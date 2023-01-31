@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -25,17 +26,6 @@ constexpr char kKeys[] = "keys";
 constexpr char kTargetArea[] = "target_area";
 constexpr char kTopLeft[] = "top_left";
 constexpr char kBottomRight[] = "bottom_right";
-// TODO(cuicuiruan): remove this and replace it with image asset.
-constexpr char kMouseCursorLock[] = "mouse cursor lock (esc)";
-
-constexpr int kAxisSize = 2;
-constexpr int kDirection[kActionMoveKeysSize][kAxisSize] = {{0, -1},
-                                                            {-1, 0},
-                                                            {0, 1},
-                                                            {1, 0}};
-// UI specs.
-// Offset by label center.
-constexpr int kLabelOffset = 49;
 
 std::unique_ptr<Position> ParseApplyAreaPosition(const base::Value& value,
                                                  base::StringPiece key) {
@@ -66,13 +56,18 @@ class ActionMove::ActionMoveMouseView : public ActionView {
   ActionMoveMouseView& operator=(const ActionMoveMouseView&) = delete;
   ~ActionMoveMouseView() override = default;
 
-  // TODO(cuicuiruan): rewrite for post MVP once design is ready.
+  // TODO(b/241966781): rewrite for Beta once design is ready.
   void SetViewContent(BindingOption binding_option) override {
-    auto label = ActionLabel::CreateTextActionLabel(kMouseCursorLock);
-    labels_.emplace_back(AddChildView(std::move(label)));
+    InputElement* input_binding =
+        GetInputBindingByBindingOption(action_, binding_option);
+    if (!input_binding)
+      return;
+
+    int radius = std::max(kActionMoveMinRadius, action_->GetUIRadius());
+    labels_ = ActionLabel::Show(this, ActionType::MOVE, *input_binding, radius);
   }
 
-  // TODO(cuicuiruan): rewrite for post MVP once design is ready.
+  // TODO(b/241966781): rewrite for Beta once design is ready.
   void OnKeyBindingChange(ActionLabel* action_label,
                           ui::DomCode code) override {
     NOTIMPLEMENTED();
@@ -83,16 +78,12 @@ class ActionMove::ActionMoveMouseView : public ActionView {
   void AddTouchPoint() override { NOTIMPLEMENTED(); }
 
   void ChildPreferredSizeChanged(View* child) override {
+    DCHECK_EQ(labels_.size(), 1u);
     if (static_cast<ActionLabel*>(child) != labels_[0])
       return;
 
-    auto label_size = labels_[0]->CalculatePreferredSize();
-    labels_[0]->SetSize(label_size);
-    labels_[0]->SetPosition(gfx::Point());
-    center_.set_x(label_size.width() / 2);
-    center_.set_y(label_size.height() / 2);
     UpdateTrashButtonPosition();
-    SetSize(label_size);
+    SetSize(labels_[0]->size());
     SetPositionFromCenterPosition(action_->GetUICenterPosition());
   }
 };
@@ -113,34 +104,18 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     int radius = std::max(kActionMoveMinRadius, action_->GetUIRadius());
     auto* action_move = static_cast<ActionMove*>(action_);
     action_move->set_move_distance(radius / 2);
-    center_.set_x(radius);
-    center_.set_y(radius);
+    set_touch_point_center(gfx::Point(radius, radius));
     UpdateTrashButtonPosition();
 
-    InputElement* input_binding = nullptr;
-    switch (binding_option) {
-      case BindingOption::kCurrent:
-        input_binding = action_->current_input();
-        break;
-      case BindingOption::kOriginal:
-        input_binding = action_->original_input();
-        break;
-
-      case BindingOption::kPending:
-        input_binding = action_->pending_input();
-        break;
-      default:
-        NOTREACHED();
-    }
+    InputElement* input_binding =
+        GetInputBindingByBindingOption(action_, binding_option);
     if (!input_binding)
       return;
 
     const auto& keys = input_binding->keys();
     if (labels_.empty()) {
-      for (const auto& key : keys) {
-        auto label = ActionLabel::CreateTextActionLabel(GetDisplayText(key));
-        labels_.emplace_back(AddChildView(std::move(label)));
-      }
+      labels_ =
+          ActionLabel::Show(this, ActionType::MOVE, *input_binding, radius);
     } else {
       DCHECK(labels_.size() == keys.size());
       for (size_t i = 0; i < keys.size(); i++)
@@ -205,16 +180,6 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     if (label_index == -1)
       return;
 
-    const int radius = std::max(kActionMoveMinRadius, action_->GetUIRadius());
-    auto label_size = child_label->CalculatePreferredSize();
-    child_label->SetSize(label_size);
-    int x = kDirection[label_index][0];
-    int y = kDirection[label_index][1];
-    auto pos = gfx::Point(
-        radius + x * (radius - kLabelOffset) - label_size.width() / 2,
-        radius + y * (radius - kLabelOffset) - label_size.height() / 2);
-    child_label->SetPosition(pos);
-
     // Calculate minimum size of the |ActionMoveKeyView|.
     int left = INT_MAX, right = 0, top = INT_MAX, bottom = 0;
     for (const auto* label : labels_) {
@@ -226,6 +191,7 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     DCHECK_LT(left, right);
     DCHECK_LT(top, bottom);
 
+    const int radius = std::max(kActionMoveMinRadius, action_->GetUIRadius());
     auto size = gfx::Size(radius * 2, radius * 2);
     size.SetToMax(gfx::Size(right - left, bottom - top));
     SetSize(size);

@@ -5,6 +5,9 @@
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/notreached.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 
 namespace arc::input_overlay {
 
@@ -25,6 +28,25 @@ bool UpdatePositionByArrowKey(ui::KeyboardCode key, gfx::Point& position) {
     default:
       return false;
   }
+}
+
+InputElement* GetInputBindingByBindingOption(Action* action,
+                                             BindingOption binding_option) {
+  InputElement* input_binding = nullptr;
+  switch (binding_option) {
+    case BindingOption::kCurrent:
+      input_binding = action->current_input();
+      break;
+    case BindingOption::kOriginal:
+      input_binding = action->original_input();
+      break;
+    case BindingOption::kPending:
+      input_binding = action->pending_input();
+      break;
+    default:
+      NOTREACHED();
+  }
+  return input_binding;
 }
 
 bool AllowReposition() {

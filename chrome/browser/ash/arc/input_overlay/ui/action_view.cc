@@ -95,8 +95,8 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
 
 void ActionView::SetPositionFromCenterPosition(
     const gfx::PointF& center_position) {
-  int left = std::max(0, (int)(center_position.x() - center_.x()));
-  int top = std::max(0, (int)(center_position.y() - center_.y()));
+  int left = std::max(0, (int)(center_position.x() - touch_point_center_.x()));
+  int top = std::max(0, (int)(center_position.y() - touch_point_center_.y()));
   // SetPosition function needs the top-left position.
   SetPosition(gfx::Point(left, top));
 }
@@ -240,27 +240,11 @@ bool ActionView::ApplyKeyReleased(const ui::KeyEvent& event) {
   if (!allow_reposition_ || !ash::IsArrowKeyEvent(event))
     return View::OnKeyReleased(event);
 
-  ChangePositionBinding(
-      gfx::Point(origin().x() + center_.x(), origin().y() + center_.y()));
+  ChangePositionBinding(gfx::Point(origin().x() + touch_point_center_.x(),
+                                   origin().y() + touch_point_center_.y()));
   RecordInputOverlayActionReposition(
       RepositionType::kKeyboardArrowKeyReposition);
   return true;
-}
-
-void ActionView::OnFocus() {
-  if (!IsFocusable()) {
-    auto* focus_manager = GetFocusManager();
-    if (focus_manager)
-      focus_manager->ClearFocus();
-    return;
-  }
-
-  // TODO(b/260868602): Update the color according to the design spec.
-  SetBackground(views::CreateSolidBackground(gfx::kGoogleBlue300));
-}
-
-void ActionView::OnBlur() {
-  SetBackground(nullptr);
 }
 
 void ActionView::AddEditButton() {
@@ -322,7 +306,7 @@ void ActionView::AddTouchPoint(ActionType action_type) {
   if (touch_point_)
     return;
 
-  touch_point_ = TouchPoint::Show(this, action_type, center_);
+  touch_point_ = TouchPoint::Show(this, action_type, touch_point_center_);
 }
 
 void ActionView::RemoveTouchPoint() {
@@ -338,8 +322,8 @@ void ActionView::UpdateTrashButtonPosition() {
     return;
 
   trash_button_->SetPosition(
-      gfx::Point(std::max(0, center_.x() - kTrashButtonSize / 2),
-                 std::max(0, center_.y() - kTrashButtonSize / 2)));
+      gfx::Point(std::max(0, touch_point_center_.x() - kTrashButtonSize / 2),
+                 std::max(0, touch_point_center_.y() - kTrashButtonSize / 2)));
 }
 
 void ActionView::OnDragStart(const ui::LocatedEvent& event) {
@@ -358,8 +342,8 @@ bool ActionView::OnDragUpdate(const ui::LocatedEvent& event) {
 }
 
 void ActionView::OnDragEnd() {
-  auto new_touch_center =
-      gfx::Point(origin().x() + center_.x(), origin().y() + center_.y());
+  auto new_touch_center = gfx::Point(origin().x() + touch_point_center_.x(),
+                                     origin().y() + touch_point_center_.y());
   ChangePositionBinding(new_touch_center);
 }
 

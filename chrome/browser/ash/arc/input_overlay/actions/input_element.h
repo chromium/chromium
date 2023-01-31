@@ -25,8 +25,6 @@ constexpr char kHoverMove[] = "hover_move";
 constexpr char kPrimaryDragMove[] = "primary_drag_move";
 constexpr char kSecondaryDragMove[] = "secondary_drag_move";
 
-// Total key size for ActionMoveKey.
-constexpr size_t kActionMoveKeysSize = 4;
 // Gets the event flags for the modifier domcode. Return ui::DomCode::NONE if
 // |code| is not modifier DomCode.
 int ModifierDomCodeToEventFlag(ui::DomCode code);

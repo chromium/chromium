@@ -25,10 +25,18 @@ namespace {
 // UI specs.
 constexpr int kSideInset = 6;
 constexpr gfx::Size kLabelSize(32, 32);
+constexpr int kLabelMargin = 2;
 constexpr int kCornerRadiusView = 6;
 constexpr int kIconSize = 20;
 constexpr char kFontStyle[] = "Google Sans";
 constexpr int kFontSize = 16;
+constexpr int kLabelPositionToSide = 36;
+
+// TODO(b/241966781): remove this and replace it with image asset for beta.
+constexpr char kMouseCursorLock[] = "mouse cursor lock (esc)";
+
+// Offset by label center for Action move.
+constexpr int kLabelOffset = 49;
 
 // About colors.
 constexpr SkColor kViewModeForeColor = SkColorSetA(SK_ColorBLACK, 0x29);
@@ -43,6 +51,8 @@ constexpr SkColor kEditTextColor = gfx::kGoogleGrey900;
 constexpr float kHaloInset = -6;
 // Thickness of focus ring.
 constexpr float kHaloThickness = 4;
+
+constexpr char kUnknownBind[] = "?";
 
 // Arrow symbols for arrow keys.
 constexpr char kLeftArrow[] = "←";
@@ -69,6 +79,79 @@ constexpr char kAlt[] = "alt";
 constexpr char kCtrl[] = "ctrl";
 constexpr char kShift[] = "shift";
 constexpr char kCap[] = "cap";
+
+class ActionLabelTap : public ActionLabel {
+ public:
+  ActionLabelTap(int radius,
+                 MouseAction mouse_action,
+                 TapLabelPosition label_position)
+      : ActionLabel(radius, mouse_action), label_position_(label_position) {
+    DCHECK(mouse_action == MouseAction::PRIMARY_CLICK ||
+           mouse_action == MouseAction::SECONDARY_CLICK);
+  }
+
+  ActionLabelTap(int radius,
+                 const std::string& text,
+                 TapLabelPosition label_position)
+      : ActionLabel(radius, text), label_position_(label_position) {}
+
+  ~ActionLabelTap() override = default;
+
+  void UpdateBoundsAlpha() override {
+    auto label_size = CalculatePreferredSize();
+    SetSize(label_size);
+    int width = std::max(
+        radius_ * 2, radius_ * 2 - kLabelPositionToSide + label_size.width());
+    switch (label_position_) {
+      case TapLabelPosition::kBottomLeft:
+        SetPosition(
+            gfx::Point(0, radius_ * 2 - label_size.height() - kLabelMargin));
+        static_cast<ActionView*>(parent())->set_touch_point_center(
+            gfx::Point(width - radius_, radius_));
+        break;
+      case TapLabelPosition::kBottomRight:
+        SetPosition(
+            gfx::Point(label_size.width() > kLabelPositionToSide
+                           ? width - label_size.width()
+                           : width - kLabelPositionToSide,
+                       radius_ * 2 - label_size.height() - kLabelMargin));
+        static_cast<ActionView*>(parent())->set_touch_point_center(
+            gfx::Point(radius_, radius_));
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
+ private:
+  TapLabelPosition label_position_ = TapLabelPosition::kTopLeft;
+};
+
+class ActionLabelMove : public ActionLabel {
+ public:
+  ActionLabelMove(int radius, const std::string& text, int index)
+      : ActionLabel(radius, text, index) {}
+  ActionLabelMove(int radius, MouseAction mouse) : ActionLabel(radius, mouse) {}
+
+  ~ActionLabelMove() override = default;
+
+  void UpdateBoundsAlpha() override {
+    auto label_size = CalculatePreferredSize();
+    SetSize(label_size);
+    if (mouse_action_ == MouseAction::NONE) {
+      int x = kDirection[index_][0];
+      int y = kDirection[index_][1];
+      SetPosition(gfx::Point(
+          radius_ + x * (radius_ - kLabelOffset) - label_size.width() / 2,
+          radius_ + y * (radius_ - kLabelOffset) - label_size.height() / 2));
+    } else {
+      SetPosition(gfx::Point());
+      static_cast<ActionView*>(parent())->set_touch_point_center(
+          gfx::Point(label_size.width() / 2, label_size.height() / 2));
+    }
+  }
+};
+
 }  // namespace
 
 std::string GetDisplayText(const ui::DomCode code) {
@@ -140,35 +223,89 @@ std::string GetDisplayText(const ui::DomCode code) {
   }
 }
 
-ActionLabel::ActionLabel() : views::LabelButton() {
+std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
+                                            ActionType action_type,
+                                            const InputElement& input_element,
+                                            int radius,
+                                            TapLabelPosition label_position) {
+  std::vector<ActionLabel*> labels;
+
+  switch (action_type) {
+    case ActionType::TAP:
+      if (IsKeyboardBound(input_element)) {
+        DCHECK_EQ(1u, input_element.keys().size());
+        labels.emplace_back(
+            parent->AddChildView(std::make_unique<ActionLabelTap>(
+                radius, GetDisplayText(input_element.keys()[0]),
+                label_position)));
+      } else if (IsMouseBound(input_element)) {
+        labels.emplace_back(
+            parent->AddChildView(std::make_unique<ActionLabelTap>(
+                radius, input_element.mouse_action(), label_position)));
+      } else {
+        labels.emplace_back(
+            parent->AddChildView(std::make_unique<ActionLabelTap>(
+                radius, kUnknownBind, label_position)));
+      }
+      break;
+
+    case ActionType::MOVE:
+      if (IsKeyboardBound(input_element)) {
+        const auto& keys = input_element.keys();
+        for (size_t i = 0; i < kActionMoveKeysSize; i++) {
+          labels.emplace_back(
+              parent->AddChildView(std::make_unique<ActionLabelMove>(
+                  radius, GetDisplayText(keys[i]), i)));
+        }
+      } else if (IsMouseBound(input_element)) {
+        labels.emplace_back(parent->AddChildView(
+            std::make_unique<ActionLabelMove>(radius, kMouseCursorLock, 0)));
+        NOTIMPLEMENTED();
+      } else {
+        for (size_t i = 0; i < kActionMoveKeysSize; i++) {
+          labels.emplace_back(parent->AddChildView(
+              std::make_unique<ActionLabelMove>(radius, kUnknownBind, i)));
+        }
+      }
+      break;
+
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  for (auto* label : labels)
+    label->Init();
+
+  return labels;
+}
+
+void ActionLabel::Init() {
   SetRequestFocusOnPress(true);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kSideInset)));
+  SetAccessibleName(mouse_action_ == MouseAction::NONE
+                        ? label()->GetText()
+                        : base::UTF8ToUTF16(GetClassName()));
+}
+
+ActionLabel::ActionLabel(int radius, MouseAction mouse_action)
+    : radius_(radius), mouse_action_(mouse_action) {}
+
+ActionLabel::ActionLabel(int radius, const std::string& text)
+    : views::LabelButton(views::Button::PressedCallback(),
+                         base::UTF8ToUTF16(text)),
+      radius_(radius) {}
+
+ActionLabel::ActionLabel(int radius, const std::string& text, int index)
+    : views::LabelButton(views::Button::PressedCallback(),
+                         base::UTF8ToUTF16(text)),
+      radius_(radius),
+      index_(index) {
+  DCHECK(index_ >= 0 && index_ < kActionMoveKeysSize);
 }
 
 ActionLabel::~ActionLabel() = default;
-
-// static
-std::unique_ptr<ActionLabel> ActionLabel::CreateTextActionLabel(
-    const std::string& text) {
-  auto label = std::make_unique<ActionLabel>();
-  label->SetTextActionLabel(text);
-  return label;
-}
-
-// static
-std::unique_ptr<ActionLabel> ActionLabel::CreateImageActionLabel(
-    MouseAction mouse_action) {
-  DCHECK(mouse_action == MouseAction::PRIMARY_CLICK ||
-         mouse_action == MouseAction::SECONDARY_CLICK);
-  if (mouse_action != MouseAction::PRIMARY_CLICK &&
-      mouse_action != MouseAction::SECONDARY_CLICK) {
-    return nullptr;
-  }
-  auto label = std::make_unique<ActionLabel>();
-  label->SetImageActionLabel(mouse_action);
-  return label;
-}
 
 void ActionLabel::SetTextActionLabel(const std::string& text) {
   label()->SetText(base::UTF8ToUTF16(text));
@@ -235,6 +372,11 @@ gfx::Size ActionLabel::CalculatePreferredSize() const {
   return size;
 }
 
+void ActionLabel::ChildPreferredSizeChanged(View* child) {
+  UpdateBoundsAlpha();
+  LabelButton::ChildPreferredSizeChanged(this);
+}
+
 bool ActionLabel::OnKeyPressed(const ui::KeyEvent& event) {
   DCHECK(parent());
   auto code = event.code();
@@ -278,10 +420,6 @@ void ActionLabel::OnBlur() {
 }
 
 void ActionLabel::SetToViewMode() {
-  if (IsInputUnbound()) {
-    SetVisible(false);
-    return;
-  }
   ClearFocus();
   SetInstallFocusRingOnFocus(false);
   label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL, kFontSize,

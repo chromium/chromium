@@ -90,9 +90,6 @@ class ActionView : public views::View {
   bool ApplyKeyPressed(const ui::KeyEvent& event);
   bool ApplyKeyReleased(const ui::KeyEvent& event);
 
-  void OnFocus() override;
-  void OnBlur() override;
-
   Action* action() { return action_; }
   const std::vector<ActionLabel*>& labels() const { return labels_; }
   TouchPoint* touch_point() { return touch_point_; }
@@ -104,6 +101,10 @@ class ActionView : public views::View {
     unbind_label_index_ = label_index;
   }
   int unbind_label_index() { return unbind_label_index_; }
+
+  void set_touch_point_center(const gfx::Point& touch_point_center) {
+    touch_point_center_ = touch_point_center;
+  }
 
  protected:
   void UpdateTrashButtonPosition();
@@ -123,7 +124,7 @@ class ActionView : public views::View {
   // Current display mode.
   DisplayMode current_display_mode_ = DisplayMode::kNone;
   // Center position of the touch point view.
-  gfx::Point center_;
+  gfx::Point touch_point_center_;
   // TODO(cuicuirunan): Enable or remove this after MVP.
   bool show_edit_button_ = false;
 

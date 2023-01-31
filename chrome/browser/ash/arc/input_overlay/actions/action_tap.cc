@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -18,23 +19,15 @@
 
 namespace arc::input_overlay {
 namespace {
-// UI specs.
-constexpr int kLabelPositionToSide = 36;
-constexpr int kLabelMargin = 2;
 
-// Create |ActionLabel| for |ActionTap|.
-std::unique_ptr<ActionLabel> CreateActionLabel(InputElement& input_element) {
-  std::unique_ptr<ActionLabel> label;
-  if (IsKeyboardBound(input_element)) {
-    DCHECK_EQ(1u, input_element.keys().size());
-    label = ActionLabel::CreateTextActionLabel(
-        GetDisplayText(input_element.keys()[0]));
-  } else if (IsMouseBound(input_element)) {
-    label = ActionLabel::CreateImageActionLabel(input_element.mouse_action());
-  } else {
-    label = ActionLabel::CreateTextActionLabel(kUnknownBind);
+gfx::Size GetBoundingBoxOfChildren(views::View* view) {
+  int x = 0;
+  int y = 0;
+  for (auto* child : view->children()) {
+    x = std::max(x, child->bounds().right());
+    y = std::max(y, child->bounds().bottom());
   }
-  return label;
+  return gfx::Size(x, y);
 }
 
 }  // namespace
@@ -52,27 +45,17 @@ class ActionTap::ActionTapView : public ActionView {
   ~ActionTapView() override = default;
 
   void SetViewContent(BindingOption binding_option) override {
-    InputElement* input_binding = nullptr;
-    switch (binding_option) {
-      case BindingOption::kCurrent:
-        input_binding = action_->current_input();
-        break;
-      case BindingOption::kOriginal:
-        input_binding = action_->original_input();
-        break;
-      case BindingOption::kPending:
-        input_binding = action_->pending_input();
-        break;
-      default:
-        NOTREACHED();
-    }
+    InputElement* input_binding =
+        GetInputBindingByBindingOption(action_, binding_option);
     if (!input_binding)
       return;
 
     if (labels_.empty()) {
       // Create new action label when initializing.
-      auto label = CreateActionLabel(*input_binding);
-      labels_.emplace_back(AddChildView(std::move(label)));
+      labels_ = ActionLabel::Show(
+          this, ActionType::TAP, *input_binding, action_->GetUIRadius(),
+          action_->on_left_or_middle_side() ? TapLabelPosition::kBottomRight
+                                            : TapLabelPosition::kBottomLeft);
     } else if (!IsInputBound(*input_binding)) {
       // Action label exists but without any bindings.
       labels_[0]->SetTextActionLabel(
@@ -138,28 +121,9 @@ class ActionTap::ActionTapView : public ActionView {
     DCHECK_EQ(1u, labels_.size());
     if (static_cast<ActionLabel*>(child) != labels_[0])
       return;
-
-    int radius = action_->GetUIRadius();
-    auto* label = labels_[0];
-    auto label_size = label->CalculatePreferredSize();
-    int width = std::max(
-        radius * 2, radius * 2 - kLabelPositionToSide + label_size.width());
-    if (action_->on_left_or_middle_side()) {
-      label->SetPosition(
-          gfx::Point(label_size.width() > kLabelPositionToSide
-                         ? width - label_size.width()
-                         : width - kLabelPositionToSide,
-                     radius * 2 - label_size.height() - kLabelMargin));
-      center_.set_x(radius);
-      center_.set_y(radius);
-    } else {
-      label->SetPosition(
-          gfx::Point(0, radius * 2 - label_size.height() - kLabelMargin));
-      center_.set_x(width - radius);
-      center_.set_y(radius);
-    }
     UpdateTrashButtonPosition();
-    label->SetSize(label_size);
+    int radius = action_->GetUIRadius();
+    int width = std::max(radius * 2, GetBoundingBoxOfChildren(this).width());
     SetSize(gfx::Size(width, radius * 2));
     SetPositionFromCenterPosition(action_->GetUICenterPosition());
   }
