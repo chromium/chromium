@@ -182,6 +182,8 @@ Site InstallableSiteToSite(InstallableSite site) {
       return Site::kStandalone;
     case InstallableSite::kMinimalUi:
       return Site::kMinimalUi;
+    case InstallableSite::kTabbed:
+      return Site::kTabbed;
     case InstallableSite::kStandaloneNestedA:
       return Site::kStandaloneNestedA;
     case InstallableSite::kStandaloneNestedB:
@@ -258,6 +260,12 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .app_name = "Site B",
       .wco_not_enabled_title = u"Site B",
       .icon_color = SK_ColorBLACK}},
+    {Site::kTabbed,
+     {.relative_url = "/webapps_integration/tabbed/basic.html",
+      .relative_manifest_id = "webapps_integration/tabbed/basic.html",
+      .app_name = "Tabbed",
+      .wco_not_enabled_title = u"Tabbed",
+      .icon_color = SK_ColorRED}},
     {Site::kNotPromotable,
      {.relative_url = "/webapps_integration/not_promotable/basic.html",
       .relative_manifest_id = "webapps_integration/not_promotable/basic.html",
@@ -348,6 +356,8 @@ base::flat_map<Display, DisplayConfig> g_display_configs = {
      {.manifest_url_param = "?manifest=manifest_browser.json"}},
     {Display::kMinimalUi,
      {.manifest_url_param = "?manifest=manifest_minimal_ui.json"}},
+    {Display::kTabbed,
+     {.manifest_url_param = "?manifest=manifest_tabbed.json"}},
     {Display::kStandalone, {.manifest_url_param = "?manifest=basic.json"}},
     {Display::kWco,
      {.manifest_url_param =
