@@ -99,7 +99,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossBatteryManagerClient
   // Path used for battery api calls by this class.
   dbus::ObjectPath battery_manager_adapter_path_;
 
-  // Service which implements the GattClient interface.
+  // Service which implements the BatteryManagerClient interface.
   std::string service_name_;
 
   // List of observers interested in battery event notifications.

@@ -1,8 +1,8 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef DEVICE_BLUETOOTH_FLOSS_FLOSS_GATT_CLIENT_H_
-#define DEVICE_BLUETOOTH_FLOSS_FLOSS_GATT_CLIENT_H_
+#ifndef DEVICE_BLUETOOTH_FLOSS_FLOSS_GATT_MANAGER_CLIENT_H_
+#define DEVICE_BLUETOOTH_FLOSS_FLOSS_GATT_MANAGER_CLIENT_H_
 
 #include <string>
 
@@ -241,20 +241,21 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattServerObserver
                                          std::string address) {}
 };
 
-class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
-                                                public FlossGattClientObserver,
-                                                public FlossGattServerObserver {
+class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
+    : public FlossDBusClient,
+      public FlossGattClientObserver,
+      public FlossGattServerObserver {
  public:
   static const char kExportedCallbacksPath[];
 
   // Creates the instance.
-  static std::unique_ptr<FlossGattClient> Create();
+  static std::unique_ptr<FlossGattManagerClient> Create();
 
-  FlossGattClient();
-  ~FlossGattClient() override;
+  FlossGattManagerClient();
+  ~FlossGattManagerClient() override;
 
-  FlossGattClient(const FlossGattClient&) = delete;
-  FlossGattClient& operator=(const FlossGattClient&) = delete;
+  FlossGattManagerClient(const FlossGattManagerClient&) = delete;
+  FlossGattManagerClient& operator=(const FlossGattManagerClient&) = delete;
 
   // Manage observers.
   void AddObserver(FlossGattClientObserver* observer);
@@ -425,7 +426,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
   base::ObserverList<FlossGattClientObserver> gatt_client_observers_;
   base::ObserverList<FlossGattServerObserver> gatt_server_observers_;
 
-  // Service which implements the GattClient interface.
+  // Service which implements the GattManagerClient interface.
   std::string service_name_;
 
  private:
@@ -454,9 +455,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
   ExportedCallbackManager<FlossGattServerObserver>
       gatt_server_exported_callback_manager_{gatt::kCallbackInterface};
 
-  base::WeakPtrFactory<FlossGattClient> weak_ptr_factory_{this};
+  base::WeakPtrFactory<FlossGattManagerClient> weak_ptr_factory_{this};
 };
 
 }  // namespace floss
 
-#endif  // DEVICE_BLUETOOTH_FLOSS_FLOSS_GATT_CLIENT_H_
+#endif  // DEVICE_BLUETOOTH_FLOSS_FLOSS_GATT_MANAGER_CLIENT_H_

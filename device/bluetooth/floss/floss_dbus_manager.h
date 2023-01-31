@@ -29,7 +29,7 @@ namespace floss {
 class FlossAdapterClient;
 class FlossClientBundle;
 class FlossDBusManagerSetter;
-class FlossGattClient;
+class FlossGattManagerClient;
 class FlossManagerClient;
 class FlossSocketManager;
 class FlossLEScanClient;
@@ -110,7 +110,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   // All returned objects are owned by FlossDBusManager. Do not use these
   // pointers after FlossDBusManager has been shut down.
   FlossAdapterClient* GetAdapterClient();
-  FlossGattClient* GetGattClient();
+  FlossGattManagerClient* GetGattManagerClient();
   FlossManagerClient* GetManagerClient();
   FlossSocketManager* GetSocketManager();
   FlossLEScanClient* GetLEScanClient();
@@ -168,7 +168,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManagerSetter {
   void SetFlossSocketManager(std::unique_ptr<FlossSocketManager> manager);
   void SetFlossLEScanClient(std::unique_ptr<FlossLEScanClient> client);
   void SetFlossAdvertiserClient(std::unique_ptr<FlossAdvertiserClient> client);
-  void SetFlossGattClient(std::unique_ptr<FlossGattClient> client);
+  void SetFlossGattManagerClient(
+      std::unique_ptr<FlossGattManagerClient> client);
   void SetFlossBatteryManagerClient(
       std::unique_ptr<FlossBatteryManagerClient> client);
 #if BUILDFLAG(IS_CHROMEOS)
@@ -220,7 +221,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
 
   FlossAdapterClient* adapter_client() { return adapter_client_.get(); }
 
-  FlossGattClient* gatt_client() { return gatt_client_.get(); }
+  FlossGattManagerClient* gatt_manager_client() {
+    return gatt_manager_client_.get();
+  }
 
   FlossSocketManager* socket_manager() { return socket_manager_.get(); }
 
@@ -246,7 +249,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
   bool use_stubs_;
   std::unique_ptr<FlossManagerClient> manager_client_;
   std::unique_ptr<FlossAdapterClient> adapter_client_;
-  std::unique_ptr<FlossGattClient> gatt_client_;
+  std::unique_ptr<FlossGattManagerClient> gatt_manager_client_;
   std::unique_ptr<FlossSocketManager> socket_manager_;
   std::unique_ptr<FlossLEScanClient> lescan_client_;
   std::unique_ptr<FlossAdvertiserClient> advertiser_client_;

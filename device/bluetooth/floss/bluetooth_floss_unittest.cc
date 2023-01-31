@@ -16,7 +16,7 @@
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
 #include "device/bluetooth/floss/fake_floss_advertiser_client.h"
 #include "device/bluetooth/floss/fake_floss_battery_manager_client.h"
-#include "device/bluetooth/floss/fake_floss_gatt_client.h"
+#include "device/bluetooth/floss/fake_floss_gatt_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_lescan_client.h"
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_socket_manager.h"
@@ -117,7 +117,8 @@ class BluetoothFlossTest : public testing::Test {
 
     dbus_setter->SetFlossManagerClient(std::move(fake_floss_manager_client));
     dbus_setter->SetFlossAdapterClient(std::move(fake_floss_adapter_client));
-    dbus_setter->SetFlossGattClient(std::make_unique<FakeFlossGattClient>());
+    dbus_setter->SetFlossGattManagerClient(
+        std::make_unique<FakeFlossGattManagerClient>());
     dbus_setter->SetFlossSocketManager(
         std::make_unique<FakeFlossSocketManager>());
     dbus_setter->SetFlossLEScanClient(std::move(fake_floss_lescan_client));

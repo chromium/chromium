@@ -20,7 +20,7 @@
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
 #include "device/bluetooth/floss/fake_floss_advertiser_client.h"
 #include "device/bluetooth/floss/fake_floss_battery_manager_client.h"
-#include "device/bluetooth/floss/fake_floss_gatt_client.h"
+#include "device/bluetooth/floss/fake_floss_gatt_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_lescan_client.h"
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_socket_manager.h"
@@ -55,20 +55,22 @@ class BluetoothGattFlossTest : public testing::Test {
         floss::FlossDBusManager::GetSetterForTesting();
 
     auto fake_floss_adapter_client = std::make_unique<FakeFlossAdapterClient>();
-    auto fake_floss_gatt_client = std::make_unique<FakeFlossGattClient>();
+    auto fake_floss_gatt_manager_client =
+        std::make_unique<FakeFlossGattManagerClient>();
     auto fake_floss_manager_client = std::make_unique<FakeFlossManagerClient>();
     auto fake_floss_battery_manager_client =
         std::make_unique<FakeFlossBatteryManagerClient>();
 
     fake_floss_adapter_client_ = fake_floss_adapter_client.get();
-    fake_floss_gatt_client_ = fake_floss_gatt_client.get();
+    fake_floss_gatt_manager_client_ = fake_floss_gatt_manager_client.get();
     fake_floss_manager_client_ = fake_floss_manager_client.get();
     fake_floss_battery_manager_client_ =
         fake_floss_battery_manager_client.get();
 
     dbus_setter->SetFlossManagerClient(std::move(fake_floss_manager_client));
     dbus_setter->SetFlossAdapterClient(std::move(fake_floss_adapter_client));
-    dbus_setter->SetFlossGattClient(std::move(fake_floss_gatt_client));
+    dbus_setter->SetFlossGattManagerClient(
+        std::move(fake_floss_gatt_manager_client));
     dbus_setter->SetFlossSocketManager(
         std::make_unique<FakeFlossSocketManager>());
     dbus_setter->SetFlossLEScanClient(
@@ -121,8 +123,8 @@ class BluetoothGattFlossTest : public testing::Test {
   }
 
   void SetClientRegistered() {
-    fake_floss_gatt_client_->GattClientRegistered(GattStatus::kSuccess,
-                                                  kGattClientId);
+    fake_floss_gatt_manager_client_->GattClientRegistered(GattStatus::kSuccess,
+                                                          kGattClientId);
   }
 
   void SetAclConnectionState(std::string address, bool connected) {
@@ -142,20 +144,21 @@ class BluetoothGattFlossTest : public testing::Test {
   void SetGattConnectionState(GattStatus status,
                               bool connected,
                               std::string address) {
-    fake_floss_gatt_client_->GattClientConnectionState(status, kGattClientId,
-                                                       connected, address);
+    fake_floss_gatt_manager_client_->GattClientConnectionState(
+        status, kGattClientId, connected, address);
   }
 
   void SetGattSearchComplete(std::string address,
                              const std::vector<GattService>& services,
                              GattStatus status) {
-    fake_floss_gatt_client_->GattSearchComplete(address, services, status);
+    fake_floss_gatt_manager_client_->GattSearchComplete(address, services,
+                                                        status);
   }
 
   void SetGattConfigureMtu(std::string address,
                            int32_t mtu,
                            GattStatus status) {
-    fake_floss_gatt_client_->GattConfigureMtu(address, mtu, status);
+    fake_floss_gatt_manager_client_->GattConfigureMtu(address, mtu, status);
   }
 
   GattService CreateFakeServiceFor(const device::BluetoothUUID& uuid) {
@@ -176,7 +179,7 @@ class BluetoothGattFlossTest : public testing::Test {
   // Holds pointer to FakeFloss*Client so that we can manipulate the fakes
   // within the tests.
   raw_ptr<FakeFlossAdapterClient> fake_floss_adapter_client_;
-  raw_ptr<FakeFlossGattClient> fake_floss_gatt_client_;
+  raw_ptr<FakeFlossGattManagerClient> fake_floss_gatt_manager_client_;
   raw_ptr<FakeFlossManagerClient> fake_floss_manager_client_;
   raw_ptr<FakeFlossBatteryManagerClient> fake_floss_battery_manager_client_;
 };

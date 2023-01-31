@@ -17,7 +17,7 @@
 #include "dbus/object_proxy.h"
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
 #include "device/bluetooth/floss/fake_floss_advertiser_client.h"
-#include "device/bluetooth/floss/fake_floss_gatt_client.h"
+#include "device/bluetooth/floss/fake_floss_gatt_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_lescan_client.h"
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_socket_manager.h"
@@ -191,8 +191,8 @@ FlossAdapterClient* FlossDBusManager::GetAdapterClient() {
   return client_bundle_->adapter_client();
 }
 
-FlossGattClient* FlossDBusManager::GetGattClient() {
-  return client_bundle_->gatt_client();
+FlossGattManagerClient* FlossDBusManager::GetGattManagerClient() {
+  return client_bundle_->gatt_manager_client();
 }
 
 FlossManagerClient* FlossDBusManager::GetManagerClient() {
@@ -237,8 +237,8 @@ void FlossDBusManager::InitializeAdapterClients(int adapter) {
   // Initialize any adapter clients.
   client_bundle_->adapter_client()->Init(GetSystemBus(), kAdapterService,
                                          active_adapter_);
-  client_bundle_->gatt_client()->Init(GetSystemBus(), kAdapterService,
-                                      active_adapter_);
+  client_bundle_->gatt_manager_client()->Init(GetSystemBus(), kAdapterService,
+                                              active_adapter_);
   client_bundle_->socket_manager()->Init(GetSystemBus(), kAdapterService,
                                          active_adapter_);
   client_bundle_->lescan_client()->Init(GetSystemBus(), kAdapterService,
@@ -263,9 +263,10 @@ void FlossDBusManagerSetter::SetFlossAdapterClient(
   FlossDBusManager::Get()->client_bundle_->adapter_client_ = std::move(client);
 }
 
-void FlossDBusManagerSetter::SetFlossGattClient(
-    std::unique_ptr<FlossGattClient> client) {
-  FlossDBusManager::Get()->client_bundle_->gatt_client_ = std::move(client);
+void FlossDBusManagerSetter::SetFlossGattManagerClient(
+    std::unique_ptr<FlossGattManagerClient> client) {
+  FlossDBusManager::Get()->client_bundle_->gatt_manager_client_ =
+      std::move(client);
 }
 
 void FlossDBusManagerSetter::SetFlossSocketManager(
@@ -314,7 +315,7 @@ void FlossClientBundle::ResetAdapterClients() {
   }
 
   adapter_client_ = FlossAdapterClient::Create();
-  gatt_client_ = FlossGattClient::Create();
+  gatt_manager_client_ = FlossGattManagerClient::Create();
   socket_manager_ = FlossSocketManager::Create();
   lescan_client_ = FlossLEScanClient::Create();
   advertiser_client_ = FlossAdvertiserClient::Create();

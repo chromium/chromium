@@ -4,7 +4,7 @@
 #include "device/bluetooth/floss/floss_advertiser_client.h"
 
 #include "components/device_event_log/device_event_log.h"
-#include "device/bluetooth/floss/floss_gatt_client.h"
+#include "device/bluetooth/floss/floss_gatt_manager_client.h"
 
 namespace floss {
 namespace {

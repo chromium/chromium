@@ -14,7 +14,7 @@
 #include "device/bluetooth/floss/bluetooth_remote_gatt_characteristic_floss.h"
 #include "device/bluetooth/floss/bluetooth_remote_gatt_service_floss.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
-#include "device/bluetooth/floss/floss_gatt_client.h"
+#include "device/bluetooth/floss/floss_gatt_manager_client.h"
 
 namespace floss {
 
@@ -80,7 +80,7 @@ void BluetoothRemoteGattDescriptorFloss::ReadRemoteDescriptor(
 
   AuthRequired auth = characteristic_->GetAuthForRead();
 
-  FlossDBusManager::Get()->GetGattClient()->ReadDescriptor(
+  FlossDBusManager::Get()->GetGattManagerClient()->ReadDescriptor(
       base::BindOnce(&BluetoothRemoteGattDescriptorFloss::OnReadDescriptor,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       service_->GetDevice()->GetAddress(), descriptor_->instance_id, auth);
@@ -92,7 +92,7 @@ void BluetoothRemoteGattDescriptorFloss::WriteRemoteDescriptor(
     ErrorCallback error_callback) {
   AuthRequired auth = characteristic_->GetAuthForWrite();
 
-  FlossDBusManager::Get()->GetGattClient()->WriteDescriptor(
+  FlossDBusManager::Get()->GetGattManagerClient()->WriteDescriptor(
       base::BindOnce(&BluetoothRemoteGattDescriptorFloss::OnWriteDescriptor,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(error_callback), new_value),

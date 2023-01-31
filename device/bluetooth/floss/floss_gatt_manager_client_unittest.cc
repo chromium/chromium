@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/bluetooth/floss/floss_gatt_client.h"
+#include "device/bluetooth/floss/floss_gatt_manager_client.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -19,11 +19,11 @@ class FlossGattClientTest : public testing::Test,
                             public FlossGattClientObserver {
  public:
   void SetUp() override {
-    client_ = FlossGattClient::Create();
-    client_->AddObserver(this);
+    gatt_manager_client_ = FlossGattManagerClient::Create();
+    gatt_manager_client_->AddObserver(this);
   }
 
-  void TearDown() override { client_.reset(); }
+  void TearDown() override { gatt_manager_client_.reset(); }
 
   // FlossGattClientObserver overrides
   void GattClientConnectionState(GattStatus status,
@@ -34,28 +34,30 @@ class FlossGattClientTest : public testing::Test,
   }
 
   void TestRegisterClient() {
-    client_->GattClientRegistered(GattStatus::kError, 10);
-    EXPECT_EQ(client_->client_id_, 0);
+    gatt_manager_client_->GattClientRegistered(GattStatus::kError, 10);
+    EXPECT_EQ(gatt_manager_client_->client_id_, 0);
 
-    client_->GattClientRegistered(GattStatus::kSuccess, 10);
-    EXPECT_EQ(client_->client_id_, 10);
+    gatt_manager_client_->GattClientRegistered(GattStatus::kSuccess, 10);
+    EXPECT_EQ(gatt_manager_client_->client_id_, 10);
 
-    client_->GattClientRegistered(GattStatus::kSuccess, 20);
-    EXPECT_EQ(client_->client_id_, 10);
+    gatt_manager_client_->GattClientRegistered(GattStatus::kSuccess, 20);
+    EXPECT_EQ(gatt_manager_client_->client_id_, 10);
   }
 
   void TestConnectionState() {
     GattStatus success = GattStatus::kSuccess;
     last_connection_state_address_ = "";
 
-    client_->GattClientConnectionState(success, 10, false, "12345");
+    gatt_manager_client_->GattClientConnectionState(success, 10, false,
+                                                    "12345");
     EXPECT_EQ(last_connection_state_address_, "12345");
 
-    client_->GattClientConnectionState(success, 20, false, "23456");
+    gatt_manager_client_->GattClientConnectionState(success, 20, false,
+                                                    "23456");
     EXPECT_EQ(last_connection_state_address_, "12345");
   }
 
-  std::unique_ptr<FlossGattClient> client_;
+  std::unique_ptr<FlossGattManagerClient> gatt_manager_client_;
   std::string last_connection_state_address_ = "";
 
   base::test::TaskEnvironment task_environment_;

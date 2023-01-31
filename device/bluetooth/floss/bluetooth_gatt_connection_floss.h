@@ -10,7 +10,7 @@
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
-#include "device/bluetooth/floss/floss_gatt_client.h"
+#include "device/bluetooth/floss/floss_gatt_manager_client.h"
 
 namespace device {
 class BluetoothAdapter;

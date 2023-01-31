@@ -6,18 +6,18 @@
 
 #include "base/containers/contains.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
-#include "device/bluetooth/floss/floss_gatt_client.h"
+#include "device/bluetooth/floss/floss_gatt_manager_client.h"
 
 namespace floss {
 
 BluetoothGattServiceFloss::BluetoothGattServiceFloss(
     BluetoothAdapterFloss* adapter)
     : adapter_(adapter) {
-  FlossDBusManager::Get()->GetGattClient()->AddObserver(this);
+  FlossDBusManager::Get()->GetGattManagerClient()->AddObserver(this);
 }
 
 BluetoothGattServiceFloss::~BluetoothGattServiceFloss() {
-  FlossDBusManager::Get()->GetGattClient()->RemoveObserver(this);
+  FlossDBusManager::Get()->GetGattManagerClient()->RemoveObserver(this);
 }
 
 BluetoothAdapterFloss* BluetoothGattServiceFloss::GetAdapter() const {

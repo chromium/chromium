@@ -7,7 +7,7 @@
 #include <map>
 
 #include "device/bluetooth/bluetooth_gatt_service.h"
-#include "device/bluetooth/floss/floss_gatt_client.h"
+#include "device/bluetooth/floss/floss_gatt_manager_client.h"
 
 namespace floss {
 

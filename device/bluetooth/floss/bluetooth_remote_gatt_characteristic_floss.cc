@@ -13,7 +13,7 @@
 #include "device/bluetooth/floss/bluetooth_remote_gatt_descriptor_floss.h"
 #include "device/bluetooth/floss/bluetooth_remote_gatt_service_floss.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
-#include "device/bluetooth/floss/floss_gatt_client.h"
+#include "device/bluetooth/floss/floss_gatt_manager_client.h"
 
 namespace floss {
 
@@ -83,7 +83,7 @@ void BluetoothRemoteGattCharacteristicFloss::ReadRemoteCharacteristic(
 
   AuthRequired auth = GetAuthForRead();
 
-  FlossDBusManager::Get()->GetGattClient()->ReadCharacteristic(
+  FlossDBusManager::Get()->GetGattManagerClient()->ReadCharacteristic(
       base::BindOnce(
           &BluetoothRemoteGattCharacteristicFloss::OnReadCharacteristic,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
@@ -130,7 +130,7 @@ void BluetoothRemoteGattCharacteristicFloss::WriteRemoteCharacteristicImpl(
     ErrorCallback error_callback) {
   AuthRequired auth = GetAuthForWrite();
 
-  FlossDBusManager::Get()->GetGattClient()->WriteCharacteristic(
+  FlossDBusManager::Get()->GetGattManagerClient()->WriteCharacteristic(
       base::BindOnce(
           &BluetoothRemoteGattCharacteristicFloss::OnWriteCharacteristic,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -244,7 +244,7 @@ void BluetoothRemoteGattCharacteristicFloss::SubscribeToNotifications(
   std::vector<uint8_t> value = {static_cast<uint8_t>(notification_type), 0};
 
   // Register this characteristic for notifications
-  FlossDBusManager::Get()->GetGattClient()->RegisterForNotification(
+  FlossDBusManager::Get()->GetGattManagerClient()->RegisterForNotification(
       base::BindOnce(
           &BluetoothRemoteGattCharacteristicFloss::OnRegisterForNotification,
           weak_ptr_factory_.GetWeakPtr(), ccc_descriptor, value,
@@ -260,7 +260,7 @@ void BluetoothRemoteGattCharacteristicFloss::UnsubscribeFromNotifications(
   std::vector<uint8_t> value = {0, 0};
 
   // Unregister this characteristic for notifications
-  FlossDBusManager::Get()->GetGattClient()->UnregisterNotification(
+  FlossDBusManager::Get()->GetGattManagerClient()->UnregisterNotification(
       base::BindOnce(
           &BluetoothRemoteGattCharacteristicFloss::OnRegisterForNotification,
           weak_ptr_factory_.GetWeakPtr(), ccc_descriptor, value,
