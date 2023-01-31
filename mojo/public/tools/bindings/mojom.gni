@@ -40,25 +40,15 @@ declare_args() {
   # scrambling on all platforms.
   enable_mojom_message_id_scrambling = true
 
-  # Enables generating javascript fuzzing-related code and the bindings for the
-  # MojoLPM fuzzer targets. Off by default.
-  enable_mojom_fuzzer = false
-
   # Enables Closure compilation of generated JS lite bindings. In environments
   # where compilation is supported, any mojom target "foo" will also have a
   # corresponding "foo_js_library_for_compile" target generated.
-  if (is_chromeos_ash) {
-    enable_mojom_closure_compile = enable_js_type_check && optimize_webui
-  }
-}
+  enable_mojom_closure_compile =
+      is_chromeos_ash && enable_js_type_check && optimize_webui
 
-# Closure libraries are needed for mojom_closure_compile, and when
-# js_type_check is enabled on Ash.
-if (is_chromeos_ash) {
-  generate_mojom_closure_libraries =
-      enable_mojom_closure_compile || enable_js_type_check
-} else {
-  generate_mojom_closure_libraries = false
+  # Enables generating javascript fuzzing-related code and the bindings for the
+  # MojoLPM fuzzer targets. Off by default.
+  enable_mojom_fuzzer = false
 }
 
 # NOTE: We would like to avoid scrambling message IDs where it doesn't add
@@ -1938,10 +1928,15 @@ template("mojom") {
     }
   }
 
+  # Closure libraries are needed for mojom_closure_compile, and when
+  # js_type_check is enabled on Ash. ash_ts_libraries are needed in ash.
+  generate_extra_libraries =
+      enable_mojom_closure_compile || (is_chromeos_ash && enable_js_type_check)
+
   # js_library() closure compiler targets, primarily used on ChromeOS. Only
   # generate these targets if the mojom target is not C++ only and is not using
   # TypeScript.
-  if (generate_mojom_closure_libraries &&
+  if (generate_extra_libraries &&
       (!defined(invoker.cpp_only) || !invoker.cpp_only) &&
       !use_typescript_for_target) {
     js_library_target_name = "${target_name}_js_library"
@@ -2151,12 +2146,8 @@ template("mojom") {
 
     # Use the same logic as js extra libraries since they can depend on each
     # other.
-    if (is_chromeos_ash) {
-      generate_extra_libraries =
-          enable_mojom_closure_compile || enable_js_type_check
-    } else {
-      generate_extra_libraries = false
-    }
+    generate_extra_libraries = enable_mojom_closure_compile ||
+                               (is_chromeos_ash && enable_js_type_check)
     if (generate_extra_libraries) {
       # Only generate ash_ts_library targets for targets that set
       # `webui_module_path` to the target's full path or have chrome:// paths.

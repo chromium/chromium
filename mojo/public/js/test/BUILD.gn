@@ -16,7 +16,7 @@ mojom("test_mojom") {
   ]
 }
 
-if (generate_mojom_closure_libraries) {
+if (enable_mojom_closure_compile || (enable_js_type_check && is_chromeos_ash)) {
   js_binary("compile_test") {
     outputs = [ "$target_gen_dir/compile_test.js" ]
     deps = [ ":test_mojom_js_library_for_compile" ]
