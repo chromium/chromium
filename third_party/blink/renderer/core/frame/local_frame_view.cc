@@ -5024,13 +5024,17 @@ bool LocalFrameView::UpdateAllPendingTransforms() {
   DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
   bool updated = false;
   ForAllNonThrottledLocalFrameViews([&updated](LocalFrameView& frame_view) {
+    HeapHashSet<Member<LayoutObject>> blocked_updates;
     if (frame_view.pending_transform_updates_) {
-      for (const LayoutObject* object :
-           *frame_view.pending_transform_updates_) {
-        PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(*object);
-        updated = true;
+      for (LayoutObject* object : *frame_view.pending_transform_updates_) {
+        if (!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*object)) {
+          PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(*object);
+          updated = true;
+        } else {
+          blocked_updates.insert(object);
+        }
       }
-      frame_view.pending_transform_updates_->clear();
+      frame_view.pending_transform_updates_->swap(blocked_updates);
     }
   });
   return updated;
@@ -5058,12 +5062,17 @@ bool LocalFrameView::UpdateAllPendingOpacityUpdates() {
   DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
   bool updated = false;
   ForAllNonThrottledLocalFrameViews([&updated](LocalFrameView& frame_view) {
+    HeapHashSet<Member<LayoutObject>> blocked_updates;
     if (frame_view.pending_opacity_updates_) {
-      for (const LayoutObject* object : *frame_view.pending_opacity_updates_) {
-        PaintPropertyTreeBuilder::DirectlyUpdateOpacityValue(*object);
-        updated = true;
+      for (LayoutObject* object : *frame_view.pending_opacity_updates_) {
+        if (!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*object)) {
+          PaintPropertyTreeBuilder::DirectlyUpdateOpacityValue(*object);
+          updated = true;
+        } else {
+          blocked_updates.insert(object);
+        }
       }
-      frame_view.pending_opacity_updates_->clear();
+      frame_view.pending_opacity_updates_->swap(blocked_updates);
     }
   });
   return updated;
