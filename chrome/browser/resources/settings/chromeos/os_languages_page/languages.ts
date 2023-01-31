@@ -1224,6 +1224,10 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     this.inputMethodPrivate_.setCurrentInputMethod(id);
   }
 
+  getCurrentInputMethod(): Promise<string> {
+    return this.inputMethodPrivate_.getCurrentInputMethod();
+  }
+
   getInputMethodsForLanguage(languageCode: string):
       chrome.languageSettingsPrivate.InputMethod[] {
     return this.languageInputMethods_.get(languageCode) || [];

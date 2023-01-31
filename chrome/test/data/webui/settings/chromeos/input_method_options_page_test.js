@@ -22,6 +22,9 @@ class FakeLanguageHelper {
   getInputMethodDisplayName(_) {
     return 'fake display name';
   }
+  getCurrentInputMethod() {
+    return Promise.resolve(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
+  }
 }
 
 function getFakePrefs() {
@@ -57,20 +60,23 @@ suite('InputMethodOptionsPage', function() {
   });
 
   /**
-   * @param {string} id Input method ID.
+   * @param {string=} id Input method ID.
    */
   function createOptionsPage(id) {
     const params = new URLSearchParams();
-    params.append('id', id);
+    if (id) {
+      params.append('id', id);
+    }
     Router.getInstance().navigateTo(
         routes.OS_LANGUAGES_INPUT_METHOD_OPTIONS, params);
 
     flush();
   }
 
-  test('US English page', () => {
+  test('US English page', async () => {
     loadTimeData.overrideValues({allowPredictiveWriting: false});
     createOptionsPage(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
+    await waitAfterNextRender(optionsPage);
     const titles = optionsPage.shadowRoot.querySelectorAll('h2');
     assertTrue(!!titles);
     assertEquals(titles.length, 2);
@@ -78,9 +84,21 @@ suite('InputMethodOptionsPage', function() {
     assertEquals(titles[1].textContent, 'On-screen keyboard');
   });
 
-  test('US English page with predictive writing', () => {
+  test('US English page from current input method', async () => {
+    loadTimeData.overrideValues({allowPredictiveWriting: false});
+    createOptionsPage();
+    await waitAfterNextRender(optionsPage);
+    const titles = optionsPage.shadowRoot.querySelectorAll('h2');
+    assertTrue(!!titles);
+    assertEquals(titles.length, 2);
+    assertEquals(titles[0].textContent, 'Physical keyboard');
+    assertEquals(titles[1].textContent, 'On-screen keyboard');
+  });
+
+  test('US English page with predictive writing', async () => {
     loadTimeData.overrideValues({allowPredictiveWriting: true});
     createOptionsPage(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
+    await waitAfterNextRender(optionsPage);
     const titles = optionsPage.shadowRoot.querySelectorAll('h2');
     assertTrue(!!titles);
     assertEquals(titles.length, 3);
@@ -89,8 +107,9 @@ suite('InputMethodOptionsPage', function() {
     assertEquals(titles[2].textContent, 'Suggestions');
   });
 
-  test('Pinyin page', () => {
+  test('Pinyin page', async () => {
     createOptionsPage(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'zh-t-i0-pinyin');
+    await waitAfterNextRender(optionsPage);
     const titles = optionsPage.shadowRoot.querySelectorAll('h2');
     assertTrue(!!titles);
     assertEquals(titles.length, 2);
@@ -100,6 +119,7 @@ suite('InputMethodOptionsPage', function() {
 
   test('updates options in prefs', async () => {
     createOptionsPage(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
+    await waitAfterNextRender(optionsPage);
     const options = optionsPage.shadowRoot.querySelectorAll('.list-item');
     assertTrue(!!options);
     assertEquals(options.length, 9);

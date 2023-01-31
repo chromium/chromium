@@ -163,7 +163,7 @@ class SettingsInputMethodOptionsPageElement extends
   /**
    * Overrides RouteObserverBehavior.
    */
-  override currentRouteChanged(route: Route): void {
+  override async currentRouteChanged(route: Route): Promise<void> {
     if (route !== routes.OS_LANGUAGES_INPUT_METHOD_OPTIONS) {
       this.id_ = '';
       // During tests, the parent node is not a <os-settings-subpage>.
@@ -175,23 +175,22 @@ class SettingsInputMethodOptionsPageElement extends
     }
 
     const queryParams = Router.getInstance().getQueryParameters();
-    this.id_ = queryParams.get('id') || '';
-    this.languageHelper.whenReady().then(() => {
-      const displayName =
-          this.languageHelper.getInputMethodDisplayName(this.id_);
-      // During tests, the parent node is not a <os-settings-subpage>.
-      if (this.parentNode instanceof OsSettingsSubpageElement) {
-        this.parentNode.pageTitle = displayName;
-      }
-      // Safety: As this page (under normal use) can only be navigated to via
-      // the inputs settings page, we should always have a valid input method ID
-      // here.
-      // Note that this asserts that this input method has a name, not that this
-      // input method has options (from `generateOptions`). It is possible for
-      // an input method to have a valid display name and not have options, and
-      // an input method to have options but not a valid display name.
-      assert(displayName !== '', `Input method ID '${this.id_}' is invalid`);
-    });
+    await this.languageHelper.whenReady();
+    this.id_ = queryParams.get('id') ||
+        await this.languageHelper.getCurrentInputMethod();
+    const displayName = this.languageHelper.getInputMethodDisplayName(this.id_);
+    // During tests, the parent node is not a <os-settings-subpage>.
+    if (this.parentNode instanceof OsSettingsSubpageElement) {
+      this.parentNode.pageTitle = displayName;
+    }
+    // Safety: As this page (under normal use) can only be navigated to via
+    // the inputs settings page, we should always have a valid input method ID
+    // here.
+    // Note that this asserts that this input method has a name, not that this
+    // input method has options (from `generateOptions`). It is possible for
+    // an input method to have a valid display name and not have options, and
+    // an input method to have options but not a valid display name.
+    assert(displayName !== '', `Input method ID '${this.id_}' is invalid`);
     this.engineId_ = getFirstPartyInputMethodEngineId(this.id_);
     this.populateOptionSections_();
   }

@@ -193,6 +193,8 @@ export interface LanguageHelper {
 
   setCurrentInputMethod(id: string): void;
 
+  getCurrentInputMethod(): Promise<string>;
+
   getInputMethodsForLanguage(languageCode: string):
       chrome.languageSettingsPrivate.InputMethod[];
 
