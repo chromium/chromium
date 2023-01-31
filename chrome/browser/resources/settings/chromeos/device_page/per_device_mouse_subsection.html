@@ -1,0 +1,81 @@
+<style include="settings-shared">
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .subsection {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .subsection > settings-toggle-button,
+  .subsection > .settings-box  {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+</style>
+<div id="mouse">
+  <h2>[[mouse.name]]</h2>
+  <div class="subsection">
+    <div class="settings-box">
+      <div class="start settings-box-text" id="mouseSwapButtonLabel">
+        $i18n{mouseSwapButtons}
+      </div>
+      <settings-dropdown-menu id="mouseSwapButtonDropdown"
+          aria-labeledby="mouseSwapButtonLabel"
+          pref="{{primaryRightPref}}"
+          menu-options="[[swapPrimaryOptions]]">
+      </settings-dropdown-menu>
+    </div>
+    <settings-toggle-button id="mouseAcceleration"
+        class="hr"
+        pref="{{accelerationPref}}"
+        label="$i18n{mouseAccelerationLabel}">
+    </settings-toggle-button>
+    <div class="settings-box">
+      <div class="start" id="mouseSpeedLabel" aria-hidden="true">
+        $i18n{mouseSpeed}
+      </div>
+      <settings-slider id="mouseSpeedSlider"
+          pref="{{sensitivityPref}}"
+          ticks="[[sensitivityValues_]]"
+          label-aria="$i18n{mouseSpeed}"
+          label-min="$i18n{pointerSlow}"
+          label-max="$i18n{pointerFast}">
+      </settings-slider>
+    </div>
+    <template is="dom-if" if="[[allowScrollSettings_]]">
+      <settings-toggle-button id="mouseScrollAcceleration"
+          class="hr"
+          pref="{{scrollAccelerationPref}}"
+          label="$i18n{mouseScrollAccelerationLabel}">
+      </settings-toggle-button>
+      <div class="settings-box">
+        <div class="start" id="mouseScrollSpeedLabel" aria-hidden="true">
+          $i18n{mouseScrollSpeed}
+        </div>
+        <settings-slider pref="{{scrollSensitivityPref}}"
+            ticks="[[sensitivityValues_]]"
+            label-aria="$i18n{mouseScrollSpeed}"
+            label-min="$i18n{pointerSlow}"
+            label-max="$i18n{pointerFast}">
+        </settings-slider>
+      </div>
+    </template>
+    <div class="settings-box" id="mouseReverseScrollRow"
+          on-click="onMouseReverseScrollRowClicked_">
+      <div class="start settings-box-text">
+        <localized-link
+            on-click="onLearnMoreLinkClicked_"
+            id="enableMouseReverseScrollingLabel"
+            localized-string="$i18n{mouseReverseScroll}"
+            link-url="$i18n{naturalScrollLearnMoreLink}">
+        </localized-link>
+      </div>
+      <cr-toggle id="mouseReverseScroll"
+          checked="[[reverseScrollValue]]"
+          aria-labelledby="enableMouseReverseScrollingLabel">
+      </cr-toggle>
+    </div>
+  </div>
+</div>

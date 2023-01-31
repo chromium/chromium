@@ -148,6 +148,7 @@ test_files = [
   "os_sync_controls_test.js",
   "parental_controls_page_test.js",
   "people_page_account_manager_test.js",
+  "per_device_mouse_subsection_test.js",
   "personalization_page_with_personalization_hub_test.js",
   "privacy_hub_subpage_tests.js",
   "quick_unlock_authenticate_browsertest_chromeos.js",

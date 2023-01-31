@@ -1,1 +1,4 @@
-<div id="perDeviceMouseSubpageTitle">$i18n{mouseTitle}</div>
+<template is="dom-repeat" items="[[mice]]" as="mouse">
+  <settings-per-device-mouse-subsection mouse="[[mouse]]">
+  </settings-per-device-mouse-subsection>
+</template>

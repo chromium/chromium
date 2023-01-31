@@ -22,6 +22,7 @@ import './device_page/input_device_settings_types.js';
 import './device_page/keyboard.js';
 import './device_page/per_device_keyboard.js';
 import './device_page/per_device_mouse.js';
+import './device_page/per_device_mouse_subsection.js';
 import './device_page/per_device_pointing_stick.js';
 import './device_page/per_device_touchpad.js';
 import './device_page/pointers.js';
@@ -155,6 +156,7 @@ export {fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads} from './devi
 export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_settings_provider.js';
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
 export {MetaKey} from './device_page/input_device_settings_types.js';
+export {SettingsPerDeviceMouseSubsectionElement} from './device_page/per_device_mouse_subsection.js';
 export {GoogleAssistantBrowserProxyImpl} from './google_assistant_page/google_assistant_browser_proxy.js';
 export {ConsentStatus, DspHotwordState} from './google_assistant_page/google_assistant_page.js';
 export {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page/internet_page_browser_proxy.js';

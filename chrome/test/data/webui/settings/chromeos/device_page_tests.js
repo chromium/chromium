@@ -1276,8 +1276,6 @@ suite('SettingsDevicePage', function() {
     test('per-device mouse subpage visibility', function() {
       assertEquals(
           routes.PER_DEVICE_MOUSE, Router.getInstance().getCurrentRoute());
-      assertTrue(isVisible(perDeviceMousePage.shadowRoot.querySelector(
-          '#perDeviceMouseSubpageTitle')));
     });
   });
 
