@@ -16,19 +16,21 @@ namespace logging {
 // non-FATAL a crash report will be generated for the first NOTREACHED() that
 // hits per process.
 //
-// Outside DCHECK builds NOTREACHED() will LOG(ERROR) and also upload a crash
-// report without crashing in order to weed out prevalent NOTREACHED()s in the
-// wild before always turning NOTREACHED()s FATAL.
+// If `enable_log_error_not_reached` is enabled in the build then NOTREACHED()
+// builds will LOG(ERROR) and also upload a crash report without crashing in
+// order to weed out prevalent NOTREACHED()s in the wild before always turning
+// NOTREACHED()s FATAL.
 //
+// Without either of the above this currently does nothing. In the future (TODO
+// below) we should replace the #else branch here with base::ImmediateCrash() or
+// equivalent (and make ~NotReachedError()) FATAL and [[noreturn]].
 // TODO(crbug.com/851128): Turn NOTREACHED() FATAL and mark them [[noreturn]].
 #if CHECK_WILL_STREAM() || BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
 #define NOTREACHED()   \
   CHECK_FUNCTION_IMPL( \
       ::logging::NotReachedError::NotReached(__FILE__, __LINE__), false)
 #else
-#define NOTREACHED()                                       \
-  (true) ? ::logging::NotReachedError::TriggerNotReached() \
-         : EAT_CHECK_STREAM_PARAMS()
+#define NOTREACHED() EAT_CHECK_STREAM_PARAMS()
 #endif
 
 // The NOTIMPLEMENTED() macro annotates codepaths which have not been
