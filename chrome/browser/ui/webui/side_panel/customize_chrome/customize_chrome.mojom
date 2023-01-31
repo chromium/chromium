@@ -19,6 +19,10 @@ struct BackgroundImage {
   string title;
   // The main color of the background image.
   skia.mojom.SkColor? main_color;
+  // Collection id of the background image.
+  string collection_id;
+  // Whether daily refresh is enabled.
+  bool daily_refresh_enabled;
 };
 
 // Additional info for third-party themes.
@@ -49,8 +53,6 @@ struct Theme {
   bool colors_managed_by_policy;
   // True if the background is managed by a policy.
   bool background_managed_by_policy;
-  // Selected collection for daily refresh.
-  string? daily_refresh_collection_id;
 };
 
 struct ChromeColor {
@@ -85,6 +87,8 @@ struct CollectionImage {
   url.mojom.Url image_url;
   // URL to a preview of the image. Can point to untrusted content.
   url.mojom.Url preview_image_url;
+  // Collection id of the image;
+  string collection_id;
 };
 
 // Settings associated with a given module.
@@ -151,7 +155,7 @@ interface CustomizeChromePageHandler {
   // Sets the background image and notifies all NTPs of the change.
   SetBackgroundImage(string attribution_1, string attribution_2,
       url.mojom.Url attribution_url, url.mojom.Url image_url,
-      url.mojom.Url thumbnail_url);
+      url.mojom.Url thumbnail_url, string collection_id);
 
   // Sets collection id for daily refresh. When |collection_id| is empty, the
   // daily refresh is turned off.

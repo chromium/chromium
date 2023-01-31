@@ -111,17 +111,21 @@ export class ThemesElement extends PolymerElement {
       attributionUrl,
       imageUrl,
       previewImageUrl,
+      collectionId,
     } = e.model.item;
     this.pageHandler_.setBackgroundImage(
-        attribution1, attribution2, attributionUrl, imageUrl, previewImageUrl);
+        attribution1, attribution2, attributionUrl, imageUrl, previewImageUrl,
+        collectionId);
   }
 
   private computeIsRefreshToggleChecked_(): boolean {
     if (!this.selectedCollection) {
       return false;
     }
-    return !!this.theme_ &&
-        this.selectedCollection!.id === this.theme_.dailyRefreshCollectionId;
+    return !!this.theme_ && !!this.theme_.backgroundImage &&
+        this.theme_.backgroundImage.dailyRefreshEnabled &&
+        this.selectedCollection!.id ===
+        this.theme_.backgroundImage.collectionId;
   }
 
   private onRefreshDailyToggleChange_(e: CustomEvent<boolean>) {
