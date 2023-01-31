@@ -123,6 +123,13 @@ void VerifyEntryAddedFailure(DeskModel::AddOrUpdateEntryStatus status,
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kFailure);
 }
 
+// Verifies that the status passed into it is kInvalidArgument
+void VerifyEntryAddedErrorInvalidArgument(
+    DeskModel::AddOrUpdateEntryStatus status,
+    std::unique_ptr<ash::DeskTemplate> new_entry) {
+  EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kInvalidArgument);
+}
+
 void VerifyEntryAddedErrorHitMaximumLimit(
     DeskModel::AddOrUpdateEntryStatus status,
     std::unique_ptr<ash::DeskTemplate> new_entry) {
@@ -979,6 +986,14 @@ TEST_F(LocalDeskDataManagerTest, CanRecordFileSizeMetrics) {
   histogram_tester.ExpectTotalCount(kTemplateSizeHistogramName, 1u);
   histogram_tester.ExpectTotalCount(kSaveAndRecallTemplateSizeHistogramName,
                                     1u);
+}
+
+TEST_F(LocalDeskDataManagerTest, AddUnknownDeskTypeShouldFail) {
+  data_manager_->AddOrUpdateEntry(
+      MakeTestDeskTemplate(1u, ash::DeskTemplateType::kUnknown),
+      base::BindOnce(&VerifyEntryAddedErrorInvalidArgument));
+
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace desks_storage

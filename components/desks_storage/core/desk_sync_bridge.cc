@@ -329,6 +329,12 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
     return;
   }
 
+  if (!new_entry) {
+    std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument,
+                            std::move(new_entry));
+    return;
+  }
+
   base::GUID uuid = new_entry->uuid();
   if (!uuid.is_valid()) {
     std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument,

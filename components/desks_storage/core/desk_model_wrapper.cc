@@ -68,13 +68,21 @@ DeskModel::GetEntryByUuidResult DeskModelWrapper::GetEntryByUUID(
 void DeskModelWrapper::AddOrUpdateEntry(
     std::unique_ptr<ash::DeskTemplate> new_entry,
     DeskModel::AddOrUpdateEntryCallback callback) {
-  if (new_entry->type() == ash::DeskTemplateType::kTemplate ||
-      new_entry->type() == ash::DeskTemplateType::kFloatingWorkspace) {
-    GetDeskTemplateModel()->AddOrUpdateEntry(std::move(new_entry),
-                                             std::move(callback));
-  } else {
-    save_and_recall_desks_model_->AddOrUpdateEntry(std::move(new_entry),
-                                                   std::move(callback));
+  switch (new_entry->type()) {
+    case ash::DeskTemplateType::kTemplate:
+    case ash::DeskTemplateType::kFloatingWorkspace:
+      GetDeskTemplateModel()->AddOrUpdateEntry(std::move(new_entry),
+                                               std::move(callback));
+      return;
+    case ash::DeskTemplateType::kSaveAndRecall:
+      save_and_recall_desks_model_->AddOrUpdateEntry(std::move(new_entry),
+                                                     std::move(callback));
+      return;
+    // Return kInvalidArgument on an unknown desk type.
+    case ash::DeskTemplateType::kUnknown:
+      std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument,
+                              std::move(new_entry));
+      return;
   }
 }
 
@@ -160,12 +168,15 @@ ash::DeskTemplate* DeskModelWrapper::FindOtherEntryWithName(
     const std::u16string& name,
     ash::DeskTemplateType type,
     const base::GUID& uuid) const {
-  if (type == ash::DeskTemplateType::kTemplate ||
-      type == ash::DeskTemplateType::kFloatingWorkspace) {
-    return GetDeskTemplateModel()->FindOtherEntryWithName(name, type, uuid);
-  } else {
-    return save_and_recall_desks_model_->FindOtherEntryWithName(name, type,
-                                                                uuid);
+  switch (type) {
+    case ash::DeskTemplateType::kTemplate:
+    case ash::DeskTemplateType::kFloatingWorkspace:
+      return GetDeskTemplateModel()->FindOtherEntryWithName(name, type, uuid);
+    case ash::DeskTemplateType::kSaveAndRecall:
+      return save_and_recall_desks_model_->FindOtherEntryWithName(name, type,
+                                                                  uuid);
+    case ash::DeskTemplateType::kUnknown:
+      return nullptr;
   }
 }
 

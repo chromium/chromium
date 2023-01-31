@@ -91,7 +91,7 @@ bool FindUuidInUuidList(
   return false;
 }
 
-// Verifies that the status passed into it is kOk
+// Verifies that the status passed into it is kOk.
 void VerifyEntryAddedCorrectly(DeskModel::AddOrUpdateEntryStatus status,
                                std::unique_ptr<ash::DeskTemplate> new_entry) {
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
@@ -101,6 +101,13 @@ void VerifyEntryAddedErrorHitMaximumLimit(
     DeskModel::AddOrUpdateEntryStatus status,
     std::unique_ptr<ash::DeskTemplate> new_entry) {
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kHitMaximumLimit);
+}
+
+// Verifies that the status passed into it is kInvalidArgument/
+void VerifyEntryAddedInvalidArgument(
+    DeskModel::AddOrUpdateEntryStatus status,
+    std::unique_ptr<ash::DeskTemplate> new_entry) {
+  EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kInvalidArgument);
 }
 
 // Make test template with ID containing the index. Defaults to desk template
@@ -786,5 +793,11 @@ TEST_F(DeskModelWrapperTest,
   EXPECT_EQ(model_wrapper_->GetDeskTemplateEntryCount(), 1ul);
   EXPECT_EQ(model_wrapper_->GetSaveAndRecallDeskEntryCount(), 6ul);
 }
+TEST_F(DeskModelWrapperTest, AddUnknownDeskTypeShouldFail) {
+  InitializeBridge();
 
+  model_wrapper_->AddOrUpdateEntry(
+      MakeTestDeskTemplate(1u, ash::DeskTemplateType::kUnknown),
+      base::BindOnce(&VerifyEntryAddedInvalidArgument));
+}
 }  // namespace desks_storage

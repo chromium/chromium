@@ -1267,7 +1267,7 @@ TEST_F(DeskSyncBridgeTest, AddEntryShouldFailWhenEntryIsTooLarge) {
   loop.Run();
 }
 
-TEST_F(DeskSyncBridgeTest, AddEntryShouldSucceedWheSyncIsDisabled) {
+TEST_F(DeskSyncBridgeTest, AddEntryShouldSucceedWhenSyncIsDisabled) {
   InitializeBridge();
   DisableBridgeSync();
 
@@ -1740,6 +1740,26 @@ TEST_F(DeskSyncBridgeTest, GetTemplateJsonShouldReturnList) {
         // components/desks_storage/core/desk_template_conversion_unittests.cc
         loop.Quit();
       }));
+  loop.Run();
+}
+
+TEST_F(DeskSyncBridgeTest, AddUnknownDeskTypeShouldFail) {
+  InitializeBridge();
+
+  WorkspaceDeskSpecifics unknown_desk = CreateUnknownDeskType();
+  std::unique_ptr<DeskTemplate> desk_template =
+      desk_template_conversion::FromSyncProto(unknown_desk);
+
+  base::RunLoop loop;
+  bridge()->AddOrUpdateEntry(
+      std::move(desk_template),
+      base::BindLambdaForTesting(
+          [&](DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(status,
+                      DeskModel::AddOrUpdateEntryStatus::kInvalidArgument);
+            loop.Quit();
+          }));
   loop.Run();
 }
 

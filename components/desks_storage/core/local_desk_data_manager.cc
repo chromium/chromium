@@ -56,7 +56,7 @@ constexpr size_t kMaxDeskTemplateCount = 6u;
 constexpr size_t kMaxSaveAndRecallDeskCount = 6u;
 
 // Set of valid desk types.
-constexpr auto kDeskTypes = base::MakeFixedFlatSet<ash::DeskTemplateType>(
+constexpr auto kValidDeskTypes = base::MakeFixedFlatSet<ash::DeskTemplateType>(
     {ash::DeskTemplateType::kTemplate, ash::DeskTemplateType::kSaveAndRecall});
 
 // Reads a file at `fully_qualified_path` into a
@@ -144,7 +144,7 @@ LocalDeskDataManager::LocalDeskDataManager(
       account_id_(account_id),
       cache_status_(CacheStatus::kNotInitialized) {
   // Populate `saved_desks_list_` with all the desk types.
-  for (const auto& desk_type : kDeskTypes) {
+  for (const auto& desk_type : kValidDeskTypes) {
     saved_desks_list_[desk_type];
   }
   // Load the cache.
@@ -240,19 +240,16 @@ void LocalDeskDataManager::AddOrUpdateEntry(
   }
 
   const ash::DeskTemplateType desk_type = new_entry->type();
-  size_t template_type_max_size = desk_type == ash::DeskTemplateType::kTemplate
-                                      ? kMaxDeskTemplateCount
-                                      : kMaxSaveAndRecallDeskCount;
-  if (!g_disable_max_template_limit &&
-      saved_desks_list_[desk_type].size() >= template_type_max_size) {
-    std::move(callback).Run(AddOrUpdateEntryStatus::kHitMaximumLimit,
+  const base::GUID uuid = new_entry->uuid();
+  if (!uuid.is_valid() || desk_type == ash::DeskTemplateType::kUnknown) {
+    std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument,
                             std::move(new_entry));
     return;
   }
-
-  const base::GUID uuid = new_entry->uuid();
-  if (!uuid.is_valid()) {
-    std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument,
+  size_t template_type_max_size = GetMaxEntryCountByDeskType(desk_type);
+  if (!g_disable_max_template_limit &&
+      saved_desks_list_[desk_type].size() >= template_type_max_size) {
+    std::move(callback).Run(AddOrUpdateEntryStatus::kHitMaximumLimit,
                             std::move(new_entry));
     return;
   }
@@ -578,7 +575,20 @@ ash::DeskTemplateType LocalDeskDataManager::GetDeskTypeOfUuid(
     if (base::Contains(saved_desk, uuid))
       return desk_type;
   }
-  return ash::DeskTemplateType::kTemplate;
+  return ash::DeskTemplateType::kUnknown;
+}
+
+size_t LocalDeskDataManager::GetMaxEntryCountByDeskType(
+    ash::DeskTemplateType desk_type) const {
+  switch (desk_type) {
+    case ash::DeskTemplateType::kTemplate:
+      return kMaxDeskTemplateCount;
+    case ash::DeskTemplateType::kSaveAndRecall:
+      return kMaxSaveAndRecallDeskCount;
+    case ash::DeskTemplateType::kFloatingWorkspace:
+    case ash::DeskTemplateType::kUnknown:
+      return 0;
+  }
 }
 
 void LocalDeskDataManager::MoveEntriesIntoCache(LoadCacheResult cache_result) {
