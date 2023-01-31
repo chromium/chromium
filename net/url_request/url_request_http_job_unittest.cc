@@ -1879,6 +1879,28 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest, SetPartitionedCookie) {
       EXPECT_EQ("__Host-foo=bar", delegate.data_received());
     }
   }
+
+  {  // Test request from same top-level eTLD+1 but different scheme. Note that
+     // although the top-level site is insecure, the endpoint setting/receiving
+     // the cookie is always secure.
+    const url::Origin kHttpTopFrameOrigin =
+        url::Origin::Create(GURL("http://www.toplevelsite.com"));
+    const IsolationInfo kHttpTestIsolationInfo =
+        IsolationInfo::CreateForInternalRequest(kHttpTopFrameOrigin);
+
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context->CreateRequest(
+        https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kHttpTestIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    if (PartitionedCookiesEnabled()) {
+      EXPECT_EQ("None", delegate.data_received());
+    } else {
+      EXPECT_EQ("__Host-foo=bar", delegate.data_received());
+    }
+  }
 }
 
 TEST_P(PartitionedCookiesURLRequestHttpJobTest, PrivacyMode) {
