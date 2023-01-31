@@ -302,6 +302,7 @@ source_set("bridge_ice_controller") {
     "//third_party/webrtc/api:scoped_refptr",
     "//third_party/webrtc/p2p:rtc_p2p",
     "//third_party/webrtc/rtc_base:logging",
+    "//third_party/webrtc/rtc_base:stringutils",
     "//third_party/webrtc/rtc_base/system:rtc_export",
   ]
 }

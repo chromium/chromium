@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_SWITCH_PROPOSAL_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_SWITCH_PROPOSAL_H_
 
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -31,6 +32,10 @@ enum class IceSwitchReason {
   kSelectedConnectionDestroyed,
   kIceControllerRecheck,
 };
+
+std::string IceSwitchReasonToString(IceSwitchReason reason);
+RTC_EXPORT IceSwitchReason
+ConvertFromWebrtcIceSwitchReason(cricket::IceSwitchReason reason);
 
 // Represents a future event to check whether an ICE switch should be performed.
 struct IceRecheckEvent {
@@ -68,6 +73,12 @@ class RTC_EXPORT IceSwitchProposal : public IceProposal {
   const rtc::ArrayView<const IceConnection> connections_to_forget_state_on()
       const {
     return connections_to_forget_state_on_;
+  }
+
+  std::string ToString() const;
+  // Pretty printing for unit test matchers.
+  friend void PrintTo(const IceSwitchProposal& proposal, std::ostream* os) {
+    *os << proposal.ToString();
   }
 
  private:

@@ -23,6 +23,7 @@
 #include "third_party/webrtc/p2p/base/transport_description.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_connection.h"
+#include "third_party/webrtc_overrides/p2p/base/ice_controller_observer.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_interaction_interface.h"
 
 namespace blink {
@@ -35,8 +36,7 @@ namespace blink {
 // by the native ICE transport (i.e. P2PTransportChannel). It must be called on
 // the same sequence (or thread) on which the ICE agent expects to be invoked.
 class RTC_EXPORT BridgeIceController
-    : public cricket::ActiveIceControllerInterface,
-      public IceInteractionInterface {
+    : public cricket::ActiveIceControllerInterface {
  public:
   // Constructs an ICE controller wrapping an already constructed native webrtc
   // ICE controller. Does not take ownership of the ICE agent, which must
@@ -44,9 +44,16 @@ class RTC_EXPORT BridgeIceController
   // sequence on which the ICE agent expects to be invoked.
   BridgeIceController(
       scoped_refptr<base::SequencedTaskRunner> network_task_runner,
+      IceControllerObserverInterface* observer,
+      cricket::IceAgentInterface* ice_agent,
+      std::unique_ptr<cricket::IceControllerInterface> native_controller);
+  BridgeIceController(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       cricket::IceAgentInterface* ice_agent,
       std::unique_ptr<cricket::IceControllerInterface> native_controller);
   ~BridgeIceController() override;
+
+  void AttachObserver(IceControllerObserverInterface* observer);
 
   // ActiveIceControllerInterface overrides.
 
@@ -71,44 +78,6 @@ class RTC_EXPORT BridgeIceController
   // Only for unit tests
   const cricket::Connection* FindNextPingableConnection() override;
 
-  // IceInteractionInterface overrides.
-
-  void AcceptPingProposal(const IcePingProposal& ping_proposal) override {
-    NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-  }
-  void RejectPingProposal(const IcePingProposal& ping_proposal) override {
-    NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-  }
-
-  void AcceptSwitchProposal(const IceSwitchProposal& switch_proposal) override {
-    NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-  }
-  void RejectSwitchProposal(const IceSwitchProposal& switch_proposal) override {
-    NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-  }
-
-  void AcceptPruneProposal(const IcePruneProposal& prune_proposal) override {
-    NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-  }
-  void RejectPruneProposal(const IcePruneProposal& prune_proposal) override {
-    NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-  }
-
-  webrtc::RTCError PingIceConnection(const IceConnection& connection) override {
-    NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-    return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
-  }
-  webrtc::RTCError SwitchToIceConnection(
-      const IceConnection& connection) override {
-    NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-    return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
-  }
-  webrtc::RTCError PruneIceConnections(
-      base::span<const IceConnection> connections_to_prune) override {
-    NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-    return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
-  }
-
  private:
   void MaybeStartPinging();
   void SelectAndPingConnection();
@@ -122,14 +91,63 @@ class RTC_EXPORT BridgeIceController
 
   void PruneConnections();
 
+  // Receives ICE interaction requests and delegates them to the ICE controller
+  // to act on as appropriate.
+  class IceInteractionProxy : public IceInteractionInterface {
+   public:
+    IceInteractionProxy() = default;
+    ~IceInteractionProxy() override = default;
+
+    void AcceptPingProposal(const IcePingProposal& ping_proposal) override {
+      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
+    }
+    void RejectPingProposal(const IcePingProposal& ping_proposal) override {
+      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
+    }
+
+    void AcceptSwitchProposal(
+        const IceSwitchProposal& switch_proposal) override {
+      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
+    }
+    void RejectSwitchProposal(
+        const IceSwitchProposal& switch_proposal) override {
+      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
+    }
+
+    void AcceptPruneProposal(const IcePruneProposal& prune_proposal) override {
+      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
+    }
+    void RejectPruneProposal(const IcePruneProposal& prune_proposal) override {
+      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
+    }
+
+    webrtc::RTCError PingIceConnection(
+        const IceConnection& connection) override {
+      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
+      return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
+    }
+    webrtc::RTCError SwitchToIceConnection(
+        const IceConnection& connection) override {
+      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
+      return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
+    }
+    webrtc::RTCError PruneIceConnections(
+        base::span<const IceConnection> connections_to_prune) override {
+      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
+      return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
+    }
+  };
+
   const scoped_refptr<base::SequencedTaskRunner> network_task_runner_;
 
   bool started_pinging_ = false;
   bool sort_pending_ = false;
   const cricket::Connection* selected_connection_ = nullptr;
 
+  scoped_refptr<IceInteractionProxy> interaction_proxy_;
   const std::unique_ptr<cricket::IceControllerInterface> native_controller_;
   cricket::IceAgentInterface& agent_;
+  IceControllerObserverInterface* observer_ = nullptr;
 
   base::WeakPtrFactory<BridgeIceController> weak_factory_;
 };

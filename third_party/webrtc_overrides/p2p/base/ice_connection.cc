@@ -1,6 +1,7 @@
 #include "third_party/webrtc_overrides/p2p/base/ice_connection.h"
 
 #include "third_party/webrtc/p2p/base/connection.h"
+#include "third_party/webrtc/rtc_base/strings/string_builder.h"
 
 namespace blink {
 
@@ -35,5 +36,12 @@ IceConnection::IceConnection(const cricket::Connection* connection)
       last_ping_response_received_(connection->last_ping_response_received()),
       num_pings_sent_(connection->num_pings_sent()) {}
 // TODO(crbug.com/1369096): rtt_samples_: extract RTT samples from connection.
+
+std::string IceConnection::ToString() const {
+  rtc::StringBuilder ss;
+  ss << "IceConn[" << id_ << ":" << local_candidate_.ToString() << ":"
+     << remote_candidate_.ToString() << "]";
+  return ss.Release();
+}
 
 }  // namespace blink

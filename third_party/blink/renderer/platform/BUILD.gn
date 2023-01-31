@@ -2328,12 +2328,14 @@ source_set("bridge_ice_controller_tests") {
   sources = [
     "peerconnection/bridge_ice_controller_test.cc",
     "peerconnection/fake_connection_factory_test.cc",
+    "peerconnection/webrtc_connection_matchers.h",
   ]
 
   deps = [
     ":test_support",
     "//components/webrtc:thread_wrapper",
     "//third_party/webrtc_overrides:ice_controller_test_utils",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }
 

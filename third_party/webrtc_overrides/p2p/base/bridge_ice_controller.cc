@@ -5,21 +5,26 @@
 #include "third_party/webrtc_overrides/p2p/base/bridge_ice_controller.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 
-#include "third_party/webrtc/p2p/base/active_ice_controller_interface.h"
 #include "third_party/webrtc/p2p/base/connection.h"
 #include "third_party/webrtc/p2p/base/ice_agent_interface.h"
-#include "third_party/webrtc/p2p/base/ice_controller_factory_interface.h"
 #include "third_party/webrtc/p2p/base/ice_controller_interface.h"
 #include "third_party/webrtc/p2p/base/ice_switch_reason.h"
 #include "third_party/webrtc/p2p/base/ice_transport_internal.h"
 #include "third_party/webrtc/p2p/base/transport_description.h"
+#include "third_party/webrtc_overrides/p2p/base/ice_connection.h"
+#include "third_party/webrtc_overrides/p2p/base/ice_controller_observer.h"
+#include "third_party/webrtc_overrides/p2p/base/ice_ping_proposal.h"
+#include "third_party/webrtc_overrides/p2p/base/ice_prune_proposal.h"
+#include "third_party/webrtc_overrides/p2p/base/ice_switch_proposal.h"
 
 namespace {
 using cricket::Connection;
@@ -35,16 +40,45 @@ namespace blink {
 
 BridgeIceController::BridgeIceController(
     scoped_refptr<base::SequencedTaskRunner> network_task_runner,
+    IceControllerObserverInterface* observer,
     IceAgentInterface* ice_agent,
-    std::unique_ptr<IceControllerInterface> native_controller)
+    std::unique_ptr<cricket::IceControllerInterface> native_controller)
     : network_task_runner_(std::move(network_task_runner)),
+      interaction_proxy_(base::MakeRefCounted<IceInteractionProxy>()),
       native_controller_(std::move(native_controller)),
       agent_(*ice_agent),
       weak_factory_(this) {
   DCHECK(ice_agent != nullptr);
+  DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
+  if (observer) {
+    AttachObserver(observer);
+  }
 }
 
+BridgeIceController::BridgeIceController(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    IceAgentInterface* ice_agent,
+    std::unique_ptr<IceControllerInterface> native_controller)
+    : BridgeIceController(std::move(task_runner),
+                          /*observer=*/nullptr,
+                          ice_agent,
+                          std::move(native_controller)) {}
+
 BridgeIceController::~BridgeIceController() = default;
+
+void BridgeIceController::AttachObserver(
+    IceControllerObserverInterface* observer) {
+  DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
+  bool changed = observer_ != observer;
+  IceControllerObserverInterface* previous_observer = observer_;
+  observer_ = observer;
+  if (previous_observer && changed) {
+    previous_observer->OnObserverDetached();
+  }
+  if (observer_ && changed) {
+    observer_->OnObserverAttached(interaction_proxy_);
+  }
+}
 
 void BridgeIceController::SetIceConfig(const IceConfig& config) {
   native_controller_->SetIceConfig(config);
@@ -62,6 +96,9 @@ bool BridgeIceController::GetUseCandidateAttribute(
 void BridgeIceController::OnConnectionAdded(const Connection* connection) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   native_controller_->AddConnection(connection);
+  if (observer_) {
+    observer_->OnConnectionAdded(IceConnection(connection));
+  }
 }
 
 void BridgeIceController::OnConnectionPinged(const Connection* connection) {
@@ -70,20 +107,28 @@ void BridgeIceController::OnConnectionPinged(const Connection* connection) {
 }
 
 void BridgeIceController::OnConnectionUpdated(const Connection* connection) {
-  RTC_LOG(LS_VERBOSE) << "Connection report for " << connection->ToString();
-  // Do nothing. Native ICE controllers have direct access to Connection, so no
-  // need to update connection state separately.
+  DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
+  if (observer_) {
+    observer_->OnConnectionUpdated(IceConnection(connection));
+  }
 }
 
 void BridgeIceController::OnConnectionSwitched(const Connection* connection) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   selected_connection_ = connection;
   native_controller_->SetSelectedConnection(connection);
+  if (observer_) {
+    observer_->OnConnectionSwitched(IceConnection(connection));
+  }
 }
 
 void BridgeIceController::OnConnectionDestroyed(const Connection* connection) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
+  IceConnection deleted_connection = IceConnection(connection);
   native_controller_->OnConnectionDestroyed(connection);
+  if (observer_) {
+    observer_->OnConnectionDestroyed(deleted_connection);
+  }
 }
 
 void BridgeIceController::MaybeStartPinging() {
@@ -110,6 +155,10 @@ void BridgeIceController::SelectAndPingConnection() {
 
   IceControllerInterface::PingResult result =
       native_controller_->SelectConnectionToPing(agent_.GetLastPingSentMs());
+  if (observer_) {
+    observer_->OnPingProposal(IcePingProposal(result, /*reply_expected=*/true));
+  }
+  // TODO(crbug.com/1369096) handle reply rather than pinging immediately.
   HandlePingResult(result);
 }
 
@@ -176,6 +225,11 @@ void BridgeIceController::DoSortAndSwitchToBestConnection(
 
   IceControllerInterface::SwitchResult result =
       native_controller_->SortAndSwitchConnection(reason);
+  if (observer_) {
+    observer_->OnSwitchProposal(
+        IceSwitchProposal(reason, result, /*reply_expected=*/true));
+  }
+  // TODO(crbug.com/1369096) handle reply rather than switching immediately.
   HandleSwitchResult(reason, result);
   UpdateStateOnConnectionsResorted();
 }
@@ -186,6 +240,10 @@ bool BridgeIceController::OnImmediateSwitchRequest(
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   IceControllerInterface::SwitchResult result =
       native_controller_->ShouldSwitchConnection(reason, selected);
+  if (observer_) {
+    observer_->OnSwitchProposal(
+        IceSwitchProposal(reason, result, /*reply_expected=*/false));
+  }
   HandleSwitchResult(reason, result);
   return result.connection.has_value();
 }
@@ -246,6 +304,11 @@ void BridgeIceController::PruneConnections() {
       (selected_connection_ && selected_connection_->nominated())) {
     std::vector<const Connection*> connections_to_prune =
         native_controller_->PruneConnections();
+    if (observer_ && !connections_to_prune.empty()) {
+      observer_->OnPruneProposal(
+          IcePruneProposal(connections_to_prune, /*reply_expected=*/true));
+    }
+    // TODO(crbug.com/1369096) handle reply rather than pruning immediately.
     agent_.PruneConnections(connections_to_prune);
   }
 }

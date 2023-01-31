@@ -5,13 +5,12 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_PRUNE_PROPOSAL_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_PRUNE_PROPOSAL_H_
 
+#include <ostream>
 #include <string>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/api/array_view.h"
 #include "third_party/webrtc/p2p/base/connection.h"
-#include "third_party/webrtc/p2p/base/ice_controller_interface.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_connection.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_proposal.h"
@@ -33,6 +32,12 @@ class RTC_EXPORT IcePruneProposal : public IceProposal {
   // longer viable candidates for a STUN ping or to switch the transport to.
   const rtc::ArrayView<const IceConnection> connections_to_prune() const {
     return connections_to_prune_;
+  }
+
+  std::string ToString() const;
+  // Pretty printing for unit test matchers.
+  friend void PrintTo(const IcePruneProposal& proposal, std::ostream* os) {
+    *os << proposal.ToString();
   }
 
  private:

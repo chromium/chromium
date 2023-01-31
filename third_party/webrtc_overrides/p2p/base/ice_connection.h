@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_CONNECTION_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_CONNECTION_H_
 
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -68,6 +69,12 @@ class RTC_EXPORT IceConnection {
   // Samples of round trip times.
   const rtc::ArrayView<const RttSample> rtt_samples() const {
     return rtt_samples_;
+  }
+
+  std::string ToString() const;
+  // Pretty printing for unit test matchers.
+  friend void PrintTo(const IceConnection& conn, std::ostream* os) {
+    *os << conn.ToString();
   }
 
  private:

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "third_party/webrtc/rtc_base/strings/string_builder.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_connection.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_proposal.h"
 
@@ -16,6 +17,17 @@ IcePruneProposal::IcePruneProposal(
       connections_to_prune.cbegin(), connections_to_prune.cend(),
       std::back_inserter(connections_to_prune_),
       [](const cricket::Connection* conn) { return IceConnection(conn); });
+}
+
+std::string IcePruneProposal::ToString() const {
+  rtc::StringBuilder ss;
+  ss << "PruneProposal[";
+  int ctr = 1;
+  for (auto conn : connections_to_prune_) {
+    ss << "(" << ctr++ << ":" << conn.ToString() << ")";
+  }
+  ss << "]";
+  return ss.Release();
 }
 
 }  // namespace blink
