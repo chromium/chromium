@@ -3522,14 +3522,16 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
     return;
   }
 
-  network_metadata_store->SetCustomApnList(network_guid, new_apns.Clone());
-
   SetPropertiesInternal(
       network_guid, *network, UserApnListToOnc(network_guid, &new_apns),
       base::BindOnce(
-          [](const std::string& guid, mojom::ApnPropertiesPtr apn, bool success,
+          [](const std::string& guid, base::Value::List new_apns,
+             mojom::ApnPropertiesPtr apn, bool success,
              const std::string& message) {
-            if (!success) {
+            if (success) {
+              NetworkHandler::Get()->network_metadata_store()->SetCustomApnList(
+                  guid, std::move(new_apns));
+            } else {
               NET_LOG(ERROR)
                   << "CreateCustomApn: Failed to update the user APN "
                      "list in Shill for network: "
@@ -3538,7 +3540,7 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
             CellularNetworkMetricsLogger::LogCreateCustomApnResult(
                 success, std::move(apn));
           },
-          network_guid, std::move(apn)));
+          network_guid, new_apns.Clone(), std::move(apn)));
 }
 
 void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
@@ -3602,13 +3604,16 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
     return;
   }
 
-  network_metadata_store->SetCustomApnList(network_guid, new_apns.Clone());
   SetPropertiesInternal(
       network_guid, *network, UserApnListToOnc(network_guid, &new_apns),
       base::BindOnce(
-          [](const std::string& guid, std::vector<mojom::ApnType> apn_types,
-             bool success, const std::string& message) {
-            if (!success) {
+          [](const std::string& guid, base::Value::List new_apns,
+             std::vector<mojom::ApnType> apn_types, bool success,
+             const std::string& message) {
+            if (success) {
+              NetworkHandler::Get()->network_metadata_store()->SetCustomApnList(
+                  guid, std::move(new_apns));
+            } else {
               NET_LOG(ERROR)
                   << "RemoveCustomApn: Failed to update the user APN "
                      "list in Shill for network: "
@@ -3617,7 +3622,7 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
             CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
                 success, std::move(apn_types));
           },
-          network_guid, std::move(removed_apn_apn_types)));
+          network_guid, new_apns.Clone(), std::move(removed_apn_apn_types)));
 }
 
 void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
@@ -3706,16 +3711,18 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
 
   NET_LOG(USER) << "ModifyCustomApn: Setting user APNs for: " << network_guid
                 << ": " << new_custom_apns.size();
-  network_metadata_store->SetCustomApnList(network_guid,
-                                           new_custom_apns.Clone());
   SetPropertiesInternal(
       network_guid, *network, UserApnListToOnc(network_guid, &new_custom_apns),
       base::BindOnce(
-          [](const std::string& guid, std::vector<mojom::ApnType> old_apn_types,
+          [](const std::string& guid, base::Value::List new_apns,
+             std::vector<mojom::ApnType> old_apn_types,
              const mojom::ApnState apn_state,
              const mojom::ApnState old_apn_state, bool success,
              const std::string& message) {
-            if (!success) {
+            if (success) {
+              NetworkHandler::Get()->network_metadata_store()->SetCustomApnList(
+                  guid, std::move(new_apns));
+            } else {
               NET_LOG(ERROR)
                   << "ModifyCustomApn: Failed to update the user APN "
                      "list in Shill for network: "
@@ -3726,7 +3733,8 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
             CellularNetworkMetricsLogger::LogModifyCustomApnResult(
                 success, old_apn_types, apn_state, old_apn_state);
           },
-          network_guid, std::move(modified_apn_old_apn_types), apn->state,
+          network_guid, new_custom_apns.Clone(),
+          std::move(modified_apn_old_apn_types), apn->state,
           modified_apn_old_apn_state));
 }
 

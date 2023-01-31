@@ -106,6 +106,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
     virtual void SetErrorForNextConnectionAttempt(
         const std::string& error_name) = 0;
 
+    // Sets a SetProperties error. If set, the next SetProperties call will
+    // fail with the given |error_name|
+    virtual void SetErrorForNextSetPropertiesAttempt(
+        const std::string& error_name) = 0;
+
     // Sets a state property to set affer a call to RequestPortalDetection.
     virtual void SetRequestPortalState(const std::string& state) = 0;
 

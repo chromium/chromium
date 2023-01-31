@@ -211,6 +211,13 @@ void FakeShillServiceClient::SetProperties(const dbus::ObjectPath& service_path,
                                            const base::Value& properties,
                                            base::OnceClosure callback,
                                            ErrorCallback error_callback) {
+  if (set_properties_error_name_.has_value()) {
+    std::move(error_callback)
+        .Run(set_properties_error_name_.value(),
+             /*error_message=*/std::string());
+    set_properties_error_name_ = absl::nullopt;
+    return;
+  }
   for (auto iter : properties.DictItems()) {
     if (!SetServiceProperty(service_path.value(), iter.first, iter.second)) {
       LOG(ERROR) << "Service not found: " << service_path.value();
@@ -717,6 +724,11 @@ void FakeShillServiceClient::SetConnectBehavior(
 void FakeShillServiceClient::SetErrorForNextConnectionAttempt(
     const std::string& error_name) {
   connect_error_name_ = error_name;
+}
+
+void FakeShillServiceClient::SetErrorForNextSetPropertiesAttempt(
+    const std::string& error_name) {
+  set_properties_error_name_ = error_name;
 }
 
 void FakeShillServiceClient::SetRequestPortalState(const std::string& state) {
