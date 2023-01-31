@@ -9,8 +9,10 @@
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "skia/ext/rgba_to_yuva.h"
@@ -165,6 +167,69 @@ sk_sp<SkColorSpace> ReadSkColorSpace(const volatile GLbyte* bytes) {
   return SkColorSpace::MakeRGB(
       const_cast<const skcms_TransferFunction&>(*transfer),
       const_cast<const skcms_Matrix3x3&>(*primaries));
+}
+
+bool TryCopySubTextureINTERNALMemory(
+    GLint xoffset,
+    GLint yoffset,
+    GLint x,
+    GLint y,
+    GLsizei width,
+    GLsizei height,
+    gfx::Rect dest_cleared_rect,
+    GLboolean unpack_flip_y,
+    const Mailbox& source_mailbox,
+    SkiaImageRepresentation* dest_shared_image,
+    SkiaImageRepresentation::ScopedWriteAccess* dest_scoped_access,
+    SharedImageRepresentationFactory* representation_factory,
+    SharedContextState* shared_context_state,
+    const std::vector<GrBackendSemaphore>& begin_semaphores,
+    std::vector<GrBackendSemaphore>& end_semaphores) {
+  if (unpack_flip_y) {
+    return false;
+  }
+
+  auto source_shared_image =
+      representation_factory->ProduceMemory(source_mailbox);
+  if (!source_shared_image) {
+    return false;
+  }
+
+  gfx::Size source_size = source_shared_image->size();
+  gfx::Rect source_rect(x, y, width, height);
+  if (!gfx::Rect(source_size).Contains(source_rect)) {
+    return false;
+  }
+
+  auto scoped_read_access = source_shared_image->BeginScopedReadAccess();
+  if (!scoped_read_access) {
+    return false;
+  }
+
+  SkPixmap pm = scoped_read_access->pixmap();
+  SkIRect skIRect = RectToSkIRect(source_rect);
+  SkPixmap subset;
+  if (!pm.extractSubset(&subset, skIRect)) {
+    return false;
+  }
+
+  if (!begin_semaphores.empty()) {
+    bool result = dest_scoped_access->surface()->wait(
+        begin_semaphores.size(), begin_semaphores.data(),
+        /*deleteSemaphoresAfterWait=*/false);
+    DCHECK(result);
+  }
+
+  dest_scoped_access->surface()->writePixels(subset, xoffset, yoffset);
+
+  FlushSurface(dest_scoped_access);
+  SubmitIfNecessary(std::move(end_semaphores), shared_context_state);
+
+  if (!dest_shared_image->IsCleared()) {
+    dest_shared_image->SetClearedRect(dest_cleared_rect);
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -374,6 +439,217 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
     rgba_image->SetCleared();
   }
 
+  return result;
+}
+
+base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
+    GLint xoffset,
+    GLint yoffset,
+    GLint x,
+    GLint y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean unpack_flip_y,
+    const volatile GLbyte* mailboxes) {
+  Mailbox source_mailbox = Mailbox::FromVolatile(
+      reinterpret_cast<const volatile Mailbox*>(mailboxes)[0]);
+  DLOG_IF(ERROR, !source_mailbox.Verify())
+      << "CopySubTexture was passed an invalid mailbox";
+  Mailbox dest_mailbox = Mailbox::FromVolatile(
+      reinterpret_cast<const volatile Mailbox*>(mailboxes)[1]);
+  DLOG_IF(ERROR, !dest_mailbox.Verify())
+      << "CopySubTexture was passed an invalid mailbox";
+
+  if (source_mailbox == dest_mailbox) {
+    return base::unexpected<GLError>(
+        GLError(GL_INVALID_OPERATION, "glCopySubTexture",
+                "source and destination mailboxes are the same"));
+  }
+
+  auto dest_shared_image = representation_factory_->ProduceSkia(
+      dest_mailbox,
+      scoped_refptr<gpu::SharedContextState>(shared_context_state_));
+  if (!dest_shared_image) {
+    return base::unexpected<GLError>(
+        GLError(GL_INVALID_VALUE, "glCopySubTexture", "unknown mailbox"));
+  }
+
+  gfx::Size dest_size = dest_shared_image->size();
+  gfx::Rect dest_rect(xoffset, yoffset, width, height);
+  if (!gfx::Rect(dest_size).Contains(dest_rect)) {
+    return base::unexpected<GLError>(
+        GLError(GL_INVALID_VALUE, "glCopySubTexture",
+                "destination texture bad dimensions."));
+  }
+
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+
+  // Allow uncleared access, as we manually handle clear tracking.
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+      dest_scoped_access = dest_shared_image->BeginScopedWriteAccess(
+          &begin_semaphores, &end_semaphores,
+          SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  if (!dest_scoped_access) {
+    return base::unexpected<GLError>(
+        GLError(GL_INVALID_VALUE, "glCopySubTexture",
+                "Dest shared image is not writable"));
+  }
+
+  gfx::Rect new_cleared_rect;
+  gfx::Rect old_cleared_rect = dest_shared_image->ClearedRect();
+  if (gles2::TextureManager::CombineAdjacentRects(old_cleared_rect, dest_rect,
+                                                  &new_cleared_rect)) {
+    DCHECK(old_cleared_rect.IsEmpty() ||
+           new_cleared_rect.Contains(old_cleared_rect));
+  } else {
+    // No users of RasterDecoder leverage this functionality. Clearing uncleared
+    // regions could be added here if needed.
+    return base::unexpected<GLError>(
+        GLError(GL_INVALID_VALUE, "glCopySubTexture",
+                "Cannot clear non-combineable rects."));
+  }
+
+  // Attempt to upload directly from CPU shared memory to destination texture.
+  if (TryCopySubTextureINTERNALMemory(
+          xoffset, yoffset, x, y, width, height, new_cleared_rect,
+          unpack_flip_y, source_mailbox, dest_shared_image.get(),
+          dest_scoped_access.get(), representation_factory_,
+          shared_context_state_, begin_semaphores, end_semaphores)) {
+    return base::ok();
+  }
+
+  // Fall back to GPU->GPU copy if src image is not CPU-backed.
+  auto source_shared_image = representation_factory_->ProduceSkia(
+      source_mailbox,
+      scoped_refptr<gpu::SharedContextState>(shared_context_state_));
+
+  // In some cases (e.g android video that is promoted to overlay) we can't
+  // create representation of the valid mailbox. To avoid problems with
+  // uncleared destination later later, we do clear destination rect with black
+  // color.
+  if (!source_shared_image) {
+    auto* canvas = dest_scoped_access->surface()->getCanvas();
+
+    SkAutoCanvasRestore autoRestore(canvas, true /* do_save */);
+    canvas->clipRect(gfx::RectToSkRect(dest_rect));
+    canvas->clear(SkColors::kBlack);
+
+    if (!dest_shared_image->IsCleared()) {
+      dest_shared_image->SetClearedRect(new_cleared_rect);
+    }
+    FlushSurface(dest_scoped_access.get());
+    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_);
+
+    // Note, that we still generate error for the client to indicate there was
+    // problem.
+  }
+
+  if (!source_shared_image) {
+    return base::unexpected<GLError>(GLError(
+        GL_INVALID_VALUE, "glCopySubTexture", "unknown source image mailbox."));
+  }
+
+  gfx::Size source_size = source_shared_image->size();
+  gfx::Rect source_rect(x, y, width, height);
+  if (!gfx::Rect(source_size).Contains(source_rect)) {
+    return base::unexpected<GLError>(GLError(GL_INVALID_VALUE,
+                                             "glCopySubTexture",
+                                             "source texture bad dimensions."));
+  }
+
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
+      source_scoped_access = source_shared_image->BeginScopedReadAccess(
+          &begin_semaphores, &end_semaphores);
+
+  if (!begin_semaphores.empty()) {
+    bool ret = dest_scoped_access->surface()->wait(
+        begin_semaphores.size(), begin_semaphores.data(),
+        /*deleteSemaphoresAfterWait=*/false);
+    DCHECK(ret);
+  }
+
+  base::expected<void, GLError> result = base::ok();
+  if (!source_scoped_access) {
+    result = base::unexpected<GLError>(
+        GLError(GL_INVALID_VALUE, "glCopySubTexture",
+                "Source shared image is not accessable"));
+    // We still need to flush surface for begin semaphores above.
+    FlushSurface(dest_scoped_access.get());
+  } else {
+    auto source_image = source_scoped_access->CreateSkImage(
+        shared_context_state_->gr_context());
+    if (!source_image) {
+      result = base::unexpected<GLError>(
+          GLError(GL_INVALID_VALUE, "glCopySubTexture",
+                  "Couldn't create SkImage from source shared image."));
+    }
+
+    // Skia will flip the image if the surface origins do not match.
+    DCHECK_EQ(unpack_flip_y, source_shared_image->surface_origin() !=
+                                 dest_shared_image->surface_origin());
+    auto dest_format = dest_shared_image->format();
+    if (dest_format.is_single_plane()) {
+      // Destination shared image cannot prefer external sampler.
+      DCHECK(!dest_format.IsLegacyMultiplanar());
+
+      auto* canvas = dest_scoped_access->surface()->getCanvas();
+      SkPaint paint;
+      paint.setBlendMode(SkBlendMode::kSrc);
+
+      // Reinterpret the source image as being in the destination color space,
+      // to disable color conversion.
+      auto source_image_reinterpreted = source_image;
+      if (canvas->imageInfo().colorSpace()) {
+        source_image_reinterpreted = source_image->reinterpretColorSpace(
+            canvas->imageInfo().refColorSpace());
+      }
+      canvas->drawImageRect(source_image_reinterpreted,
+                            gfx::RectToSkRect(source_rect),
+                            gfx::RectToSkRect(dest_rect), SkSamplingOptions(),
+                            &paint, SkCanvas::kStrict_SrcRectConstraint);
+    } else {
+      SkSurface* yuva_sk_surfaces[SkYUVAInfo::kMaxPlanes] = {};
+      for (int plane_index = 0; plane_index < dest_format.NumberOfPlanes();
+           plane_index++) {
+        // Get surface per plane from destination scoped write access.
+        yuva_sk_surfaces[plane_index] =
+            dest_scoped_access->surface(plane_index);
+      }
+
+      // TODO(crbug.com/828599): This should really default to rec709.
+      SkYUVColorSpace yuv_color_space = kRec601_SkYUVColorSpace;
+      dest_shared_image->color_space().ToSkYUVColorSpace(
+          dest_format.MultiplanarBitDepth(), &yuv_color_space);
+
+      SkYUVAInfo yuva_info(gfx::SizeToSkISize(dest_shared_image->size()),
+                           ToSkYUVAPlaneConfig(dest_format),
+                           ToSkYUVASubsampling(dest_format), yuv_color_space);
+      // Perform skia::BlitRGBAToYUVA for the multiplanar YUV format image.
+      skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces, yuva_info);
+    }
+
+    FlushSurface(dest_scoped_access.get());
+    auto source_format = source_shared_image->format();
+    if (auto end_state = source_scoped_access->TakeEndState()) {
+      // Only one texture for external sampler case in source shared image.
+      const int num_planes = source_format.PrefersExternalSampler()
+                                 ? 1
+                                 : source_format.NumberOfPlanes();
+      for (int plane_index = 0; plane_index < num_planes; plane_index++) {
+        shared_context_state_->gr_context()->setBackendTextureState(
+            source_scoped_access->promise_image_texture(plane_index)
+                ->backendTexture(),
+            *end_state);
+      }
+    }
+
+    if (!dest_shared_image->IsCleared()) {
+      dest_shared_image->SetClearedRect(new_cleared_rect);
+    }
+  }
+
+  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_);
   return result;
 }
 

@@ -45,6 +45,15 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
       GLenum plane_config,
       GLenum subsampling,
       const volatile GLbyte* mailboxes_in);
+  base::expected<void, GLError> CopySharedImage(
+      GLint xoffset,
+      GLint yoffset,
+      GLint x,
+      GLint y,
+      GLsizei width,
+      GLsizei height,
+      GLboolean unpack_flip_y,
+      const volatile GLbyte* mailboxes);
 
  private:
   raw_ptr<SharedImageRepresentationFactory> representation_factory_ = nullptr;
