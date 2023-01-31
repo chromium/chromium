@@ -52,8 +52,9 @@ constexpr base::TimeDelta kShortBanDiscoveryNotificationBanTime =
 
 // static
 std::unique_ptr<Mediator> Mediator::Factory::Create() {
-  if (g_test_factory)
+  if (g_test_factory) {
     return g_test_factory->BuildInstance();
+  }
 
   auto process_manager = std::make_unique<QuickPairProcessManagerImpl>();
   auto pairer_broker = std::make_unique<PairerBrokerImpl>();
@@ -186,8 +187,9 @@ bool Mediator::IsDeviceBlockedForDiscoveryNotifications(
     scoped_refptr<Device> device) {
   auto it = discovery_notification_block_list_.find(
       std::make_pair(device->metadata_id(), device->protocol()));
-  if (it == discovery_notification_block_list_.end())
+  if (it == discovery_notification_block_list_.end()) {
     return false;
+  }
 
   DiscoveryNotificationDismissalState notification_state = it->second.first;
 
@@ -254,8 +256,9 @@ void Mediator::OnRetroactivePairFound(scoped_refptr<Device> device) {
   // SFUL metrics will cause a crash if Fast Pair is disabled when we
   // retroactive pair, so prevent a notification from popping up.
   // TODO(b/247148054): Look into moving this elsewhere.
-  if (!feature_status_tracker_->IsFastPairEnabled())
+  if (!feature_status_tracker_->IsFastPairEnabled()) {
     return;
+  }
   device_currently_showing_notification_ = device;
   ui_broker_->ShowAssociateAccount(device);
 }
@@ -427,8 +430,9 @@ void Mediator::OnAdapterStateControllerChanged(
   // Always reset the observation first to handle the case where the ptr
   // became a nullptr (i.e. AdapterStateController was destroyed).
   adapter_state_controller_observation_.Reset();
-  if (adapter_state_controller)
+  if (adapter_state_controller) {
     adapter_state_controller_observation_.Observe(adapter_state_controller);
+  }
 }
 
 void Mediator::OnAdapterStateChanged() {

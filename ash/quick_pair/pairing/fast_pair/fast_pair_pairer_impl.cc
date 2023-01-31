@@ -565,8 +565,17 @@ void FastPairPairerImpl::OnWriteAccountKey(
     return;
   }
 
+  const std::vector<uint8_t> account_key_vec(account_key.begin(),
+                                             account_key.end());
+
+  device_->set_account_key(account_key_vec);
+  if (!FastPairRepository::Get()->WriteAccountAssociationToLocalRegistry(
+          device_)) {
+    QP_LOG(WARNING) << "Failed to write account association to Local Registry.";
+  }
+
   FastPairRepository::Get()->WriteAccountAssociationToFootprints(
-      device_, std::vector<uint8_t>(account_key.begin(), account_key.end()));
+      device_, account_key_vec);
 
   // If the Saved Devices feature is enabled and we are utilizing a "loose"
   // interpretation of a user's opt-in status, then we will opt-in the user
