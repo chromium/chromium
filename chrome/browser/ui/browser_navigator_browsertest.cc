@@ -8,7 +8,6 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -44,7 +43,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
@@ -52,7 +50,6 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/resource_request_body.h"
-#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
@@ -1859,15 +1856,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
 }
 #endif
 
-//  Helper class to enable picture in picture V2 for those tests that need it.
-//  Once the feature is enabled permanently, these can be merged back to
-//  BrowserNavigatorTest instead.
-class BrowserNavigatorWithPictureInPictureTest : public BrowserNavigatorTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kDocumentPictureInPictureAPI};
-};
-
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        Disposition_PictureInPicture_Open) {
   // Create the params for the PiP request.
   auto pip_options = blink::mojom::PictureInPictureWindowOptions::New();
@@ -1895,7 +1884,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
   EXPECT_DOUBLE_EQ(0.5, aspect_ratio);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        Disposition_PictureInPicture_OpenWithWidthAndHeight) {
   // Give both an aspect ratio and a width/height that don't match. The
   // width/height should take precedence.
@@ -1918,25 +1907,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
   EXPECT_EQ(500, override_bounds.height());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        Disposition_PictureInPicture_CantFromAnotherPip) {
   // Make sure that attempting to open a picture in picture window from a
   // picture in picture window fails.
   Browser* pip = CreateEmptyBrowserForType(Browser::TYPE_PICTURE_IN_PICTURE,
                                            browser()->profile());
   NavigateParams params(MakeNavigateParams(pip));
-  params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
-  Navigate(&params);
-
-  EXPECT_EQ(params.browser, nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
-                       Disposition_PictureInPicture_FeatureMustBeEnabled) {
-  // Creating a picture in picture window should not work if the feature is off.
-  ASSERT_FALSE(base::FeatureList::IsEnabled(
-      blink::features::kDocumentPictureInPictureAPI));
-  NavigateParams params(MakeNavigateParams(browser()));
   params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
   Navigate(&params);
 
