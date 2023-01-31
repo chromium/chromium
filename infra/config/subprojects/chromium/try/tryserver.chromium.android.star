@@ -24,9 +24,6 @@ try_.defaults.set(
     orchestrator_cores = 4,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 consoles.list_view(
@@ -377,9 +374,6 @@ try_.orchestrator_builder(
     # use_orchestrator_pool = True,
     use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
-
-    # TODO(crbug.com/1405549): verify if py3 works for this builder.
-    omit_python2 = True,
 )
 
 try_.orchestrator_builder(
