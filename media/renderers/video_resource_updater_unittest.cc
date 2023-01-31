@@ -393,10 +393,10 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGB) {
 
     if (fmt == PIXEL_FORMAT_XBGR) {
       EXPECT_EQ(resources.resources[0].format,
-                viz::SharedImageFormat::SinglePlane(viz::RGBX_8888));
+                viz::SharedImageFormat::SinglePlane(viz::RGBA_8888));
     } else if (fmt == PIXEL_FORMAT_XRGB) {
       EXPECT_EQ(resources.resources[0].format,
-                viz::SharedImageFormat::SinglePlane(viz::BGRX_8888));
+                viz::SharedImageFormat::SinglePlane(viz::BGRA_8888));
 
     } else if (fmt == PIXEL_FORMAT_ABGR) {
       EXPECT_EQ(resources.resources[0].format,

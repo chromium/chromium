@@ -290,13 +290,13 @@ viz::ResourceFormat GetRGBResourceFormat(VideoPixelFormat format) {
   // macOS IOSurfaces are always BGRA_8888.
   return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
 #else
+  // viz::RGBX_8888 and viz::BGRX_8888 require upload as GL_RGB (3 bytes), while
+  // VideoFrame is always four bytes, so we can't upload directly from them.
   switch (format) {
     case PIXEL_FORMAT_XBGR:
-      return viz::RGBX_8888;
     case PIXEL_FORMAT_ABGR:
       return viz::RGBA_8888;
     case PIXEL_FORMAT_XRGB:
-      return viz::BGRX_8888;
     case PIXEL_FORMAT_ARGB:
       return viz::BGRA_8888;
     default:
