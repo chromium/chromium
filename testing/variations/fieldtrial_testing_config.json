@@ -5269,18 +5269,18 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledEditAndSign_20221206",
+                    "name": "EnabledEditOrSign_20230127",
                     "params": {
-                        "text": "Edit and Sign"
+                        "text": "Edit or sign"
                     },
                     "enable_features": [
                         "GalleryAppPdfEditNotification"
                     ]
                 },
                 {
-                    "name": "EnabledOpenInGallery_20221206",
+                    "name": "EnabledOpenAndEdit_20230127",
                     "params": {
-                        "text": "Open in Gallery app"
+                        "text": "Open and edit"
                     },
                     "enable_features": [
                         "GalleryAppPdfEditNotification"
