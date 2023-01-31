@@ -1,0 +1,59 @@
+{
+  // See third_party/blink/renderer/core/frame/deprecation/README.md
+  // The code for triggering DevTools Deprecation Issues is generated from here.
+  //
+  // TODO(crbug.com/1411444): Add existing deprecations to this file.
+  // TODO(crbug.com/1411444): Copy this file into devtools_frontend.
+  // TODO(crbug.com/1411444): Codegen deprecations and update note in README.
+  parameters: {
+    // The name of each deprecation is cannot contain any characters illegal in
+    // a c++ enum.
+    // name: {
+    //   valid_type: "str",
+    // },
+    // The message is user-facing text detailing what was deprecated.
+    message: {
+      valid_type: "str",
+    },
+    // The translation_note is sent to the translator as context on the message.
+    translation_note: {
+      valid_type: "str",
+    },
+    // The web_features are a list of WebFeature:: enums that trigger the issue.
+    web_features: {
+      default: [],
+      valid_type: "list",
+    },
+    // The chrome_status_feature is an optional attribute used to link to
+    // https://chromestatus.com/feature/....
+    chrome_status_feature: {
+      valid_type: "int",
+    },
+    // The milestone is an optional attribute used inform the user of when the
+    // change detailed in the message takes effect.
+    milestone: {
+      valid_type: "int",
+    },
+  },
+  data: [
+    {
+      name: "ExampleWithOptionals",
+      message: "This is an example with all optional attributes present.",
+      translation_note: "This string does not need to be translated.",
+      web_features: [
+        "ExampleWithAttributes",
+        "AnotherExampleWithAttributes",
+      ],
+      chrome_status_feature: 123456789,
+      milestone: 100,
+    },
+    {
+      name: "ExampleWithoutOptionals",
+      message: "This is an example with no optional attributes present.",
+      translation_note: "This string does not need to be translated.",
+      web_features: [
+        "ExampleWithoutOptionals",
+      ],
+    },
+  ],
+}
