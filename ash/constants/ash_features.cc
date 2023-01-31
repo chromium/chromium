@@ -968,7 +968,7 @@ BASE_FEATURE(kFloatingWorkspace,
 
 // Maximum delay to wait for restoring Floating Workspace after login.
 constexpr base::FeatureParam<base::TimeDelta>
-    kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin{
+    kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin{
         &kFloatingWorkspace, "MaxTimeAvailableForRestoreAfterLogin",
         base::Seconds(3)};
 
@@ -979,7 +979,7 @@ BASE_FEATURE(kFloatingWorkspaceV2,
 
 // Maximum delay to wait for restoring Floating Workspace V2 after login.
 constexpr base::FeatureParam<base::TimeDelta>
-    kFloatingWorkspaceV2MaxTimeAvaliableForRestoreAfterLogin{
+    kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin{
         &kFloatingWorkspaceV2, "MaxTimeAvailableForRestoreAfterLoginV2",
         base::Seconds(15)};
 

@@ -106,7 +106,7 @@ void FloatingWorkspaceService::
     return;
   if (base::TimeTicks::Now() >
       initialization_timestamp_ +
-          ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+          ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
               .Get()) {
     // No need to restore any remote session 3 seconds (TBD) after login.
     should_run_restore_ = false;
@@ -127,7 +127,7 @@ void FloatingWorkspaceService::
         base::BindOnce(
             &FloatingWorkspaceService::TryRestoreMostRecentlyUsedSession,
             weak_pointer_factory_.GetWeakPtr()),
-        ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+        ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
             .Get());
     should_run_restore_ = false;
     return;
@@ -264,7 +264,7 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
   if (base::TimeTicks::Now() >
       initialization_timestamp_ +
           ash::features::
-              kFloatingWorkspaceV2MaxTimeAvaliableForRestoreAfterLogin.Get()) {
+              kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin.Get()) {
     // No need to restore any remote session 15 seconds (TBD) after login.
     should_run_restore_ = false;
     return;

@@ -291,11 +291,11 @@ BASE_DECLARE_FEATURE(kFirstPartyVietnameseInput);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFloatingWorkspace);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
-    kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin;
+    kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFloatingWorkspaceV2);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
-    kFloatingWorkspaceV2MaxTimeAvaliableForRestoreAfterLogin;
+    kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
     kFloatingWorkspaceV2PeriodicJobIntervalInSeconds;

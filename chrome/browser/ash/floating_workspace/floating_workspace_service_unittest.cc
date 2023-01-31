@@ -199,7 +199,7 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSession) {
   test_floating_workspace_service
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
   task_environment().FastForwardBy(
-      ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+      ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
           .Get() +
       base::Seconds(1));
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
@@ -230,7 +230,7 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreLocalSession) {
   test_floating_workspace_service
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
   task_environment().FastForwardBy(
-      ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+      ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
           .Get() +
       base::Seconds(1));
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
@@ -272,7 +272,7 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSessionAfterUpdated) {
   less_recent_remote_session->SetModifiedTime(remote_session_updated_time);
 
   task_environment().FastForwardBy(
-      ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+      ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
           .Get() -
       remote_session_update_arrival_time);
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
@@ -297,9 +297,9 @@ TEST_F(FloatingWorkspaceServiceTest, NoLocalSession) {
 
   test_floating_workspace_service
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-  // Wait for kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin seconds.
+  // Wait for kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin seconds.
   task_environment().FastForwardBy(
-      ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+      ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
           .Get());
 
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
@@ -317,9 +317,9 @@ TEST_F(FloatingWorkspaceServiceTest, NoRemoteSession) {
       local_session.get());
   test_floating_workspace_service
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-  // Wait for kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin seconds.
+  // Wait for kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin seconds.
   task_environment().FastForwardBy(
-      ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+      ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
           .Get());
 
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
@@ -333,9 +333,9 @@ TEST_F(FloatingWorkspaceServiceTest, NoSession) {
       profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV1Enabled);
   test_floating_workspace_service
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-  // Wait for kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin seconds.
+  // Wait for kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin seconds.
   task_environment().FastForwardBy(
-      ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+      ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
           .Get());
 
   EXPECT_FALSE(test_floating_workspace_service.GetRestoredSession());
@@ -368,7 +368,7 @@ TEST_F(FloatingWorkspaceServiceTest, FloatingWorkspaceTemplateTimeOut) {
       MakeTestFloatingWorkspaceDeskTemplate(template_name);
   desk_template_entries.push_back(floating_workspace_template.get());
   task_environment().FastForwardBy(
-      ash::features::kFloatingWorkspaceV2MaxTimeAvaliableForRestoreAfterLogin
+      ash::features::kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin
           .Get() +
       base::Seconds(1));
   test_floating_workspace_service_v2.EntriesAddedOrUpdatedRemotely(
