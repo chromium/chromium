@@ -207,6 +207,11 @@ void Start() {
 
   crash_reporter::InitializeCrashKeys();
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  static crash_reporter::CrashKeyString<4> key("partition_alloc");
+  key.Set("yes");
+#endif
+
   // Don't start MTFD when prewarmed, the check thread will just get confused.
   if (!base::ios::IsApplicationPreWarmed()) {
     [[MainThreadFreezeDetector sharedInstance] start];
