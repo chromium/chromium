@@ -111,6 +111,12 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               SetAutofillSuggestionMethod,
               (AutofillSuggestionMethod state),
               (override));
+  MOCK_METHOD(void,
+              DidShowSuggestions,
+              (bool has_autofill_suggestions,
+               const FormData& form,
+               const FormFieldData& field),
+              (override));
 };
 
 }  // namespace
@@ -186,6 +192,7 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
 TEST_F(TouchToFillDelegateImplUnitTest, TryToShowTouchToFillSucceeds) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
+  EXPECT_CALL(*browser_autofill_manager_, DidShowSuggestions);
   TryToShowTouchToFill(/*expected_success=*/true);
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,

@@ -90,6 +90,8 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
   ttf_credit_card_state_ = TouchToFillState::kIsShowing;
   manager_->client()->HideAutofillPopup(
       PopupHidingReason::kOverlappingWithTouchToFillSurface);
+  manager_->DidShowSuggestions(/*has_autofill_suggestions=*/true, form, field);
+
   return true;
 }
 

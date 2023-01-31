@@ -157,9 +157,10 @@ class BrowserAutofillManager : public AutofillManager,
                               const FormFieldData& field,
                               const CreditCard& credit_card,
                               const std::u16string& cvc) override;
-  void DidShowSuggestions(bool has_autofill_suggestions,
-                          const FormData& form,
-                          const FormFieldData& field);
+  // Virtual for testing
+  virtual void DidShowSuggestions(bool has_autofill_suggestions,
+                                  const FormData& form,
+                                  const FormFieldData& field);
 
   // Fills or previews the credit card form.
   // Assumes the form and field are valid.
