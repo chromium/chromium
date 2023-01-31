@@ -1113,7 +1113,7 @@ bool DrawingBuffer::CopyToPlatformMailbox(
       unpack_premultiply_alpha_needed = GL_TRUE;
     }
 
-    dst_raster_interface->CopySubTexture(
+    dst_raster_interface->CopySharedImage(
         src_mailbox.mailbox, dst_mailbox, dst_texture_target,
         dst_texture_offset.x(), dst_texture_offset.y(), src_sub_rectangle.x(),
         src_sub_rectangle.y(), src_sub_rectangle.width(),

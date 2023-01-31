@@ -292,15 +292,15 @@ gpu::SyncToken Buffer::Texture::CopyTexImage(
     ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
     DCHECK_NE(query_id_, 0u);
     ri->BeginQueryEXT(query_type_, query_id_);
-    ri->CopySubTexture(mailbox_, destination->mailbox_,
-                       destination->texture_target_, 0, 0, 0, 0, size_.width(),
-                       size_.height(), /*unpack_flip_y=*/false,
-                       /*unpack_premultiply_alpha=*/false);
+    ri->CopySharedImage(mailbox_, destination->mailbox_,
+                        destination->texture_target_, 0, 0, 0, 0, size_.width(),
+                        size_.height(), /*unpack_flip_y=*/false,
+                        /*unpack_premultiply_alpha=*/false);
     ri->EndQueryEXT(query_type_);
     // Run callback when query result is available.
     ReleaseWhenQueryResultIsAvailable(std::move(callback));
     // Create and return a sync token that can be used to ensure that the
-    // CopySubTexture call is processed before issuing any commands
+    // CopySharedImage call is processed before issuing any commands
     // that will read from the target texture on a different context.
     ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   }

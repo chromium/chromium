@@ -620,15 +620,15 @@ class RasterDecoderImpl final : public RasterDecoder,
   void DoFlush();
   void DoGetIntegerv(GLenum pname, GLint* params, GLsizei params_size);
   void DoTraceEndCHROMIUM();
-  void DoCopySubTextureINTERNAL(GLint xoffset,
-                                GLint yoffset,
-                                GLint x,
-                                GLint y,
-                                GLsizei width,
-                                GLsizei height,
-                                GLboolean unpack_flip_y,
-                                const volatile GLbyte* mailboxes);
-  bool TryCopySubTextureINTERNALMemory(
+  void DoCopySharedImageINTERNAL(GLint xoffset,
+                                 GLint yoffset,
+                                 GLint x,
+                                 GLint y,
+                                 GLsizei width,
+                                 GLsizei height,
+                                 GLboolean unpack_flip_y,
+                                 const volatile GLbyte* mailboxes);
+  bool TryCopySharedImageINTERNALMemory(
       GLint xoffset,
       GLint yoffset,
       GLint x,
@@ -1922,7 +1922,7 @@ error::Error RasterDecoderImpl::HandleSetActiveURLCHROMIUM(
   return error::kNoError;
 }
 
-void RasterDecoderImpl::DoCopySubTextureINTERNAL(
+void RasterDecoderImpl::DoCopySharedImageINTERNAL(
     GLint xoffset,
     GLint yoffset,
     GLint x,
@@ -1934,14 +1934,14 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
   Mailbox source_mailbox = Mailbox::FromVolatile(
       reinterpret_cast<const volatile Mailbox*>(mailboxes)[0]);
   DLOG_IF(ERROR, !source_mailbox.Verify())
-      << "CopySubTexture was passed an invalid mailbox";
+      << "CopySharedImage was passed an invalid mailbox";
   Mailbox dest_mailbox = Mailbox::FromVolatile(
       reinterpret_cast<const volatile Mailbox*>(mailboxes)[1]);
   DLOG_IF(ERROR, !dest_mailbox.Verify())
-      << "CopySubTexture was passed an invalid mailbox";
+      << "CopySharedImage was passed an invalid mailbox";
 
   if (source_mailbox == dest_mailbox) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glCopySubTexture",
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glCopySharedImage",
                        "source and destination mailboxes are the same");
     return;
   }
@@ -1949,14 +1949,15 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
   auto dest_shared_image = shared_image_representation_factory_.ProduceSkia(
       dest_mailbox, shared_context_state_);
   if (!dest_shared_image) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTexture", "unknown mailbox");
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImage",
+                       "unknown mailbox");
     return;
   }
 
   gfx::Size dest_size = dest_shared_image->size();
   gfx::Rect dest_rect(xoffset, yoffset, width, height);
   if (!gfx::Rect(dest_size).Contains(dest_rect)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTexture",
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImage",
                        "destination texture bad dimensions.");
     return;
   }
@@ -1970,7 +1971,7 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
           &begin_semaphores, &end_semaphores,
           SharedImageRepresentation::AllowUnclearedAccess::kYes);
   if (!dest_scoped_access) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTexture",
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImage",
                        "Dest shared image is not writable");
     return;
   }
@@ -1984,13 +1985,13 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
   } else {
     // No users of RasterDecoder leverage this functionality. Clearing uncleared
     // regions could be added here if needed.
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTexture",
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImage",
                        "Cannot clear non-combineable rects.");
     return;
   }
 
   // Attempt to upload directly from CPU shared memory to destination texture.
-  if (TryCopySubTextureINTERNALMemory(
+  if (TryCopySharedImageINTERNALMemory(
           xoffset, yoffset, x, y, width, height, new_cleared_rect,
           unpack_flip_y, source_mailbox, dest_shared_image.get(),
           dest_scoped_access.get(), begin_semaphores, end_semaphores)) {
@@ -2023,7 +2024,7 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
   }
 
   if (!source_shared_image) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTexture",
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImage",
                        "unknown source image mailbox.");
     return;
   }
@@ -2031,7 +2032,7 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
   gfx::Size source_size = source_shared_image->size();
   gfx::Rect source_rect(x, y, width, height);
   if (!gfx::Rect(source_size).Contains(source_rect)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTexture",
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImage",
                        "source texture bad dimensions.");
     return;
   }
@@ -2048,7 +2049,7 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
   }
 
   if (!source_scoped_access) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTexture",
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImage",
                        "Source shared image is not accessable");
     // We still need to flush surface for begin semaphores above.
     FlushSurface(dest_scoped_access.get());
@@ -2056,7 +2057,7 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
     auto source_image = source_scoped_access->CreateSkImage(
         shared_context_state_->gr_context());
     if (!source_image) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTexture",
+      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImage",
                          "Couldn't create SkImage from source shared image.");
     }
 
@@ -2127,7 +2128,7 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
   SubmitIfNecessary(std::move(end_semaphores));
 }
 
-bool RasterDecoderImpl::TryCopySubTextureINTERNALMemory(
+bool RasterDecoderImpl::TryCopySharedImageINTERNALMemory(
     GLint xoffset,
     GLint yoffset,
     GLint x,

@@ -303,7 +303,7 @@ TEST_F(RasterFormatTest, ClearPaintCacheINTERNAL) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
-TEST_F(RasterFormatTest, CopySubTextureINTERNALImmediate) {
+TEST_F(RasterFormatTest, CopySharedImageINTERNALImmediate) {
   const int kSomeBaseValueToTestWith = 51;
   static GLbyte data[] = {
       static_cast<GLbyte>(kSomeBaseValueToTestWith + 0),
@@ -339,14 +339,14 @@ TEST_F(RasterFormatTest, CopySubTextureINTERNALImmediate) {
       static_cast<GLbyte>(kSomeBaseValueToTestWith + 30),
       static_cast<GLbyte>(kSomeBaseValueToTestWith + 31),
   };
-  cmds::CopySubTextureINTERNALImmediate& cmd =
-      *GetBufferAs<cmds::CopySubTextureINTERNALImmediate>();
+  cmds::CopySharedImageINTERNALImmediate& cmd =
+      *GetBufferAs<cmds::CopySharedImageINTERNALImmediate>();
   void* next_cmd = cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLint>(12),
                            static_cast<GLint>(13), static_cast<GLint>(14),
                            static_cast<GLsizei>(15), static_cast<GLsizei>(16),
                            static_cast<GLboolean>(17), data);
   EXPECT_EQ(
-      static_cast<uint32_t>(cmds::CopySubTextureINTERNALImmediate::kCmdId),
+      static_cast<uint32_t>(cmds::CopySharedImageINTERNALImmediate::kCmdId),
       cmd.header.command);
   EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
             cmd.header.size * 4u);

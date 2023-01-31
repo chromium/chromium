@@ -114,17 +114,17 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
 #include "gpu/command_buffer/client/raster_implementation_autogen.h"
 
   // RasterInterface implementation.
-  void CopySubTexture(const gpu::Mailbox& source_mailbox,
-                      const gpu::Mailbox& dest_mailbox,
-                      GLenum dest_target,
-                      GLint xoffset,
-                      GLint yoffset,
-                      GLint x,
-                      GLint y,
-                      GLsizei width,
-                      GLsizei height,
-                      GLboolean unpack_flip_y,
-                      GLboolean unpack_premultiply_alpha) override;
+  void CopySharedImage(const gpu::Mailbox& source_mailbox,
+                       const gpu::Mailbox& dest_mailbox,
+                       GLenum dest_target,
+                       GLint xoffset,
+                       GLint yoffset,
+                       GLint x,
+                       GLint y,
+                       GLsizei width,
+                       GLsizei height,
+                       GLboolean unpack_flip_y,
+                       GLboolean unpack_premultiply_alpha) override;
 
   void WritePixels(const gpu::Mailbox& dest_mailbox,
                    int dst_x_offset,

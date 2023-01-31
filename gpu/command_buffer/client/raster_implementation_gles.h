@@ -55,18 +55,18 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
                               GLenum pname,
                               GLuint64* params) override;
 
-  // Texture copying.
-  void CopySubTexture(const gpu::Mailbox& source_mailbox,
-                      const gpu::Mailbox& dest_mailbox,
-                      GLenum dest_target,
-                      GLint xoffset,
-                      GLint yoffset,
-                      GLint x,
-                      GLint y,
-                      GLsizei width,
-                      GLsizei height,
-                      GLboolean unpack_flip_y,
-                      GLboolean unpack_premultiply_alpha) override;
+  // SharedImage copying.
+  void CopySharedImage(const gpu::Mailbox& source_mailbox,
+                       const gpu::Mailbox& dest_mailbox,
+                       GLenum dest_target,
+                       GLint xoffset,
+                       GLint yoffset,
+                       GLint x,
+                       GLint y,
+                       GLsizei width,
+                       GLsizei height,
+                       GLboolean unpack_flip_y,
+                       GLboolean unpack_premultiply_alpha) override;
 
   void WritePixels(const gpu::Mailbox& dest_mailbox,
                    int dst_x_offset,

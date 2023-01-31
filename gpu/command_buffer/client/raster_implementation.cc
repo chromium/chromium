@@ -1148,25 +1148,25 @@ void RasterImplementation::UnmapRasterCHROMIUM(uint32_t raster_written_size,
 // instead of having to edit some template or the code generator.
 #include "gpu/command_buffer/client/raster_implementation_impl_autogen.h"
 
-void RasterImplementation::CopySubTexture(const gpu::Mailbox& source_mailbox,
-                                          const gpu::Mailbox& dest_mailbox,
-                                          GLenum dest_target,
-                                          GLint xoffset,
-                                          GLint yoffset,
-                                          GLint x,
-                                          GLint y,
-                                          GLsizei width,
-                                          GLsizei height,
-                                          GLboolean unpack_flip_y,
-                                          GLboolean unpack_premultiply_alpha) {
+void RasterImplementation::CopySharedImage(const gpu::Mailbox& source_mailbox,
+                                           const gpu::Mailbox& dest_mailbox,
+                                           GLenum dest_target,
+                                           GLint xoffset,
+                                           GLint yoffset,
+                                           GLint x,
+                                           GLint y,
+                                           GLsizei width,
+                                           GLsizei height,
+                                           GLboolean unpack_flip_y,
+                                           GLboolean unpack_premultiply_alpha) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCopySubTexture("
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCopySharedImage("
                      << source_mailbox.ToDebugString() << ", "
                      << dest_mailbox.ToDebugString() << ", " << xoffset << ", "
                      << yoffset << ", " << x << ", " << y << ", " << width
                      << ", " << height << ")");
   if (!source_mailbox.IsSharedImage()) {
-    SetGLError(GL_INVALID_VALUE, "glCopySubTexture",
+    SetGLError(GL_INVALID_VALUE, "glCopySharedImage",
                "source_mailbox is not a shared image.");
     // TODO(crbug.com/1229479): This call to NOTREACHED is temporary while we
     // investigate crbug.com/1229479. The failure with test
@@ -1178,24 +1178,24 @@ void RasterImplementation::CopySubTexture(const gpu::Mailbox& source_mailbox,
     return;
   }
   if (!dest_mailbox.IsSharedImage()) {
-    SetGLError(GL_INVALID_VALUE, "glCopySubTexture",
+    SetGLError(GL_INVALID_VALUE, "glCopySharedImage",
                "dest_mailbox is not a shared image.");
     return;
   }
   if (width < 0) {
-    SetGLError(GL_INVALID_VALUE, "glCopySubTexture", "width < 0");
+    SetGLError(GL_INVALID_VALUE, "glCopySharedImage", "width < 0");
     return;
   }
   if (height < 0) {
-    SetGLError(GL_INVALID_VALUE, "glCopySubTexture", "height < 0");
+    SetGLError(GL_INVALID_VALUE, "glCopySharedImage", "height < 0");
     return;
   }
   GLbyte mailboxes[sizeof(source_mailbox.name) * 2];
   memcpy(mailboxes, source_mailbox.name, sizeof(source_mailbox.name));
   memcpy(mailboxes + sizeof(source_mailbox.name), dest_mailbox.name,
          sizeof(dest_mailbox.name));
-  helper_->CopySubTextureINTERNALImmediate(xoffset, yoffset, x, y, width,
-                                           height, unpack_flip_y, mailboxes);
+  helper_->CopySharedImageINTERNALImmediate(xoffset, yoffset, x, y, width,
+                                            height, unpack_flip_y, mailboxes);
   CheckGLError();
 }
 

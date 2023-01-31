@@ -134,7 +134,7 @@ void RasterImplementationGLES::GetQueryObjectui64vEXT(GLuint id,
   gl_->GetQueryObjectui64vEXT(id, pname, params);
 }
 
-void RasterImplementationGLES::CopySubTexture(
+void RasterImplementationGLES::CopySharedImage(
     const gpu::Mailbox& source_mailbox,
     const gpu::Mailbox& dest_mailbox,
     GLenum dest_target,

@@ -193,8 +193,8 @@ _NAMED_TYPE_INFO = {
 # not_shared:   For GENn types, True if objects can't be shared between contexts
 
 _FUNCTION_INFO = {
-  'CopySubTextureINTERNAL': {
-    'decoder_func': 'DoCopySubTextureINTERNAL',
+  'CopySharedImageINTERNAL': {
+    'decoder_func': 'DoCopySharedImageINTERNAL',
     'internal': True,
     'type': 'PUT',
     'count': 32,  # GL_MAILBOX_SIZE_CHROMIUM x2

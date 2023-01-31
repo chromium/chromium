@@ -30,7 +30,7 @@
   OP(DeletePaintCachePathsINTERNALImmediate)      /* 271 */ \
   OP(DeletePaintCachePathsINTERNAL)               /* 272 */ \
   OP(ClearPaintCacheINTERNAL)                     /* 273 */ \
-  OP(CopySubTextureINTERNALImmediate)             /* 274 */ \
+  OP(CopySharedImageINTERNALImmediate)            /* 274 */ \
   OP(WritePixelsINTERNALImmediate)                /* 275 */ \
   OP(ReadbackARGBImagePixelsINTERNALImmediate)    /* 276 */ \
   OP(ReadbackYUVImagePixelsINTERNALImmediate)     /* 277 */ \

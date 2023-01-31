@@ -257,12 +257,12 @@ error::Error RasterDecoderImpl::HandleClearPaintCacheINTERNAL(
   return error::kNoError;
 }
 
-error::Error RasterDecoderImpl::HandleCopySubTextureINTERNALImmediate(
+error::Error RasterDecoderImpl::HandleCopySharedImageINTERNALImmediate(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  const volatile raster::cmds::CopySubTextureINTERNALImmediate& c =
+  const volatile raster::cmds::CopySharedImageINTERNALImmediate& c =
       *static_cast<
-          const volatile raster::cmds::CopySubTextureINTERNALImmediate*>(
+          const volatile raster::cmds::CopySharedImageINTERNALImmediate*>(
           cmd_data);
   GLint xoffset = static_cast<GLint>(c.xoffset);
   GLint yoffset = static_cast<GLint>(c.yoffset);
@@ -282,20 +282,20 @@ error::Error RasterDecoderImpl::HandleCopySubTextureINTERNALImmediate(
       gles2::GetImmediateDataAs<volatile const GLbyte*>(c, mailboxes_size,
                                                         immediate_data_size);
   if (width < 0) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTextureINTERNAL",
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImageINTERNAL",
                        "width < 0");
     return error::kNoError;
   }
   if (height < 0) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTextureINTERNAL",
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImageINTERNAL",
                        "height < 0");
     return error::kNoError;
   }
   if (mailboxes == nullptr) {
     return error::kOutOfBounds;
   }
-  DoCopySubTextureINTERNAL(xoffset, yoffset, x, y, width, height, unpack_flip_y,
-                           mailboxes);
+  DoCopySharedImageINTERNAL(xoffset, yoffset, x, y, width, height,
+                            unpack_flip_y, mailboxes);
   return error::kNoError;
 }
 

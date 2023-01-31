@@ -1961,11 +1961,11 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
             GetVideoFrameMailboxHolder(video_frame.get());
         ri->WaitSyncTokenCHROMIUM(
             frame_mailbox_holder.sync_token.GetConstData());
-        ri->CopySubTexture(frame_mailbox_holder.mailbox, mailbox, GL_TEXTURE_2D,
-                           0, 0, 0, 0, video_frame->coded_size().width(),
-                           video_frame->coded_size().height(),
-                           !video_frame->metadata().texture_origin_is_top_left,
-                           GL_FALSE);
+        ri->CopySharedImage(
+            frame_mailbox_holder.mailbox, mailbox, GL_TEXTURE_2D, 0, 0, 0, 0,
+            video_frame->coded_size().width(),
+            video_frame->coded_size().height(),
+            !video_frame->metadata().texture_origin_is_top_left, GL_FALSE);
       } else {
         DCHECK(video_frame->metadata().texture_origin_is_top_left);
         gpu::MailboxHolder dest_holder{mailbox, gpu::SyncToken(),

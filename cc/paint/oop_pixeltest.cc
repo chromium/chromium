@@ -2163,7 +2163,7 @@ TEST_F(OopPixelTest, WritePixels) {
   ExpectEquals(actual, expected);
 }
 
-TEST_F(OopPixelTest, CopySubTexture) {
+TEST_F(OopPixelTest, CopySharedImage) {
   const gfx::Size size(16, 16);
   auto* ri = raster_context_provider_->RasterInterface();
   auto* sii = raster_context_provider_->SharedImageInterface();
@@ -2205,10 +2205,10 @@ TEST_F(OopPixelTest, CopySubTexture) {
                                             viz::ResourceFormat::RGBA_8888);
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
-    ri->CopySubTexture(source_mailbox, dest_mailbox, GL_TEXTURE_2D, 0, 0, 0, 0,
-                       size.width(), size.height(),
-                       /*unpack_flip_y=*/GL_FALSE,
-                       /*unpack_premultiply_alpha=*/GL_FALSE);
+    ri->CopySharedImage(source_mailbox, dest_mailbox, GL_TEXTURE_2D, 0, 0, 0, 0,
+                        size.width(), size.height(),
+                        /*unpack_flip_y=*/GL_FALSE,
+                        /*unpack_premultiply_alpha=*/GL_FALSE);
   }
 
   // Read the data back as DisplayP3, from the Display P3 SharedImage.

@@ -190,19 +190,19 @@ void ClearPaintCacheINTERNAL() {
   }
 }
 
-void CopySubTextureINTERNALImmediate(GLint xoffset,
-                                     GLint yoffset,
-                                     GLint x,
-                                     GLint y,
-                                     GLsizei width,
-                                     GLsizei height,
-                                     GLboolean unpack_flip_y,
-                                     const GLbyte* mailboxes) {
+void CopySharedImageINTERNALImmediate(GLint xoffset,
+                                      GLint yoffset,
+                                      GLint x,
+                                      GLint y,
+                                      GLsizei width,
+                                      GLsizei height,
+                                      GLboolean unpack_flip_y,
+                                      const GLbyte* mailboxes) {
   const uint32_t size =
-      raster::cmds::CopySubTextureINTERNALImmediate::ComputeSize();
-  raster::cmds::CopySubTextureINTERNALImmediate* c =
+      raster::cmds::CopySharedImageINTERNALImmediate::ComputeSize();
+  raster::cmds::CopySharedImageINTERNALImmediate* c =
       GetImmediateCmdSpaceTotalSize<
-          raster::cmds::CopySubTextureINTERNALImmediate>(size);
+          raster::cmds::CopySharedImageINTERNALImmediate>(size);
   if (c) {
     c->Init(xoffset, yoffset, x, y, width, height, unpack_flip_y, mailboxes);
   }

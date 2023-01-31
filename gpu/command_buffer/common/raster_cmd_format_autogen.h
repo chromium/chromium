@@ -831,9 +831,9 @@ static_assert(sizeof(ClearPaintCacheINTERNAL) == 4,
 static_assert(offsetof(ClearPaintCacheINTERNAL, header) == 0,
               "offset of ClearPaintCacheINTERNAL header should be 0");
 
-struct CopySubTextureINTERNALImmediate {
-  typedef CopySubTextureINTERNALImmediate ValueType;
-  static const CommandId kCmdId = kCopySubTextureINTERNALImmediate;
+struct CopySharedImageINTERNALImmediate {
+  typedef CopySharedImageINTERNALImmediate ValueType;
+  static const CommandId kCmdId = kCopySharedImageINTERNALImmediate;
   static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
   static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
 
@@ -891,25 +891,25 @@ struct CopySubTextureINTERNALImmediate {
   uint32_t unpack_flip_y;
 };
 
-static_assert(sizeof(CopySubTextureINTERNALImmediate) == 32,
-              "size of CopySubTextureINTERNALImmediate should be 32");
-static_assert(offsetof(CopySubTextureINTERNALImmediate, header) == 0,
-              "offset of CopySubTextureINTERNALImmediate header should be 0");
-static_assert(offsetof(CopySubTextureINTERNALImmediate, xoffset) == 4,
-              "offset of CopySubTextureINTERNALImmediate xoffset should be 4");
-static_assert(offsetof(CopySubTextureINTERNALImmediate, yoffset) == 8,
-              "offset of CopySubTextureINTERNALImmediate yoffset should be 8");
-static_assert(offsetof(CopySubTextureINTERNALImmediate, x) == 12,
-              "offset of CopySubTextureINTERNALImmediate x should be 12");
-static_assert(offsetof(CopySubTextureINTERNALImmediate, y) == 16,
-              "offset of CopySubTextureINTERNALImmediate y should be 16");
-static_assert(offsetof(CopySubTextureINTERNALImmediate, width) == 20,
-              "offset of CopySubTextureINTERNALImmediate width should be 20");
-static_assert(offsetof(CopySubTextureINTERNALImmediate, height) == 24,
-              "offset of CopySubTextureINTERNALImmediate height should be 24");
+static_assert(sizeof(CopySharedImageINTERNALImmediate) == 32,
+              "size of CopySharedImageINTERNALImmediate should be 32");
+static_assert(offsetof(CopySharedImageINTERNALImmediate, header) == 0,
+              "offset of CopySharedImageINTERNALImmediate header should be 0");
+static_assert(offsetof(CopySharedImageINTERNALImmediate, xoffset) == 4,
+              "offset of CopySharedImageINTERNALImmediate xoffset should be 4");
+static_assert(offsetof(CopySharedImageINTERNALImmediate, yoffset) == 8,
+              "offset of CopySharedImageINTERNALImmediate yoffset should be 8");
+static_assert(offsetof(CopySharedImageINTERNALImmediate, x) == 12,
+              "offset of CopySharedImageINTERNALImmediate x should be 12");
+static_assert(offsetof(CopySharedImageINTERNALImmediate, y) == 16,
+              "offset of CopySharedImageINTERNALImmediate y should be 16");
+static_assert(offsetof(CopySharedImageINTERNALImmediate, width) == 20,
+              "offset of CopySharedImageINTERNALImmediate width should be 20");
+static_assert(offsetof(CopySharedImageINTERNALImmediate, height) == 24,
+              "offset of CopySharedImageINTERNALImmediate height should be 24");
 static_assert(
-    offsetof(CopySubTextureINTERNALImmediate, unpack_flip_y) == 28,
-    "offset of CopySubTextureINTERNALImmediate unpack_flip_y should be 28");
+    offsetof(CopySharedImageINTERNALImmediate, unpack_flip_y) == 28,
+    "offset of CopySharedImageINTERNALImmediate unpack_flip_y should be 28");
 
 struct WritePixelsINTERNALImmediate {
   typedef WritePixelsINTERNALImmediate ValueType;
