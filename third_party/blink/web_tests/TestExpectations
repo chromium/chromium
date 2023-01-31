@@ -5266,7 +5266,6 @@ crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_sc
 crbug.com/1237640 http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Pass Timeout ]
 crbug.com/1239175 http/tests/navigation/same-and-different-back.html [ Failure Pass ]
 crbug.com/1239164 http/tests/inspector-protocol/network/navigate-iframe-in2in.js [ Failure Pass ]
-crbug.com/1237909 external/wpt/webrtc-svc/RTCRtpParameters-scalability.html [ Crash Failure Pass Timeout ]
 crbug.com/1237909 [ Mac11-arm64 Release ] external/wpt/webrtc-svc/RTCRtpParameters-scalability-h264.html [ Crash Pass Timeout ]
 crbug.com/1237909 [ Mac12-arm64 Release ] external/wpt/webrtc-svc/RTCRtpParameters-scalability-h264.html [ Crash Pass Timeout ]
 
