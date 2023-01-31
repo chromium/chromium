@@ -6,13 +6,14 @@
 
 #import "base/containers/cxx20_erase_vector.h"
 #import "base/memory/raw_ptr.h"
-#import "components/password_manager/core/browser/password_account_storage_settings_watcher.h"
-#import "components/password_manager/core/browser/password_manager_features_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/passphrase_enums.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "components/sync/driver/sync_service_utils.h"
 #import "components/sync/driver/sync_user_settings.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
@@ -63,10 +64,6 @@ using password_manager::prefs::kCredentialsEnableService;
 
   // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
-
-  // Account storage settings observer.
-  std::unique_ptr<password_manager::PasswordAccountStorageSettingsWatcher>
-      _accountStorageSettingsWatcher;
 }
 
 // Helper object which maintains state about the "Export Passwords..." flow, and
@@ -120,15 +117,6 @@ using password_manager::prefs::kCredentialsEnableService;
                                                                 self);
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
-    __weak __typeof(self) weakSelf = self;
-    _accountStorageSettingsWatcher = std::make_unique<
-        password_manager::PasswordAccountStorageSettingsWatcher>(
-        _prefService, _syncService,
-        base::BindRepeating(
-            [](__typeof(self) strongSelf) {
-              return [strongSelf onAccountStorageSettingsChanged];
-            },
-            weakSelf));
   }
   return self;
 }
@@ -142,6 +130,9 @@ using password_manager::prefs::kCredentialsEnableService;
   [self savedPasswordsDidChange];
 
   [self.consumer setSavePasswordsEnabled:_passwordManagerEnabled.value];
+
+  [self.consumer setSignedInAccount:base::SysUTF8ToNSString(
+                                        _syncService->GetAccountInfo().email)];
 
   [self.consumer setAccountStorageState:[self computeAccountStorageState]];
 
@@ -186,7 +177,6 @@ using password_manager::prefs::kCredentialsEnableService;
   [_passwordManagerEnabled stop];
   _identityManagerObserver.reset();
   _syncObserver.reset();
-  _accountStorageSettingsWatcher.reset();
 }
 
 #pragma mark - PasswordExporterDelegate
@@ -225,13 +215,15 @@ using password_manager::prefs::kCredentialsEnableService;
 }
 
 - (void)accountStorageSwitchDidChange:(BOOL)enabled {
+  syncer::UserSelectableTypeSet types =
+      _syncService->GetUserSettings()->GetSelectedTypes();
   if (enabled) {
-    password_manager::features_util::OptInToAccountStorage(_prefService,
-                                                           _syncService);
+    types.Put(syncer::UserSelectableType::kPasswords);
   } else {
-    password_manager::features_util::OptOutOfAccountStorageAndClearSettings(
-        _prefService, _syncService);
+    types.Remove(syncer::UserSelectableType::kPasswords);
   }
+  _syncService->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
+                                                    types);
 }
 
 #pragma mark - SavedPasswordsPresenterObserver
@@ -269,6 +261,9 @@ using password_manager::prefs::kCredentialsEnableService;
 
 - (void)onSyncStateChanged {
   [self.consumer setOnDeviceEncryptionState:[self onDeviceEncryptionState]];
+  [self.consumer setSignedInAccount:base::SysUTF8ToNSString(
+                                        _syncService->GetAccountInfo().email)];
+  [self.consumer setAccountStorageState:[self computeAccountStorageState]];
 }
 
 #pragma mark - Private
@@ -293,21 +288,15 @@ using password_manager::prefs::kCredentialsEnableService;
   [self.consumer updateExportPasswordsButton];
 }
 
-- (void)onAccountStorageSettingsChanged {
-  [self.consumer setAccountStorageState:[self computeAccountStorageState]];
-}
-
 - (PasswordSettingsAccountStorageState)computeAccountStorageState {
-  // TODO(crbug.com/1377384): This is broken in case the user opted in then
-  // enabled sync, because IsOptedInForAccountStorage() continues to return
-  // true. The APIs in features_util need some rethinking.
-  if (password_manager::features_util::IsOptedInForAccountStorage(
-          _prefService, _syncService)) {
-    return PasswordSettingsAccountStorageStateOptedIn;
-  }
-  if (password_manager::features_util::ShouldShowAccountStorageOptIn(
-          _prefService, _syncService)) {
-    return PasswordSettingsAccountStorageStateOptedOut;
+  if (!_syncService->GetAccountInfo().IsEmpty() &&
+      !_syncService->IsSyncFeatureEnabled() &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kEnablePasswordsAccountStorage)) {
+    return _syncService->GetUserSettings()->GetSelectedTypes().Has(
+               syncer::UserSelectableType::kPasswords)
+               ? PasswordSettingsAccountStorageStateOptedIn
+               : PasswordSettingsAccountStorageStateOptedOut;
   }
   return PasswordSettingsAccountStorageStateNotShown;
 }

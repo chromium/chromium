@@ -8,6 +8,7 @@
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -91,6 +92,9 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 // Indicates the state of the account storage switch.
 @property(nonatomic, assign)
     PasswordSettingsAccountStorageState accountStorageState;
+
+// Indicates the signed in account.
+@property(nonatomic, copy) NSString* signedInAccount;
 
 // On-device encryption state according to the sync service.
 @property(nonatomic, assign)
@@ -315,10 +319,17 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
     return _accountStorageItem;
   }
 
+  DCHECK_GT([self.signedInAccount length], 0u)
+      << "Account storage item shouldn't be shown if there's no signed-in "
+         "account";
+
   _accountStorageItem =
       [[TableViewSwitchItem alloc] initWithType:ItemTypeAccountStorageSwitch];
   _accountStorageItem.text =
       l10n_util::GetNSString(IDS_IOS_ACCOUNT_STORAGE_OPT_IN_LABEL);
+  _accountStorageItem.detailText =
+      l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_STORAGE_OPT_IN_SUBLABEL,
+                              base::SysNSStringToUTF16(self.signedInAccount));
   _accountStorageItem.accessibilityIdentifier =
       kPasswordSettingsAccountStorageSwitchTableViewId;
   return _accountStorageItem;

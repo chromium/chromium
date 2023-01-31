@@ -45,6 +45,9 @@ typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
 // Indicates the state of the account storage switch.
 - (void)setAccountStorageState:(PasswordSettingsAccountStorageState)state;
 
+// Indicates the signed-in account.
+- (void)setSignedInAccount:(NSString*)account;
+
 // Indicates whether or not Chromium has been enabled as a credential provider
 // at the iOS level.
 - (void)setPasswordsInOtherAppsEnabled:(BOOL)enabled;

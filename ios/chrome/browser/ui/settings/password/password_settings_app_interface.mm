@@ -14,7 +14,6 @@
 #import "base/time/time.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
-#import "components/password_manager/core/browser/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -268,15 +267,6 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
       chrome_test_util::GetOriginalBrowserState();
   return browserState->GetPrefs()->GetBoolean(
       password_manager::prefs::kCredentialsEnableService);
-}
-
-+ (BOOL)isOptedInForAccountStorage {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
-  return password_manager::features_util::IsOptedInForAccountStorage(
-      browserState->GetPrefs(), syncService);
 }
 
 @end

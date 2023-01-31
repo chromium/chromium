@@ -36,6 +36,7 @@
 #import "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/earl_grey/matchers.h"
 #import "ios/web/public/test/element_selector.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -54,6 +55,7 @@ using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TextFieldForCellWithLabelId;
 using chrome_test_util::TurnTableViewSwitchOn;
+using testing::ElementWithAccessibilityLabelSubtring;
 
 namespace {
 
@@ -2747,8 +2749,6 @@ id<GREYMatcher> EditDoneButton() {
 - (void)testAccountStorageSwitchHiddenIfSignedInAndFlagDisabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncInitializedTimeout];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
@@ -2763,31 +2763,31 @@ id<GREYMatcher> EditDoneButton() {
 - (void)testAccountStorageSwitchShownIfSignedInAndFlagEnabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncInitializedTimeout];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
 
-  GREYAssert(![PasswordSettingsAppInterface isOptedInForAccountStorage],
-             @"User should be opted out by default after sign-in");
+  // User should be opted in by default after sign-in.
   GREYElementInteraction* accountStorageSwitch =
       [EarlGrey selectElementWithMatcher:
                     chrome_test_util::TableViewSwitchCell(
                         kPasswordSettingsAccountStorageSwitchTableViewId,
-                        /*is_toggled_on=*/NO)];
+                        /*is_toggled_on=*/YES)];
+  // The toggle text must contain the signed-in account.
+  [EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_descendant(grey_accessibilityID(
+                  kPasswordSettingsAccountStorageSwitchTableViewId)),
+              ElementWithAccessibilityLabelSubtring(fakeIdentity.userEmail),
+              nil)];
 
-  [accountStorageSwitch performAction:TurnTableViewSwitchOn(YES)];
+  [accountStorageSwitch performAction:TurnTableViewSwitchOn(NO)];
 
-  bool success = base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForActionTimeout, ^{
-        return [PasswordSettingsAppInterface isOptedInForAccountStorage];
-      });
-  GREYAssert(success, @"Flipping the toggle should have opted in the user");
   [EarlGrey selectElementWithMatcher:
                 chrome_test_util::TableViewSwitchCell(
                     kPasswordSettingsAccountStorageSwitchTableViewId,
-                    /*is_toggled_on=*/YES)];
+                    /*is_toggled_on=*/NO)];
 }
 
 - (void)testAccountStorageSwitchHiddenIfSignedOut {
