@@ -1084,9 +1084,6 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
       if (child != grouped_children.header && child != grouped_children.footer)
         continue;
 
-      if (!IsAvoidBreakValue(ConstraintSpace(), child.Style().BreakInside()))
-        continue;
-
       const NGBlockBreakToken* child_break_token = entry.GetBreakToken();
       // If we've already broken inside the section, it's not going to repeat,
       // but rather perform regular fragmentation.
@@ -1124,6 +1121,11 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         if (!ConstraintSpace().HasKnownFragmentainerBlockSize() ||
             block_size > max_section_block_size)
           continue;
+
+        if (!IsAvoidBreakValue(ConstraintSpace(),
+                               child.Style().BreakInside())) {
+          continue;
+        }
       }
 
       if (child == grouped_children.header) {
@@ -1600,7 +1602,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
   }
 
   bool has_entered_table_box = false;
-  if (ConstraintSpace().HasBlockFragmentation()) {
+  if (InvolvedInBlockFragmentation(container_builder_)) {
     LayoutUnit consumed_table_box_block_size =
         previously_consumed_table_box_block_size;
     if (incoming_table_break_data)
