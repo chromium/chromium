@@ -386,22 +386,28 @@ absl::optional<cbor::Value> RpEntityAsCBOR(
 // or displayName to be INVALID_UTF8.
 absl::optional<cbor::Value> UserEntityAsCBOR(
     const PublicKeyCredentialUserEntity& user,
+    bool user_verification,
     bool allow_invalid_utf8) {
-  if (!allow_invalid_utf8) {
-    return AsCBOR(user);
-  }
-
   cbor::Value::MapValue user_map;
   user_map.emplace(kEntityIdMapKey, user.id);
-  if (user.name) {
-    user_map.emplace(kEntityNameMapKey,
-                     cbor::Value::InvalidUTF8StringValueForTesting(*user.name));
+
+  if (user_verification) {
+    if (user.name) {
+      user_map.emplace(
+          kEntityNameMapKey,
+          allow_invalid_utf8
+              ? cbor::Value::InvalidUTF8StringValueForTesting(*user.name)
+              : cbor::Value(*user.name));
+    }
+    if (user.display_name) {
+      user_map.emplace(kDisplayNameMapKey,
+                       allow_invalid_utf8
+                           ? cbor::Value::InvalidUTF8StringValueForTesting(
+                                 *user.display_name)
+                           : cbor::Value(*user.display_name));
+    }
   }
-  if (user.display_name) {
-    user_map.emplace(
-        kDisplayNameMapKey,
-        cbor::Value::InvalidUTF8StringValueForTesting(*user.display_name));
-  }
+
   return cbor::Value(std::move(user_map));
 }
 
@@ -425,7 +431,10 @@ std::vector<uint8_t> EncodeGetAssertionResponse(
 
   if (response.user_entity) {
     response_map.emplace(
-        4, *UserEntityAsCBOR(*response.user_entity, allow_invalid_utf8));
+        4, *UserEntityAsCBOR(
+               *response.user_entity,
+               response.authenticator_data.obtained_user_verification(),
+               allow_invalid_utf8));
   }
   if (response.num_credentials) {
     response_map.emplace(5, response.num_credentials.value());
@@ -2791,6 +2800,7 @@ void VirtualCtap2Device::InitPendingRegistrations(
     response_map.emplace(
         static_cast<int>(CredentialManagementResponseKey::kUser),
         *UserEntityAsCBOR(*registration.second.user,
+                          /* user_verification= */ true,
                           config_.allow_invalid_utf8_in_credential_entities));
     response_map.emplace(
         static_cast<int>(CredentialManagementResponseKey::kCredentialID),
