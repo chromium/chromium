@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "ash/system/brightness/unified_brightness_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -30,8 +29,7 @@ class UnifiedSystemTrayController;
 // View class of the bubble in status area tray.
 //
 // The `QuickSettingsView` contains the quick settings controls
-class ASH_EXPORT QuickSettingsView : public views::View,
-                                     public PaginationModelObserver {
+class ASH_EXPORT QuickSettingsView : public views::View {
  public:
   METADATA_HEADER(QuickSettingsView);
 
@@ -83,9 +81,6 @@ class ASH_EXPORT QuickSettingsView : public views::View,
 
   // Shows media controls view.
   void ShowMediaControls();
-
-  // PaginationModelObserver:
-  void TotalPagesChanged(int previous_page_count, int new_page_count) override;
 
   // views::View:
   void OnGestureEvent(ui::GestureEvent* event) override;

@@ -862,9 +862,6 @@ bool UnifiedSystemTrayController::IsExpanded() const {
 }
 
 void UnifiedSystemTrayController::UpdateBubble() {
-  if (!bubble_) {
-    return;
-  }
   bubble_->UpdateBubble();
 }
 
