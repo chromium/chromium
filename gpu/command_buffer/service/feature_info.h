@@ -149,6 +149,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool ext_yuv_target = false;
     bool angle_rgbx_internal_format = false;
     bool angle_provoking_vertex = false;
+    bool angle_clip_cull_distance = false;
   };
 
   FeatureInfo();

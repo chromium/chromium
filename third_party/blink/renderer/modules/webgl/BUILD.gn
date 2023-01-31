@@ -64,6 +64,8 @@ blink_modules_sources("webgl") {
     "webgl_active_info.h",
     "webgl_buffer.cc",
     "webgl_buffer.h",
+    "webgl_clip_cull_distance.cc",
+    "webgl_clip_cull_distance.h",
     "webgl_color_buffer_float.cc",
     "webgl_color_buffer_float.h",
     "webgl_compressed_texture_astc.cc",

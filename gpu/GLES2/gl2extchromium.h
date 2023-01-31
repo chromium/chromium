@@ -301,6 +301,55 @@ GL_APICALL void GL_APIENTRY glProvokingVertexANGLE(GLenum provokeMode);
 typedef void(GL_APIENTRYP PFNGLPROVOKINGVERTEXANGLEPROC)(GLenum provokeMode);
 #endif /* GL_ANGLE_provoking_vertex */
 
+/* GL_ANGLE_clip_cull_distance */
+#ifndef GL_ANGLE_clip_cull_distance
+#define GL_ANGLE_clip_cull_distance 1
+
+#ifndef GL_MAX_CLIP_DISTANCES_ANGLE
+#define GL_MAX_CLIP_DISTANCES_ANGLE 0x0D32
+#endif
+
+#ifndef GL_MAX_CULL_DISTANCES_ANGLE
+#define GL_MAX_CULL_DISTANCES_ANGLE 0x82F9
+#endif
+
+#ifndef GL_MAX_COMBINED_CLIP_AND_CULL_DISTANCES_ANGLE
+#define GL_MAX_COMBINED_CLIP_AND_CULL_DISTANCES_ANGLE 0x82FA
+#endif
+
+#ifndef GL_CLIP_DISTANCE0_ANGLE
+#define GL_CLIP_DISTANCE0_ANGLE 0x3000
+#endif
+
+#ifndef GL_CLIP_DISTANCE1_ANGLE
+#define GL_CLIP_DISTANCE1_ANGLE 0x3001
+#endif
+
+#ifndef GL_CLIP_DISTANCE2_ANGLE
+#define GL_CLIP_DISTANCE2_ANGLE 0x3002
+#endif
+
+#ifndef GL_CLIP_DISTANCE3_ANGLE
+#define GL_CLIP_DISTANCE3_ANGLE 0x3003
+#endif
+
+#ifndef GL_CLIP_DISTANCE4_ANGLE
+#define GL_CLIP_DISTANCE4_ANGLE 0x3004
+#endif
+
+#ifndef GL_CLIP_DISTANCE5_ANGLE
+#define GL_CLIP_DISTANCE5_ANGLE 0x3005
+#endif
+
+#ifndef GL_CLIP_DISTANCE6_ANGLE
+#define GL_CLIP_DISTANCE6_ANGLE 0x3006
+#endif
+
+#ifndef GL_CLIP_DISTANCE7_ANGLE
+#define GL_CLIP_DISTANCE7_ANGLE 0x3007
+#endif
+#endif /* GL_ANGLE_clip_cull_distance */
+
 /* GL_CHROMIUM_async_pixel_transfers */
 #ifndef GL_CHROMIUM_async_pixel_transfers
 #define GL_CHROMIUM_async_pixel_transfers 1

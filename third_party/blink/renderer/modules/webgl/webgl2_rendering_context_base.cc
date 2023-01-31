@@ -5399,6 +5399,28 @@ ScriptValue WebGL2RenderingContextBase::getParameter(ScriptState* script_state,
                         "invalid parameter name, "
                         "WEBGL_provoking_vertex not enabled");
       return ScriptValue::CreateNull(script_state->GetIsolate());
+    case GL_MAX_CLIP_DISTANCES_ANGLE:
+    case GL_MAX_CULL_DISTANCES_ANGLE:
+    case GL_MAX_COMBINED_CLIP_AND_CULL_DISTANCES_ANGLE:
+    case GL_CLIP_DISTANCE0_ANGLE:
+    case GL_CLIP_DISTANCE1_ANGLE:
+    case GL_CLIP_DISTANCE2_ANGLE:
+    case GL_CLIP_DISTANCE3_ANGLE:
+    case GL_CLIP_DISTANCE4_ANGLE:
+    case GL_CLIP_DISTANCE5_ANGLE:
+    case GL_CLIP_DISTANCE6_ANGLE:
+    case GL_CLIP_DISTANCE7_ANGLE:
+      if (ExtensionEnabled(kWebGLClipCullDistanceName)) {
+        if (pname >= GL_CLIP_DISTANCE0_ANGLE &&
+            pname <= GL_CLIP_DISTANCE7_ANGLE) {
+          return GetBooleanParameter(script_state, pname);
+        }
+        return GetUnsignedIntParameter(script_state, pname);
+      }
+      SynthesizeGLError(GL_INVALID_ENUM, "getParameter",
+                        "invalid parameter name, "
+                        "WEBGL_clip_cull_distance not enabled");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
 
     default:
       return WebGLRenderingContextBase::getParameter(script_state, pname);
@@ -5417,6 +5439,21 @@ ScriptValue WebGL2RenderingContextBase::GetInt64Parameter(
 bool WebGL2RenderingContextBase::ValidateCapability(const char* function_name,
                                                     GLenum cap) {
   switch (cap) {
+    case GL_CLIP_DISTANCE0_ANGLE:
+    case GL_CLIP_DISTANCE1_ANGLE:
+    case GL_CLIP_DISTANCE2_ANGLE:
+    case GL_CLIP_DISTANCE3_ANGLE:
+    case GL_CLIP_DISTANCE4_ANGLE:
+    case GL_CLIP_DISTANCE5_ANGLE:
+    case GL_CLIP_DISTANCE6_ANGLE:
+    case GL_CLIP_DISTANCE7_ANGLE:
+      if (ExtensionEnabled(kWebGLClipCullDistanceName)) {
+        return true;
+      }
+      SynthesizeGLError(
+          GL_INVALID_ENUM, function_name,
+          "invalid capability, WEBGL_clip_cull_distance not enabled");
+      return false;
     case GL_RASTERIZER_DISCARD:
       return true;
     default:

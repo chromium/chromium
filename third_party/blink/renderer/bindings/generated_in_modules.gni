@@ -2491,6 +2491,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_active_info.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_buffer.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_buffer.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_clip_cull_distance.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_clip_cull_distance.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_color_buffer_float.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_color_buffer_float.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_compressed_texture_astc.cc",

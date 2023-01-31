@@ -121,8 +121,9 @@ crbug.com/1058744 [ no-passthrough ] WebglExtension_OES_draw_buffers_indexed [ S
 [ android qualcomm ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
 [ android qualcomm ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
 
-# Extension only available via passthrough decoder.
+# Extensions only available via passthrough decoder.
 crbug.com/1194209 [ mac no-passthrough ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
+crbug.com/1410603 [ no-passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Skip ]
 
 # Extension only available through passthrough decoder?
 crbug.com/849576 [ no-passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]

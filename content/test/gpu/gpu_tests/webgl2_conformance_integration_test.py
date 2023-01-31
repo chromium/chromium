@@ -46,6 +46,7 @@ class WebGL2ConformanceIntegrationTest(
         'OES_draw_buffers_indexed',
         'OES_texture_float_linear',
         'OVR_multiview2',
+        'WEBGL_clip_cull_distance',
         'WEBGL_compressed_texture_astc',
         'WEBGL_compressed_texture_etc',
         'WEBGL_compressed_texture_etc1',

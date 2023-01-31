@@ -1736,6 +1736,11 @@ void FeatureInfo::InitializeFeatures() {
     feature_flags_.angle_provoking_vertex = true;
     AddExtensionString("GL_ANGLE_provoking_vertex");
   }
+
+  if (gfx::HasExtension(extensions, "GL_ANGLE_clip_cull_distance")) {
+    feature_flags_.angle_clip_cull_distance = true;
+    AddExtensionString("GL_ANGLE_clip_cull_distance");
+  }
 }
 
 void FeatureInfo::InitializeFloatAndHalfFloatFeatures(

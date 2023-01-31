@@ -921,6 +921,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_active_info.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_buffer.idl",
+          "//third_party/blink/renderer/modules/webgl/webgl_clip_cull_distance.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_color_buffer_float.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_compressed_texture_astc.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_compressed_texture_etc.idl",
