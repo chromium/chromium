@@ -1104,6 +1104,53 @@ TEST_F(WallpaperControllerTest, ColorsCalculatedForMostRecentWallpaper) {
   EXPECT_TRUE(pref_manager_->GetCachedKMeanColor("new"));
 }
 
+TEST_F(WallpaperControllerTest, CelebiNotSavedWhenJellyIsDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kJelly);
+  TestWallpaperControllerObserver observer(controller_);
+
+  const char location[] = "test_wallpaper_here";
+
+  // Set the wallpaper with a valid location.
+  WallpaperInfo wallpaper_info = CreateWallpaperInfo(WALLPAPER_LAYOUT_STRETCH);
+  wallpaper_info.location = location;
+  const gfx::ImageSkia kImage = CreateImage(10, 10, kWallpaperColor);
+  controller_->ShowWallpaperImage(kImage, wallpaper_info,
+                                  /*preview_mode=*/false,
+                                  /*always_on_top=*/false);
+  SetSessionState(SessionState::ACTIVE);
+
+  // Wait for color computation to complete.
+  base::RunLoop colors_loop;
+  observer.SetOnColorsCalculatedCallback(colors_loop.QuitClosure());
+  colors_loop.Run();
+
+  EXPECT_FALSE(pref_manager_->GetCelebiColor(location));
+}
+
+TEST_F(WallpaperControllerTest, SaveCelebiColorWhenJellyActive) {
+  base::test::ScopedFeatureList features(features::kJelly);
+  TestWallpaperControllerObserver observer(controller_);
+
+  const char location[] = "test_wallpaper_here";
+
+  // Set the wallpaper with a valid location.
+  WallpaperInfo wallpaper_info = CreateWallpaperInfo(WALLPAPER_LAYOUT_STRETCH);
+  wallpaper_info.location = location;
+  const gfx::ImageSkia kImage = CreateImage(10, 10, kWallpaperColor);
+  controller_->ShowWallpaperImage(kImage, wallpaper_info,
+                                  /*preview_mode=*/false,
+                                  /*always_on_top=*/false);
+  SetSessionState(SessionState::ACTIVE);
+
+  // Wait for color computation to complete.
+  base::RunLoop colors_loop;
+  observer.SetOnColorsCalculatedCallback(colors_loop.QuitClosure());
+  colors_loop.Run();
+
+  EXPECT_EQ(kWallpaperColor, pref_manager_->GetCelebiColor(location));
+}
+
 TEST_F(WallpaperControllerTest, EnableShelfColoringNotifiesObservers) {
   TestWallpaperControllerObserver observer(controller_);
   EXPECT_EQ(0, observer.colors_changed_count());

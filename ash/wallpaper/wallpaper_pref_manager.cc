@@ -357,10 +357,20 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     absl::optional<std::vector<SkColor>> cached_colors =
         GetCachedProminentColors(location);
     absl::optional<SkColor> cached_k_mean_color = GetCachedKMeanColor(location);
-    if (cached_colors.has_value() && cached_k_mean_color.has_value()) {
-      return WallpaperCalculatedColors(cached_colors.value(),
-                                       cached_k_mean_color.value(),
-                                       SK_ColorTRANSPARENT);
+    if (!features::IsJellyEnabled()) {
+      if (cached_colors.has_value() && cached_k_mean_color.has_value()) {
+        return WallpaperCalculatedColors(cached_colors.value(),
+                                         cached_k_mean_color.value(),
+                                         SK_ColorTRANSPARENT);
+      }
+
+      return absl::nullopt;
+    }
+
+    absl::optional<SkColor> cached_celebi_color = GetCelebiColor(location);
+    if (cached_k_mean_color.has_value() && cached_celebi_color.has_value()) {
+      return WallpaperCalculatedColors({}, cached_k_mean_color.value(),
+                                       cached_celebi_color.value());
     }
 
     return absl::nullopt;

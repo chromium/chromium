@@ -456,12 +456,42 @@ TEST_F(WallpaperPrefManagerTest, SetCalculatedColors) {
 }
 
 TEST_F(WallpaperPrefManagerTest, CalculatedColorsEmptyIfKMeanMissing) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature({features::kJelly});
   const char location[] = "location";
 
   const std::vector<SkColor> prominent_colors = {
       SK_ColorGREEN, SK_ColorGREEN, SK_ColorGREEN,
       SkColorSetRGB(0xAB, 0xBC, 0xEF)};
   pref_manager_->CacheProminentColors(location, prominent_colors);
+
+  EXPECT_FALSE(pref_manager_->GetCachedWallpaperColors(location));
+}
+
+TEST_F(WallpaperPrefManagerTest, CalculatedColorsWhenJellyEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kJelly);
+  const char location[] = "location";
+
+  const SkColor k_mean_color = SkColorSetRGB(0xAB, 0xBC, 0xEF);
+  pref_manager_->CacheKMeanColor(location, k_mean_color);
+
+  const SkColor celebi_color = SkColorSetRGB(0xFF, 0xCC, 0x22);
+  pref_manager_->CacheCelebiColor(location, celebi_color);
+
+  absl::optional<WallpaperCalculatedColors> actual_colors =
+      pref_manager_->GetCachedWallpaperColors(location);
+  ASSERT_TRUE(actual_colors);
+  EXPECT_EQ(k_mean_color, actual_colors->k_mean_color);
+  EXPECT_EQ(celebi_color, actual_colors->celebi_color);
+}
+
+TEST_F(WallpaperPrefManagerTest,
+       CalculatedColorsEmptyIfCelebiMissingWhenJellyEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kJelly);
+  const char location[] = "location";
+
+  const SkColor k_mean_color = SkColorSetRGB(0xAB, 0xBC, 0xEF);
+  pref_manager_->CacheKMeanColor(location, k_mean_color);
 
   EXPECT_FALSE(pref_manager_->GetCachedWallpaperColors(location));
 }
