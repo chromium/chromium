@@ -10,16 +10,37 @@ export const fakeKeyboards: Keyboard[] = [
     name: 'ERGO K860',
     isExternal: true,
     metaKey: MetaKey.COMMAND,
-    modifierKeys: [],
-    settings: {},
+    modifierKeys: [
+      ModifierKey.ALT,
+      ModifierKey.BACKSPACE,
+      ModifierKey.CAPS_LOCK,
+      ModifierKey.CONTROL,
+      ModifierKey.ESC,
+      ModifierKey.META,
+    ],
+    settings: {
+      modifierRemappings: new Map<ModifierKey, ModifierKey>([
+        [ModifierKey.META, ModifierKey.VOID],
+        [ModifierKey.CAPS_LOCK, ModifierKey.ASSISTANT],
+      ]),
+    },
   },
   {
     id: 1,
     name: 'AT Translated Set 2 ',
     isExternal: false,
     metaKey: MetaKey.SEARCH,
-    modifierKeys: [ModifierKey.BACKSPACE],
-    settings: {},
+    modifierKeys: [
+      ModifierKey.ALT,
+      ModifierKey.ASSISTANT,
+      ModifierKey.BACKSPACE,
+      ModifierKey.CONTROL,
+      ModifierKey.ESC,
+      ModifierKey.META,
+    ],
+    settings: {
+      modifierRemappings: new Map<ModifierKey, ModifierKey>(),
+    },
   },
 ];
 

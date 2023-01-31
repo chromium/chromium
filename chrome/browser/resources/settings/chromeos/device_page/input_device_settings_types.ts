@@ -66,7 +66,8 @@ export interface PointingStick {
 }
 
 export interface KeyboardSettings {
-  // TODO: Populate KeyboardSettings interface.
+  modifierRemappings: Map<ModifierKey, ModifierKey>;
+  // TODO: Populate other KeyboardSettings interface.
 }
 
 export interface KeyboardObserverInterface {
