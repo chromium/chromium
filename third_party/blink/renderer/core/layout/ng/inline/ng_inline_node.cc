@@ -414,8 +414,7 @@ bool IsDeferrableContent(const NGInlineNodeData& data) {
 }  // namespace
 
 NGInlineNode::NGInlineNode(LayoutBlockFlow* block)
-    : NGLayoutInputNode(block, kInline),
-      record_replay_id_(recordreplay::NewIdMainThread("NGInlineNode")) {
+    : NGLayoutInputNode(block, kInline) {
   DCHECK(block);
   DCHECK(block->IsLayoutNGObject());
   if (!block->HasNGInlineNodeData())
@@ -1261,7 +1260,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
   // https://linear.app/replay/issue/RUN-1219
   recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeText id=%d",
-    record_replay_id_);
+    RecordReplayId());
 
   TRACE_EVENT0("fonts", "NGInlineNode::ShapeText");
   const String& text_content = data->text_content;
@@ -1462,7 +1461,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 void NGInlineNode::ShapeTextForFirstLineIfNeeded(NGInlineNodeData* data) const {
   // https://linear.app/replay/issue/RUN-1219
   recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeTextForFirstLineIfNeeded id=%d",
-    record_replay_id_);
+    RecordReplayId());
 
   // First check if the document has any :first-line rules.
   DCHECK(!data->first_line_items_);
@@ -1516,7 +1515,7 @@ void NGInlineNode::ShapeTextIncludingFirstLine(
 
   // https://linear.app/replay/issue/RUN-1219
   recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeTextIncludingFirstLine id=%d",
-    record_replay_id_);
+    RecordReplayId());
 
   DCHECK_NE(new_state, NGInlineNodeData::kShapingNone);
   data->shaping_state_ = new_state;
@@ -1923,7 +1922,7 @@ MinMaxSizesResult NGInlineNode::ComputeMinMaxSizes(
 
   // https://linear.app/replay/issue/RUN-1219
   recordreplay::Assert("[RUN-1219] NGInlineNode::ComputeMinMaxSizes id=%d",
-    record_replay_id_);
+    RecordReplayId());
 
   PrepareLayoutIfNeeded();
   ShapeTextOrDefer(space);
