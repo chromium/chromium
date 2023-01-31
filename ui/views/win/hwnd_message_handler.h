@@ -824,6 +824,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
     bool visibility_state = false;
     bool fullscreen_state = false;
+    bool active_state = false;
     enum { kNormal, kMinimized, kMaximized } minmax_state = kNormal;
   };
 

@@ -666,9 +666,13 @@ void HWNDMessageHandler::Show(ui::WindowShowState show_state,
 
   // In headless mode the platform window is always hidden, so instead of
   // showing it just maintain a local flag to track the expected headless
-  // window visibility state.
+  // window visibility state and explicitly activate window just like
+  // platform window manager would do.
   if (IsHeadless()) {
     headless_mode_window_->visibility_state = true;
+    if (show_state != ui::SHOW_STATE_INACTIVE) {
+      Activate();
+    }
     return;
   }
 
@@ -790,6 +794,19 @@ void HWNDMessageHandler::Restore() {
 }
 
 void HWNDMessageHandler::Activate() {
+  // In headless mode the platform window is always hidden, so instead of
+  // activating it just maintain a local flag to track the expected headless
+  // window activation state.
+  if (IsHeadless()) {
+    if (!headless_mode_window_->active_state) {
+      headless_mode_window_->active_state = true;
+      if (delegate_->CanActivate() && IsTopLevelWindow(hwnd())) {
+        delegate_->HandleActivationChanged(/*active=*/true);
+      }
+    }
+    return;
+  }
+
   if (IsMinimized()) {
     base::AutoReset<bool> restoring_activate(&notify_restore_on_activate_,
                                              true);
@@ -801,6 +818,16 @@ void HWNDMessageHandler::Activate() {
 }
 
 void HWNDMessageHandler::Deactivate() {
+  if (IsHeadless()) {
+    if (headless_mode_window_->active_state) {
+      headless_mode_window_->active_state = false;
+      if (delegate_->CanActivate() && IsTopLevelWindow(hwnd())) {
+        delegate_->HandleActivationChanged(/*active=*/false);
+      }
+    }
+    return;
+  }
+
   HWND next_hwnd = ::GetNextWindow(hwnd(), GW_HWNDNEXT);
   while (next_hwnd) {
     if (::IsWindowVisible(next_hwnd)) {
@@ -825,7 +852,11 @@ bool HWNDMessageHandler::IsVisible() const {
 }
 
 bool HWNDMessageHandler::IsActive() const {
-  return GetActiveWindow() == hwnd();
+  // In headless mode return expected activation state instead of the
+  // actual one. This ensures that onfocus/onblur notifications work
+  // as expected and no unexpected throttling occurs.
+  return IsHeadless() ? headless_mode_window_->active_state
+                      : GetActiveWindow() == hwnd();
 }
 
 bool HWNDMessageHandler::IsMinimized() const {

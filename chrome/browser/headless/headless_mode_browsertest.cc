@@ -27,6 +27,7 @@
 #include "chrome/browser/process_singleton.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_switches.h"
@@ -97,6 +98,10 @@ void ToggleFullscreenModeSync(Browser* browser) {
 }
 
 namespace {
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, BrowserWindowIsActive) {
+  EXPECT_TRUE(browser()->window()->IsActive());
+}
 
 class HeadlessModeBrowserTestWithUserDataDir : public HeadlessModeBrowserTest {
  public:
