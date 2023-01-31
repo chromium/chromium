@@ -23,6 +23,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -47,6 +48,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for {@link WarmupManager} */
 @RunWith(ParameterizedRunner.class)
+@Batch(Batch.PER_CLASS)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 public class WarmupManagerTest {
     public enum ProfileType { REGULAR_PROFILE, PRIMARY_OTR_PROFILE, NON_PRIMARY_OTR_PROFILE }
@@ -92,6 +94,7 @@ public class WarmupManagerTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> mWarmupManager.destroySpareWebContents());
+        WarmupManager.deInitForTesting();
     }
 
     private static Profile getNonPrimaryOTRProfile() {

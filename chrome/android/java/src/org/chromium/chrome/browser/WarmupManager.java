@@ -74,6 +74,14 @@ public class WarmupManager {
     private RenderProcessGoneObserver mObserver;
 
     /**
+     * Removes the singleton instance for the WarmupManager for testing.
+     */
+    @VisibleForTesting
+    public static void deInitForTesting() {
+        sWarmupManager = null;
+    }
+
+    /**
      * @return The singleton instance for the WarmupManager, creating one if necessary.
      */
     public static WarmupManager getInstance() {
