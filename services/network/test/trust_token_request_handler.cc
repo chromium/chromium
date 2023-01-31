@@ -234,7 +234,7 @@ absl::optional<std::string> TrustTokenRequestHandler::Redeem(
   ScopedBoringsslBytes redeemed_client_data;
   uint32_t received_public_metadata;
   uint8_t received_private_metadata;
-  if (!TRUST_TOKEN_ISSUER_redeem_raw(
+  if (!TRUST_TOKEN_ISSUER_redeem(
           issuer_ctx.get(), &received_public_metadata,
           &received_private_metadata, &redeemed_token,
           redeemed_client_data.mutable_ptr(),

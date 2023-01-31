@@ -172,7 +172,7 @@ void RedeemSingleToken(const ProtocolKeys& keys,
   ScopedBoringsslBytes redeemed_client_data;
   uint32_t received_public_metadata;
   uint8_t received_private_metadata;
-  ASSERT_TRUE(TRUST_TOKEN_ISSUER_redeem_raw(
+  ASSERT_TRUE(TRUST_TOKEN_ISSUER_redeem(
       issuer_ctx, &received_public_metadata, &received_private_metadata,
       &redeemed_token, redeemed_client_data.mutable_ptr(),
       redeemed_client_data.mutable_len(),

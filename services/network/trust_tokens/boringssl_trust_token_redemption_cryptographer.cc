@@ -94,22 +94,7 @@ BoringsslTrustTokenRedemptionCryptographer::ConfirmRedemption(
   if (!base::Base64Decode(response_header, &decoded_response))
     return absl::nullopt;
 
-  // In TrustTokenV3, the entire RR is stored in the body field, and the
-  // signature field is unused in finish_redemption.
-  ScopedBoringsslBytes rr;
-  ScopedBoringsslBytes unused;
-  if (!TRUST_TOKEN_CLIENT_finish_redemption(
-          ctx_.get(), rr.mutable_ptr(), rr.mutable_len(), unused.mutable_ptr(),
-          unused.mutable_len(),
-          base::as_bytes(base::make_span(decoded_response)).data(),
-          decoded_response.size())) {
-    return absl::nullopt;
-  }
-
-  if (!rr.is_valid())
-    return "";
-  return std::string(reinterpret_cast<const char*>(rr.as_span().data()),
-                     rr.as_span().size());
+  return decoded_response;
 }
 
 }  // namespace network
