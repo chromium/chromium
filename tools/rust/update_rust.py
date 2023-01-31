@@ -37,6 +37,9 @@ RUST_SUB_REVISION = 1
 # The revision specified below should typically be the same as the
 # `crubit_revision` specified in the //DEPS file.  More details and roll
 # instructions can be found in tools/rust/README.md.
+#
+# TODO(danakj): This should be included in --print-rust-revision when we want
+# code to depend on using crubit rs_to_cc_bindings.
 CRUBIT_REVISION = 'f5cbdf4b54b0e6b9f63a4464a2c901c82e0f0209'
 CRUBIT_SUB_REVISION = 1
 

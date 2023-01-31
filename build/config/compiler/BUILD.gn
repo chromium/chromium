@@ -1433,16 +1433,25 @@ config("clang_revision") {
 }
 
 config("rustc_revision") {
-  if (enable_rust && defined(rustc_version)) {
+  # Use the rustc version as an input to all rustc invovations if a custom
+  # toolchain is not being used (`rust_sysroot_absolute`).
+  if (toolchain_has_rust && rust_sysroot_absolute == "") {
+    if (use_chromium_rust_toolchain) {
+      update_rust_args = [ "--print-package-version" ]
+      rustc_revision = exec_script("//tools/rust/update_rust.py",
+                                   update_rust_args,
+                                   "trim string")
+    } else {
+      # Android toolchain version.
+      rustc_revision =
+          "rustc 1.64.0-dev (Android Rust Toolchain version 9099361)"
+    }
+
     # Similar to the above config, this is here so that all files get
     # recompiled after a rustc roll. Nothing should ever read this cfg.
-    # $rustc_version is a gn arg set within //build/config/rust.gni
-    # so that users using a custom Rust toolchain can override it.
-    # Its accuracy is checked in //build/rust/std:find_stdlib, which
-    # most of our Rust targets depend upon.
     rustflags = [
       "--cfg",
-      "rustc_version=\"$rustc_version\"",
+      "cr_rustc_revision=\"$rustc_revision\"",
     ]
   }
 }

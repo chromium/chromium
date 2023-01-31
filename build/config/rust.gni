@@ -37,9 +37,6 @@ declare_args() {
   # TODO(https://crbug.com/1245714): fix std handling and check `current_os`.
   use_chromium_rust_toolchain = target_os == "linux" && host_os == "linux"
 
-  # The version string returned by rustc -V, if using an alternative toolchain.
-  rustc_version = ""
-
   # Chromium currently has a Rust toolchain for Android and Linux, but
   # if you wish to experiment on more platforms you can use this
   # argument to specify an alternative toolchain.
@@ -73,20 +70,6 @@ declare_args() {
   # it is the regular toolchain, but when that toolchain has sanitizers, then
   # this variable is changed to avoid them.
   host_toolchain_no_sanitizers = host_toolchain
-}
-
-# Set rustc_version to the in-tree toolchain version, if enabled, or otherwise
-# the Android toolchain version. If using a custom toolchain it is not changed.
-if (enable_rust) {
-  if (use_chromium_rust_toolchain) {
-    assert(rustc_version == "",
-           "Cannot override rustc_version when using in-tree rust build")
-    rustc_version =
-        read_file("//third_party/rust-toolchain/VERSION", "trim string")
-  } else if (rustc_version == "") {
-    # Android toolchain version.
-    rustc_version = "rustc 1.64.0-dev (Android Rust Toolchain version 9099361)"
-  }
 }
 
 # Platform support for "official" toolchains (Android or Chromium)

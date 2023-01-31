@@ -125,9 +125,6 @@ if (toolchain_has_rust) {
       # related to the Rust standard library, we ensure libstd.rlib is first.
       "--depfile-target",
       stdlib_files[0],
-
-      "--expected-rustc-version",
-      rustc_version,
     ]
 
     if (!use_unverified_rust_toolchain) {
