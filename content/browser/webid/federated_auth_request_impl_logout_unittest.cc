@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/webid/test/delegated_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
+#include "content/browser/webid/test/mock_auto_signin_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_permission_delegate.h"
@@ -129,6 +130,8 @@ class FederatedAuthRequestImplLogoutTest
     RenderViewHostImplTestHarness::SetUp();
     test_api_permission_delegate_ =
         std::make_unique<TestApiPermissionDelegate>();
+    mock_auto_signin_permission_delegate_ =
+        std::make_unique<NiceMock<MockAutoSigninPermissionDelegate>>();
     mock_permission_delegate_ =
         std::make_unique<NiceMock<MockPermissionDelegate>>();
 
@@ -137,6 +140,7 @@ class FederatedAuthRequestImplLogoutTest
 
     federated_auth_request_impl_ = &FederatedAuthRequestImpl::CreateForTesting(
         *main_test_rfh(), test_api_permission_delegate_.get(),
+        mock_auto_signin_permission_delegate_.get(),
         mock_permission_delegate_.get(),
         request_remote_.BindNewPipeAndPassReceiver());
     auto mock_dialog_controller =
@@ -174,6 +178,8 @@ class FederatedAuthRequestImplLogoutTest
   std::unique_ptr<TestLogoutIdpNetworkRequestManager> network_request_manager_;
 
   std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
+  std::unique_ptr<NiceMock<MockAutoSigninPermissionDelegate>>
+      mock_auto_signin_permission_delegate_;
   std::unique_ptr<NiceMock<MockPermissionDelegate>> mock_permission_delegate_;
 };
 

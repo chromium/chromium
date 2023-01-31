@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
+#include "content/public/browser/federated_identity_auto_signin_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 
 namespace content {
@@ -21,6 +22,7 @@ namespace content {
 // can run wpt tests against it.
 class ShellFederatedPermissionContext
     : public FederatedIdentityApiPermissionContextDelegate,
+      public FederatedIdentityAutoSigninPermissionContextDelegate,
       public FederatedIdentityPermissionContextDelegate {
  public:
   ShellFederatedPermissionContext();
@@ -34,6 +36,9 @@ class ShellFederatedPermissionContext
   void RemoveEmbargoAndResetCounts(
       const url::Origin& relying_party_embedder) override;
   bool ShouldCompleteRequestImmediately() const override;
+
+  // FederatedIdentityAutoSigninPermissionContextDelegate
+  bool HasAutoSigninPermission() override;
 
   // FederatedIdentityPermissionContextDelegate
   bool HasActiveSession(const url::Origin& relying_party_requester,
@@ -74,6 +79,7 @@ class ShellFederatedPermissionContext
   std::map<std::string, absl::optional<bool>> idp_signin_status_;
 
   base::RepeatingClosure idp_signin_status_closure_;
+  bool auto_signin_permission_{true};
 };
 
 }  // namespace content

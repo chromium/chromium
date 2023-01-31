@@ -563,6 +563,16 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+
+  Register(ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION,
+           "webid-auto-signin", CONTENT_SETTING_ALLOW,
+           WebsiteSettingsInfo::UNSYNCABLE,
+           /*allowlisted_schemes=*/{},
+           /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
+           WebsiteSettingsRegistry::ALL_PLATFORMS,
+           ContentSettingsInfo::INHERIT_IN_INCOGNITO,
+           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 }
 
 void ContentSettingsRegistry::Register(

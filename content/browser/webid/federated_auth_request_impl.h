@@ -28,6 +28,7 @@ namespace content {
 
 class FederatedAuthUserInfoRequest;
 class FederatedIdentityApiPermissionContextDelegate;
+class FederatedIdentityAutoSigninPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHost;
 
@@ -47,6 +48,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   static FederatedAuthRequestImpl& CreateForTesting(
       RenderFrameHost&,
       FederatedIdentityApiPermissionContextDelegate*,
+      FederatedIdentityAutoSigninPermissionContextDelegate*,
       FederatedIdentityPermissionContextDelegate*,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
@@ -113,6 +115,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   FederatedAuthRequestImpl(
       RenderFrameHost&,
       FederatedIdentityApiPermissionContextDelegate*,
+      FederatedIdentityAutoSigninPermissionContextDelegate*,
       FederatedIdentityPermissionContextDelegate*,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
@@ -255,6 +258,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_delegate_ = nullptr;
+  raw_ptr<FederatedIdentityAutoSigninPermissionContextDelegate>
+      auto_signin_permission_delegate_ = nullptr;
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_ =
       nullptr;
 

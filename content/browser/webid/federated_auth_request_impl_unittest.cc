@@ -24,6 +24,7 @@
 #include "content/browser/webid/test/delegated_idp_network_request_manager.h"
 #include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
+#include "content/browser/webid/test/mock_auto_signin_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_permission_delegate.h"
@@ -631,12 +632,15 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     test_api_permission_delegate_ =
         std::make_unique<TestApiPermissionDelegate>();
     test_permission_delegate_ = std::make_unique<TestPermissionDelegate>();
+    mock_auto_signin_permission_delegate_ =
+        std::make_unique<NiceMock<MockAutoSigninPermissionDelegate>>();
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
 
     federated_auth_request_impl_ = &FederatedAuthRequestImpl::CreateForTesting(
         *main_test_rfh(), test_api_permission_delegate_.get(),
+        mock_auto_signin_permission_delegate_.get(),
         test_permission_delegate_.get(),
         request_remote_.BindNewPipeAndPassReceiver());
 
@@ -970,6 +974,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
   std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> test_permission_delegate_;
+  std::unique_ptr<NiceMock<MockAutoSigninPermissionDelegate>>
+      mock_auto_signin_permission_delegate_;
 
   AuthRequestCallbackHelper auth_helper_;
 
@@ -1299,6 +1305,10 @@ TEST_F(FederatedAuthRequestImplTest,
       .Times(2)
       .WillRepeatedly(Return(true));
 
+  // Pretend the auto sign-in permission has been granted.
+  EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
+      .WillOnce(Return(true));
+
   for (const auto& idp_info : kConfigurationValid.idp_info) {
     ASSERT_EQ(idp_info.second.accounts.size(), 1u);
   }
@@ -1339,6 +1349,10 @@ TEST_F(FederatedAuthRequestImplTest,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountIdZach))
       .WillOnce(Return(false));
+
+  // Pretend the auto sign-in permission has been granted.
+  EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
+      .WillOnce(Return(true));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
   request_parameters.prefer_auto_sign_in = true;
@@ -1383,6 +1397,10 @@ TEST_F(FederatedAuthRequestImplTest,
                            OriginFromString(kProviderUrlFull), kAccountIdZach))
       .WillOnce(Return(false));
 
+  // Pretend the auto sign-in permission has been granted.
+  EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
+      .WillOnce(Return(true));
+
   RequestParameters request_parameters = kDefaultRequestParameters;
   request_parameters.prefer_auto_sign_in = true;
 
@@ -1409,6 +1427,10 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninForZeroReturningUsers) {
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
       .WillOnce(Return(false));
+
+  // Pretend the auto sign-in permission has been granted.
+  EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
+      .WillOnce(Return(true));
 
   for (const auto& idp_info : kConfigurationValid.idp_info) {
     ASSERT_EQ(idp_info.second.accounts.size(), 1u);
@@ -1459,6 +1481,10 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninBrowserNotObservedSigninBefore) {
       .Times(2)
       .WillRepeatedly(Return(false));
 
+  // Pretend the auto sign-in permission has been granted.
+  EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
+      .WillOnce(Return(true));
+
   RequestParameters request_parameters = kDefaultRequestParameters;
   request_parameters.prefer_auto_sign_in = true;
 
@@ -1480,12 +1506,43 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninForFirstTimeUser) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAutoSignin);
 
+  // Pretend the auto sign-in permission has been granted.
+  EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
+      .WillOnce(Return(true));
+
   RequestParameters request_parameters = kDefaultRequestParameters;
   request_parameters.prefer_auto_sign_in = true;
   RunAuthTest(request_parameters, kExpectationSuccess, kConfigurationValid);
 
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignUp);
+  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+}
+
+// Test that auto sign-in where the auto sign-in permission is blocked sets the
+// sign-in mode to explicit.
+TEST_F(FederatedAuthRequestImplTest,
+       AutoSigninWithBlockedAutoSigninPermissions) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAutoSignin);
+
+  // Pretend the sharing permission has been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountId))
+      .WillOnce(Return(true));
+
+  // Pretend the auto sign-in permission has been blocked for this account.
+  EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
+      .WillOnce(Return(false));
+
+  RequestParameters request_parameters = kDefaultRequestParameters;
+  request_parameters.prefer_auto_sign_in = true;
+  RunAuthTest(request_parameters, kExpectationSuccess, kConfigurationValid);
+
+  ASSERT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 }
 

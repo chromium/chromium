@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
+#include "content/public/browser/federated_identity_auto_signin_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -316,10 +317,13 @@ FederatedAuthRequestImpl::IdentityProviderInfo::IdentityProviderInfo(
 FederatedAuthRequestImpl::FederatedAuthRequestImpl(
     RenderFrameHost& host,
     FederatedIdentityApiPermissionContextDelegate* api_permission_context,
+    FederatedIdentityAutoSigninPermissionContextDelegate*
+        auto_signin_permission_context,
     FederatedIdentityPermissionContextDelegate* permission_context,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver)
     : DocumentService(host, std::move(receiver)),
       api_permission_delegate_(api_permission_context),
+      auto_signin_permission_delegate_(auto_signin_permission_context),
       permission_delegate_(permission_context),
       token_request_delay_(kDefaultTokenRequestDelay) {}
 
@@ -358,24 +362,33 @@ void FederatedAuthRequestImpl::Create(
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_context =
           browser_context->GetFederatedIdentityApiPermissionContext();
+  raw_ptr<FederatedIdentityAutoSigninPermissionContextDelegate>
+      auto_signin_permission_context =
+          browser_context->GetFederatedIdentityAutoSigninPermissionContext();
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_context =
       browser_context->GetFederatedIdentityPermissionContext();
-  if (!api_permission_context || !permission_context)
+  if (!api_permission_context || !auto_signin_permission_context ||
+      !permission_context) {
     return;
+  }
 
   // FederatedAuthRequestImpl owns itself. It will self-destruct when a mojo
   // interface error occurs, the RenderFrameHost is deleted, or the
   // RenderFrameHost navigates to a new document.
   new FederatedAuthRequestImpl(*host, api_permission_context,
+                               auto_signin_permission_context,
                                permission_context, std::move(receiver));
 }
 
 FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
     RenderFrameHost& host,
     FederatedIdentityApiPermissionContextDelegate* api_permission_context,
+    FederatedIdentityAutoSigninPermissionContextDelegate*
+        auto_signin_permission_context,
     FederatedIdentityPermissionContextDelegate* permission_context,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
   return *new FederatedAuthRequestImpl(host, api_permission_context,
+                                       auto_signin_permission_context,
                                        permission_context, std::move(receiver));
 }
 
@@ -818,7 +831,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   DCHECK(render_frame_host().GetPage().IsPrimary());
 
   bool maybe_proceed_with_auto_signin =
-      prefer_auto_signin && IsFedCmAutoSigninEnabled();
+      prefer_auto_signin && IsFedCmAutoSigninEnabled() &&
+      auto_signin_permission_delegate_->HasAutoSigninPermission();
 
   if (maybe_proceed_with_auto_signin) {
     const IdentityProviderData* auto_signin_idp = nullptr;

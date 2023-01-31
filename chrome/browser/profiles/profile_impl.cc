@@ -110,6 +110,8 @@
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service_factory.h"
 #include "chrome/browser/webid/federated_identity_api_permission_context.h"
 #include "chrome/browser/webid/federated_identity_api_permission_context_factory.h"
+#include "chrome/browser/webid/federated_identity_auto_signin_permission_context.h"
+#include "chrome/browser/webid/federated_identity_auto_signin_permission_context_factory.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 #include "chrome/browser/webid/federated_identity_permission_context_factory.h"
 #include "chrome/common/buildflags.h"
@@ -161,6 +163,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
+#include "content/public/browser/federated_identity_auto_signin_permission_context_delegate.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_process_host.h"
@@ -1381,6 +1384,12 @@ content::ContentIndexProvider* ProfileImpl::GetContentIndexProvider() {
 content::FederatedIdentityApiPermissionContextDelegate*
 ProfileImpl::GetFederatedIdentityApiPermissionContext() {
   return FederatedIdentityApiPermissionContextFactory::GetForProfile(this);
+}
+
+content::FederatedIdentityAutoSigninPermissionContextDelegate*
+ProfileImpl::GetFederatedIdentityAutoSigninPermissionContext() {
+  return FederatedIdentityAutoSigninPermissionContextFactory::GetForProfile(
+      this);
 }
 
 content::FederatedIdentityPermissionContextDelegate*

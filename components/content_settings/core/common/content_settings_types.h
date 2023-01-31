@@ -311,6 +311,10 @@ enum class ContentSettingsType : int32_t {
   // being specific to a frame.
   TOP_LEVEL_STORAGE_ACCESS,
 
+  // Setting to indicate whether user has opted in to allowing auto sign-in via
+  // the FedCM API.
+  FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION,
+
   NUM_TYPES,
 };
 

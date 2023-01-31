@@ -213,6 +213,15 @@ ShellBrowserContext::GetFederatedIdentityApiPermissionContext() {
   return federated_permission_context_.get();
 }
 
+FederatedIdentityAutoSigninPermissionContextDelegate*
+ShellBrowserContext::GetFederatedIdentityAutoSigninPermissionContext() {
+  if (!federated_permission_context_) {
+    federated_permission_context_ =
+        std::make_unique<ShellFederatedPermissionContext>();
+  }
+  return federated_permission_context_.get();
+}
+
 FederatedIdentityPermissionContextDelegate*
 ShellBrowserContext::GetFederatedIdentityPermissionContext() {
   if (!federated_permission_context_)

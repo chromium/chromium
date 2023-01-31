@@ -86,6 +86,7 @@ class DownloadManager;
 class DownloadManagerDelegate;
 class FederatedIdentityPermissionContextDelegate;
 class FederatedIdentityApiPermissionContextDelegate;
+class FederatedIdentityAutoSigninPermissionContextDelegate;
 class FileSystemAccessPermissionContext;
 class OriginTrialsControllerDelegate;
 class PermissionController;
@@ -438,6 +439,10 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // enabled in site settings.
   virtual FederatedIdentityApiPermissionContextDelegate*
   GetFederatedIdentityApiPermissionContext();
+  // Gets the permission context for determining whether the FedCM API's auto
+  // sign-in feature is enabled in site settings.
+  virtual FederatedIdentityAutoSigninPermissionContextDelegate*
+  GetFederatedIdentityAutoSigninPermissionContext();
   // Gets the permission context for allowing session management capabilities
   // between an identity provider and a relying party if one exists, or
   // nullptr otherwise.

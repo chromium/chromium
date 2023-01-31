@@ -178,6 +178,9 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::DEPRECATED_PPAPI_BROKER, nullptr},
     {ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, nullptr},
     {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, nullptr},
+    // TODO(crbug.com/1408520): Update JavaScript string representation when
+    // desktop UI is implemented.
+    {ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==
