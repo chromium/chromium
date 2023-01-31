@@ -1392,8 +1392,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.HTMLFastPathParser.AbortedParseTime" units="ms"
-    expires_after="2023-12-07">
+<histogram name="Blink.HTMLFastPathParser.AbortedParseTime2"
+    units="microseconds" expires_after="2023-12-07">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
@@ -1401,6 +1401,9 @@ chromium-metrics-reviews@google.com.
     The amount of time the innerHTML fast-path parser took before reaching input
     it could not handle. This is recorded when Element::setInnerHTML is called,
     and at the moment when the input it can't handle is reached.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
   </summary>
 </histogram>
 
@@ -1428,8 +1431,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.HTMLFastPathParser.SuccessfulParseTime" units="ms"
-    expires_after="2023-12-07">
+<histogram name="Blink.HTMLFastPathParser.SuccessfulParseTime2"
+    units="microseconds" expires_after="2023-12-07">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
@@ -1437,10 +1440,13 @@ chromium-metrics-reviews@google.com.
     The time it takes for the innerHTML fast-path parser to complete processing
     text from Element::setInnerHTML. This is recorded if fast-path innerHTML is
     enabled, and completes successfully.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
   </summary>
 </histogram>
 
-<histogram name="Blink.HTMLFastPathParser.TotalParseTime" units="ms"
+<histogram name="Blink.HTMLFastPathParser.TotalParseTime2" units="microseconds"
     expires_after="2023-12-07">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
@@ -1449,6 +1455,9 @@ chromium-metrics-reviews@google.com.
     The total time it takes to complete parsing of Element::setInnerHTML. This
     includes the time taken by the fast-path parser (even if it failed). This is
     recorded after every invocation of Element::setInnerHTML.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
   </summary>
 </histogram>
 

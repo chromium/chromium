@@ -231,6 +231,19 @@ class EmptyLocalFrameClientWithFailingLoaderFactory final
   }
 };
 
+#if defined(USE_INNER_HTML_PARSER_FAST_PATH)
+void LogFastPathParserTotalTime(base::TimeDelta parse_time) {
+  // The time needed to parse is typically < 1ms (even at the 99%).
+  if (!base::TimeTicks::IsHighResolution()) {
+    return;
+  }
+
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Blink.HTMLFastPathParser.TotalParseTime2", parse_time,
+      base::Microseconds(1), base::Milliseconds(10), 100);
+}
+#endif
+
 }  // namespace
 
 static void CompleteURLs(DocumentFragment& fragment, const String& base_url) {
@@ -758,8 +771,7 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
           TryParsingHTMLFragment(markup, document, *fragment, *context_element,
                                  parser_content_policy, include_shadow_roots);
       if (parsed_fast_path) {
-        base::UmaHistogramTimes("Blink.HTMLFastPathParser.TotalParseTime",
-                                parse_timer.Elapsed());
+        LogFastPathParserTotalTime(parse_timer.Elapsed());
 #if DCHECK_IS_ON()
         // As a sanity check for the fast-path, create another fragment using
         // the full parser and compare the results.
@@ -778,8 +790,7 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
 #endif
     fragment->ParseHTML(markup, context_element, parser_content_policy);
 #if defined(USE_INNER_HTML_PARSER_FAST_PATH)
-    base::UmaHistogramTimes("Blink.HTMLFastPathParser.TotalParseTime",
-                            parse_timer.Elapsed());
+    LogFastPathParserTotalTime(parse_timer.Elapsed());
 #endif
     return fragment;
   }
