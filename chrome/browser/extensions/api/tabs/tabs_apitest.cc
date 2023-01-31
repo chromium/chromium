@@ -105,8 +105,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Tabs2) {
       << message_;
 }
 
-// crbug.com/149924
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabDuplicate) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabDuplicate) {
   ASSERT_TRUE(
       RunExtensionTest("tabs/basics", {.extension_url = "duplicate.html"}))
       << message_;

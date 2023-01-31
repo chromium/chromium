@@ -9,15 +9,19 @@ chrome.test.runTests([
   function setupWindow() {
     createWindow([pageUrl("a")], {},
                  pass(function(winId, tabIds) {
-      firstWindowId = winId;
-      firstTabId = tabIds[0];
+      waitForAllTabs(pass(function() {
+        firstWindowId = winId;
+        firstTabId = tabIds[0];
+      }))
     }));
   },
 
   function duplicateTab() {
     chrome.tabs.duplicate(firstTabId, pass(function(tab) {
-      assertEq(pageUrl("a"), tab.url);
-      assertEq(1, tab.index);
+      waitForAllTabs(pass(function() {
+        assertEq(pageUrl("a"), tab.url);
+        assertEq(1, tab.index);
+      }));
     }));
   },
 
@@ -30,6 +34,9 @@ chrome.test.runTests([
       }));
   },
 
+  // TODO(crbug.com/149924): This test was broken by
+  // https://chromium-review.googlesource.com/c/chromium/src/+/3029302
+/*
   function duplicateTabFromNewPopupWindow() {
     chrome.windows.create({
         "url": "http://google.com",
@@ -44,4 +51,5 @@ chrome.test.runTests([
       }));
     });
   }
+ */
 ]);
