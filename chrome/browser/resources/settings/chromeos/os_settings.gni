@@ -52,6 +52,7 @@ web_component_files = [
   "chromeos/device_page/per_device_mouse_subsection.ts",
   "chromeos/device_page/per_device_pointing_stick.ts",
   "chromeos/device_page/per_device_touchpad.ts",
+  "chromeos/device_page/per_device_touchpad_subsection.ts",
   "chromeos/device_page/pointers.ts",
   "chromeos/device_page/power.ts",
   "chromeos/device_page/storage.ts",

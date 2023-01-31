@@ -1,1 +1,4 @@
-<div id="perDeviceTouchpadSubpageTitle">$i18n{touchpadTitle}</div>
+<template is="dom-repeat" items="[[touchpads]]" as="touchpad">
+  <settings-per-device-touchpad-subsection touchpad="[[touchpad]]">
+  </settings-per-device-touchpad-subsection>
+</template>

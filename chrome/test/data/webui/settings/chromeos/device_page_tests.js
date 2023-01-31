@@ -1300,8 +1300,6 @@ suite('SettingsDevicePage', function() {
     test('per-device touchpad subpage visibility', function() {
       assertEquals(
           routes.PER_DEVICE_TOUCHPAD, Router.getInstance().getCurrentRoute());
-      assertTrue(isVisible(perDeviceTouchpadPage.shadowRoot.querySelector(
-          '#perDeviceTouchpadSubpageTitle')));
     });
   });
 
