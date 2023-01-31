@@ -398,8 +398,6 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
   // Allows derived classes to customize `client_ptr_` within `SetUpPlugin()`.
   virtual void SetUpClient() {}
 
-  void TearDown() override { plugin_.reset(); }
-
   void ExpectUpdateTextInputState(
       blink::WebTextInputType expected_text_input_type) {
     EXPECT_CALL(*client_ptr_, UpdateTextInputState)
@@ -409,11 +407,19 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
         });
   }
 
+  void OnMessageWithEngineUpdate(const base::Value::Dict& message) {
+    // New engine will be created making this unowned reference stale.
+    engine_ptr_ = nullptr;
+    plugin_->OnMessage(message);
+  }
+
   NiceMock<FakePdfService> pdf_service_;
   mojo::AssociatedReceiver<pdf::mojom::PdfService> pdf_receiver_{&pdf_service_};
 
-  raw_ptr<FakePdfViewWebPluginClient> client_ptr_;
+  // Must outlive raw_ptrs below.
   std::unique_ptr<PdfViewWebPlugin, PluginDeleter> plugin_;
+
+  raw_ptr<FakePdfViewWebPluginClient> client_ptr_;
   raw_ptr<TestPDFiumEngine> engine_ptr_;
   raw_ptr<MockPdfAccessibilityDataHandler> accessibility_data_handler_ptr_;
 };
@@ -2208,7 +2214,7 @@ TEST_F(PdfViewWebPluginPrintPreviewTest, HandleResetPrintPreviewModeMessage) {
         return engine;
       });
 
-  plugin_->OnMessage(ParseMessage(R"({
+  OnMessageWithEngineUpdate(ParseMessage(R"({
     "type": "resetPrintPreviewMode",
     "url": "chrome-untrusted://print/0/0/print.pdf",
     "grayscale": false,
@@ -2228,7 +2234,7 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
 
   // The UI ID of 1 in the URL is arbitrary.
   // The page index value of -1, AKA `kCompletePDFIndex`, is required for PDFs.
-  plugin_->OnMessage(ParseMessage(R"({
+  OnMessageWithEngineUpdate(ParseMessage(R"({
     "type": "resetPrintPreviewMode",
     "url": "chrome-untrusted://print/1/-1/print.pdf",
     "grayscale": false,
@@ -2253,7 +2259,7 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
         return engine;
       });
 
-  plugin_->OnMessage(ParseMessage(R"({
+  OnMessageWithEngineUpdate(ParseMessage(R"({
     "type": "resetPrintPreviewMode",
     "url": "chrome-untrusted://print/0/0/print.pdf",
     "grayscale": true,
@@ -2262,7 +2268,7 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
 }
 
 TEST_F(PdfViewWebPluginPrintPreviewTest, DocumentLoadComplete) {
-  plugin_->OnMessage(ParseMessage(R"({
+  OnMessageWithEngineUpdate(ParseMessage(R"({
     "type": "resetPrintPreviewMode",
     "url": "chrome-untrusted://print/0/0/print.pdf",
     "grayscale": false,
@@ -2294,7 +2300,7 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
        DocumentLoadProgressResetByResetPrintPreviewModeMessage) {
   plugin_->DocumentLoadProgress(2, 100);
 
-  plugin_->OnMessage(ParseMessage(R"({
+  OnMessageWithEngineUpdate(ParseMessage(R"({
     "type": "resetPrintPreviewMode",
     "url": "chrome-untrusted://print/123/0/print.pdf",
     "grayscale": false,
@@ -2310,7 +2316,7 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
 
 TEST_F(PdfViewWebPluginPrintPreviewTest,
        DocumentLoadProgressNotResetByLoadPreviewPageMessage) {
-  plugin_->OnMessage(ParseMessage(R"({
+  OnMessageWithEngineUpdate(ParseMessage(R"({
     "type": "resetPrintPreviewMode",
     "url": "chrome-untrusted://print/123/0/print.pdf",
     "grayscale": false,
