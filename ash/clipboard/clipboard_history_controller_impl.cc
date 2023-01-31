@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/clipboard_history_util.h"
@@ -428,8 +429,7 @@ void ClipboardHistoryControllerImpl::GetHistoryValues(
       continue;
     }
 
-    if (clipboard_history_util::CalculateDisplayFormat(item.data()) ==
-        clipboard_history_util::DisplayFormat::kPng) {
+    if (item.display_format() == ClipboardHistoryItem::DisplayFormat::kPng) {
       const auto& maybe_png = item.data().maybe_png();
       if (!maybe_png.has_value()) {
         // The clipboard contains an image which has not yet been encoded to a
@@ -512,8 +512,8 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
     }
 
     base::Value::Dict item_dict;
-    switch (clipboard_history_util::CalculateDisplayFormat(item.data())) {
-      case clipboard_history_util::DisplayFormat::kPng: {
+    switch (item.display_format()) {
+      case ClipboardHistoryItem::DisplayFormat::kPng: {
         if (!item.data().maybe_png().has_value()) {
           // The clipboard contains an image which has not yet been encoded to a
           // PNG. Hopefully we just finished encoding and the PNG can be found
@@ -540,18 +540,18 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
         }
         break;
       }
-      case clipboard_history_util::DisplayFormat::kHtml: {
+      case ClipboardHistoryItem::DisplayFormat::kHtml: {
         const SkBitmap& bitmap =
             *(resource_manager_->GetImageModel(item).GetImage().ToSkBitmap());
         item_dict.Set(kImageDataKey, webui::GetBitmapDataUrl(bitmap));
         item_dict.Set(kFormatDataKey, kHtmlFormat);
         break;
       }
-      case clipboard_history_util::DisplayFormat::kText:
+      case ClipboardHistoryItem::DisplayFormat::kText:
         item_dict.Set(kTextDataKey, item.data().text());
         item_dict.Set(kFormatDataKey, kTextFormat);
         break;
-      case clipboard_history_util::DisplayFormat::kFile: {
+      case ClipboardHistoryItem::DisplayFormat::kFile: {
         std::string file_name =
             base::UTF16ToUTF8(resource_manager_->GetLabel(item));
         item_dict.Set(kTextDataKey, file_name);

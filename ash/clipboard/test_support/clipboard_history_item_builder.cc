@@ -23,6 +23,10 @@ ClipboardHistoryItemBuilder::ClipboardHistoryItemBuilder() = default;
 ClipboardHistoryItemBuilder::~ClipboardHistoryItemBuilder() = default;
 
 ClipboardHistoryItem ClipboardHistoryItemBuilder::Build() const {
+  return ClipboardHistoryItem(BuildData());
+}
+
+ui::ClipboardData ClipboardHistoryItemBuilder::BuildData() const {
   ui::ClipboardData data;
   if (text_.has_value())
     data.set_text(text_.value());
@@ -40,7 +44,7 @@ ClipboardHistoryItem ClipboardHistoryItemBuilder::Build() const {
     data.SetCustomData(custom_format_.value(), custom_data_.value());
   if (web_smart_paste_.has_value())
     data.set_web_smart_paste(web_smart_paste_.value());
-  return ClipboardHistoryItem(std::move(data));
+  return data;
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::Clear() {

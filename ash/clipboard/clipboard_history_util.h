@@ -60,18 +60,6 @@ enum MenuViewID {
   kMainButtonViewID
 };
 
-// Used in histograms, each value corresponds with an underlying format
-// displayed by a `ClipboardHistoryItemView`, shown as
-// `ClipboardHistoryDisplayFormat` in enums.xml. Do not reorder entries, if you
-// must add to it, add at the end.
-enum class DisplayFormat {
-  kText = 0,
-  kPng = 1,
-  kHtml = 2,
-  kFile = 3,
-  kMaxValue = 3,
-};
-
 // Modes for specifying a clipboard history pause's semantics.
 enum class PauseBehavior {
   // Clipboard history should be truly paused, i.e., any data change or read
@@ -119,11 +107,6 @@ enum class ReorderType {
 // Returns the main format of the specified clipboard `data`.
 // NOTE: One `ui::ClipboardData` instance may contain multiple formats.
 ASH_EXPORT absl::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
-    const ui::ClipboardData& data);
-
-// Returns the display format of the specified clipboard `data`. This determines
-// which type of view is shown, and which type of histograms are recorded.
-ASH_EXPORT clipboard_history_util::DisplayFormat CalculateDisplayFormat(
     const ui::ClipboardData& data);
 
 // Returns true if `data` contains the specified `format`.

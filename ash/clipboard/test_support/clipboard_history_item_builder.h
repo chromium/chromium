@@ -13,6 +13,7 @@
 #include "ui/base/clipboard/file_info.h"
 
 namespace ui {
+class ClipboardData;
 enum class ClipboardInternalFormat;
 }  // namespace ui
 
@@ -31,6 +32,9 @@ class ASH_EXPORT ClipboardHistoryItemBuilder {
 
   // Constructs a `ClipboardHistoryItem` from only explicitly set data.
   ClipboardHistoryItem Build() const;
+
+  // Constructs a `ClipboardData` with the requested formats populated.
+  ui::ClipboardData BuildData() const;
 
   // Clears all data.
   ClipboardHistoryItemBuilder& Clear();

@@ -50,30 +50,6 @@ absl::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
   return absl::nullopt;
 }
 
-DisplayFormat CalculateDisplayFormat(const ui::ClipboardData& data) {
-  switch (CalculateMainFormat(data).value()) {
-    case ui::ClipboardInternalFormat::kPng:
-      return DisplayFormat::kPng;
-    case ui::ClipboardInternalFormat::kHtml:
-      if ((data.markup_data().find("<img") == std::string::npos) &&
-          (data.markup_data().find("<table") == std::string::npos)) {
-        return DisplayFormat::kText;
-      }
-      return DisplayFormat::kHtml;
-    case ui::ClipboardInternalFormat::kText:
-    case ui::ClipboardInternalFormat::kSvg:
-    case ui::ClipboardInternalFormat::kRtf:
-    case ui::ClipboardInternalFormat::kBookmark:
-    case ui::ClipboardInternalFormat::kWeb:
-      return DisplayFormat::kText;
-    case ui::ClipboardInternalFormat::kFilenames:
-      return DisplayFormat::kFile;
-    case ui::ClipboardInternalFormat::kCustom:
-      return ContainsFileSystemData(data) ? DisplayFormat::kFile
-                                          : DisplayFormat::kText;
-  }
-}
-
 bool ContainsFormat(const ui::ClipboardData& data,
                     ui::ClipboardInternalFormat format) {
   return data.format() & static_cast<int>(format);
@@ -82,13 +58,13 @@ bool ContainsFormat(const ui::ClipboardData& data,
 void RecordClipboardHistoryItemDeleted(const ClipboardHistoryItem& item) {
   UMA_HISTOGRAM_ENUMERATION(
       "Ash.ClipboardHistory.ContextMenu.DisplayFormatDeleted",
-      CalculateDisplayFormat(item.data()));
+      item.display_format());
 }
 
 void RecordClipboardHistoryItemPasted(const ClipboardHistoryItem& item) {
   UMA_HISTOGRAM_ENUMERATION(
       "Ash.ClipboardHistory.ContextMenu.DisplayFormatPasted",
-      CalculateDisplayFormat(item.data()));
+      item.display_format());
 }
 
 bool ContainsFileSystemData(const ui::ClipboardData& data) {
@@ -189,7 +165,7 @@ bool IsEnabledInCurrentMode() {
 
 ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem& item,
                                            const std::string& file_name) {
-  DCHECK_EQ(DisplayFormat::kFile, CalculateDisplayFormat(item.data()));
+  DCHECK_EQ(item.display_format(), ClipboardHistoryItem::DisplayFormat::kFile);
   const int copied_files_count = GetCountOfCopiedFiles(item.data());
 
   if (copied_files_count == 0)

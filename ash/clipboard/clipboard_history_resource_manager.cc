@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/display/display_util.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
@@ -235,8 +236,7 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
 
   // For items that will be represented by their rendered HTML, we need to do
   // some prep work to pre-render and cache an image model.
-  if (clipboard_history_util::CalculateDisplayFormat(item.data()) !=
-      clipboard_history_util::DisplayFormat::kHtml) {
+  if (item.display_format() != ClipboardHistoryItem::DisplayFormat::kHtml) {
     return;
   }
 
@@ -288,8 +288,7 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
 void ClipboardHistoryResourceManager::OnClipboardHistoryItemRemoved(
     const ClipboardHistoryItem& item) {
   // For items that will not be represented by their rendered HTML, do nothing.
-  if (clipboard_history_util::CalculateDisplayFormat(item.data()) !=
-      clipboard_history_util::DisplayFormat::kHtml) {
+  if (item.display_format() != ClipboardHistoryItem::DisplayFormat::kHtml) {
     return;
   }
 

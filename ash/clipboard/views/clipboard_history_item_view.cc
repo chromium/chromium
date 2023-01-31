@@ -75,18 +75,17 @@ ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
     const ClipboardHistoryItem& item,
     const ClipboardHistoryResourceManager* resource_manager,
     views::MenuItemView* container) {
-  const auto display_format =
-      clipboard_history_util::CalculateDisplayFormat(item.data());
+  const auto display_format = item.display_format();
   UMA_HISTOGRAM_ENUMERATION(
       "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", display_format);
   switch (display_format) {
-    case clipboard_history_util::DisplayFormat::kText:
+    case ClipboardHistoryItem::DisplayFormat::kText:
       return std::make_unique<ClipboardHistoryTextItemView>(&item, container);
-    case clipboard_history_util::DisplayFormat::kPng:
-    case clipboard_history_util::DisplayFormat::kHtml:
+    case ClipboardHistoryItem::DisplayFormat::kPng:
+    case ClipboardHistoryItem::DisplayFormat::kHtml:
       return std::make_unique<ClipboardHistoryBitmapItemView>(
           &item, resource_manager, container);
-    case clipboard_history_util::DisplayFormat::kFile:
+    case ClipboardHistoryItem::DisplayFormat::kFile:
       return std::make_unique<ClipboardHistoryFileItemView>(&item, container);
   }
 }

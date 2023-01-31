@@ -512,14 +512,12 @@ TEST_F(ClipboardHistoryTest, BasicFileSystemData) {
 TEST_F(ClipboardHistoryTest, DisplayFormatForPlainHTML) {
   ui::ClipboardData data;
   data.set_markup_data("plain html with no img or table tags");
-
-  EXPECT_EQ(clipboard_history_util::DisplayFormat::kText,
-            clipboard_history_util::CalculateDisplayFormat(data));
+  EXPECT_EQ(ClipboardHistoryItem(data).display_format(),
+            ClipboardHistoryItem::DisplayFormat::kText);
 
   data.set_markup_data("<img> </img>");
-
-  EXPECT_EQ(clipboard_history_util::DisplayFormat::kHtml,
-            clipboard_history_util::CalculateDisplayFormat(data));
+  EXPECT_EQ(ClipboardHistoryItem(data).display_format(),
+            ClipboardHistoryItem::DisplayFormat::kHtml);
 }
 
 // Tests that exactly one Ash.ClipboardHistory.ControlToVDelayV2 histogram entry
