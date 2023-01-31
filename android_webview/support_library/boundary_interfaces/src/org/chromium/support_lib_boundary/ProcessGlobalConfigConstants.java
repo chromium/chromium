@@ -20,10 +20,7 @@ public final class ProcessGlobalConfigConstants {
 
     /** @hide */
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    @StringDef(value =
-                       {
-                               DATA_DIRECTORY_SUFFIX,
-                       })
+    @StringDef(value = {DATA_DIRECTORY_SUFFIX, DATA_DIRECTORY_BASE_PATH, CACHE_DIRECTORY_BASE_PATH})
     @Retention(RetentionPolicy.SOURCE)
     @Target({ElementType.PARAMETER, ElementType.METHOD})
     public @interface ProcessGlobalConfigMapKey {}
@@ -33,4 +30,16 @@ public final class ProcessGlobalConfigConstants {
      * via reflection into AndroidX class.
      */
     public static final String DATA_DIRECTORY_SUFFIX = "DATA_DIRECTORY_SUFFIX";
+
+    /**
+     * Key for the data directory base path in the process global config map that is read in
+     * chromium via reflection into AndroidX class.
+     */
+    public static final String DATA_DIRECTORY_BASE_PATH = "DATA_DIRECTORY_BASE_PATH";
+
+    /**
+     * Key for the cache directory base path in the process global config map that is read in
+     * chromium via reflection into AndroidX class.
+     */
+    public static final String CACHE_DIRECTORY_BASE_PATH = "CACHE_DIRECTORY_BASE_PATH";
 }
