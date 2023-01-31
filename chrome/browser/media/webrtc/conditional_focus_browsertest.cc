@@ -219,18 +219,8 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
-#if BUILDFLAG(IS_WIN)
-// Flaky on Win7 CI builder. See https://crbug.com/1255957.
-#define MAYBE_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus \
-  DISABLED_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus
-#else
-#define MAYBE_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus \
-  CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus
-#endif
-
-IN_PROC_BROWSER_TEST_F(
-    ConditionalFocusBrowserTest,
-    MAYBE_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus) {
+IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
+                       CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus) {
   SetUpTestTabs();
   Capture(15000, FocusEnumValue::kNoFocusChange);
   EXPECT_TRUE(WaitForFocusSwitchToCapturedTab());
