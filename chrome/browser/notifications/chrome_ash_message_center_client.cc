@@ -14,7 +14,6 @@
 #include "chrome/browser/notifications/extension_notifier_controller.h"
 #include "chrome/browser/notifications/pwa_notifier_controller.h"
 #include "chrome/browser/notifications/web_page_notifier_controller.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/user_manager/user.h"

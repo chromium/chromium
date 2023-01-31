@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/android/jni_headers/ProfileKey_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/profiles/profile_manager.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

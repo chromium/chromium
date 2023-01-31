@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "extensions/browser/event_router.h"

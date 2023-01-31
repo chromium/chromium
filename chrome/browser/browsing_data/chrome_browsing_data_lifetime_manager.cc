@@ -23,7 +23,6 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_types.h"

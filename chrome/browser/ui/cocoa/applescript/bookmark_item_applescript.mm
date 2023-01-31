@@ -7,7 +7,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "chrome/browser/app_controller_mac.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #import "chrome/browser/ui/cocoa/applescript/apple_event_util.h"
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #include "components/bookmarks/browser/bookmark_model.h"

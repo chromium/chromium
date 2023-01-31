@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/ui/input_method_menu_item.h"
 #include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"

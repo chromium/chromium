@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service_factory.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/constants/devicetype.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"

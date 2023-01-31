@@ -36,7 +36,6 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"

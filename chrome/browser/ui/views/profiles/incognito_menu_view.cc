@@ -30,7 +30,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #endif
 

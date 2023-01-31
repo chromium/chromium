@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
 #include "chrome/browser/ash/net/network_diagnostics/udp_prober.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/network_context.mojom.h"

@@ -36,7 +36,6 @@
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/android/omnibox/jni_headers/AutocompleteController_jni.h"
 #include "chrome/common/webui_url_constants.h"

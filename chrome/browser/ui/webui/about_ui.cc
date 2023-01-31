@@ -35,7 +35,6 @@
 #include "chrome/browser/ash/borealis/borealis_credits.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"

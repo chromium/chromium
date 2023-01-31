@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
 
 namespace ash {
 

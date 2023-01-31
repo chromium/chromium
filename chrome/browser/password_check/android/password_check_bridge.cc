@@ -11,7 +11,6 @@
 #include "chrome/browser/password_check/android/jni_headers/CompromisedCredential_jni.h"
 #include "chrome/browser/password_check/android/jni_headers/PasswordCheckBridge_jni.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"

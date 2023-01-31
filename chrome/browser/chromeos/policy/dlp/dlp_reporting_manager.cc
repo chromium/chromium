@@ -15,7 +15,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/util/status.h"

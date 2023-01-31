@@ -127,7 +127,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/default_pinned_apps.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"

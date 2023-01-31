@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/ui/login_feedback.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 

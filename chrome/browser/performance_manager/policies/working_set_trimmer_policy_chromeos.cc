@@ -15,7 +15,6 @@
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_arcvm.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"

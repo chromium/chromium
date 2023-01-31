@@ -13,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/android/chrome_jni_headers/RlzPingHandler_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"

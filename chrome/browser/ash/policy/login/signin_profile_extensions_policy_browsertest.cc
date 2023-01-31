@@ -20,7 +20,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"

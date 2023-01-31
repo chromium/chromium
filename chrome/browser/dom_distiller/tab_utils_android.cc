@@ -8,7 +8,6 @@
 #include "chrome/android/chrome_jni_headers/DomDistillerTabUtils_jni.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/dom_distiller/core/experiments.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/url_formatter/url_formatter.h"

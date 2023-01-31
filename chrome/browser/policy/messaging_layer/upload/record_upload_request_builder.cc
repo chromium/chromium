@@ -22,7 +22,6 @@
 #include "base/task/thread_pool.h"
 #include "base/token.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"

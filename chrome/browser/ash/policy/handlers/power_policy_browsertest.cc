@@ -26,7 +26,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"

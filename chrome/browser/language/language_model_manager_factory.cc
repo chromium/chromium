@@ -12,7 +12,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/language/content/browser/geo_language_model.h"
 #include "components/language/content/browser/geo_language_provider.h"

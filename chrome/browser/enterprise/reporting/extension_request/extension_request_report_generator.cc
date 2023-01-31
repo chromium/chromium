@@ -14,7 +14,6 @@
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/enterprise/common/proto/extensions_workflow_events.pb.h"

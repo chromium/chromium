@@ -21,7 +21,6 @@
 #include "chrome/browser/apps/platform_apps/platform_app_launch.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/launch_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"

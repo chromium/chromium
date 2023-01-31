@@ -17,7 +17,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service_client.h"

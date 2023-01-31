@@ -13,7 +13,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"

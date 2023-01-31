@@ -63,7 +63,6 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

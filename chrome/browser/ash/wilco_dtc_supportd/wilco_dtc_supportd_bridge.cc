@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_messaging.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_notification_controller.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

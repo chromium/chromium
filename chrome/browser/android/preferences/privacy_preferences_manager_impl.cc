@@ -8,7 +8,6 @@
 #include "chrome/android/chrome_jni_headers/PrivacyPreferencesManagerImpl_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/policy/core/common/features.h"

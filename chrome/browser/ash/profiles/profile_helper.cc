@@ -27,7 +27,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_types_ash.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"

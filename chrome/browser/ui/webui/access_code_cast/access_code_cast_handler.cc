@@ -14,7 +14,6 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"

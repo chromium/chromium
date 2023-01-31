@@ -20,7 +20,6 @@
 #include "chrome/android/chrome_jni_headers/DevToolsServer_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/chrome_content_client.h"

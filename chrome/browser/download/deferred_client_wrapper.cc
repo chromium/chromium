@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/android/startup_bridge.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 #include "components/download/public/background_service/clients.h"
 #include "components/download/public/background_service/download_metadata.h"

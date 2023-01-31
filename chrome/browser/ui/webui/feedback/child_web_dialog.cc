@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/feedback/child_web_dialog.h"
 
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"

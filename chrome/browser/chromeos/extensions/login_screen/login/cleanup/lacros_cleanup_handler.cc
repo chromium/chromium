@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/login_ash.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/chrome_speech_recognition_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
