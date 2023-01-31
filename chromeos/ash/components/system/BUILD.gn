@@ -15,7 +15,6 @@ component("system") {
   deps = [
     "//ash/constants",
     "//base",
-    "//ui/ozone:ozone_switches",
   ]
   sources = [
     "devicemode.cc",

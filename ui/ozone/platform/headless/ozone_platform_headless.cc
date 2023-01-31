@@ -155,8 +155,6 @@ OzonePlatform* CreateOzonePlatformHeadless() {
   base::FilePath location;
   if (cmd->HasSwitch(switches::kOzoneDumpFile))
     location = cmd->GetSwitchValuePath(switches::kOzoneDumpFile);
-  cmd->AppendSwitch(switches::kDisableRunningAsSystemCompositor);
-
   return new OzonePlatformHeadless(location);
 }
 

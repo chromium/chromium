@@ -42,6 +42,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -54,6 +55,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
+#include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -83,6 +85,8 @@ constexpr char kTabletModeDisabled[] = "Touchview_Disabled";
 
 constexpr char kEnterHistogram[] = "Ash.TabletMode.AnimationSmoothness.Enter";
 constexpr char kExitHistogram[] = "Ash.TabletMode.AnimationSmoothness.Exit";
+
+constexpr char kLsbReleaseContent[] = "CHROMEOS_RELEASE_NAME=Chromium OS\n";
 
 }  // namespace
 
@@ -1787,8 +1791,13 @@ class TabletModeControllerOnDeviceTest : public TabletModeControllerTest {
 
   void SetUp() override {
     // We need to simulate the real on-device behavior for some tests.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kEnableRunningAsSystemCompositor);
+    scoped_version_info_ =
+        std::make_unique<base::test::ScopedChromeOSVersionInfo>(
+            kLsbReleaseContent, base::Time::Now());
+    // TODO(oshima): Disable native events instead of adding offset.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        ::switches::kHostWindowBounds, "800x600");
+
     TabletModeControllerTest::SetUp();
     // PowerManagerClient callback is a posted task.
     base::RunLoop().RunUntilIdle();
@@ -1797,6 +1806,9 @@ class TabletModeControllerOnDeviceTest : public TabletModeControllerTest {
     TriggerBaseAndLidUpdate(gfx::Vector3dF(kMeanGravityFloat, 0.0f, 0.0f),
                             gfx::Vector3dF(kMeanGravityFloat, 0.0f, 0.0f));
   }
+
+ private:
+  std::unique_ptr<base::test::ScopedChromeOSVersionInfo> scoped_version_info_;
 };
 
 // Tests that if there is no internal and external input device, the device

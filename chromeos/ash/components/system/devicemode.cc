@@ -4,21 +4,14 @@
 
 #include "chromeos/ash/components/system/devicemode.h"
 
-#include "base/command_line.h"
 #include "base/system/sys_info.h"
-#include "ui/ozone/public/ozone_switches.h"
 
 namespace chromeos {
 
+// TODO(crbug.com/1408913): Remove this function and replace by
+// IsRunningOnChromeOS().
 bool IsRunningAsSystemCompositor() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kDisableRunningAsSystemCompositor)) {
-    return false;
-  }
-  static bool is_running_on_chrome_os = base::SysInfo::IsRunningOnChromeOS();
-  return is_running_on_chrome_os ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             ::switches::kEnableRunningAsSystemCompositor);
+  return base::SysInfo::IsRunningOnChromeOS();
 }
 
 }  // namespace chromeos
