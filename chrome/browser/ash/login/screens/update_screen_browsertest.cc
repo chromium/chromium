@@ -8,10 +8,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_forward.h"
-#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -193,12 +193,12 @@ class UpdateScreenTest : public OobeBaseTest,
 
  protected:
   void WaitForScreenResult() {
-    if (last_screen_result_.has_value())
+    if (last_screen_result_.has_value()) {
       return;
-
-    base::RunLoop run_loop;
-    screen_result_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
+    }
+    base::test::TestFuture<void> waiter;
+    screen_result_callback_ = waiter.GetCallback();
+    EXPECT_TRUE(waiter.Wait());
   }
 
   void ShowUpdateScreen() {

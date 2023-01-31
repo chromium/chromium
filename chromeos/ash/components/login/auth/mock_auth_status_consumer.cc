@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/login/auth/mock_auth_status_consumer.h"
 
-#include "base/run_loop.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

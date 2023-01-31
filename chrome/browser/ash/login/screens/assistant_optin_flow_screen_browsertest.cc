@@ -10,8 +10,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
 #include "base/strings/string_piece.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
@@ -415,12 +415,12 @@ class AssistantOptInFlowTest : public OobeBaseTest {
   }
 
   void WaitForScreenExit() {
-    if (screen_exited_)
+    if (screen_exited_) {
       return;
-
-    base::RunLoop run_loop;
-    screen_exit_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
+    }
+    base::test::TestFuture<void> waiter;
+    screen_exit_callback_ = waiter.GetCallback();
+    EXPECT_TRUE(waiter.Wait());
   }
 
   std::unique_ptr<ScopedAssistantSettings> assistant_settings_;

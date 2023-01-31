@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -102,11 +103,12 @@ void EduCoexistenceLoginBrowserTest::HandleScreenExit(
 }
 
 void EduCoexistenceLoginBrowserTest::WaitForScreenExit() {
-  if (result_.has_value())
+  if (result_.has_value()) {
     return;
-  base::RunLoop run_loop;
-  quit_closure_ = base::BindOnce(run_loop.QuitClosure());
-  run_loop.Run();
+  }
+  base::test::TestFuture<void> waiter;
+  quit_closure_ = waiter.GetCallback();
+  EXPECT_TRUE(waiter.Wait());
 }
 
 EduCoexistenceLoginScreen*

@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -74,11 +75,12 @@ class ThemeSelectionScreenTest
   }
 
   void WaitForScreenExit() {
-    if (result_.has_value())
+    if (result_.has_value()) {
       return;
-    base::RunLoop run_loop;
-    quit_closure_ = base::BindOnce(run_loop.QuitClosure());
-    run_loop.Run();
+    }
+    base::test::TestFuture<void> waiter;
+    quit_closure_ = waiter.GetCallback();
+    EXPECT_TRUE(waiter.Wait());
   }
 
   void setTabletMode(bool enabled) {

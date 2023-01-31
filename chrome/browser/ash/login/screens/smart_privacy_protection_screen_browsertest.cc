@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/test/feature_parameter_interface.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -60,11 +61,12 @@ class SmartPrivacyProtectionScreenTest : public OobeBaseTest,
   }
 
   void WaitForScreenExit() {
-    if (result_.has_value())
+    if (result_.has_value()) {
       return;
-    base::RunLoop run_loop;
-    quit_closure_ = base::BindOnce(run_loop.QuitClosure());
-    run_loop.Run();
+    }
+    base::test::TestFuture<void> waiter;
+    quit_closure_ = waiter.GetCallback();
+    EXPECT_TRUE(waiter.Wait());
   }
 
   void ExitScreenAndExpectResult(SmartPrivacyProtectionScreen::Result result) {

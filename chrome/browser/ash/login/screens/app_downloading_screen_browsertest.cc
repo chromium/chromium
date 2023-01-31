@@ -9,9 +9,9 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
-#include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -68,9 +68,9 @@ class AppDownloadingScreenTest : public OobeBaseTest {
   void WaitForScreenExit() {
     if (screen_exited_)
       return;
-    base::RunLoop run_loop;
-    screen_exit_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
+    base::test::TestFuture<void> waiter;
+    screen_exit_callback_ = waiter.GetCallback();
+    EXPECT_TRUE(waiter.Wait());
   }
 
   AppDownloadingScreen* app_downloading_screen_;
