@@ -145,7 +145,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   config.features_disabled.push_back(kEnableFeedAblation);
   // TODO(crbug.com/1403077): Scrolling issues when promo is enabled.
   config.features_disabled.push_back(kEnableDiscoverFeedTopSyncPromo);
-  config.features_enabled.push_back(kContentSuggestionsUIModuleRefresh);
   return config;
 }
 
@@ -504,7 +503,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that the trending queries module header is visible and all four
 // trending queries are interactable.
-- (void)testTrendingQueries {
+// Re-enable this test if trending queries is re-launched as a stable LE.
+- (void)DISABLED_testTrendingQueries {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.features_enabled.push_back(kTrendingQueriesModule);
   config.variations_enabled = {3350760};
