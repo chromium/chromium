@@ -23,6 +23,8 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 namespace {
 
@@ -209,6 +211,10 @@ void NGLayoutInputNode::GetOverrideIntrinsicSize(
     *computed_inline_size = LayoutUnit();
   if (ShouldApplyBlockSizeContainment() && !*computed_block_size)
     *computed_block_size = LayoutUnit();
+}
+
+void NGLayoutInputNode::InitRecordReplayId() {
+  record_replay_id_ = recordreplay::NewIdMainThread("NGInlineNode");
 }
 
 }  // namespace blink
