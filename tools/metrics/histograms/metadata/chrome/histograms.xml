@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Chrome.KAnonymityService.JoinSet.Action"
-    enum="KAnonymityServiceJoinSetAction" expires_after="2023-05-27">
+    enum="KAnonymityServiceJoinSetAction" expires_after="2023-07-30">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>

@@ -850,7 +850,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2023-05-27">
+    units="microseconds" expires_after="2023-07-30">
   <owner>flackr@chromium.org</owner>
   <summary>
     NOTE: This metric is deprecated in favor of
@@ -1030,7 +1030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.JankyDurationPercentage" units="%"
-    expires_after="2023-05-27">
+    expires_after="2023-07-30">
   <owner>ddrone@google.com</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
@@ -1603,7 +1603,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2023-05-27">
+    units="microseconds" expires_after="2023-07-30">
   <owner>flackr@chromium.org</owner>
   <summary>
     NOTE: This metric is deprecated in favor of

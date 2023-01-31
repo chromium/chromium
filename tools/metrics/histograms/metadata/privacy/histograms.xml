@@ -248,7 +248,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseEntryCount" units="entries"
-    expires_after="2023-05-30">
+    expires_after="2023-07-30">
   <owner>bcl@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -271,7 +271,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseHealthMetricsTime" units="ms"
-    expires_after="2023-05-30">
+    expires_after="2023-07-30">
   <owner>bcl@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>

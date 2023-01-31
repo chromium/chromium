@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.RenderAndPaintVisiblePagesTime" units="ms"
-    expires_after="2023-05-31">
+    expires_after="2023-07-30">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
