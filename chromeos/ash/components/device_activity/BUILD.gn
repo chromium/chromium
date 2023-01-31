@@ -61,6 +61,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "churn_active_status_unittest.cc",
     "churn_cohort_use_case_impl_unittest.cc",
     "daily_use_case_impl_unittest.cc",
     "device_active_use_case_unittest.cc",
