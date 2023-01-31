@@ -24,7 +24,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:minHeight="3dp"
         style="@android:style/Widget.ProgressBar.Horizontal"
-        android:progressBackgroundTint="#fff"
+        android:progressBackgroundTint="#0fff"
         android:progressTint="#4285F4" />
 
     <androidx.fragment.app.FragmentContainerView
