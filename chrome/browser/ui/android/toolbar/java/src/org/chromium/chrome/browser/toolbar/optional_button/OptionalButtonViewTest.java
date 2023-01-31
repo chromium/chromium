@@ -124,11 +124,11 @@ public class OptionalButtonViewTest {
         Drawable iconDrawable = AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon);
         OnClickListener clickListener = mock(OnClickListener.class);
         OnLongClickListener longClickListener = mock(OnLongClickListener.class);
-        int contentDescriptionId = R.string.button_new_tab;
+        String contentDescription = mActivity.getString(R.string.button_new_tab);
 
         // Whether a button is static or dynamic is determined by the button variant.
         ButtonSpec buttonSpec = new ButtonSpec(iconDrawable, clickListener, longClickListener,
-                contentDescriptionId, true, null, /* buttonVariant= */
+                contentDescription, true, null, /* buttonVariant= */
                 AdaptiveToolbarButtonVariant.NEW_TAB, /*actionChipLabelResId=*/Resources.ID_NULL);
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
@@ -142,11 +142,11 @@ public class OptionalButtonViewTest {
         Drawable iconDrawable = AppCompatResources.getDrawable(mActivity, R.drawable.btn_mic);
         OnClickListener clickListener = mock(OnClickListener.class);
         OnLongClickListener longClickListener = mock(OnLongClickListener.class);
-        int contentDescriptionId = R.string.enable_price_tracking_menu_item;
+        String contentDescription = mActivity.getString(R.string.enable_price_tracking_menu_item);
 
         // Whether a button is static or dynamic is determined by the button variant.
         ButtonSpec buttonSpec = new ButtonSpec(iconDrawable, clickListener, longClickListener,
-                contentDescriptionId, true, null, /* buttonVariant= */
+                contentDescription, true, null, /* buttonVariant= */
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING,
                 /*actionChipLabelResId=*/Resources.ID_NULL);
         ButtonDataImpl buttonData = new ButtonDataImpl();
@@ -161,11 +161,11 @@ public class OptionalButtonViewTest {
         Drawable iconDrawable = AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon);
         OnClickListener clickListener = mock(OnClickListener.class);
         OnLongClickListener longClickListener = mock(OnLongClickListener.class);
-        int contentDescriptionId = R.string.actionbar_share;
+        String contentDescription = mActivity.getString(R.string.actionbar_share);
         int actionChipLabelResId = R.string.adaptive_toolbar_button_preference_share;
 
         ButtonSpec buttonSpec = new ButtonSpec(iconDrawable, clickListener, longClickListener,
-                contentDescriptionId, true, null, /* buttonVariant= */
+                contentDescription, true, null, /* buttonVariant= */
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING,
                 /*actionChipLabelResId=*/actionChipLabelResId);
         ButtonDataImpl buttonData = new ButtonDataImpl();
@@ -213,8 +213,7 @@ public class OptionalButtonViewTest {
     @Test
     public void testSetIconDrawableWithAnimation_fromHiddenToIcon() {
         ButtonData buttonData = getDataForPriceTrackingIconButton();
-        String contentDescriptionString = mActivity.getResources().getString(
-                buttonData.getButtonSpec().getContentDescriptionResId());
+        String contentDescriptionString = buttonData.getButtonSpec().getContentDescription();
         ViewGroup transitionRoot = mock(ViewGroup.class);
 
         mOptionalButtonView.setTransitionRoot(transitionRoot);
@@ -623,9 +622,8 @@ public class OptionalButtonViewTest {
         priceTrackingButtonData.setButtonSpec(new ButtonSpec(newIconDrawable,
                 originalButtonSpec.getOnClickListener(),
                 originalButtonSpec.getOnLongClickListener(),
-                originalButtonSpec.getContentDescriptionResId(),
-                originalButtonSpec.getSupportsTinting(), originalButtonSpec.getIPHCommandBuilder(),
-                originalButtonSpec.getButtonVariant(),
+                originalButtonSpec.getContentDescription(), originalButtonSpec.getSupportsTinting(),
+                originalButtonSpec.getIPHCommandBuilder(), originalButtonSpec.getButtonVariant(),
                 originalButtonSpec.getActionChipLabelResId()));
 
         mOptionalButtonView.updateButtonWithAnimation(priceTrackingButtonData);

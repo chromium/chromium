@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -52,17 +53,19 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
 
     /**
      * Creates a VoiceToolbarButtonController object.
+     *
+     * @param context The context for retrieving string resources.
      * @param buttonDrawable Drawable for the voice button.
      * @param activeTabSupplier Provides the currently displayed {@link Tab}.
      * @param trackerSupplier  Supplier for the current profile tracker.
      * @param modalDialogManager Dispatcher for modal lifecycle events
      * @param voiceSearchDelegate Provides interaction with voice search.
      */
-    public VoiceToolbarButtonController(Drawable buttonDrawable, Supplier<Tab> activeTabSupplier,
-            Supplier<Tracker> trackerSupplier, ModalDialogManager modalDialogManager,
-            VoiceSearchDelegate voiceSearchDelegate) {
+    public VoiceToolbarButtonController(Context context, Drawable buttonDrawable,
+            Supplier<Tab> activeTabSupplier, Supplier<Tracker> trackerSupplier,
+            ModalDialogManager modalDialogManager, VoiceSearchDelegate voiceSearchDelegate) {
         super(activeTabSupplier, modalDialogManager, buttonDrawable,
-                R.string.accessibility_toolbar_btn_mic,
+                context.getString(R.string.accessibility_toolbar_btn_mic),
                 /* actionChipLabelResId= */ Resources.ID_NULL,
                 /* supportsTinting= */ true, /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.VOICE);

@@ -43,8 +43,7 @@ public interface ButtonData {
         private final View.OnClickListener mOnClickListener;
         @Nullable
         private final View.OnLongClickListener mOnLongClickListener;
-        @StringRes
-        private final int mContentDescriptionResId;
+        private final String mContentDescription;
         private final boolean mSupportsTinting;
         @Nullable
         private final IPHCommandBuilder mIPHCommandBuilder;
@@ -55,13 +54,13 @@ public interface ButtonData {
         private final int mActionChipLabelResId;
 
         public ButtonSpec(@NonNull Drawable drawable, @NonNull View.OnClickListener onClickListener,
-                @Nullable View.OnLongClickListener onLongClickListener, int contentDescriptionResId,
+                @Nullable View.OnLongClickListener onLongClickListener, String contentDescription,
                 boolean supportsTinting, @Nullable IPHCommandBuilder iphCommandBuilder,
                 @AdaptiveToolbarButtonVariant int buttonVariant, int actionChipLabelResId) {
             mDrawable = drawable;
             mOnClickListener = onClickListener;
             mOnLongClickListener = onLongClickListener;
-            mContentDescriptionResId = contentDescriptionResId;
+            mContentDescription = contentDescription;
             mSupportsTinting = supportsTinting;
             mIPHCommandBuilder = iphCommandBuilder;
             mButtonVariant = buttonVariant;
@@ -87,10 +86,9 @@ public interface ButtonData {
             return mOnLongClickListener;
         }
 
-        /** Returns the resource if of the string describing the button. */
-        @StringRes
-        public int getContentDescriptionResId() {
-            return mContentDescriptionResId;
+        /** Returns the string describing the button. */
+        public String getContentDescription() {
+            return mContentDescription;
         }
 
         /** Returns the resource ID of the string for the button's action chip label. */

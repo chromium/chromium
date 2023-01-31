@@ -156,8 +156,9 @@ public class ToolbarPhoneTest {
         // When menu is hidden, optional button should have no padding.
         doReturn(false).when(mMenuButtonCoordinator).isVisible();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mToolbar.updateOptionalButton(new ButtonDataImpl(false, drawable, null, R.string.share,
-                    false, null, false, AdaptiveToolbarButtonVariant.UNKNOWN));
+            mToolbar.updateOptionalButton(new ButtonDataImpl(false, drawable, null,
+                    mActivityTestRule.getActivity().getString(R.string.share), false, null, false,
+                    AdaptiveToolbarButtonVariant.UNKNOWN));
             mToolbar.updateButtonVisibility();
         });
 
@@ -199,8 +200,9 @@ public class ToolbarPhoneTest {
                     () -> null, () -> {}, org.chromium.chrome.R.id.menu_button_wrapper);
             // clang-format on
             mToolbar.setMenuButtonCoordinatorForTesting(realMenuButtonCoordinator);
-            mToolbar.updateOptionalButton(new ButtonDataImpl(false, drawable, null, R.string.share,
-                    false, null, false, AdaptiveToolbarButtonVariant.UNKNOWN));
+            mToolbar.updateOptionalButton(new ButtonDataImpl(false, drawable, null,
+                    mActivityTestRule.getActivity().getString(R.string.share), false, null, false,
+                    AdaptiveToolbarButtonVariant.UNKNOWN));
             // Make sure the button is visible in the beginning of the test.
             assertEquals(realMenuButtonCoordinator.isVisible(), true);
 

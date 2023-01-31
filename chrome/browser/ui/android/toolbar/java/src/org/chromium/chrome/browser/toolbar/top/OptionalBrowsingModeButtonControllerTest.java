@@ -209,7 +209,7 @@ public class OptionalBrowsingModeButtonControllerTest {
     private static ButtonDataImpl createButtonData() {
         return new ButtonDataImpl(
                 /*canShow=*/true, /*drawable=*/null, /*onClickListener=*/null,
-                /*contentDescriptionResId=*/0, /*supportsTinting=*/false,
+                /*contentDescription=*/"", /*supportsTinting=*/false,
                 /*iphCommandBuilder=*/null, /*isEnabled=*/true,
                 AdaptiveToolbarButtonVariant.UNKNOWN);
     }

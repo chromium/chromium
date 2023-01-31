@@ -44,7 +44,7 @@ public class ToolbarSnapshotStateTest {
 
     private static ButtonData makeButtonDate() {
         // Uses default equals impl, reference quality, to compare. Values do not matter.
-        return new ButtonDataImpl(false, null, null, 0, false, null, false, 0);
+        return new ButtonDataImpl(false, null, null, "", false, null, false, 0);
     }
 
     @Before

@@ -84,8 +84,8 @@ public class PriceTrackingButtonControllerUnitTest {
     @Test
     public void testPriceTrackingButtonClick() {
         PriceTrackingButtonController priceTrackingButtonController =
-                new PriceTrackingButtonController(mMockTabSupplier, mMockModalDialogManager,
-                        mMockBottomSheetController, mock(Drawable.class),
+                new PriceTrackingButtonController(mActivity, mMockTabSupplier,
+                        mMockModalDialogManager, mMockBottomSheetController, mock(Drawable.class),
                         mMockTabBookmarkerSupplier);
         ButtonData buttonData = priceTrackingButtonController.get(mMockTab);
 
@@ -97,8 +97,8 @@ public class PriceTrackingButtonControllerUnitTest {
     @Test
     public void testPriceTrackingButton_IsDisabledWhenBottomSheetAppears() {
         PriceTrackingButtonController priceTrackingButtonController =
-                new PriceTrackingButtonController(mMockTabSupplier, mMockModalDialogManager,
-                        mMockBottomSheetController, mock(Drawable.class),
+                new PriceTrackingButtonController(mActivity, mMockTabSupplier,
+                        mMockModalDialogManager, mMockBottomSheetController, mock(Drawable.class),
                         mMockTabBookmarkerSupplier);
         ButtonDataProvider.ButtonDataObserver buttonDataObserver =
                 Mockito.mock(ButtonDataProvider.ButtonDataObserver.class);
@@ -118,8 +118,8 @@ public class PriceTrackingButtonControllerUnitTest {
     @Test
     public void testPriceTrackingButton_IsReenabledWhenBottomSheetDismissed() {
         PriceTrackingButtonController priceTrackingButtonController =
-                new PriceTrackingButtonController(mMockTabSupplier, mMockModalDialogManager,
-                        mMockBottomSheetController, mock(Drawable.class),
+                new PriceTrackingButtonController(mActivity, mMockTabSupplier,
+                        mMockModalDialogManager, mMockBottomSheetController, mock(Drawable.class),
                         mMockTabBookmarkerSupplier);
 
         ButtonDataProvider.ButtonDataObserver buttonDataObserver =

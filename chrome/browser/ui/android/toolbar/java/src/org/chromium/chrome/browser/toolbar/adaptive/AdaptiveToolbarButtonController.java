@@ -207,7 +207,7 @@ public class AdaptiveToolbarButtonController
                             receivedButtonSpec.getButtonVariant()),
                     // Use menu handler only with static actions.
                     receivedButtonSpec.isDynamicAction() ? null : mMenuHandler,
-                    receivedButtonSpec.getContentDescriptionResId(),
+                    receivedButtonSpec.getContentDescription(),
                     receivedButtonSpec.getSupportsTinting(),
                     receivedButtonSpec.getIPHCommandBuilder(),
                     receivedButtonSpec.getButtonVariant(),

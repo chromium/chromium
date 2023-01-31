@@ -67,8 +67,8 @@ public class ReaderModeToolbarButtonControllerTest {
     }
 
     private ReaderModeToolbarButtonController createController() {
-        return new ReaderModeToolbarButtonController(
-                mMockTabSupplier, mMockModalDialogManager, mock(Drawable.class));
+        return new ReaderModeToolbarButtonController(mMockTab.getContext(), mMockTabSupplier,
+                mMockModalDialogManager, mock(Drawable.class));
     }
 
     @Test

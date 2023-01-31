@@ -31,14 +31,20 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
@@ -48,6 +54,9 @@ import org.chromium.content_public.common.ContentUrlConstants;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IdentityDiscControllerTest {
+    private static final String EMAIL = "email@gmail.com";
+    private static final String NAME = "Email Emailson";
+    private static final String FULL_NAME = NAME + ".full";
     private final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
@@ -85,8 +94,10 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
     public void testIdentityDiscWithSignin() {
-        // When user is signed out, Identity Disc should not be visible on the NTP.
+        // When user is signed out and IdentityStatusConsistency is disabled, Identity Disc should
+        // not be visible on the NTP.
         onView(withId(R.id.optional_toolbar_button)).check((view, noViewException) -> {
             if (view != null) {
                 ViewMatchers.assertThat("IdentityDisc view should be gone if it exists",
@@ -109,8 +120,61 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    public void testIdentityDiscSignedOut_identityStatusConsistencyEnabled() {
+        // When user is signed out, a signed-out avatar should be visible on the NTP.
+        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+                withContentDescription(
+                        R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    public void testIdentityDiscWithSignin_identityStatusConsistencyEnabled() {
+        // Identity Disc should be shown on sign-in state change with a NTP refresh.
+        mSigninTestRule.addAccountThenSignin(EMAIL, NAME);
+        // TODO(https://crbug.com/1132291): Remove the reload once the sign-in without sync observer
+        //  is implemented.
+        TestThreadUtils.runOnUiThreadBlocking(mTab::reload);
+        String expectedContentDescription = mActivityTestRule.getActivity().getString(
+                R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email, FULL_NAME,
+                EMAIL);
+        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+                withContentDescription(expectedContentDescription)));
+        mSigninTestRule.signOut();
+        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+                withContentDescription(
+                        R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    public void testIdentityDiscWithSignin_nonDisplayableEmail_identityStatusConsistencyEnabled() {
+        // Identity Disc should be shown on sign-in state change with a NTP refresh.
+        CoreAccountInfo coreAccountInfo = addAccountWithNonDisplayableEmail(NAME);
+        SigninTestUtil.signin(coreAccountInfo);
+        // TODO(https://crbug.com/1132291): Remove the reload once the sign-in without sync observer
+        //  is implemented.
+        TestThreadUtils.runOnUiThreadBlocking(mTab::reload);
+        String expectedContentDescription = mActivityTestRule.getActivity().getString(
+                R.string.accessibility_toolbar_btn_identity_disc_with_name, FULL_NAME);
+        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+                withContentDescription(expectedContentDescription)));
+
+        mSigninTestRule.signOut();
+        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+                withContentDescription(
+                        R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
     public void testIdentityDiscWithSigninAndEnableSync() {
-        // When user is signed out, Identity Disc should not be visible on the NTP.
+        // When user is signed out and IdentityStatusConsistency is disabled, Identity Disc should
+        // not be visible on the NTP.
         onView(withId(R.id.optional_toolbar_button)).check((view, noViewException) -> {
             if (view != null) {
                 ViewMatchers.assertThat("IdentityDisc view should be gone if it exists",
@@ -131,6 +195,44 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    public void testIdentityDiscWithSigninAndEnableSync_identityStatusConsistencyEnabled() {
+        // Identity Disc should be shown on sign-in state change without NTP refresh.
+        mSigninTestRule.addAccountThenSigninAndEnableSync(EMAIL, NAME);
+        String expectedContentDescription = mActivityTestRule.getActivity().getString(
+                R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email, FULL_NAME,
+                EMAIL);
+        waitForView(allOf(withId(R.id.optional_toolbar_button),
+                withContentDescription(expectedContentDescription), isDisplayed()));
+
+        mSigninTestRule.signOut();
+        waitForView(allOf(withId(R.id.optional_toolbar_button),
+                withContentDescription(R.string.accessibility_toolbar_btn_signed_out_identity_disc),
+                isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    public void
+    testIdentityDiscWithSigninAndEnableSync_nonDisplayableEmail_identityStatusConsistencyEnabled() {
+        // Identity Disc should be shown on sign-in state change without NTP refresh.
+        CoreAccountInfo coreAccountInfo = addAccountWithNonDisplayableEmail(NAME);
+        SigninTestUtil.signinAndEnableSync(coreAccountInfo,
+                TestThreadUtils.runOnUiThreadBlockingNoException(SyncService::get));
+        String expectedContentDescription = mActivityTestRule.getActivity().getString(
+                R.string.accessibility_toolbar_btn_identity_disc_with_name, FULL_NAME);
+        waitForView(allOf(withId(R.id.optional_toolbar_button),
+                withContentDescription(expectedContentDescription), isDisplayed()));
+
+        mSigninTestRule.signOut();
+        waitForView(allOf(withId(R.id.optional_toolbar_button),
+                withContentDescription(R.string.accessibility_toolbar_btn_signed_out_identity_disc),
+                isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
     public void testIdentityDiscWithSwitchToIncognito() {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed()));
@@ -144,5 +246,12 @@ public class IdentityDiscControllerTest {
     private void leaveNTP() {
         mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         ChromeTabUtils.waitForTabPageLoaded(mTab, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+    }
+
+    private CoreAccountInfo addAccountWithNonDisplayableEmail(String name) {
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccount(
+                EMAIL, name, SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        mSigninTestRule.waitForSeeding();
+        return coreAccountInfo;
     }
 }

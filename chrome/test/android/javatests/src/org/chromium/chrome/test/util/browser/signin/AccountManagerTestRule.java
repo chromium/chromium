@@ -106,6 +106,8 @@ public class AccountManagerTestRule implements TestRule {
         identityManager.addObserver(mFakeAccountInfoService);
     }
 
+    // TODO(https://crbug.com/1411335): Use the builder pattern here instead of all these
+    // `addAccount` methods.
     /**
      * Adds an account of the given accountName to the fake AccountManagerFacade.
      * @return The CoreAccountInfo for the account added.
@@ -120,6 +122,25 @@ public class AccountManagerTestRule implements TestRule {
      */
     public AccountInfo addAccount(String accountName, @NonNull AccountCapabilities capabilities) {
         final String baseName = accountName.split("@", 2)[0];
+        return addAccount(
+                accountName, baseName + ".full", baseName + ".given", createAvatar(), capabilities);
+    }
+
+    /**
+     * Adds an account of the given email and name to the fake AccountManagerFacade.
+     * @return The CoreAccountInfo for the account added.
+     */
+    public AccountInfo addAccount(String email, String baseName) {
+        return addAccount(email, baseName + ".full", baseName + ".given", createAvatar(),
+                new AccountCapabilities(new HashMap<>()));
+    }
+
+    /**
+     * Adds an account of the given accountName and capabilities to the fake AccountManagerFacade.
+     * @return The CoreAccountInfo for the account added.
+     */
+    public AccountInfo addAccount(
+            String accountName, String baseName, @NonNull AccountCapabilities capabilities) {
         return addAccount(
                 accountName, baseName + ".full", baseName + ".given", createAvatar(), capabilities);
     }

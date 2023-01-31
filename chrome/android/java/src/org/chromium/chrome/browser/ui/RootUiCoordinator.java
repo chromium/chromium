@@ -1072,17 +1072,17 @@ public class RootUiCoordinator
             mIdentityDiscController = new IdentityDiscController(
                     mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
             PriceTrackingButtonController priceTrackingButtonController =
-                    new PriceTrackingButtonController(mActivityTabProvider,
+                    new PriceTrackingButtonController(mActivity, mActivityTabProvider,
                             mModalDialogManagerSupplier.get(), getBottomSheetController(),
                             AppCompatResources.getDrawable(
                                     mActivity, R.drawable.price_tracking_disabled),
                             mTabBookmarkerSupplier);
             ReaderModeToolbarButtonController readerModeToolbarButtonController =
-                    new ReaderModeToolbarButtonController(mActivityTabProvider,
+                    new ReaderModeToolbarButtonController(mActivity, mActivityTabProvider,
                             mModalDialogManagerSupplier.get(),
                             AppCompatResources.getDrawable(
                                     mActivity, R.drawable.ic_mobile_friendly));
-            ShareButtonController shareButtonController = new ShareButtonController(
+            ShareButtonController shareButtonController = new ShareButtonController(mActivity,
                     AppCompatResources.getDrawable(
                             mActivity, R.drawable.ic_toolbar_share_offset_24dp),
                     mActivityTabProvider, mShareDelegateSupplier, trackerSupplier, new ShareUtils(),
@@ -1108,7 +1108,7 @@ public class RootUiCoordinator
                         }
                     };
             VoiceToolbarButtonController voiceToolbarButtonController =
-                    new VoiceToolbarButtonController(
+                    new VoiceToolbarButtonController(mActivity,
                             AppCompatResources.getDrawable(mActivity, R.drawable.btn_mic),
                             mActivityTabProvider, trackerSupplier,
                             mModalDialogManagerSupplier.get(), voiceSearchDelegate);

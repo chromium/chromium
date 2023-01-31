@@ -146,10 +146,10 @@ public class StartSurfaceToolbarMediatorUnitTest {
                         .with(StartSurfaceToolbarProperties.NEW_TAB_VIEW_IS_VISIBLE, false)
                         .with(StartSurfaceToolbarProperties.NEW_TAB_VIEW_TEXT_IS_VISIBLE, false)
                         .build();
-        mButtonData = new ButtonDataImpl(false, mDrawable, mOnClickListener, 0, false, null, true,
+        mButtonData = new ButtonDataImpl(false, mDrawable, mOnClickListener, "", false, null, true,
                 AdaptiveToolbarButtonVariant.UNKNOWN);
         ButtonDataImpl disabledButtonData = new ButtonDataImpl(
-                false, null, null, 0, false, null, true, AdaptiveToolbarButtonVariant.UNKNOWN);
+                false, null, null, "", false, null, true, AdaptiveToolbarButtonVariant.UNKNOWN);
 
         Profile.setLastUsedProfileForTesting(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
@@ -375,21 +375,21 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
 
         mButtonData.setButtonSpec(new ButtonSpec(mDrawable, mOnClickListener,
-                /*onLongClickListener*/ null, /*contentDescriptionResId=*/5,
+                /*onLongClickListener*/ null, /*contentDescription=*/"description",
                 /*supportsTinting=*/false, /*iphCommandBuilder=*/null,
                 AdaptiveToolbarButtonVariant.UNKNOWN, /*actionChipLabelResId=*/Resources.ID_NULL));
         mButtonData.setCanShow(true);
         mMediator.updateIdentityDisc(mButtonData);
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertEquals(mOnClickListener, mPropertyModel.get(IDENTITY_DISC_CLICK_HANDLER));
-        assertEquals(5, mPropertyModel.get(IDENTITY_DISC_DESCRIPTION));
+        assertEquals("description", mPropertyModel.get(IDENTITY_DISC_DESCRIPTION));
         assertEquals(mDrawable, mPropertyModel.get(IDENTITY_DISC_IMAGE));
 
         Drawable testDrawable2 = mock(Drawable.class);
         doReturn(mMockConstantState).when(testDrawable2).getConstantState();
         doReturn(testDrawable2).when(mMockConstantState).newDrawable();
         mButtonData.setButtonSpec(new ButtonSpec(testDrawable2, mOnClickListener,
-                /*onLongClickListener*/ null, /*contentDescriptionResId=*/5,
+                /*onLongClickListener*/ null, /*contentDescription=*/"description",
                 /*supportsTinting=*/false, /*iphCommandBuilder=*/null,
                 AdaptiveToolbarButtonVariant.UNKNOWN, /*actionChipLabelResId=*/Resources.ID_NULL));
         mMediator.updateIdentityDisc(mButtonData);
@@ -431,7 +431,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 new IPHCommandBuilder(mMockResources, "IdentityDisc", 0, 0)
                         .setOnDismissCallback(mDismissedCallback);
         mButtonData.setButtonSpec(new ButtonSpec(mDrawable, mOnClickListener,
-                /*onLongClickListener*/ null, /*contentDescriptionResId=*/0,
+                /*onLongClickListener*/ null, /*contentDescription=*/"",
                 /*supportsTinting=*/false, /*iphCommandBuilder=*/iphCommandBuilder,
                 AdaptiveToolbarButtonVariant.UNKNOWN, /*actionChipLabelResId=*/Resources.ID_NULL));
 

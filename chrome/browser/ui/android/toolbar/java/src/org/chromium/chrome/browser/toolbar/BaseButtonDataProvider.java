@@ -43,7 +43,7 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
      * @param modalDialogManager Modal dialog manager, used to disable the button when a dialog is
      *         visible. Can be null to disable this behavior.
      * @param buttonDrawable Drawable for the button icon.
-     * @param contentDescriptionResId Resource ID for the button's content description.
+     * @param contentDescription String for the button's content description.
      * @param supportsTinting Whether the button's icon should be tinted.
      * @param iphCommandBuilder An IPH command builder instance to show when the button is
      *         displayed, can be null.
@@ -52,8 +52,8 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
      */
     public BaseButtonDataProvider(Supplier<Tab> activeTabSupplier,
             @Nullable ModalDialogManager modalDialogManager, Drawable buttonDrawable,
-            @StringRes int contentDescriptionResId, @StringRes int actionChipLabelResId,
-            boolean supportsTinting, @Nullable IPHCommandBuilder iphCommandBuilder,
+            String contentDescription, @StringRes int actionChipLabelResId, boolean supportsTinting,
+            @Nullable IPHCommandBuilder iphCommandBuilder,
             @AdaptiveToolbarButtonVariant int adaptiveButtonVariant) {
         mActiveTabSupplier = activeTabSupplier;
         mModalDialogManager = modalDialogManager;
@@ -80,7 +80,7 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
         }
 
         mButtonData = new ButtonDataImpl(/*canShow=*/false, buttonDrawable,
-                /* onClickListener= */ this, contentDescriptionResId, actionChipLabelResId,
+                /* onClickListener= */ this, contentDescription, actionChipLabelResId,
                 supportsTinting,
                 /* iphCommandBuilder= */ iphCommandBuilder, /*isEnabled=*/true,
                 adaptiveButtonVariant);

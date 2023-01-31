@@ -370,6 +370,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &supervised_users::kLocalWebApprovals,
     &supervised_users::kWebFilterInterstitialRefresh,
     &switches::kForceStartupSigninPromo,
+    &switches::kIdentityStatusConsistency,
     &switches::kForceDisableExtendedSyncPromos,
     &switches::kTangibleSync,
     &syncer::kSyncEnableHistoryDataType,

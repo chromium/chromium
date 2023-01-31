@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -204,12 +203,11 @@ class StartSurfaceToolbarView extends RelativeLayout {
     }
 
     /**
-     * Updates idnetity disc content description.
-     * @param contentDescriptionResId The new description for the button.
+     * Updates identity disc content description.
+     * @param contentDescription The new description for the button.
      */
-    void setIdentityDiscContentDescription(@StringRes int contentDescriptionResId) {
-        mIdentityDiscButton.setContentDescription(
-                getContext().getResources().getString(contentDescriptionResId));
+    void setIdentityDiscContentDescription(String contentDescription) {
+        mIdentityDiscButton.setContentDescription(contentDescription);
     }
 
     /**

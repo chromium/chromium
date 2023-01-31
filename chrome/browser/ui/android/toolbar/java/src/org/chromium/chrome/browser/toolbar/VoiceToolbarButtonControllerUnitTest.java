@@ -115,7 +115,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
         doReturn(mContext).when(mTab).getContext();
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
         // clang-format off
-        mVoiceToolbarButtonController = new VoiceToolbarButtonController(mDrawable,
+        mVoiceToolbarButtonController = new VoiceToolbarButtonController(mContext, mDrawable,
                 () -> mTab, () -> mTracker, mModalDialogManager,
                 mVoiceSearchDelegate);
         // clang-format on

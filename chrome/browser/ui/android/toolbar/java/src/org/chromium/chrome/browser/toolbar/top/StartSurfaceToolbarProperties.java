@@ -31,8 +31,8 @@ class StartSurfaceToolbarProperties {
             new PropertyModel.WritableObjectPropertyKey<View.OnClickListener>();
     public static final PropertyModel.WritableObjectPropertyKey<Drawable> IDENTITY_DISC_IMAGE =
             new PropertyModel.WritableObjectPropertyKey<Drawable>(false);
-    public static final PropertyModel.WritableIntPropertyKey IDENTITY_DISC_DESCRIPTION =
-            new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableObjectPropertyKey<String> IDENTITY_DISC_DESCRIPTION =
+            new PropertyModel.WritableObjectPropertyKey<String>();
     public static final PropertyModel.WritableBooleanPropertyKey IDENTITY_DISC_IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =

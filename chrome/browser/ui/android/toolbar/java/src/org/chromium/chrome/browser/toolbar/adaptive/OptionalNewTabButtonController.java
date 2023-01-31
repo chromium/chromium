@@ -97,7 +97,8 @@ public class OptionalNewTabButtonController
             Supplier<TabCreatorManager> tabCreatorManagerSupplier, Supplier<Tab> activeTabSupplier,
             Supplier<Tracker> trackerSupplier) {
         super(activeTabSupplier, /* modalDialogManager= */ null, buttonDrawable,
-                R.string.button_new_tab, /* actionChipLabelResId= */ Resources.ID_NULL,
+                context.getString(R.string.button_new_tab),
+                /* actionChipLabelResId= */ Resources.ID_NULL,
                 /*supportsTinting= */ true, /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.NEW_TAB);
         setShouldShowOnIncognitoTabs(true);

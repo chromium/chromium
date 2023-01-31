@@ -716,8 +716,7 @@ public class ToolbarTablet
             mOptionalButton.setOnLongClickListener(buttonSpec.getOnLongClickListener());
         }
         mOptionalButton.setImageDrawable(buttonSpec.getDrawable());
-        mOptionalButton.setContentDescription(
-                getContext().getResources().getString(buttonSpec.getContentDescriptionResId()));
+        mOptionalButton.setContentDescription(buttonSpec.getContentDescription());
         mOptionalButton.setVisibility(View.VISIBLE);
         mOptionalButton.setEnabled(buttonData.isEnabled());
     }

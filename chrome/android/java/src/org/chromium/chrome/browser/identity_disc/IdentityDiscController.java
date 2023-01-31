@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
@@ -16,6 +18,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -23,6 +26,7 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.tab.Tab;
@@ -112,7 +116,8 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
                     SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
                     settingsLauncher.launchSettingsActivity(mContext, MainSettings.class);
                 },
-                R.string.accessibility_toolbar_btn_identity_disc, /*supportsTinting=*/false,
+                mContext.getString(R.string.accessibility_toolbar_btn_identity_disc),
+                /*supportsTinting=*/false,
                 new IPHCommandBuilder(mContext.getResources(),
                         FeatureConstants.IDENTITY_DISC_FEATURE, R.string.iph_identity_disc_text,
                         R.string.iph_identity_disc_accessibility_text),
@@ -176,31 +181,43 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         }
 
         String email = CoreAccountInfo.getEmailFrom(getSignedInAccountInfo());
-        mState = email == null ? IdentityDiscState.NONE : IdentityDiscState.SMALL;
-        ensureProfileDataCache(email, mState);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY)) {
+            mState = IdentityDiscState.SMALL;
+        } else {
+            mState = email == null ? IdentityDiscState.NONE : IdentityDiscState.SMALL;
+        }
+        ensureProfileDataCache(mState);
 
         if (mState != IdentityDiscState.NONE) {
             mButtonData.setButtonSpec(
-                    buttonSpecWithDrawable(mButtonData.getButtonSpec(), getProfileImage(email)));
+                    buttonSpecWithDrawableAndDescription(mButtonData.getButtonSpec(), email));
             mButtonData.setCanShow(true);
         } else {
             mButtonData.setCanShow(false);
         }
     }
 
-    private static ButtonSpec buttonSpecWithDrawable(ButtonSpec buttonSpec, Drawable drawable) {
-        if (buttonSpec.getDrawable() == drawable) return buttonSpec;
+    private ButtonSpec buttonSpecWithDrawableAndDescription(
+            ButtonSpec buttonSpec, @Nullable String email) {
+        Drawable drawable = getProfileImage(email);
+        String contentDescription = getContentDescription(email);
+
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY)
+                && (buttonSpec.getDrawable() == drawable)) {
+            return buttonSpec;
+        }
+
         return new ButtonSpec(drawable, buttonSpec.getOnClickListener(),
-                /*onLongClickListener=*/null, buttonSpec.getContentDescriptionResId(),
-                buttonSpec.getSupportsTinting(), buttonSpec.getIPHCommandBuilder(),
-                AdaptiveToolbarButtonVariant.UNKNOWN, buttonSpec.getActionChipLabelResId());
+                /*onLongClickListener=*/null, contentDescription, buttonSpec.getSupportsTinting(),
+                buttonSpec.getIPHCommandBuilder(), AdaptiveToolbarButtonVariant.UNKNOWN,
+                buttonSpec.getActionChipLabelResId());
     }
 
     /**
      * Creates and initializes ProfileDataCache if it wasn't created previously. Subscribes
      * IdentityDiscController for profile data updates.
      */
-    private void ensureProfileDataCache(String accountName, @IdentityDiscState int state) {
+    private void ensureProfileDataCache(@IdentityDiscState int state) {
         if (state == IdentityDiscState.NONE || mProfileDataCache[state] != null) return;
 
         @DimenRes
@@ -216,9 +233,12 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     /**
      * Returns Profile picture Drawable. The size of the image corresponds to current visual state.
      */
-    private Drawable getProfileImage(String accountName) {
+    private Drawable getProfileImage(@Nullable String email) {
         assert mState != IdentityDiscState.NONE;
-        return mProfileDataCache[mState].getProfileDataOrDefault(accountName).getImage();
+        if (shouldUseSignedOutAvatar(email)) {
+            return AppCompatResources.getDrawable(mContext, R.drawable.account_circle_full);
+        }
+        return mProfileDataCache[mState].getProfileDataOrDefault(email).getImage();
     }
 
     /**
@@ -347,5 +367,34 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
             mIdentityManager.addObserver(this);
             notifyObservers(true);
         }
+    }
+
+    private String getContentDescription(@Nullable String email) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY)) {
+            return mContext.getString(R.string.accessibility_toolbar_btn_identity_disc);
+        }
+
+        if (email == null) {
+            return mContext.getString(R.string.accessibility_toolbar_btn_signed_out_identity_disc);
+        }
+
+        DisplayableProfileData profileData =
+                mProfileDataCache[mState].getProfileDataOrDefault(email);
+        String userName = profileData.getFullName();
+        if (profileData.hasDisplayableEmailAddress()) {
+            return mContext.getString(
+                    R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email, userName,
+                    email);
+        }
+
+        return mContext.getString(
+                R.string.accessibility_toolbar_btn_identity_disc_with_name, userName);
+    }
+
+    private static boolean shouldUseSignedOutAvatar(@Nullable String email) {
+        boolean isIdentityStatusConsistencyEnabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY);
+        boolean isUserSignedOut = email == null;
+        return isIdentityStatusConsistencyEnabled && isUserSignedOut;
     }
 }

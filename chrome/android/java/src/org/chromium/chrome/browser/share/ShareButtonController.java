@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.share;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -40,6 +41,7 @@ public class ShareButtonController extends BaseButtonDataProvider {
 
     /**
      * Creates ShareButtonController object.
+     * @param context The context for retrieving string resources.
      * @param buttonDrawable Drawable for the new tab button.
      * @param tabProvider The {@link ActivityTabProvider} used for accessing the tab.
      * @param shareDelegateSupplier The supplier to get a handle on the share delegate.
@@ -50,11 +52,12 @@ public class ShareButtonController extends BaseButtonDataProvider {
      *                        does not actually handle sharing, but can provide supplemental
      *                        functionality when the share button is pressed.
      */
-    public ShareButtonController(Drawable buttonDrawable, ActivityTabProvider tabProvider,
+    public ShareButtonController(Context context, Drawable buttonDrawable,
+            ActivityTabProvider tabProvider,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             Supplier<Tracker> trackerSupplier, ShareUtils shareUtils,
             ModalDialogManager modalDialogManager, Runnable onShareRunnable) {
-        super(tabProvider, modalDialogManager, buttonDrawable, R.string.share,
+        super(tabProvider, modalDialogManager, buttonDrawable, context.getString(R.string.share),
                 /* actionChipLabelResId= */ Resources.ID_NULL,
                 /*supportsTinting=*/true,
                 /*iphCommandBuilder=*/null, AdaptiveToolbarButtonVariant.SHARE);

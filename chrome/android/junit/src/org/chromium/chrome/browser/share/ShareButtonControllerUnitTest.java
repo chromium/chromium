@@ -112,7 +112,7 @@ public final class ShareButtonControllerUnitTest {
 
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
 
-        mShareButtonController = new ShareButtonController(mDrawable, mTabProvider,
+        mShareButtonController = new ShareButtonController(mContext, mDrawable, mTabProvider,
                 mShareDelegateSupplier, () -> mTracker, mShareUtils, mModalDialogManager, () -> {});
 
         TrackerFactory.setTrackerForTests(mTracker);

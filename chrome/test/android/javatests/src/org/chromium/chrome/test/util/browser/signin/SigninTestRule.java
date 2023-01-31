@@ -94,6 +94,18 @@ public class SigninTestRule extends AccountManagerTestRule {
     }
 
     /**
+     * Adds and signs in an account with the specified name without sync consent.
+     */
+    public CoreAccountInfo addAccountThenSignin(String email, String name) {
+        assert !mIsSignedIn : "An account is already signed in!";
+        CoreAccountInfo coreAccountInfo = addAccount(email, name);
+        waitForSeeding();
+        SigninTestUtil.signin(coreAccountInfo);
+        mIsSignedIn = true;
+        return coreAccountInfo;
+    }
+
+    /**
      * Adds and signs in an account with the default name and enables sync.
      */
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync() {
@@ -112,6 +124,19 @@ public class SigninTestRule extends AccountManagerTestRule {
         assert !mIsSignedIn : "An account is already signed in!";
         CoreAccountInfo coreAccountInfo = addAccountAndWaitForSeeding(TEST_ACCOUNT_EMAIL);
         SigninTestUtil.signinAndEnableSync(coreAccountInfo, syncService);
+        mIsSignedIn = true;
+        return coreAccountInfo;
+    }
+
+    /**
+     * Adds and signs in an account with the specified name and enables sync.
+     */
+    public CoreAccountInfo addAccountThenSigninAndEnableSync(String email, String name) {
+        assert !mIsSignedIn : "An account is already signed in!";
+        CoreAccountInfo coreAccountInfo = addAccount(email, name);
+        waitForSeeding();
+        SigninTestUtil.signinAndEnableSync(coreAccountInfo,
+                TestThreadUtils.runOnUiThreadBlockingNoException(SyncService::get));
         mIsSignedIn = true;
         return coreAccountInfo;
     }

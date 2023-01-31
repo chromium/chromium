@@ -93,7 +93,7 @@ public class AdaptiveToolbarButtonControllerTest {
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
         mButtonData = new ButtonDataImpl(
                 /*canShow=*/true, /*drawable=*/null, mock(View.OnClickListener.class),
-                /*contentDescriptionResId=*/0, /*supportsTinting=*/false,
+                /*contentDescription=*/"", /*supportsTinting=*/false,
                 /*iphCommandBuilder=*/null, /*isEnabled=*/true,
                 AdaptiveToolbarButtonVariant.UNKNOWN);
         mConfiguration.screenWidthDp = 420;
@@ -444,7 +444,7 @@ public class AdaptiveToolbarButtonControllerTest {
     private static ButtonSpec makeButtonSpec(@AdaptiveToolbarButtonVariant int variant) {
         return new ButtonSpec(/*drawable=*/null, mock(View.OnClickListener.class),
                 /*onLongClickListener=*/null,
-                /*contentDescriptionResId=*/101, /*supportsTinting=*/false,
+                /*contentDescription=*/"description", /*supportsTinting=*/false,
                 /*iphCommandBuilder=*/null, variant, /*actionChipLabelResId=*/0);
     }
 }

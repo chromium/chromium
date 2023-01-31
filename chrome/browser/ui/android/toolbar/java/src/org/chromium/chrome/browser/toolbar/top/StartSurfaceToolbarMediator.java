@@ -423,7 +423,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
             // view mutating our drawable could cause it to display incorrectly.
             mPropertyModel.set(
                     IDENTITY_DISC_IMAGE, buttonSpec.getDrawable().getConstantState().newDrawable());
-            mPropertyModel.set(IDENTITY_DISC_DESCRIPTION, buttonSpec.getContentDescriptionResId());
+            mPropertyModel.set(IDENTITY_DISC_DESCRIPTION, buttonSpec.getContentDescription());
             mPropertyModel.set(IDENTITY_DISC_IS_VISIBLE, true);
             mShowIdentityIPHCallback.onResult(buttonSpec.getIPHCommandBuilder());
         } else {

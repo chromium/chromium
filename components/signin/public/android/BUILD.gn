@@ -130,7 +130,10 @@ android_library("signin_java_test_support") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/drawable/logo_avatar_anonymous.xml" ]
+  sources = [
+    "java/res/drawable/account_circle_full.xml",
+    "java/res/drawable/logo_avatar_anonymous.xml",
+  ]
 }
 
 android_resources("signin_test_resources") {
