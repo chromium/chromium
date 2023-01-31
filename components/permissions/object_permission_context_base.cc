@@ -266,7 +266,7 @@ void ObjectPermissionContextBase::SaveWebsiteSetting(
     return;
   }
 
-  base::Value objects_list(base::Value::Type::LIST);
+  base::Value::List objects_list;
   for (const auto& object : origin_objects_it->second) {
     objects_list.Append(object.second->value.Clone());
   }
