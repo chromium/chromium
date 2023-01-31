@@ -544,10 +544,12 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
 
   if (!main_context_provider_) {
     constexpr bool kCompositorContextSupportsLocking = false;
+    // TODO(crbug.com/895874): Switch from GLES2Implementation to
+    // RasterImplementation after removing last ContextGL() usage from browser
+    // main thread.
     constexpr bool kCompositorContextSupportsGLES2 = true;
     constexpr bool kCompositorContextSupportsRaster = true;
-    // GrContext is needed for HUD layer.
-    constexpr bool kCompositorContextSupportsGrContext = true;
+    constexpr bool kCompositorContextSupportsGrContext = false;
     constexpr bool kCompositorContextSupportsOOPR = false;
 
     main_context_provider_ = CreateContextProvider(
