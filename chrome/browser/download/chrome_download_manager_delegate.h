@@ -79,6 +79,7 @@ class ChromeDownloadManagerDelegate
                           DownloadLocationDialogType dialog_type,
                           const base::FilePath& suggested_path,
                           bool supports_later_dialog,
+                          bool is_dangerous,
                           DownloadDialogBridge::DialogCallback callback);
 
   void SetDownloadDialogBridgeForTesting(DownloadDialogBridge* bridge);
@@ -298,6 +299,7 @@ class ChromeDownloadManagerDelegate
       const std::string& download_url,
       int64_t total_bytes,
       bool show_download_later_dialog,
+      bool is_dangerous,
       DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
       download::PathValidationResult result,
       const base::FilePath& target_path);

@@ -455,6 +455,7 @@ void ChromeDownloadManagerDelegate::ShowDownloadDialog(
     DownloadLocationDialogType dialog_type,
     const base::FilePath& suggested_path,
     bool supports_later_dialog,
+    bool is_dangerous,
     DownloadDialogBridge::DialogCallback callback) {
   DCHECK(download_dialog_bridge_);
   auto connection_type = net::NetworkChangeNotifier::GetConnectionType();
@@ -467,8 +468,8 @@ void ChromeDownloadManagerDelegate::ShowDownloadDialog(
   }
   download_dialog_bridge_->ShowDialog(
       native_window, download_url, total_bytes, connection_type, dialog_type,
-      suggested_path, supports_later_dialog, show_date_time_picker, is_incognito,
-      std::move(callback));
+      suggested_path, supports_later_dialog, show_date_time_picker, is_dangerous,
+      is_incognito, std::move(callback));
 }
 
 void ChromeDownloadManagerDelegate::SetDownloadDialogBridgeForTesting(
@@ -1101,7 +1102,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
               &ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone,
               weak_ptr_factory_.GetWeakPtr(), native_window,
               download->GetURL().spec(), download->GetTotalBytes(),
-              show_download_later_dialog, std::move(callback)));
+              show_download_later_dialog, download->IsDangerous(), std::move(callback)));
       return;
     }
 
@@ -1135,6 +1136,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
     ShowDownloadDialog(
         native_window, download->GetURL().spec(), download->GetTotalBytes(),
         dialog_type, suggested_path, ShouldShowDownloadLaterDialog(download),
+        download->IsDangerous(),
         base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
     return;
 
@@ -1200,6 +1202,7 @@ void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
     const std::string& download_url,
     int64_t total_bytes,
     bool show_download_later_dialog,
+    bool is_dangerous,
     DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
     PathValidationResult result,
     const base::FilePath& target_path) {
@@ -1211,7 +1214,7 @@ void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
       ShowDownloadDialog(
           native_window, download_url, total_bytes,
           DownloadLocationDialogType::NAME_CONFLICT, target_path,
-          show_download_later_dialog,
+          show_download_later_dialog, is_dangerous,
           base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
       return;
     }

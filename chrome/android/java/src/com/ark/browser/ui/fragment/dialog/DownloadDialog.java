@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 import com.zpj.skin.SkinEngine;
 import com.zpj.toast.ZToast;
 import com.zpj.utils.PrefsHelper;
+import com.zpj.widget.checkbox.ZCheckBox;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
@@ -36,10 +38,14 @@ public class DownloadDialog extends OverDragBottomDialogFragment<DownloadDialog>
     private String url;
     private String fileSize;
     private String downloadPath;
+    private boolean isDangerous;
 
     private boolean isDismissed = false;
 
     private DownloadDialogBridge downloadDialogBridge;
+
+    private LinearLayout mDangerousLayout;
+    private ZCheckBox mCheckBox;
 
 
 //    public static DownloadDialog create(WindowAndroid windowAndroid, String fileName, String url, long fileSize, String downloadPath) {
@@ -132,6 +138,10 @@ public class DownloadDialog extends OverDragBottomDialogFragment<DownloadDialog>
         });
 
         ok.setOnClickListener(v -> {
+            if (isDangerous && !mCheckBox.isChecked()) {
+                ZToast.warning("下载文件存在风险！");
+                return;
+            }
             flag = true;
             File targetFile = new File(downloadPath);
             fileName = etName.getText().toString();
@@ -159,6 +169,16 @@ public class DownloadDialog extends OverDragBottomDialogFragment<DownloadDialog>
             }
             dismiss();
         });
+
+        mDangerousLayout = findViewById(R.id.layout_dangerous);
+        if (isDangerous) {
+            mCheckBox = findViewById(R.id.check_box);
+            mCheckBox.setChecked(false);
+            mDangerousLayout.setOnClickListener(v -> mCheckBox.performClick());
+        } else {
+            mDangerousLayout.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -195,6 +215,11 @@ public class DownloadDialog extends OverDragBottomDialogFragment<DownloadDialog>
 
     public DownloadDialog setFileSize(String fileSize) {
         this.fileSize = fileSize;
+        return this;
+    }
+
+    public DownloadDialog setDangerous(boolean dangerous) {
+        isDangerous = dangerous;
         return this;
     }
 

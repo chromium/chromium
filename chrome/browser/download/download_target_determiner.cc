@@ -588,6 +588,9 @@ void DownloadTargetDeterminer::ShowPromptDone(
     if (result == DownloadConfirmationResult::CONFIRMED_WITH_DIALOG) {
         // Double check the user-selected path is valid by looping back.
         is_checking_dialog_confirmed_path_ = true;
+        if (download_->IsDangerous()) {
+          download_->ValidateDangerousDownload();
+        }
         confirmation_reason_ = DownloadConfirmationReason::NONE;
         next_state_ = STATE_SET_MIXED_CONTENT_STATUS;
     }
@@ -651,6 +654,9 @@ void DownloadTargetDeterminer::RequestConfirmationDone(
   if (result == DownloadConfirmationResult::CONFIRMED_WITH_DIALOG) {
     // Double check the user-selected path is valid by looping back.
     is_checking_dialog_confirmed_path_ = true;
+    if (download_->IsDangerous()) {
+      download_->ValidateDangerousDownload();
+    }
     confirmation_reason_ = DownloadConfirmationReason::NONE;
     next_state_ = STATE_RESERVE_VIRTUAL_PATH;
   }

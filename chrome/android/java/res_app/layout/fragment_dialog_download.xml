@@ -120,7 +120,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
-        android:layout_marginBottom="16dp"
         android:gravity="center_vertical"
         android:background="@drawable/bg_round_accent"
         android:paddingHorizontal="16dp"
@@ -163,6 +162,42 @@
 
 
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_dangerous"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:background="@drawable/bg_round_accent"
+        >
+
+        <com.zpj.widget.checkbox.ZCheckBox
+            android:id="@+id/check_box"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            app:z_checkbox_checked_color="@color/red5"
+            app:z_checkbox_border_size="2dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="无视风险下载"
+            android:textColor="@color/red5"
+            />
+
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        />
 
     <include layout="@layout/_dialog_buttons" />
 

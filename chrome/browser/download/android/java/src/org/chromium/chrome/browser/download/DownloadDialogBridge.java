@@ -74,6 +74,7 @@ public class DownloadDialogBridge {
                         @ConnectionType int connectionType,
                         @DownloadLocationDialogType int dialogType,
                         String suggestedPath, boolean supportsLaterDialog,
+                        boolean isDangerous,
                         boolean isIncognito);
 
     }
@@ -105,6 +106,7 @@ public class DownloadDialogBridge {
                             @DownloadLocationDialogType int dialogType,
                             String suggestedPath,
                             boolean supportsLaterDialog,
+                            boolean isDangerous,
                             boolean isIncognito) {
 
 
@@ -135,7 +137,7 @@ public class DownloadDialogBridge {
         sFactory.showDialog(this, activity,
                 downloadUrl, totalBytes,
                 connectionType, dialogType, suggestedPath,
-                supportsLaterDialog, isIncognito);
+                supportsLaterDialog, isDangerous, isIncognito);
 
 //        this.mSuggestedPath = suggestedPath;
 //        this.mConnectionType = connectionType;

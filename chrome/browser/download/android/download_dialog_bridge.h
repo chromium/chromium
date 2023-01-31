@@ -55,6 +55,7 @@ class DownloadDialogBridge {
       DownloadLocationDialogType dialog_type,
       const base::FilePath& suggested_path,
       bool supports_later_dialog,
+      bool is_dangerous,
       bool show_date_time_picker,
       bool is_incognito,
       DialogCallback dialog_callback);

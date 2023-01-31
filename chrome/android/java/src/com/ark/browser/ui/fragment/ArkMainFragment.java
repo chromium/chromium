@@ -168,6 +168,7 @@ public class ArkMainFragment extends BaseFragment implements
                                    @DownloadLocationDialogType int dialogType,
                                    String suggestedPath,
                                    boolean supportsLaterDialog,
+                                   boolean isDangerous,
                                    boolean isIncognito) {
                 if (dialogType == DownloadLocationDialogType.DANGEROUS) {
                     ZDialog.alert()
@@ -190,6 +191,7 @@ public class ArkMainFragment extends BaseFragment implements
                             .setDownloadDialogBridge(downloadDialogBridge)
                             .setFileSize(FileUtils.formatFileSize(totalBytes))
                             .setDownloadPath(suggestedPath)
+                            .setDangerous(isDangerous)
                             .show(activity);
                 }
             }
