@@ -114,7 +114,8 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
  public:
   Core(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
        std::unique_ptr<webrtc::DesktopCapturer> capturer,
-       DesktopMediaID::Type type);
+       DesktopMediaID::Type type,
+       bool zero_hertz_is_supported);
 
   Core(const Core&) = delete;
   Core& operator=(const Core&) = delete;
@@ -160,6 +161,8 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   void RequestWakeLock();
 
   base::TimeTicks NowTicks() const;
+
+  bool zero_hertz_is_supported() const { return zero_hertz_is_supported_; }
 
   // Task runner used for capturing operations.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -223,6 +226,12 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   // The type of the capturer.
   DesktopMediaID::Type capturer_type_;
 
+  // True if we support dropping captured frames where the updated region
+  // contains no change since last captured frame. To support this 0Hz mode,
+  // the utilized capturer implementation must updates the
+  // |DesktopFrame::updated_region()| desktop region for each captured frame.
+  const bool zero_hertz_is_supported_;
+
   // The system time when we receive the first frame.
   base::TimeTicks first_ref_time_;
 
@@ -236,7 +245,8 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
 DesktopCaptureDevice::Core::Core(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     std::unique_ptr<webrtc::DesktopCapturer> capturer,
-    DesktopMediaID::Type type)
+    DesktopMediaID::Type type,
+    bool zero_hertz_is_supported)
     : task_runner_(task_runner),
       desktop_capturer_(std::move(capturer)),
       capture_timer_(new base::OneShotTimer()),
@@ -244,7 +254,8 @@ DesktopCaptureDevice::Core::Core(
       capture_in_progress_(false),
       first_capture_returned_(false),
       first_permanent_error_logged(false),
-      capturer_type_(type) {}
+      capturer_type_(type),
+      zero_hertz_is_supported_(zero_hertz_is_supported) {}
 
 DesktopCaptureDevice::Core::~Core() {
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -362,8 +373,11 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
   // since the last captured frame but don't send the same frame again to the
   // client. Clients may call RequestRefreshFrame() to ask for a copy of the
   // last captured frame. Check |output_frame_| to ensure that at least one
-  // valid frame has already been captured and delivered.
-  if (output_frame_ && frame->updated_region().is_empty()) {
+  // valid frame has already been captured.
+  // |zero_hertz_is_supported()| can be false in combination with capturers that
+  // do not support the 0Hz mode, e.g. Windows capturers using the WGC API.
+  if (zero_hertz_is_supported() && output_frame_ &&
+      frame->updated_region().is_empty()) {
     ScheduleNextCaptureFrame();
     return;
   }
@@ -685,10 +699,18 @@ DesktopCaptureDevice::DesktopCaptureDevice(
   base::MessagePumpType thread_type = base::MessagePumpType::DEFAULT;
 #endif
 
+  bool zero_hertz_is_supported = true;
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcDesktopCapturer)) {
+    // TODO(https://crbug.com/1400204): Add 0Hz support for WGC as well.
+    zero_hertz_is_supported = false;
+  }
+#endif
+
   thread_.StartWithOptions(base::Thread::Options(thread_type, 0));
 
-  core_ =
-      std::make_unique<Core>(thread_.task_runner(), std::move(capturer), type);
+  core_ = std::make_unique<Core>(thread_.task_runner(), std::move(capturer),
+                                 type, zero_hertz_is_supported);
 }
 
 void DesktopCaptureDevice::SetMockTimeForTesting(
