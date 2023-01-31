@@ -122,9 +122,12 @@ if (is_win) {
   # ldflags in GN aren't automatically inherited.
   config("base_win_linker_flags") {
     ldflags = [
+      # Linking with shcore.lib causes the shcore api forwarder dll to load.
+      "/DELAYLOAD:api-ms-win-shcore-scaling-l1-1-1.dll",
       "/DELAYLOAD:cfgmgr32.dll",
       "/DELAYLOAD:powrprof.dll",
       "/DELAYLOAD:setupapi.dll",
+      "/DELAYLOAD:shcore.dll",
     ]
   }
 }
@@ -2109,6 +2112,7 @@ component("base") {
       "powrprof.lib",
       "propsys.lib",
       "setupapi.lib",
+      "shcore.lib",
       "userenv.lib",
       "wbemuuid.lib",
       "winmm.lib",

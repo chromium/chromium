@@ -44,20 +44,11 @@ ScreenWin* g_instance = nullptr;
 
 // Gets the DPI for a particular monitor.
 absl::optional<int> GetPerMonitorDPI(HMONITOR monitor) {
-  if (!base::win::IsProcessPerMonitorDpiAware())
-    return absl::nullopt;
-
-  static auto get_dpi_for_monitor_func = []() {
-    const HMODULE shcore_dll = ::LoadLibrary(L"shcore.dll");
-    return reinterpret_cast<decltype(&::GetDpiForMonitor)>(
-        shcore_dll ? ::GetProcAddress(shcore_dll, "GetDpiForMonitor")
-                   : nullptr);
-  }();
   UINT dpi_x, dpi_y;
-  if (!get_dpi_for_monitor_func ||
-      !SUCCEEDED(
-          get_dpi_for_monitor_func(monitor, MDT_EFFECTIVE_DPI, &dpi_x, &dpi_y)))
+  if (!SUCCEEDED(
+          ::GetDpiForMonitor(monitor, MDT_EFFECTIVE_DPI, &dpi_x, &dpi_y))) {
     return absl::nullopt;
+  }
 
   DCHECK_EQ(dpi_x, dpi_y);
   return static_cast<int>(dpi_x);
@@ -758,11 +749,13 @@ absl::optional<bool> ScreenWin::IsWindowOnCurrentVirtualDesktop(
   return absl::nullopt;
 }
 
-ScreenWin::ScreenWin(bool initialize) {
+ScreenWin::ScreenWin(bool initialize_from_system)
+    : per_process_dpi_awareness_disabled_for_testing_(!initialize_from_system) {
   DCHECK(!g_instance);
   g_instance = this;
-  if (initialize)
+  if (initialize_from_system) {
     Initialize();
+  }
 }
 
 gfx::Point ScreenWin::GetCursorScreenPoint() {
@@ -1013,7 +1006,7 @@ ScreenWinDisplay ScreenWin::GetScreenWinDisplayVia(Getter getter,
 
 int ScreenWin::GetSystemMetricsForScaleFactor(float scale_factor,
                                               int metric) const {
-  if (base::win::IsProcessPerMonitorDpiAware()) {
+  if (!PerProcessDPIAwarenessDisabledForTesting()) {
     static const auto get_system_metrics_for_dpi =
         reinterpret_cast<decltype(&::GetSystemMetricsForDpi)>(
             base::win::GetUser32FunctionPointer("GetSystemMetricsForDpi"));
@@ -1023,7 +1016,7 @@ int ScreenWin::GetSystemMetricsForScaleFactor(float scale_factor,
     }
   }
 
-  // Windows 8.1 doesn't support GetSystemMetricsForDpi(), yet does support
+  // Versions < WIN10_RS1 don't support GetSystemMetricsForDpi, but do support
   // per-process dpi awareness.
   return base::ClampRound(GetSystemMetrics(metric) * scale_factor /
                           GetPrimaryDisplay().device_scale_factor());
@@ -1052,6 +1045,10 @@ void ScreenWin::OnUwpTextScaleFactorChanged() {
 void ScreenWin::OnUwpTextScaleFactorCleanup(UwpTextScaleFactor* source) {
   scale_factor_observation_.Reset();
   UwpTextScaleFactor::Observer::OnUwpTextScaleFactorCleanup(source);
+}
+
+bool ScreenWin::PerProcessDPIAwarenessDisabledForTesting() const {
+  return per_process_dpi_awareness_disabled_for_testing_;
 }
 
 }  // namespace win

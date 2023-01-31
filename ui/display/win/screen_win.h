@@ -178,7 +178,11 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
       gfx::NativeWindow window) const;
 
  protected:
-  ScreenWin(bool initialize);
+  // `initialize_from_system` is true if the ScreenWin should be initialized
+  // from the Windows desktop environment, e.g., the monitor information and
+  // configuration. It is false in unit tests, true in Chrome and browser
+  // tests.
+  ScreenWin(bool initialize_from_system);
 
   // Screen:
   gfx::Point GetCursorScreenPoint() override;
@@ -264,6 +268,12 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   void OnUwpTextScaleFactorChanged() override;
   void OnUwpTextScaleFactorCleanup(UwpTextScaleFactor* source) override;
 
+  // Tests don't want to use the actual DPI settings of the monitor(s) on
+  // the machine running the test.
+  // Returns false if running in unit tests, if the ScreenWin constructor was
+  // called with initialize set to false.
+  bool PerProcessDPIAwarenessDisabledForTesting() const;
+
   // Helper implementing the DisplayObserver handling.
   DisplayChangeNotifier change_notifier_;
 
@@ -288,6 +298,9 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
 
   base::ScopedObservation<UwpTextScaleFactor, UwpTextScaleFactor::Observer>
       scale_factor_observation_{this};
+
+  // Used to avoid calling GetSystemMetricsForDpi in unit tests.
+  bool per_process_dpi_awareness_disabled_for_testing_ = false;
 };
 
 }  // namespace win

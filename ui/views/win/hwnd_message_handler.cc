@@ -453,8 +453,7 @@ void HWNDMessageHandler::Init(HWND parent,
   // Create the window.
   WindowImpl::Init(parent, bounds);
 
-  if (!called_enable_non_client_dpi_scaling_ && delegate_->HasFrame() &&
-      base::win::IsProcessPerMonitorDpiAware()) {
+  if (!called_enable_non_client_dpi_scaling_ && delegate_->HasFrame()) {
     // Derived signature; not available in headers.
     // This call gets Windows to scale the non-client area when
     // WM_DPICHANGED is fired.
@@ -2342,7 +2341,7 @@ LRESULT HWNDMessageHandler::OnNCCalcSize(BOOL mode, LPARAM l_param) {
 
 LRESULT HWNDMessageHandler::OnNCCreate(LPCREATESTRUCT lpCreateStruct) {
   SetMsgHandled(FALSE);
-  if (delegate_->HasFrame() && base::win::IsProcessPerMonitorDpiAware()) {
+  if (delegate_->HasFrame()) {
     using EnableNonClientDpiScalingPtr = decltype(::EnableNonClientDpiScaling)*;
     static const auto enable_non_client_dpi_scaling_func =
         reinterpret_cast<EnableNonClientDpiScalingPtr>(

@@ -112,6 +112,8 @@ component("display") {
     # Don't conflict with Windows' "display.dll".
     output_name = "ui_display"
     deps += [ "//ui/gfx/mojom:dxgi_info" ]
+    libs = [ "shcore.lib" ]
+    ldflags = [ "/DELAYLOAD:shcore.dll" ]
   }
 
   if (use_aura) {

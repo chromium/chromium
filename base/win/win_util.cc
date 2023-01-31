@@ -101,34 +101,6 @@ POWER_PLATFORM_ROLE GetPlatformRole() {
   return PowerDeterminePlatformRoleEx(POWER_PLATFORM_ROLE_V2);
 }
 
-// Because we used to support versions earlier than 8.1, we dynamically load
-// this function from user32.dll, so it won't fail to load in runtime.
-// TODO(https://crbug.com/1408307): Call SetProcessDpiAwareness directly.
-bool SetProcessDpiAwarenessWrapper(PROCESS_DPI_AWARENESS value) {
-  if (!IsUser32AndGdi32Available())
-    return false;
-
-  static const auto set_process_dpi_awareness_func =
-      reinterpret_cast<decltype(&::SetProcessDpiAwareness)>(
-          GetUser32FunctionPointer("SetProcessDpiAwarenessInternal"));
-  if (set_process_dpi_awareness_func) {
-    HRESULT hr = set_process_dpi_awareness_func(value);
-    if (SUCCEEDED(hr))
-      return true;
-    DLOG_IF(ERROR, hr == E_ACCESSDENIED)
-        << "Access denied error from SetProcessDpiAwarenessInternal. "
-           "Function called twice, or manifest was used.";
-    NOTREACHED()
-        << "SetProcessDpiAwarenessInternal failed with unexpected error: "
-        << hr;
-    return false;
-  }
-
-  NOTREACHED() << "SetProcessDpiAwarenessInternal "
-                  "should be available on all platforms >= Windows 8.1";
-  return false;
-}
-
 // Enable V2 per-monitor high-DPI support for the process. This will cause
 // Windows to scale dialogs, comctl32 controls, context menus, and non-client
 // area owned by this process on a per-monitor basis. If per-monitor V2 is not
@@ -715,31 +687,6 @@ void DisableFlicks(HWND hwnd) {
                                      TABLET_DISABLE_FLICKFALLBACKKEYS));
 }
 
-bool IsProcessPerMonitorDpiAware() {
-  enum class PerMonitorDpiAware {
-    UNKNOWN = 0,
-    PER_MONITOR_DPI_UNAWARE,
-    PER_MONITOR_DPI_AWARE,
-  };
-  static PerMonitorDpiAware per_monitor_dpi_aware = PerMonitorDpiAware::UNKNOWN;
-  if (per_monitor_dpi_aware == PerMonitorDpiAware::UNKNOWN) {
-    per_monitor_dpi_aware = PerMonitorDpiAware::PER_MONITOR_DPI_UNAWARE;
-    HMODULE shcore_dll = ::LoadLibrary(L"shcore.dll");
-    if (shcore_dll) {
-      auto get_process_dpi_awareness_func =
-          reinterpret_cast<decltype(::GetProcessDpiAwareness)*>(
-              ::GetProcAddress(shcore_dll, "GetProcessDpiAwareness"));
-      if (get_process_dpi_awareness_func) {
-        PROCESS_DPI_AWARENESS awareness;
-        if (SUCCEEDED(get_process_dpi_awareness_func(nullptr, &awareness)) &&
-            awareness == PROCESS_PER_MONITOR_DPI_AWARE)
-          per_monitor_dpi_aware = PerMonitorDpiAware::PER_MONITOR_DPI_AWARE;
-      }
-    }
-  }
-  return per_monitor_dpi_aware == PerMonitorDpiAware::PER_MONITOR_DPI_AWARE;
-}
-
 void EnableHighDPISupport() {
   if (!IsUser32AndGdi32Available())
     return;
@@ -750,7 +697,7 @@ void EnableHighDPISupport() {
 
   // Fall back to per-monitor DPI for older versions of Win10.
   PROCESS_DPI_AWARENESS process_dpi_awareness = PROCESS_PER_MONITOR_DPI_AWARE;
-  if (!SetProcessDpiAwarenessWrapper(process_dpi_awareness)) {
+  if (!::SetProcessDpiAwareness(process_dpi_awareness)) {
     // For windows versions where SetProcessDpiAwareness fails, try its
     // predecessor.
     BOOL result = ::SetProcessDPIAware();
