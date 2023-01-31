@@ -1,0 +1,17 @@
+{
+  "name": "chrome.printing",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Browser tests for chrome.printing API",
+  "app": {
+    "background": {
+      "scripts": [
+        "background.js"
+      ]
+    }
+  },
+  "permissions": [
+    "printing",
+    "http://localhost/*"
+  ]
+}

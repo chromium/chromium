@@ -11,6 +11,5 @@ function testGetPrinters(expectedName) {
     });
   }]);
 }
-chrome.test.getConfig(config => {
-  testGetPrinters(config.customArg);
-});
+
+testGetPrinters("name");

@@ -705,7 +705,10 @@
   "printing": {
     "channel": "stable",
     "platforms": ["chromeos", "lacros"],
-    "extension_types": ["extension"]
+    "extension_types": [
+      "extension",
+      "platform_app"
+    ]
   },
   "printingMetrics": {
     "channel": "stable",
