@@ -4441,27 +4441,45 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
+class BackForwardCacheBrowserTestWithSpeechSynthesis
+    : public BackForwardCacheBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (IsSpeechSynthesisSupported()) {
+      EnableFeatureAndSetParams(features::kUnblockSpeechSynthesisForBFCache, "",
+                                "");
+    } else {
+      DisableFeature(features::kUnblockSpeechSynthesisForBFCache);
+    }
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  bool IsSpeechSynthesisSupported() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BackForwardCacheBrowserTestWithSpeechSynthesis,
+                         testing::Bool());
+
 // This test is not important for Chrome OS if TTS is called in content. For
 // more details refer (content/browser/speech/tts_platform_impl.cc).
 #if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DoesNotCacheIfUsingSpeechSynthesis \
-  DISABLED_DoesNotCacheIfUsingSpeechSynthesis
+#define MAYBE_CacheIfUsingSpeechSynthesis DISABLED_CacheIfUsingSpeechSynthesis
 #else
-#define MAYBE_DoesNotCacheIfUsingSpeechSynthesis \
-  DoesNotCacheIfUsingSpeechSynthesis
+#define MAYBE_CacheIfUsingSpeechSynthesis CacheIfUsingSpeechSynthesis
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       MAYBE_DoesNotCacheIfUsingSpeechSynthesis) {
+IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithSpeechSynthesis,
+                       MAYBE_CacheIfUsingSpeechSynthesis) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Navigate to a page and start using SpeechSynthesis.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver rhf_a_deleted(rfh_a);
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
 
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
     new Promise(async resolve => {
     var u = new SpeechSynthesisUtterance(" ");
     speechSynthesis.speak(u);
@@ -4471,16 +4489,18 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 2) Navigate away.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-
-  // The page uses SpeechSynthesis so it should be deleted.
-  rhf_a_deleted.WaitUntilDeleted();
-
-  // 3) Go back to the page with SpeechSynthesis.
+  // 3) Go back to the page with SpeechSynthesis and ensure the page is
+  // restored if the flag is on.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kSpeechSynthesis}, {}, {},
-      {}, FROM_HERE);
+  if (IsSpeechSynthesisSupported()) {
+    ExpectRestored(FROM_HERE);
+    // TODO(crbug.com/1411151): Test that onend callback is fired upon restore.
+  } else {
+    ExpectNotRestored(
+        {NotRestoredReason::kBlocklistedFeatures},
+        {blink::scheduler::WebSchedulerTrackedFeature::kSpeechSynthesis}, {},
+        {}, {}, FROM_HERE);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
