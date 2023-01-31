@@ -104,14 +104,15 @@ bool CommandBufferHelper::AllocateRingBuffer() {
 void CommandBufferHelper::SetGetBuffer(int32_t id,
                                        scoped_refptr<Buffer> buffer) {
   command_buffer_->SetGetBuffer(id);
+  entries_ = nullptr;
+  total_entry_count_ = 0;
   ring_buffer_ = std::move(buffer);
   ring_buffer_id_ = id;
   ++set_get_buffer_count_;
-  entries_ = ring_buffer_
-                 ? static_cast<CommandBufferEntry*>(ring_buffer_->memory())
-                 : 0;
-  total_entry_count_ =
-      ring_buffer_ ? ring_buffer_size_ / sizeof(CommandBufferEntry) : 0;
+  if (ring_buffer_) {
+    entries_ = static_cast<CommandBufferEntry*>(ring_buffer_->memory());
+    total_entry_count_ = ring_buffer_size_ / sizeof(CommandBufferEntry);
+  }
   // Call to SetGetBuffer(id) above resets get and put offsets to 0.
   // No need to query it through IPC.
   put_ = 0;
