@@ -1152,6 +1152,8 @@ void OverviewGrid::OnStartingAnimationComplete(bool canceled) {
 
   MaybeInitDesksWidget();
 
+  UpdateSaveDeskButtons();
+
   for (auto& window : window_list())
     window->OnStartingAnimationComplete();
 }
@@ -2269,8 +2271,6 @@ void OverviewGrid::MaybeInitDesksWidget() {
   // the container.
   auto* window = desks_widget_->GetNativeWindow();
   window->parent()->StackChildAtBottom(window);
-
-  UpdateSaveDeskButtons();
 }
 
 std::vector<gfx::RectF> OverviewGrid::GetWindowRects(
