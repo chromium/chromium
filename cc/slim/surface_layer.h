@@ -49,6 +49,14 @@ class COMPONENT_EXPORT(CC_SLIM) SurfaceLayer : public Layer {
   ~SurfaceLayer() override;
 
   cc::SurfaceLayer* cc_layer() const;
+  void SetSurfaceRange(const viz::SurfaceRange& surface_range);
+
+  // Layer implementation.
+  bool HasDrawableContent() const override;
+
+  bool stretch_content_to_fill_bounds_ = false;
+  viz::SurfaceRange surface_range_;
+  absl::optional<uint32_t> deadline_in_frames_;
 };
 
 }  // namespace cc::slim

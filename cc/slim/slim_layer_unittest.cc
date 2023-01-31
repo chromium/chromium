@@ -7,9 +7,13 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
+#include "cc/layers/deadline_policy.h"
 #include "cc/slim/features.h"
 #include "cc/slim/filter.h"
 #include "cc/slim/layer.h"
+#include "cc/slim/surface_layer.h"
+#include "components/viz/common/surfaces/surface_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -137,6 +141,29 @@ TEST_P(SlimLayerTest, LayerProperties) {
   std::vector<Filter> filters;
   filters.push_back(Filter::CreateBrightness(0.5f));
   layer->SetFilters(std::move(filters));
+}
+
+TEST_P(SlimLayerTest, SurfaceLayerProperties) {
+  scoped_refptr<SurfaceLayer> layer = SurfaceLayer::Create();
+
+  layer->SetStretchContentToFillBounds(true);
+  EXPECT_TRUE(layer->stretch_content_to_fill_bounds());
+  layer->SetStretchContentToFillBounds(false);
+  EXPECT_FALSE(layer->stretch_content_to_fill_bounds());
+
+  layer->SetMayContainVideo(true);
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  viz::SurfaceId start(viz::FrameSinkId(1u, 2u),
+                       viz::LocalSurfaceId(3u, 4u, token));
+  viz::SurfaceId end(viz::FrameSinkId(1u, 2u),
+                     viz::LocalSurfaceId(5u, 6u, token));
+
+  EXPECT_EQ(layer->oldest_acceptable_fallback(), absl::nullopt);
+  layer->SetOldestAcceptableFallback(start);
+  EXPECT_EQ(layer->oldest_acceptable_fallback(), start);
+  layer->SetSurfaceId(end, cc::DeadlinePolicy::UseDefaultDeadline());
+  EXPECT_EQ(layer->surface_id(), end);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, SlimLayerTest, testing::Bool());
