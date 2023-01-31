@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
 
@@ -27,8 +26,7 @@ enum class QuotaLimitType;
 // the same context (e.g. use the same task runner, share the quota etc).
 // Note that the remaining quota bytes (allowed_bytes_growth) may be
 // updated during the execution of write operations.
-class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationContext
-    : public base::SupportsUserData {
+class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationContext {
  public:
   explicit FileSystemOperationContext(FileSystemContext* context);
 
@@ -41,7 +39,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationContext
   FileSystemOperationContext& operator=(const FileSystemOperationContext&) =
       delete;
 
-  ~FileSystemOperationContext() override;
+  ~FileSystemOperationContext();
 
   FileSystemContext* file_system_context() const {
     return file_system_context_.get();

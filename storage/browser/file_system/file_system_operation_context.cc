@@ -26,7 +26,6 @@ FileSystemOperationContext::FileSystemOperationContext(
       quota_limit_type_(QuotaLimitType::kUnknown) {}
 
 FileSystemOperationContext::~FileSystemOperationContext() {
-  DetachFromSequence();
   DETACH_FROM_THREAD(setter_thread_checker_);
 }
 

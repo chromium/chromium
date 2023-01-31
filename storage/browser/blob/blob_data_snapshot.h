@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/supports_user_data.h"
 #include "storage/browser/blob/blob_data_item.h"
 
 namespace storage {
@@ -25,11 +24,10 @@ class BlobDataBuilder;
 // guarantees that the resources stay alive, but it does not guarentee that
 // the blob stays alive.  Use the BlobDataHandle to keep a blob alive.
 // This class must be deleted on the IO thread.
-class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataSnapshot
-    : public base::SupportsUserData::Data {
+class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataSnapshot {
  public:
   BlobDataSnapshot(const BlobDataSnapshot& other);
-  ~BlobDataSnapshot() override;
+  ~BlobDataSnapshot();
 
   const std::vector<scoped_refptr<BlobDataItem>>& items() const {
     return items_;
