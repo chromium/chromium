@@ -77,6 +77,7 @@ class ResultSinkClient(object):
            duration,
            test_log,
            test_file,
+           variant=None,
            artifacts=None,
            failure_reason=None,
            html_artifact=None):
@@ -91,6 +92,9 @@ class ResultSinkClient(object):
       duration: An int representing time in ms.
       test_log: A string representing the test's output.
       test_file: A string representing the file location of the test.
+      variant: An optional dict of variant key value pairs as the
+          additional variant sent from test runners, which can override
+          or add to the variants passed to `rdb stream` command.
       artifacts: An optional dict of artifacts to attach to the test.
       failure_reason: An optional string with the reason why the test failed.
           Should be None if the test did not fail.
@@ -127,6 +131,9 @@ class ResultSinkClient(object):
             'name': test_id,
         }
     }
+
+    if variant:
+      tr['variant'] = {'def': variant}
 
     artifacts = artifacts or {}
     tr['summaryHtml'] = html_artifact if html_artifact else ''

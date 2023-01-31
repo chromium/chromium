@@ -115,6 +115,24 @@ class ClientTest(unittest.TestCase):
                      'some-test')
     self.assertIsNotNone(data['testResults'][0]['summaryHtml'])
 
+  @mock.patch('requests.Session.post')
+  def testPostWithVariant(self, mock_post):
+    self.client.Post('some-test',
+                     result_types.PASS,
+                     0,
+                     'some-test-log',
+                     None,
+                     variant={
+                         'key1': 'value1',
+                         'key2': 'value2'
+                     })
+    data = json.loads(mock_post.call_args[1]['data'])
+    self.assertEqual(data['testResults'][0]['variant'],
+                     {'def': {
+                         'key1': 'value1',
+                         'key2': 'value2'
+                     }})
+
 
 if __name__ == '__main__':
   unittest.main()
