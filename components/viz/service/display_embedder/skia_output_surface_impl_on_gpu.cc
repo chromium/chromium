@@ -351,18 +351,12 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   // first.
   output_device_.reset();
 
-  // Destroy solid color shared images created by this class.
-  for (gpu::Mailbox& mb : solid_color_images_) {
-    shared_image_factory_->DestroySharedImage(mb);
-  }
-
-  // Destroy shared images created by this class.
-  for (auto& entry : skia_representations_) {
-    shared_image_factory_->DestroySharedImage(entry.first);
-  }
   // Clear any open accesses before destroying the skia representations.
   overlay_pass_accesses_.clear();
   skia_representations_.clear();
+
+  // Destroy shared images created by this class.
+  shared_image_factory_->DestroyAllSharedImages(has_context);
 
   // Since SharedImageFactory also has a reference to ImplOnGpu's member
   // SharedContextState, we need to explicitly invoke the factory's destructor
