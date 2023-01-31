@@ -184,6 +184,8 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mItemText.setText(mTitle);
         mItemTextClicked = false;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CORMORANT)) {
+            mItemText.setContentDescription(
+                    mContext.getString(R.string.cormorant_creator_preview, mTitle));
             mItemText.setOnClickListener((view) -> {
                 mItemTextClicked = true;
                 launchCreatorActivity();
