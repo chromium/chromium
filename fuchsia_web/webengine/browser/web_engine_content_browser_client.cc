@@ -91,6 +91,7 @@ static constexpr char const* kRendererSwitchesToCopy[] = {
     switches::kCorsExemptHeaders,
     switches::kEnableCastStreamingReceiver,
     switches::kEnableProtectedVideoBuffers,
+    switches::kForceProtectedVideoOutputBuffers,
     switches::kUseOverlaysForVideo,
     switches::kMinVideoDecoderOutputBufferSize,
 
