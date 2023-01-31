@@ -8,20 +8,24 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/containers/id_map.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "ui/base/ime/ash/input_method_ash.h"
-#include "ui/base/ime/input_method_observer.h"
 
 namespace crosapi {
 
 class FakeTextInputMethod : public ash::TextInputMethod {
  public:
+  class Observer {
+   public:
+    virtual void OnFocus() = 0;
+  };
+
   FakeTextInputMethod();
   ~FakeTextInputMethod() override;
 
-  void Focus(const InputContext& input_context) override {}
+  void Focus(const InputContext& input_context) override;
   void Blur() override {}
   void OnTouch(ui::EventPointerType pointerType) override {}
   void Enable(const std::string& component_id) override {}
@@ -43,16 +47,20 @@ class FakeTextInputMethod : public ash::TextInputMethod {
       const ash::ime::AssistiveWindow& window) override {}
   bool IsReadyForTesting() override;
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   uint64_t GetCurrentKeyEventId() const;
   void KeyEventHandled(uint64_t key_event_id, bool handled);
 
  private:
   uint64_t current_key_event_id_ = 0;
   std::map<uint64_t, KeyEventDoneCallback> pending_key_event_callbacks_;
+  base::ObserverList<Observer>::Unchecked observers_;
 };
 
 class InputMethodTestInterfaceAsh : public mojom::InputMethodTestInterface,
-                                    public ui::InputMethodObserver {
+                                    public FakeTextInputMethod::Observer {
  public:
   InputMethodTestInterfaceAsh();
   ~InputMethodTestInterfaceAsh() override;
@@ -73,19 +81,15 @@ class InputMethodTestInterfaceAsh : public mojom::InputMethodTestInterface,
                        bool handled,
                        KeyEventHandledCallback callback) override;
 
-  // ui::InputMethodObserver:
-  void OnFocus() override {}
-  void OnBlur() override {}
-  void OnCaretBoundsChanged(const ui::TextInputClient* client) override {}
-  void OnTextInputStateChanged(const ui::TextInputClient* client) override;
-  void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
+  // FakeTextInputMethod::Observer:
+  void OnFocus() override;
 
  private:
-  ash::InputMethodAsh* input_method_;
-  base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
-      input_method_observation_{this};
-  base::OnceClosureList focus_callbacks_;
+  ash::InputMethodAsh* text_input_target_;
   FakeTextInputMethod fake_text_input_method_;
+  base::ScopedObservation<FakeTextInputMethod, FakeTextInputMethod::Observer>
+      text_input_method_observation_{this};
+  base::OnceClosureList focus_callbacks_;
 };
 
 }  // namespace crosapi
