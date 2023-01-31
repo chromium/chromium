@@ -16,6 +16,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 
@@ -101,12 +102,22 @@ RemoteSuggestionsService::StartSuggestionsRequest(
   // Add Chrome experiment state to the request headers.
   AddVariationHeaders(request.get());
 
+  // Create a unique identifier for the request.
+  const base::UnguessableToken request_id = base::UnguessableToken::Create();
+
   // Make loader and start download.
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(std::move(completion_callback), loader.get()));
+      base::BindOnce(&RemoteSuggestionsService::OnURLLoadComplete,
+                     weak_ptr_factory_.GetWeakPtr(), request_id,
+                     std::move(completion_callback), loader.get()));
+
+  // Notify the observers that the transfer has started.
+  for (Observer& observer : observers_) {
+    observer.OnSuggestRequestStarted(request_id, suggest_url);
+  }
   return loader;
 }
 
@@ -165,12 +176,22 @@ RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
   // Add Chrome experiment state to the request headers.
   AddVariationHeaders(request.get());
 
+  // Create a unique identifier for the request.
+  const base::UnguessableToken request_id = base::UnguessableToken::Create();
+
   // Make loader and start download.
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(std::move(completion_callback), loader.get()));
+      base::BindOnce(&RemoteSuggestionsService::OnURLLoadComplete,
+                     weak_ptr_factory_.GetWeakPtr(), request_id,
+                     std::move(completion_callback), loader.get()));
+
+  // Notify the observers that the transfer has started.
+  for (Observer& observer : observers_) {
+    observer.OnSuggestRequestStarted(request_id, suggest_url);
+  }
   return loader;
 }
 
@@ -221,11 +242,49 @@ RemoteSuggestionsService::StartDeletionRequest(
   // Add Chrome experiment state to the request headers.
   AddVariationHeaders(request.get());
 
+  // Create a unique identifier for the request.
+  const base::UnguessableToken request_id = base::UnguessableToken::Create();
+
   // Make loader and start download.
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(std::move(completion_callback), loader.get()));
+      base::BindOnce(&RemoteSuggestionsService::OnURLLoadComplete,
+                     weak_ptr_factory_.GetWeakPtr(), request_id,
+                     std::move(completion_callback), loader.get()));
+
+  // Notify the observers that the transfer has started.
+  for (Observer& observer : observers_) {
+    observer.OnSuggestRequestStarted(request_id, url);
+  }
   return loader;
+}
+
+void RemoteSuggestionsService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void RemoteSuggestionsService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void RemoteSuggestionsService::OnURLLoadComplete(
+    const base::UnguessableToken& request_id,
+    CompletionCallback completion_callback,
+    const network::SimpleURLLoader* source,
+    std::unique_ptr<std::string> response_body) {
+  const bool response_received =
+      response_body && source->NetError() == net::OK &&
+      source->ResponseInfo() && source->ResponseInfo()->headers &&
+      source->ResponseInfo()->headers->response_code() == 200;
+
+  // Notify the observers that the transfer is done.
+  for (Observer& observer : observers_) {
+    observer.OnSuggestRequestCompleted(request_id, source->GetFinalURL(),
+                                       response_received, response_body);
+  }
+
+  std::move(completion_callback)
+      .Run(source, response_received, std::move(response_body));
 }

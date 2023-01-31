@@ -158,12 +158,9 @@ class ImageService::SuggestEntityImageURLFetcher {
 
  private:
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
+                         const bool response_received,
                          std::unique_ptr<std::string> response_body) {
     DCHECK_EQ(loader_.get(), source);
-    const bool response_received =
-        response_body && source->NetError() == net::OK &&
-        (source->ResponseInfo() && source->ResponseInfo()->headers &&
-         source->ResponseInfo()->headers->response_code() == 200);
     if (!response_received) {
       return std::move(callback_).Run(GURL());
     }
