@@ -62,8 +62,8 @@ void WebGLQuery::UpdateCachedResult(gpu::gles2::GLES2Interface* gl) {
   gl->GetQueryObjectuivEXT(Object(), GL_QUERY_RESULT_AVAILABLE_EXT, &available);
   query_result_available_ = !!available;
   if (query_result_available_) {
-    GLuint result = 0;
-    gl->GetQueryObjectuivEXT(Object(), GL_QUERY_RESULT_EXT, &result);
+    GLuint64 result = 0;
+    gl->GetQueryObjectui64vEXT(Object(), GL_QUERY_RESULT_EXT, &result);
     query_result_ = result;
     task_handle_.Cancel();
   } else {
@@ -75,7 +75,7 @@ bool WebGLQuery::IsQueryResultAvailable() {
   return query_result_available_;
 }
 
-GLuint WebGLQuery::GetQueryResult() {
+GLuint64 WebGLQuery::GetQueryResult() {
   return query_result_;
 }
 

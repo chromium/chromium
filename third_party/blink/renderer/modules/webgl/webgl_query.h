@@ -34,7 +34,7 @@ class WebGLQuery : public WebGLSharedPlatform3DObject {
   void UpdateCachedResult(gpu::gles2::GLES2Interface*);
 
   bool IsQueryResultAvailable();
-  GLuint GetQueryResult();
+  GLuint64 GetQueryResult();
 
  protected:
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
@@ -48,8 +48,8 @@ class WebGLQuery : public WebGLSharedPlatform3DObject {
   GLenum target_;
 
   bool can_update_availability_;
-  bool query_result_available_;
-  GLuint query_result_;
+  bool query_result_available_ = false;
+  GLuint64 query_result_ = 0;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   TaskHandle task_handle_;

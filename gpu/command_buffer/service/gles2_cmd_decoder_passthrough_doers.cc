@@ -3580,7 +3580,7 @@ error::Error GLES2DecoderPassthroughImpl::DoQueryCounterEXT(
     pending_query.commands_issued_timestamp = base::TimeTicks::Now();
   pending_queries_.push_back(std::move(pending_query));
 
-  return ProcessQueries(false);
+  return error::kNoError;
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoBeginQueryEXT(
@@ -3739,7 +3739,7 @@ error::Error GLES2DecoderPassthroughImpl::DoEndQueryEXT(GLenum target,
       break;
   }
   pending_queries_.push_back(std::move(pending_query));
-  return ProcessQueries(false);
+  return error::kNoError;
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoEndTransformFeedback() {
