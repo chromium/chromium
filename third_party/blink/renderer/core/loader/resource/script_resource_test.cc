@@ -90,6 +90,9 @@ TEST(ScriptResourceTest, RedirectDuringRevalidation) {
 }
 
 TEST(ScriptResourceTest, WebUICodeCacheEnabled) {
+#if DCHECK_IS_ON()
+  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+#endif
   SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
       "codecachewithhashing");
 
@@ -108,6 +111,9 @@ TEST(ScriptResourceTest, WebUICodeCacheEnabled) {
   EXPECT_TRUE(handler->HashRequired());
   EXPECT_EQ(UTF8Encoding().GetName(), handler->Encoding());
 
+#if DCHECK_IS_ON()
+  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+#endif
   SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashing("codecachewithhashing");
 }
 
