@@ -85,6 +85,8 @@ enum class ColorProfileType {
   NUM_OF_COLOR_PROFILES,
 };
 
+ASH_PUBLIC_EXPORT bool IsOnlineWallpaper(WallpaperType type);
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_TYPES_H_

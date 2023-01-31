@@ -154,8 +154,7 @@ void OnlineWallpaperVariantInfoFetcher::FetchOnlineWallpaper(
     const WallpaperInfo& info,
     ColorMode mode,
     FetchParamsCallback callback) {
-  DCHECK(info.type == WallpaperType::kDaily ||
-         info.type == WallpaperType::kOnline);
+  DCHECK(IsOnlineWallpaper(info.type));
 
   DCHECK(wallpaper_controller_client_);
 

@@ -364,6 +364,7 @@ component("cpp") {
     "wallpaper/wallpaper_drivefs_delegate.h",
     "wallpaper/wallpaper_info.cc",
     "wallpaper/wallpaper_info.h",
+    "wallpaper/wallpaper_types.cc",
     "wallpaper/wallpaper_types.h",
     "webauthn_dialog_controller.cc",
     "webauthn_dialog_controller.h",

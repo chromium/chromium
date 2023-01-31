@@ -2037,7 +2037,7 @@ void WallpaperControllerImpl::OnWallpaperVariantsFetched(
     bool start_daily_refresh_timer,
     SetWallpaperCallback callback,
     absl::optional<OnlineWallpaperParams> params) {
-  DCHECK(type == WallpaperType::kDaily || type == WallpaperType::kOnline);
+  DCHECK(IsOnlineWallpaper(type));
   if (params) {
     SetOnlineWallpaper(*params, std::move(callback));
 
@@ -2371,8 +2371,7 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
   }
 
   base::FilePath wallpaper_path;
-  if (info.type == WallpaperType::kOnline ||
-      info.type == WallpaperType::kDaily) {
+  if (IsOnlineWallpaper(info.type)) {
     wallpaper_path =
         GetOnlineWallpaperPath(info.location, GetAppropriateResolution());
 
@@ -3222,8 +3221,7 @@ void WallpaperControllerImpl::HandleGooglePhotosWallpaperInfoSyncedIn(
 void WallpaperControllerImpl::HandleSettingOnlineWallpaperFromWallpaperInfo(
     const AccountId& account_id,
     const WallpaperInfo& info) {
-  DCHECK(info.type == WallpaperType::kDaily ||
-         info.type == WallpaperType::kOnline);
+  DCHECK(IsOnlineWallpaper(info.type));
   if (!info.asset_id.has_value()) {
     // If a user has not changed their wallpaper since the addition of asset_id,
     // we can have a WallpaperInfo without an asset_id from synced data.

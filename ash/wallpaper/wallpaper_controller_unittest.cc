@@ -279,7 +279,7 @@ PrefService* GetProfilePrefService(const AccountId& account_id) {
 WallpaperInfo InfoWithType(WallpaperType type) {
   WallpaperInfo info(std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED, type,
                      base::Time::Now());
-  if (type == WallpaperType::kDaily || type == WallpaperType::kOnline) {
+  if (IsOnlineWallpaper(type)) {
     // Daily and Online types require asset id and collection id.
     info.asset_id = 1234;
     info.collection_id = "placeholder collection";
