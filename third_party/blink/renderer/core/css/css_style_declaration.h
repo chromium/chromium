@@ -114,6 +114,18 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
 
  protected:
   explicit CSSStyleDeclaration(ExecutionContext* context);
+
+ private:
+  // Fast path for when we know the value given from the script
+  // is a number, not a string; saves the round-tripping to and from
+  // strings in V8.
+  //
+  // Returns true if the fast path succeeded (in which case we need to
+  // go through the normal string path).
+  virtual bool FastPathSetProperty(CSSPropertyID unresolved_property,
+                                   double value) {
+    return false;
+  }
 };
 
 }  // namespace blink

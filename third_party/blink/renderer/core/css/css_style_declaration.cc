@@ -223,6 +223,18 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
       "CSSStyleDeclaration",
       CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
           .GetPropertyName());
+  if (value->IsNumber()) {
+    double double_value = NativeValueTraits<IDLUnrestrictedDouble>::NativeValue(
+        script_state->GetIsolate(), value, exception_state);
+    if (UNLIKELY(exception_state.HadException())) {
+      return NamedPropertySetterResult::kIntercepted;
+    }
+    if (FastPathSetProperty(unresolved_property, double_value)) {
+      return NamedPropertySetterResult::kIntercepted;
+    }
+    // The fast path failed, e.g. because the property was a longhand,
+    // so let the normal string handling deal with it.
+  }
   // Perform a type conversion from ES value to
   // IDL [LegacyNullToEmptyString] DOMString only after we've confirmed that
   // the property name is a valid CSS attribute name (see bug 1310062).

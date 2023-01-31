@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/css/abstract_property_set_css_style_declaration.h"
 
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_attribute_mutation_scope.h"
@@ -271,6 +272,56 @@ void AbstractPropertySetCSSStyleDeclaration::SetPropertyInternal(
   }
 
   mutation_scope.EnqueueMutationRecord();
+}
+
+bool AbstractPropertySetCSSStyleDeclaration::FastPathSetProperty(
+    CSSPropertyID unresolved_property,
+    double value) {
+  if (unresolved_property == CSSPropertyID::kVariable) {
+    // We don't bother with the fast path for custom properties,
+    // even though we could.
+    return false;
+  }
+  if (std::isnan(value) || std::isinf(value)) {
+    // Just to be on the safe side.
+    return false;
+  }
+  CSSPropertyID property_id = ResolveCSSPropertyID(unresolved_property);
+  const CSSProperty& property = CSSProperty::Get(property_id);
+  if (!property.AcceptsNumericLiteral()) {
+    // Not all properties are prepared to accept numeric literals;
+    // e.g. widths could accept doubles but want to convert them
+    // to lengths, and shorthand properties may want to do their
+    // own things. We don't support either yet, only specifically
+    // allowlisted properties.
+    return false;
+  }
+
+  StyleAttributeMutationScope mutation_scope(this);
+  WillMutate();
+
+  const CSSValue* css_value = CSSNumericLiteralValue::Create(
+      value, CSSPrimitiveValue::UnitType::kNumber);
+  MutableCSSPropertyValueSet::SetResult result =
+      PropertySet().SetLonghandProperty(
+          CSSPropertyValue(CSSPropertyName(property_id), *css_value,
+                           /*important=*/false));
+
+  if (result == MutableCSSPropertyValueSet::kParseError ||
+      result == MutableCSSPropertyValueSet::kUnchanged) {
+    DidMutate(kNoChanges);
+    return true;
+  }
+
+  if (result == MutableCSSPropertyValueSet::kModifiedExisting &&
+      property.SupportsIncrementalStyle()) {
+    DidMutate(kIndependentPropertyChanged);
+  } else {
+    DidMutate(kPropertyChanged);
+  }
+
+  mutation_scope.EnqueueMutationRecord();
+  return true;
 }
 
 DISABLE_CFI_PERF

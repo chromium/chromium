@@ -99,6 +99,8 @@ class CORE_EXPORT AbstractPropertySetCSSStyleDeclaration
   virtual void DidMutate(MutationType) {}
   virtual MutableCSSPropertyValueSet& PropertySet() const = 0;
   virtual bool IsKeyframeStyle() const { return false; }
+  bool FastPathSetProperty(CSSPropertyID unresolved_property,
+                           double value) override;
 };
 
 }  // namespace blink

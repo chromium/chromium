@@ -65,6 +65,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     return flags_ & kSupportsIncrementalStyle;
   }
   bool IsIdempotent() const { return flags_ & kIdempotent; }
+  bool AcceptsNumericLiteral() const { return flags_ & kAcceptsNumericLiteral; }
   bool IsValidForFirstLetter() const { return flags_ & kValidForFirstLetter; }
   bool IsValidForFirstLine() const { return flags_ & kValidForFirstLine; }
   bool IsValidForCue() const { return flags_ & kValidForCue; }
@@ -200,6 +201,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kValidForPositionFallback = 1 << 30,
     // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
     kValidForHighlight = 1ull << 31,
+    // See accepts_numeric_literal in css_properties.json5.
+    kAcceptsNumericLiteral = 1ull << 32,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

@@ -658,6 +658,17 @@
       valid_type: "bool",
     },
 
+    // If true, this property will accept a CSSNumericLiteralValue
+    // (created by a fast-path parser), with no restrictions on range.
+    // (NaN and infinities will be sent through the normal ParseSingleValue
+    // path.) A typical case is the properties that can accept an alpha value;
+    // percent values will take the slow paths, but simple numbers will be sent
+    // directly through.
+    accepts_numeric_literal: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // If true, then the ComputedStyle field for this property overlaps with
     // another property.
     //
@@ -2723,6 +2734,7 @@
       default_value: "1",
       converter: "ConvertAlpha",
       typedom_types: ["Number"],
+      accepts_numeric_literal: true,
     },
     {
       name: "fill-rule",
@@ -2846,6 +2858,7 @@
       converter: "ConvertAlpha",
       typedom_types: ["Number"],
       supports_incremental_style: true,
+      accepts_numeric_literal: true,
     },
     {
       name: "grid-auto-columns",
@@ -3566,6 +3579,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       supports_incremental_style: true,
+      accepts_numeric_literal: true,
     },
     {
       name: "order",
@@ -4397,6 +4411,7 @@
       type_name: "float",
       computed_style_custom_functions: ["setter"],
       typedom_types: ["Number"],
+      accepts_numeric_literal: true,
     },
     {
       name: "shape-margin",
@@ -4480,6 +4495,7 @@
       default_value: "1",
       converter: "ConvertAlpha",
       typedom_types: ["Number"],
+      accepts_numeric_literal: true,
     },
     {
       name: "stroke",
@@ -4578,6 +4594,7 @@
       default_value: "1",
       converter: "ConvertAlpha",
       typedom_types: ["Number"],
+      accepts_numeric_literal: true,
     },
     {
       name: "stroke-width",
@@ -5292,6 +5309,7 @@
       field_template: "primitive",
       default_value: "0.0f",
       type_name: "float",
+      accepts_numeric_literal: true,
     },
     {
       name: "-webkit-box-ordinal-group",

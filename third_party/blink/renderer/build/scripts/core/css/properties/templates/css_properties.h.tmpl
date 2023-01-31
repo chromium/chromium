@@ -43,6 +43,7 @@ namespace {{namespace}} {
   (property.is_animation_property and 'kAnimation' or ''),
   (property.supports_incremental_style and 'kSupportsIncrementalStyle' or ''),
   (property.idempotent and 'kIdempotent' or ''),
+  (property.accepts_numeric_literal and 'kAcceptsNumericLiteral' or ''),
   ((property.overlapping or property.legacy_overlapping) and 'kOverlapping' or ''),
   (property.legacy_overlapping and 'kLegacyOverlapping' or ''),
   (property.valid_for_first_letter and 'kValidForFirstLetter' or ''),
