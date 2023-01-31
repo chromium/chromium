@@ -660,6 +660,9 @@ class VIEWS_EXPORT Textfield : public View,
   void DropDraggedText(const ui::DropTargetEvent& event,
                        ui::mojom::DragOperation& output_drag_op);
 
+  // Returns the corner radius of the text field.
+  float GetCornerRadius();
+
   // The text model.
   std::unique_ptr<TextfieldModel> model_;
 

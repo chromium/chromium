@@ -55,6 +55,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/focusable_border.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -99,10 +100,6 @@
 
 namespace views {
 namespace {
-
-// TODO(1399913): Replace this placeholder value when LayoutManager supports
-// correct corner radii values.
-constexpr float kChromeRefresh2023CornerRadiusDp = 30.0f;
 
 using ::ui::mojom::DragOperation;
 
@@ -238,7 +235,8 @@ Textfield::Textfield()
   GetRenderText()->SetFontList(GetDefaultFontList());
   UpdateBorder();
   SetFocusBehavior(FocusBehavior::ALWAYS);
-
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                GetCornerRadius());
   FocusRing::Install(this);
 
 #if !BUILDFLAG(IS_MAC)
@@ -2420,11 +2418,8 @@ void Textfield::UpdateSelectionClipboard() {
 
 void Textfield::UpdateBackgroundColor() {
   const SkColor color = GetBackgroundColor();
-  SetBackground(
-      CreateBackgroundFromPainter(Painter::CreateSolidRoundRectPainter(
-          color, ::features::IsChromeRefresh2023()
-                     ? kChromeRefresh2023CornerRadiusDp
-                     : FocusRing::kDefaultCornerRadiusDp)));
+  SetBackground(CreateBackgroundFromPainter(
+      Painter::CreateSolidRoundRectPainter(color, GetCornerRadius())));
   // Disable subpixel rendering when the background color is not opaque because
   // it draws incorrect colors around the glyphs in that case.
   // See crbug.com/115198
@@ -2445,8 +2440,10 @@ void Textfield::UpdateBorder() {
           provider->GetDistanceMetric(DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
       extra_insets_.right() + provider->GetDistanceMetric(
                                   DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING)));
-  if (invalid_)
+  if (invalid_) {
     border->SetColorId(ui::kColorAlertHighSeverity);
+  }
+  border->SetCornerRadius(GetCornerRadius());
   View::SetBorder(std::move(border));
 }
 
@@ -2779,6 +2776,12 @@ void Textfield::DropDraggedText(const ui::DropTargetEvent& event,
   UpdateAfterChange(TextChangeType::kUserTriggered, true);
   OnAfterUserAction();
   output_drag_op = move ? DragOperation::kMove : DragOperation::kCopy;
+}
+
+float Textfield::GetCornerRadius() {
+  return ::features::IsChromeRefresh2023()
+             ? LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kHigh)
+             : FocusRing::kDefaultCornerRadiusDp;
 }
 
 BEGIN_METADATA(Textfield, View)

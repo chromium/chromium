@@ -26,7 +26,8 @@ constexpr int kInsetSize = 1;
 
 namespace views {
 
-FocusableBorder::FocusableBorder() : insets_(kInsetSize) {}
+FocusableBorder::FocusableBorder()
+    : insets_(kInsetSize), corner_radius_(FocusRing::kDefaultCornerRadiusDp) {}
 
 FocusableBorder::~FocusableBorder() = default;
 
@@ -51,7 +52,7 @@ void FocusableBorder::Paint(const View& view, gfx::Canvas* canvas) {
 
   SkPath path;
   flags.setAntiAlias(true);
-  float corner_radius_px = FocusRing::kDefaultCornerRadiusDp * dsf;
+  float corner_radius_px = corner_radius_ * dsf;
   path.addRoundRect(gfx::RectFToSkRect(rect), corner_radius_px,
                     corner_radius_px);
 
@@ -68,6 +69,10 @@ gfx::Size FocusableBorder::GetMinimumSize() const {
 
 void FocusableBorder::SetInsets(const gfx::Insets& insets) {
   insets_ = insets;
+}
+
+void FocusableBorder::SetCornerRadius(float radius) {
+  corner_radius_ = radius;
 }
 
 SkColor FocusableBorder::GetCurrentColor(const View& view) const {
