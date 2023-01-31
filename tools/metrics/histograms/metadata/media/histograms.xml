@@ -5601,7 +5601,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebrtcVideoPerfHistory.GetPerfInfoCodecProfile"
-    enum="VideoCodecProfile" expires_after="2023-06-04">
+    enum="VideoCodecProfile" expires_after="2024-02-01">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -5611,7 +5611,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebrtcVideoPerfHistory.SavePerfRecordCodecProfile"
-    enum="VideoCodecProfile" expires_after="2023-04-01">
+    enum="VideoCodecProfile" expires_after="2024-02-01">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -5621,7 +5621,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebrtcVideoPerfHistory.SmoothPrediction.{Operation}"
-    units="custom" expires_after="2023-02-01">
+    units="custom" expires_after="2024-02-01">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -5642,7 +5642,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.WebrtcVideoPerfHistory.SmoothVolatility.{Operation}.{Framerate}"
-    enum="SmoothVolatility" expires_after="2023-02-01">
+    enum="SmoothVolatility" expires_after="2024-02-01">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
