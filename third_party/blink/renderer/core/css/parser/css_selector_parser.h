@@ -129,6 +129,8 @@ class CORE_EXPORT CSSSelectorParser {
   // https://drafts.csswg.org/selectors/#typedef-relative-selector-list
   CSSSelectorList* ConsumeForgivingRelativeSelectorList(CSSParserTokenRange&);
   CSSSelectorList* ConsumeRelativeSelectorList(CSSParserTokenRange&);
+  void AddPlaceholderParentSelectorIfNeeded(
+      const CSSParserTokenRange& argument);
 
   base::span<CSSSelector> ConsumeNestedRelativeSelector(
       CSSParserTokenRange& range);
@@ -209,11 +211,6 @@ class CORE_EXPORT CSSSelectorParser {
   // PseudoType of the pseudo-element causing the restriction.
   CSSSelector::PseudoType restricting_pseudo_element_ =
       CSSSelector::kPseudoUnknown;
-  // Whether at any point we dropped an & token during forgiving parsing
-  // (e.g. in :is(!&, .foo)); such selectors are still considered as
-  // nest-containing. Since every top-level selector gets a new CSSParser
-  // instance, we don't need to worry about resetting it.
-  bool dropped_nest_token_during_forgiving_parsing_ = false;
   // If we're _resisting_ the default namespace, it means that we are inside
   // a nested selector (:is(), :where(), etc) where we should _consider_
   // ignoring the default namespace (depending on circumstance). See the

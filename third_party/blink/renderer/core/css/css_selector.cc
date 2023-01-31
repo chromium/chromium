@@ -353,6 +353,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoOptional:
     case kPseudoOutOfRange:
     case kPseudoParent:
+    case kPseudoParentUnparsed:
     case kPseudoPart:
     case kPseudoPastCue:
     case kPseudoPaused:
@@ -811,6 +812,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoOptional:
     case kPseudoOutOfRange:
     case kPseudoParent:
+    case kPseudoParentUnparsed:
     case kPseudoPastCue:
     case kPseudoPaused:
     case kPseudoPictureInPicture:
@@ -847,6 +849,12 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       pseudo_type_ = kPseudoUnknown;
       break;
   }
+}
+
+void CSSSelector::SetUnparsedPlaceholder(const AtomicString& value) {
+  DCHECK(match_ == kPseudoClass);
+  SetPseudoType(kPseudoParentUnparsed);
+  SetValue(value);
 }
 
 static void SerializeIdentifierOrAny(const AtomicString& identifier,
@@ -902,8 +910,10 @@ const CSSSelector* CSSSelector::SerializeCompound(
       SerializeIdentifier(simple_selector->SerializingValue(), builder);
     } else if (simple_selector->match_ == kPseudoClass ||
                simple_selector->match_ == kPagePseudoClass) {
-      if (simple_selector->GetPseudoType() != kPseudoState &&
-          simple_selector->GetPseudoType() != kPseudoParent) {
+      if (simple_selector->GetPseudoType() == kPseudoParentUnparsed) {
+        builder.Append(simple_selector->Value());
+      } else if (simple_selector->GetPseudoType() != kPseudoState &&
+                 simple_selector->GetPseudoType() != kPseudoParent) {
         builder.Append(':');
         builder.Append(simple_selector->SerializingValue());
       }

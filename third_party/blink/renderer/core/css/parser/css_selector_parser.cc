@@ -413,17 +413,12 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingComplexSelectorList(
         ConsumeComplexSelector(argument, /*in_nested_style_rule=*/false,
                                /*first_in_complex_selector_list=*/false);
     if (selector.empty() || failed_parsing_ || !argument.AtEnd()) {
-      for (const CSSParserToken& token : argument) {
-        if (token.GetType() == kDelimiterToken && token.Delimiter() == '&') {
-          dropped_nest_token_during_forgiving_parsing_ = true;
-          break;
-        }
-      }
       if (in_supports_parsing_) {
         at_supports_drop_invalid_counter.Count();
       }
       output_.resize(subpos);  // Drop what we parsed so far.
       valid_and_invalid_counter.CountInvalid();
+      AddPlaceholderParentSelectorIfNeeded(argument);
     } else {
       valid_and_invalid_counter.CountValid();
     }
@@ -443,6 +438,29 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingComplexSelectorList(
   }
 
   return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
+}
+
+// If the argument was unparsable but contained a & token,
+// we need to keep it so that we still consider the :is()
+// as nest-containing; furthermore, we need to keep it
+// on serialization so that round-tripping does not risk
+// making the :is() no longer nest-containing. We have similar
+// weaknesses here as in CSS custom properties, such as not
+// preserving comments fully.
+void CSSSelectorParser::AddPlaceholderParentSelectorIfNeeded(
+    const CSSParserTokenRange& argument) {
+  const bool contains_nest_token = std::any_of(
+      argument.begin(), argument.end(), [](const CSSParserToken& token) {
+        return token.GetType() == kDelimiterToken && token.Delimiter() == '&';
+      });
+  if (contains_nest_token) {
+    CSSSelector placeholder_selector;
+    placeholder_selector.SetMatch(CSSSelector::kPseudoClass);
+    placeholder_selector.SetUnparsedPlaceholder(
+        AtomicString(argument.Serialize()));
+    placeholder_selector.SetLastInTagHistory(true);
+    output_.push_back(placeholder_selector);
+  }
 }
 
 CSSSelectorList* CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
@@ -677,7 +695,8 @@ static bool SelectorListIsNestContaining(const CSSSelector* selector) {
   }
   for (;;) {  // Termination condition within loop.
     if (selector->Match() == CSSSelector::kPseudoClass &&
-        selector->GetPseudoType() == CSSSelector::kPseudoParent) {
+        (selector->GetPseudoType() == CSSSelector::kPseudoParent ||
+         selector->GetPseudoType() == CSSSelector::kPseudoParentUnparsed)) {
       return true;
     }
     if (selector->SelectorList() != nullptr &&
@@ -772,8 +791,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
     // of SelectorListIsNestContaining().
     wtf_size_t last_index = output_.size() - 1;
     output_[last_index].SetLastInSelectorList(true);
-    if (!dropped_nest_token_during_forgiving_parsing_ &&
-        !SelectorListIsNestContaining(reset_vector.AddedElements().data())) {
+    if (!SelectorListIsNestContaining(reset_vector.AddedElements().data())) {
       output_.back().SetRelation(CSSSelector::kDescendant);
       output_.push_back(
           CSSSelector(parent_rule_for_nesting_, /*is_implicit=*/true));

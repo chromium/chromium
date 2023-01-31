@@ -1815,6 +1815,10 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return !toggle->ValueMatches(State(0));
       }
     }
+    case CSSSelector::kPseudoParentUnparsed:
+      // Only kept around for parsing; can never match anything
+      // (because we don't know what it's supposed to mean).
+      return false;
     case CSSSelector::kPseudoUnknown:
     default:
       NOTREACHED();
