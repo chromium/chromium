@@ -6333,6 +6333,9 @@ crbug.com/1392781 [ Win ] http/tests/fetch/serviceworker-proxied/thorough/cors-p
 crbug.com/1392781 [ Win ] http/tests/fetch/serviceworker/thorough/auth-base-https-other-https.html [ Crash Failure Pass Timeout ]
 crbug.com/1392781 [ Win ] http/tests/fetch/window/thorough/auth-nocors-base-https-other-https.html [ Crash Failure Pass Timeout ]
 crbug.com/1392781 [ Win ] http/tests/fetch/workers/thorough/cors-preflight-base-https-other-https.html [ Crash Failure Pass Timeout ]
+crbug.com/1410530 [ Mac10.15 ] external/wpt/performance-timeline/tentative/include-frames-originA-B-A.html [ Failure ]
+crbug.com/1410530 [ Mac10.15 ] external/wpt/performance-timeline/tentative/include-frames-originA-B-B.html [ Failure ]
+crbug.com/1410530 [ Mac11-arm64 ] external/wpt/performance-timeline/tentative/include-frames-originA-B-A.html [ Failure ]
 
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
