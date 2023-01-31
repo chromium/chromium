@@ -1787,9 +1787,7 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-// crbug.com/1356181 Disable due to flaky.
-AX_TEST_F('ChromeVoxBackgroundTest',
-          'DISABLED_aGestureGranularity', async function() {
+AX_TEST_F('ChromeVoxBackgroundTest', 'GestureGranularity', async function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
     <p>This is a test</p>

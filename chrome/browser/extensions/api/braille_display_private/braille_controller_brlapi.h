@@ -36,6 +36,9 @@ class BrailleControllerImpl : public BrailleController {
   void AddObserver(BrailleObserver* observer) override;
   void RemoveObserver(BrailleObserver* observer) override;
 
+  // Use BrailleControllerImpl instead of Stub in tests.
+  bool use_self_in_tests() const { return use_self_in_tests_; }
+
  private:
   // For the unit tests.
   friend class BrailleDisplayPrivateApiTest;
@@ -73,6 +76,7 @@ class BrailleControllerImpl : public BrailleController {
   void DispatchOnDisplayStateChanged(std::unique_ptr<DisplayState> new_state);
 
   CreateBrlapiConnectionFunction create_brlapi_connection_function_;
+  bool use_self_in_tests_ = false;
 
   // Manipulated on the IO thread.
   LibBrlapiLoader libbrlapi_loader_;

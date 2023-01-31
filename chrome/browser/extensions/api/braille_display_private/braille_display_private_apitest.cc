@@ -153,6 +153,7 @@ class BrailleDisplayPrivateApiTest : public ExtensionApiTest {
     connection_data_.display_columns = 0;
     connection_data_.error.brlerrno = BRLAPI_ERROR_SUCCESS;
     connection_data_.reappear_on_disconnect = false;
+    BrailleControllerImpl::GetInstance()->use_self_in_tests_ = true;
     BrailleControllerImpl::GetInstance()->SetCreateBrlapiConnectionForTesting(
         base::BindOnce(&BrailleDisplayPrivateApiTest::CreateBrlapiConnection,
                        base::Unretained(this)));
