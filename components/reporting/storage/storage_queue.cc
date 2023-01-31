@@ -40,6 +40,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/thread_annotations.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -1406,9 +1407,8 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
       : TaskRunnerContext<Status>(std::move(write_callback),
                                   storage_queue->sequenced_task_runner_),
         storage_queue_(storage_queue),
-        record_(std::move(record)),
-        in_contexts_queue_(storage_queue->write_contexts_queue_.end()) {
-    DCHECK(storage_queue.get());
+        record_(std::move(record)) {
+    DCHECK(storage_queue_.get());
   }
 
  private:
@@ -1419,7 +1419,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
 
     // If still in queue, remove it (something went wrong).
     if (in_contexts_queue_ != storage_queue_->write_contexts_queue_.end()) {
-      DCHECK_EQ(storage_queue_->write_contexts_queue_.front(), this);
+      DCHECK_EQ(storage_queue_->write_contexts_queue_.front().get(), this);
       storage_queue_->write_contexts_queue_.erase(in_contexts_queue_);
     }
 
@@ -1429,7 +1429,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
         !storage_queue_->write_contexts_queue_.front()->buffer_.empty()) {
       storage_queue_->write_contexts_queue_.front()->Schedule(
           &WriteContext::ResumeWriteRecord,
-          base::Unretained(storage_queue_->write_contexts_queue_.front()));
+          storage_queue_->write_contexts_queue_.front());
     }
 
     // If uploads are not immediate, we are done.
@@ -1447,6 +1447,9 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
   void OnStart() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(
         storage_queue_->storage_queue_sequence_checker_);
+
+    // Set iterator to `end` in case early exit is required.
+    in_contexts_queue_ = storage_queue_->write_contexts_queue_.end();
 
     // Make sure the record is valid.
     if (!record_.has_destination()) {
@@ -1515,7 +1518,8 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
 
     // Add context to the end of the queue.
     in_contexts_queue_ = storage_queue_->write_contexts_queue_.insert(
-        storage_queue_->write_contexts_queue_.end(), this);
+        storage_queue_->write_contexts_queue_.end(),
+        weak_ptr_factory_.GetWeakPtr());
 
     // Start processing wrapped record.
     PrepareProcessWrappedRecord(std::move(wrapped_record));
@@ -1704,7 +1708,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     // If we are not at the head of the queue, delay write and expect to be
     // reactivated later.
     DCHECK(in_contexts_queue_ != storage_queue_->write_contexts_queue_.end());
-    if (storage_queue_->write_contexts_queue_.front() != this) {
+    if (storage_queue_->write_contexts_queue_.front().get() != this) {
       return;
     }
 
@@ -1833,11 +1837,6 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
 
   Record record_;
 
-  // Position in the |storage_queue_|->|write_contexts_queue_|.
-  // We use it in order to detect whether the context is in the queue
-  // and to remove it from the queue, when the time comes.
-  std::list<WriteContext*>::iterator in_contexts_queue_;
-
   // Digest of the current record.
   std::string current_record_digest_;
 
@@ -1848,6 +1847,16 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
   // Atomic counter of insufficien memory retry attempts.
   // Accessed in serialized methods only.
   size_t remaining_attempts_ = 16u;
+
+  // Position in the `storage_queue_`->`write_contexts_queue_`.
+  // We use it in order to detect whether the context is in the queue
+  // and to remove it from the queue, when the time comes.
+  std::list<base::WeakPtr<WriteContext>>::iterator in_contexts_queue_
+      GUARDED_BY_CONTEXT(storage_queue_->storage_queue_sequence_checker_);
+
+  // Factory for the `context_queue_`.
+  base::WeakPtrFactory<WriteContext> weak_ptr_factory_
+      GUARDED_BY_CONTEXT(storage_queue_->storage_queue_sequence_checker_){this};
 };
 
 void StorageQueue::Write(Record record,

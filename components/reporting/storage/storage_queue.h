@@ -21,6 +21,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
@@ -444,7 +445,9 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // being destructed. We use std::list rather than std::queue, because
   // if the write fails, it needs to be removed from the queue regardless of
   // whether it is at the head, tail or middle.
-  std::list<WriteContext*> write_contexts_queue_;
+  // Weak pointer allows to detect premature destruction of a context.
+  std::list<base::WeakPtr<WriteContext>> write_contexts_queue_
+      GUARDED_BY_CONTEXT(storage_queue_sequence_checker_);
 
   // Reflects reservation for the head of the write contexts queue. Will return
   // to 0 after each writing process is finished. It helps keep disk space usage
