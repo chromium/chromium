@@ -47,9 +47,10 @@ namespace blink {
 
 namespace {
 
-static constexpr char kUrlHandlerWildcardPrefix[] = "%2A.";
+static constexpr char kOriginWildcardPrefix[] = "%2A.";
 // Keep in sync with web_app_origin_association_task.cc.
 static wtf_size_t kMaxUrlHandlersSize = 10;
+static wtf_size_t kMaxScopeExtensionsSize = 10;
 static wtf_size_t kMaxShortcutsSize = 10;
 static wtf_size_t kMaxOriginLength = 2000;
 
@@ -80,9 +81,7 @@ bool URLIsWithinScope(const KURL& url, const KURL& scope) {
          url.GetPath().StartsWith(scope.GetPath());
 }
 
-// This function should be kept in sync with IsHostValidForUrlHandler in
-// manifest_mojom_traits.cc.
-bool IsHostValidForUrlHandler(String host) {
+bool IsHostValidForScopeExtension(String host) {
   if (url::HostIsIPAddress(host.Utf8()))
     return true;
 
@@ -178,6 +177,7 @@ bool ManifestParser::Parse() {
   manifest_->file_handlers = ParseFileHandlers(root_object.get());
   manifest_->protocol_handlers = ParseProtocolHandlers(root_object.get());
   manifest_->url_handlers = ParseUrlHandlers(root_object.get());
+  manifest_->scope_extensions = ParseScopeExtensions(root_object.get());
   manifest_->lock_screen = ParseLockScreen(root_object.get());
   manifest_->note_taking = ParseNoteTaking(root_object.get());
   manifest_->related_applications = ParseRelatedApplications(root_object.get());
@@ -1443,16 +1443,16 @@ ManifestParser::ParseUrlHandler(const JSONObject* object) {
   String host = origin->Host();
   auto url_handler = mojom::blink::ManifestUrlHandler::New();
   // Check for wildcard *.
-  if (host.StartsWith(kUrlHandlerWildcardPrefix)) {
+  if (host.StartsWith(kOriginWildcardPrefix)) {
     url_handler->has_origin_wildcard = true;
     // Trim the wildcard prefix to get the effective host. Minus one to exclude
     // the length of the null terminator.
-    host = host.Substring(sizeof(kUrlHandlerWildcardPrefix) - 1);
+    host = host.Substring(sizeof(kOriginWildcardPrefix) - 1);
   } else {
     url_handler->has_origin_wildcard = false;
   }
 
-  bool host_valid = IsHostValidForUrlHandler(host);
+  bool host_valid = IsHostValidForScopeExtension(host);
   if (!host_valid) {
     AddErrorInfo(
         "url_handlers entry ignored, domain of required property 'origin' is "
@@ -1472,6 +1472,164 @@ ManifestParser::ParseUrlHandler(const JSONObject* object) {
 
   url_handler->origin = origin;
   return std::move(url_handler);
+}
+
+Vector<mojom::blink::ManifestScopeExtensionPtr>
+ManifestParser::ParseScopeExtensions(const JSONObject* from) {
+  Vector<mojom::blink::ManifestScopeExtensionPtr> scope_extensions;
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableScopeExtensions) ||
+      !from->Get("scope_extensions")) {
+    return scope_extensions;
+  }
+  JSONArray* extensions_list = from->GetArray("scope_extensions");
+  if (!extensions_list) {
+    AddErrorInfo("property 'scope_extensions' ignored, type array expected.");
+    return scope_extensions;
+  }
+
+  JSONValue::ValueType expected_entry_type = JSONValue::kTypeNull;
+  for (wtf_size_t i = 0; i < extensions_list->size(); ++i) {
+    if (i == kMaxScopeExtensionsSize) {
+      AddErrorInfo("property 'scope_extensions' contains more than " +
+                   String::Number(kMaxScopeExtensionsSize) +
+                   " valid elements, only the first " +
+                   String::Number(kMaxScopeExtensionsSize) + " are parsed.");
+      break;
+    }
+
+    const JSONValue* extensions_entry = extensions_list->at(i);
+    if (!extensions_entry) {
+      AddErrorInfo("scope_extensions entry ignored, entry is null.");
+      continue;
+    }
+
+    JSONValue::ValueType entry_type = extensions_entry->GetType();
+    if (entry_type != JSONValue::kTypeString &&
+        entry_type != JSONValue::kTypeObject) {
+      AddErrorInfo(
+          "scope_extensions entry ignored, type string or object expected.");
+      continue;
+    }
+
+    // Check whether first scope extension entry in the list is a string or
+    // object to make sure that following entries have the same type, ignoring
+    // entries that are null or other types.
+    if (expected_entry_type != JSONValue::kTypeString &&
+        expected_entry_type != JSONValue::kTypeObject) {
+      expected_entry_type = entry_type;
+    }
+
+    absl::optional<mojom::blink::ManifestScopeExtensionPtr> scope_extension =
+        absl::nullopt;
+    if (expected_entry_type == JSONValue::kTypeString) {
+      String scope_extension_origin;
+      if (!extensions_entry->AsString(&scope_extension_origin)) {
+        AddErrorInfo("scope_extensions entry ignored, type string expected.");
+        continue;
+      }
+      scope_extension = ParseScopeExtensionOrigin(scope_extension_origin);
+    } else {
+      const JSONObject* extension_object = JSONObject::Cast(extensions_entry);
+      if (!extension_object) {
+        AddErrorInfo("scope_extensions entry ignored, type object expected.");
+        continue;
+      }
+      scope_extension = ParseScopeExtension(extension_object);
+    }
+
+    if (!scope_extension) {
+      continue;
+    }
+    scope_extensions.push_back(std::move(scope_extension.value()));
+  }
+  return scope_extensions;
+}
+
+absl::optional<mojom::blink::ManifestScopeExtensionPtr>
+ManifestParser::ParseScopeExtension(const JSONObject* object) {
+  DCHECK(base::FeatureList::IsEnabled(
+      blink::features::kWebAppEnableScopeExtensions));
+  if (!object->Get("origin")) {
+    AddErrorInfo(
+        "scope_extensions entry ignored, required property 'origin' is "
+        "missing.");
+    return absl::nullopt;
+  }
+  const absl::optional<String> origin_string =
+      ParseString(object, "origin", Trim(true));
+  if (!origin_string.has_value()) {
+    return absl::nullopt;
+  }
+
+  return ParseScopeExtensionOrigin(*origin_string);
+}
+
+absl::optional<mojom::blink::ManifestScopeExtensionPtr>
+ManifestParser::ParseScopeExtensionOrigin(const String& origin_string) {
+  DCHECK(base::FeatureList::IsEnabled(
+      blink::features::kWebAppEnableScopeExtensions));
+
+  // TODO(crbug.com/1250011): pre-process for input without scheme.
+  // (eg. example.com instead of https://example.com) because we can always
+  // assume the use of https for scope extensions. Remove this TODO if we decide
+  // to require fully specified https scheme in this origin input.
+
+  if (origin_string.length() > kMaxOriginLength) {
+    AddErrorInfo(
+        "scope_extensions entry ignored, 'origin' exceeds maximum character "
+        "length of " +
+        String::Number(kMaxOriginLength) + " .");
+    return absl::nullopt;
+  }
+
+  auto origin = SecurityOrigin::CreateFromString(origin_string);
+  if (!origin || origin->IsOpaque()) {
+    AddErrorInfo(
+        "scope_extensions entry ignored, required property 'origin' is "
+        "invalid.");
+    return absl::nullopt;
+  }
+  if (origin->Protocol() != url::kHttpsScheme) {
+    AddErrorInfo(
+        "scope_extensions entry ignored, required property 'origin' must use "
+        "the https scheme.");
+    return absl::nullopt;
+  }
+
+  String host = origin->Host();
+  auto scope_extension = mojom::blink::ManifestScopeExtension::New();
+  // Check for wildcard *.
+  if (host.StartsWith(kOriginWildcardPrefix)) {
+    scope_extension->has_origin_wildcard = true;
+    // Trim the wildcard prefix to get the effective host. Minus one to exclude
+    // the length of the null terminator.
+    host = host.Substring(sizeof(kOriginWildcardPrefix) - 1);
+  } else {
+    scope_extension->has_origin_wildcard = false;
+  }
+
+  bool host_valid = IsHostValidForScopeExtension(host);
+  if (!host_valid) {
+    AddErrorInfo(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.");
+    return absl::nullopt;
+  }
+
+  if (scope_extension->has_origin_wildcard) {
+    origin = SecurityOrigin::CreateFromValidTuple(origin->Protocol(), host,
+                                                  origin->Port());
+    if (!origin) {
+      AddErrorInfo(
+          "scope_extensions entry ignored, required property 'origin' is "
+          "invalid.");
+      return absl::nullopt;
+    }
+  }
+
+  scope_extension->origin = origin;
+  return std::move(scope_extension);
 }
 
 KURL ManifestParser::ParseLockScreenStartUrl(const JSONObject* lock_screen) {

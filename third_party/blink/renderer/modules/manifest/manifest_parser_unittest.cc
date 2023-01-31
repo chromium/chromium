@@ -3486,6 +3486,738 @@ TEST_F(ManifestParserTest, UrlHandlerParseRules) {
   }
 }
 
+TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kWebAppEnableScopeExtensions);
+
+  // Manifest does not contain a 'scope_extensions' field.
+  {
+    auto& manifest = ParseManifest("{ }");
+    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_EQ(0u, manifest->scope_extensions.size());
+  }
+
+  // 'scope_extensions' is not an array.
+  {
+    auto& manifest = ParseManifest(R"({ "scope_extensions": { } })");
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'scope_extensions' ignored, type array expected.",
+              errors()[0]);
+    EXPECT_EQ(0u, manifest->scope_extensions.size());
+  }
+
+  // Contains 'scope_extensions' field but no scope extension entries.
+  {
+    auto& manifest = ParseManifest(R"({ "scope_extensions": [ ] })");
+    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_EQ(0u, manifest->scope_extensions.size());
+  }
+
+  // Scope extension entry must be an object or a string.
+  {
+    auto& manifest = ParseManifest(R"({ "scope_extensions": [ 7 ] })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("scope_extensions entry ignored, type string or object expected.",
+              errors()[0]);
+    EXPECT_EQ(0u, scope_extensions.size());
+  }
+
+  // A valid scope extension.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https://foo.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+  }
+
+  // A valid scope extension in shorthand format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "https://foo.com"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+  }
+
+  // Origin field is missing from the scope extension entry.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "invalid_field": "https://foo.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "scope_extensions entry ignored, required property 'origin' is "
+        "missing.",
+        errors()[0]);
+    EXPECT_EQ(0u, scope_extensions.size());
+  }
+
+  // Scope extension entry origin must be a string.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": 7
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'origin' ignored, type string expected.", errors()[0]);
+    EXPECT_EQ(0u, scope_extensions.size());
+  }
+
+  // Scheme must be https.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "http://foo.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "scope_extensions entry ignored, required property 'origin' must use "
+        "the https scheme.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Scheme must be https in shorthand format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "http://foo.com"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "scope_extensions entry ignored, required property 'origin' must use "
+        "the https scheme.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Origin must be valid.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https:///////"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "scope_extensions entry ignored, required property 'origin' is "
+        "invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Origin must be valid in shorthand format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "https:///////"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "scope_extensions entry ignored, required property 'origin' is "
+        "invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse multiple valid scope extensions.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https://foo.com"
+            },
+            {
+              "origin": "https://bar.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(2u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://bar.com")
+                    ->IsSameOriginWith(scope_extensions[1]->origin.get()));
+  }
+
+  // Parse multiple valid scope extensions in shorthand format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "https://foo.com",
+            "https://bar.com"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(2u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://bar.com")
+                    ->IsSameOriginWith(scope_extensions[1]->origin.get()));
+  }
+
+  // Parse invalid scope extensions list with an array entry.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https://foo.com"
+            },
+            []
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("scope_extensions entry ignored, type string or object expected.",
+              errors()[0]);
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+  }
+
+  // Parse invalid scope extensions list with an array entry in shorthand
+  // format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "https://foo.com",
+            []
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("scope_extensions entry ignored, type string or object expected.",
+              errors()[0]);
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+  }
+
+  // Parse invalid scope extensions list with entries in mixed formats.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https://foo.com"
+            },
+            "https://bar.com"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("scope_extensions entry ignored, type object expected.",
+              errors()[0]);
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+  }
+
+  // Parse both valid and invalid scope extensions.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https://foo.com"
+            },
+            {
+              "origin": "about:"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "scope_extensions entry ignored, required property 'origin' is "
+        "invalid.",
+        errors()[0]);
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+  }
+
+  // Parse both valid and invalid scope extensions in shorthand format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "https://foo.com",
+            "about:"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "scope_extensions entry ignored, required property 'origin' is "
+        "invalid.",
+        errors()[0]);
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+  }
+
+  // Parse invalid scope extension where the origin is a TLD.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https://co.uk"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse invalid scope extension where the origin is a TLD in shorthand
+  // format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "https://co.uk"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse origin with wildcard.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https://*.foo.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_TRUE(scope_extensions[0]->has_origin_wildcard);
+  }
+
+  // Parse origin with wildcard in shorthand format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "https://*.foo.com"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_TRUE(scope_extensions[0]->has_origin_wildcard);
+  }
+
+  // Parse invalid origin wildcard format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https://*foo.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://*foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_FALSE(scope_extensions[0]->has_origin_wildcard);
+  }
+
+  // Parse invalid origin wildcard format in shorthand format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "https://*foo.com"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://*foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_FALSE(scope_extensions[0]->has_origin_wildcard);
+  }
+
+  // Parse origin where the host is just the wildcard prefix.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https://*."
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse origin where the host is just the wildcard prefix in shorthand
+  // format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "https://*."
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse invalid origin where wildcard is used with a TLD.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https://*.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse invalid origin where wildcard is used with a TLD in shorthand format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "https://*.com"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse invalid origin where wildcard is used with an unknown TLD.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https://*.foo"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse invalid origin where wildcard is used with an unknown TLD in
+  // shorthand format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "https://*.foo"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse invalid origin where wildcard is used with a multipart TLD.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https://*.co.uk"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse invalid origin where wildcard is used with a multipart TLD in
+  // shorthand format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "https://*.co.uk"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse valid origin with private registry.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https://*.glitch.me"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://glitch.me")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_TRUE(scope_extensions[0]->has_origin_wildcard);
+  }
+
+  // Parse valid origin with private registry in shorthand format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "https://*.glitch.me"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://glitch.me")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_TRUE(scope_extensions[0]->has_origin_wildcard);
+  }
+
+  // Parse valid IP address as origin.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "origin": "https://192.168.0.1:8888"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(
+        blink::SecurityOrigin::CreateFromString("https://192.168.0.1:8888")
+            ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_FALSE(scope_extensions[0]->has_origin_wildcard);
+  }
+
+  // Parse valid IP address as origin in shorthand format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            "https://192.168.0.1:8888"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(
+        blink::SecurityOrigin::CreateFromString("https://192.168.0.1:8888")
+            ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_FALSE(scope_extensions[0]->has_origin_wildcard);
+  }
+
+  // Validate only the first 10 scope extensions are parsed. The following
+  // manifest specifies 11 scope extensions, so the last one should not be in
+  // the result.
+  {
+    auto& manifest = ParseManifest(
+        R"({
+          "scope_extensions": [
+            {
+              "origin": "https://192.168.0.1:8001"
+            },
+            {
+              "origin": "https://192.168.0.1:8002"
+            },
+            {
+              "origin": "https://192.168.0.1:8003"
+            },
+            {
+              "origin": "https://192.168.0.1:8004"
+            },
+            {
+              "origin": "https://192.168.0.1:8005"
+            },
+            {
+              "origin": "https://192.168.0.1:8006"
+            },
+            {
+              "origin": "https://192.168.0.1:8007"
+            },
+            {
+              "origin": "https://192.168.0.1:8008"
+            },
+            {
+              "origin": "https://192.168.0.1:8009"
+            },
+            {
+              "origin": "https://192.168.0.1:8010"
+            },
+            {
+              "origin": "https://192.168.0.1:8011"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'scope_extensions' contains more than 10 valid elements, "
+        "only the first 10 are parsed.",
+        errors()[0]);
+    ASSERT_EQ(10u, scope_extensions.size());
+    ASSERT_TRUE(
+        blink::SecurityOrigin::CreateFromString("https://192.168.0.1:8010")
+            ->IsSameOriginWith(scope_extensions[9]->origin.get()));
+  }
+
+  // Validate only the first 10 scope extensions are parsed in shorthand format.
+  // The following manifest specifies 11 scope extensions, so the last one
+  // should not be in the result.
+  {
+    auto& manifest = ParseManifest(
+        R"({
+          "scope_extensions": [
+            "https://192.168.0.1:8001",
+            "https://192.168.0.1:8002",
+            "https://192.168.0.1:8003",
+            "https://192.168.0.1:8004",
+            "https://192.168.0.1:8005",
+            "https://192.168.0.1:8006",
+            "https://192.168.0.1:8007",
+            "https://192.168.0.1:8008",
+            "https://192.168.0.1:8009",
+            "https://192.168.0.1:8010",
+            "https://192.168.0.1:8011"
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'scope_extensions' contains more than 10 valid elements, "
+        "only the first 10 are parsed.",
+        errors()[0]);
+    ASSERT_EQ(10u, scope_extensions.size());
+    ASSERT_TRUE(
+        blink::SecurityOrigin::CreateFromString("https://192.168.0.1:8010")
+            ->IsSameOriginWith(scope_extensions[9]->origin.get()));
+  }
+}
+
 TEST_F(ManifestParserTest, LockScreenParseRules) {
   KURL manifest_url = KURL("https://foo.com/manifest.json");
   KURL document_url = KURL("https://foo.com/index.html");

@@ -41979,6 +41979,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="ServiceWorkerFetchHandlerModifiedAfterInitialization"/>
   <int value="4454" label="OptionLabelInQuirksMode"/>
   <int value="4455" label="ParseFromStringIncludeShadows"/>
+  <int value="4456" label="WebAppEnableScopeExtensions"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -60493,6 +60494,7 @@ from previous Chrome versions.
       label="OmniboxHistoryQuickProviderAllowMidwordContinuations:disabled"/>
   <int value="-482259889" label="MacMDDownloadShelf:disabled"/>
   <int value="-482188490" label="ImpulseScrollAnimations:disabled"/>
+  <int value="-481626345" label="WebAppEnableScopeExtensions:enabled"/>
   <int value="-481238673" label="EnableAndroidGamepadVibration:disabled"/>
   <int value="-480263549" label="AutofillShadowDOM:disabled"/>
   <int value="-479601398" label="InfoCardAcknowledgementTracking:enabled"/>
@@ -60728,6 +60730,7 @@ from previous Chrome versions.
   <int value="-340622848" label="disable-javascript-harmony-shipping"/>
   <int value="-340255045" label="allow-nacl-socket-api"/>
   <int value="-340023285" label="WebNFC:enabled"/>
+  <int value="-339201954" label="WebAppEnableScopeExtensions:disabled"/>
   <int value="-339103761" label="ArcGraphicBuffersVisualizationTool:enabled"/>
   <int value="-338978205" label="NavigationMojoResponse:enabled"/>
   <int value="-338606027" label="TrimOnMemoryPressure:disabled"/>

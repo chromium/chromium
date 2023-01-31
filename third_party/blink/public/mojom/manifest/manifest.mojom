@@ -62,6 +62,11 @@ struct Manifest {
   // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
   array<ManifestUrlHandler> url_handlers;
 
+  // TODO(crbug.com/1250011): This field is non-standard and part of an
+  // experiment. See:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
+  array<ManifestScopeExtension> scope_extensions;
+
   // TODO(crbug.com/1006642): This field is non-standard and part of an
   // experiment. See:
   // https://github.com/WICG/lock-screen/
@@ -218,6 +223,15 @@ struct ManifestUrlHandler {
   // A boolean that is used to show if a wildcard is present for the origin.
   // If true, the application indicates that it wants to handle all subdomains
   // of |origin|. If false, the application only wants to handle |origin|.
+  bool has_origin_wildcard;
+};
+
+struct ManifestScopeExtension {
+  url.mojom.Origin origin;
+  // A boolean that is used to show if a wildcard is present for the origin.
+  // If true, the application indicates that it wants to extend its scope to all
+  // subdomains of |origin|. If false, the application only wants to extend its
+  // scope to |origin|.
   bool has_origin_wildcard;
 };
 

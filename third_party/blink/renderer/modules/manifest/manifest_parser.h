@@ -337,6 +337,35 @@ class MODULES_EXPORT ManifestParser {
   absl::optional<mojom::blink::ManifestUrlHandlerPtr> ParseUrlHandler(
       const JSONObject* object);
 
+  // Parses the 'scope_extensions' field of a Manifest, as defined in:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
+  // Returns the parsed list of ScopeExtensions. The returned ScopeExtensions
+  // are empty if the field didn't exist, parsing failed, the input list was
+  // empty, or if the blink feature flag is disabled.
+  // This feature is experimental and is only enabled by the blink feature flag:
+  // blink::features::kWebAppEnableScopeExtensions.
+  Vector<mojom::blink::ManifestScopeExtensionPtr> ParseScopeExtensions(
+      const JSONObject* object);
+
+  // Parses a single scope extension entry in 'scope_extensions', as defined in:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
+  // Returns |absl::nullopt| if the ScopeExtension was invalid, or a
+  // ScopeExtension if parsing succeeded.
+  // This feature is experimental and is only enabled by the blink feature flag:
+  // blink::features::kWebAppEnableScopeExtensions.
+  absl::optional<mojom::blink::ManifestScopeExtensionPtr> ParseScopeExtension(
+      const JSONObject* object);
+
+  // Parses a single scope extension origin in 'scope_extensions', as defined
+  // in:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
+  // Returns |absl::nullopt| if the ScopeExtension origin was invalid, or a
+  // ScopeExtension if parsing succeeded.
+  // This feature is experimental and is only enabled by the blink feature flag:
+  // blink::features::kWebAppEnableScopeExtensions.
+  absl::optional<mojom::blink::ManifestScopeExtensionPtr>
+  ParseScopeExtensionOrigin(const String& origin_string);
+
   // Parses the 'file_handlers' field of a Manifest, as defined in:
   // https://github.com/WICG/file-handling/blob/main/explainer.md
   // Returns the parsed list of FileHandlers. The returned FileHandlers are
