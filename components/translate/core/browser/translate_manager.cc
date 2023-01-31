@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -338,8 +339,12 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
                                      const std::string& target_lang,
                                      bool triggered_from_menu,
                                      TranslationType translation_type) {
-  if (!translate_driver_->HasCurrentPage()) {
-    NOTREACHED();
+  const GURL& page_url = translate_driver_->GetVisibleURL();
+  // TODO(crbug.com/1407479): This call should be changed to
+  // CHECK(translate_client_->IsTranslatableURL(page_url)) once it is verified
+  // that it is not reachable.
+  if (!translate_client_->IsTranslatableURL(page_url)) {
+    base::debug::DumpWithoutCrashing();
     return;
   }
 

@@ -369,6 +369,7 @@ TEST_F(TranslateMessageTest, TranslateAndRevert) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
 
   {
     base::HistogramTester histogram_tester;
@@ -411,6 +412,7 @@ TEST_F(TranslateMessageTest, TranslateAndRevertMultipleTimes) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   TranslateThenRevertThenDismiss(env, "fr", "en");
 
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
@@ -523,6 +525,7 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleAlwaysTranslateLanguage) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
 
   ShowBeforeTranslationMessage(env, "fr", "en");
 
@@ -609,6 +612,7 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleNeverTranslateLanguage) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
   ExpectTranslationInProgress(env, "fr", "en");
   translate_message_->HandlePrimaryAction(env);
@@ -692,6 +696,7 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleNeverTranslateSite) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
   ExpectTranslationInProgress(env, "fr", "en");
   translate_message_->HandlePrimaryAction(env);
@@ -782,6 +787,7 @@ TEST_F(TranslateMessageTest, OverflowMenuChangeSourceLanguage) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
 
   ExpectConstructMenuItemArray(
@@ -857,6 +863,7 @@ TEST_F(TranslateMessageTest,
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
 
   ExpectConstructMenuItemArray(
@@ -938,6 +945,7 @@ TEST_F(TranslateMessageTest,
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
 
   ExpectConstructMenuItemArray(
@@ -1115,6 +1123,7 @@ TEST_F(TranslateMessageTest, CreateTranslateMessageFailsThenSucceeds) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   TranslateThenRevertThenDismiss(env, "fr", "en");
 }
 
@@ -1125,6 +1134,7 @@ TEST_F(TranslateMessageTest, CreateTranslateMessageSucceedsThenFails) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   TranslateThenRevertThenDismiss(env, "fr", "en");
 
   // The second call to CreateTranslateMessage will fail.
@@ -1152,6 +1162,7 @@ TEST_F(TranslateMessageTest, TranslationDismissedInProgressByTimer) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
   ExpectTranslationInProgress(env, "fr", "en");
   translate_message_->HandlePrimaryAction(env);
@@ -1185,6 +1196,7 @@ TEST_F(TranslateMessageTest, TranslationDismissedInProgressByGesture) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
   ExpectTranslationInProgress(env, "fr", "en");
   translate_message_->HandlePrimaryAction(env);
@@ -1424,6 +1436,7 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslate) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
   ExpectTranslationInProgress(env, "fr", "en");
   translate_message_->HandlePrimaryAction(env);
@@ -1480,6 +1493,7 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslatePastAcceptedThreshold) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
   ExpectTranslationInProgress(env, "fr", "en");
   translate_message_->HandlePrimaryAction(env);
@@ -1509,6 +1523,7 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslateDismissedInProgress) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
   ExpectTranslationInProgress(env, "fr", "en");
   translate_message_->HandlePrimaryAction(env);
@@ -1558,6 +1573,7 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslateThresholdNotReached) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
   ExpectTranslationInProgress(env, "fr", "en");
   translate_message_->HandlePrimaryAction(env);
@@ -1590,6 +1606,7 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslatePastMaximumTimes) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
   ExpectTranslationInProgress(env, "fr", "en");
   translate_message_->HandlePrimaryAction(env);
@@ -1623,6 +1640,7 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslateInterruptedByOverflowMenu) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
+  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
   ExpectTranslationInProgress(env, "fr", "en");
   translate_message_->HandlePrimaryAction(env);
