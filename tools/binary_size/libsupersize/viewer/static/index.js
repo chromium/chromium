@@ -124,7 +124,7 @@ function setSubmitListener(form, fetchDataUrl) {
     for (let cpu of cpus) {
       for (let apk of apks) {
         // Chrome.apk not available for arm_64
-        if (!(cpu == 'arm_64' && apk == 'Chrome.apk')) {
+        if (!(cpu === 'arm_64' && apk === 'Chrome.apk')) {
           out.push(fmtCpuApk(cpu, apk));
         }
       }
@@ -160,10 +160,10 @@ function setSubmitListener(form, fetchDataUrl) {
     let mainVersions = milestonesPushed.version;
     let canaryVersions =
         (officialBuildsPushed
-             .filter(a => fmtCpuApk(a.cpu, a.apk) == selApk.value)
+             .filter(a => fmtCpuApk(a.cpu, a.apk) === selApk.value)
              .map(a => a.version + ' (canary)'));
 
-    if (selApk.value.indexOf('AndroidWebview.apk') != -1) {
+    if (selApk.value.indexOf('AndroidWebview.apk') !== -1) {
       // AndroidWebview.apk size information exists only for M71 and above.
       mainVersions =
           mainVersions.filter(v2 => compareVersions(v2, '71.0.0.0') > 0);
@@ -227,7 +227,7 @@ function setSubmitListener(form, fetchDataUrl) {
   /** @return {string} */
   function getDataUrl() {
     function sizeUrlFor(value) {
-      if (value.indexOf('canary') != -1) {
+      if (value.indexOf('canary') !== -1) {
         const strippedVersion = value.replace(/[^\d.]/g, '');
         return `${SIZE_FILEHOST}/official_builds/reports/${strippedVersion}/${
             selApk.value}.size`;

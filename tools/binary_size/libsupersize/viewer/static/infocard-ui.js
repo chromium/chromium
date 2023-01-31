@@ -131,7 +131,7 @@ const displayInfocard = (() => {
       const elements = [];
 
       // srcPath is set only for leaf nodes.
-      if (typeof node.srcPath !== 'undefined') {
+      if (node.srcPath !== undefined) {
         const add_field = (title, text) => {
           const div = document.createElement('div');
           div.appendChild(dom.textElement('span', title, 'symbol-name-info'));
@@ -371,8 +371,8 @@ const displayInfocard = (() => {
      *   the total size of the symbols in the artifact.
      */
     _updateBreakdownRow(row, stats, percentage) {
-      if (stats == null || stats.size === 0) {
-        if (row.parentElement != null) {
+      if (!stats?.size) {  // Subsumes |size| === 0.
+        if (row.parentElement) {
           this._tableBody.removeChild(row);
         }
         return;

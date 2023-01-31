@@ -39,7 +39,7 @@ const dom = {
   replace(parent, newChild) {
     while (parent.firstChild)
       parent.removeChild(parent.firstChild);
-    if (newChild != null)
+    if (newChild)
       parent.appendChild(newChild);
   },
   /**
@@ -99,7 +99,8 @@ function _initState() {
     toString() {
       const copy = new URLSearchParams(_filterParams);
       const types = [...new Set(copy.getAll(_TYPE_STATE_KEY))];
-      if (types.length > 0) copy.set(_TYPE_STATE_KEY, types.join(''));
+      if (types.length > 0)
+        copy.set(_TYPE_STATE_KEY, types.join(''));
 
       const queryString = copy.toString();
       return queryString.length > 0 ? `?${queryString}` : '';
@@ -111,7 +112,7 @@ function _initState() {
      * @param {string | null} value
      */
     set(key, value) {
-      if (value == null) {
+      if (value === null) {
         _filterParams.delete(key);
       } else {
         _filterParams.set(key, value);
@@ -303,7 +304,7 @@ function _makeIconTemplateGetter() {
   };
 
 
-  /** @type {Map<string, {color:string,description:string}>} */
+  /** @type {Map<string, {color:string, description:string}>} */
   const iconInfoCache = new Map();
 
   /**
@@ -326,7 +327,7 @@ function _makeIconTemplateGetter() {
    */
   function getIconStyle(type) {
     let info = iconInfoCache.get(type);
-    if (info == null) {
+    if (!info) {
       const icon = getIconTemplate(type, true);
       info = {
         color: icon.getAttribute('fill'),
@@ -348,7 +349,7 @@ function _makeIconTemplateGetter() {
     const isLeaf = node.children && node.children.length === 0;
     const entries = Object.entries(node.childStats);
     let key = 'unchanged';
-    if (isLeaf && entries.length != 0) {
+    if (isLeaf && entries.length !== 0) {
       const statsEntry = entries[0][1];
       if (statsEntry.added) {
         key = 'added';
@@ -357,9 +358,9 @@ function _makeIconTemplateGetter() {
       } else if (statsEntry.changed) {
         key = 'changed';
       }
-    } else if (node.diffStatus == _DIFF_STATUSES.ADDED) {
+    } else if (node.diffStatus === _DIFF_STATUSES.ADDED) {
       key = 'added';
-    } else if (node.diffStatus == _DIFF_STATUSES.REMOVED) {
+    } else if (node.diffStatus === _DIFF_STATUSES.REMOVED) {
       key = 'removed';
     }
     return statusIcons[key].cloneNode(true);

@@ -84,7 +84,7 @@ class TreeUi {
     const element = (typeof indexOrEl === 'number') ?
         this._liveNodeList[indexOrEl] :
         indexOrEl;
-    if (element != null) {
+    if (element) {
       // Update DOM.
       element.tabIndex = 0;
       element.focus();
@@ -115,7 +115,7 @@ class TreeUi {
       // Get data for the children of this tree node element. If the children
       // have not yet been loaded, request for the data from the worker.
       let data = this._uiNodeData.get(link);
-      if (data == null || data.children == null) {
+      if (!data?.children) {
         /** @type {HTMLSpanElement} */
         const symbolName = link.querySelector('.symbol-name');
         const idPath = symbolName.title;
@@ -221,7 +221,7 @@ class TreeUi {
       // If closed tree, open tree. Otherwise, move to first child.
       case 'ArrowRight': {
         const expanded = link.parentElement.getAttribute('aria-expanded');
-        if (expanded != null) {
+        if (expanded !== null) {
           // Leafs do not have the aria-expanded property.
           if (expanded === 'true') {
             _focusNext();
@@ -354,7 +354,7 @@ class TreeUi {
     if (this._isLeafNode(node)) {
       node.addEventListener('mousedown', this._handleRefocus.bind(this));
     }
-    displayInfocard(this._uiNodeData.get(node));
+    displayInfocard(/** @type {!TreeNode} */ (this._uiNodeData.get(node)));
     /** @type {HTMLElement} */ (event.currentTarget)
         .parentElement.classList.add('focused');
   }
