@@ -237,12 +237,6 @@ class CC_EXPORT FrameSequenceMetrics {
   const raw_ptr<ThroughputUkmReporter, DanglingUntriaged>
       throughput_ukm_reporter_;
 
-  // Track state for measuring the PercentDroppedFrames v2 metrics.
-  struct {
-    uint32_t frames_expected = 0;
-    uint32_t frames_dropped = 0;
-  } v2_;
-
   // Track state for measuring the PercentDroppedFrames v3 metrics.
   struct {
     uint32_t frames_expected = 0;

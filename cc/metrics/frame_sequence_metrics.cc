@@ -88,13 +88,6 @@ std::string GetThroughputHistogramName(FrameSequenceTrackerType type,
        FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
 }
 
-std::string GetThroughputV2HistogramName(FrameSequenceTrackerType type,
-                                         const char* thread_name) {
-  return base::StrCat(
-      {"Graphics.Smoothness.PercentDroppedFrames2.", thread_name, ".",
-       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
-}
-
 std::string GetThroughputV3HistogramName(FrameSequenceTrackerType type,
                                          const char* thread_name) {
   return base::StrCat(
@@ -196,9 +189,6 @@ void FrameSequenceMetrics::Merge(
   main_throughput_.Merge(metrics->main_throughput_);
   frames_checkerboarded_ += metrics->frames_checkerboarded_;
 
-  v2_.frames_expected += metrics->v2_.frames_expected;
-  v2_.frames_dropped += metrics->v2_.frames_dropped;
-
   v3_.frames_expected += metrics->v3_.frames_expected;
   v3_.frames_dropped += metrics->v3_.frames_dropped;
 
@@ -215,12 +205,11 @@ void FrameSequenceMetrics::Merge(
 bool FrameSequenceMetrics::HasEnoughDataForReporting() const {
   return impl_throughput_.frames_expected >= kMinFramesForThroughputMetric ||
          main_throughput_.frames_expected >= kMinFramesForThroughputMetric ||
-         v2_.frames_expected >= kMinFramesForThroughputMetric ||
          v3_.frames_expected >= kMinFramesForThroughputMetric;
 }
 
 bool FrameSequenceMetrics::HasDataLeftForReporting() const {
-  return impl_throughput_.frames_expected > 0 || v2_.frames_expected > 0 ||
+  return impl_throughput_.frames_expected > 0 ||
          main_throughput_.frames_expected > 0 || v3_.frames_expected > 0;
 }
 
@@ -285,40 +274,6 @@ void FrameSequenceMetrics::ReportMetrics() {
   const bool is_animation = ShouldReportForAnimation(type(), thread_type);
   const bool is_interaction =
       ShouldReportForInteraction(type(), thread_type, thread_type);
-
-  if (v2_.frames_expected >= kMinFramesForThroughputMetric) {
-    int percent = v2_.frames_expected == 0
-                      ? 0
-                      : std::ceil(100. * v2_.frames_dropped /
-                                  static_cast<double>(v2_.frames_expected));
-
-    if (is_animation) {
-      UMA_HISTOGRAM_PERCENTAGE(
-          "Graphics.Smoothness.PercentDroppedFrames2.AllAnimations", percent);
-    }
-    if (is_interaction) {
-      UMA_HISTOGRAM_PERCENTAGE(
-          "Graphics.Smoothness.PercentDroppedFrames2.AllInteractions", percent);
-    }
-    if (is_animation || is_interaction) {
-      UMA_HISTOGRAM_PERCENTAGE(
-          "Graphics.Smoothness.PercentDroppedFrames2.AllSequences", percent);
-    }
-
-    const char* thread_name =
-        thread_type == SmoothEffectDrivingThread::kCompositor
-            ? "CompositorThread"
-            : "MainThread";
-
-    STATIC_HISTOGRAM_POINTER_GROUP(
-        GetThroughputV2HistogramName(type(), thread_name),
-        GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
-        Add(percent),
-        base::LinearHistogram::FactoryGet(
-            GetThroughputV2HistogramName(type(), thread_name), 1, 100, 101,
-            base::HistogramBase::kUmaTargetedHistogramFlag));
-    v2_ = {};
-  }
 
   if (v3_.frames_expected >= kMinFramesForThroughputMetric) {
     int percent = v3_.frames_expected == 0
@@ -778,10 +733,8 @@ void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
   switch (GetEffectiveThread()) {
     case SmoothEffectDrivingThread::kCompositor:
       if (frame_info.WasSmoothCompositorUpdateDropped()) {
-        ++v2_.frames_dropped;
         ++v3_.frames_dropped;
       }
-      ++v2_.frames_expected;
       ++v3_.frames_expected;
       break;
     case SmoothEffectDrivingThread::kMain:
@@ -791,10 +744,6 @@ void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
         }
         ++v3_.frames_expected;
       }
-      if (frame_info.WasSmoothMainUpdateDropped()) {
-        ++v2_.frames_dropped;
-      }
-      ++v2_.frames_expected;
       break;
     case SmoothEffectDrivingThread::kUnknown:
       NOTREACHED();
