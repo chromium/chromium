@@ -5452,6 +5452,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Eche.MultiDeviceFeatureState" enum="MultiDevice_FeatureState"
+    expires_after="2024-01-31">
+  <owner>jonmann@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates the feature state of the Exo feature. This metric is emitted to at
+    the creation of the user session (when the user logs in), when any
+    multi-device feature state changes, and every 30 minutes.
+  </summary>
+</histogram>
+
 <histogram name="Eche.NotificationClicked" enum="EcheNotificationInteraction"
     expires_after="2023-04-16">
   <obsolete>
