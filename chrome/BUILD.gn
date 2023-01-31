@@ -386,6 +386,15 @@ if (is_win) {
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
     configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
     configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+
+    # chrome.dll.pdb on arm64 may hit PDB file format limits with 4KB block size.
+    # See crbug.com/1406510 for details.
+    # TODO(crbug.com/1404175): Remove this once we fully migrated to
+    # use_large_pdbs.
+    if (target_cpu == "arm64") {
+      configs += [ "//build/config/win:pdb_larger_than_4gb" ]
+    }
+
     defines = []
 
     sources = [

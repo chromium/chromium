@@ -175,7 +175,7 @@ config("compiler") {
   if (use_large_pdbs) {
     # This allows PDBs up to 8 GiB in size. This requires lld-link.exe or
     # link.exe from VS 2022 or later.
-    ldflags += [ "/pdbpagesize:8192" ]
+    configs += [ ":pdb_larger_than_4gb" ]
   }
 
   if (!is_debug && !is_component_build) {
@@ -598,4 +598,13 @@ config("lean_and_mean") {
 
 config("nominmax") {
   defines = [ "NOMINMAX" ]
+}
+
+# Some binaries create PDBs larger than 4 GiB. Increasing the PDB page
+# size to allow larger PDBs.
+config("pdb_larger_than_4gb") {
+  if (!defined(ldflags)) {
+    ldflags = []
+  }
+  ldflags += [ "/pdbpagesize:8192" ]
 }
