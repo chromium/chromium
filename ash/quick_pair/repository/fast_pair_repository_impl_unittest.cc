@@ -58,6 +58,8 @@ constexpr char kTestClassicAddress2[] = "00:11:22:33:44:66";
 constexpr char kTestClassicAddress3[] = "04:CB:88:1E:56:19";
 constexpr char kBase64ExpectedSha256Hash[] =
     "gVzzRtZjwYv8lO8xwWnWW2uw/stV6RdEUhv3cIN3nH4=";
+constexpr char kBase64ForgetPatternSha256Hash[] =
+    "8PDw8NZjwYv8lO8xwWnWW2uw/stV6RdEUhv3cIN3nH4=";
 constexpr char kBase64AccountKey[] = "BAcDiEH56/Mq3hW7OKUctA==";
 const std::vector<uint8_t> kAccountKey1{0x11, 0x22, 0x33, 0x44, 0x55, 0x66,
                                         0x77, 0x88, 0x99, 0x00, 0xAA, 0xBB,
@@ -327,6 +329,31 @@ TEST_F(FastPairRepositoryImplTest, CheckAccountKeys_Match) {
       filter, base::BindOnce(&FastPairRepositoryImplTest::VerifyAccountKeyCheck,
                              base::Unretained(this), run_loop->QuitClosure(),
                              /*expected_result=*/true));
+  run_loop->Run();
+}
+
+TEST_F(FastPairRepositoryImplTest, CheckAccountKeys_SkipForgetPattern) {
+  AccountKeyFilter filter(kFilterBytes1, {salt});
+  nearby::fastpair::GetObservedDeviceResponse details;
+  DeviceMetadata metadata(details, gfx::Image());
+
+  // In this test, we use a known "marked as forgotten" hash
+  // from Android. Note that Android also leaves the account key
+  // blank; however, we add a matching account key here to test the logic
+  // of detecting the Forget pattern in the hash, which should be cause
+  // the device to be skipped in CheckAccountKeys.
+  nearby::fastpair::FastPairInfo info = BuildFastPairInfo(
+      kValidModelId, kAccountKey1, kTestClassicAddress1, &metadata);
+  auto* device = info.mutable_device();
+  device->set_sha256_account_key_public_address(
+      Base64Decode(kBase64ForgetPatternSha256Hash));
+  footprints_fetcher_->AddUserFastPairInfo(info, base::DoNothing());
+
+  auto run_loop = std::make_unique<base::RunLoop>();
+  fast_pair_repository_->CheckAccountKeys(
+      filter, base::BindOnce(&FastPairRepositoryImplTest::VerifyAccountKeyCheck,
+                             base::Unretained(this), run_loop->QuitClosure(),
+                             /*expected_result=*/false));
   run_loop->Run();
 }
 
@@ -1122,6 +1149,28 @@ TEST_F(FastPairRepositoryImplTest,
 
   base::MockCallback<base::OnceCallback<void(bool)>> callback;
   EXPECT_CALL(callback, Run(testing::Eq(true))).Times(1);
+  fast_pair_repository_->IsDeviceSavedToAccount(kTestClassicAddress3,
+                                                callback.Get());
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccount_IgnoreForgetPattern) {
+  // In this test, we use a known "marked as forgotten" hash
+  // from Android. Note that Android also leaves the account key
+  // blank; however, we add an account key here to test the logic
+  // of detecting the Forget pattern in the hash.
+  nearby::fastpair::FastPairInfo info;
+  auto* device = info.mutable_device();
+  device->set_account_key(Base64Decode(kBase64AccountKey));
+  device->set_sha256_account_key_public_address(
+      Base64Decode(kBase64ForgetPatternSha256Hash));
+  nearby::fastpair::UserReadDevicesResponse response;
+  *response.add_fast_pair_info() = info;
+  footprints_fetcher_->SetGetUserDevicesResponse(response);
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(testing::Eq(false))).Times(1);
   fast_pair_repository_->IsDeviceSavedToAccount(kTestClassicAddress3,
                                                 callback.Get());
 

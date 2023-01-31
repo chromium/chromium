@@ -34,14 +34,39 @@ namespace {
 
 constexpr base::TimeDelta kOfflineRetryTimeout = base::Minutes(1);
 constexpr base::TimeDelta kCacheInvalidationTime = base::Minutes(30);
+// This forget pattern is defined in the Android codebase as FORGET_PREFIX_BYTE
+// and FORGET_PREFIX_LENGTH_IN_BYTES. Currently, those values evaluate to the
+// string of bytes defined below, which is used as the prefix for the sha256
+// field of the device. This should be kept in sync with those values.
+// http://google3/java/com/google/location/nearby/common/fastpair/footprints/FootprintsDeviceManager.java;l=65-75;rcl=482615113
+const std::string kForgetPattern = "\xf0\xf0\xf0\xf0";
+
+// For all intents and purposes, a device that has the "Forget pattern" is no
+// longer associated to the user's account, and should be treated as removed.
+bool DoesDeviceHaveForgetPattern(
+    const nearby::fastpair::FastPairDevice& device) {
+  // The device info is modified to have no account key upon removal from
+  // Android Saved Devices, removal from CrOS Saved Devices, and forget from
+  // CrOS Bluetooth Settings.
+  if (!device.has_account_key() ||
+      !device.has_sha256_account_key_public_address()) {
+    return true;
+  }
+
+  // To match Android behavior, we check if the SHA256 of a device begins with
+  // the Forget pattern, defined in Android Fast Pair code. When a device is
+  // forgotten from Android Bluetooth Settings, the SHA256 hash is modified to
+  // contain this pattern.
+  return (device.sha256_account_key_public_address().compare(
+              0, kForgetPattern.length(), kForgetPattern) == 0);
+}
 
 // Checks if the mac address of a FastPairDevice is the same as the given
 // |mac_address| by checking if the SHA256 from the given |device| equals to
 // SHA256(concat(account_key of |device|, |mac_address|)).
 bool IsDeviceSha256Matched(const nearby::fastpair::FastPairDevice& device,
                            const std::string& mac_address) {
-  if (!device.has_account_key() ||
-      !device.has_sha256_account_key_public_address()) {
+  if (DoesDeviceHaveForgetPattern(device)) {
     return false;
   }
 
@@ -242,22 +267,26 @@ void FastPairRepositoryImpl::CheckAccountKeysImpl(
   }
 
   for (const auto& info : user_devices_cache_.fast_pair_info()) {
-    if (info.has_device()) {
-      const std::string& string_key = info.device().account_key();
-      const std::vector<uint8_t> binary_key(string_key.begin(),
-                                            string_key.end());
-      if (account_key_filter.IsAccountKeyInFilter(binary_key)) {
-        nearby::fastpair::StoredDiscoveryItem device;
-        if (device.ParseFromString(info.device().discovery_item_bytes())) {
-          QP_LOG(INFO) << "Account key matched with a paired device: "
-                       << device.title();
-          GetDeviceMetadata(
-              device.id(),
-              base::BindOnce(&FastPairRepositoryImpl::CompleteAccountKeyLookup,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             std::move(callback), std::move(binary_key)));
-          return;
-        }
+    // We have to check that the devices in Footprints don't use the "forget
+    // pattern" which Android uses in some cases to mark a device as removed
+    // from the user's account.
+    if (!info.has_device() || DoesDeviceHaveForgetPattern(info.device())) {
+      continue;
+    }
+
+    const std::string& string_key = info.device().account_key();
+    const std::vector<uint8_t> binary_key(string_key.begin(), string_key.end());
+    if (account_key_filter.IsAccountKeyInFilter(binary_key)) {
+      nearby::fastpair::StoredDiscoveryItem device;
+      if (device.ParseFromString(info.device().discovery_item_bytes())) {
+        QP_LOG(INFO) << "Account key matched with a paired device: "
+                     << device.title();
+        GetDeviceMetadata(
+            device.id(),
+            base::BindOnce(&FastPairRepositoryImpl::CompleteAccountKeyLookup,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                           std::move(binary_key)));
+        return;
       }
     }
   }
@@ -507,9 +536,14 @@ void FastPairRepositoryImpl::OnGetSavedDevices(
       opt_in_status = info.opt_in_status();
     }
 
-    if (info.has_device()) {
-      saved_devices.push_back(info.device());
+    // We have to check that the devices in Footprints don't use the "forget
+    // pattern" which Android uses in some cases to mark a device as removed
+    // from the user's account.
+    if (!info.has_device() || DoesDeviceHaveForgetPattern(info.device())) {
+      continue;
     }
+
+    saved_devices.push_back(info.device());
   }
 
   // If the opt in status is `STATUS_OPTED_OUT`, then we can expect the list of
@@ -655,11 +689,7 @@ void FastPairRepositoryImpl::RetryPendingDeletes(
     // Check if this pending delete is for a device that is in Footprints.
     bool found_in_saved_devices = false;
     for (const auto& device : devices) {
-      // Account key may be null for a device removed from Android Saved
-      // Devices.
-      if (!device.has_account_key()) {
-        continue;
-      }
+      DCHECK(device.has_account_key());
 
       const std::string saved_account_key =
           base::HexEncode(std::vector<uint8_t>(device.account_key().begin(),
@@ -763,9 +793,13 @@ FastPairRepositoryImpl::GetDeviceDisplayNameFromCache(
 
   QP_LOG(INFO) << __func__ << ": Scanning cache for device name.";
   for (const auto& info : user_devices_cache_.fast_pair_info()) {
-    if (!info.has_device()) {
+    // We have to check that the devices in Footprints don't use the "forget
+    // pattern" which Android uses in some cases to mark a device as removed
+    // from the user's account.
+    if (!info.has_device() || DoesDeviceHaveForgetPattern(info.device())) {
       continue;
     }
+
     const std::string& device_account_key_str = info.device().account_key();
 
     if (account_key_str == device_account_key_str) {
