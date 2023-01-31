@@ -1617,7 +1617,7 @@
   {
     "name": "eap-gtc-wifi-authentication",
     "owners": [ "cros-connectivity@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 120
   },
   {
     "name": "eche-launcher",
