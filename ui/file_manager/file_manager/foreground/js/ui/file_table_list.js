@@ -505,7 +505,7 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
     li.classList.toggle(
         'dim-offline', externalProps.availableOffline === false);
     li.classList.toggle('dim-hosted', !!externalProps.hosted);
-    if (externalProps.contentMimeType !== undefined) {
+    if (externalProps.contentMimeType) {
       li.classList.toggle(
           'dim-encrypted',
           externalProps.contentMimeType.startsWith(
