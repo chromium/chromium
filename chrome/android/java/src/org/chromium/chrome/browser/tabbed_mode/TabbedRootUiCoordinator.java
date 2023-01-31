@@ -740,7 +740,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             }
             DesktopSiteSettingsIPHController.create(mActivity, mWindowAndroid, mActivityTabProvider,
                     Profile.getLastUsedRegularProfile(), getToolbarManager().getMenuButtonView(),
-                    mAppMenuCoordinator.getAppMenuHandler());
+                    mAppMenuCoordinator.getAppMenuHandler(), getPrimaryDisplaySizeInInches());
         }
         mPromoShownOneshotSupplier.set(didTriggerPromo);
 

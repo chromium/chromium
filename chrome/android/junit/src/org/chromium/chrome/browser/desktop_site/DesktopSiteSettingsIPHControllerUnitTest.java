@@ -34,6 +34,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.JniMocker;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommand;
@@ -70,7 +72,7 @@ import java.util.Map.Entry;
 
 /** Unit tests for {@link DesktopSiteSettingsIPHController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
+@Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class, ShadowSysUtils.class})
 public class DesktopSiteSettingsIPHControllerUnitTest {
     @Rule
     public TestRule mFeaturesProcessor = new JUnitProcessor();
@@ -113,6 +115,7 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
     private Map<String, String> mTopDesktopSitesDomainMap;
     private boolean mDesktopSiteGloballyEnabled;
     private final TestValues mTestValues = new TestValues();
+    private double mDeviceScreenSizeInInches;
 
     @Before
     public void setUp() {
@@ -163,6 +166,9 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
             }
         });
 
+        mDeviceScreenSizeInInches = 10.0;
+        ShadowSysUtils.setMemoryInMB(2048);
+
         initializeController();
     }
 
@@ -170,12 +176,13 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
     public void tearDown() {
         TrackerFactory.setTrackerForTests(null);
         FeatureList.setTestValues(null);
+        ShadowSysUtils.setMemoryInMB(0);
         ShadowUrlUtilities.reset();
         mDesktopSiteGloballyEnabled = false;
     }
 
     @Test
-    public void testRegisterTabObserverForPerSiteIPH_Specific() {
+    public void testCreateTabObserver_SpecificIPH() {
         // Re-instantiate the controller to re-register the ActivityTabTabObserver with applicable
         // fieldtrial params set.
         mController.destroy();
@@ -194,7 +201,7 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    public void testRegisterTabObserverForPerSiteIPH_Generic() {
+    public void testCreateTabObserver_GenericIPH() {
         // Re-instantiate the controller to re-register the ActivityTabTabObserver with applicable
         // fieldtrial params set.
         mController.destroy();
@@ -207,6 +214,54 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
                 mController.getActiveTabObserverForTesting();
         activityTabTabObserver.onPageLoadFinished(mTab, mTabUrl);
         verify(mUserEducationHelper).requestShowIPH(mIPHCommandCaptor.capture());
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void testCreateTabObserver_GenericIPH_NonTabletDevice() {
+        // Re-instantiate the controller to re-register the ActivityTabTabObserver with applicable
+        // fieldtrial params set.
+        mController.destroy();
+        var params = new HashMap<String, String>();
+        params.put(DesktopSiteSettingsIPHController.PARAM_IPH_TYPE_GENERIC, "true");
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH, params);
+        initializeController();
+        Assert.assertNull(
+                "ActivityTabTabObserver should be created for the generic IPH when the device is a tablet.",
+                mController.getActiveTabObserverForTesting());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testCreateTabObserver_GenericIPH_InvalidDeviceScreenSize() {
+        // Re-instantiate the controller to re-register the ActivityTabTabObserver with applicable
+        // fieldtrial params set.
+        mController.destroy();
+        var params = new HashMap<String, String>();
+        params.put(DesktopSiteSettingsIPHController.PARAM_IPH_TYPE_GENERIC, "true");
+        params.put(DesktopSiteSettingsIPHController.PARAM_GENERIC_IPH_SCREEN_SIZE_THRESHOLD_INCHES,
+                "12.0");
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH, params);
+        initializeController();
+        Assert.assertNull(
+                "ActivityTabTabObserver should be created for the generic IPH when the device size is valid.",
+                mController.getActiveTabObserverForTesting());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testCreateTabObserver_GenericIPH_InvalidDeviceMemory() {
+        // Re-instantiate the controller to re-register the ActivityTabTabObserver with applicable
+        // fieldtrial params set.
+        mController.destroy();
+        var params = new HashMap<String, String>();
+        params.put(DesktopSiteSettingsIPHController.PARAM_IPH_TYPE_GENERIC, "true");
+        params.put(DesktopSiteSettingsIPHController.PARAM_GENERIC_IPH_MEMORY_THRESHOLD_MB, "4096");
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH, params);
+        initializeController();
+        Assert.assertNull(
+                "ActivityTabTabObserver should be created for the generic IPH when the device memory is valid.",
+                mController.getActiveTabObserverForTesting());
     }
 
     @Test
@@ -330,13 +385,6 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "sw320dp")
-    public void testGenericIPH_NotShown_NonTabletDevice() {
-        mController.showGenericIPH(mTab, mProfile);
-        verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
-    }
-
-    @Test
     @Config(qualifiers = "sw600dp")
     public void testGenericIPH_NotShown_SettingUsed() {
         // The user must have previously used the site-level setting if exceptions are added.
@@ -369,6 +417,12 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
 
         command.onDismissCallback.run();
         verify(mAppMenuHandler).clearMenuHighlight();
+
+        Assert.assertEquals(
+                "<Android.RequestDesktopSite.PerSiteIphDismissed.AppMenuOpened> should be recorded when the IPH is dismissed.",
+                1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Android.RequestDesktopSite.PerSiteIphDismissed.AppMenuOpened"));
     }
 
     private void enableFeatureWithParams(String featureName, Map<String, String> params) {
@@ -385,6 +439,6 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
     private void initializeController() {
         mController = new DesktopSiteSettingsIPHController(mWindowAndroid, mActivityTabProvider,
                 mProfile, mToolbarMenuButton, mAppMenuHandler, mUserEducationHelper,
-                mWebsitePreferenceBridge);
+                mWebsitePreferenceBridge, mDeviceScreenSizeInInches);
     }
 }
