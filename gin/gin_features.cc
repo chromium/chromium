@@ -162,4 +162,12 @@ BASE_FEATURE(kJavaScriptStringIsWellFormed,
              "JavaScriptStringIsWellFormed",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// WebAssembly features.
+
+// Enable support for the WebAssembly tail-call proposal:
+// https://github.com/WebAssembly/tail-call.
+BASE_FEATURE(kWebAssemblyTailCall,
+             "WebAssemblyTailCall",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -351,6 +351,12 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--use-libm-trig-functions",
                          "--no-use-libm-trig-functions");
 
+  // WebAssembly features.
+
+  SetV8FlagsIfOverridden(features::kWebAssemblyTailCall,
+                         "--experimental-wasm-return-call",
+                         "--no-experimental-wasm-return-call");
+
   if (js_command_line_flags.empty())
     return;
 
