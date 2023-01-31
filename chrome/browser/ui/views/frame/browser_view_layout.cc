@@ -519,6 +519,11 @@ int BrowserViewLayout::LayoutTabStripRegion(int top) {
   gfx::Rect tab_strip_region_bounds(
       delegate_->GetBoundsForTabStripRegionInBrowserView());
 
+  if (web_app_frame_toolbar_) {
+    tab_strip_region_bounds.Inset(gfx::Insets::TLBR(
+        0, 0, 0, web_app_frame_toolbar_->GetPreferredSize().width()));
+  }
+
   SetViewVisibility(tab_strip_region_view_, true);
   tab_strip_region_view_->SetBoundsRect(tab_strip_region_bounds);
 
