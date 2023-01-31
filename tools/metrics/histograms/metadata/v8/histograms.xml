@@ -1357,6 +1357,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.ProduceCodeCache" units="ms" expires_after="2023-06-20">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Time spent serializing and persisting code (mojo call) for V8 code caching.
+    Recorded when ProduceCacheInternal() is called. Only recorded when producing
+    a code cache is required.
+  </summary>
+</histogram>
+
 <histogram name="V8.RegExpBacktracks" units="backtracks"
     expires_after="2025-01-01">
   <owner>jgruber@chromium.org</owner>
