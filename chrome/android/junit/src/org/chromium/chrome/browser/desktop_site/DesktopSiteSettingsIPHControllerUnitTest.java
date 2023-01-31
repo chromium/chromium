@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.desktop_site;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -33,6 +36,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.JUnitProcessor;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -45,7 +49,9 @@ import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.NavigationController;
@@ -57,17 +63,22 @@ import org.chromium.url.JUnitTestGURLs;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /** Unit tests for {@link DesktopSiteSettingsIPHController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
 public class DesktopSiteSettingsIPHControllerUnitTest {
     @Rule
     public TestRule mFeaturesProcessor = new JUnitProcessor();
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
 
+    @Mock
+    private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock
     private WebsitePreferenceBridge mWebsitePreferenceBridge;
     @Mock
@@ -99,11 +110,14 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
 
     private DesktopSiteSettingsIPHController mController;
     private GURL mTabUrl;
+    private Map<String, String> mTopDesktopSitesDomainMap;
+    private boolean mDesktopSiteGloballyEnabled;
     private final TestValues mTestValues = new TestValues();
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
 
         enableFeatureWithParams(ChromeFeatureList.ENABLE_IPH, null);
         enableFeatureWithParams(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, null);
@@ -120,6 +134,9 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
         when(mTracker.wouldTriggerHelpUI(
                      FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE))
                 .thenReturn(true);
+        when(mTracker.wouldTriggerHelpUI(
+                     FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_SPECIFIC_FEATURE))
+                .thenReturn(true);
 
         mTabUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.getUrl()).thenReturn(mTabUrl);
@@ -132,6 +149,20 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
                      mProfile, ContentSettingsType.REQUEST_DESKTOP_SITE))
                 .thenReturn(new ArrayList<>());
 
+        doAnswer(invocation -> mDesktopSiteGloballyEnabled)
+                .when(mWebsitePreferenceBridgeJniMock)
+                .isContentSettingEnabled(any(), eq(ContentSettingsType.REQUEST_DESKTOP_SITE));
+
+        mTopDesktopSitesDomainMap = new HashMap<>();
+        mTopDesktopSitesDomainMap.put(JUnitTestGURLs.EXAMPLE_URL, "example.com");
+        mTopDesktopSitesDomainMap.put("https://foo.bar.edu", "bar.edu");
+        ShadowUrlUtilities.setTestImpl(new ShadowUrlUtilities.TestImpl() {
+            @Override
+            public String getDomainAndRegistry(String uri, boolean includePrivateRegistries) {
+                return mTopDesktopSitesDomainMap.get(uri);
+            }
+        });
+
         initializeController();
     }
 
@@ -139,6 +170,26 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
     public void tearDown() {
         TrackerFactory.setTrackerForTests(null);
         FeatureList.setTestValues(null);
+        ShadowUrlUtilities.reset();
+        mDesktopSiteGloballyEnabled = false;
+    }
+
+    @Test
+    public void testRegisterTabObserverForPerSiteIPH_Specific() {
+        // Re-instantiate the controller to re-register the ActivityTabTabObserver with applicable
+        // fieldtrial params set.
+        mController.destroy();
+        var params = new HashMap<String, String>();
+        params.put(DesktopSiteSettingsIPHController.PARAM_IPH_TYPE_SPECIFIC, "true");
+        params.put(DesktopSiteSettingsIPHController.PARAM_SITE_LIST,
+                String.join(",", mTopDesktopSitesDomainMap.values()));
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH, params);
+        initializeController();
+
+        ActivityTabTabObserver activityTabTabObserver =
+                mController.getActiveTabObserverForTesting();
+        activityTabTabObserver.onPageLoadFinished(mTab, mTabUrl);
+        verify(mUserEducationHelper).requestShowIPH(mIPHCommandCaptor.capture());
     }
 
     @Test
@@ -160,6 +211,86 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
+    public void testPerSiteIPHPreChecksFailed_TrackerWouldNotTrigger() {
+        // Test for specific IPH (Arm 1).
+        when(mTracker.wouldTriggerHelpUI(
+                     FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_SPECIFIC_FEATURE))
+                .thenReturn(false);
+        boolean failed = mController.perSiteIPHPreChecksFailed(
+                mTab, mTracker, FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_SPECIFIC_FEATURE);
+        verify(mTracker).wouldTriggerHelpUI(
+                FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_SPECIFIC_FEATURE);
+        Assert.assertTrue(
+                "Specific site IPH should not trigger when Tracker#wouldTriggerHelpUI returns false.",
+                failed);
+
+        // Test for generic IPH (Arm 2).
+        when(mTracker.wouldTriggerHelpUI(
+                     FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE))
+                .thenReturn(false);
+        failed = mController.perSiteIPHPreChecksFailed(
+                mTab, mTracker, FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
+        verify(mTracker).wouldTriggerHelpUI(
+                FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
+        Assert.assertTrue(
+                "Generic site IPH should not trigger when Tracker#wouldTriggerHelpUI returns false.",
+                failed);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testPerSiteIPHPreChecksFailed_IncognitoTab() {
+        when(mTab.isIncognito()).thenReturn(true);
+
+        // Test for specific IPH (Arm 1).
+        boolean failed = mController.perSiteIPHPreChecksFailed(
+                mTab, mTracker, FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_SPECIFIC_FEATURE);
+        Assert.assertTrue("Specific site IPH should not be triggered in incognito.", failed);
+
+        // Test for generic IPH (Arm 2).
+        failed = mController.perSiteIPHPreChecksFailed(
+                mTab, mTracker, FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
+        Assert.assertTrue("Generic site IPH should not be triggered in incognito.", failed);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testPerSiteIPHPreChecksFailed_ChromePage() {
+        mTabUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.CHROME_ABOUT);
+        when(mTab.getUrl()).thenReturn(mTabUrl);
+
+        // Test for specific IPH (Arm 1).
+        boolean failed = mController.perSiteIPHPreChecksFailed(
+                mTab, mTracker, FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_SPECIFIC_FEATURE);
+        Assert.assertTrue("Specific site IPH should not be triggered on a chrome:// page.", failed);
+
+        // Test for generic IPH (Arm 2).
+        failed = mController.perSiteIPHPreChecksFailed(
+                mTab, mTracker, FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
+        Assert.assertTrue("Generic site IPH should not be triggered on a chrome:// page.", failed);
+    }
+
+    @Test
+    public void testShowSpecificIPH() {
+        mController.setTopDesktopSitesForTesting(new HashSet<>(mTopDesktopSitesDomainMap.values()));
+        mController.showSpecificIPH(mTab, mProfile);
+        verify(mUserEducationHelper).requestShowIPH(mIPHCommandCaptor.capture());
+
+        IPHCommand command = mIPHCommandCaptor.getValue();
+        Assert.assertEquals("IPHCommand feature should match.", command.featureName,
+                FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_SPECIFIC_FEATURE);
+        Assert.assertEquals("IPHCommand stringId should match.",
+                R.string.rds_site_settings_specific_iph_text, command.stringId);
+
+        command.onShowCallback.run();
+        verify(mAppMenuHandler).setMenuHighlight(R.id.request_desktop_site_id);
+
+        command.onDismissCallback.run();
+        verify(mAppMenuHandler).clearMenuHighlight();
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
     public void testShowGenericIPH_SwitchToDesktop() {
         testShowGenericIPH(true);
     }
@@ -171,37 +302,36 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "sw320dp")
-    public void testShowGenericIPH_NonTabletDevice() {
-        mController.showGenericIPH(mTab, mProfile);
+    public void testSpecificIPH_NotShown_DesktopUserAgentInUse() {
+        // If a website from the top sites list is using the desktop UA, do not show the IPH.
+        when(mNavigationController.getUseDesktopUserAgent()).thenReturn(true);
+        mController.setTopDesktopSitesForTesting(new HashSet<>(mTopDesktopSitesDomainMap.values()));
+        mController.showSpecificIPH(mTab, mProfile);
         verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
     }
 
     @Test
-    @Config(qualifiers = "sw600dp")
-    public void testShowGenericIPH_TrackerWouldNotTrigger() {
-        when(mTracker.wouldTriggerHelpUI(
-                     FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE))
-                .thenReturn(false);
-        mController.showGenericIPH(mTab, mProfile);
-        verify(mTracker).wouldTriggerHelpUI(
-                FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
+    public void testSpecificIPH_NotShown_MobileSiteException() {
+        // If a website from the top sites list is using the mobile UA, but the global setting uses
+        // the desktop UA, do not show the IPH.
+        mDesktopSiteGloballyEnabled = true;
+        mController.setTopDesktopSitesForTesting(new HashSet<>(mTopDesktopSitesDomainMap.values()));
+        mController.showSpecificIPH(mTab, mProfile);
         verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
     }
 
     @Test
-    @Config(qualifiers = "sw600dp")
-    public void testShowGenericIPH_NotShown_IncognitoTab() {
-        when(mTab.isIncognito()).thenReturn(true);
-        mController.showGenericIPH(mTab, mProfile);
-        verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp")
-    public void testGenericIPH_NotShown_ChromePage() {
-        mTabUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.CHROME_ABOUT);
+    public void testSpecificIPH_NotShown_SiteNotEligible() {
+        mTabUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.INITIAL_URL);
         when(mTab.getUrl()).thenReturn(mTabUrl);
+        mController.setTopDesktopSitesForTesting(new HashSet<>(mTopDesktopSitesDomainMap.values()));
+        mController.showSpecificIPH(mTab, mProfile);
+        verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void testGenericIPH_NotShown_NonTabletDevice() {
         mController.showGenericIPH(mTab, mProfile);
         verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
     }
