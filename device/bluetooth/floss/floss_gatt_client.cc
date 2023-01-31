@@ -177,17 +177,27 @@ std::unique_ptr<FlossGattClient> FlossGattClient::Create() {
 FlossGattClient::FlossGattClient() = default;
 FlossGattClient::~FlossGattClient() {
   if (bus_) {
-    exported_callback_manager_.UnexportCallback(
+    gatt_client_exported_callback_manager_.UnexportCallback(
+        dbus::ObjectPath(kExportedCallbacksPath));
+    gatt_server_exported_callback_manager_.UnexportCallback(
         dbus::ObjectPath(kExportedCallbacksPath));
   }
 }
 
 void FlossGattClient::AddObserver(FlossGattClientObserver* observer) {
-  observers_.AddObserver(observer);
+  gatt_client_observers_.AddObserver(observer);
+}
+
+void FlossGattClient::AddObserver(FlossGattServerObserver* observer) {
+  gatt_server_observers_.AddObserver(observer);
 }
 
 void FlossGattClient::RemoveObserver(FlossGattClientObserver* observer) {
-  observers_.RemoveObserver(observer);
+  gatt_client_observers_.RemoveObserver(observer);
+}
+
+void FlossGattClient::RemoveObserver(FlossGattServerObserver* observer) {
+  gatt_server_observers_.RemoveObserver(observer);
 }
 
 void FlossGattClient::Connect(ResponseCallback<Void> callback,
@@ -336,10 +346,12 @@ void FlossGattClient::UpdateConnectionParameters(
 void FlossGattClient::Init(dbus::Bus* bus,
                            const std::string& service_name,
                            const int adapter_index) {
+  // Set field variables.
   bus_ = bus;
   service_name_ = service_name;
   gatt_adapter_path_ = GenerateGattPath(adapter_index);
 
+  // Initialize DBus object proxy.
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, gatt_adapter_path_);
   if (!object_proxy) {
@@ -347,59 +359,86 @@ void FlossGattClient::Init(dbus::Bus* bus,
     return;
   }
 
-  exported_callback_manager_.Init(bus_.get());
-  exported_callback_manager_.AddMethod(
+  // Register all callbacks.
+  gatt_client_exported_callback_manager_.Init(bus_.get());
+  gatt_server_exported_callback_manager_.Init(bus_.get());
+
+  gatt_client_exported_callback_manager_.AddMethod(
       gatt::kOnClientRegistered,
       &FlossGattClientObserver::GattClientRegistered);
-  exported_callback_manager_.AddMethod(
+  gatt_client_exported_callback_manager_.AddMethod(
       gatt::kOnClientConnectionState,
       &FlossGattClientObserver::GattClientConnectionState);
-  exported_callback_manager_.AddMethod(gatt::kOnPhyUpdate,
-                                       &FlossGattClientObserver::GattPhyUpdate);
-  exported_callback_manager_.AddMethod(gatt::kOnPhyRead,
-                                       &FlossGattClientObserver::GattPhyRead);
-  exported_callback_manager_.AddMethod(
+  gatt_client_exported_callback_manager_.AddMethod(
+      gatt::kOnPhyUpdate, &FlossGattClientObserver::GattPhyUpdate);
+  gatt_client_exported_callback_manager_.AddMethod(
+      gatt::kOnPhyRead, &FlossGattClientObserver::GattPhyRead);
+  gatt_client_exported_callback_manager_.AddMethod(
       gatt::kOnSearchComplete, &FlossGattClientObserver::GattSearchComplete);
-  exported_callback_manager_.AddMethod(
+  gatt_client_exported_callback_manager_.AddMethod(
       gatt::kOnCharacteristicRead,
       &FlossGattClientObserver::GattCharacteristicRead);
-  exported_callback_manager_.AddMethod(
+  gatt_client_exported_callback_manager_.AddMethod(
       gatt::kOnCharacteristicWrite,
       &FlossGattClientObserver::GattCharacteristicWrite);
-  exported_callback_manager_.AddMethod(
+  gatt_client_exported_callback_manager_.AddMethod(
       gatt::kOnExecuteWrite, &FlossGattClientObserver::GattExecuteWrite);
-  exported_callback_manager_.AddMethod(
+  gatt_client_exported_callback_manager_.AddMethod(
       gatt::kOnDescriptorRead, &FlossGattClientObserver::GattDescriptorRead);
-  exported_callback_manager_.AddMethod(
+  gatt_client_exported_callback_manager_.AddMethod(
       gatt::kOnDescriptorWrite, &FlossGattClientObserver::GattDescriptorWrite);
-  exported_callback_manager_.AddMethod(gatt::kOnNotify,
-                                       &FlossGattClientObserver::GattNotify);
-  exported_callback_manager_.AddMethod(
+  gatt_client_exported_callback_manager_.AddMethod(
+      gatt::kOnNotify, &FlossGattClientObserver::GattNotify);
+  gatt_client_exported_callback_manager_.AddMethod(
       gatt::kOnReadRemoteRssi, &FlossGattClientObserver::GattReadRemoteRssi);
-  exported_callback_manager_.AddMethod(
+  gatt_client_exported_callback_manager_.AddMethod(
       gatt::kOnConfigureMtu, &FlossGattClientObserver::GattConfigureMtu);
-  exported_callback_manager_.AddMethod(
+  gatt_client_exported_callback_manager_.AddMethod(
       gatt::kOnConnectionUpdated,
       &FlossGattClientObserver::GattConnectionUpdated);
-  exported_callback_manager_.AddMethod(
+  gatt_client_exported_callback_manager_.AddMethod(
       gatt::kOnServiceChanged, &FlossGattClientObserver::GattServiceChanged);
 
-  if (!exported_callback_manager_.ExportCallback(
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnServerRegistered,
+      &FlossGattServerObserver::GattServerRegistered);
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnServerConnectionState,
+      &FlossGattServerObserver::GattServerConnectionState);
+
+  // Export callbacks.
+  if (!gatt_client_exported_callback_manager_.ExportCallback(
           dbus::ObjectPath(kExportedCallbacksPath),
           weak_ptr_factory_.GetWeakPtr())) {
     LOG(ERROR) << "Unable to successfully export FlossGattClientObserver.";
     return;
   }
+  if (!gatt_server_exported_callback_manager_.ExportCallback(
+          dbus::ObjectPath(kExportedCallbacksPath),
+          weak_ptr_factory_.GetWeakPtr())) {
+    LOG(ERROR) << "Unable to successfully export FlossGattServerObserver.";
+    return;
+  }
 
   RegisterClient();
+  RegisterServer();
 }
 
 void FlossGattClient::RegisterClient() {
-  // Finish registering client. We will get client id via
+  // Finish registering client. We will get gatt client id via
   // |GattClientRegistered|.
   CallGattMethod<Void>(
       base::BindOnce(&HandleResponse, gatt::kRegisterClient),
       gatt::kRegisterClient, std::string(kDefaultGattClientUuid),
+      dbus::ObjectPath(kExportedCallbacksPath), kDefaultEattSupport);
+}
+
+void FlossGattClient::RegisterServer() {
+  // Finish registering server. We will get gatt server id via
+  // |GattClientRegistered|.
+  CallGattMethod<Void>(
+      base::BindOnce(&HandleResponse, gatt::kRegisterServer),
+      gatt::kRegisterServer, std::string(kDefaultGattClientUuid),
       dbus::ObjectPath(kExportedCallbacksPath), kDefaultEattSupport);
 }
 
@@ -424,12 +463,11 @@ void FlossGattClient::GattClientConnectionState(GattStatus status,
                                                 int32_t client_id,
                                                 bool connected,
                                                 std::string address) {
-  // Ignore updates for other clients.
   if (client_id != client_id_) {
     return;
   }
 
-  for (auto& observer : observers_) {
+  for (auto& observer : gatt_client_observers_) {
     observer.GattClientConnectionState(status, client_id, connected, address);
   }
 }
@@ -438,7 +476,7 @@ void FlossGattClient::GattPhyUpdate(std::string address,
                                     LePhy tx,
                                     LePhy rx,
                                     GattStatus status) {
-  for (auto& observer : observers_) {
+  for (auto& observer : gatt_client_observers_) {
     observer.GattPhyUpdate(address, tx, rx, status);
   }
 }
@@ -447,7 +485,7 @@ void FlossGattClient::GattPhyRead(std::string address,
                                   LePhy tx,
                                   LePhy rx,
                                   GattStatus status) {
-  for (auto& observer : observers_) {
+  for (auto& observer : gatt_client_observers_) {
     observer.GattPhyRead(address, tx, rx, status);
   }
 }
@@ -456,7 +494,7 @@ void FlossGattClient::GattSearchComplete(
     std::string address,
     const std::vector<GattService>& services,
     GattStatus status) {
-  for (auto& observer : observers_) {
+  for (auto& observer : gatt_client_observers_) {
     observer.GattSearchComplete(address, services, status);
   }
 }
@@ -465,7 +503,7 @@ void FlossGattClient::GattCharacteristicRead(std::string address,
                                              GattStatus status,
                                              int32_t handle,
                                              const std::vector<uint8_t>& data) {
-  for (auto& observer : observers_) {
+  for (auto& observer : gatt_client_observers_) {
     observer.GattCharacteristicRead(address, status, handle, data);
   }
 }
@@ -473,13 +511,13 @@ void FlossGattClient::GattCharacteristicRead(std::string address,
 void FlossGattClient::GattCharacteristicWrite(std::string address,
                                               GattStatus status,
                                               int32_t handle) {
-  for (auto& observer : observers_) {
+  for (auto& observer : gatt_client_observers_) {
     observer.GattCharacteristicWrite(address, status, handle);
   }
 }
 
 void FlossGattClient::GattExecuteWrite(std::string address, GattStatus status) {
-  for (auto& observer : observers_) {
+  for (auto& observer : gatt_client_observers_) {
     observer.GattExecuteWrite(address, status);
   }
 }
@@ -488,7 +526,7 @@ void FlossGattClient::GattDescriptorRead(std::string address,
                                          GattStatus status,
                                          int32_t handle,
                                          const std::vector<uint8_t>& data) {
-  for (auto& observer : observers_) {
+  for (auto& observer : gatt_client_observers_) {
     observer.GattDescriptorRead(address, status, handle, data);
   }
 }
@@ -496,7 +534,7 @@ void FlossGattClient::GattDescriptorRead(std::string address,
 void FlossGattClient::GattDescriptorWrite(std::string address,
                                           GattStatus status,
                                           int32_t handle) {
-  for (auto& observer : observers_) {
+  for (auto& observer : gatt_client_observers_) {
     observer.GattDescriptorWrite(address, status, handle);
   }
 }
@@ -504,7 +542,7 @@ void FlossGattClient::GattDescriptorWrite(std::string address,
 void FlossGattClient::GattNotify(std::string address,
                                  int32_t handle,
                                  const std::vector<uint8_t>& data) {
-  for (auto& observer : observers_) {
+  for (auto& observer : gatt_client_observers_) {
     observer.GattNotify(address, handle, data);
   }
 }
@@ -512,7 +550,7 @@ void FlossGattClient::GattNotify(std::string address,
 void FlossGattClient::GattReadRemoteRssi(std::string address,
                                          int32_t rssi,
                                          GattStatus status) {
-  for (auto& observer : observers_) {
+  for (auto& observer : gatt_client_observers_) {
     observer.GattReadRemoteRssi(address, rssi, status);
   }
 }
@@ -520,7 +558,7 @@ void FlossGattClient::GattReadRemoteRssi(std::string address,
 void FlossGattClient::GattConfigureMtu(std::string address,
                                        int32_t mtu,
                                        GattStatus status) {
-  for (auto& observer : observers_) {
+  for (auto& observer : gatt_client_observers_) {
     observer.GattConfigureMtu(address, mtu, status);
   }
 }
@@ -530,13 +568,13 @@ void FlossGattClient::GattConnectionUpdated(std::string address,
                                             int32_t latency,
                                             int32_t timeout,
                                             GattStatus status) {
-  for (auto& observer : observers_) {
+  for (auto& observer : gatt_client_observers_) {
     observer.GattConnectionUpdated(address, interval, latency, timeout, status);
   }
 }
 
 void FlossGattClient::GattServiceChanged(std::string address) {
-  for (auto& observer : observers_) {
+  for (auto& observer : gatt_client_observers_) {
     observer.GattServiceChanged(address);
   }
 }
@@ -554,6 +592,36 @@ void FlossGattClient::OnRegisterNotificationResponse(
   }
 
   std::move(callback).Run(GattStatus::kSuccess);
+}
+
+void FlossGattClient::GattServerRegistered(GattStatus status,
+                                           int32_t server_id) {
+  if (server_id_ != 0) {
+    LOG(ERROR) << "Unexpected GattServerRegistered with id = " << server_id
+               << " when we already have id = " << server_id_;
+    return;
+  }
+
+  if (status != GattStatus::kSuccess) {
+    LOG(ERROR) << "RegisterServer failed with status = "
+               << static_cast<uint32_t>(status);
+    return;
+  }
+
+  server_id_ = server_id;
+}
+
+void FlossGattClient::GattServerConnectionState(GattStatus status,
+                                                int32_t server_id,
+                                                bool connected,
+                                                std::string address) {
+  if (server_id != server_id_) {
+    return;
+  }
+
+  for (auto& observer : gatt_server_observers_) {
+    observer.GattServerConnectionState(status, server_id, connected, address);
+  }
 }
 
 }  // namespace floss

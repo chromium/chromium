@@ -218,8 +218,32 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClientObserver
   virtual void GattServiceChanged(std::string address) {}
 };
 
+// Callback functions expected to be imported by the GATT server.
+//
+// This also doubles as an observer class for the GATT server.
+class DEVICE_BLUETOOTH_EXPORT FlossGattServerObserver
+    : public base::CheckedObserver {
+ public:
+  FlossGattServerObserver(const FlossGattServerObserver&) = delete;
+  FlossGattServerObserver& operator=(const FlossGattServerObserver&) = delete;
+
+  FlossGattServerObserver() = default;
+  ~FlossGattServerObserver() override = default;
+
+  // Server has completed registration for callbacks and set a server id for
+  // subsequent use.
+  virtual void GattServerRegistered(GattStatus status, int32_t server) {}
+
+  // A server connection has changed state.
+  virtual void GattServerConnectionState(GattStatus status,
+                                         int32_t server_id,
+                                         bool connected,
+                                         std::string address) {}
+};
+
 class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
-                                                public FlossGattClientObserver {
+                                                public FlossGattClientObserver,
+                                                public FlossGattServerObserver {
  public:
   static const char kExportedCallbacksPath[];
 
@@ -234,7 +258,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
 
   // Manage observers.
   void AddObserver(FlossGattClientObserver* observer);
+  void AddObserver(FlossGattServerObserver* observer);
   void RemoveObserver(FlossGattClientObserver* observer);
+  void RemoveObserver(FlossGattServerObserver* observer);
 
   // Create a GATT client connection to a remote device on given transport.
   virtual void Connect(ResponseCallback<Void> callback,
@@ -378,10 +404,16 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
                              int32_t timeout,
                              GattStatus status) override;
   void GattServiceChanged(std::string address) override;
-
   void OnRegisterNotificationResponse(ResponseCallback<GattStatus> callback,
                                       bool is_registering,
                                       DBusResult<Void> result);
+
+  // FlossGattServerObserver overrides
+  void GattServerRegistered(GattStatus status, int32_t server_id) override;
+  void GattServerConnectionState(GattStatus status,
+                                 int32_t server_id,
+                                 bool connected,
+                                 std::string address) override;
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
   base::raw_ptr<dbus::Bus> bus_ = nullptr;
@@ -390,7 +422,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
   dbus::ObjectPath gatt_adapter_path_;
 
   // List of observers interested in event notifications from this client.
-  base::ObserverList<FlossGattClientObserver> observers_;
+  base::ObserverList<FlossGattClientObserver> gatt_client_observers_;
+  base::ObserverList<FlossGattServerObserver> gatt_server_observers_;
 
   // Service which implements the GattClient interface.
   std::string service_name_;
@@ -398,8 +431,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
  private:
   friend class FlossGattClientTest;
 
-  // Register this client to get a client id.
+  // Register gatt client and gatt server to get client and server ids.
   void RegisterClient();
+  void RegisterServer();
 
   template <typename R, typename... Args>
   void CallGattMethod(ResponseCallback<R> callback,
@@ -409,12 +443,16 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
                gatt_adapter_path_, member, args...);
   }
 
-  // Id given for registering as a client against Floss. Used in many apis.
+  // Id given for registering as a gatt client and gatt server against Floss.
+  // Used in many apis.
   int32_t client_id_ = 0;
+  int32_t server_id_ = 0;
 
   // Exported callbacks for interacting with daemon.
-  ExportedCallbackManager<FlossGattClientObserver> exported_callback_manager_{
-      gatt::kCallbackInterface};
+  ExportedCallbackManager<FlossGattClientObserver>
+      gatt_client_exported_callback_manager_{gatt::kCallbackInterface};
+  ExportedCallbackManager<FlossGattServerObserver>
+      gatt_server_exported_callback_manager_{gatt::kCallbackInterface};
 
   base::WeakPtrFactory<FlossGattClient> weak_ptr_factory_{this};
 };

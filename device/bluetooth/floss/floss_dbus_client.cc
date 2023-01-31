@@ -170,6 +170,12 @@ const char kOnReadRemoteRssi[] = "OnReadRemoteRssi";
 const char kOnConfigureMtu[] = "OnConfigureMtu";
 const char kOnConnectionUpdated[] = "OnConnectionUpdated";
 const char kOnServiceChanged[] = "OnServiceChanged";
+
+const char kRegisterServer[] = "RegisterServer";
+const char kUnregisterServer[] = "UnregisterServer";
+
+const char kOnServerRegistered[] = "OnServerRegistered";
+const char kOnServerConnectionState[] = "OnServerConnectionState";
 }  // namespace gatt
 
 namespace advertiser {

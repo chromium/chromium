@@ -171,6 +171,12 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnReadRemoteRssi[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnConfigureMtu[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnConnectionUpdated[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnServiceChanged[];
+
+extern DEVICE_BLUETOOTH_EXPORT const char kRegisterServer[];
+extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterServer[];
+
+extern DEVICE_BLUETOOTH_EXPORT const char kOnServerRegistered[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnServerConnectionState[];
 }  // namespace gatt
    //
 namespace advertiser {
