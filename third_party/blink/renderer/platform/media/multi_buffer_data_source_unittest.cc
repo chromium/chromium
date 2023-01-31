@@ -261,6 +261,7 @@ class MultiBufferDataSourceTest : public testing::Test {
     response_generator_ =
         std::make_unique<TestResponseGenerator>(gurl, file_size);
     EXPECT_CALL(*this, OnInitialize(expected));
+    data_source_->SetIsClientAudioElement(is_client_audio_element_);
     data_source_->Initialize(base::BindOnce(
         &MultiBufferDataSourceTest::OnInitialize, base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
@@ -472,9 +473,13 @@ class MultiBufferDataSourceTest : public testing::Test {
   }
   double data_source_playback_rate() { return data_source_->playback_rate_; }
   bool is_local_source() { return data_source_->AssumeFullyBuffered(); }
+  bool is_client_audio_element() { return loader()->is_client_audio_element_; }
   scoped_refptr<UrlData> url_data() { return data_source_->url_data_; }
   void set_might_be_reused_from_cache_in_future(bool value) {
     url_data()->set_cacheable(value);
+  }
+  void set_is_client_audio_element(bool value) {
+    is_client_audio_element_ = value;
   }
 
  protected:
@@ -493,6 +498,8 @@ class MultiBufferDataSourceTest : public testing::Test {
 
   // Used for calling MultiBufferDataSource::Read().
   uint8_t buffer_[kDataSize * 2];
+
+  bool is_client_audio_element_ = false;
 };
 
 TEST_F(MultiBufferDataSourceTest, Range_Supported) {
@@ -1380,6 +1387,48 @@ TEST_F(MultiBufferDataSourceTest,
     ReceiveData(kDataSize);
     ASSERT_TRUE(active_loader());
   }
+}
+
+// This test triggers an edge case where request destination is not
+// properly set to "audio" (crbug.com/12345). The edge case is triggered when
+// preload omitted or is set to metadata, and a read from an unbuffered range
+// takes place.
+TEST_F(MultiBufferDataSourceTest,
+       ExternalResource_Response206_CheckIsClientAudioElement) {
+  set_preload(MultiBufferDataSource::METADATA);
+  set_is_client_audio_element(true);
+  InitializeWith206Response();
+  EXPECT_EQ(MultiBufferDataSource::METADATA, preload());
+  EXPECT_FALSE(is_local_source());
+  EXPECT_TRUE(is_client_audio_element());
+  EXPECT_TRUE(data_source_->range_supported());
+  CheckReadThenDefer();
+
+  // Reset the reader on defer. As a result, during the next unbuffered range
+  // read, a locked resource loader will be created.
+  data_source_->OnBufferingHaveEnough(true);
+
+  // Deliver data until capacity is reached and verify deferral.
+  int bytes_received = 0;
+  EXPECT_CALL(host_, AddBufferedByteRange(_, _)).Times(testing::AtLeast(1));
+  while (active_loader_allownull() && !data_provider()->deferred()) {
+    ReceiveData(kDataSize);
+    bytes_received += kDataSize;
+  }
+  EXPECT_GT(bytes_received, 0);
+  EXPECT_LT(bytes_received + kDataSize, kFileSize);
+  EXPECT_FALSE(active_loader_allownull());
+
+  // Read from an unbuffered range will create a new resource loader.
+  ReadAt(kFarReadPosition);
+  EXPECT_CALL(*this, ReadCallback(kDataSize));
+  EXPECT_CALL(host_, AddBufferedByteRange(kFarReadPosition,
+                                          kFarReadPosition + kDataSize));
+  EXPECT_TRUE(is_client_audio_element());
+  Respond(response_generator_->Generate206(kFarReadPosition));
+  ReceiveData(kDataSize);
+
+  Stop();
 }
 
 TEST_F(MultiBufferDataSourceTest, SeekPastEOF) {

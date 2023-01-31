@@ -39,6 +39,7 @@ class PLATFORM_EXPORT MultiBufferReader : public MultiBuffer::Reader {
       MultiBuffer* multibuffer,
       int64_t start,
       int64_t end,
+      bool is_client_audio_element,
       base::RepeatingCallback<void(int64_t, int64_t)> progress_callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
@@ -103,11 +104,6 @@ class PLATFORM_EXPORT MultiBufferReader : public MultiBuffer::Reader {
   // Getters
   int64_t preload_high() const { return preload_high_; }
   int64_t preload_low() const { return preload_low_; }
-
-  // Setters
-  void SetIsClientAudioElement(bool is_client_audio_element) {
-    is_client_audio_element_ = is_client_audio_element;
-  }
 
  private:
   friend class MultiBufferDataSourceTest;
