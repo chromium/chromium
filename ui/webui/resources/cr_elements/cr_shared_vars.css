@@ -233,15 +233,17 @@ html {
 }
 
 html[chrome-refresh-2023] {
-  /* Colors */
-  --cr-color-token-primary: rgb(11, 87, 208);
-  --cr-color-token-on-primary: rgb(255, 255, 255);
-  --cr-color-token-primary-container: rgb(211, 227, 253);
-  --cr-color-token-on-primary-container: rgb(4, 30, 73);
-  --cr-color-token-secondary-container: rgb(194, 231, 255);
-  --cr-color-token-on-secondary-container: rgb(0, 29, 53);
-  --cr-color-token-on-surface-rgb: 31, 31, 31;
-  --cr-color-token-on-surface: rgb(var(--cr-color-token-on-surface-rgb));
+  /* Colors: These variables should never be overridden and should only be used
+     as fallback values for shared cr_elements or in UIs that do not have
+     the color pipeline. */
+  --cr-fallback-color-primary: rgb(11, 87, 208);
+  --cr-fallback-color-on-primary: rgb(255, 255, 255);
+  --cr-fallback-color-primary-container: rgb(211, 227, 253);
+  --cr-fallback-color-on-primary-container: rgb(4, 30, 73);
+  --cr-fallback-color-secondary-container: rgb(194, 231, 255);
+  --cr-fallback-color-on-secondary-container: rgb(0, 29, 53);
+  --cr-fallback-color-on-surface-rgb: 31, 31, 31;
+  --cr-fallback-color-on-surface: rgb(var(--cr-fallback-color-on-surface-rgb));
 
   /* Layout */
   --cr-button-height: 36px;
@@ -250,12 +252,12 @@ html[chrome-refresh-2023] {
 @media (prefers-color-scheme: dark) {
   html[chrome-refresh-2023] {
     /* Colors */
-    --cr-color-token-primary: rgb(168, 199, 250);
-    --cr-color-token-on-primary: rgb(6, 46, 111);
-    --cr-color-token-primary-container: rgb(8, 66, 160);
-    --cr-color-token-on-primary-container: rgb(211, 227, 253);
-    --cr-color-token-secondary-container: rgb(0, 74, 119);
-    --cr-color-token-on-secondary-container: rgb(194, 231, 255);
-    --cr-color-token-on-surface-rgb: 227, 227, 227;
+    --cr-fallback-color-primary: rgb(168, 199, 250);
+    --cr-fallback-color-on-primary: rgb(6, 46, 111);
+    --cr-fallback-color-primary-container: rgb(8, 66, 160);
+    --cr-fallback-color-on-primary-container: rgb(211, 227, 253);
+    --cr-fallback-color-secondary-container: rgb(0, 74, 119);
+    --cr-fallback-color-on-secondary-container: rgb(194, 231, 255);
+    --cr-fallback-color-on-surface-rgb: 227, 227, 227;
   }
 }

@@ -75,26 +75,26 @@
       :host-context([chrome-refresh-2023]):host {
         /* Default button colors. */
         --border-color: var(--color-button-border,
-            var(--cr-color-token-primary-container));
+            var(--cr-fallback-color-primary-container));
         --text-color: var(--color-button-foreground,
-            var(--cr-color-token-primary));
+            var(--cr-fallback-color-primary));
 
         /* Disabled default button colors. */
         --disabled-border-color: var(--color-button-border-disabled,
-            rgba(var(--cr-color-token-on-surface-rgb), .12));
+            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
         --disabled-text-color: var(--color-button-foreground-disabled,
-            rgba(var(--cr-color-token-on-surface-rgb),
+            rgba(var(--cr-fallback-color-on-surface-rgb),
                  var(--cr-disabled-opacity)));
 
         /* Action button colors. */
         --bg-action: var(--color-button-background-prominent,
-            var(--cr-color-token-primary));
+            var(--cr-fallback-color-primary));
         --text-color-action: var(--color-button-foreground-prominent,
-            var(--cr-color-token-on-primary));
+            var(--cr-fallback-color-on-primary));
 
         /* Disabled action button colors. */
         --disabled-bg-action: var(--color-button-background-prominent-disabled,
-            rgba(var(--cr-color-token-on-surface-rgb), .12));
+            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
 
         border-radius: 100px;
         line-height: 20px;
@@ -208,14 +208,14 @@
 
       :host-context([chrome-refresh-2023]):host(.tonal-button) {
         background-color: var(--color-button-background-tonal,
-            var(--cr-color-token-secondary-container));
+            var(--cr-fallback-color-secondary-container));
         color: var(--color-button-foreground-tonal,
-            var(--cr-color-token-on-secondary-container));
+            var(--cr-fallback-color-on-secondary-container));
       }
 
       :host-context([chrome-refresh-2023]):host(.tonal-button[disabled]) {
         background-color: var(--color-button-background-tonal-disabled,
-            rgba(var(--cr-color-token-on-surface-rgb), .12));
+            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
         border: none;
         color: var(--disabled-text-color);
       }
