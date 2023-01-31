@@ -27,14 +27,16 @@ class ErrorResponse;
 namespace floss {
 
 class FlossAdapterClient;
+class FlossAdvertiserClient;
+class FlossBatteryManagerClient;
 class FlossClientBundle;
 class FlossDBusManagerSetter;
 class FlossGattManagerClient;
+class FlossLEScanClient;
+class FlossLoggingClient;
 class FlossManagerClient;
 class FlossSocketManager;
-class FlossLEScanClient;
-class FlossAdvertiserClient;
-class FlossBatteryManagerClient;
+
 #if BUILDFLAG(IS_CHROMEOS)
 class FlossAdminClient;
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -110,12 +112,14 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   // All returned objects are owned by FlossDBusManager. Do not use these
   // pointers after FlossDBusManager has been shut down.
   FlossAdapterClient* GetAdapterClient();
-  FlossGattManagerClient* GetGattManagerClient();
-  FlossManagerClient* GetManagerClient();
-  FlossSocketManager* GetSocketManager();
-  FlossLEScanClient* GetLEScanClient();
   FlossAdvertiserClient* GetAdvertiserClient();
   FlossBatteryManagerClient* GetBatteryManagerClient();
+  FlossGattManagerClient* GetGattManagerClient();
+  FlossLEScanClient* GetLEScanClient();
+  FlossLoggingClient* GetLoggingClient();
+  FlossManagerClient* GetManagerClient();
+  FlossSocketManager* GetSocketManager();
+
 #if BUILDFLAG(IS_CHROMEOS)
   FlossAdminClient* GetAdminClient();
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -163,15 +167,16 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
 
 class DEVICE_BLUETOOTH_EXPORT FlossDBusManagerSetter {
  public:
-  void SetFlossManagerClient(std::unique_ptr<FlossManagerClient> client);
   void SetFlossAdapterClient(std::unique_ptr<FlossAdapterClient> client);
-  void SetFlossSocketManager(std::unique_ptr<FlossSocketManager> manager);
-  void SetFlossLEScanClient(std::unique_ptr<FlossLEScanClient> client);
   void SetFlossAdvertiserClient(std::unique_ptr<FlossAdvertiserClient> client);
-  void SetFlossGattManagerClient(
-      std::unique_ptr<FlossGattManagerClient> client);
   void SetFlossBatteryManagerClient(
       std::unique_ptr<FlossBatteryManagerClient> client);
+  void SetFlossGattManagerClient(
+      std::unique_ptr<FlossGattManagerClient> client);
+  void SetFlossLEScanClient(std::unique_ptr<FlossLEScanClient> client);
+  void SetFlossLoggingClient(std::unique_ptr<FlossLoggingClient> client);
+  void SetFlossManagerClient(std::unique_ptr<FlossManagerClient> client);
+  void SetFlossSocketManager(std::unique_ptr<FlossSocketManager> manager);
 #if BUILDFLAG(IS_CHROMEOS)
   void SetFlossAdminClient(std::unique_ptr<FlossAdminClient> client);
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -229,6 +234,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
 
   FlossLEScanClient* lescan_client() { return lescan_client_.get(); }
 
+  FlossLoggingClient* logging_client() { return logging_client_.get(); }
+
   FlossAdvertiserClient* advertiser_client() {
     return advertiser_client_.get();
   }
@@ -252,6 +259,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
   std::unique_ptr<FlossGattManagerClient> gatt_manager_client_;
   std::unique_ptr<FlossSocketManager> socket_manager_;
   std::unique_ptr<FlossLEScanClient> lescan_client_;
+  std::unique_ptr<FlossLoggingClient> logging_client_;
   std::unique_ptr<FlossAdvertiserClient> advertiser_client_;
   std::unique_ptr<FlossBatteryManagerClient> battery_manager_client_;
 #if BUILDFLAG(IS_CHROMEOS)

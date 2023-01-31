@@ -10,9 +10,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluetooth_debug_manager_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
+#include "device/bluetooth/floss/floss_dbus_client.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/floss/floss_features.h"
+#include "device/bluetooth/floss/floss_logging_client.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
@@ -44,9 +48,19 @@ DebugLogsManager::DebugLogsManager(const std::string& primary_user_email,
   SetBluetoothQualityReport(
       /*enable=*/features::IsBluetoothQualityReportEnabled(),
       /*num_completed_attempts=*/0);
+
+  // Grab the Bluetooth adapter instance so we can register observers.
+  device::BluetoothAdapterFactory::Get()->GetAdapter(
+      base::BindOnce(&DebugLogsManager::OnBluetoothAdapterAvailable,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 DebugLogsManager::~DebugLogsManager() {
+  if (adapter_) {
+    adapter_->RemoveObserver(this);
+    adapter_.reset();
+  }
+
   SetVerboseLogsEnable(false);
 
   // Disable Bluetooth Quality Report if it is enabled on login.
@@ -92,6 +106,7 @@ bool DebugLogsManager::AreDebugLogsSupported() const {
 }
 
 void DebugLogsManager::SetVerboseLogsEnable(bool enable) {
+  debug_logs_enabled_ = enable;
   SendDBusVerboseLogsMessage(enable, /*num_completed_attempts=*/0);
 }
 
@@ -101,22 +116,38 @@ void DebugLogsManager::SendDBusVerboseLogsMessage(bool enable,
   VLOG(1) << (enable ? "Enabling" : "Disabling") << " bluetooth verbose logs";
 
   if (floss::features::IsFlossEnabled()) {
-    VLOG(1) << "Floss does not yet support dynamic verbose logging.";
-    return;
+    floss::FlossDBusManager::Get()->GetLoggingClient()->SetDebugLogging(
+        base::BindOnce(&DebugLogsManager::OnFlossSetDebugLogging,
+                       weak_ptr_factory_.GetWeakPtr(), enable,
+                       num_completed_attempts),
+        enable);
+  } else {
+    bluez::BluezDBusManager::Get()
+        ->GetBluetoothDebugManagerClient()
+        ->SetLogLevels(
+            /*bluez_level=*/level, /*kernel_level=*/0,
+            base::BindOnce(&DebugLogsManager::OnVerboseLogsEnableSuccess,
+                           weak_ptr_factory_.GetWeakPtr(), enable),
+            base::BindOnce(&DebugLogsManager::OnVerboseLogsEnableError,
+                           weak_ptr_factory_.GetWeakPtr(), enable,
+                           num_completed_attempts));
   }
-
-  bluez::BluezDBusManager::Get()
-      ->GetBluetoothDebugManagerClient()
-      ->SetLogLevels(
-          /*bluez_level=*/level, /*kernel_level=*/0,
-          base::BindOnce(&DebugLogsManager::OnVerboseLogsEnableSuccess,
-                         weak_ptr_factory_.GetWeakPtr(), enable),
-          base::BindOnce(&DebugLogsManager::OnVerboseLogsEnableError,
-                         weak_ptr_factory_.GetWeakPtr(), enable,
-                         num_completed_attempts));
 }
 
-void DebugLogsManager::OnVerboseLogsEnableSuccess(bool enable) {
+void DebugLogsManager::OnFlossSetDebugLogging(
+    const bool enable,
+    const int num_completed_attempts,
+    floss::DBusResult<floss::Void> result) {
+  if (result.has_value()) {
+    OnVerboseLogsEnableSuccess(enable);
+  } else {
+    auto error = result.error();
+    OnVerboseLogsEnableError(enable, num_completed_attempts, error.name,
+                             error.message);
+  }
+}
+
+void DebugLogsManager::OnVerboseLogsEnableSuccess(const bool enable) {
   VLOG(1) << "Bluetooth verbose logs successfully "
           << (enable ? "enabled" : "disabled");
 }
@@ -188,6 +219,27 @@ void DebugLogsManager::OnSetBluetoothQualityReportError(
                      weak_ptr_factory_.GetWeakPtr(), enable,
                      num_completed_attempts + 1),
       kDbusRetryInterval);
+}
+
+void DebugLogsManager::OnBluetoothAdapterAvailable(
+    scoped_refptr<device::BluetoothAdapter> adapter) {
+  adapter_ = std::move(adapter);
+  adapter_->AddObserver(this);
+}
+
+void DebugLogsManager::AdapterPoweredChanged(device::BluetoothAdapter* adapter,
+                                             bool powered) {
+  // Bluez does not dynamically set log level (it is persistent).
+  if (!floss::features::IsFlossEnabled()) {
+    return;
+  }
+
+  // We only need to send enable call when powering on and we want to enable
+  // debug logs. We don't need to turn it off on power on.
+  if (powered && debug_logs_enabled_) {
+    SendDBusVerboseLogsMessage(debug_logs_enabled_,
+                               /*num_completed_attempts=*/0);
+  }
 }
 
 }  // namespace bluetooth

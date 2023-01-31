@@ -7,11 +7,23 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
+#include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_debug_manager_client.h"
+#include "device/bluetooth/floss/bluetooth_adapter_floss.h"
+#include "device/bluetooth/floss/fake_floss_adapter_client.h"
+#include "device/bluetooth/floss/fake_floss_logging_client.h"
+#include "device/bluetooth/floss/fake_floss_manager_client.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
+#include "device/bluetooth/floss/floss_features.h"
+#include "device/bluetooth/floss/floss_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -45,14 +57,34 @@ class DebugLogsManagerTest : public testing::Test {
     dbus_setter->SetBluetoothDebugManagerClient(
         std::unique_ptr<bluez::BluetoothDebugManagerClient>(
             std::move(fake_bluetooth_debug_manager_client)));
+
+    auto fake_floss_manager_client =
+        std::make_unique<floss::FakeFlossManagerClient>();
+    auto fake_floss_adapter_client =
+        std::make_unique<floss::FakeFlossAdapterClient>();
+    auto fake_floss_logging_client =
+        std::make_unique<floss::FakeFlossLoggingClient>();
+    fake_floss_manager_client_ = fake_floss_manager_client.get();
+    fake_floss_adapter_client_ = fake_floss_adapter_client.get();
+    fake_floss_logging_client_ = fake_floss_logging_client.get();
+
+    std::unique_ptr<floss::FlossDBusManagerSetter> floss_setter =
+        floss::FlossDBusManager::GetSetterForTesting();
+    floss_setter->SetFlossManagerClient(std::move(fake_floss_manager_client));
+    floss_setter->SetFlossAdapterClient(std::move(fake_floss_adapter_client));
+    floss_setter->SetFlossLoggingClient(std::move(fake_floss_logging_client));
+
+    is_floss_flag_enabled_ = false;
   }
 
   void TearDown() override {
     debug_logs_manager_.reset();
+    adapter_.reset();
     bluez::BluezDBusManager::Shutdown();
   }
 
   void EnableDebugFlag() { is_debug_toggle_flag_enabled_ = true; }
+  void EnableFlossFlag() { is_floss_flag_enabled_ = true; }
 
   void InitFeatures() {
     std::vector<base::test::FeatureRef> enabled_features;
@@ -62,6 +94,12 @@ class DebugLogsManagerTest : public testing::Test {
       enabled_features.push_back(features::kShowBluetoothDebugLogToggle);
     else
       disabled_features.push_back(features::kShowBluetoothDebugLogToggle);
+
+    if (is_floss_flag_enabled_) {
+      enabled_features.push_back(floss::features::kFlossEnabled);
+    } else {
+      disabled_features.push_back(floss::features::kFlossEnabled);
+    }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -79,15 +117,50 @@ class DebugLogsManagerTest : public testing::Test {
     return fake_bluetooth_debug_manager_client_;
   }
 
+  floss::FakeFlossLoggingClient* fake_floss_logging_client() const {
+    return fake_floss_logging_client_;
+  }
+
+  void InitializeAdapter(bool powered) {
+    adapter_ = floss::BluetoothAdapterFloss::CreateAdapter();
+
+    fake_floss_manager_client_->SetAdapterPowered(/*adapter=*/0, powered);
+
+    base::RunLoop run_loop;
+    adapter_->Initialize(run_loop.QuitClosure());
+    run_loop.Run();
+
+    ASSERT_TRUE(adapter_);
+    ASSERT_TRUE(adapter_->IsInitialized());
+
+    device::BluetoothAdapterFactory::Get()->SetAdapterForTesting(adapter_);
+  }
+
+  void SimulatePowered(bool powered) {
+    fake_floss_manager_client_->NotifyObservers(base::BindLambdaForTesting(
+        [powered](floss::FlossManagerClient::Observer* observer) {
+          observer->AdapterEnabledChanged(/*adapter=*/0, /*enabled=*/powered);
+        }));
+    base::RunLoop().RunUntilIdle();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   bool is_debug_toggle_flag_enabled_ = false;
-  bluez::FakeBluetoothDebugManagerClient* fake_bluetooth_debug_manager_client_;
+  bool is_floss_flag_enabled_ = false;
+  raw_ptr<bluez::FakeBluetoothDebugManagerClient>
+      fake_bluetooth_debug_manager_client_;
+  raw_ptr<floss::FakeFlossManagerClient> fake_floss_manager_client_;
+  raw_ptr<floss::FakeFlossLoggingClient> fake_floss_logging_client_;
+  raw_ptr<floss::FakeFlossAdapterClient> fake_floss_adapter_client_;
   std::unique_ptr<DebugLogsManager> debug_logs_manager_;
   TestingPrefServiceSimple prefs_;
+  scoped_refptr<device::BluetoothAdapter> adapter_;
 };
 
 TEST_F(DebugLogsManagerTest, FlagNotEnabled) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
   /* debug flag disabled */
   InitFeatures();
   InstantiateDebugManager(kTestGooglerEmail);
@@ -96,6 +169,8 @@ TEST_F(DebugLogsManagerTest, FlagNotEnabled) {
 }
 
 TEST_F(DebugLogsManagerTest, NonGoogler) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
   EnableDebugFlag();
   InitFeatures();
   InstantiateDebugManager(kTestNonGooglerEmail);
@@ -104,6 +179,8 @@ TEST_F(DebugLogsManagerTest, NonGoogler) {
 }
 
 TEST_F(DebugLogsManagerTest, GooglerDefaultPref) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
   EnableDebugFlag();
   InitFeatures();
   InstantiateDebugManager(kTestGooglerEmail);
@@ -112,6 +189,8 @@ TEST_F(DebugLogsManagerTest, GooglerDefaultPref) {
 }
 
 TEST_F(DebugLogsManagerTest, ChangeDebugLogsState) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
   EnableDebugFlag();
   InitFeatures();
   InstantiateDebugManager(kTestGooglerEmail);
@@ -130,6 +209,8 @@ TEST_F(DebugLogsManagerTest, ChangeDebugLogsState) {
 }
 
 TEST_F(DebugLogsManagerTest, SendVerboseLogsRequestUponLoginAndLogout) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
   EnableDebugFlag();
   InitFeatures();
   InstantiateDebugManager(kTestGooglerEmail);
@@ -175,6 +256,26 @@ TEST_F(DebugLogsManagerTest, RetryUponSetVerboseLogsFailure) {
             1);
   // Message is re-sent upon failing, eventually bluez level should change.
   EXPECT_EQ(fake_bluetooth_debug_manager_client()->bluez_level(), 0);
+}
+
+TEST_F(DebugLogsManagerTest, CheckFlossUpdatesOnPowerOn) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  InitializeAdapter(/*powered=*/false);
+
+  EnableDebugFlag();
+  EnableFlossFlag();
+  InitFeatures();
+
+  EXPECT_EQ(fake_floss_logging_client()->GetDebugEnabledForTesting(), false);
+  InstantiateDebugManager(kTestGooglerEmail);
+  EXPECT_EQ(fake_floss_logging_client()->GetDebugEnabledForTesting(), true);
+
+  fake_floss_logging_client()->SetDebugEnabledForTesting(false);
+  EXPECT_EQ(fake_floss_logging_client()->GetDebugEnabledForTesting(), false);
+  SimulatePowered(/*powered=*/true);
+  EXPECT_EQ(fake_floss_logging_client()->GetDebugEnabledForTesting(), true);
+  SimulatePowered(/*powered=*/false);
 }
 
 }  // namespace bluetooth

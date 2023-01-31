@@ -19,20 +19,24 @@ int kDBusTimeoutMs = 2000;
 // TODO(b/189499077) - Expose via floss package
 const char kAdapterService[] = "org.chromium.bluetooth";
 const char kManagerService[] = "org.chromium.bluetooth.Manager";
-const char kAdapterInterface[] = "org.chromium.bluetooth.Bluetooth";
-const char kGattInterface[] = "org.chromium.bluetooth.BluetoothGatt";
-const char kBatteryManagerInterface[] = "org.chromium.bluetooth.BatteryManager";
-const char kAdminInterface[] = "org.chromium.bluetooth.BluetoothAdmin";
-const char kManagerInterface[] = "org.chromium.bluetooth.Manager";
-const char kExperimentalInterface[] = "org.chromium.bluetooth.Experimental";
-const char kManagerObject[] = "/org/chromium/bluetooth/Manager";
+
+const char kAdapterLoggingObjectFormat[] =
+    "/org/chromium/bluetooth/hci%d/logging";
 const char kAdapterObjectFormat[] = "/org/chromium/bluetooth/hci%d/adapter";
-const char kGattObjectFormat[] = "/org/chromium/bluetooth/hci%d/gatt";
-const char kMediaObjectFormat[] = "/org/chromium/bluetooth/hci%d/media";
+const char kAdminObjectFormat[] = "/org/chromium/bluetooth/hci%d/admin";
 const char kBatteryManagerObjectFormat[] =
     "/org/chromium/bluetooth/hci%d/battery_manager";
-const char kAdminObjectFormat[] = "/org/chromium/bluetooth/hci%d/admin";
+const char kGattObjectFormat[] = "/org/chromium/bluetooth/hci%d/gatt";
+const char kManagerObject[] = "/org/chromium/bluetooth/Manager";
+const char kMediaObjectFormat[] = "/org/chromium/bluetooth/hci%d/media";
 
+const char kAdapterInterface[] = "org.chromium.bluetooth.Bluetooth";
+const char kAdapterLoggingInterface[] = "org.chromium.bluetooth.Logging";
+const char kAdminInterface[] = "org.chromium.bluetooth.BluetoothAdmin";
+const char kBatteryManagerInterface[] = "org.chromium.bluetooth.BatteryManager";
+const char kExperimentalInterface[] = "org.chromium.bluetooth.Experimental";
+const char kGattInterface[] = "org.chromium.bluetooth.BluetoothGatt";
+const char kManagerInterface[] = "org.chromium.bluetooth.Manager";
 const char kSocketManagerInterface[] = "org.chromium.bluetooth.SocketManager";
 
 namespace adapter {
@@ -227,6 +231,11 @@ const char kGetAllowedServices[] = "GetAllowedServices";
 const char kGetDevicePolicyEffect[] = "GetDevicePolicyEffect";
 }  // namespace admin
 
+namespace adapter_logging {
+const char kIsDebugEnabled[] = "IsDebugEnabled";
+const char kSetDebugLogging[] = "SetDebugLogging";
+}  // namespace adapter_logging
+
 namespace experimental {
 const char kSetLLPrivacy[] = "SetLLPrivacy";
 }  // namespace experimental
@@ -385,6 +394,11 @@ dbus::ObjectPath FlossDBusClient::GenerateBatteryManagerPath(
 dbus::ObjectPath FlossDBusClient::GenerateAdminPath(int adapter_index) {
   return dbus::ObjectPath(
       base::StringPrintf(kAdminObjectFormat, adapter_index));
+}
+
+dbus::ObjectPath FlossDBusClient::GenerateLoggingPath(int adapter_index) {
+  return dbus::ObjectPath(
+      base::StringPrintf(kAdapterLoggingObjectFormat, adapter_index));
 }
 
 // Default error handler for dbus clients is to just print the error right now.

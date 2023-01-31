@@ -18,6 +18,7 @@
 #include "device/bluetooth/floss/fake_floss_battery_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_gatt_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_lescan_client.h"
+#include "device/bluetooth/floss/fake_floss_logging_client.h"
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_socket_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
@@ -126,6 +127,8 @@ class BluetoothFlossTest : public testing::Test {
         std::move(fake_floss_advertiser_client));
     dbus_setter->SetFlossBatteryManagerClient(
         std::move(fake_floss_battery_manager_client));
+    dbus_setter->SetFlossLoggingClient(
+        std::make_unique<FakeFlossLoggingClient>());
 #if BUILDFLAG(IS_CHROMEOS)
     dbus_setter->SetFlossAdminClient(std::move(fake_floss_admin_client));
 #endif  // BUILDFLAG(IS_CHROMEOS)

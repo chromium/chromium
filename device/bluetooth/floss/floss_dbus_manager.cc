@@ -15,17 +15,11 @@
 #include "dbus/message.h"
 #include "dbus/object_manager.h"
 #include "dbus/object_proxy.h"
-#include "device/bluetooth/floss/fake_floss_adapter_client.h"
-#include "device/bluetooth/floss/fake_floss_advertiser_client.h"
-#include "device/bluetooth/floss/fake_floss_gatt_manager_client.h"
-#include "device/bluetooth/floss/fake_floss_lescan_client.h"
-#include "device/bluetooth/floss/fake_floss_manager_client.h"
-#include "device/bluetooth/floss/fake_floss_socket_manager.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
-
 #include "device/bluetooth/floss/floss_advertiser_client.h"
 #include "device/bluetooth/floss/floss_battery_manager_client.h"
 #include "device/bluetooth/floss/floss_lescan_client.h"
+#include "device/bluetooth/floss/floss_logging_client.h"
 #include "device/bluetooth/floss/floss_manager_client.h"
 #include "device/bluetooth/floss/floss_socket_manager.h"
 
@@ -215,6 +209,10 @@ FlossBatteryManagerClient* FlossDBusManager::GetBatteryManagerClient() {
   return client_bundle_->battery_manager_client();
 }
 
+FlossLoggingClient* FlossDBusManager::GetLoggingClient() {
+  return client_bundle_->logging_client();
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 FlossAdminClient* FlossDBusManager::GetAdminClient() {
   return client_bundle_->admin_client();
@@ -247,6 +245,8 @@ void FlossDBusManager::InitializeAdapterClients(int adapter) {
                                             active_adapter_);
   client_bundle_->battery_manager_client()->Init(
       GetSystemBus(), kAdapterService, active_adapter_);
+  client_bundle_->logging_client()->Init(GetSystemBus(), kAdapterService,
+                                         active_adapter_);
 #if BUILDFLAG(IS_CHROMEOS)
   client_bundle_->admin_client()->Init(GetSystemBus(), kAdapterService,
                                        active_adapter_);
@@ -290,6 +290,12 @@ void FlossDBusManagerSetter::SetFlossBatteryManagerClient(
   FlossDBusManager::Get()->client_bundle_->battery_manager_client_ =
       std::move(client);
 }
+
+void FlossDBusManagerSetter::SetFlossLoggingClient(
+    std::unique_ptr<FlossLoggingClient> client) {
+  FlossDBusManager::Get()->client_bundle_->logging_client_ = std::move(client);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 void FlossDBusManagerSetter::SetFlossAdminClient(
     std::unique_ptr<FlossAdminClient> client) {
@@ -320,6 +326,7 @@ void FlossClientBundle::ResetAdapterClients() {
   lescan_client_ = FlossLEScanClient::Create();
   advertiser_client_ = FlossAdvertiserClient::Create();
   battery_manager_client_ = FlossBatteryManagerClient::Create();
+  logging_client_ = FlossLoggingClient::Create();
 
 #if BUILDFLAG(IS_CHROMEOS)
   admin_client_ = FlossAdminClient::Create();
