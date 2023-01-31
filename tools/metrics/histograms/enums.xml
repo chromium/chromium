@@ -63191,6 +63191,7 @@ from previous Chrome versions.
   <int value="1086775696"
       label="WebAssemblyExperimentalStackSwitching:enabled"/>
   <int value="1087235172" label="file-manager-enable-new-audio-player"/>
+  <int value="1088880545" label="ShelfStackedHotseat:enabled"/>
   <int value="1088915385" label="new-password-form-parsing:enabled"/>
   <int value="1089106835" label="ContextMenuPopupStyle:enabled"/>
   <int value="1089913432" label="VirtualDesksGestures:disabled"/>
@@ -64554,6 +64555,7 @@ from previous Chrome versions.
   <int value="1864062646" label="ChromeWhatsNewUI:disabled"/>
   <int value="1864412948" label="AvatarsCloudMigration:disabled"/>
   <int value="1865068568" label="disable-audio-support-for-desktop-share"/>
+  <int value="1865211159" label="ShelfStackedHotseat:disabled"/>
   <int value="1865799183" label="javascript-harmony"/>
   <int value="1865963858" label="tls13-variant"/>
   <int value="1866079109" label="team-drives"/>

@@ -1866,6 +1866,11 @@ BASE_FEATURE(kShelfLauncherNudge,
 // Enables the shelf party.
 BASE_FEATURE(kShelfParty, "ShelfParty", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the shelf party.
+BASE_FEATURE(kShelfStackedHotseat,
+             "ShelfStackedHotseat",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Shelf Palm Rejection in tablet mode by defining a pixel offset for
 // the swipe gesture to show the extended hotseat. Limited to certain apps.
 BASE_FEATURE(kShelfPalmRejectionSwipeOffset,
@@ -3079,6 +3084,10 @@ bool IsShelfLauncherNudgeEnabled() {
 
 bool IsShelfPalmRejectionSwipeOffsetEnabled() {
   return base::FeatureList::IsEnabled(kShelfPalmRejectionSwipeOffset);
+}
+
+bool IsShelfStackedHotseatEnabled() {
+  return base::FeatureList::IsEnabled(kShelfStackedHotseat);
 }
 
 bool IsShimlessRMAFlowEnabled() {

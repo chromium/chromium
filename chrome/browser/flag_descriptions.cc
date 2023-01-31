@@ -2743,6 +2743,11 @@ const char kShelfPalmRejectionSwipeOffsetDescription[] =
     "gesture that drags the hotseat to a extended state for certain stylus "
     "apps.";
 
+const char kShelfStackedHotseatName[] = "Shelf Stacked Hotseat";
+const char kShelfStackedHotseatDescription[] =
+    "Stack the hotseat app bar above the shelf button panels/system tray when "
+    "there is not enough space for the app bar.";
+
 const char kShowAutofillSignaturesName[] = "Show autofill signatures.";
 const char kShowAutofillSignaturesDescription[] =
     "Annotates web forms with Autofill signatures as HTML attributes. Also "

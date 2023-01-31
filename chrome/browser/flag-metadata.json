@@ -6338,6 +6338,11 @@
     "expiry_milestone": 107
   },
   {
+    "name": "shelf-stacked-hotseat",
+    "owners": ["yulunwu", "//ash/shelf/OWNERS"],
+    "expiry_milestone": 116
+  },
+  {
     "name": "shimless-rma-disable-dark-mode",
     "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
     "expiry_milestone": 120

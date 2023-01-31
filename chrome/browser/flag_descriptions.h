@@ -1547,6 +1547,9 @@ extern const char kShelfHoverPreviewsDescription[];
 extern const char kShelfPalmRejectionSwipeOffsetName[];
 extern const char kShelfPalmRejectionSwipeOffsetDescription[];
 
+extern const char kShelfStackedHotseatName[];
+extern const char kShelfStackedHotseatDescription[];
+
 extern const char kShowAutofillSignaturesName[];
 extern const char kShowAutofillSignaturesDescription[];
 
