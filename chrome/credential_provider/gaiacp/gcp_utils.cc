@@ -58,47 +58,61 @@
 
 namespace credential_provider {
 
-const wchar_t kDefaultProfilePictureFileExtension[] = L".jpg";
+constexpr wchar_t kDefaultProfilePictureFileExtension[] = L".jpg";
 
-const base::FilePath::CharType kCredentialProviderFolder[] =
+constexpr base::FilePath::CharType kCredentialProviderFolder[] =
     L"Credential Provider";
-
-// Overridden in tests to fake serial number extraction.
-bool g_use_test_serial_number = false;
-std::wstring g_test_serial_number = L"";
-
-// Overridden in tests to fake mac address extraction.
-bool g_use_test_mac_addresses = false;
-std::vector<std::string> g_test_mac_addresses;
-
-// Overriden in tests to fake os version.
-bool g_use_test_os_version = false;
-std::string g_test_os_version = "";
-
-// Overridden in tests to fake installed chrome path.
-bool g_use_test_chrome_path = false;
-base::FilePath g_test_chrome_path(L"");
-
-const wchar_t kKernelLibFile[] = L"kernel32.dll";
-const wchar_t kOsRegistryPath[] =
-    L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion";
-const wchar_t kOsMajorName[] = L"CurrentMajorVersionNumber";
-const wchar_t kOsMinorName[] = L"CurrentMinorVersionNumber";
-const wchar_t kOsBuildName[] = L"CurrentBuildNumber";
-const int kVersionStringSize = 128;
 
 constexpr wchar_t kDefaultMdmUrl[] =
     L"https://deviceenrollmentforwindows.googleapis.com/v1/discovery";
 
 constexpr int kMaxNumConsecutiveUploadDeviceFailures = 3;
-const base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh = base::Days(1);
-const base::TimeDelta kMaxTimeDeltaSinceLastExperimentsFetch = base::Days(1);
 
-// Path elements for the path where the experiments are stored on disk.
-const wchar_t kGcpwExperimentsDirectory[] = L"Experiments";
-const wchar_t kGcpwUserExperimentsFileName[] = L"ExperimentsFetchResponse";
+constexpr base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh =
+    base::Days(1);
+constexpr base::TimeDelta kMaxTimeDeltaSinceLastExperimentsFetch =
+    base::Days(1);
+
+constexpr wchar_t kGcpwExperimentsDirectory[] = L"Experiments";
+constexpr wchar_t kGcpwUserExperimentsFileName[] = L"ExperimentsFetchResponse";
 
 namespace {
+
+// Overridden in tests to fake serial number extraction.
+bool g_use_test_serial_number = false;
+std::wstring& TestSerialNumber() {
+  static base::NoDestructor<std::wstring> value;
+  return *value;
+}
+
+// Overridden in tests to fake MAC address extraction.
+bool g_use_test_mac_addresses = false;
+std::vector<std::string>& TestMacAddresses() {
+  static base::NoDestructor<std::vector<std::string>> value;
+  return *value;
+}
+
+// Overridden in tests to fake OS version.
+bool g_use_test_os_version = false;
+std::string& TestOSVersion() {
+  static base::NoDestructor<std::string> value;
+  return *value;
+}
+
+// Overridden in tests to fake installed Chrome path.
+bool g_use_test_chrome_path = false;
+base::FilePath& TestChromePath() {
+  static base::NoDestructor<base::FilePath> value;
+  return *value;
+}
+
+constexpr wchar_t kKernelLibFile[] = L"kernel32.dll";
+constexpr wchar_t kOsRegistryPath[] =
+    L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion";
+constexpr wchar_t kOsMajorName[] = L"CurrentMajorVersionNumber";
+constexpr wchar_t kOsMinorName[] = L"CurrentMinorVersionNumber";
+constexpr wchar_t kOsBuildName[] = L"CurrentBuildNumber";
+constexpr int kVersionStringSize = 128;
 
 // Minimum supported version of Chrome for GCPW.
 constexpr char kMinimumSupportedChromeVersionStr[] = "77.0.3865.65";
@@ -107,7 +121,7 @@ constexpr char kSentinelFilename[] = "gcpw_startup.sentinel";
 constexpr int64_t kMaxConsecutiveCrashCount = 5;
 
 // L$ prefix means this secret can only be accessed locally.
-const wchar_t kLsaKeyDMTokenPrefix[] = L"L$GCPW-DM-Token-";
+constexpr wchar_t kLsaKeyDMTokenPrefix[] = L"L$GCPW-DM-Token-";
 
 constexpr base::win::i18n::LanguageSelector::LangToOffset
     kLanguageOffsetPairs[] = {
@@ -263,12 +277,12 @@ base::FilePath GetDirectoryFilePath(const std::wstring& sid,
 GoogleRegistrationDataForTesting::GoogleRegistrationDataForTesting(
     std::wstring serial_number) {
   g_use_test_serial_number = true;
-  g_test_serial_number = serial_number;
+  TestSerialNumber() = serial_number;
 }
 
 GoogleRegistrationDataForTesting::~GoogleRegistrationDataForTesting() {
   g_use_test_serial_number = false;
-  g_test_serial_number = L"";
+  TestSerialNumber() = L"";
 }
 
 // GoogleRegistrationDataForTesting //////////////////////////////////////////
@@ -280,8 +294,8 @@ GemDeviceDetailsForTesting::GemDeviceDetailsForTesting(
     std::string os_version) {
   g_use_test_mac_addresses = true;
   g_use_test_os_version = true;
-  g_test_mac_addresses = mac_addresses;
-  g_test_os_version = os_version;
+  TestMacAddresses() = mac_addresses;
+  TestOSVersion() = os_version;
 }
 
 GemDeviceDetailsForTesting::~GemDeviceDetailsForTesting() {
@@ -296,12 +310,12 @@ GemDeviceDetailsForTesting::~GemDeviceDetailsForTesting() {
 GoogleChromePathForTesting::GoogleChromePathForTesting(
     base::FilePath file_path) {
   g_use_test_chrome_path = true;
-  g_test_chrome_path = file_path;
+  TestChromePath() = file_path;
 }
 
 GoogleChromePathForTesting::~GoogleChromePathForTesting() {
   g_use_test_chrome_path = false;
-  g_test_chrome_path = base::FilePath(L"");
+  TestChromePath() = base::FilePath(L"");
 }
 
 // GoogleChromePathForTesting /////////////////////////////////////////////////
@@ -1077,8 +1091,9 @@ bool ExtractKeysFromDict(
 }
 
 std::wstring GetSerialNumber() {
-  if (g_use_test_serial_number)
-    return g_test_serial_number;
+  if (g_use_test_serial_number) {
+    return TestSerialNumber();
+  }
   return base::win::WmiComputerSystemInfo::Get().serial_number();
 }
 
@@ -1086,8 +1101,9 @@ std::wstring GetSerialNumber() {
 // https://msdn.microsoft.com/en-us/library/windows/desktop/aa365917(v=vs.85).aspx
 std::vector<std::string> GetMacAddresses() {
   // Used for unit tests.
-  if (g_use_test_mac_addresses)
-    return g_test_mac_addresses;
+  if (g_use_test_mac_addresses) {
+    return TestMacAddresses();
+  }
 
   PIP_ADAPTER_INFO pAdapter;
   ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
@@ -1152,7 +1168,7 @@ void GetOsVersionFallback(std::string* version) {
 // The format of the OS version is <Major>.<Minor>.<BuildNumber>. Eg: 10.0.18363
 void GetOsVersion(std::string* version) {
   if (g_use_test_os_version) {
-    *version = g_test_os_version;
+    *version = TestOSVersion();
     return;
   }
 
@@ -1273,8 +1289,9 @@ base::FilePath GetChromePath() {
 }
 
 base::FilePath GetSystemChromePath() {
-  if (g_use_test_chrome_path)
-    return g_test_chrome_path;
+  if (g_use_test_chrome_path) {
+    return TestChromePath();
+  }
 
   return chrome_launcher_support::GetChromePathForInstallationLevel(
       chrome_launcher_support::SYSTEM_LEVEL_INSTALLATION, false);

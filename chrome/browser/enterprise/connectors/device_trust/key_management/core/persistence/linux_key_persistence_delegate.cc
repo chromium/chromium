@@ -137,7 +137,7 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
     DCHECK_EQ(wrapped.size(), 0u);
     if (file.error_details() == base::File::FILE_OK) {
       return true;
-    };
+    }
 
     return RecordFailure(KeyPersistenceOperation::kStoreKeyPair,
                            KeyPersistenceError::kDeleteKeyPairFailed,
