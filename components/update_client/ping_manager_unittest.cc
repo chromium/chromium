@@ -182,7 +182,7 @@ TEST_P(PingManagerTest, SendPing) {
     EXPECT_EQ("crx3", CHECK_DEREF(request.FindString("acceptformat")));
     EXPECT_TRUE(request.contains("arch"));
     EXPECT_EQ("cr", CHECK_DEREF(request.FindString("dedup")));
-    EXPECT_LT(0, request_val->FindPath({"hw", "physmemory"})->GetInt());
+    EXPECT_LT(0, request.FindByDottedPath("hw.physmemory")->GetInt());
     EXPECT_TRUE(request.contains("nacl_arch"));
     EXPECT_EQ("fake_channel_string",
               CHECK_DEREF(request.FindString("prodchannel")));
@@ -194,10 +194,10 @@ TEST_P(PingManagerTest, SendPing) {
               CHECK_DEREF(request.FindString("updaterchannel")));
     EXPECT_EQ("30.0", CHECK_DEREF(request.FindString("updaterversion")));
 
-    EXPECT_TRUE(request_val->FindPath({"os", "arch"})->is_string());
+    EXPECT_TRUE(request.FindByDottedPath("os.arch")->is_string());
     EXPECT_EQ("Fake Operating System",
-              request_val->FindPath({"os", "platform"})->GetString());
-    EXPECT_TRUE(request_val->FindPath({"os", "version"})->is_string());
+              request.FindByDottedPath("os.platform")->GetString());
+    EXPECT_TRUE(request.FindByDottedPath("os.version")->is_string());
 
     const base::Value::Dict& app =
         CHECK_DEREF(request.FindList("app"))[0].GetDict();

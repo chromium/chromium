@@ -471,8 +471,9 @@ TEST_P(UpdateCheckerTest, UpdateCheckInvalidAp) {
   EXPECT_EQ(true, app.FindBool("enabled"));
   EXPECT_TRUE(app.contains("updatecheck"));
   EXPECT_TRUE(app.contains("ping"));
-  EXPECT_EQ(-2, app_as_val.FindPath({"ping", "r"})->GetInt());
-  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.FindPath({"packages", "package"})
+  EXPECT_EQ(-2, app_as_val.GetDict().FindByDottedPath("ping.r")->GetInt());
+  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.GetDict()
+                                   .FindByDottedPath("packages.package")
                                    ->GetList()[0]
                                    .GetDict()
                                    .FindString("fp")));
@@ -508,8 +509,9 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccessNoBrand) {
   EXPECT_EQ(true, app.FindBool("enabled"));
   EXPECT_TRUE(app.contains("updatecheck"));
   EXPECT_TRUE(app.contains("ping"));
-  EXPECT_EQ(-2, app_as_val.FindPath({"ping", "r"})->GetInt());
-  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.FindPath({"packages", "package"})
+  EXPECT_EQ(-2, app_as_val.GetDict().FindByDottedPath("ping.r")->GetInt());
+  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.GetDict()
+                                   .FindByDottedPath("packages.package")
                                    ->GetList()[0]
                                    .GetDict()
                                    .FindString("fp")));
@@ -631,8 +633,9 @@ TEST_P(UpdateCheckerTest, UpdateCheckCupError) {
   EXPECT_EQ(true, app.FindBool("enabled"));
   EXPECT_TRUE(app.contains("updatecheck"));
   EXPECT_TRUE(app.contains("ping"));
-  EXPECT_EQ(-2, app_as_val.FindPath({"ping", "r"})->GetInt());
-  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.FindPath({"packages", "package"})
+  EXPECT_EQ(-2, app_as_val.GetDict().FindByDottedPath("ping.r")->GetInt());
+  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.GetDict()
+                                   .FindByDottedPath("packages.package")
                                    ->GetList()[0]
                                    .GetDict()
                                    .FindString("fp")));
@@ -702,12 +705,13 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastRollCall) {
   absl::optional<base::Value::Dict> root1 = ParseRequest(0);
   ASSERT_TRUE(root1);
   const base::Value app1 = GetFirstAppAsValue(root1.value());
-  EXPECT_EQ(5, app1.FindPath({"ping", "r"})->GetInt());
+  EXPECT_EQ(5, app1.GetDict().FindByDottedPath("ping.r")->GetInt());
   absl::optional<base::Value::Dict> root2 = ParseRequest(1);
   ASSERT_TRUE(root2);
   const base::Value app2 = GetFirstAppAsValue(root2.value());
-  EXPECT_EQ(3383, app2.FindPath({"ping", "rd"})->GetInt());
-  EXPECT_TRUE(app2.FindPath({"ping", "ping_freshness"})->is_string());
+  EXPECT_EQ(3383, app2.GetDict().FindByDottedPath("ping.rd")->GetInt());
+  EXPECT_TRUE(
+      app2.GetDict().FindByDottedPath("ping.ping_freshness")->is_string());
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
@@ -763,23 +767,25 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
     absl::optional<base::Value::Dict> root = ParseRequest(0);
     ASSERT_TRUE(root);
     const base::Value app = GetFirstAppAsValue(root.value());
-    EXPECT_EQ(10, app.FindPath({"ping", "a"})->GetInt());
-    EXPECT_EQ(-2, app.FindPath({"ping", "r"})->GetInt());
+    EXPECT_EQ(10, app.GetDict().FindIntByDottedPath("ping.a").value());
+    EXPECT_EQ(-2, app.GetDict().FindIntByDottedPath("ping.r").value());
     }
     {
     absl::optional<base::Value::Dict> root = ParseRequest(1);
     ASSERT_TRUE(root);
     const base::Value app = GetFirstAppAsValue(root.value());
-    EXPECT_EQ(3383, app.FindPath({"ping", "ad"})->GetInt());
-    EXPECT_EQ(3383, app.FindPath({"ping", "rd"})->GetInt());
-    EXPECT_TRUE(app.FindPath({"ping", "ping_freshness"})->is_string());
+    EXPECT_EQ(3383, app.GetDict().FindByDottedPath("ping.ad")->GetInt());
+    EXPECT_EQ(3383, app.GetDict().FindByDottedPath("ping.rd")->GetInt());
+    EXPECT_TRUE(
+        app.GetDict().FindByDottedPath("ping.ping_freshness")->is_string());
     }
     {
     absl::optional<base::Value::Dict> root = ParseRequest(2);
     ASSERT_TRUE(root);
     const base::Value app = GetFirstAppAsValue(root.value());
-    EXPECT_EQ(3383, app.FindPath({"ping", "rd"})->GetInt());
-    EXPECT_TRUE(app.FindPath({"ping", "ping_freshness"})->is_string());
+    EXPECT_EQ(3383, app.GetDict().FindByDottedPath("ping.rd")->GetInt());
+    EXPECT_TRUE(
+        app.GetDict().FindByDottedPath("ping.ping_freshness")->is_string());
     }
 }
 
@@ -1078,8 +1084,9 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
     EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
     EXPECT_EQ("0.9", CHECK_DEREF(app.FindString("version")));
     EXPECT_EQ(true, app.FindBool("enabled"));
-    EXPECT_TRUE(
-        app_as_val.FindPath({"updatecheck", "updatedisabled"})->GetBool());
+    EXPECT_TRUE(app_as_val.GetDict()
+                    .FindBoolByDottedPath("updatecheck.updatedisabled")
+                    .value());
   }
 }
 
@@ -1199,7 +1206,7 @@ TEST_P(UpdateCheckerTest, UpdatePauseResume) {
   EXPECT_EQ("TEST", CHECK_DEREF(app.FindString("brand")));
   EXPECT_EQ(true, app.FindBool("enabled"));
   EXPECT_TRUE(app.FindDict("updatecheck")->empty());
-  EXPECT_EQ(-2, app_as_val.FindPath({"ping", "r"})->GetInt());
+  EXPECT_EQ(-2, app_as_val.GetDict().FindIntByDottedPath("ping.r").value());
 
   const base::Value::List& packages =
       CHECK_DEREF(app.FindDict("packages")->FindList("package"));
