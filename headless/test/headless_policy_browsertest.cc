@@ -132,13 +132,14 @@ class HeadlessBrowserTestWithUrlBlockPolicy
     : public HeadlessBrowserTestWithPolicy {
  protected:
   void SetPolicy() override {
-    base::Value value(base::Value::Type::LIST);
+    base::Value::List value;
     value.Append("*/blocked.html");
 
     policy::PolicyMap policy;
     policy.Set("URLBlocklist", policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               std::move(value), /*external_data_fetcher=*/nullptr);
+               base::Value(std::move(value)),
+               /*external_data_fetcher=*/nullptr);
     mock_provider_->UpdateChromePolicy(policy);
   }
 };
