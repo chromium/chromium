@@ -12,6 +12,9 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.pm.PackageManager;
 import android.os.Looper;
 import android.view.View;
 
@@ -32,11 +35,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -63,6 +69,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -71,7 +78,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Unit tests {@link ChromeProvidedSharingOptionsProvider}.
+ * Instrumentation Unit tests {@link ChromeProvidedSharingOptionsProvider}.
  */
 @Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -122,13 +129,47 @@ public class ChromeProvidedSharingOptionsProviderTest {
     private ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
     private UserActionTester mActionTester;
 
+    private Context mContextToRestore;
+    private TestContext mTestContext;
+
     @BeforeClass
     public static void setUpClass() {
         sActivityTestRule.startMainActivityOnBlankPage();
     }
 
+    private class TestContext extends ContextWrapper {
+        private boolean mIsAutomotive;
+
+        public TestContext(Context baseContext) {
+            super(baseContext);
+            mIsAutomotive = false;
+        }
+
+        public void setIsAutomotive(boolean isAutomotive) {
+            this.mIsAutomotive = isAutomotive;
+            TestThreadUtils.runOnUiThreadBlocking(BuildInfo::resetForTesting);
+        }
+
+        @Override
+        public PackageManager getPackageManager() {
+            return new PackageManagerWrapper(super.getPackageManager()) {
+                @Override
+                public boolean hasSystemFeature(String name) {
+                    if (name.equals(PackageManager.FEATURE_AUTOMOTIVE)) {
+                        return mIsAutomotive;
+                    }
+                    return super.hasSystemFeature(name);
+                }
+            };
+        }
+    }
+
     @Before
     public void setUp() {
+        mContextToRestore = ContextUtils.getApplicationContext();
+        mTestContext = new TestContext(mContextToRestore);
+        ContextUtils.initApplicationContextForTests(mTestContext);
+
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         mJniMocker.mock(
@@ -149,6 +190,12 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @After
     public void tearDown() throws Exception {
+        // DisableAnimationTestRule requires an initialized context to do proper teardown.
+        // This resets to the original context rather than nulling out.
+        if (mContextToRestore != null) {
+            ContextUtils.initApplicationContextForTests(mContextToRestore);
+        }
+        TestThreadUtils.runOnUiThreadBlocking(BuildInfo::resetForTesting);
         TrackerFactory.setTrackerForTests(null);
         if (mActionTester != null) mActionTester.tearDown();
     }
@@ -413,6 +460,26 @@ public class ChromeProvidedSharingOptionsProviderTest {
         Mockito.verify(mTargetChosenCallback, Mockito.times(1))
                 .onTargetChosen(ChromeProvidedSharingOptionsProvider
                                         .CHROME_PROVIDED_FEATURE_COMPONENT_NAME);
+    }
+
+    @Test
+    @MediumTest
+    public void getPropertyModels_onlyReturnValidOptionsForAutomotive() {
+        mTestContext.setIsAutomotive(true);
+        setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
+                /*printingEnabled=*/false, LinkGeneration.MAX);
+
+        List<PropertyModel> propertyModels =
+                mChromeProvidedSharingOptionsProvider.getPropertyModels(
+                        ImmutableSet.of(ContentType.LINK_PAGE_VISIBLE, ContentType.IMAGE),
+                        DetailedContentType.NOT_SPECIFIED,
+                        /*isMultiWindow=*/true);
+
+        assertCorrectModelsAreInTheRightOrder(propertyModels,
+                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_url),
+                        mActivity.getResources().getString(
+                                R.string.send_tab_to_self_share_activity_title),
+                        mActivity.getResources().getString(R.string.qr_code_share_icon_label)));
     }
 
     private void setUpChromeProvidedSharingOptionsProviderTest(boolean isIncognito,

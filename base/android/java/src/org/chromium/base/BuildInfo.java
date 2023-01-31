@@ -273,4 +273,13 @@ public class BuildInfo {
         return sFirebaseAppId;
     }
 
+    /**
+     * This operation is not thread-safe. Construction of the new BuildInfo object will
+     * happen synchronously and result in a consistent BuildInfo, but references to the static
+     * BuildInfo instance may be out of date in some threads.
+     */
+    @VisibleForTesting
+    public static void resetForTesting() {
+        Holder.sInstance = new BuildInfo();
+    }
 }

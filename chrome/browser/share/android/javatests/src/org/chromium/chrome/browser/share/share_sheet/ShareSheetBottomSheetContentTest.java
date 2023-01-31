@@ -13,6 +13,9 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -34,9 +37,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -89,12 +95,44 @@ public final class ShareSheetBottomSheetContentTest {
     private ShareParams mShareParams;
     private ShareSheetBottomSheetContent mShareSheetBottomSheetContent;
 
+    private Context mContextToRestore;
+    private TestContext mTestContext;
+
+    private class TestContext extends ContextWrapper {
+        private boolean mIsAutomotive;
+
+        public TestContext(Context baseContext) {
+            super(baseContext);
+            mIsAutomotive = false;
+        }
+
+        public void setIsAutomotive(boolean isAutomotive) {
+            this.mIsAutomotive = isAutomotive;
+            TestThreadUtils.runOnUiThreadBlocking(BuildInfo::resetForTesting);
+        }
+
+        @Override
+        public PackageManager getPackageManager() {
+            return new PackageManagerWrapper(super.getPackageManager()) {
+                @Override
+                public boolean hasSystemFeature(String name) {
+                    if (PackageManager.FEATURE_AUTOMOTIVE.equals(name)) return mIsAutomotive;
+                    return super.hasSystemFeature(name);
+                }
+            };
+        }
+    }
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
+
+        mContextToRestore = ContextUtils.getApplicationContext();
+        mTestContext = new TestContext(mContextToRestore);
+        ContextUtils.initApplicationContextForTests(mTestContext);
 
         mPreviewUrl = UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(sUrl);
         mShareParams = new ShareParams.Builder(/*window=*/null, sTitle, sUrl)
@@ -119,6 +157,12 @@ public final class ShareSheetBottomSheetContentTest {
 
     @After
     public void tearDown() {
+        // DisableAnimationTestRule requires an initialized context to do proper teardown.
+        // This resets to the original context rather than nulling out.
+        if (mContextToRestore != null) {
+            ContextUtils.initApplicationContextForTests(mContextToRestore);
+        }
+        TestThreadUtils.runOnUiThreadBlocking(BuildInfo::resetForTesting);
         TrackerFactory.setTrackerForTests(null);
     }
 
@@ -329,6 +373,64 @@ public final class ShareSheetBottomSheetContentTest {
                 shareSheetBottomSheetContent.getContentView().findViewById(R.id.link_toggle_view);
         assertEquals(View.VISIBLE, toggleView.getVisibility());
         verifyZeroInteractions(mFeatureEngagementTracker);
+    }
+
+    @Test
+    @MediumTest
+    public void createRecyclerViews_notAutomotive_thirdPartyOptionsVisible() {
+        String fileContentType = "image/jpeg";
+        ShareSheetBottomSheetContent shareSheetBottomSheetContent =
+                new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
+                        new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
+                                .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
+                                .setFileContentType(fileContentType)
+                                .build(),
+                        mFeatureEngagementTracker);
+
+        // Set the third party section to visible.
+        shareSheetBottomSheetContent.getThirdPartyView().setVisibility(View.VISIBLE);
+        shareSheetBottomSheetContent.getContentView()
+                .findViewById(R.id.share_sheet_divider)
+                .setVisibility(View.VISIBLE);
+
+        shareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
+                ImmutableSet.of(ContentType.IMAGE), fileContentType, DetailedContentType.IMAGE,
+                mShareSheetLinkToggleCoordinator);
+
+        assertEquals("The ThirdPartyView should be visible", View.VISIBLE,
+                shareSheetBottomSheetContent.getThirdPartyView().getVisibility());
+        assertEquals("The share sheet divider should be visible", View.VISIBLE,
+                shareSheetBottomSheetContent.getContentView()
+                        .findViewById(R.id.share_sheet_divider)
+                        .getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    public void createRecyclerViews_isAutomotive_thirdPartyOptionsHidden() {
+        mTestContext.setIsAutomotive(true);
+
+        String fileContentType = "image/jpeg";
+        ShareSheetBottomSheetContent shareSheetBottomSheetContent =
+                new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
+                        new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
+                                .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
+                                .setFileContentType(fileContentType)
+                                .build(),
+                        mFeatureEngagementTracker);
+
+        shareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
+                ImmutableSet.of(ContentType.IMAGE), fileContentType, DetailedContentType.IMAGE,
+                mShareSheetLinkToggleCoordinator);
+
+        assertEquals("The ThirdPartyView should be hidden", View.GONE,
+                shareSheetBottomSheetContent.getContentView()
+                        .findViewById(R.id.share_sheet_other_apps)
+                        .getVisibility());
+        assertEquals("The share sheet divider should be hidden", View.GONE,
+                shareSheetBottomSheetContent.getContentView()
+                        .findViewById(R.id.share_sheet_divider)
+                        .getVisibility());
     }
 
     private static class MockLargeIconBridge extends LargeIconBridge {

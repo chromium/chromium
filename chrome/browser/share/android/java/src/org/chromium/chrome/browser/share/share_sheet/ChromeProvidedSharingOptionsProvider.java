@@ -13,6 +13,7 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -282,10 +283,19 @@ public class ChromeProvidedSharingOptionsProvider {
     private void initializeFirstPartyOptionsInOrder() {
         boolean enableAllUpcomingSharingFeatures =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.UPCOMING_SHARING_FEATURES);
+
+        // Only show a limited first party share selection for automotive
+        if (BuildInfo.getInstance().isAutomotive) {
+            mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
+            maybeAddSendTabToSelfFirstPartyOption();
+            maybeAddQrCodeFirstPartyOption();
+            return;
+        }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEBNOTES_STYLIZE)) {
             mOrderedFirstPartyOptions.add(createWebNotesStylizeFirstPartyOption());
         }
         mOrderedFirstPartyOptions.add(createScreenshotFirstPartyOption());
+
         // TODO(crbug.com/1250871): Long Screenshots on by default; supported on Android 7.0+.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT)
                 && mTabProvider.hasValue()) {
@@ -296,19 +306,27 @@ public class ChromeProvidedSharingOptionsProvider {
         mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
+        maybeAddSendTabToSelfFirstPartyOption();
+        maybeAddQrCodeFirstPartyOption();
+        if (mTabProvider.hasValue() && UserPrefs.get(mProfile).getBoolean(Pref.PRINTING_ENABLED)) {
+            mOrderedFirstPartyOptions.add(createPrintingFirstPartyOption());
+        }
+        mOrderedFirstPartyOptions.add(createSaveImageFirstPartyOption());
+    }
+
+    private void maybeAddSendTabToSelfFirstPartyOption() {
         Optional<Integer> sendTabToSelfDisplayReason =
                 SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, mUrl);
         if (sendTabToSelfDisplayReason.isPresent()
                 || !ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO)) {
             mOrderedFirstPartyOptions.add(createSendTabToSelfFirstPartyOption());
         }
+    }
+
+    private void maybeAddQrCodeFirstPartyOption() {
         if (!mIsIncognito) {
             mOrderedFirstPartyOptions.add(createQrCodeFirstPartyOption());
         }
-        if (mTabProvider.hasValue() && UserPrefs.get(mProfile).getBoolean(Pref.PRINTING_ENABLED)) {
-            mOrderedFirstPartyOptions.add(createPrintingFirstPartyOption());
-        }
-        mOrderedFirstPartyOptions.add(createSaveImageFirstPartyOption());
     }
 
     private FirstPartyOption createScreenshotFirstPartyOption() {

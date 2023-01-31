@@ -11,9 +11,16 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageManager;
 
 import androidx.test.filters.SmallTest;
 
@@ -25,8 +32,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowPackageManager;
 
+import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -41,6 +52,7 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
@@ -86,11 +98,15 @@ public final class ShareSheetCoordinatorTest {
     private Activity mActivity;
     private ShareParams mParams;
     private ShareSheetCoordinator mShareSheetCoordinator;
+    private ShadowPackageManager mShadowPackageManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDistillerUrlUtilsJniMock);
+
+        Context context = ContextUtils.getApplicationContext();
+        mShadowPackageManager = Shadows.shadowOf(context.getPackageManager());
 
         mActivity = Robolectric.setupActivity(Activity.class);
         PropertyModel testModel1 = new PropertyModel.Builder(ShareSheetItemViewProperties.ALL_KEYS)
@@ -130,5 +146,41 @@ public final class ShareSheetCoordinatorTest {
                 mActivity, mParams, /*chromeShareExtras=*/null,
                 ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST);
         assertEquals("Property model list should be empty.", 0, propertyModels.size());
+    }
+
+    @Test
+    @SmallTest
+    public void showShareSheet_avoidThirdPartyShareOptionsOnAutomotive() {
+        mShadowPackageManager.setSystemFeature(
+                PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ true);
+        TestThreadUtils.runOnUiThreadBlocking(BuildInfo::resetForTesting);
+        mShareSheetCoordinator.disableFirstPartyFeaturesForTesting();
+
+        ShareSheetCoordinator spyShareSheet = spy(mShareSheetCoordinator);
+        doNothing().when(spyShareSheet).finishUpdateShareSheet(any(), any(), any());
+
+        spyShareSheet.updateShareSheet(/* saveLastUsed= */ false, () -> {});
+
+        verify(spyShareSheet, never())
+                .createThirdPartyPropertyModels(any(), any(), any(), anyBoolean(), any());
+        verify(spyShareSheet, atLeastOnce()).finishUpdateShareSheet(any(), any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void showShareSheet_createThirdPartyShareOptions() {
+        mShadowPackageManager.setSystemFeature(
+                PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ false);
+        TestThreadUtils.runOnUiThreadBlocking(BuildInfo::resetForTesting);
+        mShareSheetCoordinator.disableFirstPartyFeaturesForTesting();
+
+        ShareSheetCoordinator spyShareSheet = spy(mShareSheetCoordinator);
+        doNothing().when(spyShareSheet).finishUpdateShareSheet(any(), any(), any());
+
+        spyShareSheet.updateShareSheet(/* saveLastUsed= */ false, () -> {});
+
+        verify(spyShareSheet, atLeastOnce())
+                .createThirdPartyPropertyModels(any(), any(), any(), anyBoolean(), any());
+        verify(spyShareSheet, atLeastOnce()).finishUpdateShareSheet(any(), any(), any());
     }
 }

@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -145,6 +146,12 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         createFirstPartyRecyclerViews(firstPartyModels);
 
         RecyclerView thirdParty = this.getContentView().findViewById(R.id.share_sheet_other_apps);
+        // Disable third party share options for automotive.
+        if (BuildInfo.getInstance().isAutomotive) {
+            thirdParty.setVisibility(View.GONE);
+            this.getContentView().findViewById(R.id.share_sheet_divider).setVisibility(View.GONE);
+            return;
+        }
         populateView(thirdPartyModels,
                 this.getContentView().findViewById(R.id.share_sheet_other_apps),
                 /*firstParty=*/false);

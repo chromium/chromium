@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -196,7 +197,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mShareStartTime = shareStartTime;
         mLinkGenerationStatusForMetrics = mBottomSheet.getLinkGenerationState();
 
-        updateShareSheet(this::finishShowShareSheet);
+        mContentTypes =
+                ShareSheetPropertyModelBuilder.getContentTypes(mShareParams, mChromeShareExtras);
+        updateShareSheet(mChromeShareExtras.saveLastUsed(), this::finishShowShareSheet);
     }
 
     /**
@@ -218,21 +221,30 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mBottomSheet.updateShareParams(mShareParams);
         mLinkGenerationStatusForMetrics = linkGenerationState;
         mLinkToggleMetricsDetails = linkToggleMetricsDetails;
-        updateShareSheet(null);
-    }
-
-    private void updateShareSheet(Runnable onUpdateFinished) {
         mContentTypes =
                 ShareSheetPropertyModelBuilder.getContentTypes(mShareParams, mChromeShareExtras);
+        updateShareSheet(mChromeShareExtras.saveLastUsed(), null);
+    }
+
+    @VisibleForTesting
+    void updateShareSheet(boolean saveLastUsed, Runnable onUpdateFinished) {
         List<PropertyModel> firstPartyApps = createFirstPartyPropertyModels(
                 mActivity, mShareParams, mChromeShareExtras, mContentTypes);
-        createThirdPartyPropertyModels(mActivity, mShareParams, mContentTypes,
-                mChromeShareExtras.saveLastUsed(), thirdPartyApps -> {
+
+        // Initialize with an empty list of third party apps for automotive -
+        // C++ share ranking breaks on Android automotive.
+        if (BuildInfo.getInstance().isAutomotive) {
+            finishUpdateShareSheet(firstPartyApps, new ArrayList<>(), onUpdateFinished);
+            return;
+        }
+        createThirdPartyPropertyModels(
+                mActivity, mShareParams, mContentTypes, saveLastUsed, thirdPartyApps -> {
                     finishUpdateShareSheet(firstPartyApps, thirdPartyApps, onUpdateFinished);
                 });
     }
 
-    private void finishUpdateShareSheet(List<PropertyModel> firstPartyApps,
+    @VisibleForTesting
+    void finishUpdateShareSheet(List<PropertyModel> firstPartyApps,
             List<PropertyModel> thirdPartyApps, @Nullable Runnable onUpdateFinished) {
         mBottomSheet.createRecyclerViews(firstPartyApps, thirdPartyApps, mContentTypes,
                 mShareParams.getFileContentType(), mChromeShareExtras.getDetailedContentType(),
