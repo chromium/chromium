@@ -76,22 +76,6 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
   void OnDrawingSurfaceDestroyed();
   void OnSessionEnded();
 
-  template <typename... Args>
-  static void RunCallbackOnTaskRunner(
-      const scoped_refptr<base::TaskRunner>& task_runner,
-      base::OnceCallback<void(Args...)> callback,
-      Args... args) {
-    task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::forward<Args>(args)...));
-  }
-  template <typename... Args>
-  base::OnceCallback<void(Args...)> CreateMainThreadCallback(
-      base::OnceCallback<void(Args...)> callback) {
-    return base::BindOnce(&ArCoreDevice::RunCallbackOnTaskRunner<Args...>,
-                          main_thread_task_runner_, std::move(callback));
-  }
-
   void PostTaskToGlThread(base::OnceClosure task);
 
   bool IsOnMainThread();
