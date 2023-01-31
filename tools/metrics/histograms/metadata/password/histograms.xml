@@ -644,7 +644,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.AddCredentialFromSettings.AccountStoreUsed"
     enum="Boolean" expires_after="2023-06-25">
-  <owner>lizapopova@google.com</owner>
   <owner>mamir@google.com</owner>
   <summary>
     Tracks which store is used when the user adds a new credential from
@@ -662,7 +661,6 @@ chromium-metrics-reviews@google.com.
     PasswordManager.AddCredentialFromSettings.UserAction2 histogram.
   </obsolete>
   <owner>vidhanj@google.com</owner>
-  <owner>lizapopova@google.com</owner>
   <summary>
     Records the user actions performed when a new credential is added from
     Settings. Only applicable to Desktop and iOS platforms.
@@ -672,7 +670,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.AddCredentialFromSettings.UserAction2"
     enum="AddCredentialFromSettingsUserInteractions" expires_after="2023-06-04">
   <owner>vidhanj@google.com</owner>
-  <owner>lizapopova@google.com</owner>
   <summary>
     Records the user actions performed when a new credential is added from
     Settings. Only applicable to Desktop and iOS platforms.
