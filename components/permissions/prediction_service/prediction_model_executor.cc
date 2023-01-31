@@ -16,7 +16,9 @@ PredictionModelExecutor::~PredictionModelExecutor() = default;
 
 bool PredictionModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
-    const GeneratePredictionsRequest& input) {
+    const GeneratePredictionsRequest& input,
+    const absl::optional<WebPermissionPredictionsModelMetadata>& metadata) {
+  model_metadata_ = metadata;
   switch (input.permission_features()[0].permission_type_case()) {
     case PermissionFeatures::kNotificationPermission:
       request_type_ = RequestType::kNotifications;
@@ -129,10 +131,25 @@ PredictionModelExecutor::Postprocess(
     return absl::nullopt;
   }
 
-  GeneratePredictionsResponse response;
   float threshold = request_type_ == RequestType::kNotifications
                         ? kNotificationPredictionsThreshold
                         : kGeolocationPredictionsThreshold;
+
+  // If the model has a metadata which contains a threshold value,
+  // use that threshold value.
+  if (model_metadata_ && model_metadata_->has_not_grant_thresholds()) {
+    // max_likely represents very likely to not grant
+    threshold = model_metadata_->not_grant_thresholds().max_likely();
+    base::UmaHistogramEnumeration(
+        "Permissions.PredictionService.PredictionThresholdSource",
+        PermissionPredictionThresholdSource::MODEL_METADATA);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Permissions.PredictionService.PredictionThresholdSource",
+        PermissionPredictionThresholdSource::HARDCODED_FALLBACK);
+  }
+
+  GeneratePredictionsResponse response;
   response.mutable_prediction()
       ->Add()
       ->mutable_grant_likelihood()

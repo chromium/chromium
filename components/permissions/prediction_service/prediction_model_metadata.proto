@@ -1,0 +1,106 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package permissions;
+
+// This message is used to characterize a CPSS model when enrolled to the Chrome
+// Intelligence infrastructure. This way, Chrome clients will be able to
+// negotiate the required version, and we will be able to easily perform
+// tasks such as staged model rollouts and A/B testing.
+// More information at go/cpss-tflite-dd.
+message WebPermissionPredictionsModelMetadata {
+  // Message used to store the thresholds to convert the ML output to the
+  // actionable discretized output.
+  message LikelihoodThresholds {
+    // The likelihood will be discretized to "VERY_UNLIKELY" for scores in range
+    // [0.0, max_very_unlikely].
+    optional float max_very_unlikely = 1;
+
+    // The likelihood will be discretized to "UNLIKELY" for scores in range
+    // (max_very_unlikely, max_unlikely].
+    optional float max_unlikely = 2;
+
+    // The likelihood will be discretized to "NEUTRAL" for scores in range
+    // (max_unlikely, max_neutral].
+    optional float max_neutral = 3;
+
+    // The likelihood will be discretized to "LIKELY" for scores in range
+    // range (max_neutral, max_likely] and to "VERY_LIKELY" for scores in range
+    // (max_likely, 1.0]
+    optional float max_likely = 4;
+  }
+
+  // Enum to list the model features that are provided (by the model) or
+  // expected (by the client).
+  enum ModelFeature {
+    // Unspecified feature.
+    MODEL_FEATURE_UNSPECIFIED = 0;
+    // Enum to identify the client platform.
+    PLATFORM_ENUM = 1;
+    // Enum to identify the client gesture.
+    GESTURE_ENUM = 2;
+    // Average client grant rate across all permission types and all prompt
+    // dispositions (loud and quiet).
+    AVG_CLIENT_GRANT_RATE = 3;
+    // Average client deny rate across all permission types and all prompt
+    // dispositions (loud and quiet).
+    AVG_CLIENT_DENY_RATE = 4;
+    // Average client dismiss rate across all permission types and all prompt
+    // dispositions (loud and quiet).
+    AVG_CLIENT_DISMISS_RATE = 5;
+    // Average client ignore rate across all permission types and all prompt
+    // dispositions (loud and quiet).
+    AVG_CLIENT_IGNORE_RATE = 6;
+    // Number of total prompts shown to the client across all permission types
+    // and all prompt dispositions (loud and quiet).
+    CLIENT_TOTAL_PROMPTS = 7;
+    // Average client grant rate for the specific permission on all prompt
+    // dispositions (loud and quiet).
+    AVG_CLIENT_PERMISSION_GRANT_RATE = 8;
+    // Average client deny rate for the specific permission on all prompt
+    // dispositions (loud and quiet).
+    AVG_CLIENT_PERMISSION_DENY_RATE = 9;
+    // Average client dismiss rate for the specific permission on all prompt
+    // dispositions (loud and quiet).
+    AVG_CLIENT_PERMISSION_DISMISS_RATE = 10;
+    // Average client ignore rate for the specific permission on all prompt
+    // dispositions (loud and quiet).
+    AVG_CLIENT_PERMISSION_IGNORE_RATE = 11;
+    // Number of total prompts shown to the client for the specific permission
+    // on all prompt dispositions (loud and quiet).
+    CLIENT_TOTAL_PERMISSION_PROMPTS = 12;
+  }
+
+  // Repeated field to specify the features used by the model (when building
+  // a metadata object to characterize a model on the server side) or the
+  // ones expected by the client (for negotiation of the model version).
+  repeated ModelFeature model_features = 1;
+
+  // Enum used to specify the web permission that the model is trained on.
+  enum PermissionType {
+    // Unspecified permission type.
+    PERMISSION_TYPE_UNSPECIFIED = 0;
+    // The model has been trained on notification permissions.
+    NOTIFICATIONS_PERMISSION = 1;
+    // The model has been trained on geolocation permissions.
+    GEOLOCATION_PERMISSION = 2;
+  }
+
+  // The permission type that the model is trained on.
+  optional PermissionType permission_type = 2;
+
+  // Semantic version to allow to experiment with multiple models with the same
+  // features at the same time.
+  optional int32 version = 3;
+
+  // The probability of the decision to be held back (not use CPSS).
+  optional float holdback_probability = 4;
+
+  // Thresholds used to discretized the NOT_GRANT likelihood scores.
+  optional LikelihoodThresholds not_grant_thresholds = 5;
+}

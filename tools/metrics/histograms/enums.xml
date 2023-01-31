@@ -80373,6 +80373,11 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="SERVER_SIDE"/>
 </enum>
 
+<enum name="PermissionPredictionThresholdSource">
+  <int value="0" label="MODEL_METADATA"/>
+  <int value="1" label="HARDCODED_FALLBACK"/>
+</enum>
+
 <enum name="PermissionPromptDispositionReason">
   <int value="0" label="User preference in settings"/>
   <int value="1" label="Safe Browsing verdict"/>

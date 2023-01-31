@@ -9,12 +9,15 @@
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/permissions/prediction_service/prediction_model_executor.h"
+#include "components/permissions/prediction_service/prediction_model_metadata.pb.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 
 namespace permissions {
-class PredictionModelHandler : public optimization_guide::ModelHandler<
-                                   GeneratePredictionsResponse,
-                                   const GeneratePredictionsRequest&> {
+class PredictionModelHandler
+    : public optimization_guide::ModelHandler<
+          GeneratePredictionsResponse,
+          const GeneratePredictionsRequest&,
+          const absl::optional<WebPermissionPredictionsModelMetadata>&> {
  public:
   explicit PredictionModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
@@ -31,8 +34,14 @@ class PredictionModelHandler : public optimization_guide::ModelHandler<
 
   void WaitForModelLoadForTesting();
 
+  void ExecuteModelWithMetadata(
+      ExecutionCallback callback,
+      std::unique_ptr<GeneratePredictionsRequest> proto_request);
+
  private:
   base::RunLoop model_load_run_loop_;
+
+  absl::optional<WebPermissionPredictionsModelMetadata> GetModelMetaData();
 };
 
 }  // namespace permissions

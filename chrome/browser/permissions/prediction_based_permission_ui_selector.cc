@@ -166,13 +166,13 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
       permissions::PermissionUmaUtil::RecordPermissionPredictionSource(
           permissions::PermissionPredictionSource::ON_DEVICE);
       auto proto_request = GetPredictionRequestProto(features);
-      prediction_model_handler->ExecuteModelWithInput(
+      prediction_model_handler->ExecuteModelWithMetadata(
           base::BindOnce(
               &PredictionBasedPermissionUiSelector::LookupResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), /*is_on_device=*/true,
               request->request_type(),
               /*lookup_succesful=*/true, /*response_from_cache=*/false),
-          *proto_request);
+          std::move(proto_request));
       return;
     } else if (prediction_source == PredictionSource::USE_ONDEVICE) {
       VLOG(1) << "[CPSS] Model is not available and cannot fall back to server "

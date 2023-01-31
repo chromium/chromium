@@ -6,7 +6,10 @@ import("//components/optimization_guide/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("prediction_service_messages_proto") {
-  sources = [ "prediction_service_messages.proto" ]
+  sources = [
+    "prediction_model_metadata.proto",
+    "prediction_service_messages.proto",
+  ]
 }
 
 source_set("prediction_service") {
