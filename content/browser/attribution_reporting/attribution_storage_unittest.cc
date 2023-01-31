@@ -45,6 +45,7 @@
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -2341,6 +2342,37 @@ TEST_F(AttributionStorageTest, GetAttributionReportsExceedLimit_Shuffles) {
               ElementsAre(EventLevelDataIs(TriggerDataIs(2)),
                           EventLevelDataIs(TriggerDataIs(1)),
                           EventLevelDataIs(TriggerDataIs(3))));
+}
+
+TEST_F(AttributionStorageTest, GetAttributionDataKeysSet) {
+  auto expected_1 = AttributionDataModel::DataKey(
+      url::Origin::Create(GURL("https://a.r.test")));
+  auto expected_2 = AttributionDataModel::DataKey(
+      url::Origin::Create(GURL("https://b.r.test")));
+
+  auto s1 =
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://a.r.test"))
+          .Build();
+  auto s2 =
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://b.r.test"))
+          .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s1.test"))
+          .SetDestinationOrigin(*SuitableOrigin::Deserialize("https://d1.test"))
+          .Build();
+  auto s3 =
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://b.r.test"))
+          .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s2.test"))
+          .SetDestinationOrigin(*SuitableOrigin::Deserialize("https://d2.test"))
+          .Build();
+
+  storage()->StoreSource(s1);
+  storage()->StoreSource(s1);
+  storage()->StoreSource(s2);
+  storage()->StoreSource(s3);
+
+  EXPECT_THAT(storage()->GetAllDataKeys(), ElementsAre(expected_1, expected_2));
 }
 
 TEST_F(AttributionStorageTest, SourceDebugKey_RoundTrips) {

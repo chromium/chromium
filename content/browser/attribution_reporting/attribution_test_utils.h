@@ -50,6 +50,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/attribution_config.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -723,6 +724,11 @@ std::ostream& operator<<(std::ostream& out,
                          StoredSource::ActiveState active_state);
 
 std::ostream& operator<<(std::ostream& out, StorableSource::Result status);
+
+// TODO: Move to test-only public header to be reused by other test code
+// that rely on DataKey
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionDataModel::DataKey& key);
 
 std::vector<AttributionReport> GetAttributionReportsForTesting(
     AttributionManager* manager);

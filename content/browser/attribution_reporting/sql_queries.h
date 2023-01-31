@@ -77,6 +77,12 @@ inline constexpr const char kGetContributionsSql[] =
     "FROM aggregatable_contributions "
     "WHERE aggregation_id=?";
 
+inline constexpr const char kGetSourcesDataKeysSql[] =
+    "SELECT DISTINCT reporting_origin FROM sources";
+
+inline constexpr const char kGetRateLimitDataKeysSql[] =
+    "SELECT DISTINCT reporting_origin FROM rate_limits";
+
 // We need to hint to the query planner that/ `event_level_active` and
 // `aggregatable_active` are booleans, so include them in the conditional.
 #define ATTRIBUTION_COUNT_REPORTS_SQL(table) \

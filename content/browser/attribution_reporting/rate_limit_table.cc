@@ -428,4 +428,19 @@ bool RateLimitTable::ClearDataForSourceIds(
   return transaction.Commit();
 }
 
+void RateLimitTable::AppendRateLimitDataKeys(
+    sql::Database* db,
+    std::vector<AttributionDataModel::DataKey>& keys) {
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kGetRateLimitDataKeysSql));
+
+  while (statement.Step()) {
+    url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(0));
+    if (reporting_origin.opaque()) {
+      continue;
+    }
+    keys.emplace_back(std::move(reporting_origin));
+  }
+}
+
 }  // namespace content

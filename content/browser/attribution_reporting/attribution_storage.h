@@ -12,6 +12,7 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -102,6 +103,15 @@ class AttributionStorage {
   // returned. |limit| limits the number of sources to return; use
   // a negative number for no limit.
   virtual std::vector<StoredSource> GetActiveSources(int limit = -1) = 0;
+
+  // Returns all distinct reporting_origins as DataKeys for the
+  // Browsing Data Model. Partial data will still be returned
+  // in the event of an error.
+  virtual std::vector<AttributionDataModel::DataKey> GetAllDataKeys() = 0;
+
+  // Deletes all data in storage for storage keys matching the provided
+  // reporting origin in the data key.
+  virtual void DeleteByDataKey(const AttributionDataModel::DataKey&) = 0;
 
   // Deletes the report with the given |report_id|. Returns
   // false if an error occurred.

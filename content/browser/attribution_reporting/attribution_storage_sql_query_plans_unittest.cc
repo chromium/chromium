@@ -117,6 +117,19 @@ TEST_F(AttributionSqlQueryPlanTest, kGetContributionsSql) {
               UsesPrimaryKey());
 }
 
+TEST_F(AttributionSqlQueryPlanTest, kGetSourcesDataKeysSql) {
+  EXPECT_THAT(
+      GetPlan(attribution_queries::kGetSourcesDataKeysSql,
+              SqlFullScanReason::kIntentional),
+      UsesCoveringIndex("sources_by_active_destination_site_reporting_origin"));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kGetRateLimitDataKeysSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kGetRateLimitDataKeysSql,
+                      SqlFullScanReason::kIntentional),
+              UsesCoveringIndex("rate_limit_source_site_reporting_origin_idx"));
+}
+
 TEST_F(AttributionSqlQueryPlanTest, kCountEventLevelReportsSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kCountEventLevelReportsSql),
               AllOf(UsesCoveringIndex(
