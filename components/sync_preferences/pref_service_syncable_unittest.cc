@@ -533,10 +533,10 @@ TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedListValues) {
 // managed preferences.
 TEST_F(PrefServiceSyncableMergeTest, ManagedListPreferences) {
   // Make the list of urls to restore on startup managed.
-  base::Value managed_value(base::Value::Type::LIST);
+  base::Value::List managed_value;
   managed_value.Append(kExampleUrl0);
   managed_value.Append(kExampleUrl1);
-  managed_prefs_->SetValue(kListPrefName, managed_value.Clone(),
+  managed_prefs_->SetValue(kListPrefName, base::Value(managed_value.Clone()),
                            WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   // Set a cloud version.
