@@ -680,6 +680,11 @@ def main():
   if not args.use_system_cmake:
     AddCMakeToPath()
 
+  if sys.platform == 'win32':
+    # CMake on Windows doesn't like depot_tools's ninja.bat wrapper.
+    ninja_dir = os.path.join(THIRD_PARTY_DIR, 'ninja')
+    os.environ['PATH'] = ninja_dir + os.pathsep + os.environ.get('PATH', '')
+
   if args.skip_build:
     return 0
 
