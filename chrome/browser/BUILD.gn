@@ -7450,9 +7450,9 @@ static_library("browser") {
       ]
     }
     deps += [
-      "//chrome/browser/supervised_user/kids_chrome_management:proto",
       "//chrome/common:supervised_user_commands_mojom",
       "//components/supervised_user/core/browser",
+      "//components/supervised_user/core/browser/proto",
       "//components/supervised_user/core/common",
     ]
   }

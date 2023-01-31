@@ -3621,7 +3621,7 @@ if (!is_android) {
       }
       deps += [
         "//chrome/browser/supervised_user:test_support",
-        "//chrome/browser/supervised_user/kids_chrome_management:proto",
+        "//components/supervised_user/core/browser/proto",
         "//components/supervised_user/core/common",
       ]
     }
@@ -6570,7 +6570,6 @@ test("unit_tests") {
       "//chrome/browser/password_manager/android:unit_tests",
       "//chrome/browser/reading_list/android:unit_tests",
       "//chrome/browser/share",
-      "//chrome/browser/supervised_user/kids_chrome_management:proto",
       "//chrome/browser/thumbnail:unit_tests",
       "//chrome/browser/touch_to_fill/payments/android:public",
       "//chrome/services/media_gallery_util:unit_tests",
@@ -6598,6 +6597,7 @@ test("unit_tests") {
       "//components/services/unzip:in_process",
       "//components/signin/core/browser",
       "//components/signin/public/android:signin_java_test_support",
+      "//components/supervised_user/core/browser/proto",
       "//components/ukm:test_support",
       "//components/webapk:proto",
       "//components/webapps/browser",
@@ -8927,7 +8927,7 @@ test("unit_tests") {
     }
     deps += [
       "//chrome/browser/supervised_user:test_support",
-      "//chrome/browser/supervised_user/kids_chrome_management:proto",
+      "//components/supervised_user/core/browser/proto",
       "//components/supervised_user/core/common",
       "//components/supervised_user/core/common:buildflags",
     ]

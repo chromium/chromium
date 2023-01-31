@@ -18,11 +18,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/families_common.pb.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_external_fetcher.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_management_service.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_profile_manager.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
@@ -35,6 +33,8 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/supervised_user/core/browser/proto/families_common.pb.h"
+#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -147,8 +147,9 @@ void ChildAccountServiceImpl::Init() {
   AccountInfo primary_account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 
-  if (!primary_account_info.IsEmpty())
+  if (!primary_account_info.IsEmpty()) {
     OnExtendedAccountInfoUpdated(primary_account_info);
+  }
 }
 
 bool ChildAccountServiceImpl::IsChildAccountStatusKnown() {
@@ -166,17 +167,19 @@ void ChildAccountServiceImpl::Shutdown() {
 
 void ChildAccountServiceImpl::AddChildStatusReceivedCallback(
     base::OnceClosure callback) {
-  if (IsChildAccountStatusKnown())
+  if (IsChildAccountStatusKnown()) {
     std::move(callback).Run();
-  else
+  } else {
     status_received_callback_list_.push_back(std::move(callback));
+  }
 }
 
 ChildAccountService::AuthState ChildAccountServiceImpl::GetGoogleAuthState() {
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_manager_->GetAccountsInCookieJar();
-  if (!accounts_in_cookie_jar_info.accounts_are_fresh)
+  if (!accounts_in_cookie_jar_info.accounts_are_fresh) {
     return AuthState::PENDING;
+  }
 
   bool first_account_authenticated =
       !accounts_in_cookie_jar_info.signed_in_accounts.empty() &&
@@ -192,10 +195,12 @@ base::CallbackListSubscription ChildAccountServiceImpl::ObserveGoogleAuthState(
 }
 
 void ChildAccountServiceImpl::SetActive(bool active) {
-  if (!profile_->IsChild() && !active_)
+  if (!profile_->IsChild() && !active_) {
     return;
-  if (active_ == active)
+  }
+  if (active_ == active) {
     return;
+  }
   active_ = active;
 
   if (active_) {
@@ -236,8 +241,9 @@ void ChildAccountServiceImpl::SetIsChildAccount(bool is_child_account) {
   }
   profile_->GetPrefs()->SetBoolean(prefs::kChildAccountStatusKnown, true);
 
-  for (auto& callback : status_received_callback_list_)
+  for (auto& callback : status_received_callback_list_) {
     std::move(callback).Run();
+  }
   status_received_callback_list_.clear();
 }
 
@@ -269,8 +275,9 @@ void ChildAccountServiceImpl::OnExtendedAccountInfoUpdated(
   // This class doesn't care about browser sync consent.
   CoreAccountId auth_account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  if (info.account_id != auth_account_id)
+  if (info.account_id != auth_account_id) {
     return;
+  }
 
   SetIsChildAccount(info.is_child_account == signin::Tribool::kTrue);
 }
@@ -279,8 +286,9 @@ void ChildAccountServiceImpl::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   // This class doesn't care about browser sync consent.
   if (info.account_id !=
-      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin))
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
     return;
+  }
 
   SetIsChildAccount(false);
 }
@@ -379,15 +387,18 @@ void ChildAccountServiceImpl::AssertChildStatusOfTheUser(bool is_child) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile_);
-  if (user && is_child != (user->GetType() == user_manager::USER_TYPE_CHILD))
+  if (user && is_child != (user->GetType() == user_manager::USER_TYPE_CHILD)) {
     LOG(FATAL) << "User child flag has changed: " << is_child;
-  if (!user && ash::ProfileHelper::IsUserProfile(profile_))
+  }
+  if (!user && ash::ProfileHelper::IsUserProfile(profile_)) {
     LOG(DFATAL) << "User instance not found while setting child account flag.";
+  }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   bool is_child_session = chromeos::BrowserParamsProxy::Get()->SessionType() ==
                           crosapi::mojom::SessionType::kChildSession;
-  if (is_child_session != is_child)
+  if (is_child_session != is_child) {
     LOG(FATAL) << "User child flag has changed: " << is_child;
+  }
 #endif
 }
 

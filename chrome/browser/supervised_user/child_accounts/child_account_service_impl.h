@@ -18,10 +18,10 @@
 #include "chrome/browser/supervised_user/child_accounts/family_info_fetcher.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_external_fetcher.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_profile_manager.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "net/base/backoff_entry.h"
 
 class Profile;

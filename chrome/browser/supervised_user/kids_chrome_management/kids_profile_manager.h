@@ -9,8 +9,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 
 // A helper utility to manage the Profile properties consistently.
 class KidsProfileManager {
