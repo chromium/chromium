@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
@@ -112,9 +111,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 @property(nonatomic, assign) ChromeBrowserState* browserState;
 
-// Cancel button item in navigation bar.
-@property(nonatomic, strong) UIBarButtonItem* cancelItem;
-
 // Done button item in navigation bar.
 @property(nonatomic, strong) UIBarButtonItem* doneItem;
 
@@ -125,9 +121,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 // YES if the URL item is displaying a valid URL.
 @property(nonatomic, assign) BOOL displayingValidURL;
-
-// The action sheet coordinator, if one is currently being shown.
-@property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
 
 // Reports the changes to the delegate, that has the responsibility to save the
 // bookmark.
@@ -152,12 +145,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 // Called when the Folder button is pressed.
 - (void)moveBookmark;
-
-// Called when the Cancel button is pressed.
-- (void)cancel;
-
-// Called when the Done button is pressed.
-- (void)save;
 
 @end
 
@@ -242,7 +229,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
                            action:@selector(cancel)];
   cancelItem.accessibilityIdentifier = @"Cancel";
   self.navigationItem.leftBarButtonItem = cancelItem;
-  self.cancelItem = cancelItem;
+  _cancelItem = cancelItem;
 
   UIBarButtonItem* doneItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
@@ -354,6 +341,11 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }
 
 #pragma mark - Layout
+
+- (void)setNavigationItemsEnabled:(BOOL)enabled {
+  self.navigationItem.leftBarButtonItem.enabled = enabled;
+  self.navigationItem.rightBarButtonItem.enabled = enabled;
+}
 
 - (void)updateSaveButtonState {
   self.doneItem.enabled = [self inputURLIsValid];
@@ -646,56 +638,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   }
 
   [self.delegate bookmarkEditorWantsDismissal:self];
-}
-
-#pragma mark - UIAdaptivePresentationControllerDelegate
-
-- (void)presentationControllerDidAttemptToDismiss:
-    (UIPresentationController*)presentationController {
-  self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self
-                         browser:_browser
-                           title:nil
-                         message:nil
-                   barButtonItem:self.cancelItem];
-
-  __weak __typeof(self) weakSelf = self;
-  [self.actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_VIEW_CONTROLLER_DISMISS_SAVE_CHANGES)
-                action:^{
-                  [weakSelf save];
-                }
-                 style:UIAlertActionStyleDefault];
-  [self.actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_VIEW_CONTROLLER_DISMISS_DISCARD_CHANGES)
-                action:^{
-                  [weakSelf cancel];
-                }
-                 style:UIAlertActionStyleDestructive];
-  [self.actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES)
-                action:^{
-                  [weakSelf sidesBarButton:YES];
-                }
-                 style:UIAlertActionStyleCancel];
-
-  [self sidesBarButton:NO];
-  [self.actionSheetCoordinator start];
-}
-
-- (void)presentationControllerWillDismiss:
-    (UIPresentationController*)presentationController {
-  // Resign first responder if trying to dismiss the VC so the keyboard doesn't
-  // linger until the VC dismissal has completed.
-  [self.view endEditing:YES];
-}
-
-- (void)presentationControllerDidDismiss:
-    (UIPresentationController*)presentationController {
-  [self dismissBookmarkEditView];
 }
 
 #pragma mark - UIResponder

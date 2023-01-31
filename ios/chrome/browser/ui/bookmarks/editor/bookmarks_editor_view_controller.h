@@ -24,13 +24,15 @@ class BookmarkNode;
 // accordingly depending on whether the bookmark and folder it is editing
 // changes underneath it.
 @interface BookmarksEditorViewController
-    : ChromeTableViewController <KeyCommandActions,
-                                 UIAdaptivePresentationControllerDelegate>
+    : ChromeTableViewController <KeyCommandActions>
 
 @property(nonatomic, weak) id<BookmarksEditorViewControllerDelegate> delegate;
 
 // Snackbar commands handler.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
+
+// Cancel button item in navigation bar.
+@property(nonatomic, strong, readonly) UIBarButtonItem* cancelItem;
 
 // Designated initializer.
 // `bookmark`: mustn't be NULL at initialization time. It also mustn't be a
@@ -41,6 +43,18 @@ class BookmarkNode;
 
 // Called before the instance is deallocated.
 - (void)shutdown;
+
+// Cancels the editor.
+- (void)cancel;
+
+// Saves the current changes.
+- (void)save;
+
+// Enables or disables the navigation left and right buttons.
+- (void)setNavigationItemsEnabled:(BOOL)enabled;
+
+// Dismisses the bookmark edit view.
+- (void)dismissBookmarkEditView;
 
 @end
 

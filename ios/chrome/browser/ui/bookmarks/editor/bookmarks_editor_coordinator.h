@@ -18,7 +18,8 @@ class BookmarkNode;
 @protocol BookmarksEditorCoordinatorDelegate;
 
 // Coordinator to edit a bookmark based on an bookmark node or on an URL.
-@interface BookmarksEditorCoordinator : ChromeCoordinator
+@interface BookmarksEditorCoordinator
+    : ChromeCoordinator <UIAdaptivePresentationControllerDelegate>
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
