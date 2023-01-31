@@ -373,7 +373,8 @@ void StylePropertyMap::append(
 
   CSSValueList* current_value = nullptr;
   if (const CSSValue* css_value = GetProperty(property_id)) {
-    if (css_value->IsVariableReferenceValue()) {
+    if (css_value->IsVariableReferenceValue() ||
+        css_value->IsPendingSubstitutionValue()) {
       // https://drafts.css-houdini.org/css-typed-om/#dom-stylepropertymap-append
       // 8. If props[property] contains a var() reference, throw a TypeError.
       exception_state.ThrowTypeError(
