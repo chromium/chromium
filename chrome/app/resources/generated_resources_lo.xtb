@@ -6860,7 +6860,7 @@
 <translation id="7443806024147773267">ເຂົ້າເຖິງລະຫັດຜ່ານຂອງທ່ານໄດ້ທຸກເມື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="7444046173054089907">ເວັບໄຊນີ້ຖືກບລັອກໄວ້</translation>
 <translation id="7444970023873202833">ສຳຫຼວດຄວາມຊົງຈຳເພີ່ມເຕີມຂອງທ່ານໃນ Google ຮູບພາບ</translation>
-<translation id="7444983668544353857">ປິດໃຊ້ງານ <ph name="NETWORKDEVICE" /></translation>
+<translation id="7444983668544353857">ປິດການນຳໃຊ້ <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">ຕິດຕັ້ງແອັບໂດຍອັດຕະໂນມັດ</translation>
 <translation id="7449381494541372002">ກຳລັງເລີ່ມ...</translation>
 <translation id="7449752890690775568">ລຶບລະຫັດຜ່ານອອກບໍ?</translation>
@@ -7318,7 +7318,7 @@
 <translation id="786073089922909430">ການບໍລິການ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ດາວ​ໂຫຼດ</translation>
 <translation id="7861846108263890455">ພາສາບັນຊີ Google</translation>
-<translation id="7864539943188674973">ປິດໃຊ້ງານ Bluetooth</translation>
+<translation id="7864539943188674973">ປິດການນຳໃຊ້ Bluetooth</translation>
 <translation id="7865127013871431856">ຕົວເລືອກແປພາສາ</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ຈັບຄູ່ແລ້ວ</translation>
 <translation id="7869655448736341731">ໃດກໍໄດ້</translation>
@@ -8840,7 +8840,7 @@
 <translation id="991097196715779457">ລະຫັດ ID ຮ້ານຄ້າ-ຜູ້ຂາຍຍ່ອຍ (ບໍ່ບັງຄັບ)</translation>
 <translation id="992032470292211616">ສ່ວນຂະຫຍາຍ, ແອັບ, ແລະເທມສາມາດທໍາລາຍອຸປະກອນຂອງທ່ານໄດ້. ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການສືບຕໍ່?</translation>
 <translation id="992256792861109788">ສີບົວ</translation>
-<translation id="992592832486024913">ປິດໃຊ້ງານ ChromeVox (ຄໍາ​ຄິດ​​ເຫັນທີ່​ເວົ້າມາ​)</translation>
+<translation id="992592832486024913">ປິດການນຳໃຊ້ ChromeVox (ຄໍາ​ຄິດ​​ເຫັນທີ່​ເວົ້າມາ​)</translation>
 <translation id="992778845837390402">ການສຳຮອງຂໍ້ມູນ Linux ພວມດຳເນີນຢູ່ໃນປັດຈຸບັນນີ້</translation>
 <translation id="993540765962421562">ການຕິດຕັ້ງພວມດຳເນີນຢູ່</translation>
 <translation id="994289308992179865">ຫ່ວງ</translation>
