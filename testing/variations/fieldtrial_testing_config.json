@@ -9471,6 +9471,7 @@
                     "name": "AllChunks",
                     "params": {
                         "first": "true",
+                        "main": "true",
                         "rest": "true"
                     },
                     "enable_features": [
