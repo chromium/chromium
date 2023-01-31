@@ -206,7 +206,7 @@ void IOSChromePasswordCheckManager::OnSavedPasswordsChanged() {
 
 void IOSChromePasswordCheckManager::OnInsecureCredentialsChanged() {
   for (auto& observer : observers_) {
-    observer.CompromisedCredentialsChanged();
+    observer.InsecureCredentialsChanged();
   }
 }
 

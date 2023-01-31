@@ -2293,7 +2293,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [self setSafetyCheckIssueStateUnsafe:[self hasPasswordIssuesRemaining]];
 }
 
-- (void)compromisedCredentialsDidChange {
+- (void)insecureCredentialsDidChange {
   [self setSafetyCheckIssueStateUnsafe:[self hasPasswordIssuesRemaining]];
 }
 

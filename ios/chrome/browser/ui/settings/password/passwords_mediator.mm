@@ -293,7 +293,7 @@ bool IsPasswordCheckupEnabled() {
   [self updateConsumerPasswordCheckState:state];
 }
 
-- (void)compromisedCredentialsDidChange {
+- (void)insecureCredentialsDidChange {
   // Compromised passwords changes has no effect on UI while check is running.
   if (_passwordCheckManager->GetPasswordCheckState() ==
       PasswordCheckState::kRunning)

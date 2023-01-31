@@ -28,6 +28,6 @@ void PasswordCheckObserverBridge::PasswordCheckStatusChanged(
   });
 }
 
-void PasswordCheckObserverBridge::CompromisedCredentialsChanged() {
-  [delegate_ compromisedCredentialsDidChange];
+void PasswordCheckObserverBridge::InsecureCredentialsChanged() {
+  [delegate_ insecureCredentialsDidChange];
 }

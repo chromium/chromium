@@ -321,7 +321,7 @@ bool IsPasswordCheckupEnabled() {
   [self reconfigurePasswordCheckItem];
 }
 
-- (void)compromisedCredentialsDidChange {
+- (void)insecureCredentialsDidChange {
   self.passwordCheckRowState =
       [self computePasswordCheckRowState:self.currentPasswordCheckState];
   // Push update to the display.

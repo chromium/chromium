@@ -68,7 +68,7 @@ using ::testing::StrictMock;
 
 struct MockPasswordCheckManagerObserver
     : IOSChromePasswordCheckManager::Observer {
-  MOCK_METHOD(void, CompromisedCredentialsChanged, (), (override));
+  MOCK_METHOD(void, InsecureCredentialsChanged, (), (override));
   MOCK_METHOD(void,
               PasswordCheckStatusChanged,
               (PasswordCheckState),
@@ -236,7 +236,7 @@ TEST_F(IOSChromePasswordCheckManagerTest, LastTimePasswordCheckCompletedReset) {
 
 // Tests whether adding and removing an observer works as expected.
 TEST_F(IOSChromePasswordCheckManagerTest,
-       NotifyObserversAboutCompromisedCredentialChanges) {
+       NotifyObserversAboutInsecureCredentialChanges) {
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername116);
   store().AddLogin(form);
   RunUntilIdle();
@@ -246,14 +246,14 @@ TEST_F(IOSChromePasswordCheckManagerTest,
 
   // Adding a compromised credential should notify observers.
   EXPECT_CALL(observer, PasswordCheckStatusChanged);
-  EXPECT_CALL(observer, CompromisedCredentialsChanged);
+  EXPECT_CALL(observer, InsecureCredentialsChanged);
   AddIssueToForm(&form, InsecureType::kLeaked, base::Minutes(1));
   store().UpdateLogin(form);
   RunUntilIdle();
 
   // After an observer is removed it should no longer receive notifications.
   manager().RemoveObserver(&observer);
-  EXPECT_CALL(observer, CompromisedCredentialsChanged).Times(0);
+  EXPECT_CALL(observer, InsecureCredentialsChanged).Times(0);
   AddIssueToForm(&form, InsecureType::kPhished, base::Minutes(1));
   store().UpdateLogin(form);
   RunUntilIdle();

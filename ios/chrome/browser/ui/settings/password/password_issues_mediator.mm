@@ -68,7 +68,7 @@
     (const password_manager::CredentialUIEntry&)credential {
   _manager->GetSavedPasswordsPresenter()->RemoveCredential(credential);
   // TODO:(crbug.com/1075494) - Update list of compromised passwords without
-  // awaiting compromisedCredentialsDidChange.
+  // awaiting insecureCredentialsDidChange.
 }
 
 #pragma mark - PasswordCheckObserver
@@ -77,7 +77,7 @@
   // No-op.
 }
 
-- (void)compromisedCredentialsDidChange {
+- (void)insecureCredentialsDidChange {
   [self fetchPasswordIssues];
 }
 

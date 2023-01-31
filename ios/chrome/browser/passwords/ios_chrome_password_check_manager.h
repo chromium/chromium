@@ -55,13 +55,13 @@ class IOSChromePasswordCheckManager
   class Observer : public base::CheckedObserver {
    public:
     virtual void PasswordCheckStatusChanged(PasswordCheckState state) {}
-    virtual void CompromisedCredentialsChanged() {}
+    virtual void InsecureCredentialsChanged() {}
   };
 
-  // Requests to start a check for compromised passwords.
+  // Requests to start a check for insecure passwords.
   void StartPasswordCheck();
 
-  // Stops checking for compromised passwords.
+  // Stops checking for insecure passwords.
   void StopPasswordCheck();
 
   // Returns the current state of the password check.
@@ -127,7 +127,7 @@ class IOSChromePasswordCheckManager
   // passwords.
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_;
 
-  // Used to obtain the list of compromised credentials.
+  // Used to obtain the list of insecure credentials.
   password_manager::InsecureCredentialsManager insecure_credentials_manager_;
 
   // Adapter used to start, monitor and stop a bulk leak check.

@@ -212,7 +212,7 @@ using base::SysNSStringToUTF16;
   // passwords.
 }
 
-- (void)compromisedCredentialsDidChange {
+- (void)insecureCredentialsDidChange {
   [self fetchPasswordWith:_manager->GetInsecureCredentials()];
 }
 
