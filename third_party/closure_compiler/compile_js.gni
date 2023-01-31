@@ -5,11 +5,13 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 
-declare_args() {
-  # Enable closure type-checking for Chrome's web technology-based UI. This
-  # enables the webui_closure_compile target which does a no-op without this
-  # flag enabled. Requires Java.
-  enable_js_type_check = is_chromeos_ash
+if (is_chromeos_ash) {
+  declare_args() {
+    # Enable closure type-checking for Chrome's web technology-based UI. This
+    # enables the webui_closure_compile target which does a no-op without this
+    # flag enabled. Requires Java.
+    enable_js_type_check = is_chromeos_ash
+  }
 }
 
 script_path = "//third_party/closure_compiler"
@@ -287,25 +289,26 @@ template("js_binary") {
   }
 }
 
-# Defines a target that compiles a group of js_library targets.
-template("js_type_check") {
-  # js_type_check is only supported on ChromeOS Ash.
-  assert(is_chromeos_ash)
-  if (enable_js_type_check) {
-    js_binary(target_name) {
-      sources = []
-      checks_only = true
-      forward_variables_from(invoker,
-                             [
-                               "closure_flags",
-                               "deps",
-                               "is_polymer3",
-                               "testonly",
-                             ])
-    }
-  } else {
-    not_needed(invoker, "*")
-    group(target_name) {
+# js_type_check is only supported on ChromeOS Ash.
+if (is_chromeos_ash) {
+  # Defines a target that compiles a group of js_library targets.
+  template("js_type_check") {
+    if (enable_js_type_check) {
+      js_binary(target_name) {
+        sources = []
+        checks_only = true
+        forward_variables_from(invoker,
+                               [
+                                 "closure_flags",
+                                 "deps",
+                                 "is_polymer3",
+                                 "testonly",
+                               ])
+      }
+    } else {
+      not_needed(invoker, "*")
+      group(target_name) {
+      }
     }
   }
 }

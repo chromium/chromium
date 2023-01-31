@@ -101,7 +101,7 @@ concatenate_files("generate_interface_support_js") {
   output = "interface_support.js"
 }
 
-if (enable_mojom_closure_compile || (is_chromeos_ash && enable_js_type_check)) {
+if (generate_mojom_closure_libraries) {
   js_library("bindings_lite_sources") {
     sources = [
       "$target_gen_dir/interface_support.js",
@@ -133,7 +133,7 @@ concatenate_files("bindings_uncompiled_module") {
   deps = [ "//mojo/public/interfaces/bindings:bindings_js__generator" ]
 }
 
-if (enable_mojom_closure_compile || (enable_js_type_check && is_chromeos_ash)) {
+if (generate_mojom_closure_libraries) {
   js_binary("bindings_lite") {
     outputs = [ "$target_gen_dir/mojo_bindings_lite.js" ]
     sources = []
