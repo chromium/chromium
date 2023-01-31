@@ -1,7 +1,7 @@
 {
   "$build/chromium_orchestrator": {
     "compilator": "lacros-amd64-generic-rel-compilator",
-    "compilator_watcher_git_revision": "7809a690bbd935bcb3b4d922e24cabe168aaabc8"
+    "compilator_watcher_git_revision": "ed88e894b6a9f09ab3604fb3276c5810389cbcf4"
   },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
