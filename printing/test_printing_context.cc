@@ -179,6 +179,9 @@ mojom::ResultCode TestPrintingContext::NewDocument(
   in_print_job_ = true;
 
   if (!skip_system_calls()) {
+    if (new_document_cancels_) {
+      return mojom::ResultCode::kCanceled;
+    }
     if (new_document_fails_)
       return mojom::ResultCode::kFailed;
     if (new_document_blocked_by_permissions_)

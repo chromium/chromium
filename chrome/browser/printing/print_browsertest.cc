@@ -214,6 +214,9 @@ class BrowserPrintingContextFactoryForTest
     auto context = MakeDefaultTestPrintingContext(delegate, skip_system_calls,
                                                   printer_name_);
 
+    if (cancels_in_new_document_) {
+      context->SetNewDocumentCancels();
+    }
     if (failed_error_for_new_document_)
       context->SetNewDocumentFails();
     if (access_denied_errors_for_new_document_)
@@ -247,6 +250,10 @@ class BrowserPrintingContextFactoryForTest
 
   void SetPrinterNameForSubsequentContexts(const std::string& printer_name) {
     printer_name_ = printer_name;
+  }
+
+  void SetCancelErrorOnNewDocument(bool cause_errors) {
+    cancels_in_new_document_ = cause_errors;
   }
 
   void SetFailedErrorOnNewDocument(bool cause_errors) {
@@ -291,6 +298,7 @@ class BrowserPrintingContextFactoryForTest
 
  private:
   std::string printer_name_;
+  bool cancels_in_new_document_ = false;
   bool failed_error_for_new_document_ = false;
   bool access_denied_errors_for_new_document_ = false;
 #if BUILDFLAG(IS_WIN)
@@ -2724,6 +2732,11 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 #endif
 
+  void PrimeForCancelInNewDocument() {
+    test_printing_context_factory()->SetCancelErrorOnNewDocument(
+        /*cause_errors=*/true);
+  }
+
   void PrimeForErrorsInNewDocument() {
     test_printing_context_factory()->SetFailedErrorOnNewDocument(
         /*cause_errors=*/true);
@@ -3228,6 +3241,53 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   // No tracking of cancel for in-browser tests, only for OOP.
   if (GetParam() != PrintBackendFeatureVariation::kInBrowserProcess)
     EXPECT_EQ(cancel_count(), 1);
+  EXPECT_EQ(print_job_destruction_count(), 1);
+}
+
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
+                       StartPrintingCanceled) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  PrimeForCancelInNewDocument();
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  if (GetParam() == PrintBackendFeatureVariation::kInBrowserProcess) {
+    // The expected events for this are:
+    // 1.  A print job is started, but results in a cancel.  There are no
+    //     callbacks to notice this.  The cancel does result in an error dialog
+    //     being shown.
+    // 2.  Wait for the one print job to be destroyed, to ensure printing
+    //     finished cleanly before completing the test.
+    SetNumExpectedMessages(/*num=*/2);
+  } else {
+    // The expected events for this are:
+    // 1.  A print job is started, but results in a cancel.
+    // 2.  The print job is canceled.
+    // 3.  An error dialog is shown.
+    // 4.  Wait for the one print job to be destroyed, to ensure printing
+    //     finished cleanly before completing the test.
+    SetNumExpectedMessages(/*num=*/4);
+  }
+
+  PrintAfterPreviewIsReadyAndLoaded();
+
+  // No tracking of start printing or cancel for in-browser tests, only for
+  // OOP.
+  if (GetParam() != PrintBackendFeatureVariation::kInBrowserProcess) {
+    EXPECT_EQ(start_printing_result(), mojom::ResultCode::kCanceled);
+    EXPECT_EQ(cancel_count(), 1);
+  }
+  // TODO(crbug.com/1393505)  Error count should be zero once cancel handling
+  // is corrected.
+  EXPECT_EQ(error_dialog_shown_count(), 1u);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
