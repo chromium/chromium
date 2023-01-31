@@ -36,7 +36,9 @@ constexpr int kStepBasisHz = 1000;
 // worth is an arbitrary choice, but performs well since the lock guarding
 // access to the delay buffer is only held a reasonably short time during the
 // data extraction.
-constexpr int kResamplerRequestSize = 3 * media::SincResampler::kKernelSize;
+// Since the kernel size has been jacked up to 64 from 32, 2 * kernels is a
+// preferred choice. See also crbug.com/1407622.
+constexpr int kResamplerRequestSize = 2 * media::SincResampler::kKernelSize;
 
 // Returns the deviation, around an estimated reference time, beyond which a
 // SnooperNode considers a skip in input/output to have occurred.
@@ -187,9 +189,8 @@ absl::optional<base::TimeTicks> SnooperNode::SuggestLatestRenderTime(
   // maximum duration prebufferred in the resampler; 2) the duration to be
   // rendered; 3) a safety margin (to help avoid underruns when the machine is
   // under high stress).
-  const base::TimeDelta max_resampler_prebuffer_duration = Helper::FramesToTime(
-      kResamplerRequestSize + media::SincResampler::kKernelSize,
-      input_params_.sample_rate());
+  const base::TimeDelta max_resampler_prebuffer_duration =
+      Helper::FramesToTime(kResamplerRequestSize, input_params_.sample_rate());
   const base::TimeDelta render_duration =
       Helper::FramesToTime(duration, output_params_.sample_rate());
   const base::TimeDelta safety_margin =

@@ -93,7 +93,7 @@ AudioShifter::AudioShifter(base::TimeDelta max_buffer_size,
       running_(false),
       resampler_(channels,
                  1.0,
-                 96,
+                 128,
                  base::BindRepeating(&AudioShifter::ResamplerCallback,
                                      base::Unretained(this))) {}
 

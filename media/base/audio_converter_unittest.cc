@@ -222,10 +222,10 @@ TEST(AudioConverterTest, AudioDelayAndDiscreteChannelCount) {
   //
   // This magic number is the accumulated MultiChannelResampler delay after
   // |fill_count| (4) callbacks to provide input. The number of frames delayed
-  // is an implementation detail of the SincResampler chunk size (480 for the
+  // is an implementation detail of the SincResampler chunk size (448 for the
   // first two callbacks, 512 for the last two callbacks). See
   // SincResampler.ChunkSize().
-  int kExpectedDelay = 992;
+  int kExpectedDelay = 960;
   auto expected_delay =
       AudioTimestampHelper::FramesToTime(kExpectedDelay, kSampleRate);
   EXPECT_EQ(expected_delay, callback.last_delay());

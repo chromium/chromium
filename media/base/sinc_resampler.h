@@ -20,12 +20,12 @@ namespace media {
 class MEDIA_EXPORT SincResampler {
  public:
   // The kernel size can be adjusted for quality (higher is better) at the
-  // expense of performance.  Must be a multiple of 32.
-  // TODO(dalecurtis): Test performance to see if we can jack this up to 64+.
-  static constexpr int kKernelSize = 32;
+  // expense of performance.  Must be a multiple of 32.  64 is chosen for
+  // perceptible audio quality, see also crbug.com/1407622.
+  static constexpr int kKernelSize = 64;
 
   // Default request size.  Affects how often and for how much SincResampler
-  // calls back for input.  Must be greater than kKernelSize.
+  // calls back for input.  Must be greater than 1.5 * kKernelSize.
   static constexpr int kDefaultRequestSize = 512;
 
   // The kernel offset count is used for interpolation and is the number of
@@ -58,8 +58,8 @@ class MEDIA_EXPORT SincResampler {
   // Resample |frames| of data from |read_cb_| into |destination|.
   void Resample(int frames, float* destination);
 
-  // The maximum size in frames that guarantees Resample() will only make a
-  // single call to |read_cb_| for more data.  Note: If PrimeWithSilence() is
+  // The maximum size in output frames that guarantees Resample() will only make
+  // a single call to |read_cb_| for more data.  Note: If PrimeWithSilence() is
   // not called, chunk size will grow after the first two Resample() calls by
   // kKernelSize / (2 * io_sample_rate_ratio).  See the .cc file for details.
   int ChunkSize() const { return chunk_size_; }

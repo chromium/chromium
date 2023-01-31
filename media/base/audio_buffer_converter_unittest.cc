@@ -227,7 +227,7 @@ TEST_F(AudioBufferConverterTest, LargeBuffersResampling) {
   const int kInputFrameSize = 8192;
   ASSERT_NE(kInputSampleRate, kOutSampleRate);
 
-  const int kInputBuffers = 3;
+  const int kInputBuffers = 4;
   for (int i = 0; i < kInputBuffers; ++i) {
     AddInput(MakeTestBuffer(kInputSampleRate,
                             kOutChannelLayout,

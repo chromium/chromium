@@ -109,7 +109,7 @@ static double SincScaleFactor(double io_ratio) {
   // some aliasing at the very high-end.
   // TODO(crogers): this value is empirical and to be more exact should vary
   // depending on kKernelSize.
-  sinc_scale_factor *= 0.9;
+  sinc_scale_factor *= 0.92;
 
   return sinc_scale_factor;
 }
