@@ -28,6 +28,7 @@ import org.robolectric.annotation.Resetter;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -48,9 +49,7 @@ import org.chromium.url.ShadowGURL;
  * Unit tests for {@link TabUtils}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {TabUtilsUnitTest.ShadowProfile.class,
-                TabUtilsUnitTest.ShadowCriticalPersistedTabData.class, ShadowGURL.class})
+@Config(manifest = Config.NONE, shadows = {TabUtilsUnitTest.ShadowProfile.class, ShadowGURL.class})
 public class TabUtilsUnitTest {
     /**
      * A fake {@link Profile} used to reduce dependency.
@@ -71,28 +70,6 @@ public class TabUtilsUnitTest {
         @Implementation
         public static Profile fromWebContents(WebContents webContents) {
             return sProfile;
-        }
-    }
-
-    /**
-     * A fake {@link CriticalPersistedTabData} used to reduce dependency.
-     */
-    @Implements(CriticalPersistedTabData.class)
-    static class ShadowCriticalPersistedTabData {
-        private static CriticalPersistedTabData sCriticalPersistedTabData;
-
-        static void setCriticalPersistedTabData(CriticalPersistedTabData criticalPersistedTabData) {
-            sCriticalPersistedTabData = criticalPersistedTabData;
-        }
-
-        @Resetter
-        static void reset() {
-            sCriticalPersistedTabData = null;
-        }
-
-        @Implementation
-        public static CriticalPersistedTabData from(Tab tab) {
-            return sCriticalPersistedTabData;
         }
     }
 
@@ -122,9 +99,13 @@ public class TabUtilsUnitTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        ShadowCriticalPersistedTabData.setCriticalPersistedTabData(mCriticalPersistedTabData);
         ShadowProfile.setProfile(mProfile);
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
+
+        UserDataHost tabDataHost = new UserDataHost();
+        when(mTab.getUserDataHost()).thenReturn(tabDataHost);
+        when(mTabNative.getUserDataHost()).thenReturn(tabDataHost);
+        tabDataHost.setUserData(CriticalPersistedTabData.class, mCriticalPersistedTabData);
 
         when(mTab.isNativePage()).thenReturn(false);
         when(mTabNative.isNativePage()).thenReturn(true);
@@ -154,7 +135,6 @@ public class TabUtilsUnitTest {
     @After
     public void tearDown() {
         ShadowProfile.reset();
-        ShadowCriticalPersistedTabData.reset();
     }
 
     @Test

@@ -1055,7 +1055,8 @@ public class TabPersistentStoreTest {
                 // It doesn't matter what TabState is saved for the tests which use this function
                 // only that it is saved. So an arbitrary TabState is used.
                 TabStateExtractor.setTabStateForTesting(tabsToSave[i].getId(), new TabState());
-                TabStateAttributes.from(tabsToSave[i]).markTabStateDirty();
+                TabStateAttributes.from(tabsToSave[i])
+                        .setStateForTesting(TabStateAttributes.DirtinessState.DIRTY);
                 store.addTabToSaveQueue(tabsToSave[i]);
             }
         });

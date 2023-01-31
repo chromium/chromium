@@ -30,6 +30,7 @@ public final class TabHelpers {
      */
     static void initTabHelpers(Tab tab, Tab parentTab) {
         TabUma.createForTab(tab);
+        TabStateAttributes.createForTab(tab, ((TabImpl) tab).getCreationState());
         TabDistillabilityProvider.createForTab(tab);
         InterceptNavigationDelegateTabHelper.createForTab(tab);
         ContextualSearchTabHelper.createForTab(tab);

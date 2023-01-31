@@ -39,6 +39,7 @@ import org.robolectric.util.ReflectionHelpers;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.SysUtils;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -52,7 +53,6 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowUmaSessionStats;
-import org.chromium.chrome.browser.tab.TabUtilsUnitTest.ShadowCriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.TabUtilsUnitTest.ShadowProfile;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -95,8 +95,8 @@ import java.util.Map.Entry;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
-        shadows = {ShadowGURL.class, ShadowSysUtils.class, ShadowCriticalPersistedTabData.class,
-                ShadowProfile.class, ShadowUmaSessionStats.class})
+        shadows = {ShadowGURL.class, ShadowSysUtils.class, ShadowProfile.class,
+                ShadowUmaSessionStats.class})
 public class RequestDesktopUtilsUnitTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -167,8 +167,6 @@ public class RequestDesktopUtilsUnitTest {
     @Mock
     private Tracker mTracker;
     @Mock
-    private Tab mTab;
-    @Mock
     private CriticalPersistedTabData mCriticalPersistedTabData;
     @Mock
     private TabModelSelector mTabModelSelector;
@@ -179,6 +177,7 @@ public class RequestDesktopUtilsUnitTest {
     @Mock
     private ObservableSupplier<Tab> mCurrentTabSupplier;
 
+    private Tab mTab;
     private @ContentSettingValues int mRdsDefaultValue;
     private SharedPreferencesManager mSharedPreferencesManager;
 
@@ -198,11 +197,11 @@ public class RequestDesktopUtilsUnitTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
-        ShadowCriticalPersistedTabData.setCriticalPersistedTabData(mCriticalPersistedTabData);
         ShadowProfile.setProfile(mProfile);
         ShadowUmaSessionStats.setMetricsServiceAvailable(true);
+
+        mTab = createTab();
 
         doAnswer(invocation -> mRdsDefaultValue)
                 .when(mWebsitePreferenceBridgeJniMock)
@@ -253,18 +252,19 @@ public class RequestDesktopUtilsUnitTest {
     public void tearDown() {
         FeatureList.setTestValues(null);
         ShadowSysUtils.setLowEndDevice(false);
-        ShadowCriticalPersistedTabData.reset();
         ShadowProfile.reset();
         ShadowUmaSessionStats.reset();
-        mSharedPreferencesManager.removeKey(
-                ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING);
-        mSharedPreferencesManager.removeKey(
-                SingleCategorySettingsConstants
-                        .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
-        mSharedPreferencesManager.removeKey(
-                ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET);
-        mSharedPreferencesManager.removeKey(
-                ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED);
+        if (mSharedPreferencesManager != null) {
+            mSharedPreferencesManager.removeKey(
+                    ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING);
+            mSharedPreferencesManager.removeKey(
+                    SingleCategorySettingsConstants
+                            .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
+            mSharedPreferencesManager.removeKey(
+                    ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET);
+            mSharedPreferencesManager.removeKey(
+                    ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED);
+        }
         TrackerFactory.setTrackerForTests(null);
     }
 
@@ -1085,13 +1085,21 @@ public class RequestDesktopUtilsUnitTest {
                         .isEmpty());
     }
 
+    private Tab createTab() {
+        Tab tab = mock(Tab.class);
+        UserDataHost tabDataHost = new UserDataHost();
+        when(tab.getUserDataHost()).thenReturn(tabDataHost);
+        tabDataHost.setUserData(CriticalPersistedTabData.class, mCriticalPersistedTabData);
+        return tab;
+    }
+
     private List<Tab> createTabsForDesktopSiteExceptionsDowngradeTest(
             TabModel tabModel, int lastUsedTabId, int tabCount, Boolean... lastUsedUserAgents) {
         assert tabCount == lastUsedUserAgents.length;
         List<Tab> tabs = new ArrayList<>();
         int tabIndex = 0;
         for (int i = lastUsedTabId + 1; i <= lastUsedTabId + tabCount; i++) {
-            Tab tab = mock(Tab.class);
+            Tab tab = createTab();
             WebContents webContents = mock(WebContents.class);
             NavigationController navigationController = mock(NavigationController.class);
             when(tab.getId()).thenReturn(i);

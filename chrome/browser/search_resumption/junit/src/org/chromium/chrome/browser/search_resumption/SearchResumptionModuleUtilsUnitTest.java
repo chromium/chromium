@@ -26,8 +26,8 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.annotation.Resetter;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -52,30 +52,10 @@ import java.util.Map;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
-        shadows = {SearchResumptionModuleUtilsUnitTest.ShadowCriticalPersistedTabData.class,
-                SearchResumptionModuleUtilsUnitTest.ShadowChromeFeatureList.class,
+        shadows = {SearchResumptionModuleUtilsUnitTest.ShadowChromeFeatureList.class,
                 SearchResumptionModuleUtilsUnitTest.ShadowSearchResumptionUserData.class})
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public class SearchResumptionModuleUtilsUnitTest {
-    /** Shadow for {@link CriticalPersistedTabData}. */
-    @Implements(CriticalPersistedTabData.class)
-    static class ShadowCriticalPersistedTabData {
-        private static CriticalPersistedTabData sCriticalPersistedTabData;
-
-        static void setCriticalPersistedTabData(CriticalPersistedTabData criticalPersistedTabData) {
-            sCriticalPersistedTabData = criticalPersistedTabData;
-        }
-
-        @Resetter
-        static void reset() {
-            sCriticalPersistedTabData = null;
-        }
-
-        @Implementation
-        public static CriticalPersistedTabData from(Tab tab) {
-            return sCriticalPersistedTabData;
-        }
-    }
     /** Shadow for {@link SearchResumptionUserData} */
     @Implements(SearchResumptionUserData.class)
     static class ShadowSearchResumptionUserData {
@@ -141,6 +121,12 @@ public class SearchResumptionModuleUtilsUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        UserDataHost tabDataHost = new UserDataHost();
+        when(mTab.getUserDataHost()).thenReturn(tabDataHost);
+        when(mTabToTrack.getUserDataHost()).thenReturn(tabDataHost);
+        tabDataHost.setUserData(CriticalPersistedTabData.class, mCriticalPersistedTabData);
+
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
@@ -235,7 +221,6 @@ public class SearchResumptionModuleUtilsUnitTest {
         doReturn(false).when(mTabToTrack).isIncognito();
         doReturn(false).when(mGurl1).isEmpty();
         doReturn(true).when(mGurl1).isValid();
-        ShadowCriticalPersistedTabData.setCriticalPersistedTabData(mCriticalPersistedTabData);
         long lastVisitedTimestampMs = 0;
         doReturn(lastVisitedTimestampMs).when(mCriticalPersistedTabData).getTimestampMillis();
         int expirationTimeSeconds = 1;
@@ -259,8 +244,6 @@ public class SearchResumptionModuleUtilsUnitTest {
                         ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
                         SearchResumptionModuleUtils.TAB_EXPIRATION_TIME_PARAM, 0));
         Assert.assertTrue(SearchResumptionModuleUtils.isTabToTrackValid(mTabToTrack));
-
-        ShadowCriticalPersistedTabData.reset();
     }
 
     @Test

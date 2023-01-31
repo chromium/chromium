@@ -274,9 +274,6 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
             if (!navigation.hasCommitted()) return;
 
-            if (!mTab.isDestroyed()) {
-                TabStateAttributes.from(mTab).markTabStateDirty();
-            }
             mTab.updateTitle();
             mTab.handleDidFinishNavigation(navigation.getUrl(), navigation.pageTransition());
             mTab.setIsShowingErrorPage(navigation.isErrorPage());
@@ -325,13 +322,6 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         @Override
         public void navigationEntriesDeleted() {
             mTab.notifyNavigationEntriesDeleted();
-        }
-
-        @Override
-        public void navigationEntriesChanged() {
-            if (!mTab.isDestroyed()) {
-                TabStateAttributes.from(mTab).markTabStateDirty();
-            }
         }
 
         @Override

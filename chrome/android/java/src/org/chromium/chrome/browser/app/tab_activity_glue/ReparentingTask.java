@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
-import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.content_public.browser.WebContents;
@@ -165,7 +164,6 @@ public class ReparentingTask implements UserData {
     public void finish(@NonNull Delegate delegate, @Nullable Runnable finalizeCallback) {
         delegate.getCompositorViewHolder().prepareForTabReparenting();
         attach(delegate.getWindowAndroid(), delegate.getTabDelegateFactory());
-        if (!mTab.isDestroyed()) TabStateAttributes.from(mTab).markTabStateDirty();
         if (finalizeCallback != null) finalizeCallback.run();
     }
 

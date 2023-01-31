@@ -104,7 +104,12 @@ public class TabUnitTest {
         doReturn(mContext).when(mWeakReferenceContext).get();
         doReturn(mContext).when(mContext).getApplicationContext();
 
-        mTab = new TabImpl(TAB1_ID, false, null, null);
+        mTab = new TabImpl(TAB1_ID, false, null, null) {
+            @Override
+            public boolean isInitialized() {
+                return true;
+            }
+        };
         mTab.addObserver(mObserver);
         CriticalPersistedTabData.from(mTab).addObserver(mCriticalPersistedTabDataObserver);
     }
@@ -112,6 +117,9 @@ public class TabUnitTest {
     @Test
     @SmallTest
     public void testSetRootIdWithChange() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        assertThat(TabStateAttributes.from(mTab).getDirtinessState(),
+                equalTo(TabStateAttributes.DirtinessState.CLEAN));
         assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB1_ID));
 
         CriticalPersistedTabData.from(mTab).setRootId(TAB2_ID);
@@ -119,12 +127,16 @@ public class TabUnitTest {
         verify(mCriticalPersistedTabDataObserver).onRootIdChanged(mTab, TAB2_ID);
 
         assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB2_ID));
-        assertThat(TabStateAttributes.from(mTab).isTabStateDirty(), equalTo(true));
+        assertThat(TabStateAttributes.from(mTab).getDirtinessState(),
+                equalTo(TabStateAttributes.DirtinessState.DIRTY));
     }
 
     @Test
     @SmallTest
     public void testSetRootIdWithoutChange() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        assertThat(TabStateAttributes.from(mTab).getDirtinessState(),
+                equalTo(TabStateAttributes.DirtinessState.CLEAN));
         assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB1_ID));
         TabStateAttributes.from(mTab).clearTabStateDirtiness();
 
@@ -133,7 +145,8 @@ public class TabUnitTest {
         verify(mCriticalPersistedTabDataObserver, never())
                 .onRootIdChanged(any(Tab.class), anyInt());
         assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB1_ID));
-        assertThat(TabStateAttributes.from(mTab).isTabStateDirty(), equalTo(false));
+        assertThat(TabStateAttributes.from(mTab).getDirtinessState(),
+                equalTo(TabStateAttributes.DirtinessState.CLEAN));
     }
 
     @Test

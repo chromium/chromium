@@ -26,7 +26,7 @@ include_rules = [
   "+ui/android/java/src/org/chromium/ui/text",
   "+ui/android/java/src/org/chromium/ui/util",
   "+ui/android/java/src/org/chromium/ui/widget",
-  "+url/android/java",
+  "+url/android",
 ]
 
 specific_include_rules = {

@@ -97,12 +97,13 @@ public class TabbedModeTabPersistencePolicyTest {
                 new MockTabModel.MockTabModelDelegate() {
                     @Override
                     public Tab createTab(int id, boolean incognito) {
-                        Tab tab = new MockTab(id, incognito) {
+                        MockTab tab = new MockTab(id, incognito) {
                             @Override
                             public GURL getUrl() {
                                 return new GURL("https://www.google.com");
                             }
                         };
+                        tab.initialize(null, null, null, null, null, false, null);
                         return tab;
                     }
                 };

@@ -100,6 +100,7 @@ android_library("java") {
     "//components/strings:components_strings_grd",
     "//content/public/android:content_java",
     "//net/android:net_java",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -154,6 +155,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/tab/CurrentTabObserverTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabAssociatedAppTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabIdManagerTest.java",
+    "java/src/org/chromium/chrome/browser/tab/TabStateAttributesTest.java",
   ]
 
   deps = [
@@ -162,11 +164,14 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/preferences:java",
+    "//chrome/test/android:chrome_java_test_support_common",
     "//content/public/android:content_full_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 }

@@ -21,7 +21,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.DoNotClassMerge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.WebContentsStateBridge;
@@ -684,11 +683,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         mRootId = rootId;
         for (CriticalPersistedTabDataObserver observer : mObservers) {
             observer.onRootIdChanged(mTab, rootId);
-        }
-        // TODO(crbug.com/1376990) investigate if this can be moved inside markTabStateDirty.
-        //  Perhaps the gate can be changed to !mTab.isFrozen().
-        if (mTab.isInitialized()) {
-            TabStateAttributes.from(mTab).markTabStateDirty();
         }
         save();
     }

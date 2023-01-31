@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -111,6 +110,7 @@ public class TabPersistentStore {
                     CRITICAL_PERSISTED_TAB_DATA_SAVE_ONLY, false);
 
     private TabModelObserver mTabModelObserver;
+    private TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
 
     @IntDef({ActiveTabState.OTHER, ActiveTabState.NTP, ActiveTabState.EMPTY})
     @Retention(RetentionPolicy.SOURCE)
@@ -149,55 +149,40 @@ public class TabPersistentStore {
     }
 
     public void onNativeLibraryReady() {
-        mTabModelSelector.addObserver(new TabModelSelectorObserver() {
+        TabStateAttributes.Observer attributesObserver = new TabStateAttributes.Observer() {
             @Override
-            public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-                if (creationState == TabCreationState.FROZEN_FOR_LAZY_LOAD) {
+            public void onTabStateDirtinessChanged(
+                    Tab tab, @TabStateAttributes.DirtinessState int dirtiness) {
+                if (dirtiness == TabStateAttributes.DirtinessState.DIRTY && !tab.isDestroyed()) {
                     addTabToSaveQueue(tab);
                 }
             }
-
-            @Override
-            public void onTabHidden(Tab tab) {
-                addTabToSaveQueue(tab);
-            }
-        });
-
-        new TabModelSelectorTabObserver(mTabModelSelector) {
-            @Override
-            public void onNavigationEntriesDeleted(Tab tab) {
-                if (!tab.isDestroyed()) TabStateAttributes.from(tab).markTabStateDirty();
-                addTabToSaveQueue(tab);
-            }
-
-            @Override
-            public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
-                addTabToSaveQueue(tab);
-            }
-
-            @Override
-            public void onRootIdChanged(Tab tab, int newRootId) {
-                addTabToSaveQueue(tab);
-            }
-
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                if (!tab.isDestroyed()) TabStateAttributes.from(tab).markTabStateDirty();
-            }
-
-            @Override
-            public void onTitleUpdated(Tab tab) {
-                if (!tab.isDestroyed()) TabStateAttributes.from(tab).markTabStateDirty();
-            }
         };
+        mTabRegistrationObserver = new TabModelSelectorTabRegistrationObserver(mTabModelSelector);
+        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
+                new TabModelSelectorTabRegistrationObserver.Observer() {
+                    @Override
+                    public void onTabRegistered(Tab tab) {
+                        TabStateAttributes attributes = TabStateAttributes.from(tab);
+                        if (attributes.addObserver(attributesObserver)
+                                == TabStateAttributes.DirtinessState.DIRTY) {
+                            addTabToSaveQueue(tab);
+                        }
+                    }
+
+                    @Override
+                    public void onTabUnregistered(Tab tab) {
+                        if (!tab.isDestroyed()) {
+                            TabStateAttributes.from(tab).removeObserver(attributesObserver);
+                        }
+                        if (tab.isClosing()) {
+                            PersistedTabData.onTabClose(tab);
+                            removeTabFromQueues(tab);
+                        }
+                    }
+                });
 
         mTabModelObserver = new TabModelObserver() {
-            @Override
-            public void onFinishingTabClosure(Tab tab) {
-                PersistedTabData.onTabClose(tab);
-                removeTabFromQueues(tab);
-            }
-
             @Override
             public void willCloseAllTabs(boolean incognito) {
                 cancelLoadingTabs(incognito);
@@ -208,7 +193,6 @@ public class TabPersistentStore {
                 saveTabListAsynchronously();
             }
         };
-
         mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
         mTabModelSelector.getModel(true).addObserver(mTabModelObserver);
     }
@@ -936,7 +920,9 @@ public class TabPersistentStore {
 
     private void addTabToSaveQueueIfApplicable(Tab tab) {
         if (tab == null || tab.isDestroyed()) return;
-        if (mTabsToSave.contains(tab) || !TabStateAttributes.from(tab).isTabStateDirty()
+        if (mTabsToSave.contains(tab)
+                || TabStateAttributes.from(tab).getDirtinessState()
+                        == TabStateAttributes.DirtinessState.CLEAN
                 || isTabUrlContentScheme(tab)) {
             return;
         }
@@ -994,6 +980,9 @@ public class TabPersistentStore {
             mTabModelSelector.getModel(false).removeObserver(mTabModelObserver);
             mTabModelSelector.getModel(true).removeObserver(mTabModelObserver);
             mTabModelObserver = null;
+        }
+        if (mTabRegistrationObserver != null) {
+            mTabRegistrationObserver.destroy();
         }
         mPersistencePolicy.destroy();
         if (mTabLoader != null) mTabLoader.cancel(true);
