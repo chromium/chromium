@@ -18,6 +18,13 @@ class MockSignalsAggregator : public SignalsAggregator {
   ~MockSignalsAggregator() override;
 
   MOCK_METHOD(void,
+              GetSignalsForUser,
+              (const UserContext&,
+               const SignalsAggregationRequest&,
+               SignalsAggregator::GetSignalsCallback),
+              (override));
+
+  MOCK_METHOD(void,
               GetSignals,
               (const SignalsAggregationRequest&,
                SignalsAggregator::GetSignalsCallback),

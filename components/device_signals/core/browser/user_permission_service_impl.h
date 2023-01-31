@@ -31,8 +31,9 @@ class UserPermissionServiceImpl : public UserPermissionService {
   ~UserPermissionServiceImpl() override;
 
   // UserPermissionService:
-  void CanCollectSignals(const UserContext& user_context,
-                         CanCollectCallback callback) override;
+  void CanUserCollectSignals(const UserContext& user_context,
+                             CanCollectCallback callback) override;
+  void CanCollectSignals(CanCollectCallback callback) override;
 
  private:
   base::raw_ptr<policy::ManagementService> management_service_;

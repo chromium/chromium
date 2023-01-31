@@ -153,18 +153,14 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 device_signals::SignalsAggregationRequest CreateAggregationRequest(
-    const std::string& user_id,
     device_signals::SignalName signal_name) {
-  device_signals::UserContext user_context;
-  user_context.user_id = user_id;
-
   device_signals::SignalsAggregationRequest request;
-  request.user_context = std::move(user_context);
   request.signal_names.emplace(signal_name);
   return request;
 }
 
 void StartSignalCollection(
+    const std::string& user_id,
     device_signals::SignalsAggregationRequest request,
     content::BrowserContext* browser_context,
     base::OnceCallback<void(device_signals::SignalsAggregationResponse)>
@@ -175,7 +171,12 @@ void StartSignalCollection(
   auto* signals_aggregator =
       enterprise_signals::SignalsAggregatorFactory::GetForProfile(profile);
   DCHECK(signals_aggregator);
-  signals_aggregator->GetSignals(std::move(request), std::move(callback));
+
+  device_signals::UserContext user_context;
+  user_context.user_id = user_id;
+
+  signals_aggregator->GetSignalsForUser(
+      std::move(user_context), std::move(request), std::move(callback));
 }
 
 bool CanReturnResponse(content::BrowserContext* browser_context) {
@@ -670,8 +671,7 @@ EnterpriseReportingPrivateGetFileSystemInfoFunction::Run() {
   }
   EXTENSION_FUNCTION_VALIDATE(paths_are_all_utf8);
 
-  auto aggregation_request = CreateAggregationRequest(
-      params->request.user_context.user_id, signal_name());
+  auto aggregation_request = CreateAggregationRequest(signal_name());
   aggregation_request.file_system_signal_parameters =
       ConvertFileSystemInfoOptions(params->request.options);
 
@@ -680,7 +680,8 @@ EnterpriseReportingPrivateGetFileSystemInfoFunction::Run() {
   LogSignalCollectionRequestedWithItems(signal_name(), number_of_items);
 
   StartSignalCollection(
-      aggregation_request, browser_context(),
+      params->request.user_context.user_id, aggregation_request,
+      browser_context(),
       base::BindOnce(&EnterpriseReportingPrivateGetFileSystemInfoFunction::
                          OnSignalRetrieved,
                      this, base::TimeTicks::Now(), number_of_items));
@@ -749,8 +750,7 @@ EnterpriseReportingPrivateGetSettingsFunction::Run() {
   }
   EXTENSION_FUNCTION_VALIDATE(paths_are_all_utf8);
 
-  auto aggregation_request = CreateAggregationRequest(
-      params->request.user_context.user_id, signal_name());
+  auto aggregation_request = CreateAggregationRequest(signal_name());
   aggregation_request.settings_signal_parameters =
       ConvertSettingsOptions(params->request.options);
 
@@ -759,7 +759,8 @@ EnterpriseReportingPrivateGetSettingsFunction::Run() {
   LogSignalCollectionRequestedWithItems(signal_name(), number_of_items);
 
   StartSignalCollection(
-      aggregation_request, browser_context(),
+      params->request.user_context.user_id, aggregation_request,
+      browser_context(),
       base::BindOnce(
           &EnterpriseReportingPrivateGetSettingsFunction::OnSignalRetrieved,
           this, base::TimeTicks::Now(), number_of_items));
@@ -817,7 +818,7 @@ EnterpriseReportingPrivateGetAvInfoFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   StartSignalCollection(
-      CreateAggregationRequest(params->user_context.user_id, signal_name()),
+      params->user_context.user_id, CreateAggregationRequest(signal_name()),
       browser_context(),
       base::BindOnce(
           &EnterpriseReportingPrivateGetAvInfoFunction::OnSignalRetrieved, this,
@@ -870,7 +871,7 @@ EnterpriseReportingPrivateGetHotfixesFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   StartSignalCollection(
-      CreateAggregationRequest(params->user_context.user_id, signal_name()),
+      params->user_context.user_id, CreateAggregationRequest(signal_name()),
       browser_context(),
       base::BindOnce(
           &EnterpriseReportingPrivateGetHotfixesFunction::OnSignalRetrieved,

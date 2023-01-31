@@ -63,6 +63,7 @@
 #include "components/device_signals/core/browser/mock_signals_aggregator.h"  // nogncheck
 #include "components/device_signals/core/browser/signals_aggregator.h"  // nogncheck
 #include "components/device_signals/core/browser/signals_types.h"  // nogncheck
+#include "components/device_signals/core/browser/user_context.h"   // nogncheck
 #include "components/device_signals/core/common/common_types.h"    // nogncheck
 #include "components/device_signals/core/common/signals_constants.h"  // nogncheck
 #include "components/device_signals/core/common/signals_features.h"  // nogncheck
@@ -1335,12 +1336,13 @@ class UserContextGatedTest : public ExtensionApiUnittest {
 
   void SetFakeResponse(
       const device_signals::SignalsAggregationResponse& response) {
-    EXPECT_CALL(*mock_aggregator_, GetSignals(_, _))
+    EXPECT_CALL(*mock_aggregator_, GetSignalsForUser(_, _, _))
         .WillOnce(
-            Invoke([&](const device_signals::SignalsAggregationRequest& request,
+            Invoke([&](const device_signals::UserContext& user_context,
+                       const device_signals::SignalsAggregationRequest& request,
                        device_signals::SignalsAggregator::GetSignalsCallback
                            callback) {
-              EXPECT_EQ(request.user_context.user_id, kFakeUserId);
+              EXPECT_EQ(user_context.user_id, kFakeUserId);
               EXPECT_EQ(request.signal_names.size(), 1U);
               std::move(callback).Run(response);
             }));

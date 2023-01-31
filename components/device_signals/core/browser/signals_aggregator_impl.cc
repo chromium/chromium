@@ -63,6 +63,26 @@ SignalsAggregatorImpl::SignalsAggregatorImpl(
 
 SignalsAggregatorImpl::~SignalsAggregatorImpl() = default;
 
+void SignalsAggregatorImpl::GetSignalsForUser(
+    const UserContext& user_context,
+    const SignalsAggregationRequest& request,
+    GetSignalsCallback callback) {
+  // Request for collection of multiple signals is not yet supported. Only the
+  // first signal will be returned.
+  if (request.signal_names.size() != 1) {
+    RespondWithError(SignalCollectionError::kUnsupported, std::move(callback));
+    return;
+  }
+
+  LogSignalCollectionRequested(*request.signal_names.begin());
+
+  permission_service_->CanUserCollectSignals(
+      user_context,
+      base::BindOnce(&SignalsAggregatorImpl::OnUserPermissionChecked,
+                     weak_factory_.GetWeakPtr(), std::move(request),
+                     std::move(callback)));
+}
+
 void SignalsAggregatorImpl::GetSignals(const SignalsAggregationRequest& request,
                                        GetSignalsCallback callback) {
   // Request for collection of multiple signals is not yet supported. Only the
@@ -74,15 +94,9 @@ void SignalsAggregatorImpl::GetSignals(const SignalsAggregationRequest& request,
 
   LogSignalCollectionRequested(*request.signal_names.begin());
 
-  // Capture a reference to `user_context` before calling the function to
-  // prevent a "use after move" warning on `request`, since we cannot guarantee
-  // the order of execution when evaluation function parameters.
-  const auto& user_context = request.user_context;
-  permission_service_->CanCollectSignals(
-      user_context,
-      base::BindOnce(&SignalsAggregatorImpl::OnUserPermissionChecked,
-                     weak_factory_.GetWeakPtr(), std::move(request),
-                     std::move(callback)));
+  permission_service_->CanCollectSignals(base::BindOnce(
+      &SignalsAggregatorImpl::OnUserPermissionChecked,
+      weak_factory_.GetWeakPtr(), std::move(request), std::move(callback)));
 }
 
 void SignalsAggregatorImpl::OnUserPermissionChecked(

@@ -29,6 +29,9 @@ class SignalsAggregatorImpl : public SignalsAggregator {
   ~SignalsAggregatorImpl() override;
 
   // SignalsAggregator:
+  void GetSignalsForUser(const UserContext& user_context,
+                         const SignalsAggregationRequest& request,
+                         GetSignalsCallback callback) override;
   void GetSignals(const SignalsAggregationRequest& request,
                   GetSignalsCallback callback) override;
 

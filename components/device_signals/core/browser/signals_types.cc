@@ -129,8 +129,9 @@ SignalsAggregationRequest::~SignalsAggregationRequest() = default;
 
 bool SignalsAggregationRequest::operator==(
     const SignalsAggregationRequest& other) const {
-  return user_context == other.user_context &&
-         signal_names == other.signal_names;
+  return signal_names == other.signal_names &&
+         file_system_signal_parameters == other.file_system_signal_parameters &&
+         settings_signal_parameters == other.settings_signal_parameters;
 }
 
 SignalsAggregationResponse::SignalsAggregationResponse() = default;

@@ -10,7 +10,6 @@
 
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/device_signals/core/browser/user_context.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -201,9 +200,6 @@ struct SignalsAggregationRequest {
   SignalsAggregationRequest& operator=(const SignalsAggregationRequest&);
 
   ~SignalsAggregationRequest();
-
-  // Information about the user for whom these signals are collected.
-  UserContext user_context{};
 
   // Names of the signals that need to be collected.
   std::unordered_set<SignalName> signal_names{};

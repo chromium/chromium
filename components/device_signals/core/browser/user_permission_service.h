@@ -54,8 +54,13 @@ class UserPermissionService : public KeyedService {
   // Will asynchronously verify whether context-aware signals can be collected
   // on behalf of the user represented by `user_context`. The determined user
   // permission is returned via `callback`.
-  virtual void CanCollectSignals(const UserContext& user_context,
-                                 CanCollectCallback callback) = 0;
+  virtual void CanUserCollectSignals(const UserContext& user_context,
+                                     CanCollectCallback callback) = 0;
+
+  // Will asynchronously verify whether context-aware signals can be collected
+  // based on the current context (e.g. browser-wide management, user logged-in
+  // to a Profile). The determined user permission is returned via `callback`.
+  virtual void CanCollectSignals(CanCollectCallback callback) = 0;
 };
 
 }  // namespace device_signals

@@ -12,6 +12,7 @@ namespace device_signals {
 
 struct SignalsAggregationRequest;
 struct SignalsAggregationResponse;
+struct UserContext;
 
 class SignalsAggregator : public KeyedService {
  public:
@@ -21,11 +22,21 @@ class SignalsAggregator : public KeyedService {
   ~SignalsAggregator() override = default;
 
   // Will asynchronously collect signals whose names are specified in the
-  // `request` object, and will also use its user context to validate that the
+  // `request` object, and will also use a `user_context` to validate that the
   // user has permissions to the device's signals. Invokes `callback` with the
   // collected signals. Currently only supports the collection of one signal
   // (only one entry in `request.signal_names`) for simplicity as no current use
-  // case require supporting collecting multiple signals in one request.
+  // case requires supporting the collection of multiple signals in one request.
+  virtual void GetSignalsForUser(const UserContext& user_context,
+                                 const SignalsAggregationRequest& request,
+                                 GetSignalsCallback callback) = 0;
+
+  // Will asynchronously collect signals whose names are specified in the
+  // `request` object. Uses the current context (browser management and current
+  // user) to evaluation signal collection permissions. Invokes `callback` with
+  // the collected signals. Currently only supports the collection of one signal
+  // (only one entry in `request.signal_names`) for simplicity as no current use
+  // case requires supporting the collection of multiple signals in one request.
   virtual void GetSignals(const SignalsAggregationRequest& request,
                           GetSignalsCallback callback) = 0;
 };

@@ -22,7 +22,7 @@ UserPermissionServiceImpl::UserPermissionServiceImpl(
 
 UserPermissionServiceImpl::~UserPermissionServiceImpl() = default;
 
-void UserPermissionServiceImpl::CanCollectSignals(
+void UserPermissionServiceImpl::CanUserCollectSignals(
     const UserContext& user_context,
     UserPermissionService::CanCollectCallback callback) {
   // Return "unknown user" if no user ID was given.
@@ -60,6 +60,22 @@ void UserPermissionServiceImpl::CanCollectSignals(
   // - The same user as the browser user,
   // - Is managed by an org affiliated with the org managing the browser.
   // They are, therefore, allowed to collect signals.
+  std::move(callback).Run(UserPermission::kGranted);
+}
+
+void UserPermissionServiceImpl::CanCollectSignals(
+    UserPermissionService::CanCollectCallback callback) {
+  // For now, the only condition that is required is that the current
+  // browser is Cloud-managed. The rationale being that signals can be
+  // collected on managed devices by their managing organization, but
+  // would require more scrutiny for unmanaged browsers (including
+  // getting user consent). However, support for unmanaged browsers is
+  // not required yet.
+  if (!management_service_->HasManagementAuthority(
+          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN)) {
+    std::move(callback).Run(UserPermission::kMissingConsent);
+    return;
+  }
   std::move(callback).Run(UserPermission::kGranted);
 }
 
