@@ -91,7 +91,6 @@ void CompletionHandler::OnIOCompleted(
   if (error) {
     DCHECK(!actual_bytes);
     actual_bytes = static_cast<DWORD>(net::ERR_CACHE_READ_FAILURE);
-    NOTREACHED();
   }
 
   // `callback_` may self delete while in `OnFileIOComplete`.
