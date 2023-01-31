@@ -292,11 +292,11 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
     return;
   input_frame_queue_.pop();
 
-  DCHECK_EQ(frame->format(), origin_frame->format());
-  auto buffer_format = VideoPixelFormatToGfxBufferFormat(frame->format());
-  if (!buffer_format) {
-    return;
-  }
+  const auto buffer_format = VideoPixelFormatToGfxBufferFormat(frame->format());
+  // GenerateSharedImageOnGPUThread() should have checked the |origin_frame|'s
+  // format (which should be the same as the |frame|'s format).
+  CHECK_EQ(frame->format(), origin_frame->format());
+  CHECK(buffer_format);
 
   gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
 
