@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/common/buildflags.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 

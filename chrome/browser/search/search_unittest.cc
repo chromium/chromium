@@ -24,6 +24,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"

@@ -18,6 +18,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/api/webstore_private.h"
 #include "chrome/common/extensions/webstore_install_result.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/browser/extension_function.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"

@@ -14,6 +14,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/paint_preview/buildflags/buildflags.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"

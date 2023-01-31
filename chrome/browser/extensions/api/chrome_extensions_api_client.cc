@@ -43,6 +43,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/value_store/value_store_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"

@@ -21,6 +21,7 @@
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/model/sync_change.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"

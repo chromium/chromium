@@ -70,6 +70,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/browser_message_filter.h"

@@ -12,8 +12,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/api/developer_private.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 

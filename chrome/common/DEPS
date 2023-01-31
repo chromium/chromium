@@ -49,6 +49,7 @@ include_rules = [
   "+components/services/app_service/public/cpp/share_target.h",
   "+components/signin/public/base/signin_buildflags.h",
   "+components/strings/grit/components_strings.h",
+  "+components/supervised_user/core/common",
   "+components/translate/core/common",
   "+components/url_formatter",
   "+components/variations/net",

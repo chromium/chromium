@@ -14,9 +14,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
-#include "chrome/browser/supervised_user/supervised_users.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_store.h"
+#include "components/supervised_user/core/common/supervised_users.h"
 #include "components/sync/model/syncable_service.h"
 #include "url/gurl.h"
 

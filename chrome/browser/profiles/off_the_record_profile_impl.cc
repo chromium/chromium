@@ -72,6 +72,7 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/zoom/zoom_event_manager.h"

@@ -11,8 +11,8 @@
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "chrome/browser/supervised_user/supervised_users.h"
 #include "components/prefs/pref_store.h"
+#include "components/supervised_user/core/common/supervised_users.h"
 
 namespace base {
 class Value;

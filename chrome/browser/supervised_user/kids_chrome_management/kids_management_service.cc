@@ -31,6 +31,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

@@ -20,6 +20,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"

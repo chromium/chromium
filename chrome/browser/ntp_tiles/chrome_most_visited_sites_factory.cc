@@ -27,6 +27,7 @@
 #include "components/ntp_tiles/icon_cacher_impl.h"
 #include "components/ntp_tiles/metrics.h"
 #include "components/ntp_tiles/most_visited_sites.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 

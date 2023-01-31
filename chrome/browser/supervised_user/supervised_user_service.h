@@ -21,10 +21,10 @@
 #include "chrome/browser/net/file_downloader.h"
 #include "chrome/browser/supervised_user/supervised_user_denylist.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
-#include "chrome/browser/supervised_user/supervised_users.h"
 #include "chrome/browser/supervised_user/web_approvals_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/supervised_user/core/common/supervised_users.h"
 #include "components/sync/driver/sync_type_preference_provider.h"
 #include "extensions/buildflags/buildflags.h"
 

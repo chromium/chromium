@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//components/supervised_user/buildflags.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "ENABLE_SUPERVISED_USERS=$enable_supervised_users" ]
+}
+
 static_library("common") {
   sources = [
     "features.cc",
@@ -10,8 +18,12 @@ static_library("common") {
     "pref_names.h",
     "supervised_user_constants.cc",
     "supervised_user_constants.h",
+    "supervised_users.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    ":buildflags",
+    "//base",
+  ]
 }
 
 source_set("unit_tests") {

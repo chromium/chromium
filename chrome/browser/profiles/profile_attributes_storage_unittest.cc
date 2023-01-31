@@ -31,6 +31,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/profile_metrics/state.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"

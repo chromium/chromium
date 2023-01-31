@@ -47,6 +47,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/network_time/network_time_tracker.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "content/public/browser/browser_context.h"

@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/memory/singleton.h"
-#include "chrome/browser/supervised_user/supervised_users.h"
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
+#include "components/supervised_user/core/common/supervised_users.h"
 
 class SimpleFactoryKey;
 class SupervisedUserSettingsService;

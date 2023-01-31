@@ -8929,6 +8929,7 @@ test("unit_tests") {
       "//chrome/browser/supervised_user:test_support",
       "//chrome/browser/supervised_user/kids_chrome_management:proto",
       "//components/supervised_user/core/common",
+      "//components/supervised_user/core/common:buildflags",
     ]
   }
   if (safe_browsing_mode == 1 && enable_extensions) {

@@ -151,6 +151,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync_device_info/device_info_prefs.h"

@@ -44,6 +44,7 @@
 #include "components/security_interstitials/core/ssl_error_options_mask.h"
 #include "components/security_interstitials/core/ssl_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"

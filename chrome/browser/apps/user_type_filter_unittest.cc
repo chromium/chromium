@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

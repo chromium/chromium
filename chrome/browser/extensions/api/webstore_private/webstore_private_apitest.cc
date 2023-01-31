@@ -28,6 +28,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"

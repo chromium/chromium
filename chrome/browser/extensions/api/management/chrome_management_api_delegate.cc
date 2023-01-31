@@ -47,6 +47,7 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"

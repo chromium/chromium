@@ -18,6 +18,7 @@
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/features.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/webui/webui_allowlist_provider.h"

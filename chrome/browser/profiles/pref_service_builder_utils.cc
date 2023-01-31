@@ -30,6 +30,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_value_store.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"

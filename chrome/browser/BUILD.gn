@@ -2328,6 +2328,7 @@ static_library("browser") {
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/common",
     "//components/supervised_user/core/common",
+    "//components/supervised_user/core/common:buildflags",
     "//components/sync",
     "//components/sync_bookmarks",
     "//components/sync_preferences",
@@ -7436,7 +7437,6 @@ static_library("browser") {
       "supervised_user/supervised_user_sync_model_type_controller.h",
       "supervised_user/supervised_user_url_filter.cc",
       "supervised_user/supervised_user_url_filter.h",
-      "supervised_user/supervised_users.h",
       "supervised_user/web_approvals_manager.cc",
       "supervised_user/web_approvals_manager.h",
     ]

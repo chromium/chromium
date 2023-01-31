@@ -103,6 +103,7 @@
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/common_features.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/translate/content/renderer/per_frame_translate_agent.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/net/variations_http_headers.h"

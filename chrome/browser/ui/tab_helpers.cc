@@ -138,6 +138,7 @@
 #include "components/search/ntp_features.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/user_notes/user_notes_features.h"

@@ -7,7 +7,7 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_users.h"
+#include "components/supervised_user/core/common/supervised_users.h"
 
 namespace content {
 class BrowserContext;

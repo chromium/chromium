@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/common/buildflags.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/common/permissions/permission_message.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"

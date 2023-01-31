@@ -28,6 +28,7 @@
 #include "components/profile_metrics/state.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"

@@ -55,6 +55,7 @@
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync_preferences/pref_model_associator.h"

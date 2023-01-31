@@ -97,6 +97,7 @@
 #include "components/security_interstitials/content/urls.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_client.h"

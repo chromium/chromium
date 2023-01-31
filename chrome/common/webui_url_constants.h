@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/common/buildflags.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/common/url_constants.h"
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
