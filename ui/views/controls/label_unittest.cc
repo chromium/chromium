@@ -306,6 +306,35 @@ TEST_F(LabelTest, ColorPropertyOnEnabledColorIdChange) {
       label()->GetEnabledColor());
 }
 
+TEST_F(LabelTest, BackgroundColor) {
+  // The correct default background color is set.
+  EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorDialogBackground),
+            label()->GetBackgroundColor());
+
+  label()->SetBackgroundColor(SK_ColorBLUE);
+  EXPECT_EQ(SK_ColorBLUE, label()->GetBackgroundColor());
+}
+
+TEST_F(LabelTest, BackgroundColorId) {
+  // The correct default background color is set.
+  EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorDialogBackground),
+            label()->GetBackgroundColor());
+
+  label()->SetBackgroundColorId(ui::kColorAlertHighSeverity);
+  EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorAlertHighSeverity),
+            label()->GetBackgroundColor());
+
+  // A color id takes precedence.
+  label()->SetBackgroundColor(SK_ColorBLUE);
+  EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorAlertHighSeverity),
+            label()->GetBackgroundColor());
+
+  // Once a color id is no longer set, colors can be set again.
+  label()->SetBackgroundColorId(absl::nullopt);
+  label()->SetBackgroundColor(SK_ColorBLUE);
+  EXPECT_EQ(SK_ColorBLUE, label()->GetBackgroundColor());
+}
+
 TEST_F(LabelTest, AlignmentProperty) {
   const bool was_rtl = base::i18n::IsRTL();
 

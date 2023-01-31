@@ -15,8 +15,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/class_property.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/range/range.h"
@@ -100,6 +102,8 @@ class VIEWS_EXPORT StyledLabel : public View {
     std::vector<gfx::Size> line_sizes;
   };
 
+  using ColorVariant = absl::variant<absl::monostate, SkColor, ui::ColorId>;
+
   StyledLabel();
 
   StyledLabel(const StyledLabel&) = delete;
@@ -140,11 +144,11 @@ class VIEWS_EXPORT StyledLabel : public View {
   int GetLineHeight() const;
   void SetLineHeight(int height);
 
-  // Gets/Sets the color of the background on which the label is drawn. This
-  // won't be explicitly drawn, but the label will force the text color to be
-  // readable over it.
-  absl::optional<SkColor> GetDisplayedOnBackgroundColor() const;
-  void SetDisplayedOnBackgroundColor(const absl::optional<SkColor>& color);
+  // Gets/Sets the color or color id of the background on which the label is
+  // drawn. This won't be explicitly drawn, but the label will force the text
+  // color to be readable over it.
+  ColorVariant GetDisplayedOnBackgroundColor() const;
+  void SetDisplayedOnBackgroundColor(ColorVariant color);
 
   bool GetAutoColorReadabilityEnabled() const;
   void SetAutoColorReadabilityEnabled(bool auto_color_readability);
@@ -172,7 +176,6 @@ class VIEWS_EXPORT StyledLabel : public View {
   int GetHeightForWidth(int w) const override;
   void Layout() override;
   void PreferredSizeChanged() override;
-  void OnThemeChanged() override;
 
   // Sets the horizontal alignment; the argument value is mirrored in RTL UI.
   void SetHorizontalAlignment(gfx::HorizontalAlignment alignment);
@@ -253,7 +256,7 @@ class VIEWS_EXPORT StyledLabel : public View {
   mutable std::unique_ptr<LayoutViews> layout_views_;
 
   // Background color on which the label is drawn, for auto color readability.
-  absl::optional<SkColor> displayed_on_background_color_;
+  ColorVariant displayed_on_background_color_;
 
   // Controls whether the text is automatically re-colored to be readable on the
   // background.
@@ -273,8 +276,7 @@ VIEW_BUILDER_PROPERTY(const std::u16string&, Text)
 VIEW_BUILDER_PROPERTY(int, TextContext)
 VIEW_BUILDER_PROPERTY(int, DefaultTextStyle)
 VIEW_BUILDER_PROPERTY(int, LineHeight)
-VIEW_BUILDER_PROPERTY(const absl::optional<SkColor>&,
-                      DisplayedOnBackgroundColor)
+VIEW_BUILDER_PROPERTY(StyledLabel::ColorVariant, DisplayedOnBackgroundColor)
 VIEW_BUILDER_PROPERTY(bool, AutoColorReadabilityEnabled)
 VIEW_BUILDER_PROPERTY(gfx::HorizontalAlignment, HorizontalAlignment)
 VIEW_BUILDER_METHOD(SizeToFit, int)

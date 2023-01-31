@@ -13,6 +13,8 @@
 #include "base/i18n/rtl.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -161,19 +163,20 @@ void StyledLabel::SetLineHeight(int line_height) {
   OnPropertyChanged(&line_height_, kPropertyEffectsPreferredSizeChanged);
 }
 
-absl::optional<SkColor> StyledLabel::GetDisplayedOnBackgroundColor() const {
+StyledLabel::ColorVariant StyledLabel::GetDisplayedOnBackgroundColor() const {
   return displayed_on_background_color_;
 }
 
-void StyledLabel::SetDisplayedOnBackgroundColor(
-    const absl::optional<SkColor>& color) {
-  if (displayed_on_background_color_ == color)
+void StyledLabel::SetDisplayedOnBackgroundColor(ColorVariant color) {
+  if (color == displayed_on_background_color_) {
     return;
+  }
 
   displayed_on_background_color_ = color;
 
-  if (GetWidget())
+  if (GetWidget()) {
     UpdateLabelBackgroundColor();
+  }
 
   OnPropertyChanged(&displayed_on_background_color_, kPropertyEffectsPaint);
 }
@@ -303,11 +306,6 @@ void StyledLabel::PreferredSizeChanged() {
   layout_size_info_ = LayoutSizeInfo(0);
   layout_views_.reset();
   View::PreferredSizeChanged();
-}
-
-void StyledLabel::OnThemeChanged() {
-  View::OnThemeChanged();
-  UpdateLabelBackgroundColor();
 }
 
 // TODO(wutao): support gfx::ALIGN_TO_HEAD alignment.
@@ -581,23 +579,35 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
     result->SetTooltipText(style_info.tooltip);
   if (!style_info.accessible_name.empty())
     result->SetAccessibleName(style_info.accessible_name);
-  if (displayed_on_background_color_)
-    result->SetBackgroundColor(displayed_on_background_color_.value());
+  if (absl::holds_alternative<SkColor>(displayed_on_background_color_)) {
+    result->SetBackgroundColor(
+        absl::get<SkColor>(displayed_on_background_color_));
+  } else if (absl::holds_alternative<ui::ColorId>(
+                 displayed_on_background_color_)) {
+    result->SetBackgroundColorId(
+        absl::get<ui::ColorId>(displayed_on_background_color_));
+  }
   result->SetAutoColorReadabilityEnabled(auto_color_readability_enabled_);
   result->SetSubpixelRenderingEnabled(subpixel_rendering_enabled_);
   return result;
 }
 
 void StyledLabel::UpdateLabelBackgroundColor() {
-  SkColor new_color = displayed_on_background_color_.value_or(
-      GetColorProvider()->GetColor(ui::kColorDialogBackground));
   for (View* child : children()) {
     if (!child->GetProperty(kStyledLabelCustomViewKey)) {
       // TODO(kylixrd): Should updating the label background color even be
       // allowed if there are custom views?
       DCHECK((child->GetClassName() == Label::kViewClassName) ||
              (child->GetClassName() == LinkFragment::kViewClassName));
-      static_cast<Label*>(child)->SetBackgroundColor(new_color);
+      static_cast<Label*>(child)->SetBackgroundColorId(
+          absl::holds_alternative<ui::ColorId>(displayed_on_background_color_)
+              ? absl::optional<ui::ColorId>(
+                    absl::get<ui::ColorId>(displayed_on_background_color_))
+              : absl::nullopt);
+      if (absl::holds_alternative<SkColor>(displayed_on_background_color_)) {
+        static_cast<Label*>(child)->SetBackgroundColor(
+            absl::get<SkColor>(displayed_on_background_color_));
+      }
     }
   }
 }
@@ -616,7 +626,7 @@ ADD_PROPERTY_METADATA(int, TextContext)
 ADD_PROPERTY_METADATA(int, DefaultTextStyle)
 ADD_PROPERTY_METADATA(int, LineHeight)
 ADD_PROPERTY_METADATA(bool, AutoColorReadabilityEnabled)
-ADD_PROPERTY_METADATA(absl::optional<SkColor>, DisplayedOnBackgroundColor)
+ADD_PROPERTY_METADATA(StyledLabel::ColorVariant, DisplayedOnBackgroundColor)
 END_METADATA
 
 }  // namespace views

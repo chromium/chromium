@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_switches.h"
@@ -37,6 +38,8 @@ using base::ASCIIToUTF16;
 namespace views {
 
 namespace {
+
+using ::testing::SizeIs;
 
 Label* LabelAt(StyledLabel* styled,
                size_t index,
@@ -403,6 +406,57 @@ TEST_F(StyledLabelInWidgetTest, Color) {
   const SkColor kAdjustedTextColor = label->GetEnabledColor();
   EXPECT_NE(kAdjustedTextColor, kDefaultTextColor);
   EXPECT_EQ(kAdjustedTextColor, LabelAt(styled(), 2)->GetEnabledColor());
+}
+
+TEST_F(StyledLabelInWidgetTest, SetBackgroundColor) {
+  InitStyledLabel("test label");
+
+  styled()->SetBounds(0, 0, 1000, 1000);
+  test::RunScheduledLayout(styled());
+
+  ASSERT_THAT(styled()->children(), SizeIs(1u));
+  // The default background color is `ui::kColorDialogBackground`.
+  EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorDialogBackground),
+            LabelAt(styled(), 0)->GetBackgroundColor());
+
+  styled()->SetDisplayedOnBackgroundColor(SK_ColorBLUE);
+  EXPECT_EQ(SK_ColorBLUE, LabelAt(styled(), 0)->GetBackgroundColor());
+
+  styled()->SetDisplayedOnBackgroundColor(ui::kColorAlertHighSeverity);
+  EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorAlertHighSeverity),
+            LabelAt(styled(), 0)->GetBackgroundColor());
+
+  // Setting a color overwrites the color id.
+  styled()->SetDisplayedOnBackgroundColor(SK_ColorCYAN);
+  EXPECT_EQ(SK_ColorCYAN, LabelAt(styled(), 0)->GetBackgroundColor());
+}
+
+TEST_F(StyledLabelInWidgetTest, SetBackgroundColorIdReactsToThemeChange) {
+  InitStyledLabel("test label");
+
+  styled()->SetBounds(0, 0, 1000, 1000);
+  test::RunScheduledLayout(styled());
+
+  ASSERT_THAT(styled()->children(), SizeIs(1u));
+  auto* const native_theme = widget()->GetNativeTheme();
+  native_theme->set_use_dark_colors(true);
+  native_theme->NotifyOnNativeThemeUpdated();
+  EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorDialogBackground),
+            LabelAt(styled(), 0)->GetBackgroundColor());
+
+  native_theme->set_use_dark_colors(false);
+  native_theme->NotifyOnNativeThemeUpdated();
+  EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorDialogBackground),
+            LabelAt(styled(), 0)->GetBackgroundColor());
+
+  styled()->SetDisplayedOnBackgroundColor(ui::kColorAlertHighSeverity);
+  EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorAlertHighSeverity),
+            LabelAt(styled(), 0)->GetBackgroundColor());
+
+  native_theme->set_use_dark_colors(true);
+  native_theme->NotifyOnNativeThemeUpdated();
+  EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorAlertHighSeverity),
+            LabelAt(styled(), 0)->GetBackgroundColor());
 }
 
 TEST_F(StyledLabelTest, StyledRangeWithTooltip) {

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
-#include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -231,7 +230,11 @@ void Label::SetBackgroundColor(SkColor color) {
     return;
   background_color_ = color;
   background_color_set_ = true;
-  RecalculateColors();
+  if (GetWidget()) {
+    UpdateColorsFromTheme();
+  } else {
+    RecalculateColors();
+  }
   OnPropertyChanged(&background_color_, kPropertyEffectsPaint);
 }
 
@@ -241,6 +244,9 @@ void Label::SetBackgroundColorId(
     return;
 
   background_color_id_ = background_color_id;
+  if (GetWidget()) {
+    UpdateColorsFromTheme();
+  }
   OnPropertyChanged(&background_color_id_, kPropertyEffectsPaint);
 }
 
@@ -1244,10 +1250,11 @@ void Label::UpdateColorsFromTheme() {
         style::GetColor(*this, text_context_, text_style_));
   }
 
-  if (background_color_id_.has_value())
+  if (background_color_id_.has_value()) {
     background_color_ = color_provider->GetColor(*background_color_id_);
-  else if (!background_color_set_)
+  } else if (!background_color_set_) {
     background_color_ = color_provider->GetColor(ui::kColorDialogBackground);
+  }
 
   if (!selection_text_color_set_) {
     requested_selection_text_color_ =
