@@ -63,11 +63,17 @@ TEST_F(OnDeviceModelUpdateListenerTest, OnTailModelUpdate) {
 
   base::flat_set<base::FilePath> additional_files;
   additional_files.insert(vocab_path);
-  listener_->OnTailModelUpdate(model_path, additional_files);
+
+  optimization_guide::proto::OnDeviceTailSuggestModelMetadata metadata;
+  metadata.mutable_lstm_model_params()->set_state_size(33);
+
+  listener_->OnTailModelUpdate(model_path, additional_files, metadata);
 
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(base::EndsWith(listener_->tail_model_filepath().MaybeAsASCII(),
                              kTailModelFilename, base::CompareCase::SENSITIVE));
   ASSERT_TRUE(base::EndsWith(listener_->vocab_filepath().MaybeAsASCII(),
                              kVocabFilename, base::CompareCase::SENSITIVE));
+  ASSERT_EQ(33,
+            listener_->tail_model_metadata().lstm_model_params().state_size());
 }

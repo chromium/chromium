@@ -45,6 +45,12 @@ base::FilePath OnDeviceModelUpdateListener::vocab_filepath() const {
   return vocab_filepath_;
 }
 
+optimization_guide::proto::OnDeviceTailSuggestModelMetadata
+OnDeviceModelUpdateListener::tail_model_metadata() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return tail_model_metadata_;
+}
+
 OnDeviceModelUpdateListener::OnDeviceModelUpdateListener() = default;
 
 OnDeviceModelUpdateListener::~OnDeviceModelUpdateListener() = default;
@@ -68,10 +74,13 @@ void OnDeviceModelUpdateListener::OnHeadModelUpdate(
 
 void OnDeviceModelUpdateListener::OnTailModelUpdate(
     const base::FilePath& model_file,
-    const base::flat_set<base::FilePath>& additional_files) {
+    const base::flat_set<base::FilePath>& additional_files,
+    const optimization_guide::proto::OnDeviceTailSuggestModelMetadata&
+        metadata) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!(model_file.empty() || additional_files.empty())) {
     tail_model_filepath_ = model_file;
+    tail_model_metadata_ = metadata;
     for (const auto& file_path : additional_files) {
       if (!file_path.empty()) {
         // Currently only one additional file (i.e. vocabulary) will be sent.
@@ -87,4 +96,5 @@ void OnDeviceModelUpdateListener::ResetListenerForTest() {
   head_model_filename_.clear();
   tail_model_filepath_.clear();
   vocab_filepath_.clear();
+  tail_model_metadata_.Clear();
 }

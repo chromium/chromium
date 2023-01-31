@@ -4,8 +4,11 @@
 
 #include "components/omnibox/browser/on_device_tail_model_observer.h"
 
+#include "base/logging.h"
 #include "components/omnibox/browser/on_device_model_update_listener.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/optimization_guide/proto/on_device_tail_suggest_model_metadata.pb.h"
 
 OnDeviceTailModelObserver::OnDeviceTailModelObserver(
     optimization_guide::OptimizationGuideModelProvider* opt_guide)
@@ -35,7 +38,19 @@ void OnDeviceTailModelObserver::OnModelUpdated(
     return;
   }
   auto* listener = OnDeviceModelUpdateListener::GetInstance();
-  if (listener)
+  if (listener) {
+    absl::optional<optimization_guide::proto::OnDeviceTailSuggestModelMetadata>
+        metadata = optimization_guide::ParsedAnyMetadata<
+            optimization_guide::proto::OnDeviceTailSuggestModelMetadata>(
+            model_info.GetModelMetadata().value());
+
+    if (!metadata.has_value()) {
+      DVLOG(1) << "Failed to fetch metadata for Omnibox on device tail model";
+      return;
+    }
+
     listener->OnTailModelUpdate(model_info.GetModelFilePath(),
-                                model_info.GetAdditionalFiles());
+                                model_info.GetAdditionalFiles(),
+                                metadata.value());
+  }
 }
