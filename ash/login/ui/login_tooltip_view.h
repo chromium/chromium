@@ -31,7 +31,6 @@ class LoginTooltipView : public LoginBaseBubbleView {
 
   // LoginBaseBubbleView:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnThemeChanged() override;
 
  protected:
   views::Label* label() { return label_; }

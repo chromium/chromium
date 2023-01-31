@@ -6,6 +6,7 @@
 
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/views_utils.h"
+#include "ash/style/ash_color_id.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -29,24 +30,17 @@ LoginTooltipView::LoginTooltipView(const std::u16string& message,
     : LoginBaseBubbleView(std::move(anchor_view)) {
   info_icon_ = AddChildView(std::make_unique<views::ImageView>());
   info_icon_->SetPreferredSize(gfx::Size(kInfoIconSizeDp, kInfoIconSizeDp));
+  info_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      views::kInfoIcon, kColorAshIconColorPrimary));
 
   label_ = AddChildView(login_views_utils::CreateBubbleLabel(message, this));
+  label_->SetEnabledColorId(kColorAshTextColorPrimary);
 }
 
 LoginTooltipView::~LoginTooltipView() = default;
 
 void LoginTooltipView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTooltip;
-}
-
-void LoginTooltipView::OnThemeChanged() {
-  LoginBaseBubbleView::OnThemeChanged();
-  info_icon_->SetImage(gfx::CreateVectorIcon(
-      views::kInfoIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 }  // namespace ash
