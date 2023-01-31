@@ -9551,54 +9551,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       PrerenderFinalStatus::kActivated, 1);
 }
 
-namespace {
-
-class EnforceDisableSameSiteRedirectionForEmbedderTriggeredPrerenderBrowserTest
-    : public PrerenderBrowserTest {
- public:
-  EnforceDisableSameSiteRedirectionForEmbedderTriggeredPrerenderBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            blink::features::
-                kSameSiteRedirectionForEmbedderTriggeredPrerender});
-  }
-  ~EnforceDisableSameSiteRedirectionForEmbedderTriggeredPrerenderBrowserTest()
-      override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that embedder triggered prerender can be redirected to the same
-// site.
-IN_PROC_BROWSER_TEST_F(
-    EnforceDisableSameSiteRedirectionForEmbedderTriggeredPrerenderBrowserTest,
-    EmbedderTrigger_CrossOriginRedirection_FromSubdomain) {
-  GURL initial_url = GetUrl("/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
-
-  GURL::Replacements set_host;
-  set_host.SetHostStr("www.a.test");
-
-  GURL redirected_url = GetUrl("/empty.html");
-  GURL prerendering_url = GetUrl("/server-redirect?" + redirected_url.spec())
-                              .ReplaceComponents(set_host);
-  test::PrerenderHostObserver prerender_observer(*web_contents_impl(),
-                                                 prerendering_url);
-  std::unique_ptr<PrerenderHandle> prerender_handle =
-      PrerenderEmbedderTriggeredCrossOriginRedirectionPage(
-          *web_contents_impl(), prerendering_url, redirected_url);
-
-  prerender_observer.WaitForDestroyed();
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
-      "EmbedderSuffixForTest",
-      PrerenderFinalStatus::kSameSiteCrossOriginRedirect, 1);
-}
-
-}  // namespace
-
 // Tests PrerenderCrossOriginRedirectionMismatch.kHostMismatch and
 // PrerenderCrossOriginRedirectionDomain.kCrossDomain are recorded
 // when the prerendering navigation is redirected to a different domain.

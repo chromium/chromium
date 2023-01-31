@@ -179,11 +179,6 @@ BLINK_COMMON_EXPORT extern const char
 // Enables same-site cross origin Prerender2 triggered by speculation rules.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSameSiteCrossOriginForSpeculationRulesPrerender);
-// Allows same-site redirection for embedder-triggered prerendering. This
-// feature will be enabled by default and working as a switch for emergency
-// pause.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kSameSiteRedirectionForEmbedderTriggeredPrerender);
 // Enables to keep prerenderings alive in the background when their visibility
 // state changes to HIDDEN.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2InBackground);

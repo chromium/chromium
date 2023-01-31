@@ -243,20 +243,9 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
             PrerenderFinalStatus::kCrossSiteRedirect);
         return CANCEL;
       }
-      if (!base::FeatureList::IsEnabled(
-              blink::features::
-                  kSameSiteRedirectionForEmbedderTriggeredPrerender) &&
-          !prerendering_origin.IsSameOriginWith(navigation_url)) {
-        // This branch is used to enforce disable the feature. So, no need to
-        // perform analysis here.
-        prerender_host_registry->CancelHost(
-            frame_tree_node->frame_tree_node_id(),
-            PrerenderFinalStatus::kSameSiteCrossOriginRedirect);
-        return CANCEL;
-      }
     }
 
-    // Skip the same-origin check for non-redirected cases as the initiator
+    // Skip the same-site check for non-redirected cases as the initiator
     // origin is nullopt for browser-initiated prerendering.
     DCHECK(!prerender_host->initiator_origin().has_value());
   } else if (!prerender_navigation_utils::IsSameSite(

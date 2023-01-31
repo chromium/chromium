@@ -331,10 +331,6 @@ BASE_FEATURE(kSameSiteCrossOriginForSpeculationRulesPrerender,
              "SameSiteCrossOriginForSpeculationRulesPrerender",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSameSiteRedirectionForEmbedderTriggeredPrerender,
-             "SameSiteRedirectionForEmbedderTriggeredPrerender",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrerender2SequentialPrerendering,
              "Prerender2SequentialPrerendering",
              base::FEATURE_DISABLED_BY_DEFAULT);
