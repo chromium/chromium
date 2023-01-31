@@ -27,12 +27,14 @@
 #define PA_CONFIG(flag) (PA_CONFIG_##flag())
 
 // ARCH_CPU_64_BITS implies 64-bit instruction set, but not necessarily 64-bit
-// address space. The only known case where address space is 32-bit is NaCl, so
-// eliminate it explicitly. static_assert below ensures that others won't slip
-// through.
+// address space. The only known case where address space is 32-bit is NaCl.
+// In theory, PartitionAlloc isn't built on NaCl, however,
+// BUILDFLAG(USE_PARTITION_ALLOC) isn't used well enough to prevent this header
+// from being included in NaCl targets, thus triggering the below assert.
+// Therefore, we have to exclude the NaCl case explicitly.
 #define PA_CONFIG_HAS_64_BITS_POINTERS() \
   (defined(ARCH_CPU_64_BITS) && !BUILDFLAG(IS_NACL))
-
+// Assert that the above heuristic is accurate on supported configurations.
 #if PA_CONFIG(HAS_64_BITS_POINTERS)
 static_assert(sizeof(void*) == 8, "");
 #else

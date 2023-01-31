@@ -41,13 +41,7 @@
 
 #if defined(COMPILER_GCC)
 
-#if BUILDFLAG(IS_NACL)
-
-// Crash report accuracy is not guaranteed on NaCl.
-#define PA_TRAP_SEQUENCE1_() __builtin_trap()
-#define PA_TRAP_SEQUENCE2_() asm volatile("")
-
-#elif defined(ARCH_CPU_X86_FAMILY)
+#if defined(ARCH_CPU_X86_FAMILY)
 
 // TODO(https://crbug.com/958675): In theory, it should be possible to use just
 // int3. However, there are a number of crashes with SIGILL as the exception

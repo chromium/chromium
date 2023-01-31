@@ -116,11 +116,6 @@ PlatformThreadId PlatformThread::CurrentId() {
   return zx_thread_self();
 #elif BUILDFLAG(IS_SOLARIS) || BUILDFLAG(IS_QNX)
   return pthread_self();
-#elif BUILDFLAG(IS_NACL) && defined(__GLIBC__)
-  return pthread_self();
-#elif BUILDFLAG(IS_NACL) && !defined(__GLIBC__)
-  // Pointers are 32-bits in NaCl.
-  return reinterpret_cast<int32_t>(pthread_self());
 #elif BUILDFLAG(IS_POSIX) && BUILDFLAG(IS_AIX)
   return pthread_self();
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_AIX)

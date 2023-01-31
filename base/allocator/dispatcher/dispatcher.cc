@@ -207,7 +207,7 @@ AllocatorDispatch g_allocator_dispatch = {&AllocFn,
 }  // namespace base::allocator::dispatcher::allocator_shim_details
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(USE_PARTITION_ALLOC)
 namespace base::allocator::dispatcher::partition_allocator_details {
 namespace {
 
@@ -222,7 +222,7 @@ void PartitionFreeHook(void* address) {
 
 }  // namespace
 }  // namespace base::allocator::dispatcher::partition_allocator_details
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 namespace base::allocator::dispatcher {
 
@@ -236,11 +236,11 @@ void InstallStandardAllocatorHooks() {
   // happen for tests.
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(USE_PARTITION_ALLOC)
   partition_alloc::PartitionAllocHooks::SetObserverHooks(
       &partition_allocator_details::PartitionAllocHook,
       &partition_allocator_details::PartitionFreeHook);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 }
 
 }  // namespace base::allocator::dispatcher

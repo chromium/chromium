@@ -161,14 +161,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
   internal::base::TimeDelta periodic_purge_next_interval_ =
       kDefaultPurgeInterval;
 
-#if BUILDFLAG(IS_NACL)
-  // The thread cache is never used with NaCl, but its compiler doesn't
-  // understand enough constexpr to handle the code below.
-  uint8_t largest_active_bucket_index_ = 1;
-#else
   uint8_t largest_active_bucket_index_ = internal::BucketIndexLookup::GetIndex(
       ThreadCacheLimits::kDefaultSizeThreshold);
-#endif
 };
 
 constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
@@ -392,15 +386,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   void FreeAfter(internal::PartitionFreelistEntry* head, size_t slot_size);
   static void SetGlobalLimits(PartitionRoot<>* root, float multiplier);
 
-#if BUILDFLAG(IS_NACL)
-  // The thread cache is never used with NaCl, but its compiler doesn't
-  // understand enough constexpr to handle the code below.
-  static constexpr uint16_t kBucketCount = 1;
-#else
   static constexpr uint16_t kBucketCount =
       internal::BucketIndexLookup::GetIndex(ThreadCache::kLargeSizeThreshold) +
       1;
-#endif
   static_assert(
       kBucketCount < internal::kNumBuckets,
       "Cannot have more cached buckets than what the allocator supports");

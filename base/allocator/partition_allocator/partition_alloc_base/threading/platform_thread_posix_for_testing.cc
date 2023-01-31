@@ -52,16 +52,14 @@ void* ThreadFunc(void* params) {
 
     delegate = thread_params->delegate;
 
-#if !BUILDFLAG(IS_NACL)
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     PCScan::NotifyThreadCreated(GetStackPointer());
-#endif
 #endif
   }
 
   delegate->ThreadMain();
 
-#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   PCScan::NotifyThreadDestroyed();
 #endif
 

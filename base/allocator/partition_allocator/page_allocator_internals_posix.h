@@ -369,7 +369,6 @@ bool TryRecommitSystemPagesInternal(
 }
 
 void DiscardSystemPagesInternal(uintptr_t address, size_t length) {
-#if !BUILDFLAG(IS_NACL)
   void* ptr = reinterpret_cast<void*>(address);
 #if BUILDFLAG(IS_APPLE)
   int ret = madvise(ptr, length, MADV_FREE_REUSABLE);
@@ -378,7 +377,7 @@ void DiscardSystemPagesInternal(uintptr_t address, size_t length) {
     ret = madvise(ptr, length, MADV_DONTNEED);
   }
   PA_PCHECK(ret == 0);
-#else
+#else   // BUILDFLAG(IS_APPLE)
   // We have experimented with other flags, but with suboptimal results.
   //
   // MADV_FREE (Linux): Makes our memory measurements less predictable;
@@ -386,8 +385,7 @@ void DiscardSystemPagesInternal(uintptr_t address, size_t length) {
   //
   // Therefore, we just do the simple thing: MADV_DONTNEED.
   PA_PCHECK(0 == madvise(ptr, length, MADV_DONTNEED));
-#endif
-#endif  // !BUILDFLAG(IS_NACL)
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
 }  // namespace partition_alloc::internal
