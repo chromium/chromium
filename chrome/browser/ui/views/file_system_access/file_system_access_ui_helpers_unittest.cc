@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -21,12 +20,7 @@ struct UnaryTestData {
   std::u16string expected;
 };
 
-}  // namespace
-
-class FileSystemAccessUIHelpersTest : public testing::Test {};
-
-TEST_F(FileSystemAccessUIHelpersTest, GetPathForDisplay) {
-  const struct UnaryTestData cases[] = {
+static const struct UnaryTestData cases[] = {
     {FILE_PATH_LITERAL(""), u""},
     {FILE_PATH_LITERAL("aa"), u"aa"},
     {FILE_PATH_LITERAL("/aa/bb"), u"bb"},
@@ -100,11 +94,39 @@ TEST_F(FileSystemAccessUIHelpersTest, GetPathForDisplay) {
     {FILE_PATH_LITERAL("c:aa\\bb"), u"bb"},
 #endif  // FILE_PATH_USES_DRIVE_LETTERS
 #endif  // FILE_PATH_USES_WIN_SEPARATORS
-  };
+};
 
+static const struct UnaryTestData elided_cases[] = {
+    {FILE_PATH_LITERAL("spaces are elided.txt                        .exe"),
+     u"spaces are elided.txt\x2026.exe"},
+};
+
+}  // namespace
+
+class FileSystemAccessUIHelpersTest : public testing::Test {};
+
+TEST_F(FileSystemAccessUIHelpersTest, GetPathForDisplayAsParagraph) {
   for (const auto& i : cases) {
     base::FilePath input(i.input);
-    std::u16string observed = GetPathForDisplay(input);
+    std::u16string observed = GetPathForDisplayAsParagraph(input);
+    EXPECT_EQ(i.expected, observed)
+        << "input: " << i.input
+        << ", expected: " << base::UTF16ToUTF8(i.expected);
+  }
+}
+
+TEST_F(FileSystemAccessUIHelpersTest, GetElidedPathForDisplayAsTitle) {
+  for (const auto& i : cases) {
+    base::FilePath input(i.input);
+    std::u16string observed = GetElidedPathForDisplayAsTitle(input);
+    EXPECT_EQ(i.expected, observed)
+        << "input: " << i.input
+        << ", expected: " << base::UTF16ToUTF8(i.expected);
+  }
+
+  for (const auto& i : elided_cases) {
+    base::FilePath input(i.input);
+    std::u16string observed = GetElidedPathForDisplayAsTitle(input);
     EXPECT_EQ(i.expected, observed)
         << "input: " << i.input
         << ", expected: " << base::UTF16ToUTF8(i.expected);

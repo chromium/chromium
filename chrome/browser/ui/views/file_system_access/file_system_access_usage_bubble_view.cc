@@ -257,9 +257,13 @@ size_t FileSystemAccessUsageBubbleView::FilePathListModel::RowCount() {
 std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
     size_t row,
     int column_id) {
-  if (row < files_.size())
-    return file_system_access_ui_helper::GetPathForDisplay(files_[row]);
-  return file_system_access_ui_helper::GetPathForDisplay(
+  // Use the non-eliding version of GetPathForDisplay since these are files the
+  // user has already granted the site access to.
+  if (row < files_.size()) {
+    return file_system_access_ui_helper::GetPathForDisplayAsParagraph(
+        files_[row]);
+  }
+  return file_system_access_ui_helper::GetPathForDisplayAsParagraph(
       directories_[row - files_.size()]);
 }
 

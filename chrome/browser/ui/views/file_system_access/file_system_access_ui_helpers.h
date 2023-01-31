@@ -24,8 +24,8 @@ class View;
 
 namespace file_system_access_ui_helper {
 
-// Creates and returns a label where the place holder is replaced with |origin|.
-// If |show_emphasis| is true, the origin is formatted as emphasized text.
+// Creates and returns a label where the place holder is replaced with `origin`.
+// If `show_emphasis` is true, the origin is formatted as emphasized text.
 std::unique_ptr<views::View> CreateOriginLabel(Browser* browser,
                                                int message_id,
                                                const url::Origin& origin,
@@ -33,7 +33,7 @@ std::unique_ptr<views::View> CreateOriginLabel(Browser* browser,
                                                bool show_emphasis);
 
 // Creates and returns a label where the place holders are replaced with
-// |origin| and |path|. If |show_emphasis| is true, the origin and path are
+// `origin` and `path`. If `show_emphasis` is true, the origin and path are
 // formatted as emphasized text.
 std::unique_ptr<views::View> CreateOriginPathLabel(Browser* browser,
                                                    int message_id,
@@ -42,9 +42,17 @@ std::unique_ptr<views::View> CreateOriginPathLabel(Browser* browser,
                                                    int text_context,
                                                    bool show_emphasis);
 
-// Returns a human-readable string for use in UI surfaces.
-// Shows the drive letter of a path if it is the root of a file system.
-std::u16string GetPathForDisplay(const base::FilePath& path);
+// Returns a human-readable string for use in titles of dialogs. Shows the drive
+// letter of a path if it is the root of a file system. Elides `path` to fit
+// within a standard dialog, prioritizing the file extension. See
+// https://crbug.com/1354505 for context.
+std::u16string GetElidedPathForDisplayAsTitle(const base::FilePath& path);
+// Same as above, but does not elide `path`. This should only be used when it is
+// safe to show a path which may overflow its container and have the path cut
+// off (i.e. the site has already granted access to the file) or where extra
+// characters would spill to the next line rather than be cut off (such as a
+// dialog paragraph). See https://crbug.com/1354505 for context.
+std::u16string GetPathForDisplayAsParagraph(const base::FilePath& path);
 
 // Returns app's short name for Isolated Web Apps or the formatted origin for
 // all others.

@@ -41,7 +41,7 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessDangerousFileDialog(
   dialog_builder
       .SetTitle(l10n_util::GetStringFUTF16(
           IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_TITLE,
-          file_system_access_ui_helper::GetPathForDisplay(path)))
+          file_system_access_ui_helper::GetElidedPathForDisplayAsTitle(path)))
       .AddParagraph(ui::DialogModelLabel::CreateWithReplacement(
           IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_TEXT,
           ui::DialogModelLabel::CreateEmphasizedText(origin_or_short_name)))
