@@ -47,6 +47,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_tags.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/value_iterators.h"
@@ -834,6 +835,7 @@ std::ostream& operator<<(std::ostream& out, const GuestMode mode) {
 
 FileManagerBrowserTestBase::Options::Options() = default;
 FileManagerBrowserTestBase::Options::Options(const Options&) = default;
+FileManagerBrowserTestBase::Options::~Options() = default;
 
 std::ostream& operator<<(std::ostream& out,
                          const FileManagerBrowserTestBase::Options& options) {
@@ -2025,6 +2027,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     enabled_features.push_back(ash::features::kDriveFsBulkPinning);
   } else {
     disabled_features.push_back(ash::features::kDriveFsBulkPinning);
+  }
+
+  if (options.feature_ids.size() > 0) {
+    for (const std::string& feature_id : options.feature_ids) {
+      base::AddTagToTestResult("feature_id", feature_id);
+    }
   }
 
   // This is destroyed in |TearDown()|. We cannot initialize this in the

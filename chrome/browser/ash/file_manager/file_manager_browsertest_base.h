@@ -67,6 +67,7 @@ class FileManagerBrowserTestBase
   struct Options {
     Options();
     Options(const Options&);
+    ~Options();
 
     // Should test run in Guest or Incognito mode?
     GuestMode guest_mode = NOT_IN_GUEST_MODE;
@@ -162,6 +163,9 @@ class FileManagerBrowserTestBase
 
     // Whether tests should enable the Google Drive bulk pinning feature.
     bool enable_drive_bulk_pinning = false;
+
+    // Feature IDs associated for mapping test cases and features.
+    std::vector<std::string> feature_ids;
   };
 
   FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;
