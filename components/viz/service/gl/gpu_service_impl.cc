@@ -53,6 +53,7 @@
 #include "ipc/ipc_sync_channel.h"
 #include "ipc/ipc_sync_message_filter.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
@@ -812,7 +813,7 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
   // Offload VEA providers to a dedicated runner. Things like loading profiles
   // and creating encoder might take quite some time, and they might block
   // processing of other mojo calls if executed on the current runner.
-  scoped_refptr<base::SingleThreadTaskRunner> runner;
+  scoped_refptr<base::SequencedTaskRunner> runner;
 #if BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/1340041): Fuchsia does not support FIDL communication from
   // ThreadPool's worker threads.
@@ -825,7 +826,12 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
   runner = vea_thread_->task_runner();
 #else
   // MayBlock() because MF VEA can take long time running GetSupportedProfiles()
-  runner = base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()});
+  if (base::FeatureList::IsEnabled(
+          media::kUseSequencedTaskRunnerForMojoVEAProvider)) {
+    runner = base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  } else {
+    runner = base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()});
+  }
 #endif
   media::MojoVideoEncodeAcceleratorProvider::Create(
       std::move(vea_provider_receiver),

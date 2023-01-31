@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace gpu {
@@ -46,7 +46,7 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       const gpu::GPUInfo::GPUDevice& gpu_device,
-      scoped_refptr<base::SingleThreadTaskRunner> runner);
+      scoped_refptr<base::SequencedTaskRunner> runner);
 
   MojoVideoEncodeAcceleratorProvider(
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,

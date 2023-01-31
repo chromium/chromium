@@ -25,6 +25,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -113,7 +114,7 @@ VaapiVideoEncodeAccelerator::VaapiVideoEncodeAccelerator()
     : can_use_encoder_(num_instances_.Increment() < kMaxNumOfInstances),
       output_buffer_byte_size_(0),
       state_(kUninitialized),
-      child_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      child_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       // TODO(akahuang): Change to use SequencedTaskRunner to see if the
       // performance is affected.
       encoder_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
@@ -1115,7 +1116,7 @@ void VaapiVideoEncodeAccelerator::SetState(State state) {
 }
 
 void VaapiVideoEncodeAccelerator::NotifyError(Error error) {
-  if (!child_task_runner_->BelongsToCurrentThread()) {
+  if (!child_task_runner_->RunsTasksInCurrentSequence()) {
     child_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&VaapiVideoEncodeAccelerator::NotifyError,
                                   child_weak_this_, error));

@@ -15,7 +15,7 @@
 
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/android/media_codec_bridge_impl.h"
@@ -80,8 +80,8 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
   // frames are cropped to the nearest 16x16 alignment.
   bool SetInputBufferLayout();
 
-  // Used to DCHECK that we are called on the correct thread.
-  base::ThreadChecker thread_checker_;
+  // Used to DCHECK that we are called on the correct sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // VideoDecodeAccelerator::Client callbacks go here.  Invalidated once any
   // error triggers.

@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitstream_buffer.h"
@@ -69,11 +69,8 @@ void MojoVideoEncodeAcceleratorService::Initialize(
   TRACE_EVENT1("media", "MojoVideoEncodeAcceleratorService::Initialize",
                "config", config.AsHumanReadableString());
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      base::SingleThreadTaskRunner::GetCurrentDefault();
-
-  media_log_ =
-      std::make_unique<MojoMediaLog>(std::move(media_log), task_runner);
+  media_log_ = std::make_unique<MojoMediaLog>(
+      std::move(media_log), base::SequencedTaskRunner::GetCurrentDefault());
 
   if (gpu_workarounds_.disable_accelerated_vp8_encode &&
       config.output_profile == VP8PROFILE_ANY) {

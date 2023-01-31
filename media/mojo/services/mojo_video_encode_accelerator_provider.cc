@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
@@ -41,7 +41,7 @@ void MojoVideoEncodeAcceleratorProvider::Create(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const gpu::GPUInfo::GPUDevice& gpu_device,
-    scoped_refptr<base::SingleThreadTaskRunner> runner) {
+    scoped_refptr<base::SequencedTaskRunner> runner) {
   DCHECK(runner);
   runner->PostTask(
       FROM_HERE, base::BindOnce(BindVEAProvider, std::move(receiver),

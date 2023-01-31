@@ -24,6 +24,11 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/video/video_encode_accelerator.h"
 
+namespace base {
+class SequencedTaskRunner;
+class SingleThreadTaskRunner;
+}  // namespace base
+
 namespace media {
 
 // A VideoEncodeAccelerator implementation that uses VA-API
@@ -289,7 +294,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   base::queue<std::unique_ptr<EncodeResult>> pending_encode_results_;
 
   // Task runner for interacting with the client, and its checker.
-  const scoped_refptr<base::SingleThreadTaskRunner> child_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> child_task_runner_;
   SEQUENCE_CHECKER(child_sequence_checker_);
 
   // Encoder sequence and its checker. All tasks are executed on it.

@@ -24,6 +24,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -181,7 +182,7 @@ base::AtomicRefCount V4L2VideoEncodeAccelerator::num_instances_(0);
 V4L2VideoEncodeAccelerator::V4L2VideoEncodeAccelerator(
     scoped_refptr<V4L2Device> device)
     : can_use_encoder_(num_instances_.Increment() < kMaxNumOfInstances),
-      child_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      child_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       native_input_mode_(false),
       output_buffer_byte_size_(0),
       output_format_fourcc_(0),
@@ -1542,7 +1543,7 @@ void V4L2VideoEncodeAccelerator::NotifyError(Error error) {
   VLOGF(1) << "error=" << error;
   DCHECK(child_task_runner_);
 
-  if (child_task_runner_->BelongsToCurrentThread()) {
+  if (child_task_runner_->RunsTasksInCurrentSequence()) {
     if (client_) {
       client_->NotifyError(error);
       client_ptr_factory_.reset();

@@ -14,7 +14,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "media/base/android/media_codec_util.h"
@@ -97,7 +97,7 @@ static bool GetSupportedColorFormatForMime(const std::string& mime,
 AndroidVideoEncodeAccelerator::AndroidVideoEncodeAccelerator() = default;
 
 AndroidVideoEncodeAccelerator::~AndroidVideoEncodeAccelerator() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 VideoEncodeAccelerator::SupportedProfiles
@@ -145,7 +145,7 @@ bool AndroidVideoEncodeAccelerator::Initialize(
     std::unique_ptr<MediaLog> media_log) {
   DVLOG(3) << __func__ << " " << config.AsHumanReadableString();
   DCHECK(!media_codec_);
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(client);
   log_ = std::move(media_log);
   client_ptr_factory_ = std::make_unique<base::WeakPtrFactory<Client>>(client);
@@ -213,7 +213,7 @@ bool AndroidVideoEncodeAccelerator::Initialize(
       VideoFrame::AllocationSize(config.input_format,
                                  config.input_visible_size) +
       2048;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncodeAccelerator::Client::RequireBitstreamBuffers,
                      client_ptr_factory_->GetWeakPtr(), frame_input_count,
@@ -239,7 +239,7 @@ void AndroidVideoEncodeAccelerator::MaybeStopIOTimer() {
 void AndroidVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                                            bool force_keyframe) {
   DVLOG(3) << __PRETTY_FUNCTION__ << ": " << force_keyframe;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RETURN_ON_FAILURE(frame->format() == PIXEL_FORMAT_I420, "Unexpected format",
                     kInvalidArgumentError);
   RETURN_ON_FAILURE(frame->visible_rect().size() == frame_size_,
@@ -252,7 +252,7 @@ void AndroidVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
 void AndroidVideoEncodeAccelerator::UseOutputBitstreamBuffer(
     BitstreamBuffer buffer) {
   DVLOG(3) << __PRETTY_FUNCTION__ << ": bitstream_buffer_id=" << buffer.id();
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   available_bitstream_buffers_.push_back(std::move(buffer));
   DoIOTask();
 }
@@ -266,7 +266,7 @@ void AndroidVideoEncodeAccelerator::RequestEncodingParametersChange(
                     "Unexpected bitrate mode", kInvalidArgumentError);
   DVLOG(3) << __PRETTY_FUNCTION__ << ": bitrate: " << bitrate.ToString()
            << ", framerate: " << framerate;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (bitrate.target_bps() != last_set_bitrate_) {
     last_set_bitrate_ = bitrate.target_bps();
     media_codec_->SetVideoBitrate(bitrate.target_bps(), framerate);
@@ -279,7 +279,7 @@ void AndroidVideoEncodeAccelerator::RequestEncodingParametersChange(
 
 void AndroidVideoEncodeAccelerator::Destroy() {
   DVLOG(3) << __PRETTY_FUNCTION__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   client_ptr_factory_.reset();
   if (media_codec_) {
     if (io_timer_.IsRunning())
@@ -462,7 +462,7 @@ void AndroidVideoEncodeAccelerator::DequeueOutput() {
     metadata.encoded_size = *aligned_size_;
   }
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncodeAccelerator::Client::BitstreamBufferReady,
                      client_ptr_factory_->GetWeakPtr(), bitstream_buffer.id(),
@@ -493,7 +493,7 @@ bool AndroidVideoEncodeAccelerator::SetInputBufferLayout() {
   VideoEncoderInfo encoder_info;
   encoder_info.requested_resolution_alignment = 16;
   encoder_info.apply_alignment_to_all_simulcast_layers = true;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncodeAccelerator::Client::NotifyEncoderInfoChange,
                      client_ptr_factory_->GetWeakPtr(), encoder_info));

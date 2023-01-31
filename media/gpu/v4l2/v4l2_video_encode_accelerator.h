@@ -18,7 +18,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "media/gpu/chromeos/image_processor.h"
@@ -27,6 +26,10 @@
 #include "media/video/video_encode_accelerator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace media {
 class BitstreamBuffer;
@@ -173,7 +176,8 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // Safe from any thread.
   //
 
-  // Error notification (using PostTask() to child thread, if necessary).
+  // Error notification (using PostTask() to |child_task_runner_|, if
+  // necessary).
   void NotifyError(Error error);
 
   // Set the encoder_state_ to kError and notify the client (if necessary).
@@ -271,8 +275,8 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
 
   std::string driver_name_;
 
-  // Our original calling task runner for the child thread and its checker.
-  const scoped_refptr<base::SingleThreadTaskRunner> child_task_runner_;
+  // Our original calling task runner for the child sequence  and its checker.
+  const scoped_refptr<base::SequencedTaskRunner> child_task_runner_;
   SEQUENCE_CHECKER(child_sequence_checker_);
 
   // A coded_size() of VideoFrame on VEA::Encode(). This is updated on the first
@@ -350,10 +354,10 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // Video frames for image processor output / VideoEncodeAccelerator input.
   // Only accessed on child thread.
   std::vector<scoped_refptr<VideoFrame>> image_processor_output_buffers_;
-  // Indexes of free image processor output buffers. Only accessed on child
-  // thread.
+  // Indexes of free image processor output buffers. Only accessed on
+  // |child_task_runner_|.
   std::vector<size_t> free_image_processor_output_buffer_indices_;
-  // Video frames ready to be processed. Only accessed on child thread.
+  // Video frames ready to be processed. Only accessed on |child_task_runner_|.
   base::queue<InputFrameInfo> image_processor_input_queue_;
   // The number of frames that are being processed by |image_processor_|.
   size_t num_frames_in_image_processor_ = 0;

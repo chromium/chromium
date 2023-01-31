@@ -1215,6 +1215,11 @@ BASE_FEATURE(kUseSequencedTaskRunnerForMediaService,
              "UseSequencedTaskRunnerForMediaService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use SequencedTaskRunner for MojoVideoEncodeAcceleratorProvider.
+BASE_FEATURE(kUseSequencedTaskRunnerForMojoVEAProvider,
+             "UseSequencedTaskRunnerForMojoVEAProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 std::string GetEffectiveAutoplayPolicy(const base::CommandLine& command_line) {
   // Return the autoplay policy set in the command line, if any.
   if (command_line.HasSwitch(switches::kAutoplayPolicy))
