@@ -218,6 +218,23 @@ FakeSocketClient::FakeSocketClient(
 
 FakeSocketClient::~FakeSocketClient() {}
 
+FakeNetworkNotificationClient::FakeNetworkNotificationClient(
+    base::OnceClosure closure,
+    mojo::PendingReceiver<mojom::P2PNetworkNotificationClient>
+        notification_client)
+    : notification_client_(this, std::move(notification_client)),
+      closure_(std::move(closure)) {}
+
+FakeNetworkNotificationClient::~FakeNetworkNotificationClient() = default;
+
+void FakeNetworkNotificationClient::NetworkListChanged(
+    const std::vector<::net::NetworkInterface>& networks,
+    const ::net::IPAddress& default_ipv4_local_address,
+    const ::net::IPAddress& default_ipv6_local_address) {
+  network_list_changed_ = true;
+  std::move(closure_).Run();
+}
+
 void CreateRandomPacket(std::vector<uint8_t>* packet) {
   size_t size = kStunHeaderSize + rand() % 1000;
   packet->resize(size);

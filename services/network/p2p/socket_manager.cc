@@ -20,10 +20,10 @@
 #include "net/base/sys_addrinfo.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_resolver.h"
+#include "net/http/http_network_session.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
-#include "net/socket/datagram_client_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -79,6 +79,9 @@ net::DnsQueryType FamilyToDnsQueryType(int family) {
 }
 
 }  // namespace
+
+DefaultLocalAddresses::DefaultLocalAddresses() = default;
+DefaultLocalAddresses::~DefaultLocalAddresses() = default;
 
 class P2PSocketManager::DnsRequest {
  public:
@@ -206,11 +209,10 @@ void P2PSocketManager::OnNetworkChanged(
   }
 
   // Notify the renderer about changes to list of network interfaces.
-  network_list_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&P2PSocketManager::DoGetNetworkList,
-                     weak_factory_.GetWeakPtr(),
-                     base::SingleThreadTaskRunner::GetCurrentDefault()));
+  network_list_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&P2PSocketManager::DoGetNetworkList),
+      base::BindOnce(&P2PSocketManager::DoGetDefaultLocalAddresses,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void P2PSocketManager::PauseNetworkChangeNotifications() {
@@ -269,26 +271,103 @@ void P2PSocketManager::DumpPacket(base::span<const uint8_t> packet,
                                              incoming);
 }
 
-void P2PSocketManager::DoGetNetworkList(
-    const base::WeakPtr<P2PSocketManager>& socket_manager,
-    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner) {
+net::NetworkInterfaceList P2PSocketManager::DoGetNetworkList() {
   net::NetworkInterfaceList list;
   if (!net::GetNetworkList(&list, net::EXCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES)) {
     LOG(ERROR) << "GetNetworkList failed.";
+  }
+  return list;
+}
+
+void P2PSocketManager::DoGetDefaultLocalAddresses(
+    net::NetworkInterfaceList list) {
+  DefaultLocalAddresses* default_local_addresses = new DefaultLocalAddresses();
+  GetDefaultLocalAddress(
+      AF_INET,
+      base::BindOnce(&P2PSocketManager::MaybeFinishDoGetDefaultLocalAddresses,
+                     weak_factory_.GetWeakPtr(), default_local_addresses, list,
+                     AF_INET));
+  GetDefaultLocalAddress(
+      AF_INET6,
+      base::BindOnce(&P2PSocketManager::MaybeFinishDoGetDefaultLocalAddresses,
+                     weak_factory_.GetWeakPtr(), default_local_addresses, list,
+                     AF_INET6));
+}
+
+void P2PSocketManager::MaybeFinishDoGetDefaultLocalAddresses(
+    DefaultLocalAddresses* default_local_addresses,
+    net::NetworkInterfaceList list,
+    int family,
+    net::IPAddress addr) {
+  if (family == AF_INET) {
+    default_local_addresses->default_ipv4_local_address = addr;
+  } else {
+    default_local_addresses->default_ipv6_local_address = addr;
+  }
+
+  if (!default_local_addresses->default_ipv6_local_address.has_value() ||
+      !default_local_addresses->default_ipv4_local_address.has_value()) {
     return;
   }
-  net::IPAddress default_ipv4_local_address = GetDefaultLocalAddress(AF_INET);
-  net::IPAddress default_ipv6_local_address = GetDefaultLocalAddress(AF_INET6);
-  main_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&P2PSocketManager::SendNetworkList, socket_manager, list,
-                     default_ipv4_local_address, default_ipv6_local_address));
+
+  SendNetworkList(list,
+                  default_local_addresses->default_ipv4_local_address.value(),
+                  default_local_addresses->default_ipv6_local_address.value());
+  delete default_local_addresses;
+}
+
+void P2PSocketManager::GetDefaultLocalAddress(int family,
+                                              GetDefaultCallback callback) {
+  DCHECK(family == AF_INET || family == AF_INET6);
+
+  auto socket =
+      url_request_context_->GetNetworkSessionContext()
+          ->client_socket_factory->CreateDatagramClientSocket(
+              net::DatagramSocket::DEFAULT_BIND, nullptr, net::NetLogSource());
+
+  net::IPAddress ip_address;
+  if (family == AF_INET) {
+    ip_address = net::IPAddress(kPublicIPv4Host);
+  } else {
+    ip_address = net::IPAddress(kPublicIPv6Host);
+  }
+
+  auto* socket_ptr = socket.get();
+  auto split_connect_callback = base::SplitOnceCallback(base::BindOnce(
+      &P2PSocketManager::FinishGetDefaultLocalAddress,
+      weak_factory_.GetWeakPtr(), std::move(socket), std::move(callback)));
+  int rv = socket_ptr->ConnectAsync(net::IPEndPoint(ip_address, kPublicPort),
+                                    std::move(split_connect_callback.first));
+  // If ConnectAsync returns synchronously then it will never run the callback
+  // that was passed in, so run the callback here to make sure
+  // FinishGetDefaultLocalAddress runs.
+  if (rv != net::ERR_IO_PENDING) {
+    std::move(split_connect_callback.second).Run(rv);
+  }
+}
+
+void P2PSocketManager::FinishGetDefaultLocalAddress(
+    std::unique_ptr<net::DatagramClientSocket> socket,
+    GetDefaultCallback callback,
+    int result) {
+  if (result != net::OK) {
+    std::move(callback).Run(net::IPAddress());
+    return;
+  }
+
+  net::IPEndPoint local_address;
+  if (socket->GetLocalAddress(&local_address) != net::OK) {
+    std::move(callback).Run(net::IPAddress());
+    return;
+  }
+
+  std::move(callback).Run(local_address.address());
 }
 
 void P2PSocketManager::SendNetworkList(
     const net::NetworkInterfaceList& list,
-    const net::IPAddress& default_ipv4_local_address,
-    const net::IPAddress& default_ipv6_local_address) {
+    net::IPAddress default_ipv4_local_address,
+    net::IPAddress default_ipv6_local_address) {
   network_notification_client_->NetworkListChanged(
       list, default_ipv4_local_address, default_ipv6_local_address);
 }
@@ -303,11 +382,7 @@ void P2PSocketManager::StartNetworkNotifications(
 
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 
-  network_list_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&P2PSocketManager::DoGetNetworkList,
-                     weak_factory_.GetWeakPtr(),
-                     base::SingleThreadTaskRunner::GetCurrentDefault()));
+  OnNetworkChanged(net::NetworkChangeNotifier::CONNECTION_NONE);
 }
 
 void P2PSocketManager::GetHostAddress(
@@ -395,34 +470,6 @@ void P2PSocketManager::StopRtpDump(bool incoming, bool outgoing) {
 
 void P2PSocketManager::NetworkNotificationClientConnectionError() {
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
-}
-
-net::IPAddress P2PSocketManager::GetDefaultLocalAddress(int family) {
-  DCHECK(family == AF_INET || family == AF_INET6);
-
-  // Creation and connection of a UDP socket might be janky.
-  // DCHECK(network_list_task_runner_->RunsTasksInCurrentSequence());
-
-  auto socket =
-      net::ClientSocketFactory::GetDefaultFactory()->CreateDatagramClientSocket(
-          net::DatagramSocket::DEFAULT_BIND, nullptr, net::NetLogSource());
-
-  net::IPAddress ip_address;
-  if (family == AF_INET) {
-    ip_address = net::IPAddress(kPublicIPv4Host);
-  } else {
-    ip_address = net::IPAddress(kPublicIPv6Host);
-  }
-
-  if (socket->Connect(net::IPEndPoint(ip_address, kPublicPort)) != net::OK) {
-    return net::IPAddress();
-  }
-
-  net::IPEndPoint local_address;
-  if (socket->GetLocalAddress(&local_address) != net::OK)
-    return net::IPAddress();
-
-  return local_address.address();
 }
 
 void P2PSocketManager::OnAddressResolved(

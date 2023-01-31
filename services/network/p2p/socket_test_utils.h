@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_interfaces.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -137,6 +138,28 @@ class FakeSocketClient : public mojom::P2PSocketClient {
   mojo::Remote<mojom::P2PSocket> socket_;
   mojo::Receiver<mojom::P2PSocketClient> receiver_;
   bool disconnect_error_ = false;
+};
+
+class FakeNetworkNotificationClient
+    : public mojom::P2PNetworkNotificationClient {
+ public:
+  FakeNetworkNotificationClient(
+      base::OnceClosure closure,
+      mojo::PendingReceiver<mojom::P2PNetworkNotificationClient>
+          notification_client);
+  ~FakeNetworkNotificationClient() override;
+
+  void NetworkListChanged(
+      const std::vector<::net::NetworkInterface>& networks,
+      const ::net::IPAddress& default_ipv4_local_address,
+      const ::net::IPAddress& default_ipv6_local_address) override;
+
+  bool get_network_list_changed() { return network_list_changed_; }
+
+ private:
+  mojo::Receiver<mojom::P2PNetworkNotificationClient> notification_client_;
+  bool network_list_changed_ = false;
+  base::OnceClosure closure_;
 };
 
 void CreateRandomPacket(std::vector<uint8_t>* packet);

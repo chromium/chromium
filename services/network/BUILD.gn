@@ -411,6 +411,7 @@ source_set("tests") {
 
   if (is_p2p_enabled) {
     sources += [
+      "p2p/socket_manager_unittest.cc",
       "p2p/socket_tcp_unittest.cc",
       "p2p/socket_test_utils.cc",
       "p2p/socket_test_utils.h",
