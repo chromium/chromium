@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "reclient",
-              "builder": "Win x64 Builder (reclient compare)",
+              "builder": "Win x64 Cross Builder (reclient compare)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -34,7 +34,7 @@
       "builder_ids": [
         {
           "bucket": "reclient",
-          "builder": "Win x64 Builder (reclient compare)",
+          "builder": "Win x64 Cross Builder (reclient compare)",
           "project": "chromium"
         }
       ]

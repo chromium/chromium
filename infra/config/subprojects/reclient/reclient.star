@@ -524,6 +524,9 @@ ci.builder(
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
+# The following 2 builders use the untrusted RBE instance because each instance has its own
+# rewrapper configs and the trusted instance uses native windows rewrapper configs but the
+# untrusted instance uses cross compile windows rewrapper configs.
 # TODO(b/260228493) Remove once CI backend is switched
 ci.builder(
     name = "Windows Cross deterministic",
@@ -540,7 +543,7 @@ ci.builder(
 
 # TODO(b/260228493) Remove once CI backend is switched
 ci.builder(
-    name = "Win x64 Builder (reclient compare)",
+    name = "Win x64 Cross Builder (reclient compare)",
     description_html = "verify artifacts. should be removed after the migration. b/260228493",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -565,4 +568,5 @@ ci.builder(
     reclient_jobs = None,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_rewrapper_env = {"RBE_compare": "true"},
+    service_account = "chromium-cq-staging-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
