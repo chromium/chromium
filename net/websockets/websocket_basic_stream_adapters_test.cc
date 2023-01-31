@@ -1115,14 +1115,12 @@ class WebSocketQuicStreamAdapterTest
                       connection_id_,
                       &clock_,
                       "mail.example.org",
-                      quic::Perspective::IS_CLIENT,
-                      /*client_headers_include_h2_stream_dependency_=*/false),
+                      quic::Perspective::IS_CLIENT),
         server_maker_(version_,
                       connection_id_,
                       &clock_,
                       "mail.example.org",
-                      quic::Perspective::IS_SERVER,
-                      /*client_headers_include_h2_stream_dependency_=*/false),
+                      quic::Perspective::IS_SERVER),
         peer_addr_(IPAddress(192, 0, 2, 23), 443),
         destination_endpoint_(url::kHttpsScheme, "mail.example.org", 80) {}
 
@@ -1224,7 +1222,6 @@ class WebSocketQuicStreamAdapterTest
         kQuicYieldAfterPacketsRead,
         quic::QuicTime::Delta::FromMilliseconds(
             kQuicYieldAfterDurationMilliseconds),
-        /*client_headers_include_h2_stream_dependency_=*/false,
         /*cert_verify_flags=*/0, quic::test::DefaultQuicConfig(),
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
         "CONNECTION_UNKNOWN", dns_start, dns_end,
@@ -1324,7 +1321,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, SendRequestHeadersThenDisconnect) {
           packet_number++, client_data_stream_id1_,
           /*should_include_version=*/true,
           /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
-          std::move(request_header_block), 0, nullptr));
+          std::move(request_header_block), nullptr));
 
   mock_quic_data_.AddWrite(
       SYNCHRONOUS,
@@ -1362,7 +1359,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, OnHeadersReceivedThenDisconnect) {
           packet_number++, client_data_stream_id1_,
           /*should_include_version=*/true,
           /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
-          std::move(request_header_block), 0, nullptr));
+          std::move(request_header_block), nullptr));
 
   spdy::Http2HeaderBlock response_header_block = WebSocketHttp2Response({});
   mock_quic_data_.AddRead(ASYNC,

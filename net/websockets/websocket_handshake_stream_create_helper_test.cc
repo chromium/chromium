@@ -366,7 +366,7 @@ class WebSocketHandshakeStreamCreateHelperTest
                 packet_number++, client_data_stream_id,
                 /*should_include_version=*/true,
                 /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
-                std::move(request_header_block), 0, nullptr));
+                std::move(request_header_block), nullptr));
 
         spdy::Http2HeaderBlock response_header_block =
             WebSocketHttp2Response(extra_response_headers);
@@ -444,7 +444,6 @@ class WebSocketHandshakeStreamCreateHelperTest
             kQuicYieldAfterPacketsRead,
             quic::QuicTime::Delta::FromMilliseconds(
                 kQuicYieldAfterDurationMilliseconds),
-            /*client_headers_include_h2_stream_dependency_=*/false,
             /*cert_verify_flags=*/0, quic::test::DefaultQuicConfig(),
             std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config),
             "CONNECTION_UNKNOWN", dns_start, dns_end,

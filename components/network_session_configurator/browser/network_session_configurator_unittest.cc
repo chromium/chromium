@@ -866,17 +866,6 @@ TEST_F(NetworkSessionConfiguratorTest, SimpleCacheTrialDisable) {
 #endif
 }
 
-TEST_F(NetworkSessionConfiguratorTest, QuicHeadersIncludeH2StreamDependency) {
-  std::map<std::string, std::string> field_trial_params;
-  field_trial_params["headers_include_h2_stream_dependency"] = "true";
-  variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
-  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
-
-  ParseFieldTrials();
-
-  EXPECT_TRUE(quic_params_.headers_include_h2_stream_dependency);
-}
-
 TEST_F(NetworkSessionConfiguratorTest, Http2GreaseSettingsFromCommandLine) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitch(switches::kEnableHttp2GreaseSettings);

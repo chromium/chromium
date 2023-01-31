@@ -978,7 +978,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     int max_migrations_to_non_default_network_on_path_degrading,
     int yield_after_packets,
     quic::QuicTime::Delta yield_after_duration,
-    bool headers_include_h2_stream_dependency,
     int cert_verify_flags,
     const quic::QuicConfig& config,
     std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config,
@@ -1033,8 +1032,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
                         ? std::make_unique<QuicHttp3Logger>(net_log_)
                         : nullptr),
       push_delegate_(push_delegate),
-      headers_include_h2_stream_dependency_(
-          headers_include_h2_stream_dependency),
       push_promise_index_(std::move(push_promise_index)),
       path_validation_writer_delegate_(this, task_runner_) {
   default_network_ = default_network;
@@ -1189,46 +1186,12 @@ size_t QuicChromiumClientSession::WriteHeadersOnHeadersStream(
     const spdy::SpdyStreamPrecedence& precedence,
     quiche::QuicheReferenceCountedPointer<quic::QuicAckListenerInterface>
         ack_listener) {
-  spdy::SpdyStreamId parent_stream_id = 0;
-  int weight = 0;
-  bool exclusive = false;
-
-  if (headers_include_h2_stream_dependency_) {
-    priority_dependency_state_.OnStreamCreation(id, precedence.spdy3_priority(),
-                                                &parent_stream_id, &weight,
-                                                &exclusive);
-  } else {
-    weight = spdy::Spdy3PriorityToHttp2Weight(precedence.spdy3_priority());
-  }
-
+  const int weight =
+      spdy::Spdy3PriorityToHttp2Weight(precedence.spdy3_priority());
   return WriteHeadersOnHeadersStreamImpl(id, std::move(headers), fin,
-                                         parent_stream_id, weight, exclusive,
+                                         /* parent_stream_id = */ 0, weight,
+                                         /* exclusive = */ false,
                                          std::move(ack_listener));
-}
-
-void QuicChromiumClientSession::UnregisterStreamPriority(quic::QuicStreamId id,
-                                                         bool is_static) {
-  if (headers_include_h2_stream_dependency_ && !is_static) {
-    priority_dependency_state_.OnStreamDestruction(id);
-  }
-  quic::QuicSpdySession::UnregisterStreamPriority(id, is_static);
-}
-
-void QuicChromiumClientSession::UpdateStreamPriority(
-    quic::QuicStreamId id,
-    const quic::QuicStreamPriority& new_priority) {
-  if (headers_include_h2_stream_dependency_ ||
-      VersionUsesHttp3(connection()->transport_version())) {
-    auto updates =
-        priority_dependency_state_.OnStreamUpdate(id, new_priority.urgency);
-    for (auto update : updates) {
-      if (!VersionUsesHttp3(connection()->transport_version())) {
-        WritePriority(update.id, update.parent_stream_id, update.weight,
-                      update.exclusive);
-      }
-    }
-  }
-  quic::QuicSpdySession::UpdateStreamPriority(id, new_priority);
 }
 
 void QuicChromiumClientSession::OnHttp3GoAway(uint64_t id) {
@@ -3899,33 +3862,14 @@ bool QuicChromiumClientSession::HandlePromised(
     const spdy::Http2HeaderBlock& headers) {
   bool result =
       quic::QuicSpdyClientSessionBase::HandlePromised(id, promised_id, headers);
-  if (result) {
+  if (result && push_delegate_) {
     // The push promise is accepted, notify the push_delegate that a push
     // promise has been received.
-    if (push_delegate_) {
-      std::string pushed_url =
-          quic::SpdyServerPushUtils::GetPromisedUrlFromHeaders(headers);
-      push_delegate_->OnPush(std::make_unique<QuicServerPushHelper>(
-                                 weak_factory_.GetWeakPtr(), GURL(pushed_url)),
-                             net_log_);
-    }
-    if (headers_include_h2_stream_dependency_ ||
-        VersionUsesHttp3(connection()->transport_version())) {
-      // Even though the promised stream will not be created until after the
-      // push promise headers are received, send a PRIORITY frame for the
-      // promised stream ID. Send |kDefaultUrgency| since that will be the
-      // initial spdy::SpdyPriority of the push promise stream when created.
-      const spdy::SpdyPriority priority =
-          quic::QuicStreamPriority::kDefaultUrgency;
-      spdy::SpdyStreamId parent_stream_id = 0;
-      int weight = 0;
-      bool exclusive = false;
-      priority_dependency_state_.OnStreamCreation(
-          promised_id, priority, &parent_stream_id, &weight, &exclusive);
-      if (!VersionUsesHttp3(connection()->transport_version())) {
-        WritePriority(promised_id, parent_stream_id, weight, exclusive);
-      }
-    }
+    std::string pushed_url =
+        quic::SpdyServerPushUtils::GetPromisedUrlFromHeaders(headers);
+    push_delegate_->OnPush(std::make_unique<QuicServerPushHelper>(
+                               weak_factory_.GetWeakPtr(), GURL(pushed_url)),
+                           net_log_);
   }
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_PUSH_PROMISE_RECEIVED,
                     [&](NetLogCaptureMode capture_mode) {

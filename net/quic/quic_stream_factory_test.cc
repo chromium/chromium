@@ -121,18 +121,14 @@ const quic::QuicConnectionId kNewCID = quic::test::TestConnectionId(12345678);
 // and enable_connection_racting.
 struct TestParams {
   quic::ParsedQuicVersion version;
-  bool client_headers_include_h2_stream_dependency;
   bool enable_quic_priority_incremental_support;
 };
 
 // Used by ::testing::PrintToStringParamName().
 std::string PrintToString(const TestParams& p) {
-  return base::StrCat(
-      {ParsedQuicVersionToString(p.version), "_",
-       (p.client_headers_include_h2_stream_dependency ? "" : "No"),
-       "Dependency", "_",
-       (p.enable_quic_priority_incremental_support ? "" : "No"),
-       "Incremental"});
+  return base::StrCat({ParsedQuicVersionToString(p.version), "_",
+                       (p.enable_quic_priority_incremental_support ? "" : "No"),
+                       "Incremental"});
 }
 
 std::vector<TestParams> GetTestParams() {
@@ -140,10 +136,8 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       quic::AllSupportedVersions();
   for (const auto& version : all_supported_versions) {
-    params.push_back(TestParams{version, false, false});
-    params.push_back(TestParams{version, false, true});
-    params.push_back(TestParams{version, true, false});
-    params.push_back(TestParams{version, true, true});
+    params.push_back(TestParams{version, false});
+    params.push_back(TestParams{version, true});
   }
   return params;
 }
@@ -207,7 +201,6 @@ class TestPortMigrationSocketFactory : public MockClientSocketFactory {
 class QuicStreamFactoryTestBase : public WithTaskEnvironment {
  protected:
   QuicStreamFactoryTestBase(quic::ParsedQuicVersion version,
-                            bool client_headers_include_h2_stream_dependency,
                             bool enable_quic_priority_incremental_support)
       : host_resolver_(std::make_unique<MockHostResolver>(
             /*default_result=*/MockHostResolverBase::RuleResolver::
@@ -222,7 +215,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
                       context_.clock(),
                       kDefaultServerHostName,
                       quic::Perspective::IS_CLIENT,
-                      client_headers_include_h2_stream_dependency,
                       true),
         server_maker_(version_,
                       quic::QuicUtils::CreateRandomConnectionId(
@@ -248,8 +240,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
         features::kPriorityIncremental,
         enable_quic_priority_incremental_support);
     FLAGS_quic_enable_http3_grease_randomness = false;
-    quic_params_->headers_include_h2_stream_dependency =
-        client_headers_include_h2_stream_dependency;
     context_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
   }
 
@@ -462,23 +452,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     size_t spdy_headers_frame_len;
     return client_maker_.MakeRequestHeadersPacket(
         packet_number, stream_id, should_include_version, fin, priority,
-        std::move(headers), 0, &spdy_headers_frame_len);
-  }
-
-  std::unique_ptr<quic::QuicEncryptedPacket> ConstructGetRequestPacket(
-      uint64_t packet_number,
-      quic::QuicStreamId stream_id,
-      quic::QuicStreamId parent_stream_id,
-      bool should_include_version,
-      bool fin) {
-    spdy::Http2HeaderBlock headers =
-        client_maker_.GetRequestHeaders("GET", "https", "/");
-    spdy::SpdyPriority priority =
-        ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
-    size_t spdy_headers_frame_len;
-    return client_maker_.MakeRequestHeadersPacket(
-        packet_number, stream_id, should_include_version, fin, priority,
-        std::move(headers), parent_stream_id, &spdy_headers_frame_len);
+        std::move(headers), &spdy_headers_frame_len);
   }
 
   std::unique_ptr<quic::QuicEncryptedPacket> ConstructOkResponsePacket(
@@ -987,7 +961,6 @@ class QuicStreamFactoryTest : public QuicStreamFactoryTestBase,
   QuicStreamFactoryTest()
       : QuicStreamFactoryTestBase(
             GetParam().version,
-            GetParam().client_headers_include_h2_stream_dependency,
             GetParam().enable_quic_priority_incremental_support) {}
 };
 
@@ -1353,7 +1326,7 @@ TEST_P(QuicStreamFactoryTest, CachedInitialRttWithNetworkAnonymizationKey) {
         version_,
         quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
         context_.clock(), kDefaultServerHostName, quic::Perspective::IS_CLIENT,
-        quic_params_->headers_include_h2_stream_dependency, true);
+        true);
 
     MockQuicData socket_data(version_);
     socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -1586,7 +1559,7 @@ TEST_P(QuicStreamFactoryTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
         version_,
         quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
         context_.clock(), kDefaultServerHostName, quic::Perspective::IS_CLIENT,
-        quic_params_->headers_include_h2_stream_dependency, true);
+        true);
 
     MockQuicData socket_data(version_);
     socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -6785,9 +6758,7 @@ TEST_P(QuicStreamFactoryTest, MigrateSessionOnAsyncWriteError) {
       SYNCHRONOUS,
       client_maker_.MakeRetransmissionAndRequestHeadersPacket(
           {1, 2}, packet_num++, GetNthClientInitiatedBidirectionalStreamId(1),
-          true, true, priority, std::move(headers),
-          GetNthClientInitiatedBidirectionalStreamId(0),
-          &spdy_headers_frame_len));
+          true, true, priority, std::move(headers), &spdy_headers_frame_len));
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakePingPacket(packet_num++, /*include_version=*/false));
@@ -12805,7 +12776,6 @@ enum DestinationType {
 struct PoolingTestParams {
   quic::ParsedQuicVersion version;
   DestinationType destination_type;
-  bool client_headers_include_h2_stream_dependency;
   bool enable_quic_priority_incremental_support;
 };
 
@@ -12823,12 +12793,10 @@ std::string PrintToString(const PoolingTestParams& p) {
       destination_string = "DIFFERENT";
       break;
   }
-  return base::StrCat(
-      {ParsedQuicVersionToString(p.version), "_", destination_string, "_",
-       (p.client_headers_include_h2_stream_dependency ? "" : "No"),
-       "Dependency", "_",
-       (p.enable_quic_priority_incremental_support ? "" : "No"),
-       "Incremental"});
+  return base::StrCat({ParsedQuicVersionToString(p.version), "_",
+                       destination_string, "_",
+                       (p.enable_quic_priority_incremental_support ? "" : "No"),
+                       "Incremental"});
 }
 
 std::vector<PoolingTestParams> GetPoolingTestParams() {
@@ -12836,18 +12804,12 @@ std::vector<PoolingTestParams> GetPoolingTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       quic::AllSupportedVersions();
   for (const quic::ParsedQuicVersion& version : all_supported_versions) {
-    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, false, false});
-    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, false, true});
-    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, true, false});
-    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, true, true});
-    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, false, false});
-    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, false, true});
-    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, true, false});
-    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, true, true});
-    params.push_back(PoolingTestParams{version, DIFFERENT, false, false});
-    params.push_back(PoolingTestParams{version, DIFFERENT, false, true});
-    params.push_back(PoolingTestParams{version, DIFFERENT, true, false});
-    params.push_back(PoolingTestParams{version, DIFFERENT, true, true});
+    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, false});
+    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, true});
+    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, false});
+    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, true});
+    params.push_back(PoolingTestParams{version, DIFFERENT, false});
+    params.push_back(PoolingTestParams{version, DIFFERENT, true});
   }
   return params;
 }
@@ -12861,7 +12823,6 @@ class QuicStreamFactoryWithDestinationTest
   QuicStreamFactoryWithDestinationTest()
       : QuicStreamFactoryTestBase(
             GetParam().version,
-            GetParam().client_headers_include_h2_stream_dependency,
             GetParam().enable_quic_priority_incremental_support),
         destination_type_(GetParam().destination_type),
         hanging_read_(SYNCHRONOUS, ERR_IO_PENDING, 0) {}
@@ -15310,7 +15271,6 @@ namespace {
 // `use_dns_aliases`, `dns_aliases1`, and `dns_aliases2`.
 struct DnsAliasPoolingTestParams {
   quic::ParsedQuicVersion version;
-  bool client_headers_include_h2_stream_dependency;
   bool use_dns_aliases;
   std::set<std::string> dns_aliases1;
   std::set<std::string> dns_aliases2;
@@ -15330,84 +15290,71 @@ std::string PrintToString(const std::set<std::string>& set) {
 
 // Used by ::testing::PrintToStringParamName().
 std::string PrintToString(const DnsAliasPoolingTestParams& p) {
-  return base::StrCat(
-      {ParsedQuicVersionToString(p.version), "_",
-       (p.client_headers_include_h2_stream_dependency ? "" : "No"),
-       "Dependency_", (p.use_dns_aliases ? "" : "DoNot"), "UseDnsAliases_1st_",
-       PrintToString(p.dns_aliases1), "_2nd_", PrintToString(p.dns_aliases2)});
+  return base::StrCat({ParsedQuicVersionToString(p.version), "_",
+                       (p.use_dns_aliases ? "" : "DoNot"), "UseDnsAliases_1st_",
+                       PrintToString(p.dns_aliases1), "_2nd_",
+                       PrintToString(p.dns_aliases2)});
 }
 
 std::vector<DnsAliasPoolingTestParams> GetDnsAliasPoolingTestParams() {
   std::vector<DnsAliasPoolingTestParams> params;
   quic::ParsedQuicVersionVector all_supported_versions =
       quic::AllSupportedVersions();
-  for (bool include_h2_stream_dependency : {true, false}) {
-    for (const quic::ParsedQuicVersion& version : all_supported_versions) {
-      params.push_back(
-          DnsAliasPoolingTestParams{version,
-                                    include_h2_stream_dependency,
-                                    false /* use_dns_aliases */,
-                                    {} /* dns_aliases1 */,
-                                    {} /* dns_aliases2 */,
-                                    {} /* expected_dns_aliases1 */,
-                                    {} /* expected_dns_aliases2 */});
-      params.push_back(DnsAliasPoolingTestParams{
-          version,
-          include_h2_stream_dependency,
-          true /* use_dns_aliases */,
-          {} /* dns_aliases1 */,
-          {} /* dns_aliases2 */,
-          {kDefaultServerHostName} /* expected_dns_aliases1 */,
-          {kServer2HostName} /* expected_dns_aliases2 */});
-      params.push_back(
-          DnsAliasPoolingTestParams{version,
-                                    include_h2_stream_dependency,
-                                    false /* use_dns_aliases */,
-                                    {"alias1", "alias2", "alias3"},
-                                    {} /* dns_aliases2 */,
-                                    {} /* expected_dns_aliases1 */,
-                                    {} /* expected_dns_aliases2 */});
-      params.push_back(DnsAliasPoolingTestParams{
-          version,
-          include_h2_stream_dependency,
-          true /* use_dns_aliases */,
-          {"alias1", "alias2", "alias3"} /* dns_aliases1 */,
-          {} /* dns_aliases2 */,
-          {"alias1", "alias2", "alias3"} /* expected_dns_aliases1 */,
-          {kServer2HostName} /* expected_dns_aliases2 */});
-      params.push_back(DnsAliasPoolingTestParams{
-          version,
-          include_h2_stream_dependency,
-          false /* use_dns_aliases */,
-          {"alias1", "alias2", "alias3"} /* dns_aliases1 */,
-          {"alias3", "alias4", "alias5"} /* dns_aliases2 */,
-          {} /* expected_dns_aliases1 */,
-          {} /* expected_dns_aliases2 */});
-      params.push_back(DnsAliasPoolingTestParams{
-          version,
-          include_h2_stream_dependency,
-          true /* use_dns_aliases */,
-          {"alias1", "alias2", "alias3"} /* dns_aliases1 */,
-          {"alias3", "alias4", "alias5"} /* dns_aliases2 */,
-          {"alias1", "alias2", "alias3"} /* expected_dns_aliases1 */,
-          {"alias3", "alias4", "alias5"} /* expected_dns_aliases2 */});
-      params.push_back(DnsAliasPoolingTestParams{
-          version,
-          include_h2_stream_dependency,
-          false /* use_dns_aliases */,
-          {} /* dns_aliases1 */,
-          {"alias3", "alias4", "alias5"} /* dns_aliases2 */,
-          {} /* expected_dns_aliases1 */,
-          {} /* expected_dns_aliases2 */});
-      params.push_back(DnsAliasPoolingTestParams{
-          version,
-          include_h2_stream_dependency,
-          true /* use_dns_aliases */,
-          {} /* dns_aliases1 */,
-          {"alias3", "alias4", "alias5"} /* dns_aliases2 */,
-          {kDefaultServerHostName} /* expected_dns_aliases1 */,
-          {"alias3", "alias4", "alias5"} /* expected_dns_aliases2 */});
-    }
+  for (const quic::ParsedQuicVersion& version : all_supported_versions) {
+    params.push_back(DnsAliasPoolingTestParams{version,
+                                               false /* use_dns_aliases */,
+                                               {} /* dns_aliases1 */,
+                                               {} /* dns_aliases2 */,
+                                               {} /* expected_dns_aliases1 */,
+                                               {} /* expected_dns_aliases2 */});
+    params.push_back(DnsAliasPoolingTestParams{
+        version,
+        true /* use_dns_aliases */,
+        {} /* dns_aliases1 */,
+        {} /* dns_aliases2 */,
+        {kDefaultServerHostName} /* expected_dns_aliases1 */,
+        {kServer2HostName} /* expected_dns_aliases2 */});
+    params.push_back(DnsAliasPoolingTestParams{version,
+                                               false /* use_dns_aliases */,
+                                               {"alias1", "alias2", "alias3"},
+                                               {} /* dns_aliases2 */,
+                                               {} /* expected_dns_aliases1 */,
+                                               {} /* expected_dns_aliases2 */});
+    params.push_back(DnsAliasPoolingTestParams{
+        version,
+        true /* use_dns_aliases */,
+        {"alias1", "alias2", "alias3"} /* dns_aliases1 */,
+        {} /* dns_aliases2 */,
+        {"alias1", "alias2", "alias3"} /* expected_dns_aliases1 */,
+        {kServer2HostName} /* expected_dns_aliases2 */});
+    params.push_back(DnsAliasPoolingTestParams{
+        version,
+        false /* use_dns_aliases */,
+        {"alias1", "alias2", "alias3"} /* dns_aliases1 */,
+        {"alias3", "alias4", "alias5"} /* dns_aliases2 */,
+        {} /* expected_dns_aliases1 */,
+        {} /* expected_dns_aliases2 */});
+    params.push_back(DnsAliasPoolingTestParams{
+        version,
+        true /* use_dns_aliases */,
+        {"alias1", "alias2", "alias3"} /* dns_aliases1 */,
+        {"alias3", "alias4", "alias5"} /* dns_aliases2 */,
+        {"alias1", "alias2", "alias3"} /* expected_dns_aliases1 */,
+        {"alias3", "alias4", "alias5"} /* expected_dns_aliases2 */});
+    params.push_back(DnsAliasPoolingTestParams{
+        version,
+        false /* use_dns_aliases */,
+        {} /* dns_aliases1 */,
+        {"alias3", "alias4", "alias5"} /* dns_aliases2 */,
+        {} /* expected_dns_aliases1 */,
+        {} /* expected_dns_aliases2 */});
+    params.push_back(DnsAliasPoolingTestParams{
+        version,
+        true /* use_dns_aliases */,
+        {} /* dns_aliases1 */,
+        {"alias3", "alias4", "alias5"} /* dns_aliases2 */,
+        {kDefaultServerHostName} /* expected_dns_aliases1 */,
+        {"alias3", "alias4", "alias5"} /* expected_dns_aliases2 */});
   }
   return params;
 }
@@ -15419,10 +15366,7 @@ class QuicStreamFactoryDnsAliasPoolingTest
       public ::testing::TestWithParam<DnsAliasPoolingTestParams> {
  protected:
   QuicStreamFactoryDnsAliasPoolingTest()
-      : QuicStreamFactoryTestBase(
-            GetParam().version,
-            GetParam().client_headers_include_h2_stream_dependency,
-            true),
+      : QuicStreamFactoryTestBase(GetParam().version, true),
         use_dns_aliases_(GetParam().use_dns_aliases),
         dns_aliases1_(GetParam().dns_aliases1),
         dns_aliases2_(GetParam().dns_aliases2),

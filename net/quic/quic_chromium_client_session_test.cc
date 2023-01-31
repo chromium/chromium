@@ -89,30 +89,6 @@ const size_t kMaxReadersPerQuicSession = 5;
 const handles::NetworkHandle kDefaultNetworkForTests = 1;
 const handles::NetworkHandle kNewNetworkForTests = 2;
 
-struct TestParams {
-  quic::ParsedQuicVersion version;
-  bool client_headers_include_h2_stream_dependency;
-};
-
-// Used by ::testing::PrintToStringParamName().
-std::string PrintToString(const TestParams& p) {
-  return base::StrCat(
-      {ParsedQuicVersionToString(p.version), "_",
-       (p.client_headers_include_h2_stream_dependency ? "" : "No"),
-       "Dependency"});
-}
-
-std::vector<TestParams> GetTestParams() {
-  std::vector<TestParams> params;
-  quic::ParsedQuicVersionVector all_supported_versions =
-      quic::AllSupportedVersions();
-  for (const auto& version : all_supported_versions) {
-    params.push_back(TestParams{version, false});
-    params.push_back(TestParams{version, true});
-  }
-  return params;
-}
-
 // A subclass of QuicChromiumClientSession that allows OnPathDegrading to be
 // mocked.
 class TestingQuicChromiumClientSession : public QuicChromiumClientSession {
@@ -125,13 +101,11 @@ class TestingQuicChromiumClientSession : public QuicChromiumClientSession {
 };
 
 class QuicChromiumClientSessionTest
-    : public ::testing::TestWithParam<TestParams>,
+    : public ::testing::TestWithParam<quic::ParsedQuicVersion>,
       public WithTaskEnvironment {
  public:
   QuicChromiumClientSessionTest()
-      : version_(GetParam().version),
-        client_headers_include_h2_stream_dependency_(
-            GetParam().client_headers_include_h2_stream_dependency),
+      : version_(GetParam()),
         config_(quic::test::DefaultQuicConfig()),
         crypto_config_(
             quic::test::crypto_test_utils::ProofVerifierForTesting()),
@@ -155,8 +129,7 @@ class QuicChromiumClientSessionTest
                       quic::QuicUtils::CreateRandomConnectionId(&random_),
                       &clock_,
                       kServerHostname,
-                      quic::Perspective::IS_CLIENT,
-                      client_headers_include_h2_stream_dependency_),
+                      quic::Perspective::IS_CLIENT),
         server_maker_(version_,
                       quic::QuicUtils::CreateRandomConnectionId(&random_),
                       &clock_,
@@ -207,7 +180,6 @@ class QuicChromiumClientSessionTest
         kQuicYieldAfterPacketsRead,
         quic::QuicTime::Delta::FromMilliseconds(
             kQuicYieldAfterDurationMilliseconds),
-        client_headers_include_h2_stream_dependency_,
         /*cert_verify_flags=*/0, config_,
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
         "CONNECTION_UNKNOWN", base::TimeTicks::Now(), base::TimeTicks::Now(),
@@ -287,7 +259,6 @@ class QuicChromiumClientSessionTest
   }
 
   const quic::ParsedQuicVersion version_;
-  const bool client_headers_include_h2_stream_dependency_;
   quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   quic::QuicConfig config_;
   quic::QuicCryptoClientConfig crypto_config_;
@@ -321,7 +292,7 @@ class QuicChromiumClientSessionTest
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
                          QuicChromiumClientSessionTest,
-                         ::testing::ValuesIn(GetTestParams()),
+                         ::testing::ValuesIn(quic::AllSupportedVersions()),
                          ::testing::PrintToStringParamName());
 
 // Basic test of ProofVerifyDetailsChromium is converted to SSLInfo retrieved
@@ -1188,9 +1159,6 @@ TEST_P(QuicChromiumClientSessionTest, PushStreamTimedOutNoResponse) {
   if (VersionUsesHttp3(version_.transport_version)) {
     quic_data.AddWrite(ASYNC,
                        client_maker_.MakeInitialSettingsPacket(packet_num++));
-  } else if (GetParam().client_headers_include_h2_stream_dependency) {
-    quic_data.AddWrite(
-        ASYNC, client_maker_.MakePriorityPacket(packet_num++, true, 2, 0, 3));
   }
   quic_data.AddWrite(ASYNC, client_maker_.MakeRstPacket(
                                 packet_num++, true,
@@ -1244,9 +1212,6 @@ TEST_P(QuicChromiumClientSessionTest, PushStreamTimedOutWithResponse) {
   if (VersionUsesHttp3(version_.transport_version)) {
     quic_data.AddWrite(ASYNC,
                        client_maker_.MakeInitialSettingsPacket(packet_num++));
-  } else if (GetParam().client_headers_include_h2_stream_dependency) {
-    quic_data.AddWrite(
-        ASYNC, client_maker_.MakePriorityPacket(packet_num++, true, 2, 0, 3));
   }
   quic_data.AddWrite(ASYNC, client_maker_.MakeRstPacket(
                                 packet_num++, true,
@@ -1366,9 +1331,6 @@ TEST_P(QuicChromiumClientSessionTest, CancelPushWhenPendingValidation) {
   if (VersionUsesHttp3(version_.transport_version)) {
     quic_data.AddWrite(ASYNC,
                        client_maker_.MakeInitialSettingsPacket(packet_num++));
-  } else if (GetParam().client_headers_include_h2_stream_dependency) {
-    quic_data.AddWrite(
-        ASYNC, client_maker_.MakePriorityPacket(packet_num++, true, 2, 0, 3));
   }
   quic_data.AddWrite(ASYNC, client_maker_.MakeRstPacket(
                                 packet_num++, true,
@@ -1427,9 +1389,6 @@ TEST_P(QuicChromiumClientSessionTest, CancelPushBeforeReceivingResponse) {
   if (VersionUsesHttp3(version_.transport_version)) {
     quic_data.AddWrite(ASYNC,
                        client_maker_.MakeInitialSettingsPacket(packet_num++));
-  } else if (GetParam().client_headers_include_h2_stream_dependency) {
-    quic_data.AddWrite(
-        ASYNC, client_maker_.MakePriorityPacket(packet_num++, true, 2, 0, 3));
   }
   quic_data.AddWrite(ASYNC, client_maker_.MakeRstPacket(
                                 packet_num++, true,
@@ -1483,9 +1442,6 @@ TEST_P(QuicChromiumClientSessionTest, CancelPushAfterReceivingResponse) {
   if (VersionUsesHttp3(version_.transport_version)) {
     quic_data.AddWrite(ASYNC,
                        client_maker_.MakeInitialSettingsPacket(packet_num++));
-  } else if (GetParam().client_headers_include_h2_stream_dependency) {
-    quic_data.AddWrite(
-        ASYNC, client_maker_.MakePriorityPacket(packet_num++, true, 2, 0, 3));
   }
   quic_data.AddWrite(ASYNC, client_maker_.MakeRstPacket(
                                 packet_num++, true,

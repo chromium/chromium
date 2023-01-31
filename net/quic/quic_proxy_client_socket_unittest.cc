@@ -95,34 +95,11 @@ static const int kLen333 = kLen3 + kLen3 + kLen3;
 static constexpr int k0ByteConnectionId = 0;
 static constexpr int k8ByteConnectionId = 8;
 
-struct TestParams {
-  quic::ParsedQuicVersion version;
-  bool client_headers_include_h2_stream_dependency;
-};
-
-// Used by ::testing::PrintToStringParamName().
-std::string PrintToString(const TestParams& p) {
-  return base::StrCat(
-      {ParsedQuicVersionToString(p.version), "_",
-       (p.client_headers_include_h2_stream_dependency ? "" : "No"),
-       "Dependency"});
-}
-
-std::vector<TestParams> GetTestParams() {
-  std::vector<TestParams> params;
-  quic::ParsedQuicVersionVector all_supported_versions =
-      quic::AllSupportedVersions();
-  for (const auto& version : all_supported_versions) {
-    params.push_back(TestParams{version, false});
-    params.push_back(TestParams{version, true});
-  }
-  return params;
-}
-
 }  // anonymous namespace
 
-class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
-                                  public WithTaskEnvironment {
+class QuicProxyClientSocketTest
+    : public ::testing::TestWithParam<quic::ParsedQuicVersion>,
+      public WithTaskEnvironment {
  protected:
   static const bool kFin = true;
   static const bool kIncludeVersion = true;
@@ -158,7 +135,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
   }
 
   QuicProxyClientSocketTest()
-      : version_(GetParam().version),
+      : version_(GetParam()),
         client_data_stream_id1_(
             quic::VersionUsesHttp3(version_.transport_version)
                 ? quic::QuicUtils::GetFirstBidirectionalStreamId(
@@ -169,8 +146,6 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
                       quic::Perspective::IS_CLIENT) +
                       quic::QuicUtils::StreamIdDelta(
                           version_.transport_version)),
-        client_headers_include_h2_stream_dependency_(
-            GetParam().client_headers_include_h2_stream_dependency),
         mock_quic_data_(version_),
         crypto_config_(
             quic::test::crypto_test_utils::ProofVerifierForTesting()),
@@ -179,8 +154,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
                       connection_id_,
                       &clock_,
                       kProxyHost,
-                      quic::Perspective::IS_CLIENT,
-                      client_headers_include_h2_stream_dependency_),
+                      quic::Perspective::IS_CLIENT),
         server_maker_(version_,
                       connection_id_,
                       &clock_,
@@ -285,8 +259,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
         kQuicYieldAfterPacketsRead,
         quic::QuicTime::Delta::FromMilliseconds(
             kQuicYieldAfterDurationMilliseconds),
-        client_headers_include_h2_stream_dependency_, /*cert_verify_flags=*/0,
-        quic::test::DefaultQuicConfig(),
+        /*cert_verify_flags=*/0, quic::test::DefaultQuicConfig(),
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
         "CONNECTION_UNKNOWN", dns_start, dns_end,
         std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
@@ -389,7 +362,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
     return client_maker_.MakeRequestHeadersPacket(
         packet_number, client_data_stream_id1_, kIncludeVersion, !kFin,
         ConvertRequestPriorityToQuicPriority(request_priority),
-        std::move(block), 0, nullptr);
+        std::move(block), nullptr);
   }
 
   std::unique_ptr<quic::QuicReceivedPacket>
@@ -407,7 +380,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
     return client_maker_.MakeRequestHeadersPacket(
         packet_number, client_data_stream_id1_, kIncludeVersion, !kFin,
         ConvertRequestPriorityToQuicPriority(request_priority),
-        std::move(block), 0, nullptr);
+        std::move(block), nullptr);
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructConnectAuthRequestPacket(
@@ -419,7 +392,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
     return client_maker_.MakeRequestHeadersPacket(
         packet_number, client_data_stream_id1_, kIncludeVersion, !kFin,
         ConvertRequestPriorityToQuicPriority(request_priority),
-        std::move(block), 0, nullptr);
+        std::move(block), nullptr);
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructDataPacket(
@@ -617,7 +590,6 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
   quic::test::QuicFlagSaver saver_;
   const quic::ParsedQuicVersion version_;
   const quic::QuicStreamId client_data_stream_id1_;
-  const bool client_headers_include_h2_stream_dependency_;
 
   // order of destruction of these members matter
   quic::MockClock clock_;
@@ -2091,7 +2063,7 @@ TEST_P(QuicProxyClientSocketTest, RstWithReadAndWritePendingDelete) {
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
                          QuicProxyClientSocketTest,
-                         ::testing::ValuesIn(GetTestParams()),
+                         ::testing::ValuesIn(quic::AllSupportedVersions()),
                          ::testing::PrintToStringParamName());
 
 }  // namespace net::test

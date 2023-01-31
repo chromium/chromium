@@ -161,9 +161,6 @@ struct NET_EXPORT QuicParams {
   bool race_stale_dns_on_connection = false;
   // If true, estimate the initial RTT for QUIC connections based on network.
   bool estimate_initial_rtt = false;
-  // If true, client headers will include HTTP/2 stream dependency info
-  // derived from the request priority.
-  bool headers_include_h2_stream_dependency = false;
   // The initial rtt that will be used in crypto handshake if no cached
   // smoothed rtt is present.
   base::TimeDelta initial_rtt_for_handshake;

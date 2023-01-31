@@ -99,18 +99,14 @@ const uint16_t kDefaultServerPort = 443;
 
 struct TestParams {
   quic::ParsedQuicVersion version;
-  bool client_headers_include_h2_stream_dependency;
   bool enable_quic_priority_incremental_support;
 };
 
 // Used by ::testing::PrintToStringParamName().
 std::string PrintToString(const TestParams& p) {
-  return base::StrCat(
-      {ParsedQuicVersionToString(p.version), "_",
-       (p.client_headers_include_h2_stream_dependency ? "" : "No"),
-       "Dependency", "_",
-       (p.enable_quic_priority_incremental_support ? "" : "No"),
-       "Incremental"});
+  return base::StrCat({ParsedQuicVersionToString(p.version), "_",
+                       (p.enable_quic_priority_incremental_support ? "" : "No"),
+                       "Incremental"});
 }
 
 std::vector<TestParams> GetTestParams() {
@@ -118,10 +114,8 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       quic::AllSupportedVersions();
   for (const auto& version : all_supported_versions) {
-    params.push_back(TestParams{version, false, false});
-    params.push_back(TestParams{version, false, true});
-    params.push_back(TestParams{version, true, false});
-    params.push_back(TestParams{version, true, true});
+    params.push_back(TestParams{version, false});
+    params.push_back(TestParams{version, true});
   }
   return params;
 }
@@ -277,8 +271,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
 
   QuicHttpStreamTest()
       : version_(GetParam().version),
-        client_headers_include_h2_stream_dependency_(
-            GetParam().client_headers_include_h2_stream_dependency),
         crypto_config_(
             quic::test::crypto_test_utils::ProofVerifierForTesting()),
         read_buffer_(base::MakeRefCounted<IOBufferWithSize>(4096)),
@@ -290,7 +282,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
                       &clock_,
                       kDefaultServerHostName,
                       quic::Perspective::IS_CLIENT,
-                      client_headers_include_h2_stream_dependency_,
                       true),
         server_maker_(version_,
                       connection_id_,
@@ -429,8 +420,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         kQuicYieldAfterPacketsRead,
         quic::QuicTime::Delta::FromMilliseconds(
             kQuicYieldAfterDurationMilliseconds),
-        client_headers_include_h2_stream_dependency_, /*cert_verify_flags=*/0,
-        quic::test::DefaultQuicConfig(),
+        /*cert_verify_flags=*/0, quic::test::DefaultQuicConfig(),
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
         "CONNECTION_UNKNOWN", dns_start, dns_end,
         std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
@@ -505,25 +495,11 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
       bool fin,
       RequestPriority request_priority,
       size_t* spdy_headers_frame_length) {
-    return InnerConstructRequestHeadersPacket(
-        packet_number, stream_id, should_include_version, fin, request_priority,
-        0, spdy_headers_frame_length);
-  }
-
-  std::unique_ptr<quic::QuicReceivedPacket> InnerConstructRequestHeadersPacket(
-      uint64_t packet_number,
-      quic::QuicStreamId stream_id,
-      bool should_include_version,
-      bool fin,
-      RequestPriority request_priority,
-      quic::QuicStreamId parent_stream_id,
-      size_t* spdy_headers_frame_length) {
     spdy::SpdyPriority priority =
         ConvertRequestPriorityToQuicPriority(request_priority);
     return client_maker_.MakeRequestHeadersPacket(
         packet_number, stream_id, should_include_version, fin, priority,
-        std::move(request_headers_), parent_stream_id,
-        spdy_headers_frame_length);
+        std::move(request_headers_), spdy_headers_frame_length);
   }
 
   std::unique_ptr<quic::QuicReceivedPacket>
@@ -533,15 +509,13 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
       bool should_include_version,
       bool fin,
       RequestPriority request_priority,
-      quic::QuicStreamId parent_stream_id,
       size_t* spdy_headers_frame_length,
       const std::vector<std::string>& data_writes) {
     spdy::SpdyPriority priority =
         ConvertRequestPriorityToQuicPriority(request_priority);
     return client_maker_.MakeRequestHeadersAndMultipleDataFramesPacket(
         packet_number, stream_id, should_include_version, fin, priority,
-        std::move(request_headers_), parent_stream_id,
-        spdy_headers_frame_length, data_writes);
+        std::move(request_headers_), spdy_headers_frame_length, data_writes);
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructRequestAndRstPacket(
@@ -550,15 +524,13 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
       bool should_include_version,
       bool fin,
       RequestPriority request_priority,
-      quic::QuicStreamId parent_stream_id,
       size_t* spdy_headers_frame_length,
       quic::QuicRstStreamErrorCode error_code) {
     spdy::SpdyPriority priority =
         ConvertRequestPriorityToQuicPriority(request_priority);
     return client_maker_.MakeRequestHeadersAndRstPacket(
         packet_number, stream_id, should_include_version, fin, priority,
-        std::move(request_headers_), parent_stream_id,
-        spdy_headers_frame_length, error_code);
+        std::move(request_headers_), spdy_headers_frame_length, error_code);
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> InnerConstructResponseHeadersPacket(
@@ -673,7 +645,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   quic::test::QuicFlagSaver saver_;
 
   const quic::ParsedQuicVersion version_;
-  const bool client_headers_include_h2_stream_dependency_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   NetLogWithSource net_log_with_source_{
@@ -832,7 +803,6 @@ TEST_P(QuicHttpStreamTest, LoadTimingTwoRequests) {
   AddWrite(InnerConstructRequestHeadersPacket(
       packet_number++, GetNthClientInitiatedBidirectionalStreamId(1),
       kIncludeVersion, kFin, DEFAULT_PRIORITY,
-      GetNthClientInitiatedBidirectionalStreamId(0),
       &spdy_request_header_frame_length));
   AddWrite(
       ConstructClientAckPacket(packet_number++, 3, 1));  // Ack the responses.
@@ -1375,12 +1345,12 @@ TEST_P(QuicHttpStreamTest, SendPostRequest) {
   if (!version_.HasIetfQuicFrames()) {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(
         packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-        kIncludeVersion, kFin, DEFAULT_PRIORITY, 0,
+        kIncludeVersion, kFin, DEFAULT_PRIORITY,
         &spdy_request_headers_frame_length, {kUploadData}));
   } else {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(
         packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-        kIncludeVersion, kFin, DEFAULT_PRIORITY, 0,
+        kIncludeVersion, kFin, DEFAULT_PRIORITY,
         &spdy_request_headers_frame_length, {header, kUploadData}));
   }
 
@@ -1458,12 +1428,12 @@ TEST_P(QuicHttpStreamTest, SendPostRequestAndReceiveSoloFin) {
   if (!version_.HasIetfQuicFrames()) {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(
         packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-        kIncludeVersion, kFin, DEFAULT_PRIORITY, 0,
+        kIncludeVersion, kFin, DEFAULT_PRIORITY,
         &spdy_request_headers_frame_length, {kUploadData}));
   } else {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(
         packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-        kIncludeVersion, kFin, DEFAULT_PRIORITY, 0,
+        kIncludeVersion, kFin, DEFAULT_PRIORITY,
         &spdy_request_headers_frame_length, {header, kUploadData}));
   }
 
@@ -1543,14 +1513,14 @@ TEST_P(QuicHttpStreamTest, SendChunkedPostRequest) {
   if (version_.HasIetfQuicFrames()) {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(
         packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-        kIncludeVersion, !kFin, DEFAULT_PRIORITY, 0,
+        kIncludeVersion, !kFin, DEFAULT_PRIORITY,
         &spdy_request_headers_frame_length, {header, kUploadData}));
     AddWrite(ConstructClientDataPacket(packet_number++, kIncludeVersion, kFin,
                                        {header + kUploadData}));
   } else {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(
         packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-        kIncludeVersion, !kFin, DEFAULT_PRIORITY, 0,
+        kIncludeVersion, !kFin, DEFAULT_PRIORITY,
         &spdy_request_headers_frame_length, {kUploadData}));
     AddWrite(ConstructClientDataPacket(packet_number++, kIncludeVersion, kFin,
                                        kUploadData));
@@ -1631,12 +1601,12 @@ TEST_P(QuicHttpStreamTest, SendChunkedPostRequestWithFinalEmptyDataPacket) {
   if (!version_.HasIetfQuicFrames()) {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(
         packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-        kIncludeVersion, !kFin, DEFAULT_PRIORITY, 0,
+        kIncludeVersion, !kFin, DEFAULT_PRIORITY,
         &spdy_request_headers_frame_length, {kUploadData}));
   } else {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(
         packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-        kIncludeVersion, !kFin, DEFAULT_PRIORITY, 0,
+        kIncludeVersion, !kFin, DEFAULT_PRIORITY,
         &spdy_request_headers_frame_length, {header, kUploadData}));
   }
   AddWrite(
@@ -1788,7 +1758,7 @@ TEST_P(QuicHttpStreamTest, SendChunkedPostRequestAbortedByResetStream) {
   if (version_.HasIetfQuicFrames()) {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(
         packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-        kIncludeVersion, !kFin, DEFAULT_PRIORITY, 0,
+        kIncludeVersion, !kFin, DEFAULT_PRIORITY,
         &spdy_request_headers_frame_length, {header, kUploadData}));
     AddWrite(ConstructClientAckPacket(packet_number++, 3, 1));
     AddWrite(client_maker_.MakeAckAndRstPacket(
@@ -1797,7 +1767,7 @@ TEST_P(QuicHttpStreamTest, SendChunkedPostRequestAbortedByResetStream) {
   } else {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(
         packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-        kIncludeVersion, !kFin, DEFAULT_PRIORITY, 0,
+        kIncludeVersion, !kFin, DEFAULT_PRIORITY,
         &spdy_request_headers_frame_length, {kUploadData}));
     AddWrite(ConstructClientAckPacket(packet_number++, 3, 1));
     AddWrite(client_maker_.MakeAckAndRstPacket(
@@ -1983,12 +1953,12 @@ TEST_P(QuicHttpStreamTest, SessionClosedDuringDoLoop) {
   if (!version_.HasIetfQuicFrames()) {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(
         packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-        kIncludeVersion, !kFin, DEFAULT_PRIORITY, 0,
+        kIncludeVersion, !kFin, DEFAULT_PRIORITY,
         &spdy_request_headers_frame_length, {kUploadData}));
   } else {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(
         packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-        kIncludeVersion, !kFin, DEFAULT_PRIORITY, 0,
+        kIncludeVersion, !kFin, DEFAULT_PRIORITY,
         &spdy_request_headers_frame_length, {header, kUploadData}));
   }
 
@@ -2150,12 +2120,12 @@ TEST_P(QuicHttpStreamTest, SessionClosedBeforeSendBundledBodyComplete) {
   if (!version_.HasIetfQuicFrames()) {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(
         packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-        kIncludeVersion, !kFin, DEFAULT_PRIORITY, 0,
+        kIncludeVersion, !kFin, DEFAULT_PRIORITY,
         &spdy_request_headers_frame_length, {kUploadData}));
   } else {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(
         packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-        kIncludeVersion, !kFin, DEFAULT_PRIORITY, 0,
+        kIncludeVersion, !kFin, DEFAULT_PRIORITY,
         &spdy_request_headers_frame_length, {header, kUploadData}));
   }
 
@@ -2711,7 +2681,7 @@ TEST_P(QuicHttpStreamTest, DataReadErrorSynchronous) {
     AddWrite(ConstructInitialSettingsPacket(packet_number++));
   AddWrite(ConstructRequestAndRstPacket(
       packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-      kIncludeVersion, !kFin, DEFAULT_PRIORITY, 0,
+      kIncludeVersion, !kFin, DEFAULT_PRIORITY,
       &spdy_request_headers_frame_length, quic::QUIC_ERROR_PROCESSING_STREAM));
 
   Initialize();

@@ -295,14 +295,6 @@ bool ShouldQuicEstimateInitialRtt(
       GetVariationParam(quic_trial_params, "estimate_initial_rtt"), "true");
 }
 
-bool ShouldQuicHeadersIncludeH2StreamDependencies(
-    const VariationParameters& quic_trial_params) {
-  return base::EqualsCaseInsensitiveASCII(
-      GetVariationParam(quic_trial_params,
-                        "headers_include_h2_stream_dependency"),
-      "true");
-}
-
 bool ShouldQuicMigrateSessionsOnNetworkChangeV2(
     const VariationParameters& quic_trial_params) {
   return base::EqualsCaseInsensitiveASCII(
@@ -612,8 +604,6 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
     }
     quic_params->estimate_initial_rtt =
         ShouldQuicEstimateInitialRtt(quic_trial_params);
-    quic_params->headers_include_h2_stream_dependency =
-        ShouldQuicHeadersIncludeH2StreamDependencies(quic_trial_params);
     quic_params->migrate_sessions_on_network_change_v2 =
         ShouldQuicMigrateSessionsOnNetworkChangeV2(quic_trial_params);
     quic_params->migrate_sessions_early_v2 =

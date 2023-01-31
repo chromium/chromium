@@ -602,7 +602,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       int max_migrations_to_non_default_network_on_path_degrading,
       int yield_after_packets,
       quic::QuicTime::Delta yield_after_duration,
-      bool headers_include_h2_stream_dependency,
       int cert_verify_flags,
       const quic::QuicConfig& config,
       std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config,
@@ -698,10 +697,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       const spdy::SpdyStreamPrecedence& precedence,
       quiche::QuicheReferenceCountedPointer<quic::QuicAckListenerInterface>
           ack_listener) override;
-  void UnregisterStreamPriority(quic::QuicStreamId id, bool is_static) override;
-  void UpdateStreamPriority(
-      quic::QuicStreamId id,
-      const quic::QuicStreamPriority& new_priority) override;
   void OnHttp3GoAway(uint64_t id) override;
   void OnAcceptChFrameReceivedViaAlps(
       const quic::AcceptChFrame& frame) override;
@@ -1143,11 +1138,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // True if read errors should be ignored. Set when migration on write error is
   // posted and unset until the first packet is written after migration.
   bool ignore_read_error_ = false;
-
-  // If true, client headers will include HTTP/2 stream dependency info derived
-  // from spdy::SpdyStreamPrecedence.
-  bool headers_include_h2_stream_dependency_;
-  Http2PriorityDependencies priority_dependency_state_;
 
   bool attempted_zero_rtt_ = false;
 

@@ -32,19 +32,6 @@ namespace net::test {
 
 class QuicTestPacketMaker {
  public:
-  struct Http2StreamDependency {
-    quic::QuicStreamId stream_id;
-    quic::QuicStreamId parent_stream_id;
-    spdy::SpdyPriority spdy_priority;
-  };
-
-  // |client_headers_include_h2_stream_dependency| affects the output of
-  // the MakeRequestHeaders...() methods. If its value is true, then request
-  // headers are constructed with the exclusive flag set to true and the parent
-  // stream id set to the |parent_stream_id| param of MakeRequestHeaders...().
-  // Otherwise, headers are constructed with the exclusive flag set to false and
-  // the parent stream ID set to 0 (ignoring the |parent_stream_id| param).
-  //
   // |client_priority_uses_incremental| affects the output of any method that
   // includes HTTP3 priority data. The protocol default is to omit the
   // incremental flag in the priority data but HTTP streams may enable it
@@ -54,7 +41,6 @@ class QuicTestPacketMaker {
                       const quic::QuicClock* clock,
                       const std::string& host,
                       quic::Perspective perspective,
-                      bool client_headers_include_h2_stream_dependency,
                       bool client_priority_uses_incremental = false);
 
   QuicTestPacketMaker(const QuicTestPacketMaker&) = delete;
@@ -364,7 +350,6 @@ class QuicTestPacketMaker {
       bool fin,
       spdy::SpdyPriority spdy_priority,
       spdy::Http2HeaderBlock headers,
-      quic::QuicStreamId parent_stream_id,
       size_t* spdy_headers_frame_length,
       const std::vector<std::string>& data_writes);
 
@@ -377,7 +362,6 @@ class QuicTestPacketMaker {
       bool fin,
       spdy::SpdyPriority spdy_priority,
       spdy::Http2HeaderBlock headers,
-      quic::QuicStreamId parent_stream_id,
       size_t* spdy_headers_frame_length,
       bool should_include_priority_frame = true);
 
@@ -390,7 +374,6 @@ class QuicTestPacketMaker {
       bool fin,
       spdy::SpdyPriority spdy_priority,
       spdy::Http2HeaderBlock headers,
-      quic::QuicStreamId parent_stream_id,
       size_t* spdy_headers_frame_length);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRequestHeadersAndRstPacket(
@@ -400,7 +383,6 @@ class QuicTestPacketMaker {
       bool fin,
       spdy::SpdyPriority spdy_priority,
       spdy::Http2HeaderBlock headers,
-      quic::QuicStreamId parent_stream_id,
       size_t* spdy_headers_frame_length,
       quic::QuicRstStreamErrorCode error_code);
 
@@ -434,7 +416,6 @@ class QuicTestPacketMaker {
       uint64_t packet_number,
       bool should_include_version,
       quic::QuicStreamId id,
-      quic::QuicStreamId parent_stream_id,
       spdy::SpdyPriority spdy_priority);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndPriorityPacket(
@@ -443,21 +424,7 @@ class QuicTestPacketMaker {
       uint64_t largest_received,
       uint64_t smallest_received,
       quic::QuicStreamId id,
-      quic::QuicStreamId parent_stream_id,
       spdy::SpdyPriority spdy_priority);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeMultiplePriorityFramesPacket(
-      uint64_t packet_number,
-      bool should_include_version,
-      const std::vector<Http2StreamDependency>& priority_frames);
-
-  std::unique_ptr<quic::QuicReceivedPacket>
-  MakeAckAndMultiplePriorityFramesPacket(
-      uint64_t packet_number,
-      bool should_include_version,
-      uint64_t largest_received,
-      uint64_t smallest_received,
-      const std::vector<Http2StreamDependency>& priority_frames);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRetransmissionPacket(
       uint64_t original_packet_number,
@@ -574,8 +541,7 @@ class QuicTestPacketMaker {
       quic::QuicStreamId stream_id,
       bool fin,
       spdy::SpdyPriority spdy_priority,
-      spdy::Http2HeaderBlock headers,
-      quic::QuicStreamId parent_stream_id);
+      spdy::Http2HeaderBlock headers);
 
   bool ShouldIncludeVersion(bool include_version) const;
 
@@ -613,9 +579,6 @@ class QuicTestPacketMaker {
   quic::Perspective perspective_;
   quic::EncryptionLevel encryption_level_ = quic::ENCRYPTION_FORWARD_SECURE;
   quic::QuicLongHeaderType long_header_type_ = quic::INVALID_PACKET_TYPE;
-  // If true, generated request headers will include non-default HTTP2 stream
-  // dependency info.
-  bool client_headers_include_h2_stream_dependency_;
 
   // The value of incremental flag in generated priority headers.
   bool client_priority_uses_incremental_;

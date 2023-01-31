@@ -1965,46 +1965,19 @@ TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImpl) {
   EXPECT_TRUE(waiter.used_proxy_info().is_direct());
 }
 
-struct TestParams {
-  quic::ParsedQuicVersion version;
-  bool client_headers_include_h2_stream_dependency;
-};
-
-// Used by ::testing::PrintToStringParamName().
-std::string PrintToString(const TestParams& p) {
-  return base::StrCat(
-      {ParsedQuicVersionToString(p.version), "_",
-       (p.client_headers_include_h2_stream_dependency ? "" : "No"),
-       "Dependency"});
-}
-
-std::vector<TestParams> GetTestParams() {
-  std::vector<TestParams> params;
-  quic::ParsedQuicVersionVector all_supported_versions =
-      quic::AllSupportedVersions();
-  for (const auto& version : all_supported_versions) {
-    params.push_back(TestParams{version, false});
-    params.push_back(TestParams{version, true});
-  }
-  return params;
-}
-
 class HttpStreamFactoryBidirectionalQuicTest
     : public TestWithTaskEnvironment,
-      public ::testing::WithParamInterface<TestParams> {
+      public ::testing::WithParamInterface<quic::ParsedQuicVersion> {
  protected:
   HttpStreamFactoryBidirectionalQuicTest()
       : default_url_(kDefaultUrl),
-        version_(GetParam().version),
-        client_headers_include_h2_stream_dependency_(
-            GetParam().client_headers_include_h2_stream_dependency),
+        version_(GetParam()),
         client_packet_maker_(version_,
                              quic::QuicUtils::CreateRandomConnectionId(
                                  quic_context_.random_generator()),
                              quic_context_.clock(),
                              "www.example.org",
-                             quic::Perspective::IS_CLIENT,
-                             client_headers_include_h2_stream_dependency_),
+                             quic::Perspective::IS_CLIENT),
         server_packet_maker_(version_,
                              quic::QuicUtils::CreateRandomConnectionId(
                                  quic_context_.random_generator()),
@@ -2026,8 +1999,6 @@ class HttpStreamFactoryBidirectionalQuicTest
     params_.enable_quic = true;
     quic_context_.params()->supported_versions =
         quic::test::SupportedVersions(version_);
-    quic_context_.params()->headers_include_h2_stream_dependency =
-        client_headers_include_h2_stream_dependency_;
 
     HttpNetworkSessionContext session_context;
     session_context.http_server_properties = &http_server_properties_;
@@ -2096,7 +2067,6 @@ class HttpStreamFactoryBidirectionalQuicTest
  private:
   quic::test::QuicFlagSaver saver_;
   const quic::ParsedQuicVersion version_;
-  const bool client_headers_include_h2_stream_dependency_;
   MockQuicContext quic_context_;
   test::QuicTestPacketMaker client_packet_maker_;
   test::QuicTestPacketMaker server_packet_maker_;
@@ -2118,7 +2088,7 @@ class HttpStreamFactoryBidirectionalQuicTest
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
                          HttpStreamFactoryBidirectionalQuicTest,
-                         ::testing::ValuesIn(GetTestParams()),
+                         ::testing::ValuesIn(quic::AllSupportedVersions()),
                          ::testing::PrintToStringParamName());
 
 TEST_P(HttpStreamFactoryBidirectionalQuicTest,
@@ -2143,7 +2113,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
       /*should_include_version=*/true,
       /*fin=*/true, priority,
       client_packet_maker().GetRequestHeaders("GET", "https", "/"),
-      /*parent_stream_id=*/0, &spdy_headers_frame_length));
+      &spdy_headers_frame_length));
   size_t spdy_response_headers_frame_length;
   mock_quic_data.AddRead(server_packet_maker().MakeResponseHeadersPacket(
       1, GetNthClientInitiatedBidirectionalStreamId(0),
@@ -2235,7 +2205,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
       /*should_include_version=*/true,
       /*fin=*/true, priority,
       client_packet_maker().GetRequestHeaders("GET", "https", "/"),
-      /*parent_stream_id=*/0, &spdy_headers_frame_length));
+      &spdy_headers_frame_length));
   size_t spdy_response_headers_frame_length;
   mock_quic_data.AddRead(server_packet_maker().MakeResponseHeadersPacket(
       1, GetNthClientInitiatedBidirectionalStreamId(0),
@@ -2491,7 +2461,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
       /*should_include_version=*/true,
       /*fin=*/true, priority,
       client_packet_maker().GetRequestHeaders("GET", "https", "/"),
-      /*parent_stream_id=*/0, &spdy_headers_frame_length));
+      &spdy_headers_frame_length));
   size_t spdy_response_headers_frame_length;
   mock_quic_data.AddRead(server_packet_maker().MakeResponseHeadersPacket(
       1, GetNthClientInitiatedBidirectionalStreamId(0),
@@ -2514,7 +2484,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
       /*should_include_version=*/true,
       /*fin=*/true, priority,
       client_packet_maker().GetRequestHeaders("GET", "https", "/"),
-      /*parent_stream_id=*/0, &spdy_headers_frame_length));
+      &spdy_headers_frame_length));
   mock_quic_data2.AddRead(server_packet_maker().MakeResponseHeadersPacket(
       1, GetNthClientInitiatedBidirectionalStreamId(0),
       /*should_include_version=*/false,
@@ -3331,7 +3301,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
       /*should_include_version=*/true,
       /*fin=*/true, priority,
       client_packet_maker().GetRequestHeaders("GET", "https", "/"),
-      /*parent_stream_id=*/0, &spdy_headers_frame_length));
+      &spdy_headers_frame_length));
   size_t spdy_response_headers_frame_length;
   mock_quic_data.AddRead(server_packet_maker().MakeResponseHeadersPacket(
       1, GetNthClientInitiatedBidirectionalStreamId(0),
