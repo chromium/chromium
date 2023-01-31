@@ -638,8 +638,17 @@ void QuicChromiumClientSession::Handle::OnRendezvousResult(
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
 std::unique_ptr<WebSocketQuicStreamAdapter>
 QuicChromiumClientSession::Handle::CreateWebSocketQuicStreamAdapter(
-    WebSocketQuicStreamAdapter::Delegate* delegate) {
-  return session_->CreateWebSocketQuicStreamAdapter(delegate);
+    WebSocketQuicStreamAdapter::Delegate* delegate,
+    base::OnceCallback<void(std::unique_ptr<WebSocketQuicStreamAdapter>)>
+        callback,
+    const NetworkTrafficAnnotationTag& traffic_annotation) {
+  DCHECK(!stream_request_);
+  // std::make_unique does not work because the StreamRequest constructor
+  // is private.
+  stream_request_ = base::WrapUnique(new StreamRequest(
+      this, /*requires_confirmation=*/false, traffic_annotation));
+  return session_->CreateWebSocketQuicStreamAdapter(
+      delegate, std::move(callback), stream_request_.get());
 }
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
@@ -1681,6 +1690,18 @@ void QuicChromiumClientSession::OnCanCreateNewOutgoingStream(
     UMA_HISTOGRAM_TIMES("Net.QuicSession.PendingStreamsWaitTime",
                         tick_clock_->NowTicks() - request->pending_start_time_);
     stream_requests_.pop_front();
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+    if (request->for_websockets_) {
+      std::unique_ptr<WebSocketQuicStreamAdapter> adapter =
+          CreateWebSocketQuicStreamAdapterImpl(
+              request->websocket_adapter_delegate_);
+      request->websocket_adapter_delegate_ = nullptr;
+      std::move(request->start_websocket_callback_).Run(std::move(adapter));
+      continue;
+    }
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+
     request->OnRequestCompleteSuccess(
         CreateOutgoingReliableStreamImpl(request->traffic_annotation())
             ->CreateHandle());
@@ -3962,13 +3983,10 @@ QuicChromiumClientSession::GetDnsAliasesForSessionKey(
 
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
 std::unique_ptr<WebSocketQuicStreamAdapter>
-QuicChromiumClientSession::CreateWebSocketQuicStreamAdapter(
+QuicChromiumClientSession::CreateWebSocketQuicStreamAdapterImpl(
     WebSocketQuicStreamAdapter::Delegate* delegate) {
   DCHECK(connection()->connected());
-  if (!CanOpenNextOutgoingBidirectionalStream()) {
-    return nullptr;
-  }
-
+  DCHECK(CanOpenNextOutgoingBidirectionalStream());
   auto websocket_quic_spdy_stream = std::make_unique<WebSocketQuicSpdyStream>(
       GetNextOutgoingBidirectionalStreamId(), this, quic::BIDIRECTIONAL);
 
@@ -3978,6 +3996,28 @@ QuicChromiumClientSession::CreateWebSocketQuicStreamAdapter(
 
   ++num_total_streams_;
   return adapter;
+}
+
+std::unique_ptr<WebSocketQuicStreamAdapter>
+QuicChromiumClientSession::CreateWebSocketQuicStreamAdapter(
+    WebSocketQuicStreamAdapter::Delegate* delegate,
+    base::OnceCallback<void(std::unique_ptr<WebSocketQuicStreamAdapter>)>
+        callback,
+    StreamRequest* stream_request) {
+  DCHECK(connection()->connected());
+  if (!CanOpenNextOutgoingBidirectionalStream()) {
+    stream_request->pending_start_time_ = tick_clock_->NowTicks();
+    stream_request->for_websockets_ = true;
+    stream_request->websocket_adapter_delegate_ = delegate;
+    stream_request->start_websocket_callback_ = std::move(callback);
+
+    stream_requests_.push_back(stream_request);
+    UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.NumPendingStreamRequests",
+                              stream_requests_.size());
+    return nullptr;
+  }
+
+  return CreateWebSocketQuicStreamAdapterImpl(delegate);
 }
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 

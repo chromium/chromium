@@ -112,17 +112,17 @@ int WebSocketHttp3HandshakeStream::SendRequest(
 
   callback_ = std::move(callback);
 
-  stream_adapter_ = session_->CreateWebSocketQuicStreamAdapter(this);
-  if (!stream_adapter_) {
-    // TODO(momoka): Add request to streamRequest and postpone the creation of
-    // stream. Also, add a boolean 'for_websocket' and a
-    // WebSocketHttp3HandshakeStream member to streamRequest to indicate if a
-    // particular request is for websockets. OnCanCreateNewOutgoingStream() will
-    // create a stream when we can create a new stream and call Start
-    // RequestCallback().
+  std::unique_ptr<WebSocketQuicStreamAdapter> stream_adapter =
+      session_->CreateWebSocketQuicStreamAdapter(
+          this,
+          base::BindOnce(
+              &WebSocketHttp3HandshakeStream::ReceiveAdapterAndStartRequest,
+              base::Unretained(this)),
+          NetworkTrafficAnnotationTag(request_info_->traffic_annotation));
+  if (!stream_adapter) {
     return ERR_IO_PENDING;
   }
-  StartRequestCallback();
+  ReceiveAdapterAndStartRequest(std::move(stream_adapter));
   return OK;
 }
 
@@ -315,7 +315,9 @@ void WebSocketHttp3HandshakeStream::OnClose(int status) {
   }
 }
 
-void WebSocketHttp3HandshakeStream::StartRequestCallback() {
+void WebSocketHttp3HandshakeStream::ReceiveAdapterAndStartRequest(
+    std::unique_ptr<WebSocketQuicStreamAdapter> adapter) {
+  stream_adapter_ = std::move(adapter);
   // WriteHeaders returns synchronously.
   stream_adapter_->WriteHeaders(std::move(http3_request_headers_), false);
 }

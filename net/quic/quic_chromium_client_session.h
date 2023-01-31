@@ -304,7 +304,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     // stream could not be made.
     std::unique_ptr<WebSocketQuicStreamAdapter>
     CreateWebSocketQuicStreamAdapter(
-        WebSocketQuicStreamAdapter::Delegate* delegate);
+        WebSocketQuicStreamAdapter::Delegate* delegate,
+        base::OnceCallback<void(std::unique_ptr<WebSocketQuicStreamAdapter>)>
+            callback,
+        const NetworkTrafficAnnotationTag& traffic_annotation);
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
    private:
@@ -437,6 +440,14 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     State next_state_;
 
     const NetworkTrafficAnnotationTag traffic_annotation_;
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+    // For creation of streams for WebSockets over HTTP/3
+    bool for_websockets_ = false;
+    raw_ptr<WebSocketQuicStreamAdapter::Delegate> websocket_adapter_delegate_;
+    base::OnceCallback<void(std::unique_ptr<WebSocketQuicStreamAdapter>)>
+        start_websocket_callback_;
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
     base::WeakPtrFactory<StreamRequest> weak_factory_{this};
   };
@@ -918,11 +929,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   const std::set<std::string>& GetDnsAliasesForSessionKey(
       const QuicSessionKey& key) const;
 
-#if BUILDFLAG(ENABLE_WEBSOCKETS)
-  std::unique_ptr<WebSocketQuicStreamAdapter> CreateWebSocketQuicStreamAdapter(
-      WebSocketQuicStreamAdapter::Delegate* delegate);
-#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
-
  protected:
   // quic::QuicSession methods:
   bool ShouldCreateIncomingStream(quic::QuicStreamId id) override;
@@ -1045,6 +1051,18 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void OnCryptoHandshakeComplete();
 
   void LogZeroRttStats();
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+  std::unique_ptr<WebSocketQuicStreamAdapter>
+  CreateWebSocketQuicStreamAdapterImpl(
+      WebSocketQuicStreamAdapter::Delegate* delegate);
+
+  std::unique_ptr<WebSocketQuicStreamAdapter> CreateWebSocketQuicStreamAdapter(
+      WebSocketQuicStreamAdapter::Delegate* delegate,
+      base::OnceCallback<void(std::unique_ptr<WebSocketQuicStreamAdapter>)>
+          callback,
+      StreamRequest* stream_request);
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
   QuicSessionKey session_key_;
   bool require_confirmation_;

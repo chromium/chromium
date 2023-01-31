@@ -27,6 +27,7 @@
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/mock_quic_data.h"
 #include "net/quic/quic_chromium_alarm_factory.h"
+#include "net/quic/quic_chromium_client_session_peer.h"
 #include "net/quic/quic_chromium_connection_helper.h"
 #include "net/quic/quic_server_info.h"
 #include "net/quic/quic_test_packet_maker.h"
@@ -48,10 +49,13 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_stream_id_manager.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_clock.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_connection_peer.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_session_peer.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/websockets/websocket_http3_handshake_stream.h"
 #include "net/websockets/websocket_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1276,9 +1280,47 @@ class WebSocketQuicStreamAdapterTest
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
 };
 
+std::vector<quic::ParsedQuicVersion> Http3Versions() {
+  std::vector<quic::ParsedQuicVersion> versions;
+  for (const auto& version : quic::AllSupportedVersions()) {
+    if (version.UsesHttp3()) {
+      versions.push_back(version);
+    }
+  }
+  return versions;
+}
+
+// Like net::TestCompletionCallback, but for a callback that takes an unbound
+// parameter of type WebSocketQuicStreamAdapter.
+struct WebSocketQuicStreamAdapterIsPendingHelper {
+  bool operator()(
+      const std::unique_ptr<WebSocketQuicStreamAdapter>& adapter) const {
+    return !adapter;
+  }
+};
+
+using TestWebSocketQuicStreamAdapterCompletionCallbackBase =
+    net::internal::TestCompletionCallbackTemplate<
+        std::unique_ptr<WebSocketQuicStreamAdapter>,
+        WebSocketQuicStreamAdapterIsPendingHelper>;
+
+class TestWebSocketQuicStreamAdapterCompletionCallback
+    : public TestWebSocketQuicStreamAdapterCompletionCallbackBase {
+ public:
+  base::OnceCallback<void(std::unique_ptr<WebSocketQuicStreamAdapter>)>
+  callback();
+};
+
+base::OnceCallback<void(std::unique_ptr<WebSocketQuicStreamAdapter>)>
+TestWebSocketQuicStreamAdapterCompletionCallback::callback() {
+  return base::BindOnce(
+      &TestWebSocketQuicStreamAdapterCompletionCallback::SetResult,
+      base::Unretained(this));
+}
+
 INSTANTIATE_TEST_SUITE_P(QuicVersion,
                          WebSocketQuicStreamAdapterTest,
-                         ::testing::ValuesIn(quic::AllSupportedVersions()),
+                         ::testing::ValuesIn(Http3Versions()),
                          ::testing::PrintToStringParamName());
 
 TEST_P(WebSocketQuicStreamAdapterTest, Disconnect) {
@@ -1298,12 +1340,68 @@ TEST_P(WebSocketQuicStreamAdapterTest, Disconnect) {
       GetQuicSessionHandle();
   ASSERT_TRUE(session_handle);
 
+  TestWebSocketQuicStreamAdapterCompletionCallback callback;
   std::unique_ptr<WebSocketQuicStreamAdapter> adapter =
-      session_handle->CreateWebSocketQuicStreamAdapter(&mock_delegate_);
+      session_handle->CreateWebSocketQuicStreamAdapter(
+          &mock_delegate_, callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
   ASSERT_TRUE(adapter);
   EXPECT_TRUE(adapter->is_initialized());
   adapter->Disconnect();
   // TODO(momoka): Add tests to test both destruction orders.
+}
+
+TEST_P(WebSocketQuicStreamAdapterTest, AsyncAdapterCreation) {
+  const size_t kMaxOpenStreams = 50;
+
+  int packet_number = 1;
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           client_maker_.MakeStreamsBlockedPacket(
+                               packet_number++, true, kMaxOpenStreams,
+                               /* unidirectional = */ false));
+
+  mock_quic_data_.AddRead(
+      ASYNC, server_maker_.MakeMaxStreamsPacket(1, true, kMaxOpenStreams + 2,
+                                                /* unidirectional = */ false));
+
+  mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);
+  mock_quic_data_.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+
+  Initialize();
+
+  std::vector<QuicChromiumClientStream*> streams;
+
+  for (size_t i = 0; i < kMaxOpenStreams; i++) {
+    QuicChromiumClientStream* stream =
+        QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get());
+    ASSERT_TRUE(stream);
+    streams.push_back(stream);
+    EXPECT_EQ(i + 1, session_->GetNumActiveStreams());
+  }
+
+  net::QuicChromiumClientSession::Handle* session_handle =
+      GetQuicSessionHandle();
+  ASSERT_TRUE(session_handle);
+
+  // Creating an adapter should fail because of the stream limit.
+  TestWebSocketQuicStreamAdapterCompletionCallback callback;
+  std::unique_ptr<WebSocketQuicStreamAdapter> adapter =
+      session_handle->CreateWebSocketQuicStreamAdapter(
+          &mock_delegate_, callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_EQ(adapter, nullptr);
+  EXPECT_FALSE(callback.have_result());
+  EXPECT_EQ(kMaxOpenStreams, session_->GetNumActiveStreams());
+
+  // Read MAX_STREAMS frame that makes it possible to open WebSocket stream.
+  session_->StartReading();
+  callback.WaitForResult();
+  EXPECT_EQ(kMaxOpenStreams + 1, session_->GetNumActiveStreams());
+
+  // Close connection.
+  mock_quic_data_.Resume();
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_P(WebSocketQuicStreamAdapterTest, SendRequestHeadersThenDisconnect) {
@@ -1332,9 +1430,10 @@ TEST_P(WebSocketQuicStreamAdapterTest, SendRequestHeadersThenDisconnect) {
   net::QuicChromiumClientSession::Handle* session_handle =
       GetQuicSessionHandle();
   ASSERT_TRUE(session_handle);
-
+  TestWebSocketQuicStreamAdapterCompletionCallback callback;
   std::unique_ptr<WebSocketQuicStreamAdapter> adapter =
-      session_handle->CreateWebSocketQuicStreamAdapter(&mock_delegate_);
+      session_handle->CreateWebSocketQuicStreamAdapter(
+          &mock_delegate_, callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
   ASSERT_TRUE(adapter);
   EXPECT_TRUE(adapter->is_initialized());
 
@@ -1384,8 +1483,10 @@ TEST_P(WebSocketQuicStreamAdapterTest, OnHeadersReceivedThenDisconnect) {
       GetQuicSessionHandle();
   ASSERT_TRUE(session_handle);
 
+  TestWebSocketQuicStreamAdapterCompletionCallback callback;
   std::unique_ptr<WebSocketQuicStreamAdapter> adapter =
-      session_handle->CreateWebSocketQuicStreamAdapter(&mock_delegate_);
+      session_handle->CreateWebSocketQuicStreamAdapter(
+          &mock_delegate_, callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
   ASSERT_TRUE(adapter);
   EXPECT_TRUE(adapter->is_initialized());
 

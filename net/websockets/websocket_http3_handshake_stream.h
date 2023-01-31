@@ -107,9 +107,10 @@ class NET_EXPORT_PRIVATE WebSocketHttp3HandshakeStream final
       const spdy::Http2HeaderBlock& response_headers) override;
   void OnClose(int status) override;
 
-  void StartRequestCallback();
-
  private:
+  void ReceiveAdapterAndStartRequest(
+      std::unique_ptr<WebSocketQuicStreamAdapter> adapter);
+
   // Validates the response and sends the finished handshake event.
   int ValidateResponse();
 
