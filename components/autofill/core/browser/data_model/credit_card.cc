@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/credit_card.h"
 
+#include <math.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -391,15 +392,27 @@ AutofillMetadata CreditCard::GetMetadata() const {
 }
 
 double CreditCard::GetRankingScore(base::Time current_time) const {
-  int virtual_card_boost = 0;
-  if (virtual_card_enrollment_state_ == VirtualCardEnrollmentState::ENROLLED) {
-    virtual_card_boost =
-        features::kAutofillRankingFormulaVirtualCardBoost.Get() *
-        exp(-GetDaysSinceLastUse(current_time) /
-            features::kAutofillRankingFormulaVirtualCardBoostHalfLife.Get());
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableRankingFormulaCreditCards)) {
+    int virtual_card_boost =
+        virtual_card_enrollment_state_ != VirtualCardEnrollmentState::ENROLLED
+            ? 0
+            : features::kAutofillRankingFormulaVirtualCardBoost.Get() *
+                  exp(-GetDaysSinceLastUse(current_time) /
+                      features::kAutofillRankingFormulaVirtualCardBoostHalfLife
+                          .Get());
+
+    // Exponentially decay the use count by the days since the data model was
+    // last used. Add a virtual card boost if the model is a virtual card.
+    return (log10(use_count() + 1) *
+            exp(-GetDaysSinceLastUse(current_time) /
+                features::kAutofillRankingFormulaCreditCardsUsageHalfLife
+                    .Get())) +
+           virtual_card_boost;
   }
 
-  return AutofillDataModel::GetRankingScore(current_time) + virtual_card_boost;
+  // Default to legacy frecency scoring.
+  return AutofillDataModel::GetRankingScore(current_time);
 }
 
 bool CreditCard::SetMetadata(const AutofillMetadata& metadata) {

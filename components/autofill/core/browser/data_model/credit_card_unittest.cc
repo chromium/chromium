@@ -1993,10 +1993,11 @@ class VirtualCardRankingTest
     : public testing::TestWithParam<VirtualCardRankingTestCase> {};
 
 TEST_P(VirtualCardRankingTest, HasGreaterRankingThan) {
-  // Enable kAutofillEnableRankingFormula so that it uses new formula instead of
-  // frecency.
+  // Enable kAutofillEnableRankingFormulaCreditCards so that it uses new formula
+  // instead of frecency.
   base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(features::kAutofillEnableRankingFormula);
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableRankingFormulaCreditCards);
 
   auto test_case = GetParam();
 
@@ -2005,8 +2006,10 @@ TEST_P(VirtualCardRankingTest, HasGreaterRankingThan) {
   model_a.set_use_count(test_case.use_count_a);
   model_a.set_use_date(test_case.use_date_a);
 
-  TestAutofillDataModel model_b(test_case.guid_b, test_case.use_count_b,
-                                test_case.use_date_b);
+  CreditCard model_b = test::GetCreditCard();
+  model_b.set_guid(test_case.guid_b);
+  model_b.set_use_count(test_case.use_count_b);
+  model_b.set_use_date(test_case.use_date_b);
 
   EXPECT_EQ(test_case.expectation == GREATER,
             model_a.HasGreaterRankingThan(&model_b, current_time));

@@ -2730,7 +2730,8 @@ TEST_F(PersonalDataManagerTest,
        GetProfileSuggestions_AddressContactFormWithProfiles) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableRankingFormula,
+      /*enabled_features=*/{features::
+                                kAutofillEnableRankingFormulaAddressProfiles,
                             features::kAutofillUseImprovedLabelDisambiguation},
       /*disabled_features=*/{});
 
