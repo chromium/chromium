@@ -46,12 +46,7 @@ class QuietModeFeaturePodControllerTest
   }
 
   void TearDown() override {
-    if (IsQsRevampEnabled()) {
-      tile_.reset();
-    } else {
-      button_.reset();
-    }
-    controller_.reset();
+    TearDownButton();
     NoSessionAshTestBase::TearDown();
   }
 
@@ -69,7 +64,17 @@ class QuietModeFeaturePodControllerTest
     }
   }
 
+  void TearDownButton() {
+    if (IsQsRevampEnabled()) {
+      tile_.reset();
+    } else {
+      button_.reset();
+    }
+    controller_.reset();
+  }
+
   UnifiedSystemTrayController* tray_controller() {
+    DCHECK(GetPrimaryUnifiedSystemTray()->bubble());
     return GetPrimaryUnifiedSystemTray()
         ->bubble()
         ->unified_system_tray_controller();
@@ -81,6 +86,10 @@ class QuietModeFeaturePodControllerTest
 
   bool IsButtonVisible() {
     return IsQsRevampEnabled() ? tile_->GetVisible() : button_->GetVisible();
+  }
+
+  bool IsButtonToggled() {
+    return IsQsRevampEnabled() ? tile_->IsToggled() : button_->IsToggled();
   }
 
   FeaturePodButton* button() { return button_.get(); }
@@ -121,55 +130,49 @@ TEST_P(QuietModeFeaturePodControllerTest, ButtonVisibilityLocked) {
 }
 
 TEST_P(QuietModeFeaturePodControllerTest, IconUMATracking) {
-  // TODO(b/263505103): Implement Feature Tile metrics.
-  if (IsQsRevampEnabled()) {
-    return;
-  }
-
   CreateUserSessions(1);
   SetUpButton();
   message_center::MessageCenter::Get()->SetQuietMode(false);
 
+  std::string histogram_prefix;
+  if (IsQsRevampEnabled()) {
+    histogram_prefix = "Ash.QuickSettings.FeaturePod.";
+  } else {
+    histogram_prefix = "Ash.UnifiedSystemView.FeaturePod.";
+  }
+
   // No metrics logged before clicking on any views.
   auto histogram_tester = std::make_unique<base::HistogramTester>();
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
-      /*count=*/0);
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
-      /*count=*/0);
-  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
-                                     /*count=*/0);
+  histogram_tester->ExpectTotalCount(histogram_prefix + "ToggledOn",
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectTotalCount(histogram_prefix + "ToggledOff",
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectTotalCount(histogram_prefix + "DiveIn",
+                                     /*expected_count=*/0);
 
   // Turn on quiet mode when pressing on the icon.
   PressIcon();
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
-      /*count=*/1);
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
-      /*count=*/0);
-  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
-                                     /*count=*/0);
-  histogram_tester->ExpectBucketCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
-      QsFeatureCatalogName::kQuietMode,
-      /*expected_count=*/1);
+  histogram_tester->ExpectTotalCount(histogram_prefix + "ToggledOn",
+                                     /*expected_count=*/1);
+  histogram_tester->ExpectTotalCount(histogram_prefix + "ToggledOff",
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectTotalCount(histogram_prefix + "DiveIn",
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectBucketCount(histogram_prefix + "ToggledOn",
+                                      QsFeatureCatalogName::kQuietMode,
+                                      /*expected_count=*/1);
 
   // Turn off quiet mode when pressing on the icon.
   PressIcon();
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
-      /*count=*/1);
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
-      /*count=*/1);
-  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
-                                     /*count=*/0);
-  histogram_tester->ExpectBucketCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
-      QsFeatureCatalogName::kQuietMode,
-      /*expected_count=*/1);
+  histogram_tester->ExpectTotalCount(histogram_prefix + "ToggledOn",
+                                     /*expected_count=*/1);
+  histogram_tester->ExpectTotalCount(histogram_prefix + "ToggledOff",
+                                     /*expected_count=*/1);
+  histogram_tester->ExpectTotalCount(histogram_prefix + "DiveIn",
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectBucketCount(histogram_prefix + "ToggledOff",
+                                      QsFeatureCatalogName::kQuietMode,
+                                      /*expected_count=*/1);
 }
 
 TEST_P(QuietModeFeaturePodControllerTest, LabelUMATracking) {
@@ -221,6 +224,27 @@ TEST_P(QuietModeFeaturePodControllerTest, LabelUMATracking) {
         QsFeatureCatalogName::kQuietMode,
         /*expected_count=*/1);
   }
+}
+
+TEST_P(QuietModeFeaturePodControllerTest, ToggledState) {
+  CreateUserSessions(1);
+
+  // Do not disturb is initially off, button is not toggled.
+  SetUpButton();
+  EXPECT_FALSE(message_center::MessageCenter::Get()->IsQuietMode());
+  EXPECT_FALSE(IsButtonToggled());
+
+  // Button is toggled when QuietMode is on.
+  message_center::MessageCenter::Get()->SetQuietMode(true);
+  EXPECT_TRUE(message_center::MessageCenter::Get()->IsQuietMode());
+  EXPECT_TRUE(IsButtonToggled());
+
+  // Button persists state after being destroyed and recreated, such as when
+  // closing and opening the QS bubble.
+  TearDownButton();
+  SetUpButton();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->IsQuietMode());
+  EXPECT_TRUE(IsButtonToggled());
 }
 
 }  // namespace ash

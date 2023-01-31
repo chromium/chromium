@@ -41,6 +41,7 @@ QuietModeFeaturePodController::QuietModeFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {
   MessageCenter::Get()->AddObserver(this);
+  NotifierSettingsController::Get()->AddNotifierSettingsObserver(this);
 }
 
 QuietModeFeaturePodController::~QuietModeFeaturePodController() {
@@ -71,7 +72,6 @@ FeaturePodButton* QuietModeFeaturePodController::CreateButton() {
       IDS_ASH_STATUS_TRAY_NOTIFICATIONS_TOGGLE_TOOLTIP,
       GetQuietModeStateTooltip()));
   button_->ShowDetailedViewArrow();
-  NotifierSettingsController::Get()->AddNotifierSettingsObserver(this);
   OnQuietModeChanged(MessageCenter::Get()->IsQuietMode());
   return button_;
 }
@@ -104,6 +104,8 @@ std::unique_ptr<FeatureTile> QuietModeFeaturePodController::CreateTile(
   tile_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_NOTIFICATIONS_TOGGLE_TOOLTIP,
       GetQuietModeStateTooltip()));
+
+  OnQuietModeChanged(MessageCenter::Get()->IsQuietMode());
 
   return tile;
 }
