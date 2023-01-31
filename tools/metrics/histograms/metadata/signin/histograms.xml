@@ -22,7 +22,7 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Signin" enum="SigninHelperFlow" expires_after="2023-07-23">
+<histogram name="Signin" enum="SigninHelperFlow" expires_after="2023-07-30">
   <owner>mlerman@chromium.org</owner>
   <summary>
     Tracks user interactions as they sign in through a flow. The suffix of the

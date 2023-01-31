@@ -863,7 +863,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="Navigation.MainFrame.RendererInitiated.InitiatorFramePresentAtStart"
-    enum="BooleanPresent" expires_after="2023-05-26">
+    enum="BooleanPresent" expires_after="2023-07-30">
   <owner>yaoxia@chromium.org</owner>
   <owner>cammie@chromium.org</owner>
   <summary>

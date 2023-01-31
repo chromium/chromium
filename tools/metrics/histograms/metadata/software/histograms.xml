@@ -305,7 +305,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.PromptDialogResponse"
-    enum="SoftwareReporterPromptDialogResponse" expires_after="2023-05-07">
+    enum="SoftwareReporterPromptDialogResponse" expires_after="2023-07-30">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

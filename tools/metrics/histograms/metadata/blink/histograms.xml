@@ -3467,7 +3467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.WebCodecs.ImageDecoder.Type" enum="DecodedImageType"
-    expires_after="2023-05-14">
+    expires_after="2023-07-30">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>

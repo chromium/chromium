@@ -5385,7 +5385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.AppStream.LaunchAttempt" enum="AppStreamLaunchEntryPoint"
-    expires_after="2023-05-18">
+    expires_after="2023-07-30">
   <owner>crisrael@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -8886,7 +8886,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OAuth2Login.MergeSessionRetry" enum="GoogleServiceAuthError"
-    expires_after="2023-05-29">
+    expires_after="2023-07-30">
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -12908,7 +12908,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram base="true" name="Spellcheck.Windows.SpellcheckRequestDuration"
-    units="ms" expires_after="2023-05-27">
+    units="ms" expires_after="2023-07-30">
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

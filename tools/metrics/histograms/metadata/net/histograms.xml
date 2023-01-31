@@ -1106,7 +1106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.H3SupportedGoogleHost.TaskTypeMetadataAvailability2"
-    enum="DNS.TaskTypeMetadataAvailability" expires_after="2023-05-31">
+    enum="DNS.TaskTypeMetadataAvailability" expires_after="2023-07-30">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2601,7 +2601,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.BlockedFrames.Received" units="units"
-    expires_after="2023-05-11">
+    expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2611,7 +2611,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.BlockedFrames.Sent" units="units"
-    expires_after="2023-05-11">
+    expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2910,7 +2910,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfTransportGQuicErrorMissing"
-    enum="QuicTransportErrorCodes" expires_after="2023-05-11">
+    enum="QuicTransportErrorCodes" expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2921,7 +2921,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfTransportGQuicErrorMissingGoogle"
-    enum="QuicTransportErrorCodes" expires_after="2023-05-11">
+    enum="QuicTransportErrorCodes" expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2958,7 +2958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionIpPooled" enum="Boolean"
-    expires_after="2023-05-11">
+    expires_after="2023-07-30">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3017,7 +3017,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.CreationError" enum="QuicSessionErrorCodes"
-    expires_after="2023-05-11">
+    expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3055,7 +3055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.DuplicatePacketsReceived" units="units"
-    expires_after="2023-05-11">
+    expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3225,7 +3225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.HostResolution.HandshakeConfirmedTime"
-    units="Milliseconds" expires_after="2023-05-11">
+    units="Milliseconds" expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3236,7 +3236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.IncorrectConnectionIDsReceived" units="units"
-    expires_after="2023-05-11">
+    expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3246,7 +3246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.InitialRttEsitmateSource"
-    enum="InitialRttEstimateSource" expires_after="2023-05-11">
+    enum="InitialRttEstimateSource" expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3381,7 +3381,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.MinRTT" units="ms" expires_after="2023-05-11">
+<histogram name="Net.QuicSession.MinRTT" units="ms" expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3497,7 +3497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.OutOfOrderLargePacketsReceived" units="units"
-    expires_after="2023-05-11">
+    expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3508,7 +3508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.OutOfOrderPacketsReceived" units="units"
-    expires_after="2023-05-11">
+    expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3549,7 +3549,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.PacketLossRate" units="1/10th Percent"
-    expires_after="2023-05-11">
+    expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4019,7 +4019,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.StreamFrameDuplicatedLongConnection"
-    units="1/10th Percent" expires_after="2023-05-11">
+    units="1/10th Percent" expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4050,7 +4050,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.StreamFrameDuplicatedShortConnection"
-    units="1/10th Percent" expires_after="2023-05-11">
+    units="1/10th Percent" expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4111,7 +4111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.TimeFromResolveHostToConfirmConnection"
-    units="Milliseconds" expires_after="2023-05-11">
+    units="Milliseconds" expires_after="2023-07-30">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4141,7 +4141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.UndecryptablePacketsReceived" units="units"
-    expires_after="2023-05-11">
+    expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4162,7 +4162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.ValidConnectionTime" units="ms"
-    expires_after="2023-05-11">
+    expires_after="2023-07-30">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4306,7 +4306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.DefaultNetworkMatch"
-    enum="BooleanMatched" expires_after="2023-05-11">
+    enum="BooleanMatched" expires_after="2023-07-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4328,7 +4328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.DoConnectFailureLocation"
-    enum="JobProtocolErrorLocation" expires_after="2023-05-11">
+    enum="JobProtocolErrorLocation" expires_after="2023-07-30">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>

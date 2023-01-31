@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.AdaptiveToolbar.SegmentSelection.Computed"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2023-07-23">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2023-07-30">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -543,7 +543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SegmentationPlatform.SelectionFailedReason"
-    enum="SegmentationSelectionFailureReason" expires_after="2023-07-23">
+    enum="SegmentationSelectionFailureReason" expires_after="2023-07-30">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>

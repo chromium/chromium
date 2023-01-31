@@ -2227,7 +2227,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.MediaFoundationService.ErrorNotAfterPowerOrDisplayChange"
-    enum="Hresult" expires_after="2023-05-07">
+    enum="Hresult" expires_after="2023-07-30">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2370,7 +2370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.Widevine.HardwareSecure.Support"
-    enum="BooleanSupported" expires_after="2023-07-23">
+    enum="BooleanSupported" expires_after="2023-07-30">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -5121,7 +5121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Win.D3DDeviceRemovedReason" enum="Hresult"
-    expires_after="2023-05-10">
+    expires_after="2023-07-30">
   <owner>ilnik@chromium.org</owner>
   <owner>video-cmi-mpp@chromium.org</owner>
   <summary>
@@ -6310,7 +6310,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Sink.SelectedType" enum="MediaSinkType"
-    expires_after="2023-07-23">
+    expires_after="2023-07-30">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6404,7 +6404,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Device.Count" units="units"
-    expires_after="2023-07-23">
+    expires_after="2023-07-30">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>

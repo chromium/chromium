@@ -379,7 +379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.Restore" enum="CrostiniImportContainerResult"
-    expires_after="2023-05-14">
+    expires_after="2023-07-30">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>Result of crostini restore.</summary>
@@ -500,7 +500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.Stability" enum="GuestOsFailureClasses"
-    expires_after="2023-05-27">
+    expires_after="2023-07-30">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -543,7 +543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.TimeToInstallError" units="ms"
-    expires_after="2023-05-14">
+    expires_after="2023-07-30">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>

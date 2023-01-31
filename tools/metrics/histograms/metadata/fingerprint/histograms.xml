@@ -165,7 +165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Session.RetrievePrimarySessionResult"
-    enum="FingerprintRetrievePrimarySessionResult" expires_after="2023-04-17">
+    enum="FingerprintRetrievePrimarySessionResult" expires_after="2023-07-30">
   <owner>patrykd@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>

@@ -1360,7 +1360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Modemfwd.DlcUninstallResult"
-    enum="ModemfwdDlcUninstallResult" expires_after="2023-04-15">
+    enum="ModemfwdDlcUninstallResult" expires_after="2023-07-30">
   <owner>andrewlassalle@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
