@@ -9,7 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/hdr_metadata.h"
 
-#include <IOSurface/IOSurface.h>
+#include <IOSurface/IOSurfaceRef.h>
 
 namespace gfx {
 class ColorSpace;

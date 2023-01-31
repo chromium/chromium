@@ -14,6 +14,7 @@ namespace metal {
 MTLDevicePtr CreateDefaultDevice() {
   // First attempt to find a low power device to use.
   base::scoped_nsprotocol<id<MTLDevice>> device_to_use;
+#if BUILDFLAG(IS_MAC)
   base::scoped_nsobject<NSArray<id<MTLDevice>>> devices(MTLCopyAllDevices());
   for (id<MTLDevice> device in devices.get()) {
     if ([device isLowPower]) {
@@ -21,6 +22,7 @@ MTLDevicePtr CreateDefaultDevice() {
       break;
     }
   }
+#endif
   // Failing that, use the system default device.
   if (!device_to_use)
     device_to_use.reset(MTLCreateSystemDefaultDevice());
