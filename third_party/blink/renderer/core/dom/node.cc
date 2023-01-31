@@ -166,9 +166,11 @@ ScrollCustomizationCallbacks& GetScrollCustomizationCallbacks() {
 using ReattachHookScope = LayoutShiftTracker::ReattachHookScope;
 
 struct SameSizeAsNode : EventTarget {
-  uint32_t node_flags_;
-  Member<void*> willbe_member_[4];
+  subtle::UncompressedMember<int> first_uncompressed;
+  subtle::UncompressedMember<int> second_uncompressed;
+  Member<void*> willbe_member_[2];
   Member<NodeData> member_;
+  uint32_t node_flags_;
   // Increasing size of Member increases size of Node.
   static_assert(kBlinkMemberGCHasDebugChecks ||
                     sizeof(Member<NodeData>) <= sizeof(void*),
@@ -315,12 +317,12 @@ void Node::DumpStatistics() {
 #endif
 
 Node::Node(TreeScope* tree_scope, ConstructionType type)
-    : node_flags_(type),
-      parent_or_shadow_host_node_(nullptr),
+    : parent_or_shadow_host_node_(nullptr),
       tree_scope_(tree_scope),
       previous_(nullptr),
       next_(nullptr),
-      data_(&NodeData::SharedEmptyData()) {
+      data_(&NodeData::SharedEmptyData()),
+      node_flags_(type) {
   DCHECK(tree_scope_ || type == kCreateDocument || type == kCreateShadowRoot);
 #if DUMP_NODE_STATISTICS
   LiveNodeSet().insert(this);

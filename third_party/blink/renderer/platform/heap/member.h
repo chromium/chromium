@@ -25,6 +25,11 @@ using WeakMember = cppgc::WeakMember<T>;
 template <typename T>
 using UntracedMember = cppgc::UntracedMember<T>;
 
+namespace subtle {
+template <typename T>
+using UncompressedMember = cppgc::subtle::UncompressedMember<T>;
+}
+
 template <typename T>
 inline bool IsHashTableDeletedValue(const Member<T>& m) {
   return m == cppgc::kSentinelPointer;

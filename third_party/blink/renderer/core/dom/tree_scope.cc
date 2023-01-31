@@ -64,8 +64,8 @@ TreeScope::TreeScope(ContainerNode& root_node,
                          adopted_style_sheets_set_callback,
                      V8ObservableArrayCSSStyleSheet::DeleteAlgorithmCallback
                          adopted_style_sheets_delete_callback)
-    : root_node_(&root_node),
-      document_(&document),
+    : document_(&document),
+      root_node_(&root_node),
       parent_tree_scope_(&document),
       id_target_observer_registry_(
           MakeGarbageCollected<IdTargetObserverRegistry>()),
@@ -83,8 +83,8 @@ TreeScope::TreeScope(Document& document,
                          adopted_style_sheets_set_callback,
                      V8ObservableArrayCSSStyleSheet::DeleteAlgorithmCallback
                          adopted_style_sheets_delete_callback)
-    : root_node_(document),
-      document_(&document),
+    : document_(&document),
+      root_node_(document),
       parent_tree_scope_(nullptr),
       id_target_observer_registry_(
           MakeGarbageCollected<IdTargetObserverRegistry>()),
