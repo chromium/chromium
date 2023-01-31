@@ -233,20 +233,6 @@ ExternalSource GetExternalSourceFromExternalImage(
   return external_source;
 }
 
-// CopyExternalImageToTexture() will always copy from the top-left corner of the
-// back resource. But whether do flipY is decided by the source
-// StaticBitmapImage origin.
-// The StaticImageBitmap is a container that specifies an orientation for its
-// content, but the content of StaticImageBitmap has its own orientation so we
-// need to take both into account.
-bool IsExternalImageOriginTopLeft(
-    const StaticBitmapImage* static_bitmap_image) {
-  bool frameTopLeft =
-      static_bitmap_image->CurrentFrameOrientation().Orientation() ==
-      ImageOrientationEnum::kOriginTopLeft;
-  return frameTopLeft == static_bitmap_image->IsOriginTopLeft();
-}
-
 // CopyExternalImageToTexture() needs to set src/dst AlphaMode, flipY and color
 // space conversion related params. This helper function also initializes
 // ColorSpaceConversionConstants param.
@@ -292,9 +278,29 @@ WGPUCopyTextureForBrowserOptions CreateCopyTextureForBrowserOptions(
     options.conversionMatrix =
         color_space_conversion_constants->gamut_conversion_matrix.data();
   }
-  options.flipY = (IsExternalImageOriginTopLeft(image) == flipY);
+  options.flipY = image->IsOriginTopLeft() == flipY;
 
   return options;
+}
+
+// Helper function to get clipped rect from source image. Using in
+// CopyExternalImageToTexture().
+gfx::Rect GetSourceImageSubrect(StaticBitmapImage* image,
+                                gfx::Rect source_image_rect,
+                                const WGPUOrigin3D& origin,
+                                const WGPUExtent3D& copy_size) {
+  int width = static_cast<int>(copy_size.width);
+  int height = static_cast<int>(copy_size.height);
+  int x = static_cast<int>(origin.x) + source_image_rect.x();
+  int y = static_cast<int>(origin.y) + source_image_rect.y();
+
+  // Ensure generated source image subrect is into source image rect.
+  DCHECK(width <= source_image_rect.width() - source_image_rect.x() &&
+         height <= source_image_rect.height() - source_image_rect.y() &&
+         x <= source_image_rect.width() - source_image_rect.x() - width &&
+         y <= source_image_rect.height() - source_image_rect.y() - height);
+
+  return gfx::Rect(x, y, width, height);
 }
 
 }  // namespace
@@ -695,33 +701,66 @@ bool GPUQueue::CopyFromCanvasSourceImage(
   // MakeUnaccelerated() to generate CPU backed image and fallback to CPU
   // uploading path.
   scoped_refptr<StaticBitmapImage> unaccelerated_image = nullptr;
+  bool use_webgpu_mailbox_texture = true;
 
-// TODO(crbug.com/1309194): GPU-GPU copy on linux platform requires interop
-// supported. According to the bug, this change will be a long time task.
-// So disable GPU-GPU copy path on linux platform.
+// TODO(crbug.com/1309194): using webgpu mailbox texture uploading path on linux
+// platform requires interop supported. According to the bug, this change will
+// be a long time task. So disable using webgpu mailbox texture uploading path
+// on linux platform.
 #if BUILDFLAG(IS_LINUX)
+  use_webgpu_mailbox_texture = false;
   unaccelerated_image = image->MakeUnaccelerated();
   image = unaccelerated_image.get();
 #endif  // BUILDFLAG(IS_LINUX)
 
+// TODO(crbug.com/1404632): Using webgpu mailbox texture to upload cpu backed
+// resource on x86 mac platform has bug. So disable using webgpu mailbox texture
+// uploading path on Mac x86 platform when source image is cpu backed resource.
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_FAMILY)
+  if (!image->IsTextureBacked()) {
+    use_webgpu_mailbox_texture = false;
+  }
+#endif  // BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_FAMILY)
+
+  bool noop = copy_size.width == 0 || copy_size.height == 0 ||
+              copy_size.depthOrArrayLayers == 0;
+
+  // The copy rect might be a small part from a large source image. Instead of
+  // copying the whole large source image, clipped to the small rect and upload
+  // it is more performant. The clip rect should be chosen carefully when a
+  // flipY op is required during uploading.
+  gfx::Rect image_source_copy_rect =
+      GetSourceImageSubrect(image, image->Rect(), origin, copy_size);
+
+  // Get source image info.
   PaintImage paint_image = image->PaintImageForCurrentFrame();
-  SkColorType source_color_type = paint_image.GetSkImageInfo().colorType();
+  SkImageInfo source_image_info = paint_image.GetSkImageInfo();
+
+  // Source and dst might have different constants
   ColorSpaceConversionConstants color_space_conversion_constants = {};
 
-  // Handling GPU resource.
-  if (image->IsTextureBacked()) {
+  // This uploading path try to extract WebGPU mailbox texture from source
+  // image based on the copy size.
+  // The uploading path works like this:
+  // - Try to get WebGPUMailboxTexture with image source copy rect.
+  // - If success, Issue Dawn::queueCopyTextureForBrowser to upload contents
+  //   to WebGPU texture.
+  if (use_webgpu_mailbox_texture) {
+    // The copy rect might be a small part from a large source image. Instead of
+    // copying large source image, clipped to the small copy rect is more
+    // performant. The clip rect should be chosen carefully when a flipY op is
+    // required during uploading.
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
         WebGPUMailboxTexture::FromStaticBitmapImage(
             GetDawnControlClient(), device_->GetHandle(),
             static_cast<WGPUTextureUsage>(WGPUTextureUsage_CopyDst |
                                           WGPUTextureUsage_CopySrc |
                                           WGPUTextureUsage_TextureBinding),
-            image, source_color_type);
+            image, source_image_info, image_source_copy_rect, noop);
 
     if (mailbox_texture != nullptr) {
       WGPUImageCopyTexture src = {};
       src.texture = mailbox_texture->GetTexture();
-      src.origin = origin;
 
       WGPUCopyTextureForBrowserOptions options =
           CreateCopyTextureForBrowserOptions(
@@ -732,74 +771,47 @@ bool GPUQueue::CopyFromCanvasSourceImage(
                                             &copy_size, &options);
       return true;
     }
-    // Fallback to CPU uploading path
+    // Fallback path accepts CPU backed resource only.
     unaccelerated_image = image->MakeUnaccelerated();
     image = unaccelerated_image.get();
     paint_image = image->PaintImageForCurrentFrame();
-    source_color_type = paint_image.GetSkImageInfo().colorType();
+    image_source_copy_rect =
+        GetSourceImageSubrect(image, image->Rect(), origin, copy_size);
+    source_image_info = paint_image.GetSkImageInfo();
   }
 
-  // This path will handle all CPU backend resource StaticBitmapImage or the one
-  // with texture backed resource but fail to associate staticBitmapImage to
-  // dawn resource.
+  // This fallback path will handle all cases that cannot extract source image
+  // to webgpu mailbox texture based on copy rect. It accepts CPU backed
+  // resource only. The fallback path works like this:
+  // - Always create a mappable WGPUBuffer and copy CPU backed image resource to
+  // the buffer.
+  // - Always create a WGPUTexture and issue a B2T copy to upload the content
+  // from buffer to texture.
+  // - Issue Dawn::queueCopyTextureForBrowser to upload contents from temp
+  // texture to dst texture.
+  // - Destroy all temp resources.
   DCHECK(!image->IsTextureBacked());
   DCHECK(!paint_image.IsTextureBacked());
 
   // Handling CPU resource.
-  // Source type is SkColorType::kRGBA_8888_SkColorType or
-  // SkColorType::kBGRA_8888_SkColorType.
-  uint64_t bytes_per_pixel = 4;
-
-  gfx::Rect source_image_rect = image->Rect();
-  base::CheckedNumeric<uint32_t> bytes_per_row =
-      AlignBytesPerRow(image->width() * bytes_per_pixel);
-
-  // Static cast to uint64_t to catch overflow during multiplications and use
-  // base::CheckedNumeric to catch this overflow.
-  base::CheckedNumeric<size_t> size_in_bytes =
-      bytes_per_row * static_cast<uint64_t>(image->height());
-
-  // Overflow happens when calculating size or row bytes.
-  if (!size_in_bytes.IsValid()) {
-    return false;
-  }
-
-  uint32_t wgpu_bytes_per_row = bytes_per_row.ValueOrDie();
-
-  // Create a mapped buffer to receive external image contents
-  WGPUBufferDescriptor buffer_desc = {};
-  buffer_desc.usage = WGPUBufferUsage_CopySrc;
-  buffer_desc.size = size_in_bytes.ValueOrDie();
-  buffer_desc.mappedAtCreation = true;
-
-  WGPUBuffer intermediate_buffer =
-      GetProcs().deviceCreateBuffer(device_->GetHandle(), &buffer_desc);
-
-  size_t size = static_cast<size_t>(buffer_desc.size);
-  void* data = GetProcs().bufferGetMappedRange(intermediate_buffer, 0, size);
-
-  auto dest_pixels = base::span<uint8_t>(static_cast<uint8_t*>(data), size);
-
-  bool success = paint_image.readPixels(
-      paint_image.GetSkImageInfo(), dest_pixels.data(), wgpu_bytes_per_row,
-      source_image_rect.x(), source_image_rect.y());
-  if (!success) {
-    // Release the buffer.
-    GetProcs().bufferRelease(intermediate_buffer);
-    return false;
-  }
-
-  GetProcs().bufferUnmap(intermediate_buffer);
-
-  uint32_t source_image_width = static_cast<uint32_t>(image->width());
-  uint32_t source_image_height = static_cast<uint32_t>(image->height());
 
   // Create intermediate texture as input for CopyTextureForBrowser().
+  // For noop copy, creating intermediate texture with minimum size.
+  const uint32_t src_width =
+      noop && image_source_copy_rect.width() == 0
+          ? 1
+          : static_cast<uint32_t>(image_source_copy_rect.width());
+  const uint32_t src_height =
+      noop && image_source_copy_rect.height() == 0
+          ? 1
+          : static_cast<uint32_t>(image_source_copy_rect.height());
+
+  SkColorType source_color_type = source_image_info.colorType();
   WGPUTextureDescriptor texture_desc = {};
   texture_desc.usage = WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst |
                        WGPUTextureUsage_TextureBinding;
   texture_desc.dimension = WGPUTextureDimension_2D;
-  texture_desc.size = {source_image_width, source_image_height, 1};
+  texture_desc.size = {src_width, src_height, 1};
   texture_desc.format = SkColorTypeToDawnColorFormat(source_color_type);
   texture_desc.mipLevelCount = 1;
   texture_desc.sampleCount = 1;
@@ -807,38 +819,86 @@ bool GPUQueue::CopyFromCanvasSourceImage(
   WGPUTexture intermediate_texture =
       GetProcs().deviceCreateTexture(device_->GetHandle(), &texture_desc);
 
-  // Start a B2T copy to move contents from buffer to intermediate texture
-  WGPUImageCopyBuffer dawn_intermediate_buffer = {};
-  dawn_intermediate_buffer.buffer = intermediate_buffer;
-  dawn_intermediate_buffer.layout.bytesPerRow = wgpu_bytes_per_row;
-  dawn_intermediate_buffer.layout.rowsPerImage = source_image_height;
+  // For noop copy, read source image content to mappable webgpu buffer and
+  // using B2T copy to copy source content to intermediate texture.
+  if (!noop) {
+    // Source type is SkColorType::kRGBA_8888_SkColorType or
+    // SkColorType::kBGRA_8888_SkColorType.
+    uint64_t bytes_per_pixel = 4;
 
-  WGPUImageCopyTexture dawn_intermediate_texture = {};
-  dawn_intermediate_texture.texture = intermediate_texture;
-  dawn_intermediate_texture.aspect = WGPUTextureAspect_All;
+    base::CheckedNumeric<uint32_t> bytes_per_row =
+        AlignBytesPerRow(image_source_copy_rect.width() * bytes_per_pixel);
 
-  WGPUExtent3D source_image_copy_size = {source_image_width,
-                                         source_image_height, 1};
+    // Static cast to uint64_t to catch overflow during multiplications and use
+    // base::CheckedNumeric to catch this overflow.
+    base::CheckedNumeric<size_t> size_in_bytes =
+        bytes_per_row * static_cast<uint64_t>(image_source_copy_rect.height());
 
-  WGPUCommandEncoder encoder =
-      GetProcs().deviceCreateCommandEncoder(device_->GetHandle(), nullptr);
-  GetProcs().commandEncoderCopyBufferToTexture(
-      encoder, &dawn_intermediate_buffer, &dawn_intermediate_texture,
-      &source_image_copy_size);
-  WGPUCommandBuffer commands =
-      GetProcs().commandEncoderFinish(encoder, nullptr);
+    // Overflow happens when calculating size or row bytes.
+    if (!size_in_bytes.IsValid()) {
+      return false;
+    }
 
-  GetProcs().queueSubmit(GetHandle(), 1, &commands);
+    uint32_t wgpu_bytes_per_row = bytes_per_row.ValueOrDie();
 
-  // Release intermediate resources.
-  GetProcs().commandBufferRelease(commands);
-  GetProcs().commandEncoderRelease(encoder);
-  GetProcs().bufferRelease(intermediate_buffer);
+    // Create a mapped buffer to receive external image contents
+    WGPUBufferDescriptor buffer_desc = {};
+    buffer_desc.usage = WGPUBufferUsage_CopySrc;
+    buffer_desc.size = size_in_bytes.ValueOrDie();
+    buffer_desc.mappedAtCreation = true;
+
+    WGPUBuffer intermediate_buffer =
+        GetProcs().deviceCreateBuffer(device_->GetHandle(), &buffer_desc);
+
+    size_t size = static_cast<size_t>(buffer_desc.size);
+    void* data = GetProcs().bufferGetMappedRange(intermediate_buffer, 0, size);
+
+    auto dest_pixels = base::span<uint8_t>(static_cast<uint8_t*>(data), size);
+
+    SkImageInfo copy_rect_info = source_image_info.makeWH(
+        image_source_copy_rect.width(), image_source_copy_rect.height());
+    bool success = paint_image.readPixels(
+        copy_rect_info, dest_pixels.data(), wgpu_bytes_per_row,
+        image_source_copy_rect.x(), image_source_copy_rect.y());
+    if (!success) {
+      // Release the buffer.
+      GetProcs().bufferRelease(intermediate_buffer);
+      return false;
+    }
+
+    GetProcs().bufferUnmap(intermediate_buffer);
+
+    // Start a B2T copy to move contents from buffer to intermediate texture
+    WGPUImageCopyBuffer dawn_intermediate_buffer = {};
+    dawn_intermediate_buffer.buffer = intermediate_buffer;
+    dawn_intermediate_buffer.layout.bytesPerRow = wgpu_bytes_per_row;
+    dawn_intermediate_buffer.layout.rowsPerImage = copy_size.height;
+
+    WGPUImageCopyTexture dawn_intermediate_texture = {};
+    dawn_intermediate_texture.texture = intermediate_texture;
+    dawn_intermediate_texture.aspect = WGPUTextureAspect_All;
+
+    WGPUExtent3D source_image_copy_size = {copy_size.width, copy_size.height,
+                                           1};
+
+    WGPUCommandEncoder encoder =
+        GetProcs().deviceCreateCommandEncoder(device_->GetHandle(), nullptr);
+    GetProcs().commandEncoderCopyBufferToTexture(
+        encoder, &dawn_intermediate_buffer, &dawn_intermediate_texture,
+        &source_image_copy_size);
+    WGPUCommandBuffer commands =
+        GetProcs().commandEncoderFinish(encoder, nullptr);
+
+    GetProcs().queueSubmit(GetHandle(), 1, &commands);
+
+    // Release intermediate resources.
+    GetProcs().commandBufferRelease(commands);
+    GetProcs().commandEncoderRelease(encoder);
+    GetProcs().bufferRelease(intermediate_buffer);
+  }
 
   WGPUImageCopyTexture src = {};
   src.texture = intermediate_texture;
-  src.origin = origin;
-
   WGPUCopyTextureForBrowserOptions options = CreateCopyTextureForBrowserOptions(
       image, &paint_image, dst_color_space, dst_premultiplied_alpha, flipY,
       &color_space_conversion_constants);

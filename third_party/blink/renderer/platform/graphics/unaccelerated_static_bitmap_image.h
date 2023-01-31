@@ -42,6 +42,9 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
 
   bool CopyToResourceProvider(CanvasResourceProvider*) override;
 
+  bool CopyToResourceProvider(CanvasResourceProvider* resource_provider,
+                              const gfx::Rect& copy_rect) override;
+
  private:
   UnacceleratedStaticBitmapImage(sk_sp<SkImage>, ImageOrientation);
   UnacceleratedStaticBitmapImage(PaintImage, ImageOrientation);

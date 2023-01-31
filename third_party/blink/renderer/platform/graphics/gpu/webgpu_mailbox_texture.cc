@@ -22,9 +22,9 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     WGPUDevice device,
     WGPUTextureUsage usage,
     scoped_refptr<StaticBitmapImage> image,
-    SkColorType color_type) {
-  DCHECK(image->IsTextureBacked());
-
+    const SkImageInfo& info,
+    const gfx::Rect& image_sub_rect,
+    bool is_dummy_mailbox_texture) {
   // TODO(crbugs.com/1217160) Mac uses IOSurface in SharedImageBackingGLImage
   // which can be shared to dawn directly aftter passthrough command buffer
   // supported on mac os.
@@ -37,32 +37,39 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
       context_provider_wrapper->ContextProvider()->IsContextLost())
     return nullptr;
 
+  // For noop webgpu mailbox construction, creating mailbox texture with minimum
+  // size.
+  const int mailbox_texture_width =
+      is_dummy_mailbox_texture && image_sub_rect.width() == 0
+          ? 1
+          : image_sub_rect.width();
+  const int mailbox_texture_height =
+      is_dummy_mailbox_texture && image_sub_rect.height() == 0
+          ? 1
+          : image_sub_rect.height();
+
+  // If source image cannot be wrapped into webgpu mailbox texture directly,
+  // applied cache with the sub rect size.
+  SkImageInfo recyclable_canvas_resource_info =
+      info.makeWH(mailbox_texture_width, mailbox_texture_height);
   // Get a recyclable resource for producing WebGPU-compatible shared images.
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
       dawn_control_client->GetOrCreateCanvasResource(
-          image->PaintImageForCurrentFrame().GetSkImageInfo(),
-          image->IsOriginTopLeft());
+          recyclable_canvas_resource_info, image->IsOriginTopLeft());
 
-  // Fallback to unstable intermediate resource copy path.
   if (!recyclable_canvas_resource) {
-    auto finished_access_callback = WTF::BindOnce(
-        &StaticBitmapImage::UpdateSyncToken, WTF::RetainedRef(image));
-
-    WGPUTextureDescriptor desc = {};
-    desc.usage = usage;
-    return base::AdoptRef(new WebGPUMailboxTexture(
-        std::move(dawn_control_client), device, desc,
-        image->GetMailboxHolder().mailbox, image->GetMailboxHolder().sync_token,
-        gpu::webgpu::WEBGPU_MAILBOX_NONE, std::move(finished_access_callback),
-        /*recyclable_canvas_resource=*/nullptr));
+    return nullptr;
   }
 
   CanvasResourceProvider* resource_provider =
       recyclable_canvas_resource->resource_provider();
   DCHECK(resource_provider);
 
-  if (!image->CopyToResourceProvider(resource_provider)) {
-    return nullptr;
+  // Skip copy if constructing dummy mailbox texture.
+  if (!is_dummy_mailbox_texture) {
+    if (!image->CopyToResourceProvider(resource_provider, image_sub_rect)) {
+      return nullptr;
+    }
   }
 
   return WebGPUMailboxTexture::FromCanvasResource(

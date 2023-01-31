@@ -165,6 +165,12 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
 
 bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
     CanvasResourceProvider* resource_provider) {
+  return CopyToResourceProvider(resource_provider, Rect());
+}
+
+bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
+    CanvasResourceProvider* resource_provider,
+    const gfx::Rect& copy_rect) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(resource_provider);
 
@@ -191,9 +197,9 @@ bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
   auto* ri = shared_context_wrapper->ContextProvider()->RasterInterface();
   DCHECK(ri);
   ri->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
-  ri->CopySubTexture(mailbox_, dst_mailbox, dst_target, 0, 0, 0, 0,
-                     Size().width(), Size().height(), unpack_flip_y,
-                     unpack_premultiply_alpha);
+  ri->CopySubTexture(mailbox_, dst_mailbox, dst_target, 0, 0, copy_rect.x(),
+                     copy_rect.y(), copy_rect.width(), copy_rect.height(),
+                     unpack_flip_y, unpack_premultiply_alpha);
   // We need to update the texture holder's sync token to ensure that when this
   // mailbox is recycled or deleted, it is done after the copy operation above.
   gpu::SyncToken sync_token;

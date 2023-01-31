@@ -83,6 +83,12 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
     return false;
   }
 
+  virtual bool CopyToResourceProvider(CanvasResourceProvider* resource_provider,
+                                      const gfx::Rect& copy_rect) {
+    NOTREACHED();
+    return false;
+  }
+
   virtual void EnsureSyncTokenVerified() { NOTREACHED(); }
   virtual gpu::MailboxHolder GetMailboxHolder() const {
     NOTREACHED();
