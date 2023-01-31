@@ -7,11 +7,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
+#include "ash/shell.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ash/system/unified/feature_tile.h"
-#include "ash/system/unified/page_indicator_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -78,35 +78,39 @@ class FeatureTilesContainerViewTest : public AshTestBase,
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    GetPrimaryUnifiedSystemTray()->ShowBubble();
-    container_ = std::make_unique<FeatureTilesContainerView>(
-        GetPrimaryUnifiedSystemTray()
-            ->bubble()
-            ->unified_system_tray_controller());
+
+    tray_model_ =
+        base::MakeRefCounted<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
+    tray_controller_ =
+        std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
+    widget_ = CreateFramelessTestWidget();
+    widget_->SetFullscreen(true);
+
+    container_ = widget_->SetContentsView(
+        std::make_unique<FeatureTilesContainerView>(tray_controller_.get()));
     container_->AddObserver(this);
   }
 
   void TearDown() override {
     container_->RemoveObserver(this);
-    container_.reset();
-    GetPrimaryUnifiedSystemTray()->CloseBubble();
+    widget_.reset();
+    tray_controller_.reset();
+    tray_model_.reset();
+
     AshTestBase::TearDown();
   }
 
-  FeatureTilesContainerView* container() { return container_.get(); }
-
-  PageIndicatorView* GetPageIndicatorView() {
-    return GetPrimaryUnifiedSystemTray()
-        ->bubble()
-        ->quick_settings_view()
-        ->page_indicator_view_for_test();
+  void PressTab() {
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+    generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
   }
 
-  std::vector<views::View*> GetPageIndicatorButtons() {
-    return GetPageIndicatorView()->buttons_container()->children();
+  void PressShiftTab() {
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+    generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
   }
 
-  int GetPageIndicatorButtonCount() { return GetPageIndicatorButtons().size(); }
+  FeatureTilesContainerView* container() { return container_; }
 
   PaginationModel* pagination_model() { return container()->pagination_model_; }
 
@@ -126,6 +130,8 @@ class FeatureTilesContainerViewTest : public AshTestBase,
 
   int GetPageCount() { return container()->page_count(); }
 
+  // Fills the container with a number of `pages` given the max amount of
+  // displayable primary tiles per page.
   void FillContainerWithPrimaryTiles(int pages) {
     auto mock_controller = std::make_unique<MockFeaturePodController>();
     std::vector<std::unique_ptr<FeatureTile>> tiles;
@@ -140,12 +146,14 @@ class FeatureTilesContainerViewTest : public AshTestBase,
 
     EXPECT_EQ(pages, GetPageCount());
     EXPECT_EQ(pages, pagination_model()->total_pages());
-    EXPECT_EQ(pages, GetPageIndicatorButtonCount());
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<FeatureTilesContainerView> container_;
+  std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
+  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
+  FeatureTilesContainerView* container_;
 };
 
 // Tests `CalculateRowsFromHeight()` which returns the number of max displayable
@@ -409,31 +417,20 @@ TEST_F(FeatureTilesContainerViewTest, PaginationMouseWheel) {
   }
 }
 
-TEST_F(FeatureTilesContainerViewTest, PaginationDots) {
-  constexpr int kNumberOfPages = 4;
-  FillContainerWithPrimaryTiles(kNumberOfPages);
+TEST_F(FeatureTilesContainerViewTest, SwitchPageWithFocus) {
+  FillContainerWithPrimaryTiles(/*pages=*/2);
 
-  // Expect the current_page to increase with each pagination dot click.
-  int current_page = pagination_model()->selected_page();
-  for (auto* button : GetPageIndicatorButtons()) {
-    LeftClickOn(button);
-    pagination_model()->FinishAnimation();
-    EXPECT_EQ(current_page++, pagination_model()->selected_page());
+  // View starts at page with index zero.
+  EXPECT_EQ(0, pagination_model()->selected_page());
+
+  // Tab until the `selected_page` index changes to 1.
+  while (pagination_model()->selected_page() == 0) {
+    PressTab();
   }
-}
+  EXPECT_EQ(1, pagination_model()->selected_page());
 
-TEST_F(FeatureTilesContainerViewTest, ResetPagination) {
-  constexpr int kNumberOfPages = 4;
-  FillContainerWithPrimaryTiles(kNumberOfPages);
-
-  // Expect page with index 2 to be selected after clicking its dot.
-  LeftClickOn(GetPageIndicatorButtons()[2]);
-  pagination_model()->FinishAnimation();
-  EXPECT_EQ(2, pagination_model()->selected_page());
-
-  // Expect page reset after closing and opening bubble.
-  GetPrimaryUnifiedSystemTray()->CloseBubble();
-  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  // Pressing shift tab returns to the previous page.
+  PressShiftTab();
   EXPECT_EQ(0, pagination_model()->selected_page());
 }
 

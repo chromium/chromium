@@ -3230,6 +3230,7 @@ test("ash_unittests") {
     "system/unified/power_button_unittest.cc",
     "system/unified/quick_settings_footer_unittest.cc",
     "system/unified/quick_settings_header_unittest.cc",
+    "system/unified/quick_settings_view_unittest.cc",
     "system/unified/quiet_mode_feature_pod_controller_unittest.cc",
     "system/unified/top_shortcuts_view_unittest.cc",
     "system/unified/unified_system_info_view_unittest.cc",

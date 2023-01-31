@@ -120,6 +120,7 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
       interacted_by_tap_recorder_(
           std::make_unique<InteractedByTapRecorder>(this)) {
   DCHECK(controller_);
+  controller_->model()->pagination_model()->AddObserver(this);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -138,8 +139,9 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
       std::make_unique<QuickSettingsHeader>(controller_));
   feature_tiles_container_ = system_tray_container_->AddChildView(
       std::make_unique<FeatureTilesContainerView>(controller_));
-  page_indicator_view_ = system_tray_container_->AddChildView(
-      std::make_unique<PageIndicatorView>(controller_, true));
+  page_indicator_view_ =
+      system_tray_container_->AddChildView(std::make_unique<PageIndicatorView>(
+          controller_, /*initially_expanded=*/false));
 
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS)) {
     media_controls_container_ = system_tray_container_->AddChildView(
@@ -162,7 +164,9 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
       std::make_unique<AccessibilityFocusHelperView>(controller_));
 }
 
-QuickSettingsView::~QuickSettingsView() = default;
+QuickSettingsView::~QuickSettingsView() {
+  controller_->model()->pagination_model()->RemoveObserver(this);
+}
 
 void QuickSettingsView::SetMaxHeight(int max_height) {
   max_height_ = max_height;
@@ -263,6 +267,11 @@ std::u16string QuickSettingsView::GetDetailedViewAccessibleName() const {
 
 bool QuickSettingsView::IsDetailedViewShown() const {
   return detailed_view_container_->GetVisible();
+}
+
+void QuickSettingsView::TotalPagesChanged(int previous_page_count,
+                                          int new_page_count) {
+  page_indicator_view_->SetVisible(new_page_count > 1);
 }
 
 void QuickSettingsView::OnGestureEvent(ui::GestureEvent* event) {
