@@ -208,6 +208,12 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
 
     metadata->setFrameType(RTCEncodedVideoFrameTypeFromVideoFrameType(
         webrtc_metadata->GetFrameType()));
+
+    Vector<uint32_t> csrcs;
+    for (uint32_t csrc : webrtc_metadata->GetCsrcs()) {
+      csrcs.push_back(csrc);
+    }
+    metadata->setContributingSources(csrcs);
   }
   return metadata;
 }
@@ -280,6 +286,13 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
           "setMetadata() does not support this codec.");
       return;
   }
+
+  std::vector<uint32_t> csrcs;
+  for (uint32_t csrc : metadata->contributingSources()) {
+    csrcs.push_back(csrc);
+  }
+  webrtc_metadata.SetCsrcs(csrcs);
+
   delegate_->SetMetadata(webrtc_metadata);
 }
 
