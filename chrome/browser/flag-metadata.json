@@ -1372,7 +1372,7 @@
   {
     "name": "devtools-tab-target",
     "owners": [ "dsv", "caseq" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 114
   },
   {
     "name": "disable-accelerated-2d-canvas",
