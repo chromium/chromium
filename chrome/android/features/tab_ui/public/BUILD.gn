@@ -5,8 +5,36 @@
 import("//build/config/android/rules.gni")
 
 # This should ideally hold all the files in public_tab_management_java_sources, which is defined in the tab_management_java_sources.gni module.
-android_library("java") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherCustomViewManager.java" ]
+android_resources("ui_java_resources") {
+  sources = [
+    "android/java/res/drawable-hdpi/bg_tabstrip_tab_detached.9.png",
+    "android/java/res/drawable-hdpi/bg_tabstrip_tab_folio.9.png",
+    "android/java/res/drawable-mdpi/bg_tabstrip_tab_detached.9.png",
+    "android/java/res/drawable-mdpi/bg_tabstrip_tab_folio.9.png",
+    "android/java/res/drawable-xhdpi/bg_tabstrip_tab_detached.9.png",
+    "android/java/res/drawable-xhdpi/bg_tabstrip_tab_folio.9.png",
+    "android/java/res/drawable-xxhdpi/bg_tabstrip_tab_detached.9.png",
+    "android/java/res/drawable-xxhdpi/bg_tabstrip_tab_folio.9.png",
+    "android/java/res/drawable-xxxhdpi/bg_tabstrip_tab_detached.9.png",
+    "android/java/res/drawable-xxxhdpi/bg_tabstrip_tab_folio.9.png",
+  ]
+}
 
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+android_library("java") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/tasks/tab_management/TabManagementFieldTrial.java",
+    "android/java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherCustomViewManager.java",
+    "android/java/src/org/chromium/chrome/browser/tasks/tab_management/TabUiThemeUtil.java",
+  ]
+
+  deps = [
+    ":ui_java_resources",
+    "//chrome/browser/flags:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.tasks.tab_management"
 }

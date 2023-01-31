@@ -138,8 +138,6 @@ public class StripLayoutHelperTest {
         }
 
         TabUiFeatureUtilities.setTabMinWidthForTesting(null);
-        TabUiFeatureUtilities.setTabStripRedesignEnableFolioForTesting(false);
-        TabUiFeatureUtilities.setTabStripRedesignEnableDetachedForTesting(false);
     }
 
     /**
@@ -482,8 +480,6 @@ public class StripLayoutHelperTest {
     @Test
     @Feature("Tab Strip Redesign")
     public void testUpdateDividers_WithTabSelected() {
-        TabUiFeatureUtilities.setTabStripRedesignEnableDetachedForTesting(true);
-
         // Setup with 5 tabs. Select tab 2.
         initializeTest(false, false, 2);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();

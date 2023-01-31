@@ -50,8 +50,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
@@ -276,7 +277,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             }
         };
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+            if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
                 createFolioModelSelectorButtion(context, selectorClickHandler);
             } else {
                 createDetachedModelSelectorButtion(context, selectorClickHandler);
@@ -294,7 +295,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                     context.getResources().getColor(R.color.model_selector_button_bg_color);
 
             // Incognito bg color is surface 1 baseline for folio, surface 2 baseline for detached.
-            int backgroundIncognitoColor = TabUiFeatureUtilities.isTabStripFolioEnabled()
+            int backgroundIncognitoColor = TabManagementFieldTrial.isTabStripFolioEnabled()
                     ? context.getResources().getColor(R.color.default_bg_color_dark_elev_1_baseline)
                     : context.getResources().getColor(
                             R.color.default_bg_color_dark_elev_2_baseline);
@@ -751,7 +752,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     }
 
     public @ColorInt int getBackgroundColor() {
-        return TabUiThemeProvider.getTabStripBackgroundColor(mContext, mIsIncognito);
+        return TabUiThemeUtil.getTabStripBackgroundColor(mContext, mIsIncognito);
     }
 
     /**

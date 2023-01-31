@@ -31,8 +31,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
@@ -354,10 +354,10 @@ public class StripLayoutTab implements VirtualView {
      * @return The Android resource that represents the tab background.
      */
     public int getResourceId() {
-        if (TabUiFeatureUtilities.isTabStripDetachedEnabled() || !mFolioAttached) {
-            return R.drawable.bg_tabstrip_tab_detached;
-        } else if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
-            return R.drawable.bg_tabstrip_tab_folio;
+        if (TabManagementFieldTrial.isTabStripDetachedEnabled() || !mFolioAttached) {
+            return TabUiThemeUtil.getTSRDetachedResource();
+        } else if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
+            return TabUiThemeUtil.getTSRFolioResource();
         }
 
         return R.drawable.bg_tabstrip_tab;
@@ -385,7 +385,7 @@ public class StripLayoutTab implements VirtualView {
         // TODO(https://crbug.com/1408276): Avoid calculating every time. Instead, store the tab's
         //  color and only re-determine when the color could have changed (i.e. on selection).
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            return TabUiThemeProvider.getTabStripContainerColor(mContext, mIncognito, foreground);
+            return TabUiThemeUtil.getTabStripContainerColor(mContext, mIncognito, foreground);
         }
 
         if (foreground) {
@@ -443,7 +443,7 @@ public class StripLayoutTab implements VirtualView {
             return mContext.getColor(R.color.divider_line_bg_color_light);
         }
 
-        if (TabUiFeatureUtilities.isTabStripFolioEnabled() && !ColorUtils.inNightMode(mContext)
+        if (TabManagementFieldTrial.isTabStripFolioEnabled() && !ColorUtils.inNightMode(mContext)
                 && !mIncognito) {
             // This color will not be used at full opacity. We can't set this using the alpha
             // component of the {@code @ColorInt}, since it is ignored when loading resources
@@ -594,9 +594,9 @@ public class StripLayoutTab implements VirtualView {
      * @return How far to vertically offset the tab content.
      */
     public float getContentOffsetY() {
-        if (TabUiFeatureUtilities.isTabStripDetachedEnabled()) {
+        if (TabManagementFieldTrial.isTabStripDetachedEnabled()) {
             return DETACHED_CONTENT_OFFSET_Y;
-        } else if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+        } else if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
             return FOLIO_CONTENT_OFFSET_Y;
         } else {
             // If TSR is disabled, contentOffsetY will not be used. Default to 0.

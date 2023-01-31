@@ -120,6 +120,7 @@ android_library("java") {
     "//build/android:build_java",
     "//cc:cc_java",
     "//chrome/android/features/start_surface:public_java",
+    "//chrome/android/features/tab_ui/public:java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/browser_controls/android:java",

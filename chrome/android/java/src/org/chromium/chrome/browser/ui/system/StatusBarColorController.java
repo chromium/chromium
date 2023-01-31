@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
@@ -365,8 +365,7 @@ public class StatusBarColorController
         }
 
         if (mIsTablet) {
-            return TabUiThemeProvider.getTabStripBackgroundColor(
-                    mWindow.getContext(), mIsIncognito);
+            return TabUiThemeUtil.getTabStripBackgroundColor(mWindow.getContext(), mIsIncognito);
         }
 
         // When Omnibox gains focus, we want to clear the status bar theme color.
