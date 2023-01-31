@@ -65,6 +65,8 @@ class AutofillManager
   // without a corresponding OnAfterFoo() call are:
   // - if the number of cached forms exceeds `kAutofillManagerMaxFormCacheSize`;
   // - if this AutofillManager has been destroyed or reset in the meantime.
+  // - if the request in AutofillDownloadManager was not successful (i.e. no 2XX
+  //   response code or a null response body).
   //
   // The main purpose are unit tests. New pairs of events may be added as
   // needed.
@@ -93,6 +95,9 @@ class AutofillManager
 
     virtual void OnBeforeFormSubmitted() {}
     virtual void OnAfterFormSubmitted() {}
+
+    virtual void OnBeforeLoadedServerPredictions() {}
+    virtual void OnAfterLoadedServerPredictions() {}
 
     // TODO(crbug.com/1330105): Clean up API: delete the events that don't
     // follow the OnBeforeFoo() / OnAfterFoo() pattern.

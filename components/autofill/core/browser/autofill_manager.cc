@@ -419,8 +419,11 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
 
   // Query the server if at least one of the forms was parsed.
   if (!queryable_forms.empty() && download_manager()) {
-    download_manager()->StartQueryRequest(
-        queryable_forms, driver()->IsolationInfo(), GetWeakPtr());
+    NotifyObservers(&Observer::OnBeforeLoadedServerPredictions);
+    if (!download_manager()->StartQueryRequest(
+            queryable_forms, driver()->IsolationInfo(), GetWeakPtr())) {
+      NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
+    }
   }
 }
 
@@ -937,8 +940,10 @@ void AutofillManager::OnLoadedServerPredictions(
 
   // If there are no current forms corresponding to the queried signatures, drop
   // the query response.
-  if (queried_forms.empty())
+  if (queried_forms.empty()) {
+    NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
     return;
+  }
 
   // Parse and store the server predictions.
   FormStructure::ParseApiQueryResponse(
@@ -965,6 +970,7 @@ void AutofillManager::OnLoadedServerPredictions(
   // Forward form structures to the password generation manager to detect
   // account creation forms.
   PropagateAutofillPredictions(queried_forms);
+  NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
 }
 
 void AutofillManager::OnServerRequestError(

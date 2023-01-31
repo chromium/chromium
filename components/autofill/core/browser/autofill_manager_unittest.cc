@@ -33,6 +33,27 @@ namespace autofill {
 
 namespace {
 
+class MockAutofillDownloadManager : public AutofillDownloadManager {
+ public:
+  explicit MockAutofillDownloadManager(AutofillClient* client)
+      : AutofillDownloadManager(
+            client,
+            /*api_key=*/"",
+            AutofillDownloadManager::IsRawMetadataUploadingEnabled(false),
+            /*log_manager=*/nullptr) {}
+
+  MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
+  MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
+      delete;
+
+  MOCK_METHOD(bool,
+              StartQueryRequest,
+              (const std::vector<FormStructure*>&,
+               net::IsolationInfo,
+               base::WeakPtr<Observer>),
+              (override));
+};
+
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() = default;
@@ -191,6 +212,10 @@ class MockAutofillObserver : public AutofillManager::Observer {
   MOCK_METHOD(void, OnSelectControlDidChange, (), (override));
 
   MOCK_METHOD(void, OnFormSubmitted, (), (override));
+
+  MOCK_METHOD(void, OnBeforeLoadedServerPredictions, (), (override));
+
+  MOCK_METHOD(void, OnAfterLoadedServerPredictions, (), (override));
 };
 
 // Creates a vector of test forms which differ in their FormGlobalIds
@@ -275,6 +300,7 @@ class AutofillManagerTest : public testing::Test {
   NiceMock<MockAutofillClient> client_;
   std::unique_ptr<MockAutofillDriver> driver_;
   std::unique_ptr<MockAutofillManager> manager_;
+  MockAutofillObserver observer_;
 };
 
 // The test parameter sets the number of forms to be generated.
@@ -288,6 +314,19 @@ class AutofillManagerTest_WithIntParam
 INSTANTIATE_TEST_SUITE_P(AutofillManagerTest,
                          AutofillManagerTest_WithIntParam,
                          testing::Values(0, 1, 5, 10, 100, 110));
+
+class AutofillManagerTest_OnLoadedServerPredictionsObserver
+    : public AutofillManagerTest {
+ public:
+  void SetUpObserverAndDownloadManager(bool successful_request) {
+    auto download_manager =
+        std::make_unique<MockAutofillDownloadManager>(&client_);
+    ON_CALL(*download_manager, StartQueryRequest)
+        .WillByDefault(Return(successful_request));
+    manager_->set_download_manager_for_test(std::move(download_manager));
+    manager_->AddObserver(&observer_);
+  }
+};
 
 // Tests that the cache size is bounded by kAutofillManagerMaxFormCacheSize.
 TEST_P(AutofillManagerTest_WithIntParam, CacheBoundFormsSeen) {
@@ -376,6 +415,68 @@ TEST_F(AutofillManagerTest, CanShowAutofillUi) {
 TEST_F(AutofillManagerTest, TriggerReparseInAllFrames) {
   EXPECT_CALL(*driver_, TriggerReparseInAllFrames);
   manager_->TriggerReparseInAllFrames();
+}
+
+TEST_F(
+    AutofillManagerTest_OnLoadedServerPredictionsObserver,
+    OnFormsSeen_SuccessfulQueryRequest_NotifiesBeforeLoadedServerPredictionsObserver) {
+  SetUpObserverAndDownloadManager(/*successful_request=*/true);
+
+  std::vector<FormData> forms = CreateTestForms(1);
+  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions());
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions()).Times(0);
+  OnFormsSeenWithExpectations(*manager_, forms, {}, forms);
+  task_environment_.RunUntilIdle();
+
+  manager_->RemoveObserver(&observer_);
+}
+
+TEST_F(
+    AutofillManagerTest_OnLoadedServerPredictionsObserver,
+    OnFormsSeen_FailedQueryRequest_NotifiesBothLoadedServerPredictionsObservers) {
+  SetUpObserverAndDownloadManager(/*successful_request=*/false);
+
+  std::vector<FormData> forms = CreateTestForms(1);
+  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions());
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions());
+  OnFormsSeenWithExpectations(*manager_, forms, {}, forms);
+  task_environment_.RunUntilIdle();
+
+  manager_->RemoveObserver(&observer_);
+}
+
+TEST_F(
+    AutofillManagerTest_OnLoadedServerPredictionsObserver,
+    OnLoadedServerPredictions_EmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
+  SetUpObserverAndDownloadManager(/*successful_request=*/true);
+
+  std::vector<FormData> forms = CreateTestForms(1);
+  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions());
+  OnFormsSeenWithExpectations(*manager_, forms, {}, forms);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions());
+  manager_->OnLoadedServerPredictionsForTest("", {});
+
+  manager_->RemoveObserver(&observer_);
+}
+
+TEST_F(
+    AutofillManagerTest_OnLoadedServerPredictionsObserver,
+    OnLoadedServerPredictions_NonEmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
+  SetUpObserverAndDownloadManager(/*successful_request=*/true);
+
+  std::vector<FormData> forms = CreateTestForms(1);
+  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions());
+  OnFormsSeenWithExpectations(*manager_, forms, {}, forms);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions());
+  manager_->OnLoadedServerPredictionsForTest(
+      "", {manager_->FindCachedFormByRendererId(forms[0].global_id())
+               ->form_signature()});
+
+  manager_->RemoveObserver(&observer_);
 }
 
 }  // namespace autofill
