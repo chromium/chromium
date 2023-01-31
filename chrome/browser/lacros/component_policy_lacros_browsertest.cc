@@ -4,6 +4,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -86,15 +87,15 @@ class TestPolicyServiceObserver : public policy::PolicyService::Observer {
   void OnPolicyUpdated(const policy::PolicyNamespace& nsp,
                        const policy::PolicyMap& previous,
                        const policy::PolicyMap& current) override {
-    run_loop_.Quit();
+    policy_updated_future_.AddValue(true);
   }
 
-  void WaitForUpdate() { run_loop_.Run(); }
+  void WaitForUpdate() { policy_updated_future_.Take(); }
 
   const raw_ptr<policy::PolicyService> policy_service_;
   const policy::PolicyDomain policy_domain_;
 
-  base::RunLoop run_loop_;
+  base::test::RepeatingTestFuture<bool> policy_updated_future_;
 };
 
 class ComponentPolicyLacrosBrowserTest : public InProcessBrowserTest {
