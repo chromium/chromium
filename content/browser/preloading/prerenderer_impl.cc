@@ -227,32 +227,17 @@ bool PrerendererImpl::MaybePrerender(
 
   // TODO(crbug.com/1176054): Remove it after supporting cross-site
   // prerender.
-  if (blink::features::
-          IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled()) {
-    if (!prerender_navigation_utils::IsSameSite(
-            candidate->url, rfhi.GetLastCommittedOrigin())) {
-      rfhi.AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kWarning,
-          base::StringPrintf(
-              "The SpeculationRules API does not support cross-site "
-              "prerender yet "
-              "(kSameSiteCrossOriginForSpeculationRulesPrerender2 is "
-              "enabled). (initiator origin: %s, prerender origin: %s). "
-              "https://crbug.com/1176054 tracks cross-site support.",
-              rfhi.GetLastCommittedOrigin().Serialize().c_str(),
-              url::Origin::Create(candidate->url).Serialize().c_str()));
-    }
-  } else {
-    if (!rfhi.GetLastCommittedOrigin().IsSameOriginWith(candidate->url)) {
-      rfhi.AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kWarning,
-          base::StringPrintf(
-              "The SpeculationRules API does not support cross-origin "
-              "prerender yet. (initiator origin: %s, prerender origin: %s). "
-              "https://crbug.com/1176054 tracks cross-origin support.",
-              rfhi.GetLastCommittedOrigin().Serialize().c_str(),
-              url::Origin::Create(candidate->url).Serialize().c_str()));
-    }
+  if (!prerender_navigation_utils::IsSameSite(candidate->url,
+                                              rfhi.GetLastCommittedOrigin())) {
+    rfhi.AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        base::StringPrintf(
+            "The SpeculationRules API does not support cross-site prerender "
+            "yet (kSameSiteCrossOriginForSpeculationRulesPrerender2 is "
+            "enabled). (initiator origin: %s, prerender origin: %s). "
+            "https://crbug.com/1176054 tracks cross-site support.",
+            rfhi.GetLastCommittedOrigin().Serialize().c_str(),
+            url::Origin::Create(candidate->url).Serialize().c_str()));
   }
 
   Referrer referrer(*(candidate->referrer));

@@ -263,18 +263,8 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
                        : PrerenderFinalStatus::kCrossSiteNavigation);
     return CANCEL;
   } else if (navigation_origin != prerender_host->initiator_origin()) {
-    if (blink::features::
-            IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled()) {
-      is_same_site_cross_origin_prerender_ = true;
-      same_site_cross_origin_prerender_did_redirect_ = is_redirection;
-    } else {
-      prerender_host_registry->CancelHost(
-          frame_tree_node->frame_tree_node_id(),
-          is_redirection
-              ? PrerenderFinalStatus::kSameSiteCrossOriginRedirect
-              : PrerenderFinalStatus::kSameSiteCrossOriginNavigation);
-      return CANCEL;
-    }
+    is_same_site_cross_origin_prerender_ = true;
+    same_site_cross_origin_prerender_did_redirect_ = is_redirection;
   }
 
   return PROCEED;

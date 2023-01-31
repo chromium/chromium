@@ -6793,12 +6793,10 @@ class PrerenderWithProactiveBrowsingInstanceSwap : public PrerenderBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(nhiroki): Merge this into PrerenderBrowserTest.
 class PrerenderSameSiteCrossOriginBrowserTest : public PrerenderBrowserTest {
  public:
-  PrerenderSameSiteCrossOriginBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kSameSiteCrossOriginForSpeculationRulesPrerender);
-  }
+  PrerenderSameSiteCrossOriginBrowserTest() = default;
 
   void SetUp() override {
     ssl_server().RegisterRequestHandler(
@@ -6834,9 +6832,6 @@ class PrerenderSameSiteCrossOriginBrowserTest : public PrerenderBrowserTest {
   GURL GetCrossSiteUrl(const std::string& path) {
     return ssl_server().GetURL("a.b.test", path);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Make sure that we can deal with the speculative RFH that is created during
@@ -7397,8 +7392,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossSitePrerender) {
 IN_PROC_BROWSER_TEST_F(
     PrerenderSameSiteCrossOriginBrowserTest,
     SameSiteCrossOriginNavigationSpeculationRulesWithoutOptInHeader) {
-  ASSERT_TRUE(blink::features::
-                  IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
   const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
   const GURL kPrerenderingUrl =
       GetSameSiteCrossOriginUrl("/empty.html?samesitecrossorigin");
@@ -7426,8 +7419,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     PrerenderSameSiteCrossOriginBrowserTest,
     SameSiteCrossOriginRedirectionSpeculationRulesWithoutOptInHeader) {
-  ASSERT_TRUE(blink::features::
-                  IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -7458,8 +7449,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     PrerenderSameSiteCrossOriginBrowserTest,
     SameSiteCrossOriginCredentialedPrerenderRedirectionSpeculationRulesWithoutOptInHeader) {
-  ASSERT_TRUE(blink::features::
-                  IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -7490,8 +7479,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     PrerenderSameSiteCrossOriginBrowserTest,
     SameSiteCrossOriginCredentialedPrerenderRedirectionSpeculationRulesWithoutOptInHeader2) {
-  ASSERT_TRUE(blink::features::
-                  IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -7520,8 +7507,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     PrerenderSameSiteCrossOriginBrowserTest,
     SameSiteCrossOriginNavigationBackToSameOriginWithoutOptInHeader) {
-  ASSERT_TRUE(blink::features::
-                  IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -7561,8 +7546,6 @@ IN_PROC_BROWSER_TEST_F(
 // rules should be canceled.
 IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
                        CrossSiteMultipleRedirectionSpeculationRules) {
-  ASSERT_TRUE(blink::features::
-                  IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -7594,8 +7577,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
 // prerendered with the feature enabled.
 IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
                        CheckSameSiteCrossOriginSpeculationRulesPrerender) {
-  ASSERT_TRUE(blink::features::
-                  IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl =
       GetSameSiteCrossOriginUrl("/prerender/prerender_with_opt_in_header.html");
@@ -7618,8 +7599,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
 // allowed.
 IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
                        SameSiteCrossOriginSpeculationRulesRedirection) {
-  ASSERT_TRUE(blink::features::
-                  IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -7688,8 +7667,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     PrerenderSameSiteCrossOriginBrowserTest,
     SameSiteCrossOriginSpeculationRulesMultipleRedirections) {
-  ASSERT_TRUE(blink::features::
-                  IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));

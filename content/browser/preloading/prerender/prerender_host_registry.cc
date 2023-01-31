@@ -179,34 +179,21 @@ int PrerenderHostRegistry::CreateAndStartHost(
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
+    // Allow prerendering only for same-site. The initiator origin is nullopt
+    // when prerendering is initiated by the browser (not by a renderer using
+    // Speculation Rules API). In that case, skip this same-site check.
     // TODO(crbug.com/1176054): Support cross-site prerendering.
-    // The initiator origin is nullopt when prerendering is initiated by the
-    // browser (not by a renderer using Speculation Rules API). In that case,
-    // skip the same-site and same-origin check.
-    if (!attributes.IsBrowserInitiated()) {
-      if (!prerender_navigation_utils::IsSameSite(
-              attributes.prerendering_url,
-              attributes.initiator_origin.value())) {
-        RecordFailedPrerenderFinalStatus(
-            PrerenderCancellationReason(
-                PrerenderFinalStatus::kCrossSiteNavigation),
-            attributes);
-        if (attempt)
-          attempt->SetEligibility(PreloadingEligibility::kCrossOrigin);
-        return RenderFrameHost::kNoFrameTreeNodeId;
-      } else if (
-          !blink::features::
-              IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled() &&
-          !attributes.initiator_origin.value().IsSameOriginWith(
-              attributes.prerendering_url)) {
-        RecordFailedPrerenderFinalStatus(
-            PrerenderCancellationReason(
-                PrerenderFinalStatus::kSameSiteCrossOriginNavigation),
-            attributes);
-        if (attempt)
-          attempt->SetEligibility(PreloadingEligibility::kCrossOrigin);
-        return RenderFrameHost::kNoFrameTreeNodeId;
+    if (!attributes.IsBrowserInitiated() &&
+        !prerender_navigation_utils::IsSameSite(
+            attributes.prerendering_url, attributes.initiator_origin.value())) {
+      RecordFailedPrerenderFinalStatus(
+          PrerenderCancellationReason(
+              PrerenderFinalStatus::kCrossSiteNavigation),
+          attributes);
+      if (attempt) {
+        attempt->SetEligibility(PreloadingEligibility::kCrossOrigin);
       }
+      return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
     // Disallow all pages that have an effective URL like hosted apps and NTP.

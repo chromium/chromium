@@ -176,19 +176,13 @@ BLINK_COMMON_EXPORT extern const char kPrerender2MemoryThresholdParamName[];
 // pages will not be prerendered even when kPrerender2 is enabled.
 BLINK_COMMON_EXPORT extern const char
     kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName[];
-// Enables same-site cross origin Prerender2 triggered by speculation rules.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kSameSiteCrossOriginForSpeculationRulesPrerender);
 // Enables to keep prerenderings alive in the background when their visibility
 // state changes to HIDDEN.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2InBackground);
 // Enables to run prerendering for new tabs (e.g., target="_blank").
 // See https://crbug.com/1350676.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2InNewTab);
-// Returns true when the same-site cross origin Prerender2 feature is
-// enabled.
-BLINK_COMMON_EXPORT bool
-IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled();
+
 // Returns true if the Android On-Screen-Keyboard is in "resize visual
 // viewport" mode.
 BLINK_COMMON_EXPORT bool OSKResizesVisualViewportByDefault();
