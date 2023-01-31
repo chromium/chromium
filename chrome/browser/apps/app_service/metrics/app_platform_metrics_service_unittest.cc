@@ -45,6 +45,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
@@ -60,7 +61,10 @@
 #include "ui/aura/window.h"
 
 using ::testing::_;
+using ::testing::Eq;
+using ::testing::NotNull;
 using ::testing::Sequence;
+using ::testing::StrEq;
 
 namespace apps {
 
@@ -1011,7 +1015,7 @@ TEST_P(AppPlatformMetricsServiceTest, ReactiveWindow) {
 
 // Tests the app running percentage UMA metrics when launch a browser window
 // and an ARC app in one day.
-TEST_P(AppPlatformMetricsServiceTest, AppRunningPercentrage) {
+TEST_P(AppPlatformMetricsServiceTest, AppRunningPercentage) {
   // Launch a browser window.
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
                 Readiness::kReady, InstallSource::kSystem);
@@ -1360,7 +1364,7 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmWithMultipleWindows) {
 }
 
 TEST_P(AppPlatformMetricsServiceTest,
-       UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowswer) {
+       UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser) {
   // Create a browser window.
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
                 Readiness::kReady, InstallSource::kSystem);
@@ -2041,6 +2045,101 @@ TEST_P(AppPlatformMetricsServiceTest, UninstallAppUkm) {
   VerifyAppsUninstallUkm("app://" + std::string(kExtensionId),
                          AppTypeName::kStandaloneBrowserExtension,
                          UninstallSource::kAppList);
+}
+
+TEST_P(AppPlatformMetricsServiceTest,
+       ShouldClearUsageInfoFromPrefStoreSubsequently) {
+  // Create a new window for the app.
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+
+  // Set the window active state.
+  static constexpr char kAppId[] = "a";
+  const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
+  ModifyInstance(kInstanceId, kAppId, window.get(),
+                 ::apps::InstanceState::kActive);
+  static constexpr base::TimeDelta kAppRunningDuration = base::Minutes(5);
+  task_environment_.FastForwardBy(kAppRunningDuration);
+
+  // Close app window to stop tracking further usage and verify usage info is
+  // persisted in the pref store.
+  ModifyInstance(kInstanceId, kAppId, window.get(),
+                 ::apps::InstanceState::kDestroyed);
+  const auto& usage_dict_pref = GetPrefService()->GetDict(kAppUsageTime);
+  ASSERT_THAT(usage_dict_pref.size(), Eq(1UL));
+  ASSERT_THAT(usage_dict_pref.Find(kInstanceId.ToString()), NotNull());
+  EXPECT_THAT(*usage_dict_pref.Find(kInstanceId.ToString())
+                   ->FindStringKey(kUsageTimeAppIdKey),
+              StrEq(kAppId));
+  EXPECT_THAT(
+      base::ValueToTimeDelta(usage_dict_pref.Find(kInstanceId.ToString())
+                                 ->FindKey(kUsageTimeDurationKey)),
+      Eq(kAppRunningDuration));
+
+  // Fast forward by two hours so it reports usage data and we can verify usage
+  // info is cleared from the pref store.
+  task_environment_.FastForwardBy(base::Hours(2));
+  VerifyAppRunningDuration(kAppRunningDuration, AppTypeName::kArc);
+  ASSERT_TRUE(GetPrefService()->GetDict(kAppUsageTime).empty());
+}
+
+TEST_P(AppPlatformMetricsServiceTest,
+       ShouldNotClearUsageInfoFromPrefStoreIfReportingUsageSet) {
+  // Create a new window for the app.
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+
+  // Set the window active state.
+  static constexpr char kAppId[] = "a";
+  const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
+  ModifyInstance(kInstanceId, kAppId, window.get(),
+                 ::apps::InstanceState::kActive);
+  static constexpr base::TimeDelta kAppRunningDuration = base::Minutes(5);
+  task_environment_.FastForwardBy(kAppRunningDuration);
+
+  // Close app window to stop tracking further usage and verify usage info is
+  // persisted in the pref store.
+  ModifyInstance(kInstanceId, kAppId, window.get(),
+                 ::apps::InstanceState::kDestroyed);
+  const auto& usage_dict_pref = GetPrefService()->GetDict(kAppUsageTime);
+  ASSERT_THAT(usage_dict_pref.size(), Eq(1UL));
+  ASSERT_THAT(usage_dict_pref.Find(kInstanceId.ToString()), NotNull());
+  EXPECT_THAT(*usage_dict_pref.Find(kInstanceId.ToString())
+                   ->FindStringKey(kUsageTimeAppIdKey),
+              StrEq(kAppId));
+  EXPECT_THAT(
+      base::ValueToTimeDelta(usage_dict_pref.Find(kInstanceId.ToString())
+                                 ->FindKey(kUsageTimeDurationKey)),
+      Eq(kAppRunningDuration));
+
+  // Set reporting usage time for the current app instance and persist it in the
+  // pref store.
+  {
+    ScopedDictPrefUpdate usage_dict(GetPrefService(), kAppUsageTime);
+    usage_dict->FindDictByDottedPath(kInstanceId.ToString())
+        ->Set(kReportingUsageTimeDurationKey,
+              base::TimeDeltaToValue(kAppRunningDuration));
+  }
+
+  // Fast forward by two hours so it reports usage data and we can verify usage
+  // info is not cleared from the pref store.
+  task_environment_.FastForwardBy(base::Hours(2));
+  VerifyAppRunningDuration(kAppRunningDuration, AppTypeName::kArc);
+  const auto& updated_usage_dict_pref =
+      GetPrefService()->GetDict(kAppUsageTime);
+  ASSERT_THAT(updated_usage_dict_pref.size(), Eq(1UL));
+  EXPECT_THAT(updated_usage_dict_pref.Find(kInstanceId.ToString()), NotNull());
+  EXPECT_THAT(*usage_dict_pref.Find(kInstanceId.ToString())
+                   ->FindStringKey(kUsageTimeAppIdKey),
+              StrEq(kAppId));
+  EXPECT_THAT(
+      base::ValueToTimeDelta(usage_dict_pref.Find(kInstanceId.ToString())
+                                 ->FindKey(kUsageTimeDurationKey)),
+      Eq(base::TimeDelta()));
+  EXPECT_THAT(
+      base::ValueToTimeDelta(usage_dict_pref.Find(kInstanceId.ToString())
+                                 ->FindKey(kReportingUsageTimeDurationKey)),
+      Eq(kAppRunningDuration));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

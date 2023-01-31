@@ -4,15 +4,20 @@
 
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 
+#include <memory>
 #include <set>
 
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
@@ -25,6 +30,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/ukm/app_source_url_recorder.h"
 #include "components/user_manager/user_manager.h"
@@ -280,6 +286,7 @@ constexpr char kWebAppWindowHistogramName[] = "WebAppWindow";
 constexpr char kUsageTimeAppIdKey[] = "app_id";
 constexpr char kUsageTimeAppTypeKey[] = "app_type";
 constexpr char kUsageTimeDurationKey[] = "time";
+constexpr char kReportingUsageTimeDurationKey[] = "reporting_usage_time";
 
 std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name) {
   switch (app_type_name) {
@@ -376,26 +383,40 @@ AppPlatformMetrics::UsageTime::UsageTime(const base::Value& value) {
     return;
   }
 
-  const std::string* app_id_value = data_dict->FindString(kUsageTimeAppIdKey);
+  const std::string* const app_id_value =
+      data_dict->FindString(kUsageTimeAppIdKey);
   if (!app_id_value) {
     return;
   }
 
-  const std::string* app_type_value =
+  const std::string* const app_type_value =
       data_dict->FindString(kUsageTimeAppTypeKey);
   if (!app_type_value) {
     return;
   }
 
-  absl::optional<base::TimeDelta> running_time_value =
+  const absl::optional<const base::TimeDelta> running_time_value =
       base::ValueToTimeDelta(data_dict->Find(kUsageTimeDurationKey));
-  if (!running_time_value.has_value() || running_time_value.value().is_zero()) {
+  const absl::optional<const base::TimeDelta> reporting_usage_time_value =
+      base::ValueToTimeDelta(data_dict->Find(kReportingUsageTimeDurationKey));
+  if (!running_time_value.has_value() &&
+      !reporting_usage_time_value.has_value()) {
     return;
+  }
+
+  if (running_time_value.has_value()) {
+    running_time = running_time_value.value();
+  }
+
+  if (reporting_usage_time_value.has_value()) {
+    reporting_usage_time = reporting_usage_time_value.value();
   }
 
   app_id = *app_id_value;
   app_type_name = GetAppTypeNameFromString(*app_type_value);
-  running_time = running_time_value.value();
+
+  // We normally use this as we load data from the pref store at the
+  // beginning of a new session which is when windows are normally closed.
   window_is_closed = true;
 }
 
@@ -406,6 +427,8 @@ base::Value AppPlatformMetrics::UsageTime::ConvertToValue() const {
                                GetAppTypeHistogramName(app_type_name));
   usage_time_dict.SetPath(kUsageTimeDurationKey,
                           base::TimeDeltaToValue(running_time));
+  usage_time_dict.SetPath(kReportingUsageTimeDurationKey,
+                          base::TimeDeltaToValue(reporting_usage_time));
   return usage_time_dict;
 }
 
@@ -1143,6 +1166,9 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
           .SetDuration(it.second.running_time.InMilliseconds())
           .SetUserDeviceMatrix(user_type_by_device_type_)
           .Record(ukm::UkmRecorder::Get());
+
+      // Also reset time in the pref store now that we have reported this data.
+      ClearAppsUsageTimeForInstance(it.first.ToString());
     }
     if (it.second.window_is_closed) {
       closed_instance_ids.push_back(it.first);
@@ -1159,9 +1185,7 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
     usage_time_per_two_hours_.erase(instance_id);
   }
 
-  // The app usage time AppKMs have been recorded, so clear the saved usage time
-  // in the user pref.
-  profile_->GetPrefs()->SetDict(kAppUsageTime, base::Value::Dict());
+  CleanUpAppsUsageInfoInPrefStore();
 }
 
 void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
@@ -1212,11 +1236,24 @@ void AppPlatformMetrics::UpdateUsageTime(
 }
 
 void AppPlatformMetrics::SaveUsageTime() {
-  base::Value::Dict usage_time;
+  ScopedDictPrefUpdate usage_dict_pref(profile_->GetPrefs(), kAppUsageTime);
   for (auto it : usage_time_per_two_hours_) {
-    usage_time.SetByDottedPath(it.first.ToString(), it.second.ConvertToValue());
+    const std::string& instance_id = it.first.ToString();
+    auto* const usage_info = usage_dict_pref->FindByDottedPath(instance_id);
+    if (!usage_info) {
+      // No entry in the pref store for this instance, so we create a new one.
+      usage_dict_pref->SetByDottedPath(instance_id, it.second.ConvertToValue());
+      continue;
+    }
+
+    // Only override the fields tracked by this component so we do not override
+    // the reporting usage time.
+    usage_info->SetStringPath(kUsageTimeAppIdKey, it.second.app_id);
+    usage_info->SetStringPath(kUsageTimeAppTypeKey,
+                              GetAppTypeHistogramName(it.second.app_type_name));
+    usage_info->SetPath(kUsageTimeDurationKey,
+                        base::TimeDeltaToValue(it.second.running_time));
   }
-  profile_->GetPrefs()->SetDict(kAppUsageTime, std::move(usage_time));
 }
 
 void AppPlatformMetrics::LoadAppsUsageTimeUkmFromPref() {
@@ -1262,6 +1299,39 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkmFromPref() {
           .Record(ukm::UkmRecorder::Get());
       RemoveSourceId(source_id);
     }
+
+    // Clear app UKM usage from the pref store now that we have reported this
+    // data.
+    for (const auto usage_it : profile_->GetPrefs()->GetDict(kAppUsageTime)) {
+      if (*usage_it.second.FindKey(kUsageTimeAppIdKey) == it->app_id) {
+        ClearAppsUsageTimeForInstance(usage_it.first);
+      }
+    }
+  }
+}
+
+void AppPlatformMetrics::CleanUpAppsUsageInfoInPrefStore() {
+  ScopedDictPrefUpdate usage_time_pref_update(profile_->GetPrefs(),
+                                              kAppUsageTime);
+  auto usage_it = usage_time_pref_update->begin();
+  while (usage_it != usage_time_pref_update->end()) {
+    UsageTime usage_time(usage_it->second);
+    if (usage_time.reporting_usage_time.is_zero() &&
+        usage_time.running_time.is_zero()) {
+      usage_it = usage_time_pref_update->erase(usage_it);
+      continue;
+    }
+    usage_it++;
+  }
+}
+
+void AppPlatformMetrics::ClearAppsUsageTimeForInstance(
+    const base::StringPiece& instance_id) {
+  ScopedDictPrefUpdate usage_time_pref_update(profile_->GetPrefs(),
+                                              kAppUsageTime);
+  if (usage_time_pref_update->FindByDottedPath(instance_id)) {
+    usage_time_pref_update->FindByDottedPath(instance_id)
+        ->SetPath(kUsageTimeDurationKey, base::Int64ToValue(0));
   }
 }
 

@@ -11,6 +11,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -56,6 +57,7 @@ extern const char kWebAppWindowHistogramName[];
 extern const char kUsageTimeAppIdKey[];
 extern const char kUsageTimeAppTypeKey[];
 extern const char kUsageTimeDurationKey[];
+extern const char kReportingUsageTimeDurationKey[];
 
 std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name);
 
@@ -110,6 +112,33 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
     // Invoked when the `AppPlatformMetrics` component (being observed) is being
     // destroyed.
     virtual void OnAppPlatformMetricsDestroyed() {}
+  };
+
+  // Usage time representation for the data that is persisted in the pref store.
+  // Includes helpers for serialization/deserialization.
+  struct UsageTime {
+    UsageTime() = default;
+    explicit UsageTime(const base::Value& value);
+    base::TimeDelta running_time;
+    ukm::SourceId source_id = ukm::kInvalidSourceId;
+    std::string app_id;
+    AppTypeName app_type_name = AppTypeName::kUnknown;
+    bool window_is_closed = false;
+
+    // Usage time tracked for Chrome OS commercial insights reporting. Because
+    // we have two independent attributes that track usage time now, the pref
+    // store data retention period will depend on both of these attributes being
+    // reset, ideally after the corresponding snapshot has been reported.
+    base::TimeDelta reporting_usage_time;
+
+    // Converts the struct UsageTime to base::Value, e.g.:
+    // {
+    //    "app_id": "hhsosodfjlsjdflkjsdlfksdf",
+    //    "app_type": "SystemWebApp",
+    //    "time": 3600,
+    //    "reporting_usage_time": 1800,
+    // }
+    base::Value ConvertToValue() const;
   };
 
   explicit AppPlatformMetrics(Profile* profile,
@@ -193,24 +222,6 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
     std::string app_id;
   };
 
-  struct UsageTime {
-    UsageTime() = default;
-    explicit UsageTime(const base::Value& value);
-    base::TimeDelta running_time;
-    ukm::SourceId source_id = ukm::kInvalidSourceId;
-    std::string app_id;
-    AppTypeName app_type_name = AppTypeName::kUnknown;
-    bool window_is_closed = false;
-
-    // Converts the struct UsageTime to base::Value, e.g.:
-    // {
-    //    "app_id": "hhsosodfjlsjdflkjsdlfksdf",
-    //    "app_type": "SystemWebApp",
-    //    "time": 3600,
-    // }
-    base::Value ConvertToValue() const;
-  };
-
   // AppRegistryCache::Observer:
   void OnAppTypeInitialized(AppType app_type) override;
   void OnAppRegistryCacheWillBeDestroyed(
@@ -286,6 +297,16 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Records the app usage time UKM based on the usage time saved in
   // `usage_times_from_pref_`.
   void RecordAppsUsageTimeUkmFromPref();
+
+  // Attempts to clear app usage info entries in the pref store for instances if
+  // and only if both the UKM usage and reporting usage time snapshots have been
+  // reset.
+  void CleanUpAppsUsageInfoInPrefStore();
+
+  // Clears UKM usage tracked for a given app instance in the pref store.
+  // Normally triggered after corresponding usage snapshot has been reported to
+  // UKM for the app instance.
+  void ClearAppsUsageTimeForInstance(const base::StringPiece& instance_id);
 
   Profile* const profile_ = nullptr;
 
