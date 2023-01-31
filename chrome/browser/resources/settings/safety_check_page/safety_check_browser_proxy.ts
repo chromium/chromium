@@ -101,24 +101,6 @@ export enum SafetyCheckExtensionsStatus {
   BLOCKLISTED_REENABLED_ALL_BY_ADMIN = 6,
 }
 
-/**
- * States of the safety check Chrome cleaner element.
- * Needs to be kept in sync with ChromeCleanerStatus in
- * chrome/browser/ui/webui/settings/safety_check_handler.h
- */
-export enum SafetyCheckChromeCleanerStatus {
-  HIDDEN = 0,
-  CHECKING = 1,
-  INFECTED = 2,
-  REBOOT_REQUIRED = 3,
-  SCANNING_FOR_UWS = 4,
-  REMOVING_UWS = 5,
-  DISABLED_BY_ADMIN = 6,
-  ERROR = 7,
-  NO_UWS_FOUND_WITH_TIMESTAMP = 8,
-  NO_UWS_FOUND_WITHOUT_TIMESTAMP = 9,
-}
-
 export interface SafetyCheckBrowserProxy {
   /** Run the safety check. */
   runSafetyCheck(): void;

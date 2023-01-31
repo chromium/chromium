@@ -74,25 +74,6 @@ class SafetyCheckHandler
     // New enum values must go above here.
     kMaxValue = kBlocklistedReenabledAllByAdmin,
   };
-  enum class ChromeCleanerStatus {
-    kHidden = 0,
-    kChecking = 1,
-    kInfected = 2,
-    kRebootRequired = 3,
-    kScanningForUws = 4,
-    kRemovingUws = 5,
-    kDisabledByAdmin = 6,
-    kError = 7,
-    kNoUwsFoundWithTimestamp = 8,
-    kNoUwsFoundWithoutTimestamp = 9,
-    // New enum values must go above here.
-    kMaxValue = kNoUwsFoundWithoutTimestamp,
-  };
-
-  struct ChromeCleanerResult {
-    SafetyCheckHandler::ChromeCleanerStatus status;
-    base::Time cct_completion_time;
-  };
 
   SafetyCheckHandler();
   ~SafetyCheckHandler() override;
@@ -259,7 +240,6 @@ class SafetyCheckHandler
   PasswordsStatus passwords_status_ = PasswordsStatus::kChecking;
   SafeBrowsingStatus safe_browsing_status_ = SafeBrowsingStatus::kChecking;
   ExtensionsStatus extensions_status_ = ExtensionsStatus::kChecking;
-  ChromeCleanerStatus chrome_cleaner_status_ = ChromeCleanerStatus::kHidden;
   // System time when safety check completed.
   base::Time safety_check_completion_time_;
   // Tracks whether there is at least one |OnCredentialDone| callback with
