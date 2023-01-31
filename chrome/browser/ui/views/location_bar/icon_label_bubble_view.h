@@ -173,6 +173,9 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   const gfx::FontList& font_list() const { return label()->font_list(); }
 
+  // To avoid clang warning about SetImageModel being overridden, tell compiler
+  // to accept both SetImageModel functions.
+  using LabelButton::SetImageModel;
   void SetImageModel(const ui::ImageModel& image);
 
   gfx::Size GetSizeForLabelWidth(int label_width) const;

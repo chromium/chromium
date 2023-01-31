@@ -50,7 +50,8 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   virtual gfx::ImageSkia GetImage(ButtonState for_state) const;
   // TODO(http://crbug.com/1100034) prefer SetImageModel over SetImage().
   void SetImage(ButtonState for_state, const gfx::ImageSkia& image);
-  void SetImageModel(ButtonState for_state, const ui::ImageModel& image_model);
+  virtual void SetImageModel(ButtonState for_state,
+                             const ui::ImageModel& image_model);
   bool HasImage(ButtonState for_state) const;
 
   // Gets or sets the text shown on the button.

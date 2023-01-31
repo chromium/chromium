@@ -66,6 +66,8 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   void SetText(const std::u16string& text) override;
   PropertyEffects UpdateStyleToIndicateDefaultStatus() override;
   void StateChanged(ButtonState old_state) override;
+  void SetImageModel(ButtonState for_state,
+                     const ui::ImageModel& image_model) override;
 
  protected:
   // View:

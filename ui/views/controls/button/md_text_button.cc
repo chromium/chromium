@@ -50,9 +50,13 @@ MdTextButton::MdTextButton(PressedCallback callback,
       },
       this));
 
-  if (!features::IsChromeRefresh2023())
+  if (features::IsChromeRefresh2023()) {
+    constexpr int kImageSpacing = 8;
+    SetImageLabelSpacing(kImageSpacing);
+  } else {
     SetCornerRadius(
         LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kLow));
+  }
 
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
@@ -135,6 +139,12 @@ void MdTextButton::StateChanged(ButtonState old_state) {
   UpdateColors();
 }
 
+void MdTextButton::SetImageModel(ButtonState for_state,
+                                 const ui::ImageModel& image_model) {
+  LabelButton::SetImageModel(for_state, image_model);
+  UpdatePadding();
+}
+
 void MdTextButton::OnFocus() {
   LabelButton::OnFocus();
   UpdateColors();
@@ -202,10 +212,15 @@ gfx::Insets MdTextButton::CalculateDefaultPadding() const {
 
   // TODO(estade): can we get rid of the platform style border hoopla if
   // we apply the MD treatment to all buttons, even GTK buttons?
-  const int horizontal_padding = LayoutProvider::Get()->GetDistanceMetric(
+  int right_padding = LayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_BUTTON_HORIZONTAL_PADDING);
-  return gfx::Insets::TLBR(top_padding, horizontal_padding, bottom_padding,
-                           horizontal_padding);
+  int left_padding = right_padding;
+  if (HasImage(GetVisualState()) && features::IsChromeRefresh2023()) {
+    constexpr int kLeftPadding = 12;
+    left_padding = kLeftPadding;
+  }
+  return gfx::Insets::TLBR(top_padding, left_padding, bottom_padding,
+                           right_padding);
 }
 
 void MdTextButton::UpdateTextColor() {

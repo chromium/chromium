@@ -25,6 +25,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -39,6 +40,29 @@ const char16_t kLongText[] =
 }  // namespace
 
 namespace views::examples {
+
+class IconAndTextButton : public views::MdTextButton {
+ public:
+  IconAndTextButton(PressedCallback callback,
+                    const std::u16string& text,
+                    const gfx::VectorIcon& icon)
+      : MdTextButton(callback, text), icon_(icon) {}
+  IconAndTextButton(const IconAndTextButton&) = delete;
+  IconAndTextButton& operator=(const IconAndTextButton&) = delete;
+  ~IconAndTextButton() override = default;
+
+  void OnThemeChanged() override {
+    views::MdTextButton::OnThemeChanged();
+
+    // Use the text color for the associated vector image.
+    SetImageModel(
+        views::Button::ButtonState::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(*icon_, label()->GetEnabledColor()));
+  }
+
+ private:
+  const raw_ref<const gfx::VectorIcon> icon_;
+};
 
 ButtonExample::ButtonExample() : ExampleBase("Button") {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
@@ -97,6 +121,12 @@ void ButtonExample::CreateExampleView(View* container) {
                                        &ButtonExample::ImageButtonPressed,
                                        base::Unretained(this))))
                   .Build();
+
+  view->AddChildView(std::make_unique<IconAndTextButton>(
+      base::BindRepeating(&ButtonExample::ImageButtonPressed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_COLORED_DIALOG_CHOOSER_BUTTON),
+      views::kInfoIcon));
 
   image_button_->SetImage(ImageButton::STATE_NORMAL,
                           rb.GetImageNamed(IDR_CLOSE).ToImageSkia());
