@@ -10,10 +10,6 @@
 @protocol OmniboxConsumer<NSObject>
 
 // Notifies the consumer to update the autocomplete icon for the currently
-// highlighted autocomplete result.
-- (void)updateAutoCompleteIconWithoutAccessibilityIdentifier:(UIImage*)icon;
-
-// Notifies the consumer to update the autocomplete icon for the currently
 // highlighted autocomplete result with given accessibility identifier.
 - (void)updateAutocompleteIcon:(UIImage*)icon
     withAccessibilityIdentifier:(NSString*)accessibilityIdentifier;

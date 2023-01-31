@@ -153,89 +153,53 @@ using base::UserMetricsAction;
   }
 
   // Set the suggestion image, or load it if necessary.
-  if (base::FeatureList::IsEnabled(
-          kEnableAccessibilityIdentifierToOmniboxLeadingImage)) {
-    [self.consumer updateAutocompleteIcon:suggestion.matchTypeIcon
-              withAccessibilityIdentifier:
-                  kOmniboxLeadingImageSuggestionImageAccessibilityIdentifier];
-  } else {
-    [self.consumer updateAutoCompleteIconWithoutAccessibilityIdentifier:
-                       suggestion.matchTypeIcon];
-  }
+  [self.consumer updateAutocompleteIcon:suggestion.matchTypeIcon
+            withAccessibilityIdentifier:
+                kOmniboxLeadingImageSuggestionImageAccessibilityIdentifier];
 
   __weak OmniboxMediator* weakSelf = self;
   if ([suggestion isMatchTypeSearch]) {
     // Show Default Search Engine favicon.
     [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
-      if (base::FeatureList::IsEnabled(
-              kEnableAccessibilityIdentifierToOmniboxLeadingImage)) {
-        [weakSelf.consumer updateAutocompleteIcon:image
-                      withAccessibilityIdentifier:
-                          kOmniboxLeadingImageDefaultAccessibilityIdentifier];
-      } else {
-        [weakSelf.consumer
-            updateAutoCompleteIconWithoutAccessibilityIdentifier:image];
-      }
+      [weakSelf.consumer updateAutocompleteIcon:image
+                    withAccessibilityIdentifier:
+                        kOmniboxLeadingImageDefaultAccessibilityIdentifier];
     }];
   } else if (suggestion.destinationUrl.gurl.is_valid()) {
     // Show url favicon when it's valid.
-    [self
-        loadFaviconByPageURL:suggestion.destinationUrl.gurl
-                  completion:^(UIImage* image) {
-                    if (base::FeatureList::IsEnabled(
-                            kEnableAccessibilityIdentifierToOmniboxLeadingImage)) {
+    [self loadFaviconByPageURL:suggestion.destinationUrl.gurl
+                    completion:^(UIImage* image) {
                       NSString* webPageUrl = base::SysUTF8ToNSString(
                           suggestion.destinationUrl.gurl.spec());
                       [weakSelf.consumer updateAutocompleteIcon:image
                                     withAccessibilityIdentifier:webPageUrl];
-                    } else {
-                      [weakSelf.consumer
-                          updateAutoCompleteIconWithoutAccessibilityIdentifier:
-                              image];
-                    }
-                  }];
+                    }];
   } else if (isFirstUpdate) {
     // When no suggestion is highlighted (aka. isFirstUpdate) show the default
     // browser icon.
     [self setDefaultLeftImage];
   } else {
     // When a suggestion is highlighted, show the same icon as in the popup.
-    if (base::FeatureList::IsEnabled(
-            kEnableAccessibilityIdentifierToOmniboxLeadingImage)) {
-      [self.consumer updateAutocompleteIcon:suggestion.matchTypeIcon
-                withAccessibilityIdentifier:
-                    suggestion.matchTypeIconAccessibilityIdentifier];
-    } else {
-      [weakSelf.consumer updateAutoCompleteIconWithoutAccessibilityIdentifier:
-                             suggestion.matchTypeIcon];
-    }
+    [self.consumer
+             updateAutocompleteIcon:suggestion.matchTypeIcon
+        withAccessibilityIdentifier:suggestion
+                                        .matchTypeIconAccessibilityIdentifier];
   }
 }
 
 - (void)setDefaultLeftImage {
   UIImage* image = GetOmniboxSuggestionIconForAutocompleteMatchType(
       AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, /* is_starred */ false);
-  if (base::FeatureList::IsEnabled(
-          kEnableAccessibilityIdentifierToOmniboxLeadingImage)) {
-    [self.consumer updateAutocompleteIcon:image
-              withAccessibilityIdentifier:
-                  kOmniboxLeadingImageDefaultAccessibilityIdentifier];
-  } else {
-    [self.consumer updateAutoCompleteIconWithoutAccessibilityIdentifier:image];
-  }
+  [self.consumer updateAutocompleteIcon:image
+            withAccessibilityIdentifier:
+                kOmniboxLeadingImageDefaultAccessibilityIdentifier];
 
   __weak OmniboxMediator* weakSelf = self;
   // Show Default Search Engine favicon.
   [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* icon) {
-    if (base::FeatureList::IsEnabled(
-            kEnableAccessibilityIdentifierToOmniboxLeadingImage)) {
-      [weakSelf.consumer updateAutocompleteIcon:icon
-                    withAccessibilityIdentifier:
-                        kOmniboxLeadingImageDefaultAccessibilityIdentifier];
-    } else {
-      [weakSelf.consumer
-          updateAutoCompleteIconWithoutAccessibilityIdentifier:icon];
-    }
+    [weakSelf.consumer updateAutocompleteIcon:icon
+                  withAccessibilityIdentifier:
+                      kOmniboxLeadingImageDefaultAccessibilityIdentifier];
   }];
 }
 

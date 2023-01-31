@@ -41,9 +41,6 @@
 - (void)setLeadingImage:(UIImage*)image
     withAccessibilityIdentifier:(NSString*)accessibilityIdentifier;
 
-// Sets the leading button's image.
-- (void)setLeadingImageWithoutAccessibilityIdentifier:(UIImage*)image;
-
 // Sets the alpha level of the leading image view.
 - (void)setLeadingImageAlpha:(CGFloat)alpha;
 

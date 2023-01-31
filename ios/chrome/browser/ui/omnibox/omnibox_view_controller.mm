@@ -256,18 +256,11 @@ const CGFloat kClearButtonSize = 28.0f;
 }
 
 - (void)textFieldDidChange:(id)sender {
-  BOOL accessibilityIdentifierFlagEnabled = base::FeatureList::IsEnabled(
-      kEnableAccessibilityIdentifierToOmniboxLeadingImage);
   // If the text is empty, update the leading image.
   if (self.textField.text.length == 0) {
-    if (accessibilityIdentifierFlagEnabled) {
-      [self.view setLeadingImage:self.emptyTextLeadingImage
-          withAccessibilityIdentifier:
-              kOmniboxLeadingImageEmptyTextAccessibilityIdentifier];
-    } else {
-      [self.view setLeadingImageWithoutAccessibilityIdentifier:
-                     self.emptyTextLeadingImage];
-    }
+    [self.view setLeadingImage:self.emptyTextLeadingImage
+        withAccessibilityIdentifier:
+            kOmniboxLeadingImageEmptyTextAccessibilityIdentifier];
   }
 
   [self updateClearButtonVisibility];
@@ -320,13 +313,7 @@ const CGFloat kClearButtonSize = 28.0f;
           ? kOmniboxLeadingImageDefaultAccessibilityIdentifier
           : kOmniboxLeadingImageEmptyTextAccessibilityIdentifier;
 
-  if (base::FeatureList::IsEnabled(
-          kEnableAccessibilityIdentifierToOmniboxLeadingImage)) {
-    [self.view setLeadingImage:image
-        withAccessibilityIdentifier:accessibilityID];
-  } else {
-    [self.view setLeadingImageWithoutAccessibilityIdentifier:image];
-  }
+  [self.view setLeadingImage:image withAccessibilityIdentifier:accessibilityID];
 
   self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
   self.isTextfieldEditing = YES;
@@ -441,15 +428,8 @@ const CGFloat kClearButtonSize = 28.0f;
 
 #pragma mark - OmniboxConsumer
 
-- (void)updateAutoCompleteIconWithoutAccessibilityIdentifier:(UIImage*)icon {
-  DCHECK(!base::FeatureList::IsEnabled(
-      kEnableAccessibilityIdentifierToOmniboxLeadingImage));
-  [self.view setLeadingImageWithoutAccessibilityIdentifier:icon];
-}
 - (void)updateAutocompleteIcon:(UIImage*)icon
     withAccessibilityIdentifier:(NSString*)accessibilityIdentifier {
-  DCHECK(base::FeatureList::IsEnabled(
-      kEnableAccessibilityIdentifierToOmniboxLeadingImage));
   [self.view setLeadingImage:icon
       withAccessibilityIdentifier:accessibilityIdentifier];
 }

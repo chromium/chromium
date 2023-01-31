@@ -1264,12 +1264,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"promos-manager-uses-fet", flag_descriptions::kPromosManagerUsesFETName,
      flag_descriptions::kPromosManagerUsesFETDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPromosManagerUsesFET)},
-    {"enable-accessibility-identifier-to-omnibox-leading-image",
-     flag_descriptions::kEnableAccessibilityIdentifierToOmniboxLeadingImageName,
-     flag_descriptions::
-         kEnableAccessibilityIdentifierToOmniboxLeadingImageDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableAccessibilityIdentifierToOmniboxLeadingImage)},
     {"shopping-list", commerce::flag_descriptions::kShoppingListName,
      commerce::flag_descriptions::kShoppingListDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(commerce::kShoppingList)},
