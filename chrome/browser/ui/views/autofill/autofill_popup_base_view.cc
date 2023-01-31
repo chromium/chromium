@@ -109,18 +109,6 @@ int AutofillPopupBaseView::GetHorizontalPadding() {
   return GetHorizontalMargin();
 }
 
-SkColor AutofillPopupBaseView::GetForegroundColor() const {
-  return GetColorProvider()->GetColor(ui::kColorDropdownForeground);
-}
-
-SkColor AutofillPopupBaseView::GetSelectedBackgroundColor() const {
-  return GetColorProvider()->GetColor(ui::kColorDropdownBackgroundSelected);
-}
-
-SkColor AutofillPopupBaseView::GetSelectedForegroundColor() const {
-  return GetColorProvider()->GetColor(ui::kColorDropdownForegroundSelected);
-}
-
 SkColor AutofillPopupBaseView::GetFooterBackgroundColor() const {
   return GetColorProvider()->GetColor(ui::kColorBubbleFooterBackground);
 }
@@ -474,9 +462,6 @@ gfx::NativeView AutofillPopupBaseView::container_view() {
 }
 
 BEGIN_METADATA(AutofillPopupBaseView, views::WidgetDelegateView)
-ADD_READONLY_PROPERTY_METADATA(SkColor, ForegroundColor)
-ADD_READONLY_PROPERTY_METADATA(SkColor, SelectedBackgroundColor)
-ADD_READONLY_PROPERTY_METADATA(SkColor, SelectedForegroundColor)
 ADD_READONLY_PROPERTY_METADATA(SkColor, FooterBackgroundColor)
 ADD_READONLY_PROPERTY_METADATA(ui::ColorId, SeparatorColorId)
 ADD_READONLY_PROPERTY_METADATA(SkColor, WarningColor)
