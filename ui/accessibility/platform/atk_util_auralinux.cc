@@ -127,6 +127,14 @@ bool AtkUtilAuraLinux::ShouldEnableAccessibility() {
   }
 
 #if defined(USE_GIO)
+  // Do not run additional checks when Chrome runs in headless mode, which means
+  // we are in a test environment
+  std::string chrome_headless;
+  env->GetVar("CHROME_HEADLESS", &chrome_headless);
+  if (chrome_headless == "1") {
+    return false;
+  }
+
   // Check enabled accessibility based on a11y DBus interface
   GDBusConnection* connection =
       g_bus_get_sync(G_BUS_TYPE_SESSION, nullptr, nullptr);
