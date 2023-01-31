@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/editing/selection_controller.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/editing/testing/selection_sample.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -952,6 +953,38 @@ TEST_F(EventHandlerTest, HandleNotShownOnMouseEvents) {
 
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
   ASSERT_FALSE(Selection().IsHandleVisible());
+}
+
+// https://crbug.com/1410448
+TEST_F(EventHandlerTest,
+       TripleClickUserSelectNoneParagraphWithSelectableChildren) {
+  LoadAhem(*GetDocument().GetFrame());
+  InsertStyleElement("body { margin: 0; font: 20px/1 Ahem; }");
+
+  SetBodyInnerHTML(R"HTML(<div style="user-select:none">
+        <span style="user-select:text">
+          <span style="user-select:text">Hel</span>
+          lo
+        </span>
+        <span style="user-select:text"> lo </span>
+        <span style="user-select:text">there</span>
+      </div>)HTML");
+
+  MousePressEventBuilder triple_click_mouse_press_event(
+      gfx::Point(10, 10), 3, WebPointerProperties::Button::kLeft);
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+      triple_click_mouse_press_event);
+
+  EXPECT_EQ(R"HTML(<div style="user-select:none">
+        <span style="user-select:text">
+          <span style="user-select:text">^Hel</span>
+          lo
+        </span>
+        <span style="user-select:text"> lo </span>
+        <span style="user-select:text">there|</span>
+      </div>)HTML",
+            SelectionSample::GetSelectionText(
+                *GetDocument().body(), Selection().GetSelectionInDOMTree()));
 }
 
 TEST_F(EventHandlerTest, MisspellingContextMenuEvent) {
