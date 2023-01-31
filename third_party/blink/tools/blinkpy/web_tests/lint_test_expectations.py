@@ -62,7 +62,11 @@ def lint(host, options):
     # The checks and list of expectation files are generally not
     # platform-dependent. Still, we need a port to identify test types and
     # manipulate virtual test paths.
-    port = host.port_factory.get()
+    #
+    # Force a manifest update to ensure it's always up-to-date.
+    # TODO(crbug.com/1411505): See if the manifest refresh can be made faster.
+    options.manifest_update = True
+    port = host.port_factory.get(options=options)
 
     # Add all extra expectation files to be linted.
     options.additional_expectations.extend(
