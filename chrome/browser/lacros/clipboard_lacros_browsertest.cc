@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/rand_util.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -29,9 +29,10 @@ class ClipboardLacrosBrowserTest : public InProcessBrowserTest {
       delete;
 
   void WaitForClipboardText(const std::string& text) {
-    base::RunLoop run_loop;
+    base::test::TestFuture<std::string> text_found_future;
     auto look_for_clipboard_text = base::BindRepeating(
-        [](base::RunLoop* run_loop, std::string text) {
+        [](base::test::TestFuture<std::string>* text_found_future,
+           std::string text) {
           auto* lacros_chrome_service = chromeos::LacrosService::Get();
           std::string read_text = "";
           {
@@ -39,14 +40,15 @@ class ClipboardLacrosBrowserTest : public InProcessBrowserTest {
             lacros_chrome_service->GetRemote<crosapi::mojom::Clipboard>()
                 ->GetCopyPasteText(&read_text);
           }
-          if (read_text == text)
-            run_loop->Quit();
+          if (read_text == text) {
+            text_found_future->SetValue(read_text);
+          }
         },
-        &run_loop, text);
+        &text_found_future, text);
     base::RepeatingTimer timer;
     timer.Start(FROM_HERE, base::Milliseconds(1),
                 std::move(look_for_clipboard_text));
-    run_loop.Run();
+    ASSERT_TRUE(text_found_future.Wait()) << "Clipboard text match not found.";
   }
 
   ~ClipboardLacrosBrowserTest() override = default;
