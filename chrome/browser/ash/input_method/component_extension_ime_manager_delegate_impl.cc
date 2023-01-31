@@ -14,6 +14,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
@@ -306,9 +307,11 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Information is managed on VK extension side so just use a default value
   // here.
+  std::string query_part = base::StrCat(
+      {"?", "jelly=", ash::features::IsJellyEnabled() ? "true" : "false"});
   GURL url = extensions::Extension::GetResourceURL(
       extensions::Extension::GetBaseURLFromExtensionId(component_extension.id),
-      "inputview.html#id=default");
+      "inputview.html#id=default" + query_part);
   if (!url.is_valid())
     return false;
   out->input_view_url = url;
