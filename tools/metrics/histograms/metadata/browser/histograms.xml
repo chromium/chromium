@@ -171,6 +171,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Browser.ERP.UnusualEnqueueTimestamp" enum="Boolean"
+    expires_after="2024-01-30">
+  <owner>xuhong@chromium.org</owner>
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Would only be true. Recorded whenever an unusual timestamp is encounted when
+    enqueuing a record, which will be rejected.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.{Param}PayloadSize" units="bytes"
     expires_after="2023-11-17">
   <owner>xuhong@chromium.org</owner>

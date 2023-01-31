@@ -14,8 +14,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -30,6 +33,10 @@
 
 namespace reporting {
 namespace {
+
+// UTC time of 2122-01-01T00:00:00Z since Unix epoch 1970-01-01T00:00:00Z in
+// microseconds.
+constexpr int64_t kTime2122 = 4'796'668'800'000'000;
 
 // Calls |record_producer|, checks the result and in case of success, forwards
 // it to the storage. In production code should be invoked asynchronously, on a
@@ -64,6 +71,22 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
   // Calculate timestamp in microseconds - to match Spanner expectations.
   const int64_t time_since_epoch_us =
       base::Time::Now().ToJavaTime() * base::Time::kMicrosecondsPerMillisecond;
+  if (time_since_epoch_us > kTime2122) {
+    // Unusual timestamp. Reject the record even though the record is good
+    // otherwise, because we can't obtain a reasonable timestamp. We have this
+    // code block here because server very occasionally detects very large
+    // timestamps. The reason could come from occasional irregular system time.
+    // Filtering out irregular timestamps here should address the problem
+    // without leaving timestamp-related bugs in the ERP undiscovered (should
+    // there be any).
+    base::UmaHistogramBoolean("Browser.ERP.UnusualEnqueueTimestamp", true);
+    std::move(callback).Run(Status(
+        error::FAILED_PRECONDITION,
+        base::StrCat(
+            {"Abnormal system timestamp obtained. Microseconds since epoch: ",
+             base::NumberToString(time_since_epoch_us)})));
+    return;
+  }
   record.set_timestamp_us(time_since_epoch_us);
   if (!record_result.ok()) {
     std::move(callback).Run(record_result.status());

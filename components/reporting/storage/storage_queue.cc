@@ -1571,6 +1571,8 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     // Log an error if the timestamp is larger than 2122-01-01T00:00:00Z. This
     // is the latest spot in the code before a record is compressed or
     // encrypted.
+    // TODO(b/254270304): Remove this log after M111 is released and no error is
+    // reported for 3 months.
     LOG_IF(ERROR, wrapped_record.record().timestamp_us() > kTime2122)
         << "Unusually large timestamp (in milliseconds): "
         << wrapped_record.record().timestamp_us();
