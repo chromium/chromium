@@ -71,6 +71,7 @@
       "third_party/zlib/google/test/data/.*",
       "tools/android/avd/proto/creation/.*",
       "tools/clang/scripts/update.py",
+      "tools/rust/update_rust.py",
       "tools/grit/.*",
       "tools/mb/.*",
       "tools/metrics/histograms/histograms.xml",
