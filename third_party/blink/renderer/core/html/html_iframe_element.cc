@@ -485,10 +485,9 @@ HTMLIFrameElement::ConstructTrustTokenParams() const {
   if (!trust_token_)
     return nullptr;
 
-  // TODO(crbug.com/1264024): Deprecate JSON comments here, if possible.
   JSONParseError parse_error;
   std::unique_ptr<JSONValue> parsed_attribute =
-      ParseJSONWithCommentsDeprecated(trust_token_, &parse_error);
+      ParseJSON(trust_token_, &parse_error);
   if (!parsed_attribute) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
