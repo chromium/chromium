@@ -2008,12 +2008,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kPhoneHubCameraRollPendingStatePrefName);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 02/2022.
-  // TODO(crbug.com/1298250): Remove after M107.
-  guest_os::RemoveDuplicateContainerEntries(profile_prefs);
-#endif
-
   // Added 03/2022
   profile_prefs->ClearPref(kShowReadingListInBookmarkBar);
 
@@ -2034,12 +2028,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 05/2022
   profile_prefs->ClearPref(kAccessCodeCastDiscoveredNetworks);
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 05/2022.
-  // TODO(crbug.com/1028898): Remove after M110.
-  guest_os::RemoveTerminalFromRegistry(profile_prefs);
-#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 05/2022

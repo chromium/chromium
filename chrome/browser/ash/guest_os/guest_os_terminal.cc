@@ -37,7 +37,6 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
-#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/menu.h"
@@ -139,11 +138,6 @@ void LaunchTerminalImpl(Profile* profile,
 }
 
 }  // namespace
-
-void RemoveTerminalFromRegistry(PrefService* prefs) {
-  ScopedDictPrefUpdate update(prefs, guest_os::prefs::kGuestOsRegistry);
-  update->Remove(kTerminalSystemAppId);
-}
 
 const std::string& GetTerminalHomeUrl() {
   static const base::NoDestructor<std::string> url(

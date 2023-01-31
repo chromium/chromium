@@ -100,22 +100,6 @@ std::ostream& operator<<(std::ostream& ostream, const GuestId& container_id) {
                  << container_id.container_name << "\")";
 }
 
-void RemoveDuplicateContainerEntries(PrefService* prefs) {
-  ScopedListPrefUpdate updater(prefs, prefs::kGuestOsContainers);
-
-  std::set<GuestId> seen_containers;
-  auto& containers = *updater;
-  for (auto it = containers.begin(); it != containers.end();) {
-    GuestId id(*it);
-    if (seen_containers.find(id) == seen_containers.end()) {
-      seen_containers.insert(id);
-      it++;
-    } else {
-      it = containers.erase(it);
-    }
-  }
-}
-
 std::vector<GuestId> GetContainers(Profile* profile, VmType vm_type) {
   std::vector<GuestId> result;
   const base::Value::List& container_list =

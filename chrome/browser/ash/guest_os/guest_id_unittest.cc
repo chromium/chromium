@@ -54,42 +54,6 @@ TEST_F(GuestIdTest, GuestIdFromNonDictValue) {
   EXPECT_TRUE(GuestId(non_dict) == GuestId(VmType::UNKNOWN, "", ""));
 }
 
-TEST_F(GuestIdTest, DuplicateContainerNamesInPrefsAreRemoved) {
-  GuestId container1(VmType::TERMINA, "test1", "test1");
-  base::Value::Dict dictionary1 = container1.ToDictValue();
-  dictionary1.Set(prefs::kContainerOsPrettyNameKey, "Test OS Name 1");
-  dictionary1.Set(prefs::kContainerOsVersionKey, 1);
-
-  GuestId container2(VmType::TERMINA, "test1", "test2");
-  base::Value::Dict dictionary2 = container2.ToDictValue();
-  dictionary2.Set(prefs::kContainerOsPrettyNameKey, "Test OS Name 2");
-  dictionary2.Set(prefs::kContainerOsVersionKey, 2);
-
-  GuestId container3(VmType::TERMINA, "test2", "test1");
-  base::Value::Dict dictionary3 = container3.ToDictValue();
-  dictionary3.Set(prefs::kContainerOsPrettyNameKey, "Test OS Name 3");
-  dictionary3.Set(prefs::kContainerOsVersionKey, 3);
-
-  base::Value::List containers;
-  containers.Append(dictionary1.Clone());
-  containers.Append(dictionary2.Clone());
-  containers.Append(dictionary1.Clone());
-  containers.Append(dictionary2.Clone());
-  containers.Append(dictionary3.Clone());
-
-  PrefService* prefs = profile_.GetPrefs();
-  prefs->SetList(prefs::kGuestOsContainers, std::move(containers));
-
-  RemoveDuplicateContainerEntries(prefs);
-
-  const base::Value::List& result = prefs->GetList(prefs::kGuestOsContainers);
-
-  ASSERT_EQ(result.size(), 3u);
-  EXPECT_EQ(result[0].GetDict(), dictionary1);
-  EXPECT_EQ(result[1].GetDict(), dictionary2);
-  EXPECT_EQ(result[2].GetDict(), dictionary3);
-}
-
 TEST_F(GuestIdTest, GetContainers) {
   auto pref = base::JSONReader::Read(R"([
     {"vm_name": "vm1", "container_name": "c1"},
