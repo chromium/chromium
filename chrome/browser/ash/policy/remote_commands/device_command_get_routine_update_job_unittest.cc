@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/json/json_writer.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
@@ -280,22 +280,18 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
                 /*terminate_upon_input=*/false, /*id=*/56923,
                 ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove,
                 /*include_output=*/true);
-  base::RunLoop run_loop;
-  bool success =
-      job->Run(base::Time::Now(), base::TimeTicks::Now(),
-               base::BindLambdaForTesting([&]() {
-                 EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
-                 std::unique_ptr<std::string> payload = job->GetResultPayload();
-                 EXPECT_TRUE(payload);
-                 // TODO(crbug.com/1056323): Verify output.
-                 EXPECT_EQ(CreateInteractivePayload(kProgressPercent,
-                                                    /*output=*/absl::nullopt,
-                                                    kUserMessage),
-                           *payload);
-                 run_loop.Quit();
-               }));
+  base::test::TestFuture<void> job_finished_future;
+  bool success = job->Run(base::Time::Now(), base::TimeTicks::Now(),
+                          job_finished_future.GetCallback());
   EXPECT_TRUE(success);
-  run_loop.Run();
+  ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
+  EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+  std::unique_ptr<std::string> payload = job->GetResultPayload();
+  EXPECT_TRUE(payload);
+  // TODO(crbug.com/1056323): Verify output.
+  EXPECT_EQ(CreateInteractivePayload(kProgressPercent,
+                                     /*output=*/absl::nullopt, kUserMessage),
+            *payload);
 }
 
 TEST_F(DeviceCommandGetRoutineUpdateJobTest,
@@ -317,22 +313,19 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
                 /*terminate_upon_input=*/false, /*id=*/9812,
                 ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove,
                 /*include_output=*/true);
-  base::RunLoop run_loop;
-  bool success =
-      job->Run(base::Time::Now(), base::TimeTicks::Now(),
-               base::BindLambdaForTesting([&]() {
-                 EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
-                 std::unique_ptr<std::string> payload = job->GetResultPayload();
-                 EXPECT_TRUE(payload);
-                 // TODO(crbug.com/1056323): Verify output.
-                 EXPECT_EQ(CreateNonInteractivePayload(kProgressPercent,
-                                                       /*output=*/absl::nullopt,
-                                                       kStatus, kStatusMessage),
-                           *payload);
-                 run_loop.Quit();
-               }));
+  base::test::TestFuture<void> job_finished_future;
+  bool success = job->Run(base::Time::Now(), base::TimeTicks::Now(),
+                          job_finished_future.GetCallback());
   EXPECT_TRUE(success);
-  run_loop.Run();
+  ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
+  EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+  std::unique_ptr<std::string> payload = job->GetResultPayload();
+  EXPECT_TRUE(payload);
+  // TODO(crbug.com/1056323): Verify output.
+  EXPECT_EQ(CreateNonInteractivePayload(kProgressPercent,
+                                        /*output=*/absl::nullopt, kStatus,
+                                        kStatusMessage),
+            *payload);
 }
 
 }  // namespace policy

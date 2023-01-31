@@ -11,9 +11,9 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/ash/system/user_removal_manager.h"
@@ -94,7 +94,6 @@ class DeviceCommandWipeUsersJobTest : public testing::Test {
   ~DeviceCommandWipeUsersJobTest() override;
 
   content::BrowserTaskEnvironment task_environment_;
-  base::RunLoop run_loop_;
 
   ScopedTestingLocalState local_state_;
   const std::unique_ptr<MockCloudPolicyClient> client_;
@@ -122,17 +121,13 @@ TEST_F(DeviceCommandWipeUsersJobTest, TestCommandSucceededCallback) {
   std::unique_ptr<RemoteCommandJob> job =
       CreateWipeUsersJob(kCommandAge, service_.get());
 
-  auto check_result_callback = base::BindOnce(
-      [](base::RunLoop* run_loop, RemoteCommandJob* job) {
-        EXPECT_EQ(RemoteCommandJob::SUCCEEDED, job->status());
-        run_loop->Quit();
-      },
-      &run_loop_, job.get());
+  base::test::TestFuture<void> job_finished_future;
   EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
-                       std::move(check_result_callback)));
+                       job_finished_future.GetCallback()));
   // This call processes the CommitPendingWrite which persists the pref to disk,
   // and runs the passed callback which is the succeeded_callback.
-  run_loop_.Run();
+  ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
+  EXPECT_EQ(RemoteCommandJob::SUCCEEDED, job->status());
 }
 
 // Make sure that LogOut is being called after the commands gets ACK'd to the
@@ -141,33 +136,26 @@ TEST_F(DeviceCommandWipeUsersJobTest, TestLogOutCalled) {
   std::unique_ptr<RemoteCommandJob> job =
       CreateWipeUsersJob(kCommandAge, service_.get());
 
+  base::test::TestFuture<void> job_finished_future;
   EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
-                       run_loop_.QuitClosure()));
+                       job_finished_future.GetCallback()));
   // At this point the job is run, and the succeeded_callback is waiting to be
   // invoked.
 
-  run_loop_.Run();
+  ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
   // Now the succeeded_callback has been invoked, and normally it would cause an
   // ACK to be sent to the server, and upon receiving a response back from the
   // server LogOut would get called.
 
   // Simulate a response from the server by posting a task and waiting for
   // LogOut to be called.
-  bool log_out_called = false;
-  base::RunLoop run_loop2;
-  auto log_out_callback = base::BindOnce(
-      [](base::RunLoop* run_loop, bool* log_out_called) {
-        *log_out_called = true;
-        run_loop->Quit();
-      },
-      &run_loop2, &log_out_called);
+  base::test::TestFuture<void> log_out_callback_future;
   ash::user_removal_manager::OverrideLogOutForTesting(
-      std::move(log_out_callback));
-
+      log_out_callback_future.GetCallback());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, service_->OnCommandAckedCallback());
-  run_loop2.Run();
-  EXPECT_TRUE(log_out_called);
+  ASSERT_TRUE(log_out_callback_future.Wait())
+      << "Log out callback was not invoked.";
 }
 
 }  // namespace policy

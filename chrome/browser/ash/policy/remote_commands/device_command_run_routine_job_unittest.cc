@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/json/json_writer.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
@@ -201,13 +201,12 @@ bool DeviceCommandRunRoutineJobTest::RunJob(
   InitializeJob(job.get(), kUniqueID, test_start_time_, base::Seconds(30),
                 /*terminate_upon_input=*/false, routine,
                 std::move(params_dict));
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> job_finished_future;
   bool success = job->Run(base::Time::Now(), base::TimeTicks::Now(),
-                          base::BindLambdaForTesting([&]() {
-                            std::move(callback).Run(job.get());
-                            run_loop.Quit();
-                          }));
-  run_loop.Run();
+                          job_finished_future.GetCallback());
+  EXPECT_TRUE(success);
+  EXPECT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
+  std::move(callback).Run(job.get());
   return success;
 }
 

@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -54,13 +55,11 @@ void VerifyEuiccProfileCount(size_t expected_count) {
             euicc_properties->installed_carrier_profiles().value().size());
 }
 
-void VerifyJobResult(base::RunLoop* run_loop,
-                     RemoteCommandJob* job,
+void VerifyJobResult(const RemoteCommandJob& job,
                      RemoteCommandJob::Status expected_status,
                      size_t expected_profile_count) {
-  EXPECT_EQ(expected_status, job->status());
+  EXPECT_EQ(expected_status, job.status());
   VerifyEuiccProfileCount(expected_profile_count);
-  run_loop->Quit();
 }
 
 }  // namespace
@@ -120,20 +119,19 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
 };
 
 TEST_F(DeviceCommandResetEuiccJobTest, ResetEuicc) {
-  base::RunLoop run_loop;
   TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
       std::make_unique<SystemNotificationHelper>());
   NotificationDisplayServiceTester tester(/*profile=*/nullptr);
 
   std::unique_ptr<RemoteCommandJob> job = CreateResetEuiccJob(test_start_time_);
-  EXPECT_TRUE(
-      job->Run(base::Time::Now(), base::TimeTicks::Now(),
-               base::BindOnce(&VerifyJobResult, base::Unretained(&run_loop),
-                              base::Unretained(job.get()),
-                              RemoteCommandJob::Status::SUCCEEDED,
-                              /*expected_profile_count=*/0u)));
+  base::test::TestFuture<void> job_finished_future;
+  EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
+                       job_finished_future.GetCallback()));
+  ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
+  VerifyJobResult(*job, RemoteCommandJob::Status::SUCCEEDED,
+                  /*expected_profile_count=*/0u);
+
   task_environment()->FastForwardBy(kNetworkListWaitTimeout);
-  run_loop.Run();
   // Verify that the notification should be displayed.
   EXPECT_TRUE(tester.GetNotification(
       DeviceCommandResetEuiccJob::kResetEuiccNotificationId));
@@ -152,15 +150,15 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuiccFailure) {
   TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
       std::make_unique<SystemNotificationHelper>());
   NotificationDisplayServiceTester tester(/*profile=*/nullptr);
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> job_finished_future;
+
   std::unique_ptr<RemoteCommandJob> job = CreateResetEuiccJob(test_start_time_);
-  EXPECT_TRUE(
-      job->Run(base::Time::Now(), base::TimeTicks::Now(),
-               base::BindOnce(&VerifyJobResult, base::Unretained(&run_loop),
-                              base::Unretained(job.get()),
-                              RemoteCommandJob::Status::FAILED,
-                              /*expected_profile_count=*/2u)));
-  run_loop.Run();
+  EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
+                       job_finished_future.GetCallback()));
+  ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
+  VerifyJobResult(*job, RemoteCommandJob::Status::FAILED,
+                  /*expected_profile_count=*/2u);
+
   // Verify that the notification was not displayed.
   EXPECT_FALSE(tester.GetNotification(
       DeviceCommandResetEuiccJob::kResetEuiccNotificationId));

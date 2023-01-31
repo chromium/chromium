@@ -10,7 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
-#include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -70,7 +70,6 @@ class DeviceCommandSetVolumeTest : public ChromeAshTestBase {
   // testing::Test
   void SetUp() override;
 
-  base::RunLoop run_loop_;
   base::TimeTicks test_start_time_;
 };
 
@@ -81,36 +80,34 @@ void DeviceCommandSetVolumeTest::SetUp() {
   test_start_time_ = base::TimeTicks::Now();
 }
 
-void VerifyResults(base::RunLoop* run_loop,
-                   RemoteCommandJob* job,
+void VerifyResults(const RemoteCommandJob& job,
                    int expected_volume,
                    bool expected_muted) {
-  EXPECT_EQ(RemoteCommandJob::SUCCEEDED, job->status());
+  EXPECT_EQ(RemoteCommandJob::SUCCEEDED, job.status());
   int volume = ash::CrasAudioHandler::Get()->GetOutputVolumePercent();
   bool muted = ash::CrasAudioHandler::Get()->IsOutputMuted();
   EXPECT_EQ(expected_volume, volume);
   EXPECT_EQ(expected_muted, muted);
-  run_loop->Quit();
 }
 
 TEST_F(DeviceCommandSetVolumeTest, NonMuted) {
   const int kVolume = 45;
   auto job = CreateSetVolumeJob(test_start_time_, kVolume);
-  EXPECT_TRUE(
-      job->Run(base::Time::Now(), base::TimeTicks::Now(),
-               base::BindOnce(&VerifyResults, base::Unretained(&run_loop_),
-                              base::Unretained(job.get()), kVolume, false)));
-  run_loop_.Run();
+  base::test::TestFuture<void> job_finished_future;
+  EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
+                       job_finished_future.GetCallback()));
+  ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
+  VerifyResults(*job, kVolume, false);
 }
 
 TEST_F(DeviceCommandSetVolumeTest, Muted) {
   const int kVolume = 0;
   auto job = CreateSetVolumeJob(test_start_time_, kVolume);
-  EXPECT_TRUE(
-      job->Run(base::Time::Now(), base::TimeTicks::Now(),
-               base::BindOnce(&VerifyResults, base::Unretained(&run_loop_),
-                              base::Unretained(job.get()), kVolume, true)));
-  run_loop_.Run();
+  base::test::TestFuture<void> job_finished_future;
+  EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
+                       job_finished_future.GetCallback()));
+  ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
+  VerifyResults(*job, kVolume, true);
 }
 
 TEST_F(DeviceCommandSetVolumeTest, VolumeOutOfRange) {

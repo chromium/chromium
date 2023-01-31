@@ -9,9 +9,9 @@
 
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
@@ -89,7 +89,6 @@ class DeviceCommandRemotePowerwashJobTest : public testing::Test {
   ~DeviceCommandRemotePowerwashJobTest() override;
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::RunLoop run_loop_;
 
   const std::unique_ptr<MockCloudPolicyClient> client_;
   const std::unique_ptr<TestingRemoteCommandsService> service_;
@@ -123,25 +122,27 @@ TEST_F(DeviceCommandRemotePowerwashJobTest, TestCommandAckStartsPowerwash) {
   EXPECT_EQ(
       0, ash::FakeSessionManagerClient::Get()->start_device_wipe_call_count());
 
+  base::test::TestFuture<void> job_finished_future;
   EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
-                       run_loop_.QuitClosure()));
+                       job_finished_future.GetCallback()));
   // At this point the job is run, and the succeeded_callback is waiting to be
   // invoked.
 
-  run_loop_.Run();
+  ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
   // Now the succeeded_callback has been invoked, and normally it would cause an
   // ACK to be sent to the server, and upon receiving a response back from the
   // server the powerwash would start.
 
-  base::RunLoop run_loop2;
+  base::test::TestFuture<void> device_wipe_callback_future;
   ash::FakeSessionManagerClient::Get()->set_on_start_device_wipe_callback(
-      base::BindLambdaForTesting([&]() { run_loop2.Quit(); }));
+      device_wipe_callback_future.GetCallback());
 
   // Simulate a response from the server by posting a task and waiting for
   // StartDeviceWipe to be called.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, service_->OnCommandAckedCallback());
-  run_loop2.Run();
+  ASSERT_TRUE(device_wipe_callback_future.Wait())
+      << "device_wipe_callback was not invoked.";
 
   // One powerwash coming up.
   EXPECT_EQ(
@@ -158,9 +159,10 @@ TEST_F(DeviceCommandRemotePowerwashJobTest, TestFailsafeTimerStartsPowerwash) {
       0, ash::FakeSessionManagerClient::Get()->start_device_wipe_call_count());
 
   // Run job + succeeded_callback.
+  base::test::TestFuture<void> job_finished_future;
   EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
-                       run_loop_.QuitClosure()));
-  run_loop_.Run();
+                       job_finished_future.GetCallback()));
+  ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
 
   // After 5s the timer is not run yet.
   task_runner_->FastForwardBy(base::Seconds(5));

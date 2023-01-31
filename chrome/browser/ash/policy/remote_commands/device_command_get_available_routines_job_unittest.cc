@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/json/json_writer.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
@@ -119,18 +119,15 @@ TEST_F(DeviceCommandGetAvailableRoutinesJobTest, Success) {
       std::make_unique<DeviceCommandGetAvailableRoutinesJob>();
   InitializeJob(job.get(), kUniqueID, test_start_time_, base::Seconds(30),
                 /*terminate_upon_input=*/false);
-  base::RunLoop run_loop;
-  bool success =
-      job->Run(base::Time::Now(), base::TimeTicks::Now(),
-               base::BindLambdaForTesting([&]() {
-                 EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
-                 std::unique_ptr<std::string> payload = job->GetResultPayload();
-                 EXPECT_TRUE(payload);
-                 EXPECT_EQ(CreateSuccessPayload(kAvailableRoutines), *payload);
-                 run_loop.Quit();
-               }));
+  base::test::TestFuture<void> job_finished_future;
+  bool success = job->Run(base::Time::Now(), base::TimeTicks::Now(),
+                          job_finished_future.GetCallback());
   EXPECT_TRUE(success);
-  run_loop.Run();
+  ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
+  EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+  std::unique_ptr<std::string> payload = job->GetResultPayload();
+  EXPECT_TRUE(payload);
+  EXPECT_EQ(CreateSuccessPayload(kAvailableRoutines), *payload);
 }
 
 TEST_F(DeviceCommandGetAvailableRoutinesJobTest, Failure) {
@@ -139,17 +136,14 @@ TEST_F(DeviceCommandGetAvailableRoutinesJobTest, Failure) {
       std::make_unique<DeviceCommandGetAvailableRoutinesJob>();
   InitializeJob(job.get(), kUniqueID, test_start_time_, base::Seconds(30),
                 /*terminate_upon_input=*/false);
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> job_finished_future;
   bool success = job->Run(base::Time::Now(), base::TimeTicks::Now(),
-                          base::BindLambdaForTesting([&]() {
-                            EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
-                            std::unique_ptr<std::string> payload =
-                                job->GetResultPayload();
-                            EXPECT_FALSE(payload);
-                            run_loop.Quit();
-                          }));
+                          job_finished_future.GetCallback());
   EXPECT_TRUE(success);
-  run_loop.Run();
+  ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
+  EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
+  std::unique_ptr<std::string> payload = job->GetResultPayload();
+  EXPECT_FALSE(payload);
 }
 
 }  // namespace policy

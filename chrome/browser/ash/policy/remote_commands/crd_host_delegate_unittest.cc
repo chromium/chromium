@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -471,10 +470,11 @@ TEST_F(CrdHostDelegateTest, TerminateSessionShouldTerminateTheActiveSession) {
                                     session_finished_callback());
   EXPECT_TRUE(delegate().HasActiveSession());
 
-  base::RunLoop terminate_callback;
-  delegate().TerminateSession(terminate_callback.QuitClosure());
+  base::test::TestFuture<void> terminate_session_future;
+  delegate().TerminateSession(terminate_session_future.GetCallback());
 
-  terminate_callback.Run();
+  ASSERT_TRUE(terminate_session_future.Wait())
+      << "TerminateSession did not invoke the callback.";
   EXPECT_FALSE(delegate().HasActiveSession());
 }
 
