@@ -182,7 +182,9 @@ void AutofillProviderAndroid::OnAutofillAvailable(JNIEnv* env,
                                                   jobject formData) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (manager_ && form_) {
-    const FormData& form = form_->GetAutofillValues();
+    form_->UpdateFromJava();
+    const FormData& form = form_->form();
+
     FillOrPreviewForm(manager_.get(), form, triggered_origin_);
   }
 }

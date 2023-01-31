@@ -49,10 +49,9 @@ ScopedJavaLocalRef<jobject> FormDataAndroid::GetJavaPeer(
   return obj;
 }
 
-const FormData& FormDataAndroid::GetAutofillValues() {
+void FormDataAndroid::UpdateFromJava() {
   for (std::unique_ptr<FormFieldDataAndroid>& field : fields_)
-    field->GetValue();
-  return form_;
+    field->UpdateFromJava();
 }
 
 ScopedJavaLocalRef<jobject> FormDataAndroid::GetNextFormFieldData(JNIEnv* env) {

@@ -27,8 +27,8 @@ class FormDataAndroid {
   base::android::ScopedJavaLocalRef<jobject> GetJavaPeer(
       const FormStructure* form_structure);
 
-  // Get autofill values from Java side and return FormData.
-  const FormData& GetAutofillValues();
+  // Update `form_` with state from Java side.
+  void UpdateFromJava();
 
   base::android::ScopedJavaLocalRef<jobject> GetNextFormFieldData(JNIEnv* env);
 

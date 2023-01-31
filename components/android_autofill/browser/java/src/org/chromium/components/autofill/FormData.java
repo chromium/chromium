@@ -11,6 +11,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The wrap class of native autofill::FormDataAndroid.
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 public class FormData {
     public final String mName;
     public final String mHost;
-    public final ArrayList<FormFieldData> mFields;
+    public final List<FormFieldData> mFields;
 
     @CalledByNative
     private static FormData createFormData(
@@ -39,7 +40,7 @@ public class FormData {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public FormData(String name, String host, ArrayList<FormFieldData> fields) {
+    public FormData(String name, String host, List<FormFieldData> fields) {
         mName = name;
         mHost = host;
         mFields = fields;

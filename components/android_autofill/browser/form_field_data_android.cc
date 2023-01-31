@@ -98,18 +98,21 @@ ScopedJavaLocalRef<jobject> FormFieldDataAndroid::GetJavaPeer() {
         jheuristic_type, jserver_type, jcomputed_type, jserver_predictions,
         field_ptr_->bounds.x(), field_ptr_->bounds.y(),
         field_ptr_->bounds.right(), field_ptr_->bounds.bottom(),
-        jdatalist_values, jdatalist_labels, field_ptr_->IsFocusable());
+        jdatalist_values, jdatalist_labels, field_ptr_->IsFocusable(),
+        field_ptr_->is_autofilled);
     java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   }
   return obj;
 }
 
-void FormFieldDataAndroid::GetValue() {
+void FormFieldDataAndroid::UpdateFromJava() {
   JNIEnv* env = AttachCurrentThread();
 
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null())
     return;
+
+  field_ptr_->is_autofilled = Java_FormFieldData_isAutofilled(env, obj);
 
   if (IsCheckable(field_ptr_->check_status)) {
     bool checked = Java_FormFieldData_isChecked(env, obj);
@@ -120,7 +123,6 @@ void FormFieldDataAndroid::GetValue() {
       return;
     field_ptr_->value = ConvertJavaStringToUTF16(env, jvalue);
   }
-  field_ptr_->is_autofilled = true;
 }
 
 void FormFieldDataAndroid::OnFormFieldDidChange(const std::u16string& value) {
