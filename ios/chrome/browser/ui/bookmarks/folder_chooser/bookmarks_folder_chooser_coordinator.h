@@ -15,6 +15,8 @@ namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
 
+@class TableViewNavigationController;
+
 // Coordinator to select a bookmark folder. This view lists the bookmark
 // folder hierarchy, to let the user chooser a folder.
 @interface BookmarksFolderChooserCoordinator : ChromeCoordinator
@@ -24,12 +26,12 @@ class BookmarkNode;
 // The view will hide `hiddenNodes`. This is to make sure a folder cannot be
 // moved into one of its children.
 - (instancetype)
-    initWithBaseNavigationController:
-        (UINavigationController*)navigationController
-                             browser:(Browser*)browser
-                         hiddenNodes:
-                             (const std::set<const bookmarks::BookmarkNode*>&)
-                                 hiddenNodes NS_DESIGNATED_INITIALIZER;
+    initWithNavigationController:
+        (TableViewNavigationController*)navigationController
+                         browser:(Browser*)browser
+                     hiddenNodes:
+                         (const std::set<const bookmarks::BookmarkNode*>&)
+                             hiddenNodes NS_DESIGNATED_INITIALIZER;
 
 // Initializes BookmarksFolderChooserCoordinator. A navigation controller is
 // created, with the chooser folder view as the root view controller.

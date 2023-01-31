@@ -16,6 +16,7 @@ source_set("folder_chooser") {
     "//components/bookmarks/browser",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/bookmarks/cells",
@@ -27,6 +28,7 @@ source_set("folder_chooser") {
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("eg2_tests") {

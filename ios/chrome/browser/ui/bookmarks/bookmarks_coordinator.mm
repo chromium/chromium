@@ -30,7 +30,8 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_view_controller.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -69,11 +70,10 @@ enum class PresentedState {
 
 }  // namespace
 
-@interface BookmarksCoordinator () <
-    BookmarksEditorCoordinatorDelegate,
-    BookmarksFolderEditorViewControllerDelegate,
-    BookmarksFolderChooserViewControllerDelegate,
-    BookmarksHomeViewControllerDelegate> {
+@interface BookmarksCoordinator () <BookmarksEditorCoordinatorDelegate,
+                                    BookmarksFolderEditorViewControllerDelegate,
+                                    BookmarksFolderChooserCoordinatorDelegate,
+                                    BookmarksHomeViewControllerDelegate> {
   // The browser bookmarks are presented in.
   Browser* _browser;  // weak
 
@@ -117,13 +117,13 @@ enum class PresentedState {
 // when `currentPresentedState` is FOLDER_EDITOR.
 @property(nonatomic, strong) BookmarksFolderEditorViewController* folderEditor;
 
-// A reference to the potentially presented folder selector. This will be
+// A reference to the potentially presented folder chooser. This will be
 // non-nil when `currentPresentedState` is FOLDER_SELECTION.
 @property(nonatomic, strong)
-    BookmarksFolderChooserViewController* folderSelector;
+    BookmarksFolderChooserCoordinator* folderChooserCoordinator;
 
-@property(nonatomic, copy) void (^folderSelectionCompletionBlock)
-    (const bookmarks::BookmarkNode*);
+// URLs to bookmark when handling BookmarksCommands.
+@property(nonatomic, strong) NSArray<URLWithTitle*>* URLs;
 
 @property(nonatomic, strong) BookmarkMediator* mediator;
 
@@ -277,29 +277,16 @@ enum class PresentedState {
   self.currentPresentedState = PresentedState::BOOKMARK_BROWSER;
 }
 
-- (void)presentFolderPickerWithCompletion:
-    (void (^)(const bookmarks::BookmarkNode*))block {
+- (void)presentFolderChooser {
   DCHECK_EQ(PresentedState::NONE, self.currentPresentedState);
-  DCHECK(block);
 
   [self dismissSnackbar];
-
+  _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+  _folderChooserCoordinator.delegate = self;
+  [_folderChooserCoordinator start];
   self.currentPresentedState = PresentedState::FOLDER_SELECTION;
-  self.folderSelectionCompletionBlock = [block copy];
-
-  std::set<const BookmarkNode*> editedNodes;
-  self.folderSelector = [[BookmarksFolderChooserViewController alloc]
-      initWithBookmarkModel:self.bookmarkModel
-           allowsNewFolders:YES
-                editedNodes:editedNodes
-               allowsCancel:YES
-             selectedFolder:nil
-                    browser:_browser];
-  self.folderSelector.delegate = self;
-  self.folderSelector.snackbarCommandsHandler = self.snackbarCommandsHandler;
-
-  [self presentTableViewController:self.folderSelector
-      withReplacementViewControllers:nil];
 }
 
 - (void)presentEditorForURLNode:(const bookmarks::BookmarkNode*)node {
@@ -428,22 +415,6 @@ enum class PresentedState {
   self.currentPresentedState = PresentedState::NONE;
 }
 
-- (void)dismissFolderSelectionAnimated:(BOOL)animated {
-  if (self.currentPresentedState != PresentedState::FOLDER_SELECTION) {
-    return;
-  }
-  DCHECK(self.bookmarkNavigationController);
-
-  [self.bookmarkNavigationController
-      dismissViewControllerAnimated:animated
-                         completion:^{
-                           self.folderSelector.delegate = nil;
-                           self.folderSelector = nil;
-                           self.bookmarkNavigationController = nil;
-                         }];
-  self.currentPresentedState = PresentedState::NONE;
-}
-
 - (void)dismissBookmarkModalControllerAnimated:(BOOL)animated {
   // No urls to open.  So it does not care about inIncognito and newTab.
   [self dismissBookmarkBrowserAnimated:animated
@@ -495,25 +466,28 @@ enum class PresentedState {
   [self.delegate bookmarksCoordinatorWillCommitTitleOrURLChange:self];
 }
 
-#pragma mark - BookmarksFolderChooserViewControllerDelegate
+#pragma mark - BookmarksFolderChooserCoordinatorDelegate
 
-- (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
-    didFinishWithFolder:(const bookmarks::BookmarkNode*)folder {
-  [self dismissFolderSelectionAnimated:YES];
-
-  if (self.folderSelectionCompletionBlock) {
-    self.folderSelectionCompletionBlock(folder);
+- (void)bookmarksFolderChooserCoordinatorShouldStop:
+    (BookmarksFolderChooserCoordinator*)coordinator {
+  if (self.currentPresentedState != PresentedState::FOLDER_SELECTION) {
+    return;
   }
-}
+  DCHECK(_folderChooserCoordinator);
+  DCHECK(_URLs);
 
-- (void)folderPickerDidCancel:
-    (BookmarksFolderChooserViewController*)folderPicker {
-  [self dismissFolderSelectionAnimated:YES];
-}
+  const bookmarks::BookmarkNode* selectedFolder =
+      _folderChooserCoordinator.selectedFolder;
+  [_folderChooserCoordinator stop];
+  _folderChooserCoordinator = nil;
 
-- (void)folderPickerDidDismiss:
-    (BookmarksFolderChooserViewController*)folderPicker {
-  [self dismissFolderSelectionAnimated:YES];
+  if (selectedFolder) {
+    [self.snackbarCommandsHandler
+        showSnackbarMessage:[self.mediator addBookmarks:_URLs
+                                               toFolder:selectedFolder]];
+  }
+  _URLs = nil;
+  self.currentPresentedState = PresentedState::NONE;
 }
 
 #pragma mark - BookmarksHomeViewControllerDelegate
@@ -603,16 +577,8 @@ enum class PresentedState {
     return;
   }
 
-  __weak BookmarksCoordinator* weakSelf = self;
-  [self presentFolderPickerWithCompletion:^(
-            const bookmarks::BookmarkNode* folder) {
-    BookmarksCoordinator* strongSelf = weakSelf;
-    if (folder && strongSelf) {
-      [strongSelf.snackbarCommandsHandler
-          showSnackbarMessage:[strongSelf.mediator addBookmarks:command.URLs
-                                                       toFolder:folder]];
-    }
-  }];
+  _URLs = command.URLs;
+  [self presentFolderChooser];
 }
 
 #pragma mark - Private
