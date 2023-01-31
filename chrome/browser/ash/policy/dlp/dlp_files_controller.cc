@@ -310,10 +310,10 @@ class FolderRecursionDelegate : public storage::RecursiveOperationDelegate {
 class RootsRecursionDelegate {
  public:
   RootsRecursionDelegate(storage::FileSystemContext* file_system_context,
-                         const std::vector<storage::FileSystemURL>& roots,
+                         std::vector<storage::FileSystemURL> roots,
                          FolderRecursionDelegate::FileURLsCallback callback)
       : file_system_context_(file_system_context),
-        roots_(roots),
+        roots_(std::move(roots)),
         callback_(std::move(callback)) {}
 
   RootsRecursionDelegate(const RootsRecursionDelegate&) = delete;
@@ -602,8 +602,30 @@ void DlpFilesController::GetDisallowedTransfers(
     return;
   }
 
+  // If the destination file path is in My Files, all files transfers should be
+  // allowed.
+  if (IsInLocalFileSystem(destination.path())) {
+    std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
+    return;
+  }
+
+  std::vector<storage::FileSystemURL> filtered_files;
+  // If the copied file isn't in the local file system, or the file is in the
+  // same file system as the destination, no restrictions should be applied.
+  for (const auto& file : transferred_files) {
+    if (!IsInLocalFileSystem(file.path()) ||
+        file.IsInSameFileSystem(destination)) {
+      continue;
+    }
+    filtered_files.push_back(file);
+  }
+  if (filtered_files.empty()) {
+    std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
+    return;
+  }
+
   auto* roots_recursion_delegate = new RootsRecursionDelegate(
-      file_system_context, transferred_files,
+      file_system_context, std::move(filtered_files),
       base::BindOnce(&DlpFilesController::ContinueGetDisallowedTransfers,
                      weak_ptr_factory_.GetWeakPtr(), std::move(destination),
                      is_move, std::move(result_callback)));
@@ -1305,18 +1327,13 @@ void DlpFilesController::ContinueGetDisallowedTransfers(
   }
 
   ::dlp::CheckFilesTransferRequest request;
-  base::flat_map<std::string, storage::FileSystemURL> filtered_files;
+  base::flat_map<std::string, storage::FileSystemURL> transferred_files_map;
   for (const auto& file : transferred_files) {
-    // If the file isn't in the local file system, or the file is in the same
-    // file system as the destination, no restrictions should be applied.
-    if (IsInLocalFileSystem(file.path()) &&
-        !file.IsInSameFileSystem(destination)) {
-      auto file_path = file.path().value();
-      filtered_files[file_path] = file;
-      request.add_files_paths(file_path);
-    }
+    auto file_path = file.path().value();
+    transferred_files_map[file_path] = file;
+    request.add_files_paths(file_path);
   }
-  if (filtered_files.empty()) {
+  if (transferred_files_map.empty()) {
     std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
     return;
   }
@@ -1325,10 +1342,10 @@ void DlpFilesController::ContinueGetDisallowedTransfers(
   request.set_file_action(is_move ? ::dlp::FileAction::MOVE
                                   : ::dlp::FileAction::COPY);
 
-  auto return_transfers_callback =
-      base::BindOnce(&DlpFilesController::ReturnDisallowedTransfers,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(filtered_files),
-                     std::move(result_callback));
+  auto return_transfers_callback = base::BindOnce(
+      &DlpFilesController::ReturnDisallowedTransfers,
+      weak_ptr_factory_.GetWeakPtr(), std::move(transferred_files_map),
+      std::move(result_callback));
   chromeos::DlpClient::Get()->CheckFilesTransfer(
       request, std::move(return_transfers_callback));
 }
