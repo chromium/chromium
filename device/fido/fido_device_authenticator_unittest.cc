@@ -8,15 +8,21 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_test_data.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -25,11 +31,9 @@ namespace device {
 
 namespace {
 
-using WriteCallback =
-    device::test::ValueCallbackReceiver<CtapDeviceResponseCode>;
-using ReadCallback = device::test::StatusAndValueCallbackReceiver<
+using GetAssertionCallback = device::test::StatusAndValueCallbackReceiver<
     CtapDeviceResponseCode,
-    absl::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>>>;
+    std::vector<AuthenticatorGetAssertionResponse>>;
 using PinCallback = device::test::StatusAndValueCallbackReceiver<
     CtapDeviceResponseCode,
     absl::optional<pin::TokenResponse>>;
@@ -37,13 +41,16 @@ using GarbageCollectionCallback =
     device::test::ValueCallbackReceiver<CtapDeviceResponseCode>;
 using TouchCallback = device::test::TestCallbackReceiver<>;
 
-constexpr LargeBlobKey kDummyKey1 = {{0x01}};
-constexpr LargeBlobKey kDummyKey2 = {{0x02}};
+const std::string kRpId = "galaxy.example.com";
+const std::vector<uint8_t> kCredentialId1{1, 1, 1, 1};
+const std::vector<uint8_t> kCredentialId2{2, 2, 2, 2};
+const std::vector<uint8_t> kUserId1{7, 7, 7, 7};
+const std::vector<uint8_t> kUserId2{8, 8, 8, 8};
 // The actual values for the "original size" that these blobs are supposed to
 // inflate to are not important here.
-const LargeBlob kSmallBlob1({'r', 'o', 's', 'a'}, 42);
-const LargeBlob kSmallBlob2({'l', 'u', 'm', 'a'}, 9000);
-const LargeBlob kSmallBlob3({'s', 't', 'a', 'r'}, 99);
+const std::vector<uint8_t> kSmallBlob1{'r', 'o', 's', 'a'};
+const std::vector<uint8_t> kSmallBlob2{'l', 'u', 'm', 'a'};
+const std::vector<uint8_t> kSmallBlob3{'s', 't', 'a', 'r'};
 constexpr size_t kLargeBlobStorageSize = 4096;
 constexpr char kPin[] = "1234";
 
@@ -67,6 +74,12 @@ class FidoDeviceAuthenticatorTest : public testing::Test {
     authenticator_state_ = base::MakeRefCounted<VirtualFidoDevice::State>();
     auto virtual_device =
         std::make_unique<VirtualCtap2Device>(authenticator_state_, config);
+    CHECK(virtual_device->mutable_state()->InjectResidentKey(
+        kCredentialId1, kRpId, kUserId1, "rosa", "Rosalina"));
+    virtual_device->mutable_state()
+        ->registrations.at(kCredentialId1)
+        .large_blob_key = {{1}};
+
     virtual_device_ = virtual_device.get();
     authenticator_ =
         std::make_unique<FidoDeviceAuthenticator>(std::move(virtual_device));
@@ -87,12 +100,53 @@ class FidoDeviceAuthenticatorTest : public testing::Test {
   pin::TokenResponse GetPINToken() {
     virtual_device_->SetPin(kPin);
     PinCallback pin_callback;
-    authenticator_->GetPINToken(kPin, {pin::Permissions::kLargeBlobWrite},
-                                /*rp_id=*/absl::nullopt,
-                                pin_callback.callback());
+    authenticator_->GetPINToken(
+        kPin,
+        {pin::Permissions::kLargeBlobWrite, pin::Permissions::kGetAssertion},
+        kRpId, pin_callback.callback());
     pin_callback.WaitForCallback();
     DCHECK_EQ(pin_callback.status(), CtapDeviceResponseCode::kSuccess);
     return *pin_callback.value();
+  }
+
+  std::vector<AuthenticatorGetAssertionResponse> GetAssertion(
+      CtapGetAssertionOptions options,
+      std::vector<std::vector<uint8_t>> credential_ids) {
+    CtapGetAssertionRequest request(kRpId, test_data::kClientDataJson);
+    for (const std::vector<uint8_t>& credential_id : credential_ids) {
+      request.allow_list.emplace_back(CredentialType::kPublicKey,
+                                      credential_id);
+    }
+    GetAssertionCallback callback;
+    authenticator_->GetAssertion(std::move(request), std::move(options),
+                                 callback.callback());
+    callback.WaitForCallback();
+    CHECK_EQ(callback.status(), CtapDeviceResponseCode::kSuccess)
+        << " get assertion returned "
+        << static_cast<unsigned>(callback.status());
+    std::vector<AuthenticatorGetAssertionResponse> response =
+        callback.TakeValue();
+    return response;
+  }
+
+  std::vector<AuthenticatorGetAssertionResponse> GetAssertionForRead(
+      std::vector<std::vector<uint8_t>> credential_ids = {kCredentialId1}) {
+    CtapGetAssertionOptions options;
+    options.large_blob_read = true;
+    return GetAssertion(std::move(options), std::move(credential_ids));
+  }
+
+  AuthenticatorGetAssertionResponse GetAssertionForWrite(
+      const std::vector<uint8_t>& blob,
+      std::vector<uint8_t> credential_id = kCredentialId1) {
+    CtapGetAssertionOptions options;
+    options.large_blob_write = std::move(blob);
+    std::vector<std::vector<uint8_t>> credential_ids;
+    credential_ids.push_back(std::move(credential_id));
+    std::vector<AuthenticatorGetAssertionResponse> responses =
+        GetAssertion(std::move(options), std::move(credential_ids));
+    CHECK_EQ(responses.size(), 1u);
+    return std::move(responses.at(0));
   }
 
   scoped_refptr<VirtualFidoDevice::State> authenticator_state_;
@@ -101,71 +155,40 @@ class FidoDeviceAuthenticatorTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(FidoDeviceAuthenticatorTest, TestReadEmptyLargeBlob) {
-  ReadCallback callback;
-  authenticator_->ReadLargeBlob({kDummyKey1}, absl::nullopt,
-                                callback.callback());
-
-  callback.WaitForCallback();
-  EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
-  EXPECT_EQ(callback.value()->size(), 0u);
+  std::vector<AuthenticatorGetAssertionResponse> assertions =
+      GetAssertionForRead();
+  EXPECT_EQ(assertions.size(), 1u);
+  EXPECT_FALSE(assertions.at(0).large_blob.has_value());
 }
 
 TEST_F(FidoDeviceAuthenticatorTest, TestReadInvalidLargeBlob) {
   authenticator_state_->large_blob[0] += 1;
-  ReadCallback callback;
-  authenticator_->ReadLargeBlob({kDummyKey1}, absl::nullopt,
-                                callback.callback());
-
-  callback.WaitForCallback();
-  EXPECT_EQ(callback.status(),
-            CtapDeviceResponseCode::kCtap2ErrIntegrityFailure);
-  EXPECT_FALSE(callback.value());
+  std::vector<AuthenticatorGetAssertionResponse> assertions =
+      GetAssertionForRead();
+  EXPECT_EQ(assertions.size(), 1u);
+  EXPECT_FALSE(assertions.at(0).large_blob.has_value());
 }
 
 // Test reading and writing a blob that fits in a single fragment.
 TEST_F(FidoDeviceAuthenticatorTest, TestWriteSmallBlob) {
-  WriteCallback write_callback;
-  authenticator_->WriteLargeBlob(kSmallBlob1, {kDummyKey1}, absl::nullopt,
-                                 write_callback.callback());
-
-  write_callback.WaitForCallback();
-  ASSERT_EQ(write_callback.value(), CtapDeviceResponseCode::kSuccess);
-
-  ReadCallback read_callback;
-  authenticator_->ReadLargeBlob({kDummyKey1}, absl::nullopt,
-                                read_callback.callback());
-  read_callback.WaitForCallback();
-  ASSERT_EQ(read_callback.status(), CtapDeviceResponseCode::kSuccess);
-  auto large_blob_array = read_callback.value();
-  ASSERT_TRUE(large_blob_array);
-  ASSERT_EQ(large_blob_array->size(), 1u);
-  EXPECT_EQ(large_blob_array->at(0).first, kDummyKey1);
-  EXPECT_EQ(large_blob_array->at(0).second, kSmallBlob1);
+  AuthenticatorGetAssertionResponse write = GetAssertionForWrite(kSmallBlob1);
+  EXPECT_TRUE(write.large_blob_written);
+  std::vector<AuthenticatorGetAssertionResponse> read = GetAssertionForRead();
+  EXPECT_EQ(read.at(0).large_blob, kSmallBlob1);
 }
 
 // Tests that attempting to write a large blob overwrites the entire array if it
 // is corrupted.
 TEST_F(FidoDeviceAuthenticatorTest, TestWriteInvalidLargeBlob) {
   authenticator_state_->large_blob[0] += 1;
-  WriteCallback write_callback;
-  authenticator_->WriteLargeBlob(kSmallBlob1, {kDummyKey1}, absl::nullopt,
-                                 write_callback.callback());
-  write_callback.WaitForCallback();
-  EXPECT_EQ(write_callback.value(), CtapDeviceResponseCode::kSuccess);
-
-  ReadCallback read_callback;
-  authenticator_->ReadLargeBlob({kDummyKey1}, absl::nullopt,
-                                read_callback.callback());
-  read_callback.WaitForCallback();
-  ASSERT_EQ(read_callback.status(), CtapDeviceResponseCode::kSuccess);
-  auto large_blob_array = read_callback.value();
-  ASSERT_TRUE(large_blob_array);
-  ASSERT_EQ(large_blob_array->size(), 1u);
-  EXPECT_EQ(large_blob_array->at(0).first, kDummyKey1);
-  EXPECT_EQ(large_blob_array->at(0).second, kSmallBlob1);
+  AuthenticatorGetAssertionResponse write = GetAssertionForWrite(kSmallBlob1);
+  EXPECT_TRUE(write.large_blob_written);
+  std::vector<AuthenticatorGetAssertionResponse> read = GetAssertionForRead();
+  EXPECT_EQ(read.at(0).large_blob, kSmallBlob1);
 }
 
 // Regression test for crbug.com/1405288.
@@ -174,12 +197,8 @@ TEST_F(FidoDeviceAuthenticatorTest,
   virtual_device_->mutable_state()->InjectOpaqueLargeBlob(
       cbor::Value("comet observatory"));
 
-  WriteCallback write_callback;
-  authenticator_->WriteLargeBlob(kSmallBlob1, {kDummyKey1}, absl::nullopt,
-                                 write_callback.callback());
-
-  write_callback.WaitForCallback();
-  ASSERT_EQ(write_callback.value(), CtapDeviceResponseCode::kSuccess);
+  AuthenticatorGetAssertionResponse write = GetAssertionForWrite(kSmallBlob1);
+  EXPECT_TRUE(write.large_blob_written);
 
   cbor::Value::ArrayValue large_blob_array = GetLargeBlobArray();
   EXPECT_EQ(large_blob_array[0].GetString(), "comet observatory");
@@ -188,147 +207,127 @@ TEST_F(FidoDeviceAuthenticatorTest,
 
 // Test reading and writing a blob that must fit in multiple fragments.
 TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlob) {
-  std::vector<uint8_t> large_blob_contents;
-  large_blob_contents.reserve(2048);
-  for (size_t i = 0; i < large_blob_contents.capacity(); ++i) {
-    large_blob_contents.emplace_back(i % 0xFF);
-  }
-  LargeBlob large_blob(std::move(large_blob_contents), 9999);
+  std::vector<uint8_t> large_blob;
+  large_blob.resize(2048);
+  base::RandBytes(large_blob.data(), large_blob.size());
+  AuthenticatorGetAssertionResponse write = GetAssertionForWrite(large_blob);
+  EXPECT_TRUE(write.large_blob_written);
 
-  WriteCallback write_callback;
-  authenticator_->WriteLargeBlob(large_blob, {kDummyKey1}, absl::nullopt,
-                                 write_callback.callback());
-
-  write_callback.WaitForCallback();
-  ASSERT_EQ(write_callback.value(), CtapDeviceResponseCode::kSuccess);
-
-  ReadCallback read_callback;
-  authenticator_->ReadLargeBlob({kDummyKey1}, absl::nullopt,
-                                read_callback.callback());
-  read_callback.WaitForCallback();
-  ASSERT_EQ(read_callback.status(), CtapDeviceResponseCode::kSuccess);
-  auto large_blob_array = read_callback.value();
-  ASSERT_TRUE(large_blob_array);
-  ASSERT_EQ(large_blob_array->size(), 1u);
-  EXPECT_EQ(large_blob_array->at(0).first, kDummyKey1);
-  EXPECT_EQ(large_blob_array->at(0).second, large_blob);
+  std::vector<AuthenticatorGetAssertionResponse> read = GetAssertionForRead();
+  EXPECT_EQ(read.at(0).large_blob, large_blob);
 }
 
 // Test reading and writing a blob using a PinUvAuthToken.
 TEST_F(FidoDeviceAuthenticatorTest, TestWriteSmallBlobWithToken) {
   pin::TokenResponse pin_token = GetPINToken();
-  WriteCallback write_callback;
-  authenticator_->WriteLargeBlob(kSmallBlob1, {kDummyKey1}, pin_token,
-                                 write_callback.callback());
-  write_callback.WaitForCallback();
-  ASSERT_EQ(write_callback.value(), CtapDeviceResponseCode::kSuccess);
+  {
+    CtapGetAssertionOptions options;
+    options.large_blob_write = kSmallBlob1;
+    options.pin_uv_auth_token = pin_token;
+    std::vector<AuthenticatorGetAssertionResponse> responses =
+        GetAssertion(std::move(options), {kCredentialId1});
+    EXPECT_EQ(responses.size(), 1u);
+    EXPECT_TRUE(responses.at(0).large_blob_written);
+  }
 
-  ReadCallback read_callback;
-  authenticator_->ReadLargeBlob({kDummyKey1}, pin_token,
-                                read_callback.callback());
-  read_callback.WaitForCallback();
-  ASSERT_EQ(read_callback.status(), CtapDeviceResponseCode::kSuccess);
-  auto large_blob_array = read_callback.value();
-  ASSERT_TRUE(large_blob_array);
-  ASSERT_EQ(large_blob_array->size(), 1u);
-  EXPECT_EQ(large_blob_array->at(0).first, kDummyKey1);
-  EXPECT_EQ(large_blob_array->at(0).second, kSmallBlob1);
+  {
+    CtapGetAssertionOptions options;
+    options.large_blob_read = true;
+    options.pin_uv_auth_token = pin_token;
+    std::vector<AuthenticatorGetAssertionResponse> responses =
+        GetAssertion(std::move(options), {kCredentialId1});
+    EXPECT_EQ(responses.size(), 1u);
+    EXPECT_EQ(responses.at(0).large_blob, kSmallBlob1);
+  }
 }
 
 // Test updating a large blob in an array with multiple entries corresponding to
 // other keys.
 TEST_F(FidoDeviceAuthenticatorTest, TestUpdateLargeBlob) {
-  WriteCallback write_callback1;
-  authenticator_->WriteLargeBlob(kSmallBlob1, {kDummyKey1}, absl::nullopt,
-                                 write_callback1.callback());
-  write_callback1.WaitForCallback();
-  ASSERT_EQ(write_callback1.value(), CtapDeviceResponseCode::kSuccess);
+  virtual_device_->mutable_state()->InjectResidentKey(kCredentialId2, kRpId,
+                                                      kUserId2, "luma", "Luma");
+  virtual_device_->mutable_state()
+      ->registrations.at(kCredentialId2)
+      .large_blob_key = {{2}};
 
-  WriteCallback write_callback2;
-  authenticator_->WriteLargeBlob(kSmallBlob2, {kDummyKey2}, absl::nullopt,
-                                 write_callback2.callback());
-  write_callback2.WaitForCallback();
-  ASSERT_EQ(write_callback2.value(), CtapDeviceResponseCode::kSuccess);
+  {
+    AuthenticatorGetAssertionResponse write =
+        GetAssertionForWrite(kSmallBlob1, kCredentialId1);
+    EXPECT_TRUE(write.large_blob_written);
+  }
+  {
+    AuthenticatorGetAssertionResponse write =
+        GetAssertionForWrite(kSmallBlob2, kCredentialId2);
+    EXPECT_TRUE(write.large_blob_written);
+  }
+  {
+    // Update the first entry.
+    AuthenticatorGetAssertionResponse write =
+        GetAssertionForWrite(kSmallBlob3, kCredentialId1);
+    EXPECT_TRUE(write.large_blob_written);
+  }
 
-  // Update the first entry.
-  WriteCallback write_callback3;
-  authenticator_->WriteLargeBlob(kSmallBlob3, {kDummyKey1}, absl::nullopt,
-                                 write_callback3.callback());
-  write_callback3.WaitForCallback();
-  ASSERT_EQ(write_callback3.value(), CtapDeviceResponseCode::kSuccess);
+  std::vector<AuthenticatorGetAssertionResponse> read =
+      GetAssertionForRead(/*credential_ids=*/{});
 
-  ReadCallback read_callback;
-  authenticator_->ReadLargeBlob({kDummyKey1, kDummyKey2}, absl::nullopt,
-                                read_callback.callback());
-  read_callback.WaitForCallback();
-  ASSERT_EQ(read_callback.status(), CtapDeviceResponseCode::kSuccess);
-  auto large_blob_array = read_callback.value();
-  ASSERT_TRUE(large_blob_array);
-  EXPECT_THAT(*large_blob_array, testing::UnorderedElementsAre(
-                                     std::make_pair(kDummyKey1, kSmallBlob3),
-                                     std::make_pair(kDummyKey2, kSmallBlob2)));
+  ASSERT_EQ(read.size(), 2u);
+  auto first = base::ranges::find_if(read, [&](const auto& response) {
+    return response.credential->id == kCredentialId1;
+  });
+  ASSERT_NE(first, read.end());
+  EXPECT_EQ(first->large_blob, kSmallBlob3);
+
+  auto second = base::ranges::find_if(read, [&](const auto& response) {
+    return response.credential->id == kCredentialId2;
+  });
+  ASSERT_NE(second, read.end());
+  EXPECT_EQ(second->large_blob, kSmallBlob2);
 }
 
 // Test attempting to write a large blob with a serialized size larger than the
 // maximum. Chrome should not attempt writing the blob in this case.
 TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlobTooLarge) {
-  // First write a valid blob to make sure it isn't overwritten.
-  WriteCallback write_callback1;
-  authenticator_->WriteLargeBlob(kSmallBlob1, {kDummyKey1}, absl::nullopt,
-                                 write_callback1.callback());
-  write_callback1.WaitForCallback();
-  ASSERT_EQ(write_callback1.value(), CtapDeviceResponseCode::kSuccess);
-
-  // Then, attempt writing a blob that is too large.
-  std::vector<uint8_t> large_blob_contents;
-  large_blob_contents.reserve(kLargeBlobStorageSize + 1);
-  for (size_t i = 0; i < large_blob_contents.capacity(); ++i) {
-    large_blob_contents.emplace_back(i % 0xFF);
+  {
+    // First write a valid blob to make sure it isn't overwritten.
+    AuthenticatorGetAssertionResponse write = GetAssertionForWrite(kSmallBlob1);
+    EXPECT_TRUE(write.large_blob_written);
   }
-  LargeBlob large_blob(std::move(large_blob_contents), 9999);
-  WriteCallback write_callback2;
-  authenticator_->WriteLargeBlob(large_blob, {kDummyKey1}, absl::nullopt,
-                                 write_callback2.callback());
-  write_callback2.WaitForCallback();
-  ASSERT_EQ(write_callback2.value(),
-            CtapDeviceResponseCode::kCtap2ErrRequestTooLarge);
+
+  // Then, attempt writing a blob that is too large. The blob will be
+  // compressed, so fill it with random data so it doesn't shrink.
+  std::vector<uint8_t> large_blob;
+  large_blob.resize(kLargeBlobStorageSize * 2);
+  base::RandBytes(large_blob.data(), large_blob.size());
+  AuthenticatorGetAssertionResponse write =
+      GetAssertionForWrite(std::move(large_blob));
+  EXPECT_FALSE(write.large_blob_written);
 
   // Make sure the first blob was not overwritten.
-  ReadCallback read_callback;
-  authenticator_->ReadLargeBlob({kDummyKey1}, absl::nullopt,
-                                read_callback.callback());
-  read_callback.WaitForCallback();
-  ASSERT_EQ(read_callback.status(), CtapDeviceResponseCode::kSuccess);
-  auto large_blob_array = read_callback.value();
-  ASSERT_TRUE(large_blob_array);
-  ASSERT_EQ(large_blob_array->size(), 1u);
-  EXPECT_EQ(kDummyKey1, large_blob_array->at(0).first);
-  EXPECT_EQ(kSmallBlob1, large_blob_array->at(0).second);
+  std::vector<AuthenticatorGetAssertionResponse> read =
+      GetAssertionForRead(/*credential_ids=*/{});
+  ASSERT_EQ(read.size(), 1u);
+  EXPECT_EQ(read.at(0).large_blob, kSmallBlob1);
 }
 
 // Tests garbage collecting a large blob.
 TEST_F(FidoDeviceAuthenticatorTest, TestGarbageCollectLargeBlob) {
-  // Write a large blob corresponding to a key.
-  std::vector<uint8_t> credential_id = std::vector<uint8_t>{1, 2, 3, 4};
-  virtual_device_->mutable_state()->InjectResidentKey(
-      credential_id, "galaxy.example.com", std::vector<uint8_t>{5, 6, 7, 8},
-      absl::nullopt, absl::nullopt);
-  virtual_device_->mutable_state()
-      ->registrations.at(credential_id)
-      .large_blob_key = kDummyKey1;
-  WriteCallback write_callback1;
-  authenticator_->WriteLargeBlob(kSmallBlob1, {kDummyKey1}, absl::nullopt,
-                                 write_callback1.callback());
-  write_callback1.WaitForCallback();
-  ASSERT_EQ(write_callback1.value(), CtapDeviceResponseCode::kSuccess);
-
-  // Write an orphaned large blob.
-  WriteCallback write_callback2;
-  authenticator_->WriteLargeBlob(kSmallBlob2, {kDummyKey2}, absl::nullopt,
-                                 write_callback2.callback());
-  write_callback2.WaitForCallback();
-  ASSERT_EQ(write_callback2.value(), CtapDeviceResponseCode::kSuccess);
-
+  {
+    // First, write a large blob corresponding to a credential.
+    AuthenticatorGetAssertionResponse write = GetAssertionForWrite(kSmallBlob1);
+    EXPECT_TRUE(write.large_blob_written);
+  }
+  {
+    // Write an orphaned large blob.
+    virtual_device_->mutable_state()->InjectResidentKey(
+        kCredentialId2, kRpId, kUserId2, "luma", "Luma");
+    virtual_device_->mutable_state()
+        ->registrations.at(kCredentialId2)
+        .large_blob_key = {{2}};
+    AuthenticatorGetAssertionResponse write =
+        GetAssertionForWrite(kSmallBlob2, kCredentialId2);
+    EXPECT_TRUE(write.large_blob_written);
+    virtual_device_->mutable_state()->registrations.erase(kCredentialId2);
+  }
   // Write an opaque large blob.
   virtual_device_->mutable_state()->InjectOpaqueLargeBlob(
       cbor::Value("comet observatory"));
@@ -336,10 +335,6 @@ TEST_F(FidoDeviceAuthenticatorTest, TestGarbageCollectLargeBlob) {
   // At this point, there should be three blobs stored.
   cbor::Value::ArrayValue large_blob_array = GetLargeBlobArray();
   ASSERT_EQ(large_blob_array.size(), 3u);
-  ASSERT_TRUE(
-      LargeBlobData::Parse(large_blob_array.at(0))->Decrypt(kDummyKey1));
-  ASSERT_TRUE(
-      LargeBlobData::Parse(large_blob_array.at(1))->Decrypt(kDummyKey2));
   ASSERT_EQ(large_blob_array.at(2).GetString(), "comet observatory");
 
   // Perform garbage collection.
@@ -353,26 +348,21 @@ TEST_F(FidoDeviceAuthenticatorTest, TestGarbageCollectLargeBlob) {
   // The second blob, which was orphaned, should have been deleted.
   large_blob_array = GetLargeBlobArray();
   ASSERT_EQ(large_blob_array.size(), 2u);
-  EXPECT_TRUE(
-      LargeBlobData::Parse(large_blob_array.at(0))->Decrypt(kDummyKey1));
   EXPECT_EQ(large_blob_array.at(1).GetString(), "comet observatory");
+
+  // Make sure we did not delete the valid blob by reading it.
+  std::vector<AuthenticatorGetAssertionResponse> read = GetAssertionForRead();
+  ASSERT_EQ(read.size(), 1u);
+  EXPECT_EQ(read.at(0).large_blob, kSmallBlob1);
 }
 
 // Tests garbage collecting a large blob when no changes are needed.
 TEST_F(FidoDeviceAuthenticatorTest, TestGarbageCollectLargeBlobNoChanges) {
-  // Write a large blob corresponding to a key.
-  std::vector<uint8_t> credential_id = std::vector<uint8_t>{1, 2, 3, 4};
-  virtual_device_->mutable_state()->InjectResidentKey(
-      credential_id, "galaxy.example.com", std::vector<uint8_t>{5, 6, 7, 8},
-      absl::nullopt, absl::nullopt);
-  virtual_device_->mutable_state()
-      ->registrations.at(credential_id)
-      .large_blob_key = kDummyKey1;
-  WriteCallback write_callback1;
-  authenticator_->WriteLargeBlob(kSmallBlob1, {kDummyKey1}, absl::nullopt,
-                                 write_callback1.callback());
-  write_callback1.WaitForCallback();
-  ASSERT_EQ(write_callback1.value(), CtapDeviceResponseCode::kSuccess);
+  {
+    // First, write a large blob corresponding to a credential.
+    AuthenticatorGetAssertionResponse write = GetAssertionForWrite(kSmallBlob1);
+    EXPECT_TRUE(write.large_blob_written);
+  }
 
   // Perform garbage collection.
   GarbageCollectionCallback gabarge_collection_callback;
@@ -383,11 +373,12 @@ TEST_F(FidoDeviceAuthenticatorTest, TestGarbageCollectLargeBlobNoChanges) {
             CtapDeviceResponseCode::kSuccess);
 
   // The blob should still be there.
-  cbor::Value::ArrayValue large_blob_array = GetLargeBlobArray();
-  EXPECT_TRUE(LargeBlobData::Parse(large_blob_array[0])->Decrypt(kDummyKey1));
+  std::vector<AuthenticatorGetAssertionResponse> read = GetAssertionForRead();
+  ASSERT_EQ(read.size(), 1u);
+  EXPECT_EQ(read.at(0).large_blob, kSmallBlob1);
 }
 
-// Tests that attempting to garbage collecting an invalid large blob replaces it
+// Tests that attempting to garbage collect an invalid large blob replaces it
 // with a new one.
 TEST_F(FidoDeviceAuthenticatorTest, TestGarbageCollectLargeBlobInvalid) {
   std::vector<uint8_t> empty_large_blob = authenticator_state_->large_blob;
@@ -409,18 +400,16 @@ TEST_F(FidoDeviceAuthenticatorTest, TestGarbageCollectLargeBlobInvalid) {
 
 // Tests garbage collecting a large blob when there are no credentials.
 TEST_F(FidoDeviceAuthenticatorTest, TestGarbageCollectLargeBlobNoCredentials) {
-  // Write an orphaned large blob.
-  WriteCallback write_callback;
-  authenticator_->WriteLargeBlob(kSmallBlob1, {kDummyKey1}, absl::nullopt,
-                                 write_callback.callback());
-  write_callback.WaitForCallback();
-  ASSERT_EQ(write_callback.value(), CtapDeviceResponseCode::kSuccess);
+  {
+    // Write an orphaned large blob.
+    AuthenticatorGetAssertionResponse write = GetAssertionForWrite(kSmallBlob1);
+    EXPECT_TRUE(write.large_blob_written);
+    virtual_device_->mutable_state()->registrations.clear();
+  }
 
   // At this point, there should be a single blob stored.
   cbor::Value::ArrayValue large_blob_array = GetLargeBlobArray();
   ASSERT_EQ(large_blob_array.size(), 1u);
-  ASSERT_TRUE(
-      LargeBlobData::Parse(large_blob_array.at(0))->Decrypt(kDummyKey1));
 
   // Perform garbage collection.
   GarbageCollectionCallback garbage_collection_callback;

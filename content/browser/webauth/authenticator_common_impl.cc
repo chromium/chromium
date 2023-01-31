@@ -140,13 +140,6 @@ device::CtapGetAssertionRequest CreateCtapGetAssertionRequest(
   if (!options->cable_authentication_data.empty()) {
     request_parameter.cable_extension = options->cable_authentication_data;
   }
-  if (options->large_blob_read) {
-    request_parameter.large_blob_read = true;
-    request_parameter.large_blob_key = true;
-  }
-  if (options->large_blob_write) {
-    request_parameter.large_blob_key = true;
-  }
   request_parameter.is_off_the_record_context = is_off_the_record;
   return request_parameter;
 }
@@ -546,30 +539,6 @@ bool AuthenticatorCommonImpl::IsFocused() const {
   return GetRenderFrameHost()->IsActive() &&
          GetWebAuthenticationDelegate()->IsFocused(
              WebContents::FromRenderFrameHost(GetRenderFrameHost()));
-}
-
-void AuthenticatorCommonImpl::OnLargeBlobCompressed(
-    uint64_t original_size,
-    base::expected<mojo_base::BigBuffer, std::string> result) {
-  if (result.has_value()) {
-    ctap_get_assertion_request_->large_blob_write = device::LargeBlob(
-        device::fido_parsing_utils::Materialize(*result), original_size);
-  }
-  StartGetAssertionRequest(/*allow_skipping_pin_touch=*/true);
-}
-
-void AuthenticatorCommonImpl::OnLargeBlobUncompressed(
-    device::AuthenticatorGetAssertionResponse response,
-    base::expected<mojo_base::BigBuffer, std::string> result) {
-  absl::optional<mojo_base::BigBuffer> value;
-  if (result.has_value())
-    value = std::move(*result);
-
-  CompleteGetAssertionRequest(
-      blink::mojom::AuthenticatorStatus::SUCCESS,
-      CreateGetAssertionResponse(
-          std::move(response),
-          device::fido_parsing_utils::MaterializeOrNull(value)));
 }
 
 // mojom::Authenticator
@@ -1169,17 +1138,8 @@ void AuthenticatorCommonImpl::GetAssertion(
     ctap_get_assertion_request_->get_cred_blob = true;
   }
 
-  if (options->large_blob_write) {
-    data_decoder_.Deflate(
-        *options->large_blob_write,
-        base::BindOnce(&AuthenticatorCommonImpl::OnLargeBlobCompressed,
-                       weak_factory_.GetWeakPtr(),
-                       options->large_blob_write->size()));
-    return;
-  }
-
-  // Don't put any other extensions here: largeBlob might be decompressing
-  // something.
+  ctap_get_assertion_options_->large_blob_read = options->large_blob_read;
+  ctap_get_assertion_options_->large_blob_write = options->large_blob_write;
 
   StartGetAssertionRequest(/*allow_skipping_pin_touch=*/true);
 }
@@ -1660,17 +1620,8 @@ void AuthenticatorCommonImpl::OnSignResponse(
 
 void AuthenticatorCommonImpl::OnAccountSelected(
     device::AuthenticatorGetAssertionResponse response) {
-  if (response.large_blob) {
-    device::LargeBlob large_blob = std::move(*response.large_blob);
-    data_decoder_.Inflate(
-        std::move(large_blob.compressed_data), large_blob.original_size,
-        base::BindOnce(&AuthenticatorCommonImpl::OnLargeBlobUncompressed,
-                       weak_factory_.GetWeakPtr(), std::move(response)));
-    return;
-  }
   CompleteGetAssertionRequest(blink::mojom::AuthenticatorStatus::SUCCESS,
                               CreateGetAssertionResponse(std::move(response)));
-  return;
 }
 
 void AuthenticatorCommonImpl::SignalFailureToRequestDelegate(
@@ -1939,8 +1890,7 @@ void AuthenticatorCommonImpl::CompleteMakeCredentialRequest(
 
 blink::mojom::GetAssertionAuthenticatorResponsePtr
 AuthenticatorCommonImpl::CreateGetAssertionResponse(
-    device::AuthenticatorGetAssertionResponse response_data,
-    absl::optional<std::vector<uint8_t>> large_blob) {
+    device::AuthenticatorGetAssertionResponse response_data) {
   auto response = blink::mojom::GetAssertionAuthenticatorResponse::New();
   auto common_info = blink::mojom::CommonCredentialInfo::New();
   common_info->client_data_json.assign(client_data_json_.begin(),
@@ -1991,7 +1941,7 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
       }
       case RequestExtension::kLargeBlobRead:
         response->echo_large_blob = true;
-        response->large_blob = large_blob;
+        response->large_blob = response_data.large_blob;
         break;
       case RequestExtension::kLargeBlobWrite:
         response->echo_large_blob = true;

@@ -7,9 +7,7 @@
 #include <limits>
 #include <utility>
 
-#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "components/cbor/writer.h"
 #include "device/fido/device_response_converter.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"

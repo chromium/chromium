@@ -993,6 +993,7 @@ VirtualCtap2Device::CheckUserVerification(
                               : pin::Permissions::kMakeCredential;
         if (!(mutable_state()->pin_uv_token_permissions &
               static_cast<uint8_t>(permission))) {
+          NOTREACHED() << "PIN missing mc / ga permission";
           return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
         }
 

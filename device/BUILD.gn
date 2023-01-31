@@ -187,7 +187,10 @@ test("device_unittests") {
       "fido/virtual_u2f_device_unittest.cc",
     ]
 
-    deps += [ "//device/fido:mocks" ]
+    deps += [
+      "//device/fido:mocks",
+      "//services/data_decoder/public/cpp:test_support",
+    ]
 
     if (is_mac) {
       data_deps += [ "fido/strings:fido_test_strings" ]

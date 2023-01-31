@@ -9,6 +9,7 @@ include_rules = [
   "+net/cookies",
   "+net/http",
   "+net/traffic_annotation",
+  "+services/data_decoder",
   "+services/network",
   "+third_party/blink/public/mojom/webauthn",
   "+third_party/boringssl/src/include",

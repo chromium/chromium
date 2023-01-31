@@ -25,7 +25,6 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/make_credential_request_handler.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
@@ -131,18 +130,6 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       const std::string& authenticator_id,
       absl::optional<std::vector<uint8_t>> credential_id);
 
-  // Callback to handle the large blob being compressed before attempting to
-  // start a request.
-  void OnLargeBlobCompressed(
-      uint64_t original_size,
-      base::expected<mojo_base::BigBuffer, std::string> result);
-
-  // Callback to handle the large blob being uncompressed before completing a
-  // request.
-  void OnLargeBlobUncompressed(
-      device::AuthenticatorGetAssertionResponse response,
-      base::expected<mojo_base::BigBuffer, std::string> result);
-
   // Callback to handle the async response from a U2fDevice.
   void OnRegisterResponse(
       device::MakeCredentialStatus status_code,
@@ -206,8 +193,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
 
   // Creates a get assertion response.
   blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
-      device::AuthenticatorGetAssertionResponse response_data,
-      absl::optional<std::vector<uint8_t>> large_blob = absl::nullopt);
+      device::AuthenticatorGetAssertionResponse response_data);
 
   // Runs |get_assertion_response_callback_| and then Cleanup().
   void CompleteGetAssertionRequest(
@@ -270,7 +256,6 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   bool awaiting_attestation_response_ = false;
   blink::mojom::AuthenticatorStatus error_awaiting_user_acknowledgement_ =
       blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
-  data_decoder::DataDecoder data_decoder_;
   bool enable_request_proxy_api_ = false;
   bool discoverable_credential_request_ = false;
 

@@ -17,7 +17,6 @@
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/device_public_key_extension.h"
 #include "device/fido/fido_constants.h"
-#include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -51,12 +50,23 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionOptions {
     absl::optional<std::array<uint8_t, 32>> salt2;
   };
 
+  // The PUAT used for the request. The caller is expected to set this if needed
+  // with the correct permissions. Obtain from |FidoAuthenticator::GetPINToken|.
+  absl::optional<pin::TokenResponse> pin_uv_auth_token;
+
+  // The ephemeral key use to encrypt PIN material.
   absl::optional<pin::KeyAgreementResponse> pin_key_agreement;
 
   // prf_inputs may contain a default PRFInput without a |credential_id|. If so,
   // it will be the first element and all others will have |credential_id|s.
   // Elements are sorted by |credential_id|s, where present.
   std::vector<PRFInput> prf_inputs;
+
+  // If true, attempt to read a large blob.
+  bool large_blob_read = false;
+
+  // If set, attempt to write a large blob.
+  absl::optional<std::vector<uint8_t>> large_blob_write;
 };
 
 // Object that encapsulates request parameters for AuthenticatorGetAssertion as
@@ -122,8 +132,6 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
       alternative_application_parameter;
   absl::optional<HMACSecret> hmac_secret;
   bool large_blob_key = false;
-  bool large_blob_read = false;
-  absl::optional<LargeBlob> large_blob_write;
   bool get_cred_blob = false;
 
   // Indicates whether the request was created in an off-the-record

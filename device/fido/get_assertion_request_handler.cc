@@ -10,10 +10,9 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
+#include "base/containers/cxx20_erase_map.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/elapsed_timer.h"
@@ -22,16 +21,13 @@
 #include "components/cbor/diagnostic_writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_get_assertion_response.h"
-#include "device/fido/cable/fido_cable_discovery.h"
+#include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/device_public_key_extension.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/filter.h"
-#include "device/fido/get_assertion_task.h"
-#include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -55,10 +51,9 @@ using PINUVDisposition = FidoAuthenticator::PINUVDisposition;
 
 const std::set<pin::Permissions> GetPinTokenPermissionsFor(
     const FidoAuthenticator& authenticator,
-    const CtapGetAssertionRequest& request) {
+    const CtapGetAssertionOptions& options) {
   std::set<pin::Permissions> permissions = {pin::Permissions::kGetAssertion};
-  if (request.large_blob_write && authenticator.Options() &&
-      authenticator.Options()->supports_large_blobs) {
+  if (options.large_blob_write && authenticator.SupportsLargeBlobs()) {
     permissions.emplace(pin::Permissions::kLargeBlobWrite);
   }
   return permissions;
@@ -283,13 +278,6 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     const FidoAuthenticator& authenticator) {
   CtapGetAssertionRequest specialized_request(request);
 
-  if (!authenticator.Options() ||
-      !authenticator.Options()->supports_large_blobs) {
-    // Do not attempt large blob operations on devices not supporting it.
-    specialized_request.large_blob_key = false;
-    specialized_request.large_blob_read = false;
-    specialized_request.large_blob_write.reset();
-  }
   if (authenticator.Options() && authenticator.Options()->always_uv) {
     specialized_request.user_verification =
         UserVerificationRequirement::kRequired;
@@ -311,6 +299,11 @@ CtapGetAssertionOptions SpecializeOptionsForAuthenticator(
   if (!options.prf_inputs.empty() &&
       !authenticator.SupportsHMACSecretExtension()) {
     specialized_options.prf_inputs.clear();
+  }
+
+  if (!authenticator.SupportsLargeBlobs()) {
+    specialized_options.large_blob_read = false;
+    specialized_options.large_blob_write = absl::nullopt;
   }
 
   return specialized_options;
@@ -440,7 +433,7 @@ void GetAssertionRequestHandler::DispatchRequest(
       break;
     case PINUVDisposition::kGetToken:
       ObtainPINUVAuthToken(
-          authenticator, GetPinTokenPermissionsFor(*authenticator, request),
+          authenticator, GetPinTokenPermissionsFor(*authenticator, options),
           active_authenticators().size() == 1 && allow_skipping_pin_touch_,
           /*internal_uv_locked=*/false);
       return;
@@ -667,12 +660,12 @@ void GetAssertionRequestHandler::HandleResponse(
       FIDO_LOG(DEBUG) << "Authenticator is probably locked, response_time="
                       << response_time;
       ObtainPINUVAuthToken(
-          authenticator, GetPinTokenPermissionsFor(*authenticator, request),
+          authenticator, GetPinTokenPermissionsFor(*authenticator, options_),
           /*skip_pin_touch=*/false, /*internal_uv_locked=*/true);
       return;
     }
     ObtainPINUVAuthToken(authenticator,
-                         GetPinTokenPermissionsFor(*authenticator, request),
+                         GetPinTokenPermissionsFor(*authenticator, options_),
                          /*skip_pin_touch=*/true, /*internal_uv_locked=*/true);
     return;
   }
@@ -723,8 +716,8 @@ void GetAssertionRequestHandler::HandleResponse(
   }
 
   ReportGetAssertionResponseTransport(authenticator);
-  OnGetAssertionSuccess(authenticator, std::move(request),
-                        std::move(responses));
+  std::move(completion_callback_)
+      .Run(GetAssertionStatus::kSuccess, std::move(responses), authenticator);
 }
 
 void GetAssertionRequestHandler::TerminateUnsatisfiableRequestPostTouch(
@@ -744,14 +737,12 @@ void GetAssertionRequestHandler::DispatchRequestWithToken(
   DCHECK(selected_authenticator_for_pin_uv_auth_token_);
 
   observer()->FinishCollectToken();
-  pin_token_ = std::move(token);
+  options_.pin_uv_auth_token = std::move(token);
   state_ = State::kWaitingForResponseWithToken;
   CtapGetAssertionRequest request = SpecializeRequestForAuthenticator(
       request_, *selected_authenticator_for_pin_uv_auth_token_);
   CtapGetAssertionOptions options = SpecializeOptionsForAuthenticator(
       options_, *selected_authenticator_for_pin_uv_auth_token_);
-  std::tie(request.pin_protocol, request.pin_auth) =
-      pin_token_->PinAuth(request.client_data_hash);
 
   ReportGetAssertionRequestTransport(
       selected_authenticator_for_pin_uv_auth_token_);
@@ -763,78 +754,6 @@ void GetAssertionRequestHandler::DispatchRequestWithToken(
                      weak_factory_.GetWeakPtr(),
                      selected_authenticator_for_pin_uv_auth_token_,
                      std::move(request), base::ElapsedTimer()));
-}
-
-void GetAssertionRequestHandler::OnGetAssertionSuccess(
-    FidoAuthenticator* authenticator,
-    CtapGetAssertionRequest request,
-    std::vector<AuthenticatorGetAssertionResponse> responses) {
-  if (request.large_blob_read || request.large_blob_write) {
-    DCHECK(authenticator->Options()->supports_large_blobs);
-    std::vector<LargeBlobKey> keys;
-    for (const auto& response : responses) {
-      if (response.large_blob_key) {
-        keys.emplace_back(*response.large_blob_key);
-      }
-    }
-    if (!keys.empty()) {
-      if (request.large_blob_read) {
-        authenticator->ReadLargeBlob(
-            keys, pin_token_,
-            base::BindOnce(&GetAssertionRequestHandler::OnReadLargeBlobs,
-                           weak_factory_.GetWeakPtr(), authenticator,
-                           std::move(responses)));
-        return;
-      }
-      DCHECK(request.large_blob_write);
-      DCHECK_EQ(1u, keys.size());
-      authenticator->WriteLargeBlob(
-          *request.large_blob_write, keys.at(0), pin_token_,
-          base::BindOnce(&GetAssertionRequestHandler::OnWriteLargeBlob,
-                         weak_factory_.GetWeakPtr(), authenticator,
-                         std::move(responses)));
-      return;
-    }
-  }
-
-  std::move(completion_callback_)
-      .Run(GetAssertionStatus::kSuccess, std::move(responses), authenticator);
-}
-
-void GetAssertionRequestHandler::OnReadLargeBlobs(
-    FidoAuthenticator* authenticator,
-    std::vector<AuthenticatorGetAssertionResponse> responses,
-    CtapDeviceResponseCode status,
-    absl::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>> blobs) {
-  if (status == CtapDeviceResponseCode::kSuccess) {
-    for (auto& response : responses) {
-      const auto blob =
-          base::ranges::find(*blobs, response.large_blob_key,
-                             &std::pair<LargeBlobKey, LargeBlob>::first);
-      if (blob != blobs->end()) {
-        response.large_blob = std::move(blob->second);
-      }
-    }
-  } else {
-    FIDO_LOG(ERROR) << "Reading large blob failed with code "
-                    << static_cast<int>(status);
-  }
-  std::move(completion_callback_)
-      .Run(GetAssertionStatus::kSuccess, std::move(responses), authenticator);
-}
-
-void GetAssertionRequestHandler::OnWriteLargeBlob(
-    FidoAuthenticator* authenticator,
-    std::vector<AuthenticatorGetAssertionResponse> responses,
-    CtapDeviceResponseCode status) {
-  if (status != CtapDeviceResponseCode::kSuccess) {
-    FIDO_LOG(ERROR) << "Writing large blob failed with code "
-                    << static_cast<int>(status);
-  }
-  responses.at(0).large_blob_written =
-      (status == CtapDeviceResponseCode::kSuccess);
-  std::move(completion_callback_)
-      .Run(GetAssertionStatus::kSuccess, std::move(responses), authenticator);
 }
 
 }  // namespace device

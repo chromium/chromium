@@ -68,6 +68,7 @@ component("fido") {
     "//crypto",
     "//device/base",
     "//device/fido/strings",
+    "//services/data_decoder/public/cpp",
     "//third_party/boringssl",
     "//third_party/microsoft_webauthn",
     "//ui/base",

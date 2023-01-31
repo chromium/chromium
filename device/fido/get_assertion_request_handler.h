@@ -124,25 +124,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
                       std::vector<AuthenticatorGetAssertionResponse> response);
   void TerminateUnsatisfiableRequestPostTouch(FidoAuthenticator* authenticator);
   void DispatchRequestWithToken(pin::TokenResponse token);
-  void OnGetAssertionSuccess(
-      FidoAuthenticator* authenticator,
-      CtapGetAssertionRequest request,
-      std::vector<AuthenticatorGetAssertionResponse> responses);
-  void OnReadLargeBlobs(
-      FidoAuthenticator* authenticator,
-      std::vector<AuthenticatorGetAssertionResponse> responses,
-      CtapDeviceResponseCode status,
-      absl::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>> blobs);
-  void OnWriteLargeBlob(
-      FidoAuthenticator* authenticator,
-      std::vector<AuthenticatorGetAssertionResponse> responses,
-      CtapDeviceResponseCode status);
 
   CompletionCallback completion_callback_;
   State state_ = State::kWaitingForTouch;
   const CtapGetAssertionRequest request_;
-  const CtapGetAssertionOptions options_;
-  absl::optional<pin::TokenResponse> pin_token_;
+  CtapGetAssertionOptions options_;
 
   // If true, and if at the time the request is dispatched to the first
   // authenticator no other authenticators are available, the request handler

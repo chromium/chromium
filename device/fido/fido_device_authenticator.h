@@ -14,12 +14,14 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "device/fido/authenticator_get_assertion_response.h"
-#include "device/fido/ctap2_device_operation.h"
+#include "device/fido/device_operation.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
@@ -30,6 +32,7 @@ struct CtapMakeCredentialRequest;
 struct EnumerateRPsResponse;
 class FidoDevice;
 class FidoTask;
+class GenericDeviceOperation;
 
 // Adaptor class from a |FidoDevice| to the |FidoAuthenticator| interface.
 // Responsible for translating WebAuthn-level requests into serializations that
@@ -113,14 +116,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   void BioEnrollDelete(const pin::TokenResponse&,
                        std::vector<uint8_t> template_id,
                        BioEnrollmentCallback) override;
-  void WriteLargeBlob(
-      LargeBlob large_blob,
-      const LargeBlobKey& large_blob_key,
-      absl::optional<pin::TokenResponse> pin_uv_auth_token,
-      base::OnceCallback<void(CtapDeviceResponseCode)> callback) override;
-  void ReadLargeBlob(const std::vector<LargeBlobKey>& large_blob_keys,
-                     absl::optional<pin::TokenResponse> pin_uv_auth_token,
-                     LargeBlobReadCallback callback) override;
   void GarbageCollectLargeBlob(
       const pin::TokenResponse& pin_uv_auth_token,
       base::OnceCallback<void(CtapDeviceResponseCode)> callback) override;
@@ -149,6 +144,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   using GetEphemeralKeyCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
                               absl::optional<pin::KeyAgreementResponse>)>;
+  using LargeBlobReadCallback = base::OnceCallback<void(
+      CtapDeviceResponseCode,
+      absl::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>>
+          callback)>;
   void InitializeAuthenticatorDone(base::OnceClosure callback);
   void GetEphemeralKey(GetEphemeralKeyCallback callback);
   void DoGetAssertion(CtapGetAssertionRequest request,
@@ -156,10 +155,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
                       GetAssertionCallback callback);
   void OnHaveNextAssertion(
       CtapGetAssertionRequest request,
+      CtapGetAssertionOptions options,
       std::vector<AuthenticatorGetAssertionResponse> responses,
       GetAssertionCallback callback,
       CtapDeviceResponseCode status,
       absl::optional<AuthenticatorGetAssertionResponse> response);
+  void PerformGetAssertionLargeBlobOperation(
+      CtapGetAssertionRequest request,
+      CtapGetAssertionOptions options,
+      std::vector<AuthenticatorGetAssertionResponse> responses,
+      GetAssertionCallback callback);
   void OnHaveEphemeralKeyForGetAssertion(
       CtapGetAssertionRequest request,
       CtapGetAssertionOptions options,
@@ -191,8 +196,21 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       CtapDeviceResponseCode status,
       absl::optional<pin::KeyAgreementResponse> key);
 
-  void FetchLargeBlobArray(
+  // Attempts to write a |large_blob| into the credential. If there
+  // is an existing credential for the |large_blob_key|, it will be overwritten.
+  void WriteLargeBlob(
+      const LargeBlobKey& large_blob_key,
       absl::optional<pin::TokenResponse> pin_uv_auth_token,
+      size_t original_size,
+      base::OnceCallback<void(CtapDeviceResponseCode)> callback,
+      base::expected<mojo_base::BigBuffer, std::string> large_blob);
+
+  // Attempts to read large blobs from the credential encrypted with
+  // |large_blob_keys|. Returns a map of keys to their blobs.
+  void ReadLargeBlob(const std::vector<LargeBlobKey>& large_blob_keys,
+                     LargeBlobReadCallback callback);
+
+  void FetchLargeBlobArray(
       LargeBlobArrayReader large_blob_array_reader,
       base::OnceCallback<void(CtapDeviceResponseCode,
                               absl::optional<LargeBlobArrayReader>)> callback);
@@ -203,7 +221,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   void OnReadLargeBlobFragment(
       const size_t bytes_requested,
       LargeBlobArrayReader large_blob_array_reader,
-      absl::optional<pin::TokenResponse> pin_uv_auth_token,
       base::OnceCallback<void(CtapDeviceResponseCode,
                               absl::optional<LargeBlobArrayReader>)> callback,
       CtapDeviceResponseCode status,
@@ -214,6 +231,21 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       base::OnceCallback<void(CtapDeviceResponseCode)> callback,
       CtapDeviceResponseCode status,
       absl::optional<LargeBlobsResponse> response);
+  void OnWroteLargeBlobForGetAssertion(
+      std::vector<AuthenticatorGetAssertionResponse> responses,
+      GetAssertionCallback callback,
+      CtapDeviceResponseCode status);
+  void OnReadLargeBlobForGetAssertion(
+      std::vector<AuthenticatorGetAssertionResponse> responses,
+      GetAssertionCallback callback,
+      CtapDeviceResponseCode status,
+      absl::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>> blobs);
+  void OnBlobUncompressed(
+      std::vector<AuthenticatorGetAssertionResponse> responses,
+      std::vector<std::pair<LargeBlobKey, LargeBlob>> blobs,
+      LargeBlobKey uncompressed_key,
+      GetAssertionCallback callback,
+      base::expected<mojo_base::BigBuffer, std::string> result);
   void OnCredentialsEnumeratedForGarbageCollect(
       const pin::TokenResponse& pin_uv_auth_token,
       base::OnceCallback<void(CtapDeviceResponseCode)> callback,
@@ -238,6 +270,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       base::OnceCallback<void(CtapDeviceResponseCode)> callback,
       CtapDeviceResponseCode status,
       absl::optional<LargeBlobArrayReader> large_blob_array_reader);
+  void OnWriteLargeBlobForGetAssertion(
+      AuthenticatorGetAssertionResponse response,
+      GetAssertionCallback callback,
+      CtapDeviceResponseCode status);
 
   template <typename... Args>
   void TaskClearProxy(base::OnceCallback<void(Args...)> callback, Args... args);
@@ -277,6 +313,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   // supports. This is guaranteed to be non-null after authenticator
   // initialization if |options_| indicates that PIN is supported.
   absl::optional<PINUVAuthProtocol> chosen_pin_uv_auth_protocol_;
+
+  data_decoder::DataDecoder data_decoder_;
 
   base::WeakPtrFactory<FidoDeviceAuthenticator> weak_factory_{this};
 };

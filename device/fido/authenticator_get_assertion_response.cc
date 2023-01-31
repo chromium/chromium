@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "components/cbor/values.h"
-#include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_parsing_utils.h"

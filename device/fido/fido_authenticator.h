@@ -82,10 +82,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   using BioEnrollmentCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
                               absl::optional<BioEnrollmentResponse>)>;
-  using LargeBlobReadCallback = base::OnceCallback<void(
-      CtapDeviceResponseCode,
-      absl::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>>
-          callback)>;
 
   FidoAuthenticator() = default;
 
@@ -261,20 +257,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
                                std::vector<uint8_t> template_id,
                                BioEnrollmentCallback);
 
-  // Large blob commands.
-  // Attempts to write a |large_blob| into the credential. If there is an
-  // existing credential for the |large_blob_key|, it will be overwritten.
-  virtual void WriteLargeBlob(
-      LargeBlob large_blob,
-      const LargeBlobKey& large_blob_key,
-      absl::optional<pin::TokenResponse> pin_uv_auth_token,
-      base::OnceCallback<void(CtapDeviceResponseCode)> callback);
-  // Attempts to read large blobs from the credential encrypted with
-  // |large_blob_keys|. Returns a map of keys to their blobs.
-  virtual void ReadLargeBlob(
-      const std::vector<LargeBlobKey>& large_blob_keys,
-      absl::optional<pin::TokenResponse> pin_uv_auth_token,
-      LargeBlobReadCallback callback);
   // Removes all stored large blobs that conform to the large blob CBOR
   // structure without a corresponding discoverable credential.
   virtual void GarbageCollectLargeBlob(
