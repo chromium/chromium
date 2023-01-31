@@ -579,7 +579,7 @@ ts_library("build_ts") {
   ]
   deps = [
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
+    "//ui/webui/resources/js:build_ts",
   ]
   extra_deps = [
     ":preprocess",

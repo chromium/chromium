@@ -1333,8 +1333,8 @@ When adding a new import (e.g. `import {FooSharedClass} from 'chrome://resources
    `ui/webui/resources/foo/foo_shared.ts`), find which `ts_library()` target
    compiles this file.
 2. If, for example, `ui/webui/resources/foo/BUILD.gn` contains:
-   `ts_library("library")`, which has `foo_shared.ts` listed in its `in_files`,
-   then add `//ui/webui/resources/foo:library` to your `ts_library()` target's
+   `ts_library("build_ts")`, which has `foo_shared.ts` listed in its `in_files`,
+   then add `//ui/webui/resources/foo:build_ts` to your `ts_library()` target's
    deps as follows:
 
 ```
@@ -1343,8 +1343,8 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   deps = [
-    "//ui/webui/resources:library",
-    "//ui/webui/resources/foo:library", # This line is new
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/foo:build_ts", # This line is new
   ]
   in_files = my_project_ts_files
 }
@@ -1366,7 +1366,7 @@ ts_library("build_ts") {
   root_dir = my_root_dir
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
-  deps = [ "//ui/webui/resources:library" ]
+  deps = [ "//ui/webui/resources/js:build_ts" ]
 
   # This line is new
   extra_deps = [ "//ui/webui/resources/foo:generate_definitions" ]

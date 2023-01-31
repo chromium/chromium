@@ -178,7 +178,7 @@ tsconfig_base: Specifies the tsconfig_base.json file to use. Necessary only
                from the defaults in tools/typescript/tsconfig_base.json
 deps: Specifies all other ts_library targets generating libraries that this
       target's library needs, for example the shared resources library at
-      //ui/webui/resources:library.
+      //ui/webui/resources/js:build_ts.
 extra_deps: Used to specify build targets generating the input files for TS
             compiler.
 path_mappings: Additional non-default path mappings for absolute imports. The
@@ -207,7 +207,7 @@ ts_library("build_ts") {
   # List other ts_library targets for libraries the UI needs here
   deps = [
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
+    "//ui/webui/resources/js:build_ts",
   ]
   definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
@@ -246,7 +246,7 @@ out_manifest: File location to write the manifest of all output files created
               by optimize_webui(). Useful for generating grds.
 deps: Targets generating any files being bundled. Note that this should include
       targets generating shared resources that are expected to be bundled in
-      the UI, e.g. //ui/webui/resources:library.
+      the UI, e.g. //ui/webui/resources/js:build_ts.
 excludes: Paths of files that are not bundled. Often used for large mojo files
           that would otherwise be in many bundles, and for cr.js which relies
           on global variables.
@@ -269,7 +269,7 @@ if (optimize_webui) {
     # build_ts.
     deps = [
       ":build_ts",
-      "//ui/webui/resources:library",
+      "//ui/webui/resources/js:build_ts",
     ]
     excludes = [
       "chrome://resources/js/cr.js",
@@ -520,7 +520,8 @@ build_webui("build") {
 
   ts_deps = [
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
   ]
 }
 
@@ -688,7 +689,8 @@ build_cr_component("build") {
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   ts_deps = [
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
 
@@ -720,7 +722,7 @@ ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
   in_files = [ "my_debug_page.ts" ]
-  deps = [ "//ui/webui/resources:library" ]
+  deps = [ "//ui/webui/resources/js:build_ts" ]
 }
 
 # Both the HTML file and the JS file created by ts_library need to be listed in
@@ -799,7 +801,7 @@ ts_library("build_ts") {
     "my_debug_app.html.ts",
     "my_debug_page.ts",
   ]
-  deps = [ "//ui/webui/resources:library" ]
+  deps = [ "//ui/webui/resources/js:build_ts" ]
   extra_deps = [
     ":copy_files",
     ":html_wrapper_files",
