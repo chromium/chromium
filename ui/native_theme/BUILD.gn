@@ -60,6 +60,13 @@ component("native_theme") {
     ]
   }
 
+  if (is_ios) {
+    sources += [
+      "native_theme_ios.h",
+      "native_theme_ios.mm",
+    ]
+  }
+
   if (is_win) {
     sources += [
       "caption_style_win.cc",

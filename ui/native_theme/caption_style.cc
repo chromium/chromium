@@ -29,7 +29,7 @@ absl::optional<CaptionStyle> CaptionStyle::FromSpec(const std::string& spec) {
   return style;
 }
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 absl::optional<CaptionStyle> CaptionStyle::FromSystemSettings() {
   return absl::nullopt;
 }
