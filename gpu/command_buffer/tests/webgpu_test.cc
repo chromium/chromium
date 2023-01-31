@@ -54,6 +54,11 @@ bool WebGPUTest::WebGPUSupported() const {
     return false;
   }
 
+  // Nexus 5X does not support WebGPU
+  if (GPUTestBotConfig::CurrentConfigMatches("Android Qualcomm 0x4010800")) {
+    return false;
+  }
+
   return true;
 }
 

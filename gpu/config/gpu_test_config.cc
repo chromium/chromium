@@ -301,10 +301,6 @@ bool GPUTestBotConfig::Matches(const std::string& config_data) const {
 bool GPUTestBotConfig::LoadCurrentConfig(const GPUInfo* gpu_info) {
   bool rt;
   if (!gpu_info) {
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(zmo): Implement this.
-    rt = false;
-#else
     GPUInfo my_gpu_info;
     if (!CollectBasicGraphicsInfo(base::CommandLine::ForCurrentProcess(),
                                   &my_gpu_info)) {
@@ -313,7 +309,6 @@ bool GPUTestBotConfig::LoadCurrentConfig(const GPUInfo* gpu_info) {
     } else {
       rt = SetGPUInfo(my_gpu_info);
     }
-#endif  // BUILDFLAG(IS_ANDROID)
   } else {
     rt = SetGPUInfo(*gpu_info);
   }

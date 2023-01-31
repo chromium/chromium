@@ -59,6 +59,7 @@ enum Token {
   kConfigAMD,
   kConfigIntel,
   kConfigVMWare,
+  kConfigQualcomm,
   // build type
   kConfigRelease,
   kConfigDebug,
@@ -122,6 +123,7 @@ const TokenInfo kTokenData[] = {
     {"amd", 0x1002},
     {"intel", 0x8086},
     {"vmware", 0x15ad},
+    {"qualcomm", 0x5143},
     {"release", GPUTestConfig::kBuildTypeRelease},
     {"debug", GPUTestConfig::kBuildTypeDebug},
     {"d3d9", GPUTestConfig::kAPID3D9},
@@ -294,6 +296,7 @@ bool GPUTestExpectationsParser::ParseConfig(
       case kConfigAMD:
       case kConfigIntel:
       case kConfigVMWare:
+      case kConfigQualcomm:
       case kConfigRelease:
       case kConfigDebug:
       case kConfigD3D9:
@@ -362,6 +365,7 @@ bool GPUTestExpectationsParser::ParseLine(
       case kConfigAMD:
       case kConfigIntel:
       case kConfigVMWare:
+      case kConfigQualcomm:
       case kConfigRelease:
       case kConfigDebug:
       case kConfigD3D9:
@@ -500,7 +504,7 @@ bool GPUTestExpectationsParser::UpdateTestConfig(GPUTestConfig* config,
     case kConfigAMD:
     case kConfigIntel:
     case kConfigVMWare:
-      {
+    case kConfigQualcomm: {
       uint32_t gpu_vendor = static_cast<uint32_t>(kTokenData[token].flag);
         for (size_t i = 0; i < config->gpu_vendor().size(); ++i) {
           if (config->gpu_vendor()[i] == gpu_vendor) {
@@ -511,8 +515,7 @@ bool GPUTestExpectationsParser::UpdateTestConfig(GPUTestConfig* config,
           }
         }
         config->AddGPUVendor(gpu_vendor);
-      }
-      break;
+    } break;
     case kConfigRelease:
     case kConfigDebug:
       if ((config->build_type() & kTokenData[token].flag) != 0) {
