@@ -113,16 +113,15 @@ inline LayoutMultiColumnFlowThread* GetFlowThread(const LayoutBox& box) {
 template <typename Algorithm, typename Callback>
 NOINLINE void CreateAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
                                     const Callback& callback) {
-  // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] CreateAlgorithmAndRun Start %d node_id=%d",
-                       params.node.GetLayoutBox()->RecordReplayId(),
-                       params.node.RecordReplayId());
+  // https://linear.app/replay/issue/RUN-546
+  recordreplay::Assert("CreateAlgorithmAndRun Start %d",
+                       params.node.GetLayoutBox()->RecordReplayId());
 
   Algorithm algorithm(params);
   callback(&algorithm);
 
-  // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] CreateAlgorithmAndRun Done");
+  // https://linear.app/replay/issue/RUN-546
+  recordreplay::Assert("CreateAlgorithmAndRun Done");
 }
 
 template <typename Callback>
@@ -1004,11 +1003,6 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     const MinMaxSizesType type,
     const NGConstraintSpace& constraint_space,
     const MinMaxSizesFloatInput float_input) const {
-
-  // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] NGBlockNode::ComputeMinMaxSizes id=%d",
-    RecordReplayId());
-
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
   // somewhere else? List items need up-to-date markers before layout.
   if (IsListItem())

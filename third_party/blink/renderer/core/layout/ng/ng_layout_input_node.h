@@ -68,9 +68,7 @@ class CORE_EXPORT NGLayoutInputNode {
     return NGLayoutInputNode(box, type);
   }
 
-  NGLayoutInputNode(std::nullptr_t) : box_(nullptr), type_(kBlock) {
-    InitRecordReplayId();
-  }
+  NGLayoutInputNode(std::nullptr_t) : box_(nullptr), type_(kBlock) {}
 
   NGLayoutInputNodeType Type() const {
     return static_cast<NGLayoutInputNodeType>(type_);
@@ -323,10 +321,7 @@ class CORE_EXPORT NGLayoutInputNode {
 
  protected:
   NGLayoutInputNode(LayoutBox* box, NGLayoutInputNodeType type)
-      : box_(box), type_(type)
-  {
-    InitRecordReplayId();
-  }
+      : box_(box), type_(type) {}
 
   void GetOverrideIntrinsicSize(
       absl::optional<LayoutUnit>* computed_inline_size,
@@ -335,13 +330,6 @@ class CORE_EXPORT NGLayoutInputNode {
   Member<LayoutBox> box_;
 
   unsigned type_ : 1;  // NGLayoutInputNodeType
-
-private:
-  // https://linear.app/replay/issue/RUN-1219
-  void InitRecordReplayId();
-  int record_replay_id_;
-public:
-  int RecordReplayId() const { return record_replay_id_; }
 };
 
 }  // namespace blink
