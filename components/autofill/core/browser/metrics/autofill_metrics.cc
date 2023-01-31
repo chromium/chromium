@@ -2576,12 +2576,19 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       had_value_before_filling |= event->had_value_before_filling;
       autofill_skipped_status.insert(event->autofill_skipped_status);
       had_value_after_filling = event->had_value_after_filling;
+      if (was_autofilled == OptionalBoolean::kTrue &&
+          filled_value_was_modified == OptionalBoolean::kUndefined) {
+        // Only switch from unknown to false on the first filling.
+        filled_value_was_modified = OptionalBoolean::kFalse;
+      }
       ++autofill_count;
     }
 
     if (auto* event = absl::get_if<TypingFieldLogEvent>(&log_event)) {
       user_typed_into_field = OptionalBoolean::kTrue;
-      filled_value_was_modified |= was_autofilled;
+      if (was_autofilled == OptionalBoolean::kTrue) {
+        filled_value_was_modified = OptionalBoolean::kTrue;
+      }
       has_value_after_typing = event->has_value_after_typing;
     }
 
@@ -2674,9 +2681,12 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   }
 
   if (user_typed_into_field == OptionalBoolean::kTrue) {
-    builder.SetUserTypedIntoField(OptionalBooleanToBool(user_typed_into_field))
-        .SetFilledValueWasModified(
-            OptionalBooleanToBool(filled_value_was_modified));
+    builder.SetUserTypedIntoField(OptionalBooleanToBool(user_typed_into_field));
+  }
+
+  if (filled_value_was_modified != OptionalBoolean::kUndefined) {
+    builder.SetFilledValueWasModified(
+        OptionalBooleanToBool(filled_value_was_modified));
   }
 
   if (had_typed_or_filled_value_at_submission != OptionalBoolean::kUndefined) {

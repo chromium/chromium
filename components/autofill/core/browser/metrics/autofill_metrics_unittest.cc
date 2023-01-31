@@ -10588,6 +10588,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
            DenseSet<SkipStatus>{SkipStatus::kNotSkipped}.to_uint64()},
           {UFIT::kWasRefillName, false},
           {UFIT::kHadValueBeforeFillingName, false},
+          {UFIT::kFilledValueWasModifiedName, false},
           {UFIT::kHadTypedOrFilledValueAtSubmissionName, true},
       };
       if (i == 0) {
@@ -10608,7 +10609,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
 
 // Test if we have recorded UKM metrics correctly about field types after
 // parsing the form by the local heuristic prediction.
-TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetrics_FieldType) {
+TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   FormData form = CreateForm(
       {// Heuristic value will match with Autocomplete attribute.
        CreateField("Last Name", "lastname", "", "text", "family-name"),
@@ -10711,6 +10712,64 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetrics_FieldType) {
           {UFIT::kHtmlFieldModeName, static_cast<int>(HtmlFieldMode::kNone)},
       }));
     }
+    EXPECT_EQ(expected.size(), entry->metrics.size());
+    for (const auto& [metric, value] : expected) {
+      test_ukm_recorder_->ExpectEntryMetric(entry, metric, value);
+    }
+  }
+}
+
+// Test if we have recorded FieldInfo UKM metrics correctly after typing in
+// fields without autofilling first.
+TEST_F(AutofillMetricsFromLogEventsTest,
+       AutofillFieldInfoMetricsEditedFieldWithoutFill) {
+  test::FormDescription form_description = {
+      .description_for_logging = "NumberOfAutofilledFields",
+      .fields = {{.role = NAME_FULL,
+                  .value = u"Elvis Aaron Presley",
+                  .is_autofilled = false},
+                 {.role = EMAIL_ADDRESS,
+                  .value = u"buddy@gmail.com",
+                  .is_autofilled = false},
+                 {.role = PHONE_HOME_CITY_AND_NUMBER, .is_autofilled = true}},
+      .unique_renderer_id = test::MakeFormRendererId(),
+      .main_frame_origin =
+          url::Origin::Create(autofill_client_->form_origin())};
+
+  FormData form = GetAndAddSeenForm(form_description);
+
+  base::HistogramTester histogram_tester;
+  // Simulate text input in the first and second fields.
+  SimulateUserChangedTextField(form, form.fields[0]);
+  SimulateUserChangedTextField(form, form.fields[1]);
+
+  SubmitForm(form);
+
+  // Record Autofill2.FieldInfo UKM event at autofill manager reset.
+  autofill_manager().Reset();
+
+  auto entries =
+      test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
+  ASSERT_EQ(2u, entries.size());
+
+  for (size_t i = 0; i < entries.size(); ++i) {
+    SCOPED_TRACE(testing::Message() << i);
+    using UFIT = UkmFieldInfoType;
+    const auto* const entry = entries[i];
+
+    std::map<std::string, int64_t> expected = {
+        {UFIT::kFormSessionIdentifierName,
+         AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
+        {UFIT::kFieldSessionIdentifierName,
+         AutofillMetrics::FieldGlobalIdToHash64Bit(form.fields[i].global_id())},
+        {UFIT::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
+        {UFIT::kWasFocusedName, false},
+        {UFIT::kIsFocusableName, true},
+        {UFIT::kUserTypedIntoFieldName, true},
+        {UFIT::kHadTypedOrFilledValueAtSubmissionName, true},
+    };
+
     EXPECT_EQ(expected.size(), entry->metrics.size());
     for (const auto& [metric, value] : expected) {
       test_ukm_recorder_->ExpectEntryMetric(entry, metric, value);
