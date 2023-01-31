@@ -47,6 +47,8 @@ std::string GetHistogramVariant(SignalName signal_name) {
       return "FileSystemInfo";
     case SignalName::kSystemSettings:
       return "SystemSettings";
+    case SignalName::kAgent:
+      return "Agent";
   }
 }
 

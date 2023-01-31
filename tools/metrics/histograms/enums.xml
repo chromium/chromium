@@ -25778,6 +25778,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="1" label="Hotfixes"/>
   <int value="2" label="File System Info"/>
   <int value="3" label="System Settings"/>
+  <int value="4" label="Agent"/>
 </enum>
 
 <enum name="DeviceSignalsUserPermission">

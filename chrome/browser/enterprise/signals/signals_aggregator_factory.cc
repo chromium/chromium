@@ -32,6 +32,12 @@
 #include "components/device_signals/core/browser/win/win_signals_collector.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "components/device_signals/core/browser/agent_signals_collector.h"
+#include "components/device_signals/core/browser/crowdstrike_client.h"
+#include "components/device_signals/core/browser/settings_client.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 namespace enterprise_signals {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -81,6 +87,8 @@ KeyedService* SignalsAggregatorFactory::BuildServiceInstanceFor(
   collectors.push_back(
       std::make_unique<device_signals::SettingsSignalsCollector>(
           CreateSettingsClient()));
+  collectors.push_back(std::make_unique<device_signals::AgentSignalsCollector>(
+      device_signals::CrowdStrikeClient::Create()));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)

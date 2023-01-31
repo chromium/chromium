@@ -93,6 +93,8 @@ struct CrowdStrikeSignals {
   // Returns a Value with the non-empty values. Returns absl::nullopt if neither
   // values are set.
   absl::optional<base::Value> ToValue() const;
+
+  bool operator==(const CrowdStrikeSignals& other) const;
 };
 
 }  // namespace device_signals

@@ -69,4 +69,8 @@ absl::optional<base::Value> CrowdStrikeSignals::ToValue() const {
   return base::Value(std::move(dict_value));
 }
 
+bool CrowdStrikeSignals::operator==(const CrowdStrikeSignals& other) const {
+  return agent_id == other.agent_id && customer_id == other.customer_id;
+}
+
 }  // namespace device_signals

@@ -55,8 +55,14 @@ static_library("browser") {
   }
 
   if (is_win || is_mac) {
-    public += [ "crowdstrike_client.h" ]
-    sources += [ "crowdstrike_client.cc" ]
+    public += [
+      "agent_signals_collector.h",
+      "crowdstrike_client.h",
+    ]
+    sources += [
+      "agent_signals_collector.cc",
+      "crowdstrike_client.cc",
+    ]
 
     deps += [ "//services/data_decoder/public/cpp" ]
   }
@@ -110,7 +116,10 @@ source_set("unit_tests") {
   ]
 
   if (is_win || is_mac) {
-    sources += [ "crowdstrike_client_unittest.cc" ]
+    sources += [
+      "agent_signals_collector_unittest.cc",
+      "crowdstrike_client_unittest.cc",
+    ]
     deps += [ "//services/data_decoder/public/cpp:test_support" ]
   }
 

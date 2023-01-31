@@ -109,6 +109,15 @@ FileSystemInfoResponse& FileSystemInfoResponse::operator=(
 
 FileSystemInfoResponse::~FileSystemInfoResponse() = default;
 
+AgentSignalsResponse::AgentSignalsResponse() = default;
+AgentSignalsResponse::AgentSignalsResponse(const AgentSignalsResponse&) =
+    default;
+
+AgentSignalsResponse& AgentSignalsResponse::operator=(
+    const AgentSignalsResponse&) = default;
+
+AgentSignalsResponse::~AgentSignalsResponse() = default;
+
 SignalsAggregationRequest::SignalsAggregationRequest() = default;
 SignalsAggregationRequest::SignalsAggregationRequest(
     const SignalsAggregationRequest&) = default;
