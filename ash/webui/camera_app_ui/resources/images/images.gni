@@ -32,6 +32,7 @@ in_app_images = [
   "camera_intent_result_confirm.svg",
   "camera_mode_photo.svg",
   "camera_mode_portrait.svg",
+  "camera_mode_scan.svg",
   "camera_mode_video.svg",
   "camera_shutter_photo_start_active.svg",
   "camera_shutter_photo_start_hover.svg",

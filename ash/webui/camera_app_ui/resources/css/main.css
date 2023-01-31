@@ -520,6 +520,10 @@ body:not(.multi-camera) #switch-device {
   width: 40px;
 }
 
+body.scan #camera-mode {
+  background-image: url(/images/camera_mode_scan.svg);
+}
+
 body.video #camera-mode {
   background-image: url(/images/camera_mode_video.svg);
 }
