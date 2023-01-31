@@ -103,13 +103,13 @@ V4L2SliceVideoDecodeAccelerator::OutputRecord::~OutputRecord() = default;
 struct V4L2SliceVideoDecodeAccelerator::BitstreamBufferRef {
   BitstreamBufferRef(
       base::WeakPtr<VideoDecodeAccelerator::Client>& client,
-      scoped_refptr<base::SingleThreadTaskRunner> client_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       scoped_refptr<DecoderBuffer> buffer,
       int32_t input_id);
   ~BitstreamBufferRef();
 
   const base::WeakPtr<VideoDecodeAccelerator::Client> client;
-  const scoped_refptr<base::SingleThreadTaskRunner> client_task_runner;
+  const scoped_refptr<base::SequencedTaskRunner> client_task_runner;
   scoped_refptr<DecoderBuffer> buffer;
   off_t bytes_used;
   const int32_t input_id;
@@ -117,7 +117,7 @@ struct V4L2SliceVideoDecodeAccelerator::BitstreamBufferRef {
 
 V4L2SliceVideoDecodeAccelerator::BitstreamBufferRef::BitstreamBufferRef(
     base::WeakPtr<VideoDecodeAccelerator::Client>& client,
-    scoped_refptr<base::SingleThreadTaskRunner> client_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     scoped_refptr<DecoderBuffer> buffer,
     int32_t input_id)
     : client(client),
@@ -223,8 +223,8 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
   client_ptr_factory_.reset(
       new base::WeakPtrFactory<VideoDecodeAccelerator::Client>(client));
   client_ = client_ptr_factory_->GetWeakPtr();
-  // If we haven't been set up to decode on separate thread via
-  // TryToSetupDecodeOnSeparateThread(), use the main thread/client for
+  // If we haven't been set up to decode on separate sequence via
+  // TryToSetupDecodeOnSeparateSequence(), use the main thread/client for
   // decode tasks.
   if (!decode_task_runner_) {
     decode_task_runner_ = child_task_runner_;
@@ -963,7 +963,7 @@ void V4L2SliceVideoDecodeAccelerator::Decode(
     int32_t bitstream_id) {
   DVLOGF(4) << "input_id=" << bitstream_id
             << ", size=" << (buffer ? buffer->data_size() : 0);
-  DCHECK(decode_task_runner_->BelongsToCurrentThread());
+  DCHECK(decode_task_runner_->RunsTasksInCurrentSequence());
 
   if (bitstream_id < 0) {
     LOG(ERROR) << "Invalid bitstream buffer, id: " << bitstream_id;
@@ -2151,9 +2151,9 @@ void V4L2SliceVideoDecodeAccelerator::PictureCleared() {
   SendPictureReady();
 }
 
-bool V4L2SliceVideoDecodeAccelerator::TryToSetupDecodeOnSeparateThread(
+bool V4L2SliceVideoDecodeAccelerator::TryToSetupDecodeOnSeparateSequence(
     const base::WeakPtr<Client>& decode_client,
-    const scoped_refptr<base::SingleThreadTaskRunner>& decode_task_runner) {
+    const scoped_refptr<base::SequencedTaskRunner>& decode_task_runner) {
   decode_client_ = decode_client;
   decode_task_runner_ = decode_task_runner;
   return true;

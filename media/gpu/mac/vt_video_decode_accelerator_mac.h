@@ -42,6 +42,11 @@
 // system and in the source tree will conflict with each other.
 #include <VideoToolbox/VideoToolbox.h>
 
+namespace base {
+class SequencedTaskRunner;
+class SingleThreadTaskRunner;
+}  // namespace base
+
 namespace media {
 class VP9ConfigChangeDetector;
 class VP9SuperFrameBitstreamFilter;
@@ -74,9 +79,9 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   void Flush() override;
   void Reset() override;
   void Destroy() override;
-  bool TryToSetupDecodeOnSeparateThread(
+  bool TryToSetupDecodeOnSeparateSequence(
       const base::WeakPtr<Client>& decode_client,
-      const scoped_refptr<base::SingleThreadTaskRunner>& decode_task_runner)
+      const scoped_refptr<base::SequencedTaskRunner>& decode_task_runner)
       override;
   bool SupportsSharedImagePictureBuffers() const override;
   TextureAllocationMode GetSharedImageTextureAllocationMode() const override;

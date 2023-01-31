@@ -115,9 +115,9 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
   void Flush() override;
   void Reset() override;
   void Destroy() override;
-  bool TryToSetupDecodeOnSeparateThread(
+  bool TryToSetupDecodeOnSeparateSequence(
       const base::WeakPtr<Client>& decode_client,
-      const scoped_refptr<base::SingleThreadTaskRunner>& decode_task_runner)
+      const scoped_refptr<base::SequencedTaskRunner>& decode_task_runner)
       override;
   GLenum GetSurfaceInternalFormat() const override;
   bool SupportsSharedImagePictureBuffers() const override;

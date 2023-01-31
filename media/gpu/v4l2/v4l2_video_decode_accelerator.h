@@ -132,9 +132,9 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   void Flush() override;
   void Reset() override;
   void Destroy() override;
-  bool TryToSetupDecodeOnSeparateThread(
+  bool TryToSetupDecodeOnSeparateSequence(
       const base::WeakPtr<Client>& decode_client,
-      const scoped_refptr<base::SingleThreadTaskRunner>& decode_task_runner)
+      const scoped_refptr<base::SequencedTaskRunner>& decode_task_runner)
       override;
 
   static VideoDecodeAccelerator::SupportedProfiles GetSupportedProfiles();
@@ -448,7 +448,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   scoped_refptr<base::SingleThreadTaskRunner> child_task_runner_;
 
   // Task runner Decode() and PictureReady() run on.
-  scoped_refptr<base::SingleThreadTaskRunner> decode_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> decode_task_runner_;
 
   // WeakPtr<> pointing to |this| for use in posting tasks from the decoder or
   // device worker threads back to the child thread.  Because the worker threads

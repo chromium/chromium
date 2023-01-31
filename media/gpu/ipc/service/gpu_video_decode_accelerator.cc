@@ -488,7 +488,7 @@ bool GpuVideoDecodeAccelerator::Initialize(
   // Attempt to set up performing decoding tasks on IO thread, if supported by
   // the VDA.
   bool decode_on_io =
-      video_decode_accelerator_->TryToSetupDecodeOnSeparateThread(
+      video_decode_accelerator_->TryToSetupDecodeOnSeparateSequence(
           weak_factory_for_io_.GetWeakPtr(), io_task_runner_);
 
   // Bind the receiver on the IO thread. We wait here for it to be bound
@@ -498,7 +498,7 @@ bool GpuVideoDecodeAccelerator::Initialize(
   return filter_->Bind(std::move(receiver), io_task_runner_);
 }
 
-// Runs on IO thread if VDA::TryToSetupDecodeOnSeparateThread() succeeded,
+// Runs on IO thread if VDA::TryToSetupDecodeOnSeparateSequence() succeeded,
 // otherwise on the main thread.
 void GpuVideoDecodeAccelerator::OnDecode(BitstreamBuffer bitstream_buffer) {
   DCHECK(video_decode_accelerator_);

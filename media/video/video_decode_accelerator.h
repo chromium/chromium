@@ -29,7 +29,7 @@
 typedef unsigned int GLenum;
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace gpu {
@@ -410,9 +410,9 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
   // they may require GL context to be current. However, some VDAs may be able
   // to run decode operations without GL context, which helps reduce latency and
   // offloads the GPU Child thread.
-  virtual bool TryToSetupDecodeOnSeparateThread(
+  virtual bool TryToSetupDecodeOnSeparateSequence(
       const base::WeakPtr<Client>& decode_client,
-      const scoped_refptr<base::SingleThreadTaskRunner>& decode_task_runner);
+      const scoped_refptr<base::SequencedTaskRunner>& decode_task_runner);
 
   // Windows creates a BGRA texture.
   // TODO(dshwang): after moving to D3D11, remove this. crbug.com/438691

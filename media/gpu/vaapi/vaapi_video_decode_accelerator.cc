@@ -1084,9 +1084,9 @@ void VaapiVideoDecodeAccelerator::Destroy() {
   delete this;
 }
 
-bool VaapiVideoDecodeAccelerator::TryToSetupDecodeOnSeparateThread(
+bool VaapiVideoDecodeAccelerator::TryToSetupDecodeOnSeparateSequence(
     const base::WeakPtr<Client>& decode_client,
-    const scoped_refptr<base::SingleThreadTaskRunner>& decode_task_runner) {
+    const scoped_refptr<base::SequencedTaskRunner>& decode_task_runner) {
   return false;
 }
 

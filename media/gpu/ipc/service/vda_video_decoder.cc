@@ -424,7 +424,7 @@ void VdaVideoDecoder::InitializeOnGpuThread() {
   gpu_weak_vda_ = gpu_weak_vda_factory_->GetWeakPtr();
 
   vda_initialized_ = true;
-  decode_on_parent_thread_ = vda_->TryToSetupDecodeOnSeparateThread(
+  decode_on_parent_thread_ = vda_->TryToSetupDecodeOnSeparateSequence(
       parent_weak_this_, parent_task_runner_);
 
   parent_task_runner_->PostTask(
