@@ -180,6 +180,12 @@ void UnifiedVolumeView::Update(bool by_user) {
         IDS_ASH_STATUS_TRAY_VOLUME, state_tooltip_text));
   } else {
     level = audio_handler->GetOutputVolumePercentForDevice(device_id_) / 100.f;
+    // When muted by keyboard, the level stored in `audio_handler` should be
+    // preserved but the slider should appear as muted. `level` is set to 0
+    // manually to update the slider and icon.
+    if (audio_handler->IsOutputMutedForDevice(device_id_)) {
+      level = 0;
+    }
     auto active_device_id = audio_handler->GetPrimaryActiveOutputNode();
 
     switch (slider_style_) {

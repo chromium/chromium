@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
@@ -34,6 +35,20 @@ class UnifiedVolumeViewTest : public AshTestBase {
     feature_list_.InitAndEnableFeature(features::kQsRevamp);
     AshTestBase::SetUp();
     GetPrimaryUnifiedSystemTray()->ShowBubble();
+  }
+
+  // Checks `level` corresponds to the expected icon.
+  void CheckSliderIcon(float level) {
+    const gfx::VectorIcon* icon =
+        slider_icon()->GetImageModel().GetVectorIcon().vector_icon();
+
+    if (level <= 0.0) {
+      EXPECT_STREQ(icon->name, UnifiedVolumeView::kQsVolumeLevelIcons[0]->name);
+    } else if (level <= 0.5) {
+      EXPECT_STREQ(icon->name, UnifiedVolumeView::kQsVolumeLevelIcons[1]->name);
+    } else {
+      EXPECT_STREQ(icon->name, UnifiedVolumeView::kQsVolumeLevelIcons[2]->name);
+    }
   }
 
   UnifiedVolumeSliderController* volume_slider_controller() {
@@ -105,16 +120,7 @@ TEST_F(UnifiedVolumeViewTest, SliderIcon) {
         slider(), level, slider()->GetValue(),
         views::SliderChangeReason::kByUser);
 
-    const gfx::VectorIcon* icon =
-        slider_icon()->GetImageModel().GetVectorIcon().vector_icon();
-
-    if (level <= 0.0) {
-      EXPECT_STREQ(icon->name, UnifiedVolumeView::kQsVolumeLevelIcons[0]->name);
-    } else if (level <= 0.5) {
-      EXPECT_STREQ(icon->name, UnifiedVolumeView::kQsVolumeLevelIcons[1]->name);
-    } else {
-      EXPECT_STREQ(icon->name, UnifiedVolumeView::kQsVolumeLevelIcons[2]->name);
-    }
+    CheckSliderIcon(level);
   }
 }
 
@@ -148,6 +154,52 @@ TEST_F(UnifiedVolumeViewTest, MoreButton) {
   // Make sure the more button is not disabled.
   GetPrimaryUnifiedSystemTray()->ShowBubble();
   EXPECT_TRUE(more_button()->GetEnabled());
+}
+
+// Tests that pressing the keyboard volume mute key will mute the slider, and
+// pressing the volume up key will restore the volume level.
+TEST_F(UnifiedVolumeViewTest, VolumeMuteThenVolumeUp) {
+  // Sets the volume level by user.
+  const float level = 0.8;
+  volume_slider_controller()->SliderValueChanged(
+      slider(), level, slider()->GetValue(),
+      views::SliderChangeReason::kByUser);
+
+  EXPECT_EQ(slider()->GetValue(), level);
+  CheckSliderIcon(level);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_MUTE);
+  // The slider level should be 0 and icon appears as muted.
+  EXPECT_EQ(slider()->GetValue(), 0);
+  CheckSliderIcon(0);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_UP);
+  // The slider level and icon should be restored.
+  EXPECT_EQ(slider()->GetValue(), level);
+  CheckSliderIcon(level);
+}
+
+// Tests that pressing the keyboard volume mute key will mute the slider, and
+// pressing the volume down key will preserve the mute state.
+TEST_F(UnifiedVolumeViewTest, VolumeMuteThenVolumeDown) {
+  // Sets the volume level by user.
+  const float level = 0.8;
+  volume_slider_controller()->SliderValueChanged(
+      slider(), level, slider()->GetValue(),
+      views::SliderChangeReason::kByUser);
+
+  EXPECT_EQ(slider()->GetValue(), level);
+  CheckSliderIcon(level);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_MUTE);
+  // The slider level should be 0 and icon appears as muted.
+  EXPECT_EQ(slider()->GetValue(), 0);
+  CheckSliderIcon(0);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_DOWN);
+  // The slider level and icon should remain muted.
+  EXPECT_EQ(slider()->GetValue(), 0);
+  CheckSliderIcon(0);
 }
 
 }  // namespace ash
