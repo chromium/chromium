@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 456 tests; 441 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 536 tests; 521 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandIndeterm("delete") after
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandState("delete") after
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandValue("delete") after
@@ -456,5 +456,85 @@ PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] 
 PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandIndeterm("fontName") after
 PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandState("fontName") after
 PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandValue("fontName") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" compare innerHTML
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandIndeterm("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandState("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandValue("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandIndeterm("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandState("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandValue("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" compare innerHTML
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandIndeterm("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandState("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandValue("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandIndeterm("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandState("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandValue("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" compare innerHTML
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandIndeterm("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandState("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandValue("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandIndeterm("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandState("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandValue("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" compare innerHTML
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandIndeterm("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandState("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandValue("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandIndeterm("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandState("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandValue("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" compare innerHTML
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandIndeterm("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandState("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandValue("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandIndeterm("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandState("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo</span><br></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandValue("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" compare innerHTML
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandIndeterm("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandState("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandValue("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandIndeterm("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandState("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo<br></span></p><span style=\"color:rgb(255, 0, 0)\">[]bar</span>" queryCommandValue("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo</span><br><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo</span><br><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo</span><br><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo</span><br><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" compare innerHTML
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo</span><br><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandIndeterm("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo</span><br><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandState("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo</span><br><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandValue("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo</span><br><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandIndeterm("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo</span><br><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandState("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo</span><br><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandValue("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo<br></span><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo<br></span><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo<br></span><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo<br></span><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" compare innerHTML
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo<br></span><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandIndeterm("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo<br></span><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandState("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo<br></span><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandValue("foreColor") before
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo<br></span><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandIndeterm("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo<br></span><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandState("foreColor") after
+PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo<br></span><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandValue("foreColor") after
 Harness: the test ran to completion.
 
