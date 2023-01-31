@@ -65,6 +65,7 @@ TemplateURLData::TemplateURLData(
     base::StringPiece search_url,
     base::StringPiece suggest_url,
     base::StringPiece image_url,
+    base::StringPiece image_translate_url,
     base::StringPiece new_tab_url,
     base::StringPiece contextual_search_url,
     base::StringPiece logo_url,
@@ -74,6 +75,8 @@ TemplateURLData::TemplateURLData(
     base::StringPiece image_url_post_params,
     base::StringPiece side_search_param,
     base::StringPiece side_image_search_param,
+    base::StringPiece image_translate_source_language_param_key,
+    base::StringPiece image_translate_target_language_param_key,
     std::vector<std::string> search_intent_params,
     base::StringPiece favicon_url,
     base::StringPiece encoding,
@@ -84,6 +87,7 @@ TemplateURLData::TemplateURLData(
     int prepopulate_id)
     : suggestions_url(suggest_url),
       image_url(image_url),
+      image_translate_url(image_translate_url),
       new_tab_url(new_tab_url),
       contextual_search_url(contextual_search_url),
       logo_url(logo_url),
@@ -93,6 +97,10 @@ TemplateURLData::TemplateURLData(
       image_url_post_params(image_url_post_params),
       side_search_param(side_search_param),
       side_image_search_param(side_image_search_param),
+      image_translate_source_language_param_key(
+          image_translate_source_language_param_key),
+      image_translate_target_language_param_key(
+          image_translate_target_language_param_key),
       image_search_branding_label(image_search_branding_label),
       search_intent_params(search_intent_params),
       favicon_url(favicon_url),

@@ -49,6 +49,7 @@ const char DefaultSearchManager::kSyncGUID[] = "synced_guid";
 const char DefaultSearchManager::kURL[] = "url";
 const char DefaultSearchManager::kSuggestionsURL[] = "suggestions_url";
 const char DefaultSearchManager::kImageURL[] = "image_url";
+const char DefaultSearchManager::kImageTranslateURL[] = "image_translate_url";
 const char DefaultSearchManager::kNewTabURL[] = "new_tab_url";
 const char DefaultSearchManager::kContextualSearchURL[] =
     "contextual_search_url";
@@ -69,6 +70,10 @@ const char DefaultSearchManager::kSideImageSearchParam[] =
 const char DefaultSearchManager::kImageSearchBrandingLabel[] =
     "image_search_branding_label";
 const char DefaultSearchManager::kSearchIntentParams[] = "search_intent_params";
+const char DefaultSearchManager::kImageTranslateSourceLanguageParamKey[] =
+    "image_translate_source_language_param_key";
+const char DefaultSearchManager::kImageTranslateTargetLanguageParamKey[] =
+    "image_translate_target_language_param_key";
 
 const char DefaultSearchManager::kSafeForAutoReplace[] = "safe_for_autoreplace";
 const char DefaultSearchManager::kInputEncodings[] = "input_encodings";

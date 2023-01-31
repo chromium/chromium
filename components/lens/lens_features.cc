@@ -30,6 +30,10 @@ BASE_FEATURE(kEnableRegionSearchKeyboardShortcut,
              "LensEnableRegionSearchKeyboardShortcut",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableImageTranslate,
+             "LensEnableImageTranslate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableImageSearchSidePanelFor3PDse,
              "EnableImageSearchSidePanelFor3PDse",
              base::FEATURE_ENABLED_BY_DEFAULT);

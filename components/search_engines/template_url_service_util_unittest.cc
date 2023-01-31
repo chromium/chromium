@@ -22,11 +22,13 @@ std::unique_ptr<TemplateURLData> CreatePrepopulateTemplateURLData(
     const std::string& keyword) {
   return std::make_unique<TemplateURLData>(
       u"Search engine name", base::ASCIIToUTF16(keyword), "https://search.url",
-      "" /* suggest_url */, "" /* image_url */, "" /* new_tab_url */,
-      "" /* contextual_search_url */, "" /* logo_url */, "" /* doodle_url */,
-      "" /* search_url_post_params */, "" /* suggest_url_post_params */,
-      "" /* image_url_post_params */, "" /* side_search_param */,
-      "" /* side_image_search_param */,
+      "" /* suggest_url */, "" /* image_url */, "" /* image_translate_url */,
+      "" /* new_tab_url */, "" /* contextual_search_url */, "" /* logo_url */,
+      "" /* doodle_url */, "" /* search_url_post_params */,
+      "" /* suggest_url_post_params */, "" /* image_url_post_params */,
+      "" /* side_search_param */, "" /* side_image_search_param */,
+      "" /* image_translate_source_language_param_key */,
+      "" /* image_translate_target_language_param_key */,
       std::vector<std::string>() /* search_intent_params */,
       "" /* favicon_url */, "UTF-8", u"" /* image_search_branding_label */,
       base::Value::List() /* alternate_urls_list */,

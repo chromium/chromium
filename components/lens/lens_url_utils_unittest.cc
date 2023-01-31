@@ -34,6 +34,15 @@ TEST(LensUrlUtilsTest, GetImageSearchNewTabQueryParameterTest) {
   EXPECT_THAT(query_param, MatchesRegex("ep=ccm&re=df&s=4&st=\\d+"));
 }
 
+TEST(LensUrlUtilsTest, GetImageTranslateNewTabQueryParameterTest) {
+  lens::EntryPoint lens_image_translate_ep = lens::EntryPoint::
+      CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens_image_translate_ep, /* is_side_panel_request= */ false,
+      /* is_full_screen_region_search_request= */ false);
+  EXPECT_THAT(query_param, MatchesRegex("ep=ccm&re=df&s=4&st=\\d+"));
+}
+
 TEST(LensUrlUtilsTest, GetRegionSearchSidePanelQueryParameterTest) {
   lens::EntryPoint lens_region_search_ep =
       lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
@@ -48,6 +57,15 @@ TEST(LensUrlUtilsTest, GetImageSearchSidePanelQueryParameterTest) {
       lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens_image_search_ep, /* is_side_panel_request= */ true,
+      /* is_full_screen_region_search_request= */ false);
+  EXPECT_THAT(query_param, MatchesRegex("ep=ccm&re=dcsp&s=4&st=\\d+"));
+}
+
+TEST(LensUrlUtilsTest, GetImageTranslateSidePanelQueryParameterTest) {
+  lens::EntryPoint lens_image_translate_ep = lens::EntryPoint::
+      CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens_image_translate_ep, /* is_side_panel_request= */ true,
       /* is_full_screen_region_search_request= */ false);
   EXPECT_THAT(query_param, MatchesRegex("ep=ccm&re=dcsp&s=4&st=\\d+"));
 }
@@ -108,6 +126,18 @@ TEST(LensUrlUtilsTest, AppendImageSearchNewTabQueryParameterTest) {
   EXPECT_THAT(url.query(), MatchesRegex("ep=ccm&re=df&s=4&st=\\d+"));
 }
 
+TEST(LensUrlUtilsTest, AppendImageTranslateNewTabQueryParameterTest) {
+  lens::EntryPoint lens_image_translate_ep = lens::EntryPoint::
+      CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
+  lens::RenderingEnvironment re =
+      lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_FULLSCREEN;
+  GURL original_url = GURL("https://lens.google.com/");
+  GURL url = lens::AppendOrReplaceQueryParametersForLensRequest(
+      original_url, lens_image_translate_ep, re,
+      /* is_side_panel_request= */ false);
+  EXPECT_THAT(url.query(), MatchesRegex("ep=ccm&re=df&s=4&st=\\d+"));
+}
+
 TEST(LensUrlUtilsTest, AppendRegionSearchSidePanelQueryParameterTest) {
   lens::EntryPoint lens_region_search_ep =
       lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
@@ -128,6 +158,18 @@ TEST(LensUrlUtilsTest, AppendImageSearchSidePanelQueryParameterTest) {
   GURL original_url = GURL("https://lens.google.com/");
   GURL url = lens::AppendOrReplaceQueryParametersForLensRequest(
       original_url, lens_image_search_ep, re,
+      /* is_side_panel_request= */ true);
+  EXPECT_THAT(url.query(), MatchesRegex("ep=ccm&re=dcsp&s=4&st=\\d+"));
+}
+
+TEST(LensUrlUtilsTest, AppendImageTranslateSidePanelQueryParameterTest) {
+  lens::EntryPoint lens_image_translate_ep = lens::EntryPoint::
+      CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
+  lens::RenderingEnvironment re =
+      lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_CHROME_SIDE_PANEL;
+  GURL original_url = GURL("https://lens.google.com/");
+  GURL url = lens::AppendOrReplaceQueryParametersForLensRequest(
+      original_url, lens_image_translate_ep, re,
       /* is_side_panel_request= */ true);
   EXPECT_THAT(url.query(), MatchesRegex("ep=ccm&re=dcsp&s=4&st=\\d+"));
 }

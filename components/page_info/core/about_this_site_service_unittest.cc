@@ -199,6 +199,7 @@ TEST_F(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
           base::StringPiece(), base::StringPiece(), base::StringPiece(),
           base::StringPiece(), base::StringPiece(), base::StringPiece(),
           base::StringPiece(), base::StringPiece(), base::StringPiece(),
+          base::StringPiece(), base::StringPiece(), base::StringPiece(),
           base::StringPiece(), base::StringPiece(), std::vector<std::string>(),
           base::StringPiece(), base::StringPiece(), base::StringPiece16(),
           base::Value::List(), false, false, 0)));

@@ -32,6 +32,7 @@ struct TemplateURLData {
                   base::StringPiece search_url,
                   base::StringPiece suggest_url,
                   base::StringPiece image_url,
+                  base::StringPiece image_translate_url,
                   base::StringPiece new_tab_url,
                   base::StringPiece contextual_search_url,
                   base::StringPiece logo_url,
@@ -41,6 +42,8 @@ struct TemplateURLData {
                   base::StringPiece image_url_post_params,
                   base::StringPiece side_search_param,
                   base::StringPiece side_image_search_param,
+                  base::StringPiece image_translate_source_language_param_key,
+                  base::StringPiece image_translate_target_language_param_key,
                   std::vector<std::string> search_intent_params,
                   base::StringPiece favicon_url,
                   base::StringPiece encoding,
@@ -80,6 +83,7 @@ struct TemplateURLData {
   // Optional additional raw URLs.
   std::string suggestions_url;
   std::string image_url;
+  std::string image_translate_url;
   std::string new_tab_url;
   std::string contextual_search_url;
 
@@ -102,6 +106,14 @@ struct TemplateURLData {
   // The parameter appended to the engine's image URL when constructing the
   // URL for the image search entry in the side panel.
   std::string side_image_search_param;
+
+  // The key of the parameter identifying the source language for an image
+  // translation.
+  std::string image_translate_source_language_param_key;
+
+  // The key of the parameter identifying the target language for an image
+  // translation.
+  std::string image_translate_target_language_param_key;
 
   // Brand name used for image search queries. If not set, the short_name
   // will be used.

@@ -26,6 +26,8 @@
     { "field": "suggest_url", "type": "string", "optional": true },
     // If omitted, this engine does not support image search.
     { "field": "image_url", "type": "string", "optional": true },
+    // If omitted, this engine does not support image translation.
+    { "field": "image_translate_url", "type": "string", "optional": true },
     // If omitted, this engine does not support rendering a new tab page.
     { "field": "new_tab_url", "type": "string", "optional": true },
     // If omitted, this engine does not support contextual search.
@@ -54,6 +56,26 @@
     // The parameter appended to the engine's |image_url| URL when constructing the
     // URL for the image search entry in the side panel.
     { "field": "side_image_search_param", "type": "string", "optional": true },
+    // The key of the parameter identifying the source language for an image
+    // translation. For example, if set to "sourcelang", the template parameter
+    // "{imageTranslateSourceLocale}" would be replaced with "sourcelang=en"
+    // for the language code "en". If left blank, the template parameter would
+    // be replaced with simply "en".
+    {
+      "field": "image_translate_source_language_param_key",
+      "type": "string",
+      "optional": true
+    },
+    // The key of the parameter identifying the target language for an image
+    // translation. For example, if set to "targetlang", the template parameter
+    // "{imageTranslateTargetLocale}" would be replaced with "targetlang=en"
+    // for the language code "en". If left blank, the template parameter would
+    // be replaced with simply "en".
+    {
+      "field": "image_translate_target_language_param_key",
+      "type": "string",
+      "optional": true
+    },
     // The label to use for image search related queries. If omitted, will use the
     // value under the "name" field for image search queries.
     { "field": "image_search_branding_label", "type": "string16", "optional": true},

@@ -18879,6 +18879,10 @@ Called by update_net_error_codes.py.-->
   <int value="23" label="Search Images with non-Google visual search provider"/>
   <int value="24" label="Copy link to highlight"/>
   <int value="25" label="Open link as Profile"/>
+  <int value="26" label="Add a note"/>
+  <int value="27"
+      label="Translate text in image with non-Google visual search provider"/>
+  <int value="28" label="Translate text in image with Google Lens"/>
 </enum>
 
 <enum name="ContextMenuOptionIOS">
@@ -88757,6 +88761,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="127" label="IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS"/>
   <int value="128" label="IDC_CONTENT_CONTEXT_PDF_OCR_ONCE"/>
   <int value="129" label="IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK"/>
+  <int value="130" label="IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB"/>
+  <int value="131" label="IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS"/>
 </enum>
 
 <enum name="ReopenTabPromoStepAtDismissal">

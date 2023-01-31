@@ -35,6 +35,7 @@ class DefaultSearchManager {
   static const char kURL[];
   static const char kSuggestionsURL[];
   static const char kImageURL[];
+  static const char kImageTranslateURL[];
   static const char kNewTabURL[];
   static const char kContextualSearchURL[];
   static const char kFaviconURL[];
@@ -49,6 +50,8 @@ class DefaultSearchManager {
   static const char kSideImageSearchParam[];
   static const char kImageSearchBrandingLabel[];
   static const char kSearchIntentParams[];
+  static const char kImageTranslateSourceLanguageParamKey[];
+  static const char kImageTranslateTargetLanguageParamKey[];
 
   static const char kSafeForAutoReplace[];
   static const char kInputEncodings[];

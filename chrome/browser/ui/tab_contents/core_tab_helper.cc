@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/lens/lens_core_tab_side_panel_helper.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -32,6 +33,8 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/common/translate_constants.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -134,7 +137,8 @@ lens::mojom::ImageFormat CoreTabHelper::EncodeImageIntoSearchArgs(
 
 void CoreTabHelper::SearchWithLens(content::RenderFrameHost* render_frame_host,
                                    const GURL& src_url,
-                                   lens::EntryPoint entry_point) {
+                                   lens::EntryPoint entry_point,
+                                   bool is_image_translate) {
   bool use_side_panel = lens::IsSidePanelEnabledForLens(web_contents());
 
   SearchByImageImpl(render_frame_host, src_url, kImageSearchThumbnailMinSize,
@@ -143,7 +147,7 @@ void CoreTabHelper::SearchWithLens(content::RenderFrameHost* render_frame_host,
                     lens::GetQueryParametersForLensRequest(
                         entry_point, use_side_panel,
                         /** is_full_screen_region_search_request **/ false),
-                    use_side_panel);
+                    use_side_panel, is_image_translate);
 }
 
 TemplateURLService* CoreTabHelper::GetTemplateURLService() {
@@ -181,10 +185,17 @@ void CoreTabHelper::RegionSearchWithLens(
 
 void CoreTabHelper::SearchByImage(content::RenderFrameHost* render_frame_host,
                                   const GURL& src_url) {
+  SearchByImage(render_frame_host, src_url, /*is_image_translate=*/false);
+}
+
+void CoreTabHelper::SearchByImage(content::RenderFrameHost* render_frame_host,
+                                  const GURL& src_url,
+                                  bool is_image_translate) {
   SearchByImageImpl(render_frame_host, src_url, kImageSearchThumbnailMinSize,
                     kImageSearchThumbnailMaxWidth,
                     kImageSearchThumbnailMaxHeight, std::string(),
-                    lens::IsSidePanelEnabledFor3PDse(web_contents()));
+                    lens::IsSidePanelEnabledFor3PDse(web_contents()),
+                    is_image_translate);
 }
 
 void CoreTabHelper::SearchByImage(const gfx::Image& image,
@@ -247,7 +258,8 @@ void CoreTabHelper::SearchByImageImpl(
     int thumbnail_max_width,
     int thumbnail_max_height,
     const std::string& additional_query_params,
-    bool use_side_panel) {
+    bool use_side_panel,
+    bool is_image_translate) {
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &chrome_render_frame);
@@ -260,12 +272,12 @@ void CoreTabHelper::SearchByImageImpl(
           ? chrome::mojom::ImageFormat::WEBP
           : chrome::mojom::ImageFormat::JPEG,
       lens::features::GetImageSearchEncodingQuality(),
-      base::BindOnce(&CoreTabHelper::DoSearchByImage,
-                     weak_factory_.GetWeakPtr(), std::move(chrome_render_frame),
-                     src_url, additional_query_params, use_side_panel,
-                     lens::features::IsWebpForImageSearchEnabled()
-                         ? "image/webp"
-                         : "image/jpeg"));
+      base::BindOnce(
+          &CoreTabHelper::DoSearchByImage, weak_factory_.GetWeakPtr(),
+          std::move(chrome_render_frame), src_url, additional_query_params,
+          use_side_panel, is_image_translate,
+          lens::features::IsWebpForImageSearchEnabled() ? "image/webp"
+                                                        : "image/jpeg"));
 }
 
 std::unique_ptr<content::WebContents> CoreTabHelper::SwapWebContents(
@@ -429,6 +441,7 @@ void CoreTabHelper::DoSearchByImage(
     const GURL& src_url,
     const std::string& additional_query_params,
     bool use_side_panel,
+    bool is_image_translate,
     const std::string& thumbnail_content_type,
     const std::vector<uint8_t>& thumbnail_data,
     const gfx::Size& original_size,
@@ -457,8 +470,14 @@ void CoreTabHelper::DoSearchByImage(
   search_args.image_url = src_url;
   search_args.image_original_size = original_size;
   search_args.additional_query_params = additional_query_params_modified;
+  if (is_image_translate) {
+    MaybeSetSearchArgsForImageTranslate(search_args);
+  }
   TemplateURLRef::PostContent post_content;
-  GURL search_url(default_provider->image_url_ref().ReplaceSearchTerms(
+  const TemplateURLRef& template_url =
+      is_image_translate ? default_provider->image_translate_url_ref()
+                         : default_provider->image_url_ref();
+  GURL search_url(template_url.ReplaceSearchTerms(
       search_args, template_url_service->search_terms_data(), &post_content));
   if (use_side_panel) {
     search_url = template_url_service
@@ -467,6 +486,27 @@ void CoreTabHelper::DoSearchByImage(
   }
 
   PostContentToURL(post_content, search_url, use_side_panel);
+}
+
+void CoreTabHelper::MaybeSetSearchArgsForImageTranslate(
+    TemplateURLRef::SearchTermsArgs& search_args) {
+  ChromeTranslateClient* chrome_translate_client =
+      ChromeTranslateClient::FromWebContents(web_contents());
+  if (!chrome_translate_client) {
+    return;
+  }
+  const translate::LanguageState& language_state =
+      chrome_translate_client->GetLanguageState();
+  if (language_state.IsPageTranslated()) {
+    if (language_state.source_language() != translate::kUnknownLanguageCode) {
+      search_args.image_translate_source_locale =
+          language_state.source_language();
+    }
+    if (language_state.current_language() != translate::kUnknownLanguageCode) {
+      search_args.image_translate_target_locale =
+          language_state.current_language();
+    }
+  }
 }
 
 void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,

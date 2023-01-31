@@ -787,6 +787,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE_ALT_TEXT" desc="The name of the Search Lens for Image command in the content area context menu">
             Search inside image with <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph>
           </message>
+          <message name="IDS_CONTENT_CONTEXT_TRANSLATEIMAGE" desc="The name of the Translate Image command in the content area context menu">
+            Translate text in image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google</ex></ph>
+          </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1" desc="The name of the Lens Region Search command in the content area context menu">
             Search page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
@@ -1061,6 +1064,9 @@ are declared in tools/grit/grit_rule.gni.
           </message>
            <message name="IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE_ALT_TEXT" desc="The name of the Search Lens for Image command in the content area context menu">
             Search inside image with <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph>
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_TRANSLATEIMAGE" desc="In Title Case: The name of the Translate Image command in the content area context menu">
+            Translate Text in Image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
             Search Page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google</ex></ph>

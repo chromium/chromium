@@ -370,6 +370,7 @@ TEST_F(TemplateURLTest, SetPrepopulatedAndReplace) {
   data.SetURL("http://foo{fhqwhgads}search/?q={searchTerms}");
   data.suggestions_url = "http://foo{fhqwhgads}suggest/?q={searchTerms}";
   data.image_url = "http://foo{fhqwhgads}image/";
+  data.image_translate_url = "http://foo{fhqwhgads}image/?translate";
   data.new_tab_url = "http://foo{fhqwhgads}newtab/";
   data.contextual_search_url = "http://foo{fhqwhgads}context/";
   data.alternate_urls.push_back(
@@ -389,6 +390,8 @@ TEST_F(TemplateURLTest, SetPrepopulatedAndReplace) {
             url.suggestions_url_ref().ReplaceSearchTerms(args, stdata));
   EXPECT_EQ("http://foo{fhqwhgads}image/",
             url.image_url_ref().ReplaceSearchTerms(args, stdata));
+  EXPECT_EQ("http://foo%7Bfhqwhgads%7Dimage/?translate",
+            url.image_translate_url_ref().ReplaceSearchTerms(args, stdata));
   EXPECT_EQ("http://foo{fhqwhgads}newtab/",
             url.new_tab_url_ref().ReplaceSearchTerms(args, stdata));
   EXPECT_EQ("http://foo{fhqwhgads}context/",
@@ -406,6 +409,8 @@ TEST_F(TemplateURLTest, SetPrepopulatedAndReplace) {
             url2.suggestions_url_ref().ReplaceSearchTerms(args, stdata));
   EXPECT_EQ("http://fooimage/",
             url2.image_url_ref().ReplaceSearchTerms(args, stdata));
+  EXPECT_EQ("http://fooimage/?translate",
+            url2.image_translate_url_ref().ReplaceSearchTerms(args, stdata));
   EXPECT_EQ("http://foonewtab/",
             url2.new_tab_url_ref().ReplaceSearchTerms(args, stdata));
   EXPECT_EQ("http://foocontext/",
@@ -2283,6 +2288,7 @@ TEST_F(TemplateURLTest, InvalidateCachedValues) {
   data.SetURL("{google:baseURL}search?q={searchTerms}");
   data.suggestions_url = "{google:baseSuggestURL}search?q={searchTerms}";
   data.image_url = "{google:baseURL}searchbyimage/upload";
+  data.image_translate_url = "{google:baseURL}searchbyimage/upload?translate";
   data.new_tab_url = "{google:baseURL}_/chrome/newtab";
   data.contextual_search_url = "{google:baseURL}_/contextualsearch";
   data.alternate_urls.push_back("{google:baseURL}s#q={searchTerms}");
@@ -2306,6 +2312,9 @@ TEST_F(TemplateURLTest, InvalidateCachedValues) {
   EXPECT_EQ("http://www.google.com/searchbyimage/upload",
             url.image_url_ref().ReplaceSearchTerms(search_terms_args,
                                                    search_terms_data_));
+  EXPECT_EQ("http://www.google.com/searchbyimage/upload?translate",
+            url.image_translate_url_ref().ReplaceSearchTerms(
+                search_terms_args, search_terms_data_));
   EXPECT_EQ("http://www.google.com/_/chrome/newtab",
             url.new_tab_url_ref().ReplaceSearchTerms(search_terms_args,
                                                      search_terms_data_));
@@ -2341,6 +2350,9 @@ TEST_F(TemplateURLTest, InvalidateCachedValues) {
   EXPECT_EQ("https://www.foo.org/searchbyimage/upload",
             url.image_url_ref().ReplaceSearchTerms(search_terms_args,
                                                    search_terms_data_));
+  EXPECT_EQ("https://www.foo.org/searchbyimage/upload?translate",
+            url.image_translate_url_ref().ReplaceSearchTerms(
+                search_terms_args, search_terms_data_));
   EXPECT_EQ("https://www.foo.org/_/chrome/newtab",
             url.new_tab_url_ref().ReplaceSearchTerms(search_terms_args,
                                                      search_terms_data_));
@@ -2446,6 +2458,49 @@ TEST_F(TemplateURLTest, SideImageSearchParams) {
   result = url.RemoveSideImageSearchParamFromURL(
       GURL("http://foo.com/?q=123&sideimagesearch=1&sideimagesearch=2"));
   EXPECT_EQ("http://foo.com/?q=123&sideimagesearch=2", result.spec());
+}
+
+TEST_F(TemplateURLTest, ImageTranslate) {
+  struct TestData {
+    const std::string image_translate_url;
+    const std::string image_translate_source_language_param_key;
+    const std::string image_translate_target_language_param_key;
+    const std::string image_translate_source_locale;
+    const std::string image_translate_target_locale;
+    const std::string expected_result;
+  } test_data[] = {
+      {"https://lens.google.com/upload?filtertype=translate"
+       "&{imageTranslateSourceLocale}{imageTranslateTargetLocale}",
+       "sourcelang", "targetlang", "zh-CN", "fr",
+       "https://lens.google.com/"
+       "upload?filtertype=translate&sourcelang=zh-CN&targetlang=fr&"},
+      {"https://www.foo.com/images/detail/search"
+       "?ft=tr&{imageTranslateSourceLocale}{imageTranslateTargetLocale}"
+       "#fragment",
+       "sl", "tl", "ja", "es",
+       "https://www.foo.com/images/detail/search?ft=tr&sl=ja&tl=es&#fragment"},
+      {"https://bar.com/images/translate/"
+       "{imageTranslateSourceLocale}/{imageTranslateTargetLocale}/",
+       "", "", "ko", "de", "https://bar.com/images/translate/ko/de/"},
+  };
+  TemplateURLData data;
+  for (const auto& entry : test_data) {
+    data.image_translate_url = entry.image_translate_url;
+    data.image_translate_source_language_param_key =
+        entry.image_translate_source_language_param_key;
+    data.image_translate_target_language_param_key =
+        entry.image_translate_target_language_param_key;
+    TemplateURL url(data);
+    TemplateURLRef::SearchTermsArgs search_terms_args(u"");
+    search_terms_args.image_translate_source_locale =
+        entry.image_translate_source_locale;
+    search_terms_args.image_translate_target_locale =
+        entry.image_translate_target_locale;
+    GURL result(url.image_translate_url_ref().ReplaceSearchTerms(
+        search_terms_args, search_terms_data_));
+    ASSERT_TRUE(result.is_valid());
+    EXPECT_EQ(entry.expected_result, result.spec());
+  }
 }
 
 TEST_F(TemplateURLTest, ImageSearchBrandingLabel) {
