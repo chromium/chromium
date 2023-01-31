@@ -144,6 +144,11 @@
   E_CPONLY(kColorSysOnSurfaceSecondary) \
   E_CPONLY(kColorSysOnSurfaceSubtle) \
   /* Chrome surfaces. */ \
+  E_CPONLY(kColorSysBase) \
+  E_CPONLY(kColorSysOnBase) \
+  E_CPONLY(kColorSysOnBaseSecondary) \
+  E_CPONLY(kColorSysOnBaseDivider) \
+  E_CPONLY(kColorSysOnBaseBorder) \
   E_CPONLY(kColorSysHeader) \
   E_CPONLY(kColorSysHeaderInactive) \
   E_CPONLY(kColorSysOnHeaderDivider) \
@@ -154,6 +159,8 @@
   E_CPONLY(kColorSysOnHeaderSecondaryInactive) \
   E_CPONLY(kColorSysOnHeaderContainer) \
   E_CPONLY(kColorSysOnHeaderContainerInactive) \
+  /* Effects. */ \
+  E_CPONLY(kColorSysShadow) \
   /* States. */ \
   E_CPONLY(kColorSysStateHover) \
   E_CPONLY(kColorSysStateFocus) \

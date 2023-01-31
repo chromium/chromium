@@ -113,6 +113,15 @@ void AddSysColorMixer(ColorProvider* provider,
                                                : kColorRefNeutral30};
 
   // Chrome surfaces.
+  mixer[kColorSysBase] = {dark_mode ? kColorRefNeutral24 : kColorRefNeutral100};
+  mixer[kColorSysOnBase] = {dark_mode ? kColorRefNeutral90
+                                      : kColorRefNeutral10};
+  mixer[kColorSysOnBaseSecondary] = {dark_mode ? kColorRefNeutral80
+                                               : kColorRefNeutral30};
+  mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefNeutral30
+                                             : kColorRefPrimary90};
+  mixer[kColorSysOnBaseBorder] = {dark_mode ? kColorRefNeutral30
+                                            : kColorRefPrimary90};
   mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral17
                                       : kColorRefPrimary90};
   mixer[kColorSysHeaderInactive] = {dark_mode ? kColorSysSurface1
@@ -129,6 +138,9 @@ void AddSysColorMixer(ColorProvider* provider,
                                                  : kColorRefPrimary95};
   mixer[kColorSysOnHeaderContainerInactive] = {dark_mode ? kColorRefNeutral24
                                                          : kColorRefNeutral100};
+
+  // Effects.
+  mixer[kColorSysShadow] = {kColorRefNeutral100};
 
   // States.
   mixer[kColorSysStateHover] = {dark_mode
