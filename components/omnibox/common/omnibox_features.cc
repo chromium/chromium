@@ -302,7 +302,7 @@ BASE_FEATURE(kShortBookmarkSuggestions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShortBookmarkSuggestionsByTotalInputLength,
              "OmniboxShortBookmarkSuggestionsByTotalInputLength",
-             enabled_by_default_desktop_only);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, inputs may match bookmark paths. These path matches won't
 // contribute to scoring. E.g. 'planets jupiter' can suggest a bookmark titled
@@ -310,7 +310,7 @@ BASE_FEATURE(kShortBookmarkSuggestionsByTotalInputLength,
 // containing 'planet.'
 BASE_FEATURE(kBookmarkPaths,
              "OmniboxBookmarkPaths",
-             enabled_by_default_desktop_only);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, when updating or creating a shortcut, the last word of the input
 // is expanded, if possible, to a complete word in the suggestion description.
