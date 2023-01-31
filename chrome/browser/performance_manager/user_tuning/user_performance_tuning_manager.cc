@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
@@ -23,6 +24,8 @@ namespace performance_manager::user_tuning {
 namespace {
 
 UserPerformanceTuningManager* g_user_performance_tuning_manager = nullptr;
+
+constexpr base::TimeDelta kBatteryUsageWriteFrequency = base::Days(1);
 
 class FrameThrottlingDelegateImpl
     : public performance_manager::user_tuning::UserPerformanceTuningManager::
@@ -145,6 +148,11 @@ bool UserPerformanceTuningManager::IsBatterySaverActive() const {
 
 bool UserPerformanceTuningManager::IsUsingBatteryPower() const {
   return on_battery_power_;
+}
+
+base::Time UserPerformanceTuningManager::GetLastBatteryUsageTimestamp() const {
+  return pref_change_registrar_.prefs()->GetTime(
+      performance_manager::user_tuning::prefs::kLastBatteryUseTimestamp);
 }
 
 int UserPerformanceTuningManager::SampledBatteryPercentage() const {
@@ -351,8 +359,9 @@ void UserPerformanceTuningManager::OnPowerStateChange(bool on_battery_power) {
   on_battery_power_ = on_battery_power;
 
   // Plugging in the device unsets the temporary disable BSM flag
-  if (!on_battery_power)
+  if (!on_battery_power) {
     battery_saver_mode_disabled_for_session_ = false;
+  }
 
   for (auto& obs : observers_) {
     obs.OnExternalPowerConnectedChanged(on_battery_power);
@@ -375,6 +384,15 @@ void UserPerformanceTuningManager::OnBatteryStateSampled(
     for (auto& obs : observers_) {
       obs.OnDeviceHasBatteryChanged(has_battery_);
     }
+  }
+
+  // Log the battery usage to local pref if the previous value is more than a
+  // day old.
+  if (has_battery_ && (base::Time::Now() - GetLastBatteryUsageTimestamp() >
+                       kBatteryUsageWriteFrequency)) {
+    pref_change_registrar_.prefs()->SetTime(
+        performance_manager::user_tuning::prefs::kLastBatteryUseTimestamp,
+        base::Time::Now());
   }
 
   if (!battery_state->current_capacity ||

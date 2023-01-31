@@ -75,6 +75,7 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
     return performance_controls_hats_service_.get();
   }
   MockHatsService* mock_hats_service() { return mock_hats_service_; }
+  TestingPrefServiceSimple* local_state() { return &local_state_; }
 
  protected:
   performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
@@ -107,6 +108,11 @@ class PerformanceControlsHatsServiceHasBatteryTest
     environment_.battery_level_provider()->SetBatteryState(
         base::test::TestBatteryLevelProvider::CreateBatteryState());
     environment_.sampling_source()->SimulateEvent();
+
+    // Set a recent value for the last battery usage.
+    local_state()->SetTime(
+        performance_manager::user_tuning::prefs::kLastBatteryUseTimestamp,
+        base::Time::Now());
   }
 
  protected:

@@ -148,6 +148,9 @@ class UserPerformanceTuningManager
   // Returns true if the device is unplugged and using battery power.
   bool IsUsingBatteryPower() const;
 
+  // Returns the time of the last use of battery for the device.
+  base::Time GetLastBatteryUsageTimestamp() const;
+
   // Returns the last sampled device battery percentage. A percentage of -1
   // indicates that the battery state has not been sampled yet.
   int SampledBatteryPercentage() const;
