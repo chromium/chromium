@@ -130,6 +130,9 @@ function appendRow(peerConnectionElement, active, candidatePair, stats) {
     if (stat == 'candidateType' && localCandidate.relayProtocol) {
       localRow.children[index].innerText = localCandidate[stat] +
           '(' + localCandidate.relayProtocol + ')';
+      if (localCandidate.url) {
+        localRow.children[index].innerText += '\n' + localCandidate.url;
+      }
     } else if (stat === 'priority') {
       localRow.children[index].innerText = '0x' +
           parseInt(localCandidate[stat], 10).toString(16);
