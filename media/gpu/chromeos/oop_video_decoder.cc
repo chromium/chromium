@@ -102,13 +102,18 @@ class OOPVideoDecoderSupportedConfigsManager {
       mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
       base::OnceCallback<
           void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) {
-    base::AutoLock lock(lock_);
+    base::ReleasableAutoLock lock(&lock_);
     if (configs_) {
       // The supported configurations are already known. We can call |cb|
       // immediately.
+      //
+      // We release the lock in case the |waiting_callback|.cb wants to re-enter
+      // OOPVideoDecoderSupportedConfigsManager by reaching
+      // OOPVideoDecoderSupportedConfigsManager::Get() in the callback.
+      lock.Release();
       std::move(cb).Run(std::move(oop_video_decoder));
       return;
-    } else if (oop_video_decoder_) {
+    } else if (!waiting_callbacks_.empty()) {
       // There is a query in progress. We need to queue |cb| to call it later
       // when the supported configurations are known.
       waiting_callbacks_.emplace(
@@ -163,6 +168,10 @@ class OOPVideoDecoderSupportedConfigsManager {
               : oop_video_decoder_.Unbind();
 
       if (waiting_callback.cb_task_runner->RunsTasksInCurrentSequence()) {
+        // Release the lock in case the |waiting_callback|.cb wants to re-enter
+        // OOPVideoDecoderSupportedConfigsManager by reaching
+        // OOPVideoDecoderSupportedConfigsManager::Get() in the callback.
+        base::AutoUnlock unlock(lock_);
         std::move(waiting_callback.cb).Run(std::move(oop_video_decoder));
       } else {
         waiting_callback.cb_task_runner->PostTask(
