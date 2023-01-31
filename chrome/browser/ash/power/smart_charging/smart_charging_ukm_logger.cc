@@ -24,7 +24,7 @@ void SmartChargingUkmLogger::LogEvent(
     const UserChargingEvent& user_charging_event,
     const ChargeHistoryState& charge_history,
     base::Time time_of_call) const {
-  const ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  const ukm::SourceId source_id = ukm::NoURLSourceId();
   // Log UserChargingEvent and ChargeHistoryState using a same SourceID and
   // |event_id|.
   ukm::builders::SmartCharging ukm_smart_charging(source_id);
