@@ -86,55 +86,6 @@ void RecordFirstRunSignInMetrics(
                                 first_run::SIGNIN_SIZE);
 }
 
-void RecordFirstRunScrollButtonVisibilityMetrics(
-    first_run::FirstRunScreenType screen_type,
-    BOOL scroll_button_visible) {
-  switch (screen_type) {
-    case first_run::FirstRunScreenType::kDefaultBrowserPromoScreen:
-      base::UmaHistogramBoolean(
-          "IOS.FirstRun.ScrollButtonVisible.DefaultBrowserPromoScreen",
-          scroll_button_visible);
-      break;
-    case first_run::FirstRunScreenType::kSignInScreenWithFooter:
-      base::UmaHistogramBoolean(
-          "IOS.FirstRun.ScrollButtonVisible.SignInScreenWithFooter",
-          scroll_button_visible);
-      break;
-    case first_run::FirstRunScreenType::
-        kSignInScreenWithFooterAndIdentityPicker:
-      base::UmaHistogramBoolean("IOS.FirstRun.ScrollButtonVisible."
-                                "SignInScreenWithFooterAndIdentityPicker",
-                                scroll_button_visible);
-      break;
-    case first_run::FirstRunScreenType::kSignInScreenWithIdentityPicker:
-      base::UmaHistogramBoolean(
-          "IOS.FirstRun.ScrollButtonVisible.SignInScreenWithIdentityPicker",
-          scroll_button_visible);
-      break;
-    case first_run::FirstRunScreenType::
-        kSignInScreenWithoutFooterOrIdentityPicker:
-      base::UmaHistogramBoolean("IOS.FirstRun.ScrollButtonVisible."
-                                "SignInScreenWithoutFooterOrIdentityPicker",
-                                scroll_button_visible);
-      break;
-    case first_run::FirstRunScreenType::kWelcomeScreenWithoutUMACheckbox:
-      base::UmaHistogramBoolean(
-          "IOS.FirstRun.ScrollButtonVisible.WelcomeScreenWithoutUMACheckbox",
-          scroll_button_visible);
-      break;
-    case first_run::FirstRunScreenType::kWelcomeScreenWithUMACheckbox:
-      base::UmaHistogramBoolean(
-          "IOS.FirstRun.ScrollButtonVisible.WelcomeScreenWithUMACheckbox",
-          scroll_button_visible);
-      break;
-    case first_run::FirstRunScreenType::kTangibleSyncScreen:
-      base::UmaHistogramBoolean(
-          "IOS.FirstRun.ScrollButtonVisible.TangibleSyncScreen",
-          scroll_button_visible);
-      break;
-  }
-}
-
 void WriteFirstRunSentinel() {
   kFirstRunSentinelCreated = true;
   base::ThreadPool::PostTask(

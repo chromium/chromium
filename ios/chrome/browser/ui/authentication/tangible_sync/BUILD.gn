@@ -31,7 +31,6 @@ source_set("tangible_sync") {
     "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/elements:activity_overlay",
-    "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/unified_consent",
   ]
   public_deps =

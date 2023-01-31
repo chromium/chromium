@@ -25,11 +25,6 @@ void RecordFirstRunSignInMetrics(
     first_run::SignInAttemptStatus sign_in_attempt_status,
     BOOL has_sso_accounts);
 
-// Records the result of the sign in steps for the First Run.
-void RecordFirstRunScrollButtonVisibilityMetrics(
-    first_run::FirstRunScreenType screen_type,
-    BOOL scroll_button_visible);
-
 // Records the completion of the first run.
 void WriteFirstRunSentinel();
 

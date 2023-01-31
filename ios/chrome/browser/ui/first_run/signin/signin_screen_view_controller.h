@@ -18,11 +18,6 @@
 // Called when the user taps to see the account picker.
 - (void)showAccountPickerFromPoint:(CGPoint)point;
 
-// Logs scrollability metric on view appears.
-- (void)logScrollButtonVisible:(BOOL)scrollButtonVisible
-            withIdentityPicker:(BOOL)identityPickerVisible
-                     andFooter:(BOOL)footerVisible;
-
 @end
 
 // View controller of sign-in screen.

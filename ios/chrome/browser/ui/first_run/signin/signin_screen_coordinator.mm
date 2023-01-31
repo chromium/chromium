@@ -279,24 +279,6 @@
       self.mediator.selectedIdentity;
 }
 
-- (void)logScrollButtonVisible:(BOOL)scrollButtonVisible
-            withIdentityPicker:(BOOL)identityPickerVisible
-                     andFooter:(BOOL)footerVisible {
-  first_run::FirstRunScreenType screenType;
-  if (identityPickerVisible && footerVisible) {
-    screenType =
-        first_run::FirstRunScreenType::kSignInScreenWithFooterAndIdentityPicker;
-  } else if (identityPickerVisible) {
-    screenType = first_run::FirstRunScreenType::kSignInScreenWithIdentityPicker;
-  } else if (footerVisible) {
-    screenType = first_run::FirstRunScreenType::kSignInScreenWithFooter;
-  } else {
-    screenType = first_run::FirstRunScreenType::
-        kSignInScreenWithoutFooterOrIdentityPicker;
-  }
-  RecordFirstRunScrollButtonVisibilityMetrics(screenType, scrollButtonVisible);
-}
-
 #pragma mark - TOSCommands
 
 - (void)showTOSPage {

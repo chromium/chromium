@@ -161,13 +161,6 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
   [super viewDidLoad];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-  [super viewDidAppear:animated];
-  [self.delegate logScrollButtonVisible:!self.didReachBottom
-                     withIdentityPicker:!self.identityControl.hidden
-                              andFooter:[self.disclaimerText length] > 0];
-}
-
 #pragma mark - Properties
 
 - (IdentityButtonControl*)identityControl {

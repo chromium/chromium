@@ -146,11 +146,6 @@ UIView* IconViewWithImage(NSString* image_name, BOOL custom_symbol) {
   [super viewDidLoad];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-  [super viewDidAppear:animated];
-  [self.delegate logScrollButtonVisible:!self.didReachBottom];
-}
-
 #pragma mark - TangibleSyncConsumer
 
 - (void)setPrimaryIdentityAvatarImage:(UIImage*)primaryIdentityAvatarImage {

@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/elements/activity_overlay_coordinator.h"
-#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -181,15 +180,6 @@
 // Adds consent string ID.
 - (void)addConsentStringID:(const int)stringID {
   [_consentStringIDs addObject:[NSNumber numberWithInt:stringID]];
-}
-
-// Logs scrollability metric on view appears.
-- (void)logScrollButtonVisible:(BOOL)scrollButtonVisible {
-  if (!_firstRun) {
-    return;
-  }
-  RecordFirstRunScrollButtonVisibilityMetrics(
-      first_run::FirstRunScreenType::kTangibleSyncScreen, scrollButtonVisible);
 }
 
 #pragma mark - Private

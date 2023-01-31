@@ -13,9 +13,6 @@
 // Adds string ID in the consent string list.
 - (void)addConsentStringID:(const int)stringID;
 
-// Logs scrollability metric when the view appears.
-- (void)logScrollButtonVisible:(BOOL)scrollButtonVisible;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_TANGIBLE_SYNC_TANGIBLE_SYNC_VIEW_CONTROLLER_DELEGATE_H_
