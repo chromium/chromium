@@ -408,7 +408,7 @@
   "MSAN Release (chained origins)": {
     "gn_args": {
       "dcheck_always_on": false,
-      "instrumented_libraries_release": "focal",
+      "instrumented_libraries_release": "xenial",
       "is_component_build": false,
       "is_debug": false,
       "is_msan": true,
