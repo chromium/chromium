@@ -78,6 +78,10 @@ class GLImageD3DTestDelegate : public GLImageTestDelegateBase {
     return image;
   }
 
+  bool BindImageToTarget(GLImage* image, unsigned target) {
+    return static_cast<gl::GLImageD3D*>(image)->BindTexImage(target);
+  }
+
   unsigned GetTextureTarget() const { return GL_TEXTURE_2D; }
 
   const uint8_t* GetImageColor() const { return kImageColor; }
@@ -117,7 +121,7 @@ TYPED_TEST_P(GLImageZeroInitializeTest, ZeroInitialize) {
   glBindTexture(target, texture);
 
   // Bind |image| to |texture|.
-  bool rv = image->BindTexImageForTesting(target);
+  bool rv = this->delegate_.BindImageToTarget(image.get(), target);
   EXPECT_TRUE(rv);
 
   // Draw |texture| to viewport.
