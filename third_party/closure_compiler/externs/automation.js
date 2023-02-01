@@ -2222,6 +2222,18 @@ chrome.automation.AutomationNode.prototype.previousFocus;
 chrome.automation.AutomationNode.prototype.nextFocus;
 
 /**
+ * @type {(!chrome.automation.AutomationNode|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-previousWindowFocus
+ */
+chrome.automation.AutomationNode.prototype.previousWindowFocus;
+
+/**
+ * @type {(!chrome.automation.AutomationNode|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-nextWindowFocus
+ */
+chrome.automation.AutomationNode.prototype.nextWindowFocus;
+
+/**
  * The index of this node in its parent node's list of children. If this is the root node, this will be undefined.
  * @type {(number|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-indexInParent

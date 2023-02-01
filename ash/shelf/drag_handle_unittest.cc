@@ -86,8 +86,8 @@ class DragHandleFocusTest : public AshTestBase {
     auto* drag_handle = GetPrimaryShelf()->shelf_widget()->GetDragHandle();
     views::ViewAccessibility& view_accessibility =
         drag_handle->GetViewAccessibility();
-    EXPECT_EQ(expected_previous, view_accessibility.GetPreviousFocus());
-    EXPECT_EQ(expected_next, view_accessibility.GetNextFocus());
+    EXPECT_EQ(expected_previous, view_accessibility.GetPreviousWindowFocus());
+    EXPECT_EQ(expected_next, view_accessibility.GetNextWindowFocus());
   }
 
   void ClickDragHandle() {

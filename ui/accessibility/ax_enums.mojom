@@ -610,8 +610,8 @@ enum StringAttribute {
   kVirtualContent = 30,
 };
 
-// Next version: 2
-// Next value: 62
+// Next version: 3
+// Next value: 64
 [Extensible, Stable, Uuid="c350e50f-5177-405d-b155-79868449ba7b"]
 enum IntAttribute {
   [Default]kNone = 0,
@@ -753,6 +753,8 @@ enum IntAttribute {
 
   // Indicates whether the element is a popover ("popup") and if so, what type.
   [MinVersion=1] kIsPopup = 61,
+  [MinVersion=2] kNextWindowFocusId = 62,
+  [MinVersion=2] kPreviousWindowFocusId = 63,
 };
 
 // Next version: 2

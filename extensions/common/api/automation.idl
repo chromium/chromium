@@ -1385,6 +1385,8 @@ enum PositionType {
     AutomationNode? nextOnLine;
     AutomationNode? previousFocus;
     AutomationNode? nextFocus;
+    AutomationNode? previousWindowFocus;
+    AutomationNode? nextWindowFocus;
 
     // The index of this node in its parent node's list of children. If this is
     // the root node, this will be undefined.

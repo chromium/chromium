@@ -194,8 +194,8 @@ void OverviewTestBase::CheckA11yOverrides(const std::string& trace,
   views::View* contents_view = widget->GetContentsView();
   views::ViewAccessibility& view_accessibility =
       contents_view->GetViewAccessibility();
-  EXPECT_EQ(expected_previous, view_accessibility.GetPreviousFocus());
-  EXPECT_EQ(expected_next, view_accessibility.GetNextFocus());
+  EXPECT_EQ(expected_previous, view_accessibility.GetPreviousWindowFocus());
+  EXPECT_EQ(expected_next, view_accessibility.GetNextWindowFocus());
 }
 
 void OverviewTestBase::CheckOverviewEnterExitHistogram(

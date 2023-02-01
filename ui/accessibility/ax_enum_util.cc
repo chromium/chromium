@@ -978,6 +978,10 @@ const char* ToString(ax::mojom::IntAttribute int_attribute) {
       return "imageAnnotationStatus";
     case ax::mojom::IntAttribute::kDOMNodeId:
       return "domNodeId";
+    case ax::mojom::IntAttribute::kNextWindowFocusId:
+      return "nextWindowFocusId";
+    case ax::mojom::IntAttribute::kPreviousWindowFocusId:
+      return "previousWindowFocusId";
   }
 
   return "";

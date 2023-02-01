@@ -509,7 +509,7 @@ export class AutomationPredicate {
             });
       case Role.TOOLBAR:
         return node.root.role === Role.DESKTOP &&
-            !(node.nextFocus || !node.previousFocus);
+            !(node.nextWindowFocus || !node.previousWindowFocus);
       case Role.ROOT_WEB_AREA:
         if (node.parent && node.parent.role === Role.WEB_VIEW &&
             !node.parent.state[State.FOCUSED]) {

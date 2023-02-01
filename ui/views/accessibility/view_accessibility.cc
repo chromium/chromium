@@ -563,11 +563,11 @@ void ViewAccessibility::OverridePreviousFocus(Widget* widget) {
     previous_focus_ = nullptr;
 }
 
-Widget* ViewAccessibility::GetNextFocus() const {
+Widget* ViewAccessibility::GetNextWindowFocus() const {
   return next_focus_.get();
 }
 
-Widget* ViewAccessibility::GetPreviousFocus() const {
+Widget* ViewAccessibility::GetPreviousWindowFocus() const {
   return previous_focus_.get();
 }
 

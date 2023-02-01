@@ -4065,9 +4065,10 @@ AX_TEST_F(
 
           .call(() => {
             // Link the two "windows" with next/previous focus.
-            Object.defineProperty(window1, 'nextFocus', {get: () => window2});
             Object.defineProperty(
-                window2, 'previousFocus', {get: () => window1});
+                window1, 'nextWindowFocus', {get: () => window2});
+            Object.defineProperty(
+                window2, 'previousWindowFocus', {get: () => window1});
           })
 
           // window1 -> window2.
@@ -4082,8 +4083,9 @@ AX_TEST_F(
             // Link the two "windows" with next/previous focus in a slightly
             // different way.
             Object.defineProperty(
-                window1, 'previousFocus', {get: () => window2});
-            Object.defineProperty(window2, 'nextFocus', {get: () => window1});
+                window1, 'previousWindowFocus', {get: () => window2});
+            Object.defineProperty(
+                window2, 'nextWindowFocus', {get: () => window1});
           })
 
           .call(doCmd('previousObject'))

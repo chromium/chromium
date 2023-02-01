@@ -117,6 +117,8 @@ bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr) {
     case ax::mojom::IntAttribute::kTableRowHeaderId:
     case ax::mojom::IntAttribute::kNextFocusId:
     case ax::mojom::IntAttribute::kPreviousFocusId:
+    case ax::mojom::IntAttribute::kNextWindowFocusId:
+    case ax::mojom::IntAttribute::kPreviousWindowFocusId:
       return true;
 
     // Note: all of the attributes are included here explicitly,
@@ -1626,6 +1628,12 @@ std::string AXNodeData::ToString(bool verbose) const {
         break;
       case ax::mojom::IntAttribute::kPreviousFocusId:
         result += " previous_focus_id=" + value;
+        break;
+      case ax::mojom::IntAttribute::kNextWindowFocusId:
+        result += " next_window_focus_id=" + value;
+        break;
+      case ax::mojom::IntAttribute::kPreviousWindowFocusId:
+        result += " previous_window_focus_id=" + value;
         break;
       case ax::mojom::IntAttribute::kImageAnnotationStatus:
         result += std::string(" image_annotation_status=") +

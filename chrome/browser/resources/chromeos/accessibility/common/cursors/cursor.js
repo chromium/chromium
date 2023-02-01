@@ -656,7 +656,8 @@ export class WrappingCursor extends Cursor {
 
       // Finds any explicitly provided focus.
       const getDirectedFocus = function(node) {
-        return dir === Dir.FORWARD ? node.nextFocus : node.previousFocus;
+        return dir === Dir.FORWARD ? node.nextWindowFocus :
+                                     node.previousWindowFocus;
       };
 
       // Case 1: forwards (find the root-like node).

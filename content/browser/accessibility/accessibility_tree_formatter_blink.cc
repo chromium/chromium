@@ -155,10 +155,12 @@ std::string IntAttrToString(const ui::AXNode& node,
     case ax::mojom::IntAttribute::kMemberOfId:
     case ax::mojom::IntAttribute::kNextFocusId:
     case ax::mojom::IntAttribute::kNextOnLineId:
+    case ax::mojom::IntAttribute::kNextWindowFocusId:
     case ax::mojom::IntAttribute::kPosInSet:
     case ax::mojom::IntAttribute::kPopupForId:
     case ax::mojom::IntAttribute::kPreviousFocusId:
     case ax::mojom::IntAttribute::kPreviousOnLineId:
+    case ax::mojom::IntAttribute::kPreviousWindowFocusId:
     case ax::mojom::IntAttribute::kScrollX:
     case ax::mojom::IntAttribute::kScrollXMax:
     case ax::mojom::IntAttribute::kScrollXMin:
