@@ -93,7 +93,8 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUp();
   }
 
-  std::pair<net::IPEndPoint, network::test::UDPSocketTestHelper>
+  std::pair<net::IPEndPoint,
+            std::unique_ptr<network::test::UDPSocketTestHelper>>
   CreateUDPServerSocket(mojo::PendingRemote<network::mojom::UDPSocketListener>
                             listener_receiver_remote) {
     GetNetworkContext()->CreateUDPSocket(
@@ -104,12 +105,11 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
         base::BindLambdaForTesting([]() { NOTREACHED(); }));
 
     net::IPEndPoint server_addr(net::IPAddress::IPv4Localhost(), 0);
-    network::test::UDPSocketTestHelper server_helper(&server_socket_);
-
-    int result = server_helper.BindSync(server_addr, nullptr, &server_addr);
+    auto server_helper =
+        std::make_unique<network::test::UDPSocketTestHelper>(&server_socket_);
+    int result = server_helper->BindSync(server_addr, nullptr, &server_addr);
     DCHECK_EQ(net::OK, result);
-
-    return {server_addr, server_helper};
+    return {server_addr, std::move(server_helper)};
   }
 
   mojo::Remote<network::mojom::UDPSocket>& GetUDPServerSocket() {
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdp) {
       byte = bytesSent % 256;
       bytesSent++;
     }
-    EXPECT_EQ(net::OK, server_helper.SendToSync(client_addr, message));
+    EXPECT_EQ(net::OK, server_helper->SendToSync(client_addr, message));
   }
 
   // Blocks until script execution is complete and returns the resulting

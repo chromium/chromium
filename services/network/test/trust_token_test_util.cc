@@ -8,6 +8,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -44,18 +45,14 @@ mojom::TrustTokenOperationStatus
 TrustTokenRequestHelperTest::ExecuteBeginOperationAndWaitForResult(
     TrustTokenRequestHelper* helper,
     net::URLRequest* request) {
-  base::RunLoop run_loop;
-  mojom::TrustTokenOperationStatus status;
-  helper->Begin(request->url(),
-                base::BindLambdaForTesting(
-                    [&](absl::optional<net::HttpRequestHeaders> headers,
-                        mojom::TrustTokenOperationStatus returned_status) {
-                      if (headers)
-                        request->SetExtraRequestHeaders(*headers);
-                      status = returned_status;
-                      run_loop.Quit();
-                    }));
-  run_loop.Run();
+  base::test::TestFuture<absl::optional<net::HttpRequestHeaders>,
+                         mojom::TrustTokenOperationStatus>
+      future;
+  helper->Begin(request->url(), future.GetCallback());
+  auto [headers, status] = future.Take();
+  if (headers) {
+    request->SetExtraRequestHeaders(*headers);
+  }
   return status;
 }
 
@@ -63,16 +60,9 @@ mojom::TrustTokenOperationStatus
 TrustTokenRequestHelperTest::ExecuteFinalizeAndWaitForResult(
     TrustTokenRequestHelper* helper,
     mojom::URLResponseHead* response) {
-  base::RunLoop run_loop;
-  mojom::TrustTokenOperationStatus status;
-  helper->Finalize(*response->headers.get(),
-                   base::BindLambdaForTesting(
-                       [&](mojom::TrustTokenOperationStatus returned_status) {
-                         status = returned_status;
-                         run_loop.Quit();
-                       }));
-  run_loop.Run();
-  return status;
+  base::test::TestFuture<mojom::TrustTokenOperationStatus> future;
+  helper->Finalize(*response->headers.get(), future.GetCallback());
+  return future.Get();
 }
 
 std::string TrustTokenEnumToString(mojom::TrustTokenOperationType operation) {
