@@ -232,8 +232,6 @@ component("gfx") {
       "image/image_util_ios.mm",
       "ios/NSString+CrStringDrawing.h",
       "ios/NSString+CrStringDrawing.mm",
-      "ios/uikit_util.h",
-      "ios/uikit_util.mm",
       "platform_font_ios.h",
       "platform_font_ios.mm",
       "scoped_ui_graphics_push_context_ios.h",
@@ -316,6 +314,7 @@ component("gfx") {
   # iOS.
   if (is_ios) {
     sources += [ "scoped_cg_context_save_gstate_mac.h" ]
+    public_deps += [ "//ui/gfx/ios:uikit_util" ]
   } else {
     public_deps += [ "//cc/paint" ]
     deps += [ "//third_party:freetype_harfbuzz" ]

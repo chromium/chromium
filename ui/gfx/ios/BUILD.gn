@@ -1,0 +1,11 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("uikit_util") {
+  sources = [
+    "uikit_util.h",
+    "uikit_util.mm",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
