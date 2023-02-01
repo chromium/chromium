@@ -7,6 +7,7 @@ include_rules = [
   "+third_party/libaom",
   "+third_party/openscreen/src/cast/streaming",
   "+third_party/openscreen/src/platform/api",
+  "+third_party/openscreen/src/platform/base",
   "+third_party/zlib",
   "+ui/base",
   "+ui/gfx",

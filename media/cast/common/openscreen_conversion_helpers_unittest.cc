@@ -39,7 +39,7 @@ TEST(OpenscreenConversionHelpersTest, EncodedFrameConversions) {
   EXPECT_EQ(openscreen::Clock::time_point() + std::chrono::milliseconds(1338),
             converted.reference_time);
   EXPECT_EQ(std::chrono::milliseconds(564), converted.new_playout_delay);
-  EXPECT_STREQ(reinterpret_cast<char*>(converted.data.data()),
+  EXPECT_STREQ(reinterpret_cast<const char*>(converted.data.data()),
                original.data.data());
 }
 

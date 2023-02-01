@@ -4,6 +4,8 @@
 
 #include "media/cast/common/openscreen_conversion_helpers.h"
 
+#include "third_party/openscreen/src/platform/base/byte_view.h"
+
 namespace media::cast {
 
 openscreen::Clock::time_point ToOpenscreenTimePoint(base::TimeTicks ticks) {
@@ -56,10 +58,9 @@ const openscreen::cast::EncodedFrame ToOpenscreenEncodedFrame(
       encoded_frame.referenced_frame_id, encoded_frame.rtp_timestamp,
       ToOpenscreenTimePoint(encoded_frame.reference_time),
       std::chrono::milliseconds(encoded_frame.new_playout_delay_ms),
-      // We return a const EncodedFrame, so this is safe even though weird.
-      absl::Span<uint8_t>(const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(
-                              encoded_frame.data.data())),
-                          encoded_frame.data.size()));
+      openscreen::ByteView(
+          reinterpret_cast<const uint8_t*>(encoded_frame.data.data()),
+          encoded_frame.data.size()));
 }
 
 openscreen::cast::AudioCodec ToOpenscreenAudioCodec(media::cast::Codec codec) {
