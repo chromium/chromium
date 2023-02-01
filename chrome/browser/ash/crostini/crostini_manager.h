@@ -255,10 +255,6 @@ class CrostiniManager : public KeyedService,
       const std::string& vm_name,
       BoolCallback callback);
 
-  using ListVmDisksCallback =
-      base::OnceCallback<void(CrostiniResult result, int64_t total_size)>;
-  void ListVmDisks(ListVmDisksCallback callback);
-
   // Checks the arguments for starting a Termina VM. Starts a Termina VM via
   // ConciergeClient::StartTerminaVm. |callback| is called if the arguments
   // are bad, or after the method call finishes.
@@ -665,12 +661,6 @@ class CrostiniManager : public KeyedService,
   void OnDestroyDiskImage(
       BoolCallback callback,
       absl::optional<vm_tools::concierge::DestroyDiskImageResponse> response);
-
-  // Callback for ConciergeClient::ListVmDisks. Called after the Concierge
-  // service method finishes.
-  void OnListVmDisks(
-      ListVmDisksCallback callback,
-      absl::optional<vm_tools::concierge::ListVmDisksResponse> response);
 
   // Callback for ConciergeClient::StartVm. Called after the Concierge
   // service method finishes.  Updates running containers list then calls the

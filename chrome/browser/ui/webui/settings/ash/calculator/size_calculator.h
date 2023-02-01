@@ -242,6 +242,13 @@ class AppsSizeCalculator
   void OnGetAndroidAppsSize(bool succeeded,
                             arc::mojom::ApplicationsSizePtr size);
 
+  // Requests updating the size of Borealis apps.
+  void UpdateBorealisAppsSize();
+
+  // Callback to update Borealis apps and cache.
+  void OnGetBorealisAppsSize(
+      absl::optional<vm_tools::concierge::ListVmDisksResponse> response);
+
   // Updates apps and extensions size.
   void UpdateAppsAndExtensionsSize();
 
@@ -260,6 +267,12 @@ class AppsSizeCalculator
   // A flag for keeping track of the mojo connection status to the ARC
   // container.
   bool is_android_running_ = false;
+
+  // Total size of Borealis apps (bytes).
+  int64_t borealis_apps_size_ = 0;
+
+  // True if we have already received the size of Borealis apps.
+  bool has_borealis_apps_size_ = false;
 
   Profile* profile_;
   base::WeakPtrFactory<AppsSizeCalculator> weak_ptr_factory_{this};
@@ -282,7 +295,11 @@ class CrostiniSizeCalculator : public SizeCalculator {
   void PerformCalculation() override;
 
   // Callback to update the size of Crostini VMs.
-  void OnGetCrostiniSize(crostini::CrostiniResult result, int64_t size);
+  void OnGetCrostiniSize(
+      absl::optional<vm_tools::concierge::ListVmDisksResponse>);
+
+  // Helper function to simplify updating the reported size of Crostini.
+  void UpdateSize(int64_t total_bytes);
 
   Profile* profile_;
   base::WeakPtrFactory<CrostiniSizeCalculator> weak_ptr_factory_{this};

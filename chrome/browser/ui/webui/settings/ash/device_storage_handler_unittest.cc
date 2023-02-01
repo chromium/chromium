@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/containers/adapters.h"
 #include "base/files/file.h"
@@ -19,17 +20,22 @@
 #include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/borealis/borealis_prefs.h"
+#include "chrome/browser/ash/borealis/testing/features.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator_test_api.h"
 #include "chrome/browser/ui/webui/settings/ash/device_storage_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -209,6 +215,7 @@ class StorageHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   Profile* profile_;
+  base::test::ScopedFeatureList features_;
   std::unique_ptr<TotalDiskSpaceTestAPI> total_disk_space_test_api_;
   std::unique_ptr<FreeDiskSpaceTestAPI> free_disk_space_test_api_;
   std::unique_ptr<MyFilesSizeTestAPI> my_files_size_test_api_;
@@ -412,6 +419,56 @@ TEST_F(StorageHandlerTest, AppsExtensionsSize) {
   EXPECT_EQ("401 KB", callback->GetString());
 }
 
+TEST_F(StorageHandlerTest, CrostiniSize) {
+  const int64_t GB = 1024 * 1024 * 1024;
+
+  vm_tools::concierge::ListVmDisksResponse listvm_response;
+  auto* image = listvm_response.add_images();
+  image->set_name("borealis");
+  image->set_size(10 * GB);
+  image = listvm_response.add_images();
+  image->set_name("crostini");
+  image->set_size(50 * GB);
+  listvm_response.set_total_size(60 * GB);
+
+  // Simulate crostini size callback failing.
+  crostini_size_test_api_->SimulateOnGetCrostiniSize(false, listvm_response);
+  const base::Value* callback =
+      GetWebUICallbackMessage("storage-crostini-size-changed");
+  ASSERT_TRUE(callback) << "No 'storage-crostini-size-changed' callback";
+  EXPECT_EQ("0 B", callback->GetString());
+  ASSERT_FALSE(GetWebUICallbackMessage("storage-system-size-changed"));
+
+  // Simulate crostini size callback succeeding.
+  crostini_size_test_api_->SimulateOnGetCrostiniSize(true, listvm_response);
+  callback = GetWebUICallbackMessage("storage-crostini-size-changed");
+  ASSERT_TRUE(callback) << "No 'storage-crostini-size-changed' callback";
+  EXPECT_EQ("60.0 GB", callback->GetString());
+  ASSERT_FALSE(GetWebUICallbackMessage("storage-system-size-changed"));
+
+  // Simulate crostini size callback failing and retrieving value from past
+  // success.
+  crostini_size_test_api_->SimulateOnGetCrostiniSize(false, listvm_response);
+  callback = GetWebUICallbackMessage("storage-crostini-size-changed");
+  ASSERT_TRUE(callback) << "No 'storage-crostini-size-changed' callback";
+  EXPECT_EQ("60.0 GB", callback->GetString());
+  ASSERT_FALSE(GetWebUICallbackMessage("storage-system-size-changed"));
+
+  // Enable Borealis.
+  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+  borealis::AllowBorealis(profile_, &features_,
+                          static_cast<ash::FakeChromeUserManager*>(
+                              user_manager::UserManager::Get()),
+                          /*also_enable=*/true);
+
+  // Simulate crostini size callback which should now exclude the borealis VM.
+  crostini_size_test_api_->SimulateOnGetCrostiniSize(true, listvm_response);
+  callback = GetWebUICallbackMessage("storage-crostini-size-changed");
+  ASSERT_TRUE(callback) << "No 'storage-crostini-size-changed' callback";
+  EXPECT_EQ("50.0 GB", callback->GetString());
+  ASSERT_FALSE(GetWebUICallbackMessage("storage-system-size-changed"));
+}
+
 TEST_F(StorageHandlerTest, SystemSize) {
   // The "System" row on the storage page displays the difference between the
   // total amount of used space and the sum of the sizes of the different
@@ -423,6 +480,13 @@ TEST_F(StorageHandlerTest, SystemSize) {
   const int64_t MB = 1024 * KB;
   const int64_t GB = 1024 * MB;
   const int64_t TB = 1024 * GB;
+
+  // Enable Borealis.
+  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+  borealis::AllowBorealis(profile_, &features_,
+                          static_cast<ash::FakeChromeUserManager*>(
+                              user_manager::UserManager::Get()),
+                          /*also_enable=*/true);
 
   // Simulate size stat callback.
   int64_t total_size = TB;
@@ -457,9 +521,20 @@ TEST_F(StorageHandlerTest, SystemSize) {
   EXPECT_EQ("24.0 GB", callback->GetString());
   ASSERT_FALSE(GetWebUICallbackMessage("storage-system-size-changed"));
 
+  // Setup response for Crostini and Borealis.
+  vm_tools::concierge::ListVmDisksResponse listvm_response;
+  auto* image = listvm_response.add_images();
+  image->set_name("borealis");
+  image->set_size(10 * GB);
+  image = listvm_response.add_images();
+  image->set_name("crostini");
+  image->set_size(50 * GB);
+  listvm_response.set_total_size(60 * GB);
+
   // Simulate apps and extensions size callbacks.
   apps_size_test_api_->SimulateOnGetAppsSize(29 * GB);
   apps_size_test_api_->SimulateOnGetAndroidAppsSize(false, 0, 0, 0);
+  apps_size_test_api_->SimulateOnGetBorealisAppsSize(false, listvm_response);
   callback = GetWebUICallbackMessage("storage-apps-size-changed");
   ASSERT_TRUE(callback) << "No 'storage-apps-size-changed' callback";
   EXPECT_EQ("29.0 GB", callback->GetString());
@@ -470,9 +545,14 @@ TEST_F(StorageHandlerTest, SystemSize) {
   ASSERT_TRUE(callback) << "No 'storage-apps-size-changed' callback";
   EXPECT_EQ("30.0 GB", callback->GetString());
   ASSERT_FALSE(GetWebUICallbackMessage("storage-system-size-changed"));
+  apps_size_test_api_->SimulateOnGetBorealisAppsSize(true, listvm_response);
+  callback = GetWebUICallbackMessage("storage-apps-size-changed");
+  ASSERT_TRUE(callback) << "No 'storage-apps-size-changed' callback";
+  EXPECT_EQ("40.0 GB", callback->GetString());
+  ASSERT_FALSE(GetWebUICallbackMessage("storage-system-size-changed"));
 
   // Simulate crostini size callback.
-  crostini_size_test_api_->SimulateOnGetCrostiniSize(50 * GB);
+  crostini_size_test_api_->SimulateOnGetCrostiniSize(true, listvm_response);
   callback = GetWebUICallbackMessage("storage-crostini-size-changed");
   ASSERT_TRUE(callback) << "No 'storage-crostini-size-changed' callback";
   EXPECT_EQ("50.0 GB", callback->GetString());
@@ -501,7 +581,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
       // updated.
       callback = GetWebUICallbackMessage("storage-system-size-changed");
       ASSERT_TRUE(callback) << "No 'storage-system-size-changed' callback";
-      EXPECT_EQ("120 GB", callback->GetString());
+      EXPECT_EQ("110 GB", callback->GetString());
     }
   }
 
@@ -516,7 +596,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
   // section instead. We expect the displayed size to be 100 + 24 GB.
   callback = GetWebUICallbackMessage("storage-system-size-changed");
   ASSERT_TRUE(callback) << "No 'storage-system-size-changed' callback";
-  EXPECT_EQ("144 GB", callback->GetString());
+  EXPECT_EQ("134 GB", callback->GetString());
 
   // No error while recalculating browsing data size, the UI should be updated
   // with the right sizes.
@@ -527,7 +607,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
   EXPECT_EQ("24.0 GB", callback->GetString());
   callback = GetWebUICallbackMessage("storage-system-size-changed");
   ASSERT_TRUE(callback) << "No 'storage-system-size-changed' callback";
-  EXPECT_EQ("120 GB", callback->GetString());
+  EXPECT_EQ("110 GB", callback->GetString());
 }
 
 TEST_F(StorageHandlerTest, OpenBrowsingDataSettings) {

@@ -106,6 +106,13 @@ class AppsSizeTestAPI {
     apps_size_calculator_.OnGetAndroidAppsSize(succeeded, std::move(result));
   }
 
+  void SimulateOnGetBorealisAppsSize(
+      bool succeeded,
+      vm_tools::concierge::ListVmDisksResponse response) {
+    response.set_success(succeeded);
+    apps_size_calculator_.OnGetBorealisAppsSize(std::move(response));
+  }
+
  private:
   AppsSizeCalculator apps_size_calculator_;
 };
@@ -119,9 +126,11 @@ class CrostiniSizeTestAPI {
 
   void StartCalculation() { crostini_size_calculator_.StartCalculation(); }
 
-  void SimulateOnGetCrostiniSize(int64_t size) {
-    crostini_size_calculator_.OnGetCrostiniSize(
-        crostini::CrostiniResult::SUCCESS, size);
+  void SimulateOnGetCrostiniSize(
+      bool succeeded,
+      vm_tools::concierge::ListVmDisksResponse response) {
+    response.set_success(succeeded);
+    crostini_size_calculator_.OnGetCrostiniSize(std::move(response));
   }
 
  private:

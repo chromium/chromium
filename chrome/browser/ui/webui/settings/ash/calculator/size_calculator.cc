@@ -15,8 +15,12 @@
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "chrome/browser/ash/borealis/borealis_features.h"
+#include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
+#include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
 #include "chrome/browser/browsing_data/browsing_data_quota_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +31,7 @@
 #include "components/browsing_data/content/conditional_cache_counting_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -298,9 +303,18 @@ void AppsSizeCalculator::PerformCalculation() {
   has_apps_extensions_size_ = false;
   android_apps_size_ = 0;
   has_android_apps_size_ = false;
+  borealis_apps_size_ = 0;
+  has_borealis_apps_size_ = false;
 
   UpdateAppsSize();
   UpdateAndroidAppsSize();
+  if (borealis::BorealisService::GetForProfile(profile_)
+          ->Features()
+          .IsEnabled()) {
+    UpdateBorealisAppsSize();
+  } else {
+    has_borealis_apps_size_ = true;
+  }
 }
 
 void AppsSizeCalculator::UpdateAppsSize() {
@@ -354,10 +368,52 @@ void AppsSizeCalculator::OnGetAndroidAppsSize(
   UpdateAppsAndExtensionsSize();
 }
 
+void AppsSizeCalculator::UpdateBorealisAppsSize() {
+  vm_tools::concierge::ListVmDisksRequest request;
+  request.set_cryptohome_id(
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
+  request.set_vm_name("borealis");
+  ash::ConciergeClient::Get()->ListVmDisks(
+      std::move(request),
+      base::BindOnce(&AppsSizeCalculator::OnGetBorealisAppsSize,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AppsSizeCalculator::OnGetBorealisAppsSize(
+    absl::optional<vm_tools::concierge::ListVmDisksResponse> response) {
+  if (!response) {
+    LOG(ERROR) << "Failed to get response from concierge";
+    has_borealis_apps_size_ = true;
+    UpdateAppsAndExtensionsSize();
+    return;
+  }
+  if (!response->success()) {
+    LOG(ERROR) << "concierge failed to list vm disks, returned error: " +
+                      response->failure_reason();
+    has_borealis_apps_size_ = true;
+    UpdateAppsAndExtensionsSize();
+    return;
+  }
+  auto image = base::ranges::find(response->images(), "borealis",
+                                  &vm_tools::concierge::VmDiskInfo::name);
+  if (image == response->images().end()) {
+    LOG(ERROR) << "Couldn't find Borealis VM";
+    has_borealis_apps_size_ = true;
+    UpdateAppsAndExtensionsSize();
+    return;
+  }
+  borealis_apps_size_ = image->size();
+  has_borealis_apps_size_ = true;
+  UpdateAppsAndExtensionsSize();
+}
+
 void AppsSizeCalculator::UpdateAppsAndExtensionsSize() {
-  if (has_apps_extensions_size_ && has_android_apps_size_) {
+  if (has_apps_extensions_size_ && has_android_apps_size_ &&
+      has_borealis_apps_size_) {
     calculating_ = false;
-    NotifySizeCalculated(apps_extensions_size_ + android_apps_size_);
+    NotifySizeCalculated(apps_extensions_size_ + android_apps_size_ +
+                         borealis_apps_size_);
   }
 }
 
@@ -368,17 +424,57 @@ CrostiniSizeCalculator::~CrostiniSizeCalculator() = default;
 
 void CrostiniSizeCalculator::PerformCalculation() {
   if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
-    NotifySizeCalculated(0);
+    UpdateSize(
+        profile_->GetPrefs()->GetInt64(crostini::prefs::kCrostiniLastDiskSize));
     return;
   }
 
-  crostini::CrostiniManager::GetForProfile(profile_)->ListVmDisks(
+  vm_tools::concierge::ListVmDisksRequest request;
+  request.set_cryptohome_id(
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
+  ash::ConciergeClient::Get()->ListVmDisks(
+      std::move(request),
       base::BindOnce(&CrostiniSizeCalculator::OnGetCrostiniSize,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CrostiniSizeCalculator::OnGetCrostiniSize(crostini::CrostiniResult result,
-                                               int64_t total_bytes) {
+void CrostiniSizeCalculator::OnGetCrostiniSize(
+    absl::optional<vm_tools::concierge::ListVmDisksResponse> response) {
+  if (!response) {
+    LOG(ERROR) << "Failed to get list of VM disks. Empty response.";
+    UpdateSize(
+        profile_->GetPrefs()->GetInt64(crostini::prefs::kCrostiniLastDiskSize));
+    return;
+  }
+
+  if (!response->success()) {
+    LOG(ERROR) << "Failed to list VM disks: " << response->failure_reason();
+    UpdateSize(
+        profile_->GetPrefs()->GetInt64(crostini::prefs::kCrostiniLastDiskSize));
+    return;
+  }
+  int64_t vm_disk_usage = response->total_size();
+
+  // If Borealis is installed then we need to subtract its size from Crostini
+  // in order for it to not be double counted.
+  if (borealis::BorealisService::GetForProfile(profile_)
+          ->Features()
+          .IsEnabled()) {
+    auto image = base::ranges::find(response->images(), "borealis",
+                                    &vm_tools::concierge::VmDiskInfo::name);
+    if (image == response->images().end()) {
+      LOG(ERROR) << "Couldn't find Borealis VM";
+    } else {
+      vm_disk_usage -= image->size();
+    }
+  }
+  profile_->GetPrefs()->SetInt64(crostini::prefs::kCrostiniLastDiskSize,
+                                 vm_disk_usage);
+  UpdateSize(vm_disk_usage);
+}
+
+void CrostiniSizeCalculator::UpdateSize(int64_t total_bytes) {
   calculating_ = false;
   NotifySizeCalculated(total_bytes);
 }
