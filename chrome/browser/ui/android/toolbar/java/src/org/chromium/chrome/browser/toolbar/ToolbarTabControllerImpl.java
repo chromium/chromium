@@ -8,6 +8,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
@@ -30,6 +31,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     private final ObservableSupplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
     private final Supplier<String> mHomepageUrlSupplier;
     private final Runnable mOnSuccessRunnable;
+    private final Supplier<Tab> mActivityTabSupplier;
     /**
      *
      * @param tabSupplier Supplier for the currently active tab.
@@ -39,17 +41,23 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
      * @param homepageUrlSupplier Supplier for the homepage URL.
      * @param onSuccessRunnable Runnable that is invoked when the active tab is asked to perform the
      *         corresponding ToolbarTabController action; it is not invoked if the tab cannot
+     * @param activityTabSupplier Supplier for the currently active and interactable tab. Both
+     *         tabSupplier and activityTabSupplier can return the same tab if tab is active and
+     *         interactable. But activityTabSupplier will return null if it is non-interactable,
+     *         such as on overview mode.
      */
     public ToolbarTabControllerImpl(Supplier<Tab> tabSupplier,
             Supplier<Boolean> overrideHomePageSupplier, Supplier<Tracker> trackerSupplier,
             ObservableSupplier<BottomControlsCoordinator> bottomControlsCoordinatorSupplier,
-            Supplier<String> homepageUrlSupplier, Runnable onSuccessRunnable) {
+            Supplier<String> homepageUrlSupplier, Runnable onSuccessRunnable,
+            Supplier<Tab> activityTabSupplier) {
         mTabSupplier = tabSupplier;
         mOverrideHomePageSupplier = overrideHomePageSupplier;
         mTrackerSupplier = trackerSupplier;
         mBottomControlsCoordinatorSupplier = bottomControlsCoordinatorSupplier;
         mHomepageUrlSupplier = homepageUrlSupplier;
         mOnSuccessRunnable = onSuccessRunnable;
+        mActivityTabSupplier = activityTabSupplier;
     }
 
     @Override
@@ -58,7 +66,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         if (controlsCoordinator != null && controlsCoordinator.onBackPressed()) {
             return true;
         }
-        Tab tab = mTabSupplier.get();
+        Tab tab = BackPressManager.isEnabled() ? mActivityTabSupplier.get() : mTabSupplier.get();
         if (tab != null && tab.canGoBack()) {
             NativePage nativePage = tab.getNativePage();
             if (nativePage != null) {
@@ -140,7 +148,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
                         controlsCoordinator.getHandleBackPressChangedSupplier().get())) {
             return true;
         }
-        Tab tab = mTabSupplier.get();
+        Tab tab = BackPressManager.isEnabled() ? mActivityTabSupplier.get() : mTabSupplier.get();
         return tab != null && tab.canGoBack();
     }
 

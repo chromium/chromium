@@ -555,7 +555,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     return profile != null ? TrackerFactory.getTrackerForProfile(profile) : null;
                 },
                 mBottomControlsCoordinatorSupplier, ToolbarManager::homepageUrl,
-                this::updateButtonStatus);
+                this::updateButtonStatus, mActivityTabProvider);
         // clang-format on
         if (backPressManager != null && BackPressManager.isEnabled()) {
             backPressManager.addHandler(this, BackPressHandler.Type.TAB_HISTORY);
@@ -2124,12 +2124,16 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     public void handleBackPress() {
         boolean ret = back();
         if (!ret) {
-            var bc = mBottomControlsCoordinatorSupplier.get();
+            var bc = mBottomControlsCoordinatorSupplier != null
+                    ? mBottomControlsCoordinatorSupplier.get()
+                    : null;
             var tab = mActivityTabProvider.get();
+            var t2 = mTabModelSelector != null ? mTabModelSelector.getCurrentTab() : null;
             var msg = String.format(
-                    "Bottom control %s, back press state %s; tab %s, back press state %s", bc,
+                    "BottomCtrl %s %s; actTab %s, urlBarTab %s, sTab %s, init %s, destroy %s", bc,
                     bc != null && Boolean.TRUE.equals(bc.getHandleBackPressChangedSupplier().get()),
-                    tab, mBackPressStateSupplier.get());
+                    tab, mLocationBarModel.getTab(), t2, tab != null && tab.isInitialized(),
+                    tab != null && tab.isDestroyed());
             assert false : msg;
         }
     }

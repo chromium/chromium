@@ -194,6 +194,6 @@ public class ToolbarTabControllerImplTest {
     private void initToolbarTabController() {
         mToolbarTabController = new ToolbarTabControllerImpl(mTabSupplier,
                 mOverrideHomePageSupplier, mTrackerSupplier, mBottomControlsCoordinatorSupplier,
-                ToolbarManager::homepageUrl, mRunnable);
+                ToolbarManager::homepageUrl, mRunnable, mTabSupplier);
     }
 }

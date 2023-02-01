@@ -2913,7 +2913,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
     private void returnToOverviewModeOnBackPressed() {
         Tab currentTab = getActivityTab();
-        assert currentTab != null;
+        assert currentTab != null && !currentTab.canGoBack();
 
         // If current tab is an incognito one, we need to change tab model to non-incognito for
         // showing non-incognito start surface homepage.
