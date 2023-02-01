@@ -7,6 +7,7 @@
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
+#include "ui/gl/gl_image_d3d.h"
 #include "ui/gl/scoped_restore_texture.h"
 
 namespace gpu {
@@ -44,8 +45,11 @@ bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
         gl::ScopedRestoreTexture scoped_restore(api, target);
         api->glBindTextureFn(target, texture->service_id());
 
-        // Now bind the GLImage to |texture| via |target|.
-        image->BindTexImage(target);
+        auto* image_d3d = gl::GLImage::ToGLImageD3D(image);
+        if (image_d3d) {
+          // Bind the GLImage to |texture| via |target|.
+          image_d3d->BindTexImage(target);
+        }
 
         texture->clear_bind_pending();
       }

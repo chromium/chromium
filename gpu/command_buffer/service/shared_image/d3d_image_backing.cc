@@ -951,9 +951,11 @@ bool D3DImageBacking::PresentSwapChain() {
   DCHECK_EQ(gl_textures_[0]->target(), static_cast<unsigned>(GL_TEXTURE_2D));
   api->glBindTextureFn(GL_TEXTURE_2D, gl_textures_[0]->service_id());
   DCHECK(GetGLImage());
-  if (!GetGLImage()->BindTexImage(GL_TEXTURE_2D)) {
-    LOG(ERROR) << "GLImage::BindTexImage failed";
-    return false;
+  if (auto* gl_image_d3d = gl::GLImage::ToGLImageD3D(GetGLImage())) {
+    if (!gl_image_d3d->BindTexImage(GL_TEXTURE_2D)) {
+      LOG(ERROR) << "GLImageD3D::BindTexImage failed";
+      return false;
+    }
   }
 
   TRACE_EVENT0("gpu", "D3DImageBacking::PresentSwapChain::Flush");
