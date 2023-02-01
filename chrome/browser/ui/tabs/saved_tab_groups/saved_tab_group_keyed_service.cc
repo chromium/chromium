@@ -227,6 +227,6 @@ void SavedTabGroupKeyedService::DisconnectLocalTabGroup(
   SavedTabGroup* group = model_.Get(group_id);
   CHECK(group);
 
-  // Stop listening to the current tab group.
-  group->SetLocalGroupId(absl::nullopt);
+  // Stop listening to the current tab group and notify observers.
+  model_.OnGroupClosedInTabStrip(group_id);
 }
