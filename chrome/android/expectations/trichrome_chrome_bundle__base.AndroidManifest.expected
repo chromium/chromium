@@ -604,6 +604,11 @@
       <intent-filter>  # DIFF-ANCHOR: 8f70c92f
         <action android:name="android.intent.action.SEARCH"/>
       </intent-filter>  # DIFF-ANCHOR: 8f70c92f
+      <intent-filter>  # DIFF-ANCHOR: 4ee601b7
+        <action android:name="android.intent.action.SEND"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="text/plain"/>
+      </intent-filter>  # DIFF-ANCHOR: 4ee601b7
       <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.BROWSABLE"/>

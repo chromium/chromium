@@ -88,6 +88,10 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
             return LaunchCause.OPEN_IN_BROWSER_FROM_MENU;
         }
 
+        if (Intent.ACTION_SEND.equals(launchIntent.getAction())) {
+            return LaunchCause.SHARE_INTENT;
+        }
+
         @IntentHandler.ExternalAppId
         int intentSender = IntentHandler.determineExternalIntentSource(launchIntent);
         if (Intent.ACTION_VIEW.equals(launchIntent.getAction())

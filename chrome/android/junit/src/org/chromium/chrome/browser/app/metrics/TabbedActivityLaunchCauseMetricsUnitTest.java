@@ -258,4 +258,19 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         Assert.assertEquals(
                 count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_SHORTCUT));
     }
+
+    @Test
+    public void testShareIntent() throws Throwable {
+        int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.SHARE_INTENT);
+        Intent intent = new Intent(Intent.ACTION_SEND, Uri.parse("https://example.com"));
+        Mockito.when(mActivity.getIntent()).thenReturn(intent);
+
+        TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
+
+        metrics.onReceivedIntent();
+        metrics.recordLaunchCause();
+        ++count;
+        Assert.assertEquals(
+                count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.SHARE_INTENT));
+    }
 }

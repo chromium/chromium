@@ -44,7 +44,7 @@ public class IntentFilterUnitTest {
     @Before
     public void setUp() {
         mPm = ContextUtils.getApplicationContext().getPackageManager();
-        mIntent = new Intent();
+        mIntent = new Intent(Intent.ACTION_VIEW);
         mIntent.setPackage(ContextUtils.getApplicationContext().getPackageName());
     }
 
@@ -195,5 +195,14 @@ public class IntentFilterUnitTest {
         verifyIntent(true);
         mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
         verifyIntent(false);
+    }
+
+    @Test
+    @SmallTest
+    public void testShareIntent() {
+        mIntent.setType("text/plain");
+        verifyIntent(false);
+        mIntent.setAction(Intent.ACTION_SEND);
+        verifyIntent(true);
     }
 }

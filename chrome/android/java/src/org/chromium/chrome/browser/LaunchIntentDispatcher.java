@@ -150,9 +150,17 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         boolean incognito =
                 mIntent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false);
 
+        String url = null;
+        if (Intent.ACTION_SEND.equals(mIntent.getAction())) {
+            url = IntentHandler.getUrlFromShareIntent(mIntent);
+            if (url == null) return Action.FINISH_ACTIVITY;
+            mIntent.setData(Uri.parse(url));
+        } else {
+            url = IntentHandler.getUrlFromIntent(mIntent);
+        }
+
         // Check if a web search Intent is being handled.
         IntentHandler intentHandler = new IntentHandler(mActivity, this);
-        String url = IntentHandler.getUrlFromIntent(mIntent);
         if (url == null && tabId == Tab.INVALID_TAB_ID && !incognito
                 && intentHandler.handleWebSearchIntent(mIntent)) {
             return Action.FINISH_ACTIVITY;

@@ -1259,6 +1259,36 @@ public class IntentHandler {
         return TextUtils.isEmpty(url) ? null : url;
     }
 
+    /**
+     * Extract a raw URL from the Share intent text, without further processing. In the case of
+     * multiple URLs being present, picks the last one. Only considers http/https URLs.
+     * @param intent Intent to examine.
+     * @return Raw URL from the intent, or null if no URL could be found.
+     */
+    public static @Nullable String getUrlFromShareIntent(Intent intent) {
+        assert Intent.ACTION_SEND.equals(intent.getAction());
+        if (!"text/plain".equals(intent.getType())) return null;
+
+        String text = IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_TEXT);
+        if (TextUtils.isEmpty(text)) return null;
+        // If multiple URLs are present, somewhat arbitrarily pick the last one - share actions seem
+        // to usually put the URL at the end.
+        int startIndex = text.lastIndexOf(UrlConstants.HTTPS_URL_PREFIX);
+        if (startIndex == -1) startIndex = text.lastIndexOf(UrlConstants.HTTP_URL_PREFIX);
+        if (startIndex == -1) return null;
+
+        int endIndex = -1;
+        for (int i = startIndex; i < text.length(); i++) {
+            if (Character.isWhitespace(text.charAt(i))) {
+                endIndex = i;
+                break;
+            }
+        }
+
+        if (endIndex == -1) return text.substring(startIndex);
+        return text.substring(startIndex, endIndex);
+    }
+
     private static String getUrlForCustomTab(Intent intent) {
         if (intent == null || intent.getData() == null) return null;
         Uri data = intent.getData();

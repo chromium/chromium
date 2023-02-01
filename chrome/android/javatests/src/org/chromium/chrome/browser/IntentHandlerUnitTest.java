@@ -136,6 +136,18 @@ public class IntentHandlerUnitTest {
             {"content://example.com/1", "text/html"},
     };
 
+    private static final String[][] SHARE_INTENT_CASES = {
+            {"Check this out! https://example.com/foo#bar", "https://example.com/foo#bar"},
+            {"This http://www.example.com URL is bussin fr fr.\nhttp://www.example.com/foo",
+                    "http://www.example.com/foo"},
+            {"https://example.com", "https://example.com"},
+            {"https://example.com Sent from my iPhone.", "https://example.com"},
+            {"https://example.com\nSent from my iPhone.", "https://example.com"},
+            {"~(_8^(|)", null},
+            {"", null},
+            {null, null},
+    };
+
     private static final String GOOGLE_URL = "https://www.google.com";
 
     private IntentHandler mIntentHandler;
@@ -735,5 +747,17 @@ public class IntentHandlerUnitTest {
         expected.addCategory(Intent.CATEGORY_LAUNCHER);
         expected.setData(null);
         assertEquals(expected.toUri(0), newIntent.toUri(0));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetUrlFromShareIntent() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        Assert.assertNull(IntentHandler.getUrlFromShareIntent(intent));
+        for (String[] shareCase : SHARE_INTENT_CASES) {
+            intent.putExtra(Intent.EXTRA_TEXT, shareCase[0]);
+            Assert.assertEquals(shareCase[1], IntentHandler.getUrlFromShareIntent(intent));
+        }
     }
 }

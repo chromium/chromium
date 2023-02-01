@@ -55834,6 +55834,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
   <int value="14" label="WebApk installed by Chrome"/>
   <int value="15" label="WebApk not installed by Chrome"/>
   <int value="16" label="Homescreen shortcut (Add To Homescreen)"/>
+  <int value="17" label="Share Intent"/>
 </enum>
 
 <enum name="LauncherContinueSectionRemoveFeedbackType">
