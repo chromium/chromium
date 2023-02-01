@@ -1,5 +1,5 @@
 The .crx packages must be signed by WebStore in order for the extensions to
-have the expected IDs which are whitelisted in Chrome.
+have the expected IDs which are allowlisted in Chrome.
 The expected IDs are:
 extension.crx:            oclffehlkdgibkainkilopaalpdobkan
 in_session_extension.crx: ofcpkomnogjenhfajfjadjmjppbegnad
