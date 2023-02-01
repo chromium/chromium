@@ -31,6 +31,14 @@ constexpr char kKeyboardSettingModifierRemappings[] = "modifier_remappings";
 constexpr char kKeyboardSettingSuppressMetaFKeyRewrites[] =
     "suppress_meta_fkey_rewrites";
 constexpr char kKeyboardSettingTopRowAreFKeys[] = "top_row_are_fkeys";
+
+// Mouse settings dictionary keys.
+constexpr char kMouseSettingSwapRight[] = "swap_right";
+constexpr char kMouseSettingSensitivity[] = "sensitivity";
+constexpr char kMouseSettingReverseScrolling[] = "reverse_scrolling";
+constexpr char kMouseSettingAccelerationEnabled[] = "acceleration_enabled";
+constexpr char kMouseSettingScrollSensitivity[] = "scroll_sensitivity";
+constexpr char kMouseSettingScrollAcceleration[] = "scroll_acceleration";
 }  // namespace ash::prefs
 
 #endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_PREF_NAMES_H_
