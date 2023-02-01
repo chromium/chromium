@@ -20,15 +20,15 @@
 namespace ash {
 
 InputDeviceTracker::InputDeviceTracker() {
+  Shell::Get()->session_controller()->AddObserver(this);
   if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    Shell::Get()->session_controller()->AddObserver(this);
     Shell::Get()->input_device_settings_controller()->AddObserver(this);
   }
 }
 
 InputDeviceTracker::~InputDeviceTracker() {
+  Shell::Get()->session_controller()->RemoveObserver(this);
   if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    Shell::Get()->session_controller()->RemoveObserver(this);
     Shell::Get()->input_device_settings_controller()->RemoveObserver(this);
   }
 }
