@@ -2177,4 +2177,75 @@ TEST_F(ChromeVariationsConfigurationTest,
       static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 2);
 }
 
+TEST_F(ChromeVariationsConfigurationTest,
+       ParseExpandsSessionRateImpactGroupNameIntoFeatures) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
+                                       {} /* disabled_features */);
+
+  base::HistogramTester histogram_tester;
+  std::map<std::string, std::string> foo_params;
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  foo_params["session_rate_impact"] = "test_group_one";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::map<std::string, std::string> bar_params;
+  bar_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  bar_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  bar_params["groups"] = "test_group_one";
+  SetFeatureParams(kChromeTestFeatureBar, bar_params);
+
+  FeatureVector features = {&kChromeTestFeatureFoo, &kChromeTestFeatureBar};
+  GroupVector groups = {&kChromeTestGroupOne};
+  configuration_.ParseConfigs(features, groups);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+
+  EXPECT_EQ(true, foo.valid);
+  FeatureConfig expected_foo;
+  expected_foo.valid = true;
+  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
+  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.session_rate_impact =
+      CreateSessionRateImpactExplicit({kChromeTestFeatureBar.name});
+  EXPECT_EQ(expected_foo, foo);
+
+  histogram_tester.ExpectBucketCount(
+      kConfigParseEventName,
+      static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 2);
+}
+
+TEST_F(ChromeVariationsConfigurationTest,
+       ParseExpandsSessionRateEmptyGroupIntoEmptyList) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
+                                       {} /* disabled_features */);
+
+  base::HistogramTester histogram_tester;
+  std::map<std::string, std::string> foo_params;
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  foo_params["session_rate_impact"] = "test_group_one";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  FeatureVector features = {&kChromeTestFeatureFoo};
+  GroupVector groups = {&kChromeTestGroupOne};
+  configuration_.ParseConfigs(features, groups);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+
+  EXPECT_EQ(true, foo.valid);
+  FeatureConfig expected_foo;
+  expected_foo.valid = true;
+  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
+  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.session_rate_impact = CreateSessionRateImpactExplicit({});
+  EXPECT_EQ(expected_foo, foo);
+
+  histogram_tester.ExpectBucketCount(
+      kConfigParseEventName,
+      static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 1);
+}
+
 }  // namespace feature_engagement

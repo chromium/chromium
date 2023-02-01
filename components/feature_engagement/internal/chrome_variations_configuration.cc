@@ -233,7 +233,8 @@ bool IsKnownGroup(const base::StringPiece& group_name,
 bool ParseSessionRateImpact(const base::StringPiece& definition,
                             SessionRateImpact* session_rate_impact,
                             const base::Feature* this_feature,
-                            const FeatureVector& all_features) {
+                            const FeatureVector& all_features,
+                            const GroupVector& all_groups) {
   base::StringPiece trimmed_def =
       base::TrimWhitespaceASCII(definition, base::TRIM_ALL);
 
@@ -271,7 +272,8 @@ bool ParseSessionRateImpact(const base::StringPiece& definition,
                << "for feature " << this_feature->name << ": " << feature_name;
       return false;
     }
-    if (!IsKnownFeature(feature_name, all_features)) {
+    if (!IsKnownFeature(feature_name, all_features) &&
+        !IsKnownGroup(feature_name, all_groups)) {
       DVLOG(1) << "Unknown feature name found when parsing session_rate_impact "
                << "for feature " << this_feature->name << ": " << feature_name;
       stats::RecordConfigParsingEvent(
@@ -563,7 +565,7 @@ void ParseConfigFields(const base::Feature* feature,
     } else if (key == kSessionRateImpactKey && output.session_rate_impact) {
       SessionRateImpact parsed_session_rate_impact;
       if (!ParseSessionRateImpact(param_value, &parsed_session_rate_impact,
-                                  feature, all_features)) {
+                                  feature, all_features, all_groups)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_SESSION_RATE_IMPACT_PARSE);
         ++output.parse_errors;
@@ -857,14 +859,19 @@ void ChromeVariationsConfiguration::ExpandGroupNamesInFeatures(
     }
   }
 
-  // Flatten any group names in each feature's blocked by list into the
-  // constituent features.
+  // Flatten any group names in each feature's blocked by or session rate impact
+  // list into the constituent features.
   for (auto& [feature_name, feature] : configs_) {
     if (feature.blocked_by.type == BlockedBy::Type::EXPLICIT) {
       auto original_blocked_by_items =
           feature.blocked_by.affected_features.value();
       feature.blocked_by.affected_features = FlattenGroupsAndFeatures(
           original_blocked_by_items, group_to_feature_mapping, all_groups);
+    }
+    if (feature.session_rate_impact.type == SessionRateImpact::Type::EXPLICIT) {
+      feature.session_rate_impact.affected_features = FlattenGroupsAndFeatures(
+          feature.session_rate_impact.affected_features.value(),
+          group_to_feature_mapping, all_groups);
     }
   }
 }
