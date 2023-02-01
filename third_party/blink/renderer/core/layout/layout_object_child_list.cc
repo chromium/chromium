@@ -36,6 +36,8 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 
 namespace {
@@ -94,6 +96,12 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
     bool notify_layout_object) {
   DCHECK_EQ(old_child->Parent(), owner);
   DCHECK_EQ(this, owner->VirtualChildren());
+
+  // https://linear.app/replay/issue/RUN-1219
+  recordreplay::Assert(
+    "[RUN-1219] LayoutObjectChildList::RemoveChildNode owner=%d child=%d",
+    owner ? owner->RecordReplayId() : -1,
+    old_child ? old_child->RecordReplayId() : -1);
 
   if (old_child->IsFloatingOrOutOfFlowPositioned())
     To<LayoutBox>(old_child)->RemoveFloatingOrPositionedChildFromBlockLists();
@@ -166,6 +174,13 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
                                             LayoutObject* new_child,
                                             LayoutObject* before_child,
                                             bool notify_layout_object) {
+  // https://linear.app/replay/issue/RUN-1219
+  recordreplay::Assert(
+    "[RUN-1219] LayoutObjectChildList::InsertChildNode owner=%d new_child=%d before_child=%d",
+    owner ? owner->RecordReplayId() : -1,
+    new_child ? new_child->RecordReplayId() : -1,
+    before_child ? before_child->RecordReplayId() : -1);
+
   DCHECK(!new_child->Parent());
   DCHECK_EQ(this, owner->VirtualChildren());
   DCHECK(!owner->IsLayoutBlockFlow() ||
