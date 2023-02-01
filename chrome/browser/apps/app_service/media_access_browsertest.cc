@@ -391,6 +391,52 @@ IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
       AccessingMicrophone(browser()->profile(), app_constants::kChromeAppId));
 }
 
+IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
+                       RequestAccessingStreamTypesForChromeInTabs) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
+
+  content::WebContents* web_contents = GetWebContents();
+  // Request DEVICE_VIDEO_CAPTURE accessing the camera for |web_contents|.
+  MediaRequestChangeForWebContent(
+      web_contents, GetUrl1(),
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      content::MEDIA_REQUEST_STATE_DONE);
+  EXPECT_TRUE(
+      AccessingCamera(browser()->profile(), app_constants::kChromeAppId));
+  EXPECT_FALSE(
+      AccessingMicrophone(browser()->profile(), app_constants::kChromeAppId));
+
+  // Request GUM_DESKTOP_VIDEO_CAPTURE accessing the camera for |web_contents|.
+  MediaRequestChangeForWebContent(
+      web_contents, GetUrl1(),
+      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+      content::MEDIA_REQUEST_STATE_DONE);
+  EXPECT_TRUE(
+      AccessingCamera(browser()->profile(), app_constants::kChromeAppId));
+  EXPECT_FALSE(
+      AccessingMicrophone(browser()->profile(), app_constants::kChromeAppId));
+
+  // Stop GUM_DESKTOP_VIDEO_CAPTURE accessing the camera for |web_contents|.
+  MediaRequestChangeForWebContent(
+      web_contents, GetUrl1(),
+      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+      content::MEDIA_REQUEST_STATE_CLOSING);
+  EXPECT_TRUE(
+      AccessingCamera(browser()->profile(), app_constants::kChromeAppId));
+  EXPECT_FALSE(
+      AccessingMicrophone(browser()->profile(), app_constants::kChromeAppId));
+
+  // Stop DEVICE_VIDEO_CAPTURE accessing the camera for |web_contents|.
+  MediaRequestChangeForWebContent(
+      web_contents, GetUrl1(),
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      content::MEDIA_REQUEST_STATE_CLOSING);
+  EXPECT_FALSE(
+      AccessingCamera(browser()->profile(), app_constants::kChromeAppId));
+  EXPECT_FALSE(
+      AccessingMicrophone(browser()->profile(), app_constants::kChromeAppId));
+}
+
 class MediaAccessWebAppsTest : public web_app::WebAppControllerBrowserTest {
  public:
   MediaAccessWebAppsTest() = default;
@@ -672,4 +718,47 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, TwoApps) {
   EXPECT_TRUE(AccessingCamera(browser()->profile(), app_id2));
   EXPECT_FALSE(AccessingCamera(browser()->profile(), app_id1));
   EXPECT_FALSE(AccessingMicrophone(browser()->profile(), app_id1));
+}
+
+IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest,
+                       RequestAccessingStreamTypesCamera) {
+  std::string app_id = CreateWebApp(GetUrl1());
+
+  // Launch |app_id| in a new tab.
+  web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+  web_app::NavigateToURLAndWait(browser(), GetUrl1());
+
+  // Request DEVICE_VIDEO_CAPTURE accessing the camera for |app_id| in the new
+  // tab.
+  content::WebContents* web_contents = GetWebContents();
+  MediaRequestChangeForWebContent(
+      web_contents, GetUrl1(),
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      content::MEDIA_REQUEST_STATE_DONE);
+  EXPECT_TRUE(AccessingCamera(browser()->profile(), app_id));
+
+  // Request GUM_DESKTOP_VIDEO_CAPTURE accessing the camera for |app_id| in the
+  // new tab.
+  MediaRequestChangeForWebContent(
+      web_contents, GetUrl1(),
+      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+      content::MEDIA_REQUEST_STATE_DONE);
+  EXPECT_TRUE(AccessingCamera(browser()->profile(), app_id));
+
+  // Stop DEVICE_VIDEO_CAPTURE accessing the camera for |app_id| in the tab.
+  MediaRequestChangeForWebContent(
+      web_contents, GetUrl1(),
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      content::MEDIA_REQUEST_STATE_CLOSING);
+  EXPECT_TRUE(AccessingCamera(browser()->profile(), app_id));
+
+  // Stop GUM_DESKTOP_VIDEO_CAPTURE accessing the camera for |app_id| in the
+  // tab.
+  MediaRequestChangeForWebContent(
+      web_contents, GetUrl1(),
+      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+      content::MEDIA_REQUEST_STATE_CLOSING);
+  EXPECT_FALSE(AccessingCamera(browser()->profile(), app_id));
+
+  web_app::CloseAndWait(browser());
 }
