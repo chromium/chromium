@@ -1311,6 +1311,20 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   event_status.bytes_transferred = status.bytes_transferred;
   event_status.total_bytes = status.total_bytes;
 
+  // CopyOrMoveIOTask can enter PAUSED state when it needs the user to resolve
+  // a file name conflict. Add PauseParams for the file name conflict, to send
+  // to the files app UI conflict dialog.
+  if (GetIOTaskState(status.state) ==
+      file_manager_private::IO_TASK_STATE_PAUSED) {
+    file_manager_private::PauseParams pause_params;
+    pause_params.conflict_name = status.pause_params.conflict_name;
+    pause_params.conflict_multiple = status.pause_params.conflict_multiple;
+    pause_params.conflict_is_directory =
+        status.pause_params.conflict_is_directory;
+    pause_params.conflict_target_url = status.pause_params.conflict_target_url;
+    event_status.pause_params = std::move(pause_params);
+  }
+
   // The TrashIOTask is the only IOTask that uses the output Entry's, so don't
   // try to resolve the outputs for all other IOTasks.
   if (GetIOTaskType(status.type) != file_manager_private::IO_TASK_TYPE_TRASH ||
