@@ -501,12 +501,11 @@ void RegisterMultinodeTests() {
     for (const auto& [test_driver_name, test_driver] : GetTestDrivers()) {
       const std::string test_name =
           absl::StrCat(test.test_name, "/", test_driver_name);
-      ::testing::RegisterTest(
-          test.test_suite_name, test_name.c_str(), nullptr, nullptr,
-          test.filename, test.line,
-          [factory = test.factory, test_driver = test_driver] {
-            return factory(test_driver);
-          });
+      ::testing::RegisterTest(test.test_suite_name, test_name.c_str(), nullptr,
+                              nullptr, test.filename, test.line,
+                              [factory = test.factory, driver = test_driver] {
+                                return factory(driver);
+                              });
     }
   }
 }
