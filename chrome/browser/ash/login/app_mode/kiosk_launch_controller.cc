@@ -9,14 +9,19 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -149,6 +154,36 @@ class ArcKioskAppServiceWrapper : public KioskAppLauncher {
   ArcKioskAppService* const service_;
 };
 
+std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
+    Profile* profile,
+    const KioskAppId& kiosk_app_id,
+    KioskAppLauncher::NetworkDelegate* network_delegate) {
+  switch (kiosk_app_id.type) {
+    case KioskAppType::kArcApp:
+      // ArcKioskAppService lifetime is bound to the profile, therefore
+      // wrap it into a separate object.
+      return std::make_unique<ArcKioskAppServiceWrapper>(
+          ArcKioskAppService::Get(profile), network_delegate);
+    case KioskAppType::kChromeApp:
+      return std::make_unique<StartupAppLauncher>(
+          profile, kiosk_app_id.app_id.value(), /*should_skip_install=*/false,
+          network_delegate);
+    case KioskAppType::kWebApp:
+      // TODO(b/242023891): |WebKioskAppServiceLauncher| does not support
+      // Lacros until App Service installation API is available.
+      if (base::FeatureList::IsEnabled(features::kKioskEnableAppService) &&
+          !crosapi::browser_util::IsLacrosEnabled()) {
+        return std::make_unique<WebKioskAppServiceLauncher>(
+            profile, kiosk_app_id.account_id.value(), network_delegate);
+      } else {
+        return std::make_unique<WebKioskAppLauncher>(
+            profile, kiosk_app_id.account_id.value(),
+            /*should_skip_install=*/false, network_delegate);
+      }
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 const char kKioskLaunchStateCrashKey[] = "kiosk-launch-state";
@@ -175,10 +210,17 @@ void SetKioskLaunchStateCrashKey(KioskLaunchState state) {
 }
 
 KioskLaunchController::KioskLaunchController(OobeUI* oobe_ui)
-    : host_(LoginDisplayHost::default_host()),
-      splash_screen_view_(oobe_ui->GetView<AppLaunchSplashScreenHandler>()) {}
+    : KioskLaunchController(LoginDisplayHost::default_host(),
+                            oobe_ui->GetView<AppLaunchSplashScreenHandler>(),
+                            base::BindRepeating(&BuildKioskAppLauncher)) {}
 
-KioskLaunchController::KioskLaunchController() : host_(nullptr) {}
+KioskLaunchController::KioskLaunchController(
+    LoginDisplayHost* host,
+    AppLaunchSplashScreenView* splash_screen,
+    KioskAppLauncherFactory app_launcher_factory)
+    : host_(host),
+      splash_screen_view_(splash_screen),
+      app_launcher_factory_(std::move(app_launcher_factory)) {}
 
 KioskLaunchController::~KioskLaunchController() {
   if (splash_screen_view_) {
@@ -253,6 +295,8 @@ bool KioskLaunchController::HandleAccelerator(LoginAcceleratorAction action) {
 
 void KioskLaunchController::OnProfileLoaded(Profile* profile) {
   SYSLOG(INFO) << "Profile loaded... Starting app launch.";
+  DCHECK(!profile_) << "OnProfileLoaded called twice";
+  profile_ = profile;
 
   // Call `ClearMigrationStep()` once per signin so that the check for migration
   // is run exactly once per signin. Check the comment for `kMigrationStep` in
@@ -272,51 +316,33 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
     return;
   }
 
-  profile_ = profile;
-
   // This is needed to trigger input method extensions being loaded.
   profile->InitChromeOSPreferences();
 
-  // Reset virtual keyboard to use IME engines in app profile early.
-  ChromeKeyboardControllerClient::Get()->RebuildKeyboardIfEnabled();
+  InitializeKeyboard();
+  InitializeLauncher();
 
-  // Do not set update `app_launcher_` if has been set.
-  if (!app_launcher_) {
-    switch (kiosk_app_id_.type) {
-      case KioskAppType::kArcApp:
-        // ArcKioskAppService lifetime is bound to the profile, therefore
-        // wrap it into a separate object.
-        app_launcher_ = std::make_unique<ArcKioskAppServiceWrapper>(
-            ArcKioskAppService::Get(profile_), /*delegate=*/this);
-        break;
-      case KioskAppType::kChromeApp:
-        app_launcher_ = std::make_unique<StartupAppLauncher>(
-            profile_, *kiosk_app_id_.app_id, /*should_skip_install=*/false,
-            /*delegate=*/this);
-        break;
-      case KioskAppType::kWebApp:
-        // Make keyboard config sync with the `VirtualKeyboardFeatures` policy.
-        ChromeKeyboardControllerClient::Get()->SetKeyboardConfigFromPref(true);
-        // TODO(b/242023891): |WebKioskAppServiceLauncher| does not support
-        // Lacros until App Service installation API is available.
-        if (base::FeatureList::IsEnabled(features::kKioskEnableAppService) &&
-            !crosapi::browser_util::IsLacrosEnabled()) {
-          app_launcher_ = std::make_unique<WebKioskAppServiceLauncher>(
-              profile, *kiosk_app_id_.account_id, /*delegate=*/this);
-        } else {
-          app_launcher_ = std::make_unique<WebKioskAppLauncher>(
-              profile, *kiosk_app_id_.account_id,
-              /*should_skip_install=*/false, /*delegate=*/this);
-        }
-        break;
-    }
-  }
-  app_launcher_observation_.Observe(app_launcher_.get());
-
-  app_launcher_->Initialize();
   if (network_ui_state_ == NetworkUIState::kNeedToShow) {
     ShowNetworkConfigureUI();
   }
+}
+
+void KioskLaunchController::InitializeKeyboard() {
+  // Reset virtual keyboard to use IME engines in app profile early.
+  ChromeKeyboardControllerClient::Get()->RebuildKeyboardIfEnabled();
+  if (kiosk_app_id_.type == KioskAppType::kWebApp) {
+    // Make keyboard config sync with the `VirtualKeyboardFeatures`
+    // policy.
+    ChromeKeyboardControllerClient::Get()->SetKeyboardConfigFromPref(true);
+  }
+}
+
+void KioskLaunchController::InitializeLauncher() {
+  DCHECK(!app_launcher_);
+
+  app_launcher_ = app_launcher_factory_.Run(profile_, kiosk_app_id_, this);
+  app_launcher_observation_.Observe(app_launcher_.get());
+  app_launcher_->Initialize();
 }
 
 void KioskLaunchController::OnConfigureNetwork() {
@@ -877,17 +903,6 @@ void KioskLaunchController::
     SetNeedOwnerAuthToConfigureNetworkCallbackForTesting(
         ReturnBoolCallback* callback) {
   need_owner_auth_to_configure_network_callback = callback;
-}
-
-// static
-std::unique_ptr<KioskLaunchController> KioskLaunchController::CreateForTesting(
-    AppLaunchSplashScreenView* view,
-    std::unique_ptr<KioskAppLauncher> app_launcher) {
-  std::unique_ptr<KioskLaunchController> controller(
-      new KioskLaunchController());
-  controller->splash_screen_view_ = view;
-  controller->app_launcher_ = std::move(app_launcher);
-  return controller;
 }
 
 }  // namespace ash

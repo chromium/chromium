@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/login_accelerators.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -92,7 +93,19 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
 
   using ReturnBoolCallback = base::RepeatingCallback<bool()>;
 
+  // Factory class that constructs a `KioskAppLauncher`.
+  // The default implementation constructs the correct implementation of
+  // `KioskAppLauncher` based on the kiosk type associated with `KioskAppId`.
+  using KioskAppLauncherFactory =
+      base::RepeatingCallback<std::unique_ptr<KioskAppLauncher>(
+          Profile*,
+          const KioskAppId&,
+          KioskAppLauncher::NetworkDelegate*)>;
+
   explicit KioskLaunchController(OobeUI* oobe_ui);
+  KioskLaunchController(LoginDisplayHost* host,
+                        AppLaunchSplashScreenView* splash_screen,
+                        KioskAppLauncherFactory app_launcher_factory);
   KioskLaunchController(const KioskLaunchController&) = delete;
   KioskLaunchController& operator=(const KioskLaunchController&) = delete;
   ~KioskLaunchController() override;
@@ -111,10 +124,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
       ReturnBoolCallback* callback);
   static void SetNeedOwnerAuthToConfigureNetworkCallbackForTesting(
       ReturnBoolCallback* callback);
-
-  static std::unique_ptr<KioskLaunchController> CreateForTesting(
-      AppLaunchSplashScreenView* view,
-      std::unique_ptr<KioskAppLauncher> app_launcher);
 
   bool waiting_for_network() const {
     return app_state_ == AppState::kInitNetwork;
@@ -153,10 +162,10 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
     kShowing          // Network configure UI is being shown.
   };
 
-  KioskLaunchController();
-
   void OnCancelAppLaunch();
   void OnNetworkConfigRequested();
+  void InitializeKeyboard();
+  void InitializeLauncher();
 
   // `AppLaunchSplashScreenView::Delegate`
   void OnConfigureNetwork() override;
@@ -218,10 +227,15 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   // Current state of network configure dialog.
   NetworkUIState network_ui_state_ = NetworkUIState::kNotShowing;
 
-  LoginDisplayHost* const host_;  // Not owned, destructed upon shutdown.
-  AppLaunchSplashScreenView* splash_screen_view_ = nullptr;  // Owned by OobeUI.
-  KioskAppId kiosk_app_id_;                                  // Current app.
-  Profile* profile_ = nullptr;                               // Not owned.
+  // Not owned, destructed upon shutdown.
+  raw_ptr<LoginDisplayHost> const host_;
+  // Owned by OobeUI.
+  raw_ptr<AppLaunchSplashScreenView> splash_screen_view_ = nullptr;
+  // Current app.
+  KioskAppId kiosk_app_id_;
+  // Not owned.
+  raw_ptr<Profile> profile_ = nullptr;
+  const KioskAppLauncherFactory app_launcher_factory_;
 
   // Whether app should be launched as soon as it is ready.
   bool launch_on_install_ = false;

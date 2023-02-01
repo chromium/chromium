@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -101,12 +102,12 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     disable_wait_timer_and_login_operations_for_testing_ =
         KioskLaunchController::DisableWaitTimerAndLoginOperationsForTesting();
 
-    auto app_launcher = std::make_unique<FakeKioskAppLauncher>();
-    app_launcher_ = app_launcher.get();
-
     view_ = std::make_unique<FakeAppLaunchSplashScreenHandler>();
-    controller_ = KioskLaunchController::CreateForTesting(
-        view_.get(), std::move(app_launcher));
+    controller_ = std::make_unique<KioskLaunchController>(
+        /*host=*/nullptr, view_.get(),
+        base::BindRepeating(
+            &KioskLaunchControllerTest::BuildFakeKioskAppLauncher,
+            base::Unretained(this)));
 
     // We can't call `crash_reporter::ResetCrashKeysForTesting()` to reset crash
     // keys since it destroys the storage for static crash keys. Instead we set
@@ -133,6 +134,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   AppLaunchSplashScreenView::Delegate& view_controls() { return *controller_; }
 
   FakeKioskAppLauncher& launcher() { return *app_launcher_; }
+
+  int num_launchers_created() { return app_launchers_created_; }
 
   auto HasState(AppState app_state, NetworkUIState network_state) {
     return testing::AllOf(
@@ -183,6 +186,16 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   }
 
  private:
+  std::unique_ptr<KioskAppLauncher> BuildFakeKioskAppLauncher(
+      Profile*,
+      const KioskAppId& kiosk_app_id,
+      KioskAppLauncher::NetworkDelegate*) {
+    app_launchers_created_++;
+    auto app_launcher = std::make_unique<FakeKioskAppLauncher>();
+    app_launcher_ = app_launcher.get();
+    return std::move(app_launcher);
+  }
+
   TestingProfile profile_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
@@ -192,7 +205,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   std::unique_ptr<base::AutoReset<bool>>
       disable_wait_timer_and_login_operations_for_testing_;
   std::unique_ptr<FakeAppLaunchSplashScreenHandler> view_;
-  FakeKioskAppLauncher* app_launcher_;  // owned by `controller_`.
+  FakeKioskAppLauncher* app_launcher_ = nullptr;  // owned by `controller_`.
+  int app_launchers_created_ = 0;
   std::unique_ptr<KioskLaunchController> controller_;
   KioskAppId kiosk_app_id_;
 };
@@ -369,6 +383,7 @@ TEST_F(KioskLaunchControllerTest, KioskProfileLoadFailedObserverShouldBeFired) {
 
   controller().RemoveKioskProfileLoadFailedObserver(
       &profile_load_failed_observer);
+  EXPECT_EQ(num_launchers_created(), 0);
 }
 
 TEST_F(KioskLaunchControllerTest, KioskProfileLoadErrorShouldBeStored) {
@@ -629,11 +644,12 @@ TEST_F(KioskLaunchControllerWithExtensionTest,
 TEST_F(KioskLaunchControllerTest, TestFullFlow) {
   SetOnline(true);
 
-  EXPECT_FALSE(launcher().IsInitialized());
-  EXPECT_FALSE(launcher().HasAppLaunched());
-  EXPECT_FALSE(launcher().HasContinueWithNetworkReadyBeenCalled());
+  EXPECT_EQ(num_launchers_created(), 0);
 
   controller().Start(kiosk_app_id(), /*auto_launch=*/false);
+
+  EXPECT_EQ(num_launchers_created(), 0);
+
   profile_controls().OnProfileLoaded(profile());
 
   EXPECT_EQ(launcher().initialize_called(), 1);
@@ -655,5 +671,6 @@ TEST_F(KioskLaunchControllerTest, TestFullFlow) {
   EXPECT_EQ(launcher().initialize_called(), 1);
   EXPECT_EQ(launcher().continue_with_network_ready_called(), 1);
   EXPECT_EQ(launcher().launch_app_called(), 1);
+  EXPECT_EQ(num_launchers_created(), 1);
 }
 }  // namespace ash
