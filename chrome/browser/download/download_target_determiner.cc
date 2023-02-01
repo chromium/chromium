@@ -978,12 +978,14 @@ void DownloadTargetDeterminer::CheckVisitedReferrerBeforeDone(
     bool visited_referrer_before) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(STATE_DETERMINE_INTERMEDIATE_PATH, next_state_);
+  /*
   safe_browsing::RecordDownloadFileTypeAttributes(
       safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
           virtual_path_.BaseName(), download_->GetURL(),
           GetProfile()->GetPrefs()),
       download_->HasUserGesture(), visited_referrer_before,
       GetLastDownloadBypassTimestamp());
+  */
   danger_level_ = GetDangerLevel(
       visited_referrer_before ? VISITED_REFERRER : NO_VISITS_TO_REFERRER);
   if (danger_level_ != DownloadFileType::NOT_DANGEROUS &&
@@ -1241,10 +1243,10 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
       download_->HasUserGesture())
     return DownloadFileType::NOT_DANGEROUS;
 
-  DownloadFileType::DangerLevel danger_level =
-      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-          virtual_path_.BaseName(), download_->GetURL(),
-          GetProfile()->GetPrefs());
+  DownloadFileType::DangerLevel danger_level = DownloadFileType::NOT_DANGEROUS;
+  //    safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+  //        virtual_path_.BaseName(), download_->GetURL(),
+  //        GetProfile()->GetPrefs());
 
   // A danger level of ALLOW_ON_USER_GESTURE is used to label potentially
   // dangerous file types that have a high frequency of legitimate use. We would

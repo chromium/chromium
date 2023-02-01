@@ -1273,7 +1273,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
     }
 
     private void savePosition() {
-        PrefsHelper.with().getSharedPreferences().edit().putInt("tab_index", mPosition).apply();
+        PrefsHelper.with().applyInt("tab_index", mPosition);
     }
 
     private void selectCenterChildView() {
@@ -1537,6 +1537,8 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                     }
                     break;
                 case STATE_EXPAND:
+                    mPosition = position;
+                    savePosition();
                     for (Callback callback : mCallbackList) {
                         callback.onBeforeExpand(position);
                     }
