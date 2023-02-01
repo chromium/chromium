@@ -28,6 +28,7 @@ namespace {
 const int64_t kMockTimestamp1 = 123456;
 const int64_t kMockTimestamp2 = 234567;
 const int64_t kMockTimestamp3 = 345678;
+const int64_t kMockTimestamp4 = 456789;
 const std::string kMockId1 = "111";
 const std::string kMockId2 = "222";
 const std::string kMockId3 = "333";
@@ -289,24 +290,59 @@ TEST_F(SubscriptionsStorageTest, TestUpdateStorage) {
   proto_db_->MockLoadResponse(true);
   proto_db_->MockOperationResult(true);
 
-  {
-    InSequence s;
     EXPECT_CALL(*proto_db_, LoadContentWithPrefix("PRICE_TRACK", _));
-    EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey3, _));
-    EXPECT_CALL(*proto_db_, InsertContent(kKey1, _, _));
-  }
+    EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey3, _)).Times(1);
+    EXPECT_CALL(*proto_db_, InsertContent(kKey1, _, _)).Times(1);
+    EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey2, _)).Times(0);
+    EXPECT_CALL(*proto_db_, InsertContent(kKey2, _, _)).Times(0);
 
-  base::RunLoop run_loop;
-  storage_->UpdateStorage(
-      SubscriptionType::kPriceTrack,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, SubscriptionsRequestStatus status) {
-            ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
-            run_loop->Quit();
-          },
-          &run_loop),
-      MockRemoteSubscriptions());
-  run_loop.Run();
+    base::RunLoop run_loop;
+    storage_->UpdateStorage(
+        SubscriptionType::kPriceTrack,
+        base::BindOnce(
+            [](base::RunLoop* run_loop, SubscriptionsRequestStatus status) {
+              ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
+              run_loop->Quit();
+            },
+            &run_loop),
+        MockRemoteSubscriptions());
+    run_loop.Run();
+}
+
+TEST_F(SubscriptionsStorageTest,
+       TestUpdateStorage_OneWithSameKeyDifferentTimestamp) {
+    // Mock that one local subscription has the same key but different timestamp
+    // from a server-side subscription, in which case we need to delete the
+    // local one and re-insert the server one.
+    auto remote_subscriptions =
+        std::make_unique<std::vector<CommerceSubscription>>();
+    remote_subscriptions->push_back(CommerceSubscription(
+        SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
+        kMockId1, ManagementType::kUserManaged, kMockTimestamp1));
+    remote_subscriptions->push_back(CommerceSubscription(
+        SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
+        kMockId2, ManagementType::kUserManaged, kMockTimestamp4));
+
+    proto_db_->MockLoadResponse(true);
+    proto_db_->MockOperationResult(true);
+
+    EXPECT_CALL(*proto_db_, LoadContentWithPrefix("PRICE_TRACK", _));
+    EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey3, _)).Times(1);
+    EXPECT_CALL(*proto_db_, InsertContent(kKey1, _, _)).Times(1);
+    EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey2, _)).Times(1);
+    EXPECT_CALL(*proto_db_, InsertContent(kKey2, _, _)).Times(1);
+
+    base::RunLoop run_loop;
+    storage_->UpdateStorage(
+        SubscriptionType::kPriceTrack,
+        base::BindOnce(
+            [](base::RunLoop* run_loop, SubscriptionsRequestStatus status) {
+              ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
+              run_loop->Quit();
+            },
+            &run_loop),
+        std::move(remote_subscriptions));
+    run_loop.Run();
 }
 
 TEST_F(SubscriptionsStorageTest, TestUpdateStorage_LoadFailed) {

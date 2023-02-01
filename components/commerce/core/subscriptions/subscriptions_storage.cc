@@ -215,14 +215,29 @@ void SubscriptionsStorage::PerformUpdateStorage(
     }
   }
   for (auto& kv : remote_map) {
-    if (local_map.find(kv.first) == local_map.end()) {
-      SaveSubscription(std::move(kv.second),
-                       base::BindOnce(
-                           [](bool* all_succeeded, bool succeeded) {
-                             *all_succeeded = (*all_succeeded) && succeeded;
-                           },
-                           &all_succeeded));
+    auto local_it = local_map.find(kv.first);
+    // If there is one subscription in local cache with the same key but
+    // different timestamp, we need to replace it with the server-side one since
+    // we use the timestamp as the identifier when removing subscription from
+    // server. This will ensure the unsubscribe operation works correctly when a
+    // user operates on multiple devices.
+    if (local_it != local_map.end()) {
+      if (local_it->second.timestamp == kv.second.timestamp) {
+        continue;
+      }
+      DeleteSubscription(std::move(local_it->second),
+                         base::BindOnce(
+                             [](bool* all_succeeded, bool succeeded) {
+                               *all_succeeded = (*all_succeeded) && succeeded;
+                             },
+                             &all_succeeded));
     }
+    SaveSubscription(std::move(kv.second),
+                     base::BindOnce(
+                         [](bool* all_succeeded, bool succeeded) {
+                           *all_succeeded = (*all_succeeded) && succeeded;
+                         },
+                         &all_succeeded));
   }
   std::move(callback).Run(all_succeeded
                               ? SubscriptionsRequestStatus::kSuccess
