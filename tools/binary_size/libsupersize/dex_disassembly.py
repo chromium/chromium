@@ -107,7 +107,7 @@ def _ComputeDisassemblyForSymbol(symbol, path_resolver, apk_disassembler_cache):
 
   proguard_mapping_file_path = path_resolver(proguard_mapping_file_name)
   apk_file_name = container.metadata['apk_file_name']
-  apk_file_path = path_resolver(apk_file_name)
+  apk_file_path = str(path_resolver(apk_file_name))
   split_name = container.metadata.get('apk_split_name')  # Can be None.
   apk_disassembler_cache.AssignProguardMappingPath(apk_file_path,
                                                    proguard_mapping_file_path)
