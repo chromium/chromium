@@ -104679,6 +104679,40 @@ Full version information for the fingerprint enum values:
   <int value="113"
       label="kMacAvFoundationReceivedAVCaptureSessionRuntimeErrorNotification"/>
   <int value="114" label="kAndroidApi2ErrorConfiguringCamera"/>
+  <int value="115" label="kCrosHalV3DeviceDelegateFailedToFlush"/>
+  <int value="116" label="kFuchsiaCameraDeviceDisconnected"/>
+  <int value="117" label="kFuchsiaCameraStreamDisconnected"/>
+  <int value="118" label="kFuchsiaSysmemDidNotSetImageFormat"/>
+  <int value="119" label="kFuchsiaSysmemInvalidBufferIndex"/>
+  <int value="120" label="kFuchsiaSysmemInvalidBufferSize"/>
+  <int value="121" label="kFuchsiaUnsupportedPixelFormat"/>
+  <int value="122" label="kFuchsiaFailedToMapSysmemBuffer"/>
+  <int value="123" label="kCrosHalV3DeviceContextDuplicatedClient"/>
+  <int value="124" label="kDesktopCaptureDeviceMacFailedStreamCreate"/>
+  <int value="125" label="kDesktopCaptureDeviceMacFailedStreamStart"/>
+  <int value="126" label="kCrosHalV3BufferManagerFailedToReserveBuffers"/>
+  <int value="127" label="kWinMediaFoundationSystemPermissionDenied"/>
+  <int value="128" label="kVideoCaptureImplTimedOutOnStart"/>
+  <int value="129"
+      label="kLacrosVideoCaptureDeviceProxyAlreadyEndedOnFatalError"/>
+  <int value="130" label="kLacrosVideoCaptureDeviceProxyEncounteredFatalError"/>
+  <int value="131" label="kScreenCaptureKitFailedGetShareableContent"/>
+  <int value="132" label="kScreenCaptureKitFailedAddStreamOutput"/>
+  <int value="133" label="kScreenCaptureKitFailedStartCapture"/>
+  <int value="134" label="kScreenCaptureKitFailedStopCapture"/>
+  <int value="135" label="kScreenCaptureKitStreamError"/>
+  <int value="136" label="kScreenCaptureKitFailedToFindSCDisplay"/>
+  <int value="137" label="kVideoCaptureControllerUnsupportedPixelFormat"/>
+  <int value="138" label="kVideoCaptureControllerInvalid"/>
+  <int value="139"
+      label="kVideoCaptureDeviceFactoryChromeOSCreateDeviceFailed"/>
+  <int value="140" label="kVideoCaptureDeviceAlreadyReleased"/>
+  <int value="141" label="kVideoCaptureSystemDeviceIdNotFound"/>
+  <int value="142" label="kVideoCaptureDeviceFactoryWinUnknownError"/>
+  <int value="143" label="kWinMediaFoundationDeviceInitializationFailed"/>
+  <int value="144" label="kWinMediaFoundationSourceCreationFailed"/>
+  <int value="145" label="kWinDirectShowDeviceFilterCreationFailed"/>
+  <int value="146" label="kWinDirectShowDeviceInitializationFailed"/>
 </enum>
 
 <enum name="VideoCaptureEvent">
