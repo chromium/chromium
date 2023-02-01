@@ -691,6 +691,11 @@ const char kForceUpdateMenuType[] = "force-update-menu-type";
 // Forces a custom summary to be displayed below the update menu item.
 const char kForceShowUpdateMenuItemCustomSummary[] = "custom_summary";
 
+// Force hiding non-displayable account email during the FRE flow. Only for
+// testing purposes.
+const char kForceHideNonDisplayableAccountEmailFRE[] =
+    "force-hide-non-displayable-account-email-fre";
+
 // Sets the market URL for Chrome for use in testing.
 const char kMarketUrlForTesting[] = "market-url-for-testing";
 #endif  // BUILDFLAG(IS_ANDROID)

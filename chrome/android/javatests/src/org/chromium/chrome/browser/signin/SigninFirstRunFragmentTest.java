@@ -650,8 +650,8 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({ChromeSwitches.FORCE_HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL_FRE})
     public void testContinueButtonWithChildAccountWithNonDisplayableAccountEmail() {
-        ChromeFeatureList.sHideNonDisplayableAccountEmail.setForTesting(true);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             when(IdentityServicesProvider.get().getSigninManager(
@@ -667,9 +667,9 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({ChromeSwitches.FORCE_HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL_FRE})
     public void
     testContinueButtonWithChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName() {
-        ChromeFeatureList.sHideNonDisplayableAccountEmail.setForTesting(true);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             when(IdentityServicesProvider.get().getSigninManager(
