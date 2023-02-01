@@ -14,9 +14,10 @@ namespace ios {
 // iOS implementation of `AccountCapabilitiesFetcher`.
 class AccountCapabilitiesFetcherIOS : public AccountCapabilitiesFetcher {
  public:
-  AccountCapabilitiesFetcherIOS(id<SystemIdentity> system_identity,
-                                const CoreAccountInfo& account_info,
-                                OnCompleteCallback on_complete_callback);
+  AccountCapabilitiesFetcherIOS(
+      const CoreAccountInfo& account_info,
+      AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback,
+      id<SystemIdentity> system_identity);
   ~AccountCapabilitiesFetcherIOS() override;
 
   AccountCapabilitiesFetcherIOS(const AccountCapabilitiesFetcherIOS&) = delete;

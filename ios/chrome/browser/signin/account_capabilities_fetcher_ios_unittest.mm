@@ -62,9 +62,10 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
     // Check that the capabilities are correctly converted.
     base::RunLoop run_loop;
     ios::AccountCapabilitiesFetcherIOS fetcher(
-        identity, CoreAccountInfo{},
+        CoreAccountInfo{},
         base::BindOnce(&CheckHaveEmailAddressDisplayed, capability_expected)
-            .Then(run_loop.QuitClosure()));
+            .Then(run_loop.QuitClosure()),
+        identity);
 
     fetcher.Start();
     run_loop.Run();
