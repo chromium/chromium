@@ -158,6 +158,7 @@ class TestProvider : public AutocompleteProvider {
   // AutocompleteProvider:
   void StartPrefetch(const AutocompleteInput& input) override;
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
+  void ResizeMatches(size_t max_matches, bool ml_scoring_enabled);
 
   void set_supports_prefetch(const bool supports_prefetch) {
     supports_prefetch_ = supports_prefetch;
@@ -168,6 +169,9 @@ class TestProvider : public AutocompleteProvider {
   void set_closure(const base::RepeatingClosure& closure) {
     closure_ = closure;
   }
+
+  void set_matches(const ACMatches& matches) { matches_ = matches; }
+  const ACMatches& get_matches() { return matches_; }
 
  protected:
   ~TestProvider() override = default;
@@ -245,6 +249,10 @@ void TestProvider::Start(const AutocompleteInput& input, bool minimal_changes) {
         FROM_HERE, base::BindOnce(&TestProvider::OnNonPrefetchRequestDone,
                                   base::Unretained(this)));
   }
+}
+
+void TestProvider::ResizeMatches(size_t max_matches, bool ml_scoring_enabled) {
+  AutocompleteProvider::ResizeMatches(max_matches, ml_scoring_enabled);
 }
 
 void TestProvider::OnNonPrefetchRequestDone() {
@@ -1685,6 +1693,66 @@ TEST_F(AutocompleteProviderTest, ClassifyAllMatchesInString) {
   // ACMatch spans should be: "-------MMMMM---MMMMMM-----";
   EXPECT_EQ("0,0,7,2,12,0,15,2,21,0",
             AutocompleteMatch::ClassificationsToString(spans));
+}
+
+TEST_F(AutocompleteProviderTest, ResizeMatches) {
+  TestProvider* provider = nullptr;
+  ResetControllerWithTestProviders(false, &provider, nullptr);
+
+  // Populate 'matches_` with test data.
+  ACMatches matches = {
+      AutocompleteMatch(nullptr, 100, false,
+                        AutocompleteMatchType::BOOKMARK_TITLE),
+      AutocompleteMatch(nullptr, 110, false,
+                        AutocompleteMatchType::BOOKMARK_TITLE),
+      AutocompleteMatch(nullptr, 120, false,
+                        AutocompleteMatchType::BOOKMARK_TITLE),
+      AutocompleteMatch(nullptr, 130, false,
+                        AutocompleteMatchType::BOOKMARK_TITLE),
+      AutocompleteMatch(nullptr, 140, false,
+                        AutocompleteMatchType::BOOKMARK_TITLE),
+      AutocompleteMatch(nullptr, 150, false,
+                        AutocompleteMatchType::BOOKMARK_TITLE),
+  };
+  provider->set_matches(matches);
+  EXPECT_EQ(provider->get_matches().size(), matches.size());
+
+  // When ML Scoring is enabled, calling resize matches should not actually
+  // resize the match list. Instead, it should mark any matches over the
+  // `max_matches` with a relevance score of zero and `culled_by_provider`.
+  const size_t kMaxMatches = 3;
+  provider->ResizeMatches(kMaxMatches, true);
+  EXPECT_EQ(provider->get_matches().size(), matches.size());
+
+  // Check to see if `relevance` and `culled_by_provider` are set correctly.
+  // The first `max_matches` matches should keep their relevance score and have
+  // `culled_by_provider` set to false.
+  ACMatches provider_matches = provider->get_matches();
+  base::ranges::for_each(provider_matches.begin(),
+                         std::next(provider_matches.begin(), kMaxMatches),
+                         [&](auto match) {
+                           EXPECT_NE(match.relevance, 0);
+                           EXPECT_FALSE(match.culled_by_provider);
+                         });
+  // Any match beyond that should have their relevance score zeroed and
+  // `culled_by_provider` set.
+  base::ranges::for_each(std::next(provider_matches.begin(), kMaxMatches),
+                         provider_matches.end(), [&](auto match) {
+                           EXPECT_EQ(match.relevance, 0);
+                           EXPECT_TRUE(match.culled_by_provider);
+                         });
+
+  // Now disable the flag. With ML Scoring disabled, `matches_` should actually
+  // be resized and `relevance` and `culled_by_provider` should be untouched.
+  provider->set_matches(matches);
+  EXPECT_EQ(provider->get_matches().size(), matches.size());
+
+  provider->ResizeMatches(kMaxMatches, false);
+  EXPECT_EQ(provider->get_matches().size(), kMaxMatches);
+  base::ranges::for_each(provider->get_matches(), [&](auto match) {
+    EXPECT_NE(match.relevance, 0);
+    EXPECT_FALSE(match.culled_by_provider);
+  });
 }
 
 class AutocompleteProviderPrefetchTest : public AutocompleteProviderTest {

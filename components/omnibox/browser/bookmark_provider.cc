@@ -130,7 +130,7 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   size_t num_matches = std::min(matches_.size(), max_matches);
   std::partial_sort(matches_.begin(), matches_.begin() + num_matches,
                     matches_.end(), AutocompleteMatch::MoreRelevant);
-  matches_.resize(num_matches);
+  ResizeMatches(num_matches, OmniboxFieldTrial::IsMlRelevanceScoringEnabled());
 }
 
 std::vector<TitledUrlMatch> BookmarkProvider::GetMatchesWithBookmarkPaths(

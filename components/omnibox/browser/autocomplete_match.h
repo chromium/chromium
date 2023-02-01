@@ -810,6 +810,14 @@ struct AutocompleteMatch {
   // Signals for ML scoring.
   metrics::OmniboxEventProto::Suggestion::ScoringSignals scoring_signals;
 
+  // A flag to mark whether this would've been excluded from the "original" list
+  // of matches. Traditionally, providers limit the number of suggestions they
+  // provide to the top N most relevant matches. When ML scoring is enabled,
+  // however, providers pass ALL suggestion candidates to the controller. When
+  // this flag is true, this match is an "extra" suggestion that would've
+  // originally been culled by the provider.
+  bool culled_by_provider = false;
+
   // So users of AutocompleteMatch can use the same ellipsis that it uses.
   static const char16_t kEllipsis[];
 
