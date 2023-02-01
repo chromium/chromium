@@ -1362,32 +1362,34 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
 
   // If a new toggle is added here, ForceDawnTogglesForWebGPU() which collects
   // info for about:gpu should be updated as well.
-  WGPUDawnTogglesDeviceDescriptor dawn_toggles = {};
-  std::vector<const char*> force_enabled_toggles;
-  std::vector<const char*> force_disabled_toggles;
+  WGPUDawnTogglesDescriptor dawn_device_toggles = {};
+  std::vector<const char*> require_device_enabled_toggles;
+  std::vector<const char*> require_device_disabled_toggles;
 
   // Disallows usage of SPIR-V by default for security (we only ensure that WGSL
   // is secure), unless --enable-unsafe-webgpu is used.
   if (!enable_unsafe_webgpu_) {
-    force_enabled_toggles.push_back("disallow_spirv");
+    require_device_enabled_toggles.push_back("disallow_spirv");
   }
   // Disable the blob cache if we don't have an isolation key.
   if (isolation_key_->empty()) {
-    force_enabled_toggles.push_back("disable_blob_cache");
+    require_device_enabled_toggles.push_back("disable_blob_cache");
   }
 
   for (const std::string& toggles : force_enabled_toggles_) {
-    force_enabled_toggles.push_back(toggles.c_str());
+    require_device_enabled_toggles.push_back(toggles.c_str());
   }
   for (const std::string& toggles : force_disabled_toggles_) {
-    force_disabled_toggles.push_back(toggles.c_str());
+    require_device_disabled_toggles.push_back(toggles.c_str());
   }
-  dawn_toggles.forceEnabledToggles = force_enabled_toggles.data();
-  dawn_toggles.forceEnabledTogglesCount = force_enabled_toggles.size();
-  dawn_toggles.forceDisabledToggles = force_disabled_toggles.data();
-  dawn_toggles.forceDisabledTogglesCount = force_disabled_toggles.size();
-  dawn_toggles.chain.sType = WGPUSType_DawnTogglesDeviceDescriptor;
-  desc.nextInChain = reinterpret_cast<WGPUChainedStruct*>(&dawn_toggles);
+  dawn_device_toggles.enabledToggles = require_device_enabled_toggles.data();
+  dawn_device_toggles.enabledTogglesCount =
+      require_device_enabled_toggles.size();
+  dawn_device_toggles.disabledToggles = require_device_disabled_toggles.data();
+  dawn_device_toggles.disabledTogglesCount =
+      require_device_disabled_toggles.size();
+  dawn_device_toggles.chain.sType = WGPUSType_DawnTogglesDescriptor;
+  desc.nextInChain = reinterpret_cast<WGPUChainedStruct*>(&dawn_device_toggles);
 
   // Dawn caching isolation key information needs to be passed per device. If an
   // isolation key is empty, we do not pass this extra descriptor, and disable
@@ -1396,7 +1398,8 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
   if (!isolation_key_->empty()) {
     dawn_cache.isolationKey = isolation_key_->c_str();
     dawn_cache.chain.sType = WGPUSType_DawnCacheDeviceDescriptor;
-    dawn_toggles.chain.next = reinterpret_cast<WGPUChainedStruct*>(&dawn_cache);
+    dawn_device_toggles.chain.next =
+        reinterpret_cast<WGPUChainedStruct*>(&dawn_cache);
   }
 
   bool called = false;
