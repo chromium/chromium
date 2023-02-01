@@ -782,6 +782,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedHtmlTokenizer);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kThreadedHtmlTokenizerTokenMaxCount;
 
+// Make RTCVideoEncoder::Encode() asynchronous.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcEncoderAsyncEncode);
+
 // If enabled, the WebRTC_* threads in peerconnection module will use
 // kResourceEfficient thread type.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

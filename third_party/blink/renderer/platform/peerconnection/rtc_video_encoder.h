@@ -34,7 +34,6 @@ struct VideoEncoderInfo;
 namespace blink {
 
 namespace features {
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kWebRtcEncoderAsyncEncode);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kWebRtcScreenshareSwEncoding);
 }
 

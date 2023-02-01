@@ -1536,6 +1536,10 @@ BASE_FEATURE(kThreadedHtmlTokenizer,
 const base::FeatureParam<int> kThreadedHtmlTokenizerTokenMaxCount{
     &kThreadedHtmlTokenizer, "max-count", 2048};
 
+BASE_FEATURE(kWebRtcEncoderAsyncEncode,
+             "WebRtcEncoderAsyncEncode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kWebRtcThreadsUseResourceEfficientType,
              "WebRtcThreadsUseResourceEfficientType",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -456,11 +456,6 @@ void RecordEncoderShutdownReasonUMA(RTCVideoEncoderShutdownReason reason,
 }  // namespace
 
 namespace features {
-// Make RTCVideoEncoder::Encode() asynchronous.
-BASE_FEATURE(kWebRtcEncoderAsyncEncode,
-             "WebRtcEncoderAsyncEncode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Fallback from hardware encoder (if available) to software, for WebRTC
 // screensharing that uses temporal scalability.
 BASE_FEATURE(kWebRtcScreenshareSwEncoding,
