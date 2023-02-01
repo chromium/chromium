@@ -195,8 +195,15 @@ deps: Specifies all other ts_library targets generating libraries that this
 extra_deps: Used to specify build targets generating the input files for TS
             compiler.
 path_mappings: Additional non-default path mappings for absolute imports. The
-               absolute 'chrome://resources/' paths are already mapped by
-               default.
+               absolute 'chrome://resources/' paths are already mapped for any
+               resources in libraries that are listed in |deps|; for example
+               adding "//ui/webui/resources/cr_elements:build_ts" in deps will
+               automatically add the mapping for imports from that library
+               (e.g. 'chrome://resources/cr_elements/cr_button/cr_button.js').
+               Important: Don't add path_mappings without also adding the
+               ts_library() target(s) responsible for the files being mapped to
+               deps! path_mappings without corresponding deps can result in
+               flaky build errors.
 manifest_excludes: List of input files to exclude from the output
                    the manifest file.
 ```
