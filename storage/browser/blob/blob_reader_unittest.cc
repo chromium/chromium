@@ -218,6 +218,7 @@ class BlobReaderTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    provider_ = nullptr;
     reader_.reset();
     blob_handle_.reset();
     base::RunLoop().RunUntilIdle();
@@ -289,8 +290,8 @@ class BlobReaderTest : public ::testing::Test {
 
   BlobStorageContext context_;
   std::unique_ptr<BlobDataHandle> blob_handle_;
-  raw_ptr<MockFileStreamReaderProvider> provider_ = nullptr;
   std::unique_ptr<BlobReader> reader_;
+  raw_ptr<MockFileStreamReaderProvider> provider_ = nullptr;
   scoped_refptr<FileSystemContext> file_system_context_;
 };
 
