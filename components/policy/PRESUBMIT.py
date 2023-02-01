@@ -410,7 +410,7 @@ def CheckMissingPlaceholders(input_api, output_api):
       if not key in item:
         continue
       try:
-        node = minidom.parseString('<msg>%s</msg>' % item[key]).childNodes[0]
+        node = minidom.parseString(u'<msg>%s</msg>' % item[key]).childNodes[0]
       except expat.ExpatError as e:
         error = (
             'Error when checking for missing placeholders: %s in:\n'
