@@ -52,6 +52,7 @@ void WaylandSeat::OnSeatCapabilitiesEvent(void* data,
   DCHECK(wayland_seat);
   DCHECK_CALLED_ON_VALID_SEQUENCE(wayland_seat->sequence_checker_);
   const bool has_keyboard = capabilities & WL_SEAT_CAPABILITY_KEYBOARD;
+  const bool has_pointer = capabilities & WL_SEAT_CAPABILITY_POINTER;
   if (has_keyboard && !wayland_seat->wayland_keyboard_) {
     wayland_seat->wayland_keyboard_ =
         std::make_unique<WaylandKeyboard>(wayland_seat->wl_seat_);
@@ -59,6 +60,12 @@ void WaylandSeat::OnSeatCapabilitiesEvent(void* data,
   } else if (!has_keyboard && wayland_seat->wayland_keyboard_) {
     WaylandManager::Get()->OnSeatKeyboardCapabilityRevoked();
     wayland_seat->wayland_keyboard_.reset();
+  }
+
+  if (has_pointer) {
+    WaylandManager::Get()->OnSeatPointerCapability();
+  } else {
+    WaylandManager::Get()->OnSeatPointerCapabilityRevoked();
   }
 }
 

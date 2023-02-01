@@ -109,7 +109,7 @@ constexpr base::TimeDelta kContinuousScrollTimeout = base::Milliseconds(500);
 InputInjectorWayland::InputInjectorWayland(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   core_ = new Core(task_runner);
-  core_->SetKeyboardCapabilityCallback();
+  core_->SetCapabilityCallbacks();
 
   // Register callback with the wayland manager so that it can get details
   // about the desktop capture metadata (which include session details of the
@@ -164,19 +164,22 @@ InputInjectorWayland::Core::Core(
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner)
     : input_task_runner_(input_task_runner) {}
 
-void InputInjectorWayland::Core::SetKeyboardCapabilityCallback() {
+void InputInjectorWayland::Core::SetCapabilityCallbacks() {
   if (!input_task_runner_->BelongsToCurrentThread()) {
     input_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&Core::SetKeyboardCapabilityCallback, this));
+        FROM_HERE, base::BindOnce(&Core::SetCapabilityCallbacks, this));
     return;
   }
 
   auto on_seat_acquired_keyboard_capability =
       base::BindOnce(&Core::SeatAcquiredKeyboardCapability, this);
+  auto on_seat_acquired_pointer_capability =
+      base::BindOnce(&Core::SeatAcquiredPointerCapability, this);
   auto on_seat_present =
-      base::BindOnce(&WaylandManager::SetKeyboardCapabilityCallback,
+      base::BindOnce(&WaylandManager::SetCapabilityCallbacks,
                      base::Unretained(WaylandManager::Get()),
-                     std::move(on_seat_acquired_keyboard_capability));
+                     std::move(on_seat_acquired_keyboard_capability),
+                     std::move(on_seat_acquired_pointer_capability));
   WaylandManager::Get()->SetSeatPresentCallback(std::move(on_seat_present));
 }
 
@@ -191,6 +194,16 @@ void InputInjectorWayland::Core::InjectFakeKeyEvent() {
   InjectKeyPress(SHIFT_KEY_CODE, /*pressed=*/false);
 }
 
+void InputInjectorWayland::Core::InjectFakePointerEvent() {
+  DCHECK(input_task_runner_->BelongsToCurrentThread());
+  if (seat_has_pointer_capability_) {
+    return;
+  }
+
+  MovePointerTo(0, -1);
+  MovePointerTo(0, 1);
+}
+
 void InputInjectorWayland::Core::SeatAcquiredKeyboardCapability() {
   if (!input_task_runner_->BelongsToCurrentThread()) {
     input_task_runner_->PostTask(
@@ -202,9 +215,21 @@ void InputInjectorWayland::Core::SeatAcquiredKeyboardCapability() {
   MaybeFlushPendingEvents();
 }
 
+void InputInjectorWayland::Core::SeatAcquiredPointerCapability() {
+  if (!input_task_runner_->BelongsToCurrentThread()) {
+    input_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Core::SeatAcquiredPointerCapability, this));
+    return;
+  }
+
+  seat_has_pointer_capability_ = true;
+  MaybeFlushPendingEvents();
+}
+
 bool InputInjectorWayland::Core::IsReady() {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
-  return seat_has_keyboard_capability_ && remote_desktop_initialized_;
+  return seat_has_keyboard_capability_ && seat_has_pointer_capability_ &&
+         remote_desktop_initialized_;
 }
 
 void InputInjectorWayland::Core::InjectClipboardEvent(
@@ -432,8 +457,10 @@ void InputInjectorWayland::Core::SetRemoteDesktopSessionDetails(
   remotedesktop_portal_.SetSessionDetails(session_details);
   remote_desktop_initialized_ = true;
 
-  // This is needed so that we can acquire keyboard capability.
+  // These are needed so that we can acquire keyboard/pointer capability.
   InjectFakeKeyEvent();
+  InjectFakePointerEvent();
+
   MaybeFlushPendingEvents();
 }
 
@@ -520,6 +547,7 @@ void InputInjectorWayland::Core::Shutdown() {
   // queued for sometime but the expectation here is that after `Shutdown` is
   // invoked, we expect the injector to be destroyed soon.
   seat_has_keyboard_capability_ = false;
+  seat_has_pointer_capability_ = false;
   clipboard_initialized_ = false;
   remote_desktop_initialized_ = false;
 }

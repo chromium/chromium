@@ -109,9 +109,10 @@ class WaylandManager {
 
   void SetSeatPresentCallback(WaylandSeat::OnSeatPresentCallback callback);
 
-  // Sets callback to be invoked when the associated seat gains a keyboard
-  // capability.
-  void SetKeyboardCapabilityCallback(base::OnceClosure callback);
+  // Sets callback to be invoked when the associated seat gains a keyboard or
+  // pointer capability.
+  void SetCapabilityCallbacks(base::OnceClosure keyboard_capability_callback,
+                              base::OnceClosure pointer_capability_callback);
 
  private:
   friend class WaylandSeat;
@@ -119,6 +120,10 @@ class WaylandManager {
   // Invoked by wayland seat when wayland keyboard capability changes.
   void OnSeatKeyboardCapability();
   void OnSeatKeyboardCapabilityRevoked();
+
+  // Invoked by wayland seat when wayland pointer capability changes.
+  void OnSeatPointerCapability();
+  void OnSeatPointerCapabilityRevoked();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -136,6 +141,8 @@ class WaylandManager {
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::OnceClosure keyboard_capability_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  base::OnceClosure pointer_capability_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   base::OnceClosure capturer_destroyed_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -144,6 +151,9 @@ class WaylandManager {
   XkbKeyMapUniquePtr keymap_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   bool is_keyboard_capability_acquired_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
+
+  bool is_pointer_capability_acquired_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
 };
 

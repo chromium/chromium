@@ -82,9 +82,8 @@ class InputInjectorWayland : public InputInjector {
         const webrtc::xdg_portal::SessionDetails& session_details);
     // Mirrors the InputInjector interface.
     void Start(std::unique_ptr<protocol::ClipboardStub> client_clipboard);
-    // Sets a keyboard capability ready callback on the global
-    // WaylandManager class.
-    void SetKeyboardCapabilityCallback();
+    // Sets capabilities ready callbacks on the global WaylandManager class.
+    void SetCapabilityCallbacks();
 
     void Shutdown();
 
@@ -92,7 +91,9 @@ class InputInjectorWayland : public InputInjector {
     friend class base::RefCountedThreadSafe<Core>;
     virtual ~Core();
     void SeatAcquiredKeyboardCapability();
+    void SeatAcquiredPointerCapability();
     void InjectFakeKeyEvent();
+    void InjectFakePointerEvent();
     bool IsReady();
     void MaybeFlushPendingEvents();
     void InjectScrollWheelClicks(int button, int count);
@@ -135,6 +136,9 @@ class InputInjectorWayland : public InputInjector {
     // Keeps track of whether or not the associated seat has keyboard
     // capability.
     bool seat_has_keyboard_capability_ = false;
+
+    // Keeps track of whether or not the associated seat has pointer capability.
+    bool seat_has_pointer_capability_ = false;
   };
   scoped_refptr<Core> core_;
 };

@@ -230,22 +230,32 @@ void WaylandManager::AddKeyboardModifiersCallback(
   keyboard_modifier_callbacks_.AddUnsafe(std::move(callback));
 }
 
-void WaylandManager::SetKeyboardCapabilityCallback(base::OnceClosure callback) {
+void WaylandManager::SetCapabilityCallbacks(
+    base::OnceClosure keyboard_capability_callback,
+    base::OnceClosure pointer_capability_callback) {
   if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
     ui_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&WaylandManager::SetKeyboardCapabilityCallback,
+        base::BindOnce(&WaylandManager::SetCapabilityCallbacks,
                        base::Unretained(this),
                        base::BindPostTask(
                            base::SingleThreadTaskRunner::GetCurrentDefault(),
-                           std::move(callback))));
+                           std::move(keyboard_capability_callback)),
+                       base::BindPostTask(
+                           base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::move(pointer_capability_callback))));
     return;
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  keyboard_capability_callback_ = std::move(callback);
+  keyboard_capability_callback_ = std::move(keyboard_capability_callback);
+  pointer_capability_callback_ = std::move(pointer_capability_callback);
   if (is_keyboard_capability_acquired_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(keyboard_capability_callback_));
+  }
+  if (is_pointer_capability_acquired_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(pointer_capability_callback_));
   }
 }
 
@@ -277,6 +287,37 @@ void WaylandManager::OnSeatKeyboardCapability() {
                  << "before a listener is registered.";
   } else {
     std::move(keyboard_capability_callback_).Run();
+  }
+}
+
+void WaylandManager::OnSeatPointerCapabilityRevoked() {
+  if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WaylandManager::OnSeatPointerCapabilityRevoked,
+                       base::Unretained(this)));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_pointer_capability_acquired_ = false;
+}
+
+void WaylandManager::OnSeatPointerCapability() {
+  if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&WaylandManager::OnSeatPointerCapability,
+                                  base::Unretained(this)));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_pointer_capability_acquired_ = true;
+
+  const uint32_t seat_id = wayland_connection_->GetSeatId();
+  if (!pointer_capability_callback_) {
+    LOG(WARNING) << "Seat (" << seat_id << ") gained pointer capability "
+                 << "before a listener is registered.";
+  } else {
+    std::move(pointer_capability_callback_).Run();
   }
 }
 
