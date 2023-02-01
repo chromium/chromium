@@ -1630,12 +1630,14 @@ class CORE_EXPORT Document : public ContainerNode,
   static void SetForceSynchronousParsingForTesting(bool);
   static bool ForceSynchronousParsingForTesting();
 
+#if DCHECK_IS_ON()
   void IncrementNodeCount() { node_count_++; }
   void DecrementNodeCount() {
     DCHECK_GT(node_count_, 0);
     node_count_--;
   }
   int NodeCount() const { return node_count_; }
+#endif  // DCHECK_IS_ON()
 
   SnapCoordinator& GetSnapCoordinator();
   void PerformScrollSnappingTasks();
