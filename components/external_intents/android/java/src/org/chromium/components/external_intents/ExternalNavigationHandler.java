@@ -985,11 +985,7 @@ public class ExternalNavigationHandler {
 
         // Ensure the navigation was started with a user gesture so that inactive pages can't launch
         // apps unexpectedly, unless we trust the calling app for a CCT/TWA.
-        // TODO(https://crbug.com/839751): Remove gesture exception for form submits.
-        if (initialState.isRendererInitiated && !initialState.hasUserGesture
-                && (!initialState.isFromFormSubmit
-                        || ExternalIntentsFeatures.BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE
-                                   .isEnabled())) {
+        if (initialState.isRendererInitiated && !initialState.hasUserGesture) {
             if (isExternalProtocol) handler.maybeLogExternalRedirectBlockedWithMissingGesture();
             if (debug()) Log.i(TAG, "Navigation chain started without a gesture.");
             return true;
