@@ -7006,7 +7006,7 @@
   {
     "name": "use-winrt-midi-api",
     "owners": [ "toyoshim", "mjwilson", "deviceapi-team@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 117
   },
   {
     "name": "use-xps-for-printing",
@@ -7167,7 +7167,7 @@
   {
     "name": "web-midi",
     "owners": [ "//third_party/blink/renderer/modules/webaudio/OWNERS", "reillyg", "deviceapi-team@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 117
   },
   {
     "name": "web-otp-backend",
