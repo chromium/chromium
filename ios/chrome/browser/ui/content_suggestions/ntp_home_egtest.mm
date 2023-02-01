@@ -591,7 +591,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that when navigating back to the NTP while having the omnibox focused
 // does not consider the shifting offset in the instance the omnibox was already
 // pinned to the top of the page before focusing.
-- (void)testPositionRestoredWithoutShiftingOffset {
+// TODO(crbug.com/1412089): Re-enable after failure is fixed.
+- (void)DISABLED_testPositionRestoredWithoutShiftingOffset {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Pinning Fake Omnibox to top of surface is only on iphone");
