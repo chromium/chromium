@@ -159,6 +159,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
   static constexpr char kButtonPartName[] = "button";
   static constexpr char kSelectedValuePartName[] = "selected-value";
   static constexpr char kListboxPartName[] = "listbox";
+  static constexpr char kMarkerPartName[] = "marker";
 
   Member<ButtonPartEventListener> button_part_listener_;
   Member<OptionPartEventListener> option_part_listener_;
@@ -171,6 +172,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
   HeapLinkedHashSet<Member<HTMLOptionElement>> option_parts_;
   Member<HTMLSlotElement> button_slot_;
   Member<HTMLSlotElement> listbox_slot_;
+  Member<HTMLSlotElement> marker_slot_;
   Member<HTMLOptionElement> selected_option_;
   Member<HTMLOptionElement> selected_option_when_listbox_opened_;
   bool queued_check_for_missing_parts_{false};

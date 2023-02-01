@@ -8,6 +8,7 @@ rootWebArea focusable
 ++++++++++++++staticText name='Option 1'
 ++++++++++++++++inlineTextBox name='Option 1'
 ++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
 ++++++++genericContainer ignored
 ++++++++++listBox ignored invisible
 ++++++genericContainer

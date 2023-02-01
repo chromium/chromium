@@ -248,9 +248,13 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   selected_value_part_->setAttribute(html_names::kBehaviorAttr,
                                      kSelectedValuePartName);
 
-  auto* button_icon = MakeGarbageCollected<HTMLDivElement>(document);
-  button_icon->SetShadowPseudoId(
+  marker_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
+  marker_slot_->setAttribute(html_names::kNameAttr, kMarkerPartName);
+
+  auto* marker_icon = MakeGarbageCollected<HTMLDivElement>(document);
+  marker_icon->SetShadowPseudoId(
       AtomicString("-internal-selectmenu-button-icon"));
+  marker_icon->setAttribute(html_names::kPartAttr, kMarkerPartName);
 
   listbox_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
   listbox_slot_->setAttribute(html_names::kNameAttr, kListboxPartName);
@@ -266,7 +270,9 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   auto* options_slot = MakeGarbageCollected<HTMLSlotElement>(document);
 
   button_part_->AppendChild(selected_value_part_);
-  button_part_->AppendChild(button_icon);
+  button_part_->AppendChild(marker_slot_);
+
+  marker_slot_->AppendChild(marker_icon);
 
   button_slot_->AppendChild(button_part_);
 
@@ -1041,6 +1047,7 @@ void HTMLSelectMenuElement::Trace(Visitor* visitor) const {
   visitor->Trace(option_parts_);
   visitor->Trace(button_slot_);
   visitor->Trace(listbox_slot_);
+  visitor->Trace(marker_slot_);
   visitor->Trace(selected_option_);
   visitor->Trace(selected_option_when_listbox_opened_);
   HTMLFormControlElementWithState::Trace(visitor);
