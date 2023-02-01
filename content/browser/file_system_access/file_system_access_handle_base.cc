@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -26,7 +25,6 @@
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_switches.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -220,12 +218,11 @@ void FileSystemAccessHandleBase::DoMove(
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
-  // TODO(crbug.com/1247850): Allow moves of files outside of the OPFS.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableExperimentalWebPlatformFeatures)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessMoveLocalFiles)) {
     if (url().type() != storage::FileSystemType::kFileSystemTypeTemporary) {
       std::move(callback).Run(file_system_access_error::FromStatus(
-          blink::mojom::FileSystemAccessStatus::kOperationAborted));
+          blink::mojom::FileSystemAccessStatus::kNotSupportedError));
       return;
     }
   }
@@ -254,12 +251,11 @@ void FileSystemAccessHandleBase::DoRename(
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
-  // TODO(crbug.com/1247850): Allow moves of files outside of the OPFS.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableExperimentalWebPlatformFeatures)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessMoveLocalFiles)) {
     if (url().type() != storage::FileSystemType::kFileSystemTypeTemporary) {
       std::move(callback).Run(file_system_access_error::FromStatus(
-          blink::mojom::FileSystemAccessStatus::kOperationAborted));
+          blink::mojom::FileSystemAccessStatus::kNotSupportedError));
       return;
     }
   }
@@ -337,12 +333,11 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
     return;
   }
 
-  // TODO(crbug.com/1247850): Allow moves of files outside of the OPFS.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableExperimentalWebPlatformFeatures)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessMoveLocalFiles)) {
     if (dest_url.type() != storage::FileSystemType::kFileSystemTypeTemporary) {
       std::move(callback).Run(file_system_access_error::FromStatus(
-          blink::mojom::FileSystemAccessStatus::kOperationAborted));
+          blink::mojom::FileSystemAccessStatus::kNotSupportedError));
       return;
     }
   }
