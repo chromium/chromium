@@ -18,9 +18,11 @@ crosapi::mojom::LacrosFeedbackSource ToMojoLacrosFeedbackSource(
       return crosapi::mojom::LacrosFeedbackSource::kLacrosBrowserCommand;
     case kFeedbackSourceMdSettingsAboutPage:
       return crosapi::mojom::LacrosFeedbackSource::kLacrosSettingsAboutPage;
+    case kFeedbackSourceAutofillContextMenu:
+      return crosapi::mojom::LacrosFeedbackSource::kLacrosAutofillContextMenu;
     default:
       NOTREACHED() << "ShowFeedbackPage is called by unknown Lacros source";
-      return crosapi::mojom::LacrosFeedbackSource::kLacrosBrowserCommand;
+      return crosapi::mojom::LacrosFeedbackSource::kUnknown;
   }
 }
 

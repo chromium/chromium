@@ -10,6 +10,8 @@ import "url/mojom/url.mojom";
 enum LacrosFeedbackSource {
   kLacrosBrowserCommand = 0,
   kLacrosSettingsAboutPage = 1,
+  [Default, MinVersion=1] kUnknown = 2,
+  [MinVersion=1] kLacrosAutofillContextMenu = 3,
 };
 
 [Stable]

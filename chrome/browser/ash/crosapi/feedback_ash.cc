@@ -18,6 +18,11 @@ chrome::FeedbackSource FromMojo(mojom::LacrosFeedbackSource source) {
       return chrome::kFeedbackSourceBrowserCommand;
     case mojom::LacrosFeedbackSource::kLacrosSettingsAboutPage:
       return chrome::kFeedbackSourceMdSettingsAboutPage;
+    case mojom::LacrosFeedbackSource::kLacrosAutofillContextMenu:
+      return chrome::kFeedbackSourceAutofillContextMenu;
+    case mojom::LacrosFeedbackSource::kUnknown:
+      NOTREACHED() << "FromMojo is called by unknown Lacros source";
+      return chrome::kFeedbackSourceBrowserCommand;
   }
 }
 
