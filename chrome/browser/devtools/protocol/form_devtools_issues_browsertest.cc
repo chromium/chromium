@@ -134,4 +134,15 @@ IN_PROC_BROWSER_TEST_F(
                   .has_value());
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
+                       FormHasLabelWithoutNeitherForNorNestedInput) {
+  NavigateToFormPageAndEnableAudits();
+  base::Value::Dict notification =
+      WaitForGenericIssueAdded("FormLabelHasNeitherForNorNestedInput");
+  EXPECT_TRUE(notification
+                  .FindIntByDottedPath(
+                      "issue.details.genericIssueDetails.violatingNodeId")
+                  .has_value());
+}
+
 }  // namespace autofill

@@ -1384,6 +1384,14 @@ void MatchLabelsAndFields(
     auto label_source = AssignedLabelSource::kId;
 
     if (control.IsNull()) {
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableDevtoolsIssues) &&
+          !label.HasAttribute(*kFor)) {
+        label.GetDocument().GetFrame()->AddGenericIssue(
+            blink::mojom::GenericIssueErrorType::
+                kFormLabelHasNeitherForNorNestedInput,
+            label.GetDevToolsNodeId());
+      }
       // Sometimes site authors will incorrectly specify the corresponding
       // field element's name rather than its id, so we compensate here.
       field_data = SearchForFormControlByName(label.GetAttribute(*kFor).Utf16(),

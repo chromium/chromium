@@ -108,6 +108,10 @@ protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
         kFormInputAssignedAutocompleteValueToIdOrNameAttributeError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormInputAssignedAutocompleteValueToIdOrNameAttributeError;
+    case mojom::blink::GenericIssueErrorType::
+        kFormLabelHasNeitherForNorNestedInput:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormLabelHasNeitherForNorNestedInput;
   }
 }
 

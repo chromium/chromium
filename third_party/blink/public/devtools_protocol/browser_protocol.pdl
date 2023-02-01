@@ -750,6 +750,7 @@ experimental domain Audits
       FormEmptyIdAndNameAttributesForInputError
       FormAriaLabelledByToNonExistingId
       FormInputAssignedAutocompleteValueToIdOrNameAttributeError
+      FormLabelHasNeitherForNorNestedInput
 
   # Depending on the concrete errorType, different properties are set.
   type GenericIssueDetails extends object
