@@ -35,22 +35,13 @@ class Group {
   // limit for the `GroupId` of the match.
   virtual bool CanAdd(const AutocompleteMatch& match) const;
   // Adds `match` to this `Group` and increments this `Group`'s total count and
-  // the count for the `GroupId` of the match.
-  // `CanAdd()` should be verified by the caller.
+  // the count for the `GroupId` of the match. `CanAdd()` should be verified by
+  // the caller.
   void Add(const AutocompleteMatch& match);
-  // Increments this `Group`'s total count and the count for the `GroupId` of
-  // the match but does not add `match` to this `Group`.
-  void Count(const AutocompleteMatch& match);
-  // Adjusts the `Group`'s total limit and the limits for the `GroupId`s in the
-  // `Group` based on the number of matches counted and the given max limit.
-  // Ensures that the limits are less than or equal to their original values.
-  // Resets the `Group`'s total count and the counts for the `GroupId`s in the
-  // `Group` so that matches can actually be added to the `Group`.
-  void AdjustLimitsAndResetCounts(size_t max_limit);
 
-  size_t limit() { return limit_; }
+  size_t limit() const { return limit_; }
   void set_limit(size_t limit) { limit_ = limit; }
-  const ACMatches& matches() { return matches_; }
+  const ACMatches& matches() const { return matches_; }
 
  private:
   // Max number of matches this `Group` can contain.

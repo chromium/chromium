@@ -384,7 +384,7 @@ void AutocompleteResult::SortAndCull(
     PSections sections;
     if (is_zero_suggest) {
       sections.push_back(std::make_unique<DesktopZpsSection>());
-    } else if (matches_.size() > 2) {  // Grouping is a no-op for only 1 match.
+    } else {
       sections.push_back(std::make_unique<DesktopNonZpsSection>());
     }
     matches_ = Section::GroupMatches(std::move(sections), std::move(matches_));

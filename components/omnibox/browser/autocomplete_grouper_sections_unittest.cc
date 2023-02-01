@@ -52,8 +52,8 @@ TEST(AutocompleteGrouperSectionsTest, Section) {
   test({CreateMatch(1, omnibox::GROUP_SEARCH)}, {});
 }
 
-// Tests a section with groups and limits, but no rules.
-TEST(AutocompleteGrouperSectionsTest, SectionWithGroupsAndLimitsButNoRules) {
+// Tests the groups, limits, and rules for the ZPS section.
+TEST(AutocompleteGrouperSectionsTest, ZpsSection) {
   auto test = [](const ACMatches& matches,
                  std::vector<int> expected_relevances) {
     PSections sections;
@@ -68,7 +68,7 @@ TEST(AutocompleteGrouperSectionsTest, SectionWithGroupsAndLimitsButNoRules) {
   }
 
   {
-    SCOPED_TRACE("Matches that qualify for no groups, should not be added.");
+    SCOPED_TRACE("Matches that qualify for no groups should not be added.");
     test(
         {
             CreateMatch(100, omnibox::GROUP_DOCUMENT),

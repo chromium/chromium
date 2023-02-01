@@ -26,14 +26,14 @@ class Section {
   // Returns `matches` ranked and culled according to `sections`. All `matches`
   // should have `suggestion_group_id` set and be sorted by relevance.
   static ACMatches GroupMatches(PSections sections, ACMatches matches);
-  // Used to adjust this `Section`'s total limit and the total limits for the
-  // `Group`s in this `Section` based on the given matches.
-  virtual void InitFromMatches(const ACMatches& matches) {}
+  // Used to adjust this `Section`'s and its `Group`s' total limits.
+  virtual void InitFromMatches(ACMatches& matches) {}
 
  protected:
   // Returns the first `Group` in this `Section` `match` can be added to or
-  // `nullptr` if none can be found. Does not take the total limit into account.
-  Group* FindGroup(const AutocompleteMatch& match);
+  // `groups_.end()` if none can be found. Does not take the total limit into
+  // account.
+  PGroups::iterator FindGroup(const AutocompleteMatch& match);
   // Returns whether `match` was added to a `Group` in this `Section`. Does not
   // add a match beyond the total limit.
   bool Add(const AutocompleteMatch& match);
@@ -46,16 +46,14 @@ class Section {
   PGroups groups_{};
 };
 
-// Base section for zps limits and grouping.
-// Since zero-prefix matches are seen in descending order of relevance, the
-// default implementation of `InitFromMatches()` ensures that matches with
-// higher relevance scores do not fill up the section if others with lower
-// scores are expected to be placed earlier based on their `Group`s position.
+// Base section for zps limits and grouping. Ensures that matches with higher
+// relevance scores do not fill up the section if others with lower scores are
+// expected to be placed earlier based on their `Group`'s position.
 class ZpsSection : public Section {
  public:
   explicit ZpsSection(size_t limit);
   // Section:
-  void InitFromMatches(const ACMatches& matches) override;
+  void InitFromMatches(ACMatches& matches) override;
 };
 
 // Section expressing the Android zps limits and grouping. The rules are:
@@ -89,7 +87,7 @@ class DesktopNonZpsSection : public Section {
  public:
   DesktopNonZpsSection();
   // Section:
-  void InitFromMatches(const ACMatches& matches) override;
+  void InitFromMatches(ACMatches& matches) override;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_GROUPER_SECTIONS_H_

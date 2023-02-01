@@ -5,7 +5,6 @@
 #include "components/omnibox/browser/autocomplete_grouper_sections.h"
 
 #include <algorithm>
-#include <iterator>
 #include <limits>
 #include <memory>
 
@@ -43,52 +42,40 @@ ACMatches Section::GroupMatches(PSections sections, ACMatches matches) {
   return grouped_matches;
 }
 
-Group* Section::FindGroup(const AutocompleteMatch& match) {
-  auto iter = base::ranges::find_if(
+PGroups::iterator Section::FindGroup(const AutocompleteMatch& match) {
+  return base::ranges::find_if(
       groups_, [&](const auto& group) { return group->CanAdd(match); });
-  if (iter == groups_.end())
-    return nullptr;
-  return iter->get();
 }
 
 bool Section::Add(const AutocompleteMatch& match) {
   if (count_ >= limit_) {
     return false;
   }
-  Group* group = FindGroup(match);
-  if (group) {
-    group->Add(match);
-    count_++;
+  auto group_itr = FindGroup(match);
+  if (group_itr == groups_.end()) {
+    return false;
   }
-  return group;
+  group_itr->get()->Add(match);
+  count_++;
+  return true;
 }
 
 ZpsSection::ZpsSection(size_t limit) : Section(limit) {}
 
-void ZpsSection::InitFromMatches(const ACMatches& matches) {
-  // Iterate over the matches to see if they can be added to any `Group` in this
-  // `Section`. If so, increment the total count for this `Section` and for the
-  // respective group.
-  for (const auto& match : matches) {
-    Group* group = FindGroup(match);
-    if (group) {
-      count_++;
-      group->Count(match);
-    }
-  }
-
-  // Adjust the `Section`'s total limit based on the number of matches in the
-  // `Section`. Ensure the limit is less than or equal to the original value.
-  // Reset the count so that matches can actually be added to this `Section`.
-  limit_ = std::min(limit_, count_);
-  count_ = 0;
-
-  size_t remaining = limit_;
-  for (const auto& group : groups_) {
-    group->AdjustLimitsAndResetCounts(remaining);
-    remaining -= group->limit();
-  }
-  DCHECK_EQ(remaining, 0U);
+void ZpsSection::InitFromMatches(ACMatches& matches) {
+  // Sort matches in the order of their potential containing groups. E.g., if
+  // `groups_ = {group 1, group 2}, this sorts all matches that can be added to
+  // group 1 before those that can only be added to group 2.
+  base::ranges::stable_sort(
+      matches,
+      [&](const auto& group_index1, const auto& group_index2) {
+        return group_index1 - group_index2;
+      },
+      [&](const auto& match) {
+        // Don't have to handle `FindGroup()` returning `groups_.end()` since
+        // those matches won't be added to the section anyways.
+        return std::distance(groups_.begin(), FindGroup(match));
+      });
 }
 
 AndroidZpsSection::AndroidZpsSection() : ZpsSection(15) {
@@ -121,7 +108,7 @@ DesktopNonZpsSection::DesktopNonZpsSection() : Section(10) {
   groups_.push_back(std::make_unique<Group>(7, omnibox::GROUP_OTHER_NAVS));
 }
 
-void DesktopNonZpsSection::InitFromMatches(const ACMatches& matches) {
+void DesktopNonZpsSection::InitFromMatches(ACMatches& matches) {
   auto* default_group = groups_[0].get();
   auto* search_group = groups_[2].get();
   auto* nav_group = groups_[3].get();
