@@ -180,8 +180,18 @@ NotificationCenterBubble* NotificationCenterTestApi::GetBubble() {
   return notification_center_tray_->bubble_.get();
 }
 
-views::View* NotificationCenterTestApi::GetNotificationCenterView() {
-  return notification_center_tray_->bubble_->notification_center_view_;
+NotificationCenterView* NotificationCenterTestApi::GetNotificationCenterView() {
+  auto* status_area_widget =
+      Shell::Get()
+          ->GetRootWindowControllerWithDisplayId(primary_display_id_)
+          ->shelf()
+          ->status_area_widget();
+  return features::IsQsRevampEnabled()
+             ? status_area_widget->notification_center_tray()
+                   ->bubble_->notification_center_view_
+             : status_area_widget->unified_system_tray()
+                   ->message_center_bubble()
+                   ->notification_center_view();
 }
 
 views::View* NotificationCenterTestApi::GetClearAllButton() {

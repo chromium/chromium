@@ -36,6 +36,7 @@ namespace ash {
 class NotificationCenterBubble;
 class NotificationListView;
 class NotificationCenterTray;
+class NotificationCenterView;
 
 // Utility class to facilitate easier testing of the notification center.
 class NotificationCenterTestApi {
@@ -124,7 +125,7 @@ class NotificationCenterTestApi {
   NotificationCenterBubble* GetBubble();
 
   // Returns the top level view for the notification center.
-  views::View* GetNotificationCenterView();
+  NotificationCenterView* GetNotificationCenterView();
 
   // Returns the clear all button in the bottom right corner of the notification
   // center UI.
