@@ -36215,6 +36215,7 @@ should be able to be added at any place in this file.
       label="For the overflow menu help tip on iOS."/>
   <suffix name="PageInfo" label="In product help for opening PageInfo."/>
   <suffix name="PageInfoStoreInfo" label="For PageInfoStoreInfo feature."/>
+  <suffix name="PageZoom" label="For Page Zoom feature."/>
   <suffix name="PasswordsAccountStorage"
       label="For PasswordsAccountStorage feature."/>
   <suffix name="PasswordSuggestions" label="For PasswordSuggestions feature."/>

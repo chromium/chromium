@@ -18,6 +18,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/ShortcutHelperTest.java",
   "junit/src/org/chromium/chrome/browser/UndoRefocusHelperTest.java",
   "junit/src/org/chromium/chrome/browser/about_settings/AboutSettingsBridgeTest.java",
+  "junit/src/org/chromium/chrome/browser/accessibility/PageZoomIPHControllerTest.java",
   "junit/src/org/chromium/chrome/browser/app/appmenu/AppMenuPropertiesDelegateUnitTest.java",
   "junit/src/org/chromium/chrome/browser/app/download/home/FileDeletionQueueTest.java",
   "junit/src/org/chromium/chrome/browser/app/metrics/LaunchCauseMetricsTest.java",
