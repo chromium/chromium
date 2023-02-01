@@ -193,7 +193,7 @@ struct SerializeObject {
 // 30: Add navigation API state.
 // 31: Add protect url in navigation API bit.
 // 32: Fix assign() for initiator origin.
-// 33: Add initiator origin to FrameState.
+// 33: Add initiator base url to FrameState.
 // NOTE: If the version is -1, then the pickle contains only a URL string.
 // See ReadPageState.
 //
