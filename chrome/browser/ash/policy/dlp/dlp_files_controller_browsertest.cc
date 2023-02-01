@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/string_piece_forward.h"
+#include "chrome/browser/extensions/api/file_system/file_entry_picker.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -102,6 +103,33 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerBrowserTest, FilesUploadCallerPassed) {
     select_file_dialog_factory->SetOpenCallback(run_loop.QuitClosure());
     file_select_helper->RunFileChooser(render_frame_host, std::move(listener),
                                        params.Clone());
+    run_loop.Run();
+  }
+
+  const GURL* caller = select_file_dialog_factory->GetLastDialog()->caller();
+  ASSERT_TRUE(caller);
+  EXPECT_EQ(*caller, GURL(kExampleUrl));
+}
+
+IN_PROC_BROWSER_TEST_F(DlpFilesControllerBrowserTest,
+                       FileEntryPicker_CallerPassed) {
+  ui::FakeSelectFileDialog::Factory* select_file_dialog_factory =
+      ui::FakeSelectFileDialog::RegisterFactory();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  {
+    base::RunLoop run_loop;
+    select_file_dialog_factory->SetOpenCallback(run_loop.QuitClosure());
+    new extensions::FileEntryPicker(
+        /*web_contents=*/web_contents, /*suggested_name=*/base::FilePath(),
+        /*file_type_info*/ ui::SelectFileDialog::FileTypeInfo(),
+        /*picker_type=*/ui::SelectFileDialog::Type::SELECT_SAVEAS_FILE,
+        /*files_selected_callback=*/base::DoNothing(),
+        /*file_selection_canceled_callback=*/base::DoNothing());
     run_loop.Run();
   }
 
