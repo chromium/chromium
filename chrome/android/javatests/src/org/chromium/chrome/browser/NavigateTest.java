@@ -576,6 +576,7 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
+    @DisabledTest(message = "https://crbug.com/1410635")
     @Features.DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testNavigateBackWithTabSwitcher() throws Exception {
         final String[] urls = {mTestServer.getURL("/chrome/test/data/android/navigate/one.html"),
@@ -605,6 +606,7 @@ public class NavigateTest {
     @MediumTest
     @Feature({"Navigation"})
     @Features.EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @DisabledTest(message = "https://crbug.com/1410635")
     public void testNavigateBackWithTabSwitcher_BackPressRefactor() throws Exception {
         // Disable iph
         TestThreadUtils.runOnUiThreadBlocking(() -> {
