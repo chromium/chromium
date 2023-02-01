@@ -425,10 +425,11 @@ Intellisense support.
 If you want to use Visual Studio Intellisense when developing Chromium, use the
 `--ide` command line argument to `gn gen` when you generate your output
 directory (as described on the [get the code](https://dev.chromium.org/developers/how-tos/get-the-code)
-page):
+page). This is an example when your checkout is `C:\src\chromium` and your
+output directory is `out\Default`:
 
 ```shell
-$ gn gen --ide=vs --ninja-executable=\path\to\chromium\src\third_party\ninja\ninja.exe out\Default
+$ gn gen --ide=vs --ninja-executable=C:\src\chromium\src\third_party\ninja\ninja.exe out\Default
 $ devenv out\Default\all.sln
 ```
 
@@ -447,7 +448,7 @@ let you compile and run Chrome in the IDE but will not show any source files
 is:
 
 ```
-$ gn gen --ide=vs --ninja-executable=\path\to\chromium\src\third_party\ninja\ninja.exe --filters=//chrome --no-deps out\Default
+$ gn gen --ide=vs --ninja-executable=C:\src\chromium\src\third_party\ninja\ninja.exe --filters=//chrome --no-deps out\Default
 ```
 
 You can selectively add other directories you care about to the filter like so:
