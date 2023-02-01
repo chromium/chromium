@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -859,6 +860,49 @@ TEST_F(LayoutBoxTest, DelayedInvalidation) {
   EXPECT_EQ(obj->FullPaintInvalidationReason(),
             PaintInvalidationReason::kImage);
   EXPECT_FALSE(obj->ShouldDelayFullPaintInvalidation());
+}
+
+TEST_F(LayoutBoxTest, DelayedInvalidationLayoutViewScrolled) {
+  SetHtmlInnerHTML(R"HTML(
+    <body style="
+      background-image: url(data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==);
+      background-size: cover;
+    ">
+      <div style="height: 20000px"></div>
+    </body>
+  )HTML");
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* layout_view = GetDocument().GetLayoutView();
+  EXPECT_FALSE(layout_view->ShouldDelayFullPaintInvalidation());
+
+  // The background-image will be painted by the LayoutView. Get a reference to
+  // it from there.
+  auto* background_image =
+      layout_view->StyleRef().BackgroundLayers().GetImage();
+  ASSERT_TRUE(background_image);
+  auto* image_resource_content = background_image->CachedImage();
+  ASSERT_TRUE(image_resource_content);
+  ASSERT_TRUE(image_resource_content->GetImage()->MaybeAnimated());
+
+  // Simulate an image change notification.
+  static_cast<ImageObserver*>(image_resource_content)
+      ->Changed(image_resource_content->GetImage());
+  EXPECT_TRUE(layout_view->MayNeedPaintInvalidationAnimatedBackgroundImage());
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(layout_view->ShouldDelayFullPaintInvalidation());
+
+  static_cast<ImageObserver*>(image_resource_content)
+      ->Changed(image_resource_content->GetImage());
+  EXPECT_TRUE(layout_view->MayNeedPaintInvalidationAnimatedBackgroundImage());
+
+  // Scroll down at least by a viewport height.
+  GetDocument().domWindow()->scrollBy(0, 10000);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(layout_view->ShouldDelayFullPaintInvalidation());
 }
 
 TEST_F(LayoutBoxTest, MarkerContainerLayoutOverflowRect) {

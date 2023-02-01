@@ -2891,10 +2891,16 @@ void LayoutBox::SizeChanged() {
 
 bool LayoutBox::IntersectsVisibleViewport() const {
   NOT_DESTROYED();
-  PhysicalRect rect = PhysicalVisualOverflowRect();
   LayoutView* layout_view = View();
-  while (layout_view->GetFrame()->OwnerLayoutObject())
-    layout_view = layout_view->GetFrame()->OwnerLayoutObject()->View();
+  while (auto* owner = layout_view->GetFrame()->OwnerLayoutObject()) {
+    layout_view = owner->View();
+  }
+  // If this is the outermost LayoutView then it will always intersect. (`rect`
+  // will be the viewport in that case.)
+  if (this == layout_view) {
+    return true;
+  }
+  PhysicalRect rect = PhysicalVisualOverflowRect();
   MapToVisualRectInAncestorSpace(layout_view, rect);
   return rect.Intersects(PhysicalRect(
       layout_view->GetFrameView()->GetScrollableArea()->VisibleContentRect()));
