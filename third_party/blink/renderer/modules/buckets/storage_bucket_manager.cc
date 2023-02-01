@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/buckets/storage_bucket_manager.h"
 
+#include <cstdint>
+
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -22,14 +24,17 @@ namespace blink {
 namespace {
 
 bool IsValidName(const String& name) {
-  if (!name.IsLowerASCII())
+  if (!name.IsLowerASCII()) {
     return false;
+  }
 
-  if (!name.ContainsOnlyASCIIOrEmpty())
+  if (!name.ContainsOnlyASCIIOrEmpty()) {
     return false;
+  }
 
-  if (name.empty() || name.length() >= 64)
+  if (name.empty() || name.length() >= 64) {
     return false;
+  }
 
   // | name | must only contain lowercase latin letters, digits 0-9, or special
   // characters '-' & '_' in the middle of the name, but not at the beginning.
@@ -51,6 +56,8 @@ mojom::blink::BucketPoliciesPtr ToMojoBucketPolicies(
   }
 
   if (options->hasQuotaNonNull()) {
+    DCHECK_LE(options->quotaNonNull(),
+              uint64_t{std::numeric_limits<int64_t>::max()});
     policies->quota = options->quotaNonNull();
     policies->has_quota = true;
   }
@@ -62,8 +69,9 @@ mojom::blink::BucketPoliciesPtr ToMojoBucketPolicies(
     policies->has_durability = true;
   }
 
-  if (options->hasExpiresNonNull())
+  if (options->hasExpiresNonNull()) {
     policies->expires = base::Time::FromJavaTime(options->expiresNonNull());
+  }
 
   return policies;
 }
@@ -107,6 +115,12 @@ ScriptPromise StorageBucketManager::open(ScriptState* script_state,
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidCharacterError,
         "The bucket name '" + name + "' is not a valid name."));
+    return promise;
+  }
+
+  if (options->hasQuotaNonNull() && options->quotaNonNull() == 0) {
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(), "The bucket's quota cannot equal zero."));
     return promise;
   }
 
@@ -182,8 +196,9 @@ void StorageBucketManager::DidOpen(
     ScriptPromiseResolver* resolver,
     mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote) {
   ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
+  if (!script_state->ContextIsValid()) {
     return;
+  }
   ScriptState::Scope scope(script_state);
 
   if (!bucket_remote) {
@@ -200,8 +215,9 @@ void StorageBucketManager::DidGetKeys(ScriptPromiseResolver* resolver,
                                       const Vector<String>& keys,
                                       bool success) {
   ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
+  if (!script_state->ContextIsValid()) {
     return;
+  }
   ScriptState::Scope scope(script_state);
 
   if (!success) {
@@ -216,8 +232,9 @@ void StorageBucketManager::DidGetKeys(ScriptPromiseResolver* resolver,
 void StorageBucketManager::DidDelete(ScriptPromiseResolver* resolver,
                                      bool success) {
   ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
+  if (!script_state->ContextIsValid()) {
     return;
+  }
   ScriptState::Scope scope(script_state);
 
   if (!success) {

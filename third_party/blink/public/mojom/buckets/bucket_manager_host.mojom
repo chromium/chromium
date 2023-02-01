@@ -30,6 +30,9 @@ struct BucketPolicies {
   BucketDurability durability;
   bool has_durability = false;
 
+  // `quota` should always be positive, but this is not uint64_t because SQLite
+  // only handles signed integers and some legacy code does arithmetic with
+  // these values.
   int64 quota;
   bool has_quota = false;
 
@@ -53,6 +56,8 @@ interface BucketHost {
 
   // Retrieves estimated quota usage data for the StorageBucket. The values for
   // |current_usage| and |current_quota| are only valid when |success| is true.
+  // Ideally usage and quota should be an uint64s. See comment in BucketPolicies
+  // for quota.
   // TODO(ayui): Return quota UsageBreakdown.
   Estimate() => (int64 current_usage, int64 current_quota, bool success);
 

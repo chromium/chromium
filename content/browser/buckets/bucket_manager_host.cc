@@ -48,14 +48,22 @@ void BucketManagerHost::OpenBucket(const std::string& name,
 
   storage::BucketInitParams params(storage_key_, name);
   if (policies) {
-    if (policies->expires)
+    if (policies->expires) {
       params.expiration = *policies->expires;
+    }
 
-    if (policies->has_quota)
+    if (policies->has_quota) {
+      if (policies->quota <= 0) {
+        receivers_.ReportBadMessage("Invalid quota");
+        return;
+      }
+
       params.quota = policies->quota;
+    }
 
-    if (policies->has_durability)
+    if (policies->has_durability) {
       params.durability = policies->durability;
+    }
 
     if (policies->has_persisted) {
       // Only grant persistence if permitted.
@@ -148,8 +156,9 @@ void BucketManagerHost::DidGetBuckets(
 
   std::vector<std::string> keys;
   for (auto& bucket : buckets.value()) {
-    if (!bucket.is_default())
+    if (!bucket.is_default()) {
       keys.push_back(bucket.name);
+    }
   }
   std::sort(keys.begin(), keys.end());
 
