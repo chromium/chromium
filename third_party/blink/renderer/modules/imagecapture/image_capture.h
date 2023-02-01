@@ -120,6 +120,9 @@ class MODULES_EXPORT ImageCapture final
 
   const String& SourceId() const;
 
+  const absl::optional<String> GetUnsupportedContraint(
+      const MediaTrackConstraintSet* constraints);
+
   Member<MediaStreamTrack> stream_track_;
   std::unique_ptr<ImageCaptureFrameGrabber> frame_grabber_;
   HeapMojoRemote<media::mojom::blink::ImageCapture> service_;

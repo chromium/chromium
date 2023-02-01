@@ -462,33 +462,9 @@ void ImageCapture::SetMediaTrackConstraints(
     return;
   }
 
-  if ((constraints->hasWhiteBalanceMode() &&
-       !capabilities_->hasWhiteBalanceMode()) ||
-      (constraints->hasExposureMode() && !capabilities_->hasExposureMode()) ||
-      (constraints->hasFocusMode() && !capabilities_->hasFocusMode()) ||
-      (constraints->hasExposureCompensation() &&
-       !capabilities_->hasExposureCompensation()) ||
-      (constraints->hasExposureTime() && !capabilities_->hasExposureTime()) ||
-      (constraints->hasColorTemperature() &&
-       !capabilities_->hasColorTemperature()) ||
-      (constraints->hasIso() && !capabilities_->hasIso()) ||
-      (constraints->hasBrightness() && !capabilities_->hasBrightness()) ||
-      (constraints->hasContrast() && !capabilities_->hasContrast()) ||
-      (constraints->hasSaturation() && !capabilities_->hasSaturation()) ||
-      (constraints->hasSharpness() && !capabilities_->hasSharpness()) ||
-      (constraints->hasFocusDistance() && !capabilities_->hasFocusDistance()) ||
-      (constraints->hasPan() &&
-       !(capabilities_->hasPan() && HasPanTiltZoomPermissionGranted())) ||
-      (constraints->hasTilt() &&
-       !(capabilities_->hasTilt() && HasPanTiltZoomPermissionGranted())) ||
-      (constraints->hasZoom() &&
-       !(capabilities_->hasZoom() && HasPanTiltZoomPermissionGranted())) ||
-      (constraints->hasTorch() && !capabilities_->hasTorch()) ||
-      (constraints->hasBackgroundBlur() &&
-       !capabilities_->hasBackgroundBlur())) {
-    // TODO(eero): supply a constraint name.
+  if (absl::optional<String> name = GetUnsupportedContraint(constraints)) {
     resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-        "", "Unsupported constraint(s)"));
+        name.value(), "Unsupported constraint"));
     return;
   }
 
@@ -1218,6 +1194,67 @@ bool ImageCapture::IsPageVisible() {
 
 const String& ImageCapture::SourceId() const {
   return stream_track_->Component()->Source()->Id();
+}
+
+const absl::optional<String> ImageCapture::GetUnsupportedContraint(
+    const MediaTrackConstraintSet* constraints) {
+  if (constraints->hasWhiteBalanceMode() &&
+      !capabilities_->hasWhiteBalanceMode()) {
+    return "whiteBalanceMode";
+  }
+  if (constraints->hasExposureMode() && !capabilities_->hasExposureMode()) {
+    return "exposureMode";
+  }
+  if (constraints->hasFocusMode() && !capabilities_->hasFocusMode()) {
+    return "focusMode";
+  }
+  if (constraints->hasExposureCompensation() &&
+      !capabilities_->hasExposureCompensation()) {
+    return "exposureCompensation";
+  }
+  if (constraints->hasExposureTime() && !capabilities_->hasExposureTime()) {
+    return "exposureTime";
+  }
+  if (constraints->hasColorTemperature() &&
+      !capabilities_->hasColorTemperature()) {
+    return "colorTemperature";
+  }
+  if (constraints->hasIso() && !capabilities_->hasIso()) {
+    return "iso";
+  }
+  if (constraints->hasBrightness() && !capabilities_->hasBrightness()) {
+    return "brightness";
+  }
+  if (constraints->hasContrast() && !capabilities_->hasContrast()) {
+    return "contrast";
+  }
+  if (constraints->hasSaturation() && !capabilities_->hasSaturation()) {
+    return "saturation";
+  }
+  if (constraints->hasSharpness() && !capabilities_->hasSharpness()) {
+    return "sharpness";
+  }
+  if (constraints->hasFocusDistance() && !capabilities_->hasFocusDistance()) {
+    return "focusDistance";
+  }
+  if (!HasPanTiltZoomPermissionGranted()) {
+    if (constraints->hasPan() && !capabilities_->hasPan()) {
+      return "pan";
+    }
+    if (constraints->hasTilt() && !capabilities_->hasTilt()) {
+      return "tilt";
+    }
+    if (constraints->hasZoom() && !capabilities_->hasZoom()) {
+      return "zoom";
+    }
+  }
+  if (constraints->hasTorch() && !capabilities_->hasTorch()) {
+    return "torch";
+  }
+  if (constraints->hasBackgroundBlur() && !capabilities_->hasBackgroundBlur()) {
+    return "backgroundBlur";
+  }
+  return absl::nullopt;
 }
 
 ImageCapture* ImageCapture::Clone() const {
