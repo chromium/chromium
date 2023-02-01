@@ -83,13 +83,40 @@ static const struct FileUtilICUTestCases {
     {u"(\u200C.\u200D.\u200E.\u200F.\u202A.\u202B.\u202C.\u202D.\u202E.\u206A."
      u"\u206B.\u206C.\u206D.\u206F.\uFEFF)",
      u"(-.-.-.-.-.-.-.-.-.-.-.-.-.-.-)", u"( . . . . . . . . . . . . . . )"},
-    {u"config~1", u"config-1", u"config 1"},
     {u" _ ", u"-_-", u"_"},
     {u" ", u"-", u"_ _"},
     {u"\u2008.(\u2007).\u3000", u"-.(\u2007).-", u"(\u2007)"},
     {u"     ", u"-   -", u"_     _"},
-    {u".    ", u"-   -", u"_.    _"}};
-
+    {u".    ", u"-   -", u"_.    _"},
+#if BUILDFLAG(IS_WIN)
+    // '~' is only invalid on Windows, and only if the file name could possibly
+    // be an 8.3 short name.
+    {u"config~1", u"config-1", u"config 1"},
+    {u"config~1.txt", u"config-1.txt", u"config 1.txt"},
+#else
+    {u"config~1", u"config~1", u"config~1"},
+    {u"config~1.txt", u"config~1.txt", u"config~1.txt"},
+#endif
+    // Tildes are always illegal at ends.
+    {u"~config1.txt", u"-config1.txt", u"config1.txt"},
+    {u"config1.txt~", u"config1.txt-", u"config1.txt"},
+    // Some characters, such as spaces, are not allowed in 8.3 short names.
+    // Don't replace the '~' if these characters are present.
+    {u"conf g~1", u"conf g~1", u"conf g~1"},
+    {u"conf,g~1.txt", u"conf,g~1.txt", u"conf,g~1.txt"},
+    // File names with periods in invalid positions are not legal 8.3 names.
+    {u"conf~1.jpeg", u"conf~1.jpeg", u"conf~1.jpeg"},
+    {u"config~12.md", u"config~12.md", u"config~12.md"},
+    // Short names without a '~' character are allowed.
+    {u"config.txt", u"config.txt", u"config.txt"},
+    // Names long enough to not be short names are allowed.
+    {u"config~12.txt", u"config~12.txt", u"config~12.txt"},
+    {u"config~1VeryLongCannotBeShortNameOK.txt",
+     u"config~1VeryLongCannotBeShortNameOK.txt",
+     u"config~1VeryLongCannotBeShortNameOK.txt"},
+    // Base name is longer than 8 characters, without a dot.
+    {u"config~1txt", u"config~1txt", u"config~1txt"},
+};
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_POSIX)
 
 TEST_F(FileUtilICUTest, ReplaceIllegalCharactersInPathTest) {
