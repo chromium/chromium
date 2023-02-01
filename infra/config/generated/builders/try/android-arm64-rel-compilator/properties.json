@@ -85,6 +85,10 @@
     }
   },
   "$build/code_coverage": {
+    "coverage_test_types": [
+      "unit",
+      "overall"
+    ],
     "use_clang_coverage": true
   },
   "$build/flakiness": {

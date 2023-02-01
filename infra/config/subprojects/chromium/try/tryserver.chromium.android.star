@@ -127,6 +127,7 @@ try_.orchestrator_builder(
     # are addressed
     # use_orchestrator_pool = True,
     use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
 )
 
 try_.orchestrator_builder(
@@ -148,6 +149,7 @@ try_.orchestrator_builder(
     },
     use_orchestrator_pool = True,
     use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
 )
 
 try_.compilator_builder(
