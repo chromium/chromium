@@ -31,7 +31,13 @@
 #endif
 
 namespace {
-const CGFloat kTextTopMargin = 6;
+const CGFloat kTextTopMargin = 6.0;
+const CGFloat kMultilineTextTopMargin = 11.0;
+/// Trailing margin of the text. This margin is increased when the text is on
+/// multiple lines, otherwise text of the first lines without the gradient seems
+/// too close to the trailing (button/end).
+const CGFloat kTextTrailingMargin = 0.0;
+const CGFloat kMultilineTextTrailingMargin = 4.0;
 const CGFloat kTrailingButtonSize = 24;
 const CGFloat kTrailingButtonTrailingMargin = 14;
 const CGFloat kTopGradientColorOpacity = 0.85;
@@ -46,6 +52,12 @@ const NSInteger kSearchSuggestNumberOfLines = 2;
 
 NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     @"OmniboxPopupRowSwitchTabAccessibilityIdentifier";
+
+/// Returns `YES` if `kOmniboxMultilineSearchSuggest` is enabled.
+BOOL IsMultilineSearchSuggestionEnabled() {
+  return base::FeatureList::IsEnabled(kOmniboxMultilineSearchSuggest);
+}
+
 }  // namespace
 
 @interface OmniboxPopupRowCell ()
@@ -81,6 +93,11 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 /// The layout guides tracking external views to base layout off of.
 @property(nonatomic, strong) UILayoutGuide* imageLayoutGuide;
 @property(nonatomic, strong) UILayoutGuide* textLayoutGuide;
+
+/// Constraints that changes when the text is a multi-lines search suggestion.
+@property(nonatomic, strong) NSLayoutConstraint* textTopConstraint;
+@property(nonatomic, strong) NSLayoutConstraint* textTrailingToButtonConstraint;
+@property(nonatomic, strong) NSLayoutConstraint* textTrailingConstraint;
 
 @end
 
@@ -247,6 +264,12 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
       [self.layoutGuideCenter makeLayoutGuideNamed:kOmniboxTextFieldGuide];
   [self.contentView addLayoutGuide:self.textLayoutGuide];
 
+  // Top space should be at least the given top margin, but can be more if
+  // the row is short enough to use the minimum height constraint above.
+  self.textTopConstraint = [self.textStackView.topAnchor
+      constraintGreaterThanOrEqualToAnchor:self.contentView.topAnchor
+                                  constant:kTextTopMargin];
+
   [NSLayoutConstraint activateConstraints:@[
     // Row has a minimum height.
     [self.contentView.heightAnchor
@@ -263,11 +286,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     // Position textStackView "after" leadingIconView. The horizontal position
     // is actually left off because it will be added via a
     // layout guide once the cell has been added to the view hierarchy.
-    // Top space should be at least the given top margin, but can be more if
-    // the row is short enough to use the minimum height constraint above.
-    [self.textStackView.topAnchor
-        constraintGreaterThanOrEqualToAnchor:self.contentView.topAnchor
-                                    constant:kTextTopMargin],
+    self.textTopConstraint,
     [self.textStackView.centerYAnchor
         constraintEqualToAnchor:self.contentView.centerYAnchor],
 
@@ -294,14 +313,17 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 /// Add the trailing button as a subview and setup its constraints.
 - (void)setupTrailingButtonLayout {
   [self.contentView addSubview:self.trailingButton];
+
+  self.textTrailingToButtonConstraint = [self.trailingButton.leadingAnchor
+      constraintEqualToAnchor:self.textStackView.trailingAnchor
+                     constant:kTextTrailingMargin];
   [NSLayoutConstraint activateConstraints:@[
     [self.trailingButton.centerYAnchor
         constraintEqualToAnchor:self.contentView.centerYAnchor],
     [self.contentView.trailingAnchor
         constraintEqualToAnchor:self.trailingButton.trailingAnchor
                        constant:kTrailingButtonTrailingMargin],
-    [self.trailingButton.leadingAnchor
-        constraintEqualToAnchor:self.textStackView.trailingAnchor],
+    self.textTrailingToButtonConstraint,
   ]];
 }
 
@@ -314,8 +336,10 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   // trailing button.
   NSLayoutConstraint* stackViewToCellTrailing =
       [self.textStackView.trailingAnchor
-          constraintEqualToAnchor:self.contentView.trailingAnchor];
+          constraintEqualToAnchor:self.contentView.trailingAnchor
+                         constant:kTextTrailingMargin];
   stackViewToCellTrailing.priority = UILayoutPriorityDefaultHigh;
+  self.textTrailingConstraint = stackViewToCellTrailing;
 
   // These constraints need to be removed when freezing the position of these
   // views. See -freezeLayoutGuidePositions for the reason why.
@@ -422,6 +446,19 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   self.accessibilityCustomActions = nil;
 }
 
+/// Updates the text constraint according to `isMultiline`.
+- (void)updateTextConstraints:(BOOL)isMultiline {
+  if (isMultiline) {
+    self.textTopConstraint.constant = kMultilineTextTopMargin;
+    self.textTrailingConstraint.constant = kMultilineTextTrailingMargin;
+    self.textTrailingToButtonConstraint.constant = kMultilineTextTrailingMargin;
+  } else {
+    self.textTopConstraint.constant = kTextTopMargin;
+    self.textTrailingConstraint.constant = kTextTrailingMargin;
+    self.textTrailingToButtonConstraint.constant = kTextTrailingMargin;
+  }
+}
+
 #pragma mark - Cell setup with data
 
 /// Use the given autocomplete suggestion and whether incognito is enabled to
@@ -472,6 +509,8 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     self.textTruncatingLabel.lineBreakMode = NSLineBreakByClipping;
     self.textTruncatingLabel.numberOfLines = 1;
   }
+  [self updateTextConstraints:IsMultilineSearchSuggestionEnabled() &&
+                              suggestion.isMatchTypeSearch];
 
   // URLs have have special layout requirements.
   self.detailTruncatingLabel.displayAsURL = suggestion.isURL;
