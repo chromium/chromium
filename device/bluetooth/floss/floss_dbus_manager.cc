@@ -15,15 +15,6 @@
 #include "dbus/message.h"
 #include "dbus/object_manager.h"
 #include "dbus/object_proxy.h"
-#include "device/bluetooth/floss/fake_floss_adapter_client.h"
-#include "device/bluetooth/floss/fake_floss_admin_client.h"
-#include "device/bluetooth/floss/fake_floss_advertiser_client.h"
-#include "device/bluetooth/floss/fake_floss_battery_manager_client.h"
-#include "device/bluetooth/floss/fake_floss_gatt_manager_client.h"
-#include "device/bluetooth/floss/fake_floss_lescan_client.h"
-#include "device/bluetooth/floss/fake_floss_logging_client.h"
-#include "device/bluetooth/floss/fake_floss_manager_client.h"
-#include "device/bluetooth/floss/fake_floss_socket_manager.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
 #include "device/bluetooth/floss/floss_advertiser_client.h"
 #include "device/bluetooth/floss/floss_battery_manager_client.h"
@@ -168,9 +159,8 @@ void FlossDBusManager::OnObjectManagerNotSupported(
   // Don't initialize any clients since they need ObjectManager.
 
   object_manager_support_known_ = true;
-  if (object_manager_support_known_callback_) {
+  if (object_manager_support_known_callback_)
     std::move(object_manager_support_known_callback_).Run();
-  }
 }
 
 void FlossDBusManager::SwitchAdapter(int adapter) {
@@ -314,17 +304,11 @@ void FlossDBusManagerSetter::SetFlossAdminClient(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 FlossClientBundle::FlossClientBundle(bool use_stubs) : use_stubs_(use_stubs) {
-#if defined(USE_REAL_DBUS_CLIENTS)
   if (use_stubs) {
-    LOG(FATAL) << "Fakes are unavailable if USE_REAL_DBUS_CLIENTS is defined.";
     return;
   }
-#endif  // defined(USE_REAL_DBUS_CLIENTS)
-  if (!use_stubs) {
-    manager_client_ = FlossManagerClient::Create();
-  } else {
-    manager_client_ = std::make_unique<FakeFlossManagerClient>();
-  }
+
+  manager_client_ = FlossManagerClient::Create();
 
   ResetAdapterClients();
 }
@@ -332,35 +316,21 @@ FlossClientBundle::FlossClientBundle(bool use_stubs) : use_stubs_(use_stubs) {
 FlossClientBundle::~FlossClientBundle() = default;
 
 void FlossClientBundle::ResetAdapterClients() {
-#if defined(USE_REAL_DBUS_CLIENTS)
   if (use_stubs_) {
-    LOG(FATAL) << "Fakes are unavailable if USE_REAL_DBUS_CLIENTS is defined.";
     return;
   }
-#endif  // defined(USE_REAL_DBUS_CLIENTS)
-  if (!use_stubs_) {
-    adapter_client_ = FlossAdapterClient::Create();
-    gatt_manager_client_ = FlossGattManagerClient::Create();
-    socket_manager_ = FlossSocketManager::Create();
-    lescan_client_ = FlossLEScanClient::Create();
-    advertiser_client_ = FlossAdvertiserClient::Create();
-    battery_manager_client_ = FlossBatteryManagerClient::Create();
-    logging_client_ = FlossLoggingClient::Create();
+
+  adapter_client_ = FlossAdapterClient::Create();
+  gatt_manager_client_ = FlossGattManagerClient::Create();
+  socket_manager_ = FlossSocketManager::Create();
+  lescan_client_ = FlossLEScanClient::Create();
+  advertiser_client_ = FlossAdvertiserClient::Create();
+  battery_manager_client_ = FlossBatteryManagerClient::Create();
+  logging_client_ = FlossLoggingClient::Create();
+
 #if BUILDFLAG(IS_CHROMEOS)
-    admin_client_ = FlossAdminClient::Create();
+  admin_client_ = FlossAdminClient::Create();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  } else {
-    adapter_client_ = std::make_unique<FakeFlossAdapterClient>();
-    gatt_manager_client_ = std::make_unique<FakeFlossGattManagerClient>();
-    socket_manager_ = std::make_unique<FakeFlossSocketManager>();
-    lescan_client_ = std::make_unique<FakeFlossLEScanClient>();
-    advertiser_client_ = std::make_unique<FakeFlossAdvertiserClient>();
-    battery_manager_client_ = std::make_unique<FakeFlossBatteryManagerClient>();
-    logging_client_ = std::make_unique<FakeFlossLoggingClient>();
-#if BUILDFLAG(IS_CHROMEOS)
-    admin_client_ = std::make_unique<FakeFlossAdminClient>();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  }
 }
 
 }  // namespace floss
