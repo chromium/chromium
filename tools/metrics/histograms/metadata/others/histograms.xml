@@ -13141,6 +13141,17 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="SubresourceWebBundles.HasJSONComments" enum="Boolean"
+    expires_after="2023-06-01">
+  <owner>jbroman@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
+  <summary>
+    Whether (non-standard) JSON comments occur in a webbundle script element.
+    Logged each time it is parsed as valid JSON, potentially twice due to, e.g.,
+    the preload scanner.
+  </summary>
+</histogram>
+
 <histogram name="SubresourceWebBundles.LoadResult"
     enum="SubresourceWebBundleLoadResult" expires_after="2023-06-18">
   <owner>horo@chromium.org</owner>
