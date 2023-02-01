@@ -721,6 +721,13 @@ void FloatController::FloatImpl(aura::Window* window) {
   const Desk* desk = desks_util::GetDeskForContext(window);
   DCHECK(desk);
 
+  // TODO(b/267363112): Allow a floated window to be assigned to all desks.
+  // If window is visible to all desks, unset it.
+  if (desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
+    window->SetProperty(aura::client::kWindowWorkspaceKey,
+                        aura::client::kWindowWorkspaceUnassignedWorkspace);
+  }
+
   auto* previously_floated_window = FindFloatedWindowOfDesk(desk);
   // Add floated window to `floated_window_info_map_`.
   // Note: this has to be called before `ResetFloatedWindow`. Because in the

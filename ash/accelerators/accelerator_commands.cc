@@ -1072,6 +1072,7 @@ void ToggleAssignToAllDesk() {
   if (!active_window)
     return;
 
+  // TODO(b/267363112): Allow a floated window to be assigned to all desks.
   // Only children of the desk container should have their assigned to all
   // desks state toggled to avoid interfering with special windows like
   // always-on-top windows, floated windows, etc.
