@@ -99851,6 +99851,8 @@ would be helpful to identify which type is being sent.
   <int value="38" label="Eche Tray Tablet Mode Not Supported"/>
   <int value="39" label="Notification Center Tray No Notifications"/>
   <int value="40" label="Copy to Clipboard Action"/>
+  <int value="41" label="Video Conference Tray Speak-On-Mute Detected"/>
+  <int value="42" label="Copy Gif To Clipboard Action"/>
 </enum>
 
 <enum name="TokenBinding.KeyMatch">
