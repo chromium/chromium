@@ -4,12 +4,12 @@
 
 #include "chromeos/components/onc/variable_expander.h"
 
+#include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace variable_expander {
+namespace chromeos::variable_expander {
 
 TEST(VariableExpanderTest, DoesNothingWithoutVariables) {
   VariableExpander expander({{"machine_name", "chromebook"}});
@@ -140,12 +140,14 @@ TEST(VariableExpanderTest, ExpandValueSucceeds) {
   VariableExpander expander({{"machine_name", "chromebook"}});
   EXPECT_TRUE(expander.ExpandValue(&root));
 
-  const base::Value::List& expanded_list = *root.GetDict().FindList("list");
+  const base::Value::Dict& root_dict = root.GetDict();
+  const base::Value::List& expanded_list =
+      CHECK_DEREF(root_dict.FindList("list"));
   EXPECT_EQ(expanded_list[0].GetInt(), 123);
   EXPECT_EQ(expanded_list[1].GetString(), "chromebook");
   EXPECT_EQ(expanded_list[2].GetBool(), true);
-  EXPECT_EQ(*root.GetDict().FindString("str"), "chromebook");
-  EXPECT_EQ(*root.GetDict().FindDouble("double"), 123.45);
+  EXPECT_EQ(CHECK_DEREF(root_dict.FindString("str")), "chromebook");
+  EXPECT_EQ(root_dict.FindDouble("double"), 123.45);
 }
 
 TEST(VariableExpanderTest, ExpandValueExpandsOnlyGoodVariables) {
@@ -156,9 +158,9 @@ TEST(VariableExpanderTest, ExpandValueExpandsOnlyGoodVariables) {
   VariableExpander expander({{"machine_name", "chromebook"}});
   EXPECT_FALSE(expander.ExpandValue(&root));
 
-  EXPECT_EQ(*root.GetDict().FindString("str1"), "${machine_nameBAD}");
-  EXPECT_EQ(*root.GetDict().FindString("str2"), "chromebook");
+  const base::Value::Dict& root_dict = root.GetDict();
+  EXPECT_EQ(CHECK_DEREF(root_dict.FindString("str1")), "${machine_nameBAD}");
+  EXPECT_EQ(CHECK_DEREF(root_dict.FindString("str2")), "chromebook");
 }
 
-}  // namespace variable_expander
-}  // namespace chromeos
+}  // namespace chromeos::variable_expander

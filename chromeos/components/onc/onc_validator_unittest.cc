@@ -316,7 +316,7 @@ class ONCValidatorTestRepairable
   base::Value GetDictionaryFromTestFile(const std::string& name) {
     base::Value dict = test_utils::ReadTestDictionaryValue(
         "invalid_settings_with_repairs.json");
-    base::Value* result = dict.FindKey(name);
+    base::Value* result = dict.GetDict().Find(name);
     EXPECT_TRUE(result);
     return result ? std::move(*result) : base::Value();
   }
