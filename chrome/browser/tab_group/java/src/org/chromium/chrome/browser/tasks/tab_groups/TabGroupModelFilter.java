@@ -319,11 +319,15 @@ public class TabGroupModelFilter extends TabModelFilter {
             }
             for (int i = 0; i < tabsToMerge.size(); i++) {
                 Tab tab = tabsToMerge.get(i);
-                int index = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
-                assert index != TabModel.INVALID_TAB_INDEX;
 
-                originalIndexes.add(index);
-                originalRootIds.add(getRootId(tab));
+                // Skip unnecessary work of populating the lists if logic is skipped below.
+                if (!skipUpdateTabModel) {
+                    int index = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
+                    assert index != TabModel.INVALID_TAB_INDEX;
+                    originalIndexes.add(index);
+                    originalRootIds.add(getRootId(tab));
+                }
+
                 setRootId(tab, destinationGroupId);
             }
             resetFilterState();
@@ -333,10 +337,15 @@ public class TabGroupModelFilter extends TabModelFilter {
             for (Observer observer : mGroupFilterObserver) {
                 observer.didMergeTabToGroup(
                         tabsToMerge.get(tabsToMerge.size() - 1), group.getLastShownTabId());
-                observer.didCreateGroup(tabsToMerge, originalIndexes, originalRootIds);
+                // Since the undo group merge logic is unsupported when called from the tab strip,
+                // skip notifying the UndoGroupSnackbarController observer which shows the snackbar.
+                if (!skipUpdateTabModel) {
+                    observer.didCreateGroup(tabsToMerge, originalIndexes, originalRootIds);
+                }
             }
         } else {
-            mergeListOfTabsToGroup(tabsToMerge, destinationTab, true, true);
+            // For non adjacent tabs, the same logic as above applies regarding the tab strip skip.
+            mergeListOfTabsToGroup(tabsToMerge, destinationTab, true, !skipUpdateTabModel);
         }
     }
 
