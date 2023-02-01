@@ -101,6 +101,10 @@ class WPTResultsProcessorTest(LoggingTestCase):
             self.path_finder.path_from_blink_tools('blinkpy', 'web_tests',
                                                    'results.html'),
             'results-viewer-body')
+        self.fs.write_text_file(
+            self.path_finder.path_from_blink_tools('blinkpy', 'web_tests',
+                                                   'results.html.version'),
+            'Version=1.0')
         self.wpt_report = {
             'run_info': {
                 'os': 'linux',

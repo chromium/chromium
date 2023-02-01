@@ -167,11 +167,15 @@ class WPTResultsProcessor:
         _log.info('Recreated artifacts directory (%s)', self.artifacts_dir)
 
     def _copy_results_viewer(self):
-        source = self.path_finder.path_from_blink_tools(
-            'blinkpy', 'web_tests', 'results.html')
-        destination = self.fs.join(self.artifacts_dir, 'results.html')
-        self.fs.copyfile(source, destination)
-        _log.info('Copied results viewer (%s -> %s)', source, destination)
+        files_to_copy = ['results.html', 'results.html.version']
+        for file in files_to_copy:
+            source = self.path_finder.path_from_blink_tools(
+                'blinkpy', 'web_tests', file)
+            destination = self.fs.join(self.artifacts_dir, file)
+            self.fs.copyfile(source, destination)
+            if file == 'results.html':
+                _log.info('Copied results viewer (%s -> %s)', source,
+                          destination)
 
     def process_wpt_results(self,
                             raw_results_path,
