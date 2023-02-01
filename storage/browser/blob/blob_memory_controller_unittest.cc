@@ -788,7 +788,7 @@ TEST_F(BlobMemoryControllerTest, PagingStopsWhenFull) {
 
 TEST_F(BlobMemoryControllerTest, DisableDiskWithFileAndMemoryPending) {
   const std::string kFirstMemoryId = "id";
-  const uint64_t kFirstMemorySize = kTestBlobStorageMaxBlobMemorySize;
+  const size_t kFirstMemorySize = kTestBlobStorageMaxBlobMemorySize;
   const std::string kSecondMemoryId = "id2";
   const uint64_t kSecondMemorySize = 1;
   const std::string kFileId = "id2";
