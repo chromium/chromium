@@ -92,14 +92,14 @@ class CertificateTransparencyBrowserTest : public CertVerifierBrowserTest {
                                  const char* policy_name,
                                  const char* pref_name,
                                  const std::vector<std::string>& list_values) {
-    base::Value policy_value(base::Value::Type::LIST);
+    base::Value::List policy_value;
     for (const auto& value : list_values) {
       policy_value.Append(value);
     }
     policy::PolicyMap policy_map;
     policy_map.Set(policy_name, policy::POLICY_LEVEL_MANDATORY,
                    policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
-                   std::move(policy_value), nullptr);
+                   base::Value(std::move(policy_value)), nullptr);
 
     EXPECT_NO_FATAL_FAILURE(UpdateChromePolicy(policy_map));
 

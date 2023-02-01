@@ -356,42 +356,37 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
     // 2022-01-01 00:00:00 GMT.
     base::Time server_time =
         base::Time::UnixEpoch() + base::Seconds(1640995200);
-    base::Value response(base::Value::Type::DICT);
-    response.SetStringKey("responseStatus", "OK");
-    response.SetStringKey("now", base::TimeToISO8601(server_time));
+    base::Value::Dict response;
+    response.Set("responseStatus", "OK");
+    response.Set("now", base::TimeToISO8601(server_time));
 
-    base::Value suffixes(base::Value::Type::LIST);
+    base::Value::List suffixes;
     for (const auto& suffix : suffix_list_) {
       suffixes.Append(
           base::Base64Encode(base::as_bytes(base::make_span(suffix))));
     }
-    response.SetKey("hashSuffix", std::move(suffixes));
+    response.Set("hashSuffix", std::move(suffixes));
 
-    base::Value log_list(base::Value::Type::LIST);
+    base::Value::List log_list;
     {
-      base::Value log_status(base::Value::Type::DICT);
-      log_status.SetStringKey("logId", base::Base64Encode(kTestGoogleLogId));
-      log_status.SetStringKey("ingestedUntil",
-                              base::TimeToISO8601(server_time));
+      base::Value::Dict log_status;
+      log_status.Set("logId", base::Base64Encode(kTestGoogleLogId));
+      log_status.Set("ingestedUntil", base::TimeToISO8601(server_time));
       log_list.Append(std::move(log_status));
     }
     {
-      base::Value log_status(base::Value::Type::DICT);
-      log_status.SetStringKey("logId",
-                              base::Base64Encode(kTestNonGoogleLogId1));
-      log_status.SetStringKey("ingestedUntil",
-                              base::TimeToISO8601(server_time));
+      base::Value::Dict log_status;
+      log_status.Set("logId", base::Base64Encode(kTestNonGoogleLogId1));
+      log_status.Set("ingestedUntil", base::TimeToISO8601(server_time));
       log_list.Append(std::move(log_status));
     }
     {
-      base::Value log_status(base::Value::Type::DICT);
-      log_status.SetStringKey("logId",
-                              base::Base64Encode(kTestNonGoogleLogId2));
-      log_status.SetStringKey("ingestedUntil",
-                              base::TimeToISO8601(server_time));
+      base::Value::Dict log_status;
+      log_status.Set("logId", base::Base64Encode(kTestNonGoogleLogId2));
+      log_status.Set("ingestedUntil", base::TimeToISO8601(server_time));
       log_list.Append(std::move(log_status));
     }
-    response.SetKey("logStatus", std::move(log_list));
+    response.Set("logStatus", std::move(log_list));
 
     std::string json;
     bool ok = base::JSONWriter::Write(response, &json);
