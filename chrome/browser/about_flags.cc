@@ -4062,7 +4062,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(content_creation::kWebNotesDynamicTemplates)},
     {"cormorant", flag_descriptions::kCormorantName,
      flag_descriptions::kCormorantDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(share::kCormorant)},
+     FEATURE_VALUE_TYPE(feed::kCormorant)},
     {"add-edu-account-for-supervised-users",
      flag_descriptions::kAddEduAccountFromAccountSettingsForSupervisedUsersName,
      flag_descriptions::
