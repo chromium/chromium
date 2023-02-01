@@ -8,6 +8,13 @@
 
 namespace bookmarks {
 
+constexpr auto kEnabledByDefaultDesktopOnly =
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#endif
+
 // If enabled, uses an approximate pre-check to determine if an input matches a
 // particular bookmark index node. This pre-check is faster than the more
 // accurate check, but it returns false positives; therefore, it's only a
@@ -15,7 +22,7 @@ namespace bookmarks {
 // `omnibox::kBookmarkPaths` is disabled.
 BASE_FEATURE(kApproximateNodeMatch,
              "BookmarkApproximateNodeMatch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             kEnabledByDefaultDesktopOnly);
 
 // If enabled, uses an alternative approach to loading typed counts for URLs
 // when fetching bookmark matches for the bookmark provider.
@@ -39,13 +46,13 @@ BASE_FEATURE(kTypedUrlsMap,
 // `omnibox::kBookmarkPaths` is disabled.
 BASE_FEATURE(kLimitNumNodesForBookmarkSearch,
              "BookmarkLimitNumNodesForBookmarkSearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             kEnabledByDefaultDesktopOnly);
 
 // See `kLimitNumNodesForBookmarkSearch`.
 const base::FeatureParam<int> kLimitNumNodesForBookmarkSearchCount(
     &kLimitNumNodesForBookmarkSearch,
     "BookmarkLimitNumNodesForBookmarkSearchCount",
-    3000);
+    1000);
 
 // If enabled, creates and uses a lightweight (compared to the existing
 // `TitledUrlIndex`). The index maps the terms in paths and the number of paths
@@ -55,8 +62,6 @@ const base::FeatureParam<int> kLimitNumNodesForBookmarkSearchCount(
 // results in much fewer nodes and processing. Should be disabled if
 // `omnibox::kBookmarkPaths` is disabled; otherwise, it'll create the index
 // unnecessarily.
-BASE_FEATURE(kIndexPaths,
-             "BookmarkIndexPaths",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIndexPaths, "BookmarkIndexPaths", kEnabledByDefaultDesktopOnly);
 
 }  // namespace bookmarks
