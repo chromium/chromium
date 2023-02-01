@@ -171,6 +171,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Browser.ERP.RecordsPerUpload" units="records"
+    expires_after="2024-01-31">
+  <owner>jrhilke@chromium.org</owner>
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when uploading records to the reporting server. Counts the number
+    of records batched into a single upload request.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.UnusualEnqueueTimestamp" enum="Boolean"
     expires_after="2024-01-30">
   <owner>xuhong@chromium.org</owner>

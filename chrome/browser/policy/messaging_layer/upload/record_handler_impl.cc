@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -166,6 +167,8 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
   auto response_cb =
       base::BindOnce(&RecordHandlerImpl::ReportUploader::OnUploadComplete,
                      base::Unretained(this));
+
+  base::UmaHistogramCounts1000("Browser.ERP.RecordsPerUpload", records_.size());
 
   UploadEncryptedReportingRequestBuilder request_builder{need_encryption_key_};
   for (auto record : records_) {
