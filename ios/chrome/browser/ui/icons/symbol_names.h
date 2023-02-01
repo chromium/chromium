@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "build/build_config.h"
 #import "ios/chrome/browser/ui/icons/buildflags.h"
 
 /// *******
@@ -34,7 +35,9 @@ extern NSString* const kReadingListSymbol;
 extern NSString* const kRecentTabsSymbol;
 extern NSString* const kLanguageSymbol;
 extern NSString* const kPasswordSymbol;
+#if !BUILDFLAG(IS_IOS_MACCATALYST)
 extern NSString* const kMulticolorPasswordSymbol;
+#endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 extern NSString* const kCameraLensSymbol;
 extern NSString* const kDownTrendSymbol;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)

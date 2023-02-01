@@ -7,6 +7,8 @@
 #import <ostream>
 
 #import "base/notreached.h"
+#import "build/build_config.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/ui/badges/badge_button.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/badges/badge_delegate.h"
@@ -63,9 +65,16 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 
 #pragma mark - Private
 - (BadgeButton*)passwordsSaveBadgeButton {
-  UIImage* image = UseSymbols() ? CustomSymbolWithPointSize(
-                                      kPasswordSymbol, kInfobarSymbolPointSize)
-                                : [UIImage imageNamed:@"password_key"];
+  UIImage* symbol =
+      CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
+#if !BUILDFLAG(IS_IOS_MACCATALYST)
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kIOSShowPasswordStorageInSaveInfobar)) {
+    symbol = CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
+                                       kInfobarSymbolPointSize);
+  }
+#endif  // BUILDFLAG(IS_IOS_MACCATALYST)
+  UIImage* image = UseSymbols() ? symbol : [UIImage imageNamed:@"password_key"];
   BadgeButton* button =
       [self createButtonForType:kBadgeTypePasswordSave
                           image:[image imageWithRenderingMode:
@@ -81,9 +90,16 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 }
 
 - (BadgeButton*)passwordsUpdateBadgeButton {
-  UIImage* image = UseSymbols() ? CustomSymbolWithPointSize(
-                                      kPasswordSymbol, kInfobarSymbolPointSize)
-                                : [UIImage imageNamed:@"password_key"];
+  UIImage* symbol =
+      CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
+#if !BUILDFLAG(IS_IOS_MACCATALYST)
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kIOSShowPasswordStorageInSaveInfobar)) {
+    symbol = CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
+                                       kInfobarSymbolPointSize);
+  }
+#endif  // BUILDFLAG(IS_IOS_MACCATALYST)
+  UIImage* image = UseSymbols() ? symbol : [UIImage imageNamed:@"password_key"];
   BadgeButton* button =
       [self createButtonForType:kBadgeTypePasswordUpdate
                           image:[image imageWithRenderingMode:
