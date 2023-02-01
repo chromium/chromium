@@ -21,6 +21,7 @@ class HTMLAnchorElement;
 class IntersectionObserver;
 class IntersectionObserverEntry;
 class AnchorElementMetrics;
+class PointerEvent;
 
 // AnchorElementMetricsSender is responsible to send anchor element metrics to
 // the browser process for a given document.
@@ -80,13 +81,23 @@ class CORE_EXPORT AnchorElementMetricsSender final
   void AddAnchorElement(HTMLAnchorElement& element);
 
   HeapMojoRemote<mojom::blink::AnchorElementMetricsHost>* MetricsHost();
+  void SetTickClockForTesting(const base::TickClock* clock);
+  void FireUpdateTimerForTesting();
 
   // Creates AnchorElementMetrics from anchor element if possible. Then records
   // the metrics, and sends them to the browser process.
   void UpdateVisibleAnchors(
       const HeapVector<Member<IntersectionObserverEntry>>& entries);
 
+  // Report the pointer event for the anchor element.
+  void MaybeReportAnchorElementPointerEvent(HTMLAnchorElement& element,
+                                            const PointerEvent& pointer_event);
+
   void Trace(Visitor*) const override;
+
+  // The minimum time gap that is required between two consecutive UpdateMetrics
+  // calls.
+  static constexpr auto kUpdateMetricsTimeGap = base::Milliseconds(200);
 
  private:
   // Associates |metrics_host_| with the IPC interface if not already, so it can
@@ -97,16 +108,49 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // enqueue it so that it gets reported after the next layout.
   void EnqueueEnteredViewport(const HTMLAnchorElement& element);
 
+  // Creates an AnchorElementLeftViewportPtr for the given element and
+  // enqueue it so that it gets reported after the next layout.
+  void EnqueueLeftViewport(const HTMLAnchorElement& element);
+
+  // Checks how long it has passed since the last call and decides whether to
+  // call or reschedule a future call to UpdateMetrics.
+  void MaybeUpdateMetrics();
+
+  // Sends the metrics update, immediately.
+  void UpdateMetrics(TimerBase*);
+
   // Use WeakMember to make sure we don't leak memory on long-lived pages.
   HeapHashSet<WeakMember<HTMLAnchorElement>> anchor_elements_to_report_;
 
   HeapMojoRemote<mojom::blink::AnchorElementMetricsHost> metrics_host_;
 
+  // Used to limit the rate at which update IPCs are sent by UpdateMetrics.
+  HeapTaskRunnerTimer<AnchorElementMetricsSender> update_timer_;
+
+  WTF::Vector<mojom::blink::AnchorElementMetricsPtr> metrics_;
+
   Member<IntersectionObserver> intersection_observer_;
 
   WTF::Vector<mojom::blink::AnchorElementEnteredViewportPtr>
       entered_viewport_messages_;
+
+  using AnchorId = uint32_t;
+  struct AnchorElementTimingStats {
+    bool entered_viewport_should_be_enqueued_{true};
+    absl::optional<base::TimeTicks> viewport_entry_time_;
+    absl::optional<base::TimeTicks> pointer_over_timer_;
+  };
+  WTF::HashMap<AnchorId, std::unique_ptr<AnchorElementTimingStats>>
+      anchor_elements_timing_stats_;
+
+  WTF::Vector<mojom::blink::AnchorElementLeftViewportPtr>
+      left_viewport_messages_;
+
   WTF::Vector<mojom::blink::AnchorElementClickPtr> clicked_messages_;
+
+  const base::TickClock* clock_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace blink

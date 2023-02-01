@@ -5,12 +5,14 @@
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -45,6 +47,19 @@ class MockAnchorElementMetricsHost
     }
   }
 
+  void ReportAnchorElementsLeftViewport(
+      WTF::Vector<mojom::blink::AnchorElementLeftViewportPtr> elements)
+      override {
+    for (auto& element : elements) {
+      left_viewport_.emplace_back(std::move(element));
+    }
+  }
+
+  void ReportAnchorElementsPointerHover(
+      mojom::blink::AnchorElementPointerHoverPtr hover_event) override {
+    pointer_hover_.emplace_back(std::move(hover_event));
+  }
+
   void ReportNewAnchorElements(
       WTF::Vector<mojom::blink::AnchorElementMetricsPtr> elements) override {
     for (auto& element : elements) {
@@ -60,6 +75,8 @@ class MockAnchorElementMetricsHost
  public:
   std::vector<mojom::blink::AnchorElementClickPtr> clicks_;
   std::vector<mojom::blink::AnchorElementEnteredViewportPtr> entered_viewport_;
+  std::vector<mojom::blink::AnchorElementLeftViewportPtr> left_viewport_;
+  std::vector<mojom::blink::AnchorElementPointerHoverPtr> pointer_hover_;
   std::vector<mojom::blink::AnchorElementMetricsPtr> elements_;
   std::set<int32_t> anchor_ids_;
 
@@ -117,6 +134,11 @@ class AnchorElementMetricsSenderTest : public SimTest {
     // be sent to the browser process.
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+    // Fastforward execution of delayed tasks.
+    if (auto* metrics_sender =
+            AnchorElementMetricsSender::From(GetDocument())) {
+      metrics_sender->FireUpdateTimerForTesting();
+    }
     // Allow the mock host to process messages it received from the renderer.
     base::RunLoop().RunUntilIdle();
     // Wait until we've gotten the reports we expect.
@@ -130,10 +152,16 @@ class AnchorElementMetricsSenderTest : public SimTest {
     }
   }
 
+  void SetMockClock() {
+    AnchorElementMetricsSender::From(GetDocument())
+        ->SetTickClockForTesting(&clock_);
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::vector<std::unique_ptr<MockAnchorElementMetricsHost>> hosts_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
+  base::SimpleTestTickClock clock_;
 };
 
 // Test that anchors on non-HTTPS pages are not reported.
@@ -143,7 +171,7 @@ TEST_F(AnchorElementMetricsSenderTest, AddAnchorElementHTTP) {
   SimRequest main_resource(source, "text/html");
   LoadURL(source);
   main_resource.Complete(
-      "<a id='anchor1' href=''>example</a><a id='anchor2' href=''>example</a>");
+      R"HTML(<a id="anchor1" href="">example</a><a id="anchor2" href="">example</a>)HTML");
 
   ProcessEvents(0);
   EXPECT_EQ(0u, hosts_.size());
@@ -155,7 +183,7 @@ TEST_F(AnchorElementMetricsSenderTest, AddAnchorElement) {
   SimRequest main_resource(source, "text/html");
   LoadURL(source);
   main_resource.Complete(
-      "<a id='anchor1' href=''>example</a><a id='anchor2' href=''>example</a>");
+      R"HTML(<a id="anchor1" href="">example</a><a id="anchor2" href="">example</a>)HTML");
 
   ProcessEvents(2);
   EXPECT_EQ(1u, hosts_.size());
@@ -198,6 +226,153 @@ TEST_F(AnchorElementMetricsSenderTest, AddAnchorElementAfterLoad) {
             mock_host->elements_[0]->anchor_id);
 }
 
+TEST_F(AnchorElementMetricsSenderTest, AnchorElementLeftViewport) {
+  String source("https://example.com/p1");
+
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(String::Format(
+      R"HTML(
+        <body style="margin: 0px">
+        <div style="height: %dpx;"></div>
+        <a href="" style="width: 300px; height: %dpx;">foo</a>
+        </body>)HTML",
+      2 * kViewportHeight, kViewportHeight / 2));
+
+  ProcessEvents(1);
+  EXPECT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(0u, mock_host->clicks_.size());
+  EXPECT_EQ(0u, mock_host->entered_viewport_.size());
+  EXPECT_EQ(0u, mock_host->left_viewport_.size());
+
+  // Scroll down. Now the anchor element is visible.
+  SetMockClock();
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 2 * kViewportHeight),
+      mojom::blink::ScrollType::kProgrammatic);
+  ProcessEvents(1);
+  EXPECT_EQ(1u, hosts_.size());
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(0u, mock_host->clicks_.size());
+  EXPECT_EQ(1u, mock_host->entered_viewport_.size());
+  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
+            mock_host->entered_viewport_[0]->anchor_id);
+  EXPECT_EQ(0u, mock_host->left_viewport_.size());
+
+  // Scroll up. It should be out of view again.
+  const auto wait_time = base::Milliseconds(150);
+  clock_.Advance(wait_time);
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, -2 * kViewportHeight),
+      mojom::blink::ScrollType::kProgrammatic);
+  ProcessEvents(1);
+  EXPECT_EQ(1u, hosts_.size());
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(0u, mock_host->clicks_.size());
+  EXPECT_EQ(1u, mock_host->entered_viewport_.size());
+  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
+            mock_host->entered_viewport_[0]->anchor_id);
+  EXPECT_EQ(1u, mock_host->left_viewport_.size());
+  EXPECT_EQ(wait_time, mock_host->left_viewport_[0]->time_in_viewport);
+  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
+            mock_host->left_viewport_[0]->anchor_id);
+
+  // Scroll down to make it visible again.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 2 * kViewportHeight),
+      mojom::blink::ScrollType::kProgrammatic);
+  ProcessEvents(1);
+  EXPECT_EQ(1u, hosts_.size());
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(0u, mock_host->clicks_.size());
+  EXPECT_EQ(2u, mock_host->entered_viewport_.size());
+  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
+            mock_host->entered_viewport_[1]->anchor_id);
+  EXPECT_EQ(1u, mock_host->left_viewport_.size());
+  EXPECT_EQ(wait_time, mock_host->left_viewport_[0]->time_in_viewport);
+  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
+            mock_host->left_viewport_[0]->anchor_id);
+
+  // Scroll up to push it out of view again.
+  const auto wait_time2 = base::Milliseconds(300);
+  clock_.Advance(wait_time2);
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, -2 * kViewportHeight),
+      mojom::blink::ScrollType::kProgrammatic);
+  ProcessEvents(1);
+  EXPECT_EQ(1u, hosts_.size());
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(0u, mock_host->clicks_.size());
+  EXPECT_EQ(2u, mock_host->entered_viewport_.size());
+  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
+            mock_host->entered_viewport_[1]->anchor_id);
+  EXPECT_EQ(2u, mock_host->left_viewport_.size());
+  EXPECT_EQ(wait_time, mock_host->left_viewport_[0]->time_in_viewport);
+  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
+            mock_host->left_viewport_[0]->anchor_id);
+  EXPECT_EQ(wait_time2, mock_host->left_viewport_[1]->time_in_viewport);
+  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
+            mock_host->left_viewport_[1]->anchor_id);
+}
+
+TEST_F(AnchorElementMetricsSenderTest,
+       AnchorElementInteractionTrackerSendsPointerEvents) {
+  base::test::ScopedFeatureList anchor_element_interaction;
+  anchor_element_interaction.InitWithFeatures(
+      {features::kAnchorElementInteraction,
+       features::kSpeculationRulesPointerHoverHeuristics},
+      {});
+
+  String source("https://example.com/p1");
+
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(String::Format(
+      R"HTML(
+        <body style="margin: 0px">
+        <a href="" style="width: %dpx; height: %dpx;">foo</a>
+        </body>)HTML",
+      kViewportWidth, kViewportHeight / 2));
+
+  ProcessEvents(1);
+  EXPECT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  EXPECT_EQ(0u, mock_host->clicks_.size());
+  EXPECT_EQ(1u, mock_host->entered_viewport_.size());
+  EXPECT_EQ(0u, mock_host->left_viewport_.size());
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(0u, mock_host->pointer_hover_.size());
+
+  SetMockClock();
+
+  auto move_to = [this](const auto x, const auto y) {
+    gfx::PointF coordinates(x, y);
+    WebMouseEvent event(WebInputEvent::Type::kMouseMove, coordinates,
+                        coordinates, WebPointerProperties::Button::kNoButton, 0,
+                        WebInputEvent::kNoModifiers,
+                        WebInputEvent::GetStaticTimeStampForTests());
+    GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+        event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  };
+
+  const auto wait_time = base::Milliseconds(150);
+  move_to(0, 0);
+  clock_.Advance(wait_time);
+  move_to(kViewportWidth / 2, kViewportHeight);
+  ProcessEvents(1);
+  EXPECT_EQ(1u, hosts_.size());
+  EXPECT_EQ(0u, mock_host->clicks_.size());
+  EXPECT_EQ(1u, mock_host->entered_viewport_.size());
+  EXPECT_EQ(0u, mock_host->left_viewport_.size());
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(1u, mock_host->pointer_hover_.size());
+  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
+            mock_host->pointer_hover_[0]->anchor_id);
+  EXPECT_EQ(wait_time, mock_host->pointer_hover_[0]->hover_dwell_time);
+}
+
 TEST_F(AnchorElementMetricsSenderTest, AnchorElementEnteredViewportLater) {
   String source("https://example.com/p1");
 
@@ -205,9 +380,9 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementEnteredViewportLater) {
   LoadURL(source);
   main_resource.Complete(String::Format(
       R"HTML(
-        <body style='margin: 0px'>
-        <div style='height: %dpx;'></div>
-        <a href="" style='width: 300px; height: %dpx;'>foo</a>
+        <body style="margin: 0px">
+        <div style="height: %dpx;"></div>
+        <a href="" style="width: 300px; height: %dpx;">foo</a>
         </body>)HTML",
       2 * kViewportHeight, kViewportHeight / 2));
 
@@ -248,18 +423,16 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementClicked) {
   )HTML");
 
   ProcessEvents(0);
-  // Wait until the script has had time to run.
-  platform_->RunForPeriodSeconds(5.);
-  next_page.Complete("empty");
-  ProcessEvents(1);
-  // The second page load has no anchor elements and therefore no host is bound.
   EXPECT_EQ(1u, hosts_.size());
   const auto& mock_host = hosts_[0];
   EXPECT_EQ(1u, mock_host->clicks_.size());
-  EXPECT_EQ(1u, mock_host->entered_viewport_.size());
-  EXPECT_EQ(1u, mock_host->elements_.size());
-  EXPECT_EQ(mock_host->clicks_[0]->anchor_id,
-            mock_host->elements_[0]->anchor_id);
+  // Wait until the script has had time to run.
+  platform_->RunForPeriodSeconds(5.);
+  next_page.Complete("empty");
+  ProcessEvents(0);
+  // The second page load has no anchor elements and therefore no host is bound.
+  EXPECT_EQ(1u, hosts_.size());
+  EXPECT_EQ(1u, mock_host->clicks_.size());
 }
 
 }  // namespace blink

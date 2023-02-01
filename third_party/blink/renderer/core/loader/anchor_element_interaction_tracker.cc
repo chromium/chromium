@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
+
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
@@ -12,6 +13,7 @@
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
@@ -22,7 +24,8 @@ AnchorElementInteractionTracker::AnchorElementInteractionTracker(
       hover_timer_(document.GetTaskRunner(TaskType::kUserInteraction),
                    this,
                    &AnchorElementInteractionTracker::HoverTimerFired),
-      clock_(base::DefaultTickClock::GetInstance()) {
+      clock_(base::DefaultTickClock::GetInstance()),
+      document_(&document) {
   DCHECK(clock_);
   document.GetFrame()->GetBrowserInterfaceBroker().GetInterface(
       interaction_host_.BindNewPipeAndPassReceiver(
@@ -35,6 +38,7 @@ AnchorElementInteractionTracker::~AnchorElementInteractionTracker() = default;
 void AnchorElementInteractionTracker::Trace(Visitor* visitor) const {
   visitor->Trace(interaction_host_);
   visitor->Trace(hover_timer_);
+  visitor->Trace(document_);
 }
 
 // static
@@ -67,6 +71,12 @@ void AnchorElementInteractionTracker::OnPointerEvent(
   KURL url = GetHrefEligibleForPreloading(*anchor);
   if (url.IsEmpty()) {
     return;
+  }
+
+  Document& top_document = GetDocument()->TopDocument();
+  if (AnchorElementMetricsSender::HasAnchorElementMetricsSender(top_document)) {
+    AnchorElementMetricsSender::From(top_document)
+        ->MaybeReportAnchorElementPointerEvent(*anchor, pointer_event);
   }
 
   // interaction_host_ might become unbound: Android's low memory detector

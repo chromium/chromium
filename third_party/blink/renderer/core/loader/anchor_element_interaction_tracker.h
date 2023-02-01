@@ -40,6 +40,7 @@ class BLINK_EXPORT AnchorElementInteractionTracker
   void Trace(Visitor* visitor) const;
   void FireHoverTimerForTesting();
   void SetTickClockForTesting(const base::TickClock* clock);
+  Document* GetDocument() { return document_; }
 
  private:
   HTMLAnchorElement* FirstAnchorElementIncludingSelf(Node* node);
@@ -54,6 +55,7 @@ class BLINK_EXPORT AnchorElementInteractionTracker
   HashMap<KURL, base::TimeTicks> hover_events_;
   HeapTaskRunnerTimer<AnchorElementInteractionTracker> hover_timer_;
   const base::TickClock* clock_;
+  Member<Document> document_;
 };
 
 }  // namespace blink

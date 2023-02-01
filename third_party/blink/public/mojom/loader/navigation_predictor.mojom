@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -89,8 +90,25 @@ struct AnchorElementEnteredViewport {
   uint32 anchor_id;
 
   // The time between navigation start and the time the anchor element entered
-  // the viewport in milliseconds.
-  uint64 navigation_start_to_entered_viewport_ms;
+  // the viewport.
+  mojo_base.mojom.TimeDelta navigation_start_to_entered_viewport;
+};
+
+struct AnchorElementLeftViewport {
+  // The ID of the anchor that exited the viewport.
+  uint32 anchor_id;
+
+  // The time between the moment the anchor element entered the viewport and the
+  // moment it left the viewport.
+  mojo_base.mojom.TimeDelta time_in_viewport;
+};
+
+struct AnchorElementPointerHover {
+  // The ID of the anchor that pointer hovered over it.
+  uint32 anchor_id;
+
+  // The time interval pointer was hovering over the anchor element.
+  mojo_base.mojom.TimeDelta hover_dwell_time;
 };
 
 // An interface to pass descriptive information about anchor elements from
@@ -118,4 +136,12 @@ interface AnchorElementMetricsHost {
   // not visible following the first layout after the HTMLAnchorElement was
   // created).
   ReportAnchorElementsEnteredViewport(array<AnchorElementEnteredViewport> elements);
+
+  // This is called regularly to report anchors that left the viewport. This
+  // just reports the ID of each element leaving the viewport. These records
+  // can be joined with the metrics reported by ReportAnchorElementsEnteredViewport.
+  ReportAnchorElementsLeftViewport(array<AnchorElementLeftViewport> elements);
+
+  // This is called whenever pointer hovers over the anchor element.
+  ReportAnchorElementsPointerHover(AnchorElementPointerHover hover_event);
 };

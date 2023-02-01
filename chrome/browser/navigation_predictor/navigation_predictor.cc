@@ -203,6 +203,14 @@ void NavigationPredictor::ReportAnchorElementClick(
   builder.Record(ukm_recorder_);
 }
 
+// TODO(isaboori crbug.com/1408182): Implement ReportAnchorElementsLeftViewport.
+void NavigationPredictor::ReportAnchorElementsLeftViewport(
+    std::vector<blink::mojom::AnchorElementLeftViewportPtr> /*elements*/) {}
+
+// TODO(isaboori crbug.com/1408182): Implement ReportAnchorElementsPointerHover.
+void NavigationPredictor::ReportAnchorElementsPointerHover(
+    blink::mojom::AnchorElementPointerHoverPtr /*hover_event*/) {}
+
 void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     std::vector<blink::mojom::AnchorElementEnteredViewportPtr> elements) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -255,7 +263,8 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     anchor_element_builder.SetIsBold(anchor->font_weight > 500 ? 1 : 0);
     anchor_element_builder.SetNavigationStartToLinkLoggedMs(
         ukm::GetExponentialBucketMin(
-            element->navigation_start_to_entered_viewport_ms, 1.3));
+            element->navigation_start_to_entered_viewport.InMilliseconds(),
+            1.3));
 
     uint32_t font_size_bucket;
     if (anchor->font_size_px < 10) {
