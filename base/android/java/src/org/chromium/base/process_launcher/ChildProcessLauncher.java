@@ -107,7 +107,7 @@ public class ChildProcessLauncher {
      * Constructor.
      *
      * @param launcherHandler the handler for the thread where all operations should happen.
-     * @param delegate the delagate that gets notified of the launch progress.
+     * @param delegate the delegate that gets notified of the launch progress.
      * @param commandLine the command line that should be passed to the started process.
      * @param filesToBeMapped the files that should be passed to the started process.
      * @param connectionAllocator the allocator used to create connections to the service.
