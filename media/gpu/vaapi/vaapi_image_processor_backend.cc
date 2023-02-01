@@ -17,6 +17,7 @@
 #include "base/stl_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -192,6 +193,9 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
                                          FrameReadyCB cb) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
+  TRACE_EVENT2("media", "VaapiImageProcessorBackend::Process", "input_frame",
+               input_frame->AsHumanReadableString(), "output_frame",
+               output_frame->AsHumanReadableString());
 
   if (!vaapi_wrapper_) {
     // Note that EncryptionScheme::kUnencrypted is fine even for the use case

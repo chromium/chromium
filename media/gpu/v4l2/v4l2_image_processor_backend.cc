@@ -22,8 +22,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/color_plane_layout.h"
+#include "media/base/media_util.h"
 #include "media/base/scopedfd_helper.h"
 #include "media/base/status.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -562,6 +564,9 @@ void V4L2ImageProcessorBackend::ProcessLegacy(scoped_refptr<VideoFrame> frame,
   auto job_record = std::make_unique<JobRecord>();
   job_record->input_frame = frame;
   job_record->legacy_ready_cb = std::move(cb);
+  if (MediaTraceIsEnabled()) {
+    job_record->start_time = base::TimeTicks::Now();
+  }
 
   input_job_queue_.emplace(std::move(job_record));
   ProcessJobsTask();
@@ -577,6 +582,9 @@ void V4L2ImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
   job_record->input_frame = std::move(input_frame);
   job_record->output_frame = std::move(output_frame);
   job_record->ready_cb = std::move(cb);
+  if (MediaTraceIsEnabled()) {
+    job_record->start_time = base::TimeTicks::Now();
+  }
 
   input_job_queue_.emplace(std::move(job_record));
   ProcessJobsTask();
@@ -910,6 +918,15 @@ void V4L2ImageProcessorBackend::Dequeue() {
 
     output_frame->set_timestamp(timestamp);
     output_frame->set_color_space(job_record->input_frame->ColorSpace());
+
+    if (job_record->start_time) {
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+          "media", "V4L2ImageProcessorBackend::Process", TRACE_ID_LOCAL(this),
+          job_record->start_time.value());
+      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
+          "media", "V4L2ImageProcessorBackend::Process", TRACE_ID_LOCAL(this),
+          base::TimeTicks::Now(), "timestamp", timestamp.InMilliseconds());
+    }
 
     if (!job_record->legacy_ready_cb.is_null()) {
       std::move(job_record->legacy_ready_cb)

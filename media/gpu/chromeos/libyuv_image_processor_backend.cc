@@ -388,7 +388,9 @@ void LibYUVImageProcessorBackend::Process(
 
   int res;
   {
-    TRACE_EVENT0("media", "LibYUVImageProcessorBackend::Process");
+    TRACE_EVENT2("media", "LibYUVImageProcessorBackend::Process", "input_frame",
+                 input_frame->AsHumanReadableString(), "output_frame",
+                 mapped_frame->AsHumanReadableString());
     SCOPED_UMA_HISTOGRAM_TIMER("LibYUVImageProcessorBackend::Process");
     res = DoConversion(input_frame.get(), mapped_frame.get());
   }

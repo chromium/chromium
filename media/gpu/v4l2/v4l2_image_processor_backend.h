@@ -27,6 +27,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace base {
+class TimeTicks;
+}
+
 namespace media {
 
 // Handles image processing accelerators that expose a V4L2 memory-to-memory
@@ -107,6 +111,9 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
     LegacyFrameReadyCB legacy_ready_cb;
     scoped_refptr<VideoFrame> output_frame;
     size_t output_buffer_id;
+
+    // This is filled only if chrome tracing in "media" category is enabled.
+    absl::optional<base::TimeTicks> start_time;
   };
 
   V4L2ImageProcessorBackend(scoped_refptr<V4L2Device> device,
