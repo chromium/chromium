@@ -202,12 +202,12 @@ TEST_F(WindowFloatTest, WindowFloatingResize) {
   // Unfloat.
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_FALSE(window_state->IsFloated());
-  EXPECT_TRUE(window_state->IsFullscreen());
-  // Unfullscreen.
-  window_state->OnWMEvent(&toggle_fullscreen_event);
-  EXPECT_TRUE(window_state->IsFloated());
-  EXPECT_FALSE(window_state->IsFullscreen());
+  // Unfloat a previously full screened window will restore to previous window
+  // state.
+  EXPECT_TRUE(window_state->IsMaximized());
 
+  // Float window again.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   // Minimize floated window.
   // Minimized window can't be floated, but when a floated window enter/exit
   // minimized state, it remains floated.

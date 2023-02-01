@@ -116,12 +116,8 @@ bool IsValidForRestoreHistory(WindowStateType state_type) {
 
 // Returns true if |current_state| can restore back to |previous_state|.
 // Normally, a state can only restore back to another state at a lower level.
-// If |allow_same_level_restore| is true, some window state types at the same
-// restore level are allowed to restore between each other. This is useful to
-// set to false to prevent cycles in the restore state transition graph.
 bool CanRestoreState(WindowStateType current_state,
-                     WindowStateType previous_state,
-                     bool allow_same_level_restore) {
+                     WindowStateType previous_state) {
   if (!IsValidForRestoreHistory(current_state) ||
       !IsValidForRestoreHistory(previous_state)) {
     return false;
@@ -132,16 +128,6 @@ bool CanRestoreState(WindowStateType current_state,
     return true;
   }
 
-  if (allow_same_level_restore) {
-    // `Fullscreen` and `Floated` have the same restore order, but can restore
-    // to each other.
-    if ((current_state == WindowStateType::kFullscreen &&
-         previous_state == WindowStateType::kFloated) ||
-        (current_state == WindowStateType::kFloated &&
-         previous_state == WindowStateType::kFullscreen)) {
-      return true;
-    }
-  }
   return false;
 }
 
@@ -492,8 +478,7 @@ void WindowState::Restore() {
 }
 
 bool WindowState::IsRestoring(WindowStateType previous_state) const {
-  return CanRestoreState(previous_state, GetStateType(),
-                         /*allow_same_level_restore=*/false);
+  return CanRestoreState(previous_state, GetStateType());
 }
 
 void WindowState::DisableZOrdering(aura::Window* window_on_top) {
@@ -1165,13 +1150,7 @@ void WindowState::UpdateRestoreHistory(
   // not restore back to (i.e., whose restore order is equal or higher than
   // `current_state_type`).
   for (auto& state : base::Reversed(window_state_restore_history_)) {
-    // Don't allow same-level restore here to prevent restore cycles which can
-    // lead to unbounded stack, e.g. when toggling between fullscreen and
-    // floated repeatedly. The side effect is that restore will only remember
-    // (handled below) at most one such same-level transition (e.g. fullscreen
-    // to floated, or vice versa), which is ok.
-    if (CanRestoreState(current_state_type, state.window_state_type,
-                        /*allow_same_level_restore=*/false)) {
+    if (CanRestoreState(current_state_type, state.window_state_type)) {
       break;
     }
     // Retrieve and hold onto the restore state for the state type that we're
@@ -1196,11 +1175,7 @@ void WindowState::UpdateRestoreHistory(
   }
 
   if (IsValidForRestoreHistory(previous_state_type) &&
-      // Allow same-level restore, so the previous state can be remembered.
-      // Potential restore cycles are handled when the history is updated next
-      // time, in the code above.
-      CanRestoreState(current_state_type, previous_state_type,
-                      /*allow_same_level_restore=*/true)) {
+      CanRestoreState(current_state_type, previous_state_type)) {
     window_state_restore_history_.push_back({
         .window_state_type = previous_state_type,
         .actual_bounds_in_screen = GetCurrentBoundsInScreen(),
