@@ -9,9 +9,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
-#include "ash/shell.h"
-#include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
@@ -585,13 +582,6 @@ void DemoSession::OnSessionStateChanged() {
                                                    current_locale_iso_code);
       }
       RestoreDefaultLocaleForNextSession();
-
-      if (Shell::HasInstance() &&
-          user_manager::UserManager::Get()->GetActiveUser()) {
-        Shell::Get()->keyboard_backlight_color_controller()->SetBacklightColor(
-            personalization_app::mojom::BacklightColor::kRainbow,
-            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
-      }
 
       if (chromeos::PowerManagerClient::Get()) {
         chromeos::PowerManagerClient::Get()->GetKeyboardBrightnessPercent(
