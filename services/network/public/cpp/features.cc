@@ -290,7 +290,7 @@ BASE_FEATURE(kDisableResourceScheduler,
 // Reduce PNA preflight response waiting time to 200ms.
 // See: https://wicg.github.io/private-network-access/#cors-preflight
 BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,
-             "PrivateNetworkAccessPreflightReduceTimeout",
+             "PrivateNetworkAccessPreflightShortTimeout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Handle the Link header DNS prefetches and preconnects in the network

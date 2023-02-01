@@ -58371,6 +58371,8 @@ from previous Chrome versions.
   <int value="-1668306615" label="CrostiniUseDlc:enabled"/>
   <int value="-1667822423" label="ContextMenuGoogleLensChip:disabled"/>
   <int value="-1666652919" label="MagnifierPanningImprovements:disabled"/>
+  <int value="-1666519913"
+      label="PrivateNetworkAccessPreflightShortTimeout:disabled"/>
   <int value="-1664795930" label="StorageAccessAPI:disabled"/>
   <int value="-1664290318" label="ComputePressure:enabled"/>
   <int value="-1663410466" label="top-document-isolation"/>
@@ -59817,8 +59819,6 @@ from previous Chrome versions.
   <int value="-871784177" label="DeprecateMenagerieAPI:enabled"/>
   <int value="-871520682"
       label="AccessibilityInternalsPageImprovements:enabled"/>
-  <int value="-871467950"
-      label="PrivateNetworkAccessPreflightReduceTimeout:enabled"/>
   <int value="-871450829"
       label="ThreadedScrollPreventRenderingStarvation:disabled"/>
   <int value="-870994173" label="NtpChromeCartModule:enabled"/>
@@ -63629,8 +63629,6 @@ from previous Chrome versions.
   <int value="1324623677"
       label="SessionRestorePrioritizesBackgroundUseCases:enabled"/>
   <int value="1325459977" label="HandwritingGestureEditing:disabled"/>
-  <int value="1326346535"
-      label="PrivateNetworkAccessPreflightReduceTimeout:disabled"/>
   <int value="1326530782" label="AutofillParseAsync:enabled"/>
   <int value="1327883321"
       label="OmniboxHistoryQuickProviderAllowMidwordContinuations:enabled"/>
@@ -64483,6 +64481,8 @@ from previous Chrome versions.
   <int value="1827369558" label="AndroidPayIntegrationV1:disabled"/>
   <int value="1828660283" label="enable-webfonts-intervention-trigger"/>
   <int value="1829231569" label="ShelfLauncherNudge:enabled"/>
+  <int value="1829252358"
+      label="PrivateNetworkAccessPreflightShortTimeout:enabled"/>
   <int value="1829259057" label="MediaAppHandlesPdf:enabled"/>
   <int value="1830460973" label="disable-network-settings-config"/>
   <int value="1831103529" label="MediaNotificationsCounter:disabled"/>
