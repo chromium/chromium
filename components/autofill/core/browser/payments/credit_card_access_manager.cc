@@ -170,6 +170,7 @@ void CreditCardAccessManager::PrepareToFetchCreditCard() {
 
 void CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable(
     bool is_user_verifiable) {
+#if !BUILDFLAG(IS_IOS)
   is_user_verifiable_ = is_user_verifiable;
 
   if (is_user_verifiable_called_timestamp_.has_value()) {
@@ -189,8 +190,10 @@ void CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable(
         base::BindOnce(&CreditCardAccessManager::OnDidGetUnmaskDetails,
                        weak_ptr_factory_.GetWeakPtr()),
         personal_data_manager_->app_locale());
-    autofill_metrics::LogCardUnmaskPreflightCalled();
+    autofill_metrics::LogCardUnmaskPreflightCalled(
+        GetOrCreateFidoAuthenticator()->IsUserOptedIn());
   }
+#endif
 }
 
 void CreditCardAccessManager::OnDidGetUnmaskDetails(

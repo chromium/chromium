@@ -741,7 +741,7 @@ TEST_F(CreditCardAccessManagerTest, CardUnmaskPreflightCalledMetric) {
   std::string verifiability_check_metric =
       "Autofill.BetterAuth.UserVerifiabilityCheckDuration";
   std::string preflight_call_metric =
-      "Autofill.BetterAuth.CardUnmaskPreflightCalled";
+      "Autofill.BetterAuth.CardUnmaskPreflightCalledWithFidoOptInStatus";
   std::string preflight_latency_metric =
       "Autofill.BetterAuth.CardUnmaskPreflightDuration";
 
@@ -792,30 +792,44 @@ TEST_F(CreditCardAccessManagerTest, CardUnmaskPreflightCalledMetric) {
   }
 
   {
-    // Create server card and set user as eligible for FIDO auth.
-    base::HistogramTester histogram_tester;
-    ClearCards();
-    CreateServerCard(kTestGUID, kTestNumber);
+    // Tests that the metrics log correctly when the user is eligible for FIDO,
+    // and has only masked server cards.
+    for (bool is_user_opted_in_to_fido : {true, false}) {
+      SCOPED_TRACE(testing::Message()
+                   << " is_user_opted_in_to_fido="
+                   << static_cast<int>(is_user_opted_in_to_fido));
+      // Create server card and set user as eligible for FIDO auth, and set that
+      // the user is either opted-in to FIDO auth or opted-out of FIDO auth
+      // based on `is_user_opted_in_to_fido`.
+      base::HistogramTester histogram_tester;
+      ClearCards();
+      CreateServerCard(kTestGUID, kTestNumber);
 #if !BUILDFLAG(IS_IOS)
-    GetFIDOAuthenticator()->SetUserVerifiable(true);
+      auto* fido_authenticator = GetFIDOAuthenticator();
+      fido_authenticator->SetUserVerifiable(true);
+      fido_authenticator->set_is_user_opted_in(
+          /*is_user_opted_in=*/is_user_opted_in_to_fido);
 #endif
-    ResetFetchCreditCard();
+      ResetFetchCreditCard();
 
-    credit_card_access_manager_->PrepareToFetchCreditCard();
-    InvokeUnmaskDetailsTimeout();
-    WaitForCallbacks();
+      credit_card_access_manager_->PrepareToFetchCreditCard();
+      InvokeUnmaskDetailsTimeout();
+      WaitForCallbacks();
 
-    // Preflight call is made only if a server card is available and the user is
-    // eligible for FIDO authentication, except on iOS.
+      // Preflight call is made only if a server card is available and the user
+      // is eligible for FIDO authentication, except on iOS.
 #if BUILDFLAG(IS_IOS)
-    histogram_tester.ExpectTotalCount(verifiability_check_metric, 0);
-    histogram_tester.ExpectTotalCount(preflight_call_metric, 0);
-    histogram_tester.ExpectTotalCount(preflight_latency_metric, 0);
+      histogram_tester.ExpectTotalCount(verifiability_check_metric, 0);
+      histogram_tester.ExpectTotalCount(preflight_call_metric, 0);
+      histogram_tester.ExpectTotalCount(preflight_latency_metric, 0);
 #else
-    histogram_tester.ExpectTotalCount(verifiability_check_metric, 1);
-    histogram_tester.ExpectTotalCount(preflight_call_metric, 1);
-    histogram_tester.ExpectTotalCount(preflight_latency_metric, 1);
+      histogram_tester.ExpectTotalCount(verifiability_check_metric, 1);
+      histogram_tester.ExpectUniqueSample(preflight_call_metric,
+                                          /*sample=*/is_user_opted_in_to_fido,
+                                          /*expected_bucket_count=*/1);
+      histogram_tester.ExpectTotalCount(preflight_latency_metric, 1);
 #endif
+    }
   }
 }
 
@@ -2023,7 +2037,7 @@ TEST_F(CreditCardAccessManagerTest, PreflightCallRateLimited) {
   // Create server card and set user as eligible for FIDO auth.
   base::HistogramTester histogram_tester;
   std::string preflight_call_metric =
-      "Autofill.BetterAuth.CardUnmaskPreflightCalled";
+      "Autofill.BetterAuth.CardUnmaskPreflightCalledWithFidoOptInStatus";
 
   ClearCards();
   CreateServerCard(kTestGUID, kTestNumber);

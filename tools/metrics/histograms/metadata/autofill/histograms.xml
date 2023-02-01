@@ -630,7 +630,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.BetterAuth.CardUnmaskPreflightCalled"
-    enum="BooleanHit" expires_after="2023-07-01">
+    enum="BooleanHit" expires_after="M111">
+  <obsolete>
+    Deprecated in M111. Subsumed by
+    Autofill.BetterAuth.CardUnmaskPreflightCalledWithFidoOptInStatus.
+  </obsolete>
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -638,6 +642,28 @@ chromium-metrics-reviews@google.com.
     Tracks the number of times Chrome made a GetDetailsForGetRealPan call. A
     preflight call is only made when card suggestions are shown, and can only
     happen when the user has server cards and is eligible for WebAuthn.
+
+    As a percentage of the number of times card suggestions are shown, which is
+    tracked under Autofill.FormEvents.CreditCard, this metric provides an
+    estimate for the potential reach for the Autofill Better Auth project.
+    Moreover, this acts as a baseline value for other metrics in this project.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.BetterAuth.CardUnmaskPreflightCalledWithFidoOptInStatus"
+    enum="Boolean" expires_after="2023-07-01">
+  <owner>jsaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>autofill-auth-team@google.com</owner>
+  <summary>
+    The total count of this histogram tracks the number of times Chrome made a
+    preflight GetDetailsForGetRealPan call. A preflight call is only made when
+    card suggestions are shown, and can only happen when the user has server
+    cards and is eligible for WebAuthn. For every log in this histogram, it also
+    tracks whether the user is opted-in to WebAuthn or opted-out of WebAuthn. A
+    log of true indicates the user is opted-in, and a log of false indicates the
+    user is opted-out.
 
     As a percentage of the number of times card suggestions are shown, which is
     tracked under Autofill.FormEvents.CreditCard, this metric provides an
