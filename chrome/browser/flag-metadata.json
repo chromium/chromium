@@ -2632,7 +2632,7 @@
   {
     "name": "enable-lens-image-format-optimizations",
     "owners": ["mercerd@google.com", "stanfield@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 112
+    "expiry_milestone": 114
   },
   {
     "name": "enable-lens-in-home-screen-widget",
