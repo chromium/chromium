@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_provider.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -168,6 +169,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)dropAnimationDidEnd {
   _dropAnimationInProgress = NO;
   [self dragSessionEnabled:NO];
+}
+
+- (GridTransitionLayout*)transitionLayout {
+  // TODO(crbug.com/1406524): Implement this.
+  return nil;
 }
 
 #pragma mark - TabCollectionConsumer

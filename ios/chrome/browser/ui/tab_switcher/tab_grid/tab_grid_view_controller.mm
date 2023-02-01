@@ -459,12 +459,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (GridTransitionLayout*)transitionLayout:(TabGridPage)activePage {
-  GridViewController* gridViewController =
-      [self gridViewControllerForPage:activePage];
-  if (!gridViewController)
+  GridTransitionLayout* layout = [self transitionLayoutForPage:activePage];
+  if (!layout) {
     return nil;
-
-  GridTransitionLayout* layout = [gridViewController transitionLayout];
+  }
   layout.frameChanged = !CGRectEqualToRect(self.view.frame, self.initialFrame);
   return layout;
 }
@@ -980,6 +978,83 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 #pragma mark - Private
+
+// Returns transition layout for the provided `page`.
+- (GridTransitionLayout*)transitionLayoutForPage:(TabGridPage)page {
+  switch (page) {
+    case TabGridPageIncognitoTabs:
+      return [self.incognitoTabsViewController transitionLayout];
+    case TabGridPageRegularTabs:
+      return [self transitionLayoutForRegularTabsPage];
+    case TabGridPageRemoteTabs:
+      return nil;
+  }
+}
+
+// Returns transition layout provider for the regular tabs page.
+- (GridTransitionLayout*)transitionLayoutForRegularTabsPage {
+  GridTransitionLayout* regularTabsTransitionLayout =
+      [self.regularTabsViewController transitionLayout];
+
+  if (IsPinnedTabsEnabled()) {
+    GridTransitionLayout* pinnedTabsTransitionLayout =
+        [self.pinnedTabsViewController transitionLayout];
+
+    return [self combineTransitionLayout:pinnedTabsTransitionLayout
+                    withTransitionLayout:regularTabsTransitionLayout];
+  }
+
+  return regularTabsTransitionLayout;
+}
+
+// Combines two transition layouts into one. The `primaryLayout` has the
+// priority over `secondaryLayout`. This means that in case there are two
+// activeItems and/or two selectionItems available, only the ones from
+// `primaryLayout` would be picked for a combined layout.
+- (GridTransitionLayout*)
+    combineTransitionLayout:(GridTransitionLayout*)primaryLayout
+       withTransitionLayout:(GridTransitionLayout*)secondaryLayout {
+  NSArray<GridTransitionItem*>* primaryInactiveItems =
+      primaryLayout.inactiveItems;
+  NSArray<GridTransitionItem*>* secondaryInactiveItems =
+      secondaryLayout.inactiveItems;
+
+  NSArray<GridTransitionItem*>* inactiveItems =
+      [self combineInactiveItems:primaryInactiveItems
+               withInactiveItems:secondaryInactiveItems];
+
+  GridTransitionActiveItem* primaryActiveItem = primaryLayout.activeItem;
+  GridTransitionActiveItem* secondaryActiveItem = secondaryLayout.activeItem;
+
+  // Prefer primary active item.
+  GridTransitionActiveItem* activeItem =
+      primaryActiveItem ? primaryActiveItem : secondaryActiveItem;
+
+  GridTransitionItem* primarySelectionItem = primaryLayout.selectionItem;
+  GridTransitionItem* secondarySelectionItem = secondaryLayout.selectionItem;
+
+  // Prefer primary selection item.
+  GridTransitionItem* selectionItem =
+      primarySelectionItem ? primarySelectionItem : secondarySelectionItem;
+
+  return [GridTransitionLayout layoutWithInactiveItems:inactiveItems
+                                            activeItem:activeItem
+                                         selectionItem:selectionItem];
+}
+
+// Combines two arrays of inactive items into one. The `primaryInactiveItems`
+// (if any) would be placed in the front of the resulting array, whether the
+// `secondaryInactiveItems` would be placed in the back.
+- (NSArray<GridTransitionItem*>*)
+    combineInactiveItems:(NSArray<GridTransitionItem*>*)primaryInactiveItems
+       withInactiveItems:(NSArray<GridTransitionItem*>*)secondaryInactiveItems {
+  if (primaryInactiveItems == nil) {
+    primaryInactiveItems = @[];
+  }
+
+  return [primaryInactiveItems
+      arrayByAddingObjectsFromArray:secondaryInactiveItems];
+}
 
 // Hides the thumb strip's plus sign button by translating it away and making it
 // transparent.
