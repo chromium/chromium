@@ -231,7 +231,7 @@ void SecureChannel::OnSendCompleted(const Connection& connection,
                 << "}";
   pending_message_.reset();
 
-  // The connection automatically retries failed messges, so if |success| is
+  // The connection automatically retries failed messages, so if |success| is
   // |false| here, a fatal error has occurred. Thus, there is no need to retry
   // the message; instead, disconnect.
   Disconnect();
