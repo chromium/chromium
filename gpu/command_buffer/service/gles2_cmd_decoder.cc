@@ -133,6 +133,10 @@
 #include <OpenGL/CGLIOSurface.h>
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gl/gl_image_d3d.h"
+#endif
+
 // Note: this undefs far and near so include this after other Windows headers.
 #include "third_party/angle/src/image_util/loadimage.h"
 
@@ -10508,7 +10512,6 @@ bool GLES2DecoderImpl::DoBindTexImageIfNeeded(Texture* texture,
   // Image is already in use if texture is attached to a framebuffer.
   if (texture && !texture->IsAttachedToFramebuffer()) {
     if (texture->HasUnboundLevelImage(textarget, 0)) {
-      gl::GLImage* image = texture->GetLevelImage(textarget, 0);
       UMA_HISTOGRAM_BOOLEAN(
           "GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary", true);
 
@@ -10517,8 +10520,15 @@ bool GLES2DecoderImpl::DoBindTexImageIfNeeded(Texture* texture,
       if (texture_unit)
         api()->glActiveTextureFn(texture_unit);
       api()->glBindTextureFn(textarget, texture->service_id());
-      bool rv = image->BindTexImage(textarget);
-      DCHECK(rv) << "BindTexImage() failed";
+#if BUILDFLAG(IS_WIN)
+      auto* d3d_image =
+          gl::GLImage::ToGLImageD3D(texture->GetLevelImage(textarget, 0));
+      if (d3d_image) {
+        bool rv = d3d_image->BindTexImage(textarget);
+        DCHECK(rv) << "BindTexImage() failed";
+      }
+#endif
+
       texture->MarkLevelImageBound(textarget, 0);
       if (!texture_unit) {
         RestoreCurrentTextureBindings(&state_, textarget,

@@ -35,6 +35,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
+#include "ui/gl/gl_image_d3d.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace gpu {
@@ -2174,8 +2175,13 @@ void GLES2DecoderPassthroughImpl::BindOnePendingImage(
   GLenum texture_type = TextureTargetToTextureType(target);
   api()->glBindTextureFn(texture_type, texture->service_id());
 
+#if BUILDFLAG(IS_WIN)
   // TODO: internalformat?
-  image->BindTexImage(target);
+  auto* d3d_image = gl::GLImage::ToGLImageD3D(image);
+  if (d3d_image) {
+    d3d_image->BindTexImage(target);
+  }
+#endif
 
   // If bind fails, then we could keep the bind state the same.
   // However, for now, we only try once.
