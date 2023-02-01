@@ -44,6 +44,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
@@ -664,9 +665,18 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   opacity_ = properties.opacity;
   type_ = properties.type;
 
-  if (properties.inhibit_keyboard_shortcuts) {
-    InitKeyboardShortcutsInhibition();
+  // Lacros currently uses a different approach to support KeyboardLock,
+  // which relies on the Exo-specific zcr-keyboard-extension-v1 + a permanent
+  // zwp-keyboard-shortcuts-inhibitor-v1. For more details, see comments in
+  // OzonePlatformWayland::CreateKeyboardHook function.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  WaylandKeyboard* keyboard =
+      connection_->seat() ? connection_->seat()->keyboard() : nullptr;
+  if (keyboard && properties.inhibit_keyboard_shortcuts) {
+    permanent_keyboard_shortcuts_inhibitor_ =
+        keyboard->CreateShortcutsInhibitor(this);
   }
+#endif
 
   connection_->window_manager()->AddWindow(GetWidget(), this);
 
@@ -696,40 +706,6 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   connection_->Flush();
 
   return true;
-}
-
-// When upper layer requests to 'inhibit keyboard shortcuts', two different
-// behaviors are currently implemented:
-//
-// 1. If `zcr_keyboard_extension_v1` extension is available (typically meaning
-// it is running under Exo compositor), shortcuts are kept inhibited since the
-// window initialization. That is required to keep Lacros behaving just like
-// Ash Chrome's classic browser.
-//
-// 2. Otherwise, keyboard shortcuts will be inhibited only when in fullscreen.
-// See KeyboardLock spec for more details: https://wicg.github.io/keyboard-lock
-//
-// The main technical difference here is that keyboard-extension-v1 extension
-// allows ozone/wayland to report back to the Wayland compositor that a given
-// key was not processed by the client, giving it a chance of processing global
-// shortcuts (even with a shortcuts inhibitor in place), which is not currently
-// possible with standard Wayland protocol and extensions.
-//
-// TODO(crbug.com/1338554): Revisit and update when/if this scenario changes.
-void WaylandWindow::InitKeyboardShortcutsInhibition() {
-  DCHECK_EQ(keyboard_shortcuts_inhibition_mode_,
-            KeyboardShortcutsInhibitionMode::kDisabled);
-  if (!connection_->keyboard_extension_v1()) {
-    // Only set inhibition mode to kFullscreenOnly and defer the actual handling
-    // to the subsequent shell surface configure events, where window state is
-    // applied/updated. See WaylandToplevelWindow::HandleAuraToplevelConfigure.
-    keyboard_shortcuts_inhibition_mode_ =
-        KeyboardShortcutsInhibitionMode::kFullscreenOnly;
-    return;
-  }
-  keyboard_shortcuts_inhibition_mode_ =
-      KeyboardShortcutsInhibitionMode::kAlwaysEnabled;
-  root_surface()->SetKeyboardShortcutsInhibition(/*enabled=*/true);
 }
 
 void WaylandWindow::SetWindowGeometry(gfx::Size size_dip) {}

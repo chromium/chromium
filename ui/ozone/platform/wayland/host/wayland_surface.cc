@@ -7,7 +7,6 @@
 #include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
-#include <keyboard-shortcuts-inhibit-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
 #include <surface-augmenter-client-protocol.h>
@@ -36,7 +35,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
-#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
@@ -721,19 +719,6 @@ void WaylandSurface::ApplyPendingState() {
 
 void WaylandSurface::ForceImmediateStateApplication() {
   apply_state_immediately_ = true;
-}
-
-void WaylandSurface::SetKeyboardShortcutsInhibition(bool enabled) {
-  if (!enabled) {
-    keyboard_shortcuts_inhibitor_.reset();
-    return;
-  }
-  if (auto* manager = connection_->keyboard_shortcuts_inhibit_manager_v1()) {
-    keyboard_shortcuts_inhibitor_ =
-        wl::Object<zwp_keyboard_shortcuts_inhibitor_v1>(
-            zwp_keyboard_shortcuts_inhibit_manager_v1_inhibit_shortcuts(
-                manager, surface_.get(), connection_->seat()->wl_object()));
-  }
 }
 
 void WaylandSurface::ExplicitRelease(
