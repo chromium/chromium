@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
-#include "ui/gfx/presentation_feedback.h"
 
 namespace blink {
 
@@ -39,8 +38,8 @@ const char* GetHistogramSuffix(
 
 void RecordBackForwardCacheRestoreMetric(
     const base::TimeTicks requested_time,
-    const gfx::PresentationFeedback& feedback) {
-  const base::TimeDelta delta = feedback.timestamp - requested_time;
+    base::TimeTicks presentation_timestamp) {
+  const base::TimeDelta delta = presentation_timestamp - requested_time;
   // Histogram to record the content to visible duration after restoring a page
   // from back-forward cache. Here min, max bucket size are same as the
   // "PageLoad.PaintTiming.NavigationToFirstContentfulPaint" metric.
@@ -55,7 +54,7 @@ ContentToVisibleTimeReporter::ContentToVisibleTimeReporter() = default;
 
 ContentToVisibleTimeReporter::~ContentToVisibleTimeReporter() = default;
 
-base::OnceCallback<void(const gfx::PresentationFeedback&)>
+ContentToVisibleTimeReporter::SuccessfulPresentationTimeCallback
 ContentToVisibleTimeReporter::TabWasShown(
     bool has_saved_frames,
     mojom::RecordContentToVisibleTimeRequestPtr start_state) {
@@ -74,10 +73,9 @@ ContentToVisibleTimeReporter::TabWasShown(
     //
     // TODO(crbug.com/1289266): Refactor visibility states to call TabWasHidden
     // every time a tab is backgrounded, even if the content is still visible.
-    RecordHistogramsAndTraceEvents(TabSwitchResult::kMissedTabHide,
-                                   true /* show_reason_tab_switching */,
-                                   false /* show_reason_bfcache_restore */,
-                                   gfx::PresentationFeedback::Failure());
+    RecordHistogramsAndTraceEvents(
+        TabSwitchResult::kMissedTabHide, /*show_reason_tab_switching=*/true,
+        /*show_reason_bfcache_restore=*/false, base::TimeTicks::Now());
   }
   // Note: Usually `tab_switch_start_state_` should be null here, but sometimes
   // it isn't (in practice, this happens on Mac - see crbug.com/1284500). This
@@ -96,7 +94,7 @@ ContentToVisibleTimeReporter::TabWasShown(
       tab_switch_start_state_->show_reason_bfcache_restore);
 }
 
-base::OnceCallback<void(const gfx::PresentationFeedback&)>
+ContentToVisibleTimeReporter::SuccessfulPresentationTimeCallback
 ContentToVisibleTimeReporter::TabWasShown(bool has_saved_frames,
                                           base::TimeTicks event_start_time,
                                           bool destination_is_loaded,
@@ -113,9 +111,9 @@ void ContentToVisibleTimeReporter::TabWasHidden() {
   if (tab_switch_start_state_ &&
       tab_switch_start_state_->show_reason_tab_switching) {
     RecordHistogramsAndTraceEvents(TabSwitchResult::kIncomplete,
-                                   true /* show_reason_tab_switching */,
-                                   false /* show_reason_bfcache_restore */,
-                                   gfx::PresentationFeedback::Failure());
+                                   /*show_reason_tab_switching=*/true,
+                                   /*show_reason_bfcache_restore=*/false,
+                                   base::TimeTicks::Now());
   }
 
   // No matter what the show reason, clear `tab_switch_start_state_` which is no
@@ -127,14 +125,11 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
     TabSwitchResult tab_switch_result,
     bool show_reason_tab_switching,
     bool show_reason_bfcache_restore,
-    const gfx::PresentationFeedback& feedback) {
+    base::TimeTicks presentation_timestamp) {
   DCHECK(tab_switch_start_state_);
   // If the DCHECK fail, make sure RenderWidgetHostImpl::WasShown was triggered
   // for recording the event.
   DCHECK(show_reason_bfcache_restore || show_reason_tab_switching);
-  // The kPresentationFailure result should only be used if `feedback` has a
-  // failure.
-  DCHECK_NE(tab_switch_result, TabSwitchResult::kPresentationFailure);
 
   // Reset tab switch information on exit. Unretained is safe because the
   // closure is invoked synchronously.
@@ -144,20 +139,14 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
 
   if (show_reason_bfcache_restore) {
     RecordBackForwardCacheRestoreMetric(
-        tab_switch_start_state_->event_start_time, feedback);
+        tab_switch_start_state_->event_start_time, presentation_timestamp);
   }
 
   if (!show_reason_tab_switching)
     return;
 
-  // Tab switching has occurred.
-  if (tab_switch_result == TabSwitchResult::kSuccess &&
-      feedback.flags & gfx::PresentationFeedback::kFailure) {
-    tab_switch_result = TabSwitchResult::kPresentationFailure;
-  }
-
   const auto tab_switch_duration =
-      feedback.timestamp - tab_switch_start_state_->event_start_time;
+      presentation_timestamp - tab_switch_start_state_->event_start_time;
 
   // Record trace events.
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
@@ -166,7 +155,7 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
       tab_switch_start_state_->event_start_time);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP2(
       "latency", "TabSwitching::Latency",
-      TRACE_ID_LOCAL(g_num_trace_events_in_process), feedback.timestamp,
+      TRACE_ID_LOCAL(g_num_trace_events_in_process), presentation_timestamp,
       "result", tab_switch_result, "latency",
       tab_switch_duration.InMillisecondsF());
   ++g_num_trace_events_in_process;
@@ -175,35 +164,29 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
       GetHistogramSuffix(has_saved_frames_, *tab_switch_start_state_);
 
   // Record result histogram.
-  base::UmaHistogramEnumeration("Browser.Tabs.TabSwitchResult2",
+  base::UmaHistogramEnumeration("Browser.Tabs.TabSwitchResult3",
                                 tab_switch_result);
   base::UmaHistogramEnumeration(
-      base::StrCat({"Browser.Tabs.TabSwitchResult2.", suffix}),
+      base::StrCat({"Browser.Tabs.TabSwitchResult3.", suffix}),
       tab_switch_result);
 
   // Record latency histogram.
   switch (tab_switch_result) {
     case TabSwitchResult::kSuccess:
-      base::UmaHistogramMediumTimes("Browser.Tabs.TotalSwitchDuration2",
+      base::UmaHistogramMediumTimes("Browser.Tabs.TotalSwitchDuration3",
                                     tab_switch_duration);
       base::UmaHistogramMediumTimes(
-          base::StrCat({"Browser.Tabs.TotalSwitchDuration2.", suffix}),
+          base::StrCat({"Browser.Tabs.TotalSwitchDuration3.", suffix}),
           tab_switch_duration);
       break;
     case TabSwitchResult::kMissedTabHide:
     case TabSwitchResult::kIncomplete:
       base::UmaHistogramMediumTimes(
-          "Browser.Tabs.TotalIncompleteSwitchDuration2", tab_switch_duration);
+          "Browser.Tabs.TotalIncompleteSwitchDuration3", tab_switch_duration);
       base::UmaHistogramMediumTimes(
           base::StrCat(
-              {"Browser.Tabs.TotalIncompleteSwitchDuration2.", suffix}),
+              {"Browser.Tabs.TotalIncompleteSwitchDuration3.", suffix}),
           tab_switch_duration);
-      break;
-    case TabSwitchResult::kPresentationFailure:
-      // Do nothing.
-      break;
-    case TabSwitchResult::DEPRECATED_kUnhandled:
-      NOTREACHED();
       break;
   }
 }

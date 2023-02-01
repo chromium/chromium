@@ -89,7 +89,7 @@ void DelegatedFrameHost::WasShown(
 
   frame_evictor_->SetVisible(true);
   if (record_tab_switch_time_request && compositor_) {
-    compositor_->RequestPresentationTimeForNextFrame(
+    compositor_->RequestSuccessfulPresentationTimeForNextFrame(
         tab_switch_time_recorder_.TabWasShown(
             true /* has_saved_frames */,
             std::move(record_tab_switch_time_request)));
@@ -107,19 +107,19 @@ void DelegatedFrameHost::WasShown(
   }
 }
 
-void DelegatedFrameHost::RequestPresentationTimeForNextFrame(
+void DelegatedFrameHost::RequestSuccessfulPresentationTimeForNextFrame(
     blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
   DCHECK(visible_time_request);
   if (!compositor_)
     return;
   // Tab was shown while widget was already painting, eg. due to being
   // captured.
-  compositor_->RequestPresentationTimeForNextFrame(
+  compositor_->RequestSuccessfulPresentationTimeForNextFrame(
       tab_switch_time_recorder_.TabWasShown(true /* has_saved_frames */,
                                             std::move(visible_time_request)));
 }
 
-void DelegatedFrameHost::CancelPresentationTimeRequest() {
+void DelegatedFrameHost::CancelSuccessfulPresentationTimeRequest() {
   // Tab was hidden while widget keeps painting, eg. due to being captured.
   tab_switch_time_recorder_.TabWasHidden();
 }

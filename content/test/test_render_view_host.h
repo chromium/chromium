@@ -159,9 +159,9 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
       const DisplayFeature* display_feature) override;
   void NotifyHostAndDelegateOnWasShown(
       blink::mojom::RecordContentToVisibleTimeRequestPtr) override;
-  void RequestPresentationTimeFromHostOrDelegate(
+  void RequestSuccessfulPresentationTimeFromHostOrDelegate(
       blink::mojom::RecordContentToVisibleTimeRequestPtr) override;
-  void CancelPresentationTimeRequestForHostAndDelegate() override;
+  void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() override;
 
   viz::FrameSinkId frame_sink_id_;
 

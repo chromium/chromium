@@ -476,7 +476,7 @@ void WidgetBase::WasShown(bool was_evicted,
   SetHidden(false);
 
   if (record_tab_switch_time_request) {
-    LayerTreeHost()->RequestPresentationTimeForNextFrame(
+    LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(
         tab_switch_time_recorder_.TabWasShown(
             false /* has_saved_frames */,
             record_tab_switch_time_request->event_start_time,
@@ -488,7 +488,7 @@ void WidgetBase::WasShown(bool was_evicted,
   client_->WasShown(was_evicted);
 }
 
-void WidgetBase::RequestPresentationTimeForNextFrame(
+void WidgetBase::RequestSuccessfulPresentationTimeForNextFrame(
     mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request) {
   DCHECK(visible_time_request);
   if (is_hidden_)
@@ -496,7 +496,7 @@ void WidgetBase::RequestPresentationTimeForNextFrame(
 
   // Tab was shown while widget was already painting, eg. due to being
   // captured.
-  LayerTreeHost()->RequestPresentationTimeForNextFrame(
+  LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(
       tab_switch_time_recorder_.TabWasShown(
           false /* has_saved_frames */, visible_time_request->event_start_time,
           visible_time_request->destination_is_loaded,
@@ -504,7 +504,7 @@ void WidgetBase::RequestPresentationTimeForNextFrame(
           visible_time_request->show_reason_bfcache_restore));
 }
 
-void WidgetBase::CancelPresentationTimeRequest() {
+void WidgetBase::CancelSuccessfulPresentationTimeRequest() {
   if (is_hidden_)
     return;
 

@@ -599,15 +599,15 @@ chromium-metrics-reviews@google.com.
     visible (after a click, or keyboard-shortcut to switch tabs), until the tab
     is requested to become visible. The time it takes to actually make the tab
     visible and show on screen is measured in a separate metric, in
-    Browser.Tabs.TotalSwitchDuration2.
+    Browser.Tabs.TotalSwitchDuration3.
 
     This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES so only users with
     high resolution clocks will report this metric.
   </summary>
 </histogram>
 
-<histogram name="Browser.Tabs.TabSwitchResult2{TabSwitchingType}"
-    enum="TabSwitchResult" expires_after="2024-01-26">
+<histogram name="Browser.Tabs.TabSwitchResult3{TabSwitchingType}"
+    enum="TabSwitchResult2" expires_after="2024-01-26">
   <owner>fdoray@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
@@ -618,7 +618,7 @@ chromium-metrics-reviews@google.com.
   <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
 
-<histogram name="Browser.Tabs.TotalIncompleteSwitchDuration2{TabSwitchingType}"
+<histogram name="Browser.Tabs.TotalIncompleteSwitchDuration3{TabSwitchingType}"
     units="ms" expires_after="2024-01-26">
   <owner>fdoray@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
@@ -632,7 +632,7 @@ chromium-metrics-reviews@google.com.
   <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
 
-<histogram name="Browser.Tabs.TotalSwitchDuration2{TabSwitchingType}"
+<histogram name="Browser.Tabs.TotalSwitchDuration3{TabSwitchingType}"
     units="ms" expires_after="2024-01-26">
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>

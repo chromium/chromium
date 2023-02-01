@@ -123,9 +123,9 @@ class CONTENT_EXPORT DelegatedFrameHost
   // Called to request the presentation time for the next frame or cancel any
   // requests when the RenderWidget's visibility state is not changing. If the
   // visibility state is changing call WasHidden or WasShown instead.
-  void RequestPresentationTimeForNextFrame(
+  void RequestSuccessfulPresentationTimeForNextFrame(
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request);
-  void CancelPresentationTimeRequest();
+  void CancelSuccessfulPresentationTimeRequest();
 
   void EmbedSurface(const viz::LocalSurfaceId& local_surface_id,
                     const gfx::Size& dip_size,

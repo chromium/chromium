@@ -1172,14 +1172,14 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
   void ExpectPresentationFeedback(TabSwitchResult expected_result) {
     // Wait for the expected result (only) to be logged.
     const base::TimeTicks start_time = base::TimeTicks::Now();
-    while (histogram_tester_.GetAllSamples("Browser.Tabs.TabSwitchResult2")
+    while (histogram_tester_.GetAllSamples("Browser.Tabs.TabSwitchResult3")
                .empty()) {
       ASSERT_LT(base::TimeTicks::Now() - start_time,
                 TestTimeouts::action_timeout())
-          << "Timed out waiting for Browser.Tabs.TabSwitchResult2.";
+          << "Timed out waiting for Browser.Tabs.TabSwitchResult3.";
       GiveItSomeTime();
     }
-    histogram_tester_.ExpectUniqueSample("Browser.Tabs.TabSwitchResult2",
+    histogram_tester_.ExpectUniqueSample("Browser.Tabs.TabSwitchResult3",
                                          expected_result, 1);
   }
 
@@ -1190,7 +1190,7 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
     while (base::TimeTicks::Now() - start_time < base::Seconds(1)) {
       GiveItSomeTime();
       ASSERT_TRUE(
-          histogram_tester_.GetAllSamples("Browser.Tabs.TabSwitchResult2")
+          histogram_tester_.GetAllSamples("Browser.Tabs.TabSwitchResult3")
               .empty());
     }
   }

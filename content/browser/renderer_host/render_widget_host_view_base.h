@@ -596,8 +596,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   // Checks the combination of RenderWidgetHostImpl hidden state and
   // `page_visibility` and calls NotifyHostAndDelegateOnWasShown,
-  // RequestPresentationTimeFromHostOrDelegate or
-  // CancelPresentationTimeRequestForHostAndDelegate as appropriate.
+  // RequestSuccessfulPresentationTimeFromHostOrDelegate or
+  // CancelSuccessfulPresentationTimeRequestForHostAndDelegate as appropriate.
   //
   // This starts and stops tab switch latency measurements as needed so most
   // platforms should call this from ShowWithVisibility. Android does not
@@ -622,18 +622,19 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   // Each platform should override this to pass `visible_time_request`, which
   // will never be null, to
-  // DelegatedFrameHost::RequestPresentationTimeForNextFrame if there is a
-  // saved frame or RenderWidgetHostImpl::RequestPresentationTimeForNextFrame
-  // if not, after doing and platform-specific bookkeeping needed.
-  virtual void RequestPresentationTimeFromHostOrDelegate(
+  // DelegatedFrameHost::RequestSuccessfulPresentationTimeForNextFrame if there
+  // is a saved frame or
+  // RenderWidgetHostImpl::RequestSuccessfulPresentationTimeForNextFrame if not,
+  // after doing and platform-specific bookkeeping needed.
+  virtual void RequestSuccessfulPresentationTimeFromHostOrDelegate(
       blink::mojom::RecordContentToVisibleTimeRequestPtr
           visible_time_request) = 0;
 
   // Each platform should override this to call
-  // DelegatedFrameHost::CancelPresentationTimeRequest and
-  // RenderWidgetHostImpl::CancelPresentationTimeRequest, after doing and
-  // platform-specific bookkeeping needed.
-  virtual void CancelPresentationTimeRequestForHostAndDelegate() = 0;
+  // DelegatedFrameHost::CancelSuccessfulPresentationTimeRequest and
+  // RenderWidgetHostImpl::CancelSuccessfulPresentationTimeRequest, after doing
+  // and platform-specific bookkeeping needed.
+  virtual void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() = 0;
 
   // The model object. Access is protected to allow access to
   // RenderWidgetHostViewChildFrame.

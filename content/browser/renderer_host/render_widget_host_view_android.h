@@ -409,10 +409,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void NotifyHostAndDelegateOnWasShown(
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       final;
-  void RequestPresentationTimeFromHostOrDelegate(
+  void RequestSuccessfulPresentationTimeFromHostOrDelegate(
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       final;
-  void CancelPresentationTimeRequestForHostAndDelegate() final;
+  void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() final;
   void EnterFullscreenMode(
       const blink::mojom::FullscreenOptions& options) override;
   void ExitFullscreenMode() override;

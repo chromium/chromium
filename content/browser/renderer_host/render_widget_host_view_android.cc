@@ -3082,25 +3082,29 @@ void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(
     screen_state_change_handler_.WasShownAfterEviction();
 }
 
-void RenderWidgetHostViewAndroid::RequestPresentationTimeFromHostOrDelegate(
-    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+void RenderWidgetHostViewAndroid::
+    RequestSuccessfulPresentationTimeFromHostOrDelegate(
+        blink::mojom::RecordContentToVisibleTimeRequestPtr
+            visible_time_request) {
   bool has_saved_frame = delegated_frame_host_->HasSavedFrame();
   // No need to check for saved frames for the case of bfcache restore.
-  if (visible_time_request->show_reason_bfcache_restore || !has_saved_frame)
-    host()->RequestPresentationTimeForNextFrame(visible_time_request.Clone());
+  if (visible_time_request->show_reason_bfcache_restore || !has_saved_frame) {
+    host()->RequestSuccessfulPresentationTimeForNextFrame(
+        visible_time_request.Clone());
+  }
 
   // If the frame for the renderer is already available, then the
   // tab-switching time is the presentation time for the browser-compositor.
   if (has_saved_frame) {
-    delegated_frame_host_->RequestPresentationTimeForNextFrame(
+    delegated_frame_host_->RequestSuccessfulPresentationTimeForNextFrame(
         std::move(visible_time_request));
   }
 }
 
 void RenderWidgetHostViewAndroid::
-    CancelPresentationTimeRequestForHostAndDelegate() {
-  host()->CancelPresentationTimeRequest();
-  delegated_frame_host_->CancelPresentationTimeRequest();
+    CancelSuccessfulPresentationTimeRequestForHostAndDelegate() {
+  host()->CancelSuccessfulPresentationTimeRequest();
+  delegated_frame_host_->CancelSuccessfulPresentationTimeRequest();
 }
 
 void RenderWidgetHostViewAndroid::EnterFullscreenMode(

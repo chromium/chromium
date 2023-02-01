@@ -99434,12 +99434,10 @@ would be helpful to identify which type is being sent.
   <int value="1" label="Revisit"/>
 </enum>
 
-<enum name="TabSwitchResult">
+<enum name="TabSwitchResult2">
   <int value="0" label="Success"/>
   <int value="1" label="Tab hidden before a frame is presented"/>
-  <int value="2" label="Presentation failure"/>
-  <int value="3" label="Tab shown twice without being hidden"/>
-  <int value="4" label="Unhandled compositor state (deprecated)"/>
+  <int value="2" label="Tab shown twice without being hidden"/>
 </enum>
 
 <enum name="TapDelayType">

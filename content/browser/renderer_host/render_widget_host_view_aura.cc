@@ -645,8 +645,10 @@ void RenderWidgetHostViewAura::WasOccluded() {
   HideImpl();
 }
 
-void RenderWidgetHostViewAura::RequestPresentationTimeFromHostOrDelegate(
-    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+void RenderWidgetHostViewAura::
+    RequestSuccessfulPresentationTimeFromHostOrDelegate(
+        blink::mojom::RecordContentToVisibleTimeRequestPtr
+            visible_time_request) {
   DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
   DCHECK(!host_->is_hidden());
   DCHECK_EQ(visibility_, Visibility::VISIBLE);
@@ -656,25 +658,26 @@ void RenderWidgetHostViewAura::RequestPresentationTimeFromHostOrDelegate(
 
   // No need to check for saved frames for the case of bfcache restore.
   if (visible_time_request->show_reason_bfcache_restore || !has_saved_frame) {
-    host()->RequestPresentationTimeForNextFrame(visible_time_request.Clone());
+    host()->RequestSuccessfulPresentationTimeForNextFrame(
+        visible_time_request.Clone());
   }
 
   // If the frame for the renderer is already available, then the
   // tab-switching time is the presentation time for the browser-compositor.
   if (has_saved_frame) {
-    delegated_frame_host_->RequestPresentationTimeForNextFrame(
+    delegated_frame_host_->RequestSuccessfulPresentationTimeForNextFrame(
         std::move(visible_time_request));
   }
 }
 
 void RenderWidgetHostViewAura::
-    CancelPresentationTimeRequestForHostAndDelegate() {
+    CancelSuccessfulPresentationTimeRequestForHostAndDelegate() {
   DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
   DCHECK(!host_->is_hidden());
   DCHECK_EQ(visibility_, Visibility::VISIBLE);
 
-  host()->CancelPresentationTimeRequest();
-  delegated_frame_host_->CancelPresentationTimeRequest();
+  host()->CancelSuccessfulPresentationTimeRequest();
+  delegated_frame_host_->CancelSuccessfulPresentationTimeRequest();
 }
 
 bool RenderWidgetHostViewAura::ShouldSkipCursorUpdate() const {

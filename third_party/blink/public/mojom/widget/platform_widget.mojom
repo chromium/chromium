@@ -110,7 +110,7 @@ interface Widget {
   // Informs the widget that it was hidden. This allows it to reduce its
   // resource utilization, and will cancel any pending
   // RecordContentToVisibleTimeRequest that was set with WasShown or
-  // RequestPresentationTimeForNextFrame.
+  // RequestSuccessfulPresentationTimeForNextFrame.
   WasHidden();
 
   // Tells the render view that it is no longer hidden (see WasHidden).
@@ -119,12 +119,12 @@ interface Widget {
 
   // Asks the render view to report the time its next frame is presented to
   // the compositor. If the view is not visible this will do nothing.
-  RequestPresentationTimeForNextFrame(
+  RequestSuccessfulPresentationTimeForNextFrame(
     RecordContentToVisibleTimeRequest visible_time_request);
 
   // Cancels any pending RecordContentToVisibleTimeRequest that was set with
-  // WasShown or RequestPresentationTimeForNextFrame. If there are none this
-  // will do nothing.
-  CancelPresentationTimeRequest();
+  // WasShown or RequestSuccessfulPresentationTimeForNextFrame. If there are
+  // none this will do nothing.
+  CancelSuccessfulPresentationTimeRequest();
 };
 

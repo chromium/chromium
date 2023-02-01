@@ -141,10 +141,10 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void WasShown(bool was_evicted,
                 mojom::blink::RecordContentToVisibleTimeRequestPtr
                     record_tab_switch_time_request) override;
-  void RequestPresentationTimeForNextFrame(
+  void RequestSuccessfulPresentationTimeForNextFrame(
       mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;
-  void CancelPresentationTimeRequest() override;
+  void CancelSuccessfulPresentationTimeRequest() override;
 
   // LayerTreeDelegate overrides:
   // Applies viewport related properties during a commit from the compositor

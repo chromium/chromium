@@ -730,9 +730,9 @@ std::unique_ptr<ui::CompositorLock> CompositorImpl::GetCompositorLock(
       /*client=*/nullptr, timeout, host_->DeferBeginFrame());
 }
 
-void CompositorImpl::PostRequestPresentationTimeForNextFrame(
-    PresentationTimeCallback callback) {
-  RequestPresentationTimeForNextFrame(std::move(callback));
+void CompositorImpl::PostRequestSuccessfulPresentationTimeForNextFrame(
+    SuccessfulPresentationTimeCallback callback) {
+  RequestSuccessfulPresentationTimeForNextFrame(std::move(callback));
 }
 
 void CompositorImpl::DidSubmitCompositorFrame() {
@@ -990,6 +990,9 @@ void CompositorImpl::RequestPresentationTimeForNextFrame(
 
 void CompositorImpl::RequestSuccessfulPresentationTimeForNextFrame(
     SuccessfulPresentationTimeCallback callback) {
+  if (!host_) {
+    return;
+  }
   host_->RequestSuccessfulPresentationTimeForNextFrame(std::move(callback));
 }
 

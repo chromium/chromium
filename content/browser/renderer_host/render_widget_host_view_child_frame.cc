@@ -334,13 +334,14 @@ void RenderWidgetHostViewChildFrame::NotifyHostAndDelegateOnWasShown(
   NOTREACHED();
 }
 
-void RenderWidgetHostViewChildFrame::RequestPresentationTimeFromHostOrDelegate(
-    blink::mojom::RecordContentToVisibleTimeRequestPtr) {
+void RenderWidgetHostViewChildFrame::
+    RequestSuccessfulPresentationTimeFromHostOrDelegate(
+        blink::mojom::RecordContentToVisibleTimeRequestPtr) {
   NOTREACHED();
 }
 
 void RenderWidgetHostViewChildFrame::
-    CancelPresentationTimeRequestForHostAndDelegate() {
+    CancelSuccessfulPresentationTimeRequestForHostAndDelegate() {
   NOTREACHED();
 }
 

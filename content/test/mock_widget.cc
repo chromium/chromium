@@ -80,9 +80,9 @@ void MockWidget::WasShown(bool was_evicted,
     std::move(shown_hidden_callback_).Run();
 }
 
-void MockWidget::RequestPresentationTimeForNextFrame(
+void MockWidget::RequestSuccessfulPresentationTimeForNextFrame(
     blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {}
 
-void MockWidget::CancelPresentationTimeRequest() {}
+void MockWidget::CancelSuccessfulPresentationTimeRequest() {}
 
 }  // namespace content

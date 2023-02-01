@@ -1070,7 +1070,7 @@ void RenderWidgetHostViewBase::OnShowWithPageVisibility(
     // visible, so send any visibility time request to the compositor now.
     if (auto visible_time_request =
             visible_time_request_trigger.TakeRequest()) {
-      RequestPresentationTimeFromHostOrDelegate(
+      RequestSuccessfulPresentationTimeFromHostOrDelegate(
           std::move(visible_time_request));
     }
     return;
@@ -1083,7 +1083,7 @@ void RenderWidgetHostViewBase::OnShowWithPageVisibility(
   // compositor submitted a frame. The compositor will keep submitting
   // frames for the capture but they should not be included in the
   // visibility metrics.)
-  CancelPresentationTimeRequestForHostAndDelegate();
+  CancelSuccessfulPresentationTimeRequestForHostAndDelegate();
   return;
 }
 

@@ -423,18 +423,18 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 
   // Ensure the loop starts in the right state.
   ASSERT_TRUE(
-      histogram_tester.GetAllSamples("Browser.Tabs.TotalSwitchDuration2")
+      histogram_tester.GetAllSamples("Browser.Tabs.TotalSwitchDuration3")
           .empty());
 
   // Once the tab switch completes the PresentationFeedback should cause a
-  // single TotalSwitchDuration2 histogram to be logged.
+  // single TotalSwitchDuration3 histogram to be logged.
   bool got_incomplete_tab_switch = false;
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  while (histogram_tester.GetAllSamples("Browser.Tabs.TotalSwitchDuration2")
+  while (histogram_tester.GetAllSamples("Browser.Tabs.TotalSwitchDuration3")
              .empty()) {
     ASSERT_LT(base::TimeTicks::Now() - start_time,
               TestTimeouts::action_timeout())
-        << "Timed out waiting for Browser.Tabs.TotalSwitchDuration2.";
+        << "Timed out waiting for Browser.Tabs.TotalSwitchDuration3.";
     FetchHistogramsFromChildProcesses();
     GiveItSomeTime();
 
@@ -451,8 +451,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     // pump the message loop. If CrossProcessFrameConnector calls WasHidden
     // after the WasShown call above, it will cancel the simulated tab switch.
     // This causes ContentToVisibleTimeReporter to log
-    // TotalIncompleteSwitchDuration2, which is not based on
-    // PresentationFeedback, instead of TotalSwitchDuration2. See
+    // TotalIncompleteSwitchDuration3, which is not based on
+    // PresentationFeedback, instead of TotalSwitchDuration3. See
     // crbug.com/1288560 for more details.
     //
     // The race condition can only cause a single incomplete tab switch, so
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     // fixed.
     if (!got_incomplete_tab_switch &&
         !histogram_tester
-             .GetAllSamples("Browser.Tabs.TotalIncompleteSwitchDuration2")
+             .GetAllSamples("Browser.Tabs.TotalIncompleteSwitchDuration3")
              .empty()) {
       LOG(ERROR) << "Incomplete tab switch - try again.";
       got_incomplete_tab_switch = true;

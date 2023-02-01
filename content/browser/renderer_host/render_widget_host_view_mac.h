@@ -537,10 +537,10 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void NotifyHostAndDelegateOnWasShown(
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       final;
-  void RequestPresentationTimeFromHostOrDelegate(
+  void RequestSuccessfulPresentationTimeFromHostOrDelegate(
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       final;
-  void CancelPresentationTimeRequestForHostAndDelegate() final;
+  void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() final;
 
   // Gets a textual view of the page's contents, and passes it to the callback
   // provided.

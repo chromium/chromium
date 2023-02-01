@@ -417,10 +417,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void NotifyHostAndDelegateOnWasShown(
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       final;
-  void RequestPresentationTimeFromHostOrDelegate(
+  void RequestSuccessfulPresentationTimeFromHostOrDelegate(
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       final;
-  void CancelPresentationTimeRequestForHostAndDelegate() final;
+  void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() final;
 
   // May be overridden in tests.
   virtual bool ShouldSkipCursorUpdate() const;

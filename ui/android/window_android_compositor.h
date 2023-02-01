@@ -11,7 +11,6 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/compositor/compositor_lock.h"
-#include "ui/gfx/presentation_feedback.h"
 
 namespace ui {
 
@@ -50,15 +49,15 @@ class UI_ANDROID_EXPORT WindowAndroidCompositor {
   virtual std::unique_ptr<ui::CompositorLock> GetCompositorLock(
       base::TimeDelta timeout) = 0;
   virtual void OnUpdateOverlayTransform() = 0;
-  // This parallels ui::Compositor::RequestPresentationTimeForNextFrame, which
-  // while defined in ui is only implemented within
-  // content/browser/renderer_host which is not visible to other ui code. The
-  // majority of ui abstracts away ui::Compositor under
-  // ui::WindowAndroidCompositor.
-  using PresentationTimeCallback =
-      base::OnceCallback<void(const gfx::PresentationFeedback&)>;
-  virtual void PostRequestPresentationTimeForNextFrame(
-      PresentationTimeCallback callback) = 0;
+  // This parallels
+  // ui::Compositor::RequestSuccessfulPresentationTimeForNextFrame, which while
+  // defined in ui is only implemented within content/browser/renderer_host
+  // which is not visible to other ui code. The majority of ui abstracts away
+  // ui::Compositor under ui::WindowAndroidCompositor.
+  using SuccessfulPresentationTimeCallback =
+      base::OnceCallback<void(base::TimeTicks)>;
+  virtual void PostRequestSuccessfulPresentationTimeForNextFrame(
+      SuccessfulPresentationTimeCallback callback) = 0;
 };
 
 }  // namespace ui

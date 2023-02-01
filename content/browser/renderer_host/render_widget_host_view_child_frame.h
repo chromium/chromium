@@ -249,9 +249,9 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       const DisplayFeature* display_feature) override;
   void NotifyHostAndDelegateOnWasShown(
       blink::mojom::RecordContentToVisibleTimeRequestPtr) final;
-  void RequestPresentationTimeFromHostOrDelegate(
+  void RequestSuccessfulPresentationTimeFromHostOrDelegate(
       blink::mojom::RecordContentToVisibleTimeRequestPtr) final;
-  void CancelPresentationTimeRequestForHostAndDelegate() final;
+  void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() final;
 
   void StopFlingingIfNecessary(
       const blink::WebGestureEvent& event,

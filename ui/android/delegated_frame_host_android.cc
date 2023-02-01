@@ -266,10 +266,11 @@ void DelegatedFrameHostAndroid::AttachToCompositor(
   compositor->AddChildFrameSink(frame_sink_id_);
   registered_parent_compositor_ = compositor;
   if (content_to_visible_time_request_) {
-    registered_parent_compositor_->PostRequestPresentationTimeForNextFrame(
-        content_to_visible_time_recorder_.TabWasShown(
-            true /* has_saved_frames */,
-            std::move(content_to_visible_time_request_)));
+    registered_parent_compositor_
+        ->PostRequestSuccessfulPresentationTimeForNextFrame(
+            content_to_visible_time_recorder_.TabWasShown(
+                /*has_saved_frames=*/true,
+                std::move(content_to_visible_time_request_)));
   }
 }
 
@@ -290,7 +291,7 @@ bool DelegatedFrameHostAndroid::HasSavedFrame() const {
 }
 
 void DelegatedFrameHostAndroid::WasHidden() {
-  CancelPresentationTimeRequest();
+  CancelSuccessfulPresentationTimeRequest();
   frame_evictor_->SetVisible(false);
 }
 
@@ -301,7 +302,7 @@ void DelegatedFrameHostAndroid::WasShown(
     blink::mojom::RecordContentToVisibleTimeRequestPtr
         content_to_visible_time_request) {
   if (content_to_visible_time_request) {
-    PostRequestPresentationTimeForNextFrame(
+    PostRequestSuccessfulPresentationTimeForNextFrame(
         std::move(content_to_visible_time_request));
   }
   frame_evictor_->SetVisible(true);
@@ -401,14 +402,14 @@ void DelegatedFrameHostAndroid::EmbedSurface(
   }
 }
 
-void DelegatedFrameHostAndroid::RequestPresentationTimeForNextFrame(
+void DelegatedFrameHostAndroid::RequestSuccessfulPresentationTimeForNextFrame(
     blink::mojom::RecordContentToVisibleTimeRequestPtr
         content_to_content_to_visible_time_request) {
-  PostRequestPresentationTimeForNextFrame(
+  PostRequestSuccessfulPresentationTimeForNextFrame(
       std::move(content_to_content_to_visible_time_request));
 }
 
-void DelegatedFrameHostAndroid::CancelPresentationTimeRequest() {
+void DelegatedFrameHostAndroid::CancelSuccessfulPresentationTimeRequest() {
   content_to_visible_time_request_.reset();
   content_to_visible_time_recorder_.TabWasHidden();
 }
@@ -488,9 +489,10 @@ void DelegatedFrameHostAndroid::SetTopControlsVisibleHeight(float height) {
   content_layer_->layer_tree()->UpdateTopControlsVisibleHeight(height);
 }
 
-void DelegatedFrameHostAndroid::PostRequestPresentationTimeForNextFrame(
-    blink::mojom::RecordContentToVisibleTimeRequestPtr
-        content_to_visible_time_request) {
+void DelegatedFrameHostAndroid::
+    PostRequestSuccessfulPresentationTimeForNextFrame(
+        blink::mojom::RecordContentToVisibleTimeRequestPtr
+            content_to_visible_time_request) {
   // Since we could receive multiple requests while awaiting
   // `registered_parent_compositor_` we merge them.
   auto request =
@@ -502,9 +504,10 @@ void DelegatedFrameHostAndroid::PostRequestPresentationTimeForNextFrame(
     return;
   }
 
-  registered_parent_compositor_->PostRequestPresentationTimeForNextFrame(
-      content_to_visible_time_recorder_.TabWasShown(true /* has_saved_frames */,
-                                                    std::move(request)));
+  registered_parent_compositor_
+      ->PostRequestSuccessfulPresentationTimeForNextFrame(
+          content_to_visible_time_recorder_.TabWasShown(
+              /*has_saved_frames=*/true, std::move(request)));
 }
 
 }  // namespace ui

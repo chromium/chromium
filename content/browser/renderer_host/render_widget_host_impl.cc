@@ -901,7 +901,7 @@ void RenderWidgetHostImpl::WasShown(
   SynchronizeVisualProperties();
 }
 
-void RenderWidgetHostImpl::RequestPresentationTimeForNextFrame(
+void RenderWidgetHostImpl::RequestSuccessfulPresentationTimeForNextFrame(
     blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
   DCHECK(!is_hidden_);
   DCHECK(visible_time_request);
@@ -915,11 +915,11 @@ void RenderWidgetHostImpl::RequestPresentationTimeForNextFrame(
     return;
   }
   DCHECK(!pending_show_params_);
-  blink_widget_->RequestPresentationTimeForNextFrame(
+  blink_widget_->RequestSuccessfulPresentationTimeForNextFrame(
       std::move(visible_time_request));
 }
 
-void RenderWidgetHostImpl::CancelPresentationTimeRequest() {
+void RenderWidgetHostImpl::CancelSuccessfulPresentationTimeRequest() {
   DCHECK(!is_hidden_);
   if (waiting_for_init_) {
     // This method should only be called if the RWHI is already visible, meaning
@@ -930,7 +930,7 @@ void RenderWidgetHostImpl::CancelPresentationTimeRequest() {
     return;
   }
   DCHECK(!pending_show_params_);
-  blink_widget_->CancelPresentationTimeRequest();
+  blink_widget_->CancelSuccessfulPresentationTimeRequest();
 }
 
 #if BUILDFLAG(IS_ANDROID)

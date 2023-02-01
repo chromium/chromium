@@ -135,10 +135,10 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // Called to request the presentation time for the next frame or cancel any
   // requests when the RenderWidget's visibility state is not changing. If the
   // visibility state is changing call WasHidden or WasShown instead.
-  void RequestPresentationTimeForNextFrame(
+  void RequestSuccessfulPresentationTimeForNextFrame(
       blink::mojom::RecordContentToVisibleTimeRequestPtr
           content_to_visible_time_request);
-  void CancelPresentationTimeRequest();
+  void CancelSuccessfulPresentationTimeRequest();
 
   // Returns the ID for the current Surface. Returns an invalid ID if no
   // surface exists (!HasDelegatedContent()).
@@ -176,10 +176,10 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   void SetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id);
 
   // We cannot guarantee to be attached to `registered_parent_compositor_` when
-  // either WasShown or RequestPresentationTimeForNextFrame is called. In such
-  // cases we enqueue the request and attempt again to send it once the
+  // either WasShown or RequestSuccessfulPresentationTimeForNextFrame is called.
+  // In such cases we enqueue the request and attempt again to send it once the
   // compositor has been attached.
-  void PostRequestPresentationTimeForNextFrame(
+  void PostRequestSuccessfulPresentationTimeForNextFrame(
       blink::mojom::RecordContentToVisibleTimeRequestPtr
           content_to_visible_time_request);
 
