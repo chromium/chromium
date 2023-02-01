@@ -43,6 +43,10 @@ std::pair<std::string, GURL> GetShownOriginAndLinkUrl(
 std::string GetShownOrigin(const CredentialUIEntry& credential);
 GURL GetShownUrl(const CredentialUIEntry& credential);
 
+// Equivalent to |GetShownOrigin(CredentialUIEntry)| but works with
+// |CredentialFacet|.
+std::string GetShownOrigin(const CredentialFacet& facet);
+
 // Equivalent to |GetShownOriginAndLinkUrl| but works with |CredentialFacet|.
 GURL GetShownUrl(const CredentialFacet& facet);
 

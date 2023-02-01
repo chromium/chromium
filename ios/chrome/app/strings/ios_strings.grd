@@ -2559,6 +2559,24 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_DELETE_COMPROMISED_PASSWORD_DESCRIPTION" desc="Message on top of the confirmation alert when the user tapped delete password button. [iOS only]" meaning="Explaining to the user that deleting password locally won't delete account on a website.">
         Deleting this password will not delete your account on <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>. Change your password on <ph name="WEBSITE">$1<ex>twitter.com</ex></ph> to keep it safe from others.
       </message>
+      <message name="IDS_IOS_DELETE_PASSWORD_DESCRIPTION_FOR_MULTI_URLS" desc="Message at the top of the confirmation alert when the user tapped delete password button in a Password Details with more than 3 URLs. [iOS only]" meaning="Explaining to the user that deleting password locally won't delete account on a website.">
+          Passwords for <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>, <ph name="SECOND_WEBSITE">$2<ex>twitter.com</ex></ph>, and <ph name="NUMBER_OF_ACCOUNTS">$3<ex>2</ex></ph> others will be deleted. Your accounts won't be deleted.
+      </message>
+      <message name="IDS_IOS_DELETE_PASSWORD_DESCRIPTION_FOR_THREE_URLS" desc="Message at the top of the confirmation alert when the user tapped delete password button in a Password Details with 3 URLs. [iOS only]" meaning="Explaining to the user that deleting password locally won't delete account on a website.">
+        Passwords for <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>, <ph name="SECOND_WEBSITE">$2<ex>twitter.com</ex></ph>, and <ph name="THIRD_WEBSITE">$3<ex>twitter.com</ex></ph> will be deleted. Your accounts won't be deleted.
+      </message>
+      <message name="IDS_IOS_DELETE_PASSWORD_DESCRIPTION_FOR_TWO_URLS" desc="Message at the top of the confirmation alert when the user tapped delete password button in a Password Details with 2 URLs. [iOS only]" meaning="Explaining to the user that deleting password locally won't delete account on a website.">
+          Passwords for <ph name="WEBSITE">$1<ex>twitter.com</ex></ph> and <ph name="SECOND_WEBSITE">$2<ex>twitter.com</ex></ph> will be deleted. Your accounts won't be deleted.
+      </message>
+      <message name="IDS_IOS_DELETE_PASSWORD_DESCRIPTION_FOR_SINGLE_URL" desc="Message at the top of the confirmation alert when the user tapped delete password button in a Password Details. [iOS only]" meaning="Explaining to the user that deleting password locally won't delete account on a website.">
+        Your <ph name="WEBSITE">$1<ex>twitter.com</ex></ph> account won't be deleted.
+      </message>
+      <message name="IDS_IOS_DELETE_PASSWORD_TITLE_FOR_MULTI_GROUPS" desc="Title of the confirmation alert when the user tapped delete password button for multiple passwords. [iOS only]" meaning="Explaining to the user that deleting password locally won't delete account on a website.">
+          Delete <ph name="NUMBER_OF_ACCOUNTS">$1<ex>2</ex></ph> Passwords?
+      </message>
+      <message name="IDS_IOS_DELETE_PASSWORD_TITLE_FOR_SINGLE_URL" desc="Title of the confirmation alert when the user tapped delete password button. [iOS only]" meaning="Explaining to the user that deleting password locally won't delete account on a website.">
+          Delete Password for <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>?
+      </message>
       <message name="IDS_IOS_EDIT_ACTION_TITLE" desc="Title of the action used to edit a selected item. [iOS only]">
         Edit
       </message>

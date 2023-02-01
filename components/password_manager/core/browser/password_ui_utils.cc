@@ -69,6 +69,12 @@ std::pair<std::string, GURL> GetShownOriginAndLinkUrl(
           GetShownURL(facet_uri, password_form.url)};
 }
 
+std::string GetShownOrigin(const CredentialFacet& facet) {
+  auto facet_uri = password_manager::FacetURI::FromPotentiallyInvalidSpec(
+      facet.signon_realm);
+  return GetShownOrigin(facet_uri, facet.display_name, facet.url);
+}
+
 std::string GetShownOrigin(const CredentialUIEntry& credential) {
   FacetURI facet_uri =
       FacetURI::FromPotentiallyInvalidSpec(credential.GetFirstSignonRealm());
