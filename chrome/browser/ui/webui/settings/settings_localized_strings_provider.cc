@@ -1373,11 +1373,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
               autofill::payments::GetVirtualCardEnrollmentSupportUrl()
                   .spec())));
 
-  html_source->AddBoolean(
-      "virtualCardMetadataEnabled",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableVirtualCardMetadata));
-
   html_source->AddLocalizedStrings(kLocalizedStrings);
   // PASSWORD_VIEW page timeouts in 5 minutes:
   html_source->AddString(

@@ -44,7 +44,6 @@ suite('PaymentsSection', function() {
       migrationEnabled: true,
       removeCardExpirationAndTypeTitles: true,
       virtualCardEnrollmentEnabled: true,
-      virtualCardMetadataEnabled: true,
       showIbansSettings: true,
     });
   });
@@ -365,7 +364,6 @@ suite('PaymentsSection', function() {
   test('verifyPaymentSummarySublabelIsHidden', async function() {
     loadTimeData.overrideValues({
       removeCardExpirationAndTypeTitles: false,
-      virtualCardMetadataEnabled: false,
     });
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = false;
@@ -384,7 +382,6 @@ suite('PaymentsSection', function() {
   test('verifyCreditCardSummarySublabelWithExpirationDate', async function() {
     loadTimeData.overrideValues({
       removeCardExpirationAndTypeTitles: true,
-      virtualCardMetadataEnabled: false,
     });
     const creditCard = createCreditCardEntry();
 
@@ -397,7 +394,8 @@ suite('PaymentsSection', function() {
     assertFalse(getCardRowShadowRoot(section.$.paymentsList)
                     .querySelector<HTMLElement>('#summarySublabel')!.hidden);
     assertEquals(
-        creditCard.expirationMonth + '/' + creditCard.expirationYear,
+        creditCard.expirationMonth + '/' + creditCard.expirationYear +
+            '\u00a0|\u00a0' + creditCard.metadata!.summarySublabel,
         getCardRowShadowRoot(section.$.paymentsList)
             .querySelector<HTMLElement>(
                 '#summarySublabel')!.textContent!.trim());
@@ -459,7 +457,7 @@ suite('PaymentsSection', function() {
       'verifyCreditCardSummarySublabelWhenVirtualCardAvailable',
       async function() {
         loadTimeData.overrideValues({
-          removeCardExpirationAndTypeTitles: false,
+          removeCardExpirationAndTypeTitles: true,
         });
         const creditCard = createCreditCardEntry();
         creditCard.metadata!.isLocal = false;
@@ -475,7 +473,9 @@ suite('PaymentsSection', function() {
             getCardRowShadowRoot(section.$.paymentsList)
                 .querySelector<HTMLElement>('#summarySublabel')!.hidden);
         assertEquals(
-            'Virtual card available',
+            creditCard.expirationMonth + '/' + creditCard.expirationYear +
+                '\u00a0|\u00a0' +
+                'Virtual card available',
             getCardRowShadowRoot(section.$.paymentsList)
                 .querySelector<HTMLElement>(
                     '#summarySublabel')!.textContent!.trim());
@@ -485,7 +485,7 @@ suite('PaymentsSection', function() {
       'verifyCreditCardSummarySublabelWhenVirtualCardTurnedOn',
       async function() {
         loadTimeData.overrideValues({
-          removeCardExpirationAndTypeTitles: false,
+          removeCardExpirationAndTypeTitles: true,
         });
         const creditCard = createCreditCardEntry();
         creditCard.metadata!.isLocal = false;
@@ -501,7 +501,9 @@ suite('PaymentsSection', function() {
             getCardRowShadowRoot(section.$.paymentsList)
                 .querySelector<HTMLElement>('#summarySublabel')!.hidden);
         assertEquals(
-            'Virtual card turned on',
+            creditCard.expirationMonth + '/' + creditCard.expirationYear +
+                '\u00a0|\u00a0' +
+                'Virtual card turned on',
             getCardRowShadowRoot(section.$.paymentsList)
                 .querySelector<HTMLElement>(
                     '#summarySublabel')!.textContent!.trim());
@@ -537,7 +539,7 @@ suite('PaymentsSection', function() {
 
   test('verifyPaymentsLabel', async function() {
     loadTimeData.overrideValues({
-      virtualCardMetadataEnabled: false,
+      removeCardExpirationAndTypeTitles: false,
     });
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = false;
@@ -557,7 +559,7 @@ suite('PaymentsSection', function() {
 
   test('verifyPaymentsIndicator', async function() {
     loadTimeData.overrideValues({
-      virtualCardMetadataEnabled: true,
+      removeCardExpirationAndTypeTitles: true,
     });
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = false;
@@ -576,7 +578,7 @@ suite('PaymentsSection', function() {
 
   test('verifyCardImage', async function() {
     loadTimeData.overrideValues({
-      virtualCardMetadataEnabled: true,
+      removeCardExpirationAndTypeTitles: true,
     });
     const creditCard = createCreditCardEntry();
     const section = await createPaymentsSection(

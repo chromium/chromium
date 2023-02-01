@@ -42,7 +42,7 @@
     </style>
     <div class="list-item" role="row">
       <div class="type-column" role="cell">
-        <template is="dom-if" if="[[virtualCardMetadataEnabled_]]">
+        <template is="dom-if" if="[[showExpirationAsSecondaryLabelEnabled_]]">
           <img id="cardImage" src="[[creditCard.imageSrc]]" alt="">
         </template>
         <div class="summary-column">
@@ -50,14 +50,9 @@
             [[creditCard.metadata.summaryLabel]]
           </div>
           <div id="summarySublabel"
-              hidden$="[[!shouldShowSecondarySublabel_(creditCard,
-                  virtualCardEnrollmentEnabled_,
-                      showExpirationAsSecondaryLabelEnabled_)]]"
+              hidden$="[[!showExpirationAsSecondaryLabelEnabled_]]"
               class="ellipses sub-label">
-            [[getExpirationAndVirtualCardMetadata_(
-                showExpirationAsSecondaryLabelEnabled_, creditCard,
-                    showExpirationAsSecondaryLabelEnabled_,
-                        virtualCardEnrollmentEnabled_)]]
+            [[getSummarySublabel_(creditCard, virtualCardEnrollmentEnabled_)]]
           </div>
         </div>
         <span id="virtualCardLabel"

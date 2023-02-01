@@ -176,17 +176,6 @@ export class SettingsPaymentsSectionElement extends
         },
         readOnly: true,
       },
-
-      /**
-       * Whether virtual card metadata on settings page is enabled.
-       */
-      virtualCardMetadataEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('virtualCardMetadataEnabled');
-        },
-        readOnly: true,
-      },
     };
   }
 
@@ -205,7 +194,6 @@ export class SettingsPaymentsSectionElement extends
   private migrationEnabled_: boolean;
   private removeCardExpirationAndTypeTitlesEnabled_: boolean;
   private virtualCardEnrollmentEnabled_: boolean;
-  private virtualCardMetadataEnabled_: boolean;
   private activeDialogAnchor_: HTMLElement|null;
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
@@ -295,8 +283,7 @@ export class SettingsPaymentsSectionElement extends
    * Calculate the class style for `paymentsList` based on flags.
    */
   private computeCssClass_(): string {
-    return this.removeCardExpirationAndTypeTitlesEnabled_ &&
-            this.virtualCardMetadataEnabled_ ?
+    return this.removeCardExpirationAndTypeTitlesEnabled_ ?
         'payment-list-margin-start' :
         '';
   }
