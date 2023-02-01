@@ -2714,7 +2714,7 @@ bool NGFlexLayoutAlgorithm::MinBlockSizeShouldEncompassIntrinsicSize(
 
   if (is_column_) {
     bool can_shrink = item_style.ResolvedFlexShrink(Style()) != 0.f &&
-                      !Style().LogicalHeight().IsAutoOrContentOrIntrinsic();
+                      IsColumnContainerMainSizeDefinite();
 
     // Only allow growth if the item can't shrink and the flex-basis is
     // content-based.
