@@ -6,6 +6,7 @@
 #define ASH_STYLE_COLOR_PALETTE_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "base/containers/span.h"
 #include "base/observer_list_types.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -118,7 +119,7 @@ class ASH_EXPORT ColorPaletteController {
   using SampleColorSchemeCallback =
       base::OnceCallback<void(const std::vector<ash::SampleColorScheme>&)>;
   virtual void GenerateSampleColorSchemes(
-      const std::vector<ColorScheme>& color_scheme_buttons,
+      base::span<const ColorScheme> color_scheme_buttons,
       SampleColorSchemeCallback callback) const = 0;
 };
 

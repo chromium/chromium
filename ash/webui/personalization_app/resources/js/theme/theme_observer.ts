@@ -4,10 +4,10 @@
 
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {ColorScheme, ThemeObserverInterface, ThemeObserverReceiver, ThemeProviderInterface} from '../personalization_app.mojom-webui.js';
+import {ColorScheme, SampleColorScheme, ThemeObserverInterface, ThemeObserverReceiver, ThemeProviderInterface} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkModeEnabledAction, setStaticColorAction} from './theme_actions.js';
+import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkModeEnabledAction, setSampleColorSchemesAction, setStaticColorAction} from './theme_actions.js';
 import {getThemeProvider} from './theme_interface_provider.js';
 
 /** @fileoverview listens for updates on color mode changes. */
@@ -54,6 +54,11 @@ export class ThemeObserver implements ThemeObserverInterface {
   onColorSchemeChanged(scheme: ColorScheme): void {
     const store = PersonalizationStore.getInstance();
     store.dispatch(setColorSchemeAction(scheme));
+  }
+
+  onSampleColorSchemesChanged(sampleColorSchemes: SampleColorScheme[]): void {
+    const store = PersonalizationStore.getInstance();
+    store.dispatch(setSampleColorSchemesAction(sampleColorSchemes));
   }
 
   onStaticColorChanged(staticColor: SkColor): void {

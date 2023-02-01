@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider_source_observer.h"
 
 class Profile;
 
@@ -26,7 +27,8 @@ namespace ash::personalization_app {
 
 class PersonalizationAppThemeProviderImpl
     : public PersonalizationAppThemeProvider,
-      ash::ColorModeObserver {
+      public ash::ColorModeObserver,
+      public ui::ColorProviderSourceObserver {
  public:
   explicit PersonalizationAppThemeProviderImpl(content::WebUI* web_ui);
 
@@ -63,6 +65,9 @@ class PersonalizationAppThemeProviderImpl
   // ash::ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;
 
+  // ui::ColorProviderSourceObserver:
+  void OnColorProviderChanged() override;
+
   void GetColorScheme(GetColorSchemeCallback callback) override;
 
   void GetStaticColor(GetStaticColorCallback callback) override;
@@ -77,6 +82,9 @@ class PersonalizationAppThemeProviderImpl
   void NotifyColorModeAutoScheduleChanged();
 
   void OnColorSchemeChanged();
+
+  void OnSampleColorSchemesChanged(
+      const std::vector<ash::SampleColorScheme>& sampleColorSchemes);
 
   void OnStaticColorChanged();
 
@@ -94,8 +102,17 @@ class PersonalizationAppThemeProviderImpl
   mojo::Receiver<ash::personalization_app::mojom::ThemeProvider>
       theme_receiver_{this};
 
+  // The ColorProviderSourceObserver notifies whenever the ColorProvider is
+  // updated, such as when dark light mode changes or a new wallpaper is
+  // added.
+  base::ScopedObservation<ui::ColorProviderSource,
+                          ui::ColorProviderSourceObserver>
+      color_provider_source_observer_{this};
+
   mojo::Remote<ash::personalization_app::mojom::ThemeObserver>
       theme_observer_remote_;
+
+  base::WeakPtrFactory<PersonalizationAppThemeProviderImpl> weak_factory_{this};
 };
 
 }  // namespace ash::personalization_app

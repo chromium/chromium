@@ -7,7 +7,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/schedule_enums.h"
+#include "ash/shell.h"
 #include "ash/style/color_palette_controller.h"
+#include "ash/style/color_util.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
@@ -15,6 +17,15 @@
 #include "components/prefs/pref_service.h"
 
 namespace ash::personalization_app {
+
+// This array represents the order, number, and types of color schemes
+// represented by the color scheme buttons in the app.
+const std::array<ColorScheme, 4> kColorSchemeButtons{
+    ColorScheme::kTonalSpot,
+    ColorScheme::kNeutral,
+    ColorScheme::kVibrant,
+    ColorScheme::kExpressive,
+};
 
 PersonalizationAppThemeProviderImpl::PersonalizationAppThemeProviderImpl(
     content::WebUI* web_ui)
@@ -77,6 +88,9 @@ void PersonalizationAppThemeProviderImpl::SetThemeObserver(
               &PersonalizationAppThemeProviderImpl::OnStaticColorChanged,
               base::Unretained(this)));
     }
+    ui::ColorProviderSourceObserver::Observe(
+        ash::ColorUtil::GetColorProviderSourceForWindow(
+            ash::Shell::GetPrimaryRootWindow()));
   }
 }
 
@@ -130,6 +144,12 @@ void PersonalizationAppThemeProviderImpl::OnStaticColorChanged() {
   DCHECK(theme_observer_remote_.is_bound());
   theme_observer_remote_->OnStaticColorChanged(
       color_palette_controller_->GetStaticColor(GetAccountId(profile_)));
+}
+
+void PersonalizationAppThemeProviderImpl::OnSampleColorSchemesChanged(
+    const std::vector<ash::SampleColorScheme>& sampleColorSchemes) {
+  DCHECK(theme_observer_remote_.is_bound());
+  theme_observer_remote_->OnSampleColorSchemesChanged(sampleColorSchemes);
 }
 
 bool PersonalizationAppThemeProviderImpl::IsColorModeAutoScheduleEnabled() {
@@ -192,14 +212,13 @@ void PersonalizationAppThemeProviderImpl::SetStaticColor(SkColor static_color) {
 
 void PersonalizationAppThemeProviderImpl::GenerateSampleColorSchemes(
     GenerateSampleColorSchemesCallback callback) {
-  const std::vector<ColorScheme> color_scheme_buttons = {
-      ColorScheme::kTonalSpot,
-      ColorScheme::kNeutral,
-      ColorScheme::kVibrant,
-      ColorScheme::kExpressive,
-  };
-  color_palette_controller_->GenerateSampleColorSchemes(color_scheme_buttons,
+  color_palette_controller_->GenerateSampleColorSchemes(kColorSchemeButtons,
                                                         std::move(callback));
 }
 
+void PersonalizationAppThemeProviderImpl::OnColorProviderChanged() {
+  GenerateSampleColorSchemes(base::BindOnce(
+      &PersonalizationAppThemeProviderImpl::OnSampleColorSchemesChanged,
+      weak_factory_.GetWeakPtr()));
+}
 }  // namespace ash::personalization_app

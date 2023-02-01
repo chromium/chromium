@@ -13,6 +13,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -29,6 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace ash::personalization_app {
 
@@ -62,6 +64,20 @@ class TestThemeObserver
 
   void OnColorSchemeChanged(ash::ColorScheme color_scheme) override {
     color_scheme_ = color_scheme;
+  }
+
+  void OnSampleColorSchemesChanged(const std::vector<ash::SampleColorScheme>&
+                                       sample_color_schemes) override {
+    sample_color_schemes_ = sample_color_schemes;
+    on_sample_color_schemes_changed_count_ += 1;
+  }
+
+  int on_sample_color_schemes_changed_count() {
+    if (!theme_observer_receiver_.is_bound()) {
+      return 0;
+    }
+    theme_observer_receiver_.FlushForTesting();
+    return on_sample_color_schemes_changed_count_;
   }
 
   void OnStaticColorChanged(absl::optional<::SkColor> static_color) override {
@@ -113,8 +129,10 @@ class TestThemeObserver
 
   bool dark_mode_enabled_ = false;
   bool color_mode_auto_schedule_enabled_ = false;
+  int on_sample_color_schemes_changed_count_ = 0;
   ash::ColorScheme color_scheme_ = ash::ColorScheme::kTonalSpot;
   absl::optional<::SkColor> static_color_ = absl::nullopt;
+  std::vector<ash::SampleColorScheme> sample_color_schemes_;
 };
 
 }  // namespace
@@ -200,6 +218,13 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
       theme_provider_remote_.FlushForTesting();
     }
     return test_theme_observer_.GetStaticColor();
+  }
+
+  int GetOnSampleColorSchemesChangedCount() {
+    if (theme_provider_remote_.is_bound()) {
+      theme_provider_remote_.FlushForTesting();
+    }
+    return test_theme_observer_.on_sample_color_schemes_changed_count();
   }
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -379,6 +404,35 @@ TEST_F(PersonalizationAppThemeProviderImplJellyTest,
   theme_provider()->GenerateSampleColorSchemes(
       generate_sample_color_schemes_callback.Get());
   run_loop.Run();
+}
+
+TEST_F(PersonalizationAppThemeProviderImplJellyTest,
+       OnSampleColorSchemesChanged) {
+  ui::NativeTheme* theme = ui::NativeTheme::GetInstanceForNativeUi();
+  SetThemeObserver();
+  theme_provider_remote()->FlushForTesting();
+  int expected_color_schemes_changed_count =
+      GetOnSampleColorSchemesChangedCount() + 1;
+
+  // Changing the theme should trigger an update to the sample color schemes.
+  theme->NotifyOnNativeThemeUpdated();
+
+  base::RunLoop run_loop;
+  base::RepeatingTimer repeating_timer;
+  int count = 0;
+  repeating_timer.Start(FROM_HERE, base::Milliseconds(10),
+                        base::BindLambdaForTesting([&]() {
+                          count++;
+                          if (GetOnSampleColorSchemesChangedCount() >=
+                                  expected_color_schemes_changed_count ||
+                              count > 10) {
+                            repeating_timer.Stop();
+                            run_loop.Quit();
+                          }
+                        }));
+  run_loop.Run();
+  EXPECT_EQ(expected_color_schemes_changed_count,
+            GetOnSampleColorSchemesChangedCount());
 }
 
 }  // namespace ash::personalization_app

@@ -139,6 +139,33 @@ suite('DynamicColorElementTest', function() {
     assertEquals(colorScheme, action.colorScheme);
   });
 
+  test('sets sample color schemes in store on changed', async () => {
+    assertDeepEquals(emptyState(), personalizationStore.data);
+    await themeProvider.whenCalled('setThemeObserver');
+    const sampleColorSchemes = [
+      ColorScheme.kTonalSpot,
+      ColorScheme.kExpressive,
+      ColorScheme.kNeutral,
+      ColorScheme.kVibrant,
+    ].map((colorScheme) => {
+      return {
+        scheme: colorScheme,
+        primary: hexColorToSkColor('#eeeeee'),
+        secondary: hexColorToSkColor('#eeeeee'),
+        tertiary: hexColorToSkColor('#eeeeee'),
+      };
+    });
+    personalizationStore.expectAction(ThemeActionName.SET_SAMPLE_COLOR_SCHEMES);
+
+    themeProvider.themeObserverRemote!.onSampleColorSchemesChanged(
+        sampleColorSchemes);
+
+    const action = await personalizationStore.waitForAction(
+                       ThemeActionName.SET_SAMPLE_COLOR_SCHEMES) as
+        SetSampleColorSchemesAction;
+    assertDeepEquals(sampleColorSchemes, action.sampleColorSchemes);
+  });
+
   test('sets static color data in store on changed', async () => {
     const staticColor = hexColorToSkColor('#123456');
     assertDeepEquals(emptyState(), personalizationStore.data);

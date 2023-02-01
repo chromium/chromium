@@ -370,6 +370,9 @@ interface ThemeObserver {
   //Notifies the JS side about the current state of the color scheme.
   OnColorSchemeChanged(ColorScheme color_scheme);
 
+  // Notifies the JS side that the sample color schemes have changed.
+  OnSampleColorSchemesChanged(array<SampleColorScheme> sample_color_schemes);
+
   // Notifies the JS side about the current state of the static color.
   OnStaticColorChanged(skia.mojom.SkColor? color);
 };

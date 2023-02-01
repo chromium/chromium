@@ -126,7 +126,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController {
   }
 
   void GenerateSampleColorSchemes(
-      const std::vector<ColorScheme>& color_scheme_buttons,
+      base::span<const ColorScheme> color_scheme_buttons,
       SampleColorSchemeCallback callback) const override {
     std::vector<SampleColorScheme> samples;
     for (auto scheme : color_scheme_buttons) {

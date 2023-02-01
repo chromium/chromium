@@ -533,12 +533,12 @@ StructTraits<ash::personalization_app::mojom::SampleColorSchemeDataView,
   return sample_color_scheme.scheme;
 }
 
-// Default to false as we don't ever need to convert back to
-// `ash::ColorSchemeSample`.
 bool StructTraits<ash::personalization_app::mojom::SampleColorSchemeDataView,
                   ash::SampleColorScheme>::
     Read(ash::personalization_app::mojom::SampleColorSchemeDataView data,
          ash::SampleColorScheme* out) {
-  return false;
+  return data.ReadScheme(&out->scheme) && data.ReadPrimary(&out->primary) &&
+         data.ReadSecondary(&out->secondary) &&
+         data.ReadTertiary(&out->tertiary);
 }
 }  // namespace mojo
