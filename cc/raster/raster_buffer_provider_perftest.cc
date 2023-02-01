@@ -84,7 +84,7 @@ class PerfContextProvider
     capabilities_.sync_query = true;
 
     raster_context_ = std::make_unique<gpu::raster::RasterImplementationGLES>(
-        context_gl_.get(), ContextSupport());
+        context_gl_.get(), ContextSupport(), capabilities_);
   }
 
   // viz::ContextProvider implementation.

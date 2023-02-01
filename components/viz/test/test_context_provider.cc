@@ -380,7 +380,8 @@ TestContextProvider::TestContextProvider(
   if (!raster_interface_gles_) {
     raster_interface_gles_ =
         std::make_unique<gpu::raster::RasterImplementationGLES>(
-            context_gl_.get(), support_.get());
+            context_gl_.get(), support_.get(),
+            context_gl_->test_capabilities());
   }
   // Just pass nullptr to the ContextCacheController for its task runner.
   // Idle handling is tested directly in ContextCacheController's

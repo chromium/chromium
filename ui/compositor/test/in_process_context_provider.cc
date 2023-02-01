@@ -112,7 +112,7 @@ gpu::ContextResult InProcessContextProvider::BindToCurrentSequence() {
   if (gles2_context_) {
     gles2_raster_impl_ =
         std::make_unique<gpu::raster::RasterImplementationGLES>(
-            ContextGL(), ContextSupport());
+            ContextGL(), ContextSupport(), ContextCapabilities());
   }
 
   return bind_result_;

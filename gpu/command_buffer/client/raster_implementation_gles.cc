@@ -67,8 +67,9 @@ GLenum SkColorTypeToGLDataType(SkColorType color_type) {
 
 RasterImplementationGLES::RasterImplementationGLES(
     gles2::GLES2Interface* gl,
-    ContextSupport* context_support)
-    : gl_(gl), context_support_(context_support) {}
+    ContextSupport* context_support,
+    const gpu::Capabilities& caps)
+    : gl_(gl), context_support_(context_support), capabilities_(caps) {}
 
 RasterImplementationGLES::~RasterImplementationGLES() = default;
 
@@ -146,26 +147,46 @@ void RasterImplementationGLES::CopySharedImage(
     GLsizei height,
     GLboolean unpack_flip_y,
     GLboolean unpack_premultiply_alpha) {
-  GLuint texture_ids[2] = {
-      CreateAndConsumeForGpuRaster(source_mailbox),
-      CreateAndConsumeForGpuRaster(dest_mailbox),
-  };
-  DCHECK(texture_ids[0]);
-  DCHECK(texture_ids[1]);
+  // CopySharedImage does not support legacy mailboxes so fallback to
+  // CopySubTexture.
+  if (capabilities_.supports_yuv_rgb_conversion &&
+      source_mailbox.IsSharedImage() && dest_mailbox.IsSharedImage()) {
+    if (width < 0) {
+      LOG(ERROR) << "GL_INVALID_VALUE, glCopySharedImage, width < 0";
+      return;
+    }
+    if (height < 0) {
+      LOG(ERROR) << "GL_INVALID_VALUE, glCopySharedImage, height < 0";
+      return;
+    }
+    GLbyte mailboxes[sizeof(source_mailbox.name) * 2];
+    memcpy(mailboxes, source_mailbox.name, sizeof(source_mailbox.name));
+    memcpy(mailboxes + sizeof(source_mailbox.name), dest_mailbox.name,
+           sizeof(dest_mailbox.name));
+    gl_->CopySharedImageINTERNAL(xoffset, yoffset, x, y, width, height,
+                                 unpack_flip_y, mailboxes);
+  } else {
+    GLuint texture_ids[2] = {
+        CreateAndConsumeForGpuRaster(source_mailbox),
+        CreateAndConsumeForGpuRaster(dest_mailbox),
+    };
+    DCHECK(texture_ids[0]);
+    DCHECK(texture_ids[1]);
 
-  BeginSharedImageAccessDirectCHROMIUM(
-      texture_ids[0], GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
-  BeginSharedImageAccessDirectCHROMIUM(
-      texture_ids[1], GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+    BeginSharedImageAccessDirectCHROMIUM(
+        texture_ids[0], GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+    BeginSharedImageAccessDirectCHROMIUM(
+        texture_ids[1], GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 
-  gl_->CopySubTextureCHROMIUM(texture_ids[0], 0, dest_target, texture_ids[1], 0,
-                              xoffset, yoffset, x, y, width, height,
-                              unpack_flip_y, unpack_premultiply_alpha,
-                              false /* upack_unmultiply_alpha */);
+    gl_->CopySubTextureCHROMIUM(texture_ids[0], 0, dest_target, texture_ids[1],
+                                0, xoffset, yoffset, x, y, width, height,
+                                unpack_flip_y, unpack_premultiply_alpha,
+                                false /* upack_unmultiply_alpha */);
 
-  EndSharedImageAccessDirectCHROMIUM(texture_ids[0]);
-  EndSharedImageAccessDirectCHROMIUM(texture_ids[1]);
-  gl_->DeleteTextures(2, texture_ids);
+    EndSharedImageAccessDirectCHROMIUM(texture_ids[0]);
+    EndSharedImageAccessDirectCHROMIUM(texture_ids[1]);
+    gl_->DeleteTextures(2, texture_ids);
+  }
 }
 
 void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,

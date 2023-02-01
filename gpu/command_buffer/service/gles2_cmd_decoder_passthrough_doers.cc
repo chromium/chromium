@@ -5007,7 +5007,21 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageINTERNAL(
     GLsizei height,
     GLboolean unpack_flip_y,
     const volatile GLbyte* mailboxes) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (!lazy_context_) {
+    lazy_context_ = LazySharedContextState::Create(this);
+    if (!lazy_context_) {
+      return error::kNoError;
+    }
+  }
+  ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
+                            lazy_context_->shared_context_state()->surface());
+  CopySharedImageHelper helper(group_->shared_image_representation_factory(),
+                               lazy_context_->shared_context_state());
+  auto result = helper.CopySharedImage(xoffset, yoffset, x, y, width, height,
+                                       unpack_flip_y, mailboxes);
+  if (!result.has_value()) {
+    InsertError(result.error().gl_error, result.error().msg);
+  }
   return error::kNoError;
 }
 

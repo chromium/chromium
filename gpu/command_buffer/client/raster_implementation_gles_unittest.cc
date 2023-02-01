@@ -205,7 +205,8 @@ class RasterImplementationGLESTest : public testing::Test {
 
   void SetUp() override {
     gl_ = std::make_unique<RasterMockGLES2Interface>();
-    ri_ = std::make_unique<RasterImplementationGLES>(gl_.get(), &support_);
+    ri_ = std::make_unique<RasterImplementationGLES>(gl_.get(), &support_,
+                                                     gpu::Capabilities());
   }
 
   void TearDown() override {}

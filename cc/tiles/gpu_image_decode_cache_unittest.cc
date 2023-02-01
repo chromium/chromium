@@ -267,7 +267,7 @@ class MockRasterImplementation : public gpu::raster::RasterImplementationGLES {
  public:
   explicit MockRasterImplementation(gpu::gles2::GLES2Interface* gl,
                                     gpu::ContextSupport* support)
-      : RasterImplementationGLES(gl, support) {}
+      : RasterImplementationGLES(gl, support, gpu::Capabilities()) {}
   ~MockRasterImplementation() override = default;
 
   gpu::SyncToken ScheduleImageDecode(base::span<const uint8_t> encoded_data,

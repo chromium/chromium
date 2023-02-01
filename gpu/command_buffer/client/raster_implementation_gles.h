@@ -24,7 +24,8 @@ namespace raster {
 class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
  public:
   explicit RasterImplementationGLES(gles2::GLES2Interface* gl,
-                                    ContextSupport* context_support);
+                                    ContextSupport* context_support,
+                                    const gpu::Capabilities& caps);
 
   RasterImplementationGLES(const RasterImplementationGLES&) = delete;
   RasterImplementationGLES& operator=(const RasterImplementationGLES&) = delete;
@@ -55,7 +56,7 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
                               GLenum pname,
                               GLuint64* params) override;
 
-  // SharedImage copying.
+  // Copies SharedImage if `supports_yuv_rgb_conversion` else copies textures.
   void CopySharedImage(const gpu::Mailbox& source_mailbox,
                        const gpu::Mailbox& dest_mailbox,
                        GLenum dest_target,
@@ -191,6 +192,7 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
 
   raw_ptr<gles2::GLES2Interface> gl_;
   raw_ptr<ContextSupport> context_support_;
+  const gpu::Capabilities capabilities_;
   std::unique_ptr<GLHelper> gl_helper_;
   base::WeakPtrFactory<RasterImplementationGLES> weak_ptr_factory_{this};
 };
