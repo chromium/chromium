@@ -949,6 +949,9 @@ extern const char kHiddenNetworkMigrationDescription[];
 extern const char kHideShelfControlsInTabletModeName[];
 extern const char kHideShelfControlsInTabletModeDescription[];
 
+extern const char kHideNonDisplayableAccountEmailName[];
+extern const char kHideNonDisplayableAccountEmailDescription[];
+
 extern const char kHttpsOnlyModeName[];
 extern const char kHttpsOnlyModeDescription[];
 

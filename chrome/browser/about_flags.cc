@@ -4070,6 +4070,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kAddEduAccountFromAccountSettingsForSupervisedUsers)},
+    {"hide-non-displayable-account-email",
+     flag_descriptions::kHideNonDisplayableAccountEmailName,
+     flag_descriptions::kHideNonDisplayableAccountEmailDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kHideNonDisplayableAccountEmail)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"in-product-help-demo-mode-choice",
      flag_descriptions::kInProductHelpDemoModeChoiceName,

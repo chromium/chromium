@@ -1678,6 +1678,13 @@ const char kHideShelfControlsInTabletModeDescription[] =
     "Hides home, back, and overview button from the shelf while the device is "
     "in tablet mode. Predicated on shelf-hotseat feature being enabled.";
 
+const char kHideNonDisplayableAccountEmailName[] =
+    "Hide non-displayable account email";
+
+const char kHideNonDisplayableAccountEmailDescription[] =
+    "Hide the Google account email that should not be displayed on various UI "
+    "surfaces";
+
 extern const char kHotspotName[] = "Hotspot";
 extern const char kHotspotDescription[] =
     "Enables the Chromebook to share its cellular internet connection to other "
