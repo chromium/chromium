@@ -175,7 +175,7 @@ void SupportToolMessageHandler::RegisterMessages() {
           &SupportToolMessageHandler::HandleShowExportedDataInFolder,
           weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
-      "generateCustomizedURL",
+      "generateCustomizedUrl",
       base::BindRepeating(
           &SupportToolMessageHandler::HandleGenerateCustomizedURL,
           weak_ptr_factory_.GetWeakPtr()));
@@ -188,7 +188,6 @@ base::Value::List SupportToolMessageHandler::GetAccountsList() {
   // Guest mode does not have a primary account (or an IdentityManager).
   if (profile->IsGuestSession())
     return account_list;
-
   for (const auto& account : signin_ui_util::GetOrderedAccountsForDisplay(
            profile, /*restrict_to_accounts_eligible_for_sync=*/false)) {
     if (!account.IsEmpty())
