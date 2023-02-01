@@ -23,12 +23,16 @@
 
 namespace content_settings {
 
+bool CookieSettingsBase::storage_access_api_grants_unpartitioned_storage_ =
+    false;
+
+void CookieSettingsBase::
+    SetStorageAccessAPIGrantsUnpartitionedStorageForTesting(bool grants) {
+  storage_access_api_grants_unpartitioned_storage_ = grants;
+}
+
 CookieSettingsBase::CookieSettingsBase()
-    : storage_access_api_enabled_(
-          base::FeatureList::IsEnabled(net::features::kStorageAccessAPI)),
-      storage_access_api_grants_unpartitioned_storage_(
-          net::features::kStorageAccessAPIGrantsUnpartitionedStorage.Get()),
-      is_storage_partitioned_(base::FeatureList::IsEnabled(
+    : is_storage_partitioned_(base::FeatureList::IsEnabled(
           net::features::kThirdPartyStoragePartitioning)),
       is_privacy_sandbox_v4_enabled_(
 #if BUILDFLAG(IS_IOS)
@@ -151,8 +155,7 @@ CookieSettingsBase::GetCookieAccessSemanticsForDomain(
 bool CookieSettingsBase::ShouldConsiderStorageAccessGrants(
     QueryReason query_reason) const {
   return CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
-      query_reason, storage_access_api_enabled_,
-      storage_access_api_grants_unpartitioned_storage_,
+      query_reason, storage_access_api_grants_unpartitioned_storage_,
       is_storage_partitioned_);
 }
 
@@ -164,7 +167,7 @@ bool CookieSettingsBase::ShouldConsiderTopLevelStorageAccessGrants(
   return overrides.Has(
              net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible) &&
          CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
-             query_reason, storage_access_api_enabled_,
+             query_reason,
              /*storage_access_api_grants_unpartitioned_storage=*/false,
              is_storage_partitioned_);
 }
@@ -172,7 +175,6 @@ bool CookieSettingsBase::ShouldConsiderTopLevelStorageAccessGrants(
 // static
 bool CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
     QueryReason query_reason,
-    bool storage_access_api_enabled,
     bool storage_access_api_grants_unpartitioned_storage,
     bool is_storage_partitioned) {
   switch (query_reason) {
@@ -181,11 +183,10 @@ bool CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
     case QueryReason::kPrivacySandbox:
       return false;
     case QueryReason::kSiteStorage:
-      return storage_access_api_enabled &&
-             (storage_access_api_grants_unpartitioned_storage ||
-              is_storage_partitioned);
+      return storage_access_api_grants_unpartitioned_storage ||
+             is_storage_partitioned;
     case QueryReason::kCookies:
-      return storage_access_api_enabled;
+      return true;
   }
 }
 

@@ -34,16 +34,18 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 namespace {
 
 constexpr base::TimeDelta kImplicitGrantDuration = base::Hours(24);
 constexpr base::TimeDelta kExplicitGrantDuration = base::Days(30);
+constexpr bool kAutograntInFPS = true;
 
-int GetImplicitGrantLimit() {
-  return net::features::kStorageAccessAPIImplicitGrantLimit.Get();
-}
+// These are mutable for testing purposes.
+static int implicit_grant_limit = 0;
+static bool autodeny_outside_fps = true;
 
 // Returns true iff the request was answered implicitly (assuming it met some
 // other baseline prerequisites).
@@ -94,6 +96,18 @@ content_settings::ContentSettingConstraints ComputeConstraints(
 
 }  // namespace
 
+// static
+void StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(
+    int limit) {
+  implicit_grant_limit = limit;
+}
+
+// static
+void StorageAccessGrantPermissionContext::SetAutodenyOutsideFPSForTesting(
+    bool deny) {
+  autodeny_outside_fps = deny;
+}
+
 StorageAccessGrantPermissionContext::StorageAccessGrantPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(
@@ -122,7 +136,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     permissions::BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!user_gesture ||
-      !base::FeatureList::IsEnabled(net::features::kStorageAccessAPI) ||
+      !base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) ||
       !requesting_origin.is_valid() || !embedding_origin.is_valid()) {
     RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
@@ -130,8 +144,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   }
 
   if (!base::FeatureList::IsEnabled(features::kFirstPartySets) ||
-      (!net::features::kStorageAccessAPIAutoGrantInFPS.Get() &&
-       !net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get())) {
+      (!kAutograntInFPS && !autodeny_outside_fps)) {
     // First-Party Sets is disabled, or Auto-grants and auto-denials are both
     // disabled, so don't bother getting First-Party Sets data.
     UseImplicitGrantOrPrompt(id, requesting_origin, embedding_origin,
@@ -164,11 +177,10 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
     permissions::BrowserPermissionCallback callback,
     net::FirstPartySetMetadata metadata) {
   // We should only run this method if something might need the FPS metadata.
-  DCHECK(net::features::kStorageAccessAPIAutoGrantInFPS.Get() ||
-         net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get());
+  DCHECK(kAutograntInFPS || autodeny_outside_fps);
 
   if (metadata.AreSitesInSameFirstPartySet()) {
-    if (net::features::kStorageAccessAPIAutoGrantInFPS.Get()) {
+    if (kAutograntInFPS) {
       // Service domains are not allowed to request storage access on behalf
       // of other domains, even in the same First-Party Set.
       if (metadata.top_frame_entry()->site_type() == net::SiteType::kService) {
@@ -188,7 +200,7 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
     }
     // Not autogranting; fall back to implicit grants or prompt.
   } else {
-    if (net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get()) {
+    if (autodeny_outside_fps) {
       NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
                                   std::move(callback),
                                   /*persist=*/true, CONTENT_SETTING_BLOCK,
@@ -226,7 +238,7 @@ void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
 
   // If we have fewer grants than our limit, we can just set an implicit grant
   // now and skip prompting the user.
-  if (existing_implicit_grants < GetImplicitGrantLimit()) {
+  if (existing_implicit_grants < implicit_grant_limit) {
     NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
                                 std::move(callback),
                                 /*persist=*/true, CONTENT_SETTING_ALLOW,
@@ -244,7 +256,7 @@ ContentSetting StorageAccessGrantPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  if (!base::FeatureList::IsEnabled(net::features::kStorageAccessAPI)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
     return CONTENT_SETTING_BLOCK;
   }
 
@@ -279,7 +291,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
     RequestOutcome outcome) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!base::FeatureList::IsEnabled(net::features::kStorageAccessAPI)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
     return;
   }
 

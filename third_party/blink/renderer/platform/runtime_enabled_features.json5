@@ -2727,12 +2727,14 @@
       // Enabled when blink::features::kStorageAccessAPI is enabled.
       name: "StorageAccessAPI",
       status: "experimental",
+      base_feature: "StorageAccessAPI",
       implied_by: ["FirstPartySets"],
     },
     {
       name: "StorageAccessAPIForOriginExtension",
       public: true,
       status: "test",
+      depends_on: ["StorageAccessAPI"],
       base_feature: "StorageAccessAPIForOriginExtension",
     },
     {

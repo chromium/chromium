@@ -27,6 +27,7 @@
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace {
 
@@ -54,9 +55,9 @@ class TopLevelStorageAccessPermissionContextTest
     std::vector<base::test::FeatureRef> enabled;
     std::vector<base::test::FeatureRef> disabled;
     if (saa_enabled) {
-      enabled.push_back(net::features::kStorageAccessAPI);
+      enabled.push_back(blink::features::kStorageAccessAPI);
     } else {
-      disabled.push_back(net::features::kStorageAccessAPI);
+      disabled.push_back(blink::features::kStorageAccessAPI);
     }
     features_.InitWithFeatures(enabled, disabled);
   }
@@ -183,7 +184,7 @@ class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
   TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest() {
     features_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kFirstPartySets, net::features::kStorageAccessAPI},
+        {features::kFirstPartySets, blink::features::kStorageAccessAPI},
         /*disabled_features=*/{});
   }
   void SetUp() override {
@@ -281,7 +282,7 @@ class TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest
   TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest() {
     features_.InitWithFeatures(
         /*enabled_features=*/
-        {net::features::kStorageAccessAPI},
+        {blink::features::kStorageAccessAPI},
         /*disabled_features=*/{features::kFirstPartySets});
   }
 

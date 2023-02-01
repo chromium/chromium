@@ -23,7 +23,6 @@
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/buildflags/buildflags.h"
-#include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
@@ -34,6 +33,7 @@
 #include "components/content_settings/core/common/features.h"
 #else
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace {
 constexpr char kAllowedRequestsHistogram[] =
@@ -111,12 +111,13 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     std::vector<base::test::FeatureRef> disabled_features;
 #if BUILDFLAG(IS_IOS)
     enabled_features.push_back(kImprovedCookieControls);
-#endif
+#else
     if (IsStorageAccessAPIEnabled()) {
-      enabled_features.push_back(net::features::kStorageAccessAPI);
+      enabled_features.push_back(blink::features::kStorageAccessAPI);
     } else {
-      disabled_features.push_back(net::features::kStorageAccessAPI);
+      disabled_features.push_back(blink::features::kStorageAccessAPI);
     }
+#endif
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -267,9 +268,12 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   base::test::ScopedFeatureList feature_list_;
 };
 
+#if !BUILDFLAG(IS_IOS)
 TEST(CookieSettings, TestDefaultStorageAccessSetting) {
-  EXPECT_FALSE(base::FeatureList::IsEnabled(net::features::kStorageAccessAPI));
+  EXPECT_FALSE(
+      base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI));
 }
+#endif
 
 TEST_P(CookieSettingsTest, TestAllowlistedScheme) {
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
@@ -416,11 +420,13 @@ TEST_P(ImprovedCookieControlsDisabledCookieSettingsTest,
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     ImprovedCookieControlsDisabledCookieSettingsTest,
+    // Note that since Chrome's implementation of Storage Access API is not
+    // supported on iOS (and therefore neither is the Top-Level Storage Access
+    // API), we don't have to test those cases here, as this fixture only exists
+    // on iOS.
     testing::ValuesIn<TestCase>({
-        {"disable_SAA", false, false},
-        {"enable_SAA", true, false},
-        {"disable_SAA_force_3PCs", false, true},
-        {"enable_SAA_force_3PCs", true, true},
+        {"disable_all", false, false, false},
+        {"force_3PCs", false, false, true},
     }),
     [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
       return info.param.test_name;
@@ -1137,14 +1143,16 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTest,
     testing::ValuesIn<TestCase>({
-        {"disable_all", false, false, false},
-        {"disable_SAA_disable_TopLevel_force_3PCs", false, false, true},
-        {"disable_SAA_enable_TopLevel", false, true, false},
-        {"disable_SAA_enable_TopLevel_force_3PCs", false, true, true},
-        {"enable_SAA_disable_TopLevel", true, false, false},
-        {"enable_SAA_disable_TopLevel_force_3PCs", true, false, true},
-        {"enable_SAA_enable_TopLevel", true, true, false},
-        {"enable_all", true, true, true},
+      {"disable_all", false, false, false},
+          {"disable_SAA_disable_TopLevel_force_3PCs", false, false, true},
+          {"disable_SAA_enable_TopLevel", false, true, false},
+          {"disable_SAA_enable_TopLevel_force_3PCs", false, true, true},
+#if !BUILDFLAG(IS_IOS)
+          {"enable_SAA_disable_TopLevel", true, false, false},
+          {"enable_SAA_disable_TopLevel_force_3PCs", true, false, true},
+          {"enable_SAA_enable_TopLevel", true, true, false},
+          {"enable_all", true, true, true},
+#endif
     }),
     [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
       return info.param.test_name;

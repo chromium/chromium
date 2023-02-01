@@ -13,6 +13,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
@@ -60,42 +61,25 @@ constexpr char kRequestOutcomeHistogram[] = "API.StorageAccess.RequestOutcome";
 
 enum class TestType { kFrame, kWorker };
 
-std::string BoolToString(bool b) {
-  return b ? "true" : "false";
-}
-
 class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
  protected:
-  StorageAccessAPIBaseBrowserTest(bool permission_grants_unpartitioned_storage,
-                                  bool is_storage_partitioned)
+  explicit StorageAccessAPIBaseBrowserTest(bool is_storage_partitioned)
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
-        permission_grants_unpartitioned_storage_(
-            permission_grants_unpartitioned_storage),
         is_storage_partitioned_(is_storage_partitioned) {}
 
   void SetUp() override {
     features_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
                                             GetDisabledFeatures());
+    StorageAccessGrantPermissionContext::SetAutodenyOutsideFPSForTesting(
+        AutodenyOutsideFPS());
+    StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(
+        ImplicitGrantLimit());
     InProcessBrowserTest::SetUp();
   }
 
   virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
     std::vector<base::test::FeatureRefAndParams> enabled({
-        {net::features::kStorageAccessAPI,
-         {
-             {
-                 "storage-access-api-grants-unpartitioned-storage",
-                 BoolToString(permission_grants_unpartitioned_storage_),
-             },
-             {
-                 "storage_access_api_auto_grant_within_fps",
-                 "false",
-             },
-             {
-                 "storage_access_api_auto_deny_outside_fps",
-                 "false",
-             },
-         }},
+        {blink::features::kStorageAccessAPI, {}},
     });
     if (is_storage_partitioned_) {
       enabled.push_back({net::features::kThirdPartyStoragePartitioning, {}});
@@ -110,6 +94,10 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
     }
     return disabled;
   }
+
+  virtual bool AutodenyOutsideFPS() const { return false; }
+
+  virtual int ImplicitGrantLimit() const { return 5; }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -220,25 +208,18 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
 
   net::test_server::EmbeddedTestServer& https_server() { return https_server_; }
 
-  bool PermissionGrantsUnpartitionedStorage() const {
-    return permission_grants_unpartitioned_storage_;
-  }
   bool IsStoragePartitioned() const { return is_storage_partitioned_; }
 
  private:
   net::test_server::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList features_;
-  bool permission_grants_unpartitioned_storage_;
   bool is_storage_partitioned_;
 };
 
-class StorageAccessAPIBrowserTest
-    : public StorageAccessAPIBaseBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class StorageAccessAPIBrowserTest : public StorageAccessAPIBaseBrowserTest,
+                                    public testing::WithParamInterface<bool> {
  public:
-  StorageAccessAPIBrowserTest()
-      : StorageAccessAPIBaseBrowserTest(std::get<0>(GetParam()),
-                                        std::get<1>(GetParam())) {}
+  StorageAccessAPIBrowserTest() : StorageAccessAPIBaseBrowserTest(GetParam()) {}
 };
 
 // Validate that if an iframe requests access that cookies become unblocked for
@@ -640,15 +621,14 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          StorageAccessAPIBrowserTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 class StorageAccessAPIStorageBrowserTest
     : public StorageAccessAPIBaseBrowserTest,
-      public testing::WithParamInterface<std::tuple<TestType, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<TestType, bool>> {
  public:
   StorageAccessAPIStorageBrowserTest()
-      : StorageAccessAPIBaseBrowserTest(std::get<1>(GetParam()),
-                                        std::get<2>(GetParam())) {}
+      : StorageAccessAPIBaseBrowserTest(std::get<1>(GetParam())) {}
 
   void ExpectStorage(content::RenderFrameHost* frame, bool expected) {
     switch (GetTestType()) {
@@ -673,9 +653,7 @@ class StorageAccessAPIStorageBrowserTest
     }
   }
 
-  bool DoesPermissionGrantStorage() const {
-    return IsStoragePartitioned() || PermissionGrantsUnpartitionedStorage();
-  }
+  bool DoesPermissionGrantStorage() const { return IsStoragePartitioned(); }
 
  private:
   TestType GetTestType() const { return std::get<0>(GetParam()); }
@@ -779,14 +757,13 @@ INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
                          StorageAccessAPIStorageBrowserTest,
                          testing::Combine(testing::Values(TestType::kFrame,
                                                           TestType::kWorker),
-                                          testing::Bool(),
                                           testing::Bool()));
 
 class StorageAccessAPIWithFirstPartySetsBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
   StorageAccessAPIWithFirstPartySetsBrowserTest()
-      : StorageAccessAPIBaseBrowserTest(false, false) {}
+      : StorageAccessAPIBaseBrowserTest(false) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     StorageAccessAPIBaseBrowserTest::SetUpCommandLine(command_line);
@@ -800,27 +777,13 @@ class StorageAccessAPIWithFirstPartySetsBrowserTest
  protected:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {
-        {net::features::kStorageAccessAPI,
-         {
-             {
-                 net::features::kStorageAccessAPIAutoGrantInFPS.name,
-                 "true",
-             },
-             {
-                 net::features::kStorageAccessAPIAutoDenyOutsideFPS.name,
-                 "true",
-             },
-             // Setting implicit grants to a non-zero number here demonstrates
-             // that when the auto-deny param is enabled, the implicit grants
-             // param doesn't matter, since the auto-deny param takes
-             // precedence.
-             {
-                 "storage-access-api-implicit-grant-limit",
-                 "5",
-             },
-         }},
+        {blink::features::kStorageAccessAPI, {}},
     };
   }
+
+  bool AutodenyOutsideFPS() const override { return true; }
+
+  int ImplicitGrantLimit() const override { return 0; }
 };
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
@@ -928,28 +891,18 @@ class StorageAccessAPIWithFirstPartySetsAndImplicitGrantsBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
   StorageAccessAPIWithFirstPartySetsAndImplicitGrantsBrowserTest()
-      : StorageAccessAPIBaseBrowserTest(false, false) {}
+      : StorageAccessAPIBaseBrowserTest(false) {}
 
  protected:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {
-        {net::features::kStorageAccessAPI,
-         {
-             {
-                 net::features::kStorageAccessAPIAutoGrantInFPS.name,
-                 "true",
-             },
-             {
-                 net::features::kStorageAccessAPIAutoDenyOutsideFPS.name,
-                 "false",
-             },
-             {
-                 "storage-access-api-implicit-grant-limit",
-                 "5",
-             },
-         }},
+        {blink::features::kStorageAccessAPI, {}},
     };
   }
+
+  bool AutodenyOutsideFPS() const override { return false; }
+
+  int ImplicitGrantLimit() const override { return 5; }
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -995,7 +948,6 @@ class StorageAccessAPIWithCHIPSBrowserTest
  public:
   StorageAccessAPIWithCHIPSBrowserTest()
       : StorageAccessAPIBaseBrowserTest(
-            /*permission_grants_unpartitioned_storage=*/false,
             /*is_storage_partitioned=*/false) {}
 
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {

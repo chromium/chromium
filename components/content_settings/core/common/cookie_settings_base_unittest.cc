@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
-#include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
@@ -39,10 +38,6 @@ ContentSettingPatternSource CreateThirdPartySetting(ContentSetting setting) {
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromString(kDomain), base::Value(setting),
       std::string(), false);
-}
-
-std::string BoolToString(bool b) {
-  return b ? "true" : "false";
 }
 
 class CallbackCookieSettings : public CookieSettingsBase {
@@ -235,64 +230,43 @@ TEST(CookieSettingsBaseTest, IsValidLegacyAccessSetting) {
 }
 
 class CookieSettingsBaseStorageAccessAPITest
-    : public testing::TestWithParam<std::tuple<bool, bool, bool>> {
+    : public testing::TestWithParam<std::tuple<bool, bool>> {
  public:
   CookieSettingsBaseStorageAccessAPITest() {
-    std::vector<base::test::FeatureRefAndParams> enabled;
-    std::vector<base::test::FeatureRef> disabled;
-    if (IsStorageAccessAPIEnabled()) {
-      enabled.push_back({net::features::kStorageAccessAPI,
-                         {{"storage-access-api-grants-unpartitioned-storage",
-                           BoolToString(IsStorageGrantedByPermission())}}});
-    } else {
-      disabled.push_back(net::features::kStorageAccessAPI);
-    }
-    features_.InitWithFeaturesAndParameters(enabled, disabled);
+    CookieSettingsBase::SetStorageAccessAPIGrantsUnpartitionedStorageForTesting(
+        PermissionGrantsUnpartitionedStorage());
   }
 
-  bool IsStorageAccessAPIEnabled() const { return std::get<0>(GetParam()); }
   bool PermissionGrantsUnpartitionedStorage() const {
-    return std::get<1>(GetParam());
+    return std::get<0>(GetParam());
   }
-  bool IsStoragePartitioned() const { return std::get<2>(GetParam()); }
+  bool IsStoragePartitioned() const { return std::get<1>(GetParam()); }
 
   bool IsStorageGrantedByPermission() const {
     // Storage access should only be granted if the permission grants
     // unpartitioned storage, or if storage is partitioned.
-    return IsStorageAccessAPIEnabled() &&
-           (PermissionGrantsUnpartitionedStorage() || IsStoragePartitioned());
+    return PermissionGrantsUnpartitionedStorage() || IsStoragePartitioned();
   }
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
 TEST_P(CookieSettingsBaseStorageAccessAPITest,
        ShouldConsiderStorageAccessGrants) {
-  EXPECT_FALSE(CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
-      QueryReason::kSetting, IsStorageAccessAPIEnabled(),
-      PermissionGrantsUnpartitionedStorage(), IsStoragePartitioned()));
+  auto should_consider_for = [this](QueryReason query_reason) {
+    return CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
+        query_reason, PermissionGrantsUnpartitionedStorage(),
+        IsStoragePartitioned());
+  };
 
-  EXPECT_FALSE(CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
-      QueryReason::kPrivacySandbox, IsStorageAccessAPIEnabled(),
-      PermissionGrantsUnpartitionedStorage(), IsStoragePartitioned()));
-
-  EXPECT_EQ(CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
-                QueryReason::kSiteStorage, IsStorageAccessAPIEnabled(),
-                PermissionGrantsUnpartitionedStorage(), IsStoragePartitioned()),
+  EXPECT_FALSE(should_consider_for(QueryReason::kSetting));
+  EXPECT_FALSE(should_consider_for(QueryReason::kPrivacySandbox));
+  EXPECT_EQ(should_consider_for(QueryReason::kSiteStorage),
             IsStorageGrantedByPermission());
-
-  EXPECT_EQ(CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
-                QueryReason::kCookies, IsStorageAccessAPIEnabled(),
-                PermissionGrantsUnpartitionedStorage(), IsStoragePartitioned()),
-            IsStorageAccessAPIEnabled());
+  EXPECT_TRUE(should_consider_for(QueryReason::kCookies));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          CookieSettingsBaseStorageAccessAPITest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace
 }  // namespace content_settings

@@ -329,7 +329,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"OriginIsolationHeader", features::kOriginIsolationHeader},
           {"PartitionedCookies", net::features::kPartitionedCookies},
           {"ReduceAcceptLanguage", network::features::kReduceAcceptLanguage},
-          {"StorageAccessAPI", net::features::kStorageAccessAPI},
           {"TopicsAPI", features::kPrivacySandboxAdsAPIsOverride,
            kSetOnlyIfOverridden},
           {"TopicsXHR", features::kPrivacySandboxAdsAPIsOverride,
@@ -632,20 +631,6 @@ void ResolveInvalidConfigurations() {
         << switches::kEnableFeatures << "="
         << blink::features::kBrowsingTopicsXHR.name << " in addition.";
     WebRuntimeFeatures::EnableTopicsXHR(false);
-  }
-
-  // Storage Access API ForSite cannot be enabled unless the larger Storage
-  // Access API is also enabled.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIForOriginExtension) &&
-      !base::FeatureList::IsEnabled(net::features::kStorageAccessAPI)) {
-    LOG_IF(WARNING,
-           WebRuntimeFeatures::IsStorageAccessAPIForOriginExtensionEnabled())
-        << "requestStorageAccessForOrigin cannot be enabled in this "
-           "configuration. Use --"
-        << switches::kEnableFeatures << "="
-        << net::features::kStorageAccessAPI.name << " in addition.";
-    WebRuntimeFeatures::EnableStorageAccessAPIForOriginExtension(false);
   }
 }
 

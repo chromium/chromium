@@ -28,7 +28,7 @@
 #if BUILDFLAG(IS_IOS)
 #include "components/content_settings/core/common/features.h"
 #else
-#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #endif
 
 namespace content_settings {
@@ -211,7 +211,14 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
   // our checking logic.
   // We'll perform this check after we know if we will |block| or not to avoid
   // performing extra work in scenarios we already allow.
-  if (block && ShouldConsiderStorageAccessGrants(query_reason)) {
+
+  // TODO(https://crbug.com/1411765): instead of using a BUILDFLAG and checking
+  // the feature here, we should rely on CookieSettingsFactory to plumb in this
+  // boolean instead.
+  bool storage_access_api_enabled =
+      base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI);
+  if (block && storage_access_api_enabled &&
+      ShouldConsiderStorageAccessGrants(query_reason)) {
     ContentSetting host_setting = host_content_settings_map_->GetContentSetting(
         url, first_party_url, ContentSettingsType::STORAGE_ACCESS);
 
@@ -222,7 +229,7 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
     }
   }
 
-  if (block &&
+  if (block && storage_access_api_enabled &&
       ShouldConsiderTopLevelStorageAccessGrants(query_reason, overrides)) {
     ContentSetting host_setting = host_content_settings_map_->GetContentSetting(
         url, first_party_url, ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);

@@ -224,7 +224,7 @@ void UpdateLegacyCookieSettings(Profile* profile) {
 }
 
 void UpdateStorageAccessSettings(Profile* profile) {
-  if (base::FeatureList::IsEnabled(net::features::kStorageAccessAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
     ContentSettingsForOneType settings;
     HostContentSettingsMapFactory::GetForProfile(profile)
         ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS, &settings);
@@ -241,7 +241,7 @@ void UpdateStorageAccessSettings(Profile* profile) {
 
 void UpdateTopLevelStorageAccessSettings(Profile* profile) {
   // TODO(crbug.com/1385156): Switch to an independent feature flag.
-  if (base::FeatureList::IsEnabled(net::features::kStorageAccessAPI) &&
+  if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) &&
       base::FeatureList::IsEnabled(
           blink::features::kStorageAccessAPIForOriginExtension)) {
     ContentSettingsForOneType settings;
@@ -613,7 +613,7 @@ ProfileNetworkContextService::CreateCookieManagerParams(
       std::move(settings_for_legacy_cookie_access);
 
   ContentSettingsForOneType settings_for_storage_access;
-  if (base::FeatureList::IsEnabled(net::features::kStorageAccessAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
     host_content_settings_map->GetSettingsForOneType(
         ContentSettingsType::STORAGE_ACCESS, &settings_for_storage_access);
   }
@@ -621,7 +621,7 @@ ProfileNetworkContextService::CreateCookieManagerParams(
 
   ContentSettingsForOneType settings_for_top_level_storage_access;
   // TODO(crbug.com/1385156): Separate the two flags entirely.
-  if (base::FeatureList::IsEnabled(net::features::kStorageAccessAPI) &&
+  if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) &&
       base::FeatureList::IsEnabled(
           blink::features::kStorageAccessAPIForOriginExtension)) {
     host_content_settings_map->GetSettingsForOneType(

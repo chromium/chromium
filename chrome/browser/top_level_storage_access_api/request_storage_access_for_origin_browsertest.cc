@@ -100,7 +100,7 @@ class RequestStorageAccessForOriginBaseBrowserTest
 
   virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
     std::vector<base::test::FeatureRefAndParams> enabled(
-        {{net::features::kStorageAccessAPI, {}}});
+        {{blink::features::kStorageAccessAPI, {}}});
     return enabled;
   }
 
@@ -408,7 +408,7 @@ class RequestStorageAccessForOriginWithFirstPartySetsBrowserTest
  protected:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {{blink::features::kStorageAccessAPIForOriginExtension, {}},
-            {net::features::kStorageAccessAPI, {}}};
+            {blink::features::kStorageAccessAPI, {}}};
   }
 };
 
@@ -730,7 +730,7 @@ class RequestStorageAccessForOriginWithFirstPartySetsDisabledBrowserTest
  protected:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {{blink::features::kStorageAccessAPIForOriginExtension, {}},
-            {net::features::kStorageAccessAPI, {}}};
+            {blink::features::kStorageAccessAPI, {}}};
   }
   std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
     return {features::kFirstPartySets};
@@ -792,7 +792,7 @@ class RequestStorageAccessForOriginExplicitlyDisabledBrowserTest
     if (enable_standard_storage_access_api_) {
       return {blink::features::kStorageAccessAPIForOriginExtension};
     }
-    return {net::features::kStorageAccessAPI};
+    return {blink::features::kStorageAccessAPI};
   }
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     // When the standard API is enabled, return the parent class's enabled
