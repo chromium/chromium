@@ -298,7 +298,8 @@ std::map<std::string, url::Origin> CdmPrefServiceHelper::GetOriginIdMapping(
       user_prefs->GetDict(prefs::kMediaCdmOriginData);
 
   for (auto key_value : dict) {
-    const base::Value* origin_id_value = key_value.second.FindKey(kOriginId);
+    const base::Value* origin_id_value =
+        key_value.second.GetDict().Find(kOriginId);
     if (!origin_id_value)
       continue;
 
