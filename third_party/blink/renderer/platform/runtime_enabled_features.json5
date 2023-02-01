@@ -1088,6 +1088,8 @@
     {
       name: "DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning",
       origin_trial_feature_name: "DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning",
+      origin_trial_type: "deprecation",
+      origin_trial_allows_insecure: true,
       status: "experimental",
     },
     // This feature will represent the deprecation trial that allows first
