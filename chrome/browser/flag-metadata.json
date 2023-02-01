@@ -6668,7 +6668,7 @@
   {
     "name": "tab-selection-editor-v2",
     "owners": [ "ckitagawa", "fredmello" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 114
   },
   {
     "name": "tangible-sync",
