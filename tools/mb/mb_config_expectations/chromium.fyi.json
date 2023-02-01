@@ -353,6 +353,7 @@
       "is_component_build": false,
       "is_debug": false,
       "is_ubsan_security": true,
+      "is_ubsan_vptr": false,
       "optimize_for_fuzzing": true,
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,

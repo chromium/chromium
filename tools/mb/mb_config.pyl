@@ -3115,11 +3115,11 @@
     ],
 
     'libfuzzer_ubsan_release_bot': [
-      'libfuzzer', 'ubsan_security', 'release_bot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
+      'libfuzzer', 'ubsan_security_non_vptr', 'release_bot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
     ],
 
     'libfuzzer_ubsan_release_bot_reclient': [
-      'libfuzzer', 'ubsan_security', 'release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
+      'libfuzzer', 'ubsan_security_non_vptr', 'release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
     ],
 
     'libfuzzer_windows_asan_clang_tot_release_bot': [
@@ -4730,7 +4730,9 @@
       'gn_args': 'is_ubsan_no_recover=true',
     },
 
-    'ubsan_security': { 'gn_args': 'is_ubsan_security=true' },
+    'ubsan_security_non_vptr': {
+      'gn_args': 'is_ubsan_security=true is_ubsan_vptr=false'
+    },
 
     'ubsan_vptr': {
       'gn_args': 'is_ubsan_vptr=true',
