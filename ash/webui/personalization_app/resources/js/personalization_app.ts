@@ -130,6 +130,6 @@ if (loadTimeData.getBoolean('isJellyEnabled')) {
   link.rel = 'stylesheet';
   link.href = 'chrome://theme/colors.css?sets=legacy,sys';
   document.head.appendChild(link);
-  document.body.className = 'jelly-enabled';
+  document.body.classList.add('jelly-enabled');
   startColorChangeUpdater();
 }
