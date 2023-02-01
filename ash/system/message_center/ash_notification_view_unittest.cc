@@ -38,6 +38,8 @@
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_observer.h"
+#include "ui/message_center/message_center_types.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_header_view.h"
@@ -83,6 +85,44 @@ class NotificationTestDelegate : public message_center::NotificationDelegate {
   ~NotificationTestDelegate() override = default;
 
   bool disable_notification_called_ = false;
+};
+
+// A helper class to wait for the target message center visibility.
+class MessageCenterTargetVisibilityWaiter
+    : public message_center::MessageCenterObserver {
+ public:
+  explicit MessageCenterTargetVisibilityWaiter(bool target_visible)
+      : target_visible_(target_visible) {
+    observation_.Observe(message_center::MessageCenter::Get());
+  }
+
+  void Wait() {
+    if (message_center::MessageCenter::Get()->IsMessageCenterVisible() !=
+        target_visible_) {
+      run_loop_.Run();
+    }
+  }
+
+ private:
+  // message_center::MessageCenterObserver:
+  void OnCenterVisibilityChanged(
+      message_center::Visibility visibility) override {
+    if (run_loop_.running()) {
+      const bool is_actually_visible =
+          (visibility == message_center::VISIBILITY_MESSAGE_CENTER);
+      if (target_visible_ == is_actually_visible) {
+        run_loop_.Quit();
+      }
+    }
+  }
+
+  // The target message center visibility.
+  const bool target_visible_;
+
+  base::RunLoop run_loop_;
+  base::ScopedObservation<message_center::MessageCenter,
+                          message_center::MessageCenterObserver>
+      observation_{this};
 };
 
 }  // namespace
@@ -1180,16 +1220,35 @@ TEST_F(AshNotificationViewTest, ButtonStateUpdated) {
 // and gesture drag.
 class AshNotificationViewDragTest
     : public AshNotificationViewTestBase,
-      public testing::WithParamInterface</*use_gesture=*/bool> {
+      public testing::WithParamInterface<std::tuple<
+          /*use_gesture=*/bool,
+          /*is_popup=*/bool,
+          /*use_revamp_feature=*/bool>> {
  public:
   AshNotificationViewDragTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kNotificationImageDrag);
+    std::vector<base::test::FeatureRef> enabled_features{
+        features::kNotificationImageDrag};
+    if (DoesUseQsRevamp()) {
+      enabled_features.push_back(features::kQsRevamp);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features,
+                                          /*disabled_features=*/{});
+  }
+
+  // Returns the center of drag area of `notification_view` in screen
+  // coordinates.
+  gfx::Point GetDragAreaCenterInScreen(AshNotificationView* notification_view) {
+    const absl::optional<gfx::Rect> drag_area_bounds =
+        notification_view->GetDragAreaBounds();
+    EXPECT_TRUE(drag_area_bounds);
+    gfx::Rect drag_area_in_screen = *drag_area_bounds;
+    views::View::ConvertRectToScreen(notification_view, &drag_area_in_screen);
+    return drag_area_in_screen.CenterPoint();
   }
 
   // Drags from the specific location.
   void Drag(const gfx::Point& initial_press_point, int drag_step) {
     base::RunLoop run_loop;
-    const bool use_gesture = GetParam();
     ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
         base::BindLambdaForTesting([&]() {
           if (drag_step > 0) {
@@ -1197,7 +1256,7 @@ class AshNotificationViewDragTest
             --drag_step;
           } else if (!drag_step) {
             // End drag when having enough drag updates.
-            if (use_gesture) {
+            if (DoesUseGesture()) {
               GetEventGenerator()->ReleaseTouch();
             } else {
               GetEventGenerator()->ReleaseLeftButton();
@@ -1206,7 +1265,7 @@ class AshNotificationViewDragTest
         }),
         run_loop.QuitClosure());
 
-    if (GetParam()) {
+    if (DoesUseGesture()) {
       // Press touch to trigger notification drag.
       GetEventGenerator()->PressTouch(initial_press_point);
     } else {
@@ -1219,13 +1278,24 @@ class AshNotificationViewDragTest
     run_loop.Run();
   }
 
+  // Returns true when using gesture drag rather than mouse drag, specified
+  // by the test params; otherwise, returns false.
+  bool DoesUseGesture() const { return std::get<0>(GetParam()); }
+
+  // Returns true when using the popup notification rather than the tray
+  // notification. specified by the test params; otherwise, returns false.
+  bool IsPopupNotification() const { return std::get<1>(GetParam()); }
+
+  // Returns true if the quick setting revamp feature is enabled.
+  bool DoesUseQsRevamp() const { return std::get<2>(GetParam()); }
+
  private:
   // Moves drag by one step.
   void MoveDragByOneStep() {
     // The move distance for each drag move.
     constexpr int kMoveDistancePerStep = 10;
 
-    if (GetParam()) {
+    if (DoesUseGesture()) {
       GetEventGenerator()->MoveTouchBy(-kMoveDistancePerStep, /*y=*/0);
     } else {
       GetEventGenerator()->MoveMouseBy(-kMoveDistancePerStep, /*y=*/0);
@@ -1235,23 +1305,36 @@ class AshNotificationViewDragTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         AshNotificationViewDragTest,
-                         /*use_gesture=*/testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AshNotificationViewDragTest,
+    testing::Combine(/*use_gesture=*/testing::Bool(),
+                     /*is_popup=*/testing::Bool(),
+                     /*use_revamp_feature=*/testing::Bool()));
 
-// Verifies dragging an image notification popup.
-TEST_P(AshNotificationViewDragTest, DragPopup) {
-  // Add an image notification and wait until the notification popup shows.
+// Verifies that dragging a notification view works as expected.
+TEST_P(AshNotificationViewDragTest, Basics) {
+  // Add an image notification.
   std::unique_ptr<Notification> notification = CreateTestNotification(
       /*has_image=*/true);
-  MessagePopupAnimationWaiter(
-      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
-      .Wait();
-  auto* popup_view = static_cast<message_center::MessagePopupView*>(
-      NotificationCenterTestApi(nullptr).GetPopupViewForId(notification->id()));
-  DCHECK(popup_view);
-  auto* notification_view =
-      static_cast<AshNotificationView*>(popup_view->message_view());
+  AshNotificationView* notification_view = nullptr;
+  NotificationCenterTestApi notification_test_api(/*tray=*/nullptr);
+  if (IsPopupNotification()) {
+    // Wait until the notification popup shows
+    MessagePopupAnimationWaiter(
+        GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+        .Wait();
+    auto* popup_view = static_cast<message_center::MessagePopupView*>(
+        notification_test_api.GetPopupViewForId(notification->id()));
+    DCHECK(popup_view);
+    notification_view =
+        static_cast<AshNotificationView*>(popup_view->message_view());
+  } else {
+    // Open the message center bubble.
+    notification_test_api.ToggleBubble();
+    notification_view = static_cast<AshNotificationView*>(
+        notification_test_api.GetNotificationViewForId(notification->id()));
+  }
 
   MockDragDropObserver drag_drop_observer(
       aura::client::GetDragDropClient(Shell::GetPrimaryRootWindow()));
@@ -1261,20 +1344,18 @@ TEST_P(AshNotificationViewDragTest, DragPopup) {
   EXPECT_CALL(drag_drop_observer, OnDragStarted);
   EXPECT_CALL(drag_drop_observer, OnDragUpdated).Times(kMoveStep);
 
-  // Calculate the center of the drag area in screen coordinates.
-  const absl::optional<gfx::Rect> drag_area_bounds =
-      notification_view->GetDragAreaBounds();
-  ASSERT_TRUE(drag_area_bounds);
-  gfx::Point drag_area_origin = drag_area_bounds->origin();
-  views::View::ConvertPointToScreen(notification_view, &drag_area_origin);
-  const gfx::Point drag_area_center =
-      gfx::Rect(drag_area_origin, drag_area_bounds->size()).CenterPoint();
+  if (IsPopupNotification()) {
+    EXPECT_FALSE(
+        message_center::MessageCenter::Get()->GetPopupNotifications().empty());
+  } else {
+    EXPECT_TRUE(message_center::MessageCenter::Get()->IsMessageCenterVisible());
+  }
 
-  EXPECT_FALSE(
-      message_center::MessageCenter::Get()->GetPopupNotifications().empty());
-  Drag(drag_area_center, kMoveStep);
+  Drag(GetDragAreaCenterInScreen(notification_view), kMoveStep);
 
-  // After drag, the popup notification is dismissed.
+  // The the message center bubble is closed and the popup notification is
+  // dismissed when drag ends.
+  MessageCenterTargetVisibilityWaiter(/*target_visible=*/false).Wait();
   EXPECT_TRUE(
       message_center::MessageCenter::Get()->GetPopupNotifications().empty());
 }

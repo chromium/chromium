@@ -377,6 +377,10 @@ gfx::RoundedCornersF TrayBackgroundView::GetRoundedCorners() {
   }
 }
 
+base::WeakPtr<TrayBackgroundView> TrayBackgroundView::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void TrayBackgroundView::StartVisibilityAnimation(bool visible) {
   if (visible == layer()->GetTargetVisibility())
     return;

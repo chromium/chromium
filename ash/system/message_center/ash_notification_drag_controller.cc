@@ -4,8 +4,12 @@
 
 #include "ash/system/message_center/ash_notification_drag_controller.h"
 
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_notification_view.h"
+#include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
@@ -100,7 +104,40 @@ void AshNotificationDragController::OnNotificationViewDragStarted(
   drag_drop_client_observer_.Observe(
       aura::client::GetDragDropClient(Shell::GetPrimaryRootWindow()));
 
-  // Hide the dragged notification popup if any.
+  // Hide the message center bubble if it is open.
+  if (message_center::MessageCenter::Get()->IsMessageCenterVisible()) {
+    StatusAreaWidget* status_area_widget =
+        RootWindowController::ForWindow(
+            dragged_view->GetWidget()->GetNativeView())
+            ->GetStatusAreaWidget();
+    TrayBackgroundView* message_center_bubble = nullptr;
+    if (features::IsQsRevampEnabled()) {
+      message_center_bubble = status_area_widget->notification_center_tray();
+    } else {
+      // If the quick setting revamp feature is not enabled, we should hide the
+      // unified system tray bubble.
+      message_center_bubble = status_area_widget->unified_system_tray();
+    }
+
+    // We cannot destroy the message center bubble instantly. Otherwise, if
+    // `dragged_view` is under gesture drag, the gesture state will be reset
+    // when the bubble is closed. Therefore, post a task to close the bubble
+    // asynchronously.
+    DCHECK(message_center_bubble);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](const base::WeakPtr<TrayBackgroundView>& weak_ptr) {
+                         if (weak_ptr) {
+                           weak_ptr->CloseBubble();
+                         }
+                       },
+                       message_center_bubble->GetWeakPtr()));
+
+    return;
+  }
+
+  // Hide the dragged notification popup if any. Assume that the notification
+  // popup only shows when the message center is hidden.
   message_center::MessageCenter::Get()->MarkSinglePopupAsShown(
       *dragged_notification_id_,
       /*mark_notification_as_read=*/true);

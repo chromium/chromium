@@ -188,6 +188,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // Returns the corners based on the `corner_behavior_`;
   gfx::RoundedCornersF GetRoundedCorners();
 
+  // Returns a weak pointer to this instance.
+  base::WeakPtr<TrayBackgroundView> GetWeakPtr();
+
   void SetIsActive(bool is_active);
   bool is_active() const { return is_active_; }
 
