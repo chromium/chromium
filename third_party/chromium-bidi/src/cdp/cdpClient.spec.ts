@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-import {CdpConnection} from './cdpConnection.js';
-import {StubTransport} from './stubTransport.spec.js';
-
 import * as chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
-chai.use(chaiAsPromised);
-
 import * as sinon from 'sinon';
-
+import {CdpConnection} from './cdpConnection.js';
 import {Protocol} from 'devtools-protocol';
+import {StubTransport} from './stubTransport.spec.js';
+import chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
 
 const TEST_TARGET_ID = 'TargetA';
 const ANOTHER_TARGET_ID = 'TargetB';

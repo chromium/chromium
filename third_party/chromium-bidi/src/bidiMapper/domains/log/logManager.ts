@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import {CdpClient} from '../../CdpConnection.js';
 import {CommonDataTypes, Log, Script} from '../../../protocol/protocol.js';
-import {getRemoteValuesText} from './logHelper.js';
+import {CdpClient} from '../../CdpConnection.js';
+import {IEventManager} from '../events/EventManager.js';
 import {Protocol} from 'devtools-protocol';
 import {Realm} from '../script/realm.js';
-import {IEventManager} from '../events/EventManager.js';
+import {getRemoteValuesText} from './logHelper.js';
 
 /** Converts CDP StackTrace object to Bidi StackTrace object. */
 function getBidiStackTrace(

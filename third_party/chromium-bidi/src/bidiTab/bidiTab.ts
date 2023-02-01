@@ -17,13 +17,7 @@
  * @license
  */
 
-import {CdpConnection} from '../cdp/index.js';
-import {BidiServer} from '../bidiMapper/BidiServer.js';
-import {BidiTransport} from '../bidiMapper/bidiMapper.js';
-
-import {log, LogType} from '../utils/log.js';
-import {generatePage} from './mapperTabPage.js';
-import {OutgoingBidiMessage} from '../bidiMapper/OutgoindBidiMessage.js';
+import * as Parser from '../protocol-parser/protocol-parser.js';
 import type {
   BrowsingContext,
   CDP,
@@ -31,9 +25,14 @@ import type {
   Script,
   Session,
 } from '../protocol/protocol';
-import * as Parser from '../protocol-parser/protocol-parser.js';
-import {ITransport} from '../utils/transport.js';
+import {LogType, log} from '../utils/log.js';
 import {BidiParser} from '../bidiMapper/CommandProcessor.js';
+import {BidiServer} from '../bidiMapper/BidiServer.js';
+import {BidiTransport} from '../bidiMapper/bidiMapper.js';
+import {CdpConnection} from '../cdp/index.js';
+import {ITransport} from '../utils/transport.js';
+import {OutgoingBidiMessage} from '../bidiMapper/OutgoindBidiMessage.js';
+import {generatePage} from './mapperTabPage.js';
 
 const logSystem = log(LogType.system);
 const logBidi = log(LogType.bidi);

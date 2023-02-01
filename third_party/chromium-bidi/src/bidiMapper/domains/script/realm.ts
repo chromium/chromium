@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
-import {CommonDataTypes, Script, Message} from '../../../protocol/protocol.js';
+import {CommonDataTypes, Message, Script} from '../../../protocol/protocol.js';
 import {ScriptEvaluator, stringifyObject} from './scriptEvaluator.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 import {CdpClient} from '../../CdpConnection.js';
+import {Protocol} from 'devtools-protocol';
 
 export enum RealmType {
   window = 'window',

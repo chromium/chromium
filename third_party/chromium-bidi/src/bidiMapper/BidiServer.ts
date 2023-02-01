@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-import {EventEmitter} from '../utils/EventEmitter.js';
-
-import {BidiTransport} from './BidiTransport.js';
-import type {Message} from '../protocol/protocol.js';
-import {ProcessingQueue} from '../utils/processingQueue.js';
-import {OutgoingBidiMessage} from './OutgoindBidiMessage.js';
-import {EventManager} from './domains/events/EventManager.js';
 import {BidiParser, CommandProcessor} from './CommandProcessor.js';
-import {CdpConnection} from './CdpConnection.js';
+import {BidiTransport} from './BidiTransport.js';
 import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
+import {CdpConnection} from './CdpConnection.js';
+import {EventEmitter} from '../utils/EventEmitter.js';
+import {EventManager} from './domains/events/EventManager.js';
+import type {Message} from '../protocol/protocol.js';
+import {OutgoingBidiMessage} from './OutgoindBidiMessage.js';
+import {ProcessingQueue} from '../utils/processingQueue.js';
 
 type BidiServerEvents = {
   message: Message.RawCommandRequest;

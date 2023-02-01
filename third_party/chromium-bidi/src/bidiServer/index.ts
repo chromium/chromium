@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-import argparse from 'argparse';
-import puppeteer from 'puppeteer';
-
-import mapperReader from './mapperReader.js';
-import {MapperServer} from './mapperServer.js';
 import {BidiServerRunner} from './bidiServerRunner.js';
 import {ITransport} from '../utils/transport.js';
+import {MapperServer} from './mapperServer.js';
+import argparse from 'argparse';
+import mapperReader from './mapperReader.js';
+import puppeteer from 'puppeteer';
 
 function parseArguments() {
   const parser = new argparse.ArgumentParser({

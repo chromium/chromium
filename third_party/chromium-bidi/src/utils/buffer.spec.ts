@@ -16,9 +16,8 @@
  */
 
 import * as chai from 'chai';
-import {Buffer} from './buffer.js';
-
 import * as sinon from 'sinon';
+import {Buffer} from './buffer.js';
 
 const expect = chai.expect;
 

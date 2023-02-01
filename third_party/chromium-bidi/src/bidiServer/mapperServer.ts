@@ -15,15 +15,13 @@
  * limitations under the License.
  */
 
+import {CdpClient, CdpConnection, WebSocketTransport} from '../cdp/index.js';
+import Protocol from 'devtools-protocol';
+import WebSocket from 'ws';
 import debug from 'debug';
 
 const debugInternal = debug('bidiMapper:internal');
 const debugLog = debug('bidiMapper:log');
-
-import WebSocket from 'ws';
-import Protocol from 'devtools-protocol';
-
-import {CdpClient, CdpConnection, WebSocketTransport} from '../cdp/index.js';
 
 export class MapperServer {
   private _handlers: ((message: string) => void)[] = [];

@@ -15,8 +15,8 @@
  */
 
 import {EventEmitter} from './EventEmitter.js';
-import sinon from 'sinon';
 import {expect} from 'chai';
+import sinon from 'sinon';
 
 describe('EventEmitter', () => {
   type Events = {

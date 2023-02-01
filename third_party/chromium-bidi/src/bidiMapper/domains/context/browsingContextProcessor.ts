@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-import {log, LogType} from '../../../utils/log.js';
-import {CdpClient, CdpConnection} from '../../CdpConnection.js';
 import {
   BrowsingContext,
   CDP,
-  Script,
   Message,
+  Script,
 } from '../../../protocol/protocol.js';
-import Protocol from 'devtools-protocol';
-import {IEventManager} from '../events/EventManager.js';
+import {CdpClient, CdpConnection} from '../../CdpConnection.js';
+import {LogType, log} from '../../../utils/log.js';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
-import {Realm} from '../script/realm.js';
 import {BrowsingContextStorage} from './browsingContextStorage.js';
+import {IEventManager} from '../events/EventManager.js';
+import Protocol from 'devtools-protocol';
+import {Realm} from '../script/realm.js';
 
 const logContext = log(LogType.browsingContexts);
 

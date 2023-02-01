@@ -15,9 +15,9 @@
  */
 
 import * as chai from 'chai';
-import {SubscriptionManager} from './SubscriptionManager.js';
 import {BrowsingContext} from '../../../protocol/protocol.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import {SubscriptionManager} from './SubscriptionManager.js';
 
 const expect = chai.expect;
 const ALL_EVENTS = BrowsingContext.AllEvents;

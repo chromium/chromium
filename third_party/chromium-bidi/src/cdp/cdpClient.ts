@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import {EventEmitter} from '../utils/EventEmitter.js';
 import {CdpConnection} from './cdpConnection.js';
+import {EventEmitter} from '../utils/EventEmitter.js';
 
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 

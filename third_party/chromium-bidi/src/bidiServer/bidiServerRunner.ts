@@ -14,13 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import websocket from 'websocket';
-import http from 'http';
 import {ITransport} from '../utils/transport.js';
-
 import debug from 'debug';
-
+import http from 'http';
+import websocket from 'websocket';
 const debugInternal = debug('bidiServer:internal');
 const debugSend = debug('bidiServer:SEND ►');
 const debugRecv = debug('bidiServer:RECV ◀');

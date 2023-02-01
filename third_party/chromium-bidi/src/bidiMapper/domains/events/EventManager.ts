@@ -21,10 +21,10 @@ import type {
   Session,
 } from '../../../protocol/protocol.js';
 import type {BidiServer} from '../../BidiServer.js';
+import {Buffer} from '../../../utils/buffer.js';
+import {IdWrapper} from '../../../utils/idWrapper.js';
 import {OutgoingBidiMessage} from '../../OutgoindBidiMessage.js';
 import {SubscriptionManager} from './SubscriptionManager.js';
-import {IdWrapper} from '../../../utils/idWrapper.js';
-import {Buffer} from '../../../utils/buffer.js';
 
 class EventWrapper extends IdWrapper {
   readonly #contextId: CommonDataTypes.BrowsingContext | null;

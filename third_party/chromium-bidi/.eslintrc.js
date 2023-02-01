@@ -35,6 +35,7 @@ module.exports = {
     'no-undef': 'error',
     'prefer-promise-reject-errors': 'error',
     'prefer-template': 'error',
+    'sort-imports': 'error',
     eqeqeq: 'error',
   },
 };

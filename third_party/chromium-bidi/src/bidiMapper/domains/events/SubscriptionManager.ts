@@ -17,8 +17,8 @@
 
 import {
   BrowsingContext,
-  CommonDataTypes,
   CDP,
+  CommonDataTypes,
   Log,
   Session,
 } from '../../../protocol/protocol.js';
