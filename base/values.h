@@ -663,10 +663,6 @@ class BASE_EXPORT GSL_OWNER Value {
     BASE_EXPORT friend bool operator<=(const List& lhs, const List& rhs);
     BASE_EXPORT friend bool operator>=(const List& lhs, const List& rhs);
 
-    // For legacy access to the internal storage type. DEPRECATED; remove when
-    // no longer used.
-    friend Value;
-
     explicit List(const std::vector<Value>& storage);
 
     std::vector<Value> storage_;
