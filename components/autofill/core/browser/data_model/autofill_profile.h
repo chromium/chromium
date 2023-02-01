@@ -285,6 +285,11 @@ class AutofillProfile : public AutofillDataModel {
     last_modifier_id_ = modifier_id;
   }
 
+  // Converts a kLocalOrSyncable profile to a kAccount profile and returns it.
+  // The converted profile shares the same content, but with a different GUID
+  // and with `source_` kAccount. Additional kAccount-specific metadata is set.
+  AutofillProfile ConvertToAccountProfile() const;
+
   // Checks for non-empty setting-inaccessible fields and returns all that were
   // found.
   ServerFieldTypeSet FindInaccessibleProfileValues() const;

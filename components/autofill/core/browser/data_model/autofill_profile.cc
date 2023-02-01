@@ -1153,6 +1153,19 @@ bool AutofillProfile::HasStructuredData() {
   });
 }
 
+AutofillProfile AutofillProfile::ConvertToAccountProfile() const {
+  DCHECK_EQ(source(), Source::kLocalOrSyncable);
+  AutofillProfile account_profile = *this;
+  // Since GUIDs are assumed to be unique across all profile sources, a new GUID
+  // is assigned.
+  account_profile.set_guid(base::GenerateGUID());
+  account_profile.source_ = Source::kAccount;
+  // Initial creator and last modifier are unused for kLocalOrSyncable profiles.
+  account_profile.initial_creator_id_ = kInitialCreatorOrModifierChrome;
+  account_profile.last_modifier_id_ = kInitialCreatorOrModifierChrome;
+  return account_profile;
+}
+
 ServerFieldTypeSet AutofillProfile::FindInaccessibleProfileValues() const {
   ServerFieldTypeSet inaccessible_fields;
   const std::string stored_country =
