@@ -428,7 +428,7 @@ directory (as described on the [get the code](https://dev.chromium.org/developer
 page):
 
 ```shell
-$ gn gen --ide=vs out\Default
+$ gn gen --ide=vs --ninja-executable=\path\to\chromium\src\third_party\ninja\ninja.exe out\Default
 $ devenv out\Default\all.sln
 ```
 
@@ -447,7 +447,7 @@ let you compile and run Chrome in the IDE but will not show any source files
 is:
 
 ```
-$ gn gen --ide=vs --filters=//chrome --no-deps out\Default
+$ gn gen --ide=vs --ninja-executable=\path\to\chromium\src\third_party\ninja\ninja.exe --filters=//chrome --no-deps out\Default
 ```
 
 You can selectively add other directories you care about to the filter like so:
