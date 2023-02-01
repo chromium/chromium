@@ -249,11 +249,6 @@ std::string DiceWebSigninInterceptHandler::GetBodyTitle() {
         IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_TITLE);
   }
 
-  if (base::FeatureList::IsEnabled(kSigninInterceptBubbleV2)) {
-    return l10n_util::GetStringUTF8(
-        IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V2);
-  }
-
   return l10n_util::GetStringUTF8(
       IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE);
 }
@@ -263,11 +258,6 @@ std::string DiceWebSigninInterceptHandler::GetBodyText() {
       DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
     return l10n_util::GetStringUTF8(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC);
-  }
-
-  if (base::FeatureList::IsEnabled(kSigninInterceptBubbleV2)) {
-    return l10n_util::GetStringUTF8(
-        IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_V2);
   }
 
   switch (bubble_parameters_.interception_type) {
