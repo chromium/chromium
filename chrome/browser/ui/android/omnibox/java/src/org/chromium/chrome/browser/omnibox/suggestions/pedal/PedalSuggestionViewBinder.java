@@ -15,12 +15,15 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionViewProperties.PedalIcon;
+import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalViewProperties.PedalIcon;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.action.OmniboxPedal;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
+
+import java.util.List;
 
 /**
  * Binds chip suggestion view properties.
@@ -43,8 +46,11 @@ public final class PedalSuggestionViewBinder<T extends View>
     public void bind(PropertyModel model, PedalSuggestionView<T> view, PropertyKey propertyKey) {
         mBaseViewBinder.bind(model, view.getBaseSuggestionView(), propertyKey);
 
-        if (PedalSuggestionViewProperties.PEDAL == propertyKey) {
-            OmniboxPedal omniboxPedal = model.get(PedalSuggestionViewProperties.PEDAL);
+        if (PedalSuggestionViewProperties.PEDAL_LIST == propertyKey) {
+            List<ListItem> omniboxPedalList = model.get(PedalSuggestionViewProperties.PEDAL_LIST);
+            // Always get the first pedal item during the first step of Actions in Suggest.
+            ListItem omniboxPedalListItem = omniboxPedalList.get(0);
+            OmniboxPedal omniboxPedal = omniboxPedalListItem.model.get(PedalViewProperties.PEDAL);
             final String hint = omniboxPedal.getHint();
             final String contentDescription =
                     view.getContext().getString(R.string.accessibility_omnibox_pedal, hint);
@@ -55,13 +61,13 @@ public final class PedalSuggestionViewBinder<T extends View>
             view.getPedalTextView().setTextColor(
                     OmniboxResourceProvider.getSuggestionPrimaryTextColor(
                             view.getContext(), brandedColorScheme));
-        } else if (PedalSuggestionViewProperties.PEDAL_ICON == propertyKey) {
-            PedalIcon icon = model.get(PedalSuggestionViewProperties.PEDAL_ICON);
+
+            // Set up icon and click listener from the pedal list item model.
+            PedalIcon icon = omniboxPedalListItem.model.get(PedalViewProperties.PEDAL_ICON);
             view.getPedalChipView().setIcon(icon.iconRes, icon.tintWithTextColor);
             view.getPedalChipView().setBackgroundColor(Color.TRANSPARENT);
-        } else if (PedalSuggestionViewProperties.ON_PEDAL_CLICK == propertyKey) {
             view.getPedalChipView().setOnClickListener(
-                    model.get(PedalSuggestionViewProperties.ON_PEDAL_CLICK));
+                    omniboxPedalListItem.model.get(PedalViewProperties.ON_PEDAL_CLICK));
         } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
             Drawable backgroundDrawable =
                     BaseSuggestionViewBinder.getSelectableBackgroundDrawable(view, model);

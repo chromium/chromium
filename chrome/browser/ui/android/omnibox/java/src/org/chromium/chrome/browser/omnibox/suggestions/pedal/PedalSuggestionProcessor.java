@@ -21,11 +21,14 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionViewProperties.PedalIcon;
+import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalViewProperties.PedalIcon;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.action.OmniboxPedal;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -77,7 +80,7 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
     @Override
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
-        setPedal(model, suggestion.getActions().get(0), position);
+        setPedalList(model, suggestion.getActions(), position);
     }
 
     @Override
@@ -88,25 +91,38 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
     }
 
     /**
-     * Setup pedals base on the suggestion.
+     * Setup pedal list base on the suggestion.
      *
      * @param model Property model to update.
-     * @param omniboxPedal OmniboxPedal for the suggestion.
+     * @param omniboxPedalList List of OmniboxPedal for the suggestion.
+     * @param position The position for the list of OmniboxPedal among omnibox suggestions.
      */
-    protected void setPedal(PropertyModel model, @NonNull OmniboxPedal omniboxPedal, int position) {
-        model.set(PedalSuggestionViewProperties.PEDAL, omniboxPedal);
-        model.set(PedalSuggestionViewProperties.PEDAL_ICON, getPedalIcon(omniboxPedal));
-        model.set(PedalSuggestionViewProperties.ON_PEDAL_CLICK,
-                v -> executeAction(omniboxPedal, position));
+    protected void setPedalList(
+            PropertyModel model, @NonNull List<OmniboxPedal> omniboxPedalList, int position) {
+        final int pedalsCount = omniboxPedalList.size();
+        final List<ListItem> modelList = new ArrayList<>(pedalsCount);
+
+        for (OmniboxPedal omniboxPedal : omniboxPedalList) {
+            final PropertyModel pedalModel = new PropertyModel(PedalViewProperties.ALL_KEYS);
+            pedalModel.set(PedalViewProperties.PEDAL, omniboxPedal);
+            pedalModel.set(PedalViewProperties.PEDAL_ICON, getPedalIcon(omniboxPedal));
+            pedalModel.set(
+                    PedalViewProperties.ON_PEDAL_CLICK, v -> executeAction(omniboxPedal, position));
+
+            modelList.add(
+                    new ListItem(PedalSuggestionViewProperties.ViewType.PEDAL_VIEW, pedalModel));
+
+            if (omniboxPedal.hasPedalId()) {
+                mLastVisiblePedals.add(omniboxPedal.getPedalID());
+            } else if (omniboxPedal.hasActionId()
+                    && omniboxPedal.getActionID() == OmniboxActionType.HISTORY_CLUSTERS) {
+                mJourneysActionShownPosition = position;
+            }
+        }
+
+        model.set(PedalSuggestionViewProperties.PEDAL_LIST, modelList);
         model.set(
                 BaseSuggestionViewProperties.DENSITY, BaseSuggestionViewProperties.Density.COMPACT);
-
-        if (omniboxPedal.hasPedalId()) {
-            mLastVisiblePedals.add(omniboxPedal.getPedalID());
-        } else if (omniboxPedal.hasActionId()
-                && omniboxPedal.getActionID() == OmniboxActionType.HISTORY_CLUSTERS) {
-            mJourneysActionShownPosition = position;
-        }
     }
 
     /**

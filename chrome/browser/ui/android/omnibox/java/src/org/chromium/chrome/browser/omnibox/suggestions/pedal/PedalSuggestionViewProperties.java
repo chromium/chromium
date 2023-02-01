@@ -4,54 +4,39 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.pedal;
 
-import android.view.View.OnClickListener;
-
-import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
-import org.chromium.components.omnibox.action.OmniboxPedal;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /**
  * The properties associated with rendering the pedal suggestion view.
  */
 public class PedalSuggestionViewProperties {
     /**
-     * Describes the pedal Icon.
+     * ViewType defines a list of Views that are understood by the Carousel.
+     * Views below can be used by any instance of the carousel, guaranteeing that each instance
+     * will look like every other.
      */
-    public static final class PedalIcon {
-        public final @DrawableRes int iconRes;
-        public final boolean tintWithTextColor;
-
-        /**
-         * Create a new action for suggestion.
-         *
-         * @param iconRes The resource id pointing to the icon.
-         * @param tintWithTextColor tintWithTextColor If true then the image view will be tinted
-         *         with the primary text color.
-         */
-        public PedalIcon(@DrawableRes int iconRes, boolean tintWithTextColor) {
-            this.iconRes = iconRes;
-            this.tintWithTextColor = tintWithTextColor;
-        }
+    @IntDef({ViewType.PEDAL_VIEW})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ViewType {
+        /** Carousel item is a PedalView instance. */
+        public int PEDAL_VIEW = 0;
     }
 
-    /** Omnibox Pedal description. */
-    public static final WritableObjectPropertyKey<OmniboxPedal> PEDAL =
-            new WritableObjectPropertyKey();
-
-    /** Omnibox Pedal's drawable resource id. */
-    public static final WritableObjectPropertyKey<PedalIcon> PEDAL_ICON =
+    /** Omnibox Pedal list descriptions. */
+    public static final WritableObjectPropertyKey<List<ListItem>> PEDAL_LIST =
             new WritableObjectPropertyKey<>();
 
-    /** Callback invoked when user clicks the pedal. */
-    public static final WritableObjectPropertyKey<OnClickListener> ON_PEDAL_CLICK =
-            new WritableObjectPropertyKey<>();
-
-    public static final PropertyKey[] ALL_UNIQUE_KEYS =
-            new PropertyKey[] {PEDAL, PEDAL_ICON, ON_PEDAL_CLICK};
+    public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {PEDAL_LIST};
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionViewProperties.ALL_KEYS);
