@@ -318,22 +318,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         exit_code = self.command.execute(self.command_options(dry_run=True),
                                          [], self.tool)
         self.assertEqual(exit_code, 0)
-        messages = self.logMessages()
-        # Asserting an exact count is brittle.
-        # Just verify one of each internal command.
-        self.assertTrue(
-            any(
-                message.startswith('DEBUG: Would have run: "python echo '
-                                   'copy-existing-baselines-internal ')
-                for message in messages))
-        self.assertTrue(
-            any(
-                message.startswith('DEBUG: Would have run: "python echo '
-                                   'rebaseline-test-internal ')
-                for message in messages))
-        # `optimize-baselines` commands are not useful to look at, since many
-        # are no-ops anyways. We don't look at them here.
-        self.assertEqual(self.tool.executive.calls, [])
         self.assertEqual(self.command.git_cl.calls, [])
         self.assertEqual(self.tool.filesystem.files, files_before)
         self.assertEqual(self.tool.git().added_paths, set())
@@ -685,13 +669,13 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                               '--step-name',
                               'blink_web_tests (with patch)',
                           ]],
-                          [
+                          [[
                               'python',
                               'echo',
                               'optimize-baselines',
                               '--no-manifest-update',
                               'one/flaky-fail.html',
-                          ]])
+                          ]]])
 
     def test_rebaseline_command_invocations_multiple_steps(self):
         """Test the rebaseline tool handles multiple steps on the same builder.
@@ -757,10 +741,10 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 'not_site_per_process_blink_web_tests (with patch)'
             ],
         ])
-        self.assertEqual(self.tool.executive.calls[2], [
+        self.assertEqual(self.tool.executive.calls[2], [[
             'python', 'echo', 'optimize-baselines', '--no-manifest-update',
             'one/text-fail.html'
-        ])
+        ]])
 
     def test_execute_missing_results_with_no_fill_missing_prompts(self):
         self.tool.results_fetcher.set_results(

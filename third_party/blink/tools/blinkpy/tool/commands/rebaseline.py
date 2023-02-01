@@ -27,7 +27,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import collections
-import json
 import logging
 import optparse
 import re
@@ -393,7 +392,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
 
     def _rebaseline_commands(self, test_baseline_set, options):
         path_to_blink_tool = self._tool.path()
-        cwd = self._tool.git().checkout_root
         rebaseline_commands = []
         copy_baseline_commands = []
         lines_to_remove = {}
@@ -449,7 +447,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 self._tool.executable, path_to_blink_tool,
                 'rebaseline-test-internal'
             ] + args
-            rebaseline_commands.append((rebaseline_command, cwd))
+            rebaseline_commands.append(rebaseline_command)
 
             copy_command = [
                 self._tool.executable,
@@ -459,34 +457,11 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             copy_command.extend(
                 self._rebaseline_args(test, suffixes, port_name,
                                       flag_spec_option, options.verbose))
-            copy_baseline_commands.append((copy_command, cwd))
+            copy_baseline_commands.append(copy_command)
 
         return copy_baseline_commands, rebaseline_commands, lines_to_remove
 
-    @staticmethod
-    def _extract_expectation_line_changes(command_results):
-        """Parses the JSON lines from sub-command output and returns the result as a ChangeSet."""
-        change_set = ChangeSet()
-        for _, stdout, _ in command_results:
-            updated = False
-            for line in stdout.splitlines():
-                if not line:
-                    continue
-                try:
-                    parsed_line = json.loads(line)
-                    change_set.update(ChangeSet.from_dict(parsed_line))
-                    updated = True
-                except ValueError:
-                    _log.debug('"%s" is not a JSON object, ignoring', line)
-            if not updated:
-                # TODO(crbug.com/649412): This could be made into an error.
-                _log.debug('Could not add file based off output "%s"', stdout)
-        return change_set
-
-    def _optimize_commands(self,
-                           test_baseline_set,
-                           verbose=False,
-                           resultDB=False):
+    def _optimize_commands(self, test_baseline_set, verbose=False):
         """Returns a list of commands to run in parallel to de-duplicate baselines."""
         test_set = set()
         baseline_subset = self._filter_baseline_set_builders(test_baseline_set)
@@ -516,7 +491,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                                               MAX_TESTS_IN_OPTIMIZE_CMDLINE])
 
         optimize_commands = []
-        cwd = self._tool.git().checkout_root
         path_to_blink_tool = self._tool.path()
 
         # Build one optimize-baselines invocation command for each flag_spec.
@@ -535,7 +509,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 command.append('--verbose')
 
             command.extend(test_list)
-            optimize_commands.append((command, cwd))
+            optimize_commands.append(command)
 
         return optimize_commands
 
@@ -584,43 +558,21 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             system_remover.remove_os_versions(test, versions)
         system_remover.update_expectations()
 
-    def _run_in_parallel(self, commands, resultdb):
-        """
-        Parallel run the commands using the MessagePool class to make sure that
-        each process will have only one request session.
-        """
-        if not commands:
-            return []
-
-        if self._dry_run:
-            for command, _ in commands:
-                _log.debug('Would have run: "%s"',
-                           self._tool.executive.command_for_printing(command))
-            return [(0, '', '')] * len(commands)
-        results = []
-        if resultdb:
-            try:
-                num_workers = min(self.MAX_WORKERS,
-                                  self._tool.executive.cpu_count())
-                pool = message_pool.get(self, self._worker_factory,
-                                        num_workers, self._tool)
-                pool.run(('rebaseline', command) for command, cwd in commands)
-            except Exception as error:
-                _log.debug('%s("%s") raised, exiting',
-                           error.__class__.__name__, error)
-                raise
-        else:
-            results = self._tool.executive.run_in_parallel(commands)
-
-        for _, _, stderr in results:
-            if stderr:
-                lines = stderr.decode("utf-8", "ignore").splitlines()
-                for line in lines:
-                    print(line)
-        return results
+    def _message_pool(self):
+        num_workers = min(self.MAX_WORKERS, self._tool.executive.cpu_count())
+        return message_pool.get(self, self._worker_factory, num_workers)
 
     def _worker_factory(self, worker_connection):
-        return Worker(self._tool.git().checkout_root)
+        return Worker(worker_connection,
+                      self._tool.git().checkout_root,
+                      dry_run=self._dry_run)
+
+    def handle(self, name: str, source: str, *_):
+        """No-op handler called when a worker completes a rebaseline task.
+
+        This allows this class to conform to the `message_pool.MessageHandler`
+        interface.
+        """
 
     def rebaseline(self, options, test_baseline_set):
         """Fetches new baselines and removes related test expectation lines.
@@ -640,24 +592,15 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         for test in test_baseline_set.all_tests():
             _log.info('Rebaselining %s', test)
 
-        # extra_lines_to_remove are unexpected passes, while lines_to_remove are
-        # failing tests that have been rebaselined.
-        copy_baseline_commands, rebaseline_commands, extra_lines_to_remove = self._rebaseline_commands(
+        # lines_to_remove are unexpected passes.
+        copy_baseline_commands, rebaseline_commands, lines_to_remove = self._rebaseline_commands(
             test_baseline_set, options)
-        lines_to_remove = {}
-        # TODO(crbug/1213998): Make both copy and rebaseline command use the
-        # message pool.
-        self._run_in_parallel(copy_baseline_commands, False)
-        command_results = self._run_in_parallel(
-            rebaseline_commands, getattr(options, 'resultDB', False))
-        change_set = self._extract_expectation_line_changes(command_results)
-        lines_to_remove = change_set.lines_to_remove
-        for test in extra_lines_to_remove:
-            if test in lines_to_remove:
-                lines_to_remove[test] = (
-                    lines_to_remove[test] + extra_lines_to_remove[test])
-            else:
-                lines_to_remove[test] = extra_lines_to_remove[test]
+        with self._message_pool() as pool:
+            pool.run([('copy_existing_baselines', command)
+                      for command in copy_baseline_commands])
+        with self._message_pool() as pool:
+            pool.run([('rebaseline', command)
+                      for command in rebaseline_commands])
 
         if lines_to_remove:
             self._update_expectations_files(lines_to_remove)
@@ -669,10 +612,10 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 _log.info('Skipping optimization during dry run.')
             else:
                 optimize_commands = self._optimize_commands(
-                    test_baseline_set, options.verbose, options.resultDB)
-                for (cmd, cwd) in optimize_commands:
-                    output = self._tool.executive.run_command(cmd, cwd)
-                    print(output)
+                    test_baseline_set, options.verbose)
+                with self._message_pool() as pool:
+                    pool.run([('optimize_baselines', command)
+                              for command in optimize_commands])
 
         if not self._dry_run:
             self._tool.git().add_list(self.unstaged_baselines())
@@ -838,8 +781,10 @@ class Worker:
         crbug.com/1213998#c50
     """
 
-    def __init__(self, cwd: str):
+    def __init__(self, connection, cwd: str, dry_run: bool = False):
+        self._connection = connection
         self._cwd = cwd
+        self._dry_run = dry_run
 
     def start(self):
         # Dynamically import `BlinkTool` to avoid a circular import.
@@ -850,5 +795,11 @@ class Worker:
         self._tool = BlinkTool(self._cwd)
 
     def handle(self, name, source, command):
-        assert name == 'rebaseline'
-        self._tool.main(command[1:])
+        if self._dry_run:
+            _log.debug('Would have run: %s',
+                       self._tool.executive.command_for_printing(command))
+        else:
+            self._tool.main(command[1:])
+            # Post an empty message to the managing process to flush this
+            # worker's logs.
+            self._connection.post(name)

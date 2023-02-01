@@ -209,7 +209,7 @@ class _MessagePool(object):
         try:
             pickle.dumps(host)
             return True
-        except TypeError:
+        except Exception:
             return False
 
     def _loop(self, block):
