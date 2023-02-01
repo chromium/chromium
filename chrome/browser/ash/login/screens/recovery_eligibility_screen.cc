@@ -58,7 +58,7 @@ RecoveryEligibilityScreen::RecoveryEligibilityScreen(
 RecoveryEligibilityScreen::~RecoveryEligibilityScreen() = default;
 
 bool RecoveryEligibilityScreen::MaybeSkip(WizardContext& wizard_context) {
-  if (!features::IsCryptohomeRecoverySetupEnabled()) {
+  if (!features::IsCryptohomeRecoveryEnabled()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }

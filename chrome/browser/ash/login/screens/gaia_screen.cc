@@ -30,7 +30,7 @@ constexpr char kUserActionReloadDefault[] = "reloadDefault";
 constexpr char kUserActionRetry[] = "retry";
 
 bool ShouldPrepareForRecovery(const AccountId& account_id) {
-  if (!features::IsCryptohomeRecoveryFlowEnabled() || !account_id.is_valid()) {
+  if (!features::IsCryptohomeRecoveryEnabled() || !account_id.is_valid()) {
     return false;
   }
 
@@ -96,7 +96,7 @@ void GaiaScreen::LoadOnline(const AccountId& account) {
   // conditions which may be difficult as of now.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceCryptohomeRecoveryForTesting)) {
-    DCHECK(features::IsCryptohomeRecoveryFlowEnabled());
+    DCHECK(features::IsCryptohomeRecoveryEnabled());
     FetchGaiaReauthToken(account);
     return;
   }

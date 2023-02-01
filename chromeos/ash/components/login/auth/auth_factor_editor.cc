@@ -326,7 +326,7 @@ void AuthFactorEditor::RemovePinFactor(std::unique_ptr<UserContext> context,
 
 void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
                                          AuthOperationCallback callback) {
-  CHECK(features::IsCryptohomeRecoverySetupEnabled());
+  CHECK(features::IsCryptohomeRecoveryEnabled());
   DCHECK(!context->GetAuthSessionId().empty());
 
   // TODO(crbug.com/1310312): Check whether a recovery key already exists and
@@ -364,7 +364,7 @@ void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
 void AuthFactorEditor::RemoveRecoveryFactor(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
-  CHECK(features::IsCryptohomeRecoverySetupEnabled());
+  CHECK(features::IsCryptohomeRecoveryEnabled());
   DCHECK(!context->GetAuthSessionId().empty());
 
   // TODO(crbug.com/1310312): Check whether a recovery key already exists and

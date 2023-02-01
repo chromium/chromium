@@ -543,9 +543,10 @@ void LoginDisplayHostCommon::ShowNewTermsForFlexUsers() {
 void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
     const UserContext& user_context) {
   if (PinSetupScreen::ShouldSkipBecauseOfPolicy() &&
-      !features::IsCryptohomeRecoverySetupEnabled() &&
-      RecoveryEligibilityScreen::ShouldSkipRecoverySetupBecauseOfPolicy())
+      !features::IsCryptohomeRecoveryEnabled() &&
+      RecoveryEligibilityScreen::ShouldSkipRecoverySetupBecauseOfPolicy()) {
     return;
+  }
 
   wizard_context_->extra_factors_auth_session =
       std::make_unique<UserContext>(user_context);

@@ -76,7 +76,7 @@ class OSSettingsRecoveryTest : public MixinBasedInProcessBrowserTest {
 class OSSettingsRecoveryTestWithFeature : public OSSettingsRecoveryTest {
  public:
   OSSettingsRecoveryTestWithFeature() {
-    feature_list_.InitAndEnableFeature(ash::features::kCryptohomeRecoverySetup);
+    feature_list_.InitAndEnableFeature(ash::features::kCryptohomeRecovery);
   }
 
  private:
@@ -86,8 +86,7 @@ class OSSettingsRecoveryTestWithFeature : public OSSettingsRecoveryTest {
 class OSSettingsRecoveryTestWithoutFeature : public OSSettingsRecoveryTest {
  public:
   OSSettingsRecoveryTestWithoutFeature() {
-    feature_list_.InitAndDisableFeature(
-        ash::features::kCryptohomeRecoverySetup);
+    feature_list_.InitAndDisableFeature(ash::features::kCryptohomeRecovery);
   }
 
  private:

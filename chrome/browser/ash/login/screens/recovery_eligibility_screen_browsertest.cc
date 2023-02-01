@@ -31,7 +31,7 @@ namespace ash {
 class RecoveryEligibilityScreenTest : public OobeBaseTest {
  public:
   RecoveryEligibilityScreenTest() {
-    feature_list_.InitAndEnableFeature(features::kCryptohomeRecoverySetup);
+    feature_list_.InitAndEnableFeature(features::kCryptohomeRecovery);
   }
 
   ~RecoveryEligibilityScreenTest() override = default;

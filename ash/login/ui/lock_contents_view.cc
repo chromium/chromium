@@ -2384,7 +2384,7 @@ void LockContentsView::ShowAuthErrorMessage() {
   // Show gaia signin if this is login and the user has failed too many times.
   // Do not show on secondary login screen – even though it has type kLogin – as
   // there is no OOBE there.
-  if (!ash::features::IsCryptohomeRecoveryFlowEnabled()) {
+  if (!ash::features::IsCryptohomeRecoveryEnabled()) {
     // Pin login attempt does not trigger Gaia dialog. Pin auth method will be
     // disabled after 5 failed attempts.
     int pin_unlock_attempt = pin_unlock_attempt_by_user_[account_id];
@@ -2400,7 +2400,7 @@ void LockContentsView::ShowAuthErrorMessage() {
   }
 
   std::u16string error_text;
-  if (ash::features::IsCryptohomeRecoveryFlowEnabled()) {
+  if (ash::features::IsCryptohomeRecoveryEnabled()) {
     if (user_state->show_pin) {
       error_text += l10n_util::GetStringUTF16(
           unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_2ND_TIME_NEW
@@ -2441,7 +2441,7 @@ void LockContentsView::ShowAuthErrorMessage() {
     *bold_start += shortcut_offset_in_string;
   }
 
-  if (ash::features::IsCryptohomeRecoveryFlowEnabled() && unlock_attempt > 1) {
+  if (ash::features::IsCryptohomeRecoveryEnabled() && unlock_attempt > 1) {
     base::StrAppend(&error_text,
                     {u"\n\n", l10n_util::GetStringUTF16(
                                   user_state->show_pin
@@ -2469,7 +2469,7 @@ void LockContentsView::ShowAuthErrorMessage() {
   container->AddChildView(std::move(label));
   container->AddChildView(std::move(learn_more_button));
 
-  if (ash::features::IsCryptohomeRecoveryFlowEnabled()) {
+  if (ash::features::IsCryptohomeRecoveryEnabled()) {
     // The recover user flow is only accessible from the login screen but
     // not from the lock screen.
     if (screen_type_ == LockScreen::ScreenType::kLogin &&

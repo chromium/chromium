@@ -540,15 +540,11 @@ BASE_FEATURE(kCryptAuthV2Enrollment,
 // - New UI for Cryptohome recovery and Gaia password changed screen.
 // - Adds a "recover user" button to the error bubble that opens when the
 //   user fails to enter their correct password.
-BASE_FEATURE(kCryptohomeRecoveryFlow,
-             "CryptohomeRecoveryFlow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables the UI to enable or disable cryptohome recovery in the settings
+// - Enables the UI to enable or disable cryptohome recovery in the settings
 // page. Also guards the wiring of cryptohome recovery settings to the
 // cryptohome backend.
-BASE_FEATURE(kCryptohomeRecoverySetup,
-             "CryptohomeRecoverySetup",
+BASE_FEATURE(kCryptohomeRecovery,
+             "CryptohomeRecovery",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDarkLightModeKMeansColor,
@@ -2444,12 +2440,8 @@ bool IsCrosPrivacyHubV1Enabled() {
          IsCrosPrivacyHubV2Enabled();
 }
 
-bool IsCryptohomeRecoveryFlowEnabled() {
-  return base::FeatureList::IsEnabled(kCryptohomeRecoveryFlow);
-}
-
-bool IsCryptohomeRecoverySetupEnabled() {
-  return base::FeatureList::IsEnabled(kCryptohomeRecoverySetup);
+bool IsCryptohomeRecoveryEnabled() {
+  return base::FeatureList::IsEnabled(kCryptohomeRecovery);
 }
 
 bool IsDarkLightModeEnabled() {

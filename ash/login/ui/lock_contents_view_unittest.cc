@@ -1082,7 +1082,7 @@ TEST_F(LockContentsViewUnitTest, AuthErrorLockscreenLearnMoreButton) {
 TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenRecoverUserButton) {
   // Enable the "recover user" button.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kCryptohomeRecoveryFlow);
+  feature_list.InitAndEnableFeature(features::kCryptohomeRecovery);
 
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
@@ -3383,7 +3383,7 @@ class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
  protected:
   LockContentsViewWithKioskLicenseTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kCryptohomeRecoveryFlow);
+        ash::features::kCryptohomeRecovery);
   }
   LockContentsViewWithKioskLicenseTest(LockContentsViewWithKioskLicenseTest&) =
       delete;

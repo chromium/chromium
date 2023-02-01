@@ -31,7 +31,7 @@ void RecoveryFactorEditor::Configure(
     const std::string& auth_token,
     bool enabled,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  DCHECK(features::IsCryptohomeRecoverySetupEnabled());
+  DCHECK(features::IsCryptohomeRecoveryEnabled());
 
   const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
   auto* user_context_ptr =
