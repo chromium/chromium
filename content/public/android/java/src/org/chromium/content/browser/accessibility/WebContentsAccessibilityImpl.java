@@ -1371,16 +1371,21 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     private void scrollToMakeNodeVisible(int virtualViewId) {
-        if (mDelegate.scrollToMakeNodeVisible(getAbsolutePositionForNode(virtualViewId))) return;
-
-        mPendingScrollToMakeNodeVisible = true;
-        WebContentsAccessibilityImplJni.get().scrollToMakeNodeVisible(mNativeObj, virtualViewId);
+        if (mDelegate.getNativeAXTree() != 0) {
+            mDelegate.scrollToMakeNodeVisible(getAbsolutePositionForNode(virtualViewId));
+        } else {
+            mPendingScrollToMakeNodeVisible = true;
+            WebContentsAccessibilityImplJni.get().scrollToMakeNodeVisible(
+                    mNativeObj, virtualViewId);
+        }
     }
 
     private void performClick(int virtualViewId) {
-        if (mDelegate.performClick(getAbsolutePositionForNode(virtualViewId))) return;
-
-        WebContentsAccessibilityImplJni.get().click(mNativeObj, virtualViewId);
+        if (mDelegate.getNativeAXTree() != 0) {
+            mDelegate.performClick(getAbsolutePositionForNode(virtualViewId));
+        } else {
+            WebContentsAccessibilityImplJni.get().click(mNativeObj, virtualViewId);
+        }
     }
 
     private void setSelection(AccessibilityEvent selectionEvent) {
