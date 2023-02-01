@@ -15,7 +15,7 @@ mojom("test_mojom") {
   ]
 }
 
-if (enable_mojom_closure_compile || enable_js_type_check) {
+if (generate_mojom_closure_libraries) {
   js_binary("compile_test") {
     outputs = [ "$target_gen_dir/compile_test.js" ]
     deps = [ ":test_mojom_js_library_for_compile" ]
