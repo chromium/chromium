@@ -311,24 +311,21 @@ void AddEntriesAndEnterEdit() {
 
 // Adds the current page to the Reading List.
 void AddCurrentPageToReadingList() {
-  NSString* snackBarLabel =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_READING_LIST_SNACKBAR_MESSAGE);
   // Add the page to the reading list.
   [ChromeEarlGreyUI openToolsMenu];
-  // Start custom monitor, because there's a chance the snackbar is
-  // already gone by the time we wait for it (and it was like that sometimes).
-  [ChromeEarlGrey watchForButtonsWithLabels:@[ snackBarLabel ]
-                                    timeout:kSnackbarAppearanceTimeout];
   [ChromeEarlGreyUI
       tapToolsMenuAction:chrome_test_util::ButtonWithAccessibilityLabelId(
                              IDS_IOS_SHARE_MENU_READING_LIST_ACTION)];
 
   // Wait for the snackbar to appear.
   id<GREYMatcher> snackbar_matcher =
-      chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_IOS_READING_LIST_SNACKBAR_MESSAGE);
+      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier");
   ConditionBlock wait_for_appearance = ^{
-    return [ChromeEarlGrey watcherDetectedButtonWithLabel:snackBarLabel];
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return error == nil;
   };
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  kSnackbarAppearanceTimeout, wait_for_appearance),
