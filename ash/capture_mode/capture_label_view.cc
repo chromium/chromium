@@ -159,7 +159,8 @@ CaptureLabelView::CaptureLabelView(
 
   capture_button_container_ = AddChildView(std::make_unique<CaptureButtonView>(
       std::move(on_capture_button_pressed),
-      std::move(on_drop_down_button_pressed)));
+      std::move(on_drop_down_button_pressed),
+      capture_mode_session_->is_in_projector_mode()));
   capture_button_container_->SetPaintToLayer();
   capture_button_container_->layer()->SetFillsBoundsOpaquely(false);
   capture_button_container_->SetNotifyEnterExitOnChild(true);

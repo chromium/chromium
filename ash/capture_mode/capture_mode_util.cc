@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
@@ -531,6 +532,22 @@ gfx::Rect CalculateHighlightLayerBounds(const gfx::PointF& center_point,
   return gfx::Rect(center_point.x() - highlight_layer_radius,
                    center_point.y() - highlight_layer_radius,
                    highlight_layer_radius * 2, highlight_layer_radius * 2);
+}
+
+int GetNumberOfSupportedRecordingTypes(bool is_in_projector_mode) {
+  int total = 0;
+  for (const auto& type : {RecordingType::kGif, RecordingType::kWebM}) {
+    switch (type) {
+      case RecordingType::kGif:
+        total +=
+            features::IsGifRecordingEnabled() && !is_in_projector_mode ? 1 : 0;
+        break;
+      case RecordingType::kWebM:
+        total += 1;
+        break;
+    }
+  }
+  return total;
 }
 
 }  // namespace ash::capture_mode_util

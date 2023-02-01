@@ -6,6 +6,7 @@
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
@@ -376,6 +377,57 @@ TEST_F(GifRecordingTest, RecordingTypeIsRespected) {
   // The resulting file should have a ".gif" extension.
   const auto file = WaitForCaptureFileToBeSaved();
   EXPECT_TRUE(file.MatchesExtension(".gif"));
+}
+
+class ProjectorGifRecordingTest : public GifRecordingTest {
+ public:
+  ProjectorGifRecordingTest() = default;
+  ~ProjectorGifRecordingTest() override = default;
+
+  // ProjectorGifRecordingTest:
+  void SetUp() override {
+    GifRecordingTest::SetUp();
+    projector_helper_.SetUp();
+  }
+
+  void StartProjectorModeSession() {
+    projector_helper_.StartProjectorModeSession();
+  }
+
+ private:
+  ProjectorCaptureModeIntegrationHelper projector_helper_;
+};
+
+TEST_F(ProjectorGifRecordingTest, ProjectorRecordingType) {
+  // Start a normal session and enable GIF recording.
+  auto* controller = StartRegionVideoCapture();
+  controller->SetRecordingType(RecordingType::kGif);
+
+  // Exit this session and start a new projector-initiated session. The active
+  // recording type should be `kWebM`.
+  controller->Stop();
+  StartProjectorModeSession();
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_EQ(controller->recording_type(), RecordingType::kWebM);
+
+  // By default, the capture source is fullscreen in projector sessions. Switch
+  // to `kRegion` and expect that the capture button will show the correct text.
+  controller->SetSource(CaptureModeSource::kRegion);
+  EXPECT_EQ(GetCaptureButton()->GetText(), u"Record video");
+
+  // The drop-down button should not be created in this case.
+  EXPECT_FALSE(
+      GetCaptureLabelView()->capture_button_container()->drop_down_button());
+
+  // Exit this session and start a new normal session with the most recent
+  // values and expect that the pre-projector-session recording type was
+  // restored.
+  controller->Stop();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  EXPECT_EQ(controller->recording_type(), RecordingType::kGif);
+  EXPECT_EQ(GetCaptureButton()->GetText(), u"Record GIF");
+  EXPECT_TRUE(
+      GetCaptureLabelView()->capture_button_container()->drop_down_button());
 }
 
 }  // namespace ash

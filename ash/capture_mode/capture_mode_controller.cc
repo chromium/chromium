@@ -857,6 +857,7 @@ void CaptureModeController::MaybeRestoreCachedCaptureConfigurations() {
 
   type_ = cached_normal_session_configs_->type;
   source_ = cached_normal_session_configs_->source;
+  recording_type_ = cached_normal_session_configs_->recording_type;
   enable_audio_recording_ = cached_normal_session_configs_->audio_on;
   cached_normal_session_configs_.reset();
 }
@@ -1711,12 +1712,13 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
 
     // Cache the normal capture mode configurations that will be used for
     // restoration when switching to the normal capture mode session if needed.
-    cached_normal_session_configs_ =
-        CaptureSessionConfigs{type_, source_, enable_audio_recording_};
+    cached_normal_session_configs_ = CaptureSessionConfigs{
+        type_, source_, recording_type_, enable_audio_recording_};
 
     enable_audio_recording_ = true;
     SetType(CaptureModeType::kVideo);
     SetSource(CaptureModeSource::kFullscreen);
+    SetRecordingType(RecordingType::kWebM);
   }
 
   RecordCaptureModeEntryType(entry_type);

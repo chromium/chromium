@@ -28,7 +28,8 @@ class CaptureButtonView : public views::View {
   METADATA_HEADER(CaptureButtonView);
 
   CaptureButtonView(views::Button::PressedCallback on_capture_button_pressed,
-                    views::Button::PressedCallback on_drop_down_pressed);
+                    views::Button::PressedCallback on_drop_down_pressed,
+                    bool is_in_projector_mode);
   CaptureButtonView(const CaptureButtonView&) = delete;
   CaptureButtonView& operator=(const CaptureButtonView&) = delete;
   ~CaptureButtonView() override = default;
@@ -64,9 +65,9 @@ class CaptureButtonView : public views::View {
   // The button which when pressed, screen capture will be performed.
   views::LabelButton* const capture_button_;
 
-  // Optional views that are created only, when multiple recording formats (e.g.
-  // webm, gif, .. etc.) are supported. They're visible only if the current
-  // capture type is video recording.
+  // Optional views that are created only, when multiple (i.e. more than one)
+  // recording formats (e.g. webm, gif, .. etc.) are supported. They're visible
+  // only if the current capture type is video recording.
   views::Separator* separator_ = nullptr;
   views::ImageButton* drop_down_button_ = nullptr;
 };

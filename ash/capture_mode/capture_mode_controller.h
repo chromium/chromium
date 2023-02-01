@@ -285,6 +285,7 @@ class ASH_EXPORT CaptureModeController
   struct CaptureSessionConfigs {
     CaptureModeType type;
     CaptureModeSource source;
+    RecordingType recording_type;
     bool audio_on;
   };
 

@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -87,7 +88,8 @@ CaptureButtonState GetCaptureButtonState() {
 
 CaptureButtonView::CaptureButtonView(
     views::Button::PressedCallback on_capture_button_pressed,
-    views::Button::PressedCallback on_drop_down_pressed)
+    views::Button::PressedCallback on_drop_down_pressed,
+    bool is_in_projector_mode)
     : capture_button_(AddChildView(std::make_unique<views::LabelButton>(
           std::move(on_capture_button_pressed),
           std::u16string()))) {
@@ -100,7 +102,12 @@ CaptureButtonView::CaptureButtonView(
   capture_button_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   capture_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 12)));
   SetupButton(capture_button_);
-  if (features::IsGifRecordingEnabled()) {
+
+  // Only show the drop down button if there are more than one recording types
+  // that are currently supported in the current mode (i.e. we don't bother to
+  // show a drop down for a single item).
+  if (capture_mode_util::GetNumberOfSupportedRecordingTypes(
+          is_in_projector_mode) > 1) {
     separator_ = AddChildView(std::make_unique<views::Separator>());
     separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
     drop_down_button_ = AddChildView(
@@ -132,7 +139,8 @@ void CaptureButtonView::UpdateViewVisuals() {
   // is video recording.
   const bool is_capturing_image =
       CaptureModeController::Get()->type() == CaptureModeType::kImage;
-  if (features::IsGifRecordingEnabled()) {
+  if (drop_down_button_) {
+    DCHECK(separator_);
     const bool new_visibility = !is_capturing_image;
     should_invalidate_focus_ring = new_visibility != separator_->GetVisible();
     separator_->SetVisible(new_visibility);
