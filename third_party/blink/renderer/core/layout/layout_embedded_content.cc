@@ -221,8 +221,14 @@ bool LayoutEmbeddedContent::NodeAtPoint(
                                               accumulated_offset, phase);
   }
 
-  DCHECK_GE(GetDocument().Lifecycle().GetState(),
-            DocumentLifecycle::kPrePaintClean);
+  // TODO(crbug.com/1370756): This should be turned back into a DCHECK, but for
+  // now we want to test this in all builds with NOTREACHED enabled, which is a
+  // superset of those with DCHECKs enabled.
+  if (const auto state = GetDocument().Lifecycle().GetState();
+      state < DocumentLifecycle::kPrePaintClean) {
+    base::debug::Alias(&state);
+    NOTREACHED() << "Incorrect document lifecycle state: " << state;
+  }
 
   if (phase == HitTestPhase::kForeground) {
     auto* child_layout_view = local_frame_view->GetLayoutView();
