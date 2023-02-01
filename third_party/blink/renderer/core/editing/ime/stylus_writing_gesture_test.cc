@@ -204,6 +204,23 @@ TEST_F(StylusWritingGestureTest, TestGestureDeleteWithWordGranularity) {
   }
 }
 
+TEST_F(StylusWritingGestureTest, TestGestureDeleteNotFirstLine) {
+  auto* input = SetUpMultilineInput();
+  input->SetValue("ABCD\nEFGH");
+
+  mojom::blink::StylusWritingGestureDataPtr gesture_data(
+      mojom::blink::StylusWritingGestureData::New());
+  gesture_data->action = mojom::blink::StylusWritingGestureAction::DELETE_TEXT;
+  gesture_data->granularity =
+      mojom::blink::StylusWritingGestureGranularity::CHARACTER;
+  gesture_data->start_rect = gfx::Rect(0, 16, 0, 0);
+  gesture_data->end_rect = gfx::Rect(20, 16, 0, 0);
+  gesture_data->text_alternative = text_alternative;
+
+  WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
+  EXPECT_EQ("ABCD\nGH", input->Value());
+}
+
 // https://crbug.com/1407262
 TEST_F(StylusWritingGestureTest, TestGestureAtEndOfLineWithWordGranularity) {
   auto* input = SetUpMultilineInput();
@@ -224,6 +241,23 @@ TEST_F(StylusWritingGestureTest, TestGestureAtEndOfLineWithWordGranularity) {
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
   EXPECT_EQ("\nEFGH", input->Value());
+}
+
+TEST_F(StylusWritingGestureTest, TestGestureDeleteMultiline) {
+  auto* input = SetUpMultilineInput();
+  input->SetValue("ABCD\nEFGH");
+
+  mojom::blink::StylusWritingGestureDataPtr gesture_data(
+      mojom::blink::StylusWritingGestureData::New());
+  gesture_data->action = mojom::blink::StylusWritingGestureAction::DELETE_TEXT;
+  gesture_data->granularity =
+      mojom::blink::StylusWritingGestureGranularity::CHARACTER;
+  gesture_data->start_rect = gfx::Rect(22, 2, 18, 4);
+  gesture_data->end_rect = gfx::Rect(0, 16, 20, 0);
+  gesture_data->text_alternative = text_alternative;
+
+  WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
+  EXPECT_EQ("ABGH", input->Value());
 }
 
 TEST_F(StylusWritingGestureTest, TestGestureRemoveSpaces) {
@@ -301,6 +335,24 @@ TEST_F(StylusWritingGestureTest, TestGestureSelect) {
   EXPECT_EQ("AB CD EF GH", input->Value());
   EXPECT_EQ(1, range.StartOffset());
   EXPECT_EQ(4, range.EndOffset());
+}
+
+TEST_F(StylusWritingGestureTest, TestGestureSelectMultiline) {
+  auto* input = SetUpMultilineInput();
+  input->SetValue("ABCD\nEFGH");
+
+  mojom::blink::StylusWritingGestureDataPtr gesture_data(
+      mojom::blink::StylusWritingGestureData::New());
+  gesture_data->action = mojom::blink::StylusWritingGestureAction::SELECT_TEXT;
+  gesture_data->start_rect = gfx::Rect(22, 6, 18, 0);
+  gesture_data->end_rect = gfx::Rect(0, 12, 20, 4);
+  gesture_data->text_alternative = text_alternative;
+
+  WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
+  WebRange range = Controller()->GetSelectionOffsets();
+  EXPECT_EQ("ABCD\nEFGH", input->Value());
+  EXPECT_EQ(2, range.StartOffset());
+  EXPECT_EQ(7, range.EndOffset());
 }
 
 TEST_F(StylusWritingGestureTest, TestGestureAddSpaceOrText) {
