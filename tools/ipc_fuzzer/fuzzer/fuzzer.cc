@@ -555,12 +555,12 @@ struct FuzzTraits<base::Value> {
 
       // Add |random_value| to the container.
       if (p->type() == base::Value::Type::LIST) {
-        p->Append(std::move(random_value));
+        p->GetList().Append(std::move(random_value));
       } else {
         // |p| is a dictionary, a fuzzed key is also required.
         std::string key;
         fuzzer->FuzzString(&key);
-        p->SetKey(key, std::move(random_value));
+        p->GetDict().Set(key, std::move(random_value));
       }
     }
 
