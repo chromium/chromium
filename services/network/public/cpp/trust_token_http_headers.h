@@ -62,11 +62,6 @@ constexpr char kTrustTokensRequestHeaderSignedHeaders[] = "Signed-Headers";
 constexpr char kTrustTokensRequestHeaderSecTrustTokensAdditionalSigningData[] =
     "Sec-Trust-Tokens-Additional-Signing-Data";
 
-// A response header, asks UA to discard all previously issued tokens when
-// value is "all", ignored otherwise.
-constexpr char kTrustTokensResponseHeaderSecTrustTokenClearData[] =
-    "Sec-Trust-Token-Clear-Data";
-
 // A response header, from a Trust Token redemption that includes an integer
 // representing the lifetime of the Trust Token response, in seconds since the
 // redemption. If the header is omitted, the expiry time of the relevant key
