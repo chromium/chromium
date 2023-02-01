@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.os.Build;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -33,6 +34,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
@@ -664,6 +666,88 @@ public class RequestDesktopUtilsUnitTest {
                 "SharedPreference DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING should be removed.",
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING));
+        Assert.assertFalse(
+                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be removed.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT));
+    }
+
+    @Test
+    public void testMaybeDisableGlobalSetting_FinchParamChanged_Memory() {
+        // Default-enable the global setting.
+        Map<String, String> params = new HashMap<>();
+        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT, "1000");
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+        RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
+                RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                mProfile, mActivity);
+
+        // Update finch param and initiate downgrade.
+        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT, "4000");
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+        RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
+                RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                mProfile, mActivity);
+        enableFeatureWithParams(
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_DOWNGRADE, null, true);
+        boolean didDisable = RequestDesktopUtils.maybeDisableGlobalSetting(mProfile);
+
+        Assert.assertTrue(
+                "Desktop site global setting should be disabled on downgrade.", didDisable);
+        Assert.assertEquals("Desktop site content setting should be set correctly.",
+                ContentSettingValues.BLOCK, mRdsDefaultValue);
+        Assert.assertFalse(
+                "SharedPreference DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING should be removed.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING));
+        Assert.assertFalse(
+                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be removed.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT));
+    }
+
+    @Test
+    public void testMaybeDisableGlobalSetting_FinchParamChanged_CPUArch() {
+        // Default-enable the global setting.
+        Map<String, String> params = new HashMap<>();
+        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_X86_DEVICES, "true");
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+        String[] originalAbis = Build.SUPPORTED_ABIS;
+        try {
+            ReflectionHelpers.setStaticField(
+                    Build.class, "SUPPORTED_ABIS", new String[] {"x86", "armeabi-v7a"});
+            RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
+                    RequestDesktopUtils
+                            .DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                    mProfile, mActivity);
+
+            // Update finch param and initiate downgrade.
+            params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_X86_DEVICES, "false");
+            enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+            RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
+                    RequestDesktopUtils
+                            .DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                    mProfile, mActivity);
+            enableFeatureWithParams(
+                    ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_DOWNGRADE, null, true);
+            boolean didDisable = RequestDesktopUtils.maybeDisableGlobalSetting(mProfile);
+
+            Assert.assertTrue(
+                    "Desktop site global setting should be disabled on downgrade.", didDisable);
+            Assert.assertEquals("Desktop site content setting should be set correctly.",
+                    ContentSettingValues.BLOCK, mRdsDefaultValue);
+            Assert.assertFalse(
+                    "SharedPreference DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING should be removed.",
+                    mSharedPreferencesManager.contains(
+                            ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING));
+            Assert.assertFalse(
+                    "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be removed.",
+                    mSharedPreferencesManager.contains(
+                            ChromePreferenceKeys
+                                    .DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT));
+        } finally {
+            ReflectionHelpers.setStaticField(Build.class, "SUPPORTED_ABIS", originalAbis);
+        }
     }
 
     @Test

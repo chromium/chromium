@@ -360,6 +360,7 @@ public class RequestDesktopUtils {
         if (memoryLimitMB != 0
                 && SysUtils.amountOfPhysicalMemoryKB()
                         < memoryLimitMB * ConversionUtils.KILOBYTES_PER_MEGABYTE) {
+            updateNoLongerInCohort();
             return false;
         }
 
@@ -367,9 +368,12 @@ public class RequestDesktopUtils {
         if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                     feature, PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_X86_DEVICES, true)
                 && !isCpuArchitectureArm()) {
+            updateNoLongerInCohort();
             return false;
         }
 
+        // TODO(shuyng): Add downgrade path support for smallestScreenWidthDp or displaySizeInInches
+        //  change.
         // If the smallest screen size in dp is below threshold, avoid default-enabling the setting.
         if (context.getResources().getConfiguration().smallestScreenWidthDp
                 < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(feature,
@@ -410,6 +414,17 @@ public class RequestDesktopUtils {
         return !isControlGroup && wouldEnable;
     }
 
+    private static void updateNoLongerInCohort() {
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        if (sharedPreferencesManager.contains(
+                    ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT)) {
+            // The client was previous qualified for the experiment; but is no longer qualified
+            // due to finch param change.
+            sharedPreferencesManager.writeBoolean(
+                    ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT, false);
+        }
+    }
+
     /**
      * Default-enables the desktop site global setting if {@code shouldDefaultEnableGlobalSetting}
      * returns true.
@@ -437,17 +452,27 @@ public class RequestDesktopUtils {
      * 1. The setting was previously default-enabled.
      * 2. The setting has not been previously updated by the user.
      * These changes are guarded behind the REQUEST_DESKTOP_SITE_DEFAULTS_DOWNGRADE flag.
+     * This should be invoked following {@link #shouldDefaultEnableGlobalSetting(double, Context)}.
      * @param profile The current {@link Profile}.
      * @return Whether the desktop site global setting was disabled.
      */
     public static boolean maybeDisableGlobalSetting(Profile profile) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS)
-                || !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_DOWNGRADE)) {
+        if (!ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_DOWNGRADE)) {
+            return false;
+        }
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        if ((ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS)
+                    || ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL))
+                && sharedPreferencesManager.readBoolean(
+                        ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT,
+                        true)) {
             return false;
         }
 
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        sharedPreferencesManager.removeKey(
+                ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT);
         // Do not downgrade if the global setting was not default-enabled.
         if (!sharedPreferencesManager.readBoolean(
                     ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, false)) {
@@ -457,8 +482,6 @@ public class RequestDesktopUtils {
         // Remove SharedPreferences keys that were added when the feature was supported.
         sharedPreferencesManager.removeKey(
                 ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING);
-        sharedPreferencesManager.removeKey(
-                ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT);
 
         // Do not disable the global setting if it was previously updated by the user.
         if (sharedPreferencesManager.contains(

@@ -234,6 +234,10 @@ public final class ChromePreferenceKeys {
             "Chrome.RequestDesktopSiteGlobalSetting.DefaultEnabled";
     /**
      * Indicates whether the device qualifies for default-enabling the desktop site global setting.
+     * Not set: the device is not eligible for the experiment;
+     * True: the device is eligible for the experiment;
+     * False: a downgrade is pending because a previously eligible device is not eligible for the
+     * experiment any more.
      */
     public static final String DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT =
             "Chrome.RequestDesktopSiteGlobalSetting.DefaultEnabledCohort";
