@@ -23,7 +23,7 @@ namespace em = enterprise_management;
 
 // The type for variables containing an error from DM Server response.
 using CertProvisioningResponseErrorType =
-    enterprise_management::ClientCertificateProvisioningResponse::Error;
+    em::ClientCertificateProvisioningResponse::Error;
 
 namespace {
 
@@ -199,7 +199,7 @@ void CertProvisioningClientImpl::DownloadCert(
 
 void CertProvisioningClientImpl::FillCommonRequestData(
     ProvisioningProcess provisioning_process,
-    enterprise_management::ClientCertificateProvisioningRequest& out_request) {
+    em::ClientCertificateProvisioningRequest& out_request) {
   out_request.set_certificate_scope(
       CertScopeToString(provisioning_process.cert_scope));
   out_request.set_cert_profile_id(
@@ -252,8 +252,7 @@ void CertProvisioningClientImpl::OnNextActionResponse(
 void CertProvisioningClientImpl::OnStartCsrResponse(
     StartCsrCallback callback,
     policy::DeviceManagementStatus status,
-    const enterprise_management::ClientCertificateProvisioningResponse&
-        response) {
+    const em::ClientCertificateProvisioningResponse& response) {
   absl::optional<CertProvisioningResponseErrorType> response_error;
   absl::optional<int64_t> try_later;
 
@@ -314,8 +313,7 @@ void CertProvisioningClientImpl::OnStartCsrResponse(
 void CertProvisioningClientImpl::OnFinishCsrResponse(
     FinishCsrCallback callback,
     policy::DeviceManagementStatus status,
-    const enterprise_management::ClientCertificateProvisioningResponse&
-        response) {
+    const em::ClientCertificateProvisioningResponse& response) {
   absl::optional<CertProvisioningResponseErrorType> response_error;
   absl::optional<int64_t> try_later;
 
@@ -338,8 +336,7 @@ void CertProvisioningClientImpl::OnFinishCsrResponse(
 void CertProvisioningClientImpl::OnDownloadCertResponse(
     DownloadCertCallback callback,
     policy::DeviceManagementStatus status,
-    const enterprise_management::ClientCertificateProvisioningResponse&
-        response) {
+    const em::ClientCertificateProvisioningResponse& response) {
   absl::optional<CertProvisioningResponseErrorType> response_error;
   absl::optional<int64_t> try_later;
 
