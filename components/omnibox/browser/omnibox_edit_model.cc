@@ -888,7 +888,7 @@ bool OmniboxEditModel::ExecuteTakeoverAction(
   if (action && action->TakesOverMatch()) {
     OmniboxPopupSelection selection(
         match_index, OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION);
-    ExecuteAction(selection, match_selection_timestamp, disposition);
+    ExecuteAction(selection, disposition, match_selection_timestamp);
     return true;
   }
   return false;
@@ -2162,7 +2162,7 @@ bool OmniboxEditModel::TriggerPopupSelectionAction(
     case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION:
       DCHECK(timestamp != base::TimeTicks());
       DCHECK(match.GetPrimaryAction());
-      ExecuteAction(selection, timestamp, disposition);
+      ExecuteAction(selection, disposition, timestamp);
       break;
 
     case OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION:
@@ -2372,9 +2372,10 @@ PrefService* OmniboxEditModel::GetPrefService() const {
   return autocomplete_controller()->autocomplete_provider_client()->GetPrefs();
 }
 
-void OmniboxEditModel::ExecuteAction(OmniboxPopupSelection selection,
-                                     base::TimeTicks match_selection_timestamp,
-                                     WindowOpenDisposition disposition) {
+void OmniboxEditModel::ExecuteAction(
+    OmniboxPopupSelection selection,
+    WindowOpenDisposition disposition,
+    base::TimeTicks match_selection_timestamp) {
   RecordActionShownForAllActions(result(), selection);
   OmniboxAction::ExecutionContext context(
       *(autocomplete_controller()->autocomplete_provider_client()),

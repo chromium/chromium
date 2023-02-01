@@ -551,8 +551,8 @@ class OmniboxEditModel {
   // within result(). `disposition` may be used by actions to open
   // in another tab, a new window, etc.
   void ExecuteAction(OmniboxPopupSelection selection,
-                     base::TimeTicks match_selection_timestamp,
-                     WindowOpenDisposition disposition);
+                     WindowOpenDisposition disposition,
+                     base::TimeTicks match_selection_timestamp);
 
   // Returns true if a query to an autocomplete provider is currently
   // in progress.  This logic should in the future live in

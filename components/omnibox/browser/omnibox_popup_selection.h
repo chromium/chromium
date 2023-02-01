@@ -30,7 +30,7 @@ struct OmniboxPopupSelection {
     kAllLines
   };
 
-  // See `Selection::state` below for details. The numeric values are to aid
+  // See `state` below for details. The numeric values are to aid
   // comparison only. They are not persisted anywhere and can be freely changed.
   enum LineState {
     // This means the Header above this row is highlighted, and the
@@ -63,7 +63,7 @@ struct OmniboxPopupSelection {
     LINE_STATE_MAX_VALUE
   };
 
-  // The sentinel value for Selection::line which means no line is selected.
+  // The sentinel value for `line` which means no line is selected.
   static const size_t kNoMatch;
 
   // The selected line.  This is kNoMatch when nothing is selected,

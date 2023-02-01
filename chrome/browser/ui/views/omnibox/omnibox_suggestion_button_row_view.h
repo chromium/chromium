@@ -45,8 +45,17 @@ class OmniboxSuggestionButtonRowView : public views::View {
   views::Button* GetActiveButton() const;
 
  private:
+  // Indicates whether a match corresponding to `model_index_` exists in
+  // model result. Sometimes result views and button rows exist for
+  // out-of-range matches, for example during tests.
+  bool HasMatch() const;
+
   // Digs into the model with index to get the match for owning result view.
   const AutocompleteMatch& match() const;
+
+  // Clears and builds all child views (buttons in the button row),
+  // taking the current model state (e.g. match) into account.
+  void BuildViews();
 
   void SetPillButtonVisibility(OmniboxSuggestionRowButton* button,
                                OmniboxPopupSelection::LineState state);
@@ -59,10 +68,9 @@ class OmniboxSuggestionButtonRowView : public views::View {
   size_t const model_index_;
 
   raw_ptr<OmniboxSuggestionRowButton> keyword_button_ = nullptr;
-  // TODO(manukh): Rename `pedal_button_` to `action_button_` as it is shared by
-  //  other actions ('journeys' currently).
-  raw_ptr<OmniboxSuggestionRowButton> pedal_button_ = nullptr;
   raw_ptr<OmniboxSuggestionRowButton> tab_switch_button_ = nullptr;
+
+  std::vector<raw_ptr<OmniboxSuggestionRowButton>> action_buttons_;
 
   // Which button, if any, was active as of the last call to
   // SelectionStateChanged().
