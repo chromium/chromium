@@ -87,7 +87,8 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
     // Start a new PKCS#11 session for |slot_id_|.
     CK_RV open_session_result;
     {
-      base::ScopedBlockingCall(FROM_HERE, base::BlockingType::WILL_BLOCK);
+      base::ScopedBlockingCall scoped_blocking_call(
+          FROM_HERE, base::BlockingType::WILL_BLOCK);
       open_session_result =
           open_session(slot_id, kOpenSessionFlags, /*pApplication=*/nullptr,
                        /*Notify=*/nullptr, &session_handle);
@@ -105,7 +106,8 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
     if (session_handle_ != CK_INVALID_HANDLE) {
       CK_RV close_session_result;
       {
-        base::ScopedBlockingCall(FROM_HERE, base::BlockingType::WILL_BLOCK);
+        base::ScopedBlockingCall scoped_blocking_call(
+            FROM_HERE, base::BlockingType::WILL_BLOCK);
         close_session_result = close_session_(session_handle_);
       }
       if (close_session_result != CKR_OK) {
@@ -113,14 +115,16 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
       }
     }
 
-    if (chaps_handle_)
+    if (chaps_handle_) {
       dlclose(chaps_handle_);
+    }
   }
 
   bool ReopenSession() override {
     CK_RV close_session_result;
     {
-      base::ScopedBlockingCall(FROM_HERE, base::BlockingType::WILL_BLOCK);
+      base::ScopedBlockingCall scoped_blocking_call(
+          FROM_HERE, base::BlockingType::WILL_BLOCK);
       close_session_result = close_session_(session_handle_);
     }
     if (close_session_result != CKR_SESSION_HANDLE_INVALID &&
@@ -131,7 +135,8 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
 
     CK_RV open_session_result;
     {
-      base::ScopedBlockingCall(FROM_HERE, base::BlockingType::WILL_BLOCK);
+      base::ScopedBlockingCall scoped_blocking_call(
+          FROM_HERE, base::BlockingType::WILL_BLOCK);
       open_session_result =
           open_session_(slot_id_, kOpenSessionFlags, /*pApplication=*/nullptr,
                         /*Notify=*/nullptr, &session_handle_);
@@ -150,7 +155,8 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
                         CK_ULONG ulPrivateKeyAttributeCount,
                         CK_OBJECT_HANDLE_PTR phPublicKey,
                         CK_OBJECT_HANDLE_PTR phPrivateKey) override {
-    base::ScopedBlockingCall(FROM_HERE, base::BlockingType::WILL_BLOCK);
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::WILL_BLOCK);
     return generate_key_pair_(session_handle_, pMechanism, pPublicKeyTemplate,
                               ulPublicKeyAttributeCount, pPrivateKeyTemplate,
                               ulPrivateKeyAttributeCount, phPublicKey,
@@ -160,14 +166,16 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
   CK_RV GetAttributeValue(CK_OBJECT_HANDLE hObject,
                           CK_ATTRIBUTE_PTR pTemplate,
                           CK_ULONG ulCount) override {
-    base::ScopedBlockingCall(FROM_HERE, base::BlockingType::WILL_BLOCK);
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::WILL_BLOCK);
     return get_attribute_value_(session_handle_, hObject, pTemplate, ulCount);
   }
 
   CK_RV SetAttributeValue(CK_OBJECT_HANDLE hObject,
                           CK_ATTRIBUTE_PTR pTemplate,
                           CK_ULONG ulCount) override {
-    base::ScopedBlockingCall(FROM_HERE, base::BlockingType::WILL_BLOCK);
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::WILL_BLOCK);
     return set_attribute_value_(session_handle_, hObject, pTemplate, ulCount);
   }
 
