@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 #include "content/browser/direct_sockets/direct_sockets_test_utils.h"
@@ -225,41 +226,25 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
     GetNetworkContext()->CreateMdnsResponder(
         mdns_responder_.BindNewPipeAndPassReceiver());
 
-    std::string name;
-    base::RunLoop run_loop;
-    mdns_responder_->CreateNameForAddress(
-        net::IPAddress::IPv4Localhost(),
-        base::BindLambdaForTesting(
-            [&name, &run_loop](const std::string& name_out,
-                               bool announcement_scheduled) {
-              name = name_out;
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return name;
+    base::test::TestFuture<const std::string&, bool> future;
+    mdns_responder_->CreateNameForAddress(net::IPAddress::IPv4Localhost(),
+                                          future.GetCallback());
+    return future.Get<std::string>();
   }
 
   // Returns the port listening for TCP connections.
   uint16_t StartTcpServer() {
-    net::IPEndPoint local_addr;
-    base::RunLoop run_loop;
+    base::test::TestFuture<int32_t, const absl::optional<net::IPEndPoint>&>
+        future;
     GetNetworkContext()->CreateTCPServerSocket(
         net::IPEndPoint(net::IPAddress::IPv4Localhost(),
                         /*port=*/0),
         /*backlog=*/5,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        tcp_server_socket_.BindNewPipeAndPassReceiver(),
-        base::BindLambdaForTesting(
-            [&local_addr, &run_loop](
-                int32_t result,
-                const absl::optional<net::IPEndPoint>& local_addr_out) {
-              DCHECK_EQ(result, net::OK);
-              DCHECK(local_addr_out.has_value());
-              local_addr = *local_addr_out;
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return local_addr.port();
+        tcp_server_socket_.BindNewPipeAndPassReceiver(), future.GetCallback());
+    auto local_addr = future.Get<absl::optional<net::IPEndPoint>>();
+    DCHECK(local_addr);
+    return local_addr->port();
   }
 
   mojo::Remote<network::mojom::TCPServerSocket>& tcp_server_socket() {
