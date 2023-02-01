@@ -10579,7 +10579,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Can't sign in to <ph name="USERNAME">$1<ex>Jane.Doe@gmail.com</ex></ph>
       </message>
       <message name="IDS_SIGNIN_ERROR_DICE_EMAIL_TITLE" desc="Title of the signin error tab modal dialog when username can be retrieved to display and when Desktop Identity Consistency is enabled.">
-        Can't sync to <ph name="USERNAME">$1<ex>Jane.Doe@gmail.com</ex></ph>
+        Can't sync with <ph name="USERNAME">$1<ex>Jane.Doe@gmail.com</ex></ph>
       </message>
       <message name="IDS_SIGNIN_ERROR_CLOSE_BUTTON_LABEL" desc="Label of the Close button in the signin error dialog.">
         Close
