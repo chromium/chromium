@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_EDITOR_BOOKMARKS_EDITOR_COORDINATOR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_BOOKMARKS_EDITOR_BOOKMARKS_EDITOR_COORDINATOR_DELEGATE_H_
 
+#import <UIKit/UIKit.h>
+
 @class BookmarksEditorCoordinator;
 
 // Delegate for BookmarksEditorCoordinator.

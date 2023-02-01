@@ -5,9 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_EDITOR_BOOKMARKS_EDITOR_VIEW_CONTROLLER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_BOOKMARKS_EDITOR_BOOKMARKS_EDITOR_VIEW_CONTROLLER_DELEGATE_H_
 
+#import <UIKit/UIKit.h>
+
 @class BookmarksEditorViewController;
 
-@protocol BookmarksEditorViewControllerDelegate
+@protocol BookmarksEditorViewControllerDelegate <NSObject>
 
 // Called when the controller should be dismissed.
 - (void)bookmarkEditorWantsDismissal:(BookmarksEditorViewController*)controller;

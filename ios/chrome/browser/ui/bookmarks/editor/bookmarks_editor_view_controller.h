@@ -6,16 +6,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_consumer.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
+@protocol BookmarksEditorMutator;
 class Browser;
 @protocol SnackbarCommands;
-
-namespace bookmarks {
-class BookmarkNode;
-}  // namespace bookmarks
 
 // View controller for editing bookmarks. Allows editing of the title, URL and
 // the parent folder of the bookmark.
@@ -24,21 +22,19 @@ class BookmarkNode;
 // accordingly depending on whether the bookmark and folder it is editing
 // changes underneath it.
 @interface BookmarksEditorViewController
-    : ChromeTableViewController <KeyCommandActions>
+    : ChromeTableViewController <BookmarksEditorConsumer, KeyCommandActions>
 
 @property(nonatomic, weak) id<BookmarksEditorViewControllerDelegate> delegate;
-
 // Snackbar commands handler.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
-
 // Cancel button item in navigation bar.
 @property(nonatomic, strong, readonly) UIBarButtonItem* cancelItem;
+// Mutator for the presented bookmark.
+@property(nonatomic, weak) id<BookmarksEditorMutator> mutator;
 
 // Designated initializer.
-// `bookmark`: mustn't be NULL at initialization time. It also mustn't be a
-//             folder.
-- (instancetype)initWithBookmark:(const bookmarks::BookmarkNode*)bookmark
-                         browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+// TODO(crbug.com/1404311) Remove the model from init.
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // Called before the instance is deallocated.

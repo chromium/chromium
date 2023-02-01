@@ -20,33 +20,24 @@ using BookmarksEditorViewControllerTest = BookmarkIOSUnitTestSupport;
 // Checks that the view controller can become the first responder. This is
 // needed to correctly register key commands.
 TEST_F(BookmarksEditorViewControllerTest, CanBecomeFirstResponder) {
-  const bookmarks::BookmarkNode* bookmark =
-      AddBookmark(bookmark_model_->mobile_node(), @"Some Bookmark");
   BookmarksEditorViewController* controller =
-      [[BookmarksEditorViewController alloc] initWithBookmark:bookmark
-                                                      browser:browser_.get()];
+      [[BookmarksEditorViewController alloc] initWithBrowser:browser_.get()];
 
   EXPECT_TRUE(controller.canBecomeFirstResponder);
 }
 
 // Checks that key commands are registered.
 TEST_F(BookmarksEditorViewControllerTest, KeyCommands) {
-  const bookmarks::BookmarkNode* bookmark =
-      AddBookmark(bookmark_model_->mobile_node(), @"Some Bookmark");
   BookmarksEditorViewController* controller =
-      [[BookmarksEditorViewController alloc] initWithBookmark:bookmark
-                                                      browser:browser_.get()];
+      [[BookmarksEditorViewController alloc] initWithBrowser:browser_.get()];
 
   EXPECT_GT(controller.keyCommands.count, 0u);
 }
 
 // Checks that metrics are correctly reported.
 TEST_F(BookmarksEditorViewControllerTest, Metrics) {
-  const bookmarks::BookmarkNode* bookmark =
-      AddBookmark(bookmark_model_->mobile_node(), @"Some Bookmark");
   BookmarksEditorViewController* controller =
-      [[BookmarksEditorViewController alloc] initWithBookmark:bookmark
-                                                      browser:browser_.get()];
+      [[BookmarksEditorViewController alloc] initWithBrowser:browser_.get()];
   base::UserActionTester user_action_tester;
   std::string user_action = "MobileKeyCommandClose";
   ASSERT_EQ(user_action_tester.GetActionCount(user_action), 0);

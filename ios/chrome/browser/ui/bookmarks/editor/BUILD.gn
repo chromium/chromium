@@ -8,11 +8,17 @@ source_set("editor") {
     "bookmarks_editor_coordinator.h",
     "bookmarks_editor_coordinator.mm",
     "bookmarks_editor_coordinator_delegate.h",
+    "bookmarks_editor_mediator.h",
+    "bookmarks_editor_mediator.mm",
+    "bookmarks_editor_mediator_delegate.h",
   ]
   deps = [
     ":editor_ui",
     "//components/bookmarks/browser",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/bookmarks/folder_chooser",
@@ -27,6 +33,8 @@ source_set("editor") {
 source_set("editor_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "bookmarks_editor_consumer.h",
+    "bookmarks_editor_mutator.h",
     "bookmarks_editor_view_controller.h",
     "bookmarks_editor_view_controller.mm",
     "bookmarks_editor_view_controller_delegate.h",

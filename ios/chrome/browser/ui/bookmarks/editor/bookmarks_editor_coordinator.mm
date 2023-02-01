@@ -4,8 +4,13 @@
 
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_coordinator.h"
 
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mediator.h"
+#import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mediator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_coordinator.h"
@@ -18,14 +23,18 @@
 #error "This file requires ARC support."
 #endif
 
-@interface BookmarksEditorCoordinator () <
-    BookmarksEditorViewControllerDelegate> {
+@interface BookmarksEditorCoordinator () <BookmarksEditorViewControllerDelegate,
+                                          BookmarksEditorMediatorDelegate> {
   // BookmarkNode to edit.
   const bookmarks::BookmarkNode* _node;
 
   // The editor view controller owned and presented by this coordinator.
   // It is wrapped in a TableViewNavigationController.
   BookmarksEditorViewController* _viewController;
+
+  // The editor mediator owned and presented by this coordinator.
+  // It is wrapped in a TableViewNavigationController.
+  BookmarksEditorMediator* _mediator;
 
   // Receives commands to show a snackbar once a bookmark is edited or deleted.
   id<SnackbarCommands> _snackbarCommandsHandler;
@@ -60,19 +69,28 @@
 
 - (void)start {
   [super start];
+  ChromeBrowserState* browserState =
+      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  bookmarks::BookmarkModel* model =
+      ios::BookmarkModelFactory::GetForBrowserState(browserState);
+
   _viewController =
-      [[BookmarksEditorViewController alloc] initWithBookmark:_node
-                                                      browser:self.browser];
+      [[BookmarksEditorViewController alloc] initWithBrowser:self.browser];
   _viewController.delegate = self;
   _viewController.snackbarCommandsHandler = _snackbarCommandsHandler;
-  _navigationController =
-      [[TableViewNavigationController alloc] initWithTable:_viewController];
 
-  _navigationController.toolbarHidden = YES;
+  _mediator = [[BookmarksEditorMediator alloc] initWithBookmarkModel:model
+                                                            bookmark:_node];
+  _mediator.consumer = _viewController;
+  _mediator.delegate = self;
+  _viewController.mutator = _mediator;
+
   _navigationControllerDelegate =
       [[BookmarkNavigationControllerDelegate alloc] init];
+  _navigationController =
+      [[TableViewNavigationController alloc] initWithTable:_viewController];
+  _navigationController.toolbarHidden = YES;
   _navigationController.delegate = _navigationControllerDelegate;
-
   [_navigationController
       setModalPresentationStyle:UIModalPresentationFormSheet];
 
@@ -84,8 +102,13 @@
 - (void)stop {
   [super stop];
   DCHECK(_navigationController);
+  [_mediator disconnect];
+  _mediator.consumer = nil;
+  _mediator = nil;
+  [_viewController shutdown];
   _viewController.delegate = nil;
   _viewController.snackbarCommandsHandler = nil;
+  _viewController.mutator = nil;
   _viewController = nil;
   _snackbarCommandsHandler = nil;
 
