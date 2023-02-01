@@ -2808,7 +2808,7 @@
   {
     "name": "enable-open-in-download",
     "owners": [ "alionadangla", "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 120
   },
   {
     "name": "enable-openscreen-cast-streaming-session",
