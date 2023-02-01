@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 
 namespace chrome_pdf {
@@ -55,8 +56,7 @@ class URLLoaderWrapper {
   // Read the response body. The size of the buffer must be large enough to
   // hold the specified number of bytes to read.
   // This function might perform a partial read.
-  virtual void ReadResponseBody(char* buffer,
-                                int buffer_size,
+  virtual void ReadResponseBody(base::span<char> buffer,
                                 base::OnceCallback<void(int)> callback) = 0;
 };
 

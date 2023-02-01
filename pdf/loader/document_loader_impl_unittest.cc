@@ -95,15 +95,9 @@ class TestURLLoader : public URLLoaderWrapper {
 
     bool IsWaitRead() const { return !did_read_callback_.is_null(); }
     bool IsWaitOpen() const { return !did_open_callback_.is_null(); }
-    char* buffer() const { return buffer_; }
-    int buffer_size() const { return buffer_size_; }
 
-    void SetReadCallback(base::OnceCallback<void(int)> read_callback,
-                         char* buffer,
-                         int buffer_size) {
+    void SetReadCallback(base::OnceCallback<void(int)> read_callback) {
       did_read_callback_ = std::move(read_callback);
-      buffer_ = buffer;
-      buffer_size_ = buffer_size;
     }
 
     void SetOpenCallback(base::OnceCallback<void(int)> open_callback,
@@ -125,8 +119,6 @@ class TestURLLoader : public URLLoaderWrapper {
    private:
     base::OnceCallback<void(int)> did_open_callback_;
     base::OnceCallback<void(int)> did_read_callback_;
-    raw_ptr<char> buffer_ = nullptr;
-    int buffer_size_ = 0;
 
     int content_length_ = -1;
     bool accept_ranges_bytes_ = false;
@@ -182,10 +174,9 @@ class TestURLLoader : public URLLoaderWrapper {
                            gfx::Range(position, position + size));
   }
 
-  void ReadResponseBody(char* buffer,
-                        int buffer_size,
+  void ReadResponseBody(base::span<char> /*buffer*/,
                         base::OnceCallback<void(int)> callback) override {
-    data_->SetReadCallback(std::move(callback), buffer, buffer_size);
+    data_->SetReadCallback(std::move(callback));
   }
 
  private:

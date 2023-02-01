@@ -162,11 +162,9 @@ void URLLoaderWrapperImpl::OpenRange(const std::string& url,
 }
 
 void URLLoaderWrapperImpl::ReadResponseBody(
-    char* buffer,
-    int buffer_size,
+    base::span<char> buffer,
     base::OnceCallback<void(int)> callback) {
   buffer_ = buffer;
-  buffer_size_ = buffer_size;
   read_starter_.Start(
       FROM_HERE, kReadDelayMs,
       base::BindOnce(&URLLoaderWrapperImpl::ReadResponseBodyImpl,
@@ -176,9 +174,8 @@ void URLLoaderWrapperImpl::ReadResponseBody(
 void URLLoaderWrapperImpl::ReadResponseBodyImpl(
     base::OnceCallback<void(int)> callback) {
   url_loader_->ReadResponseBody(
-      base::make_span(buffer_.get(), buffer_size_),
-      base::BindOnce(&URLLoaderWrapperImpl::DidRead, weak_factory_.GetWeakPtr(),
-                     std::move(callback)));
+      buffer_, base::BindOnce(&URLLoaderWrapperImpl::DidRead,
+                              weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void URLLoaderWrapperImpl::ParseHeaders(const std::string& response_headers) {
@@ -259,14 +256,14 @@ void URLLoaderWrapperImpl::DidRead(base::OnceCallback<void(int)> callback,
     return;
   }
 
-  char* start = buffer_;
+  char* start = buffer_.data();
   size_t length = result;
   multi_part_processed_ = true;
   for (int i = 2; i < result; ++i) {
-    if (IsDoubleEndLineAtEnd(buffer_, i)) {
+    if (IsDoubleEndLineAtEnd(buffer_.data(), i)) {
       int start_pos = 0;
       int end_pos = 0;
-      if (GetByteRangeFromHeaders(std::string(buffer_.get(), i), &start_pos,
+      if (GetByteRangeFromHeaders(std::string(buffer_.data(), i), &start_pos,
                                   &end_pos)) {
         byte_range_ = gfx::Range(start_pos, end_pos);
         start += i;
@@ -281,7 +278,7 @@ void URLLoaderWrapperImpl::DidRead(base::OnceCallback<void(int)> callback,
     return ReadResponseBodyImpl(std::move(callback));
   }
   DCHECK_GT(result, 0);
-  memmove(buffer_, start, result);
+  memmove(buffer_.data(), start, result);
 
   std::move(callback).Run(result);
 }

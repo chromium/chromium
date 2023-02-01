@@ -10,8 +10,8 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "pdf/loader/url_loader_wrapper.h"
@@ -43,8 +43,7 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
                  uint32_t position,
                  uint32_t size,
                  base::OnceCallback<void(int)> callback) override;
-  void ReadResponseBody(char* buffer,
-                        int buffer_size,
+  void ReadResponseBody(base::span<char> buffer,
                         base::OnceCallback<void(int)> callback) override;
 
  private:
@@ -65,8 +64,7 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
   std::string multipart_boundary_;
   gfx::Range byte_range_ = gfx::Range::InvalidRange();
   bool is_multipart_ = false;
-  raw_ptr<char> buffer_ = nullptr;
-  uint32_t buffer_size_ = 0;
+  base::span<char> buffer_;
   bool multi_part_processed_ = false;
 
   base::OneShotTimer read_starter_;

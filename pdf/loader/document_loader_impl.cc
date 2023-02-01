@@ -292,7 +292,7 @@ void DocumentLoaderImpl::DidOpenPartial(int32_t result) {
 
 void DocumentLoaderImpl::ReadMore() {
   loader_->ReadResponseBody(
-      buffer_.data(), buffer_.size(),
+      buffer_,
       base::BindOnce(&DocumentLoaderImpl::DidRead, weak_factory_.GetWeakPtr()));
 }
 
