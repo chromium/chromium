@@ -82,6 +82,7 @@ struct TextAnnotation {
 // Contains the input and parameters used to annotate the text.
 // This is a combination of string and `AnnotationOptions` in tclib (see
 // "tclib/annotator/types.h").
+// Next MinVersion: 2
 [Stable]
 struct TextAnnotationRequest {
   // The text to be annotated.

@@ -15,6 +15,7 @@
 #include "chromeos/services/machine_learning/public/mojom/grammar_checker.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/graph_executor.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/handwriting_recognizer.mojom.h"
+#include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/soda.mojom.h"
@@ -49,6 +50,7 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       public mojom::HandwritingRecognizer,
       public mojom::GrammarChecker,
       public mojom::GraphExecutor,
+      public mojom::ImageContentAnnotator,
       public mojom::SodaRecognizer,
       public mojom::TextSuggester,
       public mojom::DocumentScanner,
@@ -127,6 +129,12 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       mojo::PendingReceiver<mojom::DocumentScanner> receiver,
       mojom::DocumentScannerConfigPtr config,
       mojom::MachineLearningService::LoadDocumentScannerCallback callback)
+      override;
+
+  void LoadImageAnnotator(
+      mojom::ImageAnnotatorConfigPtr config,
+      mojo::PendingReceiver<mojom::ImageContentAnnotator> receiver,
+      mojom::MachineLearningService::LoadImageAnnotatorCallback callback)
       override;
 
   void CreateWebPlatformModelLoader(
@@ -250,6 +258,11 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   void SetOutputDoPostProcessingResult(
       const mojom::DoPostProcessingResultPtr& result);
 
+  // Call SetOutputImageContentAnnotationResult() before
+  // Annotate*Image() to set the output.
+  void SetOutputImageContentAnnotationResult(
+      const mojom::ImageAnnotationResultPtr& result);
+
   // mojom::TextClassifier:
   void Annotate(mojom::TextAnnotationRequestPtr request,
                 mojom::TextClassifier::AnnotateCallback callback) override;
@@ -304,6 +317,19 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       const std::vector<gfx::PointF>& corners,
       chromeos::machine_learning::mojom::Rotation rotation,
       mojom::DocumentScanner::DoPostProcessingCallback callback) override;
+
+  // mojom::ImageContentAnnotator:
+  void AnnotateRawImage(
+      base::ReadOnlySharedMemoryRegion rgb_bytes,
+      uint32_t width,
+      uint32_t height,
+      uint32_t line_stride,
+      mojom::ImageContentAnnotator::AnnotateRawImageCallback callback) override;
+
+  void AnnotateEncodedImage(
+      base::ReadOnlySharedMemoryRegion encoded_image,
+      mojom::ImageContentAnnotator::AnnotateEncodedImageCallback callback)
+      override;
 
   // Flush all relevant Mojo pipes.
   void FlushForTesting();
@@ -364,6 +390,9 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   void HandleLoadDocumentScannerCall(
       mojo::PendingReceiver<mojom::DocumentScanner> receiver,
       mojom::MachineLearningService::LoadDocumentScannerCallback callback);
+  void HandleLoadImageAnnotatorCall(
+      mojo::PendingReceiver<mojom::ImageContentAnnotator> receiver,
+      mojom::MachineLearningService::LoadImageAnnotatorCallback callback);
   void HandleDocumentScannerDetectNV12Call(
       base::ReadOnlySharedMemoryRegion nv12_image,
       mojom::DocumentScanner::DetectCornersFromNV12ImageCallback callback);
@@ -383,6 +412,16 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       ml::model_loader::mojom::Model::ComputeCallback callback);
   void HandleLoadCall(
       ml::model_loader::mojom::ModelLoader::LoadCallback callback);
+  void HandleAnnotateRawImageCall(
+      base::ReadOnlySharedMemoryRegion rgb_bytes,
+      uint32_t width,
+      uint32_t height,
+      uint32_t line_stride,
+      mojom::ImageContentAnnotator::AnnotateRawImageCallback callback);
+
+  void HandleAnnotateEncodedImageCall(
+      base::ReadOnlySharedMemoryRegion encoded_image,
+      mojom::ImageContentAnnotator::AnnotateRawImageCallback callback);
 
   void HandleStopCall();
   void HandleStartCall();
@@ -406,6 +445,7 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       web_platform_model_loader_receivers_;
   mojo::ReceiverSet<ml::model_loader::mojom::Model>
       web_platform_model_receivers_;
+  mojo::ReceiverSet<mojom::ImageContentAnnotator> image_annotator_receivers_;
   mojo::RemoteSet<mojom::SodaClient> soda_client_remotes_;
   mojom::TensorPtr output_tensor_;
   mojom::LoadHandwritingModelResult load_handwriting_model_result_;
@@ -425,6 +465,7 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   mojom::TextSuggesterResultPtr text_suggester_result_;
   mojom::DetectCornersResultPtr detect_corners_result_;
   mojom::DoPostProcessingResultPtr do_post_processing_result_;
+  mojom::ImageAnnotationResultPtr image_annotation_result_;
   ml::model_loader::mojom::CreateModelLoaderResult
       create_web_platform_model_loader_result_;
   ml::model_loader::mojom::LoadModelResult load_web_platform_model_result_;

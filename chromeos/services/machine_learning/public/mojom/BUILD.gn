@@ -10,6 +10,7 @@ mojom_component("mojom") {
     "grammar_checker.mojom",
     "graph_executor.mojom",
     "handwriting_recognizer.mojom",
+    "image_content_annotation.mojom",
     "machine_learning_service.mojom",
     "model.mojom",
     "soda.mojom",

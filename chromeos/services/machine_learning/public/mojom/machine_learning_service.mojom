@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 // Top-level API of the Machine Learning Service: loading models for inference.
 
@@ -23,6 +23,7 @@ module chromeos.machine_learning.mojom;
 import "chromeos/services/machine_learning/public/mojom/document_scanner.mojom";
 import "chromeos/services/machine_learning/public/mojom/grammar_checker.mojom";
 import "chromeos/services/machine_learning/public/mojom/handwriting_recognizer.mojom";
+import "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom";
 import "chromeos/services/machine_learning/public/mojom/model.mojom";
 import "chromeos/services/machine_learning/public/mojom/soda.mojom";
 import "chromeos/services/machine_learning/public/mojom/text_classifier.mojom";
@@ -43,7 +44,7 @@ enum LoadModelResult {
 
 // Top-level interface between Chromium browser process and the ML Service
 // daemon.
-// Next ordinal: 12
+// Next ordinal: 13
 [Stable, Uuid="9e5e4750-40cc-4eda-ac09-3457d06a45ab"]
 interface MachineLearningService {
   // Binds another pipe to this instance.
@@ -103,6 +104,11 @@ interface MachineLearningService {
       pending_receiver<ml.model_loader.mojom.ModelLoader> receiver,
       ml.model_loader.mojom.CreateModelLoaderOptions options)
       => (ml.model_loader.mojom.CreateModelLoaderResult result);
+  // Create and initialize an Image Content Annotator with given `config`.
+  [MinVersion=7] LoadImageAnnotator@12(ImageAnnotatorConfig config,
+      pending_receiver<ImageContentAnnotator> receiver)
+      => (LoadModelResult result);
+
 
   // Deprecated `LoadHandwritingModelWithSpec`
   REMOVED_4@4(

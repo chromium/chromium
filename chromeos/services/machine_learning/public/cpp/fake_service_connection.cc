@@ -171,6 +171,15 @@ void FakeServiceConnectionImpl::LoadDocumentScanner(
       base::Unretained(this), std::move(receiver), std::move(callback)));
 }
 
+void FakeServiceConnectionImpl::LoadImageAnnotator(
+    mojom::ImageAnnotatorConfigPtr config,
+    mojo::PendingReceiver<mojom::ImageContentAnnotator> receiver,
+    mojom::MachineLearningService::LoadImageAnnotatorCallback callback) {
+  ScheduleCall(base::BindOnce(
+      &FakeServiceConnectionImpl::HandleLoadImageAnnotatorCall,
+      base::Unretained(this), std::move(receiver), std::move(callback)));
+}
+
 void FakeServiceConnectionImpl::Compute(
     const base::flat_map<std::string, std::vector<uint8_t>>& input_tensors,
     ml::model_loader::mojom::Model::ComputeCallback callback) {
@@ -421,6 +430,11 @@ void FakeServiceConnectionImpl::SetOutputDoPostProcessingResult(
   do_post_processing_result_ = result.Clone();
 }
 
+void FakeServiceConnectionImpl::SetOutputImageContentAnnotationResult(
+    const mojom::ImageAnnotationResultPtr& result) {
+  image_annotation_result_ = result.Clone();
+}
+
 void FakeServiceConnectionImpl::Annotate(
     mojom::TextAnnotationRequestPtr request,
     mojom::TextClassifier::AnnotateCallback callback) {
@@ -528,6 +542,26 @@ void FakeServiceConnectionImpl::DoPostProcessing(
       &FakeServiceConnectionImpl::HandleDocumentScannerPostProcessingCall,
       base::Unretained(this), std::move(jpeg_image), std::move(corners),
       std::move(callback)));
+}
+
+void FakeServiceConnectionImpl::AnnotateRawImage(
+    base::ReadOnlySharedMemoryRegion rgb_bytes,
+    uint32_t width,
+    uint32_t height,
+    uint32_t line_stride,
+    mojom::ImageContentAnnotator::AnnotateRawImageCallback callback) {
+  ScheduleCall(
+      base::BindOnce(&FakeServiceConnectionImpl::HandleAnnotateRawImageCall,
+                     base::Unretained(this), std::move(rgb_bytes), width,
+                     height, line_stride, std::move(callback)));
+}
+
+void FakeServiceConnectionImpl::AnnotateEncodedImage(
+    base::ReadOnlySharedMemoryRegion encoded_image,
+    mojom::ImageContentAnnotator::AnnotateEncodedImageCallback callback) {
+  ScheduleCall(base::BindOnce(
+      &FakeServiceConnectionImpl::HandleAnnotateEncodedImageCall,
+      base::Unretained(this), std::move(encoded_image), std::move(callback)));
 }
 
 void FakeServiceConnectionImpl::HandleLoadHandwritingModelCall(
@@ -663,6 +697,31 @@ void FakeServiceConnectionImpl::HandleLoadCall(
     std::move(callback).Run(load_web_platform_model_result_, mojo::NullRemote(),
                             nullptr);
   }
+}
+
+void FakeServiceConnectionImpl::HandleLoadImageAnnotatorCall(
+    mojo::PendingReceiver<mojom::ImageContentAnnotator> receiver,
+    mojom::MachineLearningService::LoadImageAnnotatorCallback callback) {
+  if (load_model_result_ == mojom::LoadModelResult::OK) {
+    image_annotator_receivers_.Add(this, std::move(receiver));
+  }
+
+  std::move(callback).Run(load_model_result_);
+}
+
+void FakeServiceConnectionImpl::HandleAnnotateRawImageCall(
+    base::ReadOnlySharedMemoryRegion rgb_bytes,
+    uint32_t width,
+    uint32_t height,
+    uint32_t line_stride,
+    mojom::ImageContentAnnotator::AnnotateRawImageCallback callback) {
+  std::move(callback).Run(image_annotation_result_.Clone());
+}
+
+void FakeServiceConnectionImpl::HandleAnnotateEncodedImageCall(
+    base::ReadOnlySharedMemoryRegion encoded_image,
+    mojom::ImageContentAnnotator::AnnotateRawImageCallback callback) {
+  std::move(callback).Run(image_annotation_result_.Clone());
 }
 
 }  // namespace machine_learning

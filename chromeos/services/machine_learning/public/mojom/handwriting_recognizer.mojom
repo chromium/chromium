@@ -139,7 +139,8 @@ struct HandwritingRecognizerSpec {
   string language;
 
   // Path to the language pack to use (downloaded by Chrome via DLC).
-  // If unset, ml-service will try to find the model from rootfs.
+  // If unset, ml-service will try to find the model from rootfs based on the
+  // `language` field above.
   [MinVersion=1] string? language_pack_path;
 
   // Path to already-installed handwriting recognition library (downloaded by

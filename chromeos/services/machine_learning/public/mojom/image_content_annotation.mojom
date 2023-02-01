@@ -1,0 +1,70 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Datatypes and interfaces of Image Content Annotation API.
+
+// NOTE: This mojom exists in two places and must be kept in sync:
+//       Chromium:  //chromeos/services/machine_learning/public/mojom/
+//       Chrome OS: src/platform2/ml/mojom/
+//       Note: Other repos downstream of Chromium might also use this mojom.
+// Example: A backwards-compatible mojom change (and corresponding
+// implementation change) can be made in Chrome OS first, then replicated to the
+// clients (Chromium, other downstream repos) later.
+// Use //chromeos/services/machine_learning/public/mojom/roll_mojoms.sh to help
+// replicate Chrome OS-side changes over to Chromium.
+
+module chromeos.machine_learning.mojom;
+
+import "mojo/public/mojom/base/shared_memory.mojom";
+
+
+[Stable]
+struct ImageAnnotatorConfig {
+  // User's locale.
+  string locale@0;
+};
+
+[Stable]
+struct ImageAnnotationScore {
+  // Id of the recognized entity, 0-N.
+  int32 id@0;
+  // Confidence, in the range 0-255.
+  uint8 confidence@1;
+  // Machine ID (mid).
+  // This is a unique string for identifying an entity, and can be used for
+  // image understanding. Eg the mid "/m/06wqb" corresponds to "space".
+  string mid@2;
+  // Normalized and localized name of recognized entity, if known.
+  string? name@3;
+};
+
+// Result struct for image annotation requests.
+// Maps to AnnotationScoreList in proto.
+[Stable]
+struct ImageAnnotationResult {
+  [Stable, Extensible]
+  enum Status {
+    [Default] OK = 0,
+    ERROR = 1,
+  };
+  Status status@0;
+  array<ImageAnnotationScore> annotations@1;
+};
+
+// Used to annotate images with image annotations (context).
+[Stable]
+interface ImageContentAnnotator {
+  // Annotate image contents from raw RGB image bytes.
+  AnnotateRawImage@0(mojo_base.mojom.ReadOnlySharedMemoryRegion rgb_bytes,
+                     uint32 width, uint32 height, uint32 line_stride)
+      =>(ImageAnnotationResult result);
+
+  // Annotate image contents from encoded image bytes.
+  // Image will be decoded in ml service sandbox.
+  // Supported image formats are currently JPEG, PNG, TIFF.
+  AnnotateEncodedImage@1(
+      mojo_base.mojom.ReadOnlySharedMemoryRegion encoded_image)
+      =>(ImageAnnotationResult result);
+
+};
