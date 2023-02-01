@@ -61,9 +61,9 @@ class IconView : public views::ImageView {
   // views::ImageView:
   void OnThemeChanged() override {
     ImageView::OnThemeChanged();
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     gfx::ImageSkia image;
     switch (icon_to_show_) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       case TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY:
         // kGooglePayLogoIcon is square overall, despite the drawn portion being
         // a rectangular area at the top. CreateTiledImage() will correctly clip
@@ -75,18 +75,23 @@ class IconView : public views::ImageView {
                 GetColorProvider()->GetColor(kColorPaymentsGooglePayLogo)),
             /*x=*/0, /*y=*/0, kGooglePayLogoWidth, kIconHeight);
         break;
-      case TitleWithIconAndSeparatorView::Icon::GOOGLE_G:
+      case TitleWithIconAndSeparatorView::Icon::GOOGLE_G: {
+        const gfx::VectorIcon& icon = vector_icons::kGoogleGLogoIcon;
+#else
+      case TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY:
+      case TitleWithIconAndSeparatorView::Icon::GOOGLE_G: {
+        const gfx::VectorIcon& icon = kCreditCardIcon;
+#endif
+        image = gfx::CreateVectorIcon(
+            icon, kIconHeight, GetColorProvider()->GetColor(ui::kColorIcon));
+        break;
+      }
+      case TitleWithIconAndSeparatorView::Icon::PRODUCT_LOGO:
         image =
-            gfx::CreateVectorIcon(vector_icons::kGoogleGLogoIcon, kIconHeight,
+            gfx::CreateVectorIcon(vector_icons::kProductIcon, kIconHeight,
                                   GetColorProvider()->GetColor(ui::kColorIcon));
         break;
     }
-
-#else
-    gfx::ImageSkia image =
-        gfx::CreateVectorIcon(kCreditCardIcon, kIconHeight,
-                              GetColorProvider()->GetColor(ui::kColorIcon));
-#endif
     SetImage(image);
   }
 

@@ -71,13 +71,9 @@ void SaveIbanBubbleView::AddedToWidget() {
           base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
                               base::Unretained(this))));
 
-  auto title_label = std::make_unique<views::Label>(
-      GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
-  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label->SetMultiLine(true);
-
-  // TODO(crbug.com/1352606): Add Chrome icon and separator.
-  GetBubbleFrameView()->SetTitleView(std::move(title_label));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAndSeparatorView>(
+          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::PRODUCT_LOGO));
 }
 
 std::u16string SaveIbanBubbleView::GetWindowTitle() const {
