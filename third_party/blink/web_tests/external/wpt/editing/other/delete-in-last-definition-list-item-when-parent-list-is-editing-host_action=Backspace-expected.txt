@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL Backspace in "<dl contenteditable><dt>{}</dt></dl>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Backspace in "<dl contenteditable><dd>{}</dd></dl>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Backspace in "<dl contenteditable><dd><ul><li>{}</li></ul></dd></dl>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Backspace in "<dl contenteditable><dd><ol><li>{}</li></ol></dd></dl>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Backspace in "<dl contenteditable><ul><li>{}</li></ul></dl>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Backspace in "<dl contenteditable><ol><li>{}</li></ol></dl>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Backspace in "<dl contenteditable><dl><dt>{}</dt></dl></dl>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Backspace in "<dl contenteditable><dl><dd>{}</dd></dl></dl>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+Harness: the test ran to completion.
+
