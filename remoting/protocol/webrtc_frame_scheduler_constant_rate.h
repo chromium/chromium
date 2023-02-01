@@ -36,7 +36,7 @@ class WebrtcFrameSchedulerConstantRate : public WebrtcFrameScheduler {
   // Temporarily adjusts the capture rate to |capture_interval| for the next
   // |duration|.
   void BoostCaptureRate(base::TimeDelta capture_interval,
-                        base::TimeDelta duration);
+                        base::TimeDelta duration) override;
 
   void SetPostTaskAdjustmentForTest(base::TimeDelta post_task_adjustment);
 

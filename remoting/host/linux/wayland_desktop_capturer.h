@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/base/screen_resolution.h"
+#include "remoting/protocol/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
@@ -14,7 +15,7 @@
 
 namespace remoting {
 
-class WaylandDesktopCapturer : public webrtc::DesktopCapturer,
+class WaylandDesktopCapturer : public DesktopCapturer,
                                public webrtc::ScreenCastPortal::PortalNotifier {
  public:
   explicit WaylandDesktopCapturer(const webrtc::DesktopCaptureOptions& options);
@@ -27,6 +28,8 @@ class WaylandDesktopCapturer : public webrtc::DesktopCapturer,
   void CaptureFrame() override;
   bool GetSourceList(SourceList* sources) override;
   bool SelectSource(SourceId id) override;
+  bool SupportsFrameCallbacks() override;
+  void SetMaxFrameRate(uint32_t max_frame_rate) override;
 
   // PortalNotifier interface.
   void OnScreenCastRequestResult(webrtc::xdg_portal::RequestResponse result,

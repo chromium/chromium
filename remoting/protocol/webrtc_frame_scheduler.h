@@ -7,6 +7,8 @@
 
 #include "base/functional/callback_forward.h"
 
+#include "base/time/time.h"
+
 namespace webrtc {
 class DesktopFrame;
 }  // namespace webrtc
@@ -35,6 +37,11 @@ class WebrtcFrameScheduler {
   // Called when WebRTC requests the VideoTrackSource to provide frames at a
   // maximum framerate.
   virtual void SetMaxFramerateFps(int max_framerate_fps) = 0;
+
+  // Temporarily adjusts the capture rate to |capture_interval| for the next
+  // |duration|.
+  virtual void BoostCaptureRate(base::TimeDelta capture_interval,
+                                base::TimeDelta duration) = 0;
 };
 
 }  // namespace remoting::protocol

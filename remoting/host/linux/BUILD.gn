@@ -79,7 +79,7 @@ if (enable_me2me_host) {
   }
 }
 
-if (remoting_use_x11) {
+if (is_linux) {
   source_set("wayland") {
     sources = [
       "wayland_utils.cc",
@@ -87,6 +87,9 @@ if (remoting_use_x11) {
     ]
     deps = [ "//base" ]
   }
+}
+
+if (remoting_use_x11) {
   source_set("x11") {
     sources = [
       "unicode_to_keysym.cc",

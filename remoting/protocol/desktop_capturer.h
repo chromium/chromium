@@ -26,6 +26,10 @@ class DesktopCapturer : public webrtc::DesktopCapturer {
   // Change the position of the composed mouse cursor.
   virtual void SetMouseCursorPosition(const webrtc::DesktopVector& position) {}
 
+  // Whether capturer can notify the callback interface of the available frames
+  // immediately.
+  virtual bool SupportsFrameCallbacks();
+
 #if defined(WEBRTC_USE_GIO)
   virtual void GetMetadataAsync(
       base::OnceCallback<void(webrtc::DesktopCaptureMetadata)> callback) {}
