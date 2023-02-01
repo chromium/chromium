@@ -68,10 +68,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //  methods and the winning bidder's reportWin() methods, if any.
   //
   // `debug_loss_report_urls` URLs to use for reporting loss result to bidders
-  //  and the seller. Empty if no report should be sent.
-  //
-  // `debug_win_report_urls` URLs to use for reporting win result to bidders and
-  //  the seller. Empty if no report should be sent.
+  //  and the seller. Empty if no report should be sent, and when
+  //  `interest_group_auction_reporter` is populated (In which case, it sends
+  //  them once it has received a notification the ad has been navigated to).
   //
   // `private_aggregation_requests` Requests made to the Private Aggregation
   //  API. Keyed by reporting origin of the associated requests.
@@ -99,7 +98,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       std::vector<GURL> ad_component_urls,
       std::string winning_group_ad_metadata,
       std::vector<GURL> debug_loss_report_urls,
-      std::vector<GURL> debug_win_report_urls,
       std::map<url::Origin, PrivateAggregationRequests>
           private_aggregation_requests,
       blink::InterestGroupSet interest_groups_that_bid,

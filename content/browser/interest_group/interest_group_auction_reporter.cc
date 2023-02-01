@@ -77,6 +77,8 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     WinningBidInfo winning_bid_info,
     SellerWinningBidInfo top_level_seller_winning_bid_info,
     absl::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
+    std::vector<GURL> debug_win_report_urls,
+    std::vector<GURL> debug_loss_report_urls,
     std::map<url::Origin, PrivateAggregationRequests>
         private_aggregation_requests)
     : interest_group_manager_(interest_group_manager),
@@ -87,6 +89,8 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
           std::move(top_level_seller_winning_bid_info)),
       component_seller_winning_bid_info_(
           std::move(component_seller_winning_bid_info)),
+      debug_win_report_urls_(std::move(debug_win_report_urls)),
+      debug_loss_report_urls_(std::move(debug_loss_report_urls)),
       private_aggregation_requests_(std::move(private_aggregation_requests)) {
   DCHECK(interest_group_manager_);
   DCHECK(auction_worklet_manager_);
@@ -502,7 +506,21 @@ void InterestGroupAuctionReporter::OnNavigateToWinningAd() {
     return;
   }
   navigated_to_winning_ad_ = true;
+
+  // Send any pending reports that are gathered as reports run.
   SendPendingReportsIfNavigated();
+
+  // Send pre-populated reports. Send these after the main reports, since
+  // reports are sent over the network in FIFO order.
+  interest_group_manager_->EnqueueReports(
+      InterestGroupManagerImpl::ReportType::kDebugWin, debug_win_report_urls_,
+      frame_origin_, *client_security_state_, url_loader_factory_);
+  debug_win_report_urls_.clear();
+  interest_group_manager_->EnqueueReports(
+      InterestGroupManagerImpl::ReportType::kDebugLoss, debug_loss_report_urls_,
+      frame_origin_, *client_security_state_, url_loader_factory_);
+  debug_loss_report_urls_.clear();
+
   MaybeInvokeCallback();
 }
 

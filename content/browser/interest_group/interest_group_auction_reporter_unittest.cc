@@ -141,6 +141,7 @@ class InterestGroupAuctionReporterTest
         std::move(auction_config_), std::move(winning_bid_info_),
         std::move(seller_winning_bid_info_),
         std::move(component_seller_winning_bid_info_),
+        std::move(debug_win_report_urls_), std::move(debug_loss_report_urls_),
         std::map<url::Origin,
                  InterestGroupAuctionReporter::PrivateAggregationRequests>());
     interest_group_auction_reporter_->Start(
@@ -282,6 +283,9 @@ class InterestGroupAuctionReporterTest
       GURL("https://component.seller.origin.test/component_seller_script.js");
   const url::Origin kComponentSellerOrigin =
       url::Origin::Create(kComponentSellerScriptUrl);
+
+  std::vector<GURL> debug_win_report_urls_;
+  std::vector<GURL> debug_loss_report_urls_;
 
   // These values don't matter, one of them should just not match the default
   // value, to make sure it's correctly plumbed through to
@@ -660,6 +664,57 @@ TEST_F(InterestGroupAuctionReporterTest, SingleSellerBadBidderReportUrl) {
   WaitForReportWinAndRunCallback(GURL("http://not.https.test/"));
   interest_group_manager_impl_->ExpectReports({});
   EXPECT_EQ("Invalid bidder report URL", TakeBadMessage());
+
+  WaitForCompletion();
+}
+
+TEST_F(InterestGroupAuctionReporterTest, DebugReportsEarlyNavigation) {
+  const GURL kDebugWinReport1("https://debug.win.report.test/report-1");
+  const GURL kDebugWinReport2("https://debug.win.report.test/report-2");
+  debug_win_report_urls_ = {kDebugWinReport1, kDebugWinReport2};
+
+  const GURL kDebugLossReport1("https://debug.loss.report.test/report-1");
+  const GURL kDebugLossReport2("https://debug.loss.report.test/report-2");
+  debug_loss_report_urls_ = {kDebugLossReport1, kDebugLossReport2};
+
+  SetUpAndStartSingleSellerAuction();
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+  interest_group_manager_impl_->ExpectReports(
+      {{InterestGroupManagerImpl::ReportType::kDebugWin, kDebugWinReport1},
+       {InterestGroupManagerImpl::ReportType::kDebugWin, kDebugWinReport2},
+       {InterestGroupManagerImpl::ReportType::kDebugLoss, kDebugLossReport1},
+       {InterestGroupManagerImpl::ReportType::kDebugLoss, kDebugLossReport2}});
+
+  WaitForReportResultAndRunCallback(kSellerScriptUrl, absl::nullopt);
+  interest_group_manager_impl_->ExpectReports({});
+  WaitForReportWinAndRunCallback(absl::nullopt);
+  interest_group_manager_impl_->ExpectReports({});
+
+  WaitForCompletion();
+}
+
+TEST_F(InterestGroupAuctionReporterTest, DebugReportsLateNavigation) {
+  const GURL kDebugWinReport1("https://debug.win.report.test/report-1");
+  const GURL kDebugWinReport2("https://debug.win.report.test/report-2");
+  debug_win_report_urls_ = {kDebugWinReport1, kDebugWinReport2};
+
+  const GURL kDebugLossReport1("https://debug.loss.report.test/report-1");
+  const GURL kDebugLossReport2("https://debug.loss.report.test/report-2");
+  debug_loss_report_urls_ = {kDebugLossReport1, kDebugLossReport2};
+
+  SetUpAndStartSingleSellerAuction();
+
+  WaitForReportResultAndRunCallback(kSellerScriptUrl, absl::nullopt);
+  interest_group_manager_impl_->ExpectReports({});
+  WaitForReportWinAndRunCallback(absl::nullopt);
+  interest_group_manager_impl_->ExpectReports({});
+
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+  interest_group_manager_impl_->ExpectReports(
+      {{InterestGroupManagerImpl::ReportType::kDebugWin, kDebugWinReport1},
+       {InterestGroupManagerImpl::ReportType::kDebugWin, kDebugWinReport2},
+       {InterestGroupManagerImpl::ReportType::kDebugLoss, kDebugLossReport1},
+       {InterestGroupManagerImpl::ReportType::kDebugLoss, kDebugLossReport2}});
 
   WaitForCompletion();
 }

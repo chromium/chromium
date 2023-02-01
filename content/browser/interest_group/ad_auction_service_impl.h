@@ -129,7 +129,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       std::vector<GURL> ad_component_urls,
       std::string winning_group_ad_metadata,
       std::vector<GURL> debug_loss_report_urls,
-      std::vector<GURL> debug_win_report_urls,
       std::map<
           url::Origin,
           std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
@@ -145,8 +144,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       blink::InterestGroupKey winning_group_key,
       std::string winning_group_ad_metadata,
       scoped_refptr<FencedFrameReporter> fenced_frame_reporter,
-      std::vector<GURL> debug_loss_report_urls,
-      std::vector<GURL> debug_win_report_urls,
       blink::InterestGroupSet interest_groups_that_bid,
       base::flat_set<std::string> k_anon_keys_to_join);
 

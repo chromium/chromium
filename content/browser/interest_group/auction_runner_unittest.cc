@@ -1398,7 +1398,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       std::vector<GURL> ad_component_urls,
       std::string winning_group_ad_metadata,
       std::vector<GURL> debug_loss_report_urls,
-      std::vector<GURL> debug_win_report_urls,
       std::map<url::Origin, PrivateAggregationRequests>
           private_aggregation_requests,
       blink::InterestGroupSet interest_groups_that_bid,
@@ -1425,7 +1424,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     result_.report_urls.clear();
     result_.errors = std::move(errors);
     result_.debug_loss_report_urls = std::move(debug_loss_report_urls);
-    result_.debug_win_report_urls = std::move(debug_win_report_urls);
+    result_.debug_win_report_urls.clear();
     result_.ad_beacon_map = ReportingMetadata();
     result_.interest_groups_that_bid = std::move(interest_groups_that_bid);
     result_.private_aggregation_requests =
@@ -1436,15 +1435,17 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       EXPECT_FALSE(result_.winning_group_id);
       EXPECT_FALSE(result_.ad_url);
       EXPECT_TRUE(result_.ad_component_urls.empty());
-      EXPECT_TRUE(result_.debug_win_report_urls.empty());
       auction_run_loop_->Quit();
       return;
     }
 
     EXPECT_TRUE(result_.winning_group_id);
     EXPECT_TRUE(result_.ad_url);
+
     // These are handled by the reporter, in the case an auction has a winner,
     // so they're only requested if the winning ad is used.
+    interest_group_manager_->ExpectReports({});
+    EXPECT_TRUE(result_.debug_loss_report_urls.empty());
     EXPECT_TRUE(result_.private_aggregation_requests.empty());
 
     reporter_ = std::move(reporter);
@@ -1462,6 +1463,12 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     result_.report_urls = interest_group_manager_->TakeReportUrlsOfType(
         InterestGroupManagerImpl::ReportType::kSendReportTo);
     result_.ad_beacon_map = reporter_->TakeAdBeaconMap();
+    result_.debug_loss_report_urls =
+        interest_group_manager_->TakeReportUrlsOfType(
+            InterestGroupManagerImpl::ReportType::kDebugLoss);
+    result_.debug_win_report_urls =
+        interest_group_manager_->TakeReportUrlsOfType(
+            InterestGroupManagerImpl::ReportType::kDebugWin);
     result_.private_aggregation_requests =
         reporter_->TakePrivateAggregationRequests();
     const auto& report_errors = reporter_->errors();

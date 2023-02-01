@@ -197,16 +197,16 @@ void AuctionRunner::FailAuction(
 
   UpdateInterestGroupsPostAuction();
 
-  std::move(callback_).Run(
-      this, manually_aborted,
-      /*winning_group_key=*/absl::nullopt,
-      /*render_url=*/absl::nullopt,
-      /*ad_component_urls=*/{},
-      /*winning_group_ad_metadata=*/std::string(),
-      std::move(debug_loss_report_urls), std::move(debug_win_report_urls),
-      auction_.TakePrivateAggregationRequests(),
-      std::move(interest_groups_that_bid), auction_.GetKAnonKeysToJoin(),
-      auction_.TakeErrors(), /*reporter=*/nullptr);
+  std::move(callback_).Run(this, manually_aborted,
+                           /*winning_group_key=*/absl::nullopt,
+                           /*render_url=*/absl::nullopt,
+                           /*ad_component_urls=*/{},
+                           /*winning_group_ad_metadata=*/std::string(),
+                           std::move(debug_loss_report_urls),
+                           auction_.TakePrivateAggregationRequests(),
+                           std::move(interest_groups_that_bid),
+                           auction_.GetKAnonKeysToJoin(), auction_.TakeErrors(),
+                           /*reporter=*/nullptr);
 }
 
 AuctionRunner::AuctionRunner(
@@ -286,11 +286,6 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
   blink::InterestGroupKey winning_group_key(
       {winning_group.owner, winning_group.name});
 
-  std::vector<GURL> debug_win_report_urls;
-  std::vector<GURL> debug_loss_report_urls;
-  auction_.TakeDebugReportUrlsAndFillInPrivateAggregationRequests(
-      debug_win_report_urls, debug_loss_report_urls);
-
   UpdateInterestGroupsPostAuction();
 
   auto errors = auction_.TakeErrors();
@@ -304,8 +299,7 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
       this, /*manually_aborted=*/false, std::move(winning_group_key),
       auction_.top_bid()->bid->render_url,
       auction_.top_bid()->bid->ad_components,
-      std::move(winning_group_ad_metadata), std::move(debug_loss_report_urls),
-      std::move(debug_win_report_urls),
+      std::move(winning_group_ad_metadata), /*debug_loss_report_urls=*/{},
       // In this case, the reporter has all the private aggregation requests.
       std::map<url::Origin, PrivateAggregationRequests>(),
       std::move(interest_groups_that_bid), auction_.GetKAnonKeysToJoin(),

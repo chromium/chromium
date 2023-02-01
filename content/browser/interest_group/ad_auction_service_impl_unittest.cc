@@ -6105,10 +6105,18 @@ function reportResult(auctionConfig, browserSignals) {
     auction_config.non_shared_params.interest_group_buyers = {kOriginA};
     absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
     ASSERT_NE(auction_result, absl::nullopt);
-    InvokeCallbackForURN(*auction_result);
-    // Wait for the reporting scripts to complete and reporting URLs to be
-    // requested, to ensure requests are made in a consistent order.
+    // Wait for the reporting scripts to complete. Doing this before invoking
+    // the navigation callback results in reports being sent in the order:
+    // * Seller reportResult() report.
+    // * Bidder reportWin() report.
+    // * Win reports.
+    //
+    // Not doing this results in more confusing orders, with the seller report
+    // potentially being sent either before or after the debug reports, which
+    // are always sent before the bidder report.
     task_environment()->RunUntilIdle();
+    // This will cause the reports to be queued.
+    InvokeCallbackForURN(*auction_result);
   }
 
   task_environment()->FastForwardBy(base::Seconds(3));

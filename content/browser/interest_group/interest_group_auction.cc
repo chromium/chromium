@@ -1426,11 +1426,17 @@ InterestGroupAuction::CreateReporter(
             ->Clone();
   }
 
+  std::vector<GURL> debug_win_report_urls;
+  std::vector<GURL> debug_loss_report_urls;
+  TakeDebugReportUrlsAndFillInPrivateAggregationRequests(
+      debug_win_report_urls, debug_loss_report_urls);
+
   return std::make_unique<InterestGroupAuctionReporter>(
       interest_group_manager_, auction_worklet_manager_,
       std::move(auction_config), std::move(winning_bid_info),
       std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
+      std::move(debug_win_report_urls), std::move(debug_loss_report_urls),
       TakePrivateAggregationRequests());
 }
 

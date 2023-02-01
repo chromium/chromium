@@ -123,6 +123,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       WinningBidInfo winning_bid_info,
       SellerWinningBidInfo top_level_seller_winning_bid_info,
       absl::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
+      std::vector<GURL> debug_win_report_urls,
+      std::vector<GURL> debug_loss_report_urls,
       std::map<url::Origin, PrivateAggregationRequests>
           private_aggregation_requests);
 
@@ -249,6 +251,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // Sends all reports in `pending_report_urls_` and clears it, if
   // OnNavigateToWinningAd() has been invoked. Called each time reports are
   // added, and on first invocation of OnNavigateToWinningAd().
+  // Does not send reports that are populated only on construction - those are
+  // handled in OnNavigateToWinningAd(), since they never need to be sent when a
+  // reporting script completes.
   void SendPendingReportsIfNavigated();
 
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
@@ -279,6 +284,10 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   // All errors reported by worklets thus far.
   std::vector<std::string> errors_;
+
+  // Win/loss report URLs from generateBid() and scoreAd() calls.
+  std::vector<GURL> debug_win_report_urls_;
+  std::vector<GURL> debug_loss_report_urls_;
 
   // Stores all pending Private Aggregation API report requests until they have
   // been flushed. Keyed by the origin of the script that issued the request

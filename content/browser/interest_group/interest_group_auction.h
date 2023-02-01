@@ -463,7 +463,10 @@ class CONTENT_EXPORT InterestGroupAuction
   void GetInterestGroupsThatBid(blink::InterestGroupSet& interest_groups) const;
 
   // Retrieves any debug reporting URLs. May only be called once, since it takes
-  // ownership of stored reporting URLs.
+  // ownership of stored reporting URLs. This is called internally by
+  // CreateReporter() so may only be called in the case an auction has no
+  // winner, and thus CreateReporter() need not be called.
+  //
   // Note: Temporarily, this function also fills post auction signals to private
   // aggregation requests from generateBid() and scoreAd(), so this function
   // must be called before TakePrivateAggregationRequests() to make sure that
