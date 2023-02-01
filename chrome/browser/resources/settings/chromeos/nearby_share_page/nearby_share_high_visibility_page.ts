@@ -15,47 +15,39 @@ import '../../shared/nearby_page_template.js';
 import '../../shared/nearby_shared_icons.html.js';
 
 import {RegisterReceiveSurfaceResult} from '/mojo/nearby_share.mojom-webui.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './nearby_share_high_visibility_page.html.js';
 
 /**
  * Represents the current error state, if one exists.
- * @enum {number}
  */
-const NearbyVisibilityErrorState = {
-  TIMED_OUT: 0,
-  NO_CONNECTION_MEDIUM: 1,
-  TRANSFER_IN_PROGRESS: 2,
-  SOMETHING_WRONG: 3,
-};
+enum NearbyVisibilityErrorState {
+  TIMED_OUT = 0,
+  NO_CONNECTION_MEDIUM = 1,
+  TRANSFER_IN_PROGRESS = 2,
+  SOMETHING_WRONG = 3,
+}
 
 /**
  * The pulse animation asset URL for light mode.
- * @type {string}
  */
-const PULSE_ANIMATION_URL_LIGHT = 'nearby_share_pulse_animation_light.json';
+const PULSE_ANIMATION_URL_LIGHT: string =
+    'nearby_share_pulse_animation_light.json';
 
 /**
  * The pulse animation asset URL for dark mode.
- * @type {string}
  */
-const PULSE_ANIMATION_URL_DARK = 'nearby_share_pulse_animation_dark.json';
+const PULSE_ANIMATION_URL_DARK: string =
+    'nearby_share_pulse_animation_dark.json';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const NearbyShareHighVisibilityPageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const NearbyShareHighVisibilityPageElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 class NearbyShareHighVisibilityPageElement extends
     NearbyShareHighVisibilityPageElementBase {
   static get is() {
-    return 'nearby-share-high-visibility-page';
+    return 'nearby-share-high-visibility-page' as const;
   }
 
   static get template() {
@@ -64,9 +56,6 @@ class NearbyShareHighVisibilityPageElement extends
 
   static get properties() {
     return {
-      /**
-       * @type {string}
-       */
       deviceName: {
         notify: true,
         type: String,
@@ -76,7 +65,6 @@ class NearbyShareHighVisibilityPageElement extends
       /**
        * DOMHighResTimeStamp in milliseconds of when high visibility will be
        * turned off.
-       * @type {number}
        */
       shutoffTimestamp: {
         type: Number,
@@ -86,30 +74,22 @@ class NearbyShareHighVisibilityPageElement extends
       /**
        * Calculated value of remaining seconds of high visibility mode.
        * Initialized to -1 to differentiate it from timed out state.
-       * @private {number}
        */
       remainingTimeInSeconds_: {
         type: Number,
         value: -1,
       },
 
-      /** @private {?RegisterReceiveSurfaceResult} */
       registerResult: {
         type: RegisterReceiveSurfaceResult,
         value: null,
       },
 
-      /**
-       * @type {boolean}
-       */
       nearbyProcessStopped: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * @type {boolean}
-       */
       startAdvertisingFailed: {
         type: Boolean,
         value: false,
@@ -117,7 +97,6 @@ class NearbyShareHighVisibilityPageElement extends
 
       /**
        * A null |setupState_| indicates that the operation has not yet started.
-       * @private {?NearbyVisibilityErrorState}
        */
       errorState_: {
         type: Number,
@@ -129,7 +108,6 @@ class NearbyShareHighVisibilityPageElement extends
 
       /**
        * Whether the high visibility page is being rendered in dark mode.
-       * @private {boolean}
        */
       isDarkModeActive_: {
         type: Boolean,
@@ -138,16 +116,23 @@ class NearbyShareHighVisibilityPageElement extends
     };
   }
 
+  deviceName: string;
+  nearbyProcessStopped: boolean;
+  registerResult: RegisterReceiveSurfaceResult|null;
+  shutoffTimestamp: number;
+  startAdvertisingFailed: boolean;
+  private errorState_: NearbyVisibilityErrorState|null;
+  private isDarkModeActive_: boolean;
+  private remainingTimeInSeconds_: number;
+  private remainingTimeIntervalId_: number;
+
   constructor() {
     super();
 
-    /** @private {number} */
     this.remainingTimeIntervalId_ = -1;
   }
 
-
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.calculateRemainingTime_();
@@ -156,8 +141,7 @@ class NearbyShareHighVisibilityPageElement extends
     }, 1000);
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     if (this.remainingTimeIntervalId_ !== -1) {
@@ -166,22 +150,14 @@ class NearbyShareHighVisibilityPageElement extends
     }
   }
 
-  /**
-   * @return {boolean}
-   * @protected
-   */
-  highVisibilityTimedOut_() {
+  private highVisibilityTimedOut_(): boolean {
     // High visibility session is timed out only if remaining seconds is 0 AND
     // timestamp is also set.
     return (this.remainingTimeInSeconds_ === 0) &&
         (this.shutoffTimestamp !== 0);
   }
 
-  /**
-   * @return {?NearbyVisibilityErrorState}
-   * @protected
-   */
-  computeErrorState_() {
+  private computeErrorState_(): NearbyVisibilityErrorState|null {
     if (this.registerResult ===
         RegisterReceiveSurfaceResult.kNoConnectionMedium) {
       return NearbyVisibilityErrorState.NO_CONNECTION_MEDIUM;
@@ -200,12 +176,7 @@ class NearbyShareHighVisibilityPageElement extends
     return null;
   }
 
-
-  /**
-   * @return {string} localized string
-   * @protected
-   */
-  getErrorTitle_() {
+  private getErrorTitle_(): string {
     switch (this.errorState_) {
       case NearbyVisibilityErrorState.TIMED_OUT:
         return this.i18n('nearbyShareErrorTimeOut');
@@ -220,11 +191,7 @@ class NearbyShareHighVisibilityPageElement extends
     }
   }
 
-  /**
-   * @return {string} localized string
-   * @protected
-   */
-  getErrorDescription_() {
+  private getErrorDescription_(): TrustedHTML|string {
     switch (this.errorState_) {
       case NearbyVisibilityErrorState.TIMED_OUT:
         return this.i18nAdvanced('nearbyShareHighVisibilityTimeoutText');
@@ -239,11 +206,7 @@ class NearbyShareHighVisibilityPageElement extends
     }
   }
 
-  /**
-   * @return {string} localized string
-   * @protected
-   */
-  getSubTitle_() {
+  private getSubTitle_(): string {
     if (this.remainingTimeInSeconds_ === -1) {
       return '';
     }
@@ -263,8 +226,7 @@ class NearbyShareHighVisibilityPageElement extends
         'nearbyShareHighVisibilitySubTitle', this.deviceName, timeValue);
   }
 
-  /** @private */
-  calculateRemainingTime_() {
+  private calculateRemainingTime_(): void {
     if (this.shutoffTimestamp === 0) {
       return;
     }
@@ -279,11 +241,10 @@ class NearbyShareHighVisibilityPageElement extends
    * Announce the remaining time for screen readers. Only announce once per
    * minute to avoid overwhelming user. Though this gets called once every
    * second, the value returned only changes each minute.
-   * @return {string} The alternate page subtitle to be used as an aria-live
+   * @return The alternate page subtitle to be used as an aria-live
    *     announcement for screen readers.
-   * @private
    */
-  getA11yAnnouncedSubTitle_() {
+  private getA11yAnnouncedSubTitle_(): string {
     // Skip announcement for 0 seconds left to avoid alerting on time out.
     // There is a separate time out alert shown in the error section.
     if (this.remainingTimeInSeconds_ === 0) {
@@ -303,12 +264,17 @@ class NearbyShareHighVisibilityPageElement extends
   /**
    * Returns the URL for the asset that defines the high visibility page's
    * pulsing background animation.
-   * @return {string}
-   * @private
    */
-  getAnimationUrl_() {
+  private getAnimationUrl_(): string {
     return this.isDarkModeActive_ ? PULSE_ANIMATION_URL_DARK :
                                     PULSE_ANIMATION_URL_LIGHT;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NearbyShareHighVisibilityPageElement.is]:
+        NearbyShareHighVisibilityPageElement;
   }
 }
 

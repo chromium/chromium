@@ -19,49 +19,36 @@ import './nearby_share_device_name_dialog.js';
 import './nearby_share_data_usage_dialog.js';
 import './nearby_share_receive_dialog.js';
 
-import {ReceiveObserverInterface, ReceiveObserverReceiver, ShareTarget, TransferMetadata} from '/mojo/nearby_share.mojom-webui.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {ReceiveObserverReceiver, ShareTarget, TransferMetadata} from '/mojo/nearby_share.mojom-webui.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
-import {flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {getContactManager} from '../../shared/nearby_contact_manager.js';
 import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {NearbyAccountManagerBrowserProxyImpl} from './nearby_account_manager_browser_proxy.js';
+import {NearbyShareReceiveDialogElement} from './nearby_share_receive_dialog.js';
 import {observeReceiveManager} from './nearby_share_receive_manager.js';
 import {getTemplate} from './nearby_share_subpage.html.js';
 import {dataUsageStringToEnum, NearbyShareDataUsage} from './types.js';
 
-/**
- * @type {!number}
- * @private
- */
-const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S = 300;
+const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S: number = 300;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsNearbyShareSubpageElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior],
-    PolymerElement);
+const SettingsNearbyShareSubpageElementBase =
+    DeepLinkingMixin(PrefsMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
-/** @polymer */
 class SettingsNearbyShareSubpageElement extends
     SettingsNearbyShareSubpageElementBase {
   static get is() {
-    return 'settings-nearby-share-subpage';
+    return 'settings-nearby-share-subpage' as const;
   }
 
   static get template() {
@@ -70,12 +57,6 @@ class SettingsNearbyShareSubpageElement extends
 
   static get properties() {
     return {
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       profileName_: {
         type: String,
         value: '',
@@ -86,50 +67,42 @@ class SettingsNearbyShareSubpageElement extends
         value: '',
       },
 
-      /** @type {NearbySettings} */
       settings: {
         type: Object,
         notify: true,
         value: {},
       },
 
-      /** @private {boolean} */
       isSettingsRetreived: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       showDeviceNameDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       showVisibilityDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       showDataUsageDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       showReceiveDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       manageContactsUrl_: {
         type: String,
         value: () => loadTimeData.getString('nearbyShareManageContactsUrl'),
       },
 
-      /** @private {boolean} */
       inHighVisibility_: {
         type: Boolean,
         value: false,
@@ -137,11 +110,10 @@ class SettingsNearbyShareSubpageElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kNearbyShareOnOff,
           Setting.kNearbyShareDeviceName,
           Setting.kNearbyShareDeviceVisibility,
@@ -151,7 +123,6 @@ class SettingsNearbyShareSubpageElement extends
         ]),
       },
 
-      /** @private */
       shouldShowFastInititationNotificationToggle_: {
         type: Boolean,
         computed: `computeShouldShowFastInititationNotificationToggle_(
@@ -164,22 +135,32 @@ class SettingsNearbyShareSubpageElement extends
     return ['enabledChange_(settings.enabled)'];
   }
 
+  isSettingsRetreived: boolean;
+  private inHighVisibility_: boolean;
+  private manageContactsUrl_: string;
+  private profileLabel_: string;
+  private profileName_: string;
+  private receiveObserver_: ReceiveObserverReceiver|null;
+  private settings: NearbySettings;
+  private shouldShowFastInititationNotificationToggle_: boolean;
+  private showDataUsageDialog_: boolean;
+  private showDeviceNameDialog_: boolean;
+  private showReceiveDialog_: boolean;
+  private showVisibilityDialog_: boolean;
+
   constructor() {
     super();
 
-    /** @private {?ReceiveObserverReceiver} */
     this.receiveObserver_ = null;
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener('onboarding-cancelled', this.onOnboardingCancelled_);
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     // TODO(b/166779043): Check whether the Account Manager is enabled and fall
@@ -194,12 +175,10 @@ class SettingsNearbyShareSubpageElement extends
           this.profileName_ = accounts[0].fullName;
           this.profileLabel_ = accounts[0].email;
         });
-    this.receiveObserver_ = observeReceiveManager(
-        /** @type {!ReceiveObserverInterface} */ (this));
+    this.receiveObserver_ = observeReceiveManager(this);
   }
 
-  /** @private */
-  enabledChange_(newValue, oldValue) {
+  private enabledChange_(newValue: boolean, oldValue: boolean|undefined): void {
     if (oldValue === undefined && newValue) {
       // Trigger a contact sync whenever the Nearby subpage is opened and
       // nearby is enabled complete to improve consistency. This should help
@@ -209,138 +188,98 @@ class SettingsNearbyShareSubpageElement extends
     }
   }
 
-  /** @private */
-  onDeviceNameTap_() {
+  private onDeviceNameTap_(): void {
     if (this.showDeviceNameDialog_) {
       return;
     }
     this.showDeviceNameDialog_ = true;
   }
 
-  /** @private */
-  onVisibilityTap_() {
+  private onVisibilityTap_(): void {
     this.showVisibilityDialog_ = true;
   }
 
-  /** @private */
-  onDataUsageTap_() {
+  private onDataUsageTap_(): void {
     this.showDataUsageDialog_ = true;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onDeviceNameDialogClose_(event) {
+  private onDeviceNameDialogClose_(): void {
     this.showDeviceNameDialog_ = false;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onVisibilityDialogClose_(event) {
+  private onVisibilityDialogClose_(): void {
     this.showVisibilityDialog_ = false;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onDataUsageDialogClose_(event) {
+  private onDataUsageDialogClose_(): void {
     this.showDataUsageDialog_ = false;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onReceiveDialogClose_(event) {
+  private onReceiveDialogClose_(): void {
     this.showReceiveDialog_ = false;
     this.inHighVisibility_ = false;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onManageContactsTap_(event) {
+  private onManageContactsTap_(): void {
     window.open(this.manageContactsUrl_);
   }
 
-  /**
-   * @private
-   * @return {string} Sublabel for manage contacts row.
-   */
-  getManageContactsSubLabel_() {
+  private getManageContactsSubLabel_(): string {
     // Remove the protocol part of the contacts url.
     return this.manageContactsUrl_.replace(/(^\w+:|^)\/\//, '');
   }
 
   /**
    * Mojo callback when high visibility changes.
-   * @param {boolean} inHighVisibility
    */
-  onHighVisibilityChanged(inHighVisibility) {
+  onHighVisibilityChanged(inHighVisibility: boolean): void {
     this.inHighVisibility_ = inHighVisibility;
   }
 
   /**
    * Mojo callback when transfer status changes.
-   * @param {!ShareTarget} shareTarget
-   * @param {!TransferMetadata} metadata
    */
-  onTransferUpdate(shareTarget, metadata) {
+  onTransferUpdate(_shareTarget: ShareTarget, _metadata: TransferMetadata):
+      void {
     // Note: Intentionally left empty.
   }
 
   /**
    * Mojo callback when the Nearby utility process stops.
    */
-  onNearbyProcessStopped() {
+  onNearbyProcessStopped(): void {
     this.inHighVisibility_ = false;
   }
 
   /**
    * Mojo callback when advertising fails to start.
    */
-  onStartAdvertisingFailure() {
+  onStartAdvertisingFailure(): void {
     this.inHighVisibility_ = false;
   }
 
-  /** @private */
-  onInHighVisibilityToggledByUser_() {
+  private onInHighVisibilityToggledByUser_(): void {
     if (this.inHighVisibility_) {
       this.showHighVisibilityPage_();
     }
   }
 
   /**
-   * @param {boolean} state boolean state that determines which string to show
-   * @param {string} onstr string to show when state is true
-   * @param {string} offstr string to show when state is false
-   * @return {string} localized string
-   * @private
+   * @param state boolean state that determines which string to show
+   * @param onstr string to show when state is true
+   * @param offstr string to show when state is false
+   * @return localized string
    */
-  getOnOffString_(state, onstr, offstr) {
+  private getOnOffString_(state: boolean, onstr: string, offstr: string):
+      string {
     return state ? onstr : offstr;
   }
 
-  /**
-   * @param {string} name name of device
-   * @return {string} localized string
-   * @private
-   */
-  getEditNameButtonAriaDescription_(name) {
+  private getEditNameButtonAriaDescription_(name: string): string {
     return this.i18n('nearbyShareDeviceNameAriaDescription', name);
   }
 
-  /**
-   * @param {Visibility} visibility
-   * @return {string} localized visibility string
-   * @private
-   */
-  getVisibilityText_(visibility) {
+  private getVisibilityText_(visibility: Visibility): string {
     switch (visibility) {
       case Visibility.kAllContacts:
         return this.i18n('nearbyShareContactVisibilityAll');
@@ -355,12 +294,7 @@ class SettingsNearbyShareSubpageElement extends
     }
   }
 
-  /**
-   * @param {Visibility} visibility
-   * @return {string} localized visibility description string
-   * @private
-   */
-  getVisibilityDescription_(visibility) {
+  private getVisibilityDescription_(visibility: Visibility): string {
     switch (visibility) {
       case Visibility.kAllContacts:
         return this.i18n('nearbyShareContactVisibilityAllDescription');
@@ -375,10 +309,8 @@ class SettingsNearbyShareSubpageElement extends
     }
   }
 
-  /**
-   * @param {boolean} inHighVisibility
-   */
-  getHighVisibilityToggleText_(inHighVisibility) {
+  private getHighVisibilityToggleText_(inHighVisibility: boolean): TrustedHTML
+      |string {
     // TODO(crbug.com/1154830): Add logic to show how much time the user
     // actually has left.
     return inHighVisibility ?
@@ -387,12 +319,7 @@ class SettingsNearbyShareSubpageElement extends
             'nearbyShareHighVisibilityOff', {substitutions: ['5']});
   }
 
-  /**
-   * @param {string} dataUsageValue enum value of data usage setting.
-   * @return {string} localized string
-   * @private
-   */
-  getDataUsageLabel_(dataUsageValue) {
+  private getDataUsageLabel_(dataUsageValue: string): string {
     if (dataUsageStringToEnum(dataUsageValue) === NearbyShareDataUsage.ONLINE) {
       return this.i18n('nearbyShareDataUsageDataLabel');
     } else if (
@@ -404,12 +331,7 @@ class SettingsNearbyShareSubpageElement extends
     }
   }
 
-  /**
-   * @param {string} dataUsageValue enum value of data usage setting.
-   * @return {string} localized string
-   * @private
-   */
-  getDataUsageSubLabel_(dataUsageValue) {
+  private getDataUsageSubLabel_(dataUsageValue: string): string {
     if (dataUsageStringToEnum(dataUsageValue) === NearbyShareDataUsage.ONLINE) {
       return this.i18n('nearbyShareDataUsageDataDescription');
     } else if (
@@ -421,12 +343,8 @@ class SettingsNearbyShareSubpageElement extends
     }
   }
 
-  /**
-   * @param {string} dataUsageValue enum value of data usage setting.
-   * @return {string} localized string
-   * @private
-   */
-  getEditDataUsageButtonAriaDescription_(dataUsageValue) {
+  private getEditDataUsageButtonAriaDescription_(dataUsageValue: string):
+      string {
     if (dataUsageStringToEnum(dataUsageValue) === NearbyShareDataUsage.ONLINE) {
       return this.i18n('nearbyShareDataUsageDataEditButtonDescription');
     } else if (
@@ -438,10 +356,7 @@ class SettingsNearbyShareSubpageElement extends
     }
   }
 
-  /**
-   * @param {!Route} route
-   */
-  currentRouteChanged(route) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.NEARBY_SHARE) {
       return;
@@ -465,7 +380,9 @@ class SettingsNearbyShareSubpageElement extends
     if (queryParams.has('confirm')) {
       this.showReceiveDialog_ = true;
       flush();
-      this.shadowRoot.querySelector('#receiveDialog').showConfirmPage();
+      this.shadowRoot!
+          .querySelector<NearbyShareReceiveDialogElement>(
+              '#receiveDialog')!.showConfirmPage();
     }
 
     if (queryParams.has('onboarding')) {
@@ -475,45 +392,34 @@ class SettingsNearbyShareSubpageElement extends
     this.attemptDeepLink();
   }
 
-  /**
-   * @param {number=} timeoutInSeconds
-   * @private
-   */
-  showHighVisibilityPage_(timeoutInSeconds) {
+  private showHighVisibilityPage_(timeoutInSeconds?: number): void {
     const shutoffTimeoutInSeconds =
         timeoutInSeconds || DEFAULT_HIGH_VISIBILITY_TIMEOUT_S;
     this.showReceiveDialog_ = true;
     flush();
-    this.shadowRoot.querySelector('#receiveDialog')
-        .showHighVisibilityPage(shutoffTimeoutInSeconds);
+    this.shadowRoot!
+        .querySelector<NearbyShareReceiveDialogElement>(
+            '#receiveDialog')!.showHighVisibilityPage(shutoffTimeoutInSeconds);
   }
 
-  /**
-   * @param {string} profileName The user's full name.
-   * @param {string} profileLabel The user's email.
-   * @return {string} Localized label.
-   * @private
-   */
-  getAccountRowLabel(profileName, profileLabel) {
+  private getAccountRowLabel(profileName: string, profileLabel: string):
+      string {
     return this.i18n('nearbyShareAccountRowLabel', profileName, profileLabel);
   }
 
-  /** @private */
-  getEnabledToggleClassName_() {
+  private getEnabledToggleClassName_(): string {
     if (this.getPref('nearby_sharing.enabled').value) {
       return 'enabled-toggle-on';
     }
     return 'enabled-toggle-off';
   }
 
-  /** @private */
-  onOnboardingCancelled_() {
+  private onOnboardingCancelled_(): void {
     // Return to main settings page multidevice section
     Router.getInstance().navigateTo(routes.MULTIDEVICE);
   }
 
-  /** @private */
-  onFastInitiationNotificationToggledByUser_() {
+  private onFastInitiationNotificationToggledByUser_(): void {
     this.set(
         'settings.fastInitiationNotificationState',
         this.isFastInitiationNotificationEnabled_() ?
@@ -521,25 +427,14 @@ class SettingsNearbyShareSubpageElement extends
             FastInitiationNotificationState.kEnabled);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isFastInitiationNotificationEnabled_() {
+  private isFastInitiationNotificationEnabled_(): boolean {
     return this.get('settings.fastInitiationNotificationState') ===
         FastInitiationNotificationState.kEnabled;
   }
 
-  /**
-   * @param {boolean} isNearbySharingEnabled
-   * @param {boolean} isOnboardingComplete
-   * @param {boolean} shouldShowFastInititationNotificationToggle
-   * @return {boolean}
-   * @private
-   */
-  shouldShowSubpageContent_(
-      isNearbySharingEnabled, isOnboardingComplete,
-      shouldShowFastInititationNotificationToggle) {
+  private shouldShowSubpageContent_(
+      isNearbySharingEnabled: boolean, isOnboardingComplete: boolean,
+      shouldShowFastInititationNotificationToggle: boolean): boolean {
     if (!isOnboardingComplete) {
       return false;
     }
@@ -547,20 +442,23 @@ class SettingsNearbyShareSubpageElement extends
         shouldShowFastInititationNotificationToggle;
   }
 
-  /** @private */
-  showOnboarding_() {
+  private showOnboarding_(): void {
     this.showReceiveDialog_ = true;
     flush();
-    this.shadowRoot.querySelector('#receiveDialog').showOnboarding();
+    this.shadowRoot!
+        .querySelector<NearbyShareReceiveDialogElement>(
+            '#receiveDialog')!.showOnboarding();
   }
 
-  /**
-   * @param {boolean} is_hardware_supported
-   * @return {boolean}
-   * @private
-   */
-  computeShouldShowFastInititationNotificationToggle_(is_hardware_supported) {
-    return is_hardware_supported;
+  private computeShouldShowFastInititationNotificationToggle_(
+      isHardwareSupported: boolean): boolean {
+    return isHardwareSupported;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsNearbyShareSubpageElement.is]: SettingsNearbyShareSubpageElement;
   }
 }
 

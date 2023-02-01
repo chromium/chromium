@@ -80,7 +80,14 @@ ts_library("build_ts") {
     ":generate_mojom_webui",
     ":preprocess",
     "//ash/webui/common/resources:generate_definitions",
+    "//chrome/browser/resources/nearby_share:generate_definitions",
     "//chrome/browser/resources/nearby_share/shared:preprocess",
+  ]
+  path_mappings = [
+    # Additional path mappings for Nearby share Mojo files
+    "/mojo/nearby_share*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/nearby_share/preprocessed/mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share*",
+            target_gen_dir),
   ]
   definitions = ts_definition_files
   root_dir = tsc_input_dir

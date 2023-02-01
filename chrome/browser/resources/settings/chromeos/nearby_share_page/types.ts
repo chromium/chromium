@@ -8,29 +8,28 @@ import {DataUsage} from 'chrome://resources/mojo/chromeos/ash/services/nearby/pu
  * Enumeration of all possible data usage options for Nearby Share.
  * Note: This must be kept in sync with DataUsage in
  * chrome/browser/nearby_sharing/nearby_constants.h
- * @enum {number}
  */
-export const NearbyShareDataUsage = {
-  UNKNOWN: 0,
-  OFFLINE: 1,
-  ONLINE: 2,
-  WIFI_ONLY: 3,
-};
+export enum NearbyShareDataUsage {
+  UNKNOWN = 0,
+  OFFLINE = 1,
+  ONLINE = 2,
+  WIFI_ONLY = 3,
+}
 
 /**
  * Takes a string and returns a value of the NearbyShareDataUsage enum.
- * @param {string} s string representation of the data usage value
- * @return {!DataUsage} enum value
+ * @param s string representation of the data usage value
+ * @return enum value
  */
-export function dataUsageStringToEnum(s) {
-  switch ((parseInt(s, 10))) {
+export function dataUsageStringToEnum(s: string): DataUsage {
+  switch (parseInt(s, 10)) {
     case NearbyShareDataUsage.OFFLINE:
-      return /** @type {!DataUsage} */ (NearbyShareDataUsage.OFFLINE);
+      return NearbyShareDataUsage.OFFLINE;
     case NearbyShareDataUsage.ONLINE:
-      return /** @type {!DataUsage} */ (NearbyShareDataUsage.ONLINE);
+      return NearbyShareDataUsage.ONLINE;
     case NearbyShareDataUsage.WIFI_ONLY:
-      return /** @type {!DataUsage} */ (NearbyShareDataUsage.WIFI_ONLY);
+      return NearbyShareDataUsage.WIFI_ONLY;
     default:
-      return /** @type {!DataUsage} */ (NearbyShareDataUsage.UNKNOWN);
+      return NearbyShareDataUsage.UNKNOWN;
   }
 }

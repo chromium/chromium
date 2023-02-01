@@ -14,7 +14,8 @@ import '../../shared/nearby_contact_visibility.js';
 import '../../shared/nearby_onboarding_page.js';
 import '../../shared/nearby_visibility_page.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NearbyContactVisibilityElement} from '../../shared/nearby_contact_visibility.js';
@@ -22,10 +23,16 @@ import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 
 import {getTemplate} from './nearby_share_contact_visibility_dialog.html.js';
 
-/** @polymer */
+interface NearbyShareContactVisibilityDialogElement {
+  $: {
+    contactVisibility: NearbyContactVisibilityElement,
+    dialog: CrDialogElement,
+  };
+}
+
 class NearbyShareContactVisibilityDialogElement extends PolymerElement {
   static get is() {
-    return 'nearby-share-contact-visibility-dialog';
+    return 'nearby-share-contact-visibility-dialog' as const;
   }
 
   static get template() {
@@ -34,7 +41,6 @@ class NearbyShareContactVisibilityDialogElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {NearbySettings} */
       settings: {
         type: Object,
         value: {},
@@ -42,20 +48,26 @@ class NearbyShareContactVisibilityDialogElement extends PolymerElement {
     };
   }
 
-  /** @private */
-  onSaveClick_() {
-    const contactVisibility = /** @type {NearbyContactVisibilityElement} */
-        (this.$.contactVisibility);
+  settings: NearbySettings;
+
+  private onSaveClick_(): void {
+    const contactVisibility = this.$.contactVisibility;
     contactVisibility.saveVisibilityAndAllowedContacts();
-    const dialog = /** @type {!CrDialogElement} */ (this.$.dialog);
+    const dialog = this.$.dialog;
     if (dialog.open) {
       dialog.close();
     }
   }
 
-  /** @private */
-  onManageContactsClick_() {
+  private onManageContactsClick_(): void {
     window.open(loadTimeData.getString('nearbyShareManageContactsUrl'));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NearbyShareContactVisibilityDialogElement.is]:
+        NearbyShareContactVisibilityDialogElement;
   }
 }
 

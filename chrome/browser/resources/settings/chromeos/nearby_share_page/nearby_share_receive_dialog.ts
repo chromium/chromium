@@ -29,8 +29,10 @@ import '../../shared/nearby_visibility_page.js';
 import './nearby_share_confirm_page.js';
 import './nearby_share_high_visibility_page.js';
 
-import {ReceiveManagerInterface, ReceiveObserverInterface, ReceiveObserverReceiver, RegisterReceiveSurfaceResult, ShareTarget, TransferMetadata, TransferStatus} from '/mojo/nearby_share.mojom-webui.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {ReceiveManagerInterface, ReceiveObserverReceiver, RegisterReceiveSurfaceResult, ShareTarget, TransferMetadata, TransferStatus} from '/mojo/nearby_share.mojom-webui.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -39,19 +41,24 @@ import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 import {getTemplate} from './nearby_share_receive_dialog.html.js';
 import {getReceiveManager, observeReceiveManager} from './nearby_share_receive_manager.js';
 
-/** @enum {string} */
-const Page = {
-  HIGH_VISIBILITY: 'high-visibility',
-  CONFIRM: 'confirm',
-  ONBOARDING: 'onboarding',
-  ONEPAGE_ONBOARDING: 'onboarding-one',
-  VISIBILITY: 'visibility',
-};
+enum Page {
+  HIGH_VISIBILITY = 'high-visibility',
+  CONFIRM = 'confirm',
+  ONBOARDING = 'onboarding',
+  ONEPAGE_ONBOARDING = 'onboarding-one',
+  VISIBILITY = 'visibility',
+}
 
-/** @polymer */
-class NearbyShareReceiveDialogElement extends PolymerElement {
+export interface NearbyShareReceiveDialogElement {
+  $: {
+    dialog: CrDialogElement,
+    viewManager: CrViewManagerElement,
+  };
+}
+
+export class NearbyShareReceiveDialogElement extends PolymerElement {
   static get is() {
-    return 'nearby-share-receive-dialog';
+    return 'nearby-share-receive-dialog' as const;
   }
 
   static get template() {
@@ -60,32 +67,28 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** Mirroring the enum so that it can be used from HTML bindings. */
+      /** Mirroring the enum to allow usage in Polymer HTML bindings. */
       Page: {
         type: Object,
         value: Page,
       },
 
-      /** @type {?ShareTarget} */
       shareTarget: {
         type: Object,
         value: null,
       },
 
-      /** @type {?string} */
       connectionToken: {
         type: String,
         value: null,
       },
 
-      /** @type {NearbySettings} */
       settings: {
         type: Object,
         notify: true,
         value: {},
       },
 
-      /** @private */
       isSettingsRetreived: {
         type: Boolean,
         value: false,
@@ -93,24 +96,17 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
 
       /**
        * Status of the current transfer.
-       * @private {?TransferStatus}
        */
       transferStatus_: {
         type: TransferStatus,
         value: null,
       },
 
-      /**
-       * @private {boolean}
-       */
       nearbyProcessStopped_: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * @private {boolean}
-       */
       startAdvertisingFailed_: {
         type: Boolean,
         value: false,
@@ -124,68 +120,70 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
     ];
   }
 
+  connectionToken: string|null;
+  isSettingsRetreived: boolean;
+  settings: NearbySettings;
+  shareTarget: ShareTarget|null;
+  private closing_: boolean;
+  private highVisibilityShutoffTimestamp_: number;
+  private nearbyProcessStopped_: boolean;
+  private observerReceiver_: ReceiveObserverReceiver|null;
+  private postOnboardingCallback_: Function|null;
+  private postSettingsCallback_: Function|null;
+  private receiveManager_: ReceiveManagerInterface|null;
+  private registerForegroundReceiveSurfaceResult_: RegisterReceiveSurfaceResult|
+      null;
+  private startAdvertisingFailed_: boolean;
+  private transferStatus_: TransferStatus|null;
+
   constructor() {
     super();
 
-    /** @private {boolean} */
     this.closing_ = false;
 
     /**
      * What should happen once we get settings values from mojo.
-     * @private {?function()}
      * */
-    this.postSettingsCallback = null;
+    this.postSettingsCallback_ = null;
 
     /**
      * What should happen once onboarding is complete.
-     * @private {?function()}
      * */
-    this.postOnboardingCallback = null;
+    this.postOnboardingCallback_ = null;
 
-    /** @private {?ReceiveManagerInterface} */
     this.receiveManager_ = null;
 
-    /** @private {?ReceiveObserverReceiver} */
     this.observerReceiver_ = null;
 
     /**
      * Timestamp in milliseconds since unix epoch of when high visibility will
      * be turned off.
-     * @private {number}
      */
     this.highVisibilityShutoffTimestamp_ = 0;
 
-    /** @private {?RegisterReceiveSurfaceResult} */
     this.registerForegroundReceiveSurfaceResult_ = null;
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener('accept', this.onAccept_);
     this.addEventListener('cancel', this.onCancel_);
-    this.addEventListener('change-page', (event) => {
-      this.onChangePage_(
-          /** @type {!CustomEvent<!{page: Page}>} */ (event));
-    });
+    this.addEventListener('change-page', this.onChangePage_);
     this.addEventListener('onboarding-complete', this.onOnboardingComplete_);
     this.addEventListener('reject', this.onReject_);
     this.addEventListener('close', this.close_);
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.closing_ = false;
     this.receiveManager_ = getReceiveManager();
-    this.observerReceiver_ = observeReceiveManager(
-        /** @type {!ReceiveObserverInterface} */ (this));
+    this.observerReceiver_ = observeReceiveManager(this);
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     if (this.observerReceiver_) {
@@ -194,35 +192,10 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
   }
 
   /**
-   * Records via Standard Feature Usage Logging whether or not advertising
-   * successfully starts when the user clicks the "Device nearby is sharing"
-   * notification.
-   * @param {boolean} success
-   * @private
-   */
-  recordFastInitiationNotificationUsage_(success) {
-    const url = new URL(document.URL);
-    const urlParams = new URLSearchParams(url.search);
-    if (urlParams.get('entrypoint') === 'notification') {
-      this.receiveManager_.recordFastInitiationNotificationUsage(success);
-    }
-  }
-
-  /**
-   * Determines if the feature flag for One-page onboarding workflow is enabled.
-   * @return {boolean} whether the new one-page onboarding workflow is enabled
-   * @private
-   */
-  isOnePageOnboardingEnabled_() {
-    return loadTimeData.getBoolean('isOnePageOnboardingEnabled');
-  }
-
-  /**
    * Mojo callback when high visibility changes. If high visibility is false
    * due to a user cancel, we force this dialog to close as well.
-   * @param {boolean} inHighVisibility
    */
-  onHighVisibilityChanged(inHighVisibility) {
+  onHighVisibilityChanged(inHighVisibility: boolean): void {
     const now = performance.now();
 
     if (inHighVisibility === false &&
@@ -243,10 +216,8 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
 
   /**
    * Mojo callback when transfer status changes.
-   * @param {!ShareTarget} shareTarget
-   * @param {!TransferMetadata} metadata
    */
-  onTransferUpdate(shareTarget, metadata) {
+  onTransferUpdate(shareTarget: ShareTarget, metadata: TransferMetadata): void {
     this.transferStatus_ = metadata.status;
 
     if (metadata.status === TransferStatus.kAwaitingLocalConfirmation) {
@@ -260,73 +231,37 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
   /**
    * Mojo callback when the Nearby utility process stops.
    */
-  onNearbyProcessStopped() {
+  onNearbyProcessStopped(): void {
     this.nearbyProcessStopped_ = true;
   }
 
   /**
    * Mojo callback when advertising fails to start.
    */
-  onStartAdvertisingFailure() {
+  onStartAdvertisingFailure(): void {
     this.startAdvertisingFailed_ = true;
     this.recordFastInitiationNotificationUsage_(/*success=*/ false);
-  }
-
-  /**
-   * @private
-   */
-  onSettingsLoaded_() {
-    if (this.postSettingsCallback) {
-      this.postSettingsCallback();
-      this.postSettingsCallback = null;
-    }
-  }
-
-  /**
-   * @return {!CrViewManagerElement} the view manager
-   * @private
-   */
-  getViewManager_() {
-    return /** @type {!CrViewManagerElement} */ (this.$.viewManager);
-  }
-
-  /** @private */
-  close_() {
-    // If we are already waiting for high visibility to exit, then we don't need
-    // to trigger it again.
-    if (this.closing_) {
-      return;
-    }
-
-    this.closing_ = true;
-    this.receiveManager_.unregisterForegroundReceiveSurface().then(() => {
-      const dialog = /** @type {!CrDialogElement} */ (this.$.dialog);
-      if (dialog.open) {
-        dialog.close();
-      }
-    });
   }
 
   /**
    * Defers running a callback for page navigation in the case that we do not
    * yet have a settings.enabled value from mojo or if Nearby Share is not
    * enabled yet and we need to run the onboarding flow first.
-   * @param {function()} callback
-   * @return {boolean} true if the callback has been scheduled for later, false
+   * @return true if the callback has been scheduled for later, false
    *     if it did not need to be deferred and can be called now.
    */
-  deferCallIfNecessary(callback) {
+  deferCallIfNecessary(callback: Function): boolean {
     if (!this.isSettingsRetreived) {
       // Let onSettingsLoaded_ handle the navigation because we don't know yet
       // if the feature is enabled and we might need to show onboarding.
-      this.postSettingsCallback = callback;
+      this.postSettingsCallback_ = callback;
       return true;
     }
 
     if (!this.settings.isOnboardingComplete) {
       // We need to show onboarding first if onboarding is not yet complete, but
       // we need to run the callback afterward.
-      this.postOnboardingCallback = callback;
+      this.postOnboardingCallback_ = callback;
       if (this.isOnePageOnboardingEnabled_()) {
         this.getViewManager_().switchView(Page.ONEPAGE_ONBOARDING);
       } else {
@@ -348,9 +283,9 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
   /**
    * Call to show the onboarding flow and then close when complete.
    */
-  showOnboarding() {
+  showOnboarding(): void {
     // Setup the callback to close this dialog when onboarding is complete.
-    this.postOnboardingCallback = this.close_.bind(this);
+    this.postOnboardingCallback_ = this.close_.bind(this);
     if (this.isOnePageOnboardingEnabled_()) {
       this.getViewManager_().switchView(Page.ONEPAGE_ONBOARDING);
     } else {
@@ -360,10 +295,10 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
 
   /**
    * Call to show the high visibility page.
-   * @param {number} shutoffTimeoutInSeconds Duration of the high
+   * @param shutoffTimeoutInSeconds Duration of the high
    *     visibility session, after which the session would be turned off.
    */
-  showHighVisibilityPage(shutoffTimeoutInSeconds) {
+  showHighVisibilityPage(shutoffTimeoutInSeconds: number): void {
     // Check if we need to wait for settings values from mojo or if we need to
     // run onboarding first before showing the page.
     if (this.deferCallIfNecessary(
@@ -376,7 +311,7 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
         performance.now() + (shutoffTimeoutInSeconds * 1000);
 
     // Register a receive surface to enter high visibility and show the page.
-    this.receiveManager_.registerForegroundReceiveSurface().then((result) => {
+    this.receiveManager_!.registerForegroundReceiveSurface().then((result) => {
       this.registerForegroundReceiveSurfaceResult_ = result.result;
       this.getViewManager_().switchView(Page.HIGH_VISIBILITY);
     });
@@ -385,7 +320,7 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
   /**
    * Call to show the share target configuration page.
    */
-  showConfirmPage() {
+  showConfirmPage(): void {
     // Check if we need to wait for settings values from mojo or if we need to
     // run onboarding first before showing the page.
     if (this.deferCallIfNecessary(this.showConfirmPage.bind(this))) {
@@ -395,55 +330,105 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
   }
 
   /**
-   * Child views can fire a 'change-page' event to trigger a page change.
-   * @param {!CustomEvent<!{page: Page}>} event
-   * @private
+   * Records via Standard Feature Usage Logging whether or not advertising
+   * successfully starts when the user clicks the "Device nearby is sharing"
+   * notification.
    */
-  onChangePage_(event) {
-    this.getViewManager_().switchView(event.detail.page);
+  private recordFastInitiationNotificationUsage_(success: boolean): void {
+    const url = new URL(document.URL);
+    const urlParams = new URLSearchParams(url.search);
+    if (urlParams.get('entrypoint') === 'notification') {
+      this.receiveManager_!.recordFastInitiationNotificationUsage(success);
+    }
   }
 
-  /** @private */
-  onCancel_() {
-    this.close_();
+  /**
+   * Determines if the feature flag for One-page onboarding workflow is enabled.
+   * @return whether the new one-page onboarding workflow is enabled
+   */
+  private isOnePageOnboardingEnabled_(): boolean {
+    return loadTimeData.getBoolean('isOnePageOnboardingEnabled');
   }
 
-  /** @private */
-  onAccept_() {
-    assert(this.shareTarget);
-    this.receiveManager_.accept(this.shareTarget.id).then((success) => {
-      if (success) {
-        this.close_();
-      } else {
-        // TODO(vecore): Show error state.
-        this.close_();
-      }
-    });
+  private onSettingsLoaded_(): void {
+    if (this.postSettingsCallback_) {
+      this.postSettingsCallback_();
+      this.postSettingsCallback_ = null;
+    }
   }
 
-  /** @private */
-  onOnboardingComplete_() {
-    if (!this.postOnboardingCallback) {
+  private getViewManager_(): CrViewManagerElement {
+    return this.$.viewManager;
+  }
+
+  private close_(): void {
+    // If we are already waiting for high visibility to exit, then we don't need
+    // to trigger it again.
+    if (this.closing_) {
       return;
     }
 
-    this.postOnboardingCallback();
-    this.postOnboardingCallback = null;
-  }
-
-  /** @private */
-  onReject_() {
-    assert(this.shareTarget);
-    this.receiveManager_.reject(this.shareTarget.id).then((success) => {
-      if (success) {
-        this.close_();
-      } else {
-        // TODO(vecore): Show error state.
-        this.close_();
+    this.closing_ = true;
+    this.receiveManager_!.unregisterForegroundReceiveSurface().then(() => {
+      const dialog = this.$.dialog;
+      if (dialog.open) {
+        dialog.close();
       }
     });
   }
+
+  /**
+   * Child views can fire a 'change-page' event to trigger a page change.
+   */
+  private onChangePage_(event: CustomEvent<{page: Page}>): void {
+    this.getViewManager_().switchView(event.detail.page);
+  }
+
+  private onCancel_(): void {
+    this.close_();
+  }
+
+  private async onAccept_(): Promise<void> {
+    assert(this.shareTarget);
+    const success = await this.receiveManager_!.accept(this.shareTarget.id);
+    if (success) {
+      this.close_();
+    } else {
+      // TODO(vecore): Show error state.
+      this.close_();
+    }
+  }
+
+  private onOnboardingComplete_(): void {
+    if (!this.postOnboardingCallback_) {
+      return;
+    }
+
+    this.postOnboardingCallback_();
+    this.postOnboardingCallback_ = null;
+  }
+
+  private async onReject_(): Promise<void> {
+    assert(this.shareTarget);
+    const success = await this.receiveManager_!.reject(this.shareTarget.id);
+    if (success) {
+      this.close_();
+    } else {
+      // TODO(vecore): Show error state.
+      this.close_();
+    }
+  }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NearbyShareReceiveDialogElement.is]: NearbyShareReceiveDialogElement;
+  }
+  interface HTMLElementEventMap {
+    'change-page': CustomEvent<{page: Page}>;
+  }
+}
+
 
 customElements.define(
     NearbyShareReceiveDialogElement.is, NearbyShareReceiveDialogElement);

@@ -15,35 +15,26 @@ import '../../shared/nearby_preview.js';
 import '../../shared/nearby_progress.js';
 
 import {ShareTarget, TransferStatus} from '/mojo/nearby_share.mojom-webui.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './nearby_share_confirm_page.html.js';
 
 /**
  * The progress bar asset URL for light mode.
- * @type {string}
  */
-const PROGRESS_BAR_URL_LIGHT = 'nearby_share_progress_bar_light.json';
+const PROGRESS_BAR_URL_LIGHT: string = 'nearby_share_progress_bar_light.json';
 
 /**
  * The progress bar asset URL for dark mode.
- * @type {string}
  */
-const PROGRESS_BAR_URL_DARK = 'nearby_share_progress_bar_dark.json';
+const PROGRESS_BAR_URL_DARK: string = 'nearby_share_progress_bar_dark.json';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const NearbyShareConfirmPageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const NearbyShareConfirmPageElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 class NearbyShareConfirmPageElement extends NearbyShareConfirmPageElementBase {
   static get is() {
-    return 'nearby-share-confirm-page';
+    return 'nearby-share-confirm-page' as const;
   }
 
   static get template() {
@@ -52,21 +43,16 @@ class NearbyShareConfirmPageElement extends NearbyShareConfirmPageElementBase {
 
   static get properties() {
     return {
-      /** @type {?ShareTarget} */
       shareTarget: {
         type: Object,
         value: null,
       },
 
-      /** @type {?string} */
       connectionToken: {
         type: String,
         value: null,
       },
 
-      /**
-       * @type {?TransferStatus}
-       */
       transferStatus: {
         type: TransferStatus,
         value: null,
@@ -76,7 +62,6 @@ class NearbyShareConfirmPageElement extends NearbyShareConfirmPageElementBase {
       /**
        * Header text for error. Controls error display on the confirm page.
        * The error section is not displayed if this is falsey.
-       * @private {?string}
        */
       errorTitle_: {
         type: String,
@@ -86,7 +71,6 @@ class NearbyShareConfirmPageElement extends NearbyShareConfirmPageElementBase {
       /**
        * Description text for error display on confirm page, displayed under the
        * error title.
-       * @private {?string}
        */
       errorDescription_: {
         type: String,
@@ -95,7 +79,6 @@ class NearbyShareConfirmPageElement extends NearbyShareConfirmPageElementBase {
 
       /**
        * Whether the confirm page is being rendered in dark mode.
-       * @private {boolean}
        */
       isDarkModeActive_: {
         type: Boolean,
@@ -104,12 +87,18 @@ class NearbyShareConfirmPageElement extends NearbyShareConfirmPageElementBase {
     };
   }
 
+  connectionToken: string|null;
+  shareTarget: ShareTarget|null;
+  transferStatus: TransferStatus|null;
+  private errorDescription_: string|null;
+  private errorTitle_: string|null;
+  private isDarkModeActive_: boolean;
+
   /**
    * Update the |errorTitle_| and the |errorDescription_| when the transfer
    * status changes.
-   * @param {?TransferStatus} newStatus
    */
-  onTransferStatusChanged_(newStatus) {
+  private onTransferStatusChanged_(newStatus: TransferStatus|null): void {
     switch (newStatus) {
       case TransferStatus.kTimedOut:
         this.errorTitle_ = this.i18n('nearbyShareErrorTimeOut');
@@ -152,11 +141,7 @@ class NearbyShareConfirmPageElement extends NearbyShareConfirmPageElementBase {
     }
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  getConnectionTokenString_() {
+  private getConnectionTokenString_(): string {
     return this.connectionToken ?
         this.i18n(
             'nearbyShareReceiveConfirmPageConnectionId', this.connectionToken) :
@@ -166,12 +151,16 @@ class NearbyShareConfirmPageElement extends NearbyShareConfirmPageElementBase {
   /**
    * Returns the URL for the asset that defines a file transfer's animated
    * progress bar.
-   * @return {string}
-   * @private
    */
-  getAnimationUrl_() {
+  private getAnimationUrl_(): string {
     return this.isDarkModeActive_ ? PROGRESS_BAR_URL_DARK :
                                     PROGRESS_BAR_URL_LIGHT;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NearbyShareConfirmPageElement.is]: NearbyShareConfirmPageElement;
   }
 }
 

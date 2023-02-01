@@ -4,37 +4,26 @@
 
 import {ReceiveManager, ReceiveManagerInterface, ReceiveObserverInterface, ReceiveObserverReceiver, ReceiveObserverRemote} from '/mojo/nearby_share.mojom-webui.js';
 
-/** @type {?ReceiveManagerInterface} */
-let receiveManager = null;
-/** @type {boolean} */
+let receiveManager: ReceiveManagerInterface|null = null;
 let isTesting = false;
 
-/**
- * @param {!ReceiveManagerInterface} testReceiveManager
- */
-export function setReceiveManagerForTesting(testReceiveManager) {
+export function setReceiveManagerForTesting(
+    testReceiveManager: ReceiveManagerInterface): void {
   receiveManager = testReceiveManager;
   isTesting = true;
 }
 
-/**
- * @return {!ReceiveManagerInterface} the receiveManager interface
- */
-export function getReceiveManager() {
+export function getReceiveManager(): ReceiveManagerInterface {
   if (!receiveManager) {
     receiveManager = ReceiveManager.getRemote();
   }
   return receiveManager;
 }
 
-/**
- * @param {!ReceiveObserverInterface} observer
- * @return {?ReceiveObserverReceiver} The mojo receiver or null when testing.
- */
-export function observeReceiveManager(observer) {
+export function observeReceiveManager(observer: ReceiveObserverInterface):
+    ReceiveObserverReceiver|null {
   if (isTesting) {
-    getReceiveManager().addReceiveObserver(
-        /** @type {!ReceiveObserverRemote} */ (observer));
+    getReceiveManager().addReceiveObserver(observer as ReceiveObserverRemote);
     return null;
   }
 

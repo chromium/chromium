@@ -13,27 +13,28 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNearbyShareSettings} from '../../shared/nearby_share_settings.js';
+import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 
 import {getTemplate} from './nearby_share_data_usage_dialog.html.js';
 import {dataUsageStringToEnum, NearbyShareDataUsage} from './types.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const NearbyShareDataUsageDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+interface NearbyShareDataUsageDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const NearbyShareDataUsageDialogElementBase = I18nMixin(PolymerElement);
+
 class NearbyShareDataUsageDialogElement extends
     NearbyShareDataUsageDialogElementBase {
   static get is() {
-    return 'nearby-share-data-usage-dialog';
+    return 'nearby-share-data-usage-dialog' as const;
   }
 
   static get template() {
@@ -42,51 +43,63 @@ class NearbyShareDataUsageDialogElement extends
 
   static get properties() {
     return {
-      /** @type {!Object<string, number>} */
+      /** Mirroring the enum to allow usage in Polymer HTML bindings. */
       NearbyShareDataUsage: {
         type: Object,
         value: NearbyShareDataUsage,
       },
+
+      settings: {
+        type: Object,
+        value: {},
+      },
     };
   }
 
-  /** @override */
-  connectedCallback() {
+  settings: NearbySettings;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  NearbyShareDataUsage: NearbyShareDataUsage;
+
+  override connectedCallback(): void {
     super.connectedCallback();
 
-    const dialog = /** @type {!CrDialogElement} */ (this.$.dialog);
+    const dialog = this.$.dialog;
     if (!dialog.open) {
       dialog.showModal();
     }
   }
 
-  /** @private */
-  close() {
-    const dialog = /** @type {!CrDialogElement} */ (this.$.dialog);
+  close(): void {
+    const dialog = this.$.dialog;
     if (dialog.open) {
       dialog.close();
     }
   }
 
-  /** @private */
-  onCancelClick_() {
+  private onCancelClick_(): void {
     this.close();
   }
 
-  /** @private */
-  onSaveClick_() {
-    getNearbyShareSettings().setDataUsage(dataUsageStringToEnum(
-        this.shadowRoot.querySelector('cr-radio-group').selected));
+  private onSaveClick_(): void {
+    const selectedOptionStr =
+        this.shadowRoot!.querySelector('cr-radio-group')!.selected;
+    getNearbyShareSettings().setDataUsage(
+        dataUsageStringToEnum(selectedOptionStr));
     this.close();
   }
 
-  /** @private */
-  selectedDataUsage_(dataUsageValue) {
+  private selectedDataUsage_(dataUsageValue: NearbySettings['dataUsage']) {
     if (dataUsageValue === NearbyShareDataUsage.UNKNOWN) {
       return NearbyShareDataUsage.WIFI_ONLY;
     }
 
     return dataUsageValue;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NearbyShareDataUsageDialogElement.is]: NearbyShareDataUsageDialogElement;
   }
 }
 

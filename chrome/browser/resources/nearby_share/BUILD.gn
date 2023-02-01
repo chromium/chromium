@@ -7,6 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_definitions.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash, "Nearby Share is CrOS only")
@@ -120,6 +121,18 @@ preprocess_if_expr("preprocess_mojo") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
   in_files = [
+    "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share.mojom-webui.js",
+    "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-webui.js",
+  ]
+}
+
+ts_definitions("generate_definitions") {
+  deps = [ "//ui/webui/resources/mojo:library" ]
+  extra_deps = [ ":preprocess_mojo" ]
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/$preprocess_folder"
+
+  js_files = [
     "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share.mojom-webui.js",
     "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-webui.js",
   ]
