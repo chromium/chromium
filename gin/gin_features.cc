@@ -113,6 +113,9 @@ BASE_FEATURE(kV8TurboFastApiCalls,
              "V8TurboFastApiCalls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables faster DOM methods for megamorphic ICs
+BASE_FEATURE(kV8MegaDomIC, "V8MegaDomIC", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables slow histograms that provide detailed information at increased
 // runtime overheads.
 BASE_FEATURE(kV8SlowHistograms,
