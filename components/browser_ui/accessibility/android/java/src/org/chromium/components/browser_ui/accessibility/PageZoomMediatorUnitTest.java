@@ -173,6 +173,31 @@ public class PageZoomMediatorUnitTest {
     }
 
     @Test
+    public void testIncreaseZoom_LargeConfiguration_DesktopUserAgent_RenderOverMaxDisplayValue() {
+        // Verify that calling increase zoom method sends expected value to native code when the OS
+        // font scale and desktop site zoom scale in use could cause the rendered zoom factor value
+        // to overflow beyond the maximum displayed zoom factor value.
+        HostZoomMap.SYSTEM_FONT_SCALE = 2.0f;
+        when(mHostZoomMapMock.getDesktopSiteZoomScale(mWebContentsMock)).thenReturn(1.1);
+        // Assume that the currently rendered zoom value is maximum, that is 300% or a zoom factor
+        // of 6.03. For the zoom scales defined above, this will be equivalent to a display value of
+        // 300/2/1.1 ~ 137%.
+        when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(6.03);
+        mMediator.setWebContents(mWebContentsMock);
+        Assert.assertEquals(
+                CURRENT_ZOOM_FAILURE, 87, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
+
+        // A single increase at this point should display the next closest zoom level of 150% (zoom
+        // factor ~ 2.22) with respect to 137%, that is equivalent to a rendered value of 150*2*1.1
+        // ~ 330% (zoom factor ~ 6.54).
+        mMediator.handleIncreaseClicked(null);
+        verify(mHostZoomMapMock, times(1).description(INCREASE_ZOOM_FAILURE_NO_JNI))
+                .setZoomLevel(mWebContentsMock, 2.22, 6.54);
+        Assert.assertEquals(
+                CURRENT_ZOOM_FAILURE, 100, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
+    }
+
+    @Test
     public void testSeekBarValueChanged() {
         // Verify the calling seekbar value change method sends expected value to native code.
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);

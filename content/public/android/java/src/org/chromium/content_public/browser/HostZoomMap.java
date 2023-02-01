@@ -120,11 +120,6 @@ public class HostZoomMap {
 
         // We do not pass levels to the backend, but factors. So convert back and round.
         double adjustedFactor = Math.log10(adjustedLevel) / Math.log10(TEXT_SIZE_MULTIPLIER_RATIO);
-
-        // At the extremes, this can go over the min/max, so clamp to that range.
-        adjustedFactor = MathUtils.clamp((float) adjustedFactor, (float) AVAILABLE_ZOOM_FACTORS[0],
-                (float) AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
-
         return MathUtils.roundTwoDecimalPlaces(adjustedFactor);
     }
 }
