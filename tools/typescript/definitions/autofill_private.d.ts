@@ -11,6 +11,10 @@ declare global {
   export namespace chrome {
     export namespace autofillPrivate {
 
+      export interface AccountInfo {
+        email: string;
+      }
+
       export enum AddressField {
         HONORIFIC = 'HONORIFIC',
         FULL_NAME = 'FULL_NAME',
@@ -104,6 +108,7 @@ declare global {
         countryCode: string;
       }
 
+      export function getAccountInfo(): Promise<AccountInfo>;
       export function saveAddress(address: AddressEntry): void;
       export function getCountryList(): Promise<CountryEntry[]>;
       export function getAddressComponents(
@@ -126,7 +131,7 @@ declare global {
 
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
-          ibans: IbanEntry[]) => void>;
+           ibans: IbanEntry[], accountInfo: AccountInfo) => void>;
     }
   }
 }

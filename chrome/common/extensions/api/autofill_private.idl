@@ -5,6 +5,11 @@
 // Use the <code>chrome.autofillPrivate</code> API to add, remove, or update
 // autofill data from the settings UI.
 namespace autofillPrivate {
+  // Subset of properties from the user account (signin component, AccountInfo).
+  dictionary AccountInfo {
+    DOMString email;
+  };
+
   // Fields used as part of an address.
   enum AddressField {
     HONORIFIC, // Honorific fields are not expected from getAddressComponents.
@@ -227,6 +232,7 @@ namespace autofillPrivate {
     DOMString countryCode;
   };
 
+  callback GetAccountInfoCallback = void(optional AccountInfo accountInfo);
   callback GetCountryListCallback = void(CountryEntry[] countries);
   callback GetAddressComponentsCallback = void(AddressComponents components);
   callback GetAddressListCallback = void(AddressEntry[] entries);
@@ -237,6 +243,12 @@ namespace autofillPrivate {
   callback GetUpiIdListCallback = void(DOMString[] entries);
 
   interface Functions {
+    // Gets currently signed-in user profile info, no value is returned if
+    // the user is not signed-in.
+    // |callback|: Callback which will be called with the info.
+    [supportsPromises] static void getAccountInfo(
+        GetAccountInfoCallback callback);
+
     // Saves the given address. If |address| has an empty string as its ID, it
     // will be assigned a new one and added as a new entry.
     // |address|: The address entry to save.
@@ -331,8 +343,10 @@ namespace autofillPrivate {
     // `addressEntries`: the updated list of addresses.
     // `creditCardEntries`: the updated list of credit cards.
     // `ibans`: the updated list of IBANs.
+    // `accountInfo`: account info if the user is signed-in or no value if not.
     static void onPersonalDataChanged(AddressEntry[] addressEntries,
         CreditCardEntry[] creditCardEntries,
-        IbanEntry[] ibans);
+        IbanEntry[] ibans,
+        optional AccountInfo accountInfo);
   };
 };

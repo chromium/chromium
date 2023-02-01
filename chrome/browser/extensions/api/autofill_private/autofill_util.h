@@ -10,6 +10,7 @@
 
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -36,6 +37,10 @@ CreditCardEntryList GenerateCreditCardList(
 // Uses |personal_data| to generate a list of up-to-date IbanEntry
 // objects.
 IbanEntryList GenerateIbanList(
+    const autofill::PersonalDataManager& personal_data);
+
+// Uses |personal_data| to get primary account info.
+absl::optional<api::autofill_private::AccountInfo> GetAccountInfo(
     const autofill::PersonalDataManager& personal_data);
 
 }  // namespace autofill_util

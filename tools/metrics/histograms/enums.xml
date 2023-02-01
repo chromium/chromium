@@ -35760,6 +35760,7 @@ Called by update_extension_histograms.py.-->
   <int value="1759" label="OS_TELEMETRY_GETUSBBUSINFO"/>
   <int value="1760" label="PDFVIEWERPRIVATE_ISPDFOCRALWAYSACTIVE"/>
   <int value="1761" label="PDFVIEWERPRIVATE_SETPDFOCRPREF"/>
+  <int value="1762" label="AUTOFILLPRIVATE_GETACCOUNTINFO"/>
 </enum>
 
 <enum name="ExtensionIconState">

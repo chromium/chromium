@@ -63,6 +63,8 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_auth_util.h"
 #include "components/sync/driver/sync_service.h"
@@ -614,6 +616,17 @@ bool PersonalDataManager::IsSyncFeatureEnabled() const {
 void PersonalDataManager::OnAccountsCookieDeletedByUserAction() {
   // Clear all the Sync Transport feature opt-ins.
   prefs::ClearSyncTransportOptIns(pref_service_);
+}
+
+absl::optional<CoreAccountInfo> PersonalDataManager::GetPrimaryAccountInfo()
+    const {
+  if (identity_manager_ &&
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return identity_manager_->GetPrimaryAccountInfo(
+        signin::ConsentLevel::kSignin);
+  }
+
+  return absl::nullopt;
 }
 
 AutofillSyncSigninState PersonalDataManager::GetSyncSigninState() const {

@@ -1822,6 +1822,7 @@ enum HistogramValue {
   OS_TELEMETRY_GETUSBBUSINFO = 1759,
   PDFVIEWERPRIVATE_ISPDFOCRALWAYSACTIVE = 1760,
   PDFVIEWERPRIVATE_SETPDFOCRPREF = 1761,
+  AUTOFILLPRIVATE_GETACCOUNTINFO = 1762,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

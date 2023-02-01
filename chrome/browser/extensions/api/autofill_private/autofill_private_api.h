@@ -9,6 +9,22 @@
 #include "extensions/browser/extension_function_histogram_value.h"
 
 namespace extensions {
+class AutofillPrivateGetAccountInfoFunction : public ExtensionFunction {
+ public:
+  AutofillPrivateGetAccountInfoFunction() = default;
+  AutofillPrivateGetAccountInfoFunction(
+      const AutofillPrivateGetAccountInfoFunction&) = delete;
+  AutofillPrivateGetAccountInfoFunction& operator=(
+      const AutofillPrivateGetAccountInfoFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.getAccountInfo",
+                             AUTOFILLPRIVATE_GETACCOUNTINFO)
+
+ protected:
+  ~AutofillPrivateGetAccountInfoFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
 
 class AutofillPrivateSaveAddressFunction : public ExtensionFunction {
  public:

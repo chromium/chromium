@@ -29,9 +29,11 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_registry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/localization.h"
@@ -153,6 +155,27 @@ autofill::AutofillManager* GetAutofillManager(
 }  // namespace
 
 namespace extensions {
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateGetAccountInfoFunction
+
+ExtensionFunction::ResponseAction AutofillPrivateGetAccountInfoFunction::Run() {
+  autofill::PersonalDataManager* personal_data =
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context()));
+
+  DCHECK(personal_data && personal_data->IsDataLoaded());
+
+  absl::optional<api::autofill_private::AccountInfo> account_info =
+      autofill_util::GetAccountInfo(*personal_data);
+  if (account_info.has_value()) {
+    return RespondNow(
+        ArgumentList(api::autofill_private::GetAccountInfo::Results::Create(
+            account_info.value())));
+  }
+
+  return RespondNow(NoArguments());
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateSaveAddressFunction

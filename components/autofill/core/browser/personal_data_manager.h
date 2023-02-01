@@ -50,6 +50,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/webdata/common/web_data_service_consumer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class PrefService;
@@ -141,11 +142,16 @@ class PersonalDataManager : public KeyedService,
   void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // AccountInfoGetter:
+  // TODO(1411720): Make it return absl::optional.
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
   bool IsSyncFeatureEnabled() const override;
 
   // signin::IdentityManager::Observer:
   void OnAccountsCookieDeletedByUserAction() override;
+
+  // Returns the account info of currently signed-in user, or absl::nullopt if
+  // the user is not signed-in or the identity manager is not available.
+  absl::optional<CoreAccountInfo> GetPrimaryAccountInfo() const;
 
   // Returns the current sync status.
   virtual AutofillSyncSigninState GetSyncSigninState() const;
