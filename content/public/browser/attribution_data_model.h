@@ -17,14 +17,7 @@ class CONTENT_EXPORT AttributionDataModel {
  public:
   class CONTENT_EXPORT DataKey {
    public:
-    enum class Scope {
-      kSource,
-      kReport,
-    };
-
-    DataKey(url::Origin reporting_origin,
-            url::Origin context_origin,
-            Scope scope);
+    explicit DataKey(url::Origin reporting_origin);
 
     DataKey(const DataKey&);
     DataKey(DataKey&&);
@@ -36,20 +29,12 @@ class CONTENT_EXPORT AttributionDataModel {
 
     const url::Origin& reporting_origin() const { return reporting_origin_; }
 
-    const url::Origin& context_origin() const { return context_origin_; }
-
-    Scope scope() const { return scope_; }
-
     bool operator<(const DataKey&) const;
 
     bool operator==(const DataKey&) const;
 
    private:
     url::Origin reporting_origin_;
-
-    url::Origin context_origin_;
-
-    Scope scope_;
   };
 
   virtual ~AttributionDataModel() = default;
