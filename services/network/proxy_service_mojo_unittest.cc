@@ -100,7 +100,7 @@ void CheckCapturedNetLogEntries(const std::vector<net::NetLogEntry>& entries) {
   }
   ASSERT_LT(i, entries.size());
   EXPECT_EQ("alert: foo", net::GetStringValueFromParams(entries[i], "message"));
-  ASSERT_FALSE(entries[i].params.FindKey("line_number"));
+  ASSERT_FALSE(entries[i].params.GetDict().contains("line_number"));
 
   while (i < entries.size() &&
          entries[i].type != net::NetLogEventType::PAC_JAVASCRIPT_ERROR) {

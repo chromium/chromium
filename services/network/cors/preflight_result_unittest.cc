@@ -4,6 +4,7 @@
 
 #include "services/network/cors/preflight_result.h"
 
+#include "base/check_deref.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -650,10 +651,10 @@ TEST_F(PreflightResultTest, NetLogParams) {
         mojom::CredentialsMode::kOmit, test.allow_methods, test.allow_headers,
         absl::nullopt, nullptr);
     ASSERT_TRUE(result);
-    base::Value dict = result->NetLogParams();
-    EXPECT_EQ(dict.FindKey("access-control-allow-methods")->GetString(),
+    base::Value::Dict dict = result->NetLogParams().TakeDict();
+    EXPECT_EQ(CHECK_DEREF(dict.FindString("access-control-allow-methods")),
               test.expected_methods);
-    EXPECT_EQ(dict.FindKey("access-control-allow-headers")->GetString(),
+    EXPECT_EQ(CHECK_DEREF(dict.FindString("access-control-allow-headers")),
               test.expected_headers);
   }
 }
