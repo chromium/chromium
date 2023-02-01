@@ -11,9 +11,12 @@
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
+#include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "tab_style_views.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -167,8 +170,6 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
       tab_slot_controller_->set_active_tab(tab);
 
     if (group) {
-      NOTREACHED();  // TODO(crbug.com/1346017): copy/reuse more stuff from
-                     // TabContainerTest
       AddTabToGroup(model_index, group.value());
     }
 
@@ -627,4 +628,73 @@ TEST_F(CompoundTabContainerTest, GetEventAndTooltipHandlerForOverlappingArea) {
                               unpinned_overlap_test_point));
   EXPECT_EQ(unpinned_tab, tab_container_->GetTooltipHandlerForPoint(
                               unpinned_overlap_test_point));
+}
+
+namespace {
+ui::DropTargetEvent MakeEventForDragLocation(const gfx::Point& p) {
+  return ui::DropTargetEvent({}, gfx::PointF(p), {},
+                             ui::DragDropTypes::DRAG_LINK);
+}
+}  // namespace
+
+TEST_F(CompoundTabContainerTest, DropIndexForDragLocationIsCorrect) {
+  auto group = tab_groups::TabGroupId::GenerateNew();
+  const Tab* const tab1 =
+      AddTab(0, TabPinned::kPinned, absl::nullopt, TabActive::kActive);
+  const Tab* const tab2 = AddTab(1, TabPinned::kUnpinned, group);
+  const Tab* const tab3 = AddTab(2, TabPinned::kUnpinned, group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  const TabGroupHeader* const group_header =
+      tab_container_->GetGroupViews(group)->header();
+
+  using DropIndex = BrowserRootView::DropIndex;
+
+  const auto bounds_in_ctc = [this](const views::View* view) {
+    return ToEnclosingRect(views::View::ConvertRectToTarget(
+        view, tab_container_, gfx::RectF(view->GetLocalBounds())));
+  };
+
+  // Check dragging near the edge of each tab.
+  EXPECT_EQ((DropIndex{0, true, false}),
+            tab_container_->GetDropIndex(MakeEventForDragLocation(
+                bounds_in_ctc(tab1).left_center() + gfx::Vector2d(1, 0))));
+  EXPECT_EQ((DropIndex{1, true, false}),
+            tab_container_->GetDropIndex(MakeEventForDragLocation(
+                bounds_in_ctc(tab1).right_center() + gfx::Vector2d(-1, 0))));
+  EXPECT_EQ((DropIndex{1, true, true}),
+            tab_container_->GetDropIndex(MakeEventForDragLocation(
+                bounds_in_ctc(tab2).left_center() + gfx::Vector2d(1, 0))));
+  EXPECT_EQ((DropIndex{2, true, false}),
+            tab_container_->GetDropIndex(MakeEventForDragLocation(
+                bounds_in_ctc(tab2).right_center() + gfx::Vector2d(-1, 0))));
+  EXPECT_EQ((DropIndex{2, true, false}),
+            tab_container_->GetDropIndex(MakeEventForDragLocation(
+                bounds_in_ctc(tab3).left_center() + gfx::Vector2d(1, 0))));
+  EXPECT_EQ((DropIndex{3, true, false}),
+            tab_container_->GetDropIndex(MakeEventForDragLocation(
+                bounds_in_ctc(tab3).right_center() + gfx::Vector2d(-1, 0))));
+
+  // Check dragging in the center of each tab.
+  EXPECT_EQ((DropIndex{0, false, false}),
+            tab_container_->GetDropIndex(
+                MakeEventForDragLocation(bounds_in_ctc(tab1).CenterPoint())));
+  EXPECT_EQ((DropIndex{1, false, false}),
+            tab_container_->GetDropIndex(
+                MakeEventForDragLocation(bounds_in_ctc(tab2).CenterPoint())));
+  EXPECT_EQ((DropIndex{2, false, false}),
+            tab_container_->GetDropIndex(
+                MakeEventForDragLocation(bounds_in_ctc(tab3).CenterPoint())));
+
+  // Check dragging over group header.
+  // The left half of the header should drop outside the group.
+  EXPECT_EQ(
+      (DropIndex{1, true, false}),
+      tab_container_->GetDropIndex(MakeEventForDragLocation(
+          bounds_in_ctc(group_header).CenterPoint() + gfx::Vector2d(-1, 0))));
+  // The right half of the header should drop inside the group.
+  EXPECT_EQ(
+      (DropIndex{1, true, true}),
+      tab_container_->GetDropIndex(MakeEventForDragLocation(
+          bounds_in_ctc(group_header).CenterPoint() + gfx::Vector2d(1, 0))));
 }

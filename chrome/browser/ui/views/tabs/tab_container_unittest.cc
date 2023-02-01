@@ -536,12 +536,14 @@ TEST_F(TabContainerTest, DropIndexForDragLocationIsCorrect) {
                 MakeEventForDragLocation(tab3->bounds().CenterPoint())));
 
   // Check dragging over group header.
+  // The left half of the header should drop outside the group.
   EXPECT_EQ((DropIndex{1, true, false}),
             tab_container_->GetDropIndex(MakeEventForDragLocation(
-                group_header->bounds().left_center() + gfx::Vector2d(1, 0))));
+                group_header->bounds().CenterPoint() + gfx::Vector2d(-1, 0))));
+  // The right half of the header should drop inside the group.
   EXPECT_EQ((DropIndex{1, true, true}),
             tab_container_->GetDropIndex(MakeEventForDragLocation(
-                group_header->bounds().right_center() + gfx::Vector2d(-1, 0))));
+                group_header->bounds().CenterPoint() + gfx::Vector2d(1, 0))));
 }
 
 TEST_F(TabContainerTest, AccessibilityData) {

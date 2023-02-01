@@ -155,9 +155,16 @@ class CompoundTabContainer : public TabContainer,
 
   // Returns the child TabContainer that should contain `view`. NB this can be
   // different from `view->parent()` e.g. while `view` is being dragged.
-  raw_ref<TabContainer> GetTabContainerFor(TabSlotView* view);
+  raw_ref<TabContainer> GetTabContainerFor(TabSlotView* view) const;
 
-  TabContainer* GetTabContainerAt(gfx::Point point_in_local_coords);
+  // Returns the child TabContainer that should handle text drag and drop events
+  // at `point_in_local_coords`.
+  TabContainer* GetTabContainerForDrop(gfx::Point point_in_local_coords) const;
+
+  // Returns the child TabContainer that contains `point_in_local_coords`, or
+  // nullptr if neither contain it. If both contain it, chooses based on where
+  // `point_in_local_coords` is within the overlap area.
+  TabContainer* GetTabContainerAt(gfx::Point point_in_local_coords) const;
 
   // Returns the x position that `unpinned_tab_container_` should be at after
   // any running animations finish.
@@ -171,7 +178,7 @@ class CompoundTabContainer : public TabContainer,
                                                 gfx::Size unpinned_size) const;
 
   // Private getter to retrieve the visible rect of the scroll container.
-  absl::optional<gfx::Rect> GetVisibleContentRect();
+  absl::optional<gfx::Rect> GetVisibleContentRect() const;
 
   // Animates and scrolls the tab container from the start_edge to the
   // target_edge. If the target_edge is beyond the tab strip it will be clamped
@@ -209,6 +216,10 @@ class CompoundTabContainer : public TabContainer,
 
   // Animates tabs between pinned and unpinned states.
   views::BoundsAnimator bounds_animator_;
+
+  // The sub-container that handled the last drag/drop update, if any. Used to
+  // ensure HandleDragExited is called when necessary.
+  TabContainer* current_text_drop_target_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMPOUND_TAB_CONTAINER_H_
