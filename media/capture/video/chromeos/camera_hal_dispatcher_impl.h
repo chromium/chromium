@@ -132,6 +132,16 @@ class CAPTURE_EXPORT CameraPrivacySwitchObserver
       cros::mojom::CameraPrivacySwitchState state) {}
 };
 
+// CameraEffectObserver is the interface to observe the change of camera
+// effects, the observers will be notified which effect has been changed.
+class CAPTURE_EXPORT CameraEffectObserver : public base::CheckedObserver {
+ public:
+  ~CameraEffectObserver() override = default;
+
+  virtual void OnCameraEffectChanged(cros::mojom::CameraEffect changed_effect) {
+  }
+};
+
 // The CameraHalDispatcherImpl hosts and waits on the unix domain socket
 // /var/run/camera3.sock.  CameraHalServer and CameraHalClients connect to the
 // unix domain socket to create the initial Mojo connections with the
@@ -200,6 +210,15 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // Removes the observer. A previously-added observer must be removed before
   // being destroyed.
   void RemoveCameraPrivacySwitchObserver(CameraPrivacySwitchObserver* observer);
+
+  // Adds an observer that watches for camera effect configuration change.
+  // Observer would be immediately notified of the current camera effect
+  // configuration changes.
+  void AddCameraEffectObserver(CameraEffectObserver* observer);
+
+  // Removes the observer. A previously-added observer must be removed before
+  // being destroyed.
+  void RemoveCameraEffectObserver(CameraEffectObserver* observer);
 
   // Gets the current camera software privacy switch state.
   void GetCameraSWPrivacySwitchState(
@@ -420,6 +439,9 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   scoped_refptr<base::ObserverListThreadSafe<CameraPrivacySwitchObserver>>
       privacy_switch_observers_;
+
+  scoped_refptr<base::ObserverListThreadSafe<CameraEffectObserver>>
+      camera_effect_observers_;
 
   bool sensor_enabled_ = true;
   std::map<CameraClientObserver*, std::unique_ptr<CameraClientObserver>>

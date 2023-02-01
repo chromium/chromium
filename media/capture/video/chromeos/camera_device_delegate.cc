@@ -756,6 +756,7 @@ void CameraDeviceDelegate::OnClosed(int32_t result) {
   if (request_manager_) {
     request_manager_->RemoveResultMetadataObserver(this);
   }
+  CameraHalDispatcherImpl::GetInstance()->RemoveCameraEffectObserver(this);
   ResetMojoInterface();
   device_context_ = nullptr;
   current_blob_resolution_.SetSize(0, 0);
@@ -825,6 +826,7 @@ void CameraDeviceDelegate::Initialize() {
       std::move(callback_ops),
       base::BindOnce(&CameraDeviceDelegate::OnInitialized, GetWeakPtr()));
   request_manager_->AddResultMetadataObserver(this);
+  CameraHalDispatcherImpl::GetInstance()->AddCameraEffectObserver(this);
 
   // For Intel IPU6 platform, set power mode to high quality for CCA and low
   // power mode for others.
@@ -1511,6 +1513,26 @@ void CameraDeviceDelegate::OnResultMetadataAvailable(
     for (auto& request : get_photo_state_queue_)
       ipc_task_runner_->PostTask(FROM_HERE, std::move(request));
     get_photo_state_queue_.clear();
+  }
+}
+
+void CameraDeviceDelegate::OnCameraEffectChanged(
+    cros::mojom::CameraEffect changed_effect) {
+  if (!ipc_task_runner_->BelongsToCurrentThread()) {
+    ipc_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&CameraDeviceDelegate::OnCameraEffectChanged,
+                                  GetWeakPtr(), std::move(changed_effect)));
+    return;
+  }
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+  switch (changed_effect) {
+    case cros::mojom::CameraEffect::kBackgroundBlur:
+      device_context_->OnCaptureConfigurationChanged();
+      break;
+    case cros::mojom::CameraEffect::kPortraitRelight:
+    case cros::mojom::CameraEffect::kBackgroundReplace:
+    case cros::mojom::CameraEffect::kNone:
+      return;
   }
 }
 

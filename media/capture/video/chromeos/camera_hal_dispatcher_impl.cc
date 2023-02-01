@@ -366,6 +366,16 @@ void CameraHalDispatcherImpl::RemoveCameraPrivacySwitchObserver(
   privacy_switch_observers_->RemoveObserver(observer);
 }
 
+void CameraHalDispatcherImpl::AddCameraEffectObserver(
+    CameraEffectObserver* observer) {
+  camera_effect_observers_->AddObserver(observer);
+}
+
+void CameraHalDispatcherImpl::RemoveCameraEffectObserver(
+    CameraEffectObserver* observer) {
+  camera_effect_observers_->RemoveObserver(observer);
+}
+
 void CameraHalDispatcherImpl::GetCameraSWPrivacySwitchState(
     cros::mojom::CameraHalServer::GetCameraSWPrivacySwitchStateCallback
         callback) {
@@ -429,7 +439,9 @@ CameraHalDispatcherImpl::CameraHalDispatcherImpl()
       active_client_observers_(
           new base::ObserverListThreadSafe<CameraActiveClientObserver>()),
       privacy_switch_observers_(
-          new base::ObserverListThreadSafe<CameraPrivacySwitchObserver>()) {}
+          new base::ObserverListThreadSafe<CameraPrivacySwitchObserver>()),
+      camera_effect_observers_(
+          new base::ObserverListThreadSafe<CameraEffectObserver>()) {}
 
 CameraHalDispatcherImpl::~CameraHalDispatcherImpl() {
   VLOG(1) << "Stopping CameraHalDispatcherImpl...";
@@ -1136,6 +1148,25 @@ void CameraHalDispatcherImpl::OnSetCameraEffectsCompleteOnProxyThread(
     camera_effects_controller_callback_.Run(
         current_effects_.Clone(), cros::mojom::SetEffectResult::kError);
     return;
+  }
+
+  // Notify the camera effect configuration changes.
+  if (!current_effects_.is_null()) {
+    if (current_effects_->blur_enabled != config->blur_enabled) {
+      camera_effect_observers_->Notify(
+          FROM_HERE, &CameraEffectObserver::OnCameraEffectChanged,
+          cros::mojom::CameraEffect::kBackgroundBlur);
+    }
+    if (current_effects_->relight_enabled != config->relight_enabled) {
+      camera_effect_observers_->Notify(
+          FROM_HERE, &CameraEffectObserver::OnCameraEffectChanged,
+          cros::mojom::CameraEffect::kPortraitRelight);
+    }
+    if (current_effects_->replace_enabled != config->replace_enabled) {
+      camera_effect_observers_->Notify(
+          FROM_HERE, &CameraEffectObserver::OnCameraEffectChanged,
+          cros::mojom::CameraEffect::kBackgroundReplace);
+    }
   }
 
   // Record latest successful camera effects.

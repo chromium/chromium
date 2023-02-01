@@ -12,9 +12,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
+#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/capture_metadata_dispatcher.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
+#include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -113,7 +115,8 @@ class CAPTURE_EXPORT StreamCaptureInterface {
 // second client for recording stream.
 // The second client will be a virtual camera device which is only used in CCA.
 class CAPTURE_EXPORT CameraDeviceDelegate final
-    : public CaptureMetadataDispatcher::ResultMetadataObserver {
+    : public CaptureMetadataDispatcher::ResultMetadataObserver,
+      public media::CameraEffectObserver {
  public:
   CameraDeviceDelegate() = delete;
 
@@ -240,6 +243,9 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   void OnResultMetadataAvailable(
       uint32_t frame_number,
       const cros::mojom::CameraMetadataPtr& result_metadata) final;
+
+  // media::CameraEffectObserver implementation.
+  void OnCameraEffectChanged(cros::mojom::CameraEffect changed_effect) final;
 
   void DoGetPhotoState(VideoCaptureDevice::GetPhotoStateCallback callback);
 

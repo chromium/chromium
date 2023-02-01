@@ -127,6 +127,15 @@ class MockCameraActiveClientObserver : public CameraActiveClientObserver {
                     const base::flat_set<std::string>&));
 };
 
+class MockCameraEffectObserver : public CameraEffectObserver {
+ public:
+  void OnCameraEffectChanged(
+      cros::mojom::CameraEffect changed_effect) override {
+    DoOnCameraEffectChanged(changed_effect);
+  }
+  MOCK_METHOD1(DoOnCameraEffectChanged, void(cros::mojom::CameraEffect));
+};
+
 }  // namespace
 
 class CameraHalDispatcherImplTest : public ::testing::Test {
@@ -237,6 +246,15 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
     EXPECT_TRUE(
         expected_camera_effects_config_.Equals(dispatcher_->current_effects_));
     QuitRunLoop();
+  }
+
+  // Call OnSetCameraEffectsCompleteOnProxyThread with dispatcher_.
+  // This helper function is needed because
+  // OnSetCameraEffectsCompleteOnProxyThread is a private function.
+  static void SetCameraEffectsComplete(CameraHalDispatcherImpl* dispatcher,
+                                       cros::mojom::EffectsConfigPtr config) {
+    dispatcher->OnSetCameraEffectsCompleteOnProxyThread(
+        std::move(config), cros::mojom::SetEffectResult::kOk);
   }
 
  protected:
@@ -610,6 +628,54 @@ TEST_F(CameraHalDispatcherImplTest, CameraActiveClientObserverTest) {
   dispatcher_->CameraDeviceActivityChange(
       /*camera_id=*/0, /*opened=*/false,
       cros::mojom::CameraClientType::TESTING);
+  RunLoop();
+}
+
+// Test that CameraHalDispatcherImpl correctly fires CameraEffectObserver when
+// certain effect configuration has been changed.
+TEST_F(CameraHalDispatcherImplTest, CameraEffectObserver) {
+  MockCameraEffectObserver observer;
+  dispatcher_->AddCameraEffectObserver(&observer);
+  cros::mojom::EffectsConfigPtr config =
+      GetDefaultCameraEffectsConfigForTesting();
+  // Do not notify if the configuration does not change.
+  CreateLoop(1);
+  expected_camera_effects_result_ = cros::mojom::SetEffectResult::kOk;
+  expected_camera_effects_config_ = config.Clone();
+  GetProxyTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CameraHalDispatcherImplTest::SetCameraEffectsComplete,
+                     base::Unretained(dispatcher_), std::move(config)));
+  RunLoop();
+
+  // Notify the configuration changes.
+  cros::mojom::EffectsConfigPtr new_config =
+      GetDefaultCameraEffectsConfigForTesting();
+  new_config->blur_enabled = !new_config->blur_enabled;
+  new_config->relight_enabled = !new_config->relight_enabled;
+  new_config->replace_enabled = !new_config->replace_enabled;
+  CreateLoop(4);
+  EXPECT_CALL(observer, DoOnCameraEffectChanged(
+                            cros::mojom::CameraEffect::kBackgroundBlur))
+      .Times(1)
+      .WillOnce(
+          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
+  EXPECT_CALL(observer, DoOnCameraEffectChanged(
+                            cros::mojom::CameraEffect::kPortraitRelight))
+      .Times(1)
+      .WillOnce(
+          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
+  EXPECT_CALL(observer, DoOnCameraEffectChanged(
+                            cros::mojom::CameraEffect::kBackgroundReplace))
+      .Times(1)
+      .WillOnce(
+          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
+  expected_camera_effects_result_ = cros::mojom::SetEffectResult::kOk;
+  expected_camera_effects_config_ = new_config.Clone();
+  GetProxyTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CameraHalDispatcherImplTest::SetCameraEffectsComplete,
+                     base::Unretained(dispatcher_), std::move(new_config)));
   RunLoop();
 }
 

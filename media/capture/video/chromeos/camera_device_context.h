@@ -170,6 +170,10 @@ class CAPTURE_EXPORT CameraDeviceContext {
   // Returns true if there is a client.
   bool HasClient();
 
+  // Expose MediaStreamTrack configuration changes through
+  // |client_->OnCaptureConfigurationChanged|
+  void OnCaptureConfigurationChanged();
+
  private:
   friend class RequestManagerTest;
 

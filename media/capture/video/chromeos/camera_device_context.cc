@@ -170,4 +170,11 @@ bool CameraDeviceContext::HasClient() {
   return !clients_.empty();
 }
 
+void CameraDeviceContext::OnCaptureConfigurationChanged() {
+  base::AutoLock lock(client_lock_);
+  for (const auto& client : clients_) {
+    client.second->OnCaptureConfigurationChanged();
+  }
+}
+
 }  // namespace media
