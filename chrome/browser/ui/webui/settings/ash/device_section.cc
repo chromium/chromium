@@ -9,6 +9,7 @@
 #include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/cpp/stylus_utils.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -32,6 +33,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
@@ -609,10 +611,11 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(keyboard_strings);
 
-  html_source->AddLocalizedString("keyboardKeySearch",
-                                  ui::DeviceUsesKeyboardLayout2()
-                                      ? IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER
-                                      : IDS_SETTINGS_KEYBOARD_KEY_SEARCH);
+  html_source->AddLocalizedString(
+      "keyboardKeySearch",
+      Shell::Get()->keyboard_capability()->HasLauncherButton()
+          ? IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER
+          : IDS_SETTINGS_KEYBOARD_KEY_SEARCH);
   html_source->AddLocalizedString(
       "keyboardSendFunctionKeysDescription",
       ui::DeviceUsesKeyboardLayout2()
