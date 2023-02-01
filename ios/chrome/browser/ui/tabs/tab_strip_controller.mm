@@ -1609,8 +1609,16 @@ const CGFloat kSymbolSize = 18;
   BOOL animate = _animateLayout;
   _animateLayout = NO;
   // Disable the animation if the tab count is changing from 0 to 1.
-  if (tabCount == 1 && [_closingTabs count] == 0)
+  if (tabCount == 1 && [_closingTabs count] == 0) {
     animate = NO;
+  }
+
+  // If there are pinned tabs we have to call
+  // `updateContentSizeAndRepositionViews` in order to correctly set the content
+  // size.
+  if (_pinnedTabCount > 0) {
+    [self updateContentSizeAndRepositionViews];
+  }
 
   const CGFloat tabHeight = CGRectGetHeight([_tabStripView bounds]);
 
