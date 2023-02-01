@@ -1480,7 +1480,7 @@ void BrowserAutofillManager::OnDidFillAutofillFormDataImpl(
   // Find the FormStructure that corresponds to |form|. Use default form type if
   // form is not present in our cache, which will happen rarely.
 
-  FormStructure* form_structure = FindCachedFormByRendererId(form.global_id());
+  FormStructure* form_structure = FindCachedFormById(form.global_id());
   DenseSet<FormType> form_types;
   if (form_structure) {
     form_types = form_structure->GetFormTypes();
@@ -1683,7 +1683,7 @@ void BrowserAutofillManager::SetDataList(
 
 void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
     const FormData& form) {
-  FormStructure* form_structure = FindCachedFormByRendererId(form.global_id());
+  FormStructure* form_structure = FindCachedFormById(form.global_id());
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
     // If AutofillParseAsync is enabled, the form has just been parsed
     // asynchronously if necessary.
@@ -1784,7 +1784,7 @@ void BrowserAutofillManager::MaybeTriggerRefillForExpirationDate(
   refill_value[refill_value.size() - 1] = '0' + (old_year % 10);
   refill_value[refill_value.size() - 2] = '0' + ((old_year % 100) / 10);
 
-  FormStructure* form_structure = FindCachedFormByRendererId(form.global_id());
+  FormStructure* form_structure = FindCachedFormById(form.global_id());
   if (form_structure && ShouldTriggerRefill(*form_structure)) {
     FillingContext* filling_context = GetFillingContext(*form_structure);
     DCHECK(filling_context);  // This is enforced by ShouldTriggerRefill.
@@ -2073,7 +2073,7 @@ void BrowserAutofillManager::Reset() {
 void BrowserAutofillManager::OnContextMenuShownInField(
     const FormGlobalId& form_global_id,
     const FieldGlobalId& field_global_id) {
-  FormStructure* form = FindCachedFormByRendererId(form_global_id);
+  FormStructure* form = FindCachedFormById(form_global_id);
   if (!form)
     return;
   auto field =
@@ -2559,8 +2559,7 @@ std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
     const FormData& form) {
   // Ignore forms not present in our cache.  These are typically forms with
   // wonky JavaScript that also makes them not auto-fillable.
-  FormStructure* cached_submitted_form =
-      FindCachedFormByRendererId(form.global_id());
+  FormStructure* cached_submitted_form = FindCachedFormById(form.global_id());
   if (!cached_submitted_form || !ShouldUploadForm(*cached_submitted_form)) {
     return nullptr;
   }
@@ -3025,7 +3024,7 @@ bool BrowserAutofillManager::ShouldTriggerRefill(
 }
 
 void BrowserAutofillManager::ScheduleRefill(const FormData& form) {
-  FormStructure* form_structure = FindCachedFormByRendererId(form.global_id());
+  FormStructure* form_structure = FindCachedFormById(form.global_id());
   if (!form_structure)
     return;
 
@@ -3045,7 +3044,7 @@ void BrowserAutofillManager::ScheduleRefill(const FormData& form) {
 }
 
 void BrowserAutofillManager::TriggerRefill(const FormData& form) {
-  FormStructure* form_structure = FindCachedFormByRendererId(form.global_id());
+  FormStructure* form_structure = FindCachedFormById(form.global_id());
   if (!form_structure)
     return;
 

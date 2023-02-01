@@ -9299,7 +9299,7 @@ TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {
 
   browser_autofill_manager_->OnFormsSeen({form}, {});
   FormStructure* parsed_form =
-      browser_autofill_manager_->FindCachedFormByRendererId(form.global_id());
+      browser_autofill_manager_->FindCachedFormById(form.global_id());
 
   ASSERT_TRUE(parsed_form);
   ASSERT_EQ(LanguageCode(), parsed_form->current_page_language());
@@ -9307,8 +9307,7 @@ TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {
   autofill_client_.GetLanguageState()->SetCurrentLanguage("zh");
 
   browser_autofill_manager_->OnFormsSeen({form}, {});
-  parsed_form =
-      browser_autofill_manager_->FindCachedFormByRendererId(form.global_id());
+  parsed_form = browser_autofill_manager_->FindCachedFormById(form.global_id());
 
   ASSERT_EQ(LanguageCode("zh"), parsed_form->current_page_language());
 }
@@ -9336,7 +9335,7 @@ TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
 
   browser_autofill_manager_->OnFormsSeen({form}, {});
   FormStructure* parsed_form =
-      browser_autofill_manager_->FindCachedFormByRendererId(form.global_id());
+      browser_autofill_manager_->FindCachedFormById(form.global_id());
 
   ASSERT_TRUE(parsed_form);
   ASSERT_EQ(LanguageCode(), parsed_form->current_page_language());
@@ -9348,8 +9347,7 @@ TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
 
   autofill_client_.GetLanguageState()->SetCurrentLanguage("hu");
 
-  parsed_form =
-      browser_autofill_manager_->FindCachedFormByRendererId(form.global_id());
+  parsed_form = browser_autofill_manager_->FindCachedFormById(form.global_id());
 
   // Language detection is used only for active frames.
   auto expected_language_code =

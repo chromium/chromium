@@ -329,7 +329,7 @@ void AutofillManager::OnFormsSeen(
     for (const FormData& form : updated_forms) {
       const auto parse_form_start_time = AutofillTickClock::NowTicks();
       FormStructure* cached_form_structure =
-          FindCachedFormByRendererId(form.global_id());
+          FindCachedFormById(form.global_id());
 
       // Not updating signatures of credit card forms is legacy behaviour. We
       // believe that the signatures are kept stable for voting purposes.
@@ -378,8 +378,7 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   std::vector<FormStructure*> queryable_forms;
   DenseSet<FormType> form_types;
   for (const FormData& form : forms) {
-    FormStructure* form_structure =
-        FindCachedFormByRendererId(form.global_id());
+    FormStructure* form_structure = FindCachedFormById(form.global_id());
     if (!form_structure) {
       NOTREACHED();
       continue;
@@ -580,7 +579,7 @@ bool AutofillManager::GetCachedFormAndField(const FormData& form,
                                             FormStructure** form_structure,
                                             AutofillField** autofill_field) {
   // Maybe find an existing FormStructure that corresponds to |form|.
-  FormStructure* cached_form = FindCachedFormByRendererId(form.global_id());
+  FormStructure* cached_form = FindCachedFormById(form.global_id());
   if (cached_form) {
     if (base::FeatureList::IsEnabled(features::kAutofillParseAsync) ||
         !CachedFormNeedsUpdate(form, *cached_form)) {
@@ -642,8 +641,7 @@ size_t AutofillManager::FindCachedFormsBySignature(
   return hits_num;
 }
 
-FormStructure* AutofillManager::FindCachedFormByRendererId(
-    FormGlobalId form_id) const {
+FormStructure* AutofillManager::FindCachedFormById(FormGlobalId form_id) const {
   auto it = form_structures_.find(form_id);
   return it != form_structures_.end() ? it->second.get() : nullptr;
 }
@@ -692,7 +690,7 @@ void AutofillManager::ParseFormsAsync(
     DCHECK_LE(num_managed_forms, kAutofillManagerMaxFormCacheSize);
 
     if (FormStructure* cached_form_structure =
-            FindCachedFormByRendererId(form_data.global_id())) {
+            FindCachedFormById(form_data.global_id())) {
       // We need to keep the server data if available. We need to use them while
       // determining the heuristics.
       form_structure->RetrieveFromCache(
@@ -796,7 +794,7 @@ void AutofillManager::ParseFormAsync(
   }
 
   if (FormStructure* cached_form_structure =
-          FindCachedFormByRendererId(form_data.global_id())) {
+          FindCachedFormById(form_data.global_id())) {
     if (!CachedFormNeedsUpdate(form_data, *cached_form_structure)) {
       std::move(callback).Run(*this, form_data);
       return;

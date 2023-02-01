@@ -288,7 +288,7 @@ class AutofillManager
 
   // Returns nullptr if no cached form structure is found with a matching
   // |form_id|. Runs in logarithmic time.
-  FormStructure* FindCachedFormByRendererId(FormGlobalId form_id) const;
+  FormStructure* FindCachedFormById(FormGlobalId form_id) const;
 
   // Returns the number of forms this Autofill handler is aware of.
   size_t NumFormsDetected() const { return form_structures_.size(); }

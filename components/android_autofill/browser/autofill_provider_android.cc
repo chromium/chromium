@@ -381,7 +381,7 @@ void AutofillProviderAndroid::OnServerPredictionsAvailable(
     return;
 
   if (auto* form_structure =
-          manager_->FindCachedFormByRendererId(form_->form().global_id())) {
+          manager_->FindCachedFormById(form_->form().global_id())) {
     form_->UpdateFieldTypes(*form_structure);
 
     JNIEnv* env = AttachCurrentThread();
@@ -400,7 +400,7 @@ void AutofillProviderAndroid::OnServerQueryRequestError(
     return;
 
   if (auto* form_structure =
-          manager_->FindCachedFormByRendererId(form_->form().global_id())) {
+          manager_->FindCachedFormById(form_->form().global_id())) {
     if (form_structure->form_signature() != form_signature)
       return;
 

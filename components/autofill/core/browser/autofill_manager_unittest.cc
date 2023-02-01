@@ -473,8 +473,8 @@ TEST_F(
 
   EXPECT_CALL(observer_, OnAfterLoadedServerPredictions());
   manager_->OnLoadedServerPredictionsForTest(
-      "", {manager_->FindCachedFormByRendererId(forms[0].global_id())
-               ->form_signature()});
+      "",
+      {manager_->FindCachedFormById(forms[0].global_id())->form_signature()});
 
   manager_->RemoveObserver(&observer_);
 }
