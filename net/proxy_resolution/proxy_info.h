@@ -36,31 +36,21 @@ class NET_EXPORT ProxyInfo {
 
   // Uses a direct connection. did_bypass_proxy() will return true to indicate
   // that the direct connection is the result of configured proxy bypass rules.
-  //
-  // See also the note for UseDirect().
   void UseDirectWithBypassedProxy();
 
   // Uses a specific proxy server, of the form:
   //   proxy-uri = [<scheme> "://"] <hostname> [":" <port>]
   // This may optionally be a semi-colon delimited list of <proxy-uri>.
   // It is OK to have LWS between entries.
-  //
-  // See also the note for UseDirect().
   void UseNamedProxy(const std::string& proxy_uri_list);
 
   // Sets the proxy list to a single entry, |proxy_server|.
-  //
-  // See also the note for UseDirect().
   void UseProxyServer(const ProxyServer& proxy_server);
 
   // Parses from the given PAC result.
-  //
-  // See also the note for UseDirect().
   void UsePacString(const std::string& pac_string);
 
   // Uses the proxies from the given list.
-  //
-  // See also the note for UseDirect().
   void UseProxyList(const ProxyList& proxy_list);
 
   // Uses the proxies from the given list, but does not otherwise reset the
