@@ -29,20 +29,48 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/mime_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/compression_utils.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace {
 constexpr base::FilePath::CharType kTerminalRoot[] =
     FILE_PATH_LITERAL("/usr/share/chromeos-assets/crosh_builtin");
 constexpr char kDefaultMime[] = "text/html";
+
+class TerminalFileSystemProvider
+    : public ash::file_system_provider::ExtensionProvider {
+ public:
+  TerminalFileSystemProvider()
+      : ash::file_system_provider::ExtensionProvider(
+            ProfileManager::GetPrimaryUserProfile(),
+            ash::file_system_provider::ProviderId::CreateFromExtensionId(
+                guest_os::kTerminalSystemAppId),
+            ash::file_system_provider::Capabilities(
+                /*configurable=*/true,
+                /*watchable=*/false,
+                /*multiple_mounts=*/true,
+                extensions::FileSystemProviderSource::SOURCE_NETWORK),
+            l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_APP_NAME)) {}
+  bool RequestMount(
+      Profile* profile,
+      ash::file_system_provider::RequestMountCallback callback) override {
+    guest_os::LaunchTerminalHome(profile, display::kInvalidDisplayId);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), base::File::FILE_OK));
+    return true;
+  }
+};
 
 // Attempts to read |path| as plain file.  If read fails, attempts to read
 // |path|.gz and decompress. Returns true if either file is read ok.
@@ -105,18 +133,8 @@ std::unique_ptr<TerminalSource> TerminalSource::ForCrosh(Profile* profile) {
 
 // static
 std::unique_ptr<TerminalSource> TerminalSource::ForTerminal(Profile* profile) {
-  auto provider_id =
-      ash::file_system_provider::ProviderId::CreateFromExtensionId(
-          guest_os::kTerminalSystemAppId);
-  ash::file_system_provider::Capabilities capabilities(
-      /*configurable=*/true, /*watchable=*/false, /*multiple_mounts=*/true,
-      extensions::FileSystemProviderSource::SOURCE_NETWORK);
-  auto provider =
-      std::make_unique<ash::file_system_provider::ExtensionProvider>(
-          ProfileManager::GetPrimaryUserProfile(), std::move(provider_id),
-          std::move(capabilities), chrome::kChromeUIUntrustedTerminalURL);
   ash::file_system_provider::Service::Get(profile)->RegisterProvider(
-      std::move(provider));
+      std::make_unique<TerminalFileSystemProvider>());
   return base::WrapUnique(new TerminalSource(
       profile, chrome::kChromeUIUntrustedTerminalURL,
       profile->GetPrefs()
