@@ -1496,16 +1496,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAside) {
   RunHtmlTest(FILE_PATH_LITERAL("aside.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAsideInsideOtherSection) {
-  RunHtmlTest(FILE_PATH_LITERAL("aside-inside-other-section.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAsideInsideSectionRoleGeneric) {
-  RunHtmlTest(FILE_PATH_LITERAL("aside-inside-section-role-generic.html"));
-}
-
 // https://crbug.com/923993
 // Super flaky with NetworkService.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DISABLED_AccessibilityAudio) {

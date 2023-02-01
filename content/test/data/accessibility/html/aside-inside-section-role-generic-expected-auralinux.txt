@@ -1,8 +1,0 @@
-[document web]
-++[landmark] xml-roles:complementary
-++++[paragraph]
-++++++[static] name='aside inside section with role presentational.'
-++[section] xml-roles:generic
-++++[landmark] xml-roles:complementary
-++++++[paragraph]
-++++++++[static] name='aside inside section with role generic.'

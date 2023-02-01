@@ -45,6 +45,21 @@ Document
 ++++Group
 ++++++Text Name='This should NOT have banner role.'
 ++Group
+++++Button Name='Details' ExpandCollapse.ExpandCollapseState='LeafNode'
+++++++Text Name='Details'
+++Group IsControlElement=false
+++++Group
+++++++Text Name='This should NOT have banner role.'
+++Group
+++++Group
+++++++Text Name='This should NOT have banner role.'
+++Group
+++++Group
+++++++Text Name='This should NOT have banner role.'
+++Group
+++++Group
+++++++Text Name='This should NOT have banner role.'
+++Group
 ++++Group
 ++++++Text Name='This should NOT banner role.'
 ++Group
@@ -60,6 +75,20 @@ Document
 ++++Group
 ++++++Text Name='This should NOT have banner role.'
 ++Group
+++++Button Name='Details' ExpandCollapse.ExpandCollapseState='LeafNode'
+++++++Text Name='Details'
+++Group IsControlElement=false
+++++Group
+++++++Text Name='This should NOT have banner role.'
+++Group
+++++Group
+++++++Text Name='This should NOT have banner role.'
+++Group
+++++Text Name='This should NOT have banner role.'
+++Group
+++++Group
+++++++Text Name='This should NOT have banner role.'
+++Group
 ++++Group
 ++++++Text Name='This should NOT footer role.'
 ++Group
@@ -75,6 +104,20 @@ Document
 ++++Group
 ++++++Text Name='This should NOT have footer role.'
 ++Group
+++++Button Name='Details' ExpandCollapse.ExpandCollapseState='LeafNode'
+++++++Text Name='Details'
+++Group IsControlElement=false
+++++Group
+++++++Text Name='This should NOT have footer role.'
+++Group
+++++Group
+++++++Text Name='This should NOT have footer role.'
+++Group
+++++Text Name='This should NOT have footer role.'
+++Group
+++++Group
+++++++Text Name='This should NOT have footer role.'
+++Group
 ++++Group
 ++++++Text Name='This should NOT footer role.'
 ++Group
@@ -90,32 +133,17 @@ Document
 ++++Group
 ++++++Text Name='This should NOT have footer role.'
 ++Group
-++++Group IsControlElement=false
-++++++Text Name='This should NOT complementary role.'
-++Group
-++++Group IsControlElement=false
-++++++Text Name='This should NOT have complementary role.'
-++Group
-++++Group IsControlElement=false
-++++++Text Name='This should NOT have complementary role.'
-++Group
-++++Group IsControlElement=false
-++++++Text Name='This should NOT have complementary role.'
+++++Button Name='Details' ExpandCollapse.ExpandCollapseState='LeafNode'
+++++++Text Name='Details'
+++Group IsControlElement=false
+++++Group
+++++++Text Name='This should NOT have footer role.'
 ++Group
 ++++Group
-++++++Text Name='This should have complementary role.'
-++Group
-++++Group IsControlElement=false
-++++++Text Name='This should NOT complementary role.'
-++Group
-++++Group IsControlElement=false
-++++++Text Name='This should NOT have complementary role.'
-++Group
-++++Group IsControlElement=false
-++++++Text Name='This should NOT have complementary role.'
-++Group
-++++Group IsControlElement=false
-++++++Text Name='This should NOT have complementary role.'
+++++++Text Name='This should NOT have footer role.'
 ++Group
 ++++Group
-++++++Text Name='This should have complementary role.'
+++++++Text Name='This should NOT have footer role.'
+++Group
+++++Group
+++++++Text Name='This should NOT have footer role.'

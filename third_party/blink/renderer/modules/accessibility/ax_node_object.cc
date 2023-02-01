@@ -802,52 +802,36 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
   return true;
 }
 
-// The following lists are for deciding whether the tags aside,
-// header and footer can be interpreted as roles complementary, banner and
-// contentInfo or if they should be interpreted as generic. This list
-// includes all roles that correspond to the html sectioning content elements.
-static HashSet<ax::mojom::blink::Role>& GetLandmarkIsNotAllowedAncestorRoles(
-    ax::mojom::blink::Role landmark) {
-  // clang-format off
-  DEFINE_STATIC_LOCAL(
-      HashSet<ax::mojom::blink::Role>, sectioning_content_roles,
-      ({
-        ax::mojom::blink::Role::kArticle,
-        ax::mojom::blink::Role::kComplementary,
-        ax::mojom::blink::Role::kMain,
-        ax::mojom::blink::Role::kNavigation,
-        ax::mojom::blink::Role::kSection
-      }));
-  // clang-format on
-
-  DEFINE_STATIC_LOCAL(HashSet<ax::mojom::blink::Role>,
-                      aside_is_not_allowed_roles, ());
-
-  // Main can contain complementary element but not header or footer.
-  if (landmark == ax::mojom::blink::Role::kComplementary) {
-    if (aside_is_not_allowed_roles.empty()) {
-      for (const auto& role : sectioning_content_roles) {
-        if (role != ax::mojom::blink::Role::kMain) {
-          aside_is_not_allowed_roles.insert(role);
-        }
-      }
-    }
-    return aside_is_not_allowed_roles;
+// There should only be one banner/contentInfo per page. If header/footer are
+// being used within an article, aside, nave, section, blockquote, details,
+// fieldset, figure, td, or main, then it should not be exposed as whole
+// page's banner/contentInfo.
+static HashSet<QualifiedName>& GetLandmarkRolesNotAllowed() {
+  DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, landmark_roles_not_allowed, ());
+  if (landmark_roles_not_allowed.empty()) {
+    landmark_roles_not_allowed.insert(html_names::kArticleTag);
+    landmark_roles_not_allowed.insert(html_names::kAsideTag);
+    landmark_roles_not_allowed.insert(html_names::kNavTag);
+    landmark_roles_not_allowed.insert(html_names::kSectionTag);
+    landmark_roles_not_allowed.insert(html_names::kBlockquoteTag);
+    landmark_roles_not_allowed.insert(html_names::kDetailsTag);
+    landmark_roles_not_allowed.insert(html_names::kFieldsetTag);
+    landmark_roles_not_allowed.insert(html_names::kFigureTag);
+    landmark_roles_not_allowed.insert(html_names::kTdTag);
+    landmark_roles_not_allowed.insert(html_names::kMainTag);
   }
-  return sectioning_content_roles;
+  return landmark_roles_not_allowed;
 }
 
-bool AXNodeObject::IsDescendantOfLandmarkDisallowedElement() const {
+bool AXNodeObject::IsDescendantOfElementType(
+    HashSet<QualifiedName>& tag_names) const {
   if (!GetNode())
     return false;
 
-  auto role_names = GetLandmarkIsNotAllowedAncestorRoles(RoleValue());
-
-  for (AXObject* parent = ParentObjectUnignored(); parent;
-       parent = parent->ParentObjectUnignored()) {
-    if (role_names.Contains(parent->RoleValue())) {
+  for (Element* parent = GetNode()->parentElement(); parent;
+       parent = parent->parentElement()) {
+    if (tag_names.Contains(parent->TagQName()))
       return true;
-    }
   }
   return false;
 }
@@ -1304,11 +1288,18 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (IsFrame(GetNode()))
     return ax::mojom::blink::Role::kIframe;
 
+  // There should only be one banner/contentInfo per page. If header/footer are
+  // being used within an article or section then it should not be exposed as
+  // whole page's banner/contentInfo but as a generic container role.
   if (GetNode()->HasTagName(html_names::kHeaderTag)) {
+    if (IsDescendantOfElementType(GetLandmarkRolesNotAllowed()))
+      return ax::mojom::blink::Role::kHeaderAsNonLandmark;
     return ax::mojom::blink::Role::kHeader;
   }
 
   if (GetNode()->HasTagName(html_names::kFooterTag)) {
+    if (IsDescendantOfElementType(GetLandmarkRolesNotAllowed()))
+      return ax::mojom::blink::Role::kFooterAsNonLandmark;
     return ax::mojom::blink::Role::kFooter;
   }
 

@@ -1,12 +1,12 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++footer
+++++++footerAsNonLandmark
 ++++++++paragraph
 ++++++++++staticText name='footer inside section with role presentational.'
 ++++++++++++inlineTextBox name='footer inside section with role presentational.'
 ++++++genericContainer
-++++++++footer
+++++++++footerAsNonLandmark
 ++++++++++paragraph
 ++++++++++++staticText name='footer inside section with role generic.'
 ++++++++++++++inlineTextBox name='footer inside section with role generic.'
