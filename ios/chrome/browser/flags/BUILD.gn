@@ -72,7 +72,6 @@ source_set("flags") {
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/download:features",
     "//ios/chrome/browser/ui/first_run:field_trial",
-    "//ios/chrome/browser/ui/first_run:field_trial_constants",
     "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/keyboard:features",
     "//ios/chrome/browser/ui/ntp:feature_flags",

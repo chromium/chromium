@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
-#import "ios/chrome/browser/ui/first_run/field_trial_constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
@@ -101,15 +100,11 @@ void DismissDefaultBrowserPromo() {
 }  // namespace
 
 // Test first run stages
-//
-// Note: Contrary to the naming, this file tests MiceFRE with
-// TangibleSyncA (which is the default configuration of the
-// `kNewMobileIdentityConsistencyFRE` feature flag).
-@interface FirstRunTwoStepsTestCase : ChromeTestCase
+@interface FirstRunTestCase : ChromeTestCase
 
 @end
 
-@implementation FirstRunTwoStepsTestCase
+@implementation FirstRunTestCase
 
 - (void)setUp {
   [[self class] testForStartup];

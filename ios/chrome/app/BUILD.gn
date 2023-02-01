@@ -334,7 +334,6 @@ source_set("first_run_app_state_agent") {
     "//ios/chrome/browser/ui/commands:commands",
     "//ios/chrome/browser/ui/first_run",
     "//ios/chrome/browser/ui/first_run:field_trial",
-    "//ios/chrome/browser/ui/first_run:field_trial_constants",
     "//ios/chrome/browser/ui/first_run:first_run_provider",
     "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/main:browser_interface_provider",

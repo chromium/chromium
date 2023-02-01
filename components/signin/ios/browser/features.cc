@@ -18,8 +18,4 @@ const char kDelayThresholdMinutesToUpdateGaiaCookie[] =
 const char kWaitThresholdMillisecondsForCapabilitiesApi[] =
     "wait-threshold-milliseconds-for-capabilities-api";
 
-BASE_FEATURE(kNewMobileIdentityConsistencyFRE,
-             "NewMobileIdentityConsistencyFRE",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace signin
