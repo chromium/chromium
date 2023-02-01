@@ -302,10 +302,6 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage) {
   DCHECK(gpu::IsValidClientUsage(usage));
-  DCHECK(gpu_memory_buffer->GetType() == gfx::NATIVE_PIXMAP ||
-         gpu_memory_buffer->GetType() == gfx::ANDROID_HARDWARE_BUFFER ||
-         gpu_memory_buffer_manager);
-
   // TODO(piman): DCHECK GMB format support.
   DCHECK(IsImageSizeValidForGpuMemoryBufferFormat(
       gpu_memory_buffer->GetSize(), gpu_memory_buffer->GetFormat()));
