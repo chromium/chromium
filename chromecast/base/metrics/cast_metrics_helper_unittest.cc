@@ -4,6 +4,7 @@
 
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 
+#include <memory>
 #include <string>
 
 #include "base/json/json_reader.h"
@@ -36,21 +37,34 @@ constexpr int kValue = 123;
 constexpr base::TimeDelta kAppLoadTimeout = base::Minutes(5);
 
 MATCHER_P2(HasDouble, key, value, "") {
-  auto v = base::JSONReader::ReadDeprecated(arg);
-  return v && v->FindKey(key) && v->FindKey(key)->is_double() &&
-         v->FindKey(key)->GetDouble() == value;
+  const std::unique_ptr<base::Value> v = base::JSONReader::ReadDeprecated(arg);
+  if (!v || !v->is_dict()) {
+    return false;
+  }
+
+  const base::Value::Dict& dict = v->GetDict();
+  return dict.FindDouble(key) == value;
 }
 
 MATCHER_P2(HasInt, key, value, "") {
-  auto v = base::JSONReader::ReadDeprecated(arg);
-  return v && v->FindKey(key) && v->FindKey(key)->is_int() &&
-         v->FindKey(key)->GetInt() == value;
+  const std::unique_ptr<base::Value> v = base::JSONReader::ReadDeprecated(arg);
+  if (!v || !v->is_dict()) {
+    return false;
+  }
+
+  const base::Value::Dict& dict = v->GetDict();
+  return dict.FindInt(key) == value;
 }
 
 MATCHER_P2(HasString, key, value, "") {
-  auto v = base::JSONReader::ReadDeprecated(arg);
-  return v && v->FindKey(key) && v->FindKey(key)->is_string() &&
-         v->FindKey(key)->GetString() == value;
+  const std::unique_ptr<base::Value> v = base::JSONReader::ReadDeprecated(arg);
+  if (!v || !v->is_dict()) {
+    return false;
+  }
+
+  const base::Value::Dict& dict = v->GetDict();
+  const std::string* stored_value = dict.FindString(key);
+  return stored_value && (*stored_value == value);
 }
 
 }  // namespace
