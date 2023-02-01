@@ -91,7 +91,8 @@ if (is_win) {
   }
 
   group("runtime_libs") {
-    data = []
+    # This is needed for any tests that need to decode stacks.
+    data = [ "$root_out_dir/dbghelp.dll" ]
     if (is_component_build) {
       # Copy the VS runtime DLLs into the isolate so that they don't have to be
       # preinstalled on the target machine. The debug runtimes have a "d" at

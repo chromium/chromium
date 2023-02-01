@@ -18,7 +18,7 @@ import sys
 
 from gn_helpers import ToGNString
 
-# VS 2019 16.61 with 10.0.20348.0 SDK, 10.0.19041 version of Debuggers
+# VS 2019 16.61 with 10.0.20348.0 SDK, 10.0.22621.755 version of Debuggers,
 # with ARM64 libraries and UWP support.
 # See go/chromium-msvc-toolchain for instructions about how to update the
 # toolchain.
@@ -32,7 +32,7 @@ from gn_helpers import ToGNString
 #   Affects the availability of APIs in the toolchain headers.
 # * //docs/windows_build_instructions.md mentions of VS or Windows SDK.
 #   Keeps the document consistent with the toolchain version.
-TOOLCHAIN_HASH = '1023ce2e82'
+TOOLCHAIN_HASH = '0b5ee4d2b1'
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 json_data_file = os.path.join(script_dir, 'win_toolchain.json')
