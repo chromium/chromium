@@ -57,11 +57,9 @@ BASE_FEATURE(kCreateShortcutIgnoresManifest,
 // only the "installable" status but not "promotable".
 BASE_FEATURE(kSkipServiceWorkerCheckInstallOnly,
              "SkipServiceWorkerCheckInstallOnly",
-#if BUILDFLAG(IS_ANDROID)
+
              base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
+
 );
 
 // Enables showing a detailed install dialog for user installs.
