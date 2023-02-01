@@ -487,6 +487,24 @@ AutofillOfferData AutofillOfferDataFromOfferSpecifics(
   }
 }
 
+VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
+    const sync_pb::AutofillWalletUsageSpecifics& usage_specifics) {
+  const sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData
+      virtual_card_usage_data_specifics =
+          usage_specifics.virtual_card_usage_data();
+  DCHECK(usage_specifics.has_guid() && IsVirtualCardUsageDataSpecificsValid(
+                                           virtual_card_usage_data_specifics));
+
+  return VirtualCardUsageData(
+      VirtualCardUsageData::UsageDataId(usage_specifics.guid()),
+      VirtualCardUsageData::InstrumentId(
+          virtual_card_usage_data_specifics.instrument_id()),
+      VirtualCardUsageData::VirtualCardLastFour(base::UTF8ToUTF16(
+          virtual_card_usage_data_specifics.virtual_card_last_four())),
+      url::Origin::Create(
+          GURL(virtual_card_usage_data_specifics.merchant_url())));
+}
+
 AutofillProfile ProfileFromSpecifics(
     const sync_pb::WalletPostalAddress& address) {
   AutofillProfile profile(AutofillProfile::SERVER_PROFILE, std::string());
@@ -684,6 +702,17 @@ bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics) {
 
   return (has_instrument_id && has_fixed_or_percentage_reward) ||
          has_promo_code;
+}
+
+bool IsVirtualCardUsageDataSpecificsValid(
+    const sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData&
+        specifics) {
+  // Ensure fields are present and in correct format.
+  return specifics.has_instrument_id() &&
+         specifics.has_virtual_card_last_four() &&
+         specifics.virtual_card_last_four().length() == 4 &&
+         specifics.has_merchant_url() &&
+         !url::Origin::Create(GURL(specifics.merchant_url())).opaque();
 }
 
 bool IsVirtualCardUsageDataSet(

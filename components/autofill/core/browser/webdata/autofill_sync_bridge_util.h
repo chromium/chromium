@@ -74,6 +74,12 @@ void SetAutofillOfferSpecificsFromOfferData(
 AutofillOfferData AutofillOfferDataFromOfferSpecifics(
     const sync_pb::AutofillOfferSpecifics& offer_specifics);
 
+// Creates a VirtualCardUsageData from the specified |usage_specifics|.
+// |usage_specifics| must be valid (as per
+// IsVirtualCardUsageDataSpecificsValid()).
+VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
+    const sync_pb::AutofillWalletUsageSpecifics& usage_specifics);
+
 // Creates an AutofillProfile from the specified |address| specifics.
 AutofillProfile ProfileFromSpecifics(
     const sync_pb::WalletPostalAddress& address);
@@ -104,6 +110,11 @@ void PopulateWalletTypesFromSyncData(
 template <class Item>
 bool AreAnyItemsDifferent(const std::vector<std::unique_ptr<Item>>& old_data,
                           const std::vector<Item>& new_data);
+
+// Returns whether the Virtual Card Usage Data |specifics| is valid data.
+bool IsVirtualCardUsageDataSpecificsValid(
+    const sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData&
+        specifics);
 
 // Returns whether the Wallet Offer |specifics| is valid data.
 bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics);

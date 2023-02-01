@@ -458,5 +458,26 @@ TEST_F(AutofillSyncBridgeUtilTest, WalletUsageSpecificsFromWalletUsageData) {
             usage_data.virtual_card_usage_data().merchant_origin().Serialize());
 }
 
+// Test to ensure that Wallet Usage Data for virtual card retrieval is correctly
+// converted to AutofillWalletUsageSpecifics.
+TEST_F(AutofillSyncBridgeUtilTest, VirtualCardUsageDataFromUsageSpecifics) {
+  sync_pb::AutofillWalletUsageSpecifics usage_specifics;
+  SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(
+      AutofillWalletUsageData::ForVirtualCard(test::GetVirtualCardUsageData1()),
+      &usage_specifics);
+
+  VirtualCardUsageData virtual_card_usage_data =
+      VirtualCardUsageDataFromUsageSpecifics(usage_specifics);
+
+  EXPECT_EQ(*virtual_card_usage_data.usage_data_id(), usage_specifics.guid());
+  EXPECT_EQ(*virtual_card_usage_data.instrument_id(),
+            usage_specifics.virtual_card_usage_data().instrument_id());
+  EXPECT_EQ(
+      base::UTF16ToUTF8(*virtual_card_usage_data.virtual_card_last_four()),
+      usage_specifics.virtual_card_usage_data().virtual_card_last_four());
+  EXPECT_EQ(virtual_card_usage_data.merchant_origin().Serialize(),
+            usage_specifics.virtual_card_usage_data().merchant_url());
+}
+
 }  // namespace
 }  // namespace autofill
