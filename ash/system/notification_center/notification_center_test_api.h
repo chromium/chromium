@@ -127,6 +127,12 @@ class NotificationCenterTestApi {
   // Returns the top level view for the notification center.
   NotificationCenterView* GetNotificationCenterView();
 
+  // Returns the parent view for all notification views.
+  NotificationListView* GetNotificationListView();
+
+  // Completes all animations that may be running in `NotificationListView`.
+  void CompleteNotificationListAnimation();
+
   // Returns the clear all button in the bottom right corner of the notification
   // center UI.
   views::View* GetClearAllButton();
@@ -138,8 +144,6 @@ class NotificationCenterTestApi {
 
  private:
   std::string GenerateNotificationId();
-
-  NotificationListView* GetNotificationListView();
 
   NotificationListView* GetNotificationListViewOnDisplay(int64_t display_id);
 

@@ -12,6 +12,7 @@
 #include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_view.h"
+#include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
@@ -19,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
 
@@ -223,6 +225,40 @@ TEST_F(NotificationCenterBubbleTest, LockScreenNotificationVisibility) {
   EXPECT_FALSE(test_api()->GetNotificationViewForId(id));
   EXPECT_TRUE(test_api()->GetNotificationViewForId(system_id));
   EXPECT_TRUE(test_api()->GetNotificationViewForId(system_id)->GetVisible());
+}
+
+TEST_F(NotificationCenterBubbleTest, LargeNotificationExpand) {
+  const std::string url = "http://test-url.com/";
+  std::string id0 = test_api()->AddNotificationWithSourceUrl(url);
+
+  // Create a large grouped notification by adding a bunch of notifications with
+  // the same url.
+  for (int i = 0; i < 20; i++) {
+    test_api()->AddNotificationWithSourceUrl(url);
+  }
+
+  test_api()->ToggleBubble();
+
+  std::string parent_id =
+      id0 + message_center::kIdSuffixForGroupContainerNotification;
+
+  auto* parent_notification_view = static_cast<AshNotificationView*>(
+      test_api()->GetNotificationViewForId(parent_id));
+
+  EXPECT_FALSE(parent_notification_view->IsExpanded());
+
+  // Expand the grouped notification to overflow the bubble. Then, make sure the
+  // `NotificationListView` is sized correctly relative to the notification and
+  // the bubble's widget.
+  parent_notification_view->ToggleExpand();
+  EXPECT_TRUE(parent_notification_view->IsExpanded());
+  test_api()->CompleteNotificationListAnimation();
+
+  EXPECT_EQ(parent_notification_view->height(),
+            test_api()->GetNotificationListView()->height());
+
+  EXPECT_LT(test_api()->GetWidget()->GetWindowBoundsInScreen().height(),
+            test_api()->GetNotificationListView()->height());
 }
 
 }  // namespace ash

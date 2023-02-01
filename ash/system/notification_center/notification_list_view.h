@@ -171,6 +171,7 @@ class ASH_EXPORT NotificationListView
       const;
 
  private:
+  friend class NotificationCenterTestApi;
   friend class NotificationCenterViewTest;
   friend class NotificationListViewTest;
   friend class UnifiedMessageCenterBubbleTest;

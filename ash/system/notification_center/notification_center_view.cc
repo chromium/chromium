@@ -173,6 +173,12 @@ bool NotificationCenterView::UpdateNotificationBar() {
 }
 
 void NotificationCenterView::SetMaxHeight(int max_height) {
+  // Not applicable when the QsRevamp feature is enabled since the notification
+  // center can take up the entire work area's height.
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
+
   int max_scroller_height = max_height;
   if (notification_bar_->GetVisible()) {
     max_scroller_height -=

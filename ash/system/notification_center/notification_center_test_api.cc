@@ -194,6 +194,16 @@ NotificationCenterView* NotificationCenterTestApi::GetNotificationCenterView() {
                    ->notification_center_view();
 }
 
+NotificationListView* NotificationCenterTestApi::GetNotificationListView() {
+  return GetNotificationListViewOnDisplay(primary_display_id_);
+}
+
+void NotificationCenterTestApi::CompleteNotificationListAnimation() {
+  while (GetNotificationListView()->animation_->is_animating()) {
+    GetNotificationListView()->animation_->End();
+  }
+}
+
 views::View* NotificationCenterTestApi::GetClearAllButton() {
   return notification_center_tray_->bubble_->notification_center_view_
       ->notification_bar_->clear_all_button_;
@@ -206,10 +216,6 @@ std::string NotificationCenterTestApi::NotificationIdToParentNotificationId(
 
 std::string NotificationCenterTestApi::GenerateNotificationId() {
   return base::NumberToString(notification_id_++);
-}
-
-NotificationListView* NotificationCenterTestApi::GetNotificationListView() {
-  return GetNotificationListViewOnDisplay(primary_display_id_);
 }
 
 NotificationListView*
