@@ -11,12 +11,16 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-// A signleton that provides all the URLs that are used for connecting to GAIA.
+// A singleton that provides all the URLs that are used for connecting to GAIA.
 //
 // Please update InitializeFromConfig() when adding new URLs.
 class GaiaUrls {
  public:
   static GaiaUrls* GetInstance();
+
+  // Public for testing, otherwise use singleton above.
+  GaiaUrls();
+  ~GaiaUrls();
 
   GaiaUrls(const GaiaUrls&) = delete;
   GaiaUrls& operator=(const GaiaUrls&) = delete;
@@ -60,11 +64,7 @@ class GaiaUrls {
   GURL GetCheckConnectionInfoURLWithSource(const std::string& source);
 
  private:
-  GaiaUrls();
-  ~GaiaUrls();
-
   friend struct base::DefaultSingletonTraits<GaiaUrls>;
-  friend class GaiaUrlsTest;
 
   void InitializeDefault();
   void InitializeFromConfig();

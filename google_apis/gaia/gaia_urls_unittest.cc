@@ -4,6 +4,8 @@
 
 #include "google_apis/gaia/gaia_urls.h"
 
+#include <memory>
+
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -44,22 +46,19 @@ base::FilePath GetTestFilePath(const std::string& relative_path) {
 class GaiaUrlsTest : public ::testing::Test {
  public:
   GaiaUrlsTest() = default;
-  ~GaiaUrlsTest() override { delete gaia_urls_; }
+  ~GaiaUrlsTest() override = default;
 
   // Lazily constructs |gaia_urls_|.
   GaiaUrls* gaia_urls() {
     if (!gaia_urls_) {
       GaiaConfig::ResetInstanceForTesting();
-      gaia_urls_ = new GaiaUrls();
+      gaia_urls_ = std::make_unique<GaiaUrls>();
     }
-    return gaia_urls_;
+    return gaia_urls_.get();
   }
 
  private:
-  // GaiaUrls must be constructed after command line parameters are overridden.
-  // GaiaUrls cannot be put into std::unique_ptr<> because ~GaiaUrls() is
-  // private. Thus, the owning raw pointer is used.
-  raw_ptr<GaiaUrls> gaia_urls_ = nullptr;
+  std::unique_ptr<GaiaUrls> gaia_urls_;
 };
 
 TEST_F(GaiaUrlsTest, InitializeDefault_AllUrls) {
