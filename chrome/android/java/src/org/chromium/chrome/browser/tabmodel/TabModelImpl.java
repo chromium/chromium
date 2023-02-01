@@ -16,14 +16,12 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
-import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -733,15 +731,6 @@ public class TabModelImpl extends TabModelJniBridge {
                 break;
             default:
                 assert false;
-        }
-
-        // If shouldIgnoreNewTab returns true, the intent is handled by another
-        // activity. As a result, don't launch a new tab to open the URL.
-        InterceptNavigationDelegateImpl delegate = InterceptNavigationDelegateTabHelper.get(parent);
-        if (delegate != null
-                && delegate.shouldIgnoreNewTab(
-                        url, incognito, isRendererInitiated, initiatorOrigin)) {
-            return;
         }
 
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);

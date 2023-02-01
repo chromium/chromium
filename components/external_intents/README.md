@@ -110,16 +110,13 @@ lives in **ExternalNavigationHandler#shouldOverrideUrlLoading**. This function
 makes use of the **ExternalNavigationDelegate** to allow content embedders to
 customize the behavior, and the **RedirectHandler** to track Navigation history.
 
-There are 3 main ways shouldOverrideUrlLoading gets invoked:
+There are 2 ways shouldOverrideUrlLoading gets invoked:
 
 - Main frame navigations
   - Called through a NavigationThrottle in intercept\_navigation\_delegate.cc
 - Subframe navigations
   - Only intercepted for external protocols
   - Called through ExternalProtocolHandler::LaunchUrl
-- New Tab navigations (but only sometimes)
-  - Called through the popup blocker (and maybe other things?)
-  - Doesn't have a RedirectHandler - hard to reason about
 
 # Additional Details
 

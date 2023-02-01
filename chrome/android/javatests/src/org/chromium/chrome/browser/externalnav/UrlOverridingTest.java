@@ -64,6 +64,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -78,6 +79,7 @@ import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tabmodel.TabModelImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -106,6 +108,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -1490,5 +1493,21 @@ public class UrlOverridingTest {
     @Features.EnableFeatures({ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME})
     public void testIncognitoSubframeExternalNavigation_Accepted() throws Exception {
         doTestIncognitoSubframeExternalNavigation(true);
+    }
+
+    @Test
+    @LargeTest
+    public void testWindowOpenRedirect() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        ChromeActivity activity = mActivityTestRule.getActivity();
+        TabModelImpl tabModel = (TabModelImpl) activity.getTabModelSelector().getModel(false);
+        GURL url = new GURL("intent://test/#Intent;scheme=externalappscheme;end;");
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Called when a popup window is allowed.
+            tabModel.openNewTab(activity.getActivityTab(), url, createExampleOrigin(), null, null,
+                    WindowOpenDisposition.NEW_FOREGROUND_TAB, true, true);
+        });
+
+        assertMessagePresent();
     }
 }

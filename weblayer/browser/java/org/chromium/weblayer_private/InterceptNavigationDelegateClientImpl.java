@@ -102,11 +102,6 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
-    public boolean isHidden() {
-        return !mTab.isVisible();
-    }
-
-    @Override
     public boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(
             NavigationHandle navigationHandle) {
         NavigationImpl navigation = mTab.getNavigationControllerImpl().getNavigationImplFromId(
