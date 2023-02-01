@@ -108,7 +108,7 @@ void DeviceSensorEntry::SensorReadingChanged() {
   // frequency, the |shared_buffer| is read frequently, and
   // Sensor::ConfigureReadingChangeNotifications() is set to false,
   // so this method is not called and doesn't need to be implemented.
-  NOTREACHED();
+  LOG(ERROR) << "SensorReadingChanged";
 }
 
 void DeviceSensorEntry::OnSensorCreated(
