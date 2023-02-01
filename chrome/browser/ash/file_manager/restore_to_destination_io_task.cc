@@ -160,9 +160,19 @@ void RestoreToDestinationIOTask::OnTrashInfoParsed(
 void RestoreToDestinationIOTask::OnProgressCallback(
     const ProgressStatus& status) {
   progress_.state = status.state;
+
+  // The underlying CopyOrMoveIOTask can enter state::PAUSED to resolve file
+  // name conflicts. Copy its status.pause_params to our |progress_| to send
+  // those pause_params to the files app UI.
+  progress_.pause_params = {};
+  if (progress_.state == State::kPaused) {
+    progress_.pause_params = status.pause_params;
+  }
+
   progress_.bytes_transferred = status.bytes_transferred;
   progress_.total_bytes = status.total_bytes;
   progress_.remaining_seconds = status.remaining_seconds;
+
   for (size_t i = 0; i < status.outputs.size(); ++i) {
     if (i < progress_.outputs.size() && i < status.outputs.size()) {
       if (progress_.outputs[i].url == status.outputs[i].url &&
@@ -173,6 +183,7 @@ void RestoreToDestinationIOTask::OnProgressCallback(
     progress_.outputs.emplace_back(status.outputs[i].url,
                                    status.outputs[i].error);
   }
+
   progress_callback_.Run(progress_);
 }
 
