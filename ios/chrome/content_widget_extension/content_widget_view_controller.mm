@@ -128,8 +128,7 @@ NSString* const kXCallbackURLHost = @"x-callback-url";
 #pragma mark - NCWidgetProviding
 
 - (void)widgetActiveDisplayModeDidChange:(NCWidgetDisplayMode)activeDisplayMode
-                         withMaximumSize:(CGSize)maxSize
-    API_AVAILABLE(ios(10.0)) {
+                         withMaximumSize:(CGSize)maxSize {
   switch (activeDisplayMode) {
     case NCWidgetDisplayModeCompact:
       self.preferredContentSize = maxSize;

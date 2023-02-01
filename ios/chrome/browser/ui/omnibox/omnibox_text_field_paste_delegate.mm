@@ -20,9 +20,9 @@
 @synthesize URL = _URL;
 
 - (void)textPasteConfigurationSupporting:
-    (id<UITextPasteConfigurationSupporting>)textPasteConfigurationSupporting
-    transformPasteItem:(id<UITextPasteItem>)item
-    API_AVAILABLE(ios(11.0)) {
+            (id<UITextPasteConfigurationSupporting>)
+                textPasteConfigurationSupporting
+                      transformPasteItem:(id<UITextPasteItem>)item {
   if ([item.itemProvider canLoadObjectOfClass:[NSURL class]]) {
     [item.itemProvider
         loadObjectOfClass:[NSURL class]
@@ -38,11 +38,11 @@
   }
 }
 
-- (NSAttributedString*)textPasteConfigurationSupporting:
-    (id<UITextPasteConfigurationSupporting>)textPasteConfigurationSupporting
-    combineItemAttributedStrings:(NSArray<NSAttributedString*>*)itemStrings
-                        forRange:(UITextRange*)textRange
-    API_AVAILABLE(ios(11.0)) {
+- (NSAttributedString*)
+    textPasteConfigurationSupporting:
+        (id<UITextPasteConfigurationSupporting>)textPasteConfigurationSupporting
+        combineItemAttributedStrings:(NSArray<NSAttributedString*>*)itemStrings
+                            forRange:(UITextRange*)textRange {
   // If there's a cached URL, use that. Otherwise, use one of the item strings.
   if (self.URL) {
     NSString* URLString = [self.URL absoluteString];

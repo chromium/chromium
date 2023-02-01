@@ -32,8 +32,7 @@ const CGFloat kModulePreferredMaxWidthWide = 83;
 @interface ContentSuggestionsTileView ()
 // Hold onto the created interaction for pointer support so it can be removed
 // when the view goes away.
-@property(nonatomic, strong)
-    UIPointerInteraction* pointerInteraction API_AVAILABLE(ios(13.4));
+@property(nonatomic, strong) UIPointerInteraction* pointerInteraction;
 @end
 
 @implementation ContentSuggestionsTileView
@@ -142,14 +141,12 @@ const CGFloat kModulePreferredMaxWidthWide = 83;
 
 - (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
                       regionForRequest:(UIPointerRegionRequest*)request
-                         defaultRegion:(UIPointerRegion*)defaultRegion
-    API_AVAILABLE(ios(13.4)) {
+                         defaultRegion:(UIPointerRegion*)defaultRegion {
   return defaultRegion;
 }
 
 - (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
-                       styleForRegion:(UIPointerRegion*)region
-    API_AVAILABLE(ios(13.4)) {
+                       styleForRegion:(UIPointerRegion*)region {
   // The preview APIs require the view to be in a window. Ensure they are before
   // proceeding.
   if (!self.window)

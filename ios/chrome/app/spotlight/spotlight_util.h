@@ -68,8 +68,7 @@ void ClearSpotlightIndexWithCompletion(BlockWithError completion);
 // Finds the Spoglight itemID and calls `completion` with the corresponding URL.
 // Calls `completion` with nil if none was found.
 // `completion` is called on the Spotlight Thread.
-void GetURLForSpotlightItemID(NSString* itemID, BlockWithNSURL completion)
-    API_AVAILABLE(ios(10.0));
+void GetURLForSpotlightItemID(NSString* itemID, BlockWithNSURL completion);
 
 }  // namespace spotlight
 

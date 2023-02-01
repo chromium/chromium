@@ -36,8 +36,7 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
 @property(nonatomic, assign) CGRect cachedBounds;
 // Tracks reusable cells in memory, which has an upper limit. This is used to
 // ensure that pointer interaction is added only once to a cell.
-@property(nonatomic, strong)
-    NSHashTable<UITableViewCell*>* cellsInMemory API_AVAILABLE(ios(13.4));
+@property(nonatomic, strong) NSHashTable<UITableViewCell*>* cellsInMemory;
 @end
 
 @implementation PopupMenuTableViewController

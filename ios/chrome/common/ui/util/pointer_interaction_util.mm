@@ -15,8 +15,7 @@
 namespace {
 // Returns a pointer style with a hover effect with a slight tint and no pointer
 // shape (i.e., the pointer stays the same).
-UIPointerStyle* CreateHoverEffectNoShapePointerStyle(UIButton* button)
-    API_AVAILABLE(ios(13.4)) {
+UIPointerStyle* CreateHoverEffectNoShapePointerStyle(UIButton* button) {
   UITargetedPreview* preview = [[UITargetedPreview alloc] initWithView:button];
   UIPointerHoverEffect* effect =
       [UIPointerHoverEffect effectWithPreview:preview];
@@ -28,8 +27,7 @@ UIPointerStyle* CreateHoverEffectNoShapePointerStyle(UIButton* button)
 
 // Returns a pointer style with a highlight effect and a rounded rectangle
 // pointer shape sized to the button frame.
-UIPointerStyle* CreateHighlightEffectRectShapePointerStyle(UIButton* button)
-    API_AVAILABLE(ios(13.4)) {
+UIPointerStyle* CreateHighlightEffectRectShapePointerStyle(UIButton* button) {
   UITargetedPreview* preview = [[UITargetedPreview alloc] initWithView:button];
   UIPointerHighlightEffect* effect =
       [UIPointerHighlightEffect effectWithPreview:preview];
@@ -38,8 +36,7 @@ UIPointerStyle* CreateHighlightEffectRectShapePointerStyle(UIButton* button)
 }
 }  // namespace
 
-UIButtonPointerStyleProvider CreateDefaultEffectCirclePointerStyleProvider()
-    API_AVAILABLE(ios(13.4)) {
+UIButtonPointerStyleProvider CreateDefaultEffectCirclePointerStyleProvider() {
   return ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
                           UIPointerShape* proposedShape) {
     DCHECK_EQ(button.frame.size.width, button.frame.size.height)
@@ -51,8 +48,7 @@ UIButtonPointerStyleProvider CreateDefaultEffectCirclePointerStyleProvider()
   };
 }
 
-UIButtonPointerStyleProvider CreateLiftEffectCirclePointerStyleProvider()
-    API_AVAILABLE(ios(13.4)) {
+UIButtonPointerStyleProvider CreateLiftEffectCirclePointerStyleProvider() {
   return ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
                           UIPointerShape* proposedShape) {
     DCHECK_EQ(button.frame.size.width, button.frame.size.height)
@@ -68,8 +64,7 @@ UIButtonPointerStyleProvider CreateLiftEffectCirclePointerStyleProvider()
   };
 }
 
-UIButtonPointerStyleProvider CreateOpaqueButtonPointerStyleProvider()
-    API_AVAILABLE(ios(13.4)) {
+UIButtonPointerStyleProvider CreateOpaqueButtonPointerStyleProvider() {
   return ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
                           UIPointerShape* proposedShape) {
     DCHECK(button.backgroundColor &&
@@ -79,8 +74,7 @@ UIButtonPointerStyleProvider CreateOpaqueButtonPointerStyleProvider()
   };
 }
 
-UIButtonPointerStyleProvider CreateTransparentButtonPointerStyleProvider()
-    API_AVAILABLE(ios(13.4)) {
+UIButtonPointerStyleProvider CreateTransparentButtonPointerStyleProvider() {
   return ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
                           UIPointerShape* proposedShape) {
     DCHECK(!button.backgroundColor ||
@@ -91,7 +85,7 @@ UIButtonPointerStyleProvider CreateTransparentButtonPointerStyleProvider()
 }
 
 UIButtonPointerStyleProvider
-CreateOpaqueOrTransparentButtonPointerStyleProvider() API_AVAILABLE(ios(13.4)) {
+CreateOpaqueOrTransparentButtonPointerStyleProvider() {
   return ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
                           UIPointerShape* proposedShape) {
     if (button.backgroundColor &&
@@ -102,12 +96,10 @@ CreateOpaqueOrTransparentButtonPointerStyleProvider() API_AVAILABLE(ios(13.4)) {
   };
 }
 
-API_AVAILABLE(ios(13.4))
 @interface ViewPointerInteraction ()
 @property(nonatomic, strong) UIPointerInteraction* pointerInteraction;
 @end
 
-API_AVAILABLE(ios(13.4))
 @implementation ViewPointerInteraction
 
 - (instancetype)init {
@@ -137,14 +129,12 @@ API_AVAILABLE(ios(13.4))
 
 - (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
                       regionForRequest:(UIPointerRegionRequest*)request
-                         defaultRegion:(UIPointerRegion*)defaultRegion
-    API_AVAILABLE(ios(13.4)) {
+                         defaultRegion:(UIPointerRegion*)defaultRegion {
   return defaultRegion;
 }
 
 - (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
-                       styleForRegion:(UIPointerRegion*)region
-    API_AVAILABLE(ios(13.4)) {
+                       styleForRegion:(UIPointerRegion*)region {
   if (!interaction.view.window)
     return nil;
 

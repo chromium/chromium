@@ -26,15 +26,14 @@
 
 - (void)scene:(UIScene*)scene
     willConnectToSession:(UISceneSession*)session
-                 options:(UISceneConnectionOptions*)connectionOptions
-    API_AVAILABLE(ios(13)) {
+                 options:(UISceneConnectionOptions*)connectionOptions {
   _window =
       [[UIWindow alloc] initWithWindowScene:static_cast<UIWindowScene*>(scene)];
 
   [_window setRootViewController:[[UIViewController alloc] init]];
 }
 
-- (void)sceneDidDisconnect:(UIScene*)scene API_AVAILABLE(ios(13)) {
+- (void)sceneDidDisconnect:(UIScene*)scene {
   _window = nil;
 }
 
