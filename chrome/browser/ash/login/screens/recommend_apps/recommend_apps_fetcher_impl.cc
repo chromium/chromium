@@ -577,23 +577,26 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
   }
 
   for (auto& item : app_list) {
-    if (!item.is_dict()) {
+    const base::Value::Dict* item_dict = item.GetIfDict();
+    if (!item_dict) {
       DVLOG(1) << "Cannot parse item.";
       continue;
     }
 
     base::Value::Dict output_map;
     // Retrieve the app title.
-    const base::Value* title =
-        item.FindPathOfType({"title_", "name_"}, base::Value::Type::STRING);
-    if (title)
-      output_map.Set("name", title->GetString());
+    const std::string* title =
+        item_dict->FindStringByDottedPath("title_.name_");
+    if (title) {
+      output_map.Set("name", *title);
+    }
 
     // Retrieve the package name.
-    const base::Value* package_name =
-        item.FindPathOfType({"id_", "id_"}, base::Value::Type::STRING);
-    if (package_name)
-      output_map.Set("package_name", package_name->GetString());
+    const std::string* package_name =
+        item_dict->FindStringByDottedPath("id_.id_");
+    if (package_name) {
+      output_map.Set("package_name", *package_name);
+    }
 
     // Retrieve the icon URL for the app.
     //
@@ -603,11 +606,11 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
     // a protobuf, we should not directly access this field but use the wrapper
     // method getSafeUrlString() to read it. In our case, we don't have the
     // option other than access it directly.
-    const base::Value* icon_url = item.FindPathOfType(
-        {"icon_", "url_", "privateDoNotAccessOrElseSafeUrlWrappedValue_"},
-        base::Value::Type::STRING);
-    if (icon_url)
-      output_map.Set("icon", icon_url->GetString());
+    const std::string* icon_url = item_dict->FindStringByDottedPath(
+        "icon_.url_.privateDoNotAccessOrElseSafeUrlWrappedValue_");
+    if (icon_url) {
+      output_map.Set("icon", *icon_url);
+    }
 
     if (output_map.empty()) {
       DVLOG(1) << "Invalid app item.";
