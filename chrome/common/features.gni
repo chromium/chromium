@@ -23,7 +23,7 @@ import("//printing/buildflags/buildflags.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/webui/webui_features.gni")
 
-assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
+assert(use_blink, "Chromium without blink shouldn't use anything in //chrome")
 
 # Please keep features in alphabetical order.
 declare_args() {

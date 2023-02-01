@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 # Global list of dependencies that are conceptually bad on iOS and should
 # never be added (they will never be supported).
 _ios_conceptually_bad_dependencies = [
@@ -28,5 +30,7 @@ ios_extension_assert_no_deps = [
   "//url/*",
 ]
 
-ios_assert_no_deps =
-    _ios_conceptually_bad_dependencies + _ios_transient_bad_dependencies
+ios_assert_no_deps = _ios_transient_bad_dependencies
+if (!use_blink) {
+  ios_assert_no_deps += _ios_conceptually_bad_dependencies
+}

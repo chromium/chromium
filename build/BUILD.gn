@@ -7,6 +7,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
 import("//build/util/process_version.gni")
 import("//build_overrides/build.gni")
 
@@ -28,6 +29,11 @@ buildflag_header("branding_buildflags") {
       "GOOGLE_CHROME_BRANDING=0",
     ]
   }
+}
+
+buildflag_header("blink_buildflags") {
+  header = "blink_buildflags.h"
+  flags = [ "USE_BLINK=$use_blink" ]
 }
 
 buildflag_header("chromecast_buildflags") {

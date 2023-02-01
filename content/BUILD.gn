@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
@@ -12,7 +13,7 @@ config("content_implementation") {
   configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
-assert(!is_ios, "Chromium/iOS shouldn't use anything in //content")
+assert(use_blink, "Chromium without blink shouldn't use anything in //content")
 
 # When targets depend on, e.g. //content/public/browser, what happens? To
 # facilitate the complexity here, the "public" targets are groups that forward
