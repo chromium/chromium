@@ -105,6 +105,8 @@ class CORE_EXPORT FocusController final
 
   void RegisterFocusChangedObserver(FocusChangedObserver*);
 
+  static int AdjustedTabIndex(const Element&);
+
   void Trace(Visitor*) const;
 
  private:

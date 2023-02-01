@@ -59,6 +59,10 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   void CloseWatcherFiredCancel(Event*);
   void CloseWatcherFiredClose();
 
+  bool IsMouseFocusable() const override {
+    return isConnected() && IsFocusableStyleAfterUpdate();
+  }
+
  private:
   void DefaultEventHandler(Event&) override;
 

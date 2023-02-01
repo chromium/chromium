@@ -57,6 +57,13 @@ Tests accessibility values of ignored nodes in model dialog.
     parentId : <string>
     properties : [
         [0] : {
+            name : focused
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [1] : {
             name : modal
             value : {
                 type : boolean

@@ -4987,7 +4987,12 @@ bool Element::DelegatesFocus() const {
 
 // https://html.spec.whatwg.org/C/#get-the-focusable-area
 Element* Element::GetFocusableArea(bool in_descendant_traversal) const {
-  DCHECK(!IsFocusable());
+  // GetFocusableArea should only be called as a fallback on elements which
+  // aren't focusable, unless we are looking for an initial focus candidate for
+  // a dialog element in which case we are looking for a keyboard focusable
+  // element and will be calling this for mouse focusable elements.
+  DCHECK(!IsFocusable() || FocusController::AdjustedTabIndex(*this) < 0);
+
   // TODO(crbug.com/1018619): Support AREA -> IMG delegation.
   if (!DelegatesFocus()) {
     return nullptr;
@@ -5030,7 +5035,11 @@ Element* Element::GetFocusDelegate(bool autofocus_only,
   }
 
   for (Element& descendant : ElementTraversal::DescendantsOf(*where_to_look)) {
-    if (descendant.IsFocusable()) {
+    // Dialog elements should only initially focus keyboard focusable elements,
+    // not mouse focusable elements.
+    if (descendant.IsFocusable() &&
+        (!IsA<HTMLDialogElement>(this) ||
+         FocusController::AdjustedTabIndex(descendant) >= 0)) {
       return &descendant;
     }
     if (Element* focusable_area =
