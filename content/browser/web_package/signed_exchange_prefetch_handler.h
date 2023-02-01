@@ -16,11 +16,14 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace network {
+namespace net {
 class NetworkAnonymizationKey;
+}
+
+namespace network {
 class SharedURLLoaderFactory;
 struct ResourceRequest;
-}
+}  // namespace network
 
 namespace blink {
 class URLLoaderThrottle;

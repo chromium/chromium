@@ -17,6 +17,7 @@
 
 namespace net {
 class IsolationInfo;
+class NetworkAnonymizationKey;
 }
 
 namespace content {
