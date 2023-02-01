@@ -8,13 +8,35 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_to_tab_transition_view.h"
 
 // A cell for the pinned tabs view. Contains an icon, title, snapshot.
 @interface PinnedCell : TabCell
 
 // Settable UI elements of the cell.
 @property(nonatomic, strong) UIImage* icon;
+@property(nonatomic, strong) UIImage* snapshot;
 @property(nonatomic, copy) NSString* title;
+
+@end
+
+// A "copy" of a PinnedCell to be used in the animated transitions. Some
+// of the properties of PinnedTransitionCell are tweaked (compared to the
+// PinnedCell) in order to provide a smooth transition animation.
+//
+// Note: This class is put into the same header/implementation file with
+// the PinnedCell class in order to maintain the consistency with
+// GridTransitionCell. Also this way PinnedTransitionCell has easier access to
+// some of the internal properties of the PinnedCell. If PinnedTransitionCell
+// is moved into its own file the same should be done with GridTransitionCell.
+//
+// TODO(crbug.com/1412115): Refactor `Transition` cells into separate header
+// and implementation files.
+@interface PinnedTransitionCell : PinnedCell <GridToTabTransitionView>
+
+// Returns a cell with the same theme, icon, snapshot, title, and frame as
+// `cell` (but no delegate or identifier) for use in animated transitions.
++ (instancetype)transitionCellFromCell:(PinnedCell*)cell;
 
 @end
 

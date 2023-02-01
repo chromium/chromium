@@ -43,6 +43,7 @@ source_set("pinned_tabs_ui") {
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/tabs:features",
+    "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
