@@ -32,17 +32,12 @@ class PseudoDir;
 // caller-supplied |CreateContextParams|.
 //
 // Note that Components using this class must:
-// 1. Include the "web_instance.cmx" in their package, for the implementation
-//    to read the sandbox services from.
-// 2. List the fuchsia.sys.Environment & .Loader services in their sandbox.
-// 3. Have web_engine's config-data available to the calling Component.
-//    TODO(crbug.com/1212191): Make web_instance read the config & remove this.
+// 1. Include `web_instance_host.shard.cml` in their component manifest.
+// 2. Have web_instance's config-data available to the calling Component as
+//    the `config-data-for-web-instance` directory capability.
 //
 // To ensure proper product data registration, Components using the class must:
 // * Have the same version and channel as WebEngine.
-// * Include the following services in their manifest:
-//   * "fuchsia.feedback.ComponentDataRegister"
-//   * "fuchsia.feedback.CrashReportingProductRegister"
 // * Instantiate the class on a thread with an async_dispatcher.
 // TODO(crbug.com/1211174): Remove these requirements.
 class WebInstanceHost {

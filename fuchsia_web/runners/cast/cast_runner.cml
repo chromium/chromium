@@ -65,9 +65,11 @@
       directory: "config-data",
       rights: [ "r*" ],
       path: "/config/data",
+      availability: "optional",
     },
     {
       // Capabilities used by the Runner itself.
+      // (Those also used by WebInstanceHost or WebEngine are commented out.)
       protocol: [
         "chromium.cast.ApplicationConfigManager",
         "chromium.cast.CorsExemptHeaderProvider",

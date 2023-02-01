@@ -47,6 +47,7 @@
       directory: "config-data",
       rights: [ "r*" ],
       path: "/config/data",
+      availability: "optional",
     },
     // fuchsia.web/CreateContextParams.data_directory.
     {
@@ -60,6 +61,7 @@
       directory: "root-ssl-certificates",
       rights: [ "r*" ],
       path: "/config/ssl",
+      availability: "optional",
     },
     // fuchsia.web/CreateContextParams.content_directories.
     {

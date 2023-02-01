@@ -70,25 +70,28 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
   // Run the test-ui-stack and route the protocols needed by cast_runner to it.
   AddTestUiStack(realm_builder, kCastRunnerService);
 
-  realm_builder.AddRoute(
-      Route{.capabilities =
-                {
-                    Directory{.name = "config-data"},
-                    Directory{.name = "root-ssl-certificates"},
-                    Protocol{fuchsia::buildinfo::Provider::Name_},
-                    Protocol{fuchsia::intl::PropertyProvider::Name_},
-                    Protocol{fuchsia::media::ProfileProvider::Name_},
-                    Protocol{fuchsia::memorypressure::Provider::Name_},
-                    Protocol{fuchsia::net::interfaces::State::Name_},
-                    Protocol{"fuchsia.posix.socket.Provider"},
-                    Protocol{"fuchsia.process.Launcher"},
-                    Protocol{fuchsia::settings::Display::Name_},
-                    Protocol{fuchsia::sys::Environment::Name_},
-                    Protocol{fuchsia::sys::Loader::Name_},
-                    Storage{.name = "cache", .path = "/cache"},
-                },
-            .source = ParentRef(),
-            .targets = {ChildRef{kCastRunnerService}}});
+  realm_builder.AddRoute(Route{
+      .capabilities =
+          {
+              // The chromium test realm offers the system-wide config-data dir
+              // to test components. Route the cast_runner sub-directory of this
+              // to the launched cast_runner component.
+              Directory{.name = "config-data", .subdir = "cast_runner"},
+              Directory{.name = "root-ssl-certificates"},
+              Protocol{fuchsia::buildinfo::Provider::Name_},
+              Protocol{fuchsia::intl::PropertyProvider::Name_},
+              Protocol{fuchsia::media::ProfileProvider::Name_},
+              Protocol{fuchsia::memorypressure::Provider::Name_},
+              Protocol{fuchsia::net::interfaces::State::Name_},
+              Protocol{"fuchsia.posix.socket.Provider"},
+              Protocol{"fuchsia.process.Launcher"},
+              Protocol{fuchsia::settings::Display::Name_},
+              Protocol{fuchsia::sys::Environment::Name_},
+              Protocol{fuchsia::sys::Loader::Name_},
+              Storage{.name = "cache", .path = "/cache"},
+          },
+      .source = ParentRef(),
+      .targets = {ChildRef{kCastRunnerService}}});
 
   // Provide a fake Cast "agent", providing some necessary services.
   static constexpr char kFakeCastAgentName[] = "fake-cast-agent";

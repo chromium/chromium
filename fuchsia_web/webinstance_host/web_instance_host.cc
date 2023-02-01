@@ -96,6 +96,9 @@ class InstanceBuilder {
   // protocol offers.
   void AppendOffersForServices(const std::vector<std::string>& services);
 
+  // Offers the read-only root-ssl-certificates directory from the parent.
+  void ServeRootSslCertificates();
+
   // Serves `data_directory` to the instance as the `data` read-write
   // directory.
   void ServeDataDirectory(
@@ -141,6 +144,9 @@ class InstanceBuilder {
   void ServeDirectory(base::StringPiece name,
                       std::unique_ptr<vfs::internal::Directory> directory,
                       bool writeable);
+
+  // Offers the read-only directory capability named `name` from the parent.
+  void OfferDirectoryFromParent(base::StringPiece name);
 
   const raw_ref<fuchsia::component::Realm> realm_;
   const base::GUID id_;
@@ -206,6 +212,11 @@ void InstanceBuilder::AppendOffersForServices(
             .set_dependency_type(fcdecl::DependencyType::STRONG)
             .set_availability(fcdecl::Availability::SAME_AS_TARGET))));
   }
+}
+
+void InstanceBuilder::ServeRootSslCertificates() {
+  DCHECK(instance_dir_);
+  OfferDirectoryFromParent("root-ssl-certificates");
 }
 
 void InstanceBuilder::ServeDataDirectory(
@@ -349,6 +360,29 @@ void InstanceBuilder::ServeDirectory(
                     .set_availability(fcdecl::Availability::REQUIRED))));
 }
 
+void InstanceBuilder::OfferDirectoryFromParent(base::StringPiece name) {
+  DCHECK(instance_dir_);
+  dynamic_offers_.push_back(fcdecl::Offer::WithDirectory(
+      std::move(fcdecl::OfferDirectory()
+                    .set_source(fcdecl::Ref::WithParent({}))
+                    .set_source_name(std::string(name))
+                    .set_target_name(std::string(name))
+                    .set_rights(::fuchsia::io::R_STAR_DIR)
+                    .set_dependency_type(fcdecl::DependencyType::STRONG)
+                    .set_availability(fcdecl::Availability::SAME_AS_TARGET))));
+}
+
+// Route `root-ssl-certificates` from parent if networking is requested.
+void HandleRootSslCertificates(InstanceBuilder& builder,
+                               fuchsia::web::CreateContextParams& params) {
+  if ((params.features() & fuchsia::web::ContextFeatureFlags::NETWORK) !=
+      fuchsia::web::ContextFeatureFlags::NETWORK) {
+    return;
+  }
+
+  builder.ServeRootSslCertificates();
+}
+
 void HandleCdmDataDirectoryParam(InstanceBuilder& builder,
                                  fuchsia::web::CreateContextParams& params) {
   if (!params.has_cdm_data_directory()) {
@@ -446,6 +480,8 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
                           services);
     builder->AppendOffersForServices(services);
   }
+
+  HandleRootSslCertificates(*builder, params);
 
   HandleCdmDataDirectoryParam(*builder, params);
 

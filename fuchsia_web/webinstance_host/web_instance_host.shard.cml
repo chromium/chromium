@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 {
   collections: [
+    // The collection in which child instances are dynamically created.
     {
       name: "web_instances",
       durability: "transient",
@@ -11,6 +12,8 @@
     },
   ],
   capabilities: [
+    // The root of a directory tree through which directory capabilities are
+    // dynamically routed to child instances.
     {
       directory: "web_instances",
       rights: [ "rw*" ],
@@ -35,14 +38,11 @@
   ],
   offer: [
     {
-      directory: "config-data",
+      directory: "config-data-for-web-instance",
       from: "parent",
+      as: "config-data",
       to: "#web_instances",
-    },
-    {
-      directory: "root-ssl-certificates",
-      from: "parent",
-      to: "#web_instances",
+      availability: "optional",
     },
     {
       protocol: [
