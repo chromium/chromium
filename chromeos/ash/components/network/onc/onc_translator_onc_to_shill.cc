@@ -512,6 +512,10 @@ void LocalTranslator::TranslateApn() {
       onc_object_->FindList(::onc::cellular_apn::kApnTypes);
   DCHECK(apn_types) << "APN must have APN types";
 
+  // For Phase 1 APN Revamp, always set APN source to "ui" as only users can
+  // create custom APNs.
+  shill_dictionary_->Set(shill::kApnSourceProperty, shill::kApnSourceUi);
+
   // Convert array of APN types to comma-delimited, de-duped string, i.e.
   // ["Default", "Attach", "Default"] -> "DEFAULT,IA".
   bool contains_default = false;
