@@ -7,15 +7,16 @@
 
 #include "components/metrics/structured/events_processor_interface.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 
 namespace metrics::structured::cros_event {
+
+extern const char* kResetCounterPath;
 
 // Post-processor that will process only sequenceable events and attach metadata
 // to the events.
 class CrOSEventsProcessor : public EventsProcessorInterface {
  public:
-  explicit CrOSEventsProcessor(PrefService* pref_service);
+  explicit CrOSEventsProcessor(const char* reset_counter_path);
   ~CrOSEventsProcessor() override;
 
   // Registers device-level prefs.
@@ -25,13 +26,9 @@ class CrOSEventsProcessor : public EventsProcessorInterface {
   bool ShouldProcessOnEventRecord(const Event& event) override;
   void OnEventsRecord(Event* event) override;
 
-  // Used only to set the current uptime to check against for testing.
-  // If this value is not set explicitly, system clock will be used.
-  void SetCurrentUptimeForTesting(int64_t current_uptime);
-
  private:
-  PrefService* pref_service_;
-  int64_t current_uptime_for_testing_ = 0;
+  // The current reset counter as determined by platform2.
+  int64_t current_reset_counter_ = 0;
 };
 
 }  // namespace metrics::structured::cros_event

@@ -77,7 +77,7 @@ void ChromeStructuredMetricsRecorder::Initialize() {
   if (base::FeatureList::IsEnabled(kEventSequenceLogging)) {
     Recorder::GetInstance()->AddEventsProcessor(
         std::make_unique<cros_event::CrOSEventsProcessor>(
-            g_browser_process->local_state()));
+            cros_event::kResetCounterPath));
   }
 
   LogInitializationInStructuredMetrics(StructuredMetricsPlatform::kAshChrome);

@@ -839,6 +839,16 @@ const char kMediaRouterTabMirroringSources[] =
 const char kAutofillCreditCardSigninPromoImpressionCount[] =
     "autofill.credit_card_signin_promo_impression_count";
 
+// Deprecated 01/2023
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kEventSequenceLastSystemUptime[] =
+    "metrics.event_sequence.last_system_uptime";
+
+// Keeps track of the device reset counter.
+const char kEventSequenceResetCounter[] =
+    "metrics.event_sequence.reset_counter";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -914,6 +924,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_MAC)
   registry->RegisterBooleanPref(kDeviceTrustDisableKeyCreationPref, false);
 #endif  // BUILDFLAG(IS_MAC)
+
+  // Deprecated 01/2023
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kEventSequenceResetCounter, 0);
+  registry->RegisterInt64Pref(kEventSequenceLastSystemUptime, 0);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1894,6 +1910,12 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kDeviceTrustDisableKeyCreationPref);
 #endif  // BUILDFLAG(IS_MAC)
 
+  // Added 01/2023
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  local_state->ClearPref(kEventSequenceLastSystemUptime);
+  local_state->ClearPref(kEventSequenceResetCounter);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -2151,8 +2173,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
         profile_prefs->GetString(prefs::kGoogleServicesLastAccountIdDeprecated);
     profile_prefs->ClearPref(prefs::kGoogleServicesLastAccountIdDeprecated);
     bool is_email = account_id.find('@') != std::string::npos;
-    if (!is_email && !account_id.empty())
+    if (!is_email && !account_id.empty()) {
       profile_prefs->SetString(prefs::kGoogleServicesLastGaiaId, account_id);
+    }
   }
 
   // Added 10/2022.

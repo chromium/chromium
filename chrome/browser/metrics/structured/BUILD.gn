@@ -13,8 +13,6 @@ static_library("structured") {
     "chrome_structured_metrics_recorder.h",
     "cros_events_processor.cc",
     "cros_events_processor.h",
-    "structured_metric_prefs.cc",
-    "structured_metric_prefs.h",
   ]
 
   deps = [
