@@ -18,8 +18,6 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "net/cookies/canonical_cookie.h"
-#include "net/cookies/cookie_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -31,24 +29,14 @@ namespace content {
 
 bool operator==(const AttributionTriggerAndTime& a,
                 const AttributionTriggerAndTime& b) {
-  return a.trigger == b.trigger && a.time == b.time;
+  return a.trigger == b.trigger && a.time == b.time &&
+         a.debug_permission == b.debug_permission;
 }
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionTriggerAndTime& t) {
-  return out << "{time=" << t.time << ",trigger=" << t.trigger << "}";
-}
-
-bool operator==(const AttributionSimulatorCookie& a,
-                const AttributionSimulatorCookie& b) {
-  return a.cookie.HasEquivalentDataMembers(b.cookie) &&
-         a.source_url == b.source_url;
-}
-
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionSimulatorCookie& c) {
-  return out << "{source_url=" << c.source_url
-             << ",cookie=" << c.cookie.DebugString() << "}";
+  return out << "{time=" << t.time << ",trigger=" << t.trigger
+             << ",debug_permission=" << t.debug_permission << "}";
 }
 
 bool operator==(const AttributionDataClear& a, const AttributionDataClear& b) {
@@ -76,6 +64,15 @@ std::ostream& operator<<(std::ostream& out, const AttributionDataClear& c) {
   }
 
   return out << ",delete_rate_limit_data=" << c.delete_rate_limit_data << "}";
+}
+
+bool operator==(const AttributionSource& a, const AttributionSource& b) {
+  return a.source == b.source && a.debug_permission == b.debug_permission;
+}
+
+std::ostream& operator<<(std::ostream& out, const AttributionSource& s) {
+  return out << "{source=" << s.source
+             << ",debug_permission=" << s.debug_permission << "}";
 }
 
 namespace {
@@ -115,6 +112,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       "source_type": "navigation",
       "reporting_origin": "https://a.r.test",
       "source_origin": "https://a.s.test",
+      "debug_permission": true,
       "Attribution-Reporting-Register-Source": {
         "destination": "https://a.d.test"
       }
@@ -139,35 +137,37 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(result->size(), 2u);
 
-  const auto* source1 = absl::get_if<StorableSource>(&result->front());
+  const auto* source1 = absl::get_if<AttributionSource>(&result->front());
   ASSERT_TRUE(source1);
 
-  const auto* source2 = absl::get_if<StorableSource>(&result->back());
+  const auto* source2 = absl::get_if<AttributionSource>(&result->back());
   ASSERT_TRUE(source2);
 
-  EXPECT_EQ(source1->common_info().source_time(),
+  EXPECT_EQ(source1->source.common_info().source_time(),
             kOffsetTime + base::Milliseconds(1643235574123));
-  EXPECT_EQ(source1->common_info().source_type(),
+  EXPECT_EQ(source1->source.common_info().source_type(),
             AttributionSourceType::kNavigation);
-  EXPECT_EQ(source1->common_info().reporting_origin(),
+  EXPECT_EQ(source1->source.common_info().reporting_origin(),
             *SuitableOrigin::Deserialize("https://a.r.test"));
-  EXPECT_EQ(source1->common_info().source_origin(),
+  EXPECT_EQ(source1->source.common_info().source_origin(),
             *SuitableOrigin::Deserialize("https://a.s.test"));
-  EXPECT_EQ(source1->common_info().destination_origin(),
+  EXPECT_EQ(source1->source.common_info().destination_origin(),
             *SuitableOrigin::Deserialize("https://a.d.test"));
-  EXPECT_FALSE(source1->is_within_fenced_frame());
+  EXPECT_FALSE(source1->source.is_within_fenced_frame());
+  EXPECT_TRUE(source1->debug_permission);
 
-  EXPECT_EQ(source2->common_info().source_time(),
+  EXPECT_EQ(source2->source.common_info().source_time(),
             kOffsetTime + base::Milliseconds(1643235573123));
-  EXPECT_EQ(source2->common_info().source_type(),
+  EXPECT_EQ(source2->source.common_info().source_type(),
             AttributionSourceType::kEvent);
-  EXPECT_EQ(source2->common_info().reporting_origin(),
+  EXPECT_EQ(source2->source.common_info().reporting_origin(),
             *SuitableOrigin::Deserialize("https://b.r.test"));
-  EXPECT_EQ(source2->common_info().source_origin(),
+  EXPECT_EQ(source2->source.common_info().source_origin(),
             *SuitableOrigin::Deserialize("https://b.s.test"));
-  EXPECT_EQ(source2->common_info().destination_origin(),
+  EXPECT_EQ(source2->source.common_info().destination_origin(),
             *SuitableOrigin::Deserialize("https://b.d.test"));
-  EXPECT_FALSE(source2->is_within_fenced_frame());
+  EXPECT_FALSE(source2->source.is_within_fenced_frame());
+  EXPECT_FALSE(source2->debug_permission);
 
   EXPECT_THAT(error_stream.str(), IsEmpty());
 }
@@ -178,6 +178,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
       "timestamp": "1643235575123",
       "reporting_origin": "https://a.r.test",
       "destination_origin": " https://b.d.test",
+      "debug_permission": true,
       "Attribution-Reporting-Register-Trigger": {}
     }
   ]})json";
@@ -202,51 +203,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
             *SuitableOrigin::Deserialize("https://b.d.test"));
   EXPECT_EQ(trigger->trigger.attestation(), absl::nullopt);
   EXPECT_FALSE(trigger->trigger.is_within_fenced_frame());
+  EXPECT_TRUE(trigger->debug_permission);
 
-  EXPECT_THAT(error_stream.str(), IsEmpty());
-}
-
-TEST(AttributionSimulatorInputParserTest, ValidCookieParses) {
-  // `net::CanonicalCookie::Create()` sets
-  // `net::CanonicalCookie::LastUpdateDate()` to `base::Time::Now()`, so
-  // override it here to make the test deterministic.
-  base::subtle::ScopedTimeClockOverrides time_override(
-      /*time_override=*/[]() { return kOffsetTime + base::Seconds(1); },
-      /*time_ticks_override=*/nullptr,
-      /*thread_ticks_override=*/nullptr);
-
-  constexpr char kJson[] = R"json({"cookies": [
-    {
-      "timestamp": "1643235574123",
-      "url": "https://r.test/x",
-      "Set-Cookie": "a=b; Secure; Max-Age=5"
-    }
-  ]})json";
-
-  const base::Time expected_creation_time =
-      kOffsetTime + base::Milliseconds(1643235574123);
-
-  base::Value value = base::test::ParseJson(kJson);
-  std::ostringstream error_stream;
-  EXPECT_THAT(ParseAttributionSimulationInput(std::move(value), kOffsetTime,
-                                              error_stream),
-              Optional(ElementsAre(AttributionSimulatorCookie{
-                  .cookie = *net::CanonicalCookie::CreateUnsafeCookieForTesting(
-                      /*name=*/"a",
-                      /*value=*/"b",
-                      /*domain=*/"r.test",
-                      /*path=*/"/",
-                      /*creation=*/expected_creation_time,
-                      /*expiration=*/expected_creation_time + base::Seconds(5),
-                      /*last_access=*/expected_creation_time,
-                      /*last_update=*/kOffsetTime + base::Seconds(1),
-                      /*secure=*/true,
-                      /*httponly=*/false,
-                      /*same_site=*/net::CookieSameSite::UNSPECIFIED,
-                      /*priority=*/net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
-                      /*same_party=*/false),
-                  .source_url = GURL("https://r.test/x"),
-              })));
   EXPECT_THAT(error_stream.str(), IsEmpty());
 }
 
@@ -457,44 +415,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
             "filters": ""
           }
         }]})json",
-    },
-    {
-        R"(["cookies"][0]["timestamp"]: must be an integer number of milliseconds)",
-        R"json({"cookies": [{}]})json",
-    },
-    {
-        R"(["cookies"][0]["timestamp"]: must be an integer number of milliseconds)",
-        R"json({"cookies": [{
-          "timestamp": "9223372036854775"
-        }]})json",
-    },
-    {
-        R"(["cookies"][0]["url"]: must be a valid URL)",
-        R"json({"cookies": [{
-        "timestamp": "1643235576000"
-      }]})json",
-    },
-    {
-        R"(["cookies"][0]["url"]: must be a valid URL)",
-        R"json({"cookies": [{
-        "timestamp": "1643235576000",
-        "url": "!!!"
-      }]})json",
-    },
-    {
-        R"(["cookies"][0]["Set-Cookie"]: must be present)",
-        R"json({"cookies": [{
-        "timestamp": "1643235576000",
-        "url": "https://r.test"
-      }]})json",
-    },
-    {
-        R"(["cookies"][0]: invalid cookie)",
-        R"json({"cookies": [{
-        "timestamp": "1643235576000",
-        "url": "https://r.test",
-        "Set-Cookie": ""
-      }]})json",
     },
     {R"(["data_clears"][0]["timestamp"]: must be an integer number of milliseconds)",
      R"json({"data_clears": [{}]})json"},

@@ -174,6 +174,11 @@ void AttributionInteropParser::ParseResponse(
                 *Error() << "must match " << attribution_src_url;
               }
 
+              static constexpr char kKeyDebugPermission[] = "debug_permission";
+              if (value.GetDict().contains(kKeyDebugPermission)) {
+                MoveValue(value.GetDict(), kKeyDebugPermission, out);
+              }
+
               static constexpr char kKeyResponse[] = "response";
               auto inner_context = PushContext(kKeyResponse);
               base::Value* response = value.GetDict().Find(kKeyResponse);

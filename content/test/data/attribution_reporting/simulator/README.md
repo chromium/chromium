@@ -20,6 +20,10 @@ JSON schema for the input of the simulator.
       // whether the source is registered on click or on view, respectively.
       "source_type": "navigation",
 
+      // Whether the source's reporting origin has debug permission for this
+      // event. Defaults to false.
+      "debug_permission": true,
+
       // Required dictionary data to register a source.
       "Attribution-Reporting-Register-Source": {
         // Optional uint64 formatted as a base-10 string. Defaults to 0.
@@ -79,6 +83,10 @@ JSON schema for the input of the simulator.
 
       // Required origin on which the trigger is being registered.
       "destination_origin": "https://destination.example",
+
+      // Whether the trigger's reporting origin has debug permission for this
+      // event. Defaults to false.
+      "debug_permission": true,
 
       "Attribution-Reporting-Register-Trigger": {
         // Optional list of zero or more event trigger data.
@@ -157,21 +165,6 @@ JSON schema for the input of the simulator.
         // Optional boolean. Defaults to false.
         "debug_reporting": true
       }
-    }
-  ],
-
-  // List of zero or more cookies to store, for use with debug keys.
-  "cookies": [
-    {
-      // Required time at which to store the cookie in milliseconds since the
-      // UNIX epoch formatted as a base-10 string.
-      "timestamp": "123",
-
-      // Required URL for which to store the cookie.
-      "url": "https://r.test",
-
-      // Required string specifying the cookie to store.
-      "Set-Cookie": "ar_debug=1; SameSite=None; Secure; HttpOnly"
     }
   ],
 

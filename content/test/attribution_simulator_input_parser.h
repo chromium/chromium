@@ -13,10 +13,8 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "net/cookies/canonical_cookie.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "url/gurl.h"
 
 namespace base {
 class Value;
@@ -31,11 +29,12 @@ namespace content {
 struct AttributionTriggerAndTime {
   AttributionTrigger trigger;
   base::Time time;
+  bool debug_permission = false;
 };
 
-struct AttributionSimulatorCookie {
-  net::CanonicalCookie cookie;
-  GURL source_url;
+struct AttributionSource {
+  StorableSource source;
+  bool debug_permission = false;
 };
 
 struct AttributionDataClear {
@@ -61,10 +60,8 @@ struct AttributionDataClear {
   AttributionDataClear& operator=(AttributionDataClear&&);
 };
 
-using AttributionSimulationEvent = absl::variant<StorableSource,
-                                                 AttributionTriggerAndTime,
-                                                 AttributionSimulatorCookie,
-                                                 AttributionDataClear>;
+using AttributionSimulationEvent = absl::
+    variant<AttributionSource, AttributionTriggerAndTime, AttributionDataClear>;
 
 using AttributionSimulationEvents = std::vector<AttributionSimulationEvent>;
 

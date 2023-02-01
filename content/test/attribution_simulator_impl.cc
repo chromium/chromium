@@ -37,7 +37,7 @@
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
-#include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
+#include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
@@ -54,10 +54,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/attribution_simulator_input_parser.h"
-#include "net/cookies/canonical_cookie.h"
-#include "net/cookies/cookie_access_result.h"
-#include "net/cookies/cookie_options.h"
-#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -71,13 +67,10 @@ namespace {
 base::Time GetEventTime(const AttributionSimulationEvent& event) {
   return absl::visit(
       base::Overloaded{
-          [](const StorableSource& source) {
-            return source.common_info().source_time();
+          [](const AttributionSource& source) {
+            return source.source.common_info().source_time();
           },
           [](const AttributionTriggerAndTime& trigger) { return trigger.time; },
-          [](const AttributionSimulatorCookie& cookie) {
-            return cookie.cookie.CreationDate();
-          },
           [](const AttributionDataClear& clear) { return clear.time; },
       },
       event);
@@ -232,18 +225,42 @@ class FakeReportSender : public AttributionReportSender {
   }
 };
 
+class FakeCookieChecker : public AttributionCookieChecker {
+ public:
+  FakeCookieChecker() = default;
+
+  ~FakeCookieChecker() override = default;
+
+  FakeCookieChecker(const FakeCookieChecker&) = delete;
+  FakeCookieChecker(FakeCookieChecker&&) = delete;
+
+  FakeCookieChecker& operator=(const FakeCookieChecker&) = delete;
+  FakeCookieChecker& operator=(FakeCookieChecker&&) = delete;
+
+  void set_debug_cookie_set(bool set) { debug_cookie_set_ = set; }
+
+ private:
+  // AttributionCookieChecker:
+  void IsDebugCookieSet(const url::Origin& origin,
+                        base::OnceCallback<void(bool)> callback) override {
+    std::move(callback).Run(debug_cookie_set_);
+  }
+
+  bool debug_cookie_set_ = false;
+};
+
 // Registers sources and triggers in the `AttributionManagerImpl` and records
 // rejected sources in a JSON list.
 class AttributionEventHandler : public AttributionObserver {
  public:
   AttributionEventHandler(AttributionManagerImpl* manager,
-                          StoragePartitionImpl* storage_partition,
+                          FakeCookieChecker* fake_cookie_checker,
                           AttributionReportJsonConverter json_converter)
       : manager_(manager),
-        storage_partition_(storage_partition),
+        fake_cookie_checker_(fake_cookie_checker),
         json_converter_(json_converter) {
     DCHECK(manager_);
-    DCHECK(storage_partition_);
+    DCHECK(fake_cookie_checker_);
 
     observation_.Observe(manager);
   }
@@ -255,30 +272,15 @@ class AttributionEventHandler : public AttributionObserver {
   }
 
   // For use with `absl::visit()`.
-  void operator()(StorableSource source) {
-    manager_->HandleSource(std::move(source));
-    FlushCookies();
+  void operator()(AttributionSource source) {
+    fake_cookie_checker_->set_debug_cookie_set(source.debug_permission);
+    manager_->HandleSource(std::move(source.source));
   }
 
   // For use with `absl::visit()`.
   void operator()(AttributionTriggerAndTime trigger) {
+    fake_cookie_checker_->set_debug_cookie_set(trigger.debug_permission);
     manager_->HandleTrigger(std::move(trigger.trigger));
-    FlushCookies();
-  }
-
-  // For use with `absl::visit()`.
-  void operator()(AttributionSimulatorCookie cookie) {
-    // TODO(apaseltiner): Consider surfacing `net::CookieAccessResult` in
-    // output.
-
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &network::mojom::CookieManager::SetCanonicalCookie,
-            base::Unretained(
-                storage_partition_->GetCookieManagerForBrowserProcess()),
-            cookie.cookie, cookie.source_url,
-            net::CookieOptions::MakeAllInclusive(), base::DoNothing()));
   }
 
   // For use with `absl::visit()`.
@@ -333,16 +335,6 @@ class AttributionEventHandler : public AttributionObserver {
   }
 
  private:
-  void FlushCookies() {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &network::mojom::CookieManager::FlushCookieStore,
-            base::Unretained(
-                storage_partition_->GetCookieManagerForBrowserProcess()),
-            base::DoNothing()));
-  }
-
   // AttributionObserver:
 
   void OnReportSent(const AttributionReport& report,
@@ -376,7 +368,7 @@ class AttributionEventHandler : public AttributionObserver {
       observation_{this};
 
   const base::raw_ptr<AttributionManagerImpl> manager_;
-  const base::raw_ptr<StoragePartitionImpl> storage_partition_;
+  const base::raw_ptr<FakeCookieChecker> fake_cookie_checker_;
 
   const AttributionReportJsonConverter json_converter_;
 
@@ -413,6 +405,9 @@ base::Value RunAttributionSimulation(base::Value input,
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       browser_context.GetDefaultStoragePartition());
 
+  auto fake_cookie_checker = std::make_unique<FakeCookieChecker>();
+  auto* raw_fake_cookie_checker = fake_cookie_checker.get();
+
   auto manager = AttributionManagerImpl::CreateForTesting(
       // Avoid creating an on-disk sqlite DB.
       /*user_data_directory=*/base::FilePath(),
@@ -420,14 +415,14 @@ base::Value RunAttributionSimulation(base::Value input,
       /*special_storage_policy=*/nullptr,
       AttributionStorageDelegateImpl::CreateForTesting(
           AttributionNoiseMode::kNone, AttributionDelayMode::kDefault, config),
-      std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
-      std::make_unique<FakeReportSender>(), storage_partition,
+      std::move(fake_cookie_checker), std::make_unique<FakeReportSender>(),
+      storage_partition,
       base::ThreadPool::CreateUpdateableSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
            base::ThreadPolicy::MUST_USE_FOREGROUND}));
 
-  AttributionEventHandler handler(manager.get(), storage_partition,
+  AttributionEventHandler handler(manager.get(), raw_fake_cookie_checker,
                                   AttributionReportJsonConverter(time_origin));
 
   static_cast<AggregationServiceImpl*>(
