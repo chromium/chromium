@@ -605,21 +605,10 @@ void ShillToONCTranslator::TranslateCellularDevice() {
 void ShillToONCTranslator::TranslateApnProperties() {
   DCHECK(ash::features::IsApnRevampEnabled());
   CopyPropertiesAccordingToSignature();
-  std::string shill_apn_ip_type =
-      FindStringKeyOrEmpty(*shill_dictionary_, shill::kApnIpTypeProperty);
-  std::string ip_type;
-  if (shill_apn_ip_type == shill::kApnIpTypeV4) {
-    ip_type = ::onc::cellular_apn::kIpTypeIpv4;
-  } else if (shill_apn_ip_type == shill::kApnIpTypeV6) {
-    ip_type = ::onc::cellular_apn::kIpTypeIpv6;
-  } else if (shill_apn_ip_type == shill::kApnIpTypeV4V6) {
-    ip_type = ::onc::cellular_apn::kIpTypeIpv4Ipv6;
-  } else {
-    NET_LOG(ERROR) << "APN has an invalid APN IP type: " << shill_apn_ip_type;
-  }
-  if (!ip_type.empty()) {
-    onc_object_.Set(::onc::cellular_apn::kIpType, ip_type);
-  }
+
+  TranslateWithTableAndSet(shill::kApnIpTypeProperty,
+                           kApnIpTypeTranslationTable,
+                           ::onc::cellular_apn::kIpType);
 
   const std::string shill_apn_types =
       FindStringKeyOrEmpty(*shill_dictionary_, shill::kApnTypesProperty);

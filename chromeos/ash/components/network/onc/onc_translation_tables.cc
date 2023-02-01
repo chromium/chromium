@@ -187,8 +187,8 @@ const FieldTranslationEntry cellular_apn_fields[] = {
     {::onc::cellular_apn::kLocalizedName, shill::kApnLocalizedNameProperty},
     {::onc::cellular_apn::kLanguage, shill::kApnLanguageProperty},
     {::onc::cellular_apn::kAttach, shill::kApnAttachProperty},
-    // TODO(b/162365553): Manually convert IP type.
-    {::onc::cellular_apn::kIpType, shill::kApnIpTypeProperty},
+    // This field is converted during translation, see onc_translator_*.
+    // {::onc::cellular_apn::kIpType, shill::kApnIpTypeProperty},
     {::onc::cellular_apn::kId, kShillApnId},
     {::onc::cellular_apn::kAuthenticationType, kShillApnAuthenticationType},
     // This field is converted during translation, see onc_translator_*.
@@ -439,6 +439,13 @@ const StringTranslationEntry kIKEv2AuthenticationTypeTable[] = {
     {::onc::ipsec::kPSK, shill::kIKEv2AuthenticationTypePSK},
     {::onc::ipsec::kCert, shill::kIKEv2AuthenticationTypeCert},
     {::onc::ipsec::kEAP, shill::kIKEv2AuthenticationTypeEAP},
+    {nullptr}};
+
+const StringTranslationEntry kApnIpTypeTranslationTable[] = {
+    {::onc::cellular_apn::kIpTypeAutomatic, ""},
+    {::onc::cellular_apn::kIpTypeIpv4, shill::kApnIpTypeV4},
+    {::onc::cellular_apn::kIpTypeIpv6, shill::kApnIpTypeV6},
+    {::onc::cellular_apn::kIpTypeIpv4Ipv6, shill::kApnIpTypeV4V6},
     {nullptr}};
 
 // This must contain only Shill Device properties and no Service properties.

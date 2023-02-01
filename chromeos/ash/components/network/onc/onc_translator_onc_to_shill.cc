@@ -508,6 +508,14 @@ void LocalTranslator::TranslateCellular() {
 
 void LocalTranslator::TranslateApn() {
   DCHECK(ash::features::IsApnRevampEnabled());
+
+  const std::string* ip_type =
+      onc_object_->FindString(::onc::cellular_apn::kIpType);
+  if (ip_type) {
+    TranslateWithTableAndSet(*ip_type, kApnIpTypeTranslationTable,
+                             shill::kApnIpTypeProperty);
+  }
+
   const base::Value::List* apn_types =
       onc_object_->FindList(::onc::cellular_apn::kApnTypes);
   DCHECK(apn_types) << "APN must have APN types";

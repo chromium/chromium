@@ -16,6 +16,7 @@
       "apn_source": "ui",
       "apn_types": "IA",
       "authentication": "chap",
+      "ip_type": "",
       "username": "test-username",
       "password": "test-password"
     },
@@ -24,6 +25,7 @@
       "apn_source": "ui",
       "apn_types": "DEFAULT,IA",
       "authentication": "chap",
+      "ip_type": "ipv4v6",
       "username": "test-username",
       "password": "test-password"
     }

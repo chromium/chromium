@@ -43,6 +43,7 @@
       "AccessPointName": "test-apn-3",
       "ApnTypes": ["Default"],
       "Authentication": "chap",
+      "IpType": "IPv6",
       "Name": "test-apn-name-3",
       "Username": "test-username-3",
       "Password": "test-password-3"
@@ -51,6 +52,7 @@
       "AccessPointName": "test-apn-4",
       "ApnTypes": ["Default", "Attach"],
       "Authentication": "pap",
+      "IpType": "IPv4orIPv6",
       "Name": "test-apn-name-4",
       "Username": "test-username-4",
       "Password": "test-password-4"
@@ -58,6 +60,7 @@
     "APNList": [ {
         "AccessPointName": "test-apn0",
         "ApnTypes": ["Default"],
+        "IpType": "IPv4",
         "Password": "test-password0",
         "Username": "test-username0"
       }, {

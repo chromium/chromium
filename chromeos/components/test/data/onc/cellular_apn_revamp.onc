@@ -16,6 +16,7 @@
         "AccessPointName": "test-apn-1",
         "ApnTypes": ["Attach"],
         "Authentication": "chap",
+        "IpType": "",
         "Username": "test-username",
         "Password": "test-password",
         "State": "Enabled"
@@ -32,6 +33,7 @@
         "AccessPointName": "test-apn-3",
         "ApnTypes": ["Default", "Attach"],
         "Authentication": "chap",
+        "IpType": "IPv4orIPv6",
         "Username": "test-username",
         "Password": "test-password",
         "State": "Enabled"
