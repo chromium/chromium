@@ -5,19 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_UI_CREDENTIAL_PROVIDER_PROMO_CREDENTIAL_PROVIDER_PROMO_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_UI_CREDENTIAL_PROVIDER_PROMO_CREDENTIAL_PROVIDER_PROMO_CONSTANTS_H_
 
-namespace credential_provider_promo {
-
-enum PromoSource {
+enum CredentialProviderPromoSource {
   kPasswordCopied,
   kPasswordSaved,
   kRemindLaterSelected,
   kAutofillUsed,
 };
 
-enum PromoContext {
+enum CredentialProviderPromoContext {
   kFirstStep,
   kLearnMore,
 };
-}  // namespace credential_provider_promo
 
 #endif  // IOS_CHROME_BROWSER_UI_CREDENTIAL_PROVIDER_PROMO_CREDENTIAL_PROVIDER_PROMO_CONSTANTS_H_

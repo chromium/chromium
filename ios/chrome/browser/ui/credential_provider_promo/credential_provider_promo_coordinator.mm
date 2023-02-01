@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_mediator.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_view_controller.h"
+#import "ios/chrome/browser/ui/util/top_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,6 +43,9 @@
   [super stop];
   [self.browser->GetCommandDispatcher()
       stopDispatchingForProtocol:@protocol(CredentialProviderPromoCommands)];
+  [self.viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
   self.mediator = nil;
   self.viewController = nil;
 }
@@ -50,11 +54,17 @@
 
 - (void)showCredentialProviderPromoWithTrigger:
     (CredentialProviderPromoTrigger)trigger {
-  if ([self.mediator canShowCredentialProviderPromo]) {
-    [self.mediator configureConsumerWithTrigger:trigger];
-    [self.baseViewController presentViewController:self.viewController
-                                          animated:YES
-                                        completion:nil];
+  if (![self.mediator canShowCredentialProviderPromo]) {
+    return;
+  }
+  [self.mediator configureConsumerWithTrigger:trigger];
+  if (![self.viewController isBeingPresented]) {
+    UIViewController* topViewController =
+        top_view_controller::TopPresentedViewControllerFrom(
+            self.baseViewController);
+    [topViewController presentViewController:self.viewController
+                                    animated:YES
+                                  completion:nil];
   }
 }
 

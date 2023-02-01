@@ -741,6 +741,18 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_COPY_VERSION_HINT" desc="The accessibility hint for the label showing the Chrome version. [iOS only]">
         Double tap to copy.
       </message>
+      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_TITLE" desc="Title text of the inital step Credential Provider Exention promo. [iOS only]">
+        Get your saved passwords in any app with one tap
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW" desc="Text of the primary button in the inital step view of the Credential Provider Exention Promo. [iOS only]">
+        Learn How
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_REMIND_ME_LATER" desc="Text of the tertiary button in the inital step and second step views of the Credential Provider Exention Promo. [iOS only]">
+        Remind Me Later
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_NO_THANKS" desc="Text of the secondary button in the inital step and second step views of the Credential Provider Exention Promo. [iOS only]">
+        No Thanks
+      </message>
       <message name="IDS_IOS_OPEN_SETTINGS" desc="Text of the button that will take the user to the Settings page to configure the default browser [iOS only]">
         Open Settings
       </message>

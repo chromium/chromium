@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_view_controller.h"
 
-#import "base/notreached.h"
+#import <Lottie/Lottie.h>
+
 #import "base/values.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -18,7 +19,6 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   // TODO(crbug.com/1392116): configure the action sheet.
-  NOTREACHED();
 }
 
 #pragma mark - CredentialProviderPromoConsumer
@@ -37,10 +37,9 @@
   _alertScreen.image = image;
 }
 
-- (void)setAnimation:(std::unique_ptr<base::Value>)animationAsset {
+- (void)setAnimation:(NSString*)animationAssetPath {
   // TODO(crbug.com/1392116): configure animation view for full-screen
   // promo.
-  NOTREACHED();
 }
 
 @end
