@@ -5,6 +5,8 @@ package org.chromium.chrome.browser.tabmodel
 
 import android.util.SparseArray
 
+import org.chromium.chrome.browser.tab.Tab
+
 /**
  * Data that will be used later when a tab is opened via an intent. Often only the necessary subset
  * of the data will be set. All data is removed once the tab finishes initializing.
@@ -24,18 +26,13 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
     }
   }
 
+  override fun getAsyncTabParams() = mAsyncTabParams
+
   override fun hasParamsForTabId(tabId: Int) = mAsyncTabParams[tabId] != null
 
   override fun hasParamsWithTabToReparent(): Boolean {
-    for (i in 0 until mAsyncTabParams.size()) {
-      if (mAsyncTabParams[mAsyncTabParams.keyAt(i)].tabToReparent == null) continue
-      return true
-    }
+    forEachTab { return true }
     return false
-  }
-
-  override fun getAsyncTabParams(): SparseArray<AsyncTabParams> {
-    return mAsyncTabParams
   }
 
   override fun remove(tabId: Int): AsyncTabParams? {
@@ -44,32 +41,38 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
     return data
   }
 
+  private inline fun forEachTab(action: (tab: Tab) -> Unit) {
+    val params = mAsyncTabParams
+    for (i in 0 until params.size()) {
+      val tab = params.valueAt(i).tabToReparent
+      if (tab != null) {
+        action(tab)
+      }
+    }
+  }
+
   private class AsyncTabsIncognitoTabHost(
-    private val mAsyncTabParamsManager: AsyncTabParamsManager
+    private val mAsyncTabParamsManager: AsyncTabParamsManagerImpl
   ) : IncognitoTabHost {
+
     override fun hasIncognitoTabs(): Boolean {
-      val asyncTabParams = mAsyncTabParamsManager.asyncTabParams
-      for (i in 0 until asyncTabParams.size()) {
-        val tab = asyncTabParams.valueAt(i).tabToReparent
-        if (tab != null && tab.isIncognito) {
-          return true
-        }
+      mAsyncTabParamsManager.forEachTab {
+        if (it.isIncognito) return true
       }
       return false
     }
 
     override fun closeAllIncognitoTabs() {
-      val asyncTabParams = mAsyncTabParamsManager.asyncTabParams
-      for (i in 0 until asyncTabParams.size()) {
-        val tab = asyncTabParams.valueAt(i).tabToReparent
-        if (tab != null && tab.isIncognito) {
-          mAsyncTabParamsManager.remove(tab.id)
+      val params = mAsyncTabParamsManager.mAsyncTabParams
+      // removeAt() does not invalidate indices so long as no read operations are made.
+      val clone = params.clone()
+      for (i in 0 until clone.size()) {
+        if (clone.valueAt(i).tabToReparent?.isIncognito ?: false) {
+          params.removeAt(i)
         }
       }
     }
 
-    override fun isActiveModel(): Boolean {
-      return false
-    }
+    override fun isActiveModel() = false
   }
 }
