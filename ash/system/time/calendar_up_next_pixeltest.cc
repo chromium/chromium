@@ -12,6 +12,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 
@@ -38,6 +39,9 @@ class CalendarUpNextViewPixelTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatures(
+        {features::kJelly, features::kCalendarJelly}, {});
     AshTestBase::SetUp();
 
     controller_ = std::make_unique<CalendarViewController>();
@@ -104,6 +108,7 @@ class CalendarUpNextViewPixelTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   CalendarUpNextView* up_next_view_ = nullptr;
   std::unique_ptr<CalendarViewController> controller_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 TEST_F(CalendarUpNextViewPixelTest,
