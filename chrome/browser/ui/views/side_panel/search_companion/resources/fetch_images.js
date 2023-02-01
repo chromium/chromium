@@ -4,7 +4,8 @@
 
 (function() {
   const output = {};
-  output['images'] = "Document Title: " + document.title + " Images On Page: " + document.getElementsByTagName("img").length;
+  output['images'] = 'Document Title: ' + document.title +
+      ' Images On Page: ' + document.getElementsByTagName('img').length + '\n';
   const imageTags = [].slice.call(document.getElementsByTagName("img"));
   // Sort by image size
   imageTags.sort(function(a, b){return (b.clientWidth * b.clientHeight) - (a.clientWidth * a.clientHeight);});
@@ -22,7 +23,9 @@
     if (curImage.clientWidth * curImage.clientHeight < 10000) {
       continue;
     }
-    const label = " Image " + i + " Src: " + curImage.src + " Width: " + curImage.clientWidth + " Height: " + curImage.clientHeight + ",  ";
+    const label = ' Image ' + i + ' Src: ' + curImage.src +
+        ' Width: ' + curImage.clientWidth +
+        ' Height: ' + curImage.clientHeight + '\n';
     output['images'] += label;
   }
 

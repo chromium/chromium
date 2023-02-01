@@ -5054,8 +5054,6 @@ static_library("ui") {
       "views/side_panel/reading_list/reading_list_side_panel_coordinator.h",
       "views/side_panel/search_companion/search_companion_side_panel_coordinator.cc",
       "views/side_panel/search_companion/search_companion_side_panel_coordinator.h",
-      "views/side_panel/search_companion/search_companion_side_panel_view.cc",
-      "views/side_panel/search_companion/search_companion_side_panel_view.h",
       "views/side_panel/side_panel.cc",
       "views/side_panel/side_panel.h",
       "views/side_panel/side_panel_combobox_model.cc",

@@ -30,7 +30,7 @@
 #include "ui/views/style/platform_style.h"
 
 SearchCompanionSidePanelUI::SearchCompanionSidePanelUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui, true) {
+    : ui::MojoBubbleWebUIController(web_ui, true), web_ui_(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUISearchCompanionSidePanelHost);
 
@@ -55,6 +55,10 @@ SearchCompanionSidePanelUI::~SearchCompanionSidePanelUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SearchCompanionSidePanelUI)
 
+content::WebUI* SearchCompanionSidePanelUI::GetWebUi() {
+  return web_ui_;
+}
+
 void SearchCompanionSidePanelUI::BindInterface(
     mojo::PendingReceiver<side_panel::mojom::SearchCompanionPageHandlerFactory>
         receiver) {
@@ -64,7 +68,8 @@ void SearchCompanionSidePanelUI::BindInterface(
 
 void SearchCompanionSidePanelUI::CreateSearchCompanionPageHandler(
     mojo::PendingReceiver<side_panel::mojom::SearchCompanionPageHandler>
-        receiver) {
-  search_companion_page_handler_ =
-      std::make_unique<SearchCompanionPageHandler>(std::move(receiver), this);
+        receiver,
+    mojo::PendingRemote<side_panel::mojom::SearchCompanionPage> page) {
+  search_companion_page_handler_ = std::make_unique<SearchCompanionPageHandler>(
+      std::move(receiver), std::move(page), this);
 }

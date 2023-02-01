@@ -8,11 +8,30 @@ module side_panel.mojom;
 interface SearchCompanionPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
   CreateSearchCompanionPageHandler(
-      pending_receiver<SearchCompanionPageHandler> handler);
+      pending_receiver<SearchCompanionPageHandler> handler,
+      pending_remote<SearchCompanionPage> page);
 };
 
-// Browser-side handler for requests from WebUI page.
+// Browser-side handler for requests from WebUI page. (TypeScript -> C++)
 interface SearchCompanionPageHandler {
   // Notify the backend that the UI is ready to be shown.
   ShowUI();
+};
+
+// WebUI page handler for request from Browser side. (C++ -> TypeScript)
+interface SearchCompanionPage {
+  // Pass the current main content URL to frontend
+  OnURLChanged(string new_url);
+
+  // Pass the Zero Suggest Prefix data to frontend
+  // TODO(mercerd): Use actual struct instead of string
+  OnNewZeroSuggestPrefixData(string suggest_response);
+
+  // Pass the optimization guide page annotations to the frontend
+  // TODO(mercerd): Use actual struct instead of string
+  OnNewOptimizationGuidePageAnnotations(string content_annotations);
+
+  // Pass the current viewport images to the frontend
+  // TODO(mercerd): Pass actual Image struct instead of assembling a string
+  OnNewViewportImages(string images_string);
 };

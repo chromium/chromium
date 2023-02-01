@@ -38,15 +38,20 @@ class SearchCompanionSidePanelUI
       mojo::PendingReceiver<
           side_panel::mojom::SearchCompanionPageHandlerFactory> receiver);
 
+  content::WebUI* GetWebUi();
+
  private:
   // side_panel::mojom::SearchCompanionPageHandlerFactory:
   void CreateSearchCompanionPageHandler(
       mojo::PendingReceiver<side_panel::mojom::SearchCompanionPageHandler>
-          receiver) override;
+          receiver,
+      mojo::PendingRemote<side_panel::mojom::SearchCompanionPage> page)
+      override;
 
   std::unique_ptr<SearchCompanionPageHandler> search_companion_page_handler_;
   mojo::Receiver<side_panel::mojom::SearchCompanionPageHandlerFactory>
       search_companion_page_factory_receiver_{this};
+  content::WebUI* web_ui_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
