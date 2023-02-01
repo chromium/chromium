@@ -12,8 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.CallbackController;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.IncognitoReauthCallback;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -53,9 +51,6 @@ public class IncognitoReauthCoordinatorFactory {
      * Non-null for {@link TabSwitcherIncognitoReauthCoordinator} instance.
      */
     private final @Nullable IncognitoReauthTopToolbarDelegate mIncognitoReauthTopToolbarDelegate;
-    /** A callback controller to monitor the availability of {@link TabSwitcherCustomViewManager}.*/
-    private final CallbackController mTabSwitcherCustomViewManagerController =
-            new CallbackController();
 
     /**
      * This allows to pass the re-auth view to the tab switcher.
@@ -86,9 +81,6 @@ public class IncognitoReauthCoordinatorFactory {
      *                              used to initiate re-authentication.
      * @param  settingsLauncher A {@link SettingsLauncher} to use for launching {@link
      *         SettingsActivity} from 3 dots menu inside full-screen re-auth.
-     * @param tabSwitcherCustomViewManagerOneshotSupplier {@link OneshotSupplier
-     *         <TabSwitcherCustomViewManager>} to use for communicating with tab switcher to show
-     *         the re-auth screen.
      * @param incognitoReauthTopToolbarDelegate A {@link IncognitoReauthTopToolbarDelegate} to use
      *         for disabling/enabling few top toolbar elements inside tab switcher.
      * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
@@ -100,8 +92,6 @@ public class IncognitoReauthCoordinatorFactory {
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull IncognitoReauthManager incognitoReauthManager,
             @NonNull SettingsLauncher settingsLauncher,
-            @Nullable OneshotSupplier<TabSwitcherCustomViewManager>
-                    tabSwitcherCustomViewManagerOneshotSupplier,
             @Nullable IncognitoReauthTopToolbarDelegate incognitoReauthTopToolbarDelegate,
             @Nullable LayoutManager layoutManager, @Nullable Intent showRegularOverviewIntent,
             boolean isTabbedActivity) {
@@ -115,28 +105,34 @@ public class IncognitoReauthCoordinatorFactory {
         mShowRegularOverviewIntent = showRegularOverviewIntent;
         mIsTabbedActivity = isTabbedActivity;
 
-        if (isTabbedActivity) {
-            assert tabSwitcherCustomViewManagerOneshotSupplier != null;
-            tabSwitcherCustomViewManagerOneshotSupplier.onAvailable(
-                    mTabSwitcherCustomViewManagerController.makeCancelable(manager -> {
-                        assert manager != null;
-                        mTabSwitcherCustomViewManager = manager;
-                    }));
-        } else {
-            assert tabSwitcherCustomViewManagerOneshotSupplier == null;
-            assert mShowRegularOverviewIntent
-                    != null : "A valid intent is required to be able to"
-                              + " open regular overview mode from inside non-tabbed Activity.";
-        }
+        assert isTabbedActivity
+                || mShowRegularOverviewIntent
+                        != null : "A valid intent is required to be able to"
+                                  + " open regular overview mode from inside non-tabbed Activity.";
+    }
+
+    /**
+     * @param tabSwitcherCustomViewManager {@link TabSwitcherCustomViewManager} to use for
+     *         communicating with tab switcher to show the re-auth screen.
+     */
+    public void setTabSwitcherCustomViewManager(
+            @NonNull TabSwitcherCustomViewManager tabSwitcherCustomViewManager) {
+        mTabSwitcherCustomViewManager = tabSwitcherCustomViewManager;
+    }
+
+    /**
+     * @return {@link TabSwitcherCustomViewManager} that is used to pass the re-auth screen to tab
+     *         switcher.
+     */
+    public TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
+        return mTabSwitcherCustomViewManager;
     }
 
     /**
      * This method is responsible for clean-up work. Typically, called when the Activity is being
      * destroyed.
      */
-    void destroy() {
-        mTabSwitcherCustomViewManagerController.destroy();
-    }
+    void destroy() {}
 
     private IncognitoReauthMenuDelegate getIncognitoReauthMenuDelegate() {
         if (mIncognitoReauthMenuDelegateForTesting != null) {

@@ -29,7 +29,6 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -85,7 +84,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
 
     private final boolean mIsTabbedActivity;
 
-    private OneshotSupplierImpl<TabSwitcherCustomViewManager> mTabSwitcherCustomViewManagerSupplier;
     private IncognitoReauthCoordinatorFactory mIncognitoReauthCoordinatorFactory;
 
     @ParameterizedRobolectricTestRunner.Parameters
@@ -97,22 +95,19 @@ public class IncognitoReauthCoordinatorFactoryTest {
         mIsTabbedActivity = isTabbedActivity;
     }
 
-    private void setUpMocks() {
-        if (mIsTabbedActivity) {
-            mTabSwitcherCustomViewManagerSupplier = new OneshotSupplierImpl<>();
-            mTabSwitcherCustomViewManagerSupplier.set(mTabSwitcherCustomViewManagerMock);
-        }
-    }
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        setUpMocks();
         mIncognitoReauthCoordinatorFactory = new IncognitoReauthCoordinatorFactory(mContextMock,
                 mTabModelSelectorMock, mModalDialogManagerMock, mIncognitoReauthManagerMock,
-                mSettingsLauncherMock, mTabSwitcherCustomViewManagerSupplier,
-                mIncognitoReauthTopToolbarDelegateMock, mLayoutManagerMock, mIntentMock,
-                mIsTabbedActivity);
+                mSettingsLauncherMock, mIncognitoReauthTopToolbarDelegateMock, mLayoutManagerMock,
+                mIntentMock, mIsTabbedActivity);
+
+        if (mIsTabbedActivity) {
+            mIncognitoReauthCoordinatorFactory.setTabSwitcherCustomViewManager(
+                    mTabSwitcherCustomViewManagerMock);
+        }
+
         mIncognitoReauthCoordinatorFactory.mIncognitoReauthMenuDelegateForTesting =
                 mIncognitoReauthMenuDelegateMock;
     }

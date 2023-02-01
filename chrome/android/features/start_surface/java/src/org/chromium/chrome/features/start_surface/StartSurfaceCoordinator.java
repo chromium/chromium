@@ -25,6 +25,8 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -103,7 +105,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     private final Supplier<Toolbar> mToolbarSupplier;
     // TODO(crbug.com/1315676): Directly return the supplier from {@link TabSwitcherCoordinator}.
-    private final OneshotSupplierImpl<TabSwitcherCustomViewManager>
+    private final ObservableSupplierImpl<TabSwitcherCustomViewManager>
             mTabSwitcherCustomViewManagerSupplier;
     private final CrowButtonDelegate mCrowButtonDelegate;
     private final OneshotSupplier<IncognitoReauthController> mIncognitoReauthControllerSupplier;
@@ -283,7 +285,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mCrowButtonDelegate = crowButtonDelegate;
         mIncognitoReauthControllerSupplier = incognitoReauthControllerSupplier;
 
-        mTabSwitcherCustomViewManagerSupplier = new OneshotSupplierImpl<>();
+        mTabSwitcherCustomViewManagerSupplier = new ObservableSupplierImpl<>();
         boolean excludeQueryTiles = !mIsStartSurfaceEnabled
                 || !ChromeFeatureList.sQueryTilesOnStart.isEnabled();
         mIsStartSurfaceRefactorEnabled =
@@ -641,7 +643,8 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
-    public OneshotSupplier<TabSwitcherCustomViewManager> getTabSwitcherCustomViewManagerSupplier() {
+    public ObservableSupplier<TabSwitcherCustomViewManager>
+    getTabSwitcherCustomViewManagerSupplier() {
         return mTabSwitcherCustomViewManagerSupplier;
     }
 

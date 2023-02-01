@@ -263,7 +263,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         return new IncognitoReauthCoordinatorFactory(mActivity, mTabModelSelectorSupplier.get(),
                 mModalDialogManagerSupplier.get(), new IncognitoReauthManager(),
                 new SettingsLauncherImpl(),
-                /*tabSwitcherCustomViewManagerOneshotSupplier= */ null,
                 /*incognitoReauthTopToolbarDelegate= */ null,
                 /*layoutManager=*/null,
                 /*showRegularOverviewIntent= */ showRegularOverviewIntent,

@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.appbar.AppBarLayout;
 
-import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
@@ -276,8 +276,8 @@ public interface StartSurface {
     /**
      * TODO(crbug.com/1315676): Remove this API after the bug is resolved.
      *
-     * @return A {@link OneShotSupplier <TabSwitcherCustomViewManager>}.
+     * @return A {@link ObservableSupplier <TabSwitcherCustomViewManager>}.
      */
     @NonNull
-    OneshotSupplier<TabSwitcherCustomViewManager> getTabSwitcherCustomViewManagerSupplier();
+    ObservableSupplier<TabSwitcherCustomViewManager> getTabSwitcherCustomViewManagerSupplier();
 }
