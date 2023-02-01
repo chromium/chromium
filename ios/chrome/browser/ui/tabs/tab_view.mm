@@ -47,6 +47,7 @@ const CGFloat kTabStripLineHeight = 0.5;
 const CGFloat kCloseButtonHorizontalShift = 22;
 const CGFloat kTitleLeftMargin = 8.0;
 const CGFloat kTitleRightMargin = 0.0;
+const CGFloat kPinnedFaviconHorizontalMargin = 31.0;
 
 const CGFloat kCloseButtonSize = 24.0;
 const CGFloat kFaviconSize = 16.0;
@@ -90,8 +91,16 @@ UIImage* DefaultFaviconImage() {
   MDCActivityIndicator* _activityIndicator;
 
   // Adds hover interaction to background tabs.
-  API_AVAILABLE(ios(13.4)) UIPointerInteraction* _pointerInteraction;
+  UIPointerInteraction* _pointerInteraction;
 }
+
+// Default constraints, used when the tab view is unpinned.
+@property(nonatomic, strong) NSArray<NSLayoutConstraint*>* defaultConstraints;
+
+// Constraints when the tab view is pinned.
+@property(nonatomic, strong)
+    NSArray<NSLayoutConstraint*>* faviconPinnedConstraints;
+
 @end
 
 @interface TabView (Private)
@@ -191,10 +200,10 @@ UIImage* DefaultFaviconImage() {
   if (_pinned == pinned) {
     return;
   }
+
   _pinned = pinned;
   _titleLabel.hidden = pinned;
   _closeButton.hidden = pinned;
-  [self setFrame:self.frame];
 }
 
 - (void)startProgressSpinner {
@@ -223,6 +232,14 @@ UIImage* DefaultFaviconImage() {
   if (CGRectEqualToRect(CGRectZero, previousFrame) &&
       !_layoutConstraintsInitialized) {
     [self setNeedsUpdateConstraints];
+  } else {
+    if (_pinned) {
+      [NSLayoutConstraint deactivateConstraints:self.defaultConstraints];
+      [NSLayoutConstraint activateConstraints:self.faviconPinnedConstraints];
+    } else {
+      [NSLayoutConstraint deactivateConstraints:self.faviconPinnedConstraints];
+      [NSLayoutConstraint activateConstraints:self.defaultConstraints];
+    }
   }
 }
 
@@ -233,8 +250,9 @@ UIImage* DefaultFaviconImage() {
     _layoutConstraintsInitialized = YES;
     [self addCommonConstraints];
     // Add buttons and labels constraints if needed.
-    if (_closeButton)
+    if (_closeButton) {
       [self addButtonsAndLabelConstraints];
+    }
   }
 }
 
@@ -337,31 +355,30 @@ UIImage* DefaultFaviconImage() {
     @"title" : _titleLabel,
     @"favicon" : _faviconView,
   };
+
   NSArray* constraints = @[
-    @"H:|-faviconLeftInset-[favicon(faviconSize)]",
+    @"H:[favicon(faviconSize)]",
     @"V:|-faviconVerticalOffset-[favicon]-0-|",
     @"H:[close(==closeButtonSize)]-closeButtonHorizontalShift-|",
     @"V:|-0-[close]-0-|",
-    @"H:[favicon]-titleLeftMargin-[title]-titleRightMargin-[close]",
+    @"H:[title]-titleRightMargin-[close]",
     @"V:[title(==titleHeight)]",
   ];
 
   NSDictionary* metrics = @{
     @"closeButtonSize" : @(kCloseButtonSize),
     @"closeButtonHorizontalShift" : @(kCloseButtonHorizontalShift),
-    @"titleLeftMargin" : @(kTitleLeftMargin),
     @"titleRightMargin" : @(kTitleRightMargin),
     @"titleHeight" : @(kFaviconSize),
-    @"faviconLeftInset" : @(kFaviconLeftInset),
     @"faviconVerticalOffset" : @(kFaviconVerticalOffset),
     @"faviconSize" : @(kFaviconSize),
   };
+
   ApplyVisualConstraintsWithMetrics(constraints, viewsDictionary, metrics);
   AddSameCenterXConstraint(self, _faviconView, _activityIndicator);
   AddSameCenterYConstraint(self, _faviconView, _activityIndicator);
   AddSameCenterYConstraint(self, _faviconView, _titleLabel);
 }
-
 // Updates this tab's style based on the value of `selected` and the current
 // incognito style.
 - (void)updateStyleForSelected:(BOOL)selected {
@@ -448,18 +465,45 @@ UIImage* DefaultFaviconImage() {
   return path;
 }
 
+#pragma mark - Getters
+
+- (NSArray<NSLayoutConstraint*>*)faviconPinnedConstraints {
+  if (!_faviconPinnedConstraints) {
+    _faviconPinnedConstraints = @[
+      [_faviconView.leadingAnchor
+          constraintGreaterThanOrEqualToAnchor:self.leadingAnchor
+                                      constant:kPinnedFaviconHorizontalMargin],
+      [_faviconView.trailingAnchor
+          constraintLessThanOrEqualToAnchor:self.trailingAnchor
+                                   constant:-kPinnedFaviconHorizontalMargin],
+    ];
+  }
+  return _faviconPinnedConstraints;
+}
+
+- (NSArray<NSLayoutConstraint*>*)defaultConstraints {
+  if (!_defaultConstraints) {
+    _defaultConstraints = @[
+      [_faviconView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
+                                                 constant:kFaviconLeftInset],
+      [_faviconView.trailingAnchor
+          constraintEqualToAnchor:_titleLabel.leadingAnchor
+                         constant:-kTitleLeftMargin],
+    ];
+  }
+  return _defaultConstraints;
+}
+
 #pragma mark UIPointerInteractionDelegate
 
 - (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
                       regionForRequest:(UIPointerRegionRequest*)request
-                         defaultRegion:(UIPointerRegion*)defaultRegion
-    API_AVAILABLE(ios(13.4)) {
+                         defaultRegion:(UIPointerRegion*)defaultRegion {
   return defaultRegion;
 }
 
 - (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
-                       styleForRegion:(UIPointerRegion*)region
-    API_AVAILABLE(ios(13.4)) {
+                       styleForRegion:(UIPointerRegion*)region {
   // Hovering over this tab view and closing the tab simultaneously could result
   // in this tab view having been removed from the window at the beginning of
   // this method. If this tab view has already been removed from the view
