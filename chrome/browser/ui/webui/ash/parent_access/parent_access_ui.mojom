@@ -45,6 +45,12 @@ struct ParentAccessParams {
   // Defines the type of flow to invoke in the dialog.
   FlowType flow_type;
   FlowTypeParams? flow_type_params;
+
+  // Indicates if the Parent Access disabled UI should be shown. This can be
+  // determined differently depending on the flow type. For example, in the
+  // extension approval flow, this value is true if the parent has disabled
+  // the extension permissions setting for the supervised user.
+  bool is_disabled;
 };
 
 // Parameters for local web approvals feature.

@@ -54,7 +54,8 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, ShowDialog) {
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
-              parent_access_ui::mojom::WebApprovalsParams::New())),
+              parent_access_ui::mojom::WebApprovalsParams::New()),
+          /*is_disabled=*/false),
       std::move(callback));
 
   // Verify it is showing.
@@ -66,6 +67,57 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, ShowDialog) {
   EXPECT_EQ(
       params->flow_type,
       parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess);
+
+  // Verify that it is correctly configured.
+  EXPECT_EQ(dialog->GetDialogContentURL().spec(),
+            chrome::kChromeUIParentAccessURL);
+  EXPECT_TRUE(dialog->ShouldShowCloseButton());
+  EXPECT_EQ(dialog->GetDialogModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
+
+  // Send ESCAPE keypress.  EventGenerator requires the root window, which has
+  // to be fetched from the Ash shell.
+  ui::test::EventGenerator generator(Shell::Get()->GetPrimaryRootWindow());
+  generator.PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+
+  // The dialog instance should be gone after ESC is pressed.
+  EXPECT_EQ(ParentAccessDialog::GetInstance(), nullptr);
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest,
+                       ShowDialogWithParentAccessDisabled) {
+  base::RunLoop run_loop;
+
+  // Create the callback.
+  // TODO(b/266830608): Change this to kDisabled once the disabled state is
+  // implemented in ParentAccess mojo interface.
+  ParentAccessDialog::Callback callback = base::BindLambdaForTesting(
+      [&](std::unique_ptr<ParentAccessDialog::Result> result) -> void {
+        EXPECT_EQ(result->status,
+                  ParentAccessDialog::Result::Status::kCanceled);
+        run_loop.Quit();
+      });
+
+  // Show the dialog.
+  ParentAccessDialogProvider provider;
+  ParentAccessDialogProvider::ShowError error =
+      provider.Show(parent_access_ui::mojom::ParentAccessParams::New(
+                        parent_access_ui::mojom::ParentAccessParams::FlowType::
+                            kExtensionAccess,
+                        nullptr,
+                        /*is_disabled=*/true),
+                    std::move(callback));
+
+  // Verify it is showing.
+  ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
+  ASSERT_NE(ParentAccessDialog::GetInstance(), nullptr);
+  const ParentAccessDialog* dialog = ParentAccessDialog::GetInstance();
+  parent_access_ui::mojom::ParentAccessParams* params =
+      dialog->GetParentAccessParamsForTest();
+  EXPECT_EQ(
+      params->flow_type,
+      parent_access_ui::mojom::ParentAccessParams::FlowType::kExtensionAccess);
 
   // Verify that it is correctly configured.
   EXPECT_EQ(dialog->GetDialogContentURL().spec(),
@@ -107,7 +159,8 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetApproved) {
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
-              parent_access_ui::mojom::WebApprovalsParams::New())),
+              parent_access_ui::mojom::WebApprovalsParams::New()),
+          /*is_disabled=*/false),
       std::move(callback));
 
   // Set the result.
@@ -141,7 +194,8 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetDeclined) {
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
-              parent_access_ui::mojom::WebApprovalsParams::New())),
+              parent_access_ui::mojom::WebApprovalsParams::New()),
+          /*is_disabled=*/false),
       std::move(callback));
 
   // Set the result.
@@ -173,7 +227,8 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetCanceled) {
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
-              parent_access_ui::mojom::WebApprovalsParams::New())),
+              parent_access_ui::mojom::WebApprovalsParams::New()),
+          /*is_disabled=*/false),
       std::move(callback));
 
   // Set the result.
@@ -205,7 +260,8 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetError) {
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
-              parent_access_ui::mojom::WebApprovalsParams::New())),
+              parent_access_ui::mojom::WebApprovalsParams::New()),
+          /*is_disabled=*/false),
       std::move(callback));
 
   // Set the result.
@@ -240,7 +296,8 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, DestroyedWithoutResult) {
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
-              parent_access_ui::mojom::WebApprovalsParams::New())),
+              parent_access_ui::mojom::WebApprovalsParams::New()),
+          /*is_disabled=*/false),
       std::move(callback));
 
   // Set the result.
@@ -261,7 +318,8 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest,
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
-              parent_access_ui::mojom::WebApprovalsParams::New())),
+              parent_access_ui::mojom::WebApprovalsParams::New()),
+          /*is_disabled=*/false),
       base::DoNothing());
 
   // Verify it is showing.
@@ -277,7 +335,8 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest,
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
-              parent_access_ui::mojom::WebApprovalsParams::New())),
+              parent_access_ui::mojom::WebApprovalsParams::New()),
+          false),
       base::DoNothing());
 
   // Verify an error was returned indicating it can't be shown again.
@@ -312,7 +371,8 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogRegularUserBrowserTest,
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
-              parent_access_ui::mojom::WebApprovalsParams::New())),
+              parent_access_ui::mojom::WebApprovalsParams::New()),
+          /*is_disabled=*/false),
       base::DoNothing());
 
   // Verify it is not showing.

@@ -8,6 +8,9 @@ function strToMojoString16(str) {
   return {data: str.split('').map(ch => ch.charCodeAt(0))};
 }
 
+/**
+ * @returns {ParentAccessParams}
+ */
 export function buildWebApprovalsParams() {
   const parentAccessParams = new ParentAccessParams();
   parentAccessParams.flowType = ParentAccessParams_FlowType.kWebsiteAccess;
@@ -19,8 +22,13 @@ export function buildWebApprovalsParams() {
   return parentAccessParams;
 }
 
-export function buildExtensionApprovalsParams() {
+/**
+ * @param {boolean} isDisabled If the disabled UI should be shown.
+ * @returns {ParentAccessParams}
+ */
+export function buildExtensionApprovalsParams(isDisabled) {
   const parentAccessParams = new ParentAccessParams();
   parentAccessParams.flowType = ParentAccessParams_FlowType.kExtensionAccess;
+  parentAccessParams.isDisabled = isDisabled;
   return parentAccessParams;
 }

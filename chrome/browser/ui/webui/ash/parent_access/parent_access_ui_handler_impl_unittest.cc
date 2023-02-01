@@ -42,7 +42,8 @@ class FakeParentAccessUIHandlerDelegate : public ParentAccessUIHandlerDelegate {
     return parent_access_ui::mojom::ParentAccessParams::New(
         parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
         parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
-            parent_access_ui::mojom::WebApprovalsParams::New()));
+            parent_access_ui::mojom::WebApprovalsParams::New()),
+        /*is_disabled=*/false);
   }
 
   MOCK_METHOD2(SetApproved, void(const std::string&, const base::Time&));

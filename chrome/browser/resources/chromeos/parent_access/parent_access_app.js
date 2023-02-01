@@ -8,6 +8,7 @@
 import './strings.m.js';
 import './parent_access_after.js';
 import './parent_access_before.js';
+import './parent_access_disabled.js';
 import './parent_access_ui.js';
 import './supervision/supervised_user_error.js';
 import './supervision/supervised_user_offline.js';
@@ -23,6 +24,7 @@ export const Screens = {
   AUTHENTICATION_FLOW: 'parent-access-ui',
   BEFORE_FLOW: 'parent-access-before',
   AFTER_FLOW: 'parent-access-after',
+  DISABLED: 'parent-access-disabled',
   ERROR: 'supervised-user-error',
   OFFLINE: 'supervised-user-offline',
 };
@@ -87,6 +89,9 @@ class ParentAccessApp extends PolymerElement {
   /** @private */
   async getInitialScreen_() {
     const response = await getParentAccessParams();
+    if (response.params.isDisabled) {
+      return Screens.DISABLED;
+    }
     switch (response.params.flowType) {
       case ParentAccessParams_FlowType.kExtensionAccess:
         return Screens.BEFORE_FLOW;
@@ -110,13 +115,21 @@ class ParentAccessApp extends PolymerElement {
    * @private
    */
   switchScreen_(screen) {
-    // The error screen is a terminal state.
-    if (this.currentScreen_ === Screens.ERROR) {
+    if (this.isAppInTerminalState_()) {
       return;
     }
     this.currentScreen_ = screen;
     /** @type {CrViewManagerElement} */ (this.$.viewManager)
         .switchView(this.currentScreen_);
+  }
+
+  /**
+   * @returns {boolean} If the app can navigate away from the current screen.
+   * @private
+   */
+  isAppInTerminalState_() {
+    return this.currentScreen_ === Screens.ERROR ||
+        this.currentScreen_ === Screens.DISABLED;
   }
 }
 customElements.define(ParentAccessApp.is, ParentAccessApp);

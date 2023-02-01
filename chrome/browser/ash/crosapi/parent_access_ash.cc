@@ -95,7 +95,8 @@ void ParentAccessAsh::GetWebsiteParentApproval(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
               parent_access_ui::mojom::WebApprovalsParams::New(
-                  url, child_display_name, favicon_bitmap)));
+                  url, child_display_name, favicon_bitmap)),
+          /* is_disabled= */ false);
   ShowParentAccessDialog(std::move(params), std::move(callback));
 }
 

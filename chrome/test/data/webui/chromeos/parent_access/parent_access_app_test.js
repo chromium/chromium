@@ -24,6 +24,8 @@ parent_access_app_tests.TestNames = {
       'Tests that the web approvals after flow is shown',
   TestShowExtensionApprovalsFlow:
       'Tests that the extension approvals flow is shown',
+  TestDisabledScreenIsTerminal:
+      'Tests that the disabled flow is shown and is terminal',
   TestShowErrorScreenOnOAuthFailure: 'Tests that the error screen is shown',
   TestWebApprovalsOffline:
       'Tests that dialog switches in/out of offline screen',
@@ -71,7 +73,8 @@ suite(parent_access_app_tests.suiteName, function() {
       async () => {
         // Set up the TestParentAccessUIHandler
         const handler = new TestParentAccessUIHandler();
-        handler.setParentAccessParams(buildExtensionApprovalsParams());
+        handler.setParentAccessParams(
+            buildExtensionApprovalsParams(/*is_disabled=*/ false));
         handler.setOAuthTokenStatus('token', GetOAuthTokenStatus.kSuccess);
         setParentAccessUIHandlerForTest(handler);
 
@@ -89,6 +92,30 @@ suite(parent_access_app_tests.suiteName, function() {
         // Verify online flow is showing and switch to the after screen.
         assertEquals(
             parentAccessApp.currentScreen_, Screens.AUTHENTICATION_FLOW);
+      });
+
+  test(
+      parent_access_app_tests.TestNames.TestDisabledScreenIsTerminal,
+      async () => {
+        // Set up the TestParentAccessUIHandler
+        const handler = new TestParentAccessUIHandler();
+        handler.setParentAccessParams(
+            buildExtensionApprovalsParams(/*is_disabled=*/ true));
+        handler.setOAuthTokenStatus('token', GetOAuthTokenStatus.kSuccess);
+        setParentAccessUIHandlerForTest(handler);
+
+        // Create app element.
+        const parentAccessApp = document.createElement('parent-access-app');
+        document.body.appendChild(parentAccessApp);
+        await flushTasks();
+
+        // Verify disabled flow is showing.
+        assertEquals(parentAccessApp.currentScreen_, Screens.DISABLED);
+
+        // Verify disabled screen still showing after triggering offline event.
+        window.dispatchEvent(new Event('offline'));
+        await flushTasks();
+        assertEquals(parentAccessApp.currentScreen_, Screens.DISABLED);
       });
 
   test(

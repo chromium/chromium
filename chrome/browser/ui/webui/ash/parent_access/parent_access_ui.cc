@@ -83,6 +83,8 @@ void ParentAccessUI::SetUpResources() {
                           IDR_LOCAL_WEB_APPROVALS_AFTER_JS);
   source->AddResourcePath("parent_access_before.js",
                           IDR_PARENT_ACCESS_BEFORE_JS);
+  source->AddResourcePath("parent_access_disabled.js",
+                          IDR_PARENT_ACCESS_DISABLED_JS);
   source->AddResourcePath("parent_access_ui.mojom-webui.js",
                           IDR_PARENT_ACCESS_UI_MOJOM_WEBUI_JS);
   source->AddResourcePath("webview_manager.js",
@@ -102,6 +104,7 @@ void ParentAccessUI::SetUpResources() {
       {"approveButtonText", IDS_PARENT_ACCESS_AFTER_APPROVE_BUTTON},
       {"denyButtonText", IDS_PARENT_ACCESS_AFTER_DENY_BUTTON},
       {"askInPersonButtonText", IDS_PARENT_ACCESS_ASK_IN_PERSON_BUTTON},
+      {"okButtonText", IDS_PARENT_ACCESS_OK_BUTTON},
       {"localWebApprovalsAfterTitle",
        IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_TITLE},
       {"localWebApprovalsAfterSubtitle",
