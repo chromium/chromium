@@ -117,9 +117,7 @@ void TabletModeFloatWindowResizer::CompleteDrag() {
 
   // `FloatController` will magnetize windows to one of the corners if it
   // remains in float state and not tucked.
-  auto* float_controller = Shell::Get()->float_controller();
-  float_controller->OnDragCompletedForTablet(float_window,
-                                             last_location_in_parent_);
+  Shell::Get()->float_controller()->OnDragCompletedForTablet(float_window);
 }
 
 void TabletModeFloatWindowResizer::RevertDrag() {
