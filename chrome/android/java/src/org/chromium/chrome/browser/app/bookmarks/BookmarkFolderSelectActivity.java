@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
-import org.chromium.chrome.browser.bookmarks.ReadingListFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -200,11 +199,9 @@ public class BookmarkFolderSelectActivity
 
     private void updateFolderList() {
         List<BookmarkId> folderList = new ArrayList<>();
+        folderList.add(mModel.getReadingListFolder());
         List<Integer> depthList = new ArrayList<>();
-        if (ReadingListFeatures.shouldAllowBookmarkTypeSwapping()) {
-            folderList.add(mModel.getReadingListFolder());
-            depthList.add(0);
-        }
+        depthList.add(0);
         mModel.getMoveDestinations(folderList, depthList, mBookmarksToMove);
         List<FolderListEntry> entryList = new ArrayList<>(folderList.size() + 3);
 

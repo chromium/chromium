@@ -122,10 +122,6 @@ public class ReadingListUtilsUnitTest {
         BookmarkId readingListId = new BookmarkId(1, BookmarkType.READING_LIST);
         BookmarkId regularId = new BookmarkId(1, BookmarkType.NORMAL);
 
-        // feature disabled
-        setBookmarkTypeSwappingEnabled(false);
-        Assert.assertFalse(ReadingListUtils.isSwappableReadingListItem(readingListId));
-
         // wrong type
         setBookmarkTypeSwappingEnabled(true);
         Assert.assertFalse(ReadingListUtils.isSwappableReadingListItem(regularId));
@@ -136,27 +132,9 @@ public class ReadingListUtilsUnitTest {
 
     @Test
     @SmallTest
-    public void maybeTypeSwapAndShowSaveFlow() {
-        setBookmarkTypeSwappingEnabled(true);
-        ReadingListUtils.setSkipShowSaveFlowForTesting(true);
-
-        Assert.assertTrue(ReadingListUtils.maybeTypeSwapAndShowSaveFlow(
-                Mockito.mock(Activity.class), Mockito.mock(BottomSheetController.class),
-                mBookmarkModel, mBookmarkId, BookmarkType.READING_LIST));
-        verify(mBookmarkModel).addToReadingList(any(), any());
-    }
-
-    @Test
-    @SmallTest
     public void maybeTypeSwapAndShowSaveFlow_EdgeCases() {
         BookmarkId bookmarkId = Mockito.mock(BookmarkId.class);
         doReturn(BookmarkType.NORMAL).when(bookmarkId).getType();
-
-        // feature disabled
-        setBookmarkTypeSwappingEnabled(false);
-        Assert.assertFalse(ReadingListUtils.maybeTypeSwapAndShowSaveFlow(
-                Mockito.mock(Activity.class), Mockito.mock(BottomSheetController.class),
-                Mockito.mock(BookmarkModel.class), bookmarkId, BookmarkType.READING_LIST));
 
         // bookmarkId null
         setBookmarkTypeSwappingEnabled(true);

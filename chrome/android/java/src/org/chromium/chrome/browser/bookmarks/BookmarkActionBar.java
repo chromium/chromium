@@ -248,10 +248,6 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
                 }
             }
 
-            // Unless type-swapping is enabled disable edit/move buttons. For multi-selections,
-            // check that the read state matches for all items before showing "mark as" buttons.
-            // Disable move/edit buttons regardless if there's also a partner bookmark selected.
-            boolean typeSwappingEnabled = ReadingListFeatures.shouldAllowBookmarkTypeSwapping();
             // Compute whether all selected bookmarks are reading list items and add up the number
             // of read items.
             int numReadingListItems = 0;
@@ -271,20 +267,13 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
             if (numReadingListItems > 0) {
                 getMenu()
                         .findItem(R.id.selection_mode_move_menu_id)
-                        .setVisible(typeSwappingEnabled && !hasPartnerBoomarkSelected);
+                        .setVisible(!hasPartnerBoomarkSelected);
                 getMenu()
                         .findItem(R.id.selection_mode_edit_menu_id)
-                        .setVisible(selectedBookmarks.size() == 1 && typeSwappingEnabled
-                                && !hasPartnerBoomarkSelected);
+                        .setVisible(selectedBookmarks.size() == 1 && !hasPartnerBoomarkSelected);
 
-                // Check the reading list flag before "open in" items.
-                boolean shouldUseRegularTab = !ReadingListFeatures.shouldUseCustomTab();
-                getMenu()
-                        .findItem(R.id.selection_open_in_new_tab_id)
-                        .setVisible(shouldUseRegularTab);
-                getMenu()
-                        .findItem(R.id.selection_open_in_incognito_tab_id)
-                        .setVisible(shouldUseRegularTab);
+                getMenu().findItem(R.id.selection_open_in_new_tab_id).setVisible(true);
+                getMenu().findItem(R.id.selection_open_in_incognito_tab_id).setVisible(true);
             }
 
             // Only show the "mark as" options when all selections are reading list items and

@@ -243,7 +243,6 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     private void setupFeatureDefaults() {
         setBookmarkItemRowEnabled(false);
-        setReadingListItemRowEnabled(false);
         setShoppingListItemRowEnabled(false);
         setDesktopSiteExceptionsEnabled(false);
         setTabSelectionEditorV2Enabled(false);
@@ -255,13 +254,6 @@ public class AppMenuPropertiesDelegateUnitTest {
         ShoppingFeatures.setShoppingListEligibleForTesting(enabled);
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, enabled);
         FeatureList.setTestValues(mTestValues);
-    }
-
-    private void setReadingListItemRowEnabled(boolean enabled) {
-        ReadingListUtils.setReadingListSupportedForTesting(true);
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.READ_LATER, enabled);
-        mTestValues.addFieldTrialParamOverride(
-                ChromeFeatureList.READ_LATER, "reading_list_in_app_menu", "true");
     }
 
     private void setShoppingListItemRowEnabled(boolean enabled) {
@@ -677,38 +669,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    public void updateBookmarkMenuItemRow_WithShoppingAndReadingList() {
-        setBookmarkItemRowEnabled(true);
-        setShoppingListItemRowEnabled(true);
-        PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
-        setReadingListItemRowEnabled(true);
-        doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
-
-        MenuItem bookmarkMenuItemAdd = mock(MenuItem.class);
-        MenuItem bookmarkMenuItemEdit = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updateBookmarkMenuItemRow(
-                bookmarkMenuItemAdd, bookmarkMenuItemEdit, mTab);
-        verify(bookmarkMenuItemAdd).setVisible(true);
-        verify(bookmarkMenuItemAdd).setEnabled(true);
-
-        MenuItem startPriceTrackingMenuItem = mock(MenuItem.class);
-        MenuItem stopPriceTrackingMenuItem = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updatePriceTrackingMenuItemRow(
-                startPriceTrackingMenuItem, stopPriceTrackingMenuItem, mTab);
-        // TODO(crbug.com/1264685): Add menu visibility asserts here once the code is checked in.
-
-        // Price-tracking takes priority and the reading list option won't be shown.
-        MenuItem readingListMenuItemAdd = mock(MenuItem.class);
-        MenuItem readingListMenuItemDelete = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updateReadingListMenuItemRow(
-                readingListMenuItemAdd, readingListMenuItemDelete, mTab);
-        verify(readingListMenuItemAdd).setVisible(false);
-        verify(readingListMenuItemDelete).setVisible(false);
-
-        PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
-    }
-
-    @Test
     public void updateBookmarkMenuItemRow_NullTab() {
         setBookmarkItemRowEnabled(true);
 
@@ -731,44 +691,6 @@ public class AppMenuPropertiesDelegateUnitTest {
                 bookmarkMenuItemAdd, bookmarkMenuItemEdit, null);
         verify(bookmarkMenuItemAdd).setVisible(false);
         verify(bookmarkMenuItemEdit).setVisible(false);
-    }
-
-    @Test
-    public void updateReadingListMenuItemRow() {
-        setReadingListItemRowEnabled(true);
-        doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
-
-        MenuItem readingListMenuItemAdd = mock(MenuItem.class);
-        MenuItem readingListMenuItemDelete = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updateReadingListMenuItemRow(
-                readingListMenuItemAdd, readingListMenuItemDelete, mTab);
-        verify(readingListMenuItemAdd).setVisible(true);
-        verify(readingListMenuItemDelete).setEnabled(true);
-    }
-
-    @Test
-    public void updateReadingListMenuItemRow_NullTab() {
-        setReadingListItemRowEnabled(true);
-
-        MenuItem readingListMenuItemAdd = mock(MenuItem.class);
-        MenuItem readingListMenuItemDelete = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updateReadingListMenuItemRow(
-                readingListMenuItemAdd, readingListMenuItemDelete, null);
-        verify(readingListMenuItemAdd).setVisible(false);
-        verify(readingListMenuItemDelete).setVisible(false);
-    }
-
-    @Test
-    public void updateReadingListMenuItemRow_NullBookmarkModel() {
-        setReadingListItemRowEnabled(true);
-        mBookmarkModelSupplier.set(null);
-
-        MenuItem readingListMenuItemAdd = mock(MenuItem.class);
-        MenuItem readingListMenuItemDelete = mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updateReadingListMenuItemRow(
-                readingListMenuItemAdd, readingListMenuItemDelete, null);
-        verify(readingListMenuItemAdd).setVisible(false);
-        verify(readingListMenuItemDelete).setVisible(false);
     }
 
     @Test

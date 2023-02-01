@@ -181,10 +181,8 @@ public abstract class BookmarkRow
             }
             listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
             listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
-            if (ReadingListFeatures.shouldAllowBookmarkTypeSwapping()) {
-                listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
-                listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0));
-            }
+            listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
+            listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0));
         } else {
             listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
             listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));

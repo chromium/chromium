@@ -37,6 +37,8 @@ import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** Coordinates the bottom-sheet saveflow. */
 public class BookmarkSaveFlowCoordinator {
+    private static final int AUTODISMISS_TIME_MS = 6000;
+
     private final Context mContext;
     private final PropertyModel mPropertyModel =
             new PropertyModel(BookmarkSaveFlowProperties.ALL_PROPERTIES);
@@ -156,10 +158,7 @@ public class BookmarkSaveFlowCoordinator {
     }
 
     private void setupAutodismiss() {
-        if (!BookmarkFeatures.isImprovedSaveFlowAutodismissEnabled()) return;
-
-        PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE, this::close,
-                BookmarkFeatures.getImprovedSaveFlowAutodismissTimeMs());
+        PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE, this::close, AUTODISMISS_TIME_MS);
     }
 
     private void destroy() {

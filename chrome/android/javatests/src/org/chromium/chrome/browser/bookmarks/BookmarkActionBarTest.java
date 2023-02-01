@@ -426,15 +426,12 @@ public class BookmarkActionBarTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testOnSelectionStateChange_readingList() {
-        ReadingListFeatures.setShouldUseCustomTabForTesting(false);
-
         initializeNormal();
         when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
 
         mBookmarkActionBar.onSelectionStateChange(
                 Collections.singletonList(BOOKMARK_ID_READING_LIST));
-        verifySelectionMenuVisibility(
-                R.id.selection_mode_edit_menu_id, R.id.selection_mode_move_menu_id);
+        verifySelectionMenuVisibility();
     }
 
     @Test

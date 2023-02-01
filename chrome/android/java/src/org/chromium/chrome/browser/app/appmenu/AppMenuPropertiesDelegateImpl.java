@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.bookmarks.BookmarkFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
-import org.chromium.chrome.browser.bookmarks.ReadingListFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -55,7 +54,6 @@ import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -73,8 +71,6 @@ import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
-import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -103,7 +99,6 @@ import java.util.Map;
  */
 public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate {
     private static Boolean sItemBookmarkedForTesting;
-    private static Boolean sItemInReadingListForTesting;
     protected PropertyModel mReloadPropertyModel;
 
     protected final Context mContext;
@@ -122,7 +117,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     // Keeps track of which menu item was shown when installable app is detected.
     private int mAddAppTitleShown;
     private Map<CustomViewBinder, Integer> mCustomViewTypeOffsetMap;
-    private boolean mIsTypeSpecificBookmarkItemRowPresent;
+
     /**
      * This is non null for the case of ChromeTabbedActivity when the corresponding {@link
      * CallbackController} has been fired.
@@ -476,14 +471,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         updateBookmarkMenuItemRow(menu.findItem(R.id.add_bookmark_menu_id),
                 menu.findItem(R.id.edit_bookmark_menu_id), currentTab);
-        // Updates the type-specific bookmark menu item rows.
-        // The order listed here is reflects the relative priority. Subsequent updates should check
-        // the `mIsTypeSpecificBookmarkItemRowPresent` bit before updating their row.
-        mIsTypeSpecificBookmarkItemRowPresent = false;
         updatePriceTrackingMenuItemRow(menu.findItem(R.id.enable_price_tracking_menu_id),
                 menu.findItem(R.id.disable_price_tracking_menu_id), currentTab);
-        updateReadingListMenuItemRow(menu.findItem(R.id.add_to_reading_list_menu_id),
-                menu.findItem(R.id.delete_from_reading_list_menu_id), currentTab);
 
         // Don't allow either "chrome://" pages or interstitial pages to be shared, or when the
         // current tab is null.
@@ -703,21 +692,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         if (!mBookmarkModelSupplier.hasValue()) return false;
         return mBookmarkModelSupplier.get().hasBookmarkIdForTab(currentTab);
-    }
-
-    /**
-     * @param currentTab The currentTab for which the app menu is showing.
-     * @return Whether reading list menu item should be highlighted, indicating that the current tab
-     *         exists in the reading list.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public boolean shouldHighlightReadingList(@NonNull Tab currentTab) {
-        if (sItemInReadingListForTesting != null) return sItemInReadingListForTesting;
-
-        if (!mBookmarkModelSupplier.hasValue()) return false;
-        BookmarkId existingBookmark =
-                mBookmarkModelSupplier.get().getUserBookmarkIdForTab(currentTab);
-        return existingBookmark != null && existingBookmark.getType() == BookmarkType.READING_LIST;
     }
 
     /**
@@ -1111,36 +1085,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     /**
-     * Updates the bookmark item's visibility.
-     *
-     * @param readingListMenuItemAdd {@link MenuItem} for adding to the reading list.
-     * @param readingListMenuItemDelete {@link MenuItem} for deleting from the reading list.
-     * @param currentTab Current tab being displayed.
-     */
-    protected void updateReadingListMenuItemRow(@NonNull MenuItem readingListMenuItemAdd,
-            @NonNull MenuItem readingListMenuItemDelete, @Nullable Tab currentTab) {
-        // If the reading list item row is disabled, then hide both items.
-        if (!ReadingListFeatures.isReadingListMenuItemAsDedicatedRowEnabled()
-                || !mBookmarkModelSupplier.hasValue() || currentTab == null
-                || !ReadingListUtils.isReadingListSupported(currentTab.getUrl())
-                || mIsTypeSpecificBookmarkItemRowPresent) {
-            readingListMenuItemAdd.setVisible(false);
-            readingListMenuItemDelete.setVisible(false);
-            return;
-        }
-
-        mIsTypeSpecificBookmarkItemRowPresent = true;
-
-        boolean editEnabled = mBookmarkModelSupplier.get().isEditBookmarksEnabled();
-        readingListMenuItemAdd.setEnabled(editEnabled);
-        readingListMenuItemDelete.setEnabled(editEnabled);
-
-        boolean readingListItemExists = shouldHighlightReadingList(currentTab);
-        readingListMenuItemAdd.setVisible(!readingListItemExists);
-        readingListMenuItemDelete.setVisible(readingListItemExists);
-    }
-
-    /**
      * Updates the price-tracking menu item visibility.
      *
      * @param startPriceTrackingMenuItem The menu item to start price tracking.
@@ -1159,13 +1103,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         // If price tracking isn't enabled or the page isn't eligible, then hide both items.
         if (!ShoppingFeatures.isShoppingListEligible()
                 || !PowerBookmarkUtils.isPriceTrackingEligible(currentTab)
-                || mIsTypeSpecificBookmarkItemRowPresent || !mBookmarkModelSupplier.hasValue()) {
+                || !mBookmarkModelSupplier.hasValue()) {
             startPriceTrackingMenuItem.setVisible(false);
             stopPriceTrackingMenuItem.setVisible(false);
             return;
         }
-
-        mIsTypeSpecificBookmarkItemRowPresent = true;
 
         boolean editEnabled = mBookmarkModelSupplier.get().isEditBookmarksEnabled();
         startPriceTrackingMenuItem.setEnabled(editEnabled);
@@ -1275,11 +1217,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     @VisibleForTesting
-    static void setPageInReadingListForTesting(Boolean highlight) {
-        sItemInReadingListForTesting = highlight;
-    }
-
-    @VisibleForTesting
     void setStartSurfaceStateForTesting(@StartSurfaceState int state) {
         mStartSurfaceState = state;
     }
@@ -1294,8 +1231,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     protected @ColorRes int getMenuItemIconColorRes(MenuItem menuItem) {
         final int itemId = menuItem.getItemId();
-        if (itemId == R.id.edit_bookmark_menu_id || itemId == R.id.delete_from_reading_list_menu_id
-                || itemId == R.id.disable_price_tracking_menu_id) {
+        if (itemId == R.id.edit_bookmark_menu_id || itemId == R.id.disable_price_tracking_menu_id) {
             return R.color.default_icon_color_accent1_tint_list;
         }
         return R.color.default_icon_color_secondary_tint_list;

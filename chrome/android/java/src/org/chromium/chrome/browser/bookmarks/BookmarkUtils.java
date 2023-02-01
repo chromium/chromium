@@ -74,10 +74,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /** A class holding static util functions for bookmark. */
 public class BookmarkUtils {
     private static final String TAG = "BookmarkUtils";
+    private static final int READING_LIST_SESSION_LENGTH_MS = (int) TimeUnit.HOURS.toMillis(1);
 
     /**
      * If the tab has already been bookmarked, start {@link BookmarkEditActivity} for the
@@ -108,19 +110,11 @@ public class BookmarkUtils {
             return;
         }
 
-        // TODO(crbug.com/1252228): Reading list support needs some tests.
-        if (BookmarkFeatures.isImprovedSaveFlowEnabled()) {
-            BookmarkId newBookmarkId = addBookmarkInternal(activity, bookmarkModel, tab.getTitle(),
-                    tab.getOriginalUrl(),
-                    fromExplicitTrackUi ? bookmarkModel.getMobileFolderId() : null, bookmarkType);
-            showSaveFlow(activity, bottomSheetController, fromExplicitTrackUi, newBookmarkId,
-                    /*wasBookmarkMoved=*/false);
-            callback.onResult(newBookmarkId);
-            return;
-        }
-
-        BookmarkId newBookmarkId = addBookmarkAndShowSnackbar(
-                bookmarkModel, tab, snackbarManager, activity, fromCustomTab, bookmarkType);
+        BookmarkId newBookmarkId = addBookmarkInternal(activity, bookmarkModel, tab.getTitle(),
+                tab.getOriginalUrl(),
+                fromExplicitTrackUi ? bookmarkModel.getMobileFolderId() : null, bookmarkType);
+        showSaveFlow(activity, bottomSheetController, fromExplicitTrackUi, newBookmarkId,
+                /*wasBookmarkMoved=*/false);
         callback.onResult(newBookmarkId);
     }
 
@@ -404,9 +398,8 @@ public class BookmarkUtils {
         Context context = activity == null ? ContextUtils.getApplicationContext() : activity;
         String url = getFirstUrlToLoad(context, folderId);
 
-        if (ReadingListFeatures.shouldUseRootFolderAsDefaultForReadLater()
-                && SharedPreferencesManager.getInstance().contains(
-                        ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL)) {
+        if (SharedPreferencesManager.getInstance().contains(
+                    ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL)) {
             RecordUserAction.record("MobileBookmarkManagerReopenBookmarksInSameSession");
         }
 
@@ -487,13 +480,6 @@ public class BookmarkUtils {
 
         BookmarkId parent = BookmarkId.getBookmarkIdFromString(
                 preferences.readString(ChromePreferenceKeys.BOOKMARKS_LAST_USED_PARENT, null));
-
-        // We need to reset the last used parent to support toggling reading list type-swapping.
-        if (parent.getType() == BookmarkType.READING_LIST
-                && !ReadingListFeatures.shouldAllowBookmarkTypeSwapping()) {
-            setLastUsedParent(context, bookmarkModel.getDefaultFolder());
-            return null;
-        }
 
         return parent;
     }
@@ -645,12 +631,7 @@ public class BookmarkUtils {
 
     private static void openReadingListItem(Context context, String url, BookmarkId id,
             ComponentName componentName, boolean isOffTheRecord) {
-        if (ReadingListFeatures.shouldUseCustomTab()) {
-            openReadingListInCustomTab(context, url, isOffTheRecord);
-        } else {
-            openUrl(context, url, id, componentName, TabLaunchType.FROM_READING_LIST,
-                    isOffTheRecord);
-        }
+        openUrl(context, url, id, componentName, TabLaunchType.FROM_READING_LIST, isOffTheRecord);
     }
 
     private static void openReadingListInCustomTab(
@@ -744,10 +725,7 @@ public class BookmarkUtils {
      */
     public static void maybeExpireLastBookmarkLocationForReadLater(
             long timeSinceLastBackgroundedMs) {
-        if (!ReadingListFeatures.shouldUseRootFolderAsDefaultForReadLater()) return;
-
-        int readLaterSessionLengthMs = ReadingListFeatures.getSessionLengthMs();
-        if (timeSinceLastBackgroundedMs > readLaterSessionLengthMs) {
+        if (timeSinceLastBackgroundedMs > READING_LIST_SESSION_LENGTH_MS) {
             SharedPreferencesManager.getInstance().removeKey(
                     ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL);
         }
