@@ -8,6 +8,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++STATIC_TEXT label='Option 1' actions='{DEFAULT}'
 ++++++++++++++++UNKNOWN label='Option 1'
 ++++++++++++UNKNOWN hidden
+++++++++++++++UNKNOWN hidden
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden
 ++++++UNKNOWN
