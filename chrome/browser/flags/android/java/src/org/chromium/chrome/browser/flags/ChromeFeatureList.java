@@ -290,7 +290,6 @@ public abstract class ChromeFeatureList {
     public static final String DEFER_KEEP_SCREEN_ON_DURING_GESTURE =
             "DeferKeepScreenOnDuringGesture";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
-    public static final String DISCARD_OCCLUDED_BITMAPS = "DiscardOccludedBitmaps";
     public static final String DISCO_FEED_ENDPOINT = "DiscoFeedEndpoint";
     public static final String DNS_OVER_HTTPS = "DnsOverHttps";
     public static final String DONT_AUTO_HIDE_BROWSER_CONTROLS = "DontAutoHideBrowserControls";
@@ -591,8 +590,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCommerceCoupons = new CachedFlag(COMMERCE_COUPONS, false);
     public static final CachedFlag sCriticalPersistedTabData =
             new CachedFlag(CRITICAL_PERSISTED_TAB_DATA, false);
-    public static final CachedFlag sDiscardOccludedBitmaps =
-            new CachedFlag(DISCARD_OCCLUDED_BITMAPS, false);
     public static final CachedFlag sDiscoverMultiColumn = new CachedFlag(FEED_MULTI_COLUMN, false);
     public static final CachedFlag sDownloadsAutoResumptionNative =
             new CachedFlag(DOWNLOADS_AUTO_RESUMPTION_NATIVE, true);

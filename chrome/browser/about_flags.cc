@@ -9102,12 +9102,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid | kOsDesktop,
      FEATURE_VALUE_TYPE(features::kEnableWebUsbOnExtensionServiceWorker)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"discard-occluded-bitmaps", flag_descriptions::kDiscardOccludedBitmapsName,
-     flag_descriptions::kDiscardOccludedBitmapsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kDiscardOccludedBitmaps)},
-#endif
-
     {"autofill-enable-cvc-for-vcn-yellow-path",
      flag_descriptions::kAutofillEnableCvcForVcnYellowPathName,
      flag_descriptions::kAutofillEnableCvcForVcnYellowPathDescription, kOsAll,

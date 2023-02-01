@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar.bottom;
 
 import android.view.View;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -48,8 +47,7 @@ class BottomControlsViewBinder {
                     model.get(BottomControlsProperties.COMPOSITED_VIEW_VISIBLE);
             view.root.setVisibility(showAndroidView ? View.VISIBLE : View.INVISIBLE);
             view.sceneLayer.setIsVisible(showCompositedView);
-            if (!showAndroidView && !showCompositedView
-                    && ChromeFeatureList.sDiscardOccludedBitmaps.isEnabled()) {
+            if (!showAndroidView && !showCompositedView) {
                 view.root.getResourceAdapter().dropCachedBitmap();
             }
         } else if (BottomControlsProperties.IS_OBSCURED == propertyKey) {

@@ -88,7 +88,6 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.sCriticalPersistedTabData,
                 ChromeFeatureList.sDiscoverMultiColumn,
                 ChromeFeatureList.sTabStripRedesign,
-                ChromeFeatureList.sDiscardOccludedBitmaps,
                 ChromeFeatureList.sDownloadsAutoResumptionNative,
                 ChromeFeatureList.sEarlyLibraryLoad,
                 ChromeFeatureList.sFeedLoadingPlaceholder,

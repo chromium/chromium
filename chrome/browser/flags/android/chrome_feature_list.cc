@@ -198,7 +198,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTRetainingStateInMemory,
     &kCCTResourcePrefetch,
     &kCCTToolbarCustomizations,
-    &kDiscardOccludedBitmaps,
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
     &kChromeNewDownloadTab,
@@ -589,10 +588,6 @@ BASE_FEATURE(kCCTRetainingStateInMemory,
 
 BASE_FEATURE(kCCTToolbarCustomizations,
              "CCTToolbarCustomizations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDiscardOccludedBitmaps,
-             "DiscardOccludedBitmaps",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDontAutoHideBrowserControls,

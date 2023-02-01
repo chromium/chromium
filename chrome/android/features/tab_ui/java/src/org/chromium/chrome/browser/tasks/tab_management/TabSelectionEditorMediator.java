@@ -332,9 +332,7 @@ class TabSelectionEditorMediator
         mResetHandler.resetWithListOfTabs(
                 null, /*preSelectedCount=*/0, /*recyclerViewPosition=*/null, /*quickMode=*/false);
         mModel.set(TabSelectionEditorProperties.IS_VISIBLE, false);
-        if (ChromeFeatureList.sDiscardOccludedBitmaps.isEnabled()) {
-            mResetHandler.postHiding();
-        }
+        mResetHandler.postHiding();
     }
 
     @Override

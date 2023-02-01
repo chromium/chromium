@@ -2039,9 +2039,6 @@ extern const char kChromeSharingCrowLaunchTabDescription[];
 extern const char kChromeSharingHubLaunchAdjacentName[];
 extern const char kChromeSharingHubLaunchAdjacentDescription[];
 
-extern const char kDiscardOccludedBitmapsName[];
-extern const char kDiscardOccludedBitmapsDescription[];
-
 extern const char kCloseTabSuggestionsName[];
 extern const char kCloseTabSuggestionsDescription[];
 

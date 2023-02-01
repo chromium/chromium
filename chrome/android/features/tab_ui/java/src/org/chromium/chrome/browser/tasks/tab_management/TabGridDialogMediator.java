@@ -19,7 +19,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
@@ -393,10 +392,8 @@ public class TabGridDialogMediator
     public void finishedHidingDialogView() {
         mDialogController.resetWithListOfTabs(null);
         mDialogController.postHiding();
-        if (ChromeFeatureList.sDiscardOccludedBitmaps.isEnabled()) {
-            // Purge the bitmap reference in the animation.
-            mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
-        }
+        // Purge the bitmap reference in the animation.
+        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
     }
 
     void onReset(@Nullable List<Tab> tabs) {
@@ -423,10 +420,8 @@ public class TabGridDialogMediator
         } else if (mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE)) {
             mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
             mDialogController.postHiding();
-            if (ChromeFeatureList.sDiscardOccludedBitmaps.isEnabled()) {
-                // Purge the bitmap reference in the animation.
-                mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
-            }
+            // Purge the bitmap reference in the animation.
+            mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
         }
     }
 

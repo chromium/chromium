@@ -1496,11 +1496,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "discard-occluded-bitmaps",
-    "owners": [ "ckitagawa" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "display-alignment-assistance",
     "owners": [ "cros-peripherals@google.com" ],
     "expiry_milestone": 120

@@ -57,7 +57,6 @@ BASE_DECLARE_FEATURE(kCCTResizableSideSheetForThirdParties);
 BASE_DECLARE_FEATURE(kCCTResourcePrefetch);
 BASE_DECLARE_FEATURE(kCCTRetainingStateInMemory);
 BASE_DECLARE_FEATURE(kCCTToolbarCustomizations);
-BASE_DECLARE_FEATURE(kDiscardOccludedBitmaps);
 BASE_DECLARE_FEATURE(kDontAutoHideBrowserControls);
 BASE_DECLARE_FEATURE(kCacheDeprecatedSystemLocationSetting);
 BASE_DECLARE_FEATURE(kChromeNewDownloadTab);
