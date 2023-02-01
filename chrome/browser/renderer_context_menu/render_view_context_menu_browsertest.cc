@@ -538,10 +538,10 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 // Verifies "Save link as" is not enabled for links blocked via policy.
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        SaveLinkAsEntryIsDisabledForBlockedUrls) {
-  base::Value value(base::Value::Type::LIST);
-  value.Append(base::Value("google.com"));
-  browser()->profile()->GetPrefs()->Set(policy::policy_prefs::kUrlBlocklist,
-                                        std::move(value));
+  base::Value::List list;
+  list.Append("google.com");
+  browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
+                                            std::move(list));
   base::RunLoop().RunUntilIdle();
 
   std::unique_ptr<TestRenderViewContextMenu> menu =
