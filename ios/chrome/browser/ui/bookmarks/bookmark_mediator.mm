@@ -51,13 +51,6 @@ const int64_t kLastUsedFolderNone = -1;
                               kLastUsedFolderNone);
 }
 
-+ (void)setFolderForNewBookmarks:(const BookmarkNode*)folder
-                  inBrowserState:(ChromeBrowserState*)browserState {
-  DCHECK(folder && folder->is_folder());
-  browserState->GetPrefs()->SetInt64(prefs::kIosBookmarkFolderDefault,
-                                     folder->id());
-}
-
 - (instancetype)initWithWithBookmarkModel:
                     (bookmarks::BookmarkModel*)bookmarkModel
                                     prefs:(PrefService*)prefs {

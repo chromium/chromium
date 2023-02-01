@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-class ChromeBrowserState;
-
 namespace bookmarks {
 class BookmarkNode;
 class BookmarkModel;
@@ -34,9 +32,6 @@ class GURL;
 
 // Registers the feature preferences.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
-
-+ (void)setFolderForNewBookmarks:(const bookmarks::BookmarkNode*)folder
-                  inBrowserState:(ChromeBrowserState*)browserState;
 
 // Adds a bookmark with a `title` and a `URL` and display a snackbar with an
 // `editAction`. Returns a message to be displayed after the Bookmark has been

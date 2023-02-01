@@ -17,6 +17,8 @@ class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
+class PrefService;
+
 // Mediator for the bookmark editor
 @interface BookmarksEditorMediator : NSObject <BookmarksEditorMutator>
 
@@ -37,6 +39,7 @@ class BookmarkNode;
 // folder. `bookmarkModel` should be loaded.
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                              bookmark:(const bookmarks::BookmarkNode*)bookmark
+                                prefs:(PrefService*)prefs
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

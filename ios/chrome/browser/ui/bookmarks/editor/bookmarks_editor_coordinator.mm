@@ -79,8 +79,10 @@
   _viewController.delegate = self;
   _viewController.snackbarCommandsHandler = _snackbarCommandsHandler;
 
-  _mediator = [[BookmarksEditorMediator alloc] initWithBookmarkModel:model
-                                                            bookmark:_node];
+  _mediator = [[BookmarksEditorMediator alloc]
+      initWithBookmarkModel:model
+                   bookmark:_node
+                      prefs:browserState->GetPrefs()];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _viewController.mutator = _mediator;
@@ -189,4 +191,12 @@
     (UIPresentationController*)presentationController {
   [_viewController dismissBookmarkEditView];
 }
+
+#pragma mark - BookmarksEditorMediatorDelegate
+
+- (void)bookmarkEditorMediatorWantsDismissal:
+    (BookmarksEditorMediator*)mediator {
+  [self.delegate bookmarksEditorCoordinatorShouldStop:self];
+}
+
 @end

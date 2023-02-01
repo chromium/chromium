@@ -7,9 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+@class BookmarksEditorMediator;
+
 // Delegate allowing the bookmarks editor mediator to update the coordinator if
 // needed.
 @protocol BookmarksEditorMediatorDelegate <NSObject>
+
+// Called when the controller should be dismissed.
+- (void)bookmarkEditorMediatorWantsDismissal:(BookmarksEditorMediator*)mediator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_EDITOR_BOOKMARKS_EDITOR_MEDIATOR_DELEGATE_H_

@@ -82,10 +82,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 @interface BookmarksEditorViewController () <
     BookmarksFolderChooserViewControllerDelegate,
-    BookmarkModelBridgeObserver,
-    BookmarkTextFieldItemDelegate> {
-  std::unique_ptr<BookmarkModelBridge> _modelBridge;
-}
+    BookmarkTextFieldItemDelegate>
 
 // The folder picker view controller.
 // Redefined to be readwrite.
@@ -111,19 +108,9 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 // bookmark.
 - (void)commitBookmarkChanges;
 
-// Changes `[self.mutator folder]` and updates the UI accordingly.
-// The change is not committed until the user taps the Save button.
-- (void)changeFolder:(const BookmarkNode*)folder;
-
 // The Save button is disabled if the form values are deemed non-valid. This
 // method updates the state of the Save button accordingly.
 - (void)updateSaveButtonState;
-
-// Reloads the folder label text.
-- (void)updateFolderLabel;
-
-// Populates the UI with information from the models.
-- (void)updateUIFromBookmark;
 
 // Called when the Delete button is pressed.
 - (void)deleteBookmark;
@@ -176,9 +163,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  // Set up the bookmark model oberver.
-  _modelBridge.reset(
-      new BookmarkModelBridge(self, [self.mutator bookmarkModel]));
   self.tableView.backgroundColor = self.styler.tableViewBackgroundColor;
   self.tableView.estimatedRowHeight = kEstimatedTableRowHeight;
   self.tableView.rowHeight = UITableViewAutomaticDimension;
@@ -294,14 +278,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
               self.browserState)];
 }
 
-- (void)changeFolder:(const BookmarkNode*)folder {
-  DCHECK(folder->is_folder());
-  [self.mutator setFolder:folder];
-  [BookmarkMediator setFolderForNewBookmarks:[self.mutator folder]
-                              inBrowserState:self.browserState];
-  [self updateFolderLabel];
-}
-
 - (void)dismissBookmarkEditView {
   [self.view endEditing:YES];
 
@@ -324,6 +300,12 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 - (void)updateSaveButtonState {
   self.doneItem.enabled = [self inputURLIsValid];
+}
+
+#pragma mark - BookmarksEditorConsumer
+
+- (void)bookmarkDidMoveToParent:(const bookmarks::BookmarkNode*)newParent {
+  [self.folderViewController changeSelectedFolder:newParent];
 }
 
 - (void)updateFolderLabel {
@@ -528,7 +510,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 - (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
     didFinishWithFolder:(const BookmarkNode*)folder {
-  [self changeFolder:folder];
+  [self.mutator changeFolder:folder];
   // This delegate method can be called on two occasions:
   // - the user selected a folder in the folder picker. In that case, the folder
   // picker should be popped;
@@ -557,69 +539,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   self.folderViewController.delegate = nil;
   self.folderViewController = nil;
   [self dismissBookmarkEditView];
-}
-
-#pragma mark - BookmarkModelBridgeObserver
-
-- (void)bookmarkModelLoaded {
-  // No-op.
-}
-
-- (void)bookmarkNodeChanged:(const BookmarkNode*)bookmarkNode {
-  if ([self.mutator ignoresBookmarkModelChanges]) {
-    return;
-  }
-
-  if ([self.mutator bookmark] == bookmarkNode) {
-    [self updateUIFromBookmark];
-  }
-}
-
-- (void)bookmarkNodeChildrenChanged:(const BookmarkNode*)bookmarkNode {
-  if ([self.mutator ignoresBookmarkModelChanges]) {
-    return;
-  }
-
-  [self updateFolderLabel];
-}
-
-- (void)bookmarkNode:(const BookmarkNode*)bookmarkNode
-     movedFromParent:(const BookmarkNode*)oldParent
-            toParent:(const BookmarkNode*)newParent {
-  if ([self.mutator ignoresBookmarkModelChanges]) {
-    return;
-  }
-
-  if ([self.mutator bookmark] == bookmarkNode) {
-    [self.folderViewController changeSelectedFolder:newParent];
-  }
-}
-
-- (void)bookmarkNodeDeleted:(const BookmarkNode*)bookmarkNode
-                 fromFolder:(const BookmarkNode*)folder {
-  if ([self.mutator ignoresBookmarkModelChanges]) {
-    return;
-  }
-
-  if ([self.mutator bookmark] == bookmarkNode) {
-    [self.mutator setBookmark:nil];
-    [self.delegate bookmarkEditorWantsDismissal:self];
-  } else if ([self.mutator folder] == bookmarkNode) {
-    [self changeFolder:[self.mutator bookmarkModel]->mobile_node()];
-  }
-}
-
-- (void)bookmarkModelRemovedAllNodes {
-  if ([self.mutator ignoresBookmarkModelChanges]) {
-    return;
-  }
-
-  [self.mutator setBookmark:nil];
-  if (![self.mutator bookmarkModel]->is_permanent_node([self.mutator folder])) {
-    [self changeFolder:[self.mutator bookmarkModel]->mobile_node()];
-  }
-
-  [self.delegate bookmarkEditorWantsDismissal:self];
 }
 
 #pragma mark - UIResponder
