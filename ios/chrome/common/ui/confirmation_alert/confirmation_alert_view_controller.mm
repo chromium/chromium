@@ -540,6 +540,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   view.editable = NO;
   view.selectable = NO;
   view.scrollEnabled = NO;
+  view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   return view;
 }
 
