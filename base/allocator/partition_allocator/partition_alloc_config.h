@@ -32,14 +32,22 @@
 // BUILDFLAG(USE_PARTITION_ALLOC) isn't used well enough to prevent this header
 // from being included in NaCl targets, thus triggering the below assert.
 // Therefore, we have to exclude the NaCl case explicitly.
+// TODO(bartekn): Remove when BUILDFLAG(HAS_64_BIT_POINTERS) is confirmed to
+// work well.
 #define PA_CONFIG_HAS_64_BITS_POINTERS() \
   (defined(ARCH_CPU_64_BITS) && !BUILDFLAG(IS_NACL))
+#if PA_CONFIG(HAS_64_BITS_POINTERS) && !BUILDFLAG(HAS_64_BIT_POINTERS)
+#error "Mismatch"
+#endif
+#if !PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(HAS_64_BIT_POINTERS)
+#error "Mismatch"
+#endif
 // Assert that the above heuristic is accurate on supported configurations.
 #if PA_CONFIG(HAS_64_BITS_POINTERS)
 static_assert(sizeof(void*) == 8, "");
 #else
 static_assert(sizeof(void*) != 8, "");
-#endif
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
 // PCScan supports 64 bits only and is disabled outside Chromium.
 #if PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(USE_STARSCAN)
