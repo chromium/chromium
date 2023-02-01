@@ -164,9 +164,16 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
   account_capabilities_fetcher_factory =
       std::make_unique<AccountCapabilitiesFetcherFactoryAndroid>();
 #else
-  account_capabilities_fetcher_factory =
-      std::make_unique<AccountCapabilitiesFetcherFactoryGaia>(
-          token_service.get(), params->signin_client);
+  // Default to server-based lookups if platform-specific capabilities fetcher
+  // is not defined.
+  if (params->account_capabilities_fetcher_factory) {
+    account_capabilities_fetcher_factory =
+        std::move(params->account_capabilities_fetcher_factory);
+  } else {
+    account_capabilities_fetcher_factory =
+        std::make_unique<AccountCapabilitiesFetcherFactoryGaia>(
+            token_service.get(), params->signin_client);
+  }
 #endif  // BULIDFLAG(IS_ANDROID)
 
   init_params.account_fetcher_service = BuildAccountFetcherService(

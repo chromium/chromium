@@ -1,6 +1,7 @@
 include_rules = [
   "+components/signin/internal/identity_manager/account_capabilities_constants.h",
   "+components/signin/internal/identity_manager/account_capabilities_fetcher.h",
+  "+components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h",
 ]
 
 specific_include_rules = {

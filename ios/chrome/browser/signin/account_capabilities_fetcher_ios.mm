@@ -50,9 +50,9 @@ absl::optional<AccountCapabilities> AccountCapabilitiesFromCapabilitiesMap(
 AccountCapabilitiesFetcherIOS::~AccountCapabilitiesFetcherIOS() = default;
 
 AccountCapabilitiesFetcherIOS::AccountCapabilitiesFetcherIOS(
+    id<SystemIdentity> system_identity,
     const CoreAccountInfo& account_info,
-    AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback,
-    id<SystemIdentity> system_identity)
+    AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
     : AccountCapabilitiesFetcher(account_info, std::move(on_complete_callback)),
       system_identity_(system_identity) {}
 

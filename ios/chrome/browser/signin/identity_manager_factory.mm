@@ -17,6 +17,7 @@
 #import "components/signin/public/identity_manager/identity_manager_builder.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/signin/account_capabilities_fetcher_factory_ios.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/device_accounts_provider_impl.h"
 #import "ios/chrome/browser/signin/identity_manager_factory_observer.h"
@@ -80,6 +81,10 @@ std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
   params.account_consistency = signin::AccountConsistencyMethod::kMirror;
   params.device_accounts_provider =
       std::make_unique<DeviceAccountsProviderImpl>(
+          ChromeAccountManagerServiceFactory::GetForBrowserState(
+              browser_state));
+  params.account_capabilities_fetcher_factory =
+      std::make_unique<ios::AccountCapabilitiesFetcherFactoryIOS>(
           ChromeAccountManagerServiceFactory::GetForBrowserState(
               browser_state));
   params.image_decoder = image_fetcher::CreateIOSImageDecoder();
