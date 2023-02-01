@@ -1410,6 +1410,10 @@ public class PersonalDataManager {
         // Schedule the fetching of image and return null so that the UI thread does not have to
         // wait and can show the default network icon.
         fetchImage(customImageUrl, bitmap -> {
+            // TODO (crbug.com/1410418): Log image fetching failure metrics.
+            // If the image fetching was unsuccessful, silently return.
+            if (bitmap == null) return;
+
             // Create an empty mutable bitmap and set it in a canvas.
             Bitmap cardArtImageWithOverlay = Bitmap.createBitmap(
                     bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
