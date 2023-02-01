@@ -35,6 +35,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_performance_entry_filter_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -156,30 +157,30 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   // Internal getter method for the time origin value.
   base::TimeTicks GetTimeOriginInternal() const { return time_origin_; }
 
-  // Get performance entries of the current frame, and optionally, nested
-  // same-origin iframes.
+  // Get all performance entries of the main frame. This is kept until the one
+  // with optional filtering options is enabled by default.
+  PerformanceEntryVector getEntries();
+
+  // Get performance entries with optional filtering options.
   PerformanceEntryVector getEntries(ScriptState* script_state,
-                                    bool include_frames = false);
-  // Get BufferedEntriesByType will return all entries in the buffer regardless
-  // of whether they are exposed in the Performance Timeline. getEntriesByType
-  // will only return all entries for existing types in
+                                    PerformanceEntryFilterOptions* options);
+
+  // This getBufferedEntriesByType method will return all entries in the buffer
+  // regardless of whether they are exposed in the Performance Timeline.
+  // getEntriesByType will only return all entries for existing types in
   // PerformanceEntry.IsValidTimelineEntryType.
   PerformanceEntryVector getBufferedEntriesByType(
       const AtomicString& entry_type);
 
   // Get performance entries of the current frame by type, and optionally,
   // nested same-origin iframes.
-  PerformanceEntryVector getEntriesByType(ScriptState* script_state,
-                                          const AtomicString& entry_type,
-                                          bool includeFrames = false);
+  PerformanceEntryVector getEntriesByType(const AtomicString& entry_type);
 
   // Get performance entries of the current frame by name and/or type, and
   // optionally, nested same-origin iframes.
   PerformanceEntryVector getEntriesByName(
-      ScriptState* script_state,
       const AtomicString& name,
-      const AtomicString& entry_type = g_null_atom,
-      bool includeFrames = false);
+      const AtomicString& entry_type = g_null_atom);
 
   void clearResourceTimings();
   void setResourceTimingBufferSize(unsigned);

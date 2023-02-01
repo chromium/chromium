@@ -40,10 +40,10 @@ interface Performance : EventTarget {
 
     // Performance Timeline
     // https://w3c.github.io/performance-timeline/#the-performance-interface
-    // TODO(foolip): getEntries() should take an optional FilterOptions argument.
-    [MeasureAs=PerformanceTimeline, CallWith=ScriptState] PerformanceEntryList getEntries(optional boolean includeFrames);
-    [MeasureAs=PerformanceTimeline, CallWith=ScriptState] PerformanceEntryList getEntriesByType(DOMString entryType, optional boolean includeFrames);
-    [MeasureAs=PerformanceTimeline, CallWith=ScriptState] PerformanceEntryList getEntriesByName(DOMString name, optional DOMString entryType, optional boolean includeFrames);
+    [MeasureAs=PerformanceTimeline] PerformanceEntryList getEntries();
+    [MeasureAs=PerformanceTimeline, CallWith=ScriptState, RuntimeEnabled=CrossFramePerformanceTimeline] PerformanceEntryList getEntries(PerformanceEntryFilterOptions options);
+    [MeasureAs=PerformanceTimeline] PerformanceEntryList getEntriesByType(DOMString entryType);
+    [MeasureAs=PerformanceTimeline] PerformanceEntryList getEntriesByName(DOMString name, optional DOMString entryType);
 
     // Resource Timing
     // https://w3c.github.io/resource-timing/#extensions-performance-interface

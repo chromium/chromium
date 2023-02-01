@@ -220,11 +220,10 @@ TEST_F(PerformanceTest, BackForwardCacheRestoration) {
   auto entries = PerformanceEntriesInObserver();
   CheckBackForwardCacheRestoration(entries);
 
-  entries = base_->getEntries(scope.GetScriptState());
+  entries = base_->getEntries();
   CheckBackForwardCacheRestoration(entries);
 
-  entries = base_->getEntriesByType(scope.GetScriptState(),
-                                    "back-forward-cache-restoration");
+  entries = base_->getEntriesByType("back-forward-cache-restoration");
   CheckBackForwardCacheRestoration(entries);
 }
 

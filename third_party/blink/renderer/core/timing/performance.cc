@@ -324,14 +324,39 @@ DOMHighResTimeStamp Performance::timeOrigin() const {
       cross_origin_isolated_capability_);
 }
 
-PerformanceEntryVector Performance::getEntries(ScriptState* script_state,
-                                               bool include_frames) {
-  if (include_frames &&
-      RuntimeEnabledFeatures::CrossFramePerformanceTimelineEnabled()) {
-    return GetEntriesWithChildFrames(script_state);
-  } else {
-    return GetEntriesForCurrentFrame();
+PerformanceEntryVector Performance::getEntries() {
+  return GetEntriesForCurrentFrame();
+}
+
+PerformanceEntryVector Performance::getEntries(
+    ScriptState* script_state,
+    PerformanceEntryFilterOptions* options) {
+  if (!options) {
+    return getEntries();
   }
+
+  PerformanceEntryVector entries;
+
+  AtomicString name =
+      options->hasName() ? AtomicString(options->name()) : g_null_atom;
+
+  AtomicString entry_type = options->hasEntryType()
+                                ? AtomicString(options->entryType())
+                                : g_null_atom;
+
+  // Get sorted entry list based on provided input.
+  if (options->getIncludeChildFramesOr(false) &&
+      RuntimeEnabledFeatures::CrossFramePerformanceTimelineEnabled()) {
+    entries = GetEntriesWithChildFrames(script_state, entry_type, name);
+  } else {
+    if (!entry_type) {
+      entries = GetEntriesForCurrentFrame(name);
+    } else {
+      entries = GetEntriesByTypeForCurrentFrame(entry_type, name);
+    }
+  }
+
+  return entries;
 }
 
 PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
@@ -401,15 +426,8 @@ PerformanceEntryVector Performance::getBufferedEntriesByType(
 }
 
 PerformanceEntryVector Performance::getEntriesByType(
-    ScriptState* script_state,
-    const AtomicString& entry_type,
-    bool include_frames) {
-  if (include_frames &&
-      RuntimeEnabledFeatures::CrossFramePerformanceTimelineEnabled()) {
-    return GetEntriesWithChildFrames(script_state, entry_type);
-  } else {
-    return GetEntriesByTypeForCurrentFrame(entry_type);
-  }
+    const AtomicString& entry_type) {
+  return GetEntriesByTypeForCurrentFrame(entry_type);
 }
 
 PerformanceEntryVector Performance::GetEntriesByTypeForCurrentFrame(
@@ -555,22 +573,15 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
 }
 
 PerformanceEntryVector Performance::getEntriesByName(
-    ScriptState* script_state,
     const AtomicString& name,
-    const AtomicString& entry_type,
-    bool include_frames) {
+    const AtomicString& entry_type) {
   PerformanceEntryVector entries;
 
   // Get sorted entry list based on provided input.
-  if (include_frames &&
-      RuntimeEnabledFeatures::CrossFramePerformanceTimelineEnabled()) {
-    entries = GetEntriesWithChildFrames(script_state, entry_type, name);
+  if (entry_type.IsNull()) {
+    entries = GetEntriesForCurrentFrame(name);
   } else {
-    if (entry_type.IsNull()) {
-      entries = GetEntriesForCurrentFrame(name);
-    } else {
-      entries = GetEntriesByTypeForCurrentFrame(entry_type, name);
-    }
+    entries = GetEntriesByTypeForCurrentFrame(entry_type, name);
   }
 
   return entries;
@@ -618,7 +629,7 @@ PerformanceEntryVector Performance::GetEntriesWithChildFrames(
         // frame can script the current frame, its okay to expose the current
         // frame's performance entries to the root.
         PerformanceEntryVector current_entries;
-        if (maybe_type.IsNull()) {
+        if (!maybe_type) {
           current_entries =
               window_performance->GetEntriesForCurrentFrame(maybe_name);
         } else {
