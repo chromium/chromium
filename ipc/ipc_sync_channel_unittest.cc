@@ -210,16 +210,16 @@ class Worker : public Listener, public Sender {
     ipc_event.Wait();
     // This destructs `ipc_thread_` on the listener thread.
     ipc_thread_.reset();
+
+    listener_thread_.task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&Worker::OnListenerThreadShutdown2,
+                                  base::Unretained(this), listener_event));
   }
 
   void OnIPCThreadShutdown(WaitableEvent* listener_event,
                            WaitableEvent* ipc_event) {
     base::RunLoop().RunUntilIdle();
     ipc_event->Signal();
-
-    listener_thread_.task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&Worker::OnListenerThreadShutdown2,
-                                  base::Unretained(this), listener_event));
   }
 
   void OnListenerThreadShutdown2(WaitableEvent* listener_event) {
