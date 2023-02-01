@@ -90,7 +90,6 @@ const char kQuicHostWhitelist[] = "host_whitelist";
 const char kQuicEnableSocketRecvOptimization[] =
     "enable_socket_recv_optimization";
 const char kQuicVersion[] = "quic_version";
-const char kQuicObsoleteVersionsAllowed[] = "obsolete_versions_allowed2";
 const char kQuicFlags[] = "set_quic_flags";
 const char kQuicIOSNetworkServiceType[] = "ios_network_service_type";
 const char kRetryWithoutAltSvcOnQuicErrors[] =
@@ -446,19 +445,17 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       if (quic_version_string) {
         quic::ParsedQuicVersionVector supported_versions =
             quic::ParseQuicVersionVectorString(*quic_version_string);
-        if (!quic_args.FindBool(kQuicObsoleteVersionsAllowed).value_or(false)) {
-          quic::ParsedQuicVersionVector filtered_versions;
-          quic::ParsedQuicVersionVector obsolete_versions =
-              net::ObsoleteQuicVersions();
-          for (const quic::ParsedQuicVersion& version : supported_versions) {
-            if (!base::Contains(obsolete_versions, version)) {
-              filtered_versions.push_back(version);
-            }
+        quic::ParsedQuicVersionVector filtered_versions;
+        quic::ParsedQuicVersionVector obsolete_versions =
+            net::ObsoleteQuicVersions();
+        for (const quic::ParsedQuicVersion& version : supported_versions) {
+          if (!base::Contains(obsolete_versions, version)) {
+            filtered_versions.push_back(version);
           }
-          supported_versions = filtered_versions;
         }
-        if (!supported_versions.empty())
-          quic_params->supported_versions = supported_versions;
+        if (!filtered_versions.empty()) {
+          quic_params->supported_versions = filtered_versions;
+        }
       }
 
       const std::string* quic_connection_options =
