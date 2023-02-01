@@ -121,6 +121,17 @@ void IOSChromePasswordCheckManager::StartPasswordCheck() {
         scoped_refptr<IOSChromePasswordCheckManager>(this));
     bulk_leak_check_service_adapter_.StartBulkLeakCheck(kPasswordCheckDataKey,
                                                         &data);
+
+    if (IsPasswordCheckupEnabled()) {
+      insecure_credentials_manager_.StartWeakCheck(base::BindOnce(
+          &IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished,
+          weak_ptr_factory_.GetWeakPtr()));
+
+      insecure_credentials_manager_.StartReuseCheck(base::BindOnce(
+          &IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished,
+          weak_ptr_factory_.GetWeakPtr()));
+    }
+
     is_check_running_ = true;
     start_time_ = base::Time::Now();
   } else {
@@ -143,8 +154,11 @@ PasswordCheckState IOSChromePasswordCheckManager::GetPasswordCheckState()
 }
 
 base::Time IOSChromePasswordCheckManager::GetLastPasswordCheckTime() const {
-  return base::Time::FromDoubleT(browser_state_->GetPrefs()->GetDouble(
-      password_manager::prefs::kLastTimePasswordCheckCompleted));
+  base::Time last_password_check =
+      base::Time::FromDoubleT(browser_state_->GetPrefs()->GetDouble(
+          password_manager::prefs::kLastTimePasswordCheckCompleted));
+
+  return std::max(last_password_check, last_completed_weak_or_reuse_check_);
 }
 
 std::vector<CredentialUIEntry>
@@ -246,6 +260,11 @@ void IOSChromePasswordCheckManager::OnCredentialDone(
   if (is_leaked) {
     insecure_credentials_manager_.SaveInsecureCredential(credential);
   }
+}
+
+void IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished() {
+  last_completed_weak_or_reuse_check_ = base::Time::Now();
+  NotifyPasswordCheckStatusChanged();
 }
 
 void IOSChromePasswordCheckManager::NotifyPasswordCheckStatusChanged() {

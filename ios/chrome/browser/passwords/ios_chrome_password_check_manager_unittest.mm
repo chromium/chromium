@@ -49,6 +49,7 @@ constexpr char16_t kUsername116[] = u"alice";
 constexpr char16_t kUsername216[] = u"bob";
 
 constexpr char16_t kPassword116[] = u"s3cre3t";
+constexpr char16_t kWeakPassword[] = u"123456";
 
 using password_manager::BulkLeakCheckServiceInterface;
 using password_manager::CredentialUIEntry;
@@ -65,6 +66,7 @@ using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::StrictMock;
+using ::testing::UnorderedElementsAre;
 
 struct MockPasswordCheckManagerObserver
     : IOSChromePasswordCheckManager::Observer {
@@ -284,27 +286,35 @@ TEST_F(IOSChromePasswordCheckManagerTest, NotifyObserversAboutStateChanges) {
 
 // Tests expected delay is being added.
 TEST_F(IOSChromePasswordCheckManagerTest, CheckFinishedWithDelay) {
+  // Enable weak and reuse checks.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername116));
 
   RunUntilIdle();
   StrictMock<MockPasswordCheckManagerObserver> observer;
   manager().AddObserver(&observer);
+
+  EXPECT_CALL(observer, InsecureCredentialsChanged).Times(2);
+  EXPECT_CALL(observer, PasswordCheckStatusChanged(PasswordCheckState::kIdle))
+      .Times(2);
   manager().StartPasswordCheck();
   RunUntilIdle();
 
-  EXPECT_CALL(observer, PasswordCheckStatusChanged(PasswordCheckState::kIdle))
-      .Times(0);
   static_cast<BulkLeakCheckServiceInterface::Observer*>(&manager())
       ->OnStateChanged(BulkLeakCheckServiceInterface::State::kIdle);
+
+  // Validate the minimum password check duration of 3 seconds is respected.
+  // The test will fail if any PasswordCheckStatusChanged calls are observed in
+  // the first 2 seconds after the check was started.
+  FastForwardBy(base::Seconds(2));
+  // After the minimum delay passes, the check status update should be received.
+  EXPECT_CALL(observer, PasswordCheckStatusChanged(PasswordCheckState::kIdle));
+  // Advance the clock 1 more second simulating that 3 seconds have passed so
+  // the check status update should have been received.
   FastForwardBy(base::Seconds(1));
 
-  EXPECT_CALL(observer, PasswordCheckStatusChanged(PasswordCheckState::kIdle))
-      .Times(0);
-  FastForwardBy(base::Seconds(1));
-
-  EXPECT_CALL(observer, PasswordCheckStatusChanged(PasswordCheckState::kIdle))
-      .Times(1);
-  FastForwardBy(base::Seconds(1));
   manager().RemoveObserver(&observer);
 }
 
@@ -385,4 +395,46 @@ TEST_F(IOSChromePasswordCheckManagerTest,
   // The "compromised passwords" warning becomes the highest priority warning.
   EXPECT_THAT(manager().GetWarningOfHighestPriority(),
               WarningType::kCompromisedPasswordsWarning);
+}
+
+// Verify that GetInsecureCredentials returns weak credentials.
+TEST_F(IOSChromePasswordCheckManagerTest, WeakCredentialsAreReturned) {
+  // Enable weak and reuse checks.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  PasswordForm weak_form =
+      MakeSavedPassword(kExampleCom, kUsername116, kWeakPassword);
+  store().AddLogin(weak_form);
+
+  RunUntilIdle();
+  manager().StartPasswordCheck();
+  RunUntilIdle();
+
+  EXPECT_THAT(manager().GetInsecureCredentials(),
+              ElementsAre(CredentialUIEntry(weak_form)));
+}
+
+// Verify that GetInsecureCredentials returns reused credentials.
+TEST_F(IOSChromePasswordCheckManagerTest, ReusedCredentialsAreReturned) {
+  // Enable weak and reuse checks.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  PasswordForm form_with_same_password_1 =
+      MakeSavedPassword(kExampleCom, kUsername116, kPassword116);
+  store().AddLogin(form_with_same_password_1);
+
+  PasswordForm form_with_same_password_2 =
+      MakeSavedPassword(kExampleCom, kUsername216, kPassword116);
+  store().AddLogin(form_with_same_password_2);
+
+  RunUntilIdle();
+  manager().StartPasswordCheck();
+  RunUntilIdle();
+
+  EXPECT_THAT(
+      manager().GetInsecureCredentials(),
+      UnorderedElementsAre(CredentialUIEntry(form_with_same_password_1),
+                           CredentialUIEntry(form_with_same_password_2)));
 }

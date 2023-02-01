@@ -111,6 +111,8 @@ class IOSChromePasswordCheckManager
   void OnCredentialDone(const password_manager::LeakCheckCredential& credential,
                         password_manager::IsLeaked is_leaked) override;
 
+  void OnWeakOrReuseCheckFinished();
+
   void NotifyPasswordCheckStatusChanged();
 
   // Remembers whether a password check is running right now.
@@ -145,6 +147,9 @@ class IOSChromePasswordCheckManager
   // Time when password check was started. Used to calculate delay in case
   // when password check run less than 3 seconds.
   base::Time start_time_;
+
+  // Store when the last weak or reuse check was completed.
+  base::Time last_completed_weak_or_reuse_check_;
 
   // A scoped observer for `saved_passwords_presenter_`.
   base::ScopedObservation<password_manager::SavedPasswordsPresenter,
