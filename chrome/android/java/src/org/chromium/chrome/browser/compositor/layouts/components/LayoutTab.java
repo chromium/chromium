@@ -489,7 +489,7 @@ public class LayoutTab extends PropertyModel {
      * @return The saturation value for the tab contents.
      */
     public float getSaturation() {
-        return get(SCALE);
+        return get(SATURATION);
     }
 
     /**
