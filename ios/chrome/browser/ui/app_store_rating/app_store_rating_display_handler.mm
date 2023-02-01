@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_display_handler.h"
 
 #import "base/check.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
@@ -31,7 +32,8 @@
 #pragma mark - PromoProtocol
 
 - (PromoConfig)config {
-  return PromoConfig(promos_manager::Promo::AppStoreRating, nullptr,
+  return PromoConfig(promos_manager::Promo::AppStoreRating,
+                     &feature_engagement::kIPHiOSAppStorePromoFeature,
                      @[ [[ImpressionLimit alloc] initWithLimit:1
                                                     forNumDays:365] ]);
 }

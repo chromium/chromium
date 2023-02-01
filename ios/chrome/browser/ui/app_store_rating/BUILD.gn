@@ -15,6 +15,7 @@ source_set("app_store_rating") {
   frameworks = [ "Foundation.framework" ]
   deps = [
     "//base",
+    "//components/feature_engagement/public",
     "//components/password_manager/core/browser",
     "//components/prefs",
     "//ios/chrome/browser/application_context",
