@@ -21,7 +21,6 @@
 #include "build/build_config.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
-#include "media/base/mac/color_space_util_mac.h"
 #include "media/base/mac/video_frame_mac.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -530,21 +529,6 @@ void VTVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
     NotifyError(kPlatformFailureError);
     return;
   }
-
-  if (!encoder_color_space_) {
-    DCHECK(!pending_encodes_);
-
-    // WrapVideoFrameInCVPixelBuffer() will do a few different things depending
-    // on the input buffer type:
-    //   * If it's an IOSurface, the underlying attached color space will
-    //     passthough to the pixel buffer.
-    //   * If we're uploading to a new pixel buffer and the provided frame color
-    //     space is valid that'll be set on the pixel buffer.
-    //   * If the frame color space is not valid, BT709 will be assumed.
-    encoder_color_space_ = GetImageBufferColorSpace(pixel_buffer);
-    SetEncoderColorSpace();
-  }
-
   base::ScopedCFTypeRef<CFDictionaryRef> frame_props =
       video_toolbox::DictionaryWithKeyValue(
           kVTEncodeFrameOptionKey_ForceKeyFrame,
@@ -792,8 +776,6 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
       break;
   }
 
-  md.encoded_color_space = encoder_color_space_;
-
   client_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Client::BitstreamBufferReady, client_,
                                 buffer_ref->id, std::move(md)));
@@ -976,42 +958,6 @@ void VTVideoEncodeAccelerator::MaybeRunFlushCallback() {
   client_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(pending_flush_cb_), /*success=*/true));
-}
-
-void VTVideoEncodeAccelerator::SetEncoderColorSpace() {
-  // TODO(crbug.com/1377842): Changing these properties while frames are being
-  // encoded by the OS can hang the compression session during
-  // VTSessionSetProperty() or VTCompressionSessionEncodeFrame() :|
-  DCHECK(!pending_encodes_);
-
-  if (!encoder_color_space_ || !encoder_color_space_->IsValid()) {
-    return;
-  }
-
-  CFStringRef primary, transfer, matrix;
-  if (!GetImageBufferColorValues(*encoder_color_space_, &primary, &transfer,
-                                 &matrix)) {
-    DLOG(ERROR) << "Failed to set bitstream color space: "
-                << encoder_color_space_->ToString();
-    return;
-  }
-
-  video_toolbox::SessionPropertySetter session_property_setter(
-      compression_session_);
-  if (!session_property_setter.Set(kVTCompressionPropertyKey_ColorPrimaries,
-                                   primary) ||
-      !session_property_setter.Set(kVTCompressionPropertyKey_TransferFunction,
-                                   transfer) ||
-      !session_property_setter.Set(kVTCompressionPropertyKey_YCbCrMatrix,
-                                   matrix)) {
-    session_property_setter.Clear(kVTCompressionPropertyKey_ColorPrimaries);
-    session_property_setter.Clear(kVTCompressionPropertyKey_TransferFunction);
-    session_property_setter.Clear(kVTCompressionPropertyKey_YCbCrMatrix);
-    DLOG(ERROR) << "Failed to set color space on VTCompressionSession.";
-  } else {
-    DVLOG(1) << "Set encoder color space to: "
-             << encoder_color_space_->ToString();
-  }
 }
 
 }  // namespace media

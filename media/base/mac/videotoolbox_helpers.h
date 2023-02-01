@@ -59,7 +59,6 @@ class MEDIA_EXPORT SessionPropertySetter {
   bool Set(CFStringRef key, double value);
   bool Set(CFStringRef key, CFStringRef value);
   bool Set(CFStringRef key, CFArrayRef value);
-  void Clear(CFStringRef key);
 
  private:
   base::ScopedCFTypeRef<VTCompressionSessionRef> session_;

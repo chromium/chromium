@@ -238,9 +238,6 @@ bool StructTraits<media::mojom::BitstreamBufferMetadataDataView,
   if (!data.ReadEncodedSize(&metadata->encoded_size)) {
     return false;
   }
-  if (!data.ReadEncodedColorSpace(&metadata->encoded_color_space)) {
-    return false;
-  }
 
   return data.ReadCodecMetadata(metadata);
 }

@@ -341,11 +341,6 @@ bool SessionPropertySetter::Set(CFStringRef key, CFArrayRef value) {
   return VTSessionSetProperty(session_, key, value) == noErr;
 }
 
-void SessionPropertySetter::Clear(CFStringRef key) {
-  DCHECK(session_);
-  VTSessionSetProperty(session_, key, nullptr);
-}
-
 }  // namespace video_toolbox
 
 }  // namespace media

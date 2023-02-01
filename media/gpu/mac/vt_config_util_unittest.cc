@@ -311,7 +311,9 @@ TEST(VTConfigUtil, GetImageBufferColorSpace_BT601) {
   auto image_buffer = CreateCVImageBuffer(cs);
   ASSERT_TRUE(image_buffer);
 
-  cs.primaries = VideoColorSpace::PrimaryID::SMPTE170M;
+  // macOS doesn't have a SMPTE170M transfer function, apps are supposed to use
+  // kCMFormatDescriptionTransferFunction_ITU_R_709_2 instead for SDR content.
+  cs.primaries = VideoColorSpace::PrimaryID::SMPTE240M;
   auto expected_cs = ToBT709_APPLE(cs.ToGfxColorSpace());
   EXPECT_EQ(expected_cs, GetImageBufferColorSpace(image_buffer));
 }
@@ -328,9 +330,9 @@ TEST(VTConfigUtil, GetImageBufferColorSpace_BT709) {
 }
 
 TEST(VTConfigUtil, GetImageBufferColorSpace_GAMMA22) {
-  auto cs = VideoColorSpace(VideoColorSpace::PrimaryID::SMPTE170M,
+  auto cs = VideoColorSpace(VideoColorSpace::PrimaryID::SMPTE240M,
                             VideoColorSpace::TransferID::GAMMA22,
-                            VideoColorSpace::MatrixID::SMPTE170M,
+                            VideoColorSpace::MatrixID::SMPTE240M,
                             gfx::ColorSpace::RangeID::LIMITED);
   auto image_buffer = CreateCVImageBuffer(cs);
   ASSERT_TRUE(image_buffer);
@@ -338,9 +340,9 @@ TEST(VTConfigUtil, GetImageBufferColorSpace_GAMMA22) {
 }
 
 TEST(VTConfigUtil, GetImageBufferColorSpace_GAMMA28) {
-  auto cs = VideoColorSpace(VideoColorSpace::PrimaryID::SMPTE170M,
+  auto cs = VideoColorSpace(VideoColorSpace::PrimaryID::SMPTE240M,
                             VideoColorSpace::TransferID::GAMMA28,
-                            VideoColorSpace::MatrixID::SMPTE170M,
+                            VideoColorSpace::MatrixID::SMPTE240M,
                             gfx::ColorSpace::RangeID::LIMITED);
   auto image_buffer = CreateCVImageBuffer(cs);
   ASSERT_TRUE(image_buffer);

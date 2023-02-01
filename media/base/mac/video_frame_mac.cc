@@ -10,7 +10,6 @@
 #include <algorithm>
 
 #include "base/logging.h"
-#include "media/base/mac/color_space_util_mac.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -50,40 +49,6 @@ bool IsAcceptableCvPixelFormat(VideoPixelFormat format, OSType cv_format) {
   return false;
 }
 
-bool CvPixelBufferHasColorSpace(CVPixelBufferRef pixel_buffer) {
-  return CVBufferGetAttachment(pixel_buffer, kCVImageBufferColorPrimariesKey,
-                               nullptr) &&
-         CVBufferGetAttachment(pixel_buffer, kCVImageBufferTransferFunctionKey,
-                               nullptr) &&
-         CVBufferGetAttachment(pixel_buffer, kCVImageBufferYCbCrMatrixKey,
-                               nullptr);
-}
-
-void SetCvPixelBufferColorSpace(const gfx::ColorSpace& frame_cs,
-                                CVPixelBufferRef pixel_buffer) {
-  // Apply required colorimetric attachments.
-  CFStringRef primary, transfer, matrix;
-  if (frame_cs.IsValid() &&
-      GetImageBufferColorValues(frame_cs, &primary, &transfer, &matrix)) {
-    CVBufferSetAttachment(pixel_buffer, kCVImageBufferColorPrimariesKey,
-                          primary, kCVAttachmentMode_ShouldPropagate);
-    CVBufferSetAttachment(pixel_buffer, kCVImageBufferTransferFunctionKey,
-                          transfer, kCVAttachmentMode_ShouldPropagate);
-    CVBufferSetAttachment(pixel_buffer, kCVImageBufferYCbCrMatrixKey, matrix,
-                          kCVAttachmentMode_ShouldPropagate);
-  } else {
-    CVBufferSetAttachment(pixel_buffer, kCVImageBufferColorPrimariesKey,
-                          kCVImageBufferColorPrimaries_ITU_R_709_2,
-                          kCVAttachmentMode_ShouldPropagate);
-    CVBufferSetAttachment(pixel_buffer, kCVImageBufferTransferFunctionKey,
-                          kCVImageBufferTransferFunction_ITU_R_709_2,
-                          kCVAttachmentMode_ShouldPropagate);
-    CVBufferSetAttachment(pixel_buffer, kCVImageBufferYCbCrMatrixKey,
-                          kCVImageBufferYCbCrMatrix_ITU_R_709_2,
-                          kCVAttachmentMode_ShouldPropagate);
-  }
-}
-
 }  // namespace
 
 MEDIA_EXPORT base::ScopedCFTypeRef<CVPixelBufferRef>
@@ -103,8 +68,6 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
               frame->format(), CVPixelBufferGetPixelFormatType(pixel_buffer))) {
         DLOG(ERROR) << "Dropping CVPixelBuffer w/ incorrect format.";
         pixel_buffer.reset();
-      } else if (!CvPixelBufferHasColorSpace(pixel_buffer)) {
-        SetCvPixelBufferColorSpace(frame->ColorSpace(), pixel_buffer);
       }
       return pixel_buffer;
     }
@@ -127,8 +90,6 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
                   CVPixelBufferGetPixelFormatType(pixel_buffer))) {
             DLOG(ERROR) << "Dropping CVPixelBuffer w/ incorrect format.";
             pixel_buffer.reset();
-          } else if (!CvPixelBufferHasColorSpace(pixel_buffer)) {
-            SetCvPixelBufferColorSpace(frame->ColorSpace(), pixel_buffer);
           }
           return pixel_buffer;
         }
@@ -205,7 +166,18 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
   // reference count manually. The release callback set on the pixel buffer will
   // release the frame.
   frame->AddRef();
-  SetCvPixelBufferColorSpace(frame->ColorSpace(), pixel_buffer);
+
+  // Apply required colorimetric attachments.
+  CVBufferSetAttachment(pixel_buffer, kCVImageBufferColorPrimariesKey,
+                        kCVImageBufferColorPrimaries_ITU_R_709_2,
+                        kCVAttachmentMode_ShouldPropagate);
+  CVBufferSetAttachment(pixel_buffer, kCVImageBufferTransferFunctionKey,
+                        kCVImageBufferTransferFunction_ITU_R_709_2,
+                        kCVAttachmentMode_ShouldPropagate);
+  CVBufferSetAttachment(pixel_buffer, kCVImageBufferYCbCrMatrixKey,
+                        kCVImageBufferYCbCrMatrix_ITU_R_709_2,
+                        kCVAttachmentMode_ShouldPropagate);
+
   return pixel_buffer;
 }
 
