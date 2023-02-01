@@ -132,6 +132,16 @@ bool CanRestoreState(WindowStateType current_state,
     return true;
   }
 
+  if (allow_same_level_restore) {
+    // `Fullscreen` and `Floated` have the same restore order, but can restore
+    // to each other.
+    if ((current_state == WindowStateType::kFullscreen &&
+         previous_state == WindowStateType::kFloated) ||
+        (current_state == WindowStateType::kFloated &&
+         previous_state == WindowStateType::kFullscreen)) {
+      return true;
+    }
+  }
   return false;
 }
 
