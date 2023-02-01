@@ -1575,6 +1575,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("saveAsDlpRestrictedCrostini").EnableDlp(),
         TestCase("saveAsDlpRestrictedVm").EnableDlp(),
         TestCase("saveAsDlpRestrictedUsb").EnableDlp(),
+        TestCase("saveAsDlpRestrictedDrive").EnableDlp(),
         TestCase("saveAsNonDlpRestricted").EnableDlp(),
         TestCase("saveAsDlpRestrictedRedirectsToMyFiles").EnableDlp(),
         TestCase("openDlpRestrictedFile").EnableDlp(),

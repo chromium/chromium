@@ -390,6 +390,34 @@ testcase.saveAsDlpRestrictedUsb = async () => {
 };
 
 /**
+ * Tests the save dialogs properly show blocked Google drive volume.
+ */
+testcase.saveAsDlpRestrictedDrive = async () => {
+  // Setup the restrictions.
+  await sendTestMessage({name: 'setBlockedComponent', component: 'drive'});
+
+  const closer = async (dialog) => {
+    const disabledRealTreeItem = '#directory-tree ' +
+        '.tree-item.drive-volume[disabled][has-children=false]';
+    const expandIcon = disabledRealTreeItem + ' > .tree-row .expand-icon';
+    // It should be disabled in the navigation list, and the expand icon
+    // shouldn't be visible.
+    await remoteCall.waitForElementsCount(dialog, [disabledRealTreeItem], 1);
+    const element = await remoteCall.waitForElementStyles(
+        dialog, expandIcon, ['visibility']);
+    chrome.test.assertEq('hidden', element.styles['visibility']);
+
+    // Click the close button to dismiss the dialog.
+    await remoteCall.waitAndClickElement(dialog, [cancelButton]);
+  };
+
+  chrome.test.assertEq(
+      undefined,
+      await openAndWaitForClosingDialog(
+          {type: 'saveFile'}, 'downloads', [], closer));
+};
+
+/**
  * Tests that save dialogs are opened in a requested volume/directory,
  * when it's not blocked by DLP.
  * This test is an addition to the `saveAsDlpRestrictedRedirectsToMyFiles` test
