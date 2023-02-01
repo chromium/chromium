@@ -714,6 +714,8 @@ template("mojom") {
     }
 
     action(parser_target_name) {
+      allow_remote = true
+      custom_processor = "mojom_parser"
       script = mojom_parser_script
       inputs = mojom_parser_sources + ply_sources + [ build_metadata_filename ]
       sources = sources_list
@@ -729,7 +731,11 @@ template("mojom") {
       foreach(source, sources_list) {
         filelist += [ rebase_path(source, root_build_dir) ]
       }
-      response_file_contents = filelist
+
+      # Workaround for https://github.com/ninja-build/ninja/issues/1966.
+      rsp_file = "$target_gen_dir/${target_name}.rsp"
+      write_file(rsp_file, filelist)
+      inputs += [ rsp_file ]
 
       args = [
         # Resolve relative input mojom paths against both the root src dir and
@@ -742,7 +748,7 @@ template("mojom") {
         "--output-root",
         rebase_path(root_gen_dir, root_build_dir),
 
-        "--mojom-file-list={{response_file_name}}",
+        "--mojom-file-list=" + rebase_path(rsp_file, root_build_dir),
 
         "--check-imports",
         rebase_path(build_metadata_filename, root_build_dir),
@@ -849,6 +855,7 @@ template("mojom") {
     }
 
     action(generator_cpp_message_ids_target_name) {
+      allow_remote = true
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
       sources = sources_list +
@@ -873,10 +880,13 @@ template("mojom") {
         outputs += [ "$root_gen_dir/$base_path-shared-message-ids.h" ]
       }
 
-      response_file_contents = filelist
+      # Workaround for https://github.com/ninja-build/ninja/issues/1966.
+      rsp_file = "$target_gen_dir/${target_name}.rsp"
+      write_file(rsp_file, filelist)
+      inputs += [ rsp_file ]
 
       args += [
-        "--filelist={{response_file_name}}",
+        "--filelist=" + rebase_path(rsp_file, root_build_dir),
         "--generate_non_variant_code",
         "--generate_message_ids",
         "-g",
@@ -893,6 +903,7 @@ template("mojom") {
     generator_shared_target_name = "${target_name}_shared__generator"
 
     action(generator_shared_target_name) {
+      allow_remote = true
       visibility = [ ":*" ]
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
@@ -926,10 +937,13 @@ template("mojom") {
         ]
       }
 
-      response_file_contents = filelist
+      # Workaround for https://github.com/ninja-build/ninja/issues/1966.
+      rsp_file = "$target_gen_dir/${target_name}.rsp"
+      write_file(rsp_file, filelist)
+      inputs += [ rsp_file ]
 
       args += [
-        "--filelist={{response_file_name}}",
+        "--filelist=" + rebase_path(rsp_file, root_build_dir),
         "--generate_non_variant_code",
         "-g",
         "c++",
@@ -1019,6 +1033,7 @@ template("mojom") {
         "${target_name}_mojolpm_proto_generator"
 
     action(generator_mojolpm_proto_target_name) {
+      allow_remote = true
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
       sources =
@@ -1058,10 +1073,13 @@ template("mojom") {
         outputs += [ "$target_gen_dir/$source_file.mojolpm.proto" ]
       }
 
-      response_file_contents = filelist
+      # Workaround for https://github.com/ninja-build/ninja/issues/1966.
+      rsp_file = "$target_gen_dir/${target_name}.rsp"
+      write_file(rsp_file, filelist)
+      inputs += [ rsp_file ]
 
       args += [
-        "--filelist={{response_file_name}}",
+        "--filelist=" + rebase_path(rsp_file, root_build_dir),
         "--generate_non_variant_code",
         "-g",
         "mojolpm",
@@ -1277,6 +1295,7 @@ template("mojom") {
 
       # TODO(crbug.com/1194274): Investigate nondeterminism in Py3 builds.
       action(generator_target_name) {
+        allow_remote = true
         visibility = [ ":*" ]
         script = mojom_generator_script
         inputs = mojom_generator_sources + jinja2_sources
@@ -1325,10 +1344,12 @@ template("mojom") {
           }
         }
 
-        response_file_contents = filelist
-
+        # Workaround for https://github.com/ninja-build/ninja/issues/1966.
+        rsp_file = "$target_gen_dir/${target_name}.rsp"
+        write_file(rsp_file, filelist)
+        inputs += [ rsp_file ]
         args += [
-          "--filelist={{response_file_name}}",
+          "--filelist=" + rebase_path("$rsp_file", root_build_dir),
           "-g",
         ]
 
@@ -1487,6 +1508,7 @@ template("mojom") {
     _mojom_target_name = target_name
 
     action(_typemap_validator_target_name) {
+      allow_remote = true
       script = "$mojom_generator_root/validate_typemap_config.py"
       inputs = [ _typemap_config_filename ]
       outputs = [ _typemap_stamp_filename ]
@@ -1498,6 +1520,7 @@ template("mojom") {
     }
 
     action(type_mappings_target_name) {
+      allow_remote = true
       inputs =
           mojom_generator_sources + jinja2_sources + [ _typemap_stamp_filename ]
       outputs = [ type_mappings_path ]
