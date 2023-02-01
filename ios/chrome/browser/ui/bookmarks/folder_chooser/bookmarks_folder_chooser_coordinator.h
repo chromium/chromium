@@ -28,15 +28,21 @@ class BookmarkNode;
 - (instancetype)
     initWithNavigationController:(UINavigationController*)navigationController
                          browser:(Browser*)browser
+                  selectedFolder:(const bookmarks::BookmarkNode*)folder
                      hiddenNodes:
                          (const std::set<const bookmarks::BookmarkNode*>&)
-                             hiddenNodes NS_DESIGNATED_INITIALIZER;
+                             hiddenNodes;
 
 // Initializes BookmarksFolderChooserCoordinator. A navigation controller is
 // created, with the chooser folder view as the root view controller.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                            selectedFolder:
+                                (const bookmarks::BookmarkNode*)folder
     NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Coordinator's delegate.
 @property(nonatomic, weak) id<BookmarksFolderChooserCoordinatorDelegate>

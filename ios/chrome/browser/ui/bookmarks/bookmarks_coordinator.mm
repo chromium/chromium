@@ -283,7 +283,8 @@ enum class PresentedState {
   [self dismissSnackbar];
   _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
       initWithBaseViewController:self.baseViewController
-                         browser:self.browser];
+                         browser:self.browser
+                  selectedFolder:nil];
   _folderChooserCoordinator.delegate = self;
   [_folderChooserCoordinator start];
   self.currentPresentedState = PresentedState::FOLDER_SELECTION;

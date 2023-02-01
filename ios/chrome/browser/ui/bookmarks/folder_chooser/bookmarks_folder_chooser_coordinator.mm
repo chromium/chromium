@@ -35,6 +35,8 @@
   // List of nodes to hide when displaying folders. This is to avoid to move a
   // folder inside a child folder.
   std::set<const bookmarks::BookmarkNode*> _hiddenNodes;
+  // The currently selected folder to show in the UI.
+  const bookmarks::BookmarkNode* _selectedFolder;
 }
 
 @end
@@ -46,11 +48,13 @@
 - (instancetype)
     initWithNavigationController:(UINavigationController*)navigationController
                          browser:(Browser*)browser
+                  selectedFolder:(const bookmarks::BookmarkNode*)folder
                      hiddenNodes:
                          (const std::set<const bookmarks::BookmarkNode*>&)
                              hiddenNodes {
-  self = [super initWithBaseViewController:navigationController
-                                   browser:browser];
+  self = [self initWithBaseViewController:navigationController
+                                  browser:browser
+                           selectedFolder:folder];
   if (self) {
     _baseNavigationController = navigationController;
     _hiddenNodes = hiddenNodes;
@@ -59,8 +63,14 @@
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
-  return [super initWithBaseViewController:viewController browser:browser];
+                                   browser:(Browser*)browser
+                            selectedFolder:
+                                (const bookmarks::BookmarkNode*)folder {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _selectedFolder = folder;
+  }
+  return self;
 }
 
 - (void)start {
@@ -74,7 +84,7 @@
            allowsNewFolders:YES
                 editedNodes:_hiddenNodes
                allowsCancel:YES
-             selectedFolder:nil
+             selectedFolder:_selectedFolder
                     browser:self.browser];
   _folderChooserViewController.delegate = self;
 
@@ -111,6 +121,7 @@
   } else {
     DCHECK(!self.baseViewController.presentedViewController);
   }
+  _delegate = nil;
   _folderChooserViewController = nil;
 }
 
