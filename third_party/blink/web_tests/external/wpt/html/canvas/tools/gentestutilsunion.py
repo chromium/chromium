@@ -194,6 +194,21 @@ class TestConfig:
     enabled: bool
 
 
+_CANVAS_SIZE_REGEX = re.compile(r'(?P<width>.*), (?P<height>.*)',
+                                re.MULTILINE | re.DOTALL)
+
+
+def _get_canvas_size(test: Mapping[str, str]):
+    size = test.get('size', '100, 50')
+    match = _CANVAS_SIZE_REGEX.match(size)
+    if not match:
+        raise InvalidTestDefinitionError(
+            'Invalid canvas size "%s" in test %s. Expected a string matching '
+            'this pattern: "%%s, %%s" %% (width, height)' %
+            (size, test['name']))
+    return match.group('width'), match.group('height')
+
+
 def _generate_test(test: Mapping[str, str], templates: Mapping[str, str],
                    sub_dir: str, html_canvas_cfg: TestConfig,
                    offscreen_canvas_cfg: TestConfig) -> None:
@@ -241,7 +256,8 @@ def _generate_test(test: Mapping[str, str], templates: Mapping[str, str],
                 '<img src="%s" class="output expected" id="expected" '
                 'alt="">' % expected_img)
 
-    canvas = test.get('canvas', 'width="100" height="50"')
+    canvas = ' ' + test['canvas'] if 'canvas' in test else ''
+    width, height = _get_canvas_size(test)
 
     notes = '<p class="notes">%s' % test['notes'] if 'notes' in test else ''
 
@@ -301,6 +317,8 @@ def _generate_test(test: Mapping[str, str], templates: Mapping[str, str],
         'fonthack': fonthack,
         'timeout': timeout,
         'canvas': canvas,
+        'width': width,
+        'height': height,
         'expected': expectation_html,
         'code': code_canvas,
         'scripts': scripts,
