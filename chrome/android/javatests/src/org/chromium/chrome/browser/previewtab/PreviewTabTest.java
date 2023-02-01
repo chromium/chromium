@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -213,6 +214,7 @@ public class PreviewTabTest {
     @Test
     @MediumTest
     @Feature({"PreviewTab"})
+    @DisabledTest(message = "https://crbug.com/1412050")
     public void testObserverMethods() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mEphemeralTabCoordinator.addObserver(mEphemeralTabObserver));
