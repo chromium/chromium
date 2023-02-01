@@ -62,18 +62,19 @@ class TestAuthService : public DummyAuthService {
 class RequestSenderTest : public testing::Test {
  protected:
   RequestSenderTest()
-      : auth_service_(new TestAuthService),
-        request_sender_(base::WrapUnique(auth_service_.get()),
+      : request_sender_(std::make_unique<TestAuthService>(),
                         nullptr,
                         nullptr,
                         "dummy-user-agent",
-                        TRAFFIC_ANNOTATION_FOR_TESTS) {
+                        TRAFFIC_ANNOTATION_FOR_TESTS),
+        auth_service_(
+            static_cast<TestAuthService*>(request_sender_.auth_service())) {
     auth_service_->set_refresh_token(kTestRefreshToken);
     auth_service_->set_access_token(kTestAccessToken);
   }
 
-  raw_ptr<TestAuthService> auth_service_;  // Owned by |request_sender_|.
   RequestSender request_sender_;
+  raw_ptr<TestAuthService> auth_service_;  // Owned by |request_sender_|.
 };
 
 // Minimal implementation for AuthenticatedRequestInterface that can interact
