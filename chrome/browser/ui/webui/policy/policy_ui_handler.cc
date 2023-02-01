@@ -302,7 +302,7 @@ void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {
   DCHECK(policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
   AllowJavascript();
   ResolveJavascriptCallback(args[0],
-                            policy::PolicyLogger::GetInstance()->GetAsValue());
+                            policy::PolicyLogger::GetInstance()->GetAsList());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

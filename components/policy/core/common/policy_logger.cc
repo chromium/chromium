@@ -119,14 +119,14 @@ void PolicyLogger::LogHelper::StreamLog() {
   }
 }
 
-base::Value PolicyLogger::Log::GetAsValue() const {
-  base::Value log_value(base::Value::Type::DICT);
-  log_value.SetStringPath("message", message_);
-  log_value.SetStringPath("log_severity", GetLogSeverity(log_severity_));
-  log_value.SetStringPath("log_source", GetLogSourceValue(log_source_));
-  log_value.SetStringPath("location", GetLineURL(location_));
-  log_value.SetStringPath("timestamp", base::TimeFormatHTTP(timestamp_));
-  return log_value;
+base::Value::Dict PolicyLogger::Log::GetAsDict() const {
+  base::Value::Dict log_dict;
+  log_dict.Set("message", message_);
+  log_dict.Set("log_severity", GetLogSeverity(log_severity_));
+  log_dict.Set("log_source", GetLogSourceValue(log_source_));
+  log_dict.Set("location", GetLineURL(location_));
+  log_dict.Set("timestamp", base::TimeFormatHTTP(timestamp_));
+  return log_dict;
 }
 
 PolicyLogger::PolicyLogger() = default;
@@ -138,12 +138,12 @@ void PolicyLogger::AddLog(PolicyLogger::Log&& new_log) {
   }
 }
 
-base::Value PolicyLogger::GetAsValue() const {
-  base::Value::List all_logs_value;
+base::Value::List PolicyLogger::GetAsList() const {
+  base::Value::List all_logs_list;
   for (const Log& log : logs_) {
-    all_logs_value.Append(log.GetAsValue());
+    all_logs_list.Append(log.GetAsDict());
   }
-  return base::Value(std::move(all_logs_value));
+  return all_logs_list;
 }
 
 bool PolicyLogger::IsPolicyLoggingEnabled() {
