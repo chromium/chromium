@@ -1133,7 +1133,14 @@ void NavigationControllerImpl::GoToIndex(
   TRACE_EVENT0("browser,navigation,benchmark",
                "NavigationControllerImpl::GoToIndex");
   if (index < 0 || index >= static_cast<int>(entries_.size())) {
-    NOTREACHED();
+    // We've seen reports of this NOTREACHED being hit on Android WebView, where
+    // we won't get the log message below. The following code ensures that
+    // `index` and `entries_size` will show up on the minidump for that case.
+    base::debug::Alias(&index);
+    const size_t entries_size = entries_.size();
+    base::debug::Alias(&entries_size);
+    NOTREACHED() << "Index " << index
+                 << " is out of bounds, entries_.size() is " << entries_size;
     return;
   }
 
