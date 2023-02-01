@@ -204,9 +204,16 @@ class AssistantAshTestBase : public AshTestBase {
 
   TestAssistantService* assistant_service();
 
- private:
+ protected:
+  // Sets up an active user for a test. Note that this function is called in
+  // `SetUp` by default. You can change this behavior by setting
+  // `set_up_active_user_in_test_set_up_`.
   void SetUpActiveUser();
 
+  // This variable must be set before `SetUp` function call.
+  bool set_up_active_user_in_test_set_up_ = true;
+
+ private:
   std::unique_ptr<AssistantTestApi> test_api_;
   std::unique_ptr<TestAssistantSetup> test_setup_;
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_;

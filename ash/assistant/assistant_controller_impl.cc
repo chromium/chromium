@@ -20,6 +20,7 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
@@ -77,9 +78,6 @@ void AssistantControllerImpl::SetAssistant(assistant::Assistant* assistant) {
   assistant_interaction_controller_.SetAssistant(assistant);
   assistant_notification_controller_.SetAssistant(assistant);
   assistant_ui_controller_.SetAssistant(assistant);
-
-  OnAccessibilityStatusChanged();
-  OnColorModeChanged(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
 
   if (assistant) {
     for (AssistantControllerObserver& observer : observers_)
@@ -342,10 +340,17 @@ void AssistantControllerImpl::NotifyUrlOpened(const GURL& url,
 
 void AssistantControllerImpl::OnAssistantStatusChanged(
     assistant::AssistantStatus status) {
-  if (status == assistant::AssistantStatus::NOT_READY) {
-    assistant_volume_control_receiver_.reset();
-    assistant_ui_controller_.CloseUi(
-        assistant::AssistantExitPoint::kUnspecified);
+  switch (status) {
+    case assistant::AssistantStatus::NOT_READY:
+      assistant_volume_control_receiver_.reset();
+      assistant_ui_controller_.CloseUi(
+          assistant::AssistantExitPoint::kUnspecified);
+      break;
+    case assistant::AssistantStatus::READY:
+      OnAccessibilityStatusChanged();
+      OnColorModeChanged(
+          DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
+      break;
   }
 }
 
