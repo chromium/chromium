@@ -6,6 +6,7 @@
 
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
@@ -25,6 +26,10 @@
 
 namespace {
 
+using WarningSurface = DownloadItemWarningData::WarningSurface;
+using WarningAction = DownloadItemWarningData::WarningAction;
+using WarningActionEvent = DownloadItemWarningData::WarningActionEvent;
+
 class MockDownloadBubbleUIController : public DownloadBubbleUIController {
  public:
   explicit MockDownloadBubbleUIController(Browser* browser)
@@ -41,6 +46,8 @@ class MockDownloadBubbleNavigationHandler
   void CloseDialog(views::Widget::ClosedReason) override {}
   void ResizeDialog() override {}
 };
+
+}  // namespace
 
 class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
  public:
@@ -67,13 +74,13 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
     auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
         anchor_widget_->GetContentsView(), views::BubbleBorder::TOP_RIGHT);
     bubble_delegate_ = bubble_delegate.get();
+    bubble_navigator_ = std::make_unique<MockDownloadBubbleNavigationHandler>();
     security_view_ = bubble_delegate_->SetContentsView(
         std::make_unique<DownloadBubbleSecurityView>(bubble_controller_.get(),
                                                      bubble_navigator_.get(),
                                                      bubble_delegate_));
     views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
     bubble_delegate_->GetWidget()->Show();
-    bubble_navigator_ = std::make_unique<MockDownloadBubbleNavigationHandler>();
     bubble_controller_ =
         std::make_unique<MockDownloadBubbleUIController>(browser_.get());
 
@@ -171,4 +178,70 @@ TEST_F(DownloadBubbleSecurityViewTest,
   EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_NONE);
 }
 
-}  // namespace
+TEST_F(DownloadBubbleSecurityViewTest, VerifyLogWarningActions) {
+  DownloadItemWarningData::AddWarningActionEvent(
+      &download_item_, WarningSurface::BUBBLE_MAINPAGE, WarningAction::SHOWN);
+
+  // Back action logged.
+  {
+    auto security_view = std::make_unique<DownloadBubbleSecurityView>(
+        bubble_controller_.get(), bubble_navigator_.get(), bubble_delegate_);
+    security_view->UpdateSecurityView(row_view_.get());
+
+    security_view->BackButtonPressed();
+
+    // Delete early to ensure DISMISS is not logged if BACK is already logged.
+    security_view.reset();
+    std::vector<WarningActionEvent> events =
+        DownloadItemWarningData::GetWarningActionEvents(&download_item_);
+    ASSERT_EQ(events.size(), 1u);
+    EXPECT_EQ(events[0].action, WarningAction::BACK);
+  }
+
+  // Close action logged
+  {
+    auto security_view = std::make_unique<DownloadBubbleSecurityView>(
+        bubble_controller_.get(), bubble_navigator_.get(), bubble_delegate_);
+    security_view->UpdateSecurityView(row_view_.get());
+
+    security_view->CloseBubble();
+
+    security_view.reset();
+    std::vector<WarningActionEvent> events =
+        DownloadItemWarningData::GetWarningActionEvents(&download_item_);
+    ASSERT_EQ(events.size(), 2u);
+    EXPECT_EQ(events[1].action, WarningAction::CLOSE);
+  }
+
+  // Dismiss action logged
+  {
+    auto security_view = std::make_unique<DownloadBubbleSecurityView>(
+        bubble_controller_.get(), bubble_navigator_.get(), bubble_delegate_);
+    security_view->UpdateSecurityView(row_view_.get());
+
+    security_view.reset();
+    std::vector<WarningActionEvent> events =
+        DownloadItemWarningData::GetWarningActionEvents(&download_item_);
+    ASSERT_EQ(events.size(), 3u);
+    EXPECT_EQ(events[2].action, WarningAction::DISMISS);
+  }
+
+  // Dismiss action logged after update
+  {
+    auto security_view = std::make_unique<DownloadBubbleSecurityView>(
+        bubble_controller_.get(), bubble_navigator_.get(), bubble_delegate_);
+    security_view->UpdateSecurityView(row_view_.get());
+
+    security_view->BackButtonPressed();
+
+    // The security view can be re-opened after back button is pressed.
+    security_view->UpdateSecurityView(row_view_.get());
+
+    security_view.reset();
+    std::vector<WarningActionEvent> events =
+        DownloadItemWarningData::GetWarningActionEvents(&download_item_);
+    ASSERT_EQ(events.size(), 5u);
+    EXPECT_EQ(events[3].action, WarningAction::BACK);
+    EXPECT_EQ(events[4].action, WarningAction::DISMISS);
+  }
+}

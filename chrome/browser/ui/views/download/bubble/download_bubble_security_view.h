@@ -23,6 +23,7 @@ class LabelButton;
 class DownloadBubbleUIController;
 class DownloadBubbleNavigationHandler;
 class DownloadBubbleRowView;
+class DownloadUIModel;
 
 class DownloadBubbleSecurityView : public views::View {
  public:
@@ -45,6 +46,9 @@ class DownloadBubbleSecurityView : public views::View {
   void UpdateAccessibilityTextAndFocus();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(DownloadBubbleSecurityViewTest,
+                           VerifyLogWarningActions);
+
   void BackButtonPressed();
   void UpdateHeader();
   void AddHeader();
@@ -67,6 +71,7 @@ class DownloadBubbleSecurityView : public views::View {
   void RecordWarningActionTime(bool is_secondary_button);
 
   raw_ptr<DownloadBubbleRowView> download_row_view_;
+  DownloadUIModel::DownloadUIModelPtr model_;
   raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
   raw_ptr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
   raw_ptr<views::BubbleDialogDelegate, DanglingUntriaged> bubble_delegate_ =
@@ -79,6 +84,7 @@ class DownloadBubbleSecurityView : public views::View {
   raw_ptr<views::StyledLabel> styled_label_ = nullptr;
   raw_ptr<views::ImageButton> back_button_ = nullptr;
   absl::optional<base::Time> warning_time_;
+  bool did_log_action_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_SECURITY_VIEW_H_

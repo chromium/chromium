@@ -8,7 +8,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
+#include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_item_warning_data.h"
+#include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
@@ -98,25 +100,25 @@ void DownloadBubbleSecurityView::AddHeader() {
 
 void DownloadBubbleSecurityView::BackButtonPressed() {
   DownloadItemWarningData::AddWarningActionEvent(
-      download_row_view_->model()->GetDownloadItem(),
+      model_->GetDownloadItem(),
       DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
       DownloadItemWarningData::WarningAction::BACK);
+  did_log_action_ = true;
   navigation_handler_->OpenPrimaryDialog();
   base::UmaHistogramEnumeration(
       kSubpageActionHistogram, DownloadBubbleSubpageAction::kPressedBackButton);
 }
 
 void DownloadBubbleSecurityView::UpdateHeader() {
-  title_->SetText(download_row_view_->model()
-                      ->GetFileNameToReportUser()
-                      .LossyDisplayName());
+  title_->SetText(model_->GetFileNameToReportUser().LossyDisplayName());
 }
 
 void DownloadBubbleSecurityView::CloseBubble() {
   DownloadItemWarningData::AddWarningActionEvent(
-      download_row_view_->model()->GetDownloadItem(),
+      model_->GetDownloadItem(),
       DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
       DownloadItemWarningData::WarningAction::CLOSE);
+  did_log_action_ = true;
   // CloseDialog will delete the object. Do not access any members below.
   navigation_handler_->CloseDialog(
       views::Widget::ClosedReason::kCloseButtonClicked);
@@ -228,8 +230,8 @@ void DownloadBubbleSecurityView::ProcessButtonClick(
   // happens leading to closure of the bubble, it will be called after primary
   // dialog is opened.
   navigation_handler_->OpenPrimaryDialog();
-  bubble_controller_->ProcessDownloadButtonPress(
-      download_row_view_->model(), command, /*is_main_view=*/false);
+  bubble_controller_->ProcessDownloadButtonPress(model_.get(), command,
+                                                 /*is_main_view=*/false);
   base::UmaHistogramEnumeration(
       kSubpageActionHistogram,
       is_secondary_button ? DownloadBubbleSubpageAction::kPressedSecondaryButton
@@ -302,7 +304,7 @@ void DownloadBubbleSecurityView::RecordWarningActionTime(
   std::string histogram = base::StrCat(
       {"Download.Bubble.Subpage.",
        download::GetDownloadDangerTypeString(
-           download_row_view_->model()->GetDownloadItem()->GetDangerType()),
+           model_->GetDownloadItem()->GetDangerType()),
        ".", is_secondary_button ? "Secondary" : "Primary", "ButtonActionTime"});
   base::UmaHistogramMediumTimes(histogram,
                                 base::Time::Now() - (*warning_time_));
@@ -314,6 +316,9 @@ void DownloadBubbleSecurityView::UpdateSecurityView(
   warning_time_ = absl::optional<base::Time>(base::Time::Now());
   download_row_view_ = download_row_view;
   DCHECK(download_row_view_->model());
+  model_ =
+      DownloadItemModel::Wrap(download_row_view_->model()->GetDownloadItem());
+  did_log_action_ = false;
   UpdateHeader();
   UpdateIconAndText();
   UpdateButtons();
@@ -350,7 +355,16 @@ DownloadBubbleSecurityView::DownloadBubbleSecurityView(
   AddIconAndText();
 }
 
-DownloadBubbleSecurityView::~DownloadBubbleSecurityView() = default;
+DownloadBubbleSecurityView::~DownloadBubbleSecurityView() {
+  // Note that security view is created before it is navigated, so |model_| can
+  // be null.
+  if (!did_log_action_ && model_) {
+    DownloadItemWarningData::AddWarningActionEvent(
+        model_->GetDownloadItem(),
+        DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
+        DownloadItemWarningData::WarningAction::DISMISS);
+  }
+}
 
 BEGIN_METADATA(DownloadBubbleSecurityView, views::View)
 END_METADATA
