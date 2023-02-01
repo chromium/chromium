@@ -303,6 +303,57 @@ TEST(PrintBackendCupsHelperTest, PpdParsingPageSizeNoDefaultSpecified) {
   }
 }
 
+TEST(PrintBackendCupsHelperTest, PpdParsingPrintableArea) {
+  constexpr char kTestPpdData[] =
+      R"(*PPD-Adobe: "4.3"
+*OpenUI *PageSize: PickOne
+*DefaultPageSize: Legal
+*PageSize Letter/US Letter: "
+  <</DeferredMediaSelection true /PageSize [612 792]
+  /ImagingBBox null /MediaClass null >> setpagedevice"
+*End
+*PageSize Legal/US Legal: "
+  <</DeferredMediaSelection true /PageSize [612 1008]
+  /ImagingBBox null /MediaClass null >> setpagedevice"
+*End
+*DefaultPaperDimension: Legal
+*PaperDimension Letter/US Letter: "612   792"
+*PaperDimension Legal/US Legal: "612  1008"
+*CloseUI: *PageSize
+*DefaultImageableArea: Legal
+*ImageableArea Letter/US Letter:  "24 30 600 710"
+*ImageableArea Legal/US Legal:    "12 12 600 996")";
+
+  PrinterSemanticCapsAndDefaults caps;
+  EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
+                                   kTestPpdData, &caps));
+  ASSERT_EQ(2UL, caps.papers.size());
+
+  {
+    EXPECT_EQ("Letter", caps.papers[0].vendor_id);
+    EXPECT_EQ("US Letter", caps.papers[0].display_name);
+    EXPECT_EQ(215900, caps.papers[0].size_um.width());
+    EXPECT_EQ(279400, caps.papers[0].size_um.height());
+    const gfx::Rect& printable_area_um = caps.papers[0].printable_area_um;
+    EXPECT_EQ(8467, printable_area_um.x());
+    EXPECT_EQ(10583, printable_area_um.y());
+    EXPECT_EQ(203200, printable_area_um.width());
+    EXPECT_EQ(239889, printable_area_um.height());
+  }
+  {
+    EXPECT_EQ("Legal", caps.papers[1].vendor_id);
+    EXPECT_EQ("US Legal", caps.papers[1].display_name);
+    EXPECT_EQ(215900, caps.papers[1].size_um.width());
+    EXPECT_EQ(355600, caps.papers[1].size_um.height());
+    const gfx::Rect& printable_area_um = caps.papers[1].printable_area_um;
+    EXPECT_EQ(4233, printable_area_um.x());
+    EXPECT_EQ(4233, printable_area_um.y());
+    EXPECT_EQ(207434, printable_area_um.width());
+    EXPECT_EQ(347134, printable_area_um.height());
+    EXPECT_TRUE(PapersEqual(caps.papers[1], caps.default_paper));
+  }
+}
+
 TEST(PrintBackendCupsHelperTest, PpdParsingBrotherPrinters) {
   {
     constexpr char kTestPpdData[] =

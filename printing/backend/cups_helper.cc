@@ -25,6 +25,8 @@
 #include "printing/print_job_constants_cups.h"
 #include "printing/printing_utils.h"
 #include "printing/units.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 using base::EqualsCaseInsensitiveASCII;
@@ -824,6 +826,24 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
             paper.display_name = paper_choice->text;
           }
         }
+        int printable_area_left_um =
+            ConvertUnit(ppd->sizes[i].left, kPointsPerInch, kMicronsPerInch);
+        int printable_area_bottom_um =
+            ConvertUnit(ppd->sizes[i].bottom, kPointsPerInch, kMicronsPerInch);
+        // ppd->sizes[i].right is the horizontal distance from the left of the
+        // paper to the right of the printable area.
+        int printable_area_right_um =
+            ConvertUnit(ppd->sizes[i].right, kPointsPerInch, kMicronsPerInch);
+        // ppd->sizes[i].top is the vertical distance from the bottom of the
+        // paper to the top of the printable area.
+        int printable_area_top_um =
+            ConvertUnit(ppd->sizes[i].top, kPointsPerInch, kMicronsPerInch);
+
+        paper.printable_area_um = gfx::Rect(
+            printable_area_left_um, printable_area_bottom_um,
+            /*width=*/printable_area_right_um - printable_area_left_um,
+            /*height=*/printable_area_top_um - printable_area_bottom_um);
+
         caps.papers.push_back(paper);
         if (ppd->sizes[i].marked) {
           caps.default_paper = paper;
