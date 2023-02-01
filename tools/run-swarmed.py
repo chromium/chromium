@@ -81,9 +81,12 @@ def _DoSpawn(args):
     trigger_args += [
         '-d',
         'kvm=1',
-        '-d',
-        'gpu=none',
     ]
+    if args.gpu is None:
+      trigger_args += [
+          '-d',
+          'gpu=none',
+      ]
   elif args.target_os == 'android':
     if args.arch == 'x86':
       # No x86 Android devices are available in swarming. So assume we want to
@@ -110,6 +113,9 @@ def _DoSpawn(args):
 
   if args.device_os:
     trigger_args += ['-d', 'device_os=' + args.device_os]
+
+  if args.gpu:
+    trigger_args += ['-d', 'gpu=' + args.gpu]
 
   if not args.no_test_flags:
     # These flags are recognized by our test runners, but do not work
@@ -202,10 +208,12 @@ def main():
                       help='Number of copies to spawn.')
   parser.add_argument(
       '--device-os', help='Run tests on the given version of Android.')
-  parser.add_argument(
-      '--device-type',
-      help='device_type specifier for Swarming'
-      ' from https://chromium-swarm.appspot.com/botlist .')
+  parser.add_argument('--device-type',
+                      help='device_type specifier for Swarming'
+                      ' from https://chromium-swarm.appspot.com/botlist .')
+  parser.add_argument('--gpu',
+                      help='gpu specifier for Swarming'
+                      ' from https://chromium-swarm.appspot.com/botlist .')
   parser.add_argument('--pool',
                       default='chromium.tests',
                       help='Use the given swarming pool.')
