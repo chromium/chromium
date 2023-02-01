@@ -50,10 +50,8 @@
  *   backspace was handled by ChromeVox or should be allowed to propagate
  *   through the normal event handling pipeline.
  */
-import {LocalStorage} from '../common/local_storage.js';
-import {SettingsManager} from '../chromevox/common/settings_manager.js';
 
-export class BrailleIme {
+class BrailleIme {
   constructor() {
     /**
      * Whether to enable extra debug logging for the IME.
@@ -78,7 +76,8 @@ export class BrailleIme {
 
     /**
      * Identifier for the use standard keyboard option used
-     * in the menu and {@code LocalStorage}.  This can be switched on to
+     * in the menu and
+     * {@code localStorage}.  This can be switched on to
      * type braille using the standard keyboard, or off
      * (default) for the usual keyboard behaviour.
      * @const {string}
@@ -154,9 +153,7 @@ export class BrailleIme {
   /**
    * Registers event listeners in the chrome IME API.
    */
-  async init() {
-    await LocalStorage.init();
-    await SettingsManager.init();
+  init() {
     chrome.input.ime.onActivate.addListener(this.onActivate_.bind(this));
     chrome.input.ime.onDeactivated.addListener(this.onDeactivated_.bind(this));
     chrome.input.ime.onFocus.addListener(this.onFocus_.bind(this));
@@ -182,7 +179,8 @@ export class BrailleIme {
     if (!this.port_) {
       this.connectChromeVox_();
     }
-    this.useStandardKeyboard_ = LocalStorage.get(this.USE_STANDARD_KEYBOARD_ID);
+    this.useStandardKeyboard_ =
+        localStorage[this.USE_STANDARD_KEYBOARD_ID] === String(true);
     this.accumulated_ = 0;
     this.pressed_ = 0;
     this.updateMenuItems_();
@@ -265,8 +263,8 @@ export class BrailleIme {
     if (engineID === this.engineID_ &&
         itemID === this.USE_STANDARD_KEYBOARD_ID) {
       this.useStandardKeyboard_ = !this.useStandardKeyboard_;
-      LocalStorage.set(
-          this.USE_STANDARD_KEYBOARD_ID, this.useStandardKeyboard_);
+      localStorage[this.USE_STANDARD_KEYBOARD_ID] =
+          String(this.useStandardKeyboard_);
       if (!this.useStandardKeyboard_) {
         this.accumulated_ = 0;
         this.pressed_ = 0;

@@ -3,7 +3,7 @@
   "description": "Braille Input Method Extension.",
   "version": "1.0",
   "background": {
-    "page": "braille_ime/background.html",
+    "scripts": [ "braille_ime.js", "main.js" ],
     "persistent": true
   },
   // chrome-extension://jddehjeebkoimngcbdkaahpobgicbffp

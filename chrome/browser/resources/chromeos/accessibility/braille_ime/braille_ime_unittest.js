@@ -66,6 +66,8 @@ class MockPort {
  */
 ENGINE_ID = 'braille';
 
+var localStorage;
+
 /**
  * Test fixture for the braille IME unit test.
  */
@@ -77,8 +79,7 @@ BrailleImeUnitTest = class extends AccessibilityTestBase {
     chrome.input = chrome.input || {};
     chrome.input.ime = chrome.input.ime || {};
     chrome.runtime = chrome.runtime || {};
-    chrome.storage = chrome.storage || {};
-    chrome.storage.local = chrome.storage.local || {};
+    localStorage = {};
     this.lastSentKeyRequestId_ = 0;
     this.lastHandledKeyRequestId_ = undefined;
     this.lastHandledKeyResult_ = undefined;
@@ -86,15 +87,10 @@ BrailleImeUnitTest = class extends AccessibilityTestBase {
       this.lastHandledKeyRequestId_ = Number(requestId);
       this.lastHandledKeyResult_ = result;
     }.bind(this);
+    this.createIme();
   }
 
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await this.createIme();
-  }
-
-  async createIme() {
+  createIme() {
     var IME_EVENTS = [
       'onActivate',
       'onDeactivated',
@@ -117,13 +113,8 @@ BrailleImeUnitTest = class extends AccessibilityTestBase {
     }.bind(this);
     this.menuItems = null;
     this.port = null;
-  }
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await importModule('BrailleIme', '/braille_ime/braille_ime.js');
     this.ime = new BrailleIme();
-    await this.ime.init();
+    this.ime.init();
   }
 
   activateIme() {
@@ -151,6 +142,10 @@ BrailleImeUnitTest = class extends AccessibilityTestBase {
     return this.sendKeyEvent_('keyup', code, extra);
   }
 };
+
+/** @Override */
+BrailleImeUnitTest.prototype.extraLibraries = ['braille_ime.js'];
+
 
 TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeyboardDisabled', function() {
   this.activateIme();
@@ -235,18 +230,16 @@ TEST_F('BrailleImeUnitTest', 'TestBackspaceKey', function() {
   expectTrue(this.lastHandledKeyResult_);
 });
 
-TEST_F(
-    'BrailleImeUnitTest', 'UseStandardKeyboardSettingPreserved',
-    async function() {
-      this.activateIme();
-      assertFalse(this.menuItems[0].checked);
-      this.onMenuItemActivated.dispatch(ENGINE_ID, this.menuItems[0].id);
-      assertTrue(this.menuItems[0].checked);
-      // Create a new instance and make sure the setting is still turned on.
-      await this.createIme();
-      this.activateIme();
-      assertTrue(this.menuItems[0].checked);
-    });
+TEST_F('BrailleImeUnitTest', 'UseStandardKeyboardSettingPreserved', function() {
+  this.activateIme();
+  assertFalse(this.menuItems[0].checked);
+  this.onMenuItemActivated.dispatch(ENGINE_ID, this.menuItems[0].id);
+  assertTrue(this.menuItems[0].checked);
+  // Create a new instance and make sure the setting is still turned on.
+  this.createIme();
+  this.activateIme();
+  assertTrue(this.menuItems[0].checked);
+});
 
 TEST_F('BrailleImeUnitTest', 'ReplaceText', function() {
   var CONTEXT_ID = 1;
