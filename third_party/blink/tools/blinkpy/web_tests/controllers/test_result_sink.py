@@ -129,10 +129,14 @@ class TestResultSink(object):
             pair('web_tests_base_timeout',
                  str(int(self._port.timeout_ms() / 1000))),
         ]
-        if result.image_diff_stats:
+        if (result.image_diff_stats and result.image_diff_stats.keys() >=
+            {'maxDifference', 'totalPixels'}):
             tags.append(
-                pair('web_tests_image_diff_stats',
-                     str(result.image_diff_stats)))
+                pair('web_tests_image_diff_max_difference',
+                     str(result.image_diff_stats['maxDifference'])))
+            tags.append(
+                pair('web_tests_image_diff_total_pixels',
+                     str(result.image_diff_stats['totalPixels'])))
         test_type = []
         for name in result.artifacts.artifacts.keys():
             if name == 'actual_text':

@@ -245,8 +245,12 @@ class TestResultSinkMessage(TestResultSinkTestBase):
                 'value': '6'
             },
             {
-                'key': 'web_tests_image_diff_stats',
-                'value': "{'maxDifference': 20, 'totalPixels': 50}"
+                'key': 'web_tests_image_diff_max_difference',
+                'value': '20'
+            },
+            {
+                'key': 'web_tests_image_diff_total_pixels',
+                'value': '50'
             },
             {
                 'key': 'web_tests_used_expectations_file',
