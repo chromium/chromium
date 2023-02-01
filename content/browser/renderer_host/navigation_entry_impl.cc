@@ -82,7 +82,29 @@ void RecursivelyGenerateFrameEntries(
   scoped_refptr<FrameNavigationEntry> entry = context->GetFrameNavigationEntry(
       state.item_sequence_number,
       state.target ? base::UTF16ToUTF8(*state.target) : "", state_url);
-  DCHECK(!entry || entry->initiator_origin() == state.initiator_origin);
+
+  // TODO(crbug.com/1354634): We are seeing cases where initiator_origin differs
+  // between `state` and the matching shared FNE found above. We should diagnose
+  // how this is happening and either handle or prevent this case. These crash
+  // keys will help show whether the ISN is a special case, and how the origins
+  // differ (e.g., if one is missing or just has a different nonce).
+  if (entry) {
+    SCOPED_CRASH_KEY_NUMBER("RestoreMatchingFNE", "state_isn",
+                            state.item_sequence_number);
+    SCOPED_CRASH_KEY_NUMBER("RestoreMatchingFNE", "entry_isn",
+                            entry->item_sequence_number());
+    SCOPED_CRASH_KEY_STRING64("RestoreMatchingFNE", "state_initiator",
+                              state.initiator_origin.has_value()
+                                  ? state.initiator_origin->GetDebugString()
+                                  : "none");
+    SCOPED_CRASH_KEY_STRING64("RestoreMatchingFNE", "entry_initiator",
+                              entry->initiator_origin().has_value()
+                                  ? entry->initiator_origin()->GetDebugString()
+                                  : "none");
+    DCHECK(entry->initiator_origin() == state.initiator_origin)
+        << "Unexpected difference in initiator_origin across matching FNEs.";
+  }
+
   if (!entry) {
     absl::optional<GURL> initiator_base_url;
     if (state.initiator_base_url_string) {
