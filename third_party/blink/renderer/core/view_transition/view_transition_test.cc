@@ -960,4 +960,27 @@ TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotSize) {
   UpdateAllLifecyclePhasesAndFinishDirectives();
 }
 
+TEST_P(ViewTransitionTest, DocumentWithNoDocumentElementHasNullTransition) {
+  auto* document =
+      Document::CreateForTest(*GetDocument().GetExecutionContext());
+  ASSERT_FALSE(document->documentElement());
+
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+
+  auto start_setup_lambda =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+
+  // This callback sets the elements for the start phase of the transition.
+  auto start_setup_callback =
+      v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
+          .ToLocalChecked();
+
+  ViewTransition* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, *document,
+      V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
+  ASSERT_FALSE(transition);
+}
+
 }  // namespace blink
