@@ -392,53 +392,57 @@ WebDragData DataObject::ToWebDragData() {
 
   for (wtf_size_t i = 0; i < length(); ++i) {
     DataObjectItem* original_item = Item(i);
-    WebDragData::Item item;
-    if (original_item->Kind() == DataObjectItem::kStringKind) {
-      auto& string_item = item.emplace<WebDragData::StringItem>();
-      string_item.type = original_item->GetType();
-      string_item.data = original_item->GetAsString();
-      string_item.title = original_item->Title();
-      string_item.base_url = original_item->BaseURL();
-    } else if (original_item->Kind() == DataObjectItem::kFileKind) {
-      if (original_item->GetSharedBuffer()) {
-        auto& binary_data_item = item.emplace<WebDragData::BinaryDataItem>();
-        binary_data_item.data = original_item->GetSharedBuffer();
-        binary_data_item.image_accessible = original_item->IsImageAccessible();
-        binary_data_item.source_url = original_item->BaseURL();
-        binary_data_item.filename_extension =
-            original_item->FilenameExtension();
-        binary_data_item.content_disposition = original_item->Title();
-      } else if (original_item->IsFilename()) {
-        Blob* blob = original_item->GetAsFile();
-        if (auto* file = DynamicTo<File>(blob)) {
-          if (file->HasBackingFile()) {
-            auto& filename_item = item.emplace<WebDragData::FilenameItem>();
-            filename_item.filename = file->GetPath();
-            filename_item.display_name = file->name();
-          } else if (!file->FileSystemURL().IsEmpty()) {
-            auto& file_system_file_item =
-                item.emplace<WebDragData::FileSystemFileItem>();
-            file_system_file_item.url = file->FileSystemURL();
-            file_system_file_item.size = file->size();
-            file_system_file_item.file_system_id =
-                original_item->FileSystemId();
+    WebDragData::Item& item = item_list[i];
+    switch (original_item->Kind()) {
+      case DataObjectItem::kStringKind: {
+        auto& string_item = item.emplace<WebDragData::StringItem>();
+        string_item.type = original_item->GetType();
+        string_item.data = original_item->GetAsString();
+        string_item.title = original_item->Title();
+        string_item.base_url = original_item->BaseURL();
+        break;
+      }
+      case DataObjectItem::kFileKind: {
+        if (original_item->GetSharedBuffer()) {
+          auto& binary_data_item = item.emplace<WebDragData::BinaryDataItem>();
+          binary_data_item.data = original_item->GetSharedBuffer();
+          binary_data_item.image_accessible =
+              original_item->IsImageAccessible();
+          binary_data_item.source_url = original_item->BaseURL();
+          binary_data_item.filename_extension =
+              original_item->FilenameExtension();
+          binary_data_item.content_disposition = original_item->Title();
+        } else if (original_item->IsFilename()) {
+          if (auto* file = original_item->GetAsFile()) {
+            if (file->HasBackingFile()) {
+              auto& filename_item =
+                  item.emplace<WebDragData::FilenameItem>();
+              filename_item.filename = file->GetPath();
+              filename_item.display_name = file->name();
+            } else if (!file->FileSystemURL().IsEmpty()) {
+              auto& file_system_file_item =
+                  item.emplace<WebDragData::FileSystemFileItem>();
+              file_system_file_item.url = file->FileSystemURL();
+              file_system_file_item.size = file->size();
+              file_system_file_item.file_system_id =
+                  original_item->FileSystemId();
+            } else {
+              // TODO(http://crbug.com/394955): support dragging constructed
+              // Files across renderers.
+              auto& string_item =
+                  item.emplace<WebDragData::StringItem>();
+              string_item.type = "text/plain";
+              string_item.data = file->name();
+            }
           } else {
-            // TODO(http://crbug.com/394955): support dragging constructed Files
-            // across renderers.
-            auto& string_item = item.emplace<WebDragData::StringItem>();
-            string_item.type = "text/plain";
-            string_item.data = file->name();
+            NOTREACHED();
           }
         } else {
           NOTREACHED();
         }
-      } else {
-        NOTREACHED();
+        break;
       }
-    } else {
-      NOTREACHED();
     }
-    item_list[i] = item;
   }
   data.SetItems(std::move(item_list));
   return data;
