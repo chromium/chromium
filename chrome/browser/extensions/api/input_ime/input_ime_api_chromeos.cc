@@ -934,9 +934,11 @@ bool InputImeEventRouter::RegisterImeExtension(
 void InputImeEventRouter::UnregisterAllImes(const std::string& extension_id) {
   auto it = engine_map_.find(extension_id);
   if (it != engine_map_.end()) {
-    ash::input_method::InputMethodManager::Get()
-        ->GetActiveIMEState()
-        ->RemoveInputMethodExtension(extension_id);
+    auto active_ime_state =
+        ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
+    if (active_ime_state) {
+      active_ime_state->RemoveInputMethodExtension(extension_id);
+    }
     engine_map_.erase(it);
   }
 }
