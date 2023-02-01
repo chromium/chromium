@@ -331,11 +331,6 @@ mojom_component("base") {
           cpp = "::base::Value"
           move_only = true
         },
-        {
-          mojom = "mojo_base.mojom.DeprecatedListValue"
-          cpp = "::base::Value"
-          move_only = true
-        },
       ]
 
       traits_headers = [ "//mojo/public/cpp/base/values_mojom_traits.h" ]
