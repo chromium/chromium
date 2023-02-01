@@ -10,6 +10,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "chrome/browser/headless/test/headless_browser_test_utils.h"
 #include "content/public/common/content_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -198,5 +199,14 @@ void HeadlessModeProtocolBrowserTest::OnConsoleAPICalled(
 HEADLESS_MODE_PROTOCOL_TEST(DomFocus, "input/dom-focus.js")
 HEADLESS_MODE_PROTOCOL_TEST(FocusBlurNotifications,
                             "input/focus-blur-notifications.js")
+
+// https://crbug.com/1411976
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ScreencastBasics DISABLED_ScreencastBasics
+#else
+#define MAYBE_ScreencastBasics ScreencastBasics
+#endif
+HEADLESS_MODE_PROTOCOL_TEST(MAYBE_ScreencastBasics,
+                            "sanity/screencast-basics.js")
 
 }  // namespace headless

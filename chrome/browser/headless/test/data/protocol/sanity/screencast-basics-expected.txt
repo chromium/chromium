@@ -1,0 +1,2 @@
+Tests basic screencast functionality.
+Seen both green and blue page backgrounds.
