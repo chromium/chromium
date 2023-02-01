@@ -23,8 +23,27 @@
 </style>
 `, 'Verify that media queries are reported properly.');
 
+  const TOTAL_NUMBER_OF_STYLE_SHEETS = 6;
+  let numberOfAddedStyleSheets = 0;
+  let resolveAllStyleSheetsAdded;
+  let isAllStyleSheetsAddedPromiseResolved = false;
+  const allStyleSheetsAddedPromise = new Promise(resolve => { resolveAllStyleSheetsAdded = resolve });
+  dp.CSS.onStyleSheetAdded(() => {
+    numberOfAddedStyleSheets++;
+
+    if (numberOfAddedStyleSheets >= TOTAL_NUMBER_OF_STYLE_SHEETS && !isAllStyleSheetsAddedPromiseResolved)  {
+      isAllStyleSheetsAddedPromiseResolved = true;
+      resolveAllStyleSheetsAdded();
+    }
+  });
   await dp.DOM.enable();
   await dp.CSS.enable();
+
+  // Wait until all stylesheets are added for the test
+  // otherwise there is a possible race condition in
+  // some stylesheets being loading and getMediaQueries
+  // request being made.
+  await allStyleSheetsAddedPromise;
   var response = await dp.CSS.getMediaQueries();
   var medias = response.result.medias;
 
