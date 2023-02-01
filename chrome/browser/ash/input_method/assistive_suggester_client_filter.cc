@@ -109,31 +109,6 @@ const char* kAllowedAppsForEmojiSuggester[] = {
     "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
 };
 
-// For ARC++ apps, use arc package name. For system apps, use app ID.
-const char* kAllowedAppsForMultiWordSuggester[] = {
-    "com.discord",
-    "com.facebook.orca",
-    "com.whatsapp",
-    "com.skype.raider",
-    "com.google.android.apps.tachyon",
-    "com.google.android.talk",
-    "org.telegram.messenger",
-    "com.enflick.android.TextNow",
-    "com.facebook.mlite",
-    "com.viber.voip",
-    "com.skype.m2",
-    "com.imo.android.imoim",
-    "com.google.android.apps.googlevoice",
-    "com.playstation.mobilemessenger",
-    "kik.android",
-    "com.link.messages.sms",
-    "jp.naver.line.android",
-    "com.skype.m2",
-    "co.happybits.marcopolo",
-    "com.imo.android.imous",
-    "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
-};
-
 const char* kDeniedDomainAndPathsForDiacritics[][2] = {
     // Google Slides: delete on insert does not work
     {"docs.google.com", "/presentation"},
@@ -264,8 +239,7 @@ void ReturnEnabledSuggestions(
   bool multi_word_suggestions_allowed =
       IsTestUrl(current_url) || IsInternalWebsite(current_url) ||
       IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForMultiWordSuggester,
-                                 current_url) ||
-      IsMatchedApp(kAllowedAppsForMultiWordSuggester, window_properties);
+                                 current_url);
 
   // Allow-list (will only allow if matched)
   bool personal_info_suggestions_allowed =

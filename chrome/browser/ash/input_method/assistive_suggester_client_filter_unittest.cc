@@ -292,7 +292,7 @@ INSTANTIATE_TEST_SUITE_P(
          /* app_id=*/"mmfbcljfglbokpmkimbfghdkjmjhdgbg",
          /* arc_package_name=*/"",
          EnabledSuggestions{.emoji_suggestions = true,
-                            .multi_word_suggestions = true,
+                            .multi_word_suggestions = false,
                             .personal_info_suggestions = true,
                             .diacritic_suggestions = false}},
         {"ChromeTerminalViaUrl",
