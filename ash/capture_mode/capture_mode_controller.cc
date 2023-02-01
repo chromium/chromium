@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_notification_view.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -123,6 +124,30 @@ enum ScreenshotNotificationButtonIndex {
 enum VideoNotificationButtonIndex {
   BUTTON_DELETE_VIDEO = 0,
 };
+
+// Returns the file extension for the given `recording_type`.
+std::string GetVideoExtension(RecordingType recording_type) {
+  switch (recording_type) {
+    case RecordingType::kGif:
+      return "gif";
+    case RecordingType::kWebM:
+      return "webm";
+  }
+}
+
+// Returns true if the given `recording_type` supports audio recording.
+bool SupportsAudioRecording(RecordingType recording_type) {
+  return recording_type == RecordingType::kWebM;
+}
+
+bool IsVideoFileExtensionSupported(const base::FilePath& video_file_path) {
+  for (const auto* const extension : {".webm", ".gif"}) {
+    if (video_file_path.MatchesExtension(extension)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // Returns the date extracted from |timestamp| as a string to be part of
 // captured file names. Note that naturally formatted dates includes slashes
@@ -377,9 +402,8 @@ CaptureModeController::CaptureModeController(
           std::make_unique<CaptureModeCameraController>(delegate_.get())),
       blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           // A task priority of BEST_EFFORT is good enough for this runner,
-          // since it's used for blocking file IO such as saving the screenshots
-          // or the successive webm video chunks received from the recording
-          // service.
+          // since it's used for blocking file IO such as saving the
+          // screenshots.
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       num_consecutive_screenshots_scheduler_(
@@ -1006,7 +1030,7 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
   // is ok since the |audio_stream_factory| parameter in the recording service
   // APIs is optional, and can be not bound.
   mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory;
-  if (GetAudioRecordingEnabled()) {
+  if (SupportsAudioRecording(recording_type_) && GetAudioRecordingEnabled()) {
     delegate_->BindAudioStreamFactory(
         audio_stream_factory.InitWithNewPipeAndPassReceiver());
     capture_mode_util::MaybeUpdateMicrophonePrivacyIndicator(/*mic_on=*/true);
@@ -1343,7 +1367,7 @@ base::FilePath CaptureModeController::BuildImagePath() const {
 
 base::FilePath CaptureModeController::BuildVideoPath() const {
   return BuildPathNoExtension(kVideoFileNameFmtStr, base::Time::Now())
-      .AddExtension("webm");
+      .AddExtension(GetVideoExtension(recording_type_));
 }
 
 base::FilePath CaptureModeController::BuildImagePathForDisplay(
@@ -1437,6 +1461,8 @@ void CaptureModeController::OnProjectorContainerFolderCreated(
     return;
   }
 
+  // Note that the extension `webm` is used here directly, since projector
+  // doesn't work with any other format.
   BeginVideoRecording(capture_params, /*for_projector=*/true,
                       file_path_no_extension.AddExtension("webm"));
 }
@@ -1447,7 +1473,7 @@ void CaptureModeController::BeginVideoRecording(
     const base::FilePath& video_file_path) {
   DCHECK_EQ(capture_mode_session_->is_in_projector_mode(), for_projector);
   DCHECK(!video_file_path.empty());
-  DCHECK(video_file_path.MatchesExtension(".webm"));
+  DCHECK(IsVideoFileExtensionSupported(video_file_path));
 
   if (!IsActive()) {
     // This function gets called asynchronously, and until it gets called, the

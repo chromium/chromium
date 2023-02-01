@@ -59,6 +59,9 @@ class RecordingServiceTestApi {
   void RequestAndWaitForVideoFrame(
       VerifyVideoFrameCallback verify_frame_callback = base::NullCallback());
 
+  // Returns true if the recording service is currently recording audio.
+  bool IsDoingAudioRecording() const;
+
  private:
   // The actual recording service instance.
   RecordingService recording_service_;

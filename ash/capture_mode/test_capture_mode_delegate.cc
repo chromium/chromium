@@ -75,6 +75,10 @@ void TestCaptureModeDelegate::RequestAndWaitForVideoFrame() {
   recording_service_->RequestAndWaitForVideoFrame();
 }
 
+bool TestCaptureModeDelegate::IsDoingAudioRecording() const {
+  return recording_service_ && recording_service_->IsDoingAudioRecording();
+}
+
 base::FilePath TestCaptureModeDelegate::GetUserDefaultDownloadsFolder() const {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
 

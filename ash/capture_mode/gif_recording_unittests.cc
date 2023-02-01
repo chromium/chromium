@@ -10,6 +10,7 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
+#include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/style/icon_button.h"
@@ -353,6 +354,28 @@ TEST_F(GifRecordingTest, CloseRecordingMenuWhileFocusIsSomewhereElse) {
   EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
   EXPECT_EQ(test_api.GetCaptureModeBarView()->close_button(),
             test_api.GetCurrentFocusedView()->GetView());
+}
+
+TEST_F(GifRecordingTest, RecordingTypeIsRespected) {
+  auto* controller = StartRegionVideoCapture();
+  controller->SetRecordingType(RecordingType::kGif);
+
+  // Even though audio recording is enabled, when performing a GIF recording,
+  // the recording service should not be asked to connect to the audio streaming
+  // factory and should not be doing any audio recording.
+  controller->EnableAudioRecording(true);
+  StartVideoRecordingImmediately();
+  WaitForRecordingToStart();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  CaptureModeTestApi().FlushRecordingServiceForTesting();
+  EXPECT_FALSE(test_delegate->IsDoingAudioRecording());
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+
+  // The resulting file should have a ".gif" extension.
+  const auto file = WaitForCaptureFileToBeSaved();
+  EXPECT_TRUE(file.MatchesExtension(".gif"));
 }
 
 }  // namespace ash

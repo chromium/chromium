@@ -79,6 +79,10 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   // delivered to the service.
   void RequestAndWaitForVideoFrame();
 
+  // Returns true if there is an ongoing recording and the recording service is
+  // currently recording audio.
+  bool IsDoingAudioRecording() const;
+
   // CaptureModeDelegate:
   base::FilePath GetUserDefaultDownloadsFolder() const override;
   void ShowScreenCaptureItemInFolder(const base::FilePath& file_path) override;

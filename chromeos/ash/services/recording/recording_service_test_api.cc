@@ -86,4 +86,10 @@ void RecordingServiceTestApi::RequestAndWaitForVideoFrame(
   run_loop.Run();
 }
 
+bool RecordingServiceTestApi::IsDoingAudioRecording() const {
+  DCHECK_CALLED_ON_VALID_THREAD(recording_service_.main_thread_checker_);
+
+  return !!recording_service_.audio_capturer_;
+}
+
 }  // namespace recording
