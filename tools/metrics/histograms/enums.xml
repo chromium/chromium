@@ -80262,6 +80262,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="2126196629" label="PPB_UDPSocket_Private;0.4"/>
 </enum>
 
+<enum name="PepperVideoDecoderHardwareAccelerationBehavior">
+  <int value="0" label="kOther"/>
+  <int value="1" label="kHardwareDecoderOnlyWithoutMojoVideoDecoder"/>
+  <int value="2"
+      label="kHardwareDecoderWithoutMojoVideoDecoderAndThenSoftwareDecoder"/>
+  <int value="3" label="kHardwareDecoderOnlyWithMojoVideoDecoder"/>
+  <int value="4"
+      label="kHardwareDecoderWithMojoVideoDecoderAndThenSoftwareDecoder"/>
+  <int value="5" label="kSoftwareDecoderOnly"/>
+</enum>
+
 <enum name="PerformanceHintsObserverHintForURLResult">
   <int value="0" label="Hint not found for URL"/>
   <int value="1" label="One or more sources were not yet ready"/>

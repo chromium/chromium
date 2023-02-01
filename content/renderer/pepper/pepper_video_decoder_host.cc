@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "content/common/pepper_file_util.h"
@@ -41,6 +42,36 @@ using ppapi::thunk::PPB_Graphics3D_API;
 namespace content {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class HardwareAccelerationBehavior : int {
+  kOther = 0,
+
+  // The PepperVideoDecoderHost used a hardware decoder backed by the legacy
+  // VideoDecodeAccelerator path from beginning to end.
+  kHardwareDecoderOnlyWithoutMojoVideoDecoder = 1,
+
+  // The PepperVideoDecoderHost initialized (and possibly started using) a
+  // hardware decoder backed by the legacy VideoDecodeAccelerator path but then
+  // fell back to software decoding.
+  kHardwareDecoderWithoutMojoVideoDecoderAndThenSoftwareDecoder = 2,
+
+  // The PepperVideoDecoderHost used a hardware decoder backed by the newer
+  // MojoVideoDecoder path from beginning to end.
+  kHardwareDecoderOnlyWithMojoVideoDecoder = 3,
+
+  // The PepperVideoDecoderHost initialized (and possibly started using) a
+  // hardware decoder backed by the newer MojoVideoDecoder path but then fell
+  // back to software decoding.
+  kHardwareDecoderWithMojoVideoDecoderAndThenSoftwareDecoder = 4,
+
+  // The PepperVideoDecoderHost used a software video decoder from beginning to
+  // end.
+  kSoftwareDecoderOnly = 5,
+
+  kMaxValue = kSoftwareDecoderOnly
+};
 
 media::VideoCodecProfile PepperToMediaVideoProfile(PP_VideoProfile profile) {
   switch (profile) {
@@ -107,7 +138,37 @@ PepperVideoDecoderHost::PepperVideoDecoderHost(RendererPpapiHost* host,
     : ResourceHost(host->GetPpapiHost(), instance, resource),
       renderer_ppapi_host_(host) {}
 
-PepperVideoDecoderHost::~PepperVideoDecoderHost() {}
+PepperVideoDecoderHost::~PepperVideoDecoderHost() {
+  DCHECK(!(legacy_hardware_video_decoder_path_initialized_ &&
+           mojo_video_decoder_path_initialized_));
+
+  auto hw_behavior = HardwareAccelerationBehavior::kOther;
+  if (software_fallback_used_) {
+    if (!legacy_hardware_video_decoder_path_initialized_ &&
+        !mojo_video_decoder_path_initialized_) {
+      hw_behavior = HardwareAccelerationBehavior::kSoftwareDecoderOnly;
+    } else if (legacy_hardware_video_decoder_path_initialized_) {
+      hw_behavior = HardwareAccelerationBehavior::
+          kHardwareDecoderWithoutMojoVideoDecoderAndThenSoftwareDecoder;
+    } else if (mojo_video_decoder_path_initialized_) {
+      hw_behavior = HardwareAccelerationBehavior::
+          kHardwareDecoderWithMojoVideoDecoderAndThenSoftwareDecoder;
+    } else {
+      NOTREACHED();
+    }
+  } else {
+    if (legacy_hardware_video_decoder_path_initialized_) {
+      hw_behavior = HardwareAccelerationBehavior::
+          kHardwareDecoderOnlyWithoutMojoVideoDecoder;
+    } else if (mojo_video_decoder_path_initialized_) {
+      hw_behavior = HardwareAccelerationBehavior::
+          kHardwareDecoderOnlyWithMojoVideoDecoder;
+    }
+  }
+
+  base::UmaHistogramEnumeration(
+      "Media.PepperVideoDecoder.HardwareAccelerationBehavior", hw_behavior);
+}
 
 int32_t PepperVideoDecoderHost::OnResourceMessageReceived(
     const IPC::Message& msg,
@@ -171,6 +232,7 @@ int32_t PepperVideoDecoderHost::OnHostMsgInitialize(
             {media::PIXEL_FORMAT_XRGB, media::PIXEL_FORMAT_ARGB});
         if (decoder_->Initialize(vda_config, this)) {
           initialized_ = true;
+          legacy_hardware_video_decoder_path_initialized_ = true;
           return PP_OK;
         }
       }
@@ -185,6 +247,7 @@ int32_t PepperVideoDecoderHost::OnHostMsgInitialize(
               media::VideoDecodeAccelerator::Config(profile_), this)) {
         decoder_.reset(new_decoder.release());
         initialized_ = true;
+        mojo_video_decoder_path_initialized_ = true;
         return PP_OK;
       }
     }

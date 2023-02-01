@@ -3794,6 +3794,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.PepperVideoDecoder.HardwareAccelerationBehavior"
+    enum="PepperVideoDecoderHardwareAccelerationBehavior" expires_after="never">
+<!-- expires-never: used by ChromeOS test infrastructure -->
+
+  <owner>pmolinalopez@chromium.org</owner>
+  <owner>chromeos-gfx-video@google.com</owner>
+  <summary>
+    The hardware/software decoding behavior used for a PPB_VideoDecoder API
+    instance. This UMA is recorded when the PepperVideoDecoderHost is destroyed.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Media.PepperVideoDecoderOutputPictureCount"
     enum="MediaVideoHeight" expires_after="2020-12-31">
   <owner>sandersd@chromium.org</owner>
