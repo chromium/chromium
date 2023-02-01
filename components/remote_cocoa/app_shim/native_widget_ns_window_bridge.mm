@@ -669,7 +669,16 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
         new_state != WindowVisibilityState::kHideWindow;
     host_->OnVisibilityChanged(headless_mode_window_->visibility_state);
     if (new_state == WindowVisibilityState::kShowAndActivateWindow) {
-      OnWindowKeyStatusChangedTo(/*is_key*/ true);
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](WeakPtrNSObject* handle) {
+                if (auto* bridge = ui::WeakPtrNSObjectFactory<
+                        NativeWidgetNSWindowBridge>::Get(handle)) {
+                  bridge->OnWindowKeyStatusChangedTo(/*is_key*/ true);
+                }
+              },
+              ns_weak_factory_.handle()));
     }
     return;
   }
