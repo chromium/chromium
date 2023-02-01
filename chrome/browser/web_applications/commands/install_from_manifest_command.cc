@@ -35,6 +35,22 @@
 
 namespace web_app {
 
+namespace {
+
+bool HasRequiredManifestFields(const blink::mojom::ManifestPtr& manifest) {
+  if (manifest->start_url.is_empty()) {
+    return false;
+  }
+
+  if (!manifest->short_name.has_value() && !manifest->name.has_value()) {
+    return false;
+  }
+
+  return true;
+}
+
+}  // namespace
+
 InstallFromManifestCommand::InstallFromManifestCommand(
     webapps::WebappInstallSource install_source,
     GURL document_url,
@@ -93,11 +109,11 @@ void InstallFromManifestCommand::StartWithLock(
 }
 
 base::Value InstallFromManifestCommand::ToDebugValue() const {
-  base::Value::Dict debug_value;
+  base::Value::Dict debug_value = debug_value_.Clone();
   debug_value.Set("document_url", document_url_.spec());
   debug_value.Set("manifest_url", manifest_url_.spec());
+  debug_value.Set("expected_id", expected_id_);
   debug_value.Set("manifest_contents", manifest_contents_);
-  debug_value.Set("manifest_parsed", manifest_parsed_);
   return base::Value(std::move(debug_value));
 }
 
@@ -112,14 +128,15 @@ void InstallFromManifestCommand::OnManifestParsed(
     blink::mojom::ManifestPtr manifest) {
   // Note that most errors during parsing (e.g. errors to do with parsing a
   // particular field) are silently ignored. As long as the manifest is valid
-  // JSON and contains a valid start_url, installation will proceed.
-  if (blink::IsEmptyManifest(manifest) || !manifest->start_url.is_valid()) {
+  // JSON and contains a valid start_url and name, installation will proceed.
+  if (blink::IsEmptyManifest(manifest) ||
+      !HasRequiredManifestFields(manifest)) {
     Abort(CommandResult::kFailure,
           webapps::InstallResultCode::kNotValidManifestForWebApp);
     return;
   }
 
-  manifest_parsed_ = true;
+  debug_value_.Set("manifest_parsed", true);
   web_app_info_ = std::make_unique<WebAppInstallInfo>();
   web_app_info_->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
@@ -205,6 +222,7 @@ void InstallFromManifestCommand::OnInstallFinalized(
 
 void InstallFromManifestCommand::Abort(CommandResult result,
                                        webapps::InstallResultCode code) {
+  debug_value_.Set("error_code", base::StreamableToString(code));
   SignalCompletionAndSelfDestruct(
       result, base::BindOnce(std::move(install_callback_), AppId(), code));
 }

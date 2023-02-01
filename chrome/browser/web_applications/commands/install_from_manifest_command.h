@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
@@ -35,7 +36,7 @@ class SharedWebContentsWithAppLockDescription;
 // verify all the normal installability criteria of the manifest, instead it
 // just checks limited criteria needed to successfully install the app:
 // - The manifest must be valid JSON
-// - The manifest must have a valid start URL
+// - The manifest must have a valid start URL and name/short_name
 // - The manifest must have a valid icon from an allowlisted host (see
 // `host_allowlist` parameter).
 //
@@ -111,7 +112,7 @@ class InstallFromManifestCommand
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
-  bool manifest_parsed_ = false;
+  base::Value::Dict debug_value_;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
 
   mojo::Remote<blink::mojom::ManifestManager> manifest_manager_;

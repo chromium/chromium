@@ -329,6 +329,25 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureInvalidStartUrl) {
             webapps::InstallResultCode::kNotValidManifestForWebApp);
 }
 
+IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureInvalidName) {
+  // Installation will fail because there's no valid name.
+  const GURL kDocumentUrl("https://www.app.com/");
+  const GURL kManifestUrl("https://www.app.com/manifest.json");
+  const char kManifest[] = R"json({
+    "start_url": "/"
+  })json";
+
+  base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+  provider().command_manager().ScheduleCommand(
+      std::make_unique<InstallFromManifestCommand>(
+          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
+          kManifestUrl, kManifest,
+          /*expected_id=*/"", GetHostAllowlist(), result.GetCallback()));
+
+  EXPECT_EQ(result.Get<1>(),
+            webapps::InstallResultCode::kNotValidManifestForWebApp);
+}
+
 IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
                        FailureStartUrlOriginMismatch) {
   // Installation will fail because the start URL is a different origin to the
