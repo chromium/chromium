@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
-#import "ios/chrome/browser/main/browser_observer_bridge.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
@@ -28,15 +27,11 @@
 #error "This file requires ARC support."
 #endif
 
-@interface TabContextMenuHelper () <BrowserObserving, TabContextMenuProvider> {
-  // Observe BrowserObserver to prevent any access to Browser before its
-  // destroyed.
-  std::unique_ptr<BrowserObserverBridge> _browserObserver;
-}
+@interface TabContextMenuHelper ()
 
-@property(nonatomic, assign) Browser* browser;
 @property(nonatomic, weak) id<TabContextMenuDelegate> contextMenuDelegate;
 @property(nonatomic, assign) BOOL incognito;
+
 @end
 
 @implementation TabContextMenuHelper
@@ -49,7 +44,6 @@
   self = [super init];
   if (self) {
     _browser = browser;
-    _browserObserver = std::make_unique<BrowserObserverBridge>(_browser, self);
     _contextMenuDelegate = tabContextMenuDelegate;
     _incognito = _browser->GetBrowserState()->IsOffTheRecord();
   }
@@ -57,10 +51,7 @@
 }
 
 - (void)dealloc {
-  if (self.browser) {
-    _browserObserver.reset();
-    self.browser = nullptr;
-  }
+  self.browser = nullptr;
 }
 
 - (UIContextMenuConfiguration*)
@@ -182,14 +173,6 @@
                                       pinned:pinned];
                 }]];
   return menuElements;
-}
-
-#pragma mark - BrowserObserving
-
-- (void)browserDestroyed:(Browser*)browser {
-  DCHECK_EQ(browser, self.browser);
-  _browserObserver.reset();
-  self.browser = nullptr;
 }
 
 #pragma mark - Private
