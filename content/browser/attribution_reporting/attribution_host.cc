@@ -145,10 +145,8 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   // processed after a navigation commit in the initiator RFH, so reading the
   // origin off is safe at the start of the navigation.
   absl::optional<SuitableOrigin> initiator_root_frame_origin =
-      SuitableOrigin::Create(initiator_frame_host->frame_tree_node()
-                                 ->frame_tree()
-                                 .root()
-                                 ->current_origin());
+      SuitableOrigin::Create(initiator_frame_host->GetOutermostMainFrame()
+                                 ->GetLastCommittedOrigin());
 
   if (!initiator_root_frame_origin) {
     return;
