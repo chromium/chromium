@@ -52,6 +52,15 @@ SkColor GetUserWallpaperColor(bool use_dark_color) {
   if (!wallpaper_controller)
     return kInvalidWallpaperColor;
 
+  const auto& calculated_colors = wallpaper_controller->calculated_colors();
+  if (!calculated_colors) {
+    return kInvalidWallpaperColor;
+  }
+
+  if (features::IsJellyEnabled()) {
+    return calculated_colors->celebi_color;
+  }
+
   if (features::IsDarkLightModeKMeansColorEnabled()) {
     // If feature is enabled, always use k mean color. Mixing with black/white
     // will handle adapting it to dark or light mode.
@@ -107,6 +116,11 @@ SkColor ColorUtil::GetBackgroundThemedColor(SkColor default_color,
     DVLOG(1) << "Failed to get wallpaper color";
     return default_color;
   }
+
+  if (features::IsJellyEnabled()) {
+    return wallpaper_color;
+  }
+
   const SkColor clamped_wallpaper_color =
       ClampLightness(use_dark_color, wallpaper_color);
 
