@@ -8,6 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -24,6 +26,7 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
     : public views::BubbleDialogDelegateView,
       public views::WidgetObserver,
+      public aura::WindowObserver,
       public display::DisplayObserver {
  public:
   METADATA_HEADER(MultitaskMenu);
@@ -55,6 +58,13 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* root_window) override;
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
+
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
@@ -67,11 +77,12 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
  private:
   raw_ptr<views::Widget> bubble_widget_ = nullptr;
 
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      bubble_widget_observer_{this};
-
   raw_ptr<MultitaskMenuView> multitask_menu_view_ = nullptr;
 
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      bubble_widget_observer_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      parent_window_observation_{this};
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 };
 

@@ -31,13 +31,12 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
                              views::Widget* parent_widget,
                              base::OnceClosure close_callback) {
   DCHECK(parent_widget);
-  aura::Window* parent_window = parent_widget->GetNativeWindow();
 
   set_corner_radius(kMultitaskMenuBubbleCornerRadius);
   set_close_on_deactivate(true);
   set_internal_name("MultitaskMenuBubbleWidget");
   set_margins(gfx::Insets());
-  set_parent_window(parent_window);
+  set_parent_window(parent_widget->GetNativeWindow());
   SetAnchorView(anchor);
   SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -65,12 +64,13 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
   // flag on, or in tablet mode when a window is floated. The multitask menu
   // float button is shown whenever a window can be floated, so linking with the
   // model does not work here.
-  if (chromeos::wm::CanFloatWindow(parent_window))
+  if (chromeos::wm::CanFloatWindow(parent_window())) {
     buttons |= MultitaskMenuView::kFloat;
+  }
 
   // Must be initialized after setting bounds.
   multitask_menu_view_ = AddChildView(std::make_unique<MultitaskMenuView>(
-      parent_window,
+      parent_window(),
       base::BindRepeating(&MultitaskMenu::HideBubble, base::Unretained(this)),
       buttons));
 
@@ -95,9 +95,7 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
   display_observer_.emplace(this);
 }
 
-MultitaskMenu::~MultitaskMenu() {
-  HideBubble();
-}
+MultitaskMenu::~MultitaskMenu() = default;
 
 bool MultitaskMenu::IsBubbleShown() const {
   return bubble_widget_ && !bubble_widget_->IsClosed();
@@ -128,19 +126,36 @@ void MultitaskMenu::ShowBubble() {
 
   bubble_widget_->Show();
   bubble_widget_observer_.Observe(bubble_widget_.get());
+  parent_window_observation_.Observe(parent_window());
 }
 
 void MultitaskMenu::HideBubble() {
-  // This calls into `OnWidgetDestroying()` so `bubble_widget_` should have been
-  // reset to nullptr.
+  // `CloseWithReason` calls into `OnWidgetDestroying()` asynchronously so
+  // `bubble_widget_` will be reset to nullptr safely. And since
+  // `bubble_widget_` owns `MultitaskMenu`, no house keeping is needed at
+  // destructor.
   if (bubble_widget_ && !bubble_widget_->IsClosed()) {
-    bubble_widget_->CloseNow();
+    bubble_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   }
+}
+
+void MultitaskMenu::OnWindowDestroying(aura::Window* root_window) {
+  DCHECK(parent_window_observation_.IsObservingSource(root_window));
+  HideBubble();
+}
+
+void MultitaskMenu::OnWindowBoundsChanged(aura::Window* window,
+                                          const gfx::Rect& old_bounds,
+                                          const gfx::Rect& new_bounds,
+                                          ui::PropertyChangeReason reason) {
+  DCHECK(parent_window_observation_.IsObservingSource(window));
+  HideBubble();
 }
 
 void MultitaskMenu::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(bubble_widget_, widget);
   bubble_widget_observer_.Reset();
+  parent_window_observation_.Reset();
   bubble_widget_ = nullptr;
 }
 

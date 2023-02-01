@@ -863,7 +863,7 @@ TEST_F(MultitaskMenuTest, MultitaskMenuClosesOnTabletMode) {
   ASSERT_TRUE(multitask_menu()->GetWidget());
 
   ash::TabletMode::Get()->SetEnabledForTest(true);
-  EXPECT_FALSE(multitask_menu());
+  EXPECT_FALSE(multitask_menu()->IsBubbleShown());
 }
 
 // Verifies that long touch on the size button shows the multitask menu.
