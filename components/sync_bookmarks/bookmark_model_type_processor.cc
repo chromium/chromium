@@ -343,8 +343,18 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
   sync_pb::BookmarkModelMetadata model_metadata;
   model_metadata.ParseFromString(metadata_str);
 
-  if (model_metadata.last_initial_merge_remote_updates_exceeded_limit() &&
-      base::FeatureList::IsEnabled(syncer::kSyncEnforceBookmarksCountLimit)) {
+  if (pending_clear_metadata_) {
+    pending_clear_metadata_ = false;
+    // Schedule save empty metadata, if not already empty.
+    if (!metadata_str.empty()) {
+      LogClearMetadataWhileStoppedHistogram(syncer::BOOKMARKS,
+                                            /*is_delayed_call=*/true);
+      schedule_save_closure_.Run();
+    }
+  } else if (model_metadata
+                 .last_initial_merge_remote_updates_exceeded_limit() &&
+             base::FeatureList::IsEnabled(
+                 syncer::kSyncEnforceBookmarksCountLimit)) {
     // Report error if remote updates fetched last time during initial merge
     // exceeded limit. Note that here we are only setting
     // |last_initial_merge_remote_updates_exceeded_limit_|, the actual error
@@ -465,13 +475,10 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
 
   if (bookmark_tracker_ &&
       bookmark_tracker_->model_type_state().cache_guid() != cache_guid_) {
-    // TODO(crbug.com/820049): Add basic unit testing  consider using
-    // StopTrackingMetadata().
+    // TODO(crbug.com/820049): Add basic unit testing.
     // In case of a cache guid mismatch, treat it as a corrupted metadata and
     // start clean.
-    bookmark_model_->RemoveObserver(bookmark_model_observer_.get());
-    bookmark_model_observer_.reset();
-    bookmark_tracker_.reset();
+    StopTrackingMetadataAndResetTracker();
   }
 
   auto activation_context =
@@ -514,10 +521,7 @@ void BookmarkModelTypeProcessor::OnSyncStopping(
       // Stop observing local changes. We'll start observing local changes again
       // when Sync is (re)started in StartTrackingMetadata().
       if (bookmark_tracker_) {
-        DCHECK(bookmark_model_observer_);
-        bookmark_model_->RemoveObserver(bookmark_model_observer_.get());
-        bookmark_model_observer_.reset();
-        bookmark_tracker_.reset();
+        StopTrackingMetadataAndResetTracker();
       }
       last_initial_merge_remote_updates_exceeded_limit_ = false;
       schedule_save_closure_.Run();
@@ -765,6 +769,38 @@ void BookmarkModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
 void BookmarkModelTypeProcessor::SetMaxBookmarksTillSyncEnabledForTest(
     size_t limit) {
   max_bookmarks_till_sync_enabled_ = limit;
+}
+
+void BookmarkModelTypeProcessor::ClearMetadataWhileStopped() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!bookmark_model_) {
+    // Defer the clearing until ModelReadyToSync() is invoked.
+    pending_clear_metadata_ = true;
+    return;
+  }
+  if (bookmark_tracker_) {
+    LogClearMetadataWhileStoppedHistogram(syncer::BOOKMARKS,
+                                          /*is_delayed_call=*/false);
+    StopTrackingMetadataAndResetTracker();
+    // Schedule save empty metadata.
+    schedule_save_closure_.Run();
+  } else if (last_initial_merge_remote_updates_exceeded_limit_) {
+    LogClearMetadataWhileStoppedHistogram(syncer::BOOKMARKS,
+                                          /*is_delayed_call=*/false);
+    last_initial_merge_remote_updates_exceeded_limit_ = false;
+    // Schedule save empty metadata.
+    schedule_save_closure_.Run();
+  }
+}
+
+void BookmarkModelTypeProcessor::StopTrackingMetadataAndResetTracker() {
+  // DisconnectSync() should have been called by the caller.
+  DCHECK(!worker_);
+  DCHECK(bookmark_tracker_);
+  DCHECK(bookmark_model_observer_);
+  bookmark_model_->RemoveObserver(bookmark_model_observer_.get());
+  bookmark_model_observer_.reset();
+  bookmark_tracker_.reset();
 }
 
 }  // namespace sync_bookmarks

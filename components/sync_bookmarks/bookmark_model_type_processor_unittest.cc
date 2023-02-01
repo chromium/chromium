@@ -1502,6 +1502,115 @@ TEST_F(BookmarkModelTypeProcessorTest,
       model_metadata.last_initial_merge_remote_updates_exceeded_limit());
 }
 
+TEST_F(BookmarkModelTypeProcessorTest, ShouldClearMetadataWhileStopped) {
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  processor()->OnSyncStopping(syncer::KEEP_METADATA);
+  ASSERT_THAT(processor()->GetTrackerForTest(), NotNull());
+
+  base::HistogramTester histogram_tester;
+
+  // Expect saving empty metadata upon call to ClearMetadataWhileStopped().
+  EXPECT_CALL(*schedule_save_closure(), Run);
+
+  processor()->ClearMetadataWhileStopped();
+  // Should clear the tracker even if already stopped.
+  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  // Expect an entry to the histogram.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 1);
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldClearMetadataWhileStoppedUponModelReadyToSync) {
+  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+
+  base::HistogramTester histogram_tester;
+
+  // Expect no call to save metadata before ModelReadyToSync().
+  EXPECT_CALL(*schedule_save_closure(), Run).Times(0);
+  // Call ClearMetadataWhileStopped() before ModelReadyToSync(). This should set
+  // the flag for a pending clearing of metadata.
+  processor()->ClearMetadataWhileStopped();
+  // Nothing recorded to the histograms yet.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.DelayedClear", 0);
+
+  sync_pb::BookmarkModelMetadata model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model());
+  // Expect saving empty metadata from ModelReadyToSync() while processing the
+  // pending clearing of metadata.
+  EXPECT_CALL(*schedule_save_closure(), Run);
+  // ModelReadyToSync() should take into account the pending metadata clearing
+  // flag and clear the metadata.
+  processor()->ModelReadyToSync(model_metadata.SerializeAsString(),
+                                schedule_save_closure()->Get(),
+                                bookmark_model());
+  // Tracker should have not been set.
+  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  // Expect recording of the delayed clear.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.DelayedClear", 1);
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldNotClearMetadataWhileStoppedIfPreviouslyStoppedWithClearMetadata) {
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
+  processor()->OnSyncStopping(syncer::CLEAR_METADATA);
+  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+
+  // Expect no call to save metadata upon ClearMetadataWhileStopped().
+  EXPECT_CALL(*schedule_save_closure(), Run).Times(0);
+
+  base::HistogramTester histogram_tester;
+
+  processor()->ClearMetadataWhileStopped();
+  // Expect no entry to the histogram.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldNotClearMetadataWhileStoppedWithoutMetadataInitially) {
+  SimulateModelReadyToSyncWithoutLocalMetadata();
+  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+
+  base::HistogramTester histogram_tester;
+
+  // Call ClearMetadataWhileStopped() without a prior call to OnSyncStopping().
+  processor()->ClearMetadataWhileStopped();
+
+  // Expect no call to save metadata upon ClearMetadataWhileStopped().
+  EXPECT_CALL(*schedule_save_closure(), Run).Times(0);
+  // Expect no entry to the histogram.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldNotClearMetadataWhileStoppedUponModelReadyToSyncWithoutMetadata) {
+  base::HistogramTester histogram_tester;
+
+  // Expect no call to save metadata.
+  EXPECT_CALL(*schedule_save_closure(), Run).Times(0);
+  // Call ClearMetadataWhileStopped() before ModelReadyToSync(). This should set
+  // the flag for a pending clearing of metadata.
+  processor()->ClearMetadataWhileStopped();
+
+  SimulateModelReadyToSyncWithoutLocalMetadata();
+  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+
+  // Nothing recorded to the histograms.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.DelayedClear", 0);
+}
+
 }  // namespace
 
 }  // namespace sync_bookmarks
