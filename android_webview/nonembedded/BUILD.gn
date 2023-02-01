@@ -111,6 +111,7 @@ android_library("services_java") {
     "java/src/org/chromium/android_webview/services/ComponentUpdaterSafeModeUtils.java",
     "java/src/org/chromium/android_webview/services/ComponentsProviderPathUtil.java",
     "java/src/org/chromium/android_webview/services/ComponentsProviderService.java",
+    "java/src/org/chromium/android_webview/services/CrashLoggingUtils.java",
     "java/src/org/chromium/android_webview/services/CrashReceiverService.java",
     "java/src/org/chromium/android_webview/services/DeveloperModeContentProvider.java",
     "java/src/org/chromium/android_webview/services/DeveloperUiService.java",

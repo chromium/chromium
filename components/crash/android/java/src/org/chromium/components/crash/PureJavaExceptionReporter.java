@@ -10,6 +10,7 @@ import android.util.Log;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PiiElider;
@@ -22,6 +23,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
@@ -64,6 +67,7 @@ public abstract class PureJavaExceptionReporter
     private static final String FORM_DATA_MESSAGE = "Content-Disposition: form-data; name=\"";
 
     private boolean mUpload;
+    protected Map<String, String> mReportContent;
     protected File mMinidumpFile;
     private FileOutputStream mMinidumpFileStream;
     private final String mLocalId = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
@@ -79,8 +83,8 @@ public abstract class PureJavaExceptionReporter
     public void createAndUploadReport(Throwable javaException) {
         // It is OK to do IO in main thread when we know there is a crash happens.
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            createReport(javaException);
-            flushToFile();
+            createReportContent(javaException);
+            createReportFile();
             uploadReport();
         }
     }
@@ -100,7 +104,49 @@ public abstract class PureJavaExceptionReporter
     }
 
     @SuppressLint("WrongConstant")
-    private void createReport(Throwable javaException) {
+    private void createReportContent(Throwable javaException) {
+        String processName = ContextUtils.getProcessName();
+        if (processName == null || !processName.contains(":")) {
+            processName = "browser";
+        }
+
+        BuildInfo buildInfo = BuildInfo.getInstance();
+        mReportContent = new HashMap<>();
+        mReportContent.put(PRODUCT, getProductName());
+        mReportContent.put(PROCESS_TYPE, processName);
+        mReportContent.put(DEVICE, Build.DEVICE);
+        mReportContent.put(VERSION, VersionInfo.getProductVersion());
+        mReportContent.put(CHANNEL, getChannel());
+        mReportContent.put(ANDROID_BUILD_ID, Build.ID);
+        mReportContent.put(MODEL, Build.MODEL);
+        mReportContent.put(BRAND, Build.BRAND);
+        mReportContent.put(BOARD, Build.BOARD);
+        mReportContent.put(ANDROID_BUILD_FP, buildInfo.androidBuildFingerprint);
+        // ANDROID_SDK_INT and SDK are expected to have the same value.
+        // ANDROID_SDK_INT is needed for compatibility with the C++ crashpad implementation.
+        // SDK should be maintained for potential custom monitoring.
+        mReportContent.put(SDK, String.valueOf(Build.VERSION.SDK_INT));
+        mReportContent.put(ANDROID_SDK_INT, String.valueOf(Build.VERSION.SDK_INT));
+        mReportContent.put(GMS_CORE_VERSION, buildInfo.gmsVersionCode);
+        mReportContent.put(INSTALLER_PACKAGE_NAME, buildInfo.installerPackageName);
+        mReportContent.put(ABI_NAME, buildInfo.abiString);
+        mReportContent.put(EXCEPTION_INFO,
+                PiiElider.sanitizeStacktrace(Log.getStackTraceString(javaException)));
+        mReportContent.put(EARLY_JAVA_EXCEPTION, "true");
+        mReportContent.put(PACKAGE,
+                String.format("%s v%s (%s)", BuildInfo.getFirebaseAppId(), buildInfo.versionCode,
+                        buildInfo.versionName));
+        mReportContent.put(CUSTOM_THEMES, buildInfo.customThemes);
+        mReportContent.put(RESOURCES_VERSION, buildInfo.resourcesVersion);
+
+        AtomicReferenceArray<String> values = CrashKeys.getInstance().getValues();
+        for (int i = 0; i < values.length(); i++) {
+            String value = values.get(i);
+            if (value != null) mReportContent.put(CrashKeys.getKey(i), value);
+        }
+    }
+
+    protected void createReportFile() {
         try {
             String minidumpFileName = getMinidumpPrefix() + mLocalId + FILE_SUFFIX;
             File minidumpDir = new File(getCrashFilesDirectory(), CrashFileManager.CRASH_DUMP_DIR);
@@ -119,47 +165,9 @@ public abstract class PureJavaExceptionReporter
             mMinidumpFileStream = null;
             return;
         }
-
-        String processName = ContextUtils.getProcessName();
-        if (processName == null || !processName.contains(":")) {
-            processName = "browser";
-        }
-
-        BuildInfo buildInfo = BuildInfo.getInstance();
-        addPairedString(PRODUCT, getProductName());
-        addPairedString(PROCESS_TYPE, processName);
-        addPairedString(DEVICE, Build.DEVICE);
-        addPairedString(VERSION, VersionInfo.getProductVersion());
-        addPairedString(CHANNEL, getChannel());
-        addPairedString(ANDROID_BUILD_ID, Build.ID);
-        addPairedString(MODEL, Build.MODEL);
-        addPairedString(BRAND, Build.BRAND);
-        addPairedString(BOARD, Build.BOARD);
-        addPairedString(ANDROID_BUILD_FP, buildInfo.androidBuildFingerprint);
-        // ANDROID_SDK_INT and SDK are expected to have the same value.
-        // ANDROID_SDK_INT is needed for compatibility with the C++ crashpad implementation.
-        // SDK should be maintained for potential custom monitoring.
-        addPairedString(SDK, String.valueOf(Build.VERSION.SDK_INT));
-        addPairedString(ANDROID_SDK_INT, String.valueOf(Build.VERSION.SDK_INT));
-        addPairedString(GMS_CORE_VERSION, buildInfo.gmsVersionCode);
-        addPairedString(INSTALLER_PACKAGE_NAME, buildInfo.installerPackageName);
-        addPairedString(ABI_NAME, buildInfo.abiString);
-        addPairedString(EXCEPTION_INFO,
-                PiiElider.sanitizeStacktrace(Log.getStackTraceString(javaException)));
-        addPairedString(EARLY_JAVA_EXCEPTION, "true");
-        addPairedString(PACKAGE,
-                String.format("%s v%s (%s)", BuildInfo.getFirebaseAppId(), buildInfo.versionCode,
-                        buildInfo.versionName));
-        addPairedString(CUSTOM_THEMES, buildInfo.customThemes);
-        addPairedString(RESOURCES_VERSION, buildInfo.resourcesVersion);
-
-        AtomicReferenceArray<String> values = CrashKeys.getInstance().getValues();
-        for (int i = 0; i < values.length(); i++) {
-            String value = values.get(i);
-            if (value != null) addPairedString(CrashKeys.getKey(i), value);
-        }
-
+        CollectionUtil.forEach(mReportContent, e -> { addPairedString(e.getKey(), e.getValue()); });
         addString(mBoundary);
+        flushToFile();
     }
 
     private void flushToFile() {

@@ -5,6 +5,7 @@ package org.chromium.android_webview.nonembedded;
 
 import org.chromium.android_webview.common.crash.CrashUploadUtil;
 import org.chromium.android_webview.common.crash.SystemWideCrashDirectories;
+import org.chromium.android_webview.services.CrashLoggingUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.components.crash.PureJavaExceptionReporter;
 import org.chromium.components.minidump_uploader.CrashFileManager;
@@ -19,6 +20,16 @@ import java.io.File;
 
     public AwPureJavaExceptionReporter() {
         super(/*attachLogcat=*/false);
+    }
+
+    @Override
+    protected void createReportFile() {
+        super.createReportFile();
+        if (mMinidumpFile != null) {
+            File jsonLogFile =
+                    SystemWideCrashDirectories.createCrashJsonLogFile(mMinidumpFile.getName());
+            CrashLoggingUtils.writeCrashInfoToLogFile(jsonLogFile, mMinidumpFile, mReportContent);
+        }
     }
 
     @Override
