@@ -2052,11 +2052,9 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
   }
 
   pervasive_payload_requested_ |= pervasive_payload_requested;
-  if (bytes_fetched > 0) {
-    total_bytes_fetched_ += bytes_fetched;
-    if (pervasive_payload_requested) {
-      pervasive_bytes_fetched_ += bytes_fetched;
-    }
+  total_bytes_fetched_ += bytes_fetched;
+  if (pervasive_payload_requested) {
+    pervasive_bytes_fetched_ += bytes_fetched;
   }
 
   context_->UpdateSubresourceLoadMetrics(

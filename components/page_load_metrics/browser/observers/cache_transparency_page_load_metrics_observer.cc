@@ -41,20 +41,8 @@ CacheTransparencyPageLoadMetricsObserver::OnPrerenderStart(
   return STOP_OBSERVING;
 }
 
-void CacheTransparencyPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
+void CacheTransparencyPageLoadMetricsObserver::OnLoadEventStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if ((IsCacheTransparencyEnabled() || IsPervasivePayloadsEnabled()) &&
-      page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_contentful_paint, GetDelegate())) {
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramCacheTransparencyFirstContentfulPaint,
-        timing.paint_timing->first_contentful_paint.value());
-  }
-}
-
-void CacheTransparencyPageLoadMetricsObserver::OnLoadingBehaviorObserved(
-    content::RenderFrameHost* rfh,
-    int behavior_flag) {
   if (logged_ukm_event_) {
     return;
   }
@@ -68,6 +56,17 @@ void CacheTransparencyPageLoadMetricsObserver::OnLoadingBehaviorObserved(
         .Record(ukm::UkmRecorder::Get());
   }
   logged_ukm_event_ = true;
+}
+
+void CacheTransparencyPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if ((IsCacheTransparencyEnabled() || IsPervasivePayloadsEnabled()) &&
+      page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_contentful_paint, GetDelegate())) {
+    PAGE_LOAD_HISTOGRAM(
+        internal::kHistogramCacheTransparencyFirstContentfulPaint,
+        timing.paint_timing->first_contentful_paint.value());
+  }
 }
 
 void CacheTransparencyPageLoadMetricsObserver::OnComplete(
@@ -89,13 +88,13 @@ CacheTransparencyPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 }
 
 void CacheTransparencyPageLoadMetricsObserver::RecordTimingHistograms() {
-  DCHECK(IsCacheTransparencyEnabled() || IsPervasivePayloadsEnabled());
   const page_load_metrics::ContentfulPaintTimingInfo&
       all_frames_largest_contentful_paint =
           GetDelegate()
               .GetLargestContentfulPaintHandler()
               .MergeMainFrameAndSubframes();
   if (all_frames_largest_contentful_paint.ContainsValidTime() &&
+      (IsCacheTransparencyEnabled() || IsPervasivePayloadsEnabled()) &&
       WasStartedInForegroundOptionalEventInForeground(
           all_frames_largest_contentful_paint.Time(), GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(
