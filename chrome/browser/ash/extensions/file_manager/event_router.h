@@ -194,6 +194,9 @@ class EventRouter
                     guest_os::GuestOsMountProvider* provider) override;
   void OnUnregistered(guest_os::GuestOsMountProviderRegistry::Id id) override;
 
+  // Broadcast to Files app frontend that file tasks might have changed.
+  void BroadcastOnAppsUpdatedEvent();
+
   // Use this method for unit tests to bypass checking if there are any SWA
   // windows.
   void ForceBroadcastingForTesting(bool enabled) {

@@ -482,15 +482,16 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
 // an app is installed or uninstalled.
 class RecalculateTasksObserver : public apps::AppRegistryCache::Observer {
  public:
-  explicit RecalculateTasksObserver(Profile* profile) : profile_(profile) {}
+  explicit RecalculateTasksObserver(base::WeakPtr<EventRouter> event_router)
+      : event_router_(event_router) {}
 
   // Tell Files app frontend that file tasks might have changed.
   void OnAppUpdate(const apps::AppUpdate& update) override {
     // TODO(petermarshall): Filter update more carefully.
-    BroadcastEvent(profile_,
-                   extensions::events::FILE_MANAGER_PRIVATE_ON_APPS_UPDATED,
-                   file_manager_private::OnAppsUpdated::kEventName,
-                   file_manager_private::OnAppsUpdated::Create());
+    if (!event_router_) {
+      return;
+    }
+    event_router_->BroadcastOnAppsUpdatedEvent();
   }
 
   void OnAppRegistryCacheWillBeDestroyed(
@@ -499,7 +500,7 @@ class RecalculateTasksObserver : public apps::AppRegistryCache::Observer {
   }
 
  private:
-  Profile* profile_;
+  base::WeakPtr<EventRouter> event_router_;
 };
 
 // Records mounted File System Provider type if known otherwise UNKNOWN.
@@ -585,14 +586,14 @@ EventRouter::EventRouter(Profile* profile)
           std::make_unique<DriveFsEventRouterImpl>(notification_manager_.get(),
                                                    profile,
                                                    &file_watchers_)),
-      recalculate_tasks_observer_(
-          std::make_unique<RecalculateTasksObserver>(profile)),
       dispatch_directory_change_event_impl_(
           base::BindRepeating(&EventRouter::DispatchDirectoryChangeEventImpl,
                               base::Unretained(this))) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Notification manager can call into Drive FS for dialog handling.
   notification_manager_->SetDriveFSEventRouter(drivefs_event_router_.get());
+  recalculate_tasks_observer_ =
+      std::make_unique<RecalculateTasksObserver>(weak_factory_.GetWeakPtr());
   ObserveEvents();
 }
 
@@ -714,18 +715,32 @@ void EventRouter::ObserveEvents() {
   extensions::ExtensionRegistry::Get(profile_)->AddObserver(this);
 
   pref_change_registrar_->Init(profile_->GetPrefs());
-  auto callback = base::BindRepeating(&EventRouter::OnFileManagerPrefsChanged,
-                                      weak_factory_.GetWeakPtr());
+
+  auto file_manager_prefs_callback = base::BindRepeating(
+      &EventRouter::OnFileManagerPrefsChanged, weak_factory_.GetWeakPtr());
   pref_change_registrar_->Add(drive::prefs::kDisableDriveOverCellular,
-                              callback);
-  pref_change_registrar_->Add(drive::prefs::kDisableDrive, callback);
-  pref_change_registrar_->Add(ash::prefs::kFilesAppTrashEnabled, callback);
-  pref_change_registrar_->Add(prefs::kSearchSuggestEnabled, callback);
-  pref_change_registrar_->Add(prefs::kUse24HourClock, callback);
-  pref_change_registrar_->Add(arc::prefs::kArcEnabled, callback);
+                              file_manager_prefs_callback);
+  pref_change_registrar_->Add(drive::prefs::kDisableDrive,
+                              file_manager_prefs_callback);
+  pref_change_registrar_->Add(ash::prefs::kFilesAppTrashEnabled,
+                              file_manager_prefs_callback);
+  pref_change_registrar_->Add(prefs::kSearchSuggestEnabled,
+                              file_manager_prefs_callback);
+  pref_change_registrar_->Add(prefs::kUse24HourClock,
+                              file_manager_prefs_callback);
+  pref_change_registrar_->Add(arc::prefs::kArcEnabled,
+                              file_manager_prefs_callback);
   pref_change_registrar_->Add(arc::prefs::kArcHasAccessToRemovableMedia,
-                              callback);
-  pref_change_registrar_->Add(ash::prefs::kFilesAppFolderShortcuts, callback);
+                              file_manager_prefs_callback);
+  pref_change_registrar_->Add(ash::prefs::kFilesAppFolderShortcuts,
+                              file_manager_prefs_callback);
+
+  auto on_apps_update_callback = base::BindRepeating(
+      &EventRouter::BroadcastOnAppsUpdatedEvent, weak_factory_.GetWeakPtr());
+  pref_change_registrar_->Add(prefs::kDefaultTasksByMimeType,
+                              on_apps_update_callback);
+  pref_change_registrar_->Add(prefs::kDefaultTasksBySuffix,
+                              on_apps_update_callback);
 
   ash::system::TimezoneSettings::GetInstance()->AddObserver(this);
 
@@ -1378,6 +1393,16 @@ void EventRouter::OnRegistered(guest_os::GuestOsMountProviderRegistry::Id id,
 void EventRouter::OnUnregistered(
     guest_os::GuestOsMountProviderRegistry::Id id) {
   OnMountableGuestsChanged();
+}
+
+void EventRouter::BroadcastOnAppsUpdatedEvent() {
+  DCHECK(profile_);
+  DCHECK(extensions::EventRouter::Get(profile_));
+
+  BroadcastEvent(profile_,
+                 extensions::events::FILE_MANAGER_PRIVATE_ON_APPS_UPDATED,
+                 file_manager_private::OnAppsUpdated::kEventName,
+                 file_manager_private::OnAppsUpdated::Create());
 }
 
 void EventRouter::OnMountableGuestsChanged() {
