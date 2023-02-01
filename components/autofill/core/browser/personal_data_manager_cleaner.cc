@@ -260,14 +260,18 @@ void PersonalDataManagerCleaner::DedupeProfiles(
   // other profiles, so the loop can be stopped when we reach those. However
   // they need to be in the vector because an unverified profile trying to merge
   // into a similar verified profile will be discarded.
-  base::Time comparison_time = AutofillClock::Now();
-  std::sort(existing_profiles->begin(), existing_profiles->end(),
-            [comparison_time](const std::unique_ptr<AutofillProfile>& a,
-                              const std::unique_ptr<AutofillProfile>& b) {
-              if (a->IsVerified() != b->IsVerified())
-                return !a->IsVerified();
-              return a->HasGreaterRankingThan(b.get(), comparison_time);
-            });
+  // TODO(crbug.com/1411114): Remove code duplication for sorting profiles.
+  const base::Time comparison_time = AutofillClock::Now();
+  if (existing_profiles->size() > 1) {
+    std::sort(existing_profiles->begin(), existing_profiles->end(),
+              [comparison_time](const std::unique_ptr<AutofillProfile>& a,
+                                const std::unique_ptr<AutofillProfile>& b) {
+                if (a->IsVerified() != b->IsVerified()) {
+                  return !a->IsVerified();
+                }
+                return a->HasGreaterRankingThan(b.get(), comparison_time);
+              });
+  }
 
   AutofillProfileComparator comparator(personal_data_manager_->app_locale());
 

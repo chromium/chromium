@@ -31,10 +31,12 @@ bool IBANManager::OnGetSingleFieldSuggestions(
     if (!ibans.empty()) {
       // Rank the IBANs by ranking score (see AutoFillDataModel for details).
       base::Time comparison_time = AutofillClock::Now();
-      base::ranges::sort(
-          ibans, [comparison_time](const IBAN* iban0, const IBAN* iban1) {
-            return iban0->HasGreaterRankingThan(iban1, comparison_time);
-          });
+      if (ibans.size() > 1) {
+        base::ranges::sort(
+            ibans, [comparison_time](const IBAN* iban0, const IBAN* iban1) {
+              return iban0->HasGreaterRankingThan(iban1, comparison_time);
+            });
+      }
       SendIBANSuggestions(
           ibans, QueryHandler(field.global_id(), autoselect_first_suggestion,
                               field.value, handler));
