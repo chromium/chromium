@@ -5506,6 +5506,51 @@ TEST_F(SpdyNetworkTransactionTest, GracefulGoaway) {
   helper.VerifyDataConsumed();
 }
 
+// Verify that an active stream with ID not exceeding the Last-Stream-ID field
+// of the incoming GOAWAY frame can receive data both before and after the
+// GOAWAY frame.
+TEST_F(SpdyNetworkTransactionTest, ActiveStreamWhileGoingAway) {
+  spdy::SpdySerializedFrame req(
+      spdy_util_.ConstructSpdyGet(nullptr, 0, 1, LOWEST));
+  MockWrite writes[] = {CreateMockWrite(req, 0)};
+
+  spdy::SpdySerializedFrame resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+  spdy::SpdySerializedFrame goaway(spdy_util_.ConstructSpdyGoAway(
+      /* last_good_stream_id = */ 1, spdy::ERROR_CODE_NO_ERROR,
+      "Graceful shutdown."));
+  spdy::SpdySerializedFrame body1(
+      spdy_util_.ConstructSpdyDataFrame(1, "foo", false));
+  spdy::SpdySerializedFrame body2(
+      spdy_util_.ConstructSpdyDataFrame(1, "bar", true));
+  MockRead reads[] = {CreateMockRead(resp, 1), CreateMockRead(body1, 2),
+                      CreateMockRead(goaway, 3), CreateMockRead(body2, 4),
+                      MockRead(ASYNC, 0, 5)};
+
+  SequencedSocketData data(reads, writes);
+  NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
+  helper.AddData(&data);
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, helper.session());
+  TestCompletionCallback callback;
+  int rv = trans.Start(&request_, callback.callback(), log_);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+
+  base::RunLoop().RunUntilIdle();
+  helper.VerifyDataConsumed();
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  EXPECT_TRUE(response->was_fetched_via_spdy);
+
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
+
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+  EXPECT_EQ("foobar", response_data);
+}
+
 TEST_F(SpdyNetworkTransactionTest, CloseWithActiveStream) {
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyGet(nullptr, 0, 1, LOWEST));
