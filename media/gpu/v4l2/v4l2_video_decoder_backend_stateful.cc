@@ -539,6 +539,11 @@ bool V4L2StatefulVideoDecoderBackend::InitiateFlush(
   client_->InitiateFlush();
   flush_cb_ = std::move(flush_cb);
 
+  // The stream could be stopped in the middle of the frame when the flush is
+  // being triggered. This makes sure there are no leftovers after the flush
+  // finishes.
+  frame_splitter_->Reset();
+
   // Special case: if we haven't received any decoding request, we could
   // complete the flush immediately.
   if (!has_pending_requests_)
