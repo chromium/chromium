@@ -648,14 +648,12 @@ export class EmojiPicker extends PolymerElement {
   updateCurrentGroupTabs() {
     const nextTab =
         this.emojiGroupTabs.find((tab) => tab.pagination === this.pagination);
-    if (this.category === CategoryEnum.GIF) {
-      // GIF group tabs movement isn't affected by scrolling
-      this.groupTabsMoving = false;
-
+    if (this.category === CategoryEnum.GIF && nextTab) {
+      this.setGifGroupElements(nextTab.groupId);
     } else {
-      this.scrollToGroup(nextTab?.groupId);
       this.groupTabsMoving = true;
     }
+    this.scrollToGroup(nextTab?.groupId);
   }
 
   scrollToGroup(newGroup?: string) {
@@ -1177,6 +1175,10 @@ export class EmojiPicker extends PolymerElement {
 
     this.set('category', newCategory);
     this.set('pagination', 1);
+
+    if (newCategory === CategoryEnum.GIF) {
+      this.set('activeInfiniteGroupId', this.emojiGroupTabs[0]?.groupId);
+    }
 
     if (this.getSearchContainer()?.searchNotEmpty()) {
       this.getSearchContainer()?.setSearchQuery('');

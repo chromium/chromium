@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {deepQuerySelector, waitForCondition, waitWithTimeout} from './emoji_picker_test_util.js';
+import {deepQuerySelector, waitForCondition, isGroupButtonActive, waitWithTimeout} from './emoji_picker_test_util.js';
 import {TestEmojiPickerApiProxyImpl} from './test_emoji_picker_api_proxy.js';
 
 const ACTIVE_CATEGORY_BUTTON = 'category-button-active';
@@ -218,6 +218,34 @@ export function GifTestSuite(category) {
               findInEmojiPicker(historyGroupSelector(category))
                   .shadowRoot.querySelectorAll('.emoji-button');
           assertEquals(1, recentlyUsedEmoji2.length);
+        });
+
+    test(
+        `the first tab of the next pagination should be active when clicking at
+          either chevron.`,
+        async () => {
+          const leftChevron = findInEmojiPicker('#left-chevron');
+          const rightChevron = findInEmojiPicker('#right-chevron');
+          const gifCategoryButton = findInEmojiPicker(
+              'emoji-search', 'emoji-category-button:last-of-type',
+              'cr-icon-button');
+          gifCategoryButton.click();
+          await flush();
+          const firstGifTabInFirstPage =
+              findInEmojiPicker('.pagination text-group-button', 'cr-button');
+          const firstGifTabInSecondPage = findInEmojiPicker(
+              '.pagination + .pagination', 'text-group-button', 'cr-button');
+          rightChevron.click();
+
+          await flush();
+          await waitForCondition(
+              () => !isGroupButtonActive(firstGifTabInFirstPage) &&
+                  isGroupButtonActive(firstGifTabInSecondPage));
+          leftChevron.click();
+          await flush();
+          await waitForCondition(
+              () => !isGroupButtonActive(firstGifTabInSecondPage) &&
+                  isGroupButtonActive(firstGifTabInFirstPage));
         });
   });
 }

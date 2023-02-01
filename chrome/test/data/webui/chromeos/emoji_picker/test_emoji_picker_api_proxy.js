@@ -31,11 +31,16 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
     return new Promise((resolve) => {
       resolve({
         gifCategories: [
-          {name: '#EXCITED'},
-          {name: '#ANGRY'},
-          {name: '#CRY'},
-          {name: '#CHILL OUT'},
-          {name: '#KISS'},
+          {name: '#excited'},
+          {name: '#angry'},
+          {name: '#cry'},
+          {name: '#chill out'},
+          {name: '#kiss'},
+          {name: '#hugs'},
+          {name: '#please'},
+          {name: '#dance'},
+          {name: '#omg'},
+          {name: '#wow'},
         ],
       });
     });
