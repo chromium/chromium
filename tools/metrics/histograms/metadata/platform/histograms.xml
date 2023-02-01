@@ -1934,6 +1934,17 @@ chromium-metrics-reviews@google.com.
   <summary>System uptime when first timeout writing TPM command occurs</summary>
 </histogram>
 
+<histogram name="Platform.Trunks.RecoverableWriteErrorNo" enum="PopularOSErrno"
+    expires_after="2023-08-01">
+  <owner>cylai@google.com</owner>
+  <owner>chingkang@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The write errno recovered after rebinding the TPM driver; recorded only once
+    when trunks notices the write errno is gone after restart.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Trunks.TpmErrorCode" enum="TPMResponseCode"
     expires_after="2023-06-04">
   <owner>yich@google.com</owner>
@@ -1941,6 +1952,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     Each sample is the result code of a TPM command issued through trunks. For
     the error codes, see src/platform2/trunks/tpm_generated.h.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Trunks.TransitionedWriteErrorNo"
+    enum="PopularOSErrno" expires_after="2023-08-01">
+  <owner>cylai@google.com</owner>
+  <owner>chingkang@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The write errno changed after rebinding the TPM driver; recorded only once
+    when trunks notices the write errno has changed after restart.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Trunks.UnrecoverableWriteErrorNo"
+    enum="PopularOSErrno" expires_after="2023-08-01">
+  <owner>cylai@google.com</owner>
+  <owner>chingkang@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The sticky write errno after rebinding the TPM driver; recorded only once
+    when trunks notices the write errno isn't changed after restart.
   </summary>
 </histogram>
 
