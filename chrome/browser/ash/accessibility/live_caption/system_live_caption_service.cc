@@ -16,6 +16,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/views/caption_bubble_model.h"
 #include "components/soda/constants.h"
+#include "media/audio/audio_device_description.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 
 namespace ash {
@@ -94,6 +95,7 @@ void SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged(
     // Need to wait for the recognizer to be ready before starting.
     client_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
         weak_ptr_factory_.GetWeakPtr(), profile_,
+        media::AudioDeviceDescription::kLoopbackInputDeviceId,
         media::mojom::SpeechRecognitionOptions::New(
             media::mojom::SpeechRecognitionMode::kCaption,
             /*enable_formatting=*/false,

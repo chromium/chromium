@@ -13,6 +13,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
+#include "media/audio/audio_device_description.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 
 namespace {
@@ -114,6 +115,7 @@ void SpeechRecognitionPrivateRecognizer::HandleStart(
     speech_recognizer_ =
         std::make_unique<SpeechRecognitionRecognizerClientImpl>(
             GetWeakPtr(), profile,
+            media::AudioDeviceDescription::kDefaultDeviceId,
             media::mojom::SpeechRecognitionOptions::New(
                 media::mojom::SpeechRecognitionMode::kIme,
                 /*enable_formatting=*/false,

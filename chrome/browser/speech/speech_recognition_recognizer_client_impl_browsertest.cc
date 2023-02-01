@@ -143,6 +143,7 @@ class SpeechRecognitionRecognizerClientImplTest : public InProcessBrowserTest {
         .RetiresOnSaturation();
     recognizer_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
         mock_speech_delegate_->GetWeakPtr(), browser()->profile(),
+        media::AudioDeviceDescription::kDefaultDeviceId,
         media::mojom::SpeechRecognitionOptions::New(
             media::mojom::SpeechRecognitionMode::kIme,
             /*enable_formatting=*/false,
