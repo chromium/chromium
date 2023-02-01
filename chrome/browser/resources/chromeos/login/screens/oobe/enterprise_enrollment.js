@@ -179,8 +179,8 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       isMeet_: {
         type: Boolean,
         value() {
-          return loadTimeData.valueExists('flowType') &&
-              (loadTimeData.getString('flowType') == 'meet');
+          return loadTimeData.valueExists('deviceFlowType') &&
+              (loadTimeData.getString('deviceFlowType') == 'meet');
         },
         readOnly: true,
       },

@@ -247,6 +247,11 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
                                     input_method_manager));
   dict->Set("timezoneList", GetTimezoneList());
   dict->Set("demoModeCountryList", DemoSession::GetCountryList());
+
+  // If this switch is set allow to open advanced options and configure device
+  // requisition.
+  dict->Set("isDeviceRequisitionConfigurable",
+            switches::IsDeviceRequisitionConfigurable());
 }
 
 // WelcomeScreenHandler, private: ----------------------------------------------

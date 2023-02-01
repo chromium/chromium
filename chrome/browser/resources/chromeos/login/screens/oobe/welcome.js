@@ -166,6 +166,32 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
        * @private
        */
       chromeVoxHintGiven_: Boolean,
+
+      /**
+       * If it is a meet device.
+       * @private
+       */
+      isMeet_: {
+        type: Boolean,
+        value: function() {
+          return (
+              loadTimeData.valueExists('deviceFlowType') &&
+              loadTimeData.getString('deviceFlowType') == 'meet');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * If device requisition is configurable.
+       * @private
+       */
+      isDeviceRequisitionConfigurable_: {
+        type: Boolean,
+        value: function() {
+          return loadTimeData.getBoolean('isDeviceRequisitionConfigurable');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -833,6 +859,13 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
         (this.voicesChangedListenerMaybeGiveChromeVoxHint_),
         /* useCapture */ false);
     this.voicesChangedListenerMaybeGiveChromeVoxHint_ = null;
+  }
+
+  /**
+   * If it is possible to set up CFM.
+   */
+  hideCFMSetupButton_(isDeviceRequisitionConfigurable, isMeet) {
+    return !isDeviceRequisitionConfigurable && !isMeet;
   }
 }
 

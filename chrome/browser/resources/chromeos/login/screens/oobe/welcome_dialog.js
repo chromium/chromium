@@ -74,8 +74,16 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
         type: Boolean,
         value: function() {
           return (
-              loadTimeData.valueExists('flowType') &&
-              loadTimeData.getString('flowType') == 'meet');
+              loadTimeData.valueExists('deviceFlowType') &&
+              loadTimeData.getString('deviceFlowType') == 'meet');
+        },
+        readOnly: true,
+      },
+
+      isDeviceRequisitionConfigurable_: {
+        type: Boolean,
+        value: function() {
+          return loadTimeData.getBoolean('isDeviceRequisitionConfigurable');
         },
         readOnly: true,
       },
@@ -161,9 +169,16 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
     }));
   }
 
+  /**
+   * @suppress {missingProperties}
+   */
   attached() {
-    this.titleLongTouchDetector_ = new LongTouchDetector(
-        this.$.title, () => void this.onTitleLongTouch_());
+    // Allow opening advanced options only if it is a meet device or device
+    // requisition is configurable.
+    if (this.isMeet_ || this.isDeviceRequisitionConfigurable_) {
+      this.titleLongTouchDetector_ = new LongTouchDetector(
+          this.$.title, () => void this.onTitleLongTouch_());
+    }
     this.$.chromeVoxHint.addEventListener('keydown', (event) => {
       // When the ChromeVox hint dialog is open, allow users to press the
       // space bar to activate ChromeVox. This is intended to help first time

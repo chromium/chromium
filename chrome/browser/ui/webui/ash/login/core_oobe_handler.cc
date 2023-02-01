@@ -127,7 +127,8 @@ void CoreOobeHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   dict->Set("isInTabletMode", TabletMode::Get()->InTabletMode());
   dict->Set("isDemoModeEnabled", DemoSetupController::IsDemoModeAllowed());
   if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
-    dict->Set("flowType", "meet");
+    // The value is used to show a different UI for this type of the devices.
+    dict->Set("deviceFlowType", "meet");
   }
 }
 
