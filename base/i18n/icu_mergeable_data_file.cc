@@ -34,7 +34,7 @@ constexpr size_t kHashBytes = 8;
 static_assert(sizeof(IcuMergeableDataFile::HashType) == kHashBytes);
 
 inline IcuMergeableDataFile::HashType HashPage(const uint8_t* page) {
-  return FastHash(base::make_span(page, kPageSize));
+  return FastHash(base::make_span(page, static_cast<size_t>(kPageSize)));
 }
 
 IcuMergeableDataFile::HashType ReadHash(const uint8_t* data, size_t offset) {
