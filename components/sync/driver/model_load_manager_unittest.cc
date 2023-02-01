@@ -559,4 +559,91 @@ TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataIfFailed) {
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
+// Test that Initialize waits for desired types in STOPPING state to stop and
+// reload before notifying data type manager.
+TEST_F(SyncModelLoadManagerTest,
+       ShouldWaitForStoppingDesiredTypesBeforeLoading) {
+  // Create two controllers, one with delayed model load.
+  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
+  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  GetController(BOOKMARKS)->model()->EnableManualModelStart();
+
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
+  ModelTypeSet preferred_types(APPS, BOOKMARKS);
+
+  model_load_manager.Initialize(
+      /*preferred_types_without_errors=*/preferred_types, preferred_types,
+      BuildConfigureContext());
+
+  // Bring BOOKMARKS to a STOPPING state.
+  model_load_manager.Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
+
+  ASSERT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
+
+  // It should wait for BOOKMARKS to finish loading before notifying the data
+  // type manager.
+  EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure).Times(0);
+
+  model_load_manager.Initialize(
+      /*preferred_types_without_errors=*/preferred_types, preferred_types,
+      BuildConfigureContext());
+
+  // APPS is started right away.
+  EXPECT_EQ(GetController(APPS)->state(), DataTypeController::MODEL_LOADED);
+  // BOOKMARKS needs to finish stopping first before it can start again.
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
+
+  // Finish loading of BOOKMARKS for the first time. This should first move the
+  // state to NOT_RUNNING. But, as part of the load callback,
+  // ModelTypeController::LoadModels() will be called which will set its state
+  // to MODEL_STARTING.
+  GetController(BOOKMARKS)->model()->SimulateModelStartFinished();
+  EXPECT_EQ(GetController(BOOKMARKS)->state(),
+            DataTypeController::MODEL_STARTING);
+
+  // Finish loading of BOOKMARKS. This will lead to a call to notify the
+  // delegate that all the types are ready.
+  EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure);
+  GetController(BOOKMARKS)->model()->SimulateModelStartFinished();
+  ASSERT_EQ(GetController(BOOKMARKS)->state(),
+            DataTypeController::MODEL_LOADED);
+}
+
+// Test that Initialize will not wait for no-longer-desired types in STOPPING
+// state to stop before loading.
+TEST_F(SyncModelLoadManagerTest,
+       ShouldNotWaitForStoppingUndesiredTypesBeforeLoading) {
+  // Create two controllers, one with delayed model load.
+  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
+  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  GetController(BOOKMARKS)->model()->EnableManualModelStart();
+
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
+  ModelTypeSet preferred_types(APPS, BOOKMARKS);
+  ModelTypeSet preferred_types_without_errors = preferred_types;
+
+  model_load_manager.Initialize(preferred_types_without_errors, preferred_types,
+                                BuildConfigureContext());
+
+  // Bring BOOKMARKS to a STOPPING state.
+  model_load_manager.Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
+
+  ASSERT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
+
+  // Remove BOOKMARKS from `preferred_types_without_errors` which may happen in
+  // case of failures/timeouts.
+  preferred_types_without_errors.Remove(BOOKMARKS);
+
+  EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure);
+  model_load_manager.Initialize(preferred_types_without_errors, preferred_types,
+                                BuildConfigureContext());
+
+  // APPS is started and DataTypeManager informed.
+  EXPECT_EQ(GetController(APPS)->state(), DataTypeController::MODEL_LOADED);
+  // BOOKMARKS remains in STOPPING state.
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
+}
+
 }  // namespace syncer
