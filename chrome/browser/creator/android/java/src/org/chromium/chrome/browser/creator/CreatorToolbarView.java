@@ -14,6 +14,8 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.TooltipCompat;
+
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -37,6 +39,7 @@ public class CreatorToolbarView extends LinearLayout {
 
     public void setTitle(String title) {
         mCreatorTitleToolbar.setText(title);
+        TooltipCompat.setTooltipText(mCreatorTitleToolbar, title);
     }
 
     public void setIsFollowedStatus(boolean isFollowed) {

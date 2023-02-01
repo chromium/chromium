@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.TooltipCompat;
+
 import org.chromium.ui.widget.ButtonCompat;
 
 /**
@@ -31,10 +33,12 @@ public class CreatorProfileView extends LinearLayout {
 
     public void setTitle(String title) {
         mTitle.setText(title);
+        TooltipCompat.setTooltipText(mTitle, title);
     }
 
     public void setUrl(String url) {
         mUrl.setText(url);
+        TooltipCompat.setTooltipText(mUrl, url);
     }
 
     public void setIsFollowedStatus(boolean isFollowed) {
