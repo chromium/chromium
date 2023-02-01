@@ -75,9 +75,7 @@ class BASE_EXPORT FileDescriptorWatcher {
     // Controller is deleted, ownership of |watcher_| is transfered to a delete
     // task posted to the MessageLoopForIO. This ensures that |watcher_| isn't
     // deleted while it is being used by the MessageLoopForIO.
-    //
-    // TODO(crbug.com/1298696): Breaks base_unittests.
-    raw_ptr<Watcher, DanglingUntriagedDegradeToNoOpWhenMTE> watcher_;
+    raw_ptr<Watcher, DanglingUntriaged> watcher_;
 
     // An event for the watcher to notify controller that it's destroyed.
     // As the |watcher_| is owned by Controller, always outlives the Watcher.
