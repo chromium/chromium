@@ -81,23 +81,19 @@ absl::optional<std::string> GetSubkeyString(const base::Value::Dict& dict,
   return policy_value->GetString();
 }
 
-constexpr base::StringPiece kScreenDimDelayAC[] = {"AC", "Delays", "ScreenDim"};
-constexpr base::StringPiece kScreenOffDelayAC[] = {"AC", "Delays", "ScreenOff"};
-constexpr base::StringPiece kIdleWarningDelayAC[] = {"AC", "Delays",
-                                                     "IdleWarning"};
-constexpr base::StringPiece kIdleDelayAC[] = {"AC", "Delays", "Idle"};
-constexpr base::StringPiece kIdleActionAC[] = {"AC", "IdleAction"};
-constexpr base::StringPiece kScreenDimDelayBattery[] = {"Battery", "Delays",
-                                                        "ScreenDim"};
-constexpr base::StringPiece kScreenOffDelayBattery[] = {"Battery", "Delays",
-                                                        "ScreenOff"};
-constexpr base::StringPiece kIdleWarningDelayBattery[] = {"Battery", "Delays",
-                                                          "IdleWarning"};
-constexpr base::StringPiece kIdleDelayBattery[] = {"Battery", "Delays", "Idle"};
-constexpr base::StringPiece kIdleActionBattery[] = {"Battery", "IdleAction"};
+constexpr char kScreenDimDelayAC[] = "AC.Delays.ScreenDim";
+constexpr char kScreenOffDelayAC[] = "AC.Delays.ScreenOff";
+constexpr char kIdleWarningDelayAC[] = "AC.Delays.IdleWarning";
+constexpr char kIdleDelayAC[] = "AC.Delays.Idle";
+constexpr char kIdleActionAC[] = "AC.IdleAction";
+constexpr char kScreenDimDelayBattery[] = "Battery.Delays.ScreenDim";
+constexpr char kScreenOffDelayBattery[] = "Battery.Delays.ScreenOff";
+constexpr char kIdleWarningDelayBattery[] = "Battery.Delays.IdleWarning";
+constexpr char kIdleDelayBattery[] = "Battery.Delays.Idle";
+constexpr char kIdleActionBattery[] = "Battery.IdleAction";
 
 constexpr char kScreenLockDelayAC[] = "AC";
-const char kScreenLockDelayBattery[] = "Battery";
+constexpr char kScreenLockDelayBattery[] = "Battery";
 
 constexpr char kActionSuspend[] = "Suspend";
 constexpr char kActionLogout[] = "Logout";
@@ -529,42 +525,49 @@ void PowerManagementIdleSettingsPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
   std::unique_ptr<base::Value> policy_value;
-  if (!CheckAndGetValue(policies, nullptr, &policy_value) || !policy_value)
+  if (!CheckAndGetValue(policies, nullptr, &policy_value) || !policy_value) {
     return;
-  DCHECK(policy_value->is_dict());
+  }
+  const base::Value::Dict& policy_value_dict = policy_value->GetDict();
 
   SetPrefValueIfNotNull(prefs, ash::prefs::kPowerAcScreenDimDelayMs,
-                        policy_value->FindPath(kScreenDimDelayAC));
+                        policy_value_dict.FindByDottedPath(kScreenDimDelayAC));
   SetPrefValueIfNotNull(prefs, ash::prefs::kPowerAcScreenOffDelayMs,
-                        policy_value->FindPath(kScreenOffDelayAC));
-  SetPrefValueIfNotNull(prefs, ash::prefs::kPowerAcIdleWarningDelayMs,
-                        policy_value->FindPath(kIdleWarningDelayAC));
+                        policy_value_dict.FindByDottedPath(kScreenOffDelayAC));
+  SetPrefValueIfNotNull(
+      prefs, ash::prefs::kPowerAcIdleWarningDelayMs,
+      policy_value_dict.FindByDottedPath(kIdleWarningDelayAC));
 
-  const base::Value* idle_delay_ac_value = policy_value->FindPath(kIdleDelayAC);
+  const base::Value* idle_delay_ac_value =
+      policy_value_dict.FindByDottedPath(kIdleDelayAC);
   SetPrefValueIfNotNull(prefs, ash::prefs::kPowerAcIdleDelayMs,
                         idle_delay_ac_value);
 
   base::Value idle_action_ac_value = CalculateIdleActionValue(
-      policy_value->FindPath(kIdleActionAC), idle_delay_ac_value);
+      policy_value_dict.FindByDottedPath(kIdleActionAC), idle_delay_ac_value);
   if (!idle_action_ac_value.is_none()) {
     prefs->SetValue(ash::prefs::kPowerAcIdleAction,
                     std::move(idle_action_ac_value));
   }
 
-  SetPrefValueIfNotNull(prefs, ash::prefs::kPowerBatteryScreenDimDelayMs,
-                        policy_value->FindPath(kScreenDimDelayBattery));
-  SetPrefValueIfNotNull(prefs, ash::prefs::kPowerBatteryScreenOffDelayMs,
-                        policy_value->FindPath(kScreenOffDelayBattery));
-  SetPrefValueIfNotNull(prefs, ash::prefs::kPowerBatteryIdleWarningDelayMs,
-                        policy_value->FindPath(kIdleWarningDelayBattery));
+  SetPrefValueIfNotNull(
+      prefs, ash::prefs::kPowerBatteryScreenDimDelayMs,
+      policy_value_dict.FindByDottedPath(kScreenDimDelayBattery));
+  SetPrefValueIfNotNull(
+      prefs, ash::prefs::kPowerBatteryScreenOffDelayMs,
+      policy_value_dict.FindByDottedPath(kScreenOffDelayBattery));
+  SetPrefValueIfNotNull(
+      prefs, ash::prefs::kPowerBatteryIdleWarningDelayMs,
+      policy_value_dict.FindByDottedPath(kIdleWarningDelayBattery));
 
   const base::Value* idle_delay_battery_value =
-      policy_value->FindPath(kIdleDelayBattery);
+      policy_value_dict.FindByDottedPath(kIdleDelayBattery);
   SetPrefValueIfNotNull(prefs, ash::prefs::kPowerBatteryIdleDelayMs,
                         idle_delay_battery_value);
 
   base::Value idle_action_battery_value = CalculateIdleActionValue(
-      policy_value->FindPath(kIdleActionBattery), idle_delay_battery_value);
+      policy_value_dict.FindByDottedPath(kIdleActionBattery),
+      idle_delay_battery_value);
   if (!idle_action_battery_value.is_none()) {
     prefs->SetValue(ash::prefs::kPowerBatteryIdleAction,
                     std::move(idle_action_battery_value));
@@ -586,12 +589,12 @@ void ScreenLockDelayPolicyHandler::ApplyPolicySettings(
   std::unique_ptr<base::Value> policy_value;
   if (!CheckAndGetValue(policies, nullptr, &policy_value) || !policy_value)
     return;
-  DCHECK(policy_value->is_dict());
+  const base::Value::Dict& policy_value_dict = policy_value->GetDict();
 
   SetPrefValueIfNotNull(prefs, ash::prefs::kPowerAcScreenLockDelayMs,
-                        policy_value->FindPath(kScreenLockDelayAC));
+                        policy_value_dict.Find(kScreenLockDelayAC));
   SetPrefValueIfNotNull(prefs, ash::prefs::kPowerBatteryScreenLockDelayMs,
-                        policy_value->FindPath(kScreenLockDelayBattery));
+                        policy_value_dict.Find(kScreenLockDelayBattery));
 }
 
 ScreenBrightnessPercentPolicyHandler::ScreenBrightnessPercentPolicyHandler(
@@ -610,13 +613,13 @@ void ScreenBrightnessPercentPolicyHandler::ApplyPolicySettings(
   std::unique_ptr<base::Value> policy_value;
   if (!CheckAndGetValue(policies, nullptr, &policy_value) || !policy_value)
     return;
-  DCHECK(policy_value->is_dict());
+  const base::Value::Dict& policy_value_dict = policy_value->GetDict();
 
   SetPrefValueIfNotNull(prefs, ash::prefs::kPowerAcScreenBrightnessPercent,
-                        policy_value->FindPath(kScreenBrightnessPercentAC));
+                        policy_value_dict.Find(kScreenBrightnessPercentAC));
   SetPrefValueIfNotNull(
       prefs, ash::prefs::kPowerBatteryScreenBrightnessPercent,
-      policy_value->FindPath(kScreenBrightnessPercentBattery));
+      policy_value_dict.Find(kScreenBrightnessPercentBattery));
 }
 
 ArcServicePolicyHandler::ArcServicePolicyHandler(const char* policy,
