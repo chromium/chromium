@@ -1917,7 +1917,7 @@ TEST_F(ServiceWorkerVersionTest, SetResources) {
       blink::mojom::ScriptType::kClassic);
 
   // The checksum is empty because still no resource records.
-  EXPECT_EQ("", version->sha256_script_checksum());
+  EXPECT_FALSE(version->sha256_script_checksum());
 
   // Set resource records.
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> records;

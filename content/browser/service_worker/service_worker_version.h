@@ -679,7 +679,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
       const std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>&
           resources);
 
-  std::string sha256_script_checksum() { return sha256_script_checksum_; }
+  absl::optional<std::string> sha256_script_checksum() {
+    return sha256_script_checksum_;
+  }
 
  private:
   friend class base::RefCounted<ServiceWorkerVersion>;
@@ -1213,7 +1215,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // service worker starts with an existing version. But the field will be set
   // after the worker has started when there is a change in the script and new
   // version is created.
-  std::string sha256_script_checksum_;
+  absl::optional<std::string> sha256_script_checksum_;
 
   base::WeakPtrFactory<ServiceWorkerVersion> weak_factory_{this};
 };

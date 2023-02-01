@@ -648,7 +648,8 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
                                             int64_t script_size) {
     std::vector<mojom::ServiceWorkerResourceRecordPtr> resources;
     resources.push_back(mojom::ServiceWorkerResourceRecord::New(
-        resource_id, script_url, script_size, /*sha256_checksum=*/""));
+        resource_id, script_url, script_size,
+        /*sha256_checksum=*/absl::nullopt));
 
     RegistrationData data = CreateRegistrationData(
         registration_id, version_id, scope, key, script_url, resources);
@@ -778,7 +779,8 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndDeleteRegistration) {
   // Create a registration data with a single resource.
   std::vector<mojom::ServiceWorkerResourceRecordPtr> resources;
   resources.push_back(mojom::ServiceWorkerResourceRecord::New(
-      kRegistrationId, kScriptUrl, kScriptSize, /*sha256_checksum=*/""));
+      kRegistrationId, kScriptUrl, kScriptSize,
+      /*sha256_checksum=*/absl::nullopt));
 
   auto data = mojom::ServiceWorkerRegistrationData::New();
   data->registration_id = kRegistrationId;
@@ -1171,13 +1173,14 @@ TEST_F(ServiceWorkerStorageControlImplTest, UncommittedResources) {
   const int64_t resource_id1 = GetNewResourceId();
   const std::string resource_data1 = "main script data";
   resources.push_back(mojom::ServiceWorkerResourceRecord::New(
-      resource_id1, kScriptUrl, resource_data1.size(), /*sha256_checksum=*/""));
+      resource_id1, kScriptUrl, resource_data1.size(),
+      /*sha256_checksum=*/absl::nullopt));
 
   const int64_t resource_id2 = GetNewResourceId();
   const std::string resource_data2 = "imported script data";
   resources.push_back(mojom::ServiceWorkerResourceRecord::New(
       resource_id2, kImportedScriptUrl, resource_data2.size(),
-      /*sha256_checksum=*/""));
+      /*sha256_checksum=*/absl::nullopt));
 
   const int64_t registration_id = GetNewRegistrationId();
   const int64_t version_id = GetNewVersionId().version_id;
@@ -1532,13 +1535,14 @@ TEST_F(ServiceWorkerStorageControlImplTest, GetUsageForStorageKey) {
   const int64_t resource_id1 = GetNewResourceId();
   const std::string resource_data1 = "main script data";
   resources.push_back(mojom::ServiceWorkerResourceRecord::New(
-      resource_id1, kScriptUrl, resource_data1.size(), /*sha256_checksum=*/""));
+      resource_id1, kScriptUrl, resource_data1.size(),
+      /*sha256_checksum=*/absl::nullopt));
 
   const int64_t resource_id2 = GetNewResourceId();
   const std::string resource_data2 = "imported script data";
   resources.push_back(mojom::ServiceWorkerResourceRecord::New(
       resource_id2, kImportedScriptUrl, resource_data2.size(),
-      /*sha256_checksum=*/""));
+      /*sha256_checksum=*/absl::nullopt));
 
   const int64_t registration_id = GetNewRegistrationId();
   const int64_t version_id = GetNewVersionId().version_id;
@@ -1669,7 +1673,8 @@ TEST_F(ServiceWorkerStorageControlImplTest, TrackRunningVersion) {
   result = WriteResource(resource_id1, resource_data1);
   ASSERT_GT(result, 0);
   resources.push_back(mojom::ServiceWorkerResourceRecord::New(
-      resource_id1, kScriptUrl, resource_data1.size(), /*sha256_checksum=*/""));
+      resource_id1, kScriptUrl, resource_data1.size(),
+      /*sha256_checksum=*/absl::nullopt));
 
   const int64_t resource_id2 = GetNewResourceId();
   const std::string resource_data2 = "imported script data";
@@ -1677,7 +1682,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, TrackRunningVersion) {
   ASSERT_GT(result, 0);
   resources.push_back(mojom::ServiceWorkerResourceRecord::New(
       resource_id2, kImportedScriptUrl, resource_data2.size(),
-      /*sha256_checksum=*/""));
+      /*sha256_checksum=*/absl::nullopt));
 
   const int64_t registration_id = GetNewRegistrationId();
   GetNewVersionIdResult new_version_id_result = GetNewVersionId();

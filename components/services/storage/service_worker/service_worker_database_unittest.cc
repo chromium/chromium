@@ -62,8 +62,9 @@ ResourceRecordPtr CreateResource(int64_t resource_id,
                                  const GURL& url,
                                  uint64_t size_bytes) {
   EXPECT_TRUE(url.is_valid());
-  return mojom::ServiceWorkerResourceRecord::New(resource_id, url, size_bytes,
-                                                 /*sha256_checksum=*/"");
+  return mojom::ServiceWorkerResourceRecord::New(
+      resource_id, url, size_bytes,
+      /*sha256_checksum=*/absl::nullopt);
 }
 
 ServiceWorkerDatabase* CreateDatabase(const base::FilePath& path) {

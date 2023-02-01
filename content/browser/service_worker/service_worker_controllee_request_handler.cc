@@ -96,7 +96,11 @@ const base::flat_set<std::string> FetchHandlerBypassedHashStrings() {
 }
 
 bool ShouldBypassFetchHandlerForMainResource(
-    const std::string& sha256_script_checksum) {
+    const absl::optional<std::string>& sha256_script_checksum) {
+  if (!sha256_script_checksum) {
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(
           features::kServiceWorkerBypassFetchHandler)) {
     return false;
