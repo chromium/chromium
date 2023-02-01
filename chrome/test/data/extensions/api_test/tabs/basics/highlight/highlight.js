@@ -20,6 +20,10 @@ function checkEqualSets(set1, set2) {
   return true;
 }
 
+const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
 chrome.test.runTests([
   function setup() {
     var tabs1 = ['http://e.com', 'http://a.com', 'http://a.com/b.html',
@@ -137,5 +141,4 @@ chrome.test.runTests([
     chrome.tabs.highlight({windowId: testWindowId1, tabs: [3333]},
                        fail("No tab at index: 3333."));
   }
-]);
-
+])});

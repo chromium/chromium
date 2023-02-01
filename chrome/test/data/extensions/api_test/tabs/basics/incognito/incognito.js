@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
 chrome.test.getConfig(function(config) {
   let args = JSON.parse(config.customArg);
   chrome.test.runTests([
@@ -23,4 +27,4 @@ chrome.test.getConfig(function(config) {
       );
     },
   ]);
-});
+})});

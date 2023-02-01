@@ -51,7 +51,7 @@ function waitForAllTabs(callback) {
       if (ready)
         callback();
       else
-        window.setTimeout(waitForTabs, 30);
+        setTimeout(waitForTabs, 30);
     });
   }
   waitForTabs();

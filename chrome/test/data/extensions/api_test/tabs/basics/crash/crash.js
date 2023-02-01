@@ -9,6 +9,10 @@ var ERROR = "I'm sorry. I'm afraid I can't do that.";
 var succeed = chrome.test.succeed;
 var callbackFail = chrome.test.callbackFail;
 
+const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
 chrome.test.runTests([
 
   function crashBrowserTabsCreate() {
@@ -53,4 +57,4 @@ chrome.test.runTests([
     });
   }
 
-]);
+])});

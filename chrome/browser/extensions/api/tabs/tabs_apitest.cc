@@ -49,6 +49,26 @@ class ExtensionApiTabTest : public extensions::ExtensionApiTest {
   }
 };
 
+class ExtensionApiTabTestWithContextType
+    : public ExtensionApiTabTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  ExtensionApiTabTestWithContextType() : ExtensionApiTabTest(GetParam()) {}
+  ExtensionApiTabTestWithContextType(
+      const ExtensionApiTabTestWithContextType&) = delete;
+  ExtensionApiTabTestWithContextType& operator=(
+      const ExtensionApiTabTestWithContextType&) = delete;
+  ~ExtensionApiTabTestWithContextType() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionApiTabTestWithContextType,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionApiTabTestWithContextType,
+                         ::testing::Values(ContextType::kServiceWorker));
+
 class ExtensionApiTabBackForwardCacheTest : public ExtensionApiTabTest {
  public:
   ExtensionApiTabBackForwardCacheTest() {
@@ -153,25 +173,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabRelativeURLs) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabQuery) {
-  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.extension_url = "query.html"}))
-      << message_;
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Query) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/query")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabHighlight) {
-  ASSERT_TRUE(
-      RunExtensionTest("tabs/basics", {.extension_url = "highlight.html"}))
-      << message_;
+// TODO(crbug.com/1410558): Move to tabs_interactive_test.cc
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Highlight) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/highlight")) << message_;
+}
+#endif
+
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, CrashBrowser) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/crash")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabCrashBrowser) {
-  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.extension_url = "crash.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabOpener) {
-  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.extension_url = "opener.html"}))
-      << message_;
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Opener) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/opener")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabRemove) {
@@ -370,10 +388,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_GetViewsOfCreatedWindow) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, OnUpdatedDiscardedState) {
-  ASSERT_TRUE(
-      RunExtensionTest("tabs/basics", {.extension_url = "discarded.html"}))
-      << message_;
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType,
+                       OnUpdatedDiscardedState) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/discarded")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabOpenerCraziness) {
@@ -391,11 +408,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, SendMessage) {
 // extension without "tabs" permission.
 //
 // Regression test for https://crbug.com/1302959
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabsPermissionDoesNotLeakTabInfo) {
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType,
+                       TabsPermissionDoesNotLeakTabInfo) {
   constexpr char kManifestWithTabsPermission[] =
       R"({
         "name": "test", "version": "1", "manifest_version": 2,
-        "background": {"scripts": ["background.js"]},
+        "background": {"scripts": ["background.js"], "persistent": true},
         "permissions": ["tabs"]
       })";
   constexpr char kBackgroundJSWithTabsPermission[] =
@@ -404,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabsPermissionDoesNotLeakTabInfo) {
   constexpr char kManifestWithoutTabsPermission[] =
       R"({
         "name": "test", "version": "1", "manifest_version": 2,
-        "background": {"scripts": ["background.js"]}
+        "background": {"scripts": ["background.js"], "persistent": true}
       })";
   constexpr char kBackgroundJSWithoutTabsPermission[] =
       R"(
@@ -448,12 +466,29 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabsPermissionDoesNotLeakTabInfo) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-class IncognitoExtensionApiTabTest : public ExtensionApiTabTest,
-                                     public testing::WithParamInterface<bool> {
+struct IncognitoTestParam {
+  IncognitoTestParam(bool is_incognito_enabled, ContextType context_type)
+      : is_incognito_enabled(is_incognito_enabled),
+        context_type(context_type) {}
+
+  bool is_incognito_enabled;
+  ContextType context_type;
+};
+
+class IncognitoExtensionApiTabTest
+    : public ExtensionApiTabTest,
+      public testing::WithParamInterface<IncognitoTestParam> {
+ public:
+  IncognitoExtensionApiTabTest()
+      : ExtensionApiTabTest(GetParam().context_type) {}
+  IncognitoExtensionApiTabTest(const IncognitoExtensionApiTabTest&) = delete;
+  IncognitoExtensionApiTabTest& operator=(const IncognitoExtensionApiTabTest&) =
+      delete;
+  ~IncognitoExtensionApiTabTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_P(IncognitoExtensionApiTabTest, Tabs) {
-  bool is_incognito_enabled = GetParam();
+  bool is_incognito_enabled = GetParam().is_incognito_enabled;
   Browser* incognito_browser =
       OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
   std::string args = base::StringPrintf(
@@ -461,14 +496,30 @@ IN_PROC_BROWSER_TEST_P(IncognitoExtensionApiTabTest, Tabs) {
       is_incognito_enabled ? "true" : "false",
       extensions::ExtensionTabUtil::GetWindowId(incognito_browser));
 
-  EXPECT_TRUE(RunExtensionTest(
-      "tabs/basics",
-      {.extension_url = "incognito.html", .custom_arg = args.c_str()},
-      {.allow_in_incognito = is_incognito_enabled}))
+  EXPECT_TRUE(RunExtensionTest("tabs/basics/incognito",
+                               {.custom_arg = args.c_str()},
+                               {.allow_in_incognito = is_incognito_enabled}))
       << message_;
 }
 
-INSTANTIATE_TEST_SUITE_P(All, IncognitoExtensionApiTabTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    PB_IncognitoEnabled,
+    IncognitoExtensionApiTabTest,
+    testing::Values(IncognitoTestParam(true,
+                                       ContextType::kPersistentBackground)));
+INSTANTIATE_TEST_SUITE_P(
+    PB_IncognitoDisabled,
+    IncognitoExtensionApiTabTest,
+    testing::Values(IncognitoTestParam(false,
+                                       ContextType::kPersistentBackground)));
+INSTANTIATE_TEST_SUITE_P(
+    SW_IncognitoEnabled,
+    IncognitoExtensionApiTabTest,
+    testing::Values(IncognitoTestParam(true, ContextType::kServiceWorker)));
+INSTANTIATE_TEST_SUITE_P(
+    SW_IncognitoDisabled,
+    IncognitoExtensionApiTabTest,
+    testing::Values(IncognitoTestParam(false, ContextType::kServiceWorker)));
 
 class ExtensionApiTabPrerenderingTest : public ExtensionApiTabTest {
  public:

@@ -6,6 +6,10 @@ var firstTabId;
 var secondTabId;
 var thirdTabId;
 
+const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
 chrome.test.runTests([
   function init() {
     chrome.tabs.create({index:1, active:false}, pass(function(tab) {
@@ -61,4 +65,4 @@ chrome.test.runTests([
       }));
     }));
   }
-]);
+])});

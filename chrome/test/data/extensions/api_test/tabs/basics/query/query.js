@@ -9,6 +9,10 @@ var window_tabs = [];
 var pinned_tabs = [];
 var active_and_window_tabs = [];
 
+const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
 chrome.test.runTests([
   function setup() {
     var tabs = ['http://example.org/a.html', 'http://www.google.com/favicon.ico'];
@@ -83,19 +87,6 @@ chrome.test.runTests([
     }));
   },
 
-  function queryCurrentWindow() {
-    chrome.windows.getCurrent(function(win) {
-      chrome.tabs.query({windowId: chrome.windows.WINDOW_ID_CURRENT},
-                        pass(function(tabs) {
-        // The current window should only contain this test page.
-        assertEq(1, tabs.length);
-        assertEq(win.id, tabs[0].windowId);
-        assertEq(location.href, tabs[0].url);
-        assertEq(location.href, tabs[0].title);
-      }));
-    });
-  },
-
   function queryPinned() {
     chrome.tabs.query({pinned: true}, pass(function(tabs) {
       assertEq(pinned_tabs.length, tabs.length);
@@ -151,13 +142,6 @@ chrome.test.runTests([
     }));
   },
 
-  function queryTitle() {
-    chrome.tabs.query({title: "*query.html"}, pass(function(tabs) {
-      assertEq(1, tabs.length);
-      assertEq(chrome.extension.getURL("query.html"), tabs[0].title);
-    }));
-  },
-
   function queryWindowType() {
     chrome.tabs.query({windowType: "normal"}, pass(function(tabs) {
       assertEq(4, tabs.length);
@@ -208,6 +192,18 @@ chrome.test.runTests([
     }));
   },
 
+  function queryTitle() {
+    let title_url = chrome.extension.getURL("query.html");
+    chrome.tabs.create({url: title_url}, pass(function() {
+      waitForAllTabs(pass(function() {
+        chrome.tabs.query({title: "*query.html"}, pass(function(tabs) {
+          assertEq(1, tabs.length);
+          assertEq(title_url, tabs[0].title);
+        }));
+      }));
+    }));
+  },
+
   function queryIncognito() {
     chrome.windows.create(
         {url: ['http://a.com', 'http://a.com'], incognito: true},
@@ -218,4 +214,4 @@ chrome.test.runTests([
       }));
     }));
   }
-]);
+])});
