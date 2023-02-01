@@ -87,8 +87,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiNewTabTest, Tabs) {
       << message_;
 }
 
-// TODO(crbug.com/1177118) Re-enable test
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabAudible) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
   ASSERT_TRUE(
       RunExtensionTest("tabs/basics", {.extension_url = "audible.html"}))
       << message_;
