@@ -418,7 +418,7 @@ bool V4L2IoctlShim::ReqBufsWithCount(std::unique_ptr<V4L2Queue>& queue,
 
   if (count == 0) {
     LOG(INFO) << "Requested to free all buffers in " << queue->type()
-              << "with a buffer count of 0.";
+              << " with a buffer count of 0.";
   } else {
     LOG(INFO) << queue->num_buffers() << " buffers requested, " << reqbuf.count
               << " buffers returned for " << queue->type() << ".";

@@ -319,6 +319,7 @@ std::unique_ptr<Vp8Decoder> Vp8Decoder::Create(
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, kDriverCodecFourcc,
       bitstream_coded_size, /*num_planes=*/1, V4L2_MEMORY_MMAP,
       /*num_buffers=*/kNumberOfBuffersInOutputQueue);
+  OUTPUT_queue->set_coded_size(bitstream_coded_size);
 
   // TODO(b/256543928): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
   // |num_planes| represents separate memory buffers, not planes for Y, U, V.
