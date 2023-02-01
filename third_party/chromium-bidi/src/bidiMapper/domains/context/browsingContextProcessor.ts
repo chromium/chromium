@@ -28,6 +28,7 @@ import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {IEventManager} from '../events/EventManager.js';
 import Protocol from 'devtools-protocol';
 import {Realm} from '../script/realm.js';
+import {RealmStorage} from '../script/realmStorage.js';
 
 const logContext = log(LogType.browsingContexts);
 
@@ -37,8 +38,10 @@ export class BrowsingContextProcessor {
   readonly #selfTargetId: string;
   readonly #eventManager: IEventManager;
   readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #realmStorage: RealmStorage;
 
   constructor(
+    realmStorage: RealmStorage,
     cdpConnection: CdpConnection,
     selfTargetId: string,
     eventManager: IEventManager,
@@ -48,6 +51,7 @@ export class BrowsingContextProcessor {
     this.#selfTargetId = selfTargetId;
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#realmStorage = realmStorage;
 
     this.#setBrowserClientEventListeners(this.#cdpConnection.browserClient());
   }
@@ -93,6 +97,7 @@ export class BrowsingContextProcessor {
       'Page.frameAttached',
       async (params: Protocol.Page.FrameAttachedEvent) => {
         await BrowsingContextImpl.createFrameContext(
+          this.#realmStorage,
           params.frameId,
           params.parentFrameId,
           sessionCdpClient,
@@ -135,6 +140,7 @@ export class BrowsingContextProcessor {
         .convertFrameToTargetContext(targetSessionCdpClient, sessionId);
     } else {
       await BrowsingContextImpl.createTargetContext(
+        this.#realmStorage,
         targetInfo.targetId,
         null,
         targetSessionCdpClient,
@@ -230,7 +236,9 @@ export class BrowsingContextProcessor {
 
   async #getRealm(target: Script.Target): Promise<Realm> {
     if ('realm' in target) {
-      return Realm.getRealm({realmId: target.realm});
+      return this.#realmStorage.getRealm({
+        realmId: target.realm,
+      });
     }
     const context = this.#browsingContextStorage.getKnownContext(
       target.context
@@ -257,10 +265,12 @@ export class BrowsingContextProcessor {
       // Make sure the context is known.
       this.#browsingContextStorage.getKnownContext(params.context);
     }
-    const realms = Realm.findRealms({
-      browsingContextId: params.context,
-      type: params.type,
-    }).map((realm) => realm.toBiDi());
+    const realms = this.#realmStorage
+      .findRealms({
+        browsingContextId: params.context,
+        type: params.type,
+      })
+      .map((realm: Realm) => realm.toBiDi());
     return {result: {realms}};
   }
 

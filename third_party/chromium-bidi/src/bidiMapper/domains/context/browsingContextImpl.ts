@@ -16,13 +16,14 @@
  */
 
 import {BrowsingContext, Message} from '../../../protocol/protocol.js';
-import {Realm, RealmType} from '../script/realm.js';
 import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpClient} from '../../CdpConnection.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {IEventManager} from '../events/EventManager.js';
 import {LogManager} from '../log/logManager.js';
 import {Protocol} from 'devtools-protocol';
+import {Realm} from '../script/realm.js';
+import {RealmStorage} from '../script/realmStorage.js';
 
 export class BrowsingContextImpl {
   readonly #targetDefers = {
@@ -41,9 +42,9 @@ export class BrowsingContextImpl {
   readonly #contextId: string;
   readonly #parentId: string | null;
   readonly #cdpBrowserContextId: string | null;
-
   readonly #eventManager: IEventManager;
   readonly #children: Map<string, BrowsingContextImpl> = new Map();
+  readonly #realmStorage: RealmStorage;
 
   #url = 'about:blank';
   #loaderId: string | null = null;
@@ -62,6 +63,7 @@ export class BrowsingContextImpl {
   }
 
   private constructor(
+    realmStorage: RealmStorage,
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
@@ -70,6 +72,7 @@ export class BrowsingContextImpl {
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage
   ) {
+    this.#realmStorage = realmStorage;
     this.#contextId = contextId;
     this.#parentId = parentId;
     this.#cdpClient = cdpClient;
@@ -84,6 +87,7 @@ export class BrowsingContextImpl {
   }
 
   public static async createFrameContext(
+    realmStorage: RealmStorage,
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
@@ -92,6 +96,7 @@ export class BrowsingContextImpl {
     browsingContextStorage: BrowsingContextStorage
   ): Promise<void> {
     const context = new BrowsingContextImpl(
+      realmStorage,
       contextId,
       parentId,
       cdpClient,
@@ -112,6 +117,7 @@ export class BrowsingContextImpl {
   }
 
   public static async createTargetContext(
+    realmStorage: RealmStorage,
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
@@ -121,6 +127,7 @@ export class BrowsingContextImpl {
     browsingContextStorage: BrowsingContextStorage
   ): Promise<void> {
     const context = new BrowsingContextImpl(
+      realmStorage,
       contextId,
       parentId,
       cdpClient,
@@ -165,9 +172,9 @@ export class BrowsingContextImpl {
   public async delete() {
     await this.#removeChildContexts();
 
-    Realm.findRealms({browsingContextId: this.contextId}).forEach((realm) =>
-      realm.delete()
-    );
+    this.#realmStorage.deleteRealms({
+      browsingContextId: this.contextId,
+    });
 
     // Remove context from the parent.
     if (this.parentId !== null) {
@@ -204,7 +211,12 @@ export class BrowsingContextImpl {
   }
 
   async #unblockAttachedTarget() {
-    LogManager.create(this.#cdpClient, this.#cdpSessionId, this.#eventManager);
+    LogManager.create(
+      this.#realmStorage,
+      this.#cdpClient,
+      this.#cdpSessionId,
+      this.#eventManager
+    );
     await this.#cdpClient.sendCommand('Runtime.enable');
     await this.#cdpClient.sendCommand('Page.enable');
     await this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
@@ -294,7 +306,7 @@ export class BrowsingContextImpl {
         await this.#removeChildContexts();
 
         // Remove all the already created realms.
-        Realm.clearBrowsingContext(this.contextId);
+        this.#realmStorage.deleteRealms({browsingContextId: this.contextId});
       }
     );
 
@@ -377,14 +389,15 @@ export class BrowsingContextImpl {
         if (!['default', 'isolated'].includes(params.context.auxData.type)) {
           return;
         }
-        const realm = Realm.create(
+        const realm = new Realm(
+          this.#realmStorage,
           params.context.uniqueId,
           this.contextId,
           this.navigableId ?? 'UNKNOWN',
           params.context.id,
           this.#getOrigin(params),
           // TODO: differentiate types.
-          RealmType.window,
+          'window',
           // Sandbox name for isolated world.
           params.context.auxData.type === 'isolated'
             ? params.context.name
@@ -402,10 +415,10 @@ export class BrowsingContextImpl {
     this.#cdpClient.on(
       'Runtime.executionContextDestroyed',
       (params: Protocol.Runtime.ExecutionContextDestroyedEvent) => {
-        Realm.findRealms({
+        this.#realmStorage.deleteRealms({
           cdpSessionId: this.#cdpSessionId,
           executionContextId: params.executionContextId,
-        }).map((realm) => realm.delete());
+        });
       }
     );
   }
@@ -523,7 +536,7 @@ export class BrowsingContextImpl {
       return this.#defaultRealm;
     }
 
-    let maybeSandboxes = Realm.findRealms({
+    let maybeSandboxes = this.#realmStorage.findRealms({
       browsingContextId: this.contextId,
       sandbox,
     });
@@ -535,7 +548,7 @@ export class BrowsingContextImpl {
       });
       // `Runtime.executionContextCreated` should be emitted by the time the
       // previous command is done.
-      maybeSandboxes = Realm.findRealms({
+      maybeSandboxes = this.#realmStorage.findRealms({
         browsingContextId: this.contextId,
         sandbox,
       });

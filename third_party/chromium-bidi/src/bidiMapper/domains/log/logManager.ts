@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import {CommonDataTypes, Log, Script} from '../../../protocol/protocol.js';
 import {CdpClient} from '../../CdpConnection.js';
 import {IEventManager} from '../events/EventManager.js';
 import {Protocol} from 'devtools-protocol';
 import {Realm} from '../script/realm.js';
+import {RealmStorage} from '../script/realmStorage.js';
 import {getRemoteValuesText} from './logHelper.js';
 
 /** Converts CDP StackTrace object to Bidi StackTrace object. */
@@ -55,23 +55,32 @@ export class LogManager {
   readonly #cdpClient: CdpClient;
   readonly #cdpSessionId: string;
   readonly #eventManager: IEventManager;
+  readonly #realmStorage: RealmStorage;
 
   private constructor(
+    realmStorage: RealmStorage,
     cdpClient: CdpClient,
     cdpSessionId: string,
     eventManager: IEventManager
   ) {
+    this.#realmStorage = realmStorage;
     this.#cdpSessionId = cdpSessionId;
     this.#cdpClient = cdpClient;
     this.#eventManager = eventManager;
   }
 
   public static create(
+    realmStorage: RealmStorage,
     cdpClient: CdpClient,
     cdpSessionId: string,
     eventManager: IEventManager
   ) {
-    const logManager = new LogManager(cdpClient, cdpSessionId, eventManager);
+    const logManager = new LogManager(
+      realmStorage,
+      cdpClient,
+      cdpSessionId,
+      eventManager
+    );
 
     logManager.#initialize();
     return logManager;
@@ -87,7 +96,7 @@ export class LogManager {
       (params: Protocol.Runtime.ConsoleAPICalledEvent) => {
         // Try to find realm by `cdpSessionId` and `executionContextId`,
         // if provided.
-        const realm: Realm | undefined = Realm.findRealm({
+        const realm: Realm | undefined = this.#realmStorage.findRealm({
           cdpSessionId: this.#cdpSessionId,
           executionContextId: params.executionContextId,
         });
@@ -132,7 +141,7 @@ export class LogManager {
       (params: Protocol.Runtime.ExceptionThrownEvent) => {
         // Try to find realm by `cdpSessionId` and `executionContextId`,
         // if provided.
-        const realm: Realm | undefined = Realm.findRealm({
+        const realm: Realm | undefined = this.#realmStorage.findRealm({
           cdpSessionId: this.#cdpSessionId,
           executionContextId: params.exceptionDetails.executionContextId,
         });

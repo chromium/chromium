@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 import {CommonDataTypes, Message, Script} from '../../../protocol/protocol.js';
-import {Realm, RealmStorage} from './realm.js';
 import {Protocol} from 'devtools-protocol';
+import {Realm} from './realm.js';
 
 // As `script.evaluate` wraps call into serialization script, `lineNumber`
 // should be adjusted.
 const CALL_FUNCTION_STACKTRACE_LINE_OFFSET = 1;
 const EVALUATE_STACKTRACE_LINE_OFFSET = 0;
-const SHARED_ID_DIVIDER = '_element_';
+export const SHARED_ID_DIVIDER = '_element_';
 
 function cdpRemoteObjectToCallArgument(
   cdpRemoteObject: Protocol.Runtime.RemoteObject
@@ -292,50 +292,6 @@ async function flattenValueList(
   return result;
 }
 
-function webDriverValueToBiDi(
-  webDriverValue: Protocol.Runtime.WebDriverValue,
-  realm: Realm
-): CommonDataTypes.RemoteValue {
-  // This relies on the CDP to implement proper BiDi serialization, except
-  // backendNodeId/sharedId.
-  const result = webDriverValue as any;
-  const bidiValue = result.value;
-  if (bidiValue === undefined) {
-    return result;
-  }
-
-  if (result.type === 'node') {
-    if (Object.hasOwn(bidiValue, 'backendNodeId')) {
-      bidiValue.sharedId = `${realm.navigableId}${SHARED_ID_DIVIDER}${bidiValue.backendNodeId}`;
-      delete bidiValue['backendNodeId'];
-    }
-    if (Object.hasOwn(bidiValue, 'children')) {
-      for (const i in bidiValue.children) {
-        bidiValue.children[i] = webDriverValueToBiDi(
-          bidiValue.children[i],
-          realm
-        );
-      }
-    }
-  }
-
-  // Recursively update the nested values.
-  if (['array', 'set'].includes(webDriverValue.type)) {
-    for (const i in bidiValue) {
-      bidiValue[i] = webDriverValueToBiDi(bidiValue[i], realm);
-    }
-  }
-  if (['object', 'map'].includes(webDriverValue.type)) {
-    for (const i in bidiValue) {
-      bidiValue[i] = [
-        webDriverValueToBiDi(bidiValue[i][0], realm),
-        webDriverValueToBiDi(bidiValue[i][1], realm),
-      ];
-    }
-  }
-
-  return result;
-}
 /**
  * Gets the string representation of an object. This is equivalent to
  * calling toString() on the object value.
@@ -363,12 +319,6 @@ export async function stringifyObject(
 }
 
 export class ScriptEvaluator {
-  readonly #realmStorage: RealmStorage;
-
-  constructor(realmStorage: RealmStorage) {
-    this.#realmStorage = realmStorage;
-  }
-
   /**
    * Serializes a given CDP object into BiDi, keeping references in the
    * target's `globalThis`.
@@ -391,11 +341,7 @@ export class ScriptEvaluator {
         generateWebDriverValue: true,
         executionContextId: realm.executionContextId,
       });
-    return await this.#cdpToBidiValue(
-      cdpWebDriverValue,
-      realm,
-      resultOwnership
-    );
+    return await realm.cdpToBidiValue(cdpWebDriverValue, resultOwnership);
   }
 
   public async callFunction(
@@ -465,38 +411,12 @@ export class ScriptEvaluator {
     }
     return {
       type: 'success',
-      result: await this.#cdpToBidiValue(
+      result: await realm.cdpToBidiValue(
         cdpCallFunctionResult,
-        realm,
         resultOwnership
       ),
       realm: realm.realmId,
     };
-  }
-
-  realmDestroyed(realm: Realm) {
-    return Array.from(this.#realmStorage.knownHandlesToRealm.entries())
-      .filter(([, r]) => r === realm.realmId)
-      .map(([h]) => this.#realmStorage.knownHandlesToRealm.delete(h));
-  }
-
-  async disown(realm: Realm, handle: string) {
-    // Disowning an object from different realm does nothing.
-    if (this.#realmStorage.knownHandlesToRealm.get(handle) !== realm.realmId) {
-      return;
-    }
-    try {
-      await realm.cdpClient.sendCommand('Runtime.releaseObject', {
-        objectId: handle,
-      });
-    } catch (e: any) {
-      // Heuristic to determine if the problem is in the unknown handler.
-      // Ignore the error if so.
-      if (!(e.code === -32000 && e.message === 'Invalid remote object id')) {
-        throw e;
-      }
-    }
-    this.#realmStorage.knownHandlesToRealm.delete(handle);
   }
 
   async #serializeCdpExceptionDetails(
@@ -538,34 +458,6 @@ export class ScriptEvaluator {
     };
   }
 
-  async #cdpToBidiValue(
-    cdpValue:
-      | Protocol.Runtime.CallFunctionOnResponse
-      | Protocol.Runtime.EvaluateResponse,
-    realm: Realm,
-    resultOwnership: Script.OwnershipModel
-  ): Promise<CommonDataTypes.RemoteValue> {
-    const cdpWebDriverValue = cdpValue.result.webDriverValue!;
-    const bidiValue = webDriverValueToBiDi(cdpWebDriverValue, realm);
-
-    if (cdpValue.result.objectId) {
-      const objectId = cdpValue.result.objectId;
-      if (resultOwnership === 'root') {
-        // Extend BiDi value with `handle` based on required `resultOwnership`
-        // and  CDP response but not on the actual BiDi type.
-        (bidiValue as any).handle = objectId;
-        // Remember all the handles sent to client.
-        this.#realmStorage.knownHandlesToRealm.set(objectId, realm.realmId);
-      } else {
-        // No need in waiting for the object to be released.
-        // noinspection ES6MissingAwait
-        realm.cdpClient.sendCommand('Runtime.releaseObject', {objectId});
-      }
-    }
-
-    return bidiValue as CommonDataTypes.RemoteValue;
-  }
-
   public async scriptEvaluate(
     realm: Realm,
     expression: string,
@@ -598,11 +490,7 @@ export class ScriptEvaluator {
 
     return {
       type: 'success',
-      result: await this.#cdpToBidiValue(
-        cdpEvaluateResult,
-        realm,
-        resultOwnership
-      ),
+      result: await realm.cdpToBidiValue(cdpEvaluateResult, resultOwnership),
       realm: realm.realmId,
     };
   }

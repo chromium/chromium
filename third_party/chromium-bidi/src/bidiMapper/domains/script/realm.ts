@@ -15,157 +15,36 @@
  * limitations under the License.
  */
 
-import {CommonDataTypes, Message, Script} from '../../../protocol/protocol.js';
-import {ScriptEvaluator, stringifyObject} from './scriptEvaluator.js';
+import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
+import {
+  SHARED_ID_DIVIDER,
+  ScriptEvaluator,
+  stringifyObject,
+} from './scriptEvaluator.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 import {CdpClient} from '../../CdpConnection.js';
 import {Protocol} from 'devtools-protocol';
+import {RealmStorage} from './realmStorage.js';
 
-export enum RealmType {
-  window = 'window',
-}
+export type RealmType = Script.RealmType;
 
-export class RealmStorage {
-  /** Keeps track of handles and their realms sent to client. */
-  readonly #knownHandlesToRealm = new Map<string, string>();
-
-  get knownHandlesToRealm() {
-    return this.#knownHandlesToRealm;
-  }
-}
-
-const scriptEvaluator = new ScriptEvaluator(new RealmStorage());
+const scriptEvaluator = new ScriptEvaluator();
 
 export class Realm {
-  static readonly #realmMap: Map<string, Realm> = new Map();
-
+  readonly #realmStorage: RealmStorage;
   readonly #realmId: string;
   readonly #browsingContextId: string;
   readonly #navigableId: string;
   readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
   readonly #origin: string;
   readonly #type: RealmType;
-  readonly #sandbox: string | undefined;
-  readonly #cdpSessionId: string;
   readonly #cdpClient: CdpClient;
 
-  static create(
-    realmId: string,
-    browsingContextId: string,
-    navigableId: string,
-    executionContextId: Protocol.Runtime.ExecutionContextId,
-    origin: string,
-    type: RealmType,
-    sandbox: string | undefined,
-    cdpSessionId: string,
-    cdpClient: CdpClient
-  ): Realm {
-    const realm = new Realm(
-      realmId,
-      browsingContextId,
-      navigableId,
-      executionContextId,
-      origin,
-      type,
-      sandbox,
-      cdpSessionId,
-      cdpClient
-    );
-    Realm.#realmMap.set(realm.realmId, realm);
-    return realm;
-  }
+  readonly sandbox?: string;
+  readonly cdpSessionId: string;
 
-  static findRealms(
-    filter: {
-      realmId?: string;
-      navigableId?: string;
-      browsingContextId?: string;
-      executionContextId?: Protocol.Runtime.ExecutionContextId;
-      type?: string;
-      sandbox?: string;
-      cdpSessionId?: string;
-    } = {}
-  ): Realm[] {
-    return Array.from(Realm.#realmMap.values()).filter((realm) => {
-      if (filter.realmId !== undefined && filter.realmId !== realm.realmId) {
-        return false;
-      }
-      if (
-        filter.navigableId !== undefined &&
-        filter.navigableId !== realm.navigableId
-      ) {
-        return false;
-      }
-      if (
-        filter.browsingContextId !== undefined &&
-        filter.browsingContextId !== realm.browsingContextId
-      ) {
-        return false;
-      }
-      if (
-        filter.executionContextId !== undefined &&
-        filter.executionContextId !== realm.executionContextId
-      ) {
-        return false;
-      }
-      if (filter.type !== undefined && filter.type !== realm.type) {
-        return false;
-      }
-      if (filter.sandbox !== undefined && filter.sandbox !== realm.#sandbox) {
-        return false;
-      }
-      if (
-        filter.cdpSessionId !== undefined &&
-        filter.cdpSessionId !== realm.#cdpSessionId
-      ) {
-        return false;
-      }
-      return true;
-    });
-  }
-
-  static findRealm(filter: {
-    realmId?: string;
-    browsingContextId?: string;
-    executionContextId?: Protocol.Runtime.ExecutionContextId;
-    type?: string;
-    sandbox?: string;
-    cdpSessionId?: string;
-  }): Realm | undefined {
-    const maybeRealms = Realm.findRealms(filter);
-    if (maybeRealms.length !== 1) {
-      return undefined;
-    }
-    return maybeRealms[0];
-  }
-
-  static getRealm(filter: {
-    realmId?: string;
-    browsingContextId?: string;
-    executionContextId?: Protocol.Runtime.ExecutionContextId;
-    type?: string;
-    sandbox?: string;
-    cdpSessionId?: string;
-  }): Realm {
-    const maybeRealm = Realm.findRealm(filter);
-    if (maybeRealm === undefined) {
-      throw new Message.NoSuchFrameException(
-        `Realm ${JSON.stringify(filter)} not found`
-      );
-    }
-    return maybeRealm;
-  }
-
-  static clearBrowsingContext(browsingContextId: string) {
-    Realm.findRealms({browsingContextId}).map((realm) => realm.delete());
-  }
-
-  delete() {
-    Realm.#realmMap.delete(this.realmId);
-    scriptEvaluator.realmDestroyed(this);
-  }
-
-  private constructor(
+  constructor(
+    realmStorage: RealmStorage,
     realmId: string,
     browsingContextId: string,
     navigableId: string,
@@ -180,11 +59,103 @@ export class Realm {
     this.#browsingContextId = browsingContextId;
     this.#navigableId = navigableId;
     this.#executionContextId = executionContextId;
-    this.#sandbox = sandbox;
+    this.sandbox = sandbox;
     this.#origin = origin;
     this.#type = type;
-    this.#cdpSessionId = cdpSessionId;
+    this.cdpSessionId = cdpSessionId;
     this.#cdpClient = cdpClient;
+    this.#realmStorage = realmStorage;
+
+    this.#realmStorage.realmMap.set(this.#realmId, this);
+  }
+
+  async disown(handle: string): Promise<void> {
+    // Disowning an object from different realm does nothing.
+    if (this.#realmStorage.knownHandlesToRealm.get(handle) !== this.realmId) {
+      return;
+    }
+    try {
+      await this.cdpClient.sendCommand('Runtime.releaseObject', {
+        objectId: handle,
+      });
+    } catch (e: any) {
+      // Heuristic to determine if the problem is in the unknown handler.
+      // Ignore the error if so.
+      if (!(e.code === -32000 && e.message === 'Invalid remote object id')) {
+        throw e;
+      }
+    }
+    this.#realmStorage.knownHandlesToRealm.delete(handle);
+  }
+
+  async cdpToBidiValue(
+    cdpValue:
+      | Protocol.Runtime.CallFunctionOnResponse
+      | Protocol.Runtime.EvaluateResponse,
+    resultOwnership: Script.OwnershipModel
+  ): Promise<CommonDataTypes.RemoteValue> {
+    const cdpWebDriverValue = cdpValue.result.webDriverValue!;
+    const bidiValue = this.webDriverValueToBiDi(cdpWebDriverValue);
+
+    if (cdpValue.result.objectId) {
+      const objectId = cdpValue.result.objectId;
+      if (resultOwnership === 'root') {
+        // Extend BiDi value with `handle` based on required `resultOwnership`
+        // and  CDP response but not on the actual BiDi type.
+        (bidiValue as any).handle = objectId;
+        // Remember all the handles sent to client.
+        this.#realmStorage.knownHandlesToRealm.set(objectId, this.realmId);
+      } else {
+        // No need in waiting for the object to be released.
+        // noinspection ES6MissingAwait
+        this.cdpClient.sendCommand('Runtime.releaseObject', {objectId});
+      }
+    }
+
+    return bidiValue as CommonDataTypes.RemoteValue;
+  }
+
+  webDriverValueToBiDi(
+    webDriverValue: Protocol.Runtime.WebDriverValue
+  ): CommonDataTypes.RemoteValue {
+    // This relies on the CDP to implement proper BiDi serialization, except
+    // backendNodeId/sharedId.
+    const result = webDriverValue as any;
+    const bidiValue = result.value;
+    if (bidiValue === undefined) {
+      return result;
+    }
+
+    if (result.type === 'node') {
+      if (Object.hasOwn(bidiValue, 'backendNodeId')) {
+        bidiValue.sharedId = `${this.navigableId}${SHARED_ID_DIVIDER}${bidiValue.backendNodeId}`;
+        delete bidiValue['backendNodeId'];
+      }
+      if (Object.hasOwn(bidiValue, 'children')) {
+        for (const i in bidiValue.children) {
+          bidiValue.children[i] = this.webDriverValueToBiDi(
+            bidiValue.children[i]
+          );
+        }
+      }
+    }
+
+    // Recursively update the nested values.
+    if (['array', 'set'].includes(webDriverValue.type)) {
+      for (const i in bidiValue) {
+        bidiValue[i] = this.webDriverValueToBiDi(bidiValue[i]);
+      }
+    }
+    if (['object', 'map'].includes(webDriverValue.type)) {
+      for (const i in bidiValue) {
+        bidiValue[i] = [
+          this.webDriverValueToBiDi(bidiValue[i][0]),
+          this.webDriverValueToBiDi(bidiValue[i][1]),
+        ];
+      }
+    }
+
+    return result;
   }
 
   toBiDi(): Script.RealmInfo {
@@ -193,7 +164,7 @@ export class Realm {
       origin: this.origin,
       type: this.type,
       context: this.browsingContextId,
-      ...(this.#sandbox === undefined ? {} : {sandbox: this.#sandbox}),
+      ...(this.sandbox === undefined ? {} : {sandbox: this.sandbox}),
     };
   }
 
@@ -269,10 +240,6 @@ export class Realm {
         resultOwnership
       ),
     };
-  }
-
-  async disown(handle: string): Promise<void> {
-    await scriptEvaluator.disown(this, handle);
   }
 
   /**

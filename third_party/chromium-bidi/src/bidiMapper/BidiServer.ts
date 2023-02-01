@@ -24,6 +24,7 @@ import {EventManager} from './domains/events/EventManager.js';
 import type {Message} from '../protocol/protocol.js';
 import {OutgoingBidiMessage} from './OutgoindBidiMessage.js';
 import {ProcessingQueue} from '../utils/processingQueue.js';
+import {RealmStorage} from './domains/script/realmStorage.js';
 
 type BidiServerEvents = {
   message: Message.RawCommandRequest;
@@ -34,6 +35,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   #transport: BidiTransport;
   #commandProcessor: CommandProcessor;
   #browsingContextStorage: BrowsingContextStorage;
+  #realmStorage: RealmStorage;
 
   private constructor(
     bidiTransport: BidiTransport,
@@ -43,12 +45,14 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   ) {
     super();
     this.#browsingContextStorage = new BrowsingContextStorage();
+    this.#realmStorage = new RealmStorage();
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
       this.#processOutgoingMessage
     );
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
     this.#commandProcessor = new CommandProcessor(
+      this.#realmStorage,
       cdpConnection,
       new EventManager(this),
       selfTargetId,

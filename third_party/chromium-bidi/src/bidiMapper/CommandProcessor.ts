@@ -28,6 +28,7 @@ import {CdpConnection} from './CdpConnection.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {IEventManager} from './domains/events/EventManager.js';
 import {OutgoingBidiMessage} from './OutgoindBidiMessage.js';
+import {RealmStorage} from './domains/script/realmStorage.js';
 
 type CommandProcessorEvents = {
   response: Promise<OutgoingBidiMessage>;
@@ -89,6 +90,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   #parser: BidiParser;
 
   constructor(
+    realmStorage: RealmStorage,
     cdpConnection: CdpConnection,
     eventManager: IEventManager,
     selfTargetId: string,
@@ -98,6 +100,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     super();
     this.#eventManager = eventManager;
     this.#contextProcessor = new BrowsingContextProcessor(
+      realmStorage,
       cdpConnection,
       selfTargetId,
       eventManager,
