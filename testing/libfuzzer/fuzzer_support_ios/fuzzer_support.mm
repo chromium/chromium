@@ -22,7 +22,7 @@ static int g_argc;
 static char** g_argv;
 
 namespace fuzzer {
-typedef int (*UserCallback)(const uint8_t* Data, std::size_t Size);
+typedef int (*UserCallback)(const uint8_t* Data, size_t Size);
 int FuzzerDriver(int* argc, char*** argv, UserCallback Callback);
 }  // namespace fuzzer
 
@@ -32,7 +32,7 @@ namespace {
 extern "C" __attribute__((visibility("default"))) int LLVMFuzzerRunDriver(
     int* argc,
     char*** argv,
-    int (*UserCb)(const uint8_t* Data, std::size_t Size)) {
+    int (*UserCb)(const uint8_t* Data, size_t Size)) {
   return fuzzer::FuzzerDriver(argc, argv, UserCb);
 }
 
