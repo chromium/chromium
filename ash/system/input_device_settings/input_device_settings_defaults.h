@@ -19,6 +19,13 @@ constexpr bool kDefaultAutoRepeatEnabled = true;
 constexpr bool kDefaultSuppressMetaFKeyRewrites = false;
 constexpr bool kDefaultTopRowAreFKeys = false;
 
+// Default settings for all pointers, defined in
+// chrome/browser/ash/preferences.cc.
+constexpr bool kDefaultSwapRight = false;
+constexpr int kDefaultSensitivity = 3;
+constexpr bool kDefaultReverseScrolling = false;
+constexpr bool kDefaultAccelerationEnabled = true;
+constexpr bool kDefaultScrollAcceleration = true;
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_DEFAULTS_H_

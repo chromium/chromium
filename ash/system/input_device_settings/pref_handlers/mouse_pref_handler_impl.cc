@@ -6,9 +6,9 @@
 
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "base/check.h"
-#include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -16,10 +16,20 @@ namespace ash {
 MousePrefHandlerImpl::MousePrefHandlerImpl() = default;
 MousePrefHandlerImpl::~MousePrefHandlerImpl() = default;
 
-// TODO(michaelcheco): Implement mouse settings initialization.
 void MousePrefHandlerImpl::InitializeMouseSettings(PrefService* pref_service,
                                                    mojom::Mouse* mouse) {
-  NOTIMPLEMENTED();
+  const auto& devices_dict =
+      pref_service->GetDict(prefs::kMouseDeviceSettingsDictPref);
+  const auto* settings_dict = devices_dict.FindDict(mouse->device_key);
+  if (!settings_dict) {
+    mouse->settings = GetNewMouseSettings(*mouse);
+  } else {
+    mouse->settings =
+        RetreiveMouseSettings(pref_service, *mouse, *settings_dict);
+  }
+  DCHECK(mouse->settings);
+
+  UpdateMouseSettings(pref_service, *mouse);
 }
 
 void MousePrefHandlerImpl::UpdateMouseSettings(PrefService* pref_service,
@@ -56,6 +66,44 @@ void MousePrefHandlerImpl::UpdateMouseSettings(PrefService* pref_service,
 
   pref_service->SetDict(std::string(prefs::kMouseDeviceSettingsDictPref),
                         std::move(devices_dict));
+}
+
+mojom::MouseSettingsPtr MousePrefHandlerImpl::GetNewMouseSettings(
+    const mojom::Mouse& mouse) {
+  // TODO(michaelcheco): Implement pulling from old device settings if the
+  // device was observed in the transition period.
+  mojom::MouseSettingsPtr settings = mojom::MouseSettings::New();
+  settings->swap_right = kDefaultSwapRight;
+  settings->sensitivity = kDefaultSensitivity;
+  settings->reverse_scrolling = kDefaultReverseScrolling;
+  settings->acceleration_enabled = kDefaultAccelerationEnabled;
+  settings->scroll_sensitivity = kDefaultSensitivity;
+  settings->scroll_acceleration = kDefaultScrollAcceleration;
+  return settings;
+}
+
+mojom::MouseSettingsPtr MousePrefHandlerImpl::RetreiveMouseSettings(
+    PrefService* pref_service,
+    const mojom::Mouse& mouse,
+    const base::Value::Dict& settings_dict) {
+  mojom::MouseSettingsPtr settings = mojom::MouseSettings::New();
+  settings->swap_right = settings_dict.FindBool(prefs::kMouseSettingSwapRight)
+                             .value_or(kDefaultSwapRight);
+  settings->sensitivity = settings_dict.FindInt(prefs::kMouseSettingSensitivity)
+                              .value_or(kDefaultSensitivity);
+  settings->reverse_scrolling =
+      settings_dict.FindBool(prefs::kMouseSettingReverseScrolling)
+          .value_or(kDefaultReverseScrolling);
+  settings->acceleration_enabled =
+      settings_dict.FindBool(prefs::kMouseSettingAccelerationEnabled)
+          .value_or(kDefaultAccelerationEnabled);
+  settings->scroll_sensitivity =
+      settings_dict.FindInt(prefs::kMouseSettingScrollSensitivity)
+          .value_or(kDefaultSensitivity);
+  settings->scroll_acceleration =
+      settings_dict.FindBool(prefs::kMouseSettingScrollAcceleration)
+          .value_or(kDefaultScrollAcceleration);
+  return settings;
 }
 
 }  // namespace ash

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler_impl.h"
 
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -18,6 +19,14 @@ const std::string kDictFakeValue = "fake_value";
 
 const std::string kMouseKey1 = "device_key1";
 const std::string kMouseKey2 = "device_key2";
+
+const mojom::MouseSettings kMouseSettingsDefault(
+    /*swap_right=*/kDefaultSwapRight,
+    /*sensitivity=*/kDefaultSensitivity,
+    /*reverse_scrolling=*/kDefaultReverseScrolling,
+    /*acceleration_enabled=*/kDefaultAccelerationEnabled,
+    /*scroll_sensitivity=*/kDefaultSensitivity,
+    /*scroll_acceleration=*/kDefaultScrollAcceleration);
 
 const mojom::MouseSettings kMouseSettings1(
     /*swap_right=*/false,
@@ -105,6 +114,15 @@ class MousePrefHandlerTest : public AshTestBase {
     pref_handler_->UpdateMouseSettings(pref_service_.get(), *mouse);
   }
 
+  mojom::MouseSettingsPtr CallInitializeMouseSettings(
+      const std::string& device_key) {
+    mojom::MousePtr mouse = mojom::Mouse::New();
+    mouse->device_key = device_key;
+
+    pref_handler_->InitializeMouseSettings(pref_service_.get(), mouse.get());
+    return std::move(mouse->settings);
+  }
+
  protected:
   std::unique_ptr<MousePrefHandlerImpl> pref_handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
@@ -184,6 +202,49 @@ TEST_F(MousePrefHandlerTest, UpdateSettings) {
       updated_devices_dict.FindDict(kMouseKey2);
   ASSERT_NE(nullptr, unchanged_settings_dict);
   CheckMouseSettingsAndDictAreEqual(kMouseSettings2, *unchanged_settings_dict);
+}
+
+TEST_F(MousePrefHandlerTest, NewSettingAddedRoundTrip) {
+  mojom::MouseSettings test_settings = kMouseSettings1;
+  test_settings.swap_right = !kDefaultSwapRight;
+
+  CallUpdateMouseSettings(kMouseKey1, test_settings);
+  auto devices_dict =
+      pref_service_->GetDict(prefs::kMouseDeviceSettingsDictPref).Clone();
+  auto* settings_dict = devices_dict.FindDict(kMouseKey1);
+
+  // Remove key from the dict to mock adding a new setting in the future.
+  settings_dict->Remove(prefs::kMouseSettingSwapRight);
+  pref_service_->SetDict(prefs::kMouseDeviceSettingsDictPref,
+                         std::move(devices_dict));
+
+  // Initialize keyboard settings for the device and check that
+  // "new settings" matches "test_settings".
+  mojom::MouseSettingsPtr settings = CallInitializeMouseSettings(kMouseKey1);
+  EXPECT_EQ(kDefaultSwapRight, settings->swap_right);
+
+  // Reset "new settings" to the values that match `test_settings` and check
+  // that the rest of the fields are equal.
+  settings->swap_right = !kDefaultSwapRight;
+  EXPECT_EQ(test_settings, *settings);
+}
+
+TEST_F(MousePrefHandlerTest, NewMouseDefaultSettings) {
+  mojom::MouseSettingsPtr settings = CallInitializeMouseSettings(kMouseKey1);
+  EXPECT_EQ(*settings, kMouseSettingsDefault);
+  settings = CallInitializeMouseSettings(kMouseKey2);
+  EXPECT_EQ(*settings, kMouseSettingsDefault);
+
+  auto devices_dict =
+      pref_service_->GetDict(prefs::kMouseDeviceSettingsDictPref).Clone();
+  ASSERT_EQ(2u, devices_dict.size());
+  auto* settings_dict = devices_dict.FindDict(kMouseKey1);
+  ASSERT_NE(nullptr, settings_dict);
+  CheckMouseSettingsAndDictAreEqual(kMouseSettingsDefault, *settings_dict);
+
+  settings_dict = devices_dict.FindDict(kMouseKey2);
+  ASSERT_NE(nullptr, settings_dict);
+  CheckMouseSettingsAndDictAreEqual(kMouseSettingsDefault, *settings_dict);
 }
 
 class MouseSettingsPrefConversionTest

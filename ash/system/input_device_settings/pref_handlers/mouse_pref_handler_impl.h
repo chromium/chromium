@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler.h"
+#include "base/values.h"
 
 class PrefService;
 
@@ -24,6 +25,13 @@ class ASH_EXPORT MousePrefHandlerImpl : public MousePrefHandler {
                                mojom::Mouse* mouse) override;
   void UpdateMouseSettings(PrefService* pref_service,
                            const mojom::Mouse& mouse) override;
+
+ private:
+  mojom::MouseSettingsPtr GetNewMouseSettings(const mojom::Mouse& Mouse);
+  mojom::MouseSettingsPtr RetreiveMouseSettings(
+      PrefService* prefs,
+      const mojom::Mouse& mouse,
+      const base::Value::Dict& settings_dict);
 };
 
 }  // namespace ash
