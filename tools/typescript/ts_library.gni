@@ -121,6 +121,15 @@ template("ts_library") {
     }
 
     if (defined(extra_deps)) {
+      # ts_library() targets are conventionally named with "build_ts" or
+      # "library". These should always be listed in deps and not extra_deps
+      foreach(_extra_dep, extra_deps) {
+        assert(get_label_info(_extra_dep, "name") != "build_ts" &&
+                   get_label_info(_extra_dep, "name") != "library",
+               "Did you mean to list ${_extra_dep} in deps instead of " +
+                   "extra_deps? extra_deps should not hold any ts_library() " +
+                   "targets.")
+      }
       if (!defined(deps)) {
         deps = []
       }
