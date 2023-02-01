@@ -1249,20 +1249,20 @@
     },
 
     'tryserver.chromium.mac': {
-      'gpu-fyi-try-mac-amd-pro-rel': 'gpu_fyi_tests_release_trybot',
-      'gpu-fyi-try-mac-amd-retina-asan': 'gpu_fyi_tests_release_trybot_asan',
-      'gpu-fyi-try-mac-amd-retina-dbg': 'gpu_fyi_tests_debug_trybot',
-      'gpu-fyi-try-mac-amd-retina-exp': 'gpu_fyi_tests_release_trybot',
-      'gpu-fyi-try-mac-amd-retina-rel': 'gpu_fyi_tests_release_trybot',
+      'gpu-fyi-try-mac-amd-pro-rel': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-fyi-try-mac-amd-retina-asan': 'gpu_fyi_tests_release_trybot_asan_reclient',
+      'gpu-fyi-try-mac-amd-retina-dbg': 'gpu_fyi_tests_debug_trybot_reclient',
+      'gpu-fyi-try-mac-amd-retina-exp': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-fyi-try-mac-amd-retina-rel': 'gpu_fyi_tests_release_trybot_reclient',
       'gpu-fyi-try-mac-arm64-apple-m1-exp': 'gpu_fyi_tests_release_trybot_arm64',
-      'gpu-fyi-try-mac-arm64-apple-m1-rel': 'gpu_fyi_tests_release_trybot_arm64',
-      'gpu-fyi-try-mac-intel-asan': 'gpu_fyi_tests_release_trybot_asan',
+      'gpu-fyi-try-mac-arm64-apple-m1-rel': 'gpu_fyi_tests_release_trybot_arm64_reclient',
+      'gpu-fyi-try-mac-intel-asan': 'gpu_fyi_tests_release_trybot_asan_reclient',
       'gpu-fyi-try-mac-intel-dbg': 'gpu_fyi_tests_debug_trybot_reclient',
-      'gpu-fyi-try-mac-intel-exp': 'gpu_fyi_tests_release_trybot',
-      'gpu-fyi-try-mac-intel-rel': 'gpu_fyi_tests_release_trybot',
-      'gpu-fyi-try-mac-nvidia-retina-exp': 'gpu_fyi_tests_release_trybot',
-      'gpu-fyi-try-mac-nvidia-retina-rel': 'gpu_fyi_tests_release_trybot',
-      'gpu-try-mac-amd-retina-dbg': 'gpu_tests_debug_bot',
+      'gpu-fyi-try-mac-intel-exp': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-fyi-try-mac-intel-rel': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-fyi-try-mac-nvidia-retina-exp': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-fyi-try-mac-nvidia-retina-rel': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-try-mac-amd-retina-dbg': 'gpu_tests_debug_bot_reclient',
       'gpu-try-mac-intel-dbg': 'gpu_tests_debug_bot',
       'ios-asan': 'ios_simulator_release_static_asan_bot_xctest_reclient',
       'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting_reclient',
@@ -2580,10 +2580,6 @@
       'gn_linux_upload', 'official', 'goma',
     ],
 
-    'gpu_fyi_tests_debug_trybot': [
-      'gpu_fyi_tests', 'debug_bot', 'disable_nacl',
-    ],
-
     'gpu_fyi_tests_debug_trybot_reclient': [
       'gpu_fyi_tests', 'debug_bot_reclient', 'disable_nacl',
     ],
@@ -2596,20 +2592,12 @@
       'gpu_fyi_tests', 'dx12vk', 'release_trybot_minimal_symbols_reclient', 'disable_nacl',
     ],
 
-    'gpu_fyi_tests_release_trybot': [
-      'gpu_fyi_tests', 'release_trybot_minimal_symbols', 'disable_nacl',
-    ],
-
     'gpu_fyi_tests_release_trybot_arm64': [
       'gpu_fyi_tests', 'release_trybot_minimal_symbols', 'arm64', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot_arm64_reclient': [
       'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'arm64', 'disable_nacl',
-    ],
-
-    'gpu_fyi_tests_release_trybot_asan': [
-      'gpu_fyi_tests', 'release_trybot_minimal_symbols', 'asan', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot_asan_reclient': [

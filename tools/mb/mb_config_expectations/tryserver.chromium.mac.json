@@ -8,7 +8,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-mac-amd-retina-asan": {
@@ -21,7 +21,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-mac-amd-retina-dbg": {
@@ -32,7 +32,7 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-mac-amd-retina-exp": {
@@ -44,7 +44,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-mac-amd-retina-rel": {
@@ -56,7 +56,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-mac-arm64-apple-m1-exp": {
@@ -82,7 +82,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-mac-intel-asan": {
@@ -95,7 +95,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-mac-intel-dbg": {
@@ -118,7 +118,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-mac-intel-rel": {
@@ -130,7 +130,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-mac-nvidia-retina-exp": {
@@ -142,7 +142,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-mac-nvidia-retina-rel": {
@@ -154,7 +154,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-try-mac-amd-retina-dbg": {
@@ -164,7 +164,7 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-try-mac-intel-dbg": {
