@@ -21,6 +21,12 @@ MEDIA_EXPORT gfx::ColorSpace GetImageBufferColorSpace(
 MEDIA_EXPORT gfx::ColorSpace GetFormatDescriptionColorSpace(
     CMFormatDescriptionRef format_description);
 
+// Converts a gfx::ColorSpace to individual kCVImageBuffer* keys.
+MEDIA_EXPORT bool GetImageBufferColorValues(const gfx::ColorSpace& color_space,
+                                            CFStringRef* out_primaries,
+                                            CFStringRef* out_transfer,
+                                            CFStringRef* out_matrix);
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_MAC_COLOR_SPACE_UTIL_MAC_H_

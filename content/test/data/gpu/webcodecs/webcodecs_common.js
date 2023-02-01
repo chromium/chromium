@@ -37,6 +37,12 @@ class TestHarness {
       this.reportFailure("Assertion failed: " + msg);
   }
 
+  assert_eq(val1, val2, msg) {
+    if (val1 != val2) {
+      this.reportFailure(`Assertion failed: ${msg}. ${val1} != ${val2}.`);
+    }
+  }
+
   summary() {
     return this.message + "\n\n" + this.logs.join("\n");
   }
