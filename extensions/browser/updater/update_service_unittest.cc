@@ -281,21 +281,24 @@ class FakeExtensionSystem : public MockExtensionSystem {
 
   void PerformActionBasedOnOmahaAttributes(
       const std::string& extension_id,
-      const base::Value& attributes) override {
+      const base::Value& attributes_value) override {
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
-    scoped_refptr<const Extension> extension1 =
+    scoped_refptr<const Extension> extension =
         ExtensionBuilder("1").SetVersion("1.2").SetID(extension_id).Build();
-    const base::Value* malware_value = attributes.FindKey("_malware");
-    if (malware_value && malware_value->GetBool())
-      registry->AddDisabled(extension1);
-    else
-      registry->AddEnabled(extension1);
+    const base::Value::Dict& attributes = attributes_value.GetDict();
+    const bool is_malware = attributes.FindBool("_malware").value_or(false);
+    if (is_malware) {
+      registry->AddDisabled(extension);
+    } else {
+      registry->AddEnabled(extension);
+    }
 
-    const base::Value* allowlist_value = attributes.FindKey("_esbAllowlist");
-    if (allowlist_value) {
-      bool is_allowlisted = allowlist_value->GetBool();
+    const absl::optional<bool> maybe_allowlisted =
+        attributes.FindBool("_esbAllowlist");
+    if (maybe_allowlisted) {
       extension_allowlist_states_[extension_id] =
-          is_allowlisted ? ALLOWLIST_ALLOWLISTED : ALLOWLIST_NOT_ALLOWLISTED;
+          maybe_allowlisted.value() ? ALLOWLIST_ALLOWLISTED
+                                    : ALLOWLIST_NOT_ALLOWLISTED;
     }
   }
 
