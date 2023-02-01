@@ -31,6 +31,8 @@ namespace {
 // Experimentally chosen value.
 constexpr int kChunkCloseDistance = 10;
 
+constexpr size_t kReadBufferSize = 256 * 1024;
+
 // Return true if the HTTP response of `loader` is a successful one and loading
 // should continue. 4xx error indicate subsequent requests will fail too.
 // e.g. resource has been removed from the server while loading it. 301
@@ -69,7 +71,8 @@ void DocumentLoaderImpl::Chunk::Clear() {
 DocumentLoaderImpl::DocumentLoaderImpl(Client* client)
     : client_(client),
       partial_loading_enabled_(
-          base::FeatureList::IsEnabled(features::kPdfPartialLoading)) {}
+          base::FeatureList::IsEnabled(features::kPdfPartialLoading)),
+      buffer_(kReadBufferSize) {}
 
 DocumentLoaderImpl::~DocumentLoaderImpl() = default;
 
@@ -289,7 +292,7 @@ void DocumentLoaderImpl::DidOpenPartial(int32_t result) {
 
 void DocumentLoaderImpl::ReadMore() {
   loader_->ReadResponseBody(
-      buffer_, sizeof(buffer_),
+      buffer_.data(), buffer_.size(),
       base::BindOnce(&DocumentLoaderImpl::DidRead, weak_factory_.GetWeakPtr()));
 }
 
@@ -314,8 +317,9 @@ void DocumentLoaderImpl::DidRead(int32_t result) {
     DCHECK(!chunk_.chunk_data);
     chunk_.chunk_index = chunk_stream_.GetChunkIndex(start_pos);
   }
-  if (!SaveBuffer(buffer_, result))
+  if (!SaveBuffer(buffer_.data(), result)) {
     return ReadMore();
+  }
   if (IsDocumentComplete())
     return ReadComplete();
   return ContinueDownload();

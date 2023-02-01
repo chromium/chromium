@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -83,8 +84,7 @@ class DocumentLoaderImpl : public DocumentLoader {
   bool partial_loading_enabled_;  // Default determined by `kPdfPartialLoading`.
   bool is_partial_loader_active_ = false;
 
-  static constexpr uint32_t kReadBufferSize = 256 * 1024;
-  char buffer_[kReadBufferSize];
+  std::vector<char> buffer_;
 
   // The current chunk DocumentLoader is working with.
   Chunk chunk_;
