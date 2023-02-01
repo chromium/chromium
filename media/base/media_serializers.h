@@ -53,10 +53,10 @@ struct MediaSerializer<base::Value> {
 template <typename VecType>
 struct MediaSerializer<std::vector<VecType>> {
   static base::Value Serialize(const std::vector<VecType>& vec) {
-    base::Value result(base::Value::Type::LIST);
+    base::Value::List result;
     for (const VecType& value : vec)
       result.Append(MediaSerializer<VecType>::Serialize(value));
-    return result;
+    return base::Value(std::move(result));
   }
 };
 
