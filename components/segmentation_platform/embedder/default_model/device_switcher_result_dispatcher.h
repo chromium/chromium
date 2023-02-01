@@ -53,14 +53,17 @@ class DeviceSwitcherResultDispatcher : public base::SupportsUserData::Data,
   void SaveResultToPref(const ClassificationResult& result);
   absl::optional<ClassificationResult> ReadResultFromPref();
 
+  void RefreshSegmentResult();
   void OnGotResult(const ClassificationResult& result);
+
+  void RegisterFieldTrials();
 
   const raw_ptr<SegmentationPlatformService> segmentation_service_;
   const raw_ptr<syncer::SyncService> sync_service_;
   const raw_ptr<PrefService> prefs_;
   const raw_ptr<FieldTrialRegister> field_trial_register_;
   ClassificationResultCallback waiting_callback_;
-  bool initialized_{false};
+  absl::optional<ClassificationResult> latest_result_;
 
   // Observer for sync to record time durations. Note that the observation is
   // only active when needed for metrics.

@@ -123,7 +123,7 @@ SegmentSelectorImpl::SegmentSelectorImpl(
   }
 
   // Can be nullptr in tests.
-  if (field_trial_register_) {
+  if (!config_->on_demand_execution && field_trial_register_) {
     field_trial_register_->RegisterFieldTrial(trial_name, group_name);
   }
 }

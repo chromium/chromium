@@ -32,14 +32,14 @@ enum class DeviceSwitcherClass {
 };
 
 constexpr std::array<const char*, 8> kOutputLabels = {
-    kAndroidPhoneLabel,
-    kIosPhoneChromeLabel,
-    kAndroidTabletLabel,
-    kIosTabletLabel,
-    kDesktopLabel,
-    kOtherLabel,
-    kSyncedAndFirstDeviceLabel,
-    kNotSyncedLabel};
+    DeviceSwitcherModel::kAndroidPhoneLabel,
+    DeviceSwitcherModel::kIosPhoneChromeLabel,
+    DeviceSwitcherModel::kAndroidTabletLabel,
+    DeviceSwitcherModel::kIosTabletLabel,
+    DeviceSwitcherModel::kDesktopLabel,
+    DeviceSwitcherModel::kOtherLabel,
+    DeviceSwitcherModel::kSyncedAndFirstDeviceLabel,
+    DeviceSwitcherModel::kNotSyncedLabel};
 
 static_assert(kOutputLabels.size() == (int)DeviceSwitcherClass::kMaxValue + 1,
               "labels size must be same as the classes");
@@ -84,7 +84,7 @@ void DeviceSwitcherModel::InitAndFetchModel(
       .fill_policy = proto::CustomInput::FILL_SYNC_DEVICE_INFO,
       .name = "SyncDeviceInfo"});
   (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
-      "300";
+      "60";
   (*sync_input->mutable_additional_args())["active_days_limit"] = "14";
 
   writer.AddOutputConfigForMultiClassClassifier(

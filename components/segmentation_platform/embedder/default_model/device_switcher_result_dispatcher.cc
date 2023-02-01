@@ -8,7 +8,9 @@
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/result.h"
 
 namespace segmentation_platform {
@@ -31,27 +33,22 @@ DeviceSwitcherResultDispatcher::DeviceSwitcherResultDispatcher(
       sync_service_(sync_service),
       prefs_(prefs),
       field_trial_register_(field_trial_register) {
+  latest_result_ = ReadResultFromPref();
+  RegisterFieldTrials();
+
   if (sync_service_) {
-    if (sync_service_->HasSyncConsent()) {
+    has_sync_consent_at_startup_ = sync_service_->HasSyncConsent();
+    if (has_sync_consent_at_startup_) {
       sync_consent_timestamp_ = base::Time::Now();
-      has_sync_consent_at_startup_ = true;
     } else {
       sync_observation_.Observe(sync_service);
-      has_sync_consent_at_startup_ = false;
     }
   }
 
-  absl::optional<ClassificationResult> result = ReadResultFromPref();
-  if (result && field_trial_register_) {
-    field_trial_register_->RegisterFieldTrial(kDeviceSwitcherFieldTrialName,
-                                              result->ordered_labels[0]);
-  } else if (!result) {
-    PredictionOptions options;
-    options.on_demand_execution = true;
-    segmentation_service_->GetClassificationResult(
-        kDeviceSwitcherKey, options, nullptr,
-        base::BindOnce(&DeviceSwitcherResultDispatcher::OnGotResult,
-                       weak_ptr_factory_.GetWeakPtr()));
+  if (!latest_result_ || (has_sync_consent_at_startup_ &&
+                          latest_result_->ordered_labels[0] ==
+                              DeviceSwitcherModel::kNotSyncedLabel)) {
+    RefreshSegmentResult();
   }
 }
 
@@ -59,20 +56,13 @@ DeviceSwitcherResultDispatcher::~DeviceSwitcherResultDispatcher() = default;
 
 void DeviceSwitcherResultDispatcher::GetClassificationResult(
     ClassificationResultCallback callback) {
-  absl::optional<ClassificationResult> result = ReadResultFromPref();
-  if (result) {
-    std::move(callback).Run(std::move(*result));
+  if (latest_result_) {
+    std::move(callback).Run(std::move(*latest_result_));
     return;
   }
 
   // This class does not support waiting for multiple requests.
   DCHECK(waiting_callback_.is_null());
-
-  if (initialized_) {
-    // If client calls after result is already sent out, return with failure.
-    std::move(callback).Run(ClassificationResult(PredictionStatus::kFailed));
-    return;
-  }
   waiting_callback_ = std::move(callback);
 }
 
@@ -87,6 +77,11 @@ void DeviceSwitcherResultDispatcher::OnStateChanged(syncer::SyncService* sync) {
   if (sync->HasSyncConsent()) {
     sync_consent_timestamp_ = base::Time::Now();
     sync_observation_.Reset();
+
+    if (!latest_result_ || latest_result_->ordered_labels[0] ==
+                               DeviceSwitcherModel::kNotSyncedLabel) {
+      RefreshSegmentResult();
+    }
   }
 }
 
@@ -94,10 +89,23 @@ void DeviceSwitcherResultDispatcher::OnSyncShutdown(syncer::SyncService* sync) {
   sync_observation_.Reset();
 }
 
+void DeviceSwitcherResultDispatcher::RefreshSegmentResult() {
+  PredictionOptions options;
+  options.on_demand_execution = true;
+  segmentation_service_->GetClassificationResult(
+      kDeviceSwitcherKey, options, nullptr,
+      base::BindOnce(&DeviceSwitcherResultDispatcher::OnGotResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void DeviceSwitcherResultDispatcher::OnGotResult(
     const ClassificationResult& result) {
   base::TimeDelta consent_verification_to_result_duration =
       base::Time::Now() - sync_consent_timestamp_;
+  SaveResultToPref(result);
+  latest_result_ = result;
+  RegisterFieldTrials();
+
   if (has_sync_consent_at_startup_) {
     base::UmaHistogramMediumTimes(
         "SegmentationPlatform.DeviceSwicther.TimeFromStartupToResult",
@@ -107,18 +115,22 @@ void DeviceSwitcherResultDispatcher::OnGotResult(
         "SegmentationPlatform.DeviceSwicther.TimeFromConsentToResult",
         consent_verification_to_result_duration);
   }
-  SaveResultToPref(result);
-  initialized_ = true;
-  if (result.status == PredictionStatus::kSucceeded &&
-      !result.ordered_labels.empty()) {
-    field_trial_register_->RegisterFieldTrial(kDeviceSwitcherFieldTrialName,
-                                              result.ordered_labels[0]);
+  if (!waiting_callback_.is_null()) {
+    std::move(waiting_callback_).Run(result);
+  }
+}
+
+void DeviceSwitcherResultDispatcher::RegisterFieldTrials() {
+  if (!field_trial_register_ || !latest_result_) {
+    return;
+  }
+  if (latest_result_->status == PredictionStatus::kSucceeded &&
+      !latest_result_->ordered_labels.empty()) {
+    field_trial_register_->RegisterFieldTrial(
+        kDeviceSwitcherFieldTrialName, latest_result_->ordered_labels[0]);
   } else {
     field_trial_register_->RegisterFieldTrial(kDeviceSwitcherFieldTrialName,
                                               "Unselected");
-  }
-  if (!waiting_callback_.is_null()) {
-    std::move(waiting_callback_).Run(result);
   }
 }
 

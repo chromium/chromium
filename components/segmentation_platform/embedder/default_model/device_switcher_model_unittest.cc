@@ -30,57 +30,61 @@ TEST_F(DeviceSwitcherModelTest, ExecuteModelWithInput) {
   input = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   ExpectExecutionWithInput(input, /*expected_error=*/false,
                            /*expected_result=*/{0, 0, 0, 0, 0, 0, 0, 1});
-  ExpectClassifierResults(input, {kNotSyncedLabel});
+  ExpectClassifierResults(input, {DeviceSwitcherModel::kNotSyncedLabel});
 
   // Android phone switcher.
   input = {0, 1, 0, 0, 0, 0, 0, 0, 0, 0};
   ExpectExecutionWithInput(input, /*expected_error=*/false,
                            /*expected_result=*/{10, 0, 0, 0, 0, 0, 0, 0});
-  ExpectClassifierResults(input, {kAndroidPhoneLabel});
+  ExpectClassifierResults(input, {DeviceSwitcherModel::kAndroidPhoneLabel});
 
   // IOS phone switcher.
   input = {0, 0, 0, 1, 0, 0, 0, 0, 0, 0};
   ExpectExecutionWithInput(input, /*expected_error=*/false,
                            /*expected_result=*/{0, 9, 0, 0, 0, 0, 0, 0});
-  ExpectClassifierResults(input, {kIosPhoneChromeLabel});
+  ExpectClassifierResults(input, {DeviceSwitcherModel::kIosPhoneChromeLabel});
 
   // Android tablet switcher.
   input = {0, 0, 1, 0, 0, 0, 0, 0, 0, 0};
   ExpectExecutionWithInput(input, /*expected_error=*/false,
                            /*expected_result=*/{0, 0, 8, 0, 0, 0, 0, 0});
-  ExpectClassifierResults(input, {kAndroidTabletLabel});
+  ExpectClassifierResults(input, {DeviceSwitcherModel::kAndroidTabletLabel});
 
   // IOS tablet switcher.
   input = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0};
   ExpectExecutionWithInput(input, /*expected_error=*/false,
                            /*expected_result=*/{0, 0, 0, 7, 0, 0, 0, 0});
-  ExpectClassifierResults(input, {kIosTabletLabel});
+  ExpectClassifierResults(input, {DeviceSwitcherModel::kIosTabletLabel});
 
   // Desktop switcher.
   input = {0, 0, 0, 0, 0, 1, 1, 1, 1, 0};
   ExpectExecutionWithInput(input, /*expected_error=*/false,
                            /*expected_result=*/{0, 0, 0, 0, 6, 0, 0, 0});
-  ExpectClassifierResults(input, {kDesktopLabel});
+  ExpectClassifierResults(input, {DeviceSwitcherModel::kDesktopLabel});
 
   // Other switcher.
   input = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
   ExpectExecutionWithInput(input, /*expected_error=*/false,
                            /*expected_result=*/{0, 0, 0, 0, 0, 3, 0, 0});
-  ExpectClassifierResults(input, {kOtherLabel});
+  ExpectClassifierResults(input, {DeviceSwitcherModel::kOtherLabel});
 
   // Synced, no other device.
   input = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   ExpectExecutionWithInput(input, /*expected_error=*/false,
                            /*expected_result=*/{0, 0, 0, 0, 0, 0, 2, 0});
-  ExpectClassifierResults(input, {kSyncedAndFirstDeviceLabel});
+  ExpectClassifierResults(input,
+                          {DeviceSwitcherModel::kSyncedAndFirstDeviceLabel});
 
   // Multiple labels.
   input = {0, 1, 1, 1, 1, 1, 0, 0, 0, 1};
   ExpectExecutionWithInput(input, /*expected_error=*/false,
                            /*expected_result=*/{10, 9, 8, 7, 6, 3, 0, 0});
-  ExpectClassifierResults(
-      input, {kAndroidPhoneLabel, kIosPhoneChromeLabel, kAndroidTabletLabel,
-              kIosTabletLabel, kDesktopLabel, kOtherLabel});
+  ExpectClassifierResults(input, {DeviceSwitcherModel::kAndroidPhoneLabel,
+                                  DeviceSwitcherModel::kIosPhoneChromeLabel,
+                                  DeviceSwitcherModel::kAndroidTabletLabel,
+                                  DeviceSwitcherModel::kIosTabletLabel,
+                                  DeviceSwitcherModel::kDesktopLabel,
+                                  DeviceSwitcherModel::kOtherLabel});
 }
 
 }  // namespace segmentation_platform

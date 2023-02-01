@@ -11,26 +11,22 @@
 
 namespace segmentation_platform {
 
-namespace {
-
-// Any updates to these strings need to also update the field trials allowlist
-// in go/segmentation-field-trials-map.
-constexpr char kAndroidPhoneLabel[] = "AndroidPhone";
-constexpr char kIosPhoneChromeLabel[] = "IosPhoneChrome";
-constexpr char kAndroidTabletLabel[] = "AndroidTablet";
-constexpr char kIosTabletLabel[] = "IosTablet";
-constexpr char kDesktopLabel[] = "Desktop";
-constexpr char kOtherLabel[] = "Other";
-constexpr char kSyncedAndFirstDeviceLabel[] = "SyncedAndFirstDevice";
-constexpr char kNotSyncedLabel[] = "NotSynced";
-
-}  // namespace
-
 struct Config;
 
 // Model to predict if a user switched devices.
 class DeviceSwitcherModel : public ModelProvider {
  public:
+  // Any updates to these strings need to also update the field trials allowlist
+  // in go/segmentation-field-trials-map.
+  static constexpr char kAndroidPhoneLabel[] = "AndroidPhone";
+  static constexpr char kIosPhoneChromeLabel[] = "IosPhoneChrome";
+  static constexpr char kAndroidTabletLabel[] = "AndroidTablet";
+  static constexpr char kIosTabletLabel[] = "IosTablet";
+  static constexpr char kDesktopLabel[] = "Desktop";
+  static constexpr char kOtherLabel[] = "Other";
+  static constexpr char kSyncedAndFirstDeviceLabel[] = "SyncedAndFirstDevice";
+  static constexpr char kNotSyncedLabel[] = "NotSynced";
+
   DeviceSwitcherModel();
   ~DeviceSwitcherModel() override = default;
 
