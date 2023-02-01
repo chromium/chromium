@@ -22,6 +22,12 @@ void LogUpdatesReceivedByProcessorHistogram(ModelType model_type,
 void LogNonReflectionUpdateFreshnessToUma(ModelType type,
                                           base::Time remote_modification_time);
 
+// Logs calls to processor's ClearMetadataWhileStopped(). `is_delayed_call` is
+// true if metadata is cleared from ModelReadyToSync() in the case that
+// ClearMetadataWhileStopped() was called before ModelReadyToSync().
+void LogClearMetadataWhileStoppedHistogram(ModelType model_type,
+                                           bool is_delayed_call);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_ENGINE_MODEL_TYPE_PROCESSOR_METRICS_H_

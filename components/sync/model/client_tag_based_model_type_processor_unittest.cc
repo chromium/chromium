@@ -3101,6 +3101,117 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   EXPECT_FALSE(bridge()->sync_started());
 }
 
+TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldClearMetadataWhileStopped) {
+  // Bring the processor to a stopped state.
+  InitializeToReadyState();
+  WritePrefItem(bridge(), kKey1, kValue1);
+  type_processor()->OnSyncStopping(KEEP_METADATA);
+
+  // Metadata is still being kept and tracked.
+  ASSERT_TRUE(type_processor()->IsTrackingMetadata());
+  ASSERT_EQ(1U, db()->metadata_count());
+
+  base::HistogramTester histogram_tester;
+
+  // Should clear the metadata even if already stopped.
+  type_processor()->ClearMetadataWhileStopped();
+  EXPECT_FALSE(type_processor()->IsTrackingMetadata());
+  EXPECT_EQ(0U, db()->metadata_count());
+  // Expect an entry to the histogram.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 1);
+
+  // Metadata clearing logic should not trigger bridge's OnSyncStarting().
+  EXPECT_FALSE(bridge()->sync_started());
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldClearMetadataWhileStoppedUponModelReadyToSync) {
+  base::HistogramTester histogram_tester;
+
+  // Called before ModelReadyToSync().
+  type_processor()->ClearMetadataWhileStopped();
+
+  // Nothing recorded to the histograms yet.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.DelayedClear", 0);
+
+  // Prepare metadata.
+  const syncer::ClientTagHash kClientTagHash =
+      ClientTagHash::FromUnhashed(AUTOFILL, "tag");
+  sync_pb::EntityMetadata entity_metadata1;
+  entity_metadata1.set_client_tag_hash(kClientTagHash.value());
+  entity_metadata1.set_creation_time(0);
+
+  db()->PutMetadata(kKey1, std::move(entity_metadata1));
+  ASSERT_EQ(1U, db()->metadata_count());
+
+  InitializeToMetadataLoaded();
+  // Tracker should have not been set.
+  EXPECT_FALSE(type_processor()->IsTrackingMetadata());
+  // Metadata was cleared from the persistent storage.
+  EXPECT_EQ(0U, db()->metadata_count());
+  // Expect recording of the delayed clear.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.DelayedClear", 1);
+
+  // Metadata clearing logic should not trigger bridge's OnSyncStarting().
+  EXPECT_FALSE(bridge()->sync_started());
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldNotClearMetadataWhileStoppedIfNotTracking) {
+  // Bring the processor to a stopped state.
+  InitializeToReadyState();
+  type_processor()->OnSyncStopping(CLEAR_METADATA);
+
+  // Metadata is not being tracked anymore.
+  ASSERT_FALSE(type_processor()->IsTrackingMetadata());
+
+  base::HistogramTester histogram_tester;
+
+  // Should do nothing since there's nothing to clear.
+  type_processor()->ClearMetadataWhileStopped();
+  // Expect no entry to the histogram.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldNotClearMetadataWhileStoppedWithoutMetadataInitially) {
+  InitializeToMetadataLoaded(/*initial_sync_done=*/false);
+  ASSERT_FALSE(type_processor()->IsTrackingMetadata());
+
+  base::HistogramTester histogram_tester;
+
+  // Call ClearMetadataWhileStopped() without a prior call to OnSyncStopping().
+  // Since there's no metadata, this should do nothing.
+  type_processor()->ClearMetadataWhileStopped();
+  // Expect no entry to the histogram.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldNotClearMetadataWhileStoppedUponModelReadyToSyncWithoutMetadata) {
+  base::HistogramTester histogram_tester;
+
+  // Called before ModelReadyToSync().
+  type_processor()->ClearMetadataWhileStopped();
+
+  InitializeToMetadataLoaded(/*initial_sync_done=*/false);
+  ASSERT_FALSE(type_processor()->IsTrackingMetadata());
+  // Nothing recorded to the histograms.
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
+  histogram_tester.ExpectTotalCount(
+      "Sync.ClearMetadataWhileStopped.DelayedClear", 0);
+}
+
 // The param indicates whether the password notes feature is enabled.
 class PasswordsClientTagBasedModelTypeProcessorTest
     : public testing::WithParamInterface<bool>,

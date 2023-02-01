@@ -171,11 +171,12 @@ class ModelTypeSyncBridge {
       const EntityData& remote_data) const;
 
   // Similar to ApplySyncChanges() but called by the processor when sync
-  // is in the process of being stopped. If |delete_metadata_change_list| is not
-  // null, it indicates that sync metadata must be deleted (i.e. the datatype
-  // was disabled), and |*delete_metadata_change_list| contains a change list to
-  // remove all metadata that the processor knows about (the bridge may decide
-  // to implement deletion by other means).
+  // is in the process of being stopped, or if metadata needs to cleared. If
+  // |delete_metadata_change_list| is not null, it indicates that sync metadata
+  // must be deleted (i.e. the datatype was disabled), and
+  // |*delete_metadata_change_list| contains a change list to remove all
+  // metadata that the processor knows about (the bridge may decide to implement
+  // deletion by other means).
   virtual void ApplyStopSyncChanges(
       std::unique_ptr<MetadataChangeList> delete_metadata_change_list);
 

@@ -243,6 +243,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.ClearMetadataWhileStopped.DelayedClear"
+    enum="SyncModelTypes" expires_after="2023-11-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Recorded when metadata is cleared upon ModelReadyToSync() in the case where
+    clearing of metadata was requested before ModelReadyToSync() while the data
+    type was not running.
+  </summary>
+</histogram>
+
+<histogram name="Sync.ClearMetadataWhileStopped.ImmediateClear"
+    enum="SyncModelTypes" expires_after="2023-11-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Recorded whenever clearing of metadata is requested while the data type is
+    not running and the metadata is cleared immediately.
+  </summary>
+</histogram>
+
 <histogram name="Sync.CommitResponseForUnknownEntity" enum="SyncModelTypes"
     expires_after="2023-06-30">
   <owner>treib@chromium.org</owner>

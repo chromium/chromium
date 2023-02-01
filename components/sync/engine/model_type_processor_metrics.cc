@@ -53,4 +53,13 @@ void LogNonReflectionUpdateFreshnessToUma(ModelType type,
       /*buckets=*/50);
 }
 
+void LogClearMetadataWhileStoppedHistogram(ModelType model_type,
+                                           bool is_delayed_call) {
+  const char* histogram_name =
+      is_delayed_call ? "Sync.ClearMetadataWhileStopped.DelayedClear"
+                      : "Sync.ClearMetadataWhileStopped.ImmediateClear";
+  base::UmaHistogramEnumeration(histogram_name,
+                                ModelTypeHistogramValue(model_type));
+}
+
 }  // namespace syncer
