@@ -20,7 +20,6 @@ class GLImageEGLStream : public gl::GLImage {
   GLImageEGLStream(const gfx::Size& size, EGLStreamKHR stream);
 
   // GLImage implementation.
-  bool BindTexImage(unsigned target) override;
   gfx::Size GetSize() override;
   Type GetType() const override;
 

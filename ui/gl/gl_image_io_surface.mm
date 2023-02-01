@@ -118,12 +118,6 @@ gfx::Size GLImageIOSurface::GetSize() {
   return size_;
 }
 
-bool GLImageIOSurface::BindTexImage(unsigned target) {
-  LOG(ERROR) << "GLImageIOSurface::BindTexImage should not be reached.";
-  NOTREACHED();
-  return false;
-}
-
 void GLImageIOSurface::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                                     uint64_t process_tracing_id,
                                     const std::string& dump_name) {

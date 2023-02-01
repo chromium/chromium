@@ -22,7 +22,6 @@ class GLImagePbuffer final : public gl::GLImage {
   // gl::GLImage implementation.
   gfx::Size GetSize() override;
   gl::GLImage::Type GetType() const override;
-  bool BindTexImage(unsigned target) override;
 
  private:
   ~GLImagePbuffer() override;

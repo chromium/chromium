@@ -28,7 +28,10 @@ class GL_EXPORT GLImageEGLPixmap : public GLImage {
 
   // Overridden from GLImage:
   gfx::Size GetSize() override;
-  bool BindTexImage(unsigned target) override;
+
+  // Binds image to texture currently bound to |target|. Returns true on
+  // success.
+  bool BindTexImage(unsigned target);
 
   // Releases the image that was bound via BindTexImage().
   void ReleaseEGLImage();

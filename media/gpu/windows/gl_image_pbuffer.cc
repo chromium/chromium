@@ -19,11 +19,6 @@ gfx::Size GLImagePbuffer::GetSize() {
 gl::GLImage::Type GLImagePbuffer::GetType() const {
   return gl::GLImage::Type::PBUFFER;
 }
-// PbufferPictureBuffer::CopySurfaceComplete does the actual binding, so
-// this doesn't do anything and always succeeds.
-bool GLImagePbuffer::BindTexImage(unsigned target) {
-  return true;
-}
 void SetColorSpace(const gfx::ColorSpace& color_space) {}
 
 GLImagePbuffer::~GLImagePbuffer() {

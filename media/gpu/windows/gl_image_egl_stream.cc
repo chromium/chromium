@@ -18,10 +18,6 @@ namespace media {
 GLImageEGLStream::GLImageEGLStream(const gfx::Size& size, EGLStreamKHR stream)
     : size_(size), stream_(stream) {}
 
-bool GLImageEGLStream::BindTexImage(unsigned target) {
-  return true;
-}
-
 gfx::Size GLImageEGLStream::GetSize() {
   return size_;
 }

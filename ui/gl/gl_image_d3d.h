@@ -41,10 +41,13 @@ class GL_EXPORT GLImageD3D : public GLImage {
 
   void* GetEGLImage() const;
 
+  // Binds image to texture currently bound to |target|. Returns true on
+  // success.
+  bool BindTexImage(unsigned target);
+
   // GLImage implementation
   Type GetType() const override;
   gfx::Size GetSize() override;
-  bool BindTexImage(unsigned target) override;
 
   const Microsoft::WRL::ComPtr<ID3D11Texture2D>& texture() const {
     return texture_;

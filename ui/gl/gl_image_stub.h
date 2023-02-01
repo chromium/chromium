@@ -19,7 +19,6 @@ class GL_EXPORT GLImageStub : public GLImage {
 
   // Overridden from GLImage:
   gfx::Size GetSize() override;
-  bool BindTexImage(unsigned target) override;
 
  protected:
   ~GLImageStub() override;

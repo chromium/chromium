@@ -43,11 +43,6 @@ gfx::Size GLImage::GetSize() {
   return gfx::Size();
 }
 
-bool GLImage::BindTexImage(unsigned target) {
-  NOTREACHED();
-  return false;
-}
-
 GLImage::Type GLImage::GetType() const {
   return Type::NONE;
 }

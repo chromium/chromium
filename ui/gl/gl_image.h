@@ -82,15 +82,10 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // Get the size of the image.
   virtual gfx::Size GetSize();
 
-  // Bind image to texture currently bound to |target|. Returns true on success.
-  // It is valid for an implementation to always return false.
-  virtual bool BindTexImage(unsigned target);
-
  public:
   // Allow usage of these methods from text sites that are inconvenient to
   // friend.
   gfx::Size GetSizeForTesting() { return GetSize(); }
-  bool BindTexImageForTesting(unsigned target) { return BindTexImage(target); }
 
  protected:
   // An identifier for subclasses. Necessary for safe downcasting.
