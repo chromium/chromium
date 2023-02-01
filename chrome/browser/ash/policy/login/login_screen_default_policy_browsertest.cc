@@ -11,8 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/repeating_test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
@@ -36,45 +36,6 @@ using ::ash::MagnificationManager;
 
 const em::AccessibilitySettingsProto_ScreenMagnifierType kFullScreenMagnifier =
     em::AccessibilitySettingsProto_ScreenMagnifierType_SCREEN_MAGNIFIER_TYPE_FULL;
-
-// Spins the loop until a notification is received from |prefs| that the value
-// of |pref_name| has changed. If the notification is received before Wait()
-// has been called, Wait() returns immediately and no loop is spun.
-class PrefChangeWatcher {
- public:
-  PrefChangeWatcher(const char* pref_name, PrefService* prefs);
-
-  PrefChangeWatcher(const PrefChangeWatcher&) = delete;
-  PrefChangeWatcher& operator=(const PrefChangeWatcher&) = delete;
-
-  void Wait();
-
-  void OnPrefChange();
-
- private:
-  bool pref_changed_;
-
-  base::RunLoop run_loop_;
-  PrefChangeRegistrar registrar_;
-};
-
-PrefChangeWatcher::PrefChangeWatcher(const char* pref_name, PrefService* prefs)
-    : pref_changed_(false) {
-  registrar_.Init(prefs);
-  registrar_.Add(pref_name,
-                 base::BindRepeating(&PrefChangeWatcher::OnPrefChange,
-                                     base::Unretained(this)));
-}
-
-void PrefChangeWatcher::Wait() {
-  if (!pref_changed_)
-    run_loop_.Run();
-}
-
-void PrefChangeWatcher::OnPrefChange() {
-  pref_changed_ = true;
-  run_loop_.Quit();
-}
 
 }  // namespace
 
@@ -152,9 +113,15 @@ void LoginScreenDefaultPolicyBrowsertestBase::SetUpOnMainThread() {
 
 void LoginScreenDefaultPolicyBrowsertestBase::
     RefreshDevicePolicyAndWaitForPrefChange(const char* pref_name) {
-  PrefChangeWatcher watcher(pref_name, login_profile_->GetPrefs());
+  PrefService* prefs = login_profile_->GetPrefs();
+  ASSERT_TRUE(prefs);
+  PrefChangeRegistrar registrar;
+  base::test::RepeatingTestFuture<const char*> pref_changed_future;
+  registrar.Init(prefs);
+  registrar.Add(pref_name, base::BindRepeating(
+                               pref_changed_future.GetCallback(), pref_name));
   RefreshDevicePolicy();
-  watcher.Wait();
+  EXPECT_EQ(pref_name, pref_changed_future.Take());
 }
 
 LoginScreenDefaultPolicyLoginScreenBrowsertest::
