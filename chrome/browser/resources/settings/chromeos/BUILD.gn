@@ -265,10 +265,7 @@ generate_grd("build_grd") {
 # TODO(crbug/1315757) Gradually remove closure compilation for subfolders/pages
 # that are migrated to TypeScript
 group("closure_compile_module") {
-  deps = [
-    ":closure_compile_local_module",
-    "os_people_page:closure_compile_module",
-  ]
+  deps = [ ":closure_compile_local_module" ]
 }
 
 js_type_check("closure_compile_local_module") {

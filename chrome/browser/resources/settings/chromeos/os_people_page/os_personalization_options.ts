@@ -39,6 +39,30 @@ export class OsSettingsPersonalizationOptionsElement extends
     };
   }
 
+  /**
+   * the autocomplete search suggestions CrToggleElement.
+   */
+  getSearchSuggestToggle(): SettingsToggleButtonElement|null {
+    return this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#searchSuggestToggle');
+  }
+
+  /**
+   * the anonymized URL collection CrToggleElement.
+   */
+  getUrlCollectionToggle(): SettingsToggleButtonElement|null {
+    return this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#urlCollectionToggle');
+  }
+
+  /**
+   * the Drive suggestions CrToggleElement.
+   */
+  getDriveSuggestToggle(): SettingsToggleButtonElement|null {
+    return this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#driveSuggestControl');
+  }
+
   // <if expr="_google_chrome">
   private onUseSpellingServiceToggle_(event: Event) {
     // If turning on using the spelling service, automatically turn on
@@ -53,7 +77,6 @@ export class OsSettingsPersonalizationOptionsElement extends
         !!(this.prefs as {spellcheck?: any}).spellcheck &&
         this.getPref<string[]>('spellcheck.dictionaries').value.length > 0);
   }
-
   // </if><!-- _google_chrome -->
 }
 

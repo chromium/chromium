@@ -9,80 +9,66 @@
  * @see components/sync/driver/sync_service.h
  *
  * TODO(jamescook): Encryption options.
- *
- * @typedef {{
- *   osAppsRegistered: boolean,
- *   osAppsSynced: boolean,
- *   osPreferencesRegistered: boolean,
- *   osPreferencesSynced: boolean,
- *   syncAllOsDataTypes: boolean,
- *   wallpaperEnabled: boolean,
- *   osWifiConfigurationsRegistered: boolean,
- *   osWifiConfigurationsSynced: boolean,
- * }}
  */
-export let OsSyncPrefs;
+export interface OsSyncPrefs {
+  osAppsRegistered: boolean;
+  osAppsSynced: boolean;
+  osPreferencesRegistered: boolean;
+  osPreferencesSynced: boolean;
+  syncAllOsTypes: boolean;
+  wallpaperEnabled: boolean;
+  osWifiConfigurationsRegistered: boolean;
+  osWifiConfigurationsSynced: boolean;
+}
 
-/** @interface */
-export class OsSyncBrowserProxy {
+export interface OsSyncBrowserProxy {
   /**
    * Function to invoke when the sync page has been navigated to. This
    * registers the UI as the "active" sync UI.
    */
-  didNavigateToOsSyncPage() {}
+  didNavigateToOsSyncPage(): void;
 
   /**
    * Function to invoke when leaving the sync page so that the C++ layer can
    * be notified that the sync UI is no longer open.
    */
-  didNavigateAwayFromOsSyncPage() {}
+  didNavigateAwayFromOsSyncPage(): void;
 
   /**
    * Function to invoke when the WebUI wants an update of the OsSyncPrefs.
    */
-  sendOsSyncPrefsChanged() {}
+  sendOsSyncPrefsChanged(): void;
 
   /**
    * Sets which types of data to sync.
-   * @param {!OsSyncPrefs} osSyncPrefs
    */
-  setOsSyncDatatypes(osSyncPrefs) {}
+  setOsSyncDatatypes(osSyncPrefs: OsSyncPrefs): void;
 }
 
-/** @type {?OsSyncBrowserProxy} */
-let instance = null;
+let instance: OsSyncBrowserProxy|null = null;
 
-/**
- * @implements {OsSyncBrowserProxy}
- */
-export class OsSyncBrowserProxyImpl {
-  /** @return {!OsSyncBrowserProxy} */
-  static getInstance() {
+export class OsSyncBrowserProxyImpl implements OsSyncBrowserProxy {
+  static getInstance(): OsSyncBrowserProxy {
     return instance || (instance = new OsSyncBrowserProxyImpl());
   }
 
-  /** @param {!OsSyncBrowserProxy} obj */
-  static setInstanceForTesting(obj) {
+  static setInstanceForTesting(obj: OsSyncBrowserProxy): void {
     instance = obj;
   }
 
-  /** @override */
-  didNavigateToOsSyncPage() {
+  didNavigateToOsSyncPage(): void {
     chrome.send('DidNavigateToOsSyncPage');
   }
 
-  /** @override */
-  didNavigateAwayFromOsSyncPage() {
+  didNavigateAwayFromOsSyncPage(): void {
     chrome.send('DidNavigateAwayFromOsSyncPage');
   }
 
-  /** @override */
-  sendOsSyncPrefsChanged() {
+  sendOsSyncPrefsChanged(): void {
     chrome.send('OsSyncPrefsDispatch');
   }
 
-  /** @override */
-  setOsSyncDatatypes(osSyncPrefs) {
+  setOsSyncDatatypes(osSyncPrefs: OsSyncPrefs): void {
     return chrome.send('SetOsSyncDatatypes', [osSyncPrefs]);
   }
 }
