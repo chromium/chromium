@@ -25,6 +25,19 @@ is located at chrome/browser/resources/downloads/BUILD.gn.
 These files specify the build steps necessary to convert the checked-in code to
 the code that should be served at runtime.
 
+## General guidance for using WebUI build rules
+* WebUI build rules should typically only be used in WebUI-related folders
+  (e.g. chrome/browser/resources, ui/webui/resources, and folders within
+  components/ and content/ that contain WebUI code).
+
+* WebUI build rules should only be used directly or via the wrapper rules
+  documented here ([build_webui](#build_webui),
+  [build_webui_tests](#build_webui_tests),
+  [build_cr_component](#build_cr_component)). If
+  you want to use any of the rules below from within another tool or script,
+  please get a review from one of the cross-platform, non-backend WebUI
+  [OWNERS](https://source.chromium.org/chromium/chromium/src/+/main:ui/webui/PLATFORM_OWNERS).
+
 ## WebUI build rules
 
 ### **html_to_wrapper, css_to_wrapper**
