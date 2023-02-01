@@ -29,9 +29,6 @@ class SandboxSupportMacImpl : public mojom::SandboxSupportMac {
 
   // content::mojom::SandboxSupportMac:
   void GetSystemColors(GetSystemColorsCallback callback) override;
-  void LoadFont(const std::u16string& font_name,
-                float font_point_size,
-                LoadFontCallback callback) override;
 
  private:
   mojo::ReceiverSet<mojom::SandboxSupportMac> receivers_;

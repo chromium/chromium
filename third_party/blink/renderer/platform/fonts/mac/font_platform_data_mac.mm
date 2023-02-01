@@ -28,8 +28,6 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
-#include "third_party/blink/public/platform/mac/web_sandbox_support.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/mac/core_text_font_format_support.h"
@@ -103,64 +101,6 @@ static bool CanLoadInProcess(NSFont* ns_font) {
   return ![font_name isEqualToString:@"LastResort"];
 }
 
-static CFDictionaryRef CascadeToLastResortFontAttributes() {
-  static CFDictionaryRef attributes;
-  if (attributes)
-    return attributes;
-
-  base::ScopedCFTypeRef<CTFontDescriptorRef> last_resort(
-      CTFontDescriptorCreateWithNameAndSize(CFSTR("LastResort"), 0));
-  const void* descriptors[] = {last_resort};
-  base::ScopedCFTypeRef<CFArrayRef> values_array(
-      CFArrayCreate(kCFAllocatorDefault, descriptors, std::size(descriptors),
-                    &kCFTypeArrayCallBacks));
-
-  const void* keys[] = {kCTFontCascadeListAttribute};
-  const void* values[] = {values_array};
-  attributes = CFDictionaryCreate(
-      kCFAllocatorDefault, keys, values, std::size(keys),
-      &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-  return attributes;
-}
-
-static sk_sp<SkTypeface> LoadFromBrowserProcess(NSFont* ns_font,
-                                                float text_size) {
-  // Send cross-process request to load font.
-  WebSandboxSupport* sandbox_support = Platform::Current()->GetSandboxSupport();
-  if (!sandbox_support) {
-    // This function should only be called in response to an error loading a
-    // font due to being blocked by the sandbox.
-    // This by definition shouldn't happen if there is no sandbox support.
-    NOTREACHED();
-    return nullptr;
-  }
-
-  base::ScopedCFTypeRef<CTFontDescriptorRef> loaded_data_descriptor;
-  uint32_t font_id;
-  if (!sandbox_support->LoadFont(base::mac::NSToCFCast(ns_font),
-                                 &loaded_data_descriptor, &font_id)) {
-    // TODO crbug.com/461279: Make this appear in the inspector console?
-    DLOG(ERROR)
-        << "Loading user font \"" << [[ns_font familyName] UTF8String]
-        << "\" from non system location failed. Corrupt or missing font file?";
-    return nullptr;
-  }
-
-  base::ScopedCFTypeRef<CTFontDescriptorRef> data_descriptor_with_cascade(
-      CTFontDescriptorCreateCopyWithAttributes(
-          loaded_data_descriptor, CascadeToLastResortFontAttributes()));
-  base::ScopedCFTypeRef<CTFontRef> ct_font(CTFontCreateWithFontDescriptor(
-      data_descriptor_with_cascade.get(), text_size, 0));
-  sk_sp<SkTypeface> return_font = SkMakeTypefaceFromCTFont(ct_font);
-
-  if (!return_font.get())
-    // TODO crbug.com/461279: Make this appear in the inspector console?
-    DLOG(ERROR)
-        << "Instantiating SkTypeface from user font failed for font family \""
-        << [[ns_font familyName] UTF8String] << "\".";
-  return return_font;
-}
-
 std::unique_ptr<FontPlatformData> FontPlatformDataFromNSFont(
     NSFont* ns_font,
     float size,
@@ -173,15 +113,13 @@ std::unique_ptr<FontPlatformData> FontPlatformDataFromNSFont(
     OpticalSizing optical_sizing,
     FontVariationSettings* variation_settings) {
   DCHECK(ns_font);
-  sk_sp<SkTypeface> typeface;
-  if (CanLoadInProcess(ns_font)) {
-    typeface = SkMakeTypefaceFromCTFont(base::mac::NSToCFCast(ns_font));
-  } else {
-    // In process loading fails for cases where third party font manager
-    // software registers fonts in non system locations such as /Library/Fonts
-    // and ~/Library Fonts, see crbug.com/72727 or crbug.com/108645.
-    typeface = LoadFromBrowserProcess(ns_font, size);
-  }
+
+  // fontd automatically issues a sandbox extension to permit reading
+  // activated fonts that would otherwise be restricted by the sandbox.
+  DCHECK(CanLoadInProcess(ns_font));
+
+  sk_sp<SkTypeface> typeface =
+      SkMakeTypefaceFromCTFont(base::mac::NSToCFCast(ns_font));
 
   auto make_typeface_fontplatformdata = [&typeface, &size, &synthetic_bold,
                                          &synthetic_italic, &text_rendering,

@@ -13,10 +13,4 @@ interface SandboxSupportMac {
   // Returns the shared memory region containing system theme color
   // information.
   GetSystemColors() => (mojo_base.mojom.ReadOnlySharedMemoryRegion region);
-
-  // Request the browser to load a font into a shared memory buffer.
-  [Sync]
-  LoadFont(mojo_base.mojom.String16 font_name, float font_point_size)
-      => (mojo_base.mojom.ReadOnlySharedMemoryRegion? font_data,
-          uint32 font_id);
 };

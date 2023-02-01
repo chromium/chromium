@@ -312,8 +312,6 @@ source_set("common") {
       "font_list_mac.mm",
       "mac/attributed_string_type_converters.h",
       "mac/attributed_string_type_converters.mm",
-      "mac/font_loader.h",
-      "mac/font_loader.mm",
       "mac/task_port_policy.cc",
       "mac/task_port_policy.h",
     ]

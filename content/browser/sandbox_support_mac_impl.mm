@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #import "content/browser/theme_helper_mac.h"
-#include "content/common/mac/font_loader.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -28,12 +27,6 @@ void SandboxSupportMacImpl::GetSystemColors(GetSystemColorsCallback callback) {
       base::BindOnce(&ThemeHelperMac::DuplicateReadOnlyColorMapRegion,
                      base::Unretained(ThemeHelperMac::GetInstance())),
       std::move(callback));
-}
-
-void SandboxSupportMacImpl::LoadFont(const std::u16string& font_name,
-                                     float font_point_size,
-                                     LoadFontCallback callback) {
-  FontLoader::LoadFont(font_name, font_point_size, std::move(callback));
 }
 
 }  // namespace content
