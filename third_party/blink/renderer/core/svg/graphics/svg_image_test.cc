@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -293,7 +294,15 @@ TEST_F(SVGImageTest, NestedSVGWithSmilAnimationIsAnimated) {
   EXPECT_TRUE(GetImage().MaybeAnimated());
 }
 
-class SVGImageSimTest : public SimTest, private ScopedMockOverlayScrollbars {};
+class SVGImageSimTest : public SimTest, private ScopedMockOverlayScrollbars {
+ public:
+  static void WaitForTimer(TimerBase& timer) {
+    if (!timer.IsActive()) {
+      return;
+    }
+    test::RunDelayedTasks(base::Milliseconds(1) + timer.NextFireInterval());
+  }
+};
 
 TEST_F(SVGImageSimTest, PageVisibilityHiddenToVisible) {
   SimRequest main_resource("https://example.com/", "text/html");
@@ -322,7 +331,7 @@ TEST_F(SVGImageSimTest, PageVisibilityHiddenToVisible) {
 
   // Wait for the next animation frame to be triggered, and then trigger a new
   // frame. The image animation timeline should be running.
-  test::RunDelayedTasks(base::Milliseconds(1) + timer.NextFireInterval());
+  WaitForTimer(timer);
   Compositor().BeginFrame();
 
   EXPECT_FALSE(svg_image_chrome_client.IsSuspended());
@@ -344,6 +353,81 @@ TEST_F(SVGImageSimTest, PageVisibilityHiddenToVisible) {
   Compositor().BeginFrame();
 
   EXPECT_FALSE(svg_image_chrome_client.IsSuspended());
+}
+
+const char kSmilAnimatedDocument[] = R"SVG(
+<svg xmlns='http://www.w3.org/2000/svg' fill='red' width='10' height='10'>
+  <circle cx='5' cy='5'>
+    <animate attributeName='r' values='0; 10; 0' dur='10s'
+             repeatCount='indefinite'/>
+  </circle>
+</svg>
+)SVG";
+
+TEST_F(SVGImageSimTest, AnimationsPausedWhenImageScrolledOutOfView) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimSubresourceRequest image_resource("https://example.com/image.svg",
+                                       "image/svg+xml");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <img src="image.svg" width="20" id="image">
+    <div style="height: 10000px"></div>
+  )HTML");
+  image_resource.Complete(kSmilAnimatedDocument);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  Element* element = GetDocument().getElementById("image");
+  ASSERT_TRUE(IsA<HTMLImageElement>(element));
+
+  ImageResourceContent* image_content =
+      To<HTMLImageElement>(*element).CachedImage();
+  ASSERT_TRUE(image_content);
+  ASSERT_TRUE(image_content->IsLoaded());
+  ASSERT_TRUE(image_content->HasImage());
+  Image* image = image_content->GetImage();
+  ASSERT_TRUE(IsA<SVGImage>(image));
+  SVGImage& svg_image = To<SVGImage>(*image);
+  ASSERT_TRUE(svg_image.MaybeAnimated());
+  auto& svg_image_chrome_client = svg_image.ChromeClientForTesting();
+  TimerBase& timer = svg_image_chrome_client.GetTimerForTesting();
+
+  // Wait for the next animation frame to be triggered, and then trigger a new
+  // frame. The image animation timeline should be running.
+  WaitForTimer(timer);
+  Compositor().BeginFrame();
+
+  EXPECT_FALSE(svg_image_chrome_client.IsSuspended());
+  EXPECT_TRUE(timer.IsActive());
+
+  // Scroll down to the bottom of the document to move the image out of the
+  // viewport, and then wait for the animation timer to fire. This triggers an
+  // "image changed" notification, which (re)sets the delay-invalidation
+  // flag. The following begin-frame then observes that the image is not
+  // visible.
+  GetDocument().domWindow()->scrollBy(0, 10000);
+  test::RunDelayedTasks(base::Milliseconds(1) + timer.NextFireInterval());
+  Compositor().BeginFrame();
+  EXPECT_TRUE(timer.IsActive());
+
+  // Trigger another animation frame. This makes the WillRenderImage() query
+  // return false (because delay-invalidation is set), which in turn suspends
+  // the image animation. (Suspend the image's animation timeline.)
+  test::RunDelayedTasks(base::Milliseconds(1) + timer.NextFireInterval());
+
+  EXPECT_TRUE(svg_image_chrome_client.IsSuspended());
+  EXPECT_FALSE(timer.IsActive());
+
+  // Scroll back up to make the image visible. The following paint observes
+  // that the image is now visible, and triggers a paint that resume the image
+  // animation.
+  GetDocument().domWindow()->scrollBy(0, -10000);
+  Compositor().BeginFrame();
+
+  EXPECT_FALSE(svg_image_chrome_client.IsSuspended());
+  EXPECT_TRUE(timer.IsActive());
 }
 
 TEST_F(SVGImageSimTest, TwoImagesSameSVGImageDifferentSize) {
