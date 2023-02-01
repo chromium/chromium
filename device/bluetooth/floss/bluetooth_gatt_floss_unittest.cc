@@ -52,39 +52,10 @@ using CharProperty = device::BluetoothGattCharacteristic::Property;
 class BluetoothGattFlossTest : public testing::Test {
  public:
   void SetUp() override {
-    std::unique_ptr<floss::FlossDBusManagerSetter> dbus_setter =
-        floss::FlossDBusManager::GetSetterForTesting();
-
-    auto fake_floss_adapter_client = std::make_unique<FakeFlossAdapterClient>();
-    auto fake_floss_gatt_manager_client =
-        std::make_unique<FakeFlossGattManagerClient>();
-    auto fake_floss_manager_client = std::make_unique<FakeFlossManagerClient>();
-    auto fake_floss_battery_manager_client =
-        std::make_unique<FakeFlossBatteryManagerClient>();
-
-    fake_floss_adapter_client_ = fake_floss_adapter_client.get();
-    fake_floss_gatt_manager_client_ = fake_floss_gatt_manager_client.get();
-    fake_floss_manager_client_ = fake_floss_manager_client.get();
-    fake_floss_battery_manager_client_ =
-        fake_floss_battery_manager_client.get();
-
-    dbus_setter->SetFlossManagerClient(std::move(fake_floss_manager_client));
-    dbus_setter->SetFlossAdapterClient(std::move(fake_floss_adapter_client));
-    dbus_setter->SetFlossGattManagerClient(
-        std::move(fake_floss_gatt_manager_client));
-    dbus_setter->SetFlossSocketManager(
-        std::make_unique<FakeFlossSocketManager>());
-    dbus_setter->SetFlossLEScanClient(
-        std::make_unique<FakeFlossLEScanClient>());
-    dbus_setter->SetFlossAdvertiserClient(
-        std::make_unique<FakeFlossAdvertiserClient>());
-    dbus_setter->SetFlossBatteryManagerClient(
-        std::make_unique<FakeFlossBatteryManagerClient>());
-    dbus_setter->SetFlossLoggingClient(
-        std::make_unique<FakeFlossLoggingClient>());
-#if BUILDFLAG(IS_CHROMEOS)
-    dbus_setter->SetFlossAdminClient(std::make_unique<FakeFlossAdminClient>());
-#endif  // BUILDFLAG(IS_CHROMEOS)
+    // TODO(b/266989920): GetSetterForTesting method used as a shortcut to
+    // initiate fake DBUS instances and fake clients. Replace this call with a
+    // more proper init after Floss fake implement is completed.
+    FlossDBusManager::GetSetterForTesting();
 
     // Always initialize and enable adapter for Gatt tests.
     InitializeAdapter();
@@ -92,11 +63,26 @@ class BluetoothGattFlossTest : public testing::Test {
     SetClientRegistered();
   }
 
+  FakeFlossManagerClient* GetFakeManagerClient() {
+    return static_cast<FakeFlossManagerClient*>(
+        FlossDBusManager::Get()->GetManagerClient());
+  }
+
+  FakeFlossAdapterClient* GetFakeAdapterClient() {
+    return static_cast<FakeFlossAdapterClient*>(
+        floss::FlossDBusManager::Get()->GetAdapterClient());
+  }
+
+  FakeFlossGattManagerClient* GetFakeGattManagerClient() {
+    return static_cast<FakeFlossGattManagerClient*>(
+        FlossDBusManager::Get()->GetGattManagerClient());
+  }
+
   void InitializeAdapter() {
     adapter_ = BluetoothAdapterFloss::CreateAdapter();
 
-    fake_floss_manager_client_->SetAdapterPowered(/*adapter=*/kUseThisAdapter,
-                                                  /*powered=*/true);
+    GetFakeManagerClient()->SetAdapterPowered(/*adapter=*/kUseThisAdapter,
+                                              /*powered=*/true);
 
     base::RunLoop run_loop;
     adapter_->Initialize(run_loop.QuitClosure());
@@ -111,9 +97,10 @@ class BluetoothGattFlossTest : public testing::Test {
   void EnableAdapter() {
     ASSERT_TRUE(adapter_.get() != nullptr);
 
-    fake_floss_manager_client_->NotifyObservers(
+    GetFakeManagerClient()->NotifyObservers(
         base::BindLambdaForTesting([](FlossManagerClient::Observer* observer) {
-          observer->AdapterEnabledChanged(kUseThisAdapter, /*enabled=*/true);
+          observer->AdapterEnabledChanged(kUseThisAdapter,
+                                          /*enabled=*/true);
         }));
     base::RunLoop().RunUntilIdle();
   }
@@ -126,15 +113,15 @@ class BluetoothGattFlossTest : public testing::Test {
   }
 
   void SetClientRegistered() {
-    fake_floss_gatt_manager_client_->GattClientRegistered(GattStatus::kSuccess,
-                                                          kGattClientId);
+    GetFakeGattManagerClient()->GattClientRegistered(GattStatus::kSuccess,
+                                                     kGattClientId);
   }
 
   void SetAclConnectionState(std::string address, bool connected) {
     FlossDeviceId device;
     device.address = address;
 
-    fake_floss_adapter_client_->NotifyObservers(base::BindLambdaForTesting(
+    GetFakeAdapterClient()->NotifyObservers(base::BindLambdaForTesting(
         [&connected, &device](FlossAdapterClient::Observer* observer) {
           if (connected) {
             observer->AdapterDeviceConnected(device);
@@ -147,21 +134,20 @@ class BluetoothGattFlossTest : public testing::Test {
   void SetGattConnectionState(GattStatus status,
                               bool connected,
                               std::string address) {
-    fake_floss_gatt_manager_client_->GattClientConnectionState(
-        status, kGattClientId, connected, address);
+    GetFakeGattManagerClient()->GattClientConnectionState(status, kGattClientId,
+                                                          connected, address);
   }
 
   void SetGattSearchComplete(std::string address,
                              const std::vector<GattService>& services,
                              GattStatus status) {
-    fake_floss_gatt_manager_client_->GattSearchComplete(address, services,
-                                                        status);
+    GetFakeGattManagerClient()->GattSearchComplete(address, services, status);
   }
 
   void SetGattConfigureMtu(std::string address,
                            int32_t mtu,
                            GattStatus status) {
-    fake_floss_gatt_manager_client_->GattConfigureMtu(address, mtu, status);
+    GetFakeGattManagerClient()->GattConfigureMtu(address, mtu, status);
   }
 
   GattService CreateFakeServiceFor(const device::BluetoothUUID& uuid) {
@@ -178,13 +164,6 @@ class BluetoothGattFlossTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
-
-  // Holds pointer to FakeFloss*Client so that we can manipulate the fakes
-  // within the tests.
-  raw_ptr<FakeFlossAdapterClient> fake_floss_adapter_client_;
-  raw_ptr<FakeFlossGattManagerClient> fake_floss_gatt_manager_client_;
-  raw_ptr<FakeFlossManagerClient> fake_floss_manager_client_;
-  raw_ptr<FakeFlossBatteryManagerClient> fake_floss_battery_manager_client_;
 };
 
 TEST_F(BluetoothGattFlossTest, ConnectAndResolveServices) {
