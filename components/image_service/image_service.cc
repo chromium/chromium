@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -129,13 +130,18 @@ class ImageService::SuggestEntityImageURLFetcher {
     const TemplateURLService* template_url_service =
         autocomplete_provider_client_->GetTemplateURLService();
     if (template_url_service == nullptr) {
-      return;
+      return std::move(callback).Run(GURL());
     }
 
+    // We are relying on the user's consent to Sync History, which in practice
+    // means only Google should get URL-keyed metadata requests via Suggest.
     const TemplateURL* template_url =
         template_url_service->GetDefaultSearchProvider();
-    if (template_url == nullptr) {
-      return;
+    if (template_url == nullptr ||
+        template_url->GetEngineType(
+            template_url_service->search_terms_data()) !=
+            SEARCH_ENGINE_GOOGLE) {
+      return std::move(callback).Run(GURL());
     }
 
     DCHECK(!callback_);
