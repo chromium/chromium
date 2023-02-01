@@ -915,6 +915,19 @@ void WallpaperControllerImpl::Init(
   SetDevicePolicyWallpaperPath(device_policy_wallpaper_path);
 }
 
+bool WallpaperControllerImpl::CanSetUserWallpaper(
+    const AccountId& account_id) const {
+  // There is no visible wallpaper in kiosk mode.
+  if (IsInKioskMode()) {
+    return false;
+  }
+  // Don't allow user wallpapers while policy is in effect.
+  if (IsWallpaperControlledByPolicy(account_id)) {
+    return false;
+  }
+  return true;
+}
+
 void WallpaperControllerImpl::SetCustomWallpaper(
     const AccountId& account_id,
     const base::FilePath& file_path,
@@ -1957,17 +1970,6 @@ void WallpaperControllerImpl::SetDefaultWallpaperImpl(
   }
 }
 
-bool WallpaperControllerImpl::CanSetUserWallpaper(
-    const AccountId& account_id) const {
-  // There is no visible wallpaper in kiosk mode.
-  if (IsInKioskMode())
-    return false;
-  // Don't allow user wallpapers while policy is in effect.
-  if (IsWallpaperControlledByPolicy(account_id))
-    return false;
-  return true;
-}
-
 bool WallpaperControllerImpl::WallpaperIsAlreadyLoaded(
     const gfx::ImageSkia& image,
     bool compare_layouts,
@@ -2889,6 +2891,11 @@ constexpr bool WallpaperControllerImpl::IsWallpaperTypeSyncable(
 void WallpaperControllerImpl::SetDailyRefreshCollectionId(
     const AccountId& account_id,
     const std::string& collection_id) {
+  if (!CanSetUserWallpaper(account_id)) {
+    LOG(WARNING) << "Invalid request to set daily refresh collection id";
+    return;
+  }
+
   WallpaperInfo info;
   if (!GetUserWallpaperInfo(account_id, &info))
     return;

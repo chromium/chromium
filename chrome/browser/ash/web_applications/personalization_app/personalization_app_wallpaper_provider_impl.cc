@@ -516,6 +516,13 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
     return;
   }
 
+  auto* wallpaper_controller = WallpaperController::Get();
+  DCHECK(wallpaper_controller);
+  if (!wallpaper_controller->CanSetUserWallpaper(GetAccountId(profile_))) {
+    wallpaper_receiver_.ReportBadMessage("Invalid request to set wallpaper");
+    return;
+  }
+
   std::vector<ash::OnlineWallpaperVariant> variants;
   for (const auto& entry : image_asset_id_map_) {
     const ImageInfo& image_info = entry.second;
@@ -567,6 +574,14 @@ void PersonalizationAppWallpaperProviderImpl::SelectLocalImage(
     wallpaper_receiver_.ReportBadMessage("Invalid local image path selected");
     return;
   }
+
+  ash::WallpaperController* wallpaper_controller = WallpaperController::Get();
+  DCHECK(wallpaper_controller);
+  if (!wallpaper_controller->CanSetUserWallpaper(GetAccountId(profile_))) {
+    wallpaper_receiver_.ReportBadMessage("Invalid request to set wallpaper");
+    return;
+  }
+
   if (pending_select_local_image_callback_)
     std::move(pending_select_local_image_callback_).Run(/*success=*/false);
   pending_select_local_image_callback_ = std::move(callback);
@@ -576,7 +591,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectLocalImage(
   WallpaperControllerClientImpl::Get()->RecordWallpaperSourceUMA(
       ash::WallpaperType::kCustomized);
 
-  WallpaperController::Get()->SetCustomWallpaper(
+  wallpaper_controller->SetCustomWallpaper(
       GetAccountId(profile_), path, layout, preview_mode,
       base::BindOnce(
           &PersonalizationAppWallpaperProviderImpl::OnLocalImageSelected,
@@ -593,6 +608,13 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
         "Cannot call `SelectGooglePhotosPhoto()` without confirming that the "
         "Google Photos enterprise setting is enabled.");
     std::move(callback).Run(false);
+    return;
+  }
+
+  auto* wallpaper_controller = WallpaperController::Get();
+  DCHECK(wallpaper_controller);
+  if (!wallpaper_controller->CanSetUserWallpaper(GetAccountId(profile_))) {
+    wallpaper_receiver_.ReportBadMessage("Invalid request to set wallpaper");
     return;
   }
 
@@ -628,6 +650,13 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
     return;
   }
 
+  auto* wallpaper_controller = WallpaperController::Get();
+  DCHECK(wallpaper_controller);
+  if (!wallpaper_controller->CanSetUserWallpaper(GetAccountId(profile_))) {
+    wallpaper_receiver_.ReportBadMessage("Invalid request to set wallpaper");
+    return;
+  }
+
   if (pending_set_daily_refresh_callback_) {
     std::move(pending_set_daily_refresh_callback_)
         .Run(mojom::SetDailyRefreshResponse::New(/*success=*/false,
@@ -657,12 +686,11 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
   }
   DVLOG(1) << __func__ << " force_refresh=" << force_refresh;
 
-  auto* controller = WallpaperController::Get();
-  controller->SetGooglePhotosDailyRefreshAlbumId(GetAccountId(profile_),
-                                                 album_id);
+  wallpaper_controller->SetGooglePhotosDailyRefreshAlbumId(
+      GetAccountId(profile_), album_id);
 
   if (force_refresh) {
-    controller->UpdateDailyRefreshWallpaper(base::BindOnce(
+    wallpaper_controller->UpdateDailyRefreshWallpaper(base::BindOnce(
         &PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperForced,
         backend_weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -696,12 +724,17 @@ void PersonalizationAppWallpaperProviderImpl::SetDailyRefreshCollectionId(
   }
   pending_set_daily_refresh_callback_ = std::move(callback);
 
-  auto* controller = WallpaperController::Get();
-  controller->SetDailyRefreshCollectionId(GetAccountId(profile_),
-                                          collection_id);
+  auto* wallpaper_controller = WallpaperController::Get();
+  DCHECK(wallpaper_controller);
+  if (!wallpaper_controller->CanSetUserWallpaper(GetAccountId(profile_))) {
+    wallpaper_receiver_.ReportBadMessage("Invalid request to set wallpaper");
+    return;
+  }
+  wallpaper_controller->SetDailyRefreshCollectionId(GetAccountId(profile_),
+                                                    collection_id);
 
   absl::optional<ash::WallpaperInfo> info =
-      controller->GetActiveUserWallpaperInfo();
+      wallpaper_controller->GetActiveUserWallpaperInfo();
   DCHECK(info);
   if (info->type != WallpaperType::kDaily) {
     // Daily refresh is disabled.
@@ -724,7 +757,7 @@ void PersonalizationAppWallpaperProviderImpl::SetDailyRefreshCollectionId(
            << " collection_id=" << collection_id
            << " force_refresh=" << force_refresh;
   if (force_refresh) {
-    controller->UpdateDailyRefreshWallpaper(base::BindOnce(
+    wallpaper_controller->UpdateDailyRefreshWallpaper(base::BindOnce(
         &PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperForced,
         weak_ptr_factory_.GetWeakPtr()));
     return;

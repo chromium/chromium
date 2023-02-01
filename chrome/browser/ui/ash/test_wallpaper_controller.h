@@ -35,6 +35,9 @@ class TestWallpaperController : public ash::WallpaperController {
 
   void ClearCounts();
   bool was_client_set() const { return was_client_set_; }
+  void set_can_set_user_wallpaper(bool can_set_user_wallpaper) {
+    can_set_user_wallpaper_ = can_set_user_wallpaper;
+  }
   int remove_user_wallpaper_count() const {
     return remove_user_wallpaper_count_;
   }
@@ -82,6 +85,7 @@ class TestWallpaperController : public ash::WallpaperController {
             const base::FilePath& wallpapers,
             const base::FilePath& custom_wallpapers,
             const base::FilePath& device_policy_wallpaper) override;
+  bool CanSetUserWallpaper(const AccountId& account_id) const override;
   void SetCustomWallpaper(const AccountId& account_id,
                           const base::FilePath& file_path,
                           ash::WallpaperLayout layout,
@@ -161,6 +165,7 @@ class TestWallpaperController : public ash::WallpaperController {
 
  private:
   bool was_client_set_ = false;
+  bool can_set_user_wallpaper_ = true;
   int remove_user_wallpaper_count_ = 0;
   int set_default_wallpaper_count_ = 0;
   int set_custom_wallpaper_count_ = 0;

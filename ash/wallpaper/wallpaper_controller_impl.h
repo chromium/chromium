@@ -237,6 +237,7 @@ class ASH_EXPORT WallpaperControllerImpl
             const base::FilePath& wallpapers,
             const base::FilePath& custom_wallpapers,
             const base::FilePath& device_policy_wallpaper) override;
+  bool CanSetUserWallpaper(const AccountId& account_id) const override;
   void SetCustomWallpaper(const AccountId& account_id,
                           const base::FilePath& file_path,
                           WallpaperLayout layout,
@@ -435,10 +436,6 @@ class ASH_EXPORT WallpaperControllerImpl
   void SetDefaultWallpaperImpl(user_manager::UserType user_type,
                                bool show_wallpaper,
                                SetWallpaperCallback callback);
-
-  // When kiosk app is running or policy is enforced, setting a user wallpaper
-  // is not allowed.
-  bool CanSetUserWallpaper(const AccountId& account_id) const;
 
   // Returns true if the specified wallpaper is already stored in
   // |current_wallpaper_|. If |compare_layouts| is false, layout is ignored.

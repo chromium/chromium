@@ -21,6 +21,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/values.h"
@@ -371,6 +372,26 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaper) {
                variants})));
 }
 
+TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaperWhenBanned) {
+  test_wallpaper_controller()->set_can_set_user_wallpaper(false);
+  auto image_info = GetDefaultImageInfo();
+  std::vector<ash::OnlineWallpaperVariant> variants;
+  variants.emplace_back(image_info.asset_id, image_info.image_url,
+                        backdrop::Image::IMAGE_TYPE_UNKNOWN);
+
+  AddWallpaperImage(image_info);
+
+  EXPECT_TRUE(wallpaper_provider_remote()->is_connected());
+
+  wallpaper_provider_remote()->get()->SelectWallpaper(
+      image_info.asset_id, /*preview_mode=*/false,
+      base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
+  wallpaper_provider_remote()->FlushForTesting();
+
+  // Disconnected upon receiving `ReportBadMessage`.
+  EXPECT_FALSE(wallpaper_provider_remote()->is_connected());
+}
+
 TEST_F(PersonalizationAppWallpaperProviderImplTest, PreviewWallpaper) {
   test_wallpaper_controller()->ClearCounts();
 
@@ -505,6 +526,18 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
                            EXPECT_TRUE(response->force_refresh);
                          }));
   wallpaper_provider_remote()->FlushForTesting();
+}
+
+TEST_F(PersonalizationAppWallpaperProviderImplTest, SetDailyRefreshBanned) {
+  const std::string collection_id = "collection_id";
+  test_wallpaper_controller()->set_can_set_user_wallpaper(false);
+  EXPECT_TRUE(wallpaper_provider_remote()->is_connected());
+  wallpaper_provider_remote()->get()->SetDailyRefreshCollectionId(
+      collection_id,
+      base::BindLambdaForTesting(
+          [](mojom::SetDailyRefreshResponsePtr response) { NOTREACHED(); }));
+  wallpaper_provider_remote()->FlushForTesting();
+  EXPECT_FALSE(wallpaper_provider_remote()->is_connected());
 }
 
 class PersonalizationAppWallpaperProviderImplGooglePhotosTest
@@ -1038,6 +1071,18 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
+       SelectGooglePhotosPhotoBanned) {
+  test_wallpaper_controller()->set_can_set_user_wallpaper(false);
+  EXPECT_TRUE(wallpaper_provider_remote()->is_connected());
+  wallpaper_provider_remote()->get()->SelectGooglePhotosPhoto(
+      "OmnisVirLupus", ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+      /*preview_mode=*/false,
+      base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
+  wallpaper_provider_remote()->FlushForTesting();
+  EXPECT_FALSE(wallpaper_provider_remote()->is_connected());
+}
+
+TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
        SelectGooglePhotosAlbum) {
   test_wallpaper_controller()->ClearCounts();
   const std::string album_id = "OmnisVirLupus";
@@ -1059,6 +1104,19 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
                       EXPECT_TRUE(response->force_refresh);
                     }));
   wallpaper_provider_remote()->FlushForTesting();
+}
+
+TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
+       SelectGooglePhotosAlbumBanned) {
+  test_wallpaper_controller()->set_can_set_user_wallpaper(false);
+  EXPECT_TRUE(wallpaper_provider_remote()->is_connected());
+  FetchGooglePhotosEnabled();
+  wallpaper_provider_remote()->get()->SelectGooglePhotosAlbum(
+      "OmnisVirLupus",
+      base::BindLambdaForTesting(
+          [](mojom::SetDailyRefreshResponsePtr response) { NOTREACHED(); }));
+  wallpaper_provider_remote()->FlushForTesting();
+  EXPECT_FALSE(wallpaper_provider_remote()->is_connected());
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,

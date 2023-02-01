@@ -54,6 +54,11 @@ void TestWallpaperController::Init(
   NOTIMPLEMENTED();
 }
 
+bool TestWallpaperController::CanSetUserWallpaper(
+    const AccountId& account_id) const {
+  return can_set_user_wallpaper_;
+}
+
 void TestWallpaperController::SetCustomWallpaper(
     const AccountId& account_id,
     const base::FilePath& file_path,
