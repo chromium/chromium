@@ -76,4 +76,4 @@ w3ccanvas: |
 
     }%(attributes)s);
     </script>
-    %(scripts)s%(images)s
+    %(images)s

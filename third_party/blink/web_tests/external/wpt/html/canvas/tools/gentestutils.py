@@ -239,10 +239,6 @@ def _generate_test(test: Mapping[str, str], templates: Mapping[str, str],
     timeout_js = ('// META: timeout=%s\n' % test['timeout']
                   if 'timeout' in test else '')
 
-    scripts = ''
-    for s in test.get('scripts', []):
-        scripts += '<script src="%s"></script>\n' % (s)
-
     images = ''
     for src in test.get('images', []):
         img_id = src.split('/')[-1]
@@ -297,7 +293,6 @@ def _generate_test(test: Mapping[str, str], templates: Mapping[str, str],
         'height': height,
         'expected': expectation_html,
         'code': code,
-        'scripts': scripts,
         'fallback': fallback,
         'attributes': attributes,
         'context_args': context_args
