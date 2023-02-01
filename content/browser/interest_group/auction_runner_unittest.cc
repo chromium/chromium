@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -38,6 +39,7 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/mock_auction_process_manager.h"
+#include "content/browser/interest_group/test_interest_group_manager_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/aggregatable_report.mojom-shared.h"
 #include "content/common/private_aggregation_features.h"
@@ -59,6 +61,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -1325,11 +1328,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     // Need to clear `same_process_auction_process_manager_` since underlying
     // object may be owned by `interest_group_manager_`.
     same_process_auction_process_manager_ = nullptr;
-    interest_group_manager_ = std::make_unique<InterestGroupManagerImpl>(
-        base::FilePath(), /*in_memory=*/true,
-        InterestGroupManagerImpl::ProcessMode::kDedicated,
-        /*url_loader_factory=*/nullptr,
-        /*k_anonymity_service=*/nullptr);
+    interest_group_manager_ = std::make_unique<TestInterestGroupManagerImpl>(
+        frame_origin_, GetClientSecurityState(),
+        dummy_report_shared_url_loader_factory_);
     if (!auction_process_manager_) {
       auto same_process_auction_process_manager =
           std::make_unique<SameProcessAuctionProcessManager>();
@@ -1448,7 +1449,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
     reporter_ = std::move(reporter);
 
-    reporter_->Start(base::BindOnce(&AuctionRunnerTest::OnReportingComplete,
+    reporter_->Start(frame_origin_, GetClientSecurityState(),
+                     dummy_report_shared_url_loader_factory_,
+                     base::BindOnce(&AuctionRunnerTest::OnReportingComplete,
                                     base::Unretained(this)));
     // Invoke callback immediately, so as not to block reporter completion.
     reporter_->OnNavigateToWinningAdCallback().Run();
@@ -1456,7 +1459,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
   void OnReportingComplete() {
     DCHECK(reporter_);
-    result_.report_urls = reporter_->TakeReportUrls();
+    result_.report_urls = interest_group_manager_->TakeReportUrlsOfType(
+        InterestGroupManagerImpl::ReportType::kSendReportTo);
     result_.ad_beacon_map = reporter_->TakeAdBeaconMap();
     result_.private_aggregation_requests =
         reporter_->TakePrivateAggregationRequests();
@@ -1865,6 +1869,15 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
   network::TestURLLoaderFactory url_loader_factory_;
 
+  // ScopedURLLoaderFactory used for reports. Reports are short-circuited by the
+  // TestInterestGroupManagerImpl before they make it over the network, so this
+  // is only used for equality checks around making sure the right factory is
+  // passed to it.
+  scoped_refptr<network::SharedURLLoaderFactory>
+      dummy_report_shared_url_loader_factory_ =
+          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+              nullptr);
+
   std::unique_ptr<AuctionWorkletManager> auction_worklet_manager_;
 
   // This is used (and consumed) when starting an auction, if non-null. Allows
@@ -1885,8 +1898,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   raw_ptr<SameProcessAuctionProcessManager>
       same_process_auction_process_manager_ = nullptr;
 
-  // The InterestGroupManager is recreated and repopulated for each auction.
-  std::unique_ptr<InterestGroupManagerImpl> interest_group_manager_;
+  // The TestInterestGroupManager is recreated and repopulated for each auction.
+  std::unique_ptr<TestInterestGroupManagerImpl> interest_group_manager_;
 
   std::unique_ptr<AuctionRunner> auction_runner_;
   std::unique_ptr<InterestGroupAuctionReporter> reporter_;
@@ -6737,142 +6750,6 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
   }
 }
 
-// If the winning bidder crashes while coming up with the reporting URL, the
-// auction should succeed. While the bidder cannot provide any reporting
-// information, the seller's reporting information is respected.
-TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
-  StartStandardAuctionWithMockService();
-
-  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
-  ASSERT_TRUE(seller_worklet);
-  auto bidder1_worklet =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-  ASSERT_TRUE(bidder1_worklet);
-  auto bidder2_worklet =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
-  ASSERT_TRUE(bidder2_worklet);
-
-  PrivateAggregationRequests bidder_1_pa_requests;
-  bidder_1_pa_requests.push_back(
-      kExpectedGenerateBidPrivateAggregationRequest.Clone());
-  bidder1_worklet->InvokeGenerateBidCallback(
-      /*bid=*/7, GURL("https://ad1.com/"),
-      /*mojo_kanon_bid=*/nullptr,
-      /*ad_component_urls=*/absl::nullopt,
-      /*duration=*/base::TimeDelta(),
-      /*bidding_signals_data_version=*/
-      absl::nullopt,
-      /*debug_loss_report_url=*/absl::nullopt,
-      /*debug_win_report_url=*/absl::nullopt, std::move(bidder_1_pa_requests));
-  // The bidder pipe should be closed after it bids.
-  EXPECT_TRUE(bidder1_worklet->PipeIsClosed());
-  bidder1_worklet.reset();
-
-  // Score Bidder1's bid.
-  auto score_ad_params = seller_worklet->WaitForScoreAd();
-  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
-  EXPECT_EQ(7, score_ad_params.bid);
-  PrivateAggregationRequests score_ad_1_pa_requests;
-  score_ad_1_pa_requests.push_back(
-      kExpectedScoreAdPrivateAggregationRequest.Clone());
-  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
-      std::move(score_ad_params.score_ad_client))
-      ->OnScoreAdComplete(
-          /*score=*/11,
-          /*reject_reason=*/
-          auction_worklet::mojom::RejectReason::kNotAvailable,
-          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
-          /*debug_loss_report_url=*/absl::nullopt,
-          /*debug_win_report_url=*/absl::nullopt,
-          std::move(score_ad_1_pa_requests),
-          /*errors=*/{});
-
-  PrivateAggregationRequests bidder_2_pa_requests;
-  bidder_2_pa_requests.push_back(
-      kExpectedGenerateBidPrivateAggregationRequest.Clone());
-  bidder2_worklet->InvokeGenerateBidCallback(
-      /*bid=*/5, GURL("https://ad2.com/"),
-      /*mojo_kanon_bid=*/nullptr,
-      /*ad_component_urls=*/absl::nullopt,
-      /*duration=*/base::TimeDelta(),
-      /*bidding_signals_data_version=*/
-      absl::nullopt,
-      /*debug_loss_report_url=*/absl::nullopt,
-      /*debug_win_report_url=*/absl::nullopt, std::move(bidder_2_pa_requests));
-  // The bidder pipe should be closed after it bids.
-  EXPECT_TRUE(bidder2_worklet->PipeIsClosed());
-  bidder2_worklet.reset();
-
-  // Score Bidder2's bid.
-  score_ad_params = seller_worklet->WaitForScoreAd();
-  EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
-  EXPECT_EQ(5, score_ad_params.bid);
-  PrivateAggregationRequests score_ad_2_pa_requests;
-  score_ad_2_pa_requests.push_back(
-      kExpectedScoreAdPrivateAggregationRequest.Clone());
-  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
-      std::move(score_ad_params.score_ad_client))
-      ->OnScoreAdComplete(
-          /*score=*/10,
-          /*reject_reason=*/
-          auction_worklet::mojom::RejectReason::kNotAvailable,
-          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
-          /*debug_loss_report_url=*/absl::nullopt,
-          /*debug_win_report_url=*/absl::nullopt,
-          std::move(score_ad_2_pa_requests),
-          /*errors=*/{});
-
-  PrivateAggregationRequests report_result_pa_requests;
-  report_result_pa_requests.push_back(
-      kExpectedReportResultPrivateAggregationRequest.Clone());
-
-  // Bidder1 crashes while running ReportWin.
-  seller_worklet->WaitForReportResult();
-  seller_worklet->InvokeReportResultCallback(
-      /*report_url=*/GURL("https://seller.report.test/"),
-      /*ad_beacon_map=*/{}, std::move(report_result_pa_requests));
-  mock_auction_process_manager_->WaitForWinningBidderReload();
-  bidder1_worklet =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-  bidder1_worklet->WaitForReportWin();
-  bidder1_worklet.reset();
-  auction_run_loop_->Run();
-
-  EXPECT_THAT(result_.errors, testing::ElementsAre(base::StringPrintf(
-                                  "%s crashed.", kBidder1Url.spec().c_str())));
-  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
-  EXPECT_TRUE(result_.ad_component_urls.empty());
-  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre(
-                                       GURL("https://seller.report.test/")));
-  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
-  EXPECT_THAT(
-      result_.private_aggregation_requests,
-      testing::UnorderedElementsAre(
-          testing::Pair(kBidder1,
-                        ElementsAreRequests(
-                            kExpectedGenerateBidPrivateAggregationRequest)),
-          testing::Pair(kBidder2,
-                        ElementsAreRequests(
-                            kExpectedGenerateBidPrivateAggregationRequest)),
-          testing::Pair(kSeller,
-                        ElementsAreRequests(
-                            kExpectedScoreAdPrivateAggregationRequest,
-                            kExpectedScoreAdPrivateAggregationRequest,
-                            kExpectedReportResultPrivateAggregationRequest))));
-  EXPECT_THAT(result_.interest_groups_that_bid,
-              testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
-            result_.winning_group_ad_metadata);
-  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
-                  /*expected_sellers=*/1);
-}
-
 // Should not have any debugging win/loss report URLs after auction when feature
 // kBiddingAndScoringDebugReportingAPI is not enabled.
 TEST_F(AuctionRunnerTest, ForDebuggingOnlyReporting) {
@@ -6905,21 +6782,17 @@ TEST_F(AuctionRunnerTest, ForDebuggingOnlyReporting) {
   EXPECT_EQ(0u, res.debug_win_report_urls.size());
 }
 
-// If the seller crashes before all bids are scored, the auction fails. If
-// the seller crashes during the reporting phase, the auction completes
-// successfully, and the bidder's reportWin() method is invoked. Seller load
-// failures look the same to auctions, so this test also covers load failures in
-// the same places. Note that a seller worklet load error while waiting for
-// bidder worklet processes is covered in another test, and looks exactly like a
-// crash at the same point to the AuctionRunner.
+// If the seller crashes before all bids are scored, the auction fails. Seller
+// load failures look the same to auctions, so this test also covers load
+// failures in the same places. Note that a seller worklet load error while
+// waiting for bidder worklet processes is covered in another test, and looks
+// exactly like a crash at the same point to the AuctionRunner.
 TEST_F(AuctionRunnerTest, SellerCrash) {
   enum class CrashPhase {
     kLoad,
     kScoreBid,
-    kReportResult,
   };
-  for (CrashPhase crash_phase :
-       {CrashPhase::kLoad, CrashPhase::kScoreBid, CrashPhase::kReportResult}) {
+  for (CrashPhase crash_phase : {CrashPhase::kLoad, CrashPhase::kScoreBid}) {
     SCOPED_TRACE(static_cast<int>(crash_phase));
 
     StartStandardAuctionWithMockService();
@@ -6933,14 +6806,9 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
         mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
     ASSERT_TRUE(bidder2_worklet);
 
-    // While loop to allow breaking when the crash stage is reached.
-    while (true) {
-      if (crash_phase == CrashPhase::kLoad) {
-        seller_worklet->set_expect_send_pending_signals_requests_called(false);
-        seller_worklet.reset();
-        break;
-      }
-
+    if (crash_phase == CrashPhase::kLoad) {
+      seller_worklet->set_expect_send_pending_signals_requests_called(false);
+    } else {
       // Generate both bids, wait for seller to receive them..
       bidder1_worklet->InvokeGenerateBidCallback(/*bid=*/5,
                                                  GURL("https://ad1.com/"));
@@ -6951,101 +6819,29 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
 
       // Wait for SendPendingSignalsRequests() invocation.
       task_environment()->RunUntilIdle();
-
-      if (crash_phase == CrashPhase::kScoreBid) {
-        seller_worklet.reset();
-        break;
-      }
-      // Score Bidder1's bid.
-      bidder1_worklet.reset();
-      EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
-      EXPECT_EQ(5, score_ad_params.bid);
-      mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
-          std::move(score_ad_params.score_ad_client))
-          ->OnScoreAdComplete(
-              /*score=*/10,
-              /*reject_reason=*/
-              auction_worklet::mojom::RejectReason::kNotAvailable,
-              auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-              /*scoring_signals_data_version=*/0,
-              /*has_scoring_signals_data_version=*/false,
-              /*debug_loss_report_url=*/absl::nullopt,
-              /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-              /*errors=*/{});
-
-      // Score Bidder2's bid.
-      EXPECT_EQ(kBidder2, score_ad_params2.interest_group_owner);
-      EXPECT_EQ(7, score_ad_params2.bid);
-      mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
-          std::move(score_ad_params2.score_ad_client))
-          ->OnScoreAdComplete(
-              /*score=*/11,
-              /*reject_reason=*/
-              auction_worklet::mojom::RejectReason::kNotAvailable,
-              auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-              /*scoring_signals_data_version=*/0,
-              /*has_scoring_signals_data_version=*/false,
-              /*debug_loss_report_url=*/absl::nullopt,
-              /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-              /*errors=*/{});
-
-      seller_worklet->WaitForReportResult();
-      // Crash the seller.
-      DCHECK_EQ(CrashPhase::kReportResult, crash_phase);
-      seller_worklet.reset();
-
-      mock_auction_process_manager_->WaitForWinningBidderReload();
-      bidder2_worklet =
-          mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
-      bidder2_worklet->WaitForReportWin();
-      bidder2_worklet->InvokeReportWinCallback(
-          /*report_url=*/GURL("https://bidder.report.test/"));
-      break;
     }
+
+    // Simulate seller crash.
+    seller_worklet.reset();
 
     // Wait for auction to complete.
     auction_run_loop_->Run();
 
-    if (crash_phase != CrashPhase::kReportResult) {
-      EXPECT_THAT(result_.errors,
-                  testing::ElementsAre(base::StringPrintf(
-                      "%s crashed.", kSellerUrl.spec().c_str())));
-      // No bidder won, seller crashed.
-      EXPECT_FALSE(result_.winning_group_id);
-      EXPECT_FALSE(result_.ad_url);
-      EXPECT_TRUE(result_.ad_component_urls.empty());
-      EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
-      EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
-      EXPECT_TRUE(result_.private_aggregation_requests.empty());
-      EXPECT_THAT(result_.interest_groups_that_bid,
-                  testing::UnorderedElementsAre());
-      EXPECT_EQ("", result_.winning_group_ad_metadata);
-      CheckHistograms(
-          InterestGroupAuction::AuctionResult::kSellerWorkletCrashed,
-          /*expected_interest_groups=*/2, /*expected_owners=*/2,
-          /*expected_sellers=*/1);
-    } else {
-      EXPECT_THAT(result_.errors,
-                  testing::ElementsAre(base::StringPrintf(
-                      "%s crashed.", kSellerUrl.spec().c_str())));
-      // If the seller worklet crashes while calculating the report URL, the
-      // auction completes, but reporting information is discarded.
-      EXPECT_EQ(kBidder2Key, result_.winning_group_id);
-      EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
-      EXPECT_TRUE(result_.ad_component_urls.empty());
-      EXPECT_THAT(
-          result_.report_urls,
-          testing::UnorderedElementsAre(GURL("https://bidder.report.test/")));
-      EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
-      EXPECT_TRUE(result_.private_aggregation_requests.empty());
-      EXPECT_THAT(result_.interest_groups_that_bid,
-                  testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-      EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
-                result_.winning_group_ad_metadata);
-      CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
-                      /*expected_interest_groups=*/2, /*expected_owners=*/2,
-                      /*expected_sellers=*/1);
-    }
+    EXPECT_THAT(result_.errors, testing::ElementsAre(base::StringPrintf(
+                                    "%s crashed.", kSellerUrl.spec().c_str())));
+    // No bidder won, seller crashed.
+    EXPECT_FALSE(result_.winning_group_id);
+    EXPECT_FALSE(result_.ad_url);
+    EXPECT_TRUE(result_.ad_component_urls.empty());
+    EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+    EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
+    EXPECT_TRUE(result_.private_aggregation_requests.empty());
+    EXPECT_THAT(result_.interest_groups_that_bid,
+                testing::UnorderedElementsAre());
+    EXPECT_EQ("", result_.winning_group_ad_metadata);
+    CheckHistograms(InterestGroupAuction::AuctionResult::kSellerWorkletCrashed,
+                    /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                    /*expected_sellers=*/1);
   }
 }
 
@@ -7190,155 +6986,6 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
   CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/2);
-}
-
-// Test the three case where a component seller worklet fails during
-// ReportResult:
-//
-// * Crash
-// * Load failure
-// * Error running the script.
-//
-// The auction should always complete successfully, running the bidder report
-// script.
-TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
-  interest_group_buyers_.emplace();
-  // It's simpler to start a two bidder auction and throw away one of the
-  // bidders rather than start a one-bidder auction.
-  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
-                                    /*bidder2_seller=*/kComponentSeller1,
-                                    /*bid_from_component_auction_wins=*/true);
-
-  enum class TestCase { kCrash, kLoadError, kScriptError };
-
-  // When false, simulates a seller workloet load failure instead.
-  for (auto test_case :
-       {TestCase::kCrash, TestCase::kLoadError, TestCase::kScriptError}) {
-    SCOPED_TRACE(static_cast<int>(test_case));
-
-    StartStandardAuctionWithMockService();
-
-    EXPECT_FALSE(auction_complete_);
-
-    // Bidder worklet 1 bids.
-    auto bidder1_worklet =
-        mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-    ASSERT_TRUE(bidder1_worklet);
-    bidder1_worklet->InvokeGenerateBidCallback(2, GURL("https://ad1.com/"));
-
-    // Bidder worklet 2 makes no bid.
-    auto bidder2_worklet =
-        mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
-    ASSERT_TRUE(bidder2_worklet);
-    bidder2_worklet->InvokeGenerateBidCallback(absl::nullopt);
-
-    // Component worklet scores the bid.
-    auto component_seller_worklet =
-        mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller1Url);
-    ASSERT_TRUE(component_seller_worklet);
-    auto score_ad_params = component_seller_worklet->WaitForScoreAd();
-    EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
-    EXPECT_EQ(2, score_ad_params.bid);
-    mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
-        std::move(score_ad_params.score_ad_client))
-        ->OnScoreAdComplete(
-            /*score=*/3,
-            /*reject_reason=*/
-            auction_worklet::mojom::RejectReason::kNotAvailable,
-            auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
-                /*ad=*/"null",
-                /*bid=*/0,
-                /*has_bid=*/false),
-            /*scoring_signals_data_version=*/0,
-            /*has_scoring_signals_data_version=*/false,
-            /*debug_loss_report_url=*/absl::nullopt,
-            /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-            /*errors=*/{});
-
-    // Top-level seller worklet scores the bid.
-    auto top_level_seller_worklet =
-        mock_auction_process_manager_->TakeSellerWorklet(kSellerUrl);
-    ASSERT_TRUE(top_level_seller_worklet);
-    score_ad_params = top_level_seller_worklet->WaitForScoreAd();
-    EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
-    EXPECT_EQ(2, score_ad_params.bid);
-    mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
-        std::move(score_ad_params.score_ad_client))
-        ->OnScoreAdComplete(
-            /*score=*/4,
-            /*reject_reason=*/
-            auction_worklet::mojom::RejectReason::kNotAvailable,
-            auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-            /*scoring_signals_data_version=*/0,
-            /*has_scoring_signals_data_version=*/false,
-            /*debug_loss_report_url=*/absl::nullopt,
-            /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-            /*errors=*/{});
-
-    // Top-level seller worklet returns a report url.
-    top_level_seller_worklet->WaitForReportResult();
-    top_level_seller_worklet->InvokeReportResultCallback(
-        GURL("https://report1.test/"));
-
-    // The component seller worklet should be reloaded and ReportResult()
-    // invoked.
-    mock_auction_process_manager_->WaitForWinningSellerReload();
-    component_seller_worklet =
-        mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller1Url);
-    component_seller_worklet->set_expect_send_pending_signals_requests_called(
-        false);
-    ASSERT_TRUE(component_seller_worklet);
-    component_seller_worklet->WaitForReportResult();
-    std::string expected_error;
-
-    if (test_case == TestCase::kCrash) {
-      // A crash in the winning component seller worklet will cause the
-      // reporting phase to abort, but the auction will otherwise complete
-      // successfully.
-      component_seller_worklet.reset();
-
-      expected_error = base::StringPrintf("%s crashed.",
-                                          kComponentSeller1Url.spec().c_str());
-    } else if (test_case == TestCase::kLoadError) {
-      const char kLoadError[] = "Load error";
-      // A load error in the winning component seller worklet will cause the
-      // auction to continue to completion.
-      component_seller_worklet->ResetReceiverWithReason(kLoadError);
-
-      expected_error = kLoadError;
-    } else if (test_case == TestCase::kScriptError) {
-      // A script error in the winning component seller worklet will cause the
-      // auction to continue to completion.
-      const char kScriptError[] = "Script error";
-
-      component_seller_worklet->InvokeReportResultCallback(
-          /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
-          /*pa_requests=*/{}, {kScriptError});
-      expected_error = kScriptError;
-    }
-
-      // Winning bidder worklet should be reloaded and ReportWin() invoked.
-    mock_auction_process_manager_->WaitForWinningBidderReload();
-    bidder1_worklet =
-        mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-    bidder1_worklet->WaitForReportWin();
-    bidder1_worklet->InvokeReportWinCallback(GURL("https://report3.test/"));
-
-    // Auction completes.
-    auction_run_loop_->Run();
-
-    EXPECT_THAT(result_.errors, testing::UnorderedElementsAre(expected_error));
-    EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
-    EXPECT_THAT(result_.report_urls,
-                testing::UnorderedElementsAre(GURL("https://report1.test/"),
-                                              GURL("https://report3.test/")));
-
-    EXPECT_THAT(result_.interest_groups_that_bid,
-                testing::UnorderedElementsAre(kBidder1Key));
-    CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
-                    /*expected_interest_groups=*/2, /*expected_owners=*/2,
-                    /*expected_sellers=*/2);
-  }
 }
 
 // Test the case that all component sellers crash.
@@ -7901,74 +7548,6 @@ TEST_F(AuctionRunnerTest, BadBid) {
 // worklet. Bad report URLs should be rejected in the Mojo process, so this
 // results in reporting a bad Mojo message, though the reporting phase is
 // allowed to continue.
-TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
-  StartStandardAuctionWithMockService();
-
-  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
-  ASSERT_TRUE(seller_worklet);
-  auto bidder1_worklet =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-  ASSERT_TRUE(bidder1_worklet);
-  auto bidder2_worklet =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
-  ASSERT_TRUE(bidder2_worklet);
-
-  // Only Bidder1 bids, to keep things simple.
-  bidder1_worklet->InvokeGenerateBidCallback(/*bid=*/5,
-                                             GURL("https://ad1.com/"));
-  bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
-
-  auto score_ad_params = seller_worklet->WaitForScoreAd();
-  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
-  EXPECT_EQ(5, score_ad_params.bid);
-  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
-      std::move(score_ad_params.score_ad_client))
-      ->OnScoreAdComplete(
-          /*score=*/10,
-          /*reject_reason=*/
-          auction_worklet::mojom::RejectReason::kNotAvailable,
-          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
-          /*debug_loss_report_url=*/absl::nullopt,
-          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-          /*errors=*/{});
-
-  // The seller provides a bad report URL.
-  seller_worklet->WaitForReportResult();
-  seller_worklet->InvokeReportResultCallback(GURL("http://not.https.test/"));
-
-  // The winning bidder still gets a chance to provide a report URL.
-  mock_auction_process_manager_->WaitForWinningBidderReload();
-  bidder1_worklet =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-  bidder1_worklet->WaitForReportWin();
-  bidder1_worklet->InvokeReportWinCallback(GURL("https://bidder.report.test/"));
-  auction_run_loop_->Run();
-
-  EXPECT_EQ("Invalid seller report URL", TakeBadMessage());
-
-  EXPECT_THAT(result_.errors, testing::ElementsAre());
-  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
-  EXPECT_TRUE(result_.ad_component_urls.empty());
-  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre(
-                                       GURL("https://bidder.report.test/")));
-  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
-  EXPECT_TRUE(result_.private_aggregation_requests.empty());
-  EXPECT_THAT(result_.interest_groups_that_bid,
-              testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
-            result_.winning_group_ad_metadata);
-  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
-                  /*expected_sellers=*/1);
-}
-
-// Test cases where a bad report URL is received over Mojo from the seller
-// worklet. Bad report URLs should be rejected in the Mojo process, so this
-// results in reporting a bad Mojo message, though the reporting phase is
-// allowed to continue.
 TEST_F(AuctionRunnerTest, BadSellerBeaconUrl) {
   StartStandardAuctionWithMockService();
 
@@ -8025,178 +7604,6 @@ TEST_F(AuctionRunnerTest, BadSellerBeaconUrl) {
   EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre(
                                        GURL("https://seller.report.test/"),
                                        GURL("https://bidder.report.test/")));
-  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
-  EXPECT_TRUE(result_.private_aggregation_requests.empty());
-  EXPECT_THAT(result_.interest_groups_that_bid,
-              testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
-            result_.winning_group_ad_metadata);
-  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
-                  /*expected_sellers=*/1);
-}
-
-// Test cases where a bad report URL is received over Mojo from the winning
-// component seller worklet. Bad report URLs should be rejected in the Mojo
-// process, so this results in reporting a bad Mojo message, though the
-// reporting phase is allowed to continue.
-TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
-  this->SetUpComponentAuctionAndResponses(
-      /*bidder1_seller=*/kComponentSeller1,
-      /*bidder2_seller=*/kComponentSeller1,
-      /*bid_from_component_auction_wins=*/true);
-  StartStandardAuctionWithMockService();
-
-  auto component_seller_worklet =
-      mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller1Url);
-  ASSERT_TRUE(component_seller_worklet);
-  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
-  ASSERT_TRUE(seller_worklet);
-  auto bidder1_worklet =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-  ASSERT_TRUE(bidder1_worklet);
-  auto bidder2_worklet =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
-  ASSERT_TRUE(bidder2_worklet);
-
-  // Only Bidder1 bids, to keep things simple.
-  bidder1_worklet->InvokeGenerateBidCallback(/*bid=*/5,
-                                             GURL("https://ad1.com/"));
-  bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
-
-  // Component seller scores the bid.
-  auto score_ad_params = component_seller_worklet->WaitForScoreAd();
-  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
-  EXPECT_EQ(5, score_ad_params.bid);
-  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
-      std::move(score_ad_params.score_ad_client))
-      ->OnScoreAdComplete(
-          /*score=*/10,
-          /*reject_reason=*/
-          auction_worklet::mojom::RejectReason::kNotAvailable,
-          auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
-              /*ad=*/"null",
-              /*bid=*/0,
-              /*has_bid=*/false),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
-          /*debug_loss_report_url=*/absl::nullopt,
-          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-          /*errors=*/{});
-
-  // Top-level seller scores the bid.
-  score_ad_params = seller_worklet->WaitForScoreAd();
-  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
-  EXPECT_EQ(5, score_ad_params.bid);
-  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
-      std::move(score_ad_params.score_ad_client))
-      ->OnScoreAdComplete(
-          /*score=*/10,
-          /*reject_reason=*/
-          auction_worklet::mojom::RejectReason::kNotAvailable,
-          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
-          /*debug_loss_report_url=*/absl::nullopt,
-          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-          /*errors=*/{});
-
-  // Top-level seller worklet returns a valid HTTPS report URL.
-  seller_worklet->WaitForReportResult();
-  seller_worklet->InvokeReportResultCallback(
-      GURL("https://seller.report.test/"));
-
-  mock_auction_process_manager_->WaitForWinningSellerReload();
-  component_seller_worklet =
-      mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller1Url);
-  component_seller_worklet->set_expect_send_pending_signals_requests_called(
-      false);
-  component_seller_worklet->WaitForReportResult();
-  component_seller_worklet->InvokeReportResultCallback(GURL("Invalid URL"));
-
-  // The winning bidder still gets a chance to provide a report URL.
-  mock_auction_process_manager_->WaitForWinningBidderReload();
-  bidder1_worklet =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-  bidder1_worklet->WaitForReportWin();
-  bidder1_worklet->InvokeReportWinCallback(GURL("https://bidder.report.test/"));
-  auction_run_loop_->Run();
-
-  EXPECT_EQ("Invalid seller report URL", TakeBadMessage());
-
-  EXPECT_THAT(result_.errors, testing::ElementsAre());
-  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
-  EXPECT_TRUE(result_.ad_component_urls.empty());
-  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre(
-                                       GURL("https://seller.report.test/"),
-                                       GURL("https://bidder.report.test/")));
-  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
-  EXPECT_TRUE(result_.private_aggregation_requests.empty());
-  EXPECT_THAT(result_.interest_groups_that_bid,
-              testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
-            result_.winning_group_ad_metadata);
-  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
-                  /*expected_sellers=*/2);
-}
-
-// Test cases where a bad report URL is received over Mojo from the bidder
-// worklet. Bad report URLs should be rejected in the Mojo process, so this
-// results in reporting a bad Mojo message, though the reporting phase is
-// allowed to complete.
-TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
-  StartStandardAuctionWithMockService();
-
-  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
-  ASSERT_TRUE(seller_worklet);
-  auto bidder1_worklet =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-  ASSERT_TRUE(bidder1_worklet);
-  auto bidder2_worklet =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
-  ASSERT_TRUE(bidder2_worklet);
-
-  // Only Bidder1 bids, to keep things simple.
-  bidder1_worklet->InvokeGenerateBidCallback(/*bid=*/5,
-                                             GURL("https://ad1.com/"));
-  bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
-
-  auto score_ad_params = seller_worklet->WaitForScoreAd();
-  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
-  EXPECT_EQ(5, score_ad_params.bid);
-  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
-      std::move(score_ad_params.score_ad_client))
-      ->OnScoreAdComplete(
-          /*score=*/10,
-          /*reject_reason=*/
-          auction_worklet::mojom::RejectReason::kNotAvailable,
-          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
-          /*debug_loss_report_url=*/absl::nullopt,
-          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-          /*errors=*/{});
-
-  seller_worklet->WaitForReportResult();
-  seller_worklet->InvokeReportResultCallback(
-      GURL("https://seller.report.test/"));
-  mock_auction_process_manager_->WaitForWinningBidderReload();
-  bidder1_worklet =
-      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-  bidder1_worklet->WaitForReportWin();
-  bidder1_worklet->InvokeReportWinCallback(GURL("http://not.https.test/"));
-  auction_run_loop_->Run();
-
-  EXPECT_EQ("Invalid bidder report URL", TakeBadMessage());
-
-  EXPECT_THAT(result_.errors, testing::ElementsAre());
-  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
-  EXPECT_TRUE(result_.ad_component_urls.empty());
-  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre(
-                                       GURL("https://seller.report.test/")));
   EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
   EXPECT_TRUE(result_.private_aggregation_requests.empty());
   EXPECT_THAT(result_.interest_groups_that_bid,

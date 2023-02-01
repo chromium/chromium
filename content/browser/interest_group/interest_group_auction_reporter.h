@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
@@ -23,8 +24,10 @@
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
-#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
@@ -39,6 +42,7 @@ struct AuctionConfig;
 namespace content {
 
 class AuctionWorkletManager;
+class InterestGroupManagerImpl;
 
 // Handles the reporting phase of FLEDGE auctions with a winner. Loads the
 // bidder, seller, and (if present) component seller worklets and invokes
@@ -52,10 +56,12 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // Seller-specific information about the winning bid. The top-level seller and
   // (if present) component seller associated with the winning bid have separate
   // SellerWinningBidInfos.
-  struct SellerWinningBidInfo {
+  struct CONTENT_EXPORT SellerWinningBidInfo {
     SellerWinningBidInfo();
     SellerWinningBidInfo(SellerWinningBidInfo&&);
     ~SellerWinningBidInfo();
+
+    SellerWinningBidInfo& operator=(SellerWinningBidInfo&&);
 
     // AuctionConfig associated with the seller. For a component auction, this
     // is the nested AuctionConfig.
@@ -89,7 +95,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   };
 
   // Information about the winning bit that is not specific to a seller.
-  struct WinningBidInfo {
+  struct CONTENT_EXPORT WinningBidInfo {
     WinningBidInfo();
     WinningBidInfo(WinningBidInfo&&);
     ~WinningBidInfo();
@@ -111,6 +117,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // All passed in raw pointers, including those in *BidInfo fields must outlive
   // the created InterestGroupAuctionReporter.
   InterestGroupAuctionReporter(
+      InterestGroupManagerImpl* interest_group_manager,
       AuctionWorkletManager* auction_worklet_manager,
       std::unique_ptr<blink::AuctionConfig> auction_config,
       WinningBidInfo winning_bid_info,
@@ -125,11 +132,24 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   InterestGroupAuctionReporter& operator=(const InterestGroupAuctionReporter&) =
       delete;
 
-  // Starts running reporting scripts. `callback` will be invoked once all
-  // reporting scripts have completed, and the callback returned by
-  // OnNavigateToWinningAdCallback() has been invoked, at which point reports
+  // Starts running reporting scripts.
+  //
+  // `frame_origin` is the origin of the frame that ran the auction.
+  // `client_security_state` is the ClientSecurityState of the frame.
+  // `url_loader_factory` is used to send reports.
+  //
+  // `callback` will be invoked once all reporting scripts have completed, and
+  // the callback returned by OnNavigateToWinningAdCallback() has been invoked,
+  // at which point reports not managed by the InterestGroupAuctionReporter
   // should be sent, and the reporter can be destroyed.
-  void Start(base::OnceClosure callback);
+  //
+  // TODO(https://crbug.com/1394777): Make InterestGroupAuctionReporter send all
+  // reports itself, and decouple its lifetime from the frame, so that it can
+  // continue running scripts after a frame is navigated away from.
+  void Start(const url::Origin& frame_origin,
+             network::mojom::ClientSecurityStatePtr client_security_state,
+             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+             base::OnceClosure callback);
 
   // Returns a callback that should be invoked once a fenced frame has been
   // navigated to the winning ad. May be invoked multiple times, safe to invoke
@@ -151,11 +171,6 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // Retrieves the ad beacon map. May only be called once, since it takes
   // ownership of the stored ad beacon map.
   ReportingMetadata TakeAdBeaconMap() { return std::move(ad_beacon_map_); }
-
-  // Retrieves any reporting URLs returned by ReportWin() and ReportResult()
-  // methods. May only be called after the reporter has completed. May only be
-  // called once, since it takes ownership of stored reporting URLs.
-  std::vector<GURL> TakeReportUrls() { return std::move(report_urls_); }
 
  private:
   // Starts request for a seller worklet. Invokes OnSellerWorkletReceived() on
@@ -227,7 +242,21 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // component auction, and for the top level auction, otherwise.
   const SellerWinningBidInfo& GetBidderAuction();
 
+  // Called each time a report script completes and has a valid report URL.
+  // Updates `pending_report_urls_` and calls SendPendingReportsIfNavigated();
+  void AddPendingReportUrl(const GURL& report_url);
+
+  // Sends all reports in `pending_report_urls_` and clears it, if
+  // OnNavigateToWinningAd() has been invoked. Called each time reports are
+  // added, and on first invocation of OnNavigateToWinningAd().
+  void SendPendingReportsIfNavigated();
+
+  const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
+
+  url::Origin frame_origin_;
+  network::mojom::ClientSecurityStatePtr client_security_state_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Top-level AuctionConfig. It owns the `auction_config` objects pointed at by
   // the the top-level SellerWinningBidInfo. If there's a component auction
@@ -263,7 +292,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // deleted at the end of the auction.
   ReportingMetadata ad_beacon_map_;
 
-  std::vector<GURL> report_urls_;
+  std::vector<GURL> pending_report_urls_;
 
   bool reporting_complete_ = false;
   bool navigated_to_winning_ad_ = false;

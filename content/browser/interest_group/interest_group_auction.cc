@@ -1427,8 +1427,9 @@ InterestGroupAuction::CreateReporter(
   }
 
   return std::make_unique<InterestGroupAuctionReporter>(
-      auction_worklet_manager_, std::move(auction_config),
-      std::move(winning_bid_info), std::move(top_level_seller_winning_bid_info),
+      interest_group_manager_, auction_worklet_manager_,
+      std::move(auction_config), std::move(winning_bid_info),
+      std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
       TakePrivateAggregationRequests());
 }

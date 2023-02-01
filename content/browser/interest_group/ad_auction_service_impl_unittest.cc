@@ -4867,7 +4867,13 @@ function reportResult(auctionConfig, browserSignals) {
 )",
                          kOriginStringA, kOriginStringA);
 
-  manager_->set_max_report_queue_length_for_testing(1);
+  // Set the global maximum queue length to the number of reports each auction
+  // run below tries to make (which is 2), so the second report made by each
+  // auction won't evict the first request.
+  //
+  // Use 3 instead of 2 because the queue is truncated when the "max" is hit by
+  // appending a report, as opposed to when the "max" is exceeded.
+  manager_->set_max_report_queue_length_for_testing(3);
   manager_->set_max_active_report_requests_for_testing(1);
   manager_->set_reporting_interval_for_testing(base::Seconds(5));
   network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);

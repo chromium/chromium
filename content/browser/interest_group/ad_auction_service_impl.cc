@@ -152,7 +152,6 @@ void SendSuccessfulAuctionReportsAndUpdateInterestGroups(
     std::map<url::Origin,
              std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
         private_aggregation_requests,
-    const std::vector<GURL>& report_urls,
     const std::vector<GURL>& debug_loss_report_urls,
     const std::vector<GURL>& debug_win_report_urls,
     const blink::InterestGroupSet& interest_groups_that_bid,
@@ -171,9 +170,6 @@ void SendSuccessfulAuctionReportsAndUpdateInterestGroups(
 
   SendPrivateAggregationRequests(private_aggregation_manager, main_frame_origin,
                                  std::move(private_aggregation_requests));
-  interest_group_manager->EnqueueReports(
-      InterestGroupManagerImpl::ReportType::kSendReportTo, report_urls,
-      frame_origin, *client_security_state, trusted_url_loader_factory);
   interest_group_manager->EnqueueReports(
       InterestGroupManagerImpl::ReportType::kDebugWin, debug_win_report_urls,
       frame_origin, *client_security_state, trusted_url_loader_factory);
@@ -717,12 +713,16 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   // callback returned by the InterestGroupAuctionReporter's
   // OnNavitationToWinningAdCallback() method (invoked just above).
   reporters_.emplace_front(std::move(reporter));
-  reporters_.front()->Start(base::BindOnce(
-      &AdAuctionServiceImpl::OnReporterComplete, base::Unretained(this),
-      reporters_.begin(), std::move(urn_uuid), std::move(*winning_group_key),
-      std::move(winning_group_ad_metadata), std::move(fenced_frame_reporter),
-      std::move(debug_loss_report_urls), std::move(debug_win_report_urls),
-      std::move(interest_groups_that_bid), std::move(k_anon_keys_to_join)));
+  reporters_.front()->Start(
+      origin(), GetClientSecurityState(),
+      GetRefCountedTrustedURLLoaderFactory(),
+      base::BindOnce(
+          &AdAuctionServiceImpl::OnReporterComplete, base::Unretained(this),
+          reporters_.begin(), std::move(urn_uuid),
+          std::move(*winning_group_key), std::move(winning_group_ad_metadata),
+          std::move(fenced_frame_reporter), std::move(debug_loss_report_urls),
+          std::move(debug_win_report_urls), std::move(interest_groups_that_bid),
+          std::move(k_anon_keys_to_join)));
   if (auction_result_metrics) {
     auction_result_metrics->ReportAuctionResult(
         AdAuctionResultMetrics::AuctionResult::kSucceeded);
@@ -751,7 +751,6 @@ void AdAuctionServiceImpl::OnReporterComplete(
   }
 
   auto ad_beacon_map = reporter->TakeAdBeaconMap();
-  auto report_urls = reporter->TakeReportUrls();
   auto private_aggregation_requests =
       reporter->TakePrivateAggregationRequests();
   MaybeLogPrivateAggregationFeature(private_aggregation_requests);
@@ -771,9 +770,9 @@ void AdAuctionServiceImpl::OnReporterComplete(
       private_aggregation_manager_, &GetInterestGroupManager(),
       main_frame_origin_, origin(), winning_group_key,
       winning_group_ad_metadata, std::move(private_aggregation_requests),
-      report_urls, debug_win_report_urls, debug_loss_report_urls,
-      interest_groups_that_bid, std::move(k_anon_keys_to_join),
-      GetClientSecurityState(), GetRefCountedTrustedURLLoaderFactory());
+      debug_win_report_urls, debug_loss_report_urls, interest_groups_that_bid,
+      std::move(k_anon_keys_to_join), GetClientSecurityState(),
+      GetRefCountedTrustedURLLoaderFactory());
 
   // Pass reporting map to the FencedFrameReporter.
   // TODO(mmenke): move this into InterestGroupReporter.
