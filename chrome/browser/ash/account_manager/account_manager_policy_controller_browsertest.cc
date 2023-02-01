@@ -188,10 +188,10 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop().RunUntilIdle();
 
   // Secondary Accounts must be removed.
-  const std::string& gaia_id = BrowserContextHelper::Get()
-                                   ->GetUserByBrowserContext(profile())
-                                   ->GetAccountId()
-                                   .GetGaiaId();
+  const std::string gaia_id = BrowserContextHelper::Get()
+                                  ->GetUserByBrowserContext(profile())
+                                  ->GetAccountId()
+                                  .GetGaiaId();
   accounts = GetAccountManagerAccounts();
   ASSERT_EQ(accounts.size(), 1UL);
   EXPECT_EQ(gaia_id, accounts[0].key.id());
@@ -216,10 +216,10 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop().RunUntilIdle();
 
   // Secondary Accounts must be removed.
-  const std::string& gaia_id = BrowserContextHelper::Get()
-                                   ->GetUserByBrowserContext(profile())
-                                   ->GetAccountId()
-                                   .GetGaiaId();
+  const std::string gaia_id = BrowserContextHelper::Get()
+                                  ->GetUserByBrowserContext(profile())
+                                  ->GetAccountId()
+                                  .GetGaiaId();
   accounts = GetAccountManagerAccounts();
   ASSERT_EQ(accounts.size(), 1UL);
   EXPECT_EQ(gaia_id, accounts[0].key.id());
