@@ -120,10 +120,6 @@ class FidoBleAdapterManagerTest : public ::testing::Test {
 
   MockBluetoothAdapter* adapter() { return adapter_.get(); }
   MockObserver* observer() { return mock_observer_.get(); }
-  bool adapter_powered_on_programmatically(
-      const BleAdapterManager& adapter_manager) {
-    return adapter_manager.adapter_powered_on_programmatically_;
-  }
 
   FakeFidoRequestHandlerBase* fake_request_handler() {
     return fake_request_handler_.get();
@@ -195,9 +191,7 @@ TEST_F(FidoBleAdapterManagerTest, SetBluetoothPowerOn) {
       fake_request_handler_->get_bluetooth_adapter_manager_for_testing();
   ::testing::InSequence s;
   EXPECT_CALL(*adapter(), SetPowered(true, _, _));
-  EXPECT_CALL(*adapter(), SetPowered(false, _, _));
-  power_manager->SetAdapterPower(true /* set_power_on */);
-  EXPECT_TRUE(adapter_powered_on_programmatically(*power_manager));
+  power_manager->SetAdapterPower(/*set_power_on=*/true);
   power_manager.reset();
 }
 

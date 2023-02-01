@@ -13262,7 +13262,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Turn on Bluetooth?
       </message>
       <message name="IDS_WEBAUTHN_BLUETOOTH_POWER_ON_AUTO_DESCRIPTION" desc="Description in the dialog informing the user that Chrome needs to turn on Bluetooth by itself so that security keys (external physical devices for user authentication) can be used over Bluetooth.">
-        Bluetooth will be temporarily turned on to communicate with your security key
+        Bluetooth must be on to use your passkey on a different device. You can always manage this in settings.
       </message>
       <message name="IDS_WEBAUTHN_BLUETOOTH_POWER_ON_AUTO_NEXT" desc="Button text to allow Chrome to turn on Bluetooth so that security keys can be used over Bluetooth.">
         Turn on

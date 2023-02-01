@@ -19,18 +19,12 @@ BleAdapterManager::BleAdapterManager(FidoRequestHandlerBase* request_handler)
 }
 
 BleAdapterManager::~BleAdapterManager() {
-  if (adapter_powered_on_programmatically_)
-    SetAdapterPower(false /* set_power_on */);
-
   if (adapter_) {
     adapter_->RemoveObserver(this);
   }
 }
 
 void BleAdapterManager::SetAdapterPower(bool set_power_on) {
-  if (set_power_on)
-    adapter_powered_on_programmatically_ = true;
-
   adapter_->SetPowered(set_power_on, base::DoNothing(), base::DoNothing());
 }
 

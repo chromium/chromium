@@ -42,7 +42,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BleAdapterManager
 
   const raw_ptr<FidoRequestHandlerBase> request_handler_;
   scoped_refptr<BluetoothAdapter> adapter_;
-  bool adapter_powered_on_programmatically_ = false;
 
   base::WeakPtrFactory<BleAdapterManager> weak_factory_{this};
 };
