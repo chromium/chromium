@@ -427,6 +427,7 @@ export class TestAutofillManager extends TestBrowserProxy implements
     AutofillManagerProxy {
   data: {
     addresses: chrome.autofillPrivate.AddressEntry[],
+    accountInfo: chrome.autofillPrivate.AccountInfo,
   };
 
   lastCallback:
@@ -434,6 +435,7 @@ export class TestAutofillManager extends TestBrowserProxy implements
 
   constructor() {
     super([
+      'getAccountInfo',
       'getAddressList',
       'removeAddress',
       'removePersonalDataManagerListener',
@@ -443,6 +445,7 @@ export class TestAutofillManager extends TestBrowserProxy implements
     // Set these to have non-empty data.
     this.data = {
       addresses: [],
+      accountInfo: {email: 'stub-user@example.com'},
     };
 
     // Holds the last callbacks so they can be called when needed.
@@ -458,6 +461,11 @@ export class TestAutofillManager extends TestBrowserProxy implements
 
   removePersonalDataManagerListener(_listener: PersonalDataChangedListener) {
     this.methodCalled('removePersonalDataManagerListener');
+  }
+
+  getAccountInfo() {
+    this.methodCalled('getAccountInfo');
+    return Promise.resolve(this.data.accountInfo);
   }
 
   getAddressList() {
