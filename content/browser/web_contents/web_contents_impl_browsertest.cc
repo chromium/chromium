@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -115,9 +114,8 @@
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
 #include "base/allocator/partition_alloc_features.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #endif
 
@@ -5743,7 +5741,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest,
     test_recorder_.ExpectEntryMetric(entry, UkmEntry::kIsTopFrameName, false);
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
 
 namespace {
 
@@ -5868,6 +5866,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplStarScanPrerenderBrowserTest,
   EXPECT_TRUE(partition_alloc::internal::PCScan::IsEnabled());
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_CONFIG(ALLOW_PCSCAN)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
 
 }  // namespace content

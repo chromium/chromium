@@ -11,7 +11,6 @@
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
@@ -36,7 +35,7 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
         features::kPartitionAllocPCScanBrowserOnly};
     pcscan_scope.InitWithFeatures(pcscan_enabled ? pcscan_list : empty_list,
                                   pcscan_enabled ? empty_list : pcscan_list);
-#if !PA_CONFIG(ALLOW_PCSCAN)
+#if !BUILDFLAG(USE_STARSCAN)
     pcscan_enabled = false;
 #endif
 
@@ -52,7 +51,7 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
       brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn" : "Ignore_NoGroup";
 #endif
       pcscan_expectation = "Unavailable";
-#if PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_STARSCAN)
       pcscan_expectation = pcscan_enabled ? "Enabled" : "Disabled";
 #endif
 
@@ -93,13 +92,13 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
         // (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       pcscan_expectation = "Unavailable";
-#if PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_STARSCAN)
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       pcscan_expectation = "Ignore_BRPIsOn";
 #else
       pcscan_expectation = pcscan_enabled ? "Enabled" : "Disabled";
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-#endif  // PA_CONFIG(ALLOW_PCSCAN)
+#endif  // BUILDFLAG(USE_STARSCAN)
 
       auto trials = ProposeSyntheticFinchTrials();
       auto group_iter = trials.find("BackupRefPtr_Effective");
@@ -151,14 +150,14 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
         }
         pcscan_expectation = "Unavailable";
         std::string pcscan_expectation_fallback = "Unavailable";
-#if PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_STARSCAN)
         pcscan_expectation = brp_truly_enabled
                                  ? "Ignore_BRPIsOn"
                                  : (pcscan_enabled ? "Enabled" : "Disabled");
         pcscan_expectation_fallback =
             brp_nondefault_behavior ? "Ignore_BRPIsOn"
                                     : (pcscan_enabled ? "Enabled" : "Disabled");
-#endif  // PA_CONFIG(ALLOW_PCSCAN)
+#endif  // BUILDFLAG(USE_STARSCAN)
 
         auto trials = ProposeSyntheticFinchTrials();
         auto group_iter = trials.find("BackupRefPtr_Effective");

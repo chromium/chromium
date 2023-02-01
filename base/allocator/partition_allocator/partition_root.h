@@ -72,7 +72,7 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "build/build_config.h"
 
-#if PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_STARSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #endif
@@ -247,7 +247,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   using SuperPageExtentEntry =
       internal::PartitionSuperPageExtentEntry<thread_safe>;
   using DirectMapExtent = internal::PartitionDirectMapExtent<thread_safe>;
-#if PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_STARSCAN)
   using PCScan = internal::PCScan;
 #endif
 
@@ -1310,7 +1310,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
   }
 #endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
-#if PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_STARSCAN)
   // TODO(bikineev): Change the condition to PA_LIKELY once PCScan is enabled by
   // default.
   if (PA_UNLIKELY(root->ShouldQuarantine(object))) {
@@ -1322,7 +1322,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
       return;
     }
   }
-#endif  // PA_CONFIG(ALLOW_PCSCAN)
+#endif  // BUILDFLAG(USE_STARSCAN)
 
   root->FreeNoHooksImmediate(object, slot_span, slot_start);
 }
@@ -1375,7 +1375,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   }
 #endif
 
-#if PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_STARSCAN)
   // TODO(bikineev): Change the condition to PA_LIKELY once PCScan is enabled by
   // default.
   if (PA_UNLIKELY(IsQuarantineEnabled())) {
@@ -1384,7 +1384,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
       internal::StateBitmapFromAddr(slot_start)->Free(slot_start);
     }
   }
-#endif  // PA_CONFIG(ALLOW_PCSCAN)
+#endif  // BUILDFLAG(USE_STARSCAN)
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   // TODO(keishi): Add PA_LIKELY when brp is fully enabled as |brp_enabled| will
@@ -1931,7 +1931,7 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   uintptr_t slot_start = 0;
   size_t slot_size;
 
-#if PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_STARSCAN)
   const bool is_quarantine_enabled = IsQuarantineEnabled();
   // PCScan safepoint. Call before trying to allocate from cache.
   // TODO(bikineev): Change the condition to PA_LIKELY once PCScan is enabled by
@@ -1939,7 +1939,7 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   if (PA_UNLIKELY(is_quarantine_enabled)) {
     PCScan::JoinScanIfNeeded();
   }
-#endif  // PA_CONFIG(ALLOW_PCSCAN)
+#endif  // BUILDFLAG(USE_STARSCAN)
 
   auto* thread_cache = GetOrCreateThreadCache();
 
@@ -2085,7 +2085,7 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   }
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-#if PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_STARSCAN)
   // TODO(bikineev): Change the condition to PA_LIKELY once PCScan is enabled by
   // default.
   if (PA_UNLIKELY(is_quarantine_enabled)) {
@@ -2094,7 +2094,7 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
       internal::StateBitmapFromAddr(slot_start)->Allocate(slot_start);
     }
   }
-#endif  // PA_CONFIG(ALLOW_PCSCAN)
+#endif  // BUILDFLAG(USE_STARSCAN)
 
   return object;
 }

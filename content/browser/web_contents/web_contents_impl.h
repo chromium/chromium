@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
@@ -45,7 +46,6 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
-#include "content/browser/starscan_load_observer.h"
 #include "content/browser/web_contents/file_chooser_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -85,6 +85,10 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
+#endif
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
+#include "content/browser/starscan_load_observer.h"
 #endif
 
 namespace base {
@@ -2325,8 +2329,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // color or if the page does not set a background color.
   absl::optional<SkColor> page_base_background_color_;
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
   // TODO(1231679): Remove/reevaluate after the PCScan experiment is finished.
   std::unique_ptr<StarScanLoadObserver> star_scan_load_observer_;
+#endif
 
   // Stores WebContents::CreateParams::creator_location.
   base::Location creator_location_;

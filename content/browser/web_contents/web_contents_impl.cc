@@ -14,8 +14,6 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -102,7 +100,6 @@
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/shared_storage/shared_storage_budget_charger.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/browser/starscan_load_observer.h"
 #include "content/browser/wake_lock/wake_lock_context_host.h"
 #include "content/browser/web_contents/java_script_dialog_commit_deferring_condition.h"
 #include "content/browser/web_contents/web_contents_view.h"
@@ -207,6 +204,11 @@
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
+#endif
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
+#include "content/browser/starscan_load_observer.h"
 #endif
 
 namespace content {
@@ -1052,13 +1054,13 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
     SharedStorageBudgetCharger::CreateForWebContents(this);
   }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
   // TODO(1231679): Remove or move to another place after finishing the PCScan
   // experiment.
   if (partition_alloc::internal::PCScan::IsInitialized()) {
     star_scan_load_observer_ = std::make_unique<StarScanLoadObserver>(this);
   }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_CONFIG(ALLOW_PCSCAN)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
 }
 
 WebContentsImpl::~WebContentsImpl() {

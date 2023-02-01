@@ -26,7 +26,7 @@
 #include <sys/resource.h>
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #endif
@@ -52,14 +52,14 @@ void* ThreadFunc(void* params) {
 
     delegate = thread_params->delegate;
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
     PCScan::NotifyThreadCreated(GetStackPointer());
 #endif
   }
 
   delegate->ThreadMain();
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
   PCScan::NotifyThreadDestroyed();
 #endif
 

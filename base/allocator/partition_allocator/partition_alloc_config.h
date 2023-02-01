@@ -34,13 +34,6 @@ static_assert(sizeof(void*) == 8, "");
 static_assert(sizeof(void*) != 8, "");
 #endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
-// PCScan supports 64 bits only and is disabled outside Chromium.
-#if BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(USE_STARSCAN)
-#define PA_CONFIG_ALLOW_PCSCAN() 1
-#else
-#define PA_CONFIG_ALLOW_PCSCAN() 0
-#endif
-
 #if BUILDFLAG(HAS_64_BIT_POINTERS) && \
     (defined(__ARM_NEON) || defined(__ARM_NEON__)) && defined(__ARM_FP)
 #define PA_CONFIG_STARSCAN_NEON_SUPPORTED() 1
@@ -82,7 +75,7 @@ static_assert(sizeof(void*) != 8, "");
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS) &&
         // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
 
-#if PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_STARSCAN)
 // Use card table to avoid races for PCScan configuration without safepoints.
 // The card table provides the guaranteee that for a marked card the underling
 // super-page is fully initialized.
@@ -90,7 +83,7 @@ static_assert(sizeof(void*) != 8, "");
 #else
 // The card table is permanently disabled for 32-bit.
 #define PA_CONFIG_STARSCAN_USE_CARD_TABLE() 0
-#endif  // BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(USE_STARSCAN)
+#endif  // BUILDFLAG(USE_STARSCAN)
 
 // Use batched freeing when sweeping pages. This builds up a freelist in the
 // scanner thread and appends to the slot-span's freelist only once.

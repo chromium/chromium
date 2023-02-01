@@ -6,7 +6,6 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
 
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -56,9 +55,9 @@ enum class DanglingPtrType {
 extern const BASE_EXPORT base::FeatureParam<DanglingPtrType>
     kDanglingPtrTypeParam;
 
-#if PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_STARSCAN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScan);
-#endif  // PA_CONFIG(ALLOW_PCSCAN)
+#endif
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanBrowserOnly);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanRendererOnly);

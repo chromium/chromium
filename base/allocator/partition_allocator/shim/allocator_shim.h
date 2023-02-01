@@ -10,12 +10,11 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/base_export.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #endif
 
@@ -208,7 +207,7 @@ BASE_EXPORT void ConfigurePartitions(
     AddDummyRefCount add_dummy_ref_count,
     AlternateBucketDistribution use_alternate_bucket_distribution);
 
-#if PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_STARSCAN)
 BASE_EXPORT void EnablePCScan(partition_alloc::internal::PCScan::InitConfig);
 #endif
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

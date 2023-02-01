@@ -19,7 +19,7 @@
 
 namespace base::allocator {
 
-#if PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_STARSCAN)
 BASE_EXPORT void RegisterPCScanStatsReporter();
 #endif
 

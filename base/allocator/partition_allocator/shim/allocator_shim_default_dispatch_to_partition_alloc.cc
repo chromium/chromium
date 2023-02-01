@@ -22,7 +22,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
@@ -713,7 +712,7 @@ void ConfigurePartitions(
   }
 }
 
-#if PA_CONFIG(ALLOW_PCSCAN)
+#if BUILDFLAG(USE_STARSCAN)
 void EnablePCScan(partition_alloc::internal::PCScan::InitConfig config) {
   partition_alloc::internal::base::PlatformThread::SetThreadNameHook(
       &::base::PlatformThread::SetName);
@@ -730,7 +729,7 @@ void EnablePCScan(partition_alloc::internal::PCScan::InitConfig config) {
   base::internal::NonScannableAllocator::Instance().NotifyPCScanEnabled();
   base::internal::NonQuarantinableAllocator::Instance().NotifyPCScanEnabled();
 }
-#endif  // PA_CONFIG(ALLOW_PCSCAN)
+#endif  // BUILDFLAG(USE_STARSCAN)
 
 #if BUILDFLAG(IS_WIN)
 // Call this as soon as possible during startup.

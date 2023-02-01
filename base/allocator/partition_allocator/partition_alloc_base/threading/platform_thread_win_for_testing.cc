@@ -14,7 +14,7 @@
 
 #include <windows.h>
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #endif
@@ -62,7 +62,7 @@ DWORD __stdcall ThreadFunc(void* params) {
                                  GetCurrentProcess(), &platform_handle, 0,
                                  FALSE, DUPLICATE_SAME_ACCESS);
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
   PCScan::NotifyThreadCreated(GetStackPointer());
 #endif
 
@@ -74,7 +74,7 @@ DWORD __stdcall ThreadFunc(void* params) {
   delete thread_params;
   delegate->ThreadMain();
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
   PCScan::NotifyThreadDestroyed();
 #endif
   return 0;

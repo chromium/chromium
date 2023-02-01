@@ -153,8 +153,8 @@ declare_args() {
   enable_shadow_metadata = false
 }
 
-# *Scan is currently only used by Chromium.
-use_starscan = build_with_chromium
+# *Scan is currently only used by Chromium, and supports only 64-bit.
+use_starscan = build_with_chromium && has_64_bit_pointers
 
 # We want to provide assertions that guard against inconsistent build
 # args, but there is no point in having them fire if we're not building
