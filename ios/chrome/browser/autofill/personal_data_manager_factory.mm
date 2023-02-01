@@ -8,7 +8,7 @@
 
 #import "base/no_destructor.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
-#import "components/autofill/core/browser/strike_database.h"
+#import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"

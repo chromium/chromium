@@ -20,7 +20,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
-#import "components/autofill/core/browser/strike_database.h"
+#import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/history/core/browser/history_service.h"

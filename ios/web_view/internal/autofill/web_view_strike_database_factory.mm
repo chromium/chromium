@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/no_destructor.h"
-#include "components/autofill/core/browser/strike_database.h"
+#import "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/web_view/internal/app/application_context.h"
 #include "ios/web_view/internal/web_view_browser_state.h"

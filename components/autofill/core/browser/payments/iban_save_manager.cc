@@ -7,8 +7,8 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
-#include "components/autofill/core/browser/payments/iban_save_strike_database.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 
 namespace autofill {
 
@@ -19,8 +19,9 @@ IBANSaveManager::~IBANSaveManager() = default;
 bool IBANSaveManager::AttemptToOfferIBANLocalSave(
     const IBAN& iban_import_candidate) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (client_->GetPersonalDataManager()->IsOffTheRecord())
+  if (client_->GetPersonalDataManager()->IsOffTheRecord()) {
     return false;
+  }
 
   // If the max strikes limit has been reached, do not show the IBAN save
   // prompt.
@@ -63,8 +64,9 @@ void IBANSaveManager::OnUserDidDecideOnLocalSave(
   if (nickname.has_value()) {
     std::u16string trimmed_nickname;
     base::TrimWhitespace(nickname.value(), base::TRIM_ALL, &trimmed_nickname);
-    if (!trimmed_nickname.empty())
+    if (!trimmed_nickname.empty()) {
       iban_save_candidate_.set_nickname(trimmed_nickname);
+    }
   }
 
   switch (user_decision) {
