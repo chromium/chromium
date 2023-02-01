@@ -16,6 +16,7 @@ ortuno@chromium.org
 # OS shortcuts
 tapted@chromium.org
 
+per-file web_app_default_offline*=finnur@chromium.org
 per-file web_app_file_handler*=davidbienvenu@chromium.org
 per-file web_app_file_handler*=jessemckenna@google.com
 per-file web_app_id_constants.*=dominickn@chromium.org
