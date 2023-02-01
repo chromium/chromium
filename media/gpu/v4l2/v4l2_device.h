@@ -42,7 +42,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image.h"
+#include "ui/gl/gl_image_native_pixmap.h"
 
 // TODO(mojahsu): remove this once V4L2 headers are updated.
 #ifndef V4L2_PIX_FMT_JPEG_RAW
@@ -775,8 +775,9 @@ class MEDIA_GPU_EXPORT V4L2Device
                                      const Fourcc fourcc,
                                      gfx::NativePixmapHandle handle) const = 0;
 
-  // Create a GLImage from provided |handle|, taking full ownership of it.
-  virtual scoped_refptr<gl::GLImage> CreateGLImage(
+  // Create a GLImageNativePixmap from provided |handle|, taking full ownership
+  // of it.
+  virtual scoped_refptr<gl::GLImageNativePixmap> CreateGLImage(
       const gfx::Size& size,
       const Fourcc fourcc,
       gfx::NativePixmapHandle handle) const = 0;

@@ -49,7 +49,7 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
-#include "ui/gl/gl_image.h"
+#include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/scoped_binders.h"
 
@@ -1444,7 +1444,7 @@ void V4L2SliceVideoDecodeAccelerator::CreateGLImageFor(
     return;
   }
 
-  scoped_refptr<gl::GLImage> gl_image =
+  scoped_refptr<gl::GLImageNativePixmap> gl_image =
       gl_device->CreateGLImage(visible_size, fourcc, std::move(handle));
   if (!gl_image) {
     LOG(ERROR) << "Could not create GLImage,"

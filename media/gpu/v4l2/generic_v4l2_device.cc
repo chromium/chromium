@@ -281,7 +281,7 @@ EGLImageKHR GenericV4L2Device::CreateEGLImage(
   return egl_image;
 }
 
-scoped_refptr<gl::GLImage> GenericV4L2Device::CreateGLImage(
+scoped_refptr<gl::GLImageNativePixmap> GenericV4L2Device::CreateGLImage(
     const gfx::Size& size,
     const Fourcc fourcc,
     gfx::NativePixmapHandle handle) const {

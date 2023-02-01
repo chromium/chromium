@@ -55,7 +55,7 @@ class GenericV4L2Device : public V4L2Device {
                              const Fourcc fourcc,
                              gfx::NativePixmapHandle handle) const override;
 
-  scoped_refptr<gl::GLImage> CreateGLImage(
+  scoped_refptr<gl::GLImageNativePixmap> CreateGLImage(
       const gfx::Size& size,
       const Fourcc fourcc,
       gfx::NativePixmapHandle handle) const override;
