@@ -27,7 +27,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceProcessTrackerTest,
     return;
 
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  GetNetworkService()->BindTestInterface(
+  GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
   // This ensures network service is fully running.
   network_service_test.FlushForTesting();
@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceProcessTrackerTest,
   SimulateNetworkServiceCrash();
 
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test2;
-  GetNetworkService()->BindTestInterface(
+  GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test2.BindNewPipeAndPassReceiver());
   // This ensures network service is fully running.
   network_service_test2.FlushForTesting();

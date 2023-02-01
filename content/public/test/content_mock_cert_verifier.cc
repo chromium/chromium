@@ -76,7 +76,7 @@ void ContentMockCertVerifier::CertVerifier::
     EnsureNetworkServiceTestInitialized() {
   if (!network_service_test_ || !network_service_test_.is_connected()) {
     network_service_test_.reset();
-    GetNetworkService()->BindTestInterface(
+    GetNetworkService()->BindTestInterfaceForTesting(
         network_service_test_.BindNewPipeAndPassReceiver());
   }
   // TODO(crbug.com/901026): Make sure the network process is started to avoid a

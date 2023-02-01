@@ -773,7 +773,7 @@ void BrowserTestBase::SimulateNetworkServiceCrash() {
   // SimulateNetworkServiceCrash from SetUpOnMainThread, before
   // InitializeNetworkProcess has been called.
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  content::GetNetworkService()->BindTestInterface(
+  content::GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
@@ -1058,7 +1058,7 @@ void BrowserTestBase::InitializeNetworkProcess() {
   }
 
   network_service_test_.reset();
-  content::GetNetworkService()->BindTestInterface(
+  content::GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test_.BindNewPipeAndPassReceiver());
 
   // Do not set up host resolver rules if we allow the test to access

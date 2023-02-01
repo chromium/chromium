@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(NetworkChangeManagerClientBrowserTest,
   // BrowserTestBase::SimulateNetworkServiceCrash to avoid the cleanup and
   // reconnection work it does for you.
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  content::GetNetworkService()->BindTestInterface(
+  content::GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
   IgnoreNetworkServiceCrashes();
   network_service_test->SimulateCrash();

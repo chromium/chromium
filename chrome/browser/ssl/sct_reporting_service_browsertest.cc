@@ -223,7 +223,7 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
     CertVerifierBrowserTest::SetUpOnMainThread();
 
     // Set up NetworkServiceTest once.
-    content::GetNetworkService()->BindTestInterface(
+    content::GetNetworkService()->BindTestInterfaceForTesting(
         network_service_test_.BindNewPipeAndPassReceiver());
 
     // Override the retry delay to 0 so that retries happen immediately.
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   // so set back up a retry delay of zero to avoid test timeouts.
   {
     network_service_test().reset();
-    content::GetNetworkService()->BindTestInterface(
+    content::GetNetworkService()->BindTestInterfaceForTesting(
         network_service_test().BindNewPipeAndPassReceiver());
 
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;

@@ -213,7 +213,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #if BUILDFLAG(IS_ANDROID)
   void DumpWithoutCrashing(base::Time dump_request_time) override;
 #endif
-  void BindTestInterface(
+  void BindTestInterfaceForTesting(
       mojo::PendingReceiver<mojom::NetworkServiceTest> receiver) override;
   void SetFirstPartySets(net::GlobalFirstPartySets sets) override;
   void SetExplicitlyAllowedPorts(const std::vector<uint16_t>& ports) override;

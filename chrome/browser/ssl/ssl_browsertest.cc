@@ -7851,7 +7851,7 @@ class SSLPKPBrowserTest : public CertVerifierBrowserTest {
       mojo::ScopedAllowSyncCallForTesting allow_sync_call;
 
       mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-      content::GetNetworkService()->BindTestInterface(
+      content::GetNetworkService()->BindTestInterfaceForTesting(
           network_service_test.BindNewPipeAndPassReceiver());
       network_service_test->SetTransportSecurityStateSource(0);
     } else {
@@ -7870,7 +7870,7 @@ class SSLPKPBrowserTest : public CertVerifierBrowserTest {
 
     if (content::IsOutOfProcessNetworkService()) {
       mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-      content::GetNetworkService()->BindTestInterface(
+      content::GetNetworkService()->BindTestInterfaceForTesting(
           network_service_test.BindNewPipeAndPassReceiver());
       network_service_test->SetTransportSecurityStateSource(reporting_port);
     } else {

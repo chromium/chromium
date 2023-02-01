@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
     return;
 
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  GetNetworkService()->BindTestInterface(
+  GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
   // TODO(crbug.com/901026): Make sure the network process is started to avoid a
   // deadlock on Android.
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, SyncCookieGetOnCrash) {
     return;
 
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  GetNetworkService()->BindTestInterface(
+  GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
   network_service_test->CrashOnGetCookieList();
 

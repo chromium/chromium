@@ -36,7 +36,7 @@ class HSTSPolicyTest : public PolicyTest {
 
 IN_PROC_BROWSER_TEST_F(HSTSPolicyTest, HSTSPolicyBypassList) {
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  content::GetNetworkService()->BindTestInterface(
+  content::GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
   // The port number 1234 here doesn't matter - it just needs to be a non-zero

@@ -47,7 +47,7 @@ enum class CTEnforcement { kEnabled, kDisabled };
 
 void SetRequireCTForTesting() {
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  content::GetNetworkService()->BindTestInterface(
+  content::GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
 
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;

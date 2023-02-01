@@ -50,7 +50,7 @@ std::string GetLogFileContents(const base::ScopedTempDir& dir) {
 
 void LogToNetworkService(std::string message) {
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  content::GetNetworkService()->BindTestInterface(
+  content::GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
   network_service_test->Log(message);

@@ -1602,7 +1602,7 @@ class SignedExchangePKPBrowserTest
       mojo::ScopedAllowSyncCallForTesting allow_sync_call;
 
       mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-      GetNetworkService()->BindTestInterface(
+      GetNetworkService()->BindTestInterfaceForTesting(
           network_service_test.BindNewPipeAndPassReceiver());
       network_service_test->SetTransportSecurityStateSource(0);
     } else {
@@ -1624,7 +1624,7 @@ class SignedExchangePKPBrowserTest
 
     if (IsOutOfProcessNetworkService()) {
       mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-      GetNetworkService()->BindTestInterface(
+      GetNetworkService()->BindTestInterfaceForTesting(
           network_service_test.BindNewPipeAndPassReceiver());
       network_service_test->SetTransportSecurityStateSource(reporting_port);
     } else {

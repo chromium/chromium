@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(TransferableSocketBrowserTest, TransferSocket) {
 
   mojo::PendingRemote<network::mojom::NetworkServiceTest>
       network_service_pending;
-  GetNetworkService()->BindTestInterface(
+  GetNetworkService()->BindTestInterfaceForTesting(
       network_service_pending.InitWithNewPipeAndPassReceiver());
   net::TCPSocket socket(nullptr, nullptr, net::NetLogSource());
   socket.Open(net::AddressFamily::ADDRESS_FAMILY_IPV4);

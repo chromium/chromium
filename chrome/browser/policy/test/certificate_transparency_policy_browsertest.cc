@@ -34,7 +34,7 @@ namespace policy {
 void SetRequireCTForTesting(bool required) {
   if (content::IsOutOfProcessNetworkService()) {
     mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-    content::GetNetworkService()->BindTestInterface(
+    content::GetNetworkService()->BindTestInterfaceForTesting(
         network_service_test.BindNewPipeAndPassReceiver());
     network::mojom::NetworkServiceTest::RequireCT required_ct =
         required ? network::mojom::NetworkServiceTest::RequireCT::REQUIRE

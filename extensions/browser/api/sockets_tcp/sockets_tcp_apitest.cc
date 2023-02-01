@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketTcpExtensionTLS) {
   // EmbeddedTestServer won't be recognized, so inject mock cert verifier
   // through the test helper interface.
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  content::GetNetworkService()->BindTestInterface(
+  content::GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
   network_service_test->MockCertVerifierSetDefaultResult(net::OK);

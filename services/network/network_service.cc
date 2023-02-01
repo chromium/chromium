@@ -816,7 +816,7 @@ void NetworkService::DumpWithoutCrashing(base::Time dump_request_time) {
 }
 #endif
 
-void NetworkService::BindTestInterface(
+void NetworkService::BindTestInterfaceForTesting(
     mojo::PendingReceiver<mojom::NetworkServiceTest> receiver) {
   if (registry_) {
     auto pipe = receiver.PassPipe();

@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(NetworkFieldTrialBrowserTest, FieldTrialRegistered) {
   // inform the browser process about it.
   TestFieldTrialListObserver observer;
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  GetNetworkService()->BindTestInterface(
+  GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
   network_service_test->ActivateFieldTrial(kFieldTrialName);
   observer.WaitForTrialGroupToBeFinalized();

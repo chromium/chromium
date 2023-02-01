@@ -1012,7 +1012,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
     return;
   base::RunLoop run_loop;
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  content::GetNetworkService()->BindTestInterface(
+  content::GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
 
   // Crash the network service, but do not wait for full startup.
@@ -1022,7 +1022,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   run_loop.Run();
 
   network_service_test.reset();
-  content::GetNetworkService()->BindTestInterface(
+  content::GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
 
   // Sync call should be fine, even though network process is still starting up.

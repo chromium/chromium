@@ -49,7 +49,7 @@ void AssertNetworkServiceEnvEquals(const std::string& name,
   std::string value;
   if (content::IsOutOfProcessNetworkService()) {
     mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-    content::GetNetworkService()->BindTestInterface(
+    content::GetNetworkService()->BindTestInterfaceForTesting(
         network_service_test.BindNewPipeAndPassReceiver());
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
     network_service_test->GetEnvironmentVariableValue(name, &value);

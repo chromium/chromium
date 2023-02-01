@@ -163,7 +163,7 @@ class NetworkQualityEstimatorPrefsBrowserTest : public InProcessBrowserTest {
     DCHECK(content::GetNetworkService());
 
     mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-    content::GetNetworkService()->BindTestInterface(
+    content::GetNetworkService()->BindTestInterfaceForTesting(
         network_service_test.BindNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     network_service_test->SimulateNetworkQualityChange(
