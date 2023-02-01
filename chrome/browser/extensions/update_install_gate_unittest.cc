@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
@@ -129,6 +130,8 @@ class UpdateInstallGateTest : public testing::Test {
     fake_user_manager_->LoginUser(account_id);
 #endif
     profile_ = profile_manager_->CreateTestingProfile(kUserProfile);
+    render_process_host_ =
+        std::make_unique<content::MockRenderProcessHost>(profile_);
     base::RunLoop().RunUntilIdle();
 
     system_ = static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_));
@@ -150,7 +153,10 @@ class UpdateInstallGateTest : public testing::Test {
         CreateExtension(kNonPersistentExtensionId, "2.0", false);
   }
 
-  void TearDown() override { profile_manager_->DeleteAllTestingProfiles(); }
+  void TearDown() override {
+    render_process_host_.reset();
+    profile_manager_->DeleteAllTestingProfiles();
+  }
 
   void AddExistingExtensions() {
     scoped_refptr<const Extension> app = CreateApp(kAppId, "1.0");
@@ -175,8 +181,9 @@ class UpdateInstallGateTest : public testing::Test {
   void MakeExtensionListenForOnUpdateAvailable(
       const std::string& extension_id) {
     const char kOnUpdateAvailableEvent[] = "runtime.onUpdateAvailable";
-    event_router_->AddEventListener(kOnUpdateAvailableEvent, nullptr,
-                                    extension_id);
+
+    event_router_->AddEventListener(kOnUpdateAvailableEvent,
+                                    render_process_host(), extension_id);
   }
 
   void Check(const Extension* extension,
@@ -203,6 +210,10 @@ class UpdateInstallGateTest : public testing::Test {
     return new_none_persistent_.get();
   }
 
+  content::RenderProcessHost* render_process_host() const {
+    return render_process_host_.get();
+  }
+
  private:
   // Needed by extension system.
   content::BrowserTaskEnvironment task_environment_;
@@ -213,6 +224,7 @@ class UpdateInstallGateTest : public testing::Test {
 
   raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<content::RenderProcessHost> render_process_host_;
 
   raw_ptr<TestExtensionSystem> system_ = nullptr;
   raw_ptr<ExtensionService> service_ = nullptr;

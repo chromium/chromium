@@ -38,6 +38,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/event_router.h"
@@ -314,6 +315,10 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
 
   Browser* browser() { return browser_.get(); }
 
+  content::RenderProcessHost* render_process_host() const {
+    return render_process_host_.get();
+  }
+
  private:
   // ExtensionServiceTestBase:
   void SetUp() override;
@@ -322,6 +327,7 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   // The browser (and accompanying window).
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
+  std::unique_ptr<content::RenderProcessHost> render_process_host_;
 
   std::vector<std::unique_ptr<TestExtensionDir>> test_extension_dirs_;
 };
@@ -517,12 +523,15 @@ void DeveloperPrivateApiUnitTest::SetUp() {
   // Loading unpacked extensions through the developerPrivate API requires
   // developer mode to be enabled.
   profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+  render_process_host_ =
+      std::make_unique<content::MockRenderProcessHost>(profile());
 }
 
 void DeveloperPrivateApiUnitTest::TearDown() {
   test_extension_dirs_.clear();
   browser_.reset();
   browser_window_.reset();
+  render_process_host_.reset();
   ExtensionServiceTestBase::TearDown();
 }
 
@@ -1867,10 +1876,10 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   // The DeveloperPrivateEventRouter will only dispatch events if there's at
   // least one listener to dispatch to. Create one.
-  content::RenderProcessHost* process = nullptr;
   const char* kEventName =
       api::developer_private::OnItemStateChanged::kEventName;
-  event_router->AddEventListener(kEventName, process, listener_id);
+  event_router->AddEventListener(kEventName, render_process_host(),
+                                 listener_id);
 
   TestEventRouterObserver test_observer(event_router);
   EXPECT_FALSE(WasItemChangedEventDispatched(
@@ -1910,10 +1919,10 @@ TEST_F(DeveloperPrivateApiUnitTest, ExtensionUpdatedEventOnPermissionsChange) {
 
   // The DeveloperPrivateEventRouter will only dispatch events if there's at
   // least one listener to dispatch to. Create one.
-  content::RenderProcessHost* process = nullptr;
   const char* kEventName =
       api::developer_private::OnItemStateChanged::kEventName;
-  event_router->AddEventListener(kEventName, process, listener_id);
+  event_router->AddEventListener(kEventName, render_process_host(),
+                                 listener_id);
 
   scoped_refptr<const Extension> dummy_extension =
       ExtensionBuilder("dummy")
@@ -2062,7 +2071,7 @@ TEST_F(DeveloperPrivateApiUnitTest, OnUserSiteSettingsChanged) {
   // least one listener to dispatch to. Create one.
   const char* kEventName =
       api::developer_private::OnUserSiteSettingsChanged::kEventName;
-  event_router->AddEventListener(kEventName, /*process=*/nullptr,
+  event_router->AddEventListener(kEventName, render_process_host(),
                                  crx_file::id_util::GenerateId("listener"));
 
   TestEventRouterObserver test_observer(event_router);
@@ -2644,10 +2653,10 @@ TEST_F(DeveloperPrivateApiAllowlistUnitTest,
 
   // The DeveloperPrivateEventRouter will only dispatch events if there's at
   // least one listener to dispatch to. Create one.
-  content::RenderProcessHost* process = nullptr;
   const char* kEventName =
       api::developer_private::OnItemStateChanged::kEventName;
-  event_router->AddEventListener(kEventName, process, listener_id);
+  event_router->AddEventListener(kEventName, render_process_host(),
+                                 listener_id);
 
   scoped_refptr<const Extension> dummy_extension = LoadSimpleExtension();
   base::RunLoop().RunUntilIdle();

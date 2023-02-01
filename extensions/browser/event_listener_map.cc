@@ -27,16 +27,11 @@ std::unique_ptr<EventListener> EventListener::ForExtension(
     const std::string& extension_id,
     content::RenderProcessHost* process,
     absl::optional<base::Value::Dict> filter) {
-  // The process parameter is nullptr when creating lazy listener.
-  // TODO(richardzh): Update lazy listener creation to either calling
-  // ForExtensionServiceWorker instead, or update this method signature to add a
-  // BrowserContext parameter.
-  content::BrowserContext* browser_context =
-      process ? process->GetBrowserContext() : nullptr;
+  DCHECK(process);
 
   return base::WrapUnique(new EventListener(
-      event_name, extension_id, GURL(), process, browser_context, false,
-      blink::mojom::kInvalidServiceWorkerVersionId, kMainThreadId,
+      event_name, extension_id, GURL(), process, process->GetBrowserContext(),
+      false, blink::mojom::kInvalidServiceWorkerVersionId, kMainThreadId,
       std::move(filter)));
 }
 
@@ -69,6 +64,20 @@ std::unique_ptr<EventListener> EventListener::ForExtensionServiceWorker(
   return base::WrapUnique(new EventListener(
       event_name, extension_id, service_worker_scope, process, browser_context,
       true, service_worker_version_id, worker_thread_id, std::move(filter)));
+}
+
+std::unique_ptr<EventListener> EventListener::CreateLazyListener(
+    const std::string& event_name,
+    const std::string& extension_id,
+    content::BrowserContext* browser_context,
+    bool is_for_service_worker,
+    const GURL& service_worker_scope,
+    absl::optional<base::Value::Dict> filter) {
+  return base::WrapUnique(new EventListener(
+      event_name, extension_id, service_worker_scope, /*process=*/nullptr,
+      browser_context, is_for_service_worker,
+      blink::mojom::kInvalidServiceWorkerVersionId, kMainThreadId,
+      std::move(filter)));
 }
 
 EventListener::~EventListener() {}
@@ -109,10 +118,8 @@ void EventListener::MakeLazy() {
   // A lazy listener neither has a process attached to it nor it has a worker
   // thread (if the listener was for a service worker), so reset these values
   // below to reflect that.
-  if (is_for_service_worker_) {
-    worker_thread_id_ = kMainThreadId;
-    service_worker_version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
-  }
+  worker_thread_id_ = kMainThreadId;
+  service_worker_version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
   process_ = nullptr;
 }
 
@@ -280,11 +287,17 @@ void EventListenerMap::RemoveListenersForExtension(
 }
 
 void EventListenerMap::LoadUnfilteredLazyListeners(
+    content::BrowserContext* browser_context,
     const std::string& extension_id,
+    bool is_for_service_worker,
     const std::set<std::string>& event_names) {
   for (const auto& name : event_names) {
-    AddListener(EventListener::ForExtension(name, extension_id, nullptr,
-                                            absl::nullopt));
+    AddListener(EventListener::CreateLazyListener(
+        name, extension_id, browser_context, is_for_service_worker,
+        is_for_service_worker
+            ? Extension::GetBaseURLFromExtensionId(extension_id)
+            : GURL(),
+        absl::nullopt));
   }
 }
 
@@ -314,16 +327,12 @@ void EventListenerMap::LoadFilteredLazyListeners(
       if (!filter_value.is_dict())
         continue;
       const base::Value::Dict& filter = filter_value.GetDict();
-      if (is_for_service_worker) {
-        AddListener(EventListener::ForExtensionServiceWorker(
-            item.first, extension_id, nullptr, browser_context,
-            Extension::GetBaseURLFromExtensionId(extension_id),
-            blink::mojom::kInvalidServiceWorkerVersionId, kMainThreadId,
-            filter.Clone()));
-      } else {
-        AddListener(EventListener::ForExtension(item.first, extension_id,
-                                                nullptr, filter.Clone()));
-      }
+      AddListener(EventListener::CreateLazyListener(
+          item.first, extension_id, browser_context, is_for_service_worker,
+          is_for_service_worker
+              ? Extension::GetBaseURLFromExtensionId(extension_id)
+              : GURL(),
+          filter.Clone()));
     }
   }
 }

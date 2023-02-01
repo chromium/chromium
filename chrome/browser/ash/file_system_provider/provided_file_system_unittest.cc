@@ -29,6 +29,7 @@
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/extension_id.h"
 #include "storage/browser/file_system/watcher_manager.h"
@@ -237,6 +238,8 @@ class FileSystemProviderProvidedFileSystemTest : public testing::Test {
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
+    render_process_host_ =
+        std::make_unique<content::MockRenderProcessHost>(profile_.get());
     const base::FilePath mount_path = util::GetMountPath(
         profile_.get(), ProviderId::CreateFromExtensionId(kExtensionId),
         kFileSystemId);
@@ -254,23 +257,29 @@ class FileSystemProviderProvidedFileSystemTest : public testing::Test {
         profile_.get(), provided_file_system_.get());
     event_router_->AddEventListener(extensions::api::file_system_provider::
                                         OnAddWatcherRequested::kEventName,
-                                    nullptr, kExtensionId);
+                                    render_process_host_.get(), kExtensionId);
     event_router_->AddEventListener(extensions::api::file_system_provider::
                                         OnRemoveWatcherRequested::kEventName,
-                                    nullptr, kExtensionId);
+                                    render_process_host_.get(), kExtensionId);
     event_router_->AddEventListener(
         extensions::api::file_system_provider::OnOpenFileRequested::kEventName,
-        nullptr, kExtensionId);
+        render_process_host_.get(), kExtensionId);
     event_router_->AddEventListener(
         extensions::api::file_system_provider::OnCloseFileRequested::kEventName,
-        nullptr, kExtensionId);
+        render_process_host_.get(), kExtensionId);
     provided_file_system_->SetEventRouterForTesting(event_router_.get());
     provided_file_system_->SetNotificationManagerForTesting(
         base::WrapUnique(new StubNotificationManager));
   }
 
+  void TearDown() override {
+    render_process_host_.reset();
+    Test::TearDown();
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::RenderProcessHost> render_process_host_;
   std::unique_ptr<FakeEventRouter> event_router_;
   std::unique_ptr<ProvidedFileSystemInfo> file_system_info_;
   std::unique_ptr<ProvidedFileSystem> provided_file_system_;

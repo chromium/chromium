@@ -102,14 +102,12 @@ class EventListenerMapTest : public ExtensionsTest {
       const ExtensionId& extension_id,
       absl::optional<base::Value::Dict> filter,
       bool is_for_service_worker) {
-    if (is_for_service_worker) {
-      return EventListener::ForExtensionServiceWorker(
-          event_name, extension_id, nullptr, process_->GetBrowserContext(),
-          Extension::GetBaseURLFromExtensionId(extension_id),
-          GetWorkerVersionId(true), GetWorkerThreadId(true), std::move(filter));
-    }
-    return EventListener::ForExtension(event_name, extension_id, nullptr,
-                                       std::move(filter));
+    return EventListener::CreateLazyListener(
+        event_name, extension_id, browser_context(), is_for_service_worker,
+        is_for_service_worker
+            ? Extension::GetBaseURLFromExtensionId(extension_id)
+            : GURL(),
+        std::move(filter));
   }
 
  protected:
@@ -251,8 +249,9 @@ TEST_P(EventListenerMapWithContextTest,
 }
 
 TEST_F(EventListenerMapTest, LazyAndUnlazyListenersGetReturned) {
-  listeners_->AddListener(EventListener::ForExtension(
-      kEvent1Name, kExt1Id, nullptr, CreateHostSuffixFilter("google.com")));
+  listeners_->AddListener(EventListener::CreateLazyListener(
+      kEvent1Name, kExt1Id, process_->GetBrowserContext(), false, GURL(),
+      CreateHostSuffixFilter("google.com")));
 
   listeners_->AddListener(
       EventListener::ForExtension(kEvent1Name, kExt1Id, process_.get(),
@@ -475,15 +474,20 @@ TEST_F(EventListenerMapTest, HasListenerForExtension) {
   ASSERT_FALSE(listeners_->HasListenerForExtension(kExt1Id, kEvent1Name));
 
   auto create_event_listener = [&](bool is_for_service_worker, bool lazy) {
+    if (lazy) {
+      return EventListener::CreateLazyListener(
+          kEvent1Name, kExt1Id, process_->GetBrowserContext(),
+          is_for_service_worker, Extension::GetBaseURLFromExtensionId(kExt1Id),
+          absl::nullopt);
+    }
     if (is_for_service_worker) {
       return EventListener::ForExtensionServiceWorker(
-          kEvent1Name, kExt1Id, lazy ? nullptr : process_.get(),
-          process_->GetBrowserContext(),
+          kEvent1Name, kExt1Id, process_.get(), process_->GetBrowserContext(),
           Extension::GetBaseURLFromExtensionId(kExt1Id),
           GetWorkerVersionId(lazy), GetWorkerThreadId(lazy), absl::nullopt);
     }
-    return EventListener::ForExtension(
-        kEvent1Name, kExt1Id, lazy ? nullptr : process_.get(), absl::nullopt);
+    return EventListener::ForExtension(kEvent1Name, kExt1Id, process_.get(),
+                                       absl::nullopt);
   };
 
   for (bool is_for_service_worker : {false, true}) {

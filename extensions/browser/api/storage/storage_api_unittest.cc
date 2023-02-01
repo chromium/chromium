@@ -18,6 +18,7 @@
 #include "components/value_store/leveldb_value_store.h"
 #include "components/value_store/value_store.h"
 #include "components/value_store/value_store_factory_impl.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
@@ -69,6 +70,18 @@ class StorageApiUnittest : public ApiUnitTest {
     StorageFrontend::GetFactoryInstance()->SetTestingFactory(
         browser_context(),
         base::BindRepeating(&CreateStorageFrontendForTesting));
+
+    render_process_host_ =
+        std::make_unique<content::MockRenderProcessHost>(browser_context());
+  }
+
+  void TearDown() override {
+    render_process_host_.reset();
+    ApiUnitTest::TearDown();
+  }
+
+  content::RenderProcessHost* render_process_host() const {
+    return render_process_host_.get();
   }
 
   // Runs the storage.set() API function with local storage.
@@ -105,6 +118,7 @@ class StorageApiUnittest : public ApiUnitTest {
   }
 
   ExtensionsAPIClient extensions_api_client_;
+  std::unique_ptr<content::RenderProcessHost> render_process_host_;
 };
 
 TEST_F(StorageApiUnittest, RestoreCorruptedStorage) {
@@ -147,11 +161,10 @@ TEST_F(StorageApiUnittest, StorageAreaOnChanged) {
   TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
 
   EventRouter* event_router = EventRouter::Get(browser_context());
-  content::RenderProcessHost* process = nullptr;
-  event_router->AddEventListener(api::storage::OnChanged::kEventName, process,
-                                 extension()->id());
-  event_router->AddEventListener("storage.local.onChanged", process,
-                                 extension()->id());
+  event_router->AddEventListener(api::storage::OnChanged::kEventName,
+                                 render_process_host(), extension()->id());
+  event_router->AddEventListener("storage.local.onChanged",
+                                 render_process_host(), extension()->id());
 
   RunSetFunction("key", "value");
   EXPECT_EQ(2u, event_observer.events().size());
@@ -176,13 +189,12 @@ TEST_F(StorageApiUnittest, StorageAreaOnChangedOtherListener) {
   TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
 
   EventRouter* event_router = EventRouter::Get(browser_context());
-  content::RenderProcessHost* process = nullptr;
   std::string other_listener_id =
       crx_file::id_util::GenerateId("other-listener");
-  event_router->AddEventListener(api::storage::OnChanged::kEventName, process,
-                                 other_listener_id);
-  event_router->AddEventListener("storage.local.onChanged", process,
-                                 other_listener_id);
+  event_router->AddEventListener(api::storage::OnChanged::kEventName,
+                                 render_process_host(), other_listener_id);
+  event_router->AddEventListener("storage.local.onChanged",
+                                 render_process_host(), other_listener_id);
 
   RunSetFunction("key", "value");
   EXPECT_EQ(0u, event_observer.events().size());
@@ -192,9 +204,8 @@ TEST_F(StorageApiUnittest, StorageAreaOnChangedOnlyOneListener) {
   TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
 
   EventRouter* event_router = EventRouter::Get(browser_context());
-  content::RenderProcessHost* process = nullptr;
-  event_router->AddEventListener(api::storage::OnChanged::kEventName, process,
-                                 extension()->id());
+  event_router->AddEventListener(api::storage::OnChanged::kEventName,
+                                 render_process_host(), extension()->id());
 
   RunSetFunction("key", "value");
   EXPECT_EQ(1u, event_observer.events().size());
