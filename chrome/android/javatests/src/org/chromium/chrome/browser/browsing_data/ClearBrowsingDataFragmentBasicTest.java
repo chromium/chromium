@@ -11,6 +11,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
+
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -215,6 +217,9 @@ public class ClearBrowsingDataFragmentBasicTest {
         View view = mSettingsActivityTestRule.getActivity()
                             .findViewById(android.R.id.content)
                             .getRootView();
+        // Looking for "Frees up less than 1 MB" but could conceivably free up more space.
+        // See crbug.com/1407312
+        waitForView(withText("Frees up"));
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_unknown_signed_in");
     }
 
