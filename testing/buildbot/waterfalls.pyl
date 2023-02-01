@@ -5840,12 +5840,9 @@
         },
       },
 
-      # TODO(crbug.com/1381588, crbug.com/1405483): replace
-      # `updater_gtests_mac_user` with `updater_gtests_mac` once
-      # crbug.com/1394839 is resolved.
       'mac12-x64-updater-tester-asan-dbg': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests_mac_user',
+          'gtest_tests': 'updater_gtests_mac',
         },
         'swarming': {
           'dimension_sets': [
@@ -5856,11 +5853,9 @@
           ]
         },
       },
-      # TODO(crbug.com/1405483): replace `updater_gtests_mac_user` with
-      # `updater_gtests_mac` once crbug.com/1394839 is resolved.
       'mac13-arm64-updater-tester-dbg': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests_mac_user',
+          'gtest_tests': 'updater_gtests_mac',
         },
         'swarming': {
           'dimension_sets': [
@@ -5871,11 +5866,9 @@
           ]
         },
       },
-      # TODO(crbug.com/1405483): replace `updater_gtests_mac_user` with
-      # `updater_gtests_mac` once crbug.com/1394839 is resolved.
       'mac13-x64-updater-tester-rel': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests_mac_user',
+          'gtest_tests': 'updater_gtests_mac',
         },
         'swarming': {
           'dimension_sets': [
