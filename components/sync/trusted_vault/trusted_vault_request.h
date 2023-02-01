@@ -45,7 +45,9 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
     // Reported when access token fetch attempt was failed and request wasn't
     // sent.
     kAccessTokenFetchingFailure,
-    // Reported when other network and http errors occur.
+    // Reported when network error occurs.
+    kNetworkError,
+    // Reported when other http errors occur.
     kOtherError
   };
 

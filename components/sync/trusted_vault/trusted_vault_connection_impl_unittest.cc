@@ -21,7 +21,9 @@
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/sync/trusted_vault/trusted_vault_crypto.h"
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -142,6 +144,16 @@ class TrustedVaultConnectionImplTest : public testing::Test {
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
         GetFullJoinSecurityDomainsURLForTesting(kTestURL).spec(),
         response_content, response_http_code);
+  }
+
+  bool RespondToJoinSecurityDomainsRequestWithNetworkError() {
+    // Allow request to reach |test_url_loader_factory_|.
+    base::RunLoop().RunUntilIdle();
+    return test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFullJoinSecurityDomainsURLForTesting(kTestURL),
+        network::URLLoaderCompletionStatus(net::ERR_FAILED),
+        /*response_head=*/network::mojom::URLResponseHead::New(),
+        /*content=*/std::string());
   }
 
   bool RespondToGetSecurityDomainMemberRequest(
@@ -466,7 +478,7 @@ TEST_F(TrustedVaultConnectionImplTest,
 }
 
 TEST_F(TrustedVaultConnectionImplTest,
-       ShouldHandleFailedJoinSecurityDomainsRequest) {
+       ShouldHandleFailedJoinSecurityDomainsRequestWithHttpError) {
   std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
   ASSERT_THAT(key_pair, NotNull());
 
@@ -486,6 +498,27 @@ TEST_F(TrustedVaultConnectionImplTest,
   EXPECT_TRUE(
       RespondToJoinSecurityDomainsRequest(net::HTTP_INTERNAL_SERVER_ERROR,
                                           /*response_content=*/std::string()));
+}
+
+TEST_F(TrustedVaultConnectionImplTest,
+       ShouldHandleFailedJoinSecurityDomainsRequestWithNetworkError) {
+  std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
+  ASSERT_THAT(key_pair, NotNull());
+
+  base::MockCallback<
+      TrustedVaultConnection::RegisterAuthenticationFactorCallback>
+      callback;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RegisterAuthenticationFactor(
+          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
+          /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
+          AuthenticationFactorType::kPhysicalDevice,
+          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kNetworkError)));
+  EXPECT_TRUE(RespondToJoinSecurityDomainsRequestWithNetworkError());
 }
 
 TEST_F(TrustedVaultConnectionImplTest,

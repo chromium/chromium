@@ -10,6 +10,7 @@
 #include "components/sync/protocol/vault.pb.h"
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
+#include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "components/sync/trusted_vault/trusted_vault_crypto.h"
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -98,8 +99,8 @@ class DownloadKeysResponseHandlerTest : public testing::Test {
   const DownloadKeysResponseHandler handler_;
 };
 
-// All HttpStatuses except kSuccess should end up in kOtherError or
-// kMemberNotFound reporting.
+// All HttpStatuses except kSuccess should end up in kOtherError, kNetworkError
+// or kMemberNotFound reporting.
 TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleHttpErrors) {
   EXPECT_THAT(
       handler()
@@ -122,6 +123,13 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleHttpErrors) {
               /*response_body=*/std::string())
           .status,
       Eq(TrustedVaultDownloadKeysStatus::kOtherError));
+  EXPECT_THAT(
+      handler()
+          .ProcessResponse(
+              /*http_status=*/TrustedVaultRequest::HttpStatus::kNetworkError,
+              /*response_body=*/std::string())
+          .status,
+      Eq(TrustedVaultDownloadKeysStatus::kNetworkError));
   EXPECT_THAT(
       handler()
           .ProcessResponse(

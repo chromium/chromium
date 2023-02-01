@@ -218,7 +218,7 @@ TEST_F(TrustedVaultRequestTest, ShouldHandleNetworkFailures) {
 
   // |completion_callback| should be called after receiving response.
   EXPECT_CALL(completion_callback,
-              Run(TrustedVaultRequest::HttpStatus::kOtherError, _));
+              Run(TrustedVaultRequest::HttpStatus::kNetworkError, _));
   EXPECT_TRUE(RespondToHttpRequest(net::ERR_FAILED, absl::nullopt,
                                    /*response_body=*/std::string()));
 }

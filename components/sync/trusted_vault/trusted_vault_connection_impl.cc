@@ -16,6 +16,7 @@
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
+#include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "components/sync/trusted_vault/trusted_vault_crypto.h"
 #include "components/sync/trusted_vault/trusted_vault_request.h"
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
@@ -155,6 +156,10 @@ void ProcessJoinSecurityDomainsResponse(
     case TrustedVaultRequest::HttpStatus::kSuccess:
     case TrustedVaultRequest::HttpStatus::kConflict:
       break;
+    case TrustedVaultRequest::HttpStatus::kNetworkError:
+      std::move(callback).Run(TrustedVaultRegistrationStatus::kNetworkError,
+                              /*last_key_version=*/0);
+      return;
     case TrustedVaultRequest::HttpStatus::kOtherError:
       std::move(callback).Run(TrustedVaultRegistrationStatus::kOtherError,
                               /*last_key_version=*/0);
@@ -217,6 +222,7 @@ void ProcessDownloadIsRecoverabilityDegradedResponse(
   switch (http_status) {
     case TrustedVaultRequest::HttpStatus::kSuccess:
       break;
+    case TrustedVaultRequest::HttpStatus::kNetworkError:
     case TrustedVaultRequest::HttpStatus::kOtherError:
     case TrustedVaultRequest::HttpStatus::kNotFound:
     case TrustedVaultRequest::HttpStatus::kBadRequest:

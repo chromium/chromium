@@ -135,6 +135,11 @@ void TrustedVaultRequest::OnURLLoadComplete(
                                      reason_for_uma_);
 
   std::string response_content = response_body ? *response_body : std::string();
+  if (http_response_code == 0) {
+    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kNetworkError,
+                                             response_content);
+    return;
+  }
   if (http_response_code == net::HTTP_BAD_REQUEST) {
     RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kBadRequest,
                                              response_content);

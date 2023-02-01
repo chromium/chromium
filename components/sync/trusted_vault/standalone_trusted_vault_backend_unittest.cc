@@ -1243,6 +1243,44 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                                /*has_persistent_auth_error=*/false);
 }
 
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldNotThrottleUponNetworkError) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 1;
+
+  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      device_registration_callback;
+  ON_CALL(*connection(), RegisterAuthenticationFactor)
+      .WillByDefault(
+          [&](const CoreAccountInfo&, const std::vector<std::vector<uint8_t>>&,
+              int, const SecureBoxPublicKey&, AuthenticationFactorType,
+              absl::optional<int>,
+              TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                  callback) {
+            device_registration_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor);
+  // Setting the primary account will trigger device registration.
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+  ASSERT_FALSE(device_registration_callback.is_null());
+  Mock::VerifyAndClearExpectations(connection());
+
+  // Mimic network error.
+  std::move(device_registration_callback)
+      .Run(TrustedVaultRegistrationStatus::kNetworkError);
+
+  // Mimic a restart to trigger device registration attempt, which should not be
+  // throttled.
+  ResetBackend();
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+}
+
 // System time can be changed to the past and if this situation not handled,
 // requests could be throttled for unreasonable amount of time.
 TEST_F(StandaloneTrustedVaultBackendTest,

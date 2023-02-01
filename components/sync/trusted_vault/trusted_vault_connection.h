@@ -28,7 +28,9 @@ enum class TrustedVaultRegistrationStatus {
   kLocalDataObsolete,
   // Used when request isn't sent due to access token fetching failure.
   kAccessTokenFetchingFailure,
-  // Used for all network, http and protocol errors.
+  // Used for all network errors.
+  kNetworkError,
+  // Used for all http and protocol errors not covered by the above.
   kOtherError
 };
 
@@ -50,8 +52,9 @@ enum class TrustedVaultDownloadKeysStatus {
   kKeyProofsVerificationFailed,
   // Used when request isn't sent due to access token fetching failure.
   kAccessTokenFetchingFailure,
-  // Used for all network, http and protocol errors, when no statuses above
-  // fits.
+  // Used for all network errors.
+  kNetworkError,
+  // Used for all http and protocol errors, when no statuses above fits.
   kOtherError,
 };
 

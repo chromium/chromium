@@ -291,6 +291,8 @@ StandaloneTrustedVaultBackend::GetDownloadKeysStatusForUMAFromResponse(
       return TrustedVaultDownloadKeysStatusForUMA::kKeyProofsVerificationFailed;
     case TrustedVaultDownloadKeysStatus::kAccessTokenFetchingFailure:
       return TrustedVaultDownloadKeysStatusForUMA::kAccessTokenFetchingFailure;
+    case TrustedVaultDownloadKeysStatus::kNetworkError:
+      return TrustedVaultDownloadKeysStatusForUMA::kNetworkError;
     case TrustedVaultDownloadKeysStatus::kOtherError:
       return TrustedVaultDownloadKeysStatusForUMA::kOtherError;
   }
@@ -944,6 +946,14 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
     case TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure:
       // Request wasn't sent to the server, so there is no need for throttling.
       return;
+    case TrustedVaultRegistrationStatus::kNetworkError:
+      if (base::FeatureList::IsEnabled(
+              kSyncTrustedVaultBypassThrottlingForNetworkErrors)) {
+        // Request wasn't sent to the server, so there is no need for
+        // throttling.
+        return;
+      }
+      [[fallthrough]];
     case TrustedVaultRegistrationStatus::kOtherError:
       RecordFailedConnectionRequestForThrottling();
       return;
@@ -991,6 +1001,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
       break;
     case TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure:
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
+    case TrustedVaultRegistrationStatus::kNetworkError:
     case TrustedVaultRegistrationStatus::kOtherError:
       break;
   }
@@ -1052,6 +1063,14 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
     case TrustedVaultDownloadKeysStatus::kAccessTokenFetchingFailure:
       // Request wasn't sent to the server, so there is no need for throttling.
       break;
+    case TrustedVaultDownloadKeysStatus::kNetworkError:
+      if (base::FeatureList::IsEnabled(
+              kSyncTrustedVaultBypassThrottlingForNetworkErrors)) {
+        // Request wasn't sent to the server, so there is no need for
+        // throttling.
+        break;
+      }
+      [[fallthrough]];
     case TrustedVaultDownloadKeysStatus::kOtherError:
       RecordFailedConnectionRequestForThrottling();
       break;

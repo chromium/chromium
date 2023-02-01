@@ -102411,6 +102411,7 @@ Full version information for the fingerprint enum values:
   <int value="12" label="Throttled client side"/>
   <int value="13" label="Corrupted local device registration"/>
   <int value="14" label="Aborted"/>
+  <int value="15" label="Network error"/>
 </enum>
 
 <enum name="TrustedVaultFetchKeysAttempt">

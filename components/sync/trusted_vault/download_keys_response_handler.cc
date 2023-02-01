@@ -11,6 +11,7 @@
 #include "components/sync/protocol/vault.pb.h"
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
+#include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "components/sync/trusted_vault/trusted_vault_crypto.h"
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -162,6 +163,9 @@ DownloadKeysResponseHandler::ProcessResponse(
       return ProcessedResponse(
           /*status=*/TrustedVaultDownloadKeysStatus::
               kAccessTokenFetchingFailure);
+    case TrustedVaultRequest::HttpStatus::kNetworkError:
+      return ProcessedResponse(
+          /*status=*/TrustedVaultDownloadKeysStatus::kNetworkError);
     case TrustedVaultRequest::HttpStatus::kBadRequest:
     case TrustedVaultRequest::HttpStatus::kConflict:
     case TrustedVaultRequest::HttpStatus::kOtherError:

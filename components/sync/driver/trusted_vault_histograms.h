@@ -60,7 +60,8 @@ enum class TrustedVaultDownloadKeysStatusForUMA {
   kThrottledClientSide = 12,
   kCorruptedLocalDeviceRegistration = 13,
   kAborted = 14,
-  kMaxValue = kAborted
+  kNetworkError = 15,
+  kMaxValue = kNetworkError
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
