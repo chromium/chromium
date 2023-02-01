@@ -127,6 +127,9 @@ const CGFloat kNewTabButtonWidth = 44;
 const CGFloat kNewTabButtonLeadingImageInset = -10.0;
 const CGFloat kNewTabButtonBottomImageInset = -2.0;
 
+// The minimum number of visible pinned tabs.
+const NSUInteger kMinimumVisiblePinnedTabs = 4;
+
 // Returns the background color.
 UIColor* BackgroundColor() {
   if (base::FeatureList::IsEnabled(kExpandedTabStrip)) {
@@ -1736,8 +1739,26 @@ const CGFloat kSymbolSize = 18;
           std::min(currentListIndex - selectedListIndex,
                    [self maxNumCollapsedTabs]);
     }
+
     CGFloat realMinX =
         offset + (numPossibleCollapsedTabsToLeft * kCollapsedTabOverlap);
+    if (_pinnedTabCount > 0) {
+      CGFloat pinnedStackedTabWidth =
+          kPinnedTabWidth - kTabOverlapUnstacked - kCollapsedTabOverlap;
+      if (arrayIndex < _pinnedTabCount &&
+          arrayIndex < kMinimumVisiblePinnedTabs) {
+        // The `kMinimumVisiblePinnedTabs` first pinned tabs should always be
+        // visible.
+        realMinX =
+            offset + numPossibleCollapsedTabsToLeft * pinnedStackedTabWidth;
+      } else {
+        // Other pinned or unpinned tabs can collapse.
+        CGFloat pinnedTabCount =
+            MIN(_pinnedTabCount, kMinimumVisiblePinnedTabs);
+        realMinX = offset + (pinnedTabCount * pinnedStackedTabWidth) +
+                   ((arrayIndex - pinnedTabCount) * kCollapsedTabOverlap);
+      }
+    }
 
     // `realMaxX` is the furthest right the tab can be, in real coordinates.
     int numPossibleCollapsedTabsToRight =
@@ -1791,22 +1812,6 @@ const CGFloat kSymbolSize = 18;
                               AlignValueToPixel(currentTabWith), tabHeight);
     virtualMinX += (currentTabWith - [self tabOverlap]);
     virtualMaxX = CGRectGetMaxX(frame);
-
-// TODO(rohitrao): Temporarily disabled this logic as it does not play well with
-// tab scrolling.
-#if 0
-    // If this tab is completely hidden by the previous tab, remove it from the
-    // scroll view.  Otherwise, add it back in if needed.
-    if (selectedArrayIndex != arrayIndex &&
-        CGRectEqualToRect(frame, previousTabFrame)) {
-      [view removeFromSuperview];
-    } else if (![view superview]) {
-      // TODO(rohitrao): Find a way to move the z-ordering code from the top of
-      // the function to down here, so we can consolidate the logic.
-      [_tabStripView insertSubview:view atIndex:
-                       (zOrderedAbove ? [[_tabStripView subviews] count] : 0)];
-    }
-#endif
 
     // Update the tab's collapsed state based on overlap with the previous tab.
     if (zOrderedAbove) {
