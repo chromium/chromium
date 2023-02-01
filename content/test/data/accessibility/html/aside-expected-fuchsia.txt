@@ -5,9 +5,20 @@ UNKNOWN focusable has_input_focus
 ++++++++STATIC_TEXT label='The aside tag defines some content aside from the content it is placed in.'
 ++++++++++UNKNOWN label='The aside tag defines some content aside from the content it is placed in.'
 ++++++UNKNOWN
-++++++++UNKNOWN label='Aside tag'
-++++++++++STATIC_TEXT label='Aside tag'
-++++++++++++UNKNOWN label='Aside tag'
+++++++++UNKNOWN label='Body aside'
+++++++++++STATIC_TEXT label='Body aside'
+++++++++++++UNKNOWN label='Body aside'
 ++++++++PARAGRAPH
 ++++++++++STATIC_TEXT label='The aside content should be related to the surrounding content.'
 ++++++++++++UNKNOWN label='The aside content should be related to the surrounding content.'
+++++++UNKNOWN
+++++++++PARAGRAPH
+++++++++++STATIC_TEXT label='The main content'
+++++++++++++UNKNOWN label='The main content'
+++++++++UNKNOWN
+++++++++++UNKNOWN label='Main aside'
+++++++++++++STATIC_TEXT label='Main aside'
+++++++++++++++UNKNOWN label='Main aside'
+++++++++++PARAGRAPH
+++++++++++++STATIC_TEXT label='The aside content should be related to the surrounding content.'
+++++++++++++++UNKNOWN label='The aside content should be related to the surrounding content.'

@@ -62,35 +62,6 @@ rootWebArea
 ++++++++headerAsNonLandmark
 ++++++++++staticText name='This should NOT have banner role.'
 ++++++++++++inlineTextBox name='This should NOT have banner role.'
-++++++blockquote
-++++++++headerAsNonLandmark
-++++++++++staticText name='This should NOT have banner role.'
-++++++++++++inlineTextBox name='This should NOT have banner role.'
-++++++details
-++++++++genericContainer ignored
-++++++++++disclosureTriangle name='Details'
-++++++++++++listMarker ignored
-++++++++++++++staticText ignored name='%E2%96%B8 '
-++++++++++++staticText name='Details'
-++++++++++++++inlineTextBox name='Details'
-++++++++genericContainer ignored
-++++++++++headerAsNonLandmark ignored invisible
-++++++++++++staticText ignored invisible name='This should NOT header role.'
-++++++group
-++++++++headerAsNonLandmark
-++++++++++staticText name='This should NOT have banner role.'
-++++++++++++inlineTextBox name='This should NOT have banner role.'
-++++++figure
-++++++++headerAsNonLandmark
-++++++++++staticText name='This should NOT have banner role.'
-++++++++++++inlineTextBox name='This should NOT have banner role.'
-++++++group
-++++++++genericContainer ignored
-++++++++++genericContainer ignored
-++++++++++++genericContainer ignored
-++++++++++++++headerAsNonLandmark
-++++++++++++++++staticText name='This should NOT have banner role.'
-++++++++++++++++++inlineTextBox name='This should NOT have banner role.'
 ++++++main
 ++++++++headerAsNonLandmark
 ++++++++++staticText name='This should NOT have banner role.'
@@ -115,40 +86,6 @@ rootWebArea
 ++++++++++headerAsNonLandmark
 ++++++++++++staticText name='This should NOT have banner role.'
 ++++++++++++++inlineTextBox name='This should NOT have banner role.'
-++++++blockquote
-++++++++genericContainer ignored
-++++++++++headerAsNonLandmark
-++++++++++++staticText name='This should NOT have banner role.'
-++++++++++++++inlineTextBox name='This should NOT have banner role.'
-++++++details
-++++++++genericContainer ignored
-++++++++++disclosureTriangle name='Details'
-++++++++++++listMarker ignored
-++++++++++++++staticText ignored name='%E2%96%B8 '
-++++++++++++staticText name='Details'
-++++++++++++++inlineTextBox name='Details'
-++++++++genericContainer ignored
-++++++++++genericContainer ignored invisible
-++++++++++++headerAsNonLandmark ignored invisible
-++++++++++++++staticText ignored invisible name='This should NOT header role.'
-++++++group
-++++++++genericContainer ignored
-++++++++++headerAsNonLandmark
-++++++++++++staticText name='This should NOT have banner role.'
-++++++++++++++inlineTextBox name='This should NOT have banner role.'
-++++++figure
-++++++++genericContainer ignored
-++++++++++headerAsNonLandmark
-++++++++++++staticText name='This should NOT have banner role.'
-++++++++++++++inlineTextBox name='This should NOT have banner role.'
-++++++none ignored
-++++++++genericContainer ignored
-++++++++++genericContainer ignored
-++++++++++++genericContainer ignored
-++++++++++++++genericContainer ignored
-++++++++++++++++headerAsNonLandmark
-++++++++++++++++++staticText name='This should NOT have banner role.'
-++++++++++++++++++++inlineTextBox name='This should NOT have banner role.'
 ++++++main
 ++++++++genericContainer ignored
 ++++++++++headerAsNonLandmark
@@ -170,35 +107,6 @@ rootWebArea
 ++++++++footerAsNonLandmark
 ++++++++++staticText name='This should NOT have footer role.'
 ++++++++++++inlineTextBox name='This should NOT have footer role.'
-++++++blockquote
-++++++++footerAsNonLandmark
-++++++++++staticText name='This should NOT have footer role.'
-++++++++++++inlineTextBox name='This should NOT have footer role.'
-++++++details
-++++++++genericContainer ignored
-++++++++++disclosureTriangle name='Details'
-++++++++++++listMarker ignored
-++++++++++++++staticText ignored name='%E2%96%B8 '
-++++++++++++staticText name='Details'
-++++++++++++++inlineTextBox name='Details'
-++++++++genericContainer ignored
-++++++++++footerAsNonLandmark ignored invisible
-++++++++++++staticText ignored invisible name='This should NOT footer role.'
-++++++group
-++++++++footerAsNonLandmark
-++++++++++staticText name='This should NOT have footer role.'
-++++++++++++inlineTextBox name='This should NOT have footer role.'
-++++++figure
-++++++++footerAsNonLandmark
-++++++++++staticText name='This should NOT have footer role.'
-++++++++++++inlineTextBox name='This should NOT have footer role.'
-++++++none ignored
-++++++++genericContainer ignored
-++++++++++genericContainer ignored
-++++++++++++genericContainer ignored
-++++++++++++++footerAsNonLandmark
-++++++++++++++++staticText name='This should NOT have footer role.'
-++++++++++++++++++inlineTextBox name='This should NOT have footer role.'
 ++++++main
 ++++++++footerAsNonLandmark
 ++++++++++staticText name='This should NOT have footer role.'
@@ -223,42 +131,53 @@ rootWebArea
 ++++++++++footerAsNonLandmark
 ++++++++++++staticText name='This should NOT have footer role.'
 ++++++++++++++inlineTextBox name='This should NOT have footer role.'
-++++++blockquote
-++++++++genericContainer ignored
-++++++++++footerAsNonLandmark
-++++++++++++staticText name='This should NOT have footer role.'
-++++++++++++++inlineTextBox name='This should NOT have footer role.'
-++++++details
-++++++++genericContainer ignored
-++++++++++disclosureTriangle name='Details'
-++++++++++++listMarker ignored
-++++++++++++++staticText ignored name='%E2%96%B8 '
-++++++++++++staticText name='Details'
-++++++++++++++inlineTextBox name='Details'
-++++++++genericContainer ignored
-++++++++++genericContainer ignored invisible
-++++++++++++footerAsNonLandmark ignored invisible
-++++++++++++++staticText ignored invisible name='This should NOT footer role.'
-++++++group
-++++++++genericContainer ignored
-++++++++++footerAsNonLandmark
-++++++++++++staticText name='This should NOT have footer role.'
-++++++++++++++inlineTextBox name='This should NOT have footer role.'
-++++++figure
-++++++++genericContainer ignored
-++++++++++footerAsNonLandmark
-++++++++++++staticText name='This should NOT have footer role.'
-++++++++++++++inlineTextBox name='This should NOT have footer role.'
-++++++group
-++++++++genericContainer ignored
-++++++++++genericContainer ignored
-++++++++++++genericContainer ignored
-++++++++++++++genericContainer ignored
-++++++++++++++++footerAsNonLandmark
-++++++++++++++++++staticText name='This should NOT have footer role.'
-++++++++++++++++++++inlineTextBox name='This should NOT have footer role.'
 ++++++main
 ++++++++genericContainer ignored
 ++++++++++footerAsNonLandmark
 ++++++++++++staticText name='This should NOT have footer role.'
 ++++++++++++++inlineTextBox name='This should NOT have footer role.'
+++++++article
+++++++++genericContainer
+++++++++++staticText name='This should NOT complementary role.'
+++++++++++++inlineTextBox name='This should NOT complementary role.'
+++++++complementary
+++++++++genericContainer
+++++++++++staticText name='This should NOT have complementary role.'
+++++++++++++inlineTextBox name='This should NOT have complementary role.'
+++++++navigation
+++++++++genericContainer
+++++++++++staticText name='This should NOT have complementary role.'
+++++++++++++inlineTextBox name='This should NOT have complementary role.'
+++++++section
+++++++++genericContainer
+++++++++++staticText name='This should NOT have complementary role.'
+++++++++++++inlineTextBox name='This should NOT have complementary role.'
+++++++main
+++++++++complementary
+++++++++++staticText name='This should have complementary role.'
+++++++++++++inlineTextBox name='This should have complementary role.'
+++++++article
+++++++++genericContainer ignored
+++++++++++genericContainer
+++++++++++++staticText name='This should NOT complementary role.'
+++++++++++++++inlineTextBox name='This should NOT complementary role.'
+++++++complementary
+++++++++genericContainer ignored
+++++++++++genericContainer
+++++++++++++staticText name='This should NOT have complementary role.'
+++++++++++++++inlineTextBox name='This should NOT have complementary role.'
+++++++navigation
+++++++++genericContainer ignored
+++++++++++genericContainer
+++++++++++++staticText name='This should NOT have complementary role.'
+++++++++++++++inlineTextBox name='This should NOT have complementary role.'
+++++++section
+++++++++genericContainer ignored
+++++++++++genericContainer
+++++++++++++staticText name='This should NOT have complementary role.'
+++++++++++++++inlineTextBox name='This should NOT have complementary role.'
+++++++main
+++++++++genericContainer ignored
+++++++++++complementary
+++++++++++++staticText name='This should have complementary role.'
+++++++++++++++inlineTextBox name='This should have complementary role.'

@@ -1,0 +1,8 @@
+Document
+++Group LocalizedControlType='complementary'
+++++Group IsControlElement=false
+++++++Text Name='aside inside section with role presentational.'
+++Group
+++++Group LocalizedControlType='complementary'
+++++++Group IsControlElement=false
+++++++++Text Name='aside inside section with role generic.'

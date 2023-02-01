@@ -1,0 +1,8 @@
+AXWebArea AXRoleDescription='HTML content'
+++AXGroup AXSubrole=AXLandmarkComplementary AXRoleDescription='complementary'
+++++AXGroup AXRoleDescription='group'
+++++++AXStaticText AXRoleDescription='text' AXValue='aside inside section with role presentational.'
+++AXGroup AXRoleDescription='group'
+++++AXGroup AXSubrole=AXLandmarkComplementary AXRoleDescription='complementary'
+++++++AXGroup AXRoleDescription='group'
+++++++++AXStaticText AXRoleDescription='text' AXValue='aside inside section with role generic.'

@@ -2,7 +2,15 @@
 ++[paragraph]
 ++++[static] name='The aside tag defines some content aside from the content it is placed in.'
 ++[landmark] xml-roles:complementary
-++++[heading] name='Aside tag'
-++++++[static] name='Aside tag'
+++++[heading] name='Body aside'
+++++++[static] name='Body aside'
 ++++[paragraph]
 ++++++[static] name='The aside content should be related to the surrounding content.'
+++[landmark] xml-roles:main
+++++[paragraph]
+++++++[static] name='The main content'
+++++[landmark] xml-roles:complementary
+++++++[heading] name='Main aside'
+++++++++[static] name='Main aside'
+++++++[paragraph]
+++++++++[static] name='The aside content should be related to the surrounding content.'

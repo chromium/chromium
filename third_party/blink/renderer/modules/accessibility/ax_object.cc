@@ -1487,7 +1487,8 @@ void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
   // Expose StringAttribute::kRole, which is used for the xml-roles object
   // attribute. Prefer the raw ARIA role attribute value, otherwise, the ARIA
   // equivalent role is used, if it is a role that is exposed in xml-roles.
-  const AtomicString& role_str = GetRoleAttributeStringForObjectAttribute();
+  const AtomicString& role_str =
+      GetRoleAttributeStringForObjectAttribute(node_data);
   TruncateAndAddStringAttribute(
       node_data, ax::mojom::blink::StringAttribute::kRole, role_str);
 }
@@ -2331,25 +2332,25 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() {
   return listbox_candidate;
 }
 
-const AtomicString& AXObject::GetRoleAttributeStringForObjectAttribute() {
+const AtomicString& AXObject::GetRoleAttributeStringForObjectAttribute(
+    ui::AXNodeData* node_data) {
   // All ARIA roles are exposed in xml-roles.
   if (const AtomicString& role_str =
           GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
     return role_str;
   }
 
-  ax::mojom::blink::Role landmark_role = RoleValue();
+  ax::mojom::blink::Role landmark_role = node_data->role;
   if (landmark_role == ax::mojom::blink::Role::kFooter) {
     // - Treat <footer> as "contentinfo" in xml-roles object attribute.
     landmark_role = ax::mojom::blink::Role::kContentInfo;
   } else if (landmark_role == ax::mojom::blink::Role::kHeader) {
     // - Treat <header> as "banner" in xml-roles object attribute.
     landmark_role = ax::mojom::blink::Role::kBanner;
-  } else if (!ui::IsLandmark(RoleValue())) {
+  } else if (!ui::IsLandmark(node_data->role)) {
     // Landmarks are the only roles exposed in xml-roles, matching Firefox.
     return g_null_atom;
   }
-
   return ARIARoleName(landmark_role);
 }
 
@@ -2424,8 +2425,9 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
   // AXLayoutObject::RoleFromLayoutObjectOrNode is called, that node's
   // accessible children have not been calculated. Rather than force calculation
   // there, wait until we have the full tree.
-  if (role_ == ax::mojom::blink::Role::kSvgRoot && !UnignoredChildCount())
+  if (role_ == ax::mojom::blink::Role::kSvgRoot && !UnignoredChildCount()) {
     return ax::mojom::blink::Role::kImage;
+  }
 
   // DPUB ARIA 1.1 deprecated doc-biblioentry and doc-endnote, but it's still
   // possible to create these internal roles / platform mappings with a listitem
@@ -2448,6 +2450,28 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
         if (ancestor_role == ax::mojom::blink::Role::kDocEndnotes)
           return ax::mojom::blink::Role::kDocEndnote;
       }
+    }
+  }
+
+  if (role_ == ax::mojom::blink::Role::kHeader) {
+    if (IsDescendantOfLandmarkDisallowedElement()) {
+      return ax::mojom::blink::Role::kHeaderAsNonLandmark;
+    }
+  }
+
+  if (role_ == ax::mojom::blink::Role::kFooter) {
+    if (IsDescendantOfLandmarkDisallowedElement()) {
+      return ax::mojom::blink::Role::kFooterAsNonLandmark;
+    }
+  }
+
+  // An <aside> element should not be considered a landmark region
+  // if it is a child of a landmark disallowed element, UNLESS it has
+  // an accessible name.
+  if (role_ == ax::mojom::blink::Role::kComplementary) {
+    if (IsDescendantOfLandmarkDisallowedElement() &&
+        !IsNameFromAuthorAttribute()) {
+      return ax::mojom::blink::Role::kGenericContainer;
     }
   }
 
@@ -4253,6 +4277,10 @@ AccessibilityOrientation AXObject::Orientation() const {
 }
 
 AXObject* AXObject::GetChildFigcaption() const { return nullptr; }
+
+bool AXObject::IsDescendantOfLandmarkDisallowedElement() const {
+  return false;
+}
 
 void AXObject::LoadInlineTextBoxes() {}
 

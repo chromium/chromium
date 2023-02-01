@@ -68,35 +68,6 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN label='This should NOT have banner role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
-++++++++++UNKNOWN focusable label='Details' actions='{DEFAULT}'
-++++++++++++LIST_ELEMENT_MARKER hidden
-++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
-++++++++++++STATIC_TEXT label='Details' actions='{DEFAULT}'
-++++++++++++++UNKNOWN label='Details'
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
-++++++++++++STATIC_TEXT hidden label='This should NOT header role.'
-++++++UNKNOWN
-++++++++UNKNOWN
-++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++UNKNOWN label='This should NOT have banner role.'
-++++++UNKNOWN
-++++++++UNKNOWN
-++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++UNKNOWN label='This should NOT have banner role.'
-++++++UNKNOWN
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
-++++++++++++UNKNOWN hidden
-++++++++++++++UNKNOWN
-++++++++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++++++++UNKNOWN label='This should NOT have banner role.'
-++++++UNKNOWN
-++++++++UNKNOWN
-++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++UNKNOWN label='This should NOT have banner role.'
-++++++UNKNOWN
-++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT banner role.'
 ++++++++++++++UNKNOWN label='This should NOT banner role.'
@@ -121,40 +92,6 @@ UNKNOWN focusable has_input_focus
 ++++++++++++STATIC_TEXT label='This should NOT have banner role.'
 ++++++++++++++UNKNOWN label='This should NOT have banner role.'
 ++++++UNKNOWN
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN focusable label='Details' actions='{DEFAULT}'
-++++++++++++LIST_ELEMENT_MARKER hidden
-++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
-++++++++++++STATIC_TEXT label='Details' actions='{DEFAULT}'
-++++++++++++++UNKNOWN label='Details'
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
-++++++++++++UNKNOWN hidden
-++++++++++++++STATIC_TEXT hidden label='This should NOT header role.'
-++++++UNKNOWN
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN
-++++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++++UNKNOWN label='This should NOT have banner role.'
-++++++UNKNOWN
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN
-++++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++++UNKNOWN label='This should NOT have banner role.'
-++++++UNKNOWN hidden
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
-++++++++++++UNKNOWN hidden
-++++++++++++++UNKNOWN hidden
-++++++++++++++++UNKNOWN
-++++++++++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++++++++++UNKNOWN label='This should NOT have banner role.'
-++++++UNKNOWN
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN
-++++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++++UNKNOWN label='This should NOT have banner role.'
-++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT footer role.'
 ++++++++++++UNKNOWN label='This should NOT footer role.'
@@ -170,35 +107,6 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT have footer role.'
 ++++++++++++UNKNOWN label='This should NOT have footer role.'
-++++++UNKNOWN
-++++++++UNKNOWN
-++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++UNKNOWN label='This should NOT have footer role.'
-++++++UNKNOWN
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN focusable label='Details' actions='{DEFAULT}'
-++++++++++++LIST_ELEMENT_MARKER hidden
-++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
-++++++++++++STATIC_TEXT label='Details' actions='{DEFAULT}'
-++++++++++++++UNKNOWN label='Details'
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
-++++++++++++STATIC_TEXT hidden label='This should NOT footer role.'
-++++++UNKNOWN
-++++++++UNKNOWN
-++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++UNKNOWN label='This should NOT have footer role.'
-++++++UNKNOWN
-++++++++UNKNOWN
-++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++UNKNOWN label='This should NOT have footer role.'
-++++++UNKNOWN hidden
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
-++++++++++++UNKNOWN hidden
-++++++++++++++UNKNOWN
-++++++++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++++++++UNKNOWN label='This should NOT have footer role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT have footer role.'
@@ -229,36 +137,47 @@ UNKNOWN focusable has_input_focus
 ++++++++++++STATIC_TEXT label='This should NOT have footer role.'
 ++++++++++++++UNKNOWN label='This should NOT have footer role.'
 ++++++UNKNOWN
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN focusable label='Details' actions='{DEFAULT}'
-++++++++++++LIST_ELEMENT_MARKER hidden
-++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
-++++++++++++STATIC_TEXT label='Details' actions='{DEFAULT}'
-++++++++++++++UNKNOWN label='Details'
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
-++++++++++++UNKNOWN hidden
-++++++++++++++STATIC_TEXT hidden label='This should NOT footer role.'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='This should NOT complementary role.'
+++++++++++++UNKNOWN label='This should NOT complementary role.'
+++++++UNKNOWN
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='This should NOT have complementary role.'
+++++++++++++UNKNOWN label='This should NOT have complementary role.'
+++++++UNKNOWN
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='This should NOT have complementary role.'
+++++++++++++UNKNOWN label='This should NOT have complementary role.'
+++++++UNKNOWN
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='This should NOT have complementary role.'
+++++++++++++UNKNOWN label='This should NOT have complementary role.'
+++++++UNKNOWN
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='This should have complementary role.'
+++++++++++++UNKNOWN label='This should have complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
-++++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++++UNKNOWN label='This should NOT have footer role.'
+++++++++++++STATIC_TEXT label='This should NOT complementary role.'
+++++++++++++++UNKNOWN label='This should NOT complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
-++++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++++UNKNOWN label='This should NOT have footer role.'
-++++++UNKNOWN
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
-++++++++++++UNKNOWN hidden
-++++++++++++++UNKNOWN hidden
-++++++++++++++++UNKNOWN
-++++++++++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++++++++++UNKNOWN label='This should NOT have footer role.'
+++++++++++++STATIC_TEXT label='This should NOT have complementary role.'
+++++++++++++++UNKNOWN label='This should NOT have complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
-++++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++++UNKNOWN label='This should NOT have footer role.'
+++++++++++++STATIC_TEXT label='This should NOT have complementary role.'
+++++++++++++++UNKNOWN label='This should NOT have complementary role.'
+++++++UNKNOWN
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN
+++++++++++++STATIC_TEXT label='This should NOT have complementary role.'
+++++++++++++++UNKNOWN label='This should NOT have complementary role.'
+++++++UNKNOWN
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN
+++++++++++++STATIC_TEXT label='This should have complementary role.'
+++++++++++++++UNKNOWN label='This should have complementary role.'
