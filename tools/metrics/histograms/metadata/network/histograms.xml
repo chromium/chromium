@@ -484,7 +484,7 @@ chromium-metrics-reviews@google.com.
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
-    Chrome OS cellular network metric that tracks the Attach APN Toggle value
+    ChromeOS cellular network metric that tracks the Attach APN Toggle value
     when the user explicitly clicks the Save button in the 'Other' APN settings,
     with the intent of setting the cellular network APN properties.
   </summary>
@@ -1213,7 +1213,7 @@ chromium-metrics-reviews@google.com.
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Diagnostic metric for Chrome OS DNS proxy that records the DOH mode setting
+    Diagnostic metric for ChromeOS DNS proxy that records the DOH mode setting
     whenever it is read from or changed in Chrome and propagated to shill.
   </summary>
 </histogram>
@@ -1223,9 +1223,8 @@ chromium-metrics-reviews@google.com.
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Diagnostic metric for Chrome OS DNS proxy that records an value
-    corresponding to the HTTP status returned when a DNS-over-HTTPS request
-    returns in error.
+    Diagnostic metric for ChromeOS DNS proxy that records an value corresponding
+    to the HTTP status returned when a DNS-over-HTTPS request returns in error.
   </summary>
 </histogram>
 
@@ -1234,9 +1233,8 @@ chromium-metrics-reviews@google.com.
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Diagnostic metric for Chrome OS DNS proxy that records the type of plain
-    text nameservers used whenever they are obtained from shill for a given
-    network.
+    Diagnostic metric for ChromeOS DNS proxy that records the type of plain text
+    nameservers used whenever they are obtained from shill for a given network.
   </summary>
 </histogram>
 
@@ -1245,7 +1243,7 @@ chromium-metrics-reviews@google.com.
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Diagnostic metric for Chrome OS DNS proxy that records the duration of
+    Diagnostic metric for ChromeOS DNS proxy that records the duration of
     various stages of the resolution process, including the entire time elapsed
     processing the query. The measurement is started when the resolver first
     reads the query data from the client and completes when the reply is sent.
@@ -1281,7 +1279,7 @@ chromium-metrics-reviews@google.com.
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Diagnostic metric for Chrome OS DNS proxy that records the duration of
+    Diagnostic metric for ChromeOS DNS proxy that records the duration of
     various stages of the resolution process, including the entire time elapsed
     processing the query. The measurement is started when the resolver first
     reads the query data from the client and completes when the reply is sent.
@@ -1317,7 +1315,7 @@ chromium-metrics-reviews@google.com.
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Diagnostic metric for Chrome OS DNS proxy that records the number of
+    Diagnostic metric for ChromeOS DNS proxy that records the number of
     nameserver addresses whenever they are obtained from shill for a given
     network.
   </summary>
@@ -1332,7 +1330,7 @@ chromium-metrics-reviews@google.com.
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Diagnostic metric for Chrome OS DNS proxy tracking critical process events,
+    Diagnostic metric for ChromeOS DNS proxy tracking critical process events,
     which are emitted when conditions arise that cause fatal or disruptive
     conditions to the service. This metric is used to monitor the stability of
     the service and provide detailed insight into failures.
@@ -1350,7 +1348,7 @@ chromium-metrics-reviews@google.com.
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Diagnostic metric for Chrome OS DNS proxy that records any errors that occur
+    Diagnostic metric for ChromeOS DNS proxy that records any errors that occur
     during DNS queries made by the service. A value will be recorded whenever
     the request completes in error.
   </summary>
@@ -1365,7 +1363,7 @@ chromium-metrics-reviews@google.com.
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Diagnostic metric for Chrome OS DNS proxy that records the duration of a
+    Diagnostic metric for ChromeOS DNS proxy that records the duration of a
     failed name resolution as part of an overall query. The measurement is
     started just before the client resolver (either plaintext or DoH) is run and
     stopped on its completion.
@@ -1386,7 +1384,7 @@ chromium-metrics-reviews@google.com.
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Diagnostic metric for Chrome OS DNS proxy that records the duration of a
+    Diagnostic metric for ChromeOS DNS proxy that records the duration of a
     successful name resolution as part of an overall query. The measurement is
     started just before the client resolver (either plaintext or DoH) is run and
     stopped on its completion.
@@ -1407,9 +1405,9 @@ chromium-metrics-reviews@google.com.
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Diagnostic metric for Chrome OS DNS proxy that records the results of the
-    DNS queries made by the service. A value will be recorded whenever the
-    request completes.
+    Diagnostic metric for ChromeOS DNS proxy that records the results of the DNS
+    queries made by the service. A value will be recorded whenever the request
+    completes.
   </summary>
   <token key="Type">
     <variant name="DnsOverHttps"/>
@@ -1422,10 +1420,9 @@ chromium-metrics-reviews@google.com.
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Diagnostic metric for Chrome OS DNS proxy that records the results of the
-    DNS queries made by the service. A value will be recorded whenever the
-    request completes. If there are retries, only the last result will be
-    recorded.
+    Diagnostic metric for ChromeOS DNS proxy that records the results of the DNS
+    queries made by the service. A value will be recorded whenever the request
+    completes. If there are retries, only the last result will be recorded.
   </summary>
   <token key="Type">
     <variant name="DnsOverHttps"/>
@@ -1514,7 +1511,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Diagnostic metric for Chrome OS patchpanel's ArcService which controls the
+    Diagnostic metric for ChromeOS patchpanel's ArcService which controls the
     virtual network setup for ARC++ and ARCVM. This metrics is recorded when the
     virtual network setup for ARC or ARCVM is created, deleted, or updated to
     track success and error rates of the various platform operations (network
@@ -1529,7 +1526,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Diagnostic metric for the Dbus APIs implemented by Chrome OS patchpanel
+    Diagnostic metric for the Dbus APIs implemented by ChromeOS patchpanel
     network service. This metrics is recorded whenever one of patchpanel DBus
     APIs is called and tracks success and error rates of various network
     platform primitives implemented by patchpanel (port forwarding APIs,
@@ -1650,7 +1647,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network diagnostic metric sampling the number of cellular network
+    ChromeOS network diagnostic metric sampling the number of cellular network
     flakes. A network flake occurs when the signal strength goes below detection
     level for a short duration.
   </summary>
@@ -1661,7 +1658,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network diagnostic metric sampling the total amount of time spent
+    ChromeOS network diagnostic metric sampling the total amount of time spent
     from the start of the first auto-connect request until when the cellular
     modem successfully connects to the network.
 
@@ -1674,9 +1671,9 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network diagnostic metric sampling the number of auto-connect
-    tries that were attempted before the cellular modem successfully connected
-    to the network.
+    ChromeOS network diagnostic metric sampling the number of auto-connect tries
+    that were attempted before the cellular modem successfully connected to the
+    network.
 
     NOTE: This metric was expired from 2022-01-30 to 2022-04-01.
   </summary>
@@ -1700,8 +1697,8 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric that tracks the presence of a Cellular device in
-    the system. A sample is emitted once every 3 minutes.
+    ChromeOS network metric that tracks the presence of a Cellular device in the
+    system. A sample is emitted once every 3 minutes.
   </summary>
 </histogram>
 
@@ -1710,7 +1707,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS cellular network metric that tracks the number of drops based on
+    ChromeOS cellular network metric that tracks the number of drops based on
     the network technology.
   </summary>
 </histogram>
@@ -1720,7 +1717,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric that tracks the length of a lease for a
+    ChromeOS network performance metric that tracks the length of a lease for a
     cellular network at the time it expired without the DHCP client being able
     to renew it.
 
@@ -1733,7 +1730,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric that tracks the presence of complete IPv6
+    ChromeOS network metric that tracks the presence of complete IPv6
     configuration at the time when cellular connection is established.
   </summary>
 </histogram>
@@ -1743,7 +1740,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric that tracks the types of IP configuration used for
+    ChromeOS network metric that tracks the types of IP configuration used for
     establishing cellular connections.
   </summary>
 </histogram>
@@ -1753,7 +1750,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network diagnostic metric sampling the total number of portal
+    ChromeOS network diagnostic metric sampling the total number of portal
     detection attempts performed for a cellular network between the Connected
     and Online state. This includes failure, timeout and successful attempts.
   </summary>
@@ -1764,7 +1761,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network diagnostic metric sampling the result of portal detections
+    ChromeOS network diagnostic metric sampling the result of portal detections
     for a cellular network.
   </summary>
 </histogram>
@@ -1774,7 +1771,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS connection manager service errors for cellular interface. NOTE:
+    ChromeOS connection manager service errors for cellular interface. NOTE:
     This metric was updated in M101. Data prior to that may be missing.
   </summary>
 </histogram>
@@ -1784,8 +1781,8 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the signal strength (0-100) of the
-    cellular modem before it dropped from the network.
+    ChromeOS network metric sampling the signal strength (0-100) of the cellular
+    modem before it dropped from the network.
   </summary>
 </histogram>
 
@@ -1794,7 +1791,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the time spent using cellular to transport
+    ChromeOS network metric sampling the time spent using cellular to transport
     data. These data are mostly useful when summed and compared to TimeOnline
     for other network technologies (e.g. WiFi vs Cellular).
   </summary>
@@ -1805,7 +1802,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to join a cellular
+    ChromeOS network performance metric sampling the time to join a cellular
     network and configure Layer 3 state.
   </summary>
 </histogram>
@@ -1815,7 +1812,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to connect a cellular
+    ChromeOS network performance metric sampling the time to connect a cellular
     modem.
   </summary>
 </histogram>
@@ -1825,7 +1822,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to disable a cellular
+    ChromeOS network performance metric sampling the time to disable a cellular
     modem.
   </summary>
 </histogram>
@@ -1835,7 +1832,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to enable a cellular
+    ChromeOS network performance metric sampling the time to enable a cellular
     modem.
   </summary>
 </histogram>
@@ -1845,7 +1842,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to initialize a
+    ChromeOS network performance metric sampling the time to initialize a
     cellular modem.
   </summary>
 </histogram>
@@ -1855,7 +1852,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to determine that a
+    ChromeOS network performance metric sampling the time to determine that a
     cellular network is online after configuring Layer 3 state.
   </summary>
 </histogram>
@@ -1865,7 +1862,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to determine that a
+    ChromeOS network performance metric sampling the time to determine that a
     cellular network is in a captive portal after configuring Layer 3 state.
   </summary>
 </histogram>
@@ -1876,7 +1873,7 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to determine that a
+    ChromeOS network performance metric sampling the time to determine that a
     cellular network is in a captive portal with a valid redirect URL after
     configuring Layer 3 state.
   </summary>
@@ -1887,7 +1884,7 @@ chromium-metrics-reviews@google.com.
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to scan a cellular
+    ChromeOS network performance metric sampling the time to scan a cellular
     network and register a modem.
 
     NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
@@ -1899,8 +1896,8 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric that tracks Layer 3 connectivity issues diagnosed
-    by the ConnectionDiagnostics class in Shill ran on a connected network after
+    ChromeOS network metric that tracks Layer 3 connectivity issues diagnosed by
+    the ConnectionDiagnostics class in Shill ran on a connected network after
     Shill portal detection has failed to validate the network. This metric is
     logged each time a ConnectionDiagnostics object completes its diagnostics
     actions and reports the results to its caller.
@@ -1915,7 +1912,7 @@ chromium-metrics-reviews@google.com.
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS cellular network metric that tracks the number of corrupted
+    ChromeOS cellular network metric that tracks the number of corrupted
     profiles encountered by Shill.
   </summary>
 </histogram>
@@ -1929,10 +1926,10 @@ chromium-metrics-reviews@google.com.
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS device time on line in the previous 24-hour sample period.
-    &quot;On line&quot; means shill believes the device is on the internet. The
-    shill state is sampled every 5 minutes. The start of each 24-hour period is
-    the end of the previous period, unless the device is inactive at that time
+    ChromeOS device time on line in the previous 24-hour sample period. &quot;On
+    line&quot; means shill believes the device is on the internet. The shill
+    state is sampled every 5 minutes. The start of each 24-hour period is the
+    end of the previous period, unless the device is inactive at that time
     (suspended or off), in which case it is the time of the next
     resume/power-on.
   </summary>
@@ -1947,8 +1944,8 @@ chromium-metrics-reviews@google.com.
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric that tracks the connection status of
-    the device. A sample is emitted once every 3 minutes.
+    ChromeOS network performance metric that tracks the connection status of the
+    device. A sample is emitted once every 3 minutes.
   </summary>
 </histogram>
 
@@ -1957,7 +1954,7 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric that tracks the presence of an Ethernet device in
+    ChromeOS network metric that tracks the presence of an Ethernet device in
     the system. A sample is emitted once every 3 minutes.
   </summary>
 </histogram>
@@ -1967,9 +1964,9 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric that tracks the length of a lease for
-    an Ethernet network at the time it expired without the DHCP client being
-    able to renew it.
+    ChromeOS network performance metric that tracks the length of a lease for an
+    Ethernet network at the time it expired without the DHCP client being able
+    to renew it.
 
     NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
   </summary>
@@ -1980,7 +1977,7 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network diagnostic metric sampling the total number of portal
+    ChromeOS network diagnostic metric sampling the total number of portal
     detection attempts performed for an Ethernet network between the Connected
     and Online state. This includes failure, timeout and successful attempts.
 
@@ -1993,7 +1990,7 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network diagnostic metric sampling the result of portal detections
+    ChromeOS network diagnostic metric sampling the result of portal detections
     for an Ethernet network.
 
     NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
@@ -2005,7 +2002,7 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS connection manager service errors for ethernet interface. NOTE:
+    ChromeOS connection manager service errors for ethernet interface. NOTE:
     This metric was updated in M101. Data prior to that may be missing.
   </summary>
 </histogram>
@@ -2015,7 +2012,7 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the time spent using Ethernet to transport
+    ChromeOS network metric sampling the time spent using Ethernet to transport
     data. These data are mostly useful when summed and compared to TimeOnline
     for other network technologies (e.g. WiFi vs Cellular).
 
@@ -2028,7 +2025,7 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to join a wired
+    ChromeOS network performance metric sampling the time to join a wired
     Ethernet network and configure Layer 3 state (typically acquire a DHCP
     lease).
 
@@ -2041,7 +2038,7 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to initialize an
+    ChromeOS network performance metric sampling the time to initialize an
     Ethernet device.
 
     NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
@@ -2053,7 +2050,7 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to determine that an
+    ChromeOS network performance metric sampling the time to determine that an
     Ethernet network is online after configuring Layer 3 state.
 
     NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
@@ -2065,7 +2062,7 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to determine that an
+    ChromeOS network performance metric sampling the time to determine that an
     Ethernet network is in a captive portal after configuring Layer 3 state.
 
     NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
@@ -2078,7 +2075,7 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to determine that an
+    ChromeOS network performance metric sampling the time to determine that an
     Ethernet network is in a captive portal with a valid redirect URL after
     configuring Layer 3 state.
 
@@ -2095,7 +2092,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric recording portal detection results of both the HTTP
+    ChromeOS network metric recording portal detection results of both the HTTP
     and HTTPS probes. This is recorded every time a portal detection trial
     finishes.
   </summary>
@@ -2260,7 +2257,7 @@ chromium-metrics-reviews@google.com.
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network diagnostic metric sampling the MTU value provided by the
+    ChromeOS network diagnostic metric sampling the MTU value provided by the
     upstream PPP peer for L2TP VPN connections. A sample is emitted each time
     the client successfully negotiates an MTU value via PPP.
   </summary>
@@ -2275,7 +2272,7 @@ chromium-metrics-reviews@google.com.
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network diagnostic metric sampling the number of suspend actions
+    ChromeOS network diagnostic metric sampling the number of suspend actions
     that successfully complete or fail when shill suspends.
   </summary>
 </histogram>
@@ -2286,7 +2283,7 @@ chromium-metrics-reviews@google.com.
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network diagnostic metric sampling the time in milliseconds it
+    ChromeOS network diagnostic metric sampling the time in milliseconds it
     takes suspend actions to complete when shill suspends.
   </summary>
 </histogram>
@@ -2296,7 +2293,7 @@ chromium-metrics-reviews@google.com.
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network stability metric sampling the time in seconds between the
+    ChromeOS network stability metric sampling the time in seconds between the
     networking going online to going offline. Offline events due to device
     shutdown or suspend are ignored (along with the online time before that
     offline event).
@@ -2308,8 +2305,8 @@ chromium-metrics-reviews@google.com.
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric sampled on each successful VPN connection
-    that tracks the VPN connection type.
+    ChromeOS network usage metric sampled on each successful VPN connection that
+    tracks the VPN connection type.
   </summary>
 </histogram>
 
@@ -2319,7 +2316,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric emitted on each successful IKEv2 VPN
+    ChromeOS network usage metric emitted on each successful IKEv2 VPN
     connection that tracks how the client authenticates itself to the server.
   </summary>
 </histogram>
@@ -2330,7 +2327,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric emitted on the end of each IKEv2 VPN
+    ChromeOS network usage metric emitted on the end of each IKEv2 VPN
     connection that tracks the reason that the connection is ended. This metric
     will be emitted no matter if the connection is established successfully,
     i.e., it will be emitted if an error happens during connecting.
@@ -2343,7 +2340,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric emitted on the end of each L2TP/IPsec VPN
+    ChromeOS network usage metric emitted on the end of each L2TP/IPsec VPN
     connection initiated by the swanctl-based driver that tracks the reason that
     the connection is ended. This metric will be emitted no matter if the
     connection is established successfully, i.e., it will be emitted if an error
@@ -2357,7 +2354,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric emitted on each successful L2TP/IPsec VPN
+    ChromeOS network usage metric emitted on each successful L2TP/IPsec VPN
     connection that tracks whether tunnel group is used. The tunnel group
     property needs to be set when connecting to some Cisco L2TP/IPsec VPN.
   </summary>
@@ -2369,7 +2366,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric emitted on each successful OpenVPN connection that
+    ChromeOS network metric emitted on each successful OpenVPN connection that
     tracks the cipher algorithm negotiated with server.
   </summary>
 </histogram>
@@ -2379,8 +2376,8 @@ chromium-metrics-reviews@google.com.
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric sampled on each successful VPN connection
-    that tracks the remote authentication method.
+    ChromeOS network usage metric sampled on each successful VPN connection that
+    tracks the remote authentication method.
   </summary>
 </histogram>
 
@@ -2389,9 +2386,9 @@ chromium-metrics-reviews@google.com.
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the time spent using VPN to transport
-    data. These data are mostly useful when summed and compared to TimeOnline
-    for other network technologies (e.g. WiFi vs Cellular). A sample is emitted
+    ChromeOS network metric sampling the time spent using VPN to transport data.
+    These data are mostly useful when summed and compared to TimeOnline for
+    other network technologies (e.g. WiFi vs Cellular). A sample is emitted
     every time the system transitions from primary connectivity through a VPN to
     some other type of connectivity. The value of the sample is the time delta
     in seconds from the instant the system transitioned to VPN connectivity.
@@ -2403,7 +2400,7 @@ chromium-metrics-reviews@google.com.
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to configure Layer 3
+    ChromeOS network performance metric sampling the time to configure Layer 3
     state on a VPN network (typically acquire a DHCP lease).
   </summary>
 </histogram>
@@ -2413,7 +2410,7 @@ chromium-metrics-reviews@google.com.
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to determine that a
+    ChromeOS network performance metric sampling the time to determine that a
     VPN connection is online after configuring Layer 3 state.
   </summary>
 </histogram>
@@ -2423,8 +2420,8 @@ chromium-metrics-reviews@google.com.
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric sampled on each successful VPN connection
-    that tracks the user authentication method.
+    ChromeOS network usage metric sampled on each successful VPN connection that
+    tracks the user authentication method.
   </summary>
 </histogram>
 
@@ -2433,7 +2430,7 @@ chromium-metrics-reviews@google.com.
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric emitted on each successful WireGuard VPN
+    ChromeOS network usage metric emitted on each successful WireGuard VPN
     connection that tracks the type of the allowed IPs set in this connection.
   </summary>
 </histogram>
@@ -2443,7 +2440,7 @@ chromium-metrics-reviews@google.com.
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric emitted on each successful WireGuard VPN
+    ChromeOS network usage metric emitted on each successful WireGuard VPN
     connection that tracks the source of the key pair used in this connection.
   </summary>
 </histogram>
@@ -2453,7 +2450,7 @@ chromium-metrics-reviews@google.com.
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric emitted on each successful WireGuard VPN
+    ChromeOS network usage metric emitted on each successful WireGuard VPN
     connection that tracks the number of peers used in in this connection.
   </summary>
 </histogram>
@@ -2464,7 +2461,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric emitted on each successful {VPNType} VPN
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
     connection that tracks the encryption algorithm used by the ESP protocol in
     this connection.
   </summary>
@@ -2477,7 +2474,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric emitted on each successful {VPNType} VPN
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
     connection that tracks the integrity algorithm used by the ESP protocol in
     this connection.
   </summary>
@@ -2490,7 +2487,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric emitted on each successful {VPNType} VPN
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
     connection that tracks the DH group used by the IKE protocol in this
     connection.
   </summary>
@@ -2503,7 +2500,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric emitted on each successful {VPNType} VPN
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
     connection that tracks the encryption algorithm used by the IKE protocol in
     this connection.
   </summary>
@@ -2516,7 +2513,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric emitted on each successful {VPNType} VPN
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
     connection that tracks the integrity algorithm used by the IKE protocol in
     this connection.
   </summary>
@@ -2528,7 +2525,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS WiFi usage metric emitted every time the WiFi adapter is enabled.
+    ChromeOS WiFi usage metric emitted every time the WiFi adapter is enabled.
     It tracks if the adapter that was detected on the device is in the allowlist
     to be reported via structured metrics (e.g. is it in AVL?) or not.
   </summary>
@@ -2539,7 +2536,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the number of Wireless Access Points that
+    ChromeOS network metric sampling the number of Wireless Access Points that
     support the 802.11k standard, sampled on successful connections to an AP.
   </summary>
 </histogram>
@@ -2549,7 +2546,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the number of Wireless Access Points that
+    ChromeOS network metric sampling the number of Wireless Access Points that
     support the 802.11r standard, sampled on successful connections to an AP.
   </summary>
 </histogram>
@@ -2559,7 +2556,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the number of Wireless Access Points that
+    ChromeOS network metric sampling the number of Wireless Access Points that
     support the 802.11v BSS Max Idle Period feature, sampled on successful
     connections to an AP.
   </summary>
@@ -2570,7 +2567,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the number of Wireless Access Points that
+    ChromeOS network metric sampling the number of Wireless Access Points that
     support the 802.11v BSS Transition feature, sampled on successful
     connections to an AP.
   </summary>
@@ -2581,7 +2578,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the number of Wireless Access Points that
+    ChromeOS network metric sampling the number of Wireless Access Points that
     support the 802.11v DMS feature, sampled on successful connections to an AP.
   </summary>
 </histogram>
@@ -2591,7 +2588,7 @@ chromium-metrics-reviews@google.com.
   <owner>damiendejean@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the number of Wireless Access Points that
+    ChromeOS network metric sampling the number of Wireless Access Points that
     support transmit opportunity negotation, emitted on successful connections
     to an AP.
   </summary>
@@ -2602,7 +2599,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric sampled when an AP switches channels. Shows
+    ChromeOS network usage metric sampled when an AP switches channels. Shows
     the old frequency band and the new frequency band.
   </summary>
 </histogram>
@@ -2612,7 +2609,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric. Reason code reported when the AP disconnects
+    ChromeOS network usage metric. Reason code reported when the AP disconnects
     a WiFi connection.
   </summary>
 </histogram>
@@ -2622,7 +2619,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric. Broad category of reason AP disconnected a
+    ChromeOS network usage metric. Broad category of reason AP disconnected a
     WiFi connection.
   </summary>
 </histogram>
@@ -2632,7 +2629,7 @@ chromium-metrics-reviews@google.com.
   <owner>damiendejean@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the number of Wireless Access Points that
+    ChromeOS network metric sampling the number of Wireless Access Points that
     support stream classification, emitted on successful connections to an AP.
   </summary>
 </histogram>
@@ -2642,7 +2639,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric. Status code reported when an 802.11
+    ChromeOS network usage metric. Status code reported when an 802.11
     association fails. Note that not all disconnects are caused by an assoc
     failure, and so this metric shold not be correlated with the DisconnectType
     metrics.
@@ -2654,7 +2651,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric. Status code reported when an 802.11
+    ChromeOS network usage metric. Status code reported when an 802.11
     authentication fails. Note that not all disconnects are caused by an auth
     failure, and so this metric should not be correlated with the DisconnectType
     metrics.
@@ -2667,7 +2664,7 @@ chromium-metrics-reviews@google.com.
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the number of wifi services available for
+    ChromeOS network metric sampling the number of wifi services available for
     auto-connect when auto-connect is initiated for wifi device.
   </summary>
 </histogram>
@@ -2677,7 +2674,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the number of BSSes (endpoints) available
+    ChromeOS network metric sampling the number of BSSes (endpoints) available
     for the currently connecting wifi service.
   </summary>
 </histogram>
@@ -2687,7 +2684,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric recording BSS Transition Management statuses. This
+    ChromeOS network metric recording BSS Transition Management statuses. This
     is recorded every time a BSS Transition Management request is received from
     a wireless access point.
   </summary>
@@ -2698,7 +2695,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric. The channel used for each successful WiFi
+    ChromeOS network usage metric. The channel used for each successful WiFi
     connection.
   </summary>
 </histogram>
@@ -2708,7 +2705,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the number of Wireless Access Points that
+    ChromeOS network metric sampling the number of Wireless Access Points that
     support Cisco's Adaptive FT feature, sampled on successful connections to an
     AP.
   </summary>
@@ -2719,7 +2716,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric. Reason code reported when the client
+    ChromeOS network usage metric. Reason code reported when the client
     disconnects a WiFi connection.
   </summary>
 </histogram>
@@ -2729,7 +2726,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric. Broad category of reason client disconnected
+    ChromeOS network usage metric. Broad category of reason client disconnected
     a WiFi connection.
   </summary>
 </histogram>
@@ -2739,7 +2736,7 @@ chromium-metrics-reviews@google.com.
   <owner>kuabhs@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS Wifi Connection Quality Monitor(CQM) Notifications metric. This is
+    ChromeOS Wifi Connection Quality Monitor(CQM) Notifications metric. This is
     emitted when any packet or beacon loss is observed for signal strength
     greater than -80 dBm. This metric is rate-limited such that it is never
     emitted more than once every 6 minutes.
@@ -2751,7 +2748,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric that tracks the presence of a WiFi device in the
+    ChromeOS network metric that tracks the presence of a WiFi device in the
     system. A sample is emitted once every 3 minutes.
   </summary>
 </histogram>
@@ -2761,9 +2758,8 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric that tracks whether an 802.11 wireless
-    network was disconnected due to an error or was explicitly disconnected by
-    the user.
+    ChromeOS network usage metric that tracks whether an 802.11 wireless network
+    was disconnected due to an error or was explicitly disconnected by the user.
   </summary>
 </histogram>
 
@@ -2772,7 +2768,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric sampled on each successful 802.1x wireless
+    ChromeOS network usage metric sampled on each successful 802.1x wireless
     connection that tracks the configured inner authentication method.
   </summary>
 </histogram>
@@ -2782,7 +2778,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric sampled on each successful 802.1x wireless
+    ChromeOS network usage metric sampled on each successful 802.1x wireless
     connection that tracks the configured outer authentication method.
   </summary>
 </histogram>
@@ -2792,7 +2788,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric that tracks the length of a lease for a
+    ChromeOS network performance metric that tracks the length of a lease for a
     WiFi network at the time it expired without the DHCP client being able to
     renew it.
   </summary>
@@ -2803,7 +2799,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric that tracks the result of the fallback
+    ChromeOS network performance metric that tracks the result of the fallback
     DNS test. The fallback DNS test is performed when portal detection failed
     due to DNS failure.
   </summary>
@@ -2816,7 +2812,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-network-metrics@google.com</owner>
   <owner>pwg-cros@google.com</owner>
   <summary>
-    Chrome OS network metric tracking whether there has ever been a successful
+    ChromeOS network metric tracking whether there has ever been a successful
     connection for each WiFi network which is configured with a hidden SSID. The
     metric includes networks from system and user profile and it's recorded each
     time a user configuration profile is loaded, such as when a user logs in.
@@ -2831,7 +2827,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-network-metrics@google.com</owner>
   <owner>pwg-cros@google.com</owner>
   <summary>
-    Chrome OS network metric tracking the number of days since the last
+    ChromeOS network metric tracking the number of days since the last
     connection for each WiFi network configured with hidden SSID. The metric
     includes networks from system and user profile and it's recorded each time a
     user configuration profile is loaded, such as when a user logs in.
@@ -2844,7 +2840,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-network-metrics@google.com</owner>
   <owner>cros-privacy-core@google.com</owner>
   <summary>
-    Chrome OS network metric tracking whether WiFi networks configured with
+    ChromeOS network metric tracking whether WiFi networks configured with
     hidden SSID have ever been connected. The metric includes networks from
     system and user profile and it's recorded each time a user configuration
     profile is loaded, such as when a user logs in.
@@ -2857,7 +2853,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-network-metrics@google.com</owner>
   <owner>cros-privacy-core@google.com</owner>
   <summary>
-    Chrome OS network metric tracking WiFi networks configured with hidden SSID.
+    ChromeOS network metric tracking WiFi networks configured with hidden SSID.
     The metric includes networks from system and user profile and it's recorded
     each time a user configuration profile is loaded, such as when a user logs
     in. The fraction of non-zero buckets should roughly correspond to the
@@ -2871,10 +2867,10 @@ chromium-metrics-reviews@google.com.
   <owner>kglund@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric that tracks the Hotspot 2.0 support of access
-    points that devices connect to. Results are recorded every time a device
-    connects to an access point. The metric records either the HS20 version the
-    AP supports, or that the AP does not support HS20.
+    ChromeOS network metric that tracks the Hotspot 2.0 support of access points
+    that devices connect to. Results are recorded every time a device connects
+    to an access point. The metric records either the HS20 version the AP
+    supports, or that the AP does not support HS20.
   </summary>
 </histogram>
 
@@ -2883,7 +2879,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric that tracks the presence of complete IPv6
+    ChromeOS network metric that tracks the presence of complete IPv6
     configuration at the time when WiFi connection is established.
   </summary>
 </histogram>
@@ -2893,7 +2889,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric that tracks the Multi-Band Operation (MBO) support
+    ChromeOS network metric that tracks the Multi-Band Operation (MBO) support
     of access points that devices connect to. Results are recorded every time a
     device connects to an access point.
   </summary>
@@ -2904,7 +2900,7 @@ chromium-metrics-reviews@google.com.
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS metric that signals the type of failure the NeighborLinkMonitor
+    ChromeOS metric that signals the type of failure the NeighborLinkMonitor
     detected on 802.11 wireless network. Recorded after the NeighborLinkMonitor
     detects a layer 2 connectivity failure to a neighbor.
   </summary>
@@ -2915,7 +2911,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric that tracks the types of IP configuration used for
+    ChromeOS network metric that tracks the types of IP configuration used for
     establishing WiFi connections.
   </summary>
 </histogram>
@@ -2925,7 +2921,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric that tracks the network problems
+    ChromeOS network performance metric that tracks the network problems
     encountered by TrafficMonitor after WiFi connection is established.
   </summary>
 </histogram>
@@ -2935,7 +2931,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric. The standard advertised by the AP for each
+    ChromeOS network usage metric. The standard advertised by the AP for each
     successful WiFi connection. It is not necessarily the same as the standard
     used by the AP and STA to communicate. For example, if the AP supports
     802.11ax and the STA only supports 802.11ac, this metric will report
@@ -2950,7 +2946,7 @@ chromium-metrics-reviews@google.com.
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network diagnostic metric sampling the total number of portal
+    ChromeOS network diagnostic metric sampling the total number of portal
     detection attempts performed for an 802.11 wireless network between the
     Connected and Online state. This includes failure, timeout and successful
     attempts.
@@ -2963,7 +2959,7 @@ chromium-metrics-reviews@google.com.
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network diagnostic metric sampling the result of portal detections
+    ChromeOS network diagnostic metric sampling the result of portal detections
     for an 802.11 wireless network.
   </summary>
 </histogram>
@@ -2973,7 +2969,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric that tracks which country the WiFi regulatory
+    ChromeOS network usage metric that tracks which country the WiFi regulatory
     domain is set to. Recorded every time a WiFi regulatory domain change is
     triggered or determined initially (Shill startup).
   </summary>
@@ -2984,7 +2980,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network diagnostic metric sampling the number of 802.11 wireless
+    ChromeOS network diagnostic metric sampling the number of 802.11 wireless
     networks known by the connection manager at the time a configuration profile
     has been loaded. A configuration profile is loaded at each system startup,
     and when a user logs in.
@@ -2996,7 +2992,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the number of 802.11 wireless networks
+    ChromeOS network metric sampling the number of 802.11 wireless networks
     configured from the system configuration profile. This metric is sampled
     each time a user configuration profile is loaded, such as when a user logs
     in.
@@ -3012,7 +3008,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the number of 802.11 wireless networks
+    ChromeOS network metric sampling the number of 802.11 wireless networks
     configured from a user configuration profile. This metric is sampled each
     time a user configuration profile is loaded, such as when a user logs in.
   </summary>
@@ -3025,7 +3021,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric recording roam successes or failures. This is
+    ChromeOS network metric recording roam successes or failures. This is
     recorded every time a client succeeds or fails to roam from one wireless
     access point to another.
   </summary>
@@ -3038,7 +3034,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric recording roam time in milliseconds. This is
+    ChromeOS network metric recording roam time in milliseconds. This is
     recorded every time a successful roam from one wireless access point to
     another occurs.
   </summary>
@@ -3049,8 +3045,8 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric describing, for a WiFi scan attempt, what
-    scan method is used and whether it ends in a connection.
+    ChromeOS network usage metric describing, for a WiFi scan attempt, what scan
+    method is used and whether it ends in a connection.
   </summary>
 </histogram>
 
@@ -3059,7 +3055,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric describing, for a WiFi scan attempt, how many
+    ChromeOS network usage metric describing, for a WiFi scan attempt, how many
     milliseconds were spent waiting to talk to the kernel/drivers.
   </summary>
 </histogram>
@@ -3069,8 +3065,8 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric. The security setting for each successful
-    WiFi connection.
+    ChromeOS network usage metric. The security setting for each successful WiFi
+    connection.
   </summary>
 </histogram>
 
@@ -3079,7 +3075,7 @@ chromium-metrics-reviews@google.com.
   <owner>andrzejo@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric for WiFi security changes. It is emitted every time
+    ChromeOS network metric for WiFi security changes. It is emitted every time
     a new BSSID is being added to a network, this network has already been
     connected before and configuration of this new BSSID causes network security
     to be changed in a non-trivial way - that is a downgrade or an upgrade that
@@ -3092,7 +3088,7 @@ chromium-metrics-reviews@google.com.
   <owner>kuabhs@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS connection manager service errors for wifi interface.
+    ChromeOS connection manager service errors for wifi interface.
   </summary>
 </histogram>
 
@@ -3103,7 +3099,7 @@ chromium-metrics-reviews@google.com.
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric recording session length in milliseconds. This is
+    ChromeOS network metric recording session length in milliseconds. This is
     recorded every time an uninterrupted session with a wireless access point is
     terminated.
   </summary>
@@ -3132,7 +3128,7 @@ chromium-metrics-reviews@google.com.
   <owner>kuabhs@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric indicating the negative of the dBm received signal
+    ChromeOS network metric indicating the negative of the dBm received signal
     strength recorded at the time of a WiFi disconnect.
   </summary>
 </histogram>
@@ -3142,7 +3138,7 @@ chromium-metrics-reviews@google.com.
   <owner>kuabhs@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric indicating the negative of the dBm received signal
+    ChromeOS network metric indicating the negative of the dBm received signal
     strength recorded at the time a successful WiFi connection started.
   </summary>
 </histogram>
@@ -3181,7 +3177,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the time spent using WiFi to transport
+    ChromeOS network metric sampling the time spent using WiFi to transport
     data. These data are mostly useful when summed and compared to TimeOnline
     for other network technologies (e.g. WiFi vs Cellular).
   </summary>
@@ -3192,7 +3188,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time from the resume event
+    ChromeOS network performance metric sampling the time from the resume event
     to the time when an 802.11 wireless network has configured its Layer 3
     state.
   </summary>
@@ -3203,7 +3199,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to configure Layer 3
+    ChromeOS network performance metric sampling the time to configure Layer 3
     state on an 802.11 wireless network (typically acquire a DHCP lease).
   </summary>
 </histogram>
@@ -3213,7 +3209,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to connect to a WiFi
+    ChromeOS network performance metric sampling the time to connect to a WiFi
     Basic Service Set (which consists of the access point and associated
     stations on a particular WiFi channel for a specific network).
   </summary>
@@ -3224,7 +3220,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to initialize an
+    ChromeOS network performance metric sampling the time to initialize an
     802.11 wireless device.
   </summary>
 </histogram>
@@ -3234,7 +3230,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to join (associate
+    ChromeOS network performance metric sampling the time to join (associate
     plus authenticate) an 802.11 wireless network.
   </summary>
 </histogram>
@@ -3244,7 +3240,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to determine that an
+    ChromeOS network performance metric sampling the time to determine that an
     802.11 wireless network is online after configuring Layer 3 state.
   </summary>
 </histogram>
@@ -3255,7 +3251,7 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to determine that an
+    ChromeOS network performance metric sampling the time to determine that an
     802.11 wireless network is in a captive portal after configuring Layer 3
     state.
   </summary>
@@ -3267,7 +3263,7 @@ chromium-metrics-reviews@google.com.
   <owner>hugobenichi@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to determine that an
+    ChromeOS network performance metric sampling the time to determine that an
     802.11 wireless network is in a captive portal with a valid redirect URL
     after configuring Layer 3 state.
   </summary>
@@ -3278,7 +3274,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time to scan WiFi until a
+    ChromeOS network performance metric sampling the time to scan WiFi until a
     connection is found.
   </summary>
 </histogram>
@@ -3288,7 +3284,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric sampling the time between the beginning
+    ChromeOS network performance metric sampling the time between the beginning
     of a WiFi scan (if the scan includes both a progressive scan and a full
     scan, the TimeToScanAndConnect starts with the first scan of the series) and
     the completion of a successful connection.
@@ -3300,8 +3296,8 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric that tracks the transmit bitrate in
-    Mbps for the wifi device when it is connected to a network. The bitrate is
+    ChromeOS network performance metric that tracks the transmit bitrate in Mbps
+    for the wifi device when it is connected to a network. The bitrate is
     reported once every minute after the wifi connection is established.
   </summary>
 </histogram>
@@ -3311,7 +3307,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric sampling the signal strength (0-100) of the wifi
+    ChromeOS network metric sampling the signal strength (0-100) of the wifi
     network when it becomes unreliable (experiencing multiple link failures in a
     short period of time).
   </summary>
@@ -3322,7 +3318,7 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric that tracks the reasons of failed
+    ChromeOS network performance metric that tracks the reasons of failed
     user-initiated WiFi connection attempts. The result of the user-initiated
     WiFi connection attempts are being tracked by
     Network.Shill.WiFi.UserInitiatedConnectionResult.
@@ -3334,8 +3330,8 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network performance metric that tracks the result of
-    user-initiated WiFi connection attempts.
+    ChromeOS network performance metric that tracks the result of user-initiated
+    WiFi connection attempts.
   </summary>
 </histogram>
 
@@ -3344,7 +3340,7 @@ chromium-metrics-reviews@google.com.
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <owner>cast-analytics@google.com</owner>
   <summary>
-    Chrome OS network usage metric. The channel used for each successful WiFi
+    ChromeOS network usage metric. The channel used for each successful WiFi
     connection.
   </summary>
 </histogram>
@@ -3354,7 +3350,7 @@ chromium-metrics-reviews@google.com.
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <owner>cast-analytics@google.com</owner>
   <summary>
-    Chrome OS network usage metric. The channel type used for each successful
+    ChromeOS network usage metric. The channel type used for each successful
     WiFi connection.
   </summary>
 </histogram>
@@ -3373,8 +3369,8 @@ chromium-metrics-reviews@google.com.
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <owner>cast-analytics@google.com</owner>
   <summary>
-    Chrome OS network usage metric. The security setting for each successful
-    WiFi connection.
+    ChromeOS network usage metric. The security setting for each successful WiFi
+    connection.
   </summary>
 </histogram>
 
@@ -3383,7 +3379,7 @@ chromium-metrics-reviews@google.com.
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
-    Chrome OS metric that tracks the failure reason for all connection attempts,
+    ChromeOS metric that tracks the failure reason for all connection attempts,
     manual or automatic, to Wi-Fi networks which were added from Chrome Sync.
   </summary>
 </histogram>
@@ -3393,8 +3389,8 @@ chromium-metrics-reviews@google.com.
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
-    Chrome OS metric that tracks the result of all connection attempts, manual
-    or automatic, to Wi-Fi networks which were added from Chrome Sync.
+    ChromeOS metric that tracks the result of all connection attempts, manual or
+    automatic, to Wi-Fi networks which were added from Chrome Sync.
   </summary>
 </histogram>
 
@@ -3405,7 +3401,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-network-metrics@google.com</owner>
   <owner>cros-privacy-core@google.com</owner>
   <summary>
-    Chrome OS network metric tracking the count of synced networks that were
+    ChromeOS network metric tracking the count of synced networks that were
     fixed after getting saved to the device when out of range and marked as
     hidden. See b/178089463 for more details.
   </summary>
@@ -3416,7 +3412,7 @@ chromium-metrics-reviews@google.com.
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
-    Chrome OS metric that tracks the failure reason for manual connection
+    ChromeOS metric that tracks the failure reason for manual connection
     attempts to Wi-Fi networks which were added from Chrome Sync.
   </summary>
 </histogram>
@@ -3426,7 +3422,7 @@ chromium-metrics-reviews@google.com.
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
-    Chrome OS metric that tracks the result of manual connection attempts to
+    ChromeOS metric that tracks the result of manual connection attempts to
     Wi-Fi networks which were added from Chrome Sync.
   </summary>
 </histogram>
@@ -3436,7 +3432,7 @@ chromium-metrics-reviews@google.com.
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
-    Chrome OS metric that tracks the total number of Wi-Fi networks which are
+    ChromeOS metric that tracks the total number of Wi-Fi networks which are
     stored in Chrome Sync for the active user.
   </summary>
 </histogram>
@@ -3446,9 +3442,9 @@ chromium-metrics-reviews@google.com.
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
-    Chrome OS metric that tracks the failure reason for update attempts to
-    synced Wi-Fi networks. This includes create/modify/remove operations. Each
-    retry is counted seperately.
+    ChromeOS metric that tracks the failure reason for update attempts to synced
+    Wi-Fi networks. This includes create/modify/remove operations. Each retry is
+    counted seperately.
   </summary>
 </histogram>
 
@@ -3457,7 +3453,7 @@ chromium-metrics-reviews@google.com.
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
-    Chrome OS metric that tracks the result of update attempts to synced Wi-Fi
+    ChromeOS metric that tracks the result of update attempts to synced Wi-Fi
     networks. This includes create/modify/remove operations. failures are only
     recorded after all retries have been exhausted.
   </summary>
@@ -3468,7 +3464,7 @@ chromium-metrics-reviews@google.com.
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
-    Chrome OS metric logged for users who have the feature enabled but have zero
+    ChromeOS metric logged for users who have the feature enabled but have zero
     networks eligible for sync. Tracks the reasons why none of the networks are
     eligible.
   </summary>
