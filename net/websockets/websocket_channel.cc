@@ -678,7 +678,8 @@ ChannelState WebSocketChannel::HandleFrame(
   // Respond to the frame appropriately to its type.
   return HandleFrameByState(
       opcode, frame->header.final,
-      base::make_span(frame->payload, frame->header.payload_length));
+      base::make_span(frame->payload, base::checked_cast<size_t>(
+                                          frame->header.payload_length)));
 }
 
 ChannelState WebSocketChannel::HandleFrameByState(

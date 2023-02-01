@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -70,8 +71,9 @@ absl::optional<std::map<std::string, std::string>> DecodeCerts(
                  << " instead of CERTIFICATE";
       return absl::nullopt;
     }
-    std::string sha256_hex = base::ToLowerASCII(
-        base::HexEncode(crypto::SHA256Hash(base::make_span(data, len))));
+    std::string sha256_hex =
+        base::ToLowerASCII(base::HexEncode(crypto::SHA256Hash(
+            base::make_span(data, base::checked_cast<size_t>(len)))));
     certs[sha256_hex] = std::string(data, data + len);
   }
   return std::move(certs);
