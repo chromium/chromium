@@ -1318,6 +1318,7 @@
       'Android Compile Perf PGO': 'official_goma_minimal_symbols_android_pgo',
       'Android arm64 Compile Perf': 'official_goma_minimal_symbols_android_arm64',
       'Android arm64 Compile Perf PGO': 'official_goma_minimal_symbols_android_arm64_pgo',
+      'Android arm64 High End Compile Perf': 'official_goma_minimal_symbols_android_arm64_high_end',
       'Chromeos Amd64 Generic Lacros Builder Perf': 'chromeos_amd64-generic_lacros_official',
       'Fuchsia Builder Perf': 'official_goma_fuchsia_arm64_perf',
       'Fuchsia Builder Perf x64': 'official_goma_fuchsia_x64_perf',
