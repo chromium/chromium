@@ -41,6 +41,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
@@ -136,16 +137,18 @@ public class IntentHandlerUnitTest {
             {"content://example.com/1", "text/html"},
     };
 
-    private static final String[][] SHARE_INTENT_CASES = {
-            {"Check this out! https://example.com/foo#bar", "https://example.com/foo#bar"},
+    private static final Object[][] SHARE_INTENT_CASES = {
+            {"Check this out! https://example.com/foo#bar", "https://example.com/foo#bar", 1},
             {"This http://www.example.com URL is bussin fr fr.\nhttp://www.example.com/foo",
-                    "http://www.example.com/foo"},
-            {"https://example.com", "https://example.com"},
-            {"https://example.com Sent from my iPhone.", "https://example.com"},
-            {"https://example.com\nSent from my iPhone.", "https://example.com"},
-            {"~(_8^(|)", null},
-            {"", null},
-            {null, null},
+                    "http://www.example.com/foo", 2},
+            {"http://one.com https://two.com http://three.com http://four.com", "https://two.com",
+                    4},
+            {"https://example.com", "https://example.com", 1},
+            {"https://example.com Sent from my iPhone.", "https://example.com", 1},
+            {"https://example.com\nSent from my iPhone.", "https://example.com", 1},
+            {"~(_8^(|)", null, 0},
+            {"", null, 0},
+            {null, null, 0},
     };
 
     private static final String GOOGLE_URL = "https://www.google.com";
@@ -755,9 +758,14 @@ public class IntentHandlerUnitTest {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         Assert.assertNull(IntentHandler.getUrlFromShareIntent(intent));
-        for (String[] shareCase : SHARE_INTENT_CASES) {
-            intent.putExtra(Intent.EXTRA_TEXT, shareCase[0]);
-            Assert.assertEquals(shareCase[1], IntentHandler.getUrlFromShareIntent(intent));
+        for (Object[] shareCase : SHARE_INTENT_CASES) {
+            intent.putExtra(Intent.EXTRA_TEXT, (String) shareCase[0]);
+            int before = RecordHistogram.getHistogramValueCountForTesting(
+                    IntentHandler.SHARE_INTENT_HISTOGRAM, (int) shareCase[2]);
+            Assert.assertEquals((String) shareCase[1], IntentHandler.getUrlFromShareIntent(intent));
+            Assert.assertEquals("Test case: " + (String) shareCase[0], before + 1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            IntentHandler.SHARE_INTENT_HISTOGRAM, (int) shareCase[2]));
         }
     }
 }

@@ -1768,6 +1768,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Intent.ShareIntentUrlCount" units="URLs"
+    expires_after="2024-02-01">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>tedchoc@google.com</owner>
+  <summary>
+    Number of URLs present in Text Share intents (ACTION_SEND) received by
+    Chrome.
+  </summary>
+</histogram>
+
 <histogram name="Android.IsLastSharedAppInfoRetrieved"
     enum="BooleanIsLastSharedAppInfoRetrieved" expires_after="M77">
   <owner>tedchoc@chromium.org</owner>
