@@ -33,6 +33,8 @@ ChromeVoxLearnModeTest = class extends ChromeVoxE2ETest {
     await importModule(
         ['BrailleKeyEvent', 'BrailleKeyCommand'],
         '/chromevox/common/braille/braille_key_types.js');
+    await importModule(
+        'LearnModeBridge', '/chromevox/common/learn_mode_bridge.js');
     await importModule('QueueMode', '/chromevox/common/tts_types.js');
     await importModule('AsyncUtil', '/common/async_util.js');
     await importModule('KeyCode', '/common/key_code.js');
@@ -72,40 +74,21 @@ ChromeVoxLearnModeTest = class extends ChromeVoxE2ETest {
   }
 
   doKeyDown(evt) {
-    return () => {
-      chrome.runtime.sendMessage({
-        target: 'LearnMode',
-        action: 'onKeyDown',
-        args: [this.makeMockKeyEvent(evt)],
-      });
-    };
+    return async () =>
+               await LearnModeBridge.onKeyDown(this.makeMockKeyEvent(evt));
   }
 
   doKeyUp(evt) {
-    return () => {
-      chrome.runtime.sendMessage({
-        target: 'LearnMode',
-        action: 'onKeyUp',
-        args: [this.makeMockKeyEvent(evt)],
-      });
-    };
+    return async () =>
+               await LearnModeBridge.onKeyUp(this.makeMockKeyEvent(evt));
   }
 
   doLearnModeGesture(gesture) {
-    return () => {
-      chrome.runtime.sendMessage({
-        target: 'LearnMode',
-        action: 'onAccessibilityGesture',
-        args: [gesture],
-      });
-    };
+    return async () => await LearnModeBridge.onAccessibilityGesture(gesture);
   }
 
   doBrailleKeyEvent(evt) {
-    return () => {
-      chrome.runtime.sendMessage(
-          {target: 'LearnMode', action: 'onBrailleKeyEvent', args: [evt]});
-    };
+    return async () => await LearnModeBridge.onBrailleKeyEvent(evt);
   }
 };
 
@@ -152,8 +135,7 @@ AX_TEST_F('ChromeVoxLearnModeTest', 'KeyboardInputRepeat', async function() {
 
 AX_TEST_F('ChromeVoxLearnModeTest', 'Gesture', async function() {
   const [mockFeedback, evt] = await this.runOnLearnModePage();
-  chrome.runtime.sendMessage(
-      {target: 'LearnMode', action: 'clearTouchExploreOutputTime'});
+  await LearnModeBridge.clearTouchExploreOutputTime();
   mockFeedback.call(doLearnModeGesture(Gesture.SWIPE_RIGHT1))
       .expectSpeechWithQueueMode(
           'Swipe one finger right', QueueMode.CATEGORY_FLUSH)

@@ -110,6 +110,18 @@ BridgeConstants.GestureCommandHandler = {
 };
 
 /** @public {!BridgeEntry} */
+BridgeConstants.LearnMode = {
+  TARGET: 'LearnMode',
+  Action: {
+    CLEAR_TOUCH_EXPLORE_OUTPUT_TIME: 'clearTouchExploreOutputTime',
+    ON_ACCESSIBILITY_GESTURE: 'onAccessibilityGesture',
+    ON_BRAILLE_KEY_EVENT: 'onBrailleKeyEvent',
+    ON_KEY_DOWN: 'onKeyDown',
+    ON_KEY_UP: 'onKeyUp',
+  },
+};
+
+/** @public {!BridgeEntry} */
 BridgeConstants.LogStore = {
   TARGET: 'LogStore',
   Action: {

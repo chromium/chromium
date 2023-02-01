@@ -34,6 +34,11 @@ export class BridgeHelper {
         resolve => chrome.runtime.sendMessage({target, action, args}, resolve));
   }
 
+  /** @param {BridgeTarget|string} target */
+  static clearAllHandlersForTarget(target) {
+    BridgeHelper.handlers_[target] = {};
+  }
+
   /**
    * @param {BridgeTarget|string} target The name of the class that is
    *     registering the handler.
