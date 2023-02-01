@@ -47,8 +47,12 @@ size_t g_prepopulate_chunk_size = 100;
 
 DIPSStorage::PrepopulateArgs::PrepopulateArgs(base::Time time,
                                               size_t offset,
-                                              std::vector<std::string> sites)
-    : time(time), offset(offset), sites(std::move(sites)) {}
+                                              std::vector<std::string> sites,
+                                              base::OnceClosure on_complete)
+    : time(time),
+      offset(offset),
+      sites(std::move(sites)),
+      on_complete(std::move(on_complete)) {}
 
 DIPSStorage::PrepopulateArgs::PrepopulateArgs(PrepopulateArgs&&) = default;
 
@@ -262,5 +266,8 @@ void DIPSStorage::PrepopulateChunk(PrepopulateArgs args) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&DIPSStorage::PrepopulateChunk,
                                   weak_factory_.GetWeakPtr(), std::move(args)));
+  } else {
+    db_->MarkAsPrepopulated();
+    std::move(args.on_complete).Run();
   }
 }

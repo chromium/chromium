@@ -135,6 +135,15 @@ class DIPSDatabase {
   // Checks that the internal SQLite database is initialized.
   bool CheckDBInit();
 
+  // Marks meta_table_'s `prepopulated` field as true.
+  //
+  // Called once this database has finished prepopulating with information from
+  // the SiteEngagement service. Returns whether this operation was successful.
+  bool MarkAsPrepopulated();
+
+  // Whether the database was prepopulated using the SiteEngagement service.
+  bool IsPrepopulated();
+
   size_t GetMaxEntries() const { return max_entries_; }
   size_t GetPurgeEntries() const { return purge_entries_; }
 

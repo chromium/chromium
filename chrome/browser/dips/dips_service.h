@@ -65,6 +65,7 @@ class DIPSService : public KeyedService {
   }
 
   void OnTimerFiredForTesting() { OnTimerFired(); }
+  void WaitForInitCompleteForTesting() { wait_for_prepopulating_.Run(); }
 
  private:
   // So DIPSServiceFactory::BuildServiceInstanceFor can call the constructor.
@@ -85,9 +86,11 @@ class DIPSService : public KeyedService {
                              RecordBounceCallback callback);
 
   scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner();
-  void InitializeStorageWithEngagedSites();
+  void InitializeStorageWithEngagedSites(bool prepopulated);
+  // Prepopulates the DIPS database with `sites` having interaction at `time`.
   void InitializeStorage(base::Time time, std::vector<std::string> sites);
 
+  void OnStorageInitialized();
   void OnTimerFired();
   void DeleteDIPSEligibleState(base::Time deletion_start,
                                std::vector<std::string> sites_to_clear);
@@ -100,6 +103,7 @@ class DIPSService : public KeyedService {
   bool ShouldBlockThirdPartyCookies() const;
   bool HasCookieException(const std::string& site) const;
 
+  base::RunLoop wait_for_prepopulating_;
   raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   // The return value of CookieSettings::ShouldBlockThirdPartyCookies(), cached

@@ -29,6 +29,8 @@
 
 namespace {
 
+constexpr char kPrepopulatedKey[] = "prepopulated";
+
 absl::optional<base::Time> ColumnOptionalTime(sql::Statement* statement,
                                               int column_index) {
   if (statement->GetColumnType(column_index) == sql::ColumnType::kNull) {
@@ -1090,4 +1092,26 @@ size_t DIPSDatabase::GarbageCollectOldest(int purge_goal) {
     return 0;
 
   return db_->GetLastChangeCount();
+}
+
+bool DIPSDatabase::MarkAsPrepopulated() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!CheckDBInit()) {
+    return false;
+  }
+  return meta_table_.SetValue(kPrepopulatedKey, 1);
+}
+
+bool DIPSDatabase::IsPrepopulated() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!CheckDBInit()) {
+    return false;
+  }
+  int result;
+  bool has_key = meta_table_.GetValue(kPrepopulatedKey, &result);
+  if (!has_key) {
+    meta_table_.SetValue(kPrepopulatedKey, 0);
+    return false;
+  }
+  return result;
 }
