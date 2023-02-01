@@ -319,6 +319,12 @@ class PageNodeObserver {
   // not directly reflected on the node.
   virtual void OnFaviconUpdated(const PageNode* page_node) = 0;
 
+  // Fired after `new_page_node` is created but before `page_node` is deleted
+  // from being discarded. See the equivalent function on `WebContentsObserver`
+  // for more detail.
+  virtual void OnAboutToBeDiscarded(const PageNode* page_node,
+                                    const PageNode* new_page_node) = 0;
+
   // Called every time the aggregated freezing vote changes or gets invalidated.
   virtual void OnFreezingVoteChanged(
       const PageNode* page_node,
@@ -364,6 +370,8 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
   void OnHadFormInteractionChanged(const PageNode* page_node) override {}
   void OnTitleUpdated(const PageNode* page_node) override {}
   void OnFaviconUpdated(const PageNode* page_node) override {}
+  void OnAboutToBeDiscarded(const PageNode* page_node,
+                            const PageNode* new_page_node) override {}
   void OnFreezingVoteChanged(
       const PageNode* page_node,
       absl::optional<freezing::FreezingVote> previous_vote) override {}

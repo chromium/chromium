@@ -28,16 +28,10 @@
 namespace performance_manager::metrics {
 
 PageTimelineMonitor::PageTimelineMonitor()
-    : PageTimelineMonitor(
-          base::BindRepeating([]() { return base::RandInt(0, 19) == 1; })) {}
-
-PageTimelineMonitor::PageTimelineMonitor(
-    base::RepeatingCallback<bool()> should_collect_slice_callback)
     // These counters are initialized to a random value due to privacy concerns,
     // so that we cannot tie either the startup time of a specific tab or the
     // recording time of a specific slice to the browser startup time.
-    : slice_id_counter_(base::RandInt(1, 32767)),
-      should_collect_slice_callback_(std::move(should_collect_slice_callback)) {
+    : slice_id_counter_(base::RandInt(1, 32767)) {
   collect_slice_timer_.Start(
       FROM_HERE,
       performance_manager::features::kPageTimelineStateIntervalTime.Get(), this,
@@ -68,7 +62,7 @@ PageTimelineMonitor::PageNodeInfo::GetPageState() {
 void PageTimelineMonitor::CollectSlice() {
   // We only collect a slice randomly every ~20 times this gets called for
   // privacy purposes. Always fall through when we're in a test.
-  if (!should_collect_slice_callback_.Run()) {
+  if (!ShouldCollectSlice()) {
     return;
   }
 
@@ -90,7 +84,8 @@ void PageTimelineMonitor::CollectSlice() {
     const ukm::SourceId source_id = page_node->GetUkmSourceID();
 
     DCHECK_EQ(is_visible, curr_info->currently_visible);
-    DCHECK_EQ(lifecycle_state, curr_info->current_lifecycle);
+    DCHECK(curr_info->current_lifecycle == mojom::LifecycleState::kDiscarded ||
+           lifecycle_state == curr_info->current_lifecycle);
 
     if (is_visible) {
       curr_info->total_foreground_milliseconds +=
@@ -149,8 +144,23 @@ void PageTimelineMonitor::CollectSlice() {
         .SetIsConnectedToDevice(is_connected_to_device)
         .SetIsPlayingAudio(page_node->IsAudible())
         .SetResidentSetSize(page_node->EstimateResidentSetSize())
+        .SetTabId(curr_info->tab_id)
         .Record(ukm::UkmRecorder::Get());
   }
+}
+
+bool PageTimelineMonitor::ShouldCollectSlice() const {
+  if (should_collect_slice_callback_) {
+    return should_collect_slice_callback_.Run();
+  }
+
+  // The default if not overridden by tests is to report ~1 out of 20 slices.
+  return base::RandInt(0, 19) == 1;
+}
+
+void PageTimelineMonitor::SetShouldCollectSliceCallbackForTesting(
+    base::RepeatingCallback<bool()> should_collect_slice_callback) {
+  should_collect_slice_callback_ = should_collect_slice_callback;
 }
 
 void PageTimelineMonitor::OnPassedToGraph(Graph* graph) {
@@ -178,7 +188,19 @@ void PageTimelineMonitor::OnIsVisibleChanged(const PageNode* page_node) {
   if (page_node->GetType() != performance_manager::PageType::kTab)
     return;
 
-  DCHECK(base::Contains(page_node_info_map_, page_node));
+  // It's possible for this to happen when a tab is discarded. The sequence of
+  // events is:
+  // 1. New web contents (and page node) created
+  // 2. AboutToBeDiscarded(old_page_node, new_page_node) is invoked
+  // 3. Tab is detached from the tabstrip, causing its web contents to become
+  // "occluded", which triggers a visibility change notification
+  // 4. The old web contents (and page node) are deleted
+  // In the case of PageTimelineMonitor, the page_node is removed from the map
+  // on step 2, so the notification from step 3 has to be ignored.
+  if (!base::Contains(page_node_info_map_, page_node)) {
+    return;
+  }
+
   std::unique_ptr<PageNodeInfo>& info = page_node_info_map_[page_node];
   base::TimeTicks now = base::TimeTicks::Now();
   if (info->currently_visible && !page_node->IsVisible()) {
@@ -203,22 +225,35 @@ void PageTimelineMonitor::OnPageLifecycleStateChanged(
   if (page_node->GetType() != performance_manager::PageType::kTab)
     return;
 
-  DCHECK(base::Contains(page_node_info_map_, page_node));
-  std::unique_ptr<PageNodeInfo>& info = page_node_info_map_[page_node];
-  info->current_lifecycle = page_node->GetLifecycleState();
-  info->time_of_most_recent_state_change = base::TimeTicks::Now();
+  auto it = page_node_info_map_.find(page_node);
+  if (it == page_node_info_map_.end()) {
+    // This function is called by the tab freezing apparatus between the time a
+    // page is discarded and when its PageNode is removed from the graph. In
+    // that situation, it's not in the map anymore, and another PageNode is
+    // being tracked in its place. It's safe to return early.
+    return;
+  }
+
+  it->second->current_lifecycle = page_node->GetLifecycleState();
+  it->second->time_of_most_recent_state_change = base::TimeTicks::Now();
 }
 
 void PageTimelineMonitor::OnTypeChanged(const PageNode* page_node,
                                         PageType previous_state) {
+  // If a PageNode already has a PageNodeInfo, its only valid state is
+  // `kDiscarded` and a new PageNodeInfo shouldn't be created for it.
+  if (base::Contains(page_node_info_map_, page_node)) {
+    DCHECK_EQ(page_node_info_map_[page_node]->current_lifecycle,
+              mojom::LifecycleState::kDiscarded);
+    return;
+  }
+
   // When PageNodes are added, they have type kUnknown, and so it is when new
   // nodes get changed to being of type kTab that we can start using them.
-  DCHECK(!(base::Contains(page_node_info_map_, page_node)));
-
   switch (page_node->GetType()) {
     case performance_manager::PageType::kTab:
-      page_node_info_map_[page_node] =
-          std::make_unique<PageNodeInfo>(base::TimeTicks::Now(), page_node);
+      page_node_info_map_[page_node] = std::make_unique<PageNodeInfo>(
+          base::TimeTicks::Now(), page_node, slice_id_counter_++);
       break;
     case performance_manager::PageType::kExtension:
       // We won't be dealing with these because we're not recording this UKM
@@ -251,6 +286,20 @@ void PageTimelineMonitor::OnFaviconUpdated(const PageNode* page_node) {
     page_node_info_map_[page_node]->updated_title_or_favicon_in_background =
         true;
   }
+}
+
+void PageTimelineMonitor::OnAboutToBeDiscarded(const PageNode* page_node,
+                                               const PageNode* new_page_node) {
+  auto old_it = page_node_info_map_.find(page_node);
+  DCHECK(old_it != page_node_info_map_.end());
+  old_it->second->current_lifecycle = mojom::LifecycleState::kDiscarded;
+
+  bool inserted =
+      page_node_info_map_.emplace(new_page_node, std::move(old_it->second))
+          .second;
+  DCHECK(inserted);
+
+  page_node_info_map_.erase(old_it);
 }
 
 void PageTimelineMonitor::SetBatterySaverEnabled(bool enabled) {

@@ -153,6 +153,18 @@ void PageNodeImpl::OnTitleUpdated() {
     observer->OnTitleUpdated(this);
 }
 
+void PageNodeImpl::OnAboutToBeDiscarded(base::WeakPtr<PageNode> new_page_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!new_page_node) {
+    return;
+  }
+
+  for (auto* observer : GetObservers()) {
+    observer->OnAboutToBeDiscarded(this, new_page_node.get());
+  }
+}
+
 void PageNodeImpl::OnMainFrameNavigationCommitted(
     bool same_document,
     base::TimeTicks navigation_committed_time,

@@ -38,9 +38,10 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
     GraphTestHarness::SetUp();
 
     std::unique_ptr<PageTimelineMonitor> monitor =
-        std::make_unique<PageTimelineMonitor>(
-            base::BindRepeating([]() { return true; }));
+        std::make_unique<PageTimelineMonitor>();
     monitor_ = monitor.get();
+    monitor_->SetShouldCollectSliceCallbackForTesting(
+        base::BindRepeating([]() { return true; }));
     graph()->PassToGraph(std::move(monitor));
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
@@ -76,6 +77,24 @@ TEST_F(PageTimelineMonitorUnitTest, TestPageTimeline) {
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
   EXPECT_GE(entries.size(), static_cast<const unsigned long>(1));
+}
+
+TEST_F(PageTimelineMonitorUnitTest,
+       TestPageTimelineDoesntRecordIfShouldCollectSliceReturnsFalse) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  ukm::SourceId mock_source_id = ukm::NoURLSourceId();
+  mock_graph.page->SetType(performance_manager::PageType::kTab);
+  mock_graph.page->SetUkmSourceId(mock_source_id);
+  mock_graph.page->SetIsVisible(true);
+  mock_graph.page->SetLifecycleStateForTesting(mojom::LifecycleState::kRunning);
+
+  monitor()->SetShouldCollectSliceCallbackForTesting(
+      base::BindRepeating([]() { return false; }));
+  TriggerCollectSlice();
+
+  auto entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
+  EXPECT_GE(entries.size(), 0UL);
 }
 
 TEST_F(PageTimelineMonitorUnitTest, TestPageTimelineNavigation) {

@@ -172,6 +172,10 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   void OnPageStateChanged(
       const performance_manager::PageNode* page_node,
       performance_manager::PageNode::PageState old_state) override {}
+  // Ignored.
+  void OnAboutToBeDiscarded(
+      const performance_manager::PageNode* page_node,
+      const performance_manager::PageNode* new_page_node) override {}
 
   // ProcessNodeObserver implementation:
   void OnProcessNodeAdded(

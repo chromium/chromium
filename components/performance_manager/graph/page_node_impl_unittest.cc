@@ -244,6 +244,7 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   MOCK_METHOD2(OnFreezingVoteChanged,
                void(const PageNode*, absl::optional<freezing::FreezingVote>));
   MOCK_METHOD2(OnPageStateChanged, void(const PageNode*, PageNode::PageState));
+  MOCK_METHOD2(OnAboutToBeDiscarded, void(const PageNode*, const PageNode*));
 
   void SetNotifiedPageNode(const PageNode* page_node) {
     notified_page_node_ = page_node;
