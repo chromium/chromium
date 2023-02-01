@@ -42,6 +42,8 @@ class TsLibraryTest(unittest.TestCase):
     args = [
         '--output_suffix',
         'build_ts',
+        '--root_gen_dir',
+        self._out_folder,
         '--root_dir',
         os.path.join(_HERE_DIR, 'tests', 'project1'),
         '--gen_dir',
@@ -89,6 +91,8 @@ class TsLibraryTest(unittest.TestCase):
     ts_library.main([
         '--output_suffix',
         'build_ts',
+        '--root_gen_dir',
+        self._out_folder,
         '--root_dir',
         root_dir,
         '--gen_dir',
@@ -130,6 +134,8 @@ class TsLibraryTest(unittest.TestCase):
     ts_library.main([
         '--output_suffix',
         'build_ts',
+        '--root_gen_dir',
+        self._out_folder,
         '--root_dir',
         os.path.join(_HERE_DIR, 'tests', 'project3'),
         '--gen_dir',
@@ -157,6 +163,8 @@ class TsLibraryTest(unittest.TestCase):
     ts_library.main([
         '--output_suffix',
         'build_ts',
+        '--root_gen_dir',
+        self._out_folder,
         '--root_dir',
         os.path.join(_HERE_DIR, 'tests', 'project4'),
         '--gen_dir',
@@ -201,6 +209,8 @@ class TsLibraryTest(unittest.TestCase):
         '--output_suffix',
         'build_ts',
         '--composite',
+        '--root_gen_dir',
+        self._out_folder,
         '--root_dir',
         os.path.join(_HERE_DIR, 'tests', 'project5'),
         '--gen_dir',
@@ -217,6 +227,8 @@ class TsLibraryTest(unittest.TestCase):
         'test_build_ts',
         '--deps',
         os.path.join(gen_dir, 'tsconfig_build_ts.json'),
+        '--root_gen_dir',
+        self._out_folder,
         '--root_dir',
         os.path.join(_HERE_DIR, 'tests', 'project5'),
         '--gen_dir',
@@ -272,6 +284,8 @@ class TsLibraryTest(unittest.TestCase):
       ts_library.main([
           '--output_suffix',
           'build_ts',
+          '--root_gen_dir',
+          self._out_folder,
           '--root_dir',
           os.path.join(_HERE_DIR, 'tests', 'project1'),
           '--gen_dir',
@@ -300,6 +314,8 @@ class TsLibraryTest(unittest.TestCase):
       ts_library.main([
           '--output_suffix',
           'build_ts',
+          '--root_gen_dir',
+          self._out_folder,
           '--root_dir',
           root_dir,
           '--gen_dir',

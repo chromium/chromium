@@ -18,6 +18,8 @@ sys.path.append(os.path.join(_SRC_DIR, 'third_party', 'node'))
 import node
 import node_modules
 
+from path_mappings import GetDepToPathMappings
+
 
 def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
   if not os.path.exists(gen_dir):
@@ -55,6 +57,9 @@ def main(argv):
   parser.add_argument('--deps', nargs='*')
   parser.add_argument('--gen_dir', required=True)
   parser.add_argument('--path_mappings', nargs='*')
+
+  parser.add_argument('--root_gen_dir', required=True)
+
   parser.add_argument('--root_dir', required=True)
   parser.add_argument('--out_dir', required=True)
   parser.add_argument('--tsconfig_base')
@@ -134,13 +139,19 @@ def main(argv):
   if args.definitions is not None:
     tsconfig['files'].extend(args.definitions)
 
-  # Handle custom path mappings, for example chrome://resources/ URLs.
+  # Handle path mappings, for example chrome://resources/ URLs.
+  path_mappings = collections.defaultdict(list)
+  for (dep, mappings) in GetDepToPathMappings(args.root_gen_dir).items():
+    for (url, dir) in mappings:
+      path_mappings[url].append(os.path.join('./', dir))
+      path_mappings['chrome:' + url].append(os.path.join('./', dir))
+
   if args.path_mappings is not None:
-    path_mappings = collections.defaultdict(list)
     for m in args.path_mappings:
       mapping = m.split('|')
       path_mappings[mapping[0]].append(os.path.join('./', mapping[1]))
-    tsconfig['compilerOptions']['paths'] = path_mappings
+
+  tsconfig['compilerOptions']['paths'] = path_mappings
 
   if args.deps is not None:
     tsconfig['references'] = [{'path': dep} for dep in args.deps]
