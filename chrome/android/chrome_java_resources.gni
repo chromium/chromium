@@ -152,7 +152,6 @@ chrome_java_resources = [
   "java/res/drawable-night/virtual_card_enrollment_illustration.xml",
   "java/res/drawable-nodpi/bookmark_widget_preview.png",
   "java/res/drawable-nodpi/widget_preview.png",
-  "java/res/drawable-sw600dp/window_background.xml",
   "java/res/drawable-xhdpi/bg_tabstrip_background_tab_outline.9.png",
   "java/res/drawable-xhdpi/bg_tabstrip_tab.9.png",
   "java/res/drawable-xhdpi/bookmark_check_gray.png",

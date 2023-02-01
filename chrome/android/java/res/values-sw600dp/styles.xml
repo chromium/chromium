@@ -8,6 +8,5 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.Chromium.TabbedMode" parent="Base.Theme.Chromium.TabbedMode">
         <item name="android:statusBarColor" tools:targetApi="21">@android:color/black</item>
-        <item name="android:windowBackground">@drawable/window_background</item>
     </style>
 </resources>
