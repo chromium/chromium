@@ -84,44 +84,44 @@ base::Time GetEventTime(const AttributionSimulationEvent& event) {
 }
 
 struct AttributionReportJsonConverter {
-  AttributionReportJsonConverter(AttributionSimulationOutputOptions options,
-                                 base::Time time_origin)
-      : options(options), time_origin(time_origin) {}
+  explicit AttributionReportJsonConverter(base::Time time_origin)
+      : time_origin(time_origin) {}
 
   base::Value::Dict ToJson(const AttributionReport& report,
                            bool is_debug_report) const {
     base::Value::Dict report_body = report.ReportBody();
-    if (options.remove_report_ids)
-      report_body.Remove("report_id");
+    // Report IDs are a source of nondeterminism, so remove them.
+    report_body.Remove("report_id");
 
     switch (report.GetReportType()) {
-      case AttributionReport::Type::kAggregatableAttribution:
-        if (options.remove_assembled_report) {
-          // Output attribution_destination from the shared_info field.
-          absl::optional<base::Value> shared_info =
-              report_body.Extract("shared_info");
-          DCHECK(shared_info);
-          std::string* shared_info_str = shared_info->GetIfString();
-          DCHECK(shared_info_str);
+      case AttributionReport::Type::kAggregatableAttribution: {
+        // These fields normally encode a random GUID or the absolute time and
+        // therefore are sources of nondeterminism in the output.
 
-          base::Value shared_info_value =
-              base::test::ParseJson(*shared_info_str);
-          DCHECK(shared_info_value.is_dict());
+        // Output attribution_destination from the shared_info field.
+        absl::optional<base::Value> shared_info =
+            report_body.Extract("shared_info");
+        DCHECK(shared_info);
+        std::string* shared_info_str = shared_info->GetIfString();
+        DCHECK(shared_info_str);
 
-          static constexpr char kKeyAttributionDestination[] =
-              "attribution_destination";
-          std::string* attribution_destination =
-              shared_info_value.GetDict().FindString(
-                  kKeyAttributionDestination);
-          DCHECK(attribution_destination);
-          DCHECK(!report_body.contains(kKeyAttributionDestination));
-          report_body.Set(kKeyAttributionDestination,
-                          std::move(*attribution_destination));
+        base::Value shared_info_value = base::test::ParseJson(*shared_info_str);
+        DCHECK(shared_info_value.is_dict());
 
-          report_body.Remove("aggregation_service_payloads");
-          report_body.Remove("source_registration_time");
-        }
+        static constexpr char kKeyAttributionDestination[] =
+            "attribution_destination";
+        std::string* attribution_destination =
+            shared_info_value.GetDict().FindString(kKeyAttributionDestination);
+        DCHECK(attribution_destination);
+        DCHECK(!report_body.contains(kKeyAttributionDestination));
+        report_body.Set(kKeyAttributionDestination,
+                        std::move(*attribution_destination));
+
+        report_body.Remove("aggregation_service_payloads");
+        report_body.Remove("source_registration_time");
+
         break;
+      }
       case AttributionReport::Type::kEventLevel:
         bool ok =
             AdjustScheduledReportTime(report_body, report.OriginalReportTime());
@@ -167,9 +167,8 @@ struct AttributionReportJsonConverter {
       base::Value::Dict* body = dict->FindDict("body");
       DCHECK(body);
 
-      if (options.remove_report_ids) {
-        body->Remove("report_id");
-      }
+      // Report IDs are a source of nondeterminism, so remove them.
+      body->Remove("report_id");
 
       AdjustScheduledReportTime(*body,
                                 report.GetOriginalReportTimeForTesting());
@@ -202,7 +201,6 @@ struct AttributionReportJsonConverter {
     return true;
   }
 
-  const AttributionSimulationOutputOptions options;
   const base::Time time_origin;
 };
 
@@ -391,10 +389,9 @@ class AttributionEventHandler : public AttributionObserver {
 
 }  // namespace
 
-base::Value RunAttributionSimulation(
-    base::Value input,
-    const AttributionSimulationOptions& options,
-    std::ostream& error_stream) {
+base::Value RunAttributionSimulation(base::Value input,
+                                     const AttributionConfig& config,
+                                     std::ostream& error_stream) {
   // Prerequisites for using an environment with mock time.
   content::BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
@@ -422,7 +419,7 @@ base::Value RunAttributionSimulation(
       /*max_pending_events=*/std::numeric_limits<size_t>::max(),
       /*special_storage_policy=*/nullptr,
       AttributionStorageDelegateImpl::CreateForTesting(
-          options.noise_mode, options.delay_mode, options.config),
+          AttributionNoiseMode::kNone, AttributionDelayMode::kDefault, config),
       std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
       std::make_unique<FakeReportSender>(), storage_partition,
       base::ThreadPool::CreateUpdateableSequencedTaskRunner(
@@ -430,9 +427,8 @@ base::Value RunAttributionSimulation(
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
            base::ThreadPolicy::MUST_USE_FOREGROUND}));
 
-  AttributionEventHandler handler(
-      manager.get(), storage_partition,
-      AttributionReportJsonConverter(options.output_options, time_origin));
+  AttributionEventHandler handler(manager.get(), storage_partition,
+                                  AttributionReportJsonConverter(time_origin));
 
   static_cast<AggregationServiceImpl*>(
       storage_partition->GetAggregationService())

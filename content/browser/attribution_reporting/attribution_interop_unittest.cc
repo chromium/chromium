@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/public/browser/attribution_config.h"
-#include "content/public/browser/attribution_reporting.h"
 #include "content/public/test/attribution_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -104,19 +103,8 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
 
   ASSERT_TRUE(is_config_valid && input);
 
-  AttributionSimulationOptions options{
-      .noise_mode = AttributionNoiseMode::kNone,
-      .config = config,
-      .delay_mode = AttributionDelayMode::kDefault,
-      .output_options =
-          AttributionSimulationOutputOptions{
-              .remove_report_ids = true,
-              .remove_assembled_report = true,
-          },
-  };
-
   base::Value simulator_output =
-      RunAttributionSimulation(std::move(*input), options, error_stream);
+      RunAttributionSimulation(std::move(*input), config, error_stream);
   ASSERT_FALSE(simulator_output.is_none()) << error_stream.str();
 
   absl::optional<base::Value> actual_output =

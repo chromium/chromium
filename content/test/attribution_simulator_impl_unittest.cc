@@ -15,7 +15,7 @@
 #include "base/path_service.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "content/public/browser/attribution_reporting.h"
+#include "content/public/browser/attribution_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -58,33 +58,6 @@ base::FilePath OutputPath(const base::FilePath& input_path) {
   return RemoveInputPathExtension(input_path).AddExtensionASCII("output.json");
 }
 
-base::FilePath OptionsPath(const base::FilePath& input_path) {
-  return RemoveInputPathExtension(input_path).AddExtensionASCII("options.json");
-}
-
-void ParseOptions(const base::Value& dict,
-                  AttributionSimulationOptions& options) {
-  if (const std::string* delay_mode = dict.FindStringKey("delay_mode")) {
-    if (*delay_mode == "none") {
-      options.delay_mode = AttributionDelayMode::kNone;
-    } else {
-      ASSERT_EQ(*delay_mode, "default")
-          << "unknown delay mode: " << *delay_mode;
-      options.delay_mode = AttributionDelayMode::kDefault;
-    }
-  }
-
-  if (const std::string* noise_mode = dict.FindStringKey("noise_mode")) {
-    if (*noise_mode == "none") {
-      options.noise_mode = AttributionNoiseMode::kNone;
-    } else {
-      ASSERT_EQ(*noise_mode, "default")
-          << "unknown noise mode: " << *noise_mode;
-      options.noise_mode = AttributionNoiseMode::kDefault;
-    }
-  }
-}
-
 class AttributionSimulatorImplTest
     : public ::testing::TestWithParam<base::FilePath> {};
 
@@ -92,25 +65,11 @@ TEST_P(AttributionSimulatorImplTest, HasExpectedOutput) {
   const base::FilePath input_path = GetParam();
   base::Value input = ReadJsonFromFile(input_path);
 
-  // Tests are nondeterministic if noise is used or report IDs are present.
-  AttributionSimulationOptions options{
-      .noise_mode = AttributionNoiseMode::kNone,
-      .delay_mode = AttributionDelayMode::kDefault,
-      .output_options =
-          AttributionSimulationOutputOptions{
-              .remove_report_ids = true,
-              .remove_assembled_report = true,
-          },
-  };
-
-  const base::FilePath options_path = OptionsPath(input_path);
-  if (base::PathExists(options_path))
-    ParseOptions(ReadJsonFromFile(options_path), options);
-
   const base::Value expected_output = ReadJsonFromFile(OutputPath(input_path));
 
   std::ostringstream error_stream;
-  EXPECT_THAT(RunAttributionSimulation(std::move(input), options, error_stream),
+  EXPECT_THAT(RunAttributionSimulation(std::move(input), AttributionConfig(),
+                                       error_stream),
               base::test::IsJson(expected_output));
   EXPECT_EQ(error_stream.str(), "");
 }
