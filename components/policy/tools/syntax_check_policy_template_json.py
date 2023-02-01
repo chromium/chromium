@@ -329,7 +329,7 @@ class PolicyTypeProvider():
 
     Args:
       policy (dict): The policy to get the type for.
-      schemas_by_id (dict): Maps schema id to a a schema.
+      schemas_by_id (dict): Maps schema id to a schema.
 
     '''
     # Policies may have the same name as the groups they belong to, so caching
@@ -357,8 +357,9 @@ class PolicyTypeProvider():
     if '$ref' in schema:
       if not schema['$ref'] in schemas_by_id:
         raise NotImplementedError(
-            'Policy %s uses unknow $ref %s in schema' % policy['name'],
-            schema['$ref'])
+            'Policy %s uses unknown $ref %s in schema. If you are '
+            'removing a $ref that is no longer used, please remove it in a '
+            'separate CL.' % (policy['name'], schema['$ref']))
       schema = schemas_by_id[schema['$ref']]
 
     schema_type = schema.get('type')
@@ -1420,7 +1421,8 @@ class PolicyTemplateChecker(object):
           '\'%s\' which is not allowed.' %
           (current_schema_key, str(old_schema_value), str(new_schema_value)))
 
-  def _CheckSchemasAreCompatible(self, schema_key_path, old_schema, new_schema):
+  def _CheckSchemasAreCompatible(self, schema_key_path, old_schema, new_schema,
+                                 schemas_by_id):
     current_schema_key = '/'.join(schema_key_path)
     '''
     Checks if two given schemas are compatible with each other.
@@ -1432,7 +1434,7 @@ class PolicyTemplateChecker(object):
       policy schema that we are processing represented as a list of paths.
     |old_schema|: The full contents of the schema as found in the original
       policy templates file.
-    |new_schema|: The full contents of the new schema as found  (if any) in the
+    |new_schema|: The full contents of the new schema as found (if any) in the
       modified policy templates file.
     '''
 
@@ -1456,15 +1458,24 @@ class PolicyTemplateChecker(object):
           'Policy schema path \'%s\' in new policy is of type \'%s\', it must '
           'be dict type.' % (current_schema_key, type(new_schema)))
 
-    # Both schemas must either have a 'type' key or not. This covers the case
-    # where the schema is merely a '$ref'
+    # Both schemas should either have a 'type' key or be '$ref' schemas. If this
+    # is not the case, it is possible that a schema that previously had a type
+    # is now converted into a '$ref' schema, or vice versa. In this case we want
+    # to expand the '$ref' and see if the before and after are still compatible.
     if ('type' in old_schema) != ('type' in new_schema):
-      self._SchemaCompatibleError(
-          'Mismatch in type definition for old schema and new schema for '
-          'policy schema path \'%s\'. One schema defines a type while the other'
-          ' does not.' %
-          (current_schema_key, old_schema['type'], new_schema['type']))
-      return
+      if '$ref' in old_schema:
+        if not old_schema['$ref'] in schemas_by_id:
+          raise NotImplementedError(
+              'Policy %s uses unknown $ref %s in old_schema' %
+              (policy['name'], old_schema['$ref']))
+        old_schema = schemas_by_id[old_schema['$ref']]
+
+      if '$ref' in new_schema:
+        if not new_schema['$ref'] in schemas_by_id:
+          raise NotImplementedError(
+              'Policy %s uses unknown $ref %s in new_schema' %
+              (policy['name'], new_schema['$ref']))
+        new_schema = schemas_by_id[new_schema['$ref']]
 
     # For schemas that define a 'type', make sure they match.
     schema_type = None
@@ -1522,7 +1533,7 @@ class PolicyTemplateChecker(object):
           self._CheckSchemasAreCompatible(
               schema_key_path + [old_key, sub_key], old_value[sub_key],
               new_schema_value[sub_key]
-              if sub_key in new_schema_value else None)
+              if sub_key in new_schema_value else None, schemas_by_id)
       # For types that have a key that themselves define a schema (e.g. 'items'
       # schema in an 'array' type), we need to validate the schema defined in
       # the key.
@@ -1530,7 +1541,8 @@ class PolicyTemplateChecker(object):
                                            KEYS_DEFINING_SCHEMAS_PER_TYPE):
         self._CheckSchemasAreCompatible(
             schema_key_path + [old_key], old_value,
-            new_schema[old_key] if old_key in new_schema else None)
+            new_schema[old_key] if old_key in new_schema else None,
+            schemas_by_id)
       # For any other key, we just check if the two values of the key are
       # compatible with each other, possibly allowing removal of entries in
       # array values if needed (e.g. removing 'required' fields makes the schema
@@ -1594,7 +1606,7 @@ class PolicyTemplateChecker(object):
       if policy_change['old_policy'] is not None:
         old_schema = policy_change['old_policy']['schema']
         self._CheckSchemasAreCompatible([policy['name']], old_schema,
-                                        policy['schema'])
+                                        policy['schema'], schemas_by_id)
 
       if self.schema_compatible_errors:
         schema_compatible_error_message = '\n  '.join(
