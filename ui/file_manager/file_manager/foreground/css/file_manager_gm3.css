@@ -1797,8 +1797,9 @@ li[renaming=''] .filename-label {
   background-color: currentColor;
   color: var(--cros-icon-color-primary);
   height: 24px;
-  margin-inline-end: 10px;
+  margin-inline-end: 14px;
   margin-inline-start: auto;
+  padding-inline-start: 8px;
   width: 24px;
 }
 
@@ -2079,12 +2080,12 @@ html.col-resize .table-header-label .sort-icon:not(:active):hover {
   line-height: 20px;
 }
 
-body.files-ng.check-select #list-container list li[selected] .detail-thumbnail
+.check-select #list-container list li[selected] .detail-thumbnail
 > .thumbnail {
   animation: none;
 }
 
-body.files-ng #list-container list li .detail-thumbnail > .thumbnail {
+#list-container list li .detail-thumbnail > .thumbnail {
   border-radius: 50%;
   height: 24px;
   margin-inline-start: 8px;
@@ -2092,11 +2093,15 @@ body.files-ng #list-container list li .detail-thumbnail > .thumbnail {
   width: 24px;
 }
 
-body.files-ng .table-row-cell > * {
+.table-row-cell > * {
   color: var(--cros-text-color-secondary);
   padding: 0;
   padding-inline-start: 32px;
   padding-top: 0 !important;
+}
+
+.table-row-cell > .dateholder {
+  display: flex;
 }
 
 .table-header-splitter  {
@@ -2139,21 +2144,22 @@ html.col-resize .table-header-splitter .splitter-icon:not(:active):hover {
   padding-inline-start: 32px;
 }
 
-body.files-ng.check-select list:focus li[selected] .table-row-cell > * {
+.check-select list:focus li[selected] .table-row-cell > * {
   color: var(--cros-text-color-selection);
 }
 
-body.files-ng .table-row-cell:first-child > * {
+.table-row-cell:first-child > * {
   padding-inline-start: 0;
 }
 
-body.files-ng .table-row-cell .filename-label {
+.table-row-cell .filename-label {
   color: var(--cros-text-color-primary);
   flex-grow: 1;
+  margin-inline-end: 8px;
   padding-top: 0;
 }
 
-body.files-ng.check-select list:focus li[selected] .table-row-cell
+.check-select list:focus li[selected] .table-row-cell
 .filename-label {
   color: var(--cros-text-color-selection);
 }
