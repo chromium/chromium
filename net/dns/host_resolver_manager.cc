@@ -4055,8 +4055,9 @@ std::unique_ptr<DnsProbeRunner> HostResolverManager::CreateDohProbeRunner(
     ResolveContext* resolve_context) {
   DCHECK(resolve_context);
   DCHECK(registered_contexts_.HasObserver(resolve_context));
-  if (!dns_client_->CanUseSecureDnsTransactions())
+  if (!dns_client_ || !dns_client_->CanUseSecureDnsTransactions()) {
     return nullptr;
+  }
 
   return dns_client_->GetTransactionFactory()->CreateDohProbeRunner(
       resolve_context);
