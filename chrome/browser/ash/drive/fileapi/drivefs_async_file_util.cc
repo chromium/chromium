@@ -184,8 +184,30 @@ class DeleteOperation {
         // get unpinned leaving all the children pinned. When the new method is
         // exposed (or parameter on the existing method) update the
         // implementation here.
-        drive_integration_service->GetDriveFsInterface()->SetPinned(
-            drive_path, /*pinned*/ false,
+        drive_integration_service->GetDriveFsInterface()->GetMetadata(
+            std::move(drive_path),
+            base::BindOnce(&DeleteOperation::OnGotMetadata,
+                           base::Unretained(this)));
+        return;
+      }
+    }
+
+    blocking_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DeleteOperation::Delete, base::Unretained(this)));
+  }
+
+  void OnGotMetadata(drive::FileError error,
+                     drivefs::mojom::FileMetadataPtr metadata) {
+    LOG_IF(ERROR, error != drive::FILE_ERROR_OK)
+        << "Failed to get metadata: " << drive::FileErrorToString(error);
+
+    if (error == drive::FILE_ERROR_OK && metadata && metadata->pinned) {
+      auto* drive_integration_service =
+          drive::util::GetIntegrationServiceByProfile(profile_);
+      if (drive_integration_service) {
+        drive_integration_service->GetDriveFsInterface()->SetPinnedByStableId(
+            metadata->stable_id, /*pinned=*/false,
             base::BindOnce(&DeleteOperation::OnUnpinFile,
                            base::Unretained(this)));
         return;
