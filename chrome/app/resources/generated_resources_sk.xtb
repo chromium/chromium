@@ -3836,6 +3836,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4441147046941420429">Ak chcete pokračovať, vyberte bezpečnostný kľúč zo svojho zariadenia, potom ho znova vložte a klepnite naň</translation>
 <translation id="444134486829715816">Rozbaliť...</translation>
 <translation id="4441928470323187829">Pripnuté vaším správcom</translation>
+<translation id="4442863809158514979">Zobraziť povolenia webu</translation>
 <translation id="4443536555189480885">&amp;Pomocník</translation>
 <translation id="4444304522807523469">Mať prístup ku skenerom dokumentov pripojeným cez USB alebo v miestnej sieti</translation>
 <translation id="4444512841222467874">Ak nie je dostatok miesta, môže dôjsť k automatickému odstráneniu používateľov a dát.</translation>
@@ -7469,6 +7470,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="779308894558717334">Svetlozelená</translation>
 <translation id="7793098747275782155">Tmavomodrá</translation>
 <translation id="7797571222998226653">vypnuté</translation>
+<translation id="7798504574384119986">Zobraziť povolenia webu</translation>
 <translation id="7798844538707273832">Prehliadač automaticky blokuje <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">Otočiť &amp;proti smeru hodinových ručičiek</translation>
 <translation id="7801679634091975683">Zmeny, ktoré tu vykonáte, sa použijú iba v prehliadači Lacros Chrome. Ak chcete zmeniť nastavenia prehliadača Chrome, otvorte ho a prejdite do nastavení.</translation>

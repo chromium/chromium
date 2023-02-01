@@ -5503,6 +5503,28 @@ O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de e
 <translation id="6261643884958898336">Reportar informações de identificação da máquina</translation>
 <translation id="6265892395051519509">Permite acesso a sensores nesses sites</translation>
 <translation id="6266043141694454734">Determina se a Chrome Root Store e o verificador de certificados integrado vão ser usados para verificar os certificados do servidor</translation>
+<translation id="6267130578410325007">Esta política permite por padrão o clustering do agente com origin-key.
+
+O cabeçalho HTTP Origin-Agent-Cluster controla se um documento está
+isolado em um cluster de agente com origin-key ou
+com site-key. Como um cluster de agente com origin-key permite o isolamento de
+documentos por origem, esse processo afeta a segurança. A consequência visível
+para o desenvolvedor é a impossibilidade de definir o acessador
+document.domain.
+
+O comportamento padrão quando nenhum cabeçalho Origin-Agent-Cluster foi definido
+muda de site-key para origin-key na versão M111.
+
+Se esta política for ativada ou for deixada sem definição, o navegador vai seguir o
+novo padrão dessa versão em diante.
+
+Se a política for desativada, a mudança será revertida e os
+documentos sem cabeçalhos Origin-Agent-Cluster serão atribuídos a
+clusters de agente com site-key. Consequentemente, o acessador document.domain
+vai permanecer definível por padrão. Esse comportamento é correspondente ao legado.
+
+Confira mais detalhes em https://developer.chrome.com/blog/immutable-document-domain/
+(em inglês).</translation>
 <translation id="6270615143812355589">Ativar a entrada de áudio</translation>
 <translation id="6270791075656665237">Não permitir o protocolo QUIC</translation>
 <translation id="6273015149273504999">
@@ -6453,6 +6475,23 @@ bloqueio dessas solicitações será aplicado.</translation>
       Se esta política for definida como obrigatória, o usuário não poderá alterá-la ou modificá-la.
 
       Se esta política não for definida, a estante será posicionada na parte inferior da tela por padrão, e o usuário poderá mudar a posição da estante.</translation>
+<translation id="7037853989942016900">Esta política controla a refatoração recente das APIs Graphics3D no plug-in PPAPI.
+
+A migração afeta apenas os detalhes de implementação internos e não pode
+mudar nenhum comportamento. No entanto, ela pode ser usada caso algum app PPAPI
+não funcione como esperado.
+
+Quando a política é ativada ou deixada sem definição, o navegador decide qual
+implementação será usada.
+Quando a política é desativada, o navegador usa a implementação antiga
+até que a política expire.
+
+Se você precisar usar a política, registre um bug em crbug.com explicando seu
+caso de uso. A política está programada para ser oferecida até a versão 114 do <ph name="PRODUCT_NAME" />. Após esse período,
+a implementação antiga será removida.
+
+OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta
+política enquanto o navegador estiver em execução.</translation>
 <translation id="7039815268521168329">Mostrar o fluxo do Voice Match do Google Assistente durante a configuração inicial</translation>
 <translation id="7040229947030068419">Exemplo de valor:</translation>
 <translation id="7044883996351280650">Controlar o serviço de backup e restauração do Android</translation>

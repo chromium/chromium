@@ -5460,6 +5460,18 @@ Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir res
 <translation id="6261643884958898336">Makine Kimlik bilgilerini bildir</translation>
 <translation id="6265892395051519509">Bu sitelerde sensörlere erişime izin ver</translation>
 <translation id="6266043141694454734">Sunucu sertifikalarını doğrulamak için Chrome Root Store ve yerleşik sertifika doğrulayıcının kullanılıp kullanılmayacağını belirler</translation>
+<translation id="6267130578410325007">Bu politika varsayılan olarak kaynak içeren veya kaynaklarla ilişkili aracı kümelemeye izin verir.
+
+Kaynak Aracısı Kümesi: HTTP başlığı, bir dokümanın kaynak içeren veya kaynaklarla ilişkili aracı kümesinde mi yoksa site içeren veya sitelerle ilişkili aracı kümesinde mi erişime kapalı olacağını kontrol eder. Kaynak içeren veya kaynaklarla ilişkili aracı kümesi, dokümanların kaynağa göre erişime kapatılmasına izin verdiği için güvenlik etkileri olabilir. Bu durumun geliştirici tarafından görünür olan sonucu, document.domain erişeninin artık ayarlanamamasıdır.
+
+Kaynak Aracısı Kümesi olmadığında gerçekleşen varsayılan davranış: Başlık ayarlanmış,
+      M111'de site içeren veya sitelerle ilişkili seçeneğinden kaynak içeren veya kaynaklarla ilişkili seçeneğine geçiş.
+
+Bu politika etkinleştirilir veya ayarlanmadan bırakılırsa tarayıcı bu sürümden itibaren yeni varsayılanı izler.
+
+Bu politika devre dışı bırakılırsa bu değişiklik tersine çevrilir ve dokümanlarda Kaynak Aracısı Kümesi olmaz. Başlıklar, site içeren veya sitelerle ilişkili aracı kümelerine atanır. Sonuç olarak document.domain erişeni varsayılan olarak ayarlanabilir olur. Bu da eski davranışla aynıdır.
+
+Ayrıntılı bilgi için https://developer.chrome.com/blog/immutable-document-domain/ sayfasını inceleyin.</translation>
 <translation id="6270615143812355589">Ses girişini etkinleştir</translation>
 <translation id="6270791075656665237">QUIC'ye izin verme</translation>
 <translation id="6273015149273504999">
@@ -6413,6 +6425,19 @@ olarak bu tür istekleri engelleme davranışı geçerli olur.</translation>
       Bu politikayı zorunlu olacak şekilde ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamazlar.
 
       Bu politika ayarlanmadan bırakılırsa raf varsayılan olarak ekranın alt tarafında konumlandırılır ve kullanıcı rafın yerini değiştirebilir.</translation>
+<translation id="7037853989942016900">Bu politika, PPAPI eklentisindeki Graphics3D API'leri için kısa süre önce yapılan yeni düzenlemeyi kontrol eder.
+
+Taşıma işlemi yalnızca dahili uygulama ayrıntılarını etkiler ve hiçbir davranışı değiştirmez. Ancak bu politika, PPAPI uygulamalarının beklendiği gibi çalışmaması durumunda kullanılabilir.
+
+Politika ayarlanmadan bırakıldığında veya Etkin değerine ayarlandığında hangi uygulamanın kullanılacağına tarayıcı karar verir.
+Politika, Devre Dışı değerine ayarlandığında tarayıcı, politikanın geçerliliği sona erene kadar eski uygulamayı kullanır.
+
+Bu politikayı kullanmanız gerekirse lütfen crbug.com adresinden hata bildiriminde bulunun. Bildiriminizde, kullanım
+alanınızı açıklamayı unutmayın. Bu politikanın <ph name="PRODUCT_NAME" /> 114 sürümüyle sunulması planlanmıştır. Bu sürümden
+sonra eski uygulama kaldırılacaktır.
+
+NOT: Tarayıcı çalışırken bu politikada yapılan değişiklikleri yalnızca
+yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="7039815268521168329">İlk kurulum sırasında Google Asistan Voice Match akışını göster</translation>
 <translation id="7040229947030068419">Örnek değer:</translation>
 <translation id="7044883996351280650">Android yedekleme ve geri yükleme hizmetini kontrol etme</translation>

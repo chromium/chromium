@@ -5520,6 +5520,28 @@ Waktu tunggu tidak ada aktivitas untuk memulai screensaver dan interval saat gam
 <translation id="6261643884958898336">Laporkan informasi Identifikasi Mesin</translation>
 <translation id="6265892395051519509">Mengizinkan akses ke sensor di situs ini</translation>
 <translation id="6266043141694454734">Menentukan apakah Chrome Root Store dan pemverifikasi sertifikat bawaan akan digunakan untuk memverifikasi sertifikat server</translation>
+<translation id="6267130578410325007">Kebijakan ini mengizinkan pengelompokan cluster agen dengan kunci origin secara default.
+
+Header HTTP Origin-Agent-Cluster mengontrol apakah dokumen
+diisolasi di cluster agen dengan kunci origin atau di cluster agen
+dengan kunci situs. Hal ini berdampak pada keamanan karena cluster agen dengan kunci origin
+memungkinkan isolasi dokumen menurut origin. Akibatnya,
+developer tidak lagi dapat menyetel pengakses
+document.domain.
+
+Jika tidak ada header Origin-Agent-Cluster yang disetel,
+perilaku default akan berubah dari kunci situs ke kunci origin di M111.
+
+Jika kebijakan ini disetel ke aktif atau tidak disetel, browser akan mengikuti
+perilaku default baru ini mulai versi tersebut.
+
+Jika kebijakan ini disetel ke nonaktif, perubahan tersebut akan diurungkan dan
+dokumen tanpa header Origin-Agent-Cluster akan ditetapkan ke
+cluster agen dengan kunci situs. Dengan begitu, pengakses document.domain
+tetap dapat disetel secara default. Perilaku ini cocok dengan perilaku lama.
+
+Lihat https://developer.chrome.com/blog/immutable-document-domain/ untuk
+mengetahui detail tambahan.</translation>
 <translation id="6270615143812355589">Aktifkan input audio</translation>
 <translation id="6270791075656665237">Larang QUIC</translation>
 <translation id="6273015149273504999">
@@ -6473,6 +6495,23 @@ pemblokiran permintaan semacam itu akan diterapkan.</translation>
       Jika Anda menetapkan kebijakan ini sebagai wajib, pengguna tidak dapat mengubah atau menggantinya.
 
       Jika kebijakan ini tidak ditetapkan, rak akan ditempatkan di bagian bawah layar secara default dan pengguna dapat mengubah posisi rak.</translation>
+<translation id="7037853989942016900">Kebijakan ini mengontrol pemfaktoran ulang terbaru untuk Graphics3D API dalam plugin PPAPI.
+
+Migrasi hanya memengaruhi detail implementasi internal dan seharusnya tidak
+mengubah perilaku apa pun. Namun, kebijakan ini dapat digunakan jika aplikasi
+PPAPI tidak berfungsi seperti yang diharapkan.
+
+Jika kebijakan disetel ke Aktif atau tidak disetel, browser akan menentukan
+implementasi mana yang akan digunakan.
+Jika kebijakan disetel ke Nonaktif, browser akan menggunakan implementasi lama
+hingga kebijakan berakhir.
+
+Jika Anda harus menggunakan kebijakan tersebut, laporkan bug di crbug.com yang menjelaskan
+kasus penggunaan Anda. Kebijakan ini dijadwalkan untuk ditawarkan hingga <ph name="PRODUCT_NAME" /> versi 114, setelah itu
+implementasi lama akan dihapus.
+
+CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada
+kebijakan ini saat browser berjalan.</translation>
 <translation id="7039815268521168329">Tampilkan alur Voice Match Asisten Google selama penyiapan awal</translation>
 <translation id="7040229947030068419">Nilai contoh:</translation>
 <translation id="7044883996351280650">Mengontrol layanan pencadangan dan pemulihan Android</translation>
