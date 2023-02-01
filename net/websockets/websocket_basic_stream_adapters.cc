@@ -15,6 +15,7 @@
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/socket.h"
 #include "net/spdy/spdy_buffer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_stream.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/spdy_utils.h"
 #include "net/websockets/websocket_quic_spdy_stream.h"
 
@@ -261,8 +262,19 @@ size_t WebSocketQuicStreamAdapter::WriteHeaders(
 int WebSocketQuicStreamAdapter::Read(IOBuffer* buf,
                                      int buf_len,
                                      CompletionOnceCallback callback) {
-  // TODO(momoka): Write implementation.
-  return OK;
+  if (!websocket_quic_spdy_stream_) {
+    return ERR_UNEXPECTED;
+  }
+
+  int rv = websocket_quic_spdy_stream_->Read(buf, buf_len);
+  if (rv != ERR_IO_PENDING) {
+    return rv;
+  }
+
+  read_callback_ = std::move(callback);
+  read_buffer_ = buf;
+  read_length_ = buf_len;
+  return ERR_IO_PENDING;
 }
 
 int WebSocketQuicStreamAdapter::Write(
@@ -299,11 +311,37 @@ void WebSocketQuicStreamAdapter::OnInitialHeadersComplete(
     websocket_quic_spdy_stream_->Reset(quic::QUIC_BAD_APPLICATION_PAYLOAD);
     return;
   }
+  websocket_quic_spdy_stream_->ConsumeHeaderList();
   delegate_->OnHeadersReceived(response_headers);
 }
 
 void WebSocketQuicStreamAdapter::OnBodyAvailable() {
-  // TODO(momoka): implement this.
+  if (!websocket_quic_spdy_stream_->FinishedReadingHeaders()) {
+    // Buffer the data in the sequencer until the headers have been read.
+    return;
+  }
+
+  if (!websocket_quic_spdy_stream_->HasBytesToRead()) {
+    return;
+  }
+
+  if (!read_callback_) {
+    // Wait for Read() to be called.
+    return;
+  }
+
+  DCHECK(read_buffer_);
+  DCHECK_GT(read_length_, 0);
+
+  int rv = websocket_quic_spdy_stream_->Read(read_buffer_, read_length_);
+
+  if (rv == ERR_IO_PENDING) {
+    return;
+  }
+
+  read_buffer_ = nullptr;
+  read_length_ = 0;
+  std::move(read_callback_).Run(rv);
 }
 
 void WebSocketQuicStreamAdapter::ClearStream() {

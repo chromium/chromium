@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/host_port_pair.h"
@@ -1152,12 +1153,32 @@ class WebSocketQuicStreamAdapterTest
     return client_maker_.MakeInitialSettingsPacket(packet_number);
   }
 
+  std::unique_ptr<quic::QuicReceivedPacket> ConstructServerDataPacket(
+      uint64_t packet_number,
+      base::StringPiece data) {
+    DCHECK(version_.HasIetfQuicFrames());
+    quiche::QuicheBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
+        data.size(), quiche::SimpleBufferAllocator::Get());
+    return server_maker_.MakeDataPacket(
+        packet_number, client_data_stream_id1_,
+        /*should_include_version=*/false, /*fin=*/false,
+        base::StrCat({base::StringPiece(buffer.data(), buffer.size()), data}));
+  }
+
   std::unique_ptr<quic::QuicReceivedPacket> ConstructRstPacket(
       uint64_t packet_number,
       quic::QuicRstStreamErrorCode error_code) {
     return client_maker_.MakeRstPacket(packet_number, /*include_version=*/true,
                                        client_data_stream_id1_, error_code,
                                        /*include_stop_sending_if_v99=*/true);
+  }
+
+  std::unique_ptr<quic::QuicEncryptedPacket> ConstructClientAckPacket(
+      uint64_t packet_number,
+      uint64_t largest_received,
+      uint64_t smallest_received) {
+    return client_maker_.MakeAckPacket(packet_number, largest_received,
+                                       smallest_received);
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructAckAndRstPacket(
@@ -1496,6 +1517,184 @@ TEST_P(WebSocketQuicStreamAdapterTest, OnHeadersReceivedThenDisconnect) {
   run_loop.Run();
 
   adapter->Disconnect();
+}
+
+TEST_P(WebSocketQuicStreamAdapterTest, Read) {
+  int packet_number = 1;
+  if (VersionUsesHttp3(version_.transport_version)) {
+    mock_quic_data_.AddWrite(SYNCHRONOUS,
+                             ConstructSettingsPacket(packet_number++));
+  }
+
+  SpdyTestUtil spdy_util;
+  spdy::Http2HeaderBlock request_header_block = WebSocketHttp2Request(
+      "/", "www.example.org:443", "http://www.example.org", {});
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.MakeRequestHeadersPacket(
+          packet_number++, client_data_stream_id1_,
+          /*should_include_version=*/true,
+          /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
+          std::move(request_header_block), nullptr));
+
+  spdy::Http2HeaderBlock response_header_block = WebSocketHttp2Response({});
+  mock_quic_data_.AddRead(ASYNC,
+                          server_maker_.MakeResponseHeadersPacket(
+                              /*packet_number=*/1, client_data_stream_id1_,
+                              /*should_include_version=*/false, /*fin=*/false,
+                              std::move(response_header_block),
+                              /*spdy_headers_frame_length=*/nullptr));
+  mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);
+
+  mock_quic_data_.AddRead(ASYNC, ConstructServerDataPacket(2, "foo"));
+  mock_quic_data_.AddRead(SYNCHRONOUS,
+                          ConstructServerDataPacket(3, "hogehoge"));
+  mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+
+  mock_quic_data_.AddWrite(ASYNC,
+                           ConstructClientAckPacket(packet_number++, 2, 0));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructAckAndRstPacket(packet_number++,
+                                            quic::QUIC_STREAM_CANCELLED, 3, 0));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce(Invoke([&]() {
+    run_loop.Quit();
+  }));
+
+  Initialize();
+
+  net::QuicChromiumClientSession::Handle* session_handle =
+      GetQuicSessionHandle();
+  ASSERT_TRUE(session_handle);
+
+  TestWebSocketQuicStreamAdapterCompletionCallback callback;
+  std::unique_ptr<WebSocketQuicStreamAdapter> adapter =
+      session_handle->CreateWebSocketQuicStreamAdapter(
+          &mock_delegate_, callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_TRUE(adapter);
+  EXPECT_TRUE(adapter->is_initialized());
+
+  adapter->WriteHeaders(RequestHeaders(), false);
+
+  session_->StartReading();
+  run_loop.Run();
+
+  // Buffer larger than each MockRead.
+  const int kReadBufSize = 1024;
+  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  TestCompletionCallback read_callback;
+
+  int rv =
+      adapter->Read(read_buf.get(), kReadBufSize, read_callback.callback());
+
+  ASSERT_EQ(ERR_IO_PENDING, rv);
+
+  mock_quic_data_.GetSequencedSocketData()->Resume();
+  base::RunLoop().RunUntilIdle();
+
+  rv = read_callback.WaitForResult();
+  ASSERT_EQ(3, rv);
+  EXPECT_EQ("foo", base::StringPiece(read_buf->data(), rv));
+
+  rv = adapter->Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
+  ASSERT_EQ(8, rv);
+  EXPECT_EQ("hogehoge", base::StringPiece(read_buf->data(), rv));
+
+  adapter->Disconnect();
+
+  EXPECT_TRUE(mock_quic_data_.AllReadDataConsumed());
+  EXPECT_TRUE(mock_quic_data_.AllWriteDataConsumed());
+}
+
+TEST_P(WebSocketQuicStreamAdapterTest, ReadIntoSmallBuffer) {
+  int packet_number = 1;
+  if (VersionUsesHttp3(version_.transport_version)) {
+    mock_quic_data_.AddWrite(SYNCHRONOUS,
+                             ConstructSettingsPacket(packet_number++));
+  }
+
+  SpdyTestUtil spdy_util;
+  spdy::Http2HeaderBlock request_header_block = WebSocketHttp2Request(
+      "/", "www.example.org:443", "http://www.example.org", {});
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.MakeRequestHeadersPacket(
+          packet_number++, client_data_stream_id1_,
+          /*should_include_version=*/true,
+          /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
+          std::move(request_header_block), nullptr));
+
+  spdy::Http2HeaderBlock response_header_block = WebSocketHttp2Response({});
+  mock_quic_data_.AddRead(ASYNC,
+                          server_maker_.MakeResponseHeadersPacket(
+                              /*packet_number=*/1, client_data_stream_id1_,
+                              /*should_include_version=*/false, /*fin=*/false,
+                              std::move(response_header_block),
+                              /*spdy_headers_frame_length=*/nullptr));
+  mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);
+  // First read is the same size as the buffer, next is smaller, last is larger.
+  mock_quic_data_.AddRead(ASYNC, ConstructServerDataPacket(2, "abc"));
+  mock_quic_data_.AddRead(SYNCHRONOUS, ConstructServerDataPacket(3, "12"));
+  mock_quic_data_.AddRead(SYNCHRONOUS, ConstructServerDataPacket(4, "ABCD"));
+  mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+
+  mock_quic_data_.AddWrite(ASYNC,
+                           ConstructClientAckPacket(packet_number++, 2, 0));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructAckAndRstPacket(packet_number++,
+                                            quic::QUIC_STREAM_CANCELLED, 4, 0));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce(Invoke([&]() {
+    run_loop.Quit();
+  }));
+
+  Initialize();
+
+  net::QuicChromiumClientSession::Handle* session_handle =
+      GetQuicSessionHandle();
+  ASSERT_TRUE(session_handle);
+  TestWebSocketQuicStreamAdapterCompletionCallback callback;
+  std::unique_ptr<WebSocketQuicStreamAdapter> adapter =
+      session_handle->CreateWebSocketQuicStreamAdapter(
+          &mock_delegate_, callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_TRUE(adapter);
+  EXPECT_TRUE(adapter->is_initialized());
+
+  adapter->WriteHeaders(RequestHeaders(), false);
+
+  session_->StartReading();
+  run_loop.Run();
+
+  const int kReadBufSize = 3;
+  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  TestCompletionCallback read_callback;
+
+  int rv =
+      adapter->Read(read_buf.get(), kReadBufSize, read_callback.callback());
+
+  ASSERT_EQ(ERR_IO_PENDING, rv);
+
+  mock_quic_data_.GetSequencedSocketData()->Resume();
+  base::RunLoop().RunUntilIdle();
+
+  rv = read_callback.WaitForResult();
+  ASSERT_EQ(3, rv);
+  EXPECT_EQ("abc", base::StringPiece(read_buf->data(), rv));
+
+  rv = adapter->Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
+  ASSERT_EQ(3, rv);
+  EXPECT_EQ("12A", base::StringPiece(read_buf->data(), rv));
+
+  rv = adapter->Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
+  ASSERT_EQ(3, rv);
+  EXPECT_EQ("BCD", base::StringPiece(read_buf->data(), rv));
+
+  adapter->Disconnect();
+
+  EXPECT_TRUE(mock_quic_data_.AllReadDataConsumed());
+  EXPECT_TRUE(mock_quic_data_.AllWriteDataConsumed());
 }
 
 }  // namespace net::test

@@ -9,6 +9,9 @@
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
 
 namespace net {
+
+class IOBuffer;
+
 class NET_EXPORT_PRIVATE WebSocketQuicSpdyStream : public quic::QuicSpdyStream {
  public:
   class NET_EXPORT_PRIVATE Delegate {
@@ -41,6 +44,7 @@ class NET_EXPORT_PRIVATE WebSocketQuicSpdyStream : public quic::QuicSpdyStream {
       size_t frame_len,
       const quic::QuicHeaderList& header_list) override;
   void OnBodyAvailable() override;
+  int Read(IOBuffer* buf, int buf_len);
 
  private:
   // The transaction should own the delegate. `delegate_` notifies this object

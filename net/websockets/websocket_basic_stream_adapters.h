@@ -212,6 +212,11 @@ class NET_EXPORT_PRIVATE WebSocketQuicStreamAdapter
   raw_ptr<WebSocketQuicSpdyStream> websocket_quic_spdy_stream_;
 
   raw_ptr<Delegate> delegate_;
+
+  // Read buffer, length and callback used for asynchronous read operations.
+  raw_ptr<IOBuffer> read_buffer_ = nullptr;
+  int read_length_ = 0u;
+  CompletionOnceCallback read_callback_;
 };
 
 }  // namespace net
