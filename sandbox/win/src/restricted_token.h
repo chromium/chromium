@@ -138,7 +138,7 @@ class RestrictedToken {
   std::vector<base::win::Sid> BuildRestrictedSids(
       const base::win::AccessToken& token) const;
   absl::optional<base::win::AccessToken> CreateRestricted(
-      base::win::AccessToken& token) const;
+      const base::win::AccessToken& token) const;
 
   // The list of restricting sids in the restricted token.
   std::vector<base::win::Sid> sids_to_restrict_;

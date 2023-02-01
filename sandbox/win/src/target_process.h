@@ -9,14 +9,13 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
-#include <vector>
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/sid.h"
@@ -27,7 +26,6 @@ namespace sandbox {
 
 class Dispatcher;
 class SharedMemIPCServer;
-class Sid;
 class ThreadPool;
 class StartupInformationHelper;
 
@@ -37,11 +35,10 @@ class TargetProcess {
  public:
   TargetProcess() = delete;
 
-  // The constructor takes ownership of |initial_token| and |lockdown_token|
-  TargetProcess(base::win::ScopedHandle initial_token,
-                base::win::ScopedHandle lockdown_token,
-                ThreadPool* thread_pool,
-                const std::vector<base::win::Sid>& impersonation_capabilities);
+  // The constructor takes ownership of `initial_token` and `lockdown_token`.
+  TargetProcess(base::win::AccessToken initial_token,
+                base::win::AccessToken lockdown_token,
+                ThreadPool* thread_pool);
 
   TargetProcess(const TargetProcess&) = delete;
   TargetProcess& operator=(const TargetProcess&) = delete;
@@ -109,10 +106,10 @@ class TargetProcess {
   base::win::ScopedProcessInformation sandbox_process_info_;
   // The token associated with the process. It provides the core of the
   // sbox security.
-  base::win::ScopedHandle lockdown_token_;
+  base::win::AccessToken lockdown_token_;
   // The token given to the initial thread so that the target process can
   // start. It has more powers than the lockdown_token.
-  base::win::ScopedHandle initial_token_;
+  base::win::AccessToken initial_token_;
   // Kernel handle to the shared memory used by the IPC server.
   base::win::ScopedHandle shared_section_;
   // Reference to the IPC subsystem.
@@ -127,8 +124,6 @@ class TargetProcess {
   RAW_PTR_EXCLUSION void* base_address_;
   // Full name of the target executable.
   std::unique_ptr<wchar_t, base::FreeDeleter> exe_name_;
-  /// List of capability sids for use when impersonating in an AC process.
-  std::vector<base::win::Sid> impersonation_capabilities_;
 };
 
 }  // namespace sandbox

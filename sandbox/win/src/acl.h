@@ -5,38 +5,11 @@
 #ifndef SANDBOX_WIN_SRC_ACL_H_
 #define SANDBOX_WIN_SRC_ACL_H_
 
-#include "base/win/access_control_list.h"
 #include "base/win/security_descriptor.h"
-#include "base/win/sid.h"
 #include "base/win/windows_types.h"
 #include "sandbox/win/src/security_level.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
-
-// Adds an ACE represented by `known_sid`, `access_mode`, and `access` to
-// the dacl of the kernel object referenced by `object` and of `object_type`.
-bool AddKnownSidToObject(HANDLE object,
-                         base::win::SecurityObjectType object_type,
-                         base::win::WellKnownSid known_sid,
-                         base::win::SecurityAccessMode access_mode,
-                         ACCESS_MASK access);
-
-// Adds an ACE represented by `sid`, `access_mode`, and `access` to
-// the dacl of the kernel object referenced by `object` and of `object_type`.
-bool AddKnownSidToObject(HANDLE object,
-                         base::win::SecurityObjectType object_type,
-                         const base::win::Sid& sid,
-                         base::win::SecurityAccessMode access_mode,
-                         ACCESS_MASK access);
-
-// Replace package SID in DACL to the "any package" SID. It allows Low-IL
-// tokens to open the object which is important for warm up when using renderer
-// AppContainer.
-bool ReplacePackageSidInDacl(HANDLE object,
-                             base::win::SecurityObjectType object_type,
-                             const base::win::Sid& package_sid,
-                             ACCESS_MASK access);
 
 // Returns the RID associated with a given IntegrityLevel value. This returns
 // an empty value if `integrity_level` is set to INTEGRITY_LEVEL_LAST.

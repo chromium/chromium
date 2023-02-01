@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "sandbox/win/src/app_container_base.h"
+
 #include <memory>
 #include <utility>
 
@@ -9,12 +11,8 @@
 
 #include <userenv.h>
 
-#include "base/strings/stringprintf.h"
-#include "base/win/scoped_co_mem.h"
-#include "base/win/scoped_handle.h"
 #include "base/win/security_descriptor.h"
 #include "sandbox/win/src/acl.h"
-#include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/restricted_token_utils.h"
 #include "sandbox/win/src/win_utils.h"
 
@@ -24,19 +22,6 @@ namespace {
 
 struct FreeSidDeleter {
   inline void operator()(void* ptr) const { ::FreeSid(ptr); }
-};
-
-class ScopedImpersonation {
- public:
-  explicit ScopedImpersonation(const base::win::ScopedHandle& token) {
-    BOOL result = ::ImpersonateLoggedOnUser(token.Get());
-    DCHECK(result);
-  }
-
-  ~ScopedImpersonation() {
-    BOOL result = ::RevertToSelf();
-    DCHECK(result);
-  }
 };
 
 }  // namespace
@@ -111,41 +96,6 @@ void AppContainerBase::Release() {
   }
 }
 
-bool AppContainerBase::GetRegistryLocation(REGSAM desired_access,
-                                           base::win::ScopedHandle* key) {
-  base::win::ScopedHandle token;
-  if (BuildLowBoxToken(&token) != SBOX_ALL_OK)
-    return false;
-
-  ScopedImpersonation impersonation(token);
-  HKEY key_handle;
-  if (FAILED(::GetAppContainerRegistryLocation(desired_access, &key_handle)))
-    return false;
-  key->Set(key_handle);
-  return true;
-}
-
-bool AppContainerBase::GetFolderPath(base::FilePath* file_path) {
-  auto sddl_str = package_sid_.ToSddlString();
-  if (!sddl_str)
-    return false;
-  base::win::ScopedCoMem<wchar_t> path_str;
-  if (FAILED(::GetAppContainerFolderPath(sddl_str->c_str(), &path_str)))
-    return false;
-  *file_path = base::FilePath(path_str.get());
-  return true;
-}
-
-bool AppContainerBase::GetPipePath(const wchar_t* pipe_name,
-                                   base::FilePath* pipe_path) {
-  auto sddl_str = package_sid_.ToSddlString();
-  if (!sddl_str)
-    return false;
-  *pipe_path = base::FilePath(base::StringPrintf(L"\\\\.\\pipe\\%ls\\%ls",
-                                                 sddl_str->c_str(), pipe_name));
-  return true;
-}
-
 bool AppContainerBase::AccessCheck(const wchar_t* object_name,
                                    base::win::SecurityObjectType object_type,
                                    DWORD desired_access,
@@ -175,11 +125,19 @@ bool AppContainerBase::AccessCheck(const wchar_t* object_name,
     }
   }
 
-  base::win::ScopedHandle token;
-  if (BuildLowBoxToken(&token) != SBOX_ALL_OK)
+  absl::optional<base::win::AccessToken> primary =
+      base::win::AccessToken::FromCurrentProcess(
+          /*impersonation=*/false, TOKEN_DUPLICATE);
+  if (!primary.has_value()) {
     return false;
+  }
+  absl::optional<base::win::AccessToken> lowbox = BuildPrimaryToken(*primary);
+  if (!lowbox) {
+    return false;
+  }
   absl::optional<base::win::AccessToken> token_query =
-      base::win::AccessToken::FromToken(std::move(token));
+      lowbox->DuplicateImpersonation(
+          base::win::SecurityImpersonationLevel::kIdentification);
   if (!token_query) {
     return false;
   }
@@ -262,24 +220,41 @@ AppContainerBase::GetSecurityCapabilities() {
   return std::make_unique<SecurityCapabilities>(package_sid_, capabilities_);
 }
 
-ResultCode AppContainerBase::BuildLowBoxToken(base::win::ScopedHandle* token) {
-  if (type_ == AppContainerType::kLowbox) {
-    if (!CreateLowBoxToken(token->get(), TokenType::kPrimary, package_sid_,
-                           capabilities_, token)) {
-      return SBOX_ERROR_CANNOT_CREATE_LOWBOX_TOKEN;
-    }
-
-    if (!ReplacePackageSidInDacl(token->get(),
-                                 base::win::SecurityObjectType::kKernel,
-                                 package_sid_, TOKEN_ALL_ACCESS)) {
-      return SBOX_ERROR_CANNOT_MODIFY_LOWBOX_TOKEN_DACL;
-    }
-  } else if (!CreateLowBoxToken(nullptr, TokenType::kImpersonation,
-                                package_sid_, capabilities_, token)) {
-    return SBOX_ERROR_CANNOT_CREATE_LOWBOX_IMPERSONATION_TOKEN;
+absl::optional<base::win::AccessToken>
+AppContainerBase::BuildImpersonationToken(const base::win::AccessToken& token) {
+  absl::optional<base::win::AccessToken> lowbox = token.CreateAppContainer(
+      package_sid_, impersonation_capabilities_, TOKEN_ALL_ACCESS);
+  ;
+  if (!lowbox.has_value()) {
+    return absl::nullopt;
   }
 
-  return SBOX_ALL_OK;
+  absl::optional<base::win::SecurityDescriptor> sd =
+      base::win::SecurityDescriptor::FromHandle(
+          lowbox->get(), base::win::SecurityObjectType::kKernel,
+          DACL_SECURITY_INFORMATION);
+  if (!sd) {
+    return absl::nullopt;
+  }
+
+  lowbox = lowbox->DuplicateImpersonation(
+      base::win::SecurityImpersonationLevel::kImpersonation, TOKEN_ALL_ACCESS);
+  if (!lowbox.has_value()) {
+    return absl::nullopt;
+  }
+
+  if (!sd->WriteToHandle(lowbox->get(), base::win::SecurityObjectType::kKernel,
+                         DACL_SECURITY_INFORMATION)) {
+    return absl::nullopt;
+  }
+
+  return lowbox;
+}
+
+absl::optional<base::win::AccessToken> AppContainerBase::BuildPrimaryToken(
+    const base::win::AccessToken& token) {
+  return token.CreateAppContainer(package_sid_, capabilities_,
+                                  TOKEN_ALL_ACCESS);
 }
 
 }  // namespace sandbox

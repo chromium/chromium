@@ -152,7 +152,7 @@ std::vector<base::win::Sid> RestrictedToken::BuildRestrictedSids(
 }
 
 absl::optional<base::win::AccessToken> RestrictedToken::CreateRestricted(
-    base::win::AccessToken& token) const {
+    const base::win::AccessToken& token) const {
   absl::optional<base::win::AccessToken> new_token;
 
   std::vector<base::win::Sid> deny_sids = BuildDenyOnlySids(token);

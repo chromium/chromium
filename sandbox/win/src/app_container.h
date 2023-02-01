@@ -5,11 +5,11 @@
 #ifndef SANDBOX_WIN_SRC_APP_CONTAINER_H_
 #define SANDBOX_WIN_SRC_APP_CONTAINER_H_
 
-#include "base/files/file_path.h"
-#include "base/win/scoped_handle.h"
+#include <vector>
+
+#include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
-#include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/security_capabilities.h"
 
 namespace sandbox {
@@ -27,17 +27,6 @@ class [[clang::lto_visibility_public]] AppContainer {
   // Indicates that the caller is done with this interface. After calling
   // release no other method should be called.
   virtual void Release() = 0;
-
-  // Get a handle to a registry key for this package.
-  virtual bool GetRegistryLocation(REGSAM desired_access,
-                                   base::win::ScopedHandle* key) = 0;
-
-  // Get a folder path to a location for this package.
-  virtual bool GetFolderPath(base::FilePath* file_path) = 0;
-
-  // Get a pipe name usable by this AC.
-  virtual bool GetPipePath(const wchar_t* pipe_name,
-                           base::FilePath* pipe_path) = 0;
 
   // Do an access check based on this profile for a named object. If method
   // returns true then access_status reflects whether access was granted and

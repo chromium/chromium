@@ -5,10 +5,7 @@
 #ifndef SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_
 #define SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_
 
-#include <vector>
-
 #include "base/win/access_token.h"
-#include "base/win/scoped_handle.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
 #include "sandbox/win/src/restricted_token.h"
@@ -20,8 +17,7 @@
 
 namespace sandbox {
 
-// The type of the token returned by the CreateRestrictedToken and
-// CreateLowBoxToken APIs.
+// The type of the token returned by the CreateRestrictedToken API.
 enum class TokenType { kImpersonation, kPrimary };
 
 // Creates a restricted token from the current process' token. The parameter
@@ -54,19 +50,6 @@ absl::optional<base::win::AccessToken> CreateRestrictedToken(
 // function fails, the return value is the win32 error code corresponding to
 // the error.
 DWORD HardenTokenIntegrityLevelPolicy(const base::win::AccessToken& token);
-
-// Create a lowbox token.
-// `base_token` a base token to derive the lowbox token from. Can be nullptr.
-// `token_type` specify to create either a primary or impersonation token.
-// `package_sid` is the AppContainer package SID.
-// `capabilities` is the list of AppContainer capabilities.
-// `token` is the output value containing the handle of the newly created
-// If the function succeeds, the return value is true.
-bool CreateLowBoxToken(HANDLE base_token,
-                       TokenType token_type,
-                       const base::win::Sid& package_sid,
-                       const std::vector<base::win::Sid>& capabilities,
-                       base::win::ScopedHandle* token);
 
 // Returns true if a low IL token can access the current desktop, false
 // otherwise.

@@ -14,11 +14,13 @@
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/win/security_descriptor.h"
+#include "base/win/security_util.h"
 #include "base/win/sid.h"
 #include "sandbox/features.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/security_capabilities.h"
 #include "sandbox/win/src/win_utils.h"
+#include "sandbox/win/tests/common/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
@@ -157,6 +159,47 @@ void AccessCheckFile(AppContainer* container,
                   expected_access, expected_status);
 }
 
+void CheckDaclForPackageSid(HANDLE token,
+                            const base::win::Sid& package_sid,
+                            bool package_sid_required) {
+  auto sd = *base::win::SecurityDescriptor::FromHandle(
+      token, base::win::SecurityObjectType::kKernel, DACL_SECURITY_INFORMATION);
+
+  EXPECT_EQ(package_sid_required,
+            IsSidInDacl(*sd.dacl(), true, TOKEN_ALL_ACCESS, package_sid));
+  EXPECT_NE(package_sid_required,
+            IsSidInDacl(*sd.dacl(), true, TOKEN_ALL_ACCESS,
+                        base::win::Sid(
+                            base::win::WellKnownSid::kAllApplicationPackages)));
+}
+
+void CheckLowBoxToken(AppContainerBase* container,
+                      const base::win::AccessToken& base_token,
+                      bool impersonation,
+                      size_t expected_cap_count) {
+  absl::optional<base::win::AccessToken> token =
+      impersonation ? container->BuildImpersonationToken(base_token)
+                    : container->BuildPrimaryToken(base_token);
+  ASSERT_TRUE(token);
+  EXPECT_EQ(token->User(), base_token.User());
+  EXPECT_EQ(base::win::GetGrantedAccess(token->get()), DWORD{TOKEN_ALL_ACCESS});
+  EXPECT_TRUE(token->IsAppContainer());
+  EXPECT_EQ(impersonation, token->IsImpersonation());
+  EXPECT_FALSE(token->IsIdentification());
+  EXPECT_EQ(token->AppContainerSid(), container->GetPackageSid());
+  const std::vector<base::win::Sid>& check_capabilities =
+      impersonation ? container->GetImpersonationCapabilities()
+                    : container->GetCapabilities();
+  auto capabilities = token->Capabilities();
+  ASSERT_EQ(capabilities.size(), check_capabilities.size());
+  EXPECT_EQ(expected_cap_count, capabilities.size());
+  for (size_t index = 0; index < capabilities.size(); ++index) {
+    EXPECT_EQ(capabilities[index].GetAttributes(), DWORD{SE_GROUP_ENABLED});
+    EXPECT_EQ(capabilities[index].GetSid(), check_capabilities[index]);
+  }
+  CheckDaclForPackageSid(token->get(), container->GetPackageSid(), true);
+}
+
 }  // namespace
 
 TEST(AppContainerTest, SecurityCapabilities) {
@@ -257,32 +300,6 @@ TEST(AppContainerTest, OpenAppContainerAndGetSecurityCapabilities) {
   auto with_capabilities = container->GetSecurityCapabilities();
   ASSERT_TRUE(ValidSecurityCapabilities(
       with_capabilities.get(), container->GetPackageSid(), capabilities));
-}
-
-TEST(AppContainerTest, GetResources) {
-  if (!features::IsAppContainerSandboxSupported())
-    return;
-
-  std::wstring package_name = GenerateRandomPackageName();
-  scoped_refptr<AppContainerBase> profile_container =
-      AppContainerBase::CreateProfile(package_name.c_str(), L"Name",
-                                      L"Description");
-  ASSERT_NE(nullptr, profile_container.get());
-  base::win::ScopedHandle key;
-  EXPECT_TRUE(profile_container->GetRegistryLocation(KEY_READ, &key));
-  EXPECT_TRUE(key.IsValid());
-  key.Close();
-  base::FilePath path;
-  EXPECT_TRUE(profile_container->GetFolderPath(&path));
-  EXPECT_TRUE(base::PathExists(path));
-  base::FilePath pipe_path;
-  EXPECT_TRUE(profile_container->GetPipePath(package_name.c_str(), &pipe_path));
-  base::win::ScopedHandle pipe_handle;
-  pipe_handle.Set(::CreateNamedPipe(
-      pipe_path.value().c_str(), PIPE_ACCESS_DUPLEX, PIPE_TYPE_BYTE,
-      PIPE_UNLIMITED_INSTANCES, 0, 0, 0, nullptr));
-  EXPECT_TRUE(pipe_handle.IsValid());
-  EXPECT_TRUE(AppContainerBase::Delete(package_name.c_str()));
 }
 
 TEST(AppContainerTest, AccessCheckFile) {
@@ -393,6 +410,46 @@ TEST(AppContainerTest, ImpersonationCapabilities) {
   ASSERT_TRUE(CompareSidVectors(container->GetCapabilities(), capabilities));
   ASSERT_TRUE(CompareSidVectors(container->GetImpersonationCapabilities(),
                                 impersonation_capabilities));
+}
+
+TEST(AppContainerTest, BuildImpersonationToken) {
+  if (!features::IsAppContainerSandboxSupported()) {
+    return;
+  }
+  absl::optional<base::win::AccessToken> base_token =
+      base::win::AccessToken::FromCurrentProcess(
+          /*impersonation=*/false, TOKEN_DUPLICATE);
+  ASSERT_TRUE(base_token);
+  std::wstring package_name = GenerateRandomPackageName();
+  scoped_refptr<AppContainerBase> container =
+      AppContainerBase::Open(package_name.c_str());
+  ASSERT_NE(nullptr, container.get());
+
+  CheckLowBoxToken(container.get(), *base_token, true, 0);
+  container->AddCapability(base::win::WellKnownCapability::kInternetClient);
+  container->AddImpersonationCapability(
+      base::win::WellKnownCapability::kPrivateNetworkClientServer);
+  CheckLowBoxToken(container.get(), *base_token, true, 2);
+}
+
+TEST(AppContainerTest, BuildPrimaryToken) {
+  if (!features::IsAppContainerSandboxSupported()) {
+    return;
+  }
+  absl::optional<base::win::AccessToken> base_token =
+      base::win::AccessToken::FromCurrentProcess(
+          /*impersonation=*/false, TOKEN_DUPLICATE);
+  ASSERT_TRUE(base_token);
+  std::wstring package_name = GenerateRandomPackageName();
+  scoped_refptr<AppContainerBase> container =
+      AppContainerBase::Open(package_name.c_str());
+  ASSERT_NE(nullptr, container.get());
+
+  CheckLowBoxToken(container.get(), *base_token, false, 0);
+  container->AddCapability(base::win::WellKnownCapability::kInternetClient);
+  container->AddImpersonationCapability(
+      base::win::WellKnownCapability::kPrivateNetworkClientServer);
+  CheckLowBoxToken(container.get(), *base_token, false, 1);
 }
 
 }  // namespace sandbox

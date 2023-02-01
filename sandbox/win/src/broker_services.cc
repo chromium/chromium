@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
+#include "base/win/access_token.h"
 #include "base/win/current_module.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
@@ -27,6 +28,7 @@
 #include "sandbox/win/src/target_process.h"
 #include "sandbox/win/src/threadpool.h"
 #include "sandbox/win/src/win_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -493,11 +495,11 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
 
   // Construct the tokens and the job object that we are going to associate
   // with the soon to be created target process.
-  base::win::ScopedHandle initial_token;
-  base::win::ScopedHandle lockdown_token;
+  absl::optional<base::win::AccessToken> initial_token;
+  absl::optional<base::win::AccessToken> lockdown_token;
   ResultCode result = SBOX_ALL_OK;
 
-  result = policy_base->MakeTokens(&initial_token, &lockdown_token);
+  result = policy_base->MakeTokens(initial_token, lockdown_token);
   if (SBOX_ALL_OK != result)
     return result;
 
@@ -545,16 +547,8 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   // Create the TargetProcess object and spawn the target suspended. Note that
   // Brokerservices does not own the target object. It is owned by the Policy.
   base::win::ScopedProcessInformation process_info;
-  std::vector<base::win::Sid> imp_caps;
-  if (container) {
-    for (const base::win::Sid& sid :
-         container->GetImpersonationCapabilities()) {
-      imp_caps.push_back(sid.Clone());
-    }
-  }
   std::unique_ptr<TargetProcess> target = std::make_unique<TargetProcess>(
-      std::move(initial_token), std::move(lockdown_token), thread_pool_,
-      imp_caps);
+      std::move(*initial_token), std::move(*lockdown_token), thread_pool_);
 
   result = target->Create(exe_path, command_line, std::move(startup_info),
                           &process_info, last_error);

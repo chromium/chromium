@@ -287,7 +287,7 @@ class BASE_EXPORT AccessToken {
       const std::vector<Sid>& sids_to_disable,
       const std::vector<std::wstring>& privileges_to_delete,
       const std::vector<Sid>& sids_to_restrict,
-      ACCESS_MASK desired_access = 0);
+      ACCESS_MASK desired_access = 0) const;
 
   // Create a new AppContainer primary token from this token.
   // |app_container_sid| the AppContainer package SID.
@@ -297,7 +297,7 @@ class BASE_EXPORT AccessToken {
   absl::optional<AccessToken> CreateAppContainer(
       const Sid& appcontainer_sid,
       const std::vector<Sid>& capabilities,
-      ACCESS_MASK desired_access = 0);
+      ACCESS_MASK desired_access = 0) const;
 
   // Enable or disable a privilege.
   // |name| the name of the privilege to change.

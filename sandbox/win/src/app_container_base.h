@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/files/file_path.h"
-#include "base/win/scoped_handle.h"
+#include "base/win/access_token.h"
+#include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
 #include "sandbox/win/src/app_container.h"
@@ -25,11 +25,6 @@ class AppContainerBase final : public AppContainer {
 
   void AddRef() override;
   void Release() override;
-  bool GetRegistryLocation(REGSAM desired_access,
-                           base::win::ScopedHandle* key) override;
-  bool GetFolderPath(base::FilePath* file_path) override;
-  bool GetPipePath(const wchar_t* pipe_name,
-                   base::FilePath* pipe_path) override;
   bool AccessCheck(const wchar_t* object_name,
                    base::win::SecurityObjectType object_type,
                    DWORD desired_access,
@@ -71,8 +66,19 @@ class AppContainerBase final : public AppContainer {
   // package doesn't already exist.
   static bool Delete(const wchar_t* package_name);
 
-  // Build the token for the lowbox
-  ResultCode BuildLowBoxToken(base::win::ScopedHandle* token);
+  // Build an impersontion token from an existing token.
+  // `token` specify the base token to create the new token from. Must have
+  // TOKEN_DUPLICATE access. The token is created with the impersonation
+  // capabilities list.
+  absl::optional<base::win::AccessToken> BuildImpersonationToken(
+      const base::win::AccessToken& token);
+
+  // Build a primary token from an existing token.
+  // `token` specify the base token to create the new token from. Must have
+  // TOKEN_DUPLICATE access. The token is created with the normal capabilities
+  // list.
+  absl::optional<base::win::AccessToken> BuildPrimaryToken(
+      const base::win::AccessToken& token);
 
  private:
   AppContainerBase(base::win::Sid& package_sid, AppContainerType type);

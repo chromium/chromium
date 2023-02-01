@@ -534,7 +534,7 @@ absl::optional<AccessToken> AccessToken::CreateRestricted(
     const std::vector<Sid>& sids_to_disable,
     const std::vector<std::wstring>& privileges_to_delete,
     const std::vector<Sid>& sids_to_restrict,
-    ACCESS_MASK desired_access) {
+    ACCESS_MASK desired_access) const {
   std::vector<SID_AND_ATTRIBUTES> sids_to_disable_buf =
       ConvertSids(sids_to_disable, 0);
   std::vector<SID_AND_ATTRIBUTES> sids_to_restrict_buf =
@@ -563,7 +563,7 @@ absl::optional<AccessToken> AccessToken::CreateRestricted(
 absl::optional<AccessToken> AccessToken::CreateAppContainer(
     const Sid& appcontainer_sid,
     const std::vector<Sid>& capabilities,
-    ACCESS_MASK desired_access) {
+    ACCESS_MASK desired_access) const {
   static const CreateAppContainerTokenFunction CreateAppContainerToken =
       reinterpret_cast<CreateAppContainerTokenFunction>(::GetProcAddress(
           ::GetModuleHandle(L"kernelbase.dll"), "CreateAppContainerToken"));

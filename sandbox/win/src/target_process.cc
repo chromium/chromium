@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/win/access_token.h"
 #include "base/win/current_module.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/security_util.h"
 #include "base/win/startup_information.h"
 #include "sandbox/win/src/crosscall_client.h"
@@ -72,21 +73,15 @@ void CopyPolicyToTarget(const void* source, size_t size, void* dest) {
   }
 }
 
-bool GetAppContainerImpersonationToken(
-    HANDLE process,
-    HANDLE initial_token,
-    const std::vector<base::win::Sid>& capabilities,
-    base::win::ScopedHandle* impersonation_token) {
+// Checks that the impersonation token was applied successfully and hasn't been
+// reverted to an identification level token.
+bool CheckImpersonationToken(HANDLE thread) {
   absl::optional<base::win::AccessToken> token =
-      base::win::AccessToken::FromProcess(process);
-  if (!token)
+      base::win::AccessToken::FromThread(thread);
+  if (!token.has_value()) {
     return false;
-  auto app_container_sid = token->AppContainerSid();
-  if (!app_container_sid)
-    return false;
-  return CreateLowBoxToken(initial_token, TokenType::kImpersonation,
-                           *app_container_sid, capabilities,
-                           impersonation_token);
+  }
+  return !token->IsIdentification();
 }
 
 }  // namespace
@@ -99,18 +94,14 @@ SANDBOX_INTERCEPT size_t g_shared_policy_size;
 // 'BOXY'
 SANDBOX_INTERCEPT DWORD g_sentinel_value_end = 0x424F5859;
 
-TargetProcess::TargetProcess(
-    base::win::ScopedHandle initial_token,
-    base::win::ScopedHandle lockdown_token,
-    ThreadPool* thread_pool,
-    const std::vector<base::win::Sid>& impersonation_capabilities)
+TargetProcess::TargetProcess(base::win::AccessToken initial_token,
+                             base::win::AccessToken lockdown_token,
+                             ThreadPool* thread_pool)
     // This object owns everything initialized here except thread_pool.
     : lockdown_token_(std::move(lockdown_token)),
       initial_token_(std::move(initial_token)),
       thread_pool_(thread_pool),
-      base_address_(nullptr),
-      impersonation_capabilities_(
-          base::win::CloneSidVector(impersonation_capabilities)) {}
+      base_address_(nullptr) {}
 
 TargetProcess::~TargetProcess() {
   // Give a chance to the process to die. In most cases the JOB_KILL_ON_CLOSE
@@ -183,7 +174,7 @@ ResultCode TargetProcess::Create(
 
   bool inherit_handles = startup_info_helper->ShouldInheritHandles();
   PROCESS_INFORMATION temp_process_info = {};
-  if (!::CreateProcessAsUserW(lockdown_token_.Get(), exe_path, cmd_line.get(),
+  if (!::CreateProcessAsUserW(lockdown_token_.get(), exe_path, cmd_line.get(),
                               nullptr,  // No security attribute.
                               nullptr,  // No thread attribute.
                               inherit_handles, flags,
@@ -196,25 +187,19 @@ ResultCode TargetProcess::Create(
   }
   base::win::ScopedProcessInformation process_info(temp_process_info);
 
-  if (initial_token_.IsValid()) {
-    HANDLE impersonation_token = initial_token_.Get();
-    base::win::ScopedHandle app_container_token;
-    if (GetAppContainerImpersonationToken(
-            process_info.process_handle(), impersonation_token,
-            impersonation_capabilities_, &app_container_token)) {
-      impersonation_token = app_container_token.Get();
-    }
-
-    // Change the token of the main thread of the new process for the
-    // impersonation token with more rights. This allows the target to start;
-    // otherwise it will crash too early for us to help.
-    HANDLE temp_thread = process_info.thread_handle();
-    if (!::SetThreadToken(&temp_thread, impersonation_token)) {
-      *win_error = ::GetLastError();
-      ::TerminateProcess(process_info.process_handle(), 0);
-      return SBOX_ERROR_SET_THREAD_TOKEN;
-    }
-    initial_token_.Close();
+  // Change the token of the main thread of the new process for the
+  // impersonation token with more rights. This allows the target to start;
+  // otherwise it will crash too early for us to help.
+  HANDLE temp_thread = process_info.thread_handle();
+  if (!::SetThreadToken(&temp_thread, initial_token_.get())) {
+    *win_error = ::GetLastError();
+    ::TerminateProcess(process_info.process_handle(), 0);
+    return SBOX_ERROR_SET_THREAD_TOKEN;
+  }
+  if (!CheckImpersonationToken(process_info.thread_handle())) {
+    *win_error = ERROR_BAD_IMPERSONATION_LEVEL;
+    ::TerminateProcess(process_info.process_handle(), 0);
+    return SBOX_ERROR_SET_THREAD_TOKEN;
   }
 
   if (!target_info->DuplicateFrom(process_info)) {
@@ -385,8 +370,8 @@ std::unique_ptr<TargetProcess> TargetProcess::MakeTargetProcessForTesting(
     HANDLE process,
     HMODULE base_address) {
   auto target = std::make_unique<TargetProcess>(
-      base::win::ScopedHandle(), base::win::ScopedHandle(), nullptr,
-      std::vector<base::win::Sid>());
+      base::win::AccessToken::FromCurrentProcess().value(),
+      base::win::AccessToken::FromCurrentProcess().value(), nullptr);
   PROCESS_INFORMATION process_info = {};
   process_info.hProcess = process;
   target->sandbox_process_info_.Set(process_info);

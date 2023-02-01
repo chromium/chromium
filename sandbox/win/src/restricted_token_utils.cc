@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/win/access_token.h"
-#include "base/win/scoped_handle.h"
 #include "base/win/security_descriptor.h"
 #include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/restricted_token.h"
@@ -189,66 +188,6 @@ DWORD HardenTokenIntegrityLevelPolicy(const base::win::AccessToken& token) {
   }
 
   return ERROR_SUCCESS;
-}
-
-bool CreateLowBoxToken(HANDLE base_token,
-                       TokenType token_type,
-                       const base::win::Sid& package_sid,
-                       const std::vector<base::win::Sid>& capabilities,
-                       base::win::ScopedHandle* token) {
-  if (!token) {
-    return false;
-  }
-
-  absl::optional<base::win::AccessToken> base_token_handle;
-  if (!base_token) {
-    base_token_handle = base::win::AccessToken::FromCurrentProcess(
-        /*impersonation=*/false, TOKEN_DUPLICATE);
-  } else {
-    base_token_handle =
-        base::win::AccessToken::FromToken(base_token, TOKEN_DUPLICATE);
-  }
-  if (!base_token_handle.has_value()) {
-    return false;
-  }
-
-  absl::optional<base::win::AccessToken> token_lowbox =
-      base_token_handle->CreateAppContainer(package_sid, capabilities,
-                                            TOKEN_ALL_ACCESS);
-  if (!token_lowbox.has_value()) {
-    return false;
-  }
-
-  // Default from CreateAppContainer is a Primary token.
-  if (token_type == TokenType::kPrimary) {
-    *token = token_lowbox->release();
-    return true;
-  }
-
-  absl::optional<base::win::AccessToken> token_dup =
-      token_lowbox->DuplicateImpersonation(
-          base::win::SecurityImpersonationLevel::kImpersonation,
-          TOKEN_ALL_ACCESS);
-  if (!token_dup.has_value()) {
-    return false;
-  }
-
-  absl::optional<base::win::SecurityDescriptor> sd =
-      base::win::SecurityDescriptor::FromHandle(
-          token_lowbox->get(), base::win::SecurityObjectType::kKernel,
-          DACL_SECURITY_INFORMATION);
-  if (!sd) {
-    return false;
-  }
-
-  if (!sd->WriteToHandle(token_dup->get(),
-                         base::win::SecurityObjectType::kKernel,
-                         DACL_SECURITY_INFORMATION)) {
-    return false;
-  }
-
-  *token = token_dup->release();
-  return true;
 }
 
 bool CanLowIntegrityAccessDesktop() {
