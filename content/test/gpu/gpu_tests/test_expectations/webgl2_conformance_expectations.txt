@@ -633,7 +633,7 @@ crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] deqp/fu
 crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/video/* [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] conformance2/textures/video/* [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] conformance2/textures/video/* [ RetryOnFailure ]
 # finder:group-end
 
 #####################
