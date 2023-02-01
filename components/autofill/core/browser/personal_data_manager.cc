@@ -1487,16 +1487,15 @@ const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest()
   // expired cards should be suggested last, also by ranking score.
   base::Time comparison_time = AutofillClock::Now();
   if (cards_to_suggest.size() > 1) {
-    std::stable_sort(
-        cards_to_suggest.begin(), cards_to_suggest.end(),
-        [comparison_time](const CreditCard* a, const CreditCard* b) {
-          const bool a_is_expired = a->IsExpired(comparison_time);
-          if (a_is_expired != b->IsExpired(comparison_time)) {
-            return !a_is_expired;
-          }
+    std::sort(cards_to_suggest.begin(), cards_to_suggest.end(),
+              [comparison_time](const CreditCard* a, const CreditCard* b) {
+                const bool a_is_expired = a->IsExpired(comparison_time);
+                if (a_is_expired != b->IsExpired(comparison_time)) {
+                  return !a_is_expired;
+                }
 
-          return a->HasGreaterRankingThan(b, comparison_time);
-        });
+                return a->HasGreaterRankingThan(b, comparison_time);
+              });
   }
 
   return cards_to_suggest;
