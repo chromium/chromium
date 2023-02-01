@@ -23,12 +23,6 @@
 #include "build/chromeos_buildflags.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/timezone.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "services/device/time_zone_monitor/time_zone_monitor_lacros.h"
-#endif
-
 namespace device {
 
 namespace {
@@ -207,17 +201,6 @@ TimeZoneMonitorLinux::~TimeZoneMonitorLinux() {
 // static
 std::unique_ptr<TimeZoneMonitor> TimeZoneMonitor::Create(
     scoped_refptr<base::SequencedTaskRunner> file_task_runner) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1288168): This is a temporary measure to allow Lacros
-  // to work with older versions of Ash by using there TimeZoneMonitorLinux.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service->IsAvailable<crosapi::mojom::TimeZoneService>())
-    return std::make_unique<TimeZoneMonitorLacros>();
-
-  LOG(WARNING) << "TimeZoneService crosapi is not available in ash-chrome now. "
-               << "Fallback to TimeZoneMonitorLinux.";
-#endif
-
   return std::make_unique<TimeZoneMonitorLinux>(file_task_runner);
 }
 

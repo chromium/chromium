@@ -11,16 +11,13 @@
 namespace device {
 
 TimeZoneMonitorLacros::TimeZoneMonitorLacros() {
-  auto* lacros_service = chromeos::LacrosService::Get();
-
-  // Just DCHECK here, because this is ensured by TimeZoneMonitor::Create() in
-  // time_zone_monitor_linux.cc now.
-  // TODO(crbug.com/1288168): when the old ash-chrome no longer needs to be
-  // supported, clean up the dependencies.
-  DCHECK(lacros_service);
-  DCHECK(lacros_service->IsAvailable<crosapi::mojom::TimeZoneService>());
-  lacros_service->GetRemote<crosapi::mojom::TimeZoneService>()->AddObserver(
-      receiver_.BindNewPipeAndPassRemoteWithVersion());
+  // On unit_tests/browser_tests, LacrosService may not be available.
+  if (auto* lacros_service = chromeos::LacrosService::Get();
+      lacros_service &&
+      lacros_service->IsAvailable<crosapi::mojom::TimeZoneService>()) {
+    lacros_service->GetRemote<crosapi::mojom::TimeZoneService>()->AddObserver(
+        receiver_.BindNewPipeAndPassRemoteWithVersion());
+  }
 }
 
 TimeZoneMonitorLacros::~TimeZoneMonitorLacros() = default;
@@ -29,6 +26,12 @@ void TimeZoneMonitorLacros::OnTimeZoneChanged(
     const std::u16string& time_zone_id) {
   UpdateIcuAndNotifyClients(base::WrapUnique(icu::TimeZone::createTimeZone(
       icu::UnicodeString(time_zone_id.c_str(), time_zone_id.size()))));
+}
+
+// static
+std::unique_ptr<TimeZoneMonitor> TimeZoneMonitor::Create(
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner) {
+  return std::make_unique<TimeZoneMonitorLacros>();
 }
 
 }  // namespace device

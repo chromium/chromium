@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/ptr_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/crosapi/mojom/timezone.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
