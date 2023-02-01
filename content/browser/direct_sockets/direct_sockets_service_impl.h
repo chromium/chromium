@@ -35,19 +35,17 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       RenderFrameHost*,
       mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
 
-  static content::DirectSocketsDelegate* GetDelegate();
-
   // blink::mojom::DirectSocketsService:
-  void OpenTcpSocket(
-      blink::mojom::DirectSocketOptionsPtr options,
+  void OpenTCPSocket(
+      blink::mojom::DirectTCPSocketOptionsPtr options,
       mojo::PendingReceiver<network::mojom::TCPConnectedSocket> socket,
       mojo::PendingRemote<network::mojom::SocketObserver> observer,
-      OpenTcpSocketCallback callback) override;
-  void OpenUdpSocket(
-      blink::mojom::DirectSocketOptionsPtr options,
+      OpenTCPSocketCallback callback) override;
+  void OpenUDPSocket(
+      blink::mojom::DirectUDPSocketOptionsPtr options,
       mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver,
       mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
-      OpenUdpSocketCallback callback) override;
+      OpenUDPSocketCallback callback) override;
 
   // Testing:
   static void SetNetworkContextForTesting(network::mojom::NetworkContext*);
@@ -59,19 +57,19 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 
   network::mojom::NetworkContext* GetNetworkContext() const;
 
-  void OnResolveCompleteForTcpSocket(
-      blink::mojom::DirectSocketOptionsPtr,
+  void OnResolveCompleteForTCPSocket(
+      blink::mojom::DirectTCPSocketOptionsPtr,
       mojo::PendingReceiver<network::mojom::TCPConnectedSocket>,
       mojo::PendingRemote<network::mojom::SocketObserver>,
-      OpenTcpSocketCallback,
+      OpenTCPSocketCallback,
       int result,
       const absl::optional<net::AddressList>& resolved_addresses);
 
-  void OnResolveCompleteForUdpSocket(
-      blink::mojom::DirectSocketOptionsPtr,
+  void OnResolveCompleteForUDPSocket(
+      blink::mojom::DirectUDPSocketOptionsPtr,
       mojo::PendingReceiver<network::mojom::RestrictedUDPSocket>,
       mojo::PendingRemote<network::mojom::UDPSocketListener>,
-      OpenUdpSocketCallback,
+      OpenUDPSocketCallback,
       int result,
       const absl::optional<net::AddressList>& resolved_addresses);
 

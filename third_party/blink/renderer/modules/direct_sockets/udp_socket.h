@@ -58,7 +58,7 @@ class MODULES_EXPORT UDPSocket final : public ScriptWrappable,
   ~UDPSocket() override;
 
   // Validates options and calls
-  // DirectSocketsServiceMojoRemote::OpenUdpSocket(...) with Init(...) passed as
+  // DirectSocketsServiceMojoRemote::OpenUDPSocket(...) with Init(...) passed as
   // callback.
   bool Open(const UDPSocketOptions*, ExceptionState&);
 

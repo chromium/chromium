@@ -417,4 +417,73 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsTwo) {
   EXPECT_EQ(1234, call.receive_buffer_size);
 }
 
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
+                       OpenUdp_RemoteLocalOptions) {
+  {
+    const std::string script = R"(
+      openUdp({
+        remoteAddress: '192.168.0.1',
+      })
+    )";
+    EXPECT_THAT(
+        EvalJs(shell(), script).ExtractString(),
+        testing::HasSubstr("remoteAddress and remotePort should either"));
+  }
+
+  {
+    const std::string script = R"(
+      openUdp({
+        remotePort: 228,
+      })
+    )";
+    EXPECT_THAT(
+        EvalJs(shell(), script).ExtractString(),
+        testing::HasSubstr("remoteAddress and remotePort should either"));
+  }
+
+  {
+    const std::string script = R"(
+      openUdp({
+        remoteAddress: '192.168.0.1',
+        remotePort: 228,
+        localAddress: '127.0.0.1',
+      })
+    )";
+
+    EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+                testing::HasSubstr("remoteAddress and localAddress cannot be "
+                                   "specified at the same time"));
+  }
+
+  {
+    const std::string script = R"(
+      openUdp({
+        localAddress: 'direct-sockets.com',
+      })
+    )";
+    EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+                testing::HasSubstr("localAddress must be a valid IP address"));
+  }
+
+  {
+    const std::string script = R"(
+      openUdp({
+        localPort: 228,
+      })
+    )";
+    EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+                testing::HasSubstr(
+                    "localPort cannot be specified without localAddress"));
+  }
+
+  {
+    const std::string script = R"(
+      openUdp({})
+    )";
+    EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+                testing::HasSubstr("neither remoteAddress nor "
+                                   "localAddress specified"));
+  }
+}
+
 }  // namespace content

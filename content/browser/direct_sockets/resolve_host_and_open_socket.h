@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"
+#include "net/base/host_port_pair.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 
@@ -29,16 +30,13 @@ class CONTENT_EXPORT ResolveHostAndOpenSocket
 
   ~ResolveHostAndOpenSocket() override;
 
-  static ResolveHostAndOpenSocket* Create(const std::string& host,
-                                          uint16_t port,
+  static ResolveHostAndOpenSocket* Create(net::HostPortPair addr,
                                           OpenSocketCallback);
 
   void Start(network::mojom::NetworkContext*);
 
  private:
-  ResolveHostAndOpenSocket(const std::string& host,
-                           uint16_t port,
-                           OpenSocketCallback);
+  ResolveHostAndOpenSocket(net::HostPortPair addr, OpenSocketCallback);
 
   void OnComplete(int result,
                   const net::ResolveErrorInfo& resolve_error_info,
@@ -46,8 +44,7 @@ class CONTENT_EXPORT ResolveHostAndOpenSocket
                   const absl::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override;
 
-  const std::string host_;
-  uint16_t port_;
+  const net::HostPortPair addr_;
 
   OpenSocketCallback callback_;
 

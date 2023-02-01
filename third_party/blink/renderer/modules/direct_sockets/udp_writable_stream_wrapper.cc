@@ -36,10 +36,12 @@ namespace blink {
 UDPWritableStreamWrapper::UDPWritableStreamWrapper(
     ScriptState* script_state,
     CloseOnceCallback on_close,
-    const Member<UDPSocketMojoRemote> udp_socket)
+    const Member<UDPSocketMojoRemote> udp_socket,
+    network::mojom::blink::RestrictedUDPSocketMode mode)
     : WritableStreamWrapper(script_state),
       on_close_(std::move(on_close)),
-      udp_socket_(udp_socket) {
+      udp_socket_(udp_socket),
+      mode_(mode) {
   ScriptState::Scope scope(script_state);
 
   auto* sink = WritableStreamWrapper::MakeForwardingUnderlyingSink(this);
@@ -79,8 +81,36 @@ ScriptPromise UDPWritableStreamWrapper::Write(ScriptValue chunk,
   }
 
   if (!message->hasData()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "UDPMessage: missing 'data' field.");
+    exception_state.ThrowTypeError("UDPMessage: missing 'data' field.");
+    return ScriptPromise();
+  }
+
+  absl::optional<net::HostPortPair> dest_addr;
+  if (message->hasRemoteAddress() && message->hasRemotePort()) {
+    if (mode_ == network::mojom::RestrictedUDPSocketMode::CONNECTED) {
+      exception_state.ThrowTypeError(
+          "UDPMessage: 'remoteAddress' and 'remotePort' must not be specified "
+          "in 'connected' mode.");
+      return ScriptPromise();
+    }
+    if (net::IPAddress address;
+        !address.AssignFromIPLiteral(message->remoteAddress().Utf8())) {
+      exception_state.ThrowTypeError(
+          "UDPMessage: 'remoteAddress' must be a valid IP address -- DNS "
+          "resolution is currently unsupported.");
+      return ScriptPromise();
+    }
+    dest_addr = net::HostPortPair(message->remoteAddress().Utf8(),
+                                  message->remotePort());
+  } else if (message->hasRemoteAddress() || message->hasRemotePort()) {
+    exception_state.ThrowTypeError(
+        "UDPMessage: either none or both 'remoteAddress' and 'remotePort' "
+        "fields must be specified.");
+    return ScriptPromise();
+  } else if (mode_ == network::mojom::RestrictedUDPSocketMode::BOUND) {
+    exception_state.ThrowTypeError(
+        "UDPMessage: 'remoteAddress' and 'remotePort' must be specified "
+        "in 'bound' mode.");
     return ScriptPromise();
   }
 
@@ -91,20 +121,14 @@ ScriptPromise UDPWritableStreamWrapper::Write(ScriptValue chunk,
   write_promise_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
       GetScriptState(), exception_state.GetContext());
 
-  // Why not just return write_promise_resolver_->Promise()?
-  // In view of the async nature of the write handler, the callback might get
-  // executed earlier than the function return statement. There are two
-  // concerns related to that behavior:
-  // -- write_promise_resolver_ will be set to nullptr and the above call with
-  // crash;
-  // -- write_promise_resolver_->Reject() will be called earlier than
-  // write_promise_resolver_->Promise(), and the resulting promise will be dummy
-  // (i.e. fulfilled by default).
-  ScriptPromise promise = write_promise_resolver_->Promise();
-  udp_socket_->get()->Send(data,
-                           WTF::BindOnce(&UDPWritableStreamWrapper::OnSend,
-                                         WrapWeakPersistent(this)));
-  return promise;
+  auto callback = WTF::BindOnce(&UDPWritableStreamWrapper::OnSend,
+                                WrapWeakPersistent(this));
+  if (dest_addr) {
+    udp_socket_->get()->SendTo(data, *dest_addr, std::move(callback));
+  } else {
+    udp_socket_->get()->Send(data, std::move(callback));
+  }
+  return write_promise_resolver_->Promise();
 }
 
 void UDPWritableStreamWrapper::OnSend(int32_t result) {

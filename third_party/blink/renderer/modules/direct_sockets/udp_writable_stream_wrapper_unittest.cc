@@ -80,7 +80,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
     stream_wrapper_ = MakeGarbageCollected<UDPWritableStreamWrapper>(
         script_state,
         WTF::BindOnce(&StreamCreator::Close, WrapWeakPersistent(this)),
-        udp_socket);
+        udp_socket, network::mojom::RestrictedUDPSocketMode::CONNECTED);
     return stream_wrapper_;
   }
 
@@ -220,38 +220,6 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataField) {
   // Nothing should have been written from the empty DOMArrayBuffer.
   auto* fake_udp_socket = stream_creator->fake_udp_socket();
   EXPECT_THAT(fake_udp_socket->GetReceivedData(), ::testing::ElementsAre());
-}
-
-TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithoutDataField) {
-  V8TestingScope scope;
-
-  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
-  auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
-
-  auto* script_state = scope.GetScriptState();
-
-  auto* writer = udp_writable_stream_wrapper->Writable()->getWriter(
-      script_state, ASSERT_NO_EXCEPTION);
-
-  // Create empty message (without 'data' field).
-  auto* message = UDPMessage::Create();
-
-  ScriptPromise result =
-      writer->write(script_state, ScriptValue::From(script_state, message),
-                    ASSERT_NO_EXCEPTION);
-
-  ScriptPromiseTester tester(script_state, result);
-  tester.WaitUntilSettled();
-
-  // Should be rejected due to missing 'data' field.
-  ASSERT_TRUE(tester.IsRejected());
-
-  DOMException* exception = V8DOMException::ToImplWithTypeCheck(
-      scope.GetIsolate(), tester.Value().V8Value());
-
-  ASSERT_TRUE(exception);
-  ASSERT_EQ(exception->name(), "DataError");
-  ASSERT_TRUE(exception->message().Contains("missing 'data' field"));
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteAfterFinishedWrite) {

@@ -47,13 +47,53 @@ bool CheckSendReceiveBufferSize(const UDPSocketOptions* options,
   return true;
 }
 
-mojom::blink::DirectSocketOptionsPtr CreateUDPSocketOptions(
+mojom::blink::DirectUDPSocketOptionsPtr CreateUDPSocketOptions(
     const UDPSocketOptions* options,
     ExceptionState& exception_state) {
-  auto socket_options = mojom::blink::DirectSocketOptions::New();
+  auto socket_options = mojom::blink::DirectUDPSocketOptions::New();
 
-  socket_options->remote_hostname = options->remoteAddress();
-  socket_options->remote_port = options->remotePort();
+  absl::optional<net::HostPortPair> remote_addr;
+  if (options->hasRemoteAddress() && options->hasRemotePort()) {
+    remote_addr = net::HostPortPair(options->remoteAddress().Utf8(),
+                                    options->remotePort());
+  } else if (options->hasRemoteAddress() || options->hasRemotePort()) {
+    exception_state.ThrowTypeError(
+        "remoteAddress and remotePort should either be specified together or "
+        "not specified at all.");
+    return {};
+  }
+
+  absl::optional<net::IPEndPoint> local_addr;
+  if (options->hasLocalAddress()) {
+    if (net::IPAddress address;
+        address.AssignFromIPLiteral(options->localAddress().Utf8())) {
+      // Port 0 allows the OS to pick an available port on its own.
+      local_addr =
+          net::IPEndPoint(std::move(address),
+                          options->hasLocalPort() ? options->localPort() : 0U);
+    } else {
+      exception_state.ThrowTypeError(
+          "localAddress must be a valid IP address.");
+      return {};
+    }
+  } else if (options->hasLocalPort()) {
+    exception_state.ThrowTypeError(
+        "localPort cannot be specified without localAddress.");
+    return {};
+  }
+
+  if (remote_addr && local_addr) {
+    exception_state.ThrowTypeError(
+        "remoteAddress and localAddress cannot be specified at the same time.");
+    return {};
+  } else if (!remote_addr && !local_addr) {
+    exception_state.ThrowTypeError(
+        "neither remoteAddress nor localAddress specified.");
+    return {};
+  } else {
+    socket_options->remote_addr = std::move(remote_addr);
+    socket_options->local_addr = std::move(local_addr);
+  }
 
   if (!CheckSendReceiveBufferSize(options, exception_state)) {
     return {};
@@ -142,7 +182,7 @@ bool UDPSocket::Open(const UDPSocketOptions* options,
   mojo::PendingRemote<network::mojom::blink::UDPSocketListener>
       socket_listener_remote = socket_listener.InitWithNewPipeAndPassRemote();
 
-  GetServiceRemote()->OpenUdpSocket(
+  GetServiceRemote()->OpenUDPSocket(
       std::move(open_udp_socket_options), GetUDPSocketReceiver(),
       std::move(socket_listener_remote),
       WTF::BindOnce(&UDPSocket::Init, WrapPersistent(this),
@@ -158,7 +198,6 @@ void UDPSocket::Init(
     const absl::optional<net::IPEndPoint>& local_addr,
     const absl::optional<net::IPEndPoint>& peer_addr) {
   if (result == net::OK) {
-    DCHECK(peer_addr);
     auto close_callback = base::BarrierCallback<ScriptValue>(
         /*num_callbacks=*/2, WTF::BindOnce(&UDPSocket::OnBothStreamsClosed,
                                            WrapWeakPersistent(this)));
@@ -166,17 +205,23 @@ void UDPSocket::Init(
     auto* script_state = GetScriptState();
     readable_stream_wrapper_ = MakeGarbageCollected<UDPReadableStreamWrapper>(
         script_state, close_callback, udp_socket_, std::move(socket_listener));
+    // |peer_addr| is populated only in CONNECTED mode.
     writable_stream_wrapper_ = MakeGarbageCollected<UDPWritableStreamWrapper>(
-        script_state, close_callback, udp_socket_);
+        script_state, close_callback, udp_socket_,
+        peer_addr ? network::mojom::RestrictedUDPSocketMode::CONNECTED
+                  : network::mojom::RestrictedUDPSocketMode::BOUND);
 
     auto* open_info = UDPSocketOpenInfo::Create();
 
     open_info->setReadable(readable_stream_wrapper_->Readable());
     open_info->setWritable(writable_stream_wrapper_->Writable());
 
-    open_info->setRemoteAddress(String{peer_addr->ToStringWithoutPort()});
-    open_info->setRemotePort(peer_addr->port());
+    if (peer_addr) {
+      open_info->setRemoteAddress(String{peer_addr->ToStringWithoutPort()});
+      open_info->setRemotePort(peer_addr->port());
+    }
 
+    DCHECK(local_addr);
     open_info->setLocalAddress(String{local_addr->ToStringWithoutPort()});
     open_info->setLocalPort(local_addr->port());
 

@@ -374,6 +374,98 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
+                       UdpServerFailsWithoutSocketsSendToPermission) {
+  extensions::TestExtensionDir dir;
+
+  base::Value::Dict socket_permissions;
+  socket_permissions.SetByDottedPath("udp.bind", "*");
+
+  dir.WriteManifest(GenerateManifest(std::move(socket_permissions)));
+  dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+    chrome.test.sendMessage("ready", async (message) => {
+      try {
+        const socket = new UDPSocket({ localAddress : message });
+
+        await chrome.test.assertPromiseRejects(
+          socket.opened,
+          "InvalidAccessError: Access to the requested host is blocked."
+        );
+
+        chrome.test.succeed();
+      } catch (e) {
+        chrome.test.fail(e.name + ':' + e.message);
+      }
+    });
+  )");
+
+  extensions::ResultCatcher catcher;
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
+
+  ASSERT_TRUE(LoadExtension(dir.UnpackedPath()));
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  listener.Reply("127.0.0.1");
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpServerReadWrite) {
+  extensions::TestExtensionDir dir;
+
+  base::Value::Dict socket_permissions;
+  socket_permissions.SetByDottedPath("udp.bind", "*");
+  socket_permissions.SetByDottedPath("udp.send", "*");
+
+  dir.WriteManifest(GenerateManifest(std::move(socket_permissions)));
+  dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+    chrome.test.sendMessage("ready", async (message) => {
+      try {
+        const clientPort = message;
+
+        const socket = new UDPSocket({ localAddress: "127.0.0.1" });
+
+        const { readable, writable } = await socket.opened;
+
+        const reader = readable.getReader();
+        const writer = writable.getWriter();
+
+        const kUdpMessage = "udp_message";
+
+        reader.read().then(packet => {
+          const { value, done } = packet;
+          chrome.test.assertFalse(done,
+              "ReadableStream must not be exhausted at this point.");
+
+          const { data, remoteAddress, remotePort } = value;
+          chrome.test.assertEq((new TextDecoder()).decode(data), kUdpMessage,
+              "The data returned must exactly match the data sent.");
+
+          chrome.test.assertEq(remoteAddress, "127.0.0.1");
+          chrome.test.assertEq(remotePort, parseInt(clientPort));
+          chrome.test.succeed();
+        });
+
+        writer.write({
+          data: (new TextEncoder()).encode(kUdpMessage),
+          remoteAddress: "127.0.0.1",
+          remotePort: clientPort,
+        });
+      } catch (e) {
+        chrome.test.fail(e.name + ':' + e.message);
+      }
+    });
+  )");
+
+  extensions::ResultCatcher catcher;
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
+
+  ASSERT_TRUE(LoadExtension(dir.UnpackedPath()));
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  listener.Reply(base::StringPrintf("%d", test_server()->port()));
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
 #endif
 
 class IsolatedWebAppTestHarnessWithDirectSocketsEnabled
@@ -501,6 +593,58 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest, UdpReadWrite) {
 
   ASSERT_TRUE(
       EvalJs(app_frame, content::JsReplace(kUdpSendReceiveEchoScript, kHostname,
+                                           test_server()->port()))
+          .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
+                       UdpServerReadWrite) {
+  // Install & open the IWA.
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  // Run the echo script.
+  constexpr base::StringPiece kUdpServerSendReceiveEchoScript = R"(
+    (async () => {
+      try {
+        const socket = new UDPSocket({ localAddress: "127.0.0.1" });
+        const { readable, writable } = await socket.opened;
+
+        const kUdpMessage = "udp_message";
+        writable.getWriter().write({
+          data: (new TextEncoder()).encode(kUdpMessage),
+          remoteAddress: "127.0.0.1",
+          remotePort: $1,
+        });
+        return await readable.getReader().read().then(packet => {
+          const { value, done } = packet;
+          if (done) {
+            return false;
+          }
+          const { data, remoteAddress, remotePort } = value;
+          if ((new TextDecoder()).decode(data) !== kUdpMessage) {
+            return false;
+          }
+          if (remoteAddress !== "127.0.0.1") {
+            return false;
+          }
+          if (remotePort !== $1) {
+            return false;
+          }
+          return true;
+        });
+      } catch (err) {
+        console.log(err);
+        return false;
+      }
+    })();
+  )";
+
+  ASSERT_TRUE(
+      EvalJs(app_frame, content::JsReplace(kUdpServerSendReceiveEchoScript,
                                            test_server()->port()))
           .ExtractBool());
 }

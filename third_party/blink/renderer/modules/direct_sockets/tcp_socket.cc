@@ -41,15 +41,15 @@ bool CheckSendReceiveBufferSize(const TCPSocketOptions* options,
   return true;
 }
 
-mojom::blink::DirectSocketOptionsPtr CreateTCPSocketOptions(
+mojom::blink::DirectTCPSocketOptionsPtr CreateTCPSocketOptions(
     const String& remote_address,
     const uint16_t remote_port,
     const TCPSocketOptions* options,
     ExceptionState& exception_state) {
-  auto socket_options = mojom::blink::DirectSocketOptions::New();
+  auto socket_options = mojom::blink::DirectTCPSocketOptions::New();
 
-  socket_options->remote_hostname = remote_address;
-  socket_options->remote_port = remote_port;
+  socket_options->remote_addr =
+      net::HostPortPair(remote_address.Utf8(), remote_port);
 
   if (!CheckSendReceiveBufferSize(options, exception_state)) {
     return {};
@@ -155,7 +155,7 @@ bool TCPSocket::Open(const String& remote_address,
     return false;
   }
 
-  GetServiceRemote()->OpenTcpSocket(
+  GetServiceRemote()->OpenTCPSocket(
       std::move(open_tcp_socket_options), GetTCPSocketReceiver(),
       GetTCPSocketObserver(),
       WTF::BindOnce(&TCPSocket::Init, WrapPersistent(this)));

@@ -23,19 +23,17 @@ bool ResemblesMulticastDNSName(const std::string& hostname) {
 
 }  // namespace
 
-ResolveHostAndOpenSocket::ResolveHostAndOpenSocket(const std::string& host,
-                                                   uint16_t port,
+ResolveHostAndOpenSocket::ResolveHostAndOpenSocket(net::HostPortPair addr,
                                                    OpenSocketCallback callback)
-    : host_(host), port_(port), callback_(std::move(callback)) {}
+    : addr_(addr), callback_(std::move(callback)) {}
 
 ResolveHostAndOpenSocket::~ResolveHostAndOpenSocket() = default;
 
 // static
 ResolveHostAndOpenSocket* ResolveHostAndOpenSocket::Create(
-    const std::string& address,
-    uint16_t port,
+    net::HostPortPair addr,
     OpenSocketCallback callback) {
-  return new ResolveHostAndOpenSocket(address, port, std::move(callback));
+  return new ResolveHostAndOpenSocket(std::move(addr), std::move(callback));
 }
 
 void ResolveHostAndOpenSocket::Start(
@@ -50,16 +48,15 @@ void ResolveHostAndOpenSocket::Start(
   network::mojom::ResolveHostParametersPtr parameters =
       network::mojom::ResolveHostParameters::New();
 #if BUILDFLAG(ENABLE_MDNS)
-  if (ResemblesMulticastDNSName(host_)) {
+  if (ResemblesMulticastDNSName(addr_.host())) {
     parameters->source = net::HostResolverSource::MULTICAST_DNS;
   }
 #endif  // !BUILDFLAG(ENABLE_MDNS)
   // Intentionally using a HostPortPair because scheme isn't specified.
-  resolver_->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
-                             net::HostPortPair{host_, port_}),
-                         net::NetworkAnonymizationKey::CreateTransient(),
-                         std::move(parameters),
-                         receiver_.BindNewPipeAndPassRemote());
+  resolver_->ResolveHost(
+      network::mojom::HostResolverHost::NewHostPortPair(addr_),
+      net::NetworkAnonymizationKey::CreateTransient(), std::move(parameters),
+      receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &ResolveHostAndOpenSocket::OnComplete, base::Unretained(this),
       net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),

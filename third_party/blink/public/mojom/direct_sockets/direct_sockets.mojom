@@ -11,6 +11,7 @@ import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "services/network/public/mojom/restricted_udp_socket.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
+import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/tcp_socket.mojom";
 import "services/network/public/mojom/udp_socket.mojom";
 
@@ -29,22 +30,29 @@ enum DirectSocketFailureType {
 enum DirectSocketProtocolType {
   kTcp = 0,
   kUdp = 1,
+  kUdpServer = 2,
 };
 
-struct DirectSocketOptions {
-  string? local_hostname;
-  uint16 local_port = 0;
-
-  string remote_hostname;
-  uint16 remote_port = 0;
+struct DirectTCPSocketOptions {
+  network.mojom.HostPortPair remote_addr;
+  network.mojom.IPEndPoint? local_addr;
 
   int32 send_buffer_size = 0;
   int32 receive_buffer_size = 0;
 
-  // Only relevant for TCP:
   bool no_delay = false;
 
   network.mojom.TCPKeepAliveOptions? keep_alive_options;
+};
+
+struct DirectUDPSocketOptions {
+  // Note that one and only one of |remote_addr| and |local_addr| should be
+  // populated.
+  network.mojom.HostPortPair? remote_addr;
+  network.mojom.IPEndPoint? local_addr;
+
+  int32 send_buffer_size = 0;
+  int32 receive_buffer_size = 0;
 };
 
 // This wraps network.mojom.NetworkContext and handles extra work such as
@@ -58,8 +66,8 @@ interface DirectSocketsService {
   // error on the newly established connection.
   // Caller is to use |send_stream| to send data and |receive_stream|
   // to receive data over the connection.
-  OpenTcpSocket(
-      DirectSocketOptions options,
+  OpenTCPSocket(
+      DirectTCPSocketOptions options,
       pending_receiver<network.mojom.TCPConnectedSocket> receiver,
       pending_remote<network.mojom.SocketObserver>? observer)
       => (int32 result,
@@ -68,11 +76,25 @@ interface DirectSocketsService {
           handle<data_pipe_consumer>? receive_stream,
           handle<data_pipe_producer>? send_stream);
 
-  // Creates a 'connected' UDP socket.
-  // |result| is a net::Error code (net::OK on success).
+  // Creates a Restricted UDP socket depending on the provided params.
+  //   * if |options->local_addr| is specified, creates a bound socket.
+  //       Setting the port to 0 lets the OS pick an available port.
+  //       Note that |options->remote_addr| should be set to null.
+  //   * if |options->remote_addr| is specified, creates a connected socket.
+  //       Note that |options->local_addr| should be set to null.
+  //
   // Caller can supply a |listener| to listen for incoming datagrams.
-  OpenUdpSocket(
-      DirectSocketOptions options,
+  //
+  // On success, |result| is net::OK.
+  //   * In bound mode, |local_addr| is set to the real local address used.
+  //       |peer_addr| is null.
+  //   * In connected mode, |local_addr| is set to the real local address used.
+  //       |peer_addr| is the resolved address the socket is connected to.
+  //
+  // On failure, |result| is a negative network error code.
+  // |local_addr| and |peer_addr| are null.
+  OpenUDPSocket(
+      DirectUDPSocketOptions options,
       pending_receiver<network.mojom.RestrictedUDPSocket> receiver,
       pending_remote<network.mojom.UDPSocketListener>? listener)
       => (int32 result,

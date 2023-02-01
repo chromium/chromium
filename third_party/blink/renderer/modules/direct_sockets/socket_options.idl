@@ -15,6 +15,9 @@ dictionary TCPSocketOptions : SocketOptions {
 };
 
 dictionary UDPSocketOptions : SocketOptions {
-  required DOMString remoteAddress;
-  required [EnforceRange] unsigned short remotePort;
+  DOMString remoteAddress;
+  [EnforceRange] unsigned short remotePort;
+
+  DOMString localAddress;
+  [EnforceRange] unsigned short localPort;
 };

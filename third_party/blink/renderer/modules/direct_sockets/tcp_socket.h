@@ -65,7 +65,7 @@ class MODULES_EXPORT TCPSocket final
   ~TCPSocket() override;
 
   // Validates options and calls
-  // DirectSocketsServiceMojoRemote::OpenTcpSocket(...) with Init(...) passed as
+  // DirectSocketsServiceMojoRemote::OpenTCPSocket(...) with Init(...) passed as
   // callback.
   bool Open(const String& remote_address,
             const uint16_t remote_port,
