@@ -148,7 +148,7 @@ class GPU_GLES2_EXPORT DecoderContext : public AsyncAPIInterface,
                             unsigned type,
                             const gfx::Rect& cleared_rect) = 0;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   // Attaches |image| to the texture referred to by |client_texture_id|, marking
   // the image as needing on-demand binding by the decoder.
   virtual void AttachImageToTextureWithDecoderBinding(

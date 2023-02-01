@@ -52,7 +52,7 @@ void ValidatingAbstractTextureImpl::SetParameteri(GLenum pname, GLint param) {
                                      texture_ref_.get(), pname, param);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 void ValidatingAbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
   if (!texture_ref_)
     return;

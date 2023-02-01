@@ -49,7 +49,7 @@
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
 #endif
 
@@ -291,7 +291,7 @@ SharedImageFactory::SharedImageFactory(
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 #endif  // BUILDFLAG(IS_OZONE)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   auto iosurface_backing_factory =
       std::make_unique<IOSurfaceImageBackingFactory>(
           gpu_preferences, workarounds, feature_info.get(),

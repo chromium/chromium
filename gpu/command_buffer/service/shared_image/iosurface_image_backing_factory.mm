@@ -21,12 +21,15 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/mac/display_icc_profiles.h"
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/gfx/mac/display_icc_profiles.h"
+#endif
 
 #import <Metal/Metal.h>
 
@@ -55,6 +58,7 @@ void SetIOSurfaceColorSpace(IOSurfaceRef io_surface,
     return;
   }
 
+#if BUILDFLAG(IS_MAC)
   base::ScopedCFTypeRef<CFDataRef> cf_data =
       gfx::DisplayICCProfiles::GetInstance()->GetDataForColorSpace(color_space);
   if (cf_data) {
@@ -62,6 +66,9 @@ void SetIOSurfaceColorSpace(IOSurfaceRef io_surface,
   } else {
     IOSurfaceSetColorSpace(io_surface, color_space);
   }
+#else
+  IOSurfaceSetColorSpace(io_surface, color_space);
+#endif
 }
 
 bool IsValidSize(const gfx::Size& size, int32_t max_texture_size) {

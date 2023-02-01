@@ -120,6 +120,16 @@ component("service") {
     ]
     defines += [ "GL_SILENCE_DEPRECATION" ]
   }
+  if (is_ios) {
+    sources += [
+      "gpu_memory_buffer_factory_io_surface.cc",
+      "gpu_memory_buffer_factory_io_surface.h",
+      "image_transport_surface_ios.mm",
+      "image_transport_surface_overlay_mac.h",
+      "image_transport_surface_overlay_mac.mm",
+    ]
+    deps += [ "//ui/accelerated_widget_mac" ]
+  }
   if (is_android) {
     sources += [
       "gpu_memory_buffer_factory_android_hardware_buffer.cc",

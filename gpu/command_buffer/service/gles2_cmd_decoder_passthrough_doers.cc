@@ -536,7 +536,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBindTexture(GLenum target,
   DCHECK(GLenumToTextureTarget(target) != TextureTarget::kUnkown);
   scoped_refptr<TexturePassthrough> texture_passthrough;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   // If there was anything bound that required an image bind / copy,
   // forget it since it's no longer bound to a sampler.
   RemovePendingBindingTexture(target, active_texture_unit_);
@@ -561,7 +561,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBindTexture(GLenum target,
 
     DCHECK(texture_passthrough);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
     // If |texture_passthrough| has a bound image that requires processing
     // before a draw, then keep track of it.
     if (texture_passthrough->is_bind_pending()) {
@@ -1205,7 +1205,7 @@ error::Error GLES2DecoderPassthroughImpl::DoDispatchCompute(
     GLuint num_groups_x,
     GLuint num_groups_y,
     GLuint num_groups_z) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   BindPendingImagesForSamplersIfNeeded();
 #endif
   api()->glDispatchComputeFn(num_groups_x, num_groups_y, num_groups_z);
@@ -1214,7 +1214,7 @@ error::Error GLES2DecoderPassthroughImpl::DoDispatchCompute(
 
 error::Error GLES2DecoderPassthroughImpl::DoDispatchComputeIndirect(
     GLintptr offset) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   BindPendingImagesForSamplersIfNeeded();
 #endif
   // TODO(jiajie.hu@intel.com): Use glDispatchComputeIndirectRobustANGLEFn()
@@ -1226,7 +1226,7 @@ error::Error GLES2DecoderPassthroughImpl::DoDispatchComputeIndirect(
 error::Error GLES2DecoderPassthroughImpl::DoDrawArrays(GLenum mode,
                                                        GLint first,
                                                        GLsizei count) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   BindPendingImagesForSamplersIfNeeded();
 #endif
   api()->glDrawArraysFn(mode, first, count);
@@ -1236,7 +1236,7 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawArrays(GLenum mode,
 error::Error GLES2DecoderPassthroughImpl::DoDrawArraysIndirect(
     GLenum mode,
     const void* offset) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   BindPendingImagesForSamplersIfNeeded();
 #endif
   // TODO(jiajie.hu@intel.com): Use glDrawArraysIndirectRobustANGLEFn() when
@@ -1249,7 +1249,7 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawElements(GLenum mode,
                                                          GLsizei count,
                                                          GLenum type,
                                                          const void* indices) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   BindPendingImagesForSamplersIfNeeded();
 #endif
   api()->glDrawElementsFn(mode, count, type, indices);
@@ -1260,7 +1260,7 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawElementsIndirect(
     GLenum mode,
     GLenum type,
     const void* offset) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   BindPendingImagesForSamplersIfNeeded();
 #endif
   // TODO(jiajie.hu@intel.com): Use glDrawElementsIndirectRobustANGLEFn() when
@@ -1419,7 +1419,7 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTexture2D(
                 "Cannot change the attachments of the default framebuffer.");
     return error::kNoError;
   }
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   BindPendingImageForClientIDIfNeeded(texture);
 #endif
   api()->glFramebufferTexture2DEXTFn(
@@ -3439,7 +3439,7 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTexture2DMultisampleEXT(
                 "Cannot change the attachments of the default framebuffer.");
     return error::kNoError;
   }
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   BindPendingImageForClientIDIfNeeded(texture);
 #endif
   api()->glFramebufferTexture2DMultisampleEXTFn(
@@ -4436,7 +4436,7 @@ error::Error GLES2DecoderPassthroughImpl::DoCopyTextureCHROMIUM(
     GLboolean unpack_unmultiply_alpha) {
   gl::ScopedEnableTextureRectangleInShaderCompiler enable(
       feature_info_->IsWebGLContext() ? api() : nullptr);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   BindPendingImageForClientIDIfNeeded(source_id);
 #endif
   api()->glCopyTextureCHROMIUMFn(
@@ -4467,7 +4467,7 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySubTextureCHROMIUM(
     GLboolean unpack_unmultiply_alpha) {
   gl::ScopedEnableTextureRectangleInShaderCompiler enable(
       feature_info_->IsWebGLContext() ? api() : nullptr);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   BindPendingImageForClientIDIfNeeded(source_id);
 #endif
   api()->glCopySubTextureCHROMIUMFn(
@@ -4483,7 +4483,7 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawArraysInstancedANGLE(
     GLint first,
     GLsizei count,
     GLsizei primcount) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   BindPendingImagesForSamplersIfNeeded();
 #endif
   api()->glDrawArraysInstancedANGLEFn(mode, first, count, primcount);
@@ -4497,7 +4497,7 @@ GLES2DecoderPassthroughImpl::DoDrawArraysInstancedBaseInstanceANGLE(
     GLsizei count,
     GLsizei primcount,
     GLuint baseinstance) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   BindPendingImagesForSamplersIfNeeded();
 #endif
   api()->glDrawArraysInstancedBaseInstanceANGLEFn(mode, first, count, primcount,
@@ -4511,7 +4511,7 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawElementsInstancedANGLE(
     GLenum type,
     const void* indices,
     GLsizei primcount) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   BindPendingImagesForSamplersIfNeeded();
 #endif
   api()->glDrawElementsInstancedANGLEFn(mode, count, type, indices, primcount);
@@ -4527,7 +4527,7 @@ GLES2DecoderPassthroughImpl::DoDrawElementsInstancedBaseVertexBaseInstanceANGLE(
     GLsizei primcount,
     GLint basevertex,
     GLuint baseinstance) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   BindPendingImagesForSamplersIfNeeded();
 #endif
   api()->glDrawElementsInstancedBaseVertexBaseInstanceANGLEFn(

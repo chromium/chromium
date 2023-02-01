@@ -468,7 +468,7 @@ scoped_refptr<gfx::NativePixmap> SharedImageManager::GetNativePixmap(
 }
 
 bool SharedImageManager::SupportsScanoutImages() {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   return true;
 #elif BUILDFLAG(IS_ANDROID)
   return base::AndroidHardwareBufferCompat::IsSupportAvailable();

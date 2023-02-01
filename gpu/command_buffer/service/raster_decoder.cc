@@ -471,7 +471,7 @@ class RasterDecoderImpl final : public RasterDecoder,
                           int* entries_processed) override;
   base::StringPiece GetLogPrefix() override;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
                                               uint32_t texture_target,
                                               gl::GLImage* image) override;
@@ -1162,7 +1162,8 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
       SharedImageManager::SupportsScanoutImages();
   // TODO(piman): have a consistent limit in shared image backings.
   // https://crbug.com/960588
-  if (shared_context_state_->GrContextIsGL()) {
+  if (shared_context_state_->GrContextIsGL() ||
+      shared_context_state_->GrContextIsMetal()) {
     api()->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &caps.max_texture_size);
   } else if (shared_context_state_->GrContextIsVulkan()) {
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -1551,7 +1552,7 @@ base::StringPiece RasterDecoderImpl::GetLogPrefix() {
   return logger_.GetLogPrefix();
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 void RasterDecoderImpl::AttachImageToTextureWithDecoderBinding(
     uint32_t client_texture_id,
     uint32_t texture_target,

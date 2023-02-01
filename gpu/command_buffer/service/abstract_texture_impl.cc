@@ -67,7 +67,7 @@ void AbstractTextureImpl::BindToServiceId(GLuint service_id) {
 }
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 void AbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
   NOTIMPLEMENTED();
 }
@@ -144,7 +144,7 @@ void AbstractTextureImplPassthrough::BindToServiceId(GLuint service_id) {
 }
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 void AbstractTextureImplPassthrough::SetUnboundImage(gl::GLImage* image) {
   NOTIMPLEMENTED();
 }

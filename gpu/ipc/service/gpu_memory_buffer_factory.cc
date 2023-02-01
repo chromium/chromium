@@ -9,7 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "gpu/ipc/service/gpu_memory_buffer_factory_io_surface.h"
 #endif
 
@@ -32,7 +32,7 @@ std::unique_ptr<GpuMemoryBufferFactory>
 GpuMemoryBufferFactory::CreateNativeType(
     viz::VulkanContextProvider* vulkan_context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> io_runner) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   return std::make_unique<GpuMemoryBufferFactoryIOSurface>();
 #elif BUILDFLAG(IS_ANDROID)
   return std::make_unique<GpuMemoryBufferFactoryAndroidHardwareBuffer>();

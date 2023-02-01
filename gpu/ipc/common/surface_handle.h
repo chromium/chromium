@@ -9,7 +9,7 @@
 
 #include "build/build_config.h"
 
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE)) && \
+#if (BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE)) && \
     !BUILDFLAG(IS_NACL)
 #include "ui/gfx/native_widget_types.h"
 #define GPU_SURFACE_HANDLE_IS_ACCELERATED_WINDOW

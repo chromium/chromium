@@ -139,7 +139,7 @@ GpuFeatureStatus GetAndroidSurfaceControlFeatureStatus(
 GpuFeatureStatus GetMetalFeatureStatus(
     const std::set<int>& blocklisted_features,
     const GpuPreferences& gpu_preferences) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   if (blocklisted_features.count(GPU_FEATURE_TYPE_METAL))
     return kGpuFeatureStatusBlocklisted;
 

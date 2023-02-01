@@ -65,7 +65,7 @@ class GPU_GLES2_EXPORT AbstractTexture {
   virtual void BindToServiceId(GLuint service_id) = 0;
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   // Attaches |image| to the AbstractTexture. The decoder will call
   // GLImage::Copy/Bind. Further, the decoder guarantees that
   // ScheduleOverlayPlane will be called if the texture is ever promoted to an

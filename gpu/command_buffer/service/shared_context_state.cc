@@ -44,7 +44,7 @@
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "components/viz/common/gpu/metal_context_provider.h"
 #endif
 
@@ -191,7 +191,7 @@ SharedContextState::SharedContextState(
       break;
     case GrContextType::kMetal:
       if (metal_context_provider_) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
         gr_context_ = metal_context_provider_->GetGrContext();
 #endif
         use_virtualized_gl_contexts_ = false;
@@ -270,7 +270,7 @@ bool SharedContextState::InitializeGrContext(
   progress_reporter_ = progress_reporter;
   gr_shader_cache_ = cache;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   if (metal_context_provider_)
     metal_context_provider_->SetProgressReporter(progress_reporter);
 #endif

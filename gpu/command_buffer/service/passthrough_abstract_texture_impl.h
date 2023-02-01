@@ -31,7 +31,7 @@ class GPU_GLES2_EXPORT PassthroughAbstractTextureImpl : public AbstractTexture {
   // AbstractTexture
   TextureBase* GetTextureBase() const override;
   void SetParameteri(GLenum pname, GLint param) override;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   void SetUnboundImage(gl::GLImage* image) override;
 #else
   void SetBoundImage(gl::GLImage* image) override;

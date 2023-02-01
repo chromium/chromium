@@ -1264,7 +1264,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
                                  GLboolean unpack_flip_y,
                                  const volatile GLbyte* mailboxes);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
                                               uint32_t texture_target,
                                               gl::GLImage* image) override;
@@ -18563,7 +18563,7 @@ void GLES2DecoderImpl::DoPushGroupMarkerEXT(
 void GLES2DecoderImpl::DoPopGroupMarkerEXT(void) {
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 void GLES2DecoderImpl::AttachImageToTextureWithDecoderBinding(
     uint32_t client_texture_id,
     uint32_t texture_target,

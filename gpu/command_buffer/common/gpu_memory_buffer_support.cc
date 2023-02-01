@@ -69,7 +69,7 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
 
 GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
                                                      gfx::BufferFormat format) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // On macOS each plane of a YUV GpuMemoryBuffer must be sampled separately.
   switch (format) {
     case gfx::BufferFormat::YUV_420_BIPLANAR:
@@ -175,6 +175,8 @@ uint32_t GetPlatformSpecificTextureTarget() {
 #elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   return GL_TEXTURE_EXTERNAL_OES;
+#elif BUILDFLAG(IS_IOS)
+  return GL_TEXTURE_2D;
 #elif BUILDFLAG(IS_FUCHSIA)
   // Fuchsia uses Vulkan.
   return 0;

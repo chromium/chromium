@@ -359,7 +359,7 @@ OverlayImageRepresentation::GetDCLayerOverlayImage() {
   NOTREACHED();
   return absl::nullopt;
 }
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 gfx::ScopedIOSurface OverlayImageRepresentation::GetIOSurface() const {
   return gfx::ScopedIOSurface();
 }

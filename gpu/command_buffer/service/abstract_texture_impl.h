@@ -41,7 +41,7 @@ class GPU_GLES2_EXPORT AbstractTextureImpl : public AbstractTexture {
 #if BUILDFLAG(IS_ANDROID)
   void BindToServiceId(GLuint service_id) override;
 #endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   void SetUnboundImage(gl::GLImage* image) override;
 #elif !BUILDFLAG(IS_ANDROID)
   void SetBoundImage(gl::GLImage* image) override;
@@ -77,7 +77,7 @@ class GPU_GLES2_EXPORT AbstractTextureImplPassthrough : public AbstractTexture {
 #if BUILDFLAG(IS_ANDROID)
   void BindToServiceId(GLuint service_id) override;
 #endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   void SetUnboundImage(gl::GLImage* image) override;
 #elif !BUILDFLAG(IS_ANDROID)
   void SetBoundImage(gl::GLImage* image) override;

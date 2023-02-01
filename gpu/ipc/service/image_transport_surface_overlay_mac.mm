@@ -20,8 +20,6 @@
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
 #include "gpu/ipc/service/image_transport_surface_delegate.h"
 #include "ui/accelerated_widget_mac/ca_layer_tree_coordinator.h"
-#include "ui/accelerated_widget_mac/io_surface_context.h"
-#include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/video_types.h"
@@ -29,7 +27,12 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gpu_switching_manager.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/accelerated_widget_mac/io_surface_context.h"
+#include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/gl/scoped_cgl.h"
+#endif
 
 // From ANGLE's EGL/eglext_angle.h. This should be included instead of being
 // redefined here.
@@ -53,7 +56,9 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
     base::WeakPtr<ImageTransportSurfaceDelegate> delegate)
     : gl::Presenter(display, gfx::Size()),
       delegate_(delegate),
+#if BUILDFLAG(IS_MAC)
       use_remote_layer_api_(ui::RemoteLayerAPISupported()),
+#endif
       scale_factor_(1),
       vsync_callback_(delegate->GetGpuVSyncCallback()),
       gl_renderer_id_(0),
@@ -69,6 +74,7 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
            ->workarounds()
            .disable_av_sample_buffer_display_layer;
 
+#if BUILDFLAG(IS_MAC)
   ca_layer_tree_coordinator_ = std::make_unique<ui::CALayerTreeCoordinator>(
       use_remote_layer_api_, allow_av_sample_buffer_display_layer);
 
@@ -80,6 +86,10 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
                                                    options:@{}] retain]);
     [ca_context_ setLayer:ca_layer_tree_coordinator_->GetCALayerForDisplay()];
   }
+#else
+  ca_layer_tree_coordinator_ = std::make_unique<ui::CALayerTreeCoordinator>(
+      /*allow_remote_layers=*/false, allow_av_sample_buffer_display_layer);
+#endif
 }
 
 ImageTransportSurfaceOverlayMacEGL::~ImageTransportSurfaceOverlayMacEGL() {
@@ -173,9 +183,13 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
     TRACE_EVENT_INSTANT2("test_gpu", "SwapBuffers", TRACE_EVENT_SCOPE_THREAD,
                          "GLImpl", static_cast<int>(gl::GetGLImplementation()),
                          "width", pixel_size_.width());
+#if BUILDFLAG(IS_MAC)
     if (use_remote_layer_api_) {
       params.ca_context_id = [ca_context_ contextId];
     } else {
+#else
+    if (true) {
+#endif
       IOSurfaceRef io_surface =
           ca_layer_tree_coordinator_->GetIOSurfaceForDisplay();
       if (io_surface) {

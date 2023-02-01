@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
+#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_fence.h"
 
 namespace gl {
@@ -168,6 +169,7 @@ class OverlayIOSurfaceRepresentation : public OverlayImageRepresentation {
   gfx::ScopedIOSurface io_surface_;
 };
 
+#if BUILDFLAG(USE_DAWN)
 // Representation of a IOSurfaceImageBacking as a Dawn Texture.
 class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
  public:
@@ -194,6 +196,7 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
   // created and pass a pointer to them around?
   DawnProcTable dawn_procs_;
 };
+#endif  // BUILDFLAG(USE_DAWN)
 
 // This class is only put into unique_ptrs and is never copied or assigned.
 class SharedEventAndSignalValue {

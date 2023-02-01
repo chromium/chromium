@@ -2084,7 +2084,7 @@ GLES2DecoderPassthroughImpl::GetTranslator(GLenum type) {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 void GLES2DecoderPassthroughImpl::AttachImageToTextureWithDecoderBinding(
     uint32_t client_texture_id,
     uint32_t texture_target,
@@ -2118,7 +2118,7 @@ void GLES2DecoderPassthroughImpl::BindImageInternal(uint32_t client_texture_id,
 
   // |can_bind_to_sampler| indicates that we don't need to take any action.
   // Otherwise, we do it when the texture is first used for drawing.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   CHECK(!can_bind_to_sampler);
   passthrough_texture->set_bind_pending();
 #else
@@ -2135,7 +2135,7 @@ void GLES2DecoderPassthroughImpl::BindImageInternal(uint32_t client_texture_id,
 }
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 void GLES2DecoderPassthroughImpl::BindOnePendingImage(
     GLenum target,
     TexturePassthrough* texture) {

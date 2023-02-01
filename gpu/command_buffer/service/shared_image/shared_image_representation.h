@@ -28,7 +28,7 @@
 #include "ui/gl/dc_layer_overlay_image.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "ui/gfx/mac/io_surface.h"
 #endif
 
@@ -509,7 +509,7 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
     absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() {
       return representation()->GetDCLayerOverlayImage();
     }
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
     gfx::ScopedIOSurface GetIOSurface() const {
       return representation()->GetIOSurface();
     }
@@ -558,7 +558,7 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
   scoped_refptr<gfx::NativePixmap> GetNativePixmap();
 #elif BUILDFLAG(IS_WIN)
   virtual absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   virtual gfx::ScopedIOSurface GetIOSurface() const;
   // Return true if the macOS WindowServer is currently using the underlying
   // storage for the image.

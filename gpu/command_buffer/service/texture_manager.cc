@@ -1893,7 +1893,7 @@ void Texture::SetBoundLevelImage(GLenum target,
   SetLevelImageInternal(target, level, image, ImageState::BOUND);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 void Texture::SetUnboundLevelImage(GLenum target,
                                    GLint level,
                                    gl::GLImage* image) {
@@ -2608,7 +2608,7 @@ void TextureManager::SetBoundLevelImage(TextureRef* ref,
   ref->texture()->SetBoundLevelImage(target, level, image);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 void TextureManager::SetUnboundLevelImage(TextureRef* ref,
                                           GLenum target,
                                           GLint level,

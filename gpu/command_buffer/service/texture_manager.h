@@ -88,7 +88,7 @@ class GPU_GLES2_EXPORT TexturePassthrough final
   void BindToServiceId(GLuint service_id);
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   // Return true if and only if the decoder should BindTexImage / CopyTexImage
   // us before sampling.
   bool is_bind_pending() const { return is_bind_pending_; }
@@ -117,7 +117,7 @@ class GPU_GLES2_EXPORT TexturePassthrough final
   const GLuint owned_service_id_ = 0;
 
   bool have_context_;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   bool is_bind_pending_ = false;
 #endif
 
@@ -317,7 +317,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   // set by the BindToServiceId.
   void SetBoundLevelImage(GLenum target, GLint level, gl::GLImage* image);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   // Set an image that needs binding for a particular level. If a
   // GLImage was previously set with BindToServiceId(), this will reset
   // |service_id_| back to |owned_service_id_|, removing the service id
@@ -1125,7 +1125,7 @@ class GPU_GLES2_EXPORT TextureManager
                           GLint level,
                           gl::GLImage* image);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   void SetUnboundLevelImage(TextureRef* ref,
                             GLenum target,
                             GLint level,

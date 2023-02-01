@@ -227,7 +227,7 @@ static_library("test_support") {
   }
 }
 
-if (!is_android && !is_fuchsia && !is_chromeos_ash) {
+if (!is_android && !is_fuchsia && !is_chromeos_ash && !is_ios) {
   proto_library("gl_lpm_fuzzer_proto") {
     sources = [ "command_buffer/tests/lpm/gl_lpm_fuzzer.proto" ]
 

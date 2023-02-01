@@ -33,6 +33,7 @@ class GPU_EXPORT GpuControlList {
     kOsChromeOS,
     kOsAndroid,
     kOsFuchsia,
+    kOsIOS,
     kOsAny
   };
 

@@ -51,6 +51,7 @@ class GPU_EXPORT GPUTestConfig {
     kOsChromeOS = 1 << 26,
     kOsAndroid = 1 << 27,
     kOsFuchsia = 1 << 28,
+    kOsIOS = 1 << 29,
     // If we run out of bits, please retire older OS versions, like WinXP,
     // MacLeopard, etc., for which we no longer have bots.
   };

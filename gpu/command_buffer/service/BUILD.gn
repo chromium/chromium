@@ -476,7 +476,7 @@ target(link_target_type, "gles2_sources") {
     }
   }
 
-  if (is_mac) {
+  if (is_apple) {
     deps += [ "//components/viz/common:metal_context_provider" ]
     sources += [
       "shared_image/iosurface_image_backing.h",
@@ -486,13 +486,20 @@ target(link_target_type, "gles2_sources") {
       "shared_image/shared_image_format_utils_mac.mm",
     ]
 
-    # Required by gles2_cmd_decoder.cc on Mac.
+    # Required by gles2_cmd_decoder.cc on Apple.
     frameworks = [
       "Cocoa.framework",
       "IOSurface.framework",
       "Metal.framework",
       "OpenGL.framework",
     ]
+
+    if (is_mac) {
+      frameworks += [
+        "Cocoa.framework",
+        "OpenGL.framework",
+      ]
+    }
   }
 
   if (skia_use_dawn) {

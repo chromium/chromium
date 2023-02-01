@@ -386,7 +386,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   const ContextState* GetContextState() override;
   scoped_refptr<ShaderTranslatorInterface> GetTranslator(GLenum type) override;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
                                               uint32_t texture_target,
                                               gl::GLImage* image) override;
@@ -527,7 +527,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // Textures can be marked as needing binding only on Windows/Mac, so all
   // functionality related to binding textures is relevant only on those
   // platforms.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   // Issue BindTexImage calls for |passthrough_texture|, if
   // they're pending.
   void BindOnePendingImage(GLenum target, TexturePassthrough* texture);
@@ -727,7 +727,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     GLuint unit;
     base::WeakPtr<TexturePassthrough> texture;
   };
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   std::vector<TexturePendingBinding> textures_pending_binding_;
 #endif
 
