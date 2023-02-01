@@ -2495,12 +2495,30 @@ chromium-metrics-reviews@google.com.
   <owner>vasilii@chromium.org</owner>
   <summary>
     The error codes returned by the GMS Core ChromeSync 1P API when
-    {SyncErrorStatus} is returned by SyncService.GetAuthError(). Recorded when
-    the asynchronous job has returned.
+    {SyncErrorStatus} is returned by SyncService.GetTransportState(). Recorded
+    when the asynchronous job has returned.
   </summary>
   <token key="SyncErrorStatus">
-    <variant name="NoAuthError" summary="no error"/>
-    <variant name="PersistentAuthError" summary="a persistent auth error"/>
+    <variant name="NoAuthError" summary="no error">
+      <obsolete>
+        Deprecated in M112 and no longer recorded, see
+        PasswordManager.PasswordStoreAndroidBackend.APIError.SyncNotPaused
+        instead for a replacement that is identical at the time (M112) but is
+        more future-proof (in case the implementation changes and sync gets
+        paused for reasons other than persistent auth errors).
+      </obsolete>
+    </variant>
+    <variant name="PersistentAuthError" summary="a persistent auth error">
+      <obsolete>
+        Deprecated in M112 and no longer recorded, see
+        PasswordManager.PasswordStoreAndroidBackend.APIError.SyncPaused instead
+        for a replacement that is identical at the time (M112) but is more
+        future-proof (in case the implementation changes and sync gets paused
+        for reasons other than persistent auth errors).
+      </obsolete>
+    </variant>
+    <variant name="SyncNotPaused" summary="a state other than PAUSED"/>
+    <variant name="SyncPaused" summary="PAUSED (e.g. persistent auth error)"/>
     <variant name="TransientAuthError" summary="a transient auth error">
       <obsolete>
         Deprecated in M111 and no longer recorded. In M110 and below, it only

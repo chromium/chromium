@@ -1174,7 +1174,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   RunUntilIdle();
 
   constexpr char kAPIErrorMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.APIError.NoAuthError";
+      "PasswordManager.PasswordStoreAndroidBackend.APIError.SyncNotPaused";
 
   histogram_tester.ExpectBucketCount(kAPIErrorMetric, kInternalErrorCode, 1);
 }
@@ -1205,8 +1205,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   RunUntilIdle();
 
   constexpr char kAPIErrorMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.APIError."
-      "PersistentAuthError";
+      "PasswordManager.PasswordStoreAndroidBackend.APIError.SyncPaused";
 
   histogram_tester.ExpectBucketCount(kAPIErrorMetric, kInternalErrorCode, 1);
 }

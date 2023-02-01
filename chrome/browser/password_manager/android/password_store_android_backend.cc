@@ -47,7 +47,6 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
@@ -212,16 +211,14 @@ SuccessStatus GetSuccessStatusFromError(
   return SuccessStatus::kError;
 }
 
-void RecordApiErrorInCombinationWithSyncStatus(
+void RecordApiErrorInCombinationWithSyncTransportState(
     int error_code,
-    GoogleServiceAuthError sync_error) {
+    syncer::SyncService::TransportState sync_transport_state) {
   std::string histogram_suffix;
-  if (sync_error.IsPersistentError()) {
-    histogram_suffix = "PersistentAuthError";
-  } else if (sync_error.IsTransientError()) {
-    NOTREACHED();
+  if (sync_transport_state == syncer::SyncService::TransportState::PAUSED) {
+    histogram_suffix = "SyncPaused";
   } else {
-    histogram_suffix = "NoAuthError";
+    histogram_suffix = "SyncNotPaused";
   }
   base::UmaHistogramSparse(
       "PasswordManager.PasswordStoreAndroidBackend.APIError." +
@@ -1032,8 +1029,8 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code,
     // AndroidBackendAPIErrorCode::kDeveloperError) to catch dev errors.
     DCHECK_EQ(AndroidBackendErrorType::kExternalError, error.type);
-    RecordApiErrorInCombinationWithSyncStatus(error.api_error_code.value(),
-                                              sync_service_->GetAuthError());
+    RecordApiErrorInCombinationWithSyncTransportState(
+        error.api_error_code.value(), sync_service_->GetTransportState());
 
     int api_error = error.api_error_code.value();
     auto api_error_code = static_cast<AndroidBackendAPIErrorCode>(api_error);
