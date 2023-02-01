@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/screen_details/screen_details_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -11,6 +12,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/display/screen_base.h"
 
 namespace content {
@@ -83,16 +85,26 @@ class FakeScreenDetailsTest : public ScreenDetailsTest {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_GetScreensFaked DISABLED_GetScreensFaked
 #else
-// TODO(crbug.com/1119974): Need content_browsertests permission controls.
-#define MAYBE_GetScreensFaked DISABLED_GetScreensFaked
+#define MAYBE_GetScreensFaked GetScreensFaked
 #endif
 IN_PROC_BROWSER_TEST_F(FakeScreenDetailsTest, MAYBE_GetScreensFaked) {
   ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(test_shell(), "'getScreenDetails' in self"));
 
+  content::WebContents* contents = test_shell()->web_contents();
+  PermissionControllerImpl* permission_controller =
+      PermissionControllerImpl::FromBrowserContext(
+          contents->GetBrowserContext());
+  permission_controller->GrantPermissionOverrides(
+      contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+      {blink::PermissionType::WINDOW_MANAGEMENT});
+
   screen()->display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  screen()->display_list().AddDisplay({2, gfx::Rect(901, 100, 801, 802)},
+  display::Display display(2, gfx::Rect(901, 100, 801, 802));
+  // Test that UTF-8 characters are correctly reflected in the JS output.
+  display.set_label("Inbyggd skärm");
+  screen()->display_list().AddDisplay(display,
                                       display::DisplayList::Type::NOT_PRIMARY);
 
   EvalJsResult result =

@@ -131,7 +131,7 @@ float ScreenDetailed::devicePixelRatio() const {
 String ScreenDetailed::label() const {
   if (!DomWindow())
     return String();
-  return String(GetScreenInfo().label);
+  return String::FromUTF8(GetScreenInfo().label);
 }
 
 float ScreenDetailed::highDynamicRangeHeadroom() const {
