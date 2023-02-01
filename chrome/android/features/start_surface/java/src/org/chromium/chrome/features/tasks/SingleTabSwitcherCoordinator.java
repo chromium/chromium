@@ -115,6 +115,11 @@ class SingleTabSwitcherCoordinator implements TabSwitcher {
                 assert false : "should not reach here";
                 return null;
             }
+
+            @Override
+            public void runAnimationOnNextLayout(Runnable r) {
+                assert false : "should not reach here";
+            }
         };
     }
 

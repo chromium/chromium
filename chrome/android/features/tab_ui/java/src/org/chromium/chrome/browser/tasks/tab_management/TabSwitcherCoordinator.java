@@ -910,4 +910,9 @@ public class TabSwitcherCoordinator
         return StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER.getValue()
                 && mode == TabListMode.CAROUSEL;
     }
+
+    @Override
+    public void runAnimationOnNextLayout(Runnable runnable) {
+        mTabListCoordinator.runAnimationOnNextLayout(runnable);
+    }
 }

@@ -51,7 +51,12 @@ public interface StartSurface {
     void onHide();
 
     /**
-     * Called before start surface starts hiding.
+     * Called before the tab switcher starts showing.
+     */
+    void beforeShowTabSwitcherView();
+
+    /**
+     * Called before tab switcher starts hiding.
      */
     void beforeHideTabSwitcherView();
 

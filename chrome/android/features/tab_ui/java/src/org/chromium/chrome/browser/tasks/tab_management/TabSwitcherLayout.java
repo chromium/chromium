@@ -81,6 +81,8 @@ public class TabSwitcherLayout extends Layout {
     // The transition animation from a tab to the tab switcher.
     private AnimatorSet mTabToSwitcherAnimation;
     private boolean mIsAnimatingHide;
+    @Nullable
+    private Runnable mDeferredAnimationRunnable;
 
     private TabListSceneLayer mSceneLayer;
     private final TabSwitcher mTabSwitcher;
@@ -234,13 +236,24 @@ public class TabSwitcherLayout extends Layout {
             // Skip animation when there is no tab in current tab model, we don't show the shrink
             // tab animatio.
             boolean isCurrentTabModelEmpty = mTabModelSelector.getCurrentModel().getCount() == 0;
-            animate = animate && !isCurrentTabModelEmpty;
+            final boolean shouldAnimate = animate && !isCurrentTabModelEmpty;
 
             if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(getContext())) {
-                showOverviewWithTranslateUp(animate);
+                showOverviewWithTranslateUp(shouldAnimate);
             } else {
-                showOverviewWithTabShrink(animate,
-                        () -> mGridTabListDelegate.getThumbnailLocationOfCurrentTab(false), quick);
+                mDeferredAnimationRunnable = () -> {
+                    showOverviewWithTabShrink(shouldAnimate,
+                            ()
+                                    -> mGridTabListDelegate.getThumbnailLocationOfCurrentTab(false),
+                            quick);
+                };
+                mGridTabListDelegate.runAnimationOnNextLayout(() -> {
+                    if (mDeferredAnimationRunnable != null) {
+                        Runnable deferred = mDeferredAnimationRunnable;
+                        mDeferredAnimationRunnable = null;
+                        deferred.run();
+                    }
+                });
             }
         }
     }
@@ -367,6 +380,11 @@ public class TabSwitcherLayout extends Layout {
     @Override
     protected void forceAnimationToFinish() {
         super.forceAnimationToFinish();
+        if (mDeferredAnimationRunnable != null) {
+            Runnable deferred = mDeferredAnimationRunnable;
+            mDeferredAnimationRunnable = null;
+            deferred.run();
+        }
         if (mTabToSwitcherAnimation != null) {
             if (mTabToSwitcherAnimation.isRunning()) {
                 mTabToSwitcherAnimation.end();

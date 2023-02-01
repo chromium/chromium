@@ -618,4 +618,8 @@ public class TabListCoordinator
     public void showPriceDropTooltip(int index) {
         mModel.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, true);
     }
+
+    void runAnimationOnNextLayout(Runnable runnable) {
+        mRecyclerView.runAnimationOnNextLayout(runnable);
+    }
 }

@@ -495,6 +495,18 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
+    public void beforeShowTabSwitcherView() {
+        // TODO(crbug/1386265): This is a temporary workaround to ensure the layout can run
+        // offscreen while invisible for animation purposes. We should refactor this so that the
+        // visibility is controlled independently of IS_SHOWING_OVERVIEW. The final state is
+        // View.VISIBLE after the animation so we don't need to restore the state after the
+        // animation changes.
+        if (mSwipeRefreshLayout != null) {
+            mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
     public void beforeHideTabSwitcherView() {
         mStartSurfaceMediator.beforeHideTabSwitcherView();
     }

@@ -256,6 +256,11 @@ public interface TabSwitcher {
          * Request accessibility focus for the currently selected tab.
          */
         default void requestFocusOnCurrentTab(){};
+
+        /**
+         * @param r Runnable executed on next layout pass to run a show animation.
+         */
+        void runAnimationOnNextLayout(Runnable r);
     }
 
     /**
