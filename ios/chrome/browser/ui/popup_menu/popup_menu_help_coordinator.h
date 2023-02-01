@@ -19,8 +19,6 @@
 // UI updater.
 @property(nonatomic, weak) id<PopupMenuUIUpdating> UIUpdater;
 
-- (void)showPopupMenuButtonIPH;
-
 - (void)showOverflowMenuIPHInViewController:(UIViewController*)menu;
 
 @end

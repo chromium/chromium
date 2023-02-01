@@ -100,10 +100,6 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
   [sceneState removeObserver:self];
 }
 
-- (void)showPopupMenuButtonIPH {
-  [self showPopupMenuBubbleIfNecessary];
-}
-
 - (void)showOverflowMenuIPHInViewController:(UIViewController*)menu {
   // There are 2 reasons to show the IPH in the overflow menu:
   // 1. The alternate flow is enabled and the feature tracker says it can show.
@@ -172,6 +168,19 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
   // The alternate IPH flow only shows the IPH when entering the menu.
   if (IsNewOverflowMenuAlternateIPHEnabled()) {
     return;
+  }
+
+  // If the Feature Engagement Tracker isn't ready, queue up and re-show when
+  // it has finished initializing.
+  if (!self.featureEngagementTracker->IsInitialized()) {
+    __weak __typeof(self) weakSelf = self;
+    self.featureEngagementTracker->AddOnInitializedCallback(
+        base::BindRepeating(^(bool success) {
+          if (!success) {
+            return;
+          }
+          [weakSelf showPopupMenuBubbleIfNecessary];
+        }));
   }
 
   // Skip if a presentation is already in progress
