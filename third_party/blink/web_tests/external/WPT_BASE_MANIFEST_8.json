@@ -263325,11 +263325,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "8101acb91298279fb182000d070712723c970f0c",
+     "abe6de5c05b8f74be77119cafb3b0187b91a3b30",
      []
     ],
     "mtime.json": [
-     "88064eb1047bcad8606662acea1178eec0eca4a8",
+     "f4c3179d8f25b2d646538ffd84a5a024b3f2b8d0",
      []
     ]
    },
@@ -285726,6 +285726,10 @@
       []
      ],
      "container-queries": {
+      "DIR_METADATA": [
+       "2fa113f5f777ecbc33fcb295316c42fd7dfa8f71",
+       []
+      ],
       "__dir__.ini": [
        "298ed182cec84b130ce3edf739dc9bd3303b3906",
        []
@@ -287123,7 +287127,7 @@
        []
       ],
       "system-extends.html.ini": [
-       "cce2bed8622a3a0a0dd36e8fdb474eec038580dc",
+       "19562ba7d01c458bcc7983c5c3d7013ae7091908",
        []
       ],
       "system-fixed-ref.html": [
@@ -290447,6 +290451,10 @@
       "9b64f122f6f1efb9052bec897cda72b6d45d2cdd",
       []
      ],
+     "gap-006-rl.html.ini": [
+      "60e777cddcbeb38a4333ac504732e64f99857263",
+      []
+     ],
      "gap-006-rtl-ref.html": [
       "3f64a75269d59a276943b46c6a47fa96b1cab7a2",
       []
@@ -291478,7 +291486,7 @@
       []
      ],
      "cjk-kerning.html.ini": [
-      "5f57054ae95563dfd924ace4a18776bd51a65c77",
+      "cf10f40714d0b64c83f8037bd93071a2b6b95c94",
       []
      ],
      "crash-large-grapheme-cluster.html.ini": [
@@ -325916,6 +325924,10 @@
        "383158fa4f2968546607660b8170257687bb1615",
        []
       ],
+      "kind-of-widget-fallback-textarea-border-start-start-radius-001.html.ini": [
+       "7507d0dd65818071cdfc2fdbe3a96d7249cc1e24",
+       []
+      ],
       "kind-of-widget-fallback-textarea-border-top-color-001.html.ini": [
        "9af42e769df5911125cc0aca08424b5836c96aca",
        []
@@ -326744,7 +326756,7 @@
       []
      ],
      "outline-025.html.ini": [
-      "c5515ab0e129b5c55bd8b4e73f4750c363cae17d",
+      "cc571ab0463da9cf32819f1e820b5ef4b9ce9ab4",
       []
      ],
      "outline-026.html.ini": [
@@ -329086,7 +329098,7 @@
       []
      ],
      "content-with-clip-max-texture-size.html.ini": [
-      "243c1b5ef4502506132f9ea05d027bb40cf3aa8d",
+      "9adefd74cdd6b0dfc74d5b6bd340137511be6705",
       []
      ],
      "content-with-clip-ref.html": [
@@ -329290,7 +329302,7 @@
       []
      ],
      "new-content-captures-opacity.html.ini": [
-      "d7050b65f96330547518a1c4d9f4550b7cf14912",
+      "bb2bfdd1762ce7a2b4b0782637bf6df588ef8e95",
       []
      ],
      "new-content-captures-root-ref.html": [
@@ -329326,7 +329338,7 @@
       []
      ],
      "new-content-intrinsic-aspect-ratio.html.ini": [
-      "dd8121062b36f51c0fa600189adf4b6f97f99a35",
+      "fa18c60023d714471cc7816cca3c1a820af84951",
       []
      ],
      "new-content-is-empty-div-ref.html": [
@@ -329466,7 +329478,7 @@
       []
      ],
      "old-content-captures-clip-path.html.ini": [
-      "67fc6d8cbb1b067eee03844932424475ae95b41a",
+      "660a6e5a4e5785bf859044663bc1a7d8e29ff691",
       []
      ],
      "old-content-captures-different-size-ref.html": [
@@ -329664,7 +329676,7 @@
       []
      ],
      "root-to-shared-animation-incoming.html.ini": [
-      "af41c454f3be96f8d74b116fc11c54b40cac09e2",
+      "395fe994d6edbbad6fb9049cc2782692c3587040",
       []
      ],
      "root-to-shared-animation-start-ref.html": [
@@ -371803,7 +371815,7 @@
        []
       ],
       "underover-stretchy-001.html.ini": [
-       "bad84d9cb002a9c85a67039ada0d302332d18aa9",
+       "00e37f7e4fc3ed11f26267431e006759b447158e",
        []
       ],
       "underover-stretchy-002-ref.html": [
@@ -375874,7 +375886,7 @@
       []
      ],
      "performance-navigation-timing-same-origin-bfcache.tentative.window.js.ini": [
-      "a7414b2e31aaebcdf7373b5217c283682827ab56",
+      "2faeab35f7932b2191cc0d963c0bc95d8cdfd868",
       []
      ],
      "performance-navigation-timing-same-origin-replace.tentative.window.js.ini": [
@@ -393746,6 +393758,18 @@
      "0495673f2d32baea0688361980c9c4b204ec297e",
      []
     ],
+    "conv_transpose2d.https.any-expected.txt": [
+     "a90b5a75a82ff8beaa79f16d604f8f84cc7a5e19",
+     []
+    ],
+    "conv_transpose2d.https.any.js.ini": [
+     "5f10dbebef490fb46462a652f813bda2b5ebceec",
+     []
+    ],
+    "conv_transpose2d.https.any.worker-expected.txt": [
+     "31dba769dfe3a68ed133b320ae91e0984be0593a",
+     []
+    ],
     "elementwise_binary.https.any-expected.txt": [
      "d1aa1a09165867b0b8736ad5bdfe672e10d9e583",
      []
@@ -393900,6 +393924,10 @@
        "ca7dc74aa7968f1d03788fe3a9fd7e7931ecb66d",
        []
       ],
+      "conv_transpose2d.json": [
+       "311a7d9c78aaca3e1f9be2fdda045bee897ba12e",
+       []
+      ],
       "cos.json": [
        "4d992325509141a4e5959e84317567722624edc6",
        []
@@ -394026,7 +394054,7 @@
       ]
      },
      "utils.js": [
-      "a7d67825cd644b4c17035d99df368518918bc2e9",
+      "f727d3ffe36fbcc74096d4cbe66358be2402c562",
       []
      ]
     },
@@ -439207,7 +439235,7 @@
        ]
       ],
       "custom-property-style-queries.html": [
-       "7a11d45c3133f72c9bcff1e724180152a637cfed",
+       "064e73bb25c9fd26b0b50ea9dac75ebd770b7211",
        [
         null,
         {}
@@ -565862,14 +565890,14 @@
      ]
     ],
     "MediaStreamTrack-applyConstraints-fast.html": [
-     "2bc5999544f7c351e172e13aa45fba818f8e80c5",
+     "d80ab67321fe5a238efe5e917aba037d2a406981",
      [
       null,
       {}
      ]
     ],
     "MediaStreamTrack-applyConstraints-getSettings.https.html": [
-     "1309d3bded8f83b51189ff8e0d281f4796244838",
+     "c6401570b8ba3e370be5b8414efb8e8d158c9a4d",
      [
       null,
       {
@@ -565878,7 +565906,7 @@
      ]
     ],
     "MediaStreamTrack-applyConstraints-reject.https.html": [
-     "ac6216ae199f97c3abd8062e3a31a3cc3eb7dec2",
+     "5050ed27dd8e31a84dba7428d6008a3ab7932e45",
      [
       null,
       {
@@ -629532,6 +629560,57 @@
         [
          "title",
          "test WebNN API conv2d operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "conv_transpose2d.https.any.js": [
+     "8a1f30d5272d44266d562d4db70ba71f1e3c4d52",
+     [
+      "webnn/conv_transpose2d.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API convTranspose2d operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/conv_transpose2d.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API convTranspose2d operation"
         ],
         [
          "global",
