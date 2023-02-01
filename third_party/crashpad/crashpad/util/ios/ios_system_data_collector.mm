@@ -102,6 +102,16 @@ IOSSystemDataCollector::IOSSystemDataCollector()
 #if defined(ARCH_CPU_X86_64)
   cpu_vendor_ = ReadStringSysctlByName("machdep.cpu.vendor");
 #endif
+  uint32_t addressable_bits = 0;
+  size_t len = sizeof(uint32_t);
+  // `machdep.virtual_address_size` is the number of addressable bits in
+  // userspace virtual addresses
+  if (sysctlbyname(
+          "machdep.virtual_address_size", &addressable_bits, &len, NULL, 0) !=
+      0) {
+    addressable_bits = 0;
+  }
+  address_mask_ = ~((1UL << addressable_bits) - 1);
 
 #if TARGET_OS_SIMULATOR
   // TODO(justincohen): Consider adding board and model information to

@@ -102,7 +102,8 @@ bool ProcessException(const DWORD* handled_exceptions,
       break;
     }
   }
-  if (!found)
+  // If num_handled_exceptions == 0, all exceptions should be passed on.
+  if (!found && num_handled_exceptions != 0)
     return false;
 
   // Grab out the handles to the crashpad server.

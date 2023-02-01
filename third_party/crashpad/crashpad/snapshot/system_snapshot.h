@@ -275,6 +275,20 @@ class SystemSnapshot {
                         int* daylight_offset_seconds,
                         std::string* standard_name,
                         std::string* daylight_name) const = 0;
+
+  //! \brief Returns a mask indicating the range of valid addresses for a
+  //!     pointer.
+  //!
+  //! ARM64 supports storing pointer authentication codes in the upper bits of
+  //! a pointer. This mask is generated based on the number of bits in a pointer
+  //! reserved for the authentication codes. To recover an address from pointer
+  //! with an authentication code, `AND` this mask with the pointer. If the pac
+  //! sign extension bit is set, instead `~` and `OR` this mask with the
+  //! pointer.
+  //!
+  //! If the platform does not support pointer authentication, or the range of
+  //! valid addressees for a pointer was inaccessible, this field will be 0.
+  virtual uint64_t AddressMask() const = 0;
 };
 
 }  // namespace crashpad

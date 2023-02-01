@@ -73,6 +73,7 @@ class SystemSnapshotIOSIntermediateDump final : public SystemSnapshot {
                 int* daylight_offset_seconds,
                 std::string* standard_name,
                 std::string* daylight_name) const override;
+  uint64_t AddressMask() const override;
 
  private:
   std::string os_version_build_;
@@ -91,6 +92,7 @@ class SystemSnapshotIOSIntermediateDump final : public SystemSnapshot {
   int daylight_offset_seconds_;
   std::string standard_name_;
   std::string daylight_name_;
+  uint64_t address_mask_;
   InitializationStateDcheck initialized_;
 };
 

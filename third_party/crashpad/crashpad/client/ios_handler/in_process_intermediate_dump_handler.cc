@@ -672,6 +672,8 @@ void InProcessIntermediateDumpHandler::WriteSystemInfo(
                 IntermediateDumpKey::kDaylightName,
                 daylight_name.c_str(),
                 daylight_name.length());
+  uint64_t address_mask = system_data.AddressMask();
+  WriteProperty(writer, IntermediateDumpKey::kAddressMask, &address_mask);
 
   vm_size_t page_size;
   host_page_size(mach_host_self(), &page_size);

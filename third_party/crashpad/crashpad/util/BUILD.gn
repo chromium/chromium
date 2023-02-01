@@ -411,6 +411,8 @@ crashpad_static_library("util") {
       "ios/scoped_background_task.mm",
       "ios/scoped_vm_read.cc",
       "ios/scoped_vm_read.h",
+      "ios/scoped_vm_map.cc",
+      "ios/scoped_vm_map.h",
     ]
   }
 
@@ -845,6 +847,7 @@ source_set("util_test") {
       "ios/ios_intermediate_dump_reader_test.cc",
       "ios/ios_intermediate_dump_writer_test.cc",
       "ios/scoped_vm_read_test.cc",
+      "ios/scoped_vm_map_test.cc",
     ]
 
     sources -= [

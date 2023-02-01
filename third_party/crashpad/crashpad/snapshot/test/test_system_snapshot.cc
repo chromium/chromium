@@ -36,14 +36,14 @@ TestSystemSnapshot::TestSystemSnapshot()
       os_version_bugfix_(0),
       os_version_build_(),
       os_version_full_(),
+      address_mask_(0),
       nx_enabled_(false),
       machine_description_(),
       time_zone_dst_status_(kDoesNotObserveDaylightSavingTime),
       time_zone_standard_offset_seconds_(0),
       time_zone_daylight_offset_seconds_(0),
       time_zone_standard_name_(),
-      time_zone_daylight_name_() {
-}
+      time_zone_daylight_name_() {}
 
 TestSystemSnapshot::~TestSystemSnapshot() {
 }
@@ -128,6 +128,10 @@ void TestSystemSnapshot::TimeZone(DaylightSavingTimeStatus* dst_status,
   *daylight_offset_seconds = time_zone_daylight_offset_seconds_;
   *standard_name = time_zone_standard_name_;
   *daylight_name = time_zone_daylight_name_;
+}
+
+uint64_t TestSystemSnapshot::AddressMask() const {
+  return address_mask_;
 }
 
 }  // namespace test

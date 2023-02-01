@@ -74,6 +74,7 @@ class SystemSnapshotMinidump : public SystemSnapshot {
                 int* daylight_offset_seconds,
                 std::string* standard_name,
                 std::string* daylight_name) const override;
+  uint64_t AddressMask() const override;
 
  private:
   MINIDUMP_SYSTEM_INFO minidump_system_info_;

@@ -195,5 +195,11 @@ void SystemSnapshotMinidump::TimeZone(DaylightSavingTimeStatus* dst_status,
   NOTREACHED();  // https://crashpad.chromium.org/bug/10
 }
 
+uint64_t SystemSnapshotMinidump::AddressMask() const {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  NOTREACHED();  // https://crashpad.chromium.org/bug/10
+  return 0;
+}
+
 }  // namespace internal
 }  // namespace crashpad

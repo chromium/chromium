@@ -1,4 +1,4 @@
-// Copyright 2022 The Crashpad Authors
+// Copyright 2023 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,24 +14,22 @@
 
 #include "client/length_delimited_ring_buffer.h"
 
+#include <stdint.h>
+
 #include <array>
 #include <string>
 #include <vector>
 
-#include <stdint.h>
-
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
+namespace crashpad {
+namespace test {
 namespace {
 
-using ::crashpad::LengthDelimitedRingBufferReader;
-using ::crashpad::LengthDelimitedRingBufferWriter;
-using ::crashpad::RingBufferData;
-
-using ::testing::Eq;
-using ::testing::IsFalse;
-using ::testing::IsTrue;
+using testing::Eq;
+using testing::IsFalse;
+using testing::IsTrue;
 
 // Buffer with magic 0xcab00d1e, version 1, read_pos 0, length 3, and 3 bytes of
 // data (1 varint length, 2 bytes data)
@@ -44,8 +42,8 @@ constexpr size_t kValidBufferSize3Len =
 // Buffer with magic 0xcab00d1e, version 8, read_pos 0, length 3, and 3 bytes of
 // data (1 varint length, 2 bytes data).
 constexpr char kInvalidVersionBuffer[] =
-    "\x1e\x0d\xb0\xca\x08\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x02\xAB"
-    "\xCD";
+    "\x1e\x0d\xb0\xca\x08\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x02\xab"
+    "\xcd";
 constexpr size_t kInvalidVersionBufferLen =
     sizeof(kInvalidVersionBuffer) - 1;  // Remove trailing NUL.
 
@@ -59,6 +57,32 @@ constexpr size_t kMidCrashBufferLen =
     sizeof(kMidCrashBuffer) - 1;  // Remove trailing NUL.
 
 constexpr uint8_t kHello[] = {0x68, 0x65, 0x6c, 0x6c, 0x6f};
+
+// Invalid buffer containing malformed varint in data payload (Base 128 varint
+// with length 6, which would represent a data length > 32 bits).
+constexpr char kInvalidBase128VarintBuffer[] =
+    "\x1e\x0d\xb0\xca\x01\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x80\x80"
+    "\x80\x80\x80\x01";
+constexpr size_t kInvalidBase128VarintBufferLen =
+    sizeof(kInvalidBase128VarintBuffer) - 1;  // Remove trailing NUL.
+
+// Invalid buffer containing malformed varint in data payload (Base 128 varint
+// with length 5 but bits 33 and 34 set, which would represent a data length >
+// 32 bits).
+constexpr char kInvalidBase128VarintBits33And34SetBuffer[] =
+    "\x1e\x0d\xb0\xca\x01\x00\x00\x00\x00\x00\x00\x00\x05\x00\x00\x00\x80\x80"
+    "\x80\x80\x60";
+constexpr size_t kInvalidBase128VarintBits33And34SetBufferLen =
+    sizeof(kInvalidBase128VarintBits33And34SetBuffer) -
+    1;  // Remove trailing NUL.
+
+// Invalid buffer containing too-short data payload (varint length indicates
+// payload length is 4 but payload only contains 3 bytes).
+constexpr char kInvalidPayloadBufferTooShort[] =
+    "\x1e\x0d\xb0\xca\x01\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x04"
+    "\x42\x42\x42";
+constexpr size_t kInvalidPayloadBufferTooShortLen =
+    sizeof(kInvalidPayloadBufferTooShort) - 1;  // Remove trailing NUL.
 
 TEST(LengthDelimitedRingBufferTest,
      RingBufferDataShouldStartWithMagicAndVersion) {
@@ -218,10 +242,10 @@ TEST(LengthDelimitedRingBufferDataTest,
 
 TEST(LengthDelimitedRingBufferDataTest, PushThenPopWithLengthVarintTwoBytes) {
   RingBufferData ring_buffer;
-  std::string s(150, 'X');
+  decltype(ring_buffer)::SizeType size = 150;
+  std::string s(size, 'X');
   LengthDelimitedRingBufferWriter writer(ring_buffer);
-  ASSERT_THAT(writer.Push(reinterpret_cast<const uint8_t*>(s.c_str()),
-                          static_cast<uint32_t>(s.length())),
+  ASSERT_THAT(writer.Push(reinterpret_cast<const uint8_t*>(s.c_str()), size),
               IsTrue());
 
   LengthDelimitedRingBufferReader reader(ring_buffer);
@@ -255,6 +279,44 @@ TEST(LengthDelimitedRingBufferDataTest,
 }
 
 TEST(LengthDelimitedRingBufferDataTest,
+     DeserializeFromInvalidVarintLengthShouldSucceedButPopShouldFail) {
+  RingBufferData ring_buffer;
+  EXPECT_THAT(ring_buffer.DeserializeFromBuffer(
+                  reinterpret_cast<const uint8_t*>(kInvalidBase128VarintBuffer),
+                  kInvalidBase128VarintBufferLen),
+              IsTrue());
+  LengthDelimitedRingBufferReader reader(ring_buffer);
+  std::vector<uint8_t> data;
+  EXPECT_THAT(reader.Pop(data), IsFalse());
+}
+
+TEST(LengthDelimitedRingBufferDataTest,
+     DeserializeFromInvalidVarintBitsShouldSucceedButPopShouldFail) {
+  RingBufferData ring_buffer;
+  EXPECT_THAT(ring_buffer.DeserializeFromBuffer(
+                  reinterpret_cast<const uint8_t*>(
+                      kInvalidBase128VarintBits33And34SetBuffer),
+                  kInvalidBase128VarintBits33And34SetBufferLen),
+              IsTrue());
+  LengthDelimitedRingBufferReader reader(ring_buffer);
+  std::vector<uint8_t> data;
+  EXPECT_THAT(reader.Pop(data), IsFalse());
+}
+
+TEST(LengthDelimitedRingBufferDataTest,
+     DeserializeFromInvalidPayloadBufferTooShortShouldSucceedButPopShouldFail) {
+  RingBufferData ring_buffer;
+  EXPECT_THAT(
+      ring_buffer.DeserializeFromBuffer(
+          reinterpret_cast<const uint8_t*>(kInvalidPayloadBufferTooShort),
+          kInvalidPayloadBufferTooShortLen),
+      IsTrue());
+  LengthDelimitedRingBufferReader reader(ring_buffer);
+  std::vector<uint8_t> data;
+  EXPECT_THAT(reader.Pop(data), IsFalse());
+}
+
+TEST(LengthDelimitedRingBufferDataTest,
      DeserializeFromFullBufferShouldSucceed) {
   RingBufferData<3> ring_buffer;
   EXPECT_THAT(ring_buffer.DeserializeFromBuffer(
@@ -282,3 +344,5 @@ TEST(LengthDelimitedRingBufferDataTest,
 }
 
 }  // namespace
+}  // namespace test
+}  // namespace crashpad

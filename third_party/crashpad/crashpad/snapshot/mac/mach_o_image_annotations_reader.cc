@@ -26,7 +26,6 @@
 #include "snapshot/mac/mach_o_image_reader.h"
 #include "snapshot/mac/process_reader_mac.h"
 #include "snapshot/snapshot_constants.h"
-#include "util/mac/mac_util.h"
 #include "util/stdlib/strnlen.h"
 
 namespace crashpad {
@@ -69,11 +68,16 @@ std::vector<AnnotationSnapshot> MachOImageAnnotationsReader::AnnotationsList()
 void MachOImageAnnotationsReader::ReadCrashReporterClientAnnotations(
     std::vector<std::string>* vector_annotations) const {
   mach_vm_address_t crash_info_address;
-  const char* segment =
-      MacOSVersionNumber() >= 13'00'00 ? "__DATA_DIRTY" : SEG_DATA;
   const process_types::section* crash_info_section =
       image_reader_->GetSectionByName(
-          segment, "__crash_info", &crash_info_address);
+          SEG_DATA, "__crash_info", &crash_info_address);
+
+  if (!crash_info_section) {
+    // On macOS 13, under some circumstances, `__crash_info` ends up in the
+    // `__DATA_DIRTY` segment. This is known to happen for `dyld`.
+    crash_info_section = image_reader_->GetSectionByName(
+        "__DATA_DIRTY", "__crash_info", &crash_info_address);
+  }
   if (!crash_info_section) {
     return;
   }

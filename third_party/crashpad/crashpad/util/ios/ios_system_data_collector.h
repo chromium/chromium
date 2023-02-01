@@ -43,6 +43,7 @@ class IOSSystemDataCollector {
   const std::string& StandardName() const { return standard_name_; }
   const std::string& DaylightName() const { return daylight_name_; }
   bool IsApplicationActive() const { return active_; }
+  uint64_t AddressMask() const { return address_mask_; }
 
   // Currently unused by minidump.
   int Orientation() const { return orientation_; }
@@ -80,6 +81,7 @@ class IOSSystemDataCollector {
   std::string standard_name_;
   std::string daylight_name_;
   ActiveApplicationCallback active_application_callback_;
+  uint64_t address_mask_;
 };
 
 }  // namespace internal
