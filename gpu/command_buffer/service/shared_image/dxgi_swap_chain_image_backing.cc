@@ -34,20 +34,8 @@
 #include "ui/gl/gl_utils.h"
 
 namespace gpu {
-
 namespace {
-
 const char* kDXGISwapChainImageBackingLabel = "DXGISwapChainImageBacking";
-
-bool IsWaitableSwapChainEnabled() {
-  return base::FeatureList::IsEnabled(features::kDXGIWaitableSwapChain);
-}
-
-UINT GetMaxWaitableQueuedFrames() {
-  return static_cast<UINT>(
-      features::kDXGIWaitableSwapChainMaxQueuedFrames.Get());
-}
-
 }  // namespace
 
 // static
@@ -91,7 +79,7 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
   if (gl::DirectCompositionSwapChainTearingEnabled()) {
     desc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
   }
-  if (IsWaitableSwapChainEnabled()) {
+  if (gl::DXGIWaitableSwapChainEnabled()) {
     desc.Flags |= DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
   }
 
@@ -124,8 +112,9 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
         gfx::ColorSpaceWin::GetDXGIColorSpace(color_space));
     DCHECK_EQ(hr, S_OK) << ", SetColorSpace1 failed: "
                         << logging::SystemErrorCodeToString(hr);
-    if (IsWaitableSwapChainEnabled()) {
-      hr = swap_chain_3->SetMaximumFrameLatency(GetMaxWaitableQueuedFrames());
+    if (gl::DXGIWaitableSwapChainEnabled()) {
+      hr = swap_chain_3->SetMaximumFrameLatency(
+          gl::GetDXGIWaitableSwapChainMaxQueuedFrames());
       DCHECK_EQ(hr, S_OK) << ", SetMaximumFrameLatency failed: "
                           << logging::SystemErrorCodeToString(hr);
     }

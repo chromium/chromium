@@ -73,6 +73,12 @@ GL_EXPORT bool DXGISwapChainTearingSupported();
 // Returns true if tearing should be used for dcomp root and video swap chains.
 GL_EXPORT bool DirectCompositionSwapChainTearingEnabled();
 
+// Returns true if waitable swap chain should be used to reduce display latency.
+GL_EXPORT bool DXGIWaitableSwapChainEnabled();
+
+// Returns the value passed to SetMaximumFrameLatency for waitable swap chains.
+GL_EXPORT UINT GetDXGIWaitableSwapChainMaxQueuedFrames();
+
 // Returns true if there is an HDR capable display connected.
 GL_EXPORT bool DirectCompositionSystemHDREnabled();
 

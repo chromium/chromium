@@ -718,6 +718,15 @@ bool DirectCompositionSwapChainTearingEnabled() {
   return DXGISwapChainTearingSupported() && !features::UseGpuVsync();
 }
 
+bool DXGIWaitableSwapChainEnabled() {
+  return base::FeatureList::IsEnabled(features::kDXGIWaitableSwapChain);
+}
+
+UINT GetDXGIWaitableSwapChainMaxQueuedFrames() {
+  return static_cast<UINT>(
+      features::kDXGIWaitableSwapChainMaxQueuedFrames.Get());
+}
+
 void SetDirectCompositionOverlayWorkarounds(
     const DirectCompositionOverlayWorkarounds& workarounds) {
   // This has to be set before initializing overlay caps.

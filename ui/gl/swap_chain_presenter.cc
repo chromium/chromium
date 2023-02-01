@@ -1659,12 +1659,18 @@ bool SwapChainPresenter::ReallocateSwapChain(
   desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
   desc.Flags =
       DXGI_SWAP_CHAIN_FLAG_YUV_VIDEO | DXGI_SWAP_CHAIN_FLAG_FULLSCREEN_VIDEO;
-  if (DirectCompositionSwapChainTearingEnabled())
+  if (DirectCompositionSwapChainTearingEnabled()) {
     desc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-  if (IsProtectedVideo(protected_video_type))
+  }
+  if (DXGIWaitableSwapChainEnabled()) {
+    desc.Flags |= DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+  }
+  if (IsProtectedVideo(protected_video_type)) {
     desc.Flags |= DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY;
-  if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected)
+  }
+  if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected) {
     desc.Flags |= DXGI_SWAP_CHAIN_FLAG_HW_PROTECTED;
+  }
   desc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
 
   const std::string kSwapChainCreationResultByVideoTypeUmaPrefix =
@@ -1702,12 +1708,18 @@ bool SwapChainPresenter::ReallocateSwapChain(
 
     desc.Format = swap_chain_format;
     desc.Flags = DXGI_SWAP_CHAIN_FLAG_FULLSCREEN_VIDEO;
-    if (IsProtectedVideo(protected_video_type))
-      desc.Flags |= DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY;
-    if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected)
-      desc.Flags |= DXGI_SWAP_CHAIN_FLAG_HW_PROTECTED;
-    if (DirectCompositionSwapChainTearingEnabled())
+    if (DirectCompositionSwapChainTearingEnabled()) {
       desc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+    }
+    if (DXGIWaitableSwapChainEnabled()) {
+      desc.Flags |= DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+    }
+    if (IsProtectedVideo(protected_video_type)) {
+      desc.Flags |= DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY;
+    }
+    if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected) {
+      desc.Flags |= DXGI_SWAP_CHAIN_FLAG_HW_PROTECTED;
+    }
 
     HRESULT hr = media_factory->CreateSwapChainForCompositionSurfaceHandle(
         d3d11_device_.Get(), swap_chain_handle_.Get(), &desc, nullptr,
@@ -1729,6 +1741,17 @@ bool SwapChainPresenter::ReallocateSwapChain(
       return false;
     }
   }
+
+  if (DXGIWaitableSwapChainEnabled()) {
+    Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3;
+    if (SUCCEEDED(swap_chain_.As(&swap_chain3))) {
+      HRESULT hr = swap_chain3->SetMaximumFrameLatency(
+          GetDXGIWaitableSwapChainMaxQueuedFrames());
+      DCHECK(SUCCEEDED(hr)) << "SetMaximumFrameLatency failed with error "
+                            << logging::SystemErrorCodeToString(hr);
+    }
+  }
+
   gl::LabelSwapChainAndBuffers(swap_chain_.Get(), "SwapChainPresenter");
 
   swap_chain_format_ = swap_chain_format;

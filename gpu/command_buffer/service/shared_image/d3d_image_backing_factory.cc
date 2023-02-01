@@ -256,19 +256,33 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
   desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
   desc.Scaling = DXGI_SCALING_STRETCH;
   desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-  desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+  desc.Flags = 0;
+  if (gl::DXGISwapChainTearingSupported()) {
+    desc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+  }
+  if (gl::DXGIWaitableSwapChainEnabled()) {
+    desc.Flags |= DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+  }
   desc.AlphaMode = si_format.HasAlpha() ? DXGI_ALPHA_MODE_PREMULTIPLIED
                                         : DXGI_ALPHA_MODE_IGNORE;
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;
-
   HRESULT hr = dxgi_factory->CreateSwapChainForComposition(
       d3d11_device_.Get(), &desc, nullptr, &swap_chain);
-
   if (FAILED(hr)) {
     LOG(ERROR) << "CreateSwapChainForComposition failed with error " << std::hex
                << hr;
     return {nullptr, nullptr};
+  }
+
+  if (gl::DXGIWaitableSwapChainEnabled()) {
+    Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3;
+    if (SUCCEEDED(swap_chain.As(&swap_chain3))) {
+      hr = swap_chain3->SetMaximumFrameLatency(
+          gl::GetDXGIWaitableSwapChainMaxQueuedFrames());
+      DCHECK(SUCCEEDED(hr)) << "SetMaximumFrameLatency failed with error "
+                            << logging::SystemErrorCodeToString(hr);
+    }
   }
 
   // Explicitly clear front and back buffers to ensure that there are no
