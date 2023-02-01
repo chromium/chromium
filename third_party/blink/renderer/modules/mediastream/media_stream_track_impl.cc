@@ -837,8 +837,21 @@ void MediaStreamTrackImpl::SourceChangedCaptureConfiguration() {
     return;
   }
 
-  // TODO(crbug.com/1409011): Get the current capture capabilities and settings
-  // and dispatch a configurationchange event if they differ from the old ones.
+  // Update the current image capture capabilities and settings and dispatch a
+  // configurationchange event if they differ from the old ones.
+  if (image_capture_) {
+    image_capture_->UpdateAndCheckMediaTrackSettingsAndCapabilities(
+        WTF::BindOnce(&MediaStreamTrackImpl::MaybeDispatchConfigurationChange,
+                      WrapWeakPersistent(this)));
+  }
+}
+
+void MediaStreamTrackImpl::MaybeDispatchConfigurationChange(bool has_changed) {
+  DCHECK(IsMainThread());
+
+  if (has_changed) {
+    DispatchEvent(*Event::Create(event_type_names::kConfigurationchange));
+  }
 }
 
 void MediaStreamTrackImpl::SourceChangedCaptureHandle() {

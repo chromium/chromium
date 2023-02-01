@@ -9,4 +9,6 @@
       MediaDeviceInfo deviceInfo,
       MediaTrackConstraints capabilities,
       MediaStreamTrack? dataSource);
+
+  void fakeCaptureConfigurationChanged(MediaStreamTrack? track);
 };

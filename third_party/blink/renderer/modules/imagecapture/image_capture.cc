@@ -391,6 +391,42 @@ ScriptPromise ImageCapture::grabFrame(ScriptState* script_state) {
   return promise;
 }
 
+void ImageCapture::UpdateAndCheckMediaTrackSettingsAndCapabilities(
+    base::OnceCallback<void(bool)> callback) {
+  service_->GetPhotoState(
+      stream_track_->Component()->Source()->Id(),
+      WTF::BindOnce(&ImageCapture::GotPhotoState, WrapPersistent(this),
+                    std::move(callback)));
+}
+
+void ImageCapture::GotPhotoState(
+    base::OnceCallback<void(bool)> callback,
+    media::mojom::blink::PhotoStatePtr photo_state) {
+  MediaTrackSettings* settings = MediaTrackSettings::Create();
+  MediaTrackCapabilities* capabilities = MediaTrackCapabilities::Create();
+
+  // Take a snapshot of local track settings and capabilities.
+  CopySettings(settings_, settings, CopyPanTiltZoom(true));
+  CopyCapabilities(capabilities_, capabilities, CopyPanTiltZoom(true));
+
+  // Update local track settings and capabilities.
+  UpdateMediaTrackSettingsAndCapabilities(base::DoNothing(),
+                                          std::move(photo_state));
+
+  // Check whether background blur settings and capabilities have changed.
+  if (settings_->hasBackgroundBlur() != settings->hasBackgroundBlur() ||
+      (settings_->hasBackgroundBlur() &&
+       settings_->backgroundBlur() != settings->backgroundBlur()) ||
+      capabilities_->hasBackgroundBlur() != capabilities->hasBackgroundBlur() ||
+      (capabilities_->hasBackgroundBlur() &&
+       capabilities_->backgroundBlur() != capabilities->backgroundBlur())) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  std::move(callback).Run(false);
+}
+
 void ImageCapture::GetMediaTrackCapabilities(
     MediaTrackCapabilities* capabilities) const {
   // Merge any present |capabilities_| members into |capabilities|.

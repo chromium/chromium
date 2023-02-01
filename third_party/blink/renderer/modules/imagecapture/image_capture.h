@@ -68,6 +68,11 @@ class MODULES_EXPORT ImageCapture final
 
   bool HasPanTiltZoomPermissionGranted() const;
 
+  // Update the current settings and capabilities and check whether local
+  // changes to background blur settings and capabilities were detected.
+  void UpdateAndCheckMediaTrackSettingsAndCapabilities(
+      base::OnceCallback<void(bool)>);
+
   // Called by MediaStreamTrack::clone() to get a clone with same capabilities,
   // settings, and constraints.
   ImageCapture* Clone() const;
@@ -117,6 +122,12 @@ class MODULES_EXPORT ImageCapture final
 
   // Returns true if page is visible. Otherwise returns false.
   bool IsPageVisible();
+
+  // Call UpdateMediaTrackSettingsAndCapabilities with |photo_state| and call
+  // |callback| with whether local changes to background blur settings and
+  // capabilities were detected.
+  void GotPhotoState(base::OnceCallback<void(bool)> callback,
+                     media::mojom::blink::PhotoStatePtr photo_state);
 
   const String& SourceId() const;
 
