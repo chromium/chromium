@@ -2156,7 +2156,8 @@ id<GREYMatcher> EditDoneButton() {
 }
 
 // Tests the add password flow from the toolbar button.
-- (void)testAddNewPasswordCredential {
+// TODO(crbug.com/1411944): Flaky, please re-enable once fixed.
+- (void)DISABLED_testAddNewPasswordCredential {
   OpenPasswordManager();
 
   // Press "Add".
