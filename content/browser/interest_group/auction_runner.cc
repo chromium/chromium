@@ -198,8 +198,9 @@ void AuctionRunner::FailAuction(
   // Shouldn't have any win report URLs if nothing won the auction.
   DCHECK(debug_win_report_urls.empty());
   interest_group_manager_->EnqueueReports(
-      InterestGroupManagerImpl::ReportType::kDebugLoss, debug_loss_report_urls,
-      frame_origin_, *client_security_state_, url_loader_factory_);
+      InterestGroupManagerImpl::ReportType::kDebugLoss,
+      std::move(debug_loss_report_urls), frame_origin_, *client_security_state_,
+      url_loader_factory_);
 
   UpdateInterestGroupsPostAuction();
 

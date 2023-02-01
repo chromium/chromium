@@ -511,12 +511,14 @@ void InterestGroupAuctionReporter::OnNavigateToWinningAd() {
   // Send pre-populated reports. Send these after the main reports, since
   // reports are sent over the network in FIFO order.
   interest_group_manager_->EnqueueReports(
-      InterestGroupManagerImpl::ReportType::kDebugWin, debug_win_report_urls_,
-      frame_origin_, *client_security_state_, url_loader_factory_);
+      InterestGroupManagerImpl::ReportType::kDebugWin,
+      std::move(debug_win_report_urls_), frame_origin_, *client_security_state_,
+      url_loader_factory_);
   debug_win_report_urls_.clear();
   interest_group_manager_->EnqueueReports(
-      InterestGroupManagerImpl::ReportType::kDebugLoss, debug_loss_report_urls_,
-      frame_origin_, *client_security_state_, url_loader_factory_);
+      InterestGroupManagerImpl::ReportType::kDebugLoss,
+      std::move(debug_loss_report_urls_), frame_origin_,
+      *client_security_state_, url_loader_factory_);
   debug_loss_report_urls_.clear();
 
   MaybeInvokeCallback();
@@ -549,8 +551,9 @@ void InterestGroupAuctionReporter::SendPendingReportsIfNavigated() {
     return;
   }
   interest_group_manager_->EnqueueReports(
-      InterestGroupManagerImpl::ReportType::kSendReportTo, pending_report_urls_,
-      frame_origin_, *client_security_state_, url_loader_factory_);
+      InterestGroupManagerImpl::ReportType::kSendReportTo,
+      std::move(pending_report_urls_), frame_origin_, *client_security_state_,
+      url_loader_factory_);
   pending_report_urls_.clear();
 }
 

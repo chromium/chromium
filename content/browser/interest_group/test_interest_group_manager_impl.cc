@@ -39,15 +39,15 @@ TestInterestGroupManagerImpl::~TestInterestGroupManagerImpl() {
 
 void TestInterestGroupManagerImpl::EnqueueReports(
     ReportType report_type,
-    const std::vector<GURL>& report_urls,
+    std::vector<GURL> report_urls,
     const url::Origin& frame_origin,
-    network::mojom::ClientSecurityState& client_security_state,
+    const network::mojom::ClientSecurityState& client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   EXPECT_EQ(expected_frame_origin_, frame_origin);
   EXPECT_EQ(*expected_client_security_state_, client_security_state);
   EXPECT_EQ(expected_url_loader_factory_.get(), url_loader_factory.get());
   for (const auto& report_url : report_urls) {
-    reports_.emplace_back(Report{report_type, report_url});
+    reports_.emplace_back(Report{report_type, std::move(report_url)});
   }
 }
 
