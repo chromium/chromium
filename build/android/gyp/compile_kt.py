@@ -150,6 +150,16 @@ def main(argv):
     kotlinc_cmd.append(args.gomacc_path)
   kotlinc_cmd.append(build_utils.KOTLINC_PATH)
 
+  kotlinc_cmd += [
+      '-no-jdk',  # Avoid depending on the bundled JDK.
+      # Avoid depending on the bundled Kotlin stdlib. This may have a version
+      # skew with the one in //third_party/android_deps (which is the one we
+      # prefer to use).
+      '-no-stdlib',
+      # Avoid depending on the bundled Kotlin reflect libs.
+      '-no-reflect',
+  ]
+
   if args.generated_dir:
     # Delete any stale files in the generated directory. The purpose of
     # args.generated_dir is for codesearch.
