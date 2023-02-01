@@ -218,10 +218,15 @@ bool ChromeWebAuthenticationDelegate::OriginMayUseRemoteDesktopClientOverride(
     return false;
   }
 
-  constexpr char kGoogleCorpCrdOrigin[] =
-      "https://remotedesktop.corp.google.com";
-  if (caller_origin == url::Origin::Create(GURL(kGoogleCorpCrdOrigin))) {
-    return true;
+  constexpr const char* const kGoogleCorpCrdOrigins[] = {
+      "https://remotedesktop.corp.google.com",
+      "https://remotedesktop-autopush.corp.google.com/",
+      "https://remotedesktop-daily-6.corp.google.com/",
+  };
+  for (const char* corp_crd_origin : kGoogleCorpCrdOrigins) {
+    if (caller_origin == url::Origin::Create(GURL(corp_crd_origin))) {
+      return true;
+    }
   }
 
   // An additional origin can be passed on the command line for testing.

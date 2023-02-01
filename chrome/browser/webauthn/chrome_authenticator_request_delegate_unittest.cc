@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -135,8 +136,9 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, IndividualAttestation) {
         Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
     if (!test.permit_attestation_policy_values.empty()) {
       base::Value::List policy_values;
-      for (const std::string& v : test.permit_attestation_policy_values)
+      for (const std::string& v : test.permit_attestation_policy_values) {
         policy_values.Append(v);
+      }
       prefs->SetList(prefs::kSecurityKeyPermitAttestation,
                      std::move(policy_values));
     } else {
@@ -491,6 +493,10 @@ class OriginMayUseRemoteDesktopClientOverrideTest
  protected:
   static constexpr char kCorpCrdOrigin[] =
       "https://remotedesktop.corp.google.com";
+  static constexpr char kCorpCrdAutopushOrigin[] =
+      "https://remotedesktop-autopush.corp.google.com/";
+  static constexpr char kCorpCrdDailyOrigin[] =
+      "https://remotedesktop-daily-6.corp.google.com/";
   static constexpr char kExampleOrigin[] = "https://example.com";
 
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -510,7 +516,8 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
   ChromeWebAuthenticationDelegate delegate;
   PrefService* prefs =
       Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
-  for (auto* origin : {kCorpCrdOrigin, kExampleOrigin}) {
+  for (auto* origin : {kCorpCrdOrigin, kCorpCrdAutopushOrigin,
+                       kCorpCrdDailyOrigin, kExampleOrigin}) {
     for (const auto policy :
          {Policy::kUnset, Policy::kDisabled, Policy::kEnabled}) {
       switch (policy) {
@@ -527,9 +534,15 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
           break;
       }
 
-      EXPECT_EQ(delegate.OriginMayUseRemoteDesktopClientOverride(
-                    browser_context(), url::Origin::Create(GURL(origin))),
-                origin == kCorpCrdOrigin && policy == Policy::kEnabled);
+      constexpr const char* const crd_origins[] = {
+          kCorpCrdOrigin,
+          kCorpCrdAutopushOrigin,
+          kCorpCrdDailyOrigin,
+      };
+      EXPECT_EQ(
+          delegate.OriginMayUseRemoteDesktopClientOverride(
+              browser_context(), url::Origin::Create(GURL(origin))),
+          base::Contains(crd_origins, origin) && policy == Policy::kEnabled);
     }
   }
 }
