@@ -22,8 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -39,33 +37,6 @@ std::ostream& operator<<(std::ostream& out,
              << ",debug_permission=" << t.debug_permission << "}";
 }
 
-bool operator==(const AttributionDataClear& a, const AttributionDataClear& b) {
-  return a.time == b.time && a.delete_begin == b.delete_begin &&
-         a.delete_end == b.delete_end && a.origins == b.origins &&
-         a.delete_rate_limit_data == b.delete_rate_limit_data;
-}
-
-std::ostream& operator<<(std::ostream& out, const AttributionDataClear& c) {
-  out << "{time=" << c.time << ",delete_begin=" << c.delete_begin
-      << ",delete_end=" << c.delete_end << ",origins=";
-
-  if (c.origins.has_value()) {
-    out << "[";
-
-    const char* separator = "";
-    for (const url::Origin& origin : *c.origins) {
-      out << separator << origin;
-      separator = ", ";
-    }
-
-    out << "]";
-  } else {
-    out << "null";
-  }
-
-  return out << ",delete_rate_limit_data=" << c.delete_rate_limit_data << "}";
-}
-
 bool operator==(const AttributionSource& a, const AttributionSource& b) {
   return a.source == b.source && a.debug_permission == b.debug_permission;
 }
@@ -77,7 +48,6 @@ std::ostream& operator<<(std::ostream& out, const AttributionSource& s) {
 
 namespace {
 
-using ::testing::ElementsAre;
 using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 using ::testing::Optional;
@@ -205,48 +175,6 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
   EXPECT_FALSE(trigger->trigger.is_within_fenced_frame());
   EXPECT_TRUE(trigger->debug_permission);
 
-  EXPECT_THAT(error_stream.str(), IsEmpty());
-}
-
-TEST(AttributionSimulatorInputParserTest, ValidDataClearParses) {
-  constexpr char kJson[] = R"json({"data_clears": [
-    {
-      "timestamp": "1643235574123",
-      "delete_begin": "1643235573123",
-    },
-    {
-      "timestamp": "1643235574123",
-      "delete_end": "1643235575123",
-      "origins": [
-        "https://r.test",
-        "https://s.test"
-      ],
-      "delete_rate_limit_data": false
-    }
-  ]})json";
-
-  base::Value value = base::test::ParseJson(kJson);
-  std::ostringstream error_stream;
-  EXPECT_THAT(
-      ParseAttributionSimulationInput(std::move(value), kOffsetTime,
-                                      error_stream),
-      Optional(ElementsAre(
-          AttributionDataClear(
-              /*time=*/kOffsetTime + base::Milliseconds(1643235574123),
-              /*delete_begin=*/kOffsetTime + base::Milliseconds(1643235573123),
-              /*delete_end=*/base::Time::Max(),
-              /*origins=*/absl::nullopt,
-              /*delete_rate_limit_data=*/true),
-          AttributionDataClear(
-              /*time=*/kOffsetTime + base::Milliseconds(1643235574123),
-              /*delete_begin=*/base::Time::Min(),
-              /*delete_end=*/kOffsetTime + base::Milliseconds(1643235575123),
-              /*origins=*/
-              base::flat_set<url::Origin>{
-                  url::Origin::Create(GURL("https://r.test")),
-                  url::Origin::Create(GURL("https://s.test")),
-              },
-              /*delete_rate_limit_data=*/false))));
   EXPECT_THAT(error_stream.str(), IsEmpty());
 }
 
@@ -416,28 +344,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
           }
         }]})json",
     },
-    {R"(["data_clears"][0]["timestamp"]: must be an integer number of milliseconds)",
-     R"json({"data_clears": [{}]})json"},
-    {R"(["data_clears"][0]["delete_begin"]: must be an integer number of milliseconds)",
-     R"json({"data_clears": [{
-        "timestamp": "1643235576000",
-        "delete_begin": ""
-      }]})json"},
-    {R"(["data_clears"][0]["delete_end"]: must be an integer number of milliseconds)",
-     R"json({"data_clears": [{
-        "timestamp": "1643235576000",
-        "delete_end": ""
-      }]})json"},
-    {R"(["data_clears"][0]["origins"]: must be a list)",
-     R"json({"data_clears": [{
-        "timestamp": "1643235576000",
-        "origins": ""
-      }]})json"},
-    {R"(["data_clears"][0]["origins"][0]: must be a string)",
-     R"json({"data_clears": [{
-        "timestamp": "1643235576000",
-        "origins": [1]
-      }]})json"}};
+};
 
 INSTANTIATE_TEST_SUITE_P(AttributionSimulatorInputParserInvalidInputs,
                          AttributionSimulatorInputParseErrorTest,

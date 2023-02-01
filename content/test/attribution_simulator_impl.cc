@@ -27,7 +27,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
@@ -57,7 +56,6 @@
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -71,7 +69,6 @@ base::Time GetEventTime(const AttributionSimulationEvent& event) {
             return source.source.common_info().source_time();
           },
           [](const AttributionTriggerAndTime& trigger) { return trigger.time; },
-          [](const AttributionDataClear& clear) { return clear.time; },
       },
       event);
 }
@@ -281,26 +278,6 @@ class AttributionEventHandler : public AttributionObserver {
   void operator()(AttributionTriggerAndTime trigger) {
     fake_cookie_checker_->set_debug_cookie_set(trigger.debug_permission);
     manager_->HandleTrigger(std::move(trigger.trigger));
-  }
-
-  // For use with `absl::visit()`.
-  void operator()(AttributionDataClear clear) {
-    StoragePartition::StorageKeyMatcherFunction filter;
-    if (clear.origins.has_value()) {
-      filter =
-          base::BindLambdaForTesting([origins = std::move(*clear.origins)](
-                                         const blink::StorageKey& storage_key) {
-            return origins.contains(storage_key.origin());
-          });
-    }
-
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AttributionManagerImpl::ClearData,
-                       base::Unretained(manager_), clear.delete_begin,
-                       clear.delete_end, std::move(filter),
-                       /*filter_builder=*/nullptr, clear.delete_rate_limit_data,
-                       base::DoNothing()));
   }
 
   base::Value::Dict TakeOutput() {

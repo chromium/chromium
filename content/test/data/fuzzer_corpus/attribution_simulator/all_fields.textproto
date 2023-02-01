@@ -1,87 +1,5 @@
 object_value {
   field {
-    name: "data_clears"
-    value {
-      array_value {
-        value {
-          object_value {
-            field {
-              name: "timestamp"
-              value {
-                string_value {
-                  value: "1643235571"
-                }
-              }
-            }
-            field {
-              name: "delete_begin"
-              value {
-                string_value {
-                  value: "1643235569"
-                }
-              }
-            }
-            field {
-              name: "delete_end"
-              value {
-                string_value {
-                  value: "1643235570"
-                }
-              }
-            }
-            field {
-              name: "origins"
-              value {
-                array_value {
-                  value {
-                    string_value {
-                      value: "https://a.test"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  field {
-    name: "cookies"
-    value {
-      array_value {
-        value {
-          object_value {
-            field {
-              name: "timestamp"
-              value {
-                string_value {
-                  value: "1643235572"
-                }
-              }
-            }
-            field {
-              name: "url"
-              value {
-                string_value {
-                  value: "https://r.test/cookie"
-                }
-              }
-            }
-            field {
-              name: "Set-Cookie"
-              value {
-                string_value {
-                  value: "ar_debug=1; SameSite=None; Secure; HttpOnly; Max-Age=4"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  field {
     name: "sources"
     value {
       array_value {
@@ -116,6 +34,14 @@ object_value {
               value {
                 string_value {
                   value: "navigation"
+                }
+              }
+            }
+            field {
+              name: "debug_permission"
+              value {
+                boolean_value {
+                  value: true
                 }
               }
             }
@@ -256,6 +182,14 @@ object_value {
               value {
                 string_value {
                   value: "https://d.test"
+                }
+              }
+            }
+            field {
+              name: "debug_permission"
+              value {
+                boolean_value {
+                  value: true
                 }
               }
             }

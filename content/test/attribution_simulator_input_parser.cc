@@ -32,8 +32,6 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -63,15 +61,6 @@ class AttributionSimulatorInputParser {
   absl::optional<AttributionSimulationEvents> Parse(base::Value input) && {
     if (!EnsureDictionary(input))
       return absl::nullopt;
-
-    static constexpr char kKeyDataClears[] = "data_clears";
-    if (base::Value* data_clears = input.GetDict().Find(kKeyDataClears)) {
-      auto context = PushContext(kKeyDataClears);
-      ParseList(
-          std::move(*data_clears),
-          base::BindRepeating(&AttributionSimulatorInputParser::ParseDataClear,
-                              base::Unretained(this)));
-    }
 
     static constexpr char kKeySources[] = "sources";
     if (base::Value* sources = input.GetDict().Find(kKeySources)) {
@@ -128,52 +117,6 @@ class AttributionSimulatorInputParser {
       callback.Run(std::forward<T>(value));
       index++;
     }
-  }
-
-  void ParseDataClear(base::Value&& data_clear) {
-    if (!EnsureDictionary(data_clear))
-      return;
-
-    const base::Value::Dict& dict = data_clear.GetDict();
-
-    base::Time time = ParseTime(dict, kTimestampKey);
-
-    static constexpr char kKeyDeleteBegin[] = "delete_begin";
-    base::Time delete_begin = base::Time::Min();
-    if (dict.contains(kKeyDeleteBegin))
-      delete_begin = ParseTime(dict, kKeyDeleteBegin);
-
-    static constexpr char kKeyDeleteEnd[] = "delete_end";
-    base::Time delete_end = base::Time::Max();
-    if (dict.contains(kKeyDeleteEnd))
-      delete_end = ParseTime(dict, kKeyDeleteEnd);
-
-    absl::optional<base::flat_set<url::Origin>> origin_set;
-
-    static constexpr char kKeyOrigins[] = "origins";
-    if (const base::Value* origins = dict.Find(kKeyOrigins)) {
-      auto context = PushContext(kKeyOrigins);
-      origin_set.emplace();
-
-      ParseList(
-          *origins, base::BindLambdaForTesting([&](const base::Value& value) {
-            if (!value.is_string()) {
-              *Error() << "must be a string";
-            } else {
-              origin_set->emplace(url::Origin::Create(GURL(value.GetString())));
-            }
-          }));
-    }
-
-    bool delete_rate_limit_data =
-        ParseBool(dict, "delete_rate_limit_data").value_or(true);
-
-    if (has_error())
-      return;
-
-    events_.push_back(AttributionDataClear(time, delete_begin, delete_end,
-                                           std::move(origin_set),
-                                           delete_rate_limit_data));
   }
 
   void ParseSource(base::Value&& source) {
@@ -253,13 +196,6 @@ class AttributionSimulatorInputParser {
               .debug_permission = debug_permission,
           });
         }));
-  }
-
-  GURL ParseURL(const base::Value::Dict& dict, base::StringPiece key) const {
-    if (const std::string* v = dict.FindString(key))
-      return GURL(*v);
-
-    return GURL();
   }
 
   absl::optional<SuitableOrigin> ParseOrigin(const base::Value::Dict& dict,
@@ -369,31 +305,6 @@ class AttributionSimulatorInputParser {
 };
 
 }  // namespace
-
-AttributionDataClear::AttributionDataClear(
-    base::Time time,
-    base::Time delete_begin,
-    base::Time delete_end,
-    absl::optional<base::flat_set<url::Origin>> origins,
-    bool delete_rate_limit_data)
-    : time(time),
-      delete_begin(delete_begin),
-      delete_end(delete_end),
-      origins(std::move(origins)),
-      delete_rate_limit_data(delete_rate_limit_data) {}
-
-AttributionDataClear::~AttributionDataClear() = default;
-
-AttributionDataClear::AttributionDataClear(const AttributionDataClear&) =
-    default;
-
-AttributionDataClear::AttributionDataClear(AttributionDataClear&&) = default;
-
-AttributionDataClear& AttributionDataClear::operator=(
-    const AttributionDataClear&) = default;
-
-AttributionDataClear& AttributionDataClear::operator=(AttributionDataClear&&) =
-    default;
 
 absl::optional<AttributionSimulationEvents> ParseAttributionSimulationInput(
     base::Value input,

@@ -166,32 +166,6 @@ JSON schema for the input of the simulator.
         "debug_reporting": true
       }
     }
-  ],
-
-  // List of zero or more times to clear Attribution Reporting data.
-  "data_clears": [
-    {
-      // Required time at which to clear data in milliseconds since the UNIX
-      // epoch formatted as a base-10 string.
-      "timestamp": "123",
-
-      // Optional time in milliseconds since the UNIX epoch formatted as a
-      // base-10 string. Only Attribution Reporting data at or after this time 
-      // will be deleted. If omitted, defaults to the beginning of time.
-      "delete_begin": "123",
-
-      // Optional time in milliseconds since the UNIX epoch formatted as a
-      // base-10 string. Only Attribution Reporting data at or before this
-      // time will be deleted. If omitted, defaults to the end of time.
-      "delete_end": "456",
-
-      // Optional list of origins whose data to delete. If omitted, data for all
-      // origins will be deleted.
-      "origins": [
-        "https://a.test",
-        "https://b.test"
-      ]
-    }
   ]
 }
 ```
