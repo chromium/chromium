@@ -502,8 +502,7 @@ public class ExternalNavigationHandler {
     private OverrideUrlLoadingResult handleFallbackUrl(ExternalNavigationParams params,
             Intent targetIntent, GURL browserFallbackUrl, boolean canLaunchExternalFallback) {
         if (browserFallbackUrl.isEmpty()
-                || (params.getRedirectHandler() != null
-                        && params.getRedirectHandler().isOnNavigation()
+                || (params.getRedirectHandler().isOnNavigation()
                         // For instance, if this is a chained fallback URL, we ignore it.
                         && params.getRedirectHandler().shouldNotOverrideUrlLoading())) {
             return OverrideUrlLoadingResult.forNoOverride();
@@ -551,7 +550,7 @@ public class ExternalNavigationHandler {
         // Otherwise, it can be used in chain for fingerprinting multiple app installation
         // status in one shot. In order to prevent this scenario, we notify redirection
         // handler that redirection from the current navigation should stay in this app.
-        if (params.getRedirectHandler() != null && params.getRedirectHandler().isOnNavigation()
+        if (params.getRedirectHandler().isOnNavigation()
                 && !params.getRedirectHandler()
                             .getAndClearShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain()) {
             params.getRedirectHandler().setShouldNotOverrideUrlLoadingOnCurrentRedirectChain();
@@ -926,7 +925,6 @@ public class ExternalNavigationHandler {
             Intent targetIntent, QueryIntentActivitiesSupplier resolvingInfos,
             boolean isExternalProtocol) {
         RedirectHandler handler = params.getRedirectHandler();
-        if (handler == null) return false;
         RedirectHandler.InitialNavigationState initialState = handler.getInitialNavigationState();
 
         // If a navigation chain has used the history API to go back/forward external navigation is
@@ -1386,7 +1384,7 @@ public class ExternalNavigationHandler {
     private boolean shouldKeepIntentRedirectInApp(ExternalNavigationParams params,
             boolean incomingIntentRedirect, List<ResolveInfo> resolvingInfos,
             boolean isExternalProtocol) {
-        if (params.getRedirectHandler() != null && incomingIntentRedirect && !isExternalProtocol
+        if (incomingIntentRedirect && !isExternalProtocol
                 && !params.getRedirectHandler().isFromCustomTabIntent()
                 && !params.getRedirectHandler().hasNewResolver(
                         resolvingInfos, (Intent intent) -> queryIntentActivities(intent))) {
@@ -2350,9 +2348,8 @@ public class ExternalNavigationHandler {
      * @return whether this navigation is a redirect from an intent.
      */
     private static boolean isIncomingIntentRedirect(ExternalNavigationParams params) {
-        boolean isOnEffectiveIntentRedirect = params.getRedirectHandler() == null
-                ? false
-                : params.getRedirectHandler().isOnNoninitialLoadForIntentNavigationChain();
+        boolean isOnEffectiveIntentRedirect =
+                params.getRedirectHandler().isOnNoninitialLoadForIntentNavigationChain();
         return (params.isFromIntent() && params.isRedirect()) || isOnEffectiveIntentRedirect;
     }
 

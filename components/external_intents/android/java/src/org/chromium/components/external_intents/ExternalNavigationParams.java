@@ -5,6 +5,7 @@
 package org.chromium.components.external_intents;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -97,15 +98,14 @@ public class ExternalNavigationParams {
     // Populated when an async action is taken, ensuring the callback gets called.
     private RequiredCallback<AsyncActionTakenParams> mRequiredAsyncActionTakenCallback;
 
-    private ExternalNavigationParams(GURL url, boolean isIncognito, GURL referrerUrl,
+    private ExternalNavigationParams(@NonNull GURL url, boolean isIncognito, GURL referrerUrl,
             int pageTransition, boolean isRedirect, boolean appMustBeInForeground,
-            RedirectHandler redirectHandler, boolean openInNewTab,
+            @NonNull RedirectHandler redirectHandler, boolean openInNewTab,
             boolean isBackgroundTabNavigation, boolean intentLaunchesAllowedInBackgroundTabs,
             boolean isMainFrame, String nativeClientPackageName, boolean hasUserGesture,
             Callback<AsyncActionTakenParams> asyncActionTakenCallback, boolean isRendererInitiated,
             @Nullable Origin initiatorOrigin) {
         mUrl = url;
-        assert mUrl != null;
         mIsIncognito = isIncognito;
         mPageTransition = pageTransition;
         mReferrerUrl = (referrerUrl == null) ? GURL.emptyGURL() : referrerUrl;
@@ -130,7 +130,7 @@ public class ExternalNavigationParams {
     }
 
     /** @return The URL to potentially open externally. */
-    public GURL getUrl() {
+    public @NonNull GURL getUrl() {
         return mUrl;
     }
 
@@ -140,7 +140,7 @@ public class ExternalNavigationParams {
     }
 
     /** @return The referrer URL. */
-    public GURL getReferrerUrl() {
+    public @NonNull GURL getReferrerUrl() {
         return mReferrerUrl;
     }
 
@@ -160,7 +160,7 @@ public class ExternalNavigationParams {
     }
 
     /** @return The redirect handler. */
-    public RedirectHandler getRedirectHandler() {
+    public @NonNull RedirectHandler getRedirectHandler() {
         return mRedirectHandler;
     }
 

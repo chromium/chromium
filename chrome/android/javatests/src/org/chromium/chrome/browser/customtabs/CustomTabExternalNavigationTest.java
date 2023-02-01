@@ -32,7 +32,9 @@ import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.components.external_intents.ExternalNavigationParams;
+import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -109,9 +111,12 @@ public class CustomTabExternalNavigationTest {
     @SmallTest
     public void testExternalActivityStartedForDefaultUrl() {
         final GURL testUrl = new GURL("customtab://customtabtest/intent");
+        RedirectHandler redirectHandler = RedirectHandler.create();
+        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false, true);
         ExternalNavigationParams params = new ExternalNavigationParams.Builder(testUrl, false)
                                                   .setIsMainFrame(true)
                                                   .setIsRendererInitiated(true)
+                                                  .setRedirectHandler(redirectHandler)
                                                   .build();
         OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
         Assert.assertEquals(
@@ -129,8 +134,11 @@ public class CustomTabExternalNavigationTest {
     public void
     testIntentPickerNotShownForNormalUrl() {
         final GURL testUrl = new GURL("http://customtabtest.com");
+        RedirectHandler redirectHandler = RedirectHandler.create();
+        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false, true);
         ExternalNavigationParams params = new ExternalNavigationParams.Builder(testUrl, false)
-                .build();
+                                                  .setRedirectHandler(redirectHandler)
+                                                  .build();
         OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
         Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
     }
