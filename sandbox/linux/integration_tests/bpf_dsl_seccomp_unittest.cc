@@ -497,9 +497,8 @@ int ArmPrivateSysnoToErrno(int sysno) {
   if (sysno >= static_cast<int>(MIN_PRIVATE_SYSCALL) &&
       sysno <= static_cast<int>(MAX_PRIVATE_SYSCALL)) {
     return (sysno - MIN_PRIVATE_SYSCALL) + 1;
-  } else {
-    return ENOSYS;
   }
+  return ENOSYS;
 }
 
 class ArmPrivatePolicy : public Policy {
@@ -565,13 +564,13 @@ class GreyListedPolicy : public Policy {
     // use of UnsafeTrap()
     if (SandboxBPF::IsRequiredForUnsafeTrap(sysno)) {
       return Allow();
-    } else if (sysno == __NR_getpid) {
+    }
+    if (sysno == __NR_getpid) {
       // Disallow getpid()
       return Error(EPERM);
-    } else {
-      // Allow (and count) all other system calls.
-      return UnsafeTrap(CountSyscalls, aux_);
     }
+    // Allow (and count) all other system calls.
+    return UnsafeTrap(CountSyscalls, aux_);
   }
 
  private:
@@ -613,9 +612,8 @@ intptr_t PrctlHandler(const struct arch_seccomp_data& args, void*) {
     // prctl(PR_CAPBSET_DROP, -1) is never valid. The kernel will always
     // return an error. But our handler allows this call.
     return 0;
-  } else {
-    return SandboxBPF::ForwardSyscall(args);
   }
+  return SandboxBPF::ForwardSyscall(args);
 }
 
 class PrctlPolicy : public Policy {
@@ -890,11 +888,10 @@ class EqualityStressTest {
       // are part of our test data. Every other system call remains
       // allowed.
       return Allow();
-    } else {
-      // ToErrorCode() turns an ArgValue object into an ErrorCode that is
-      // suitable for use by a sandbox policy.
-      return ToErrorCode(arg_values_[sysno].get());
     }
+    // ToErrorCode() turns an ArgValue object into an ErrorCode that is
+    // suitable for use by a sandbox policy.
+    return ToErrorCode(arg_values_[sysno].get());
   }
 
   void VerifyFilter() {
