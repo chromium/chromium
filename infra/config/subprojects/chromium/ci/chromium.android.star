@@ -21,9 +21,6 @@ ci.defaults.set(
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 consoles.console_view(
@@ -596,9 +593,6 @@ ci.builder(
         category = "builder_tester|arm64",
         short_name = "10",
     ),
-
-    # TODO(crbug.com/1405549): verify if py3 works for this builder.
-    omit_python2 = True,
 )
 
 ci.builder(
@@ -1199,9 +1193,6 @@ ci.builder(
         short_name = "N",
     ),
     execution_timeout = 4 * time.hour,
-
-    # TODO(crbug.com/1405549): verify if py3 works for this builder.
-    omit_python2 = True,
 )
 
 ci.thin_tester(
