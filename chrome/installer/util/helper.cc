@@ -44,14 +44,35 @@ base::FilePath GetInstallationDirFromPrefs(
              : base::FilePath();
 }
 
+// Rarely PathService can fail to supply a path from SHGetFolderPath but we can
+// fallback to values gleaned from the environment. Returns an empty path on
+// failure.
+base::FilePath GetDefaultInstallRootFromEnvironment(bool system_install) {
+  static constexpr wchar_t kProgramFiles[] = L"PROGRAMFILES";
+  static constexpr wchar_t kLocalAppData[] = L"LOCALAPPDATA";
+
+  wchar_t value[MAX_PATH];
+  *value = L'\0';
+  DWORD ret = ::GetEnvironmentVariableW(
+      system_install ? kProgramFiles : kLocalAppData, value, _countof(value));
+  if (ret && ret < _countof(value)) {
+    return base::FilePath(value);
+  }
+  return base::FilePath();
+}
+
 base::FilePath GetDefaultChromeInstallPath(bool system_install) {
   base::FilePath install_path;
   int key = system_install ? base::DIR_PROGRAM_FILES : base::DIR_LOCAL_APP_DATA;
-  if (base::PathService::Get(key, &install_path)) {
-    install_path =
-        install_path.Append(install_static::GetChromeInstallSubDirectory());
-    install_path = install_path.Append(installer::kInstallBinaryDir);
+  if (!base::PathService::Get(key, &install_path)) {
+    // Fallback to environment.
+    install_path = GetDefaultInstallRootFromEnvironment(system_install);
   }
+  // Later steps assume a valid install path was found.
+  CHECK(!install_path.empty());
+  install_path =
+      install_path.Append(install_static::GetChromeInstallSubDirectory());
+  install_path = install_path.Append(installer::kInstallBinaryDir);
   return install_path;
 }
 
