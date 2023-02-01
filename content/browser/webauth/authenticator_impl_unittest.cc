@@ -8144,13 +8144,16 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
   }
 
   auto assertion = [&](std::vector<blink::mojom::PRFValuesPtr> inputs,
-                       unsigned allow_list_size =
-                           1) -> blink::mojom::PRFValuesPtr {
+                       unsigned allow_list_size = 1,
+                       device::UserVerificationRequirement uv =
+                           device::UserVerificationRequirement::kPreferred)
+      -> blink::mojom::PRFValuesPtr {
     PublicKeyCredentialRequestOptionsPtr options =
         GetTestPublicKeyCredentialRequestOptions();
     options->prf = true;
     options->prf_inputs = std::move(inputs);
     options->allow_credentials.clear();
+    options->user_verification = uv;
     if (allow_list_size >= 1) {
       for (unsigned i = 0; i < allow_list_size - 1; i++) {
         std::vector<uint8_t> random_credential_id(32, static_cast<uint8_t>(i));
@@ -8191,6 +8194,18 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
     inputs.emplace_back(std::move(prf_value));
     auto result = assertion(std::move(inputs));
     ASSERT_EQ(result->first, salt1_eval);
+  }
+
+  // ... but should be different when uv=discouraged because a different PRF
+  // is used.
+  {
+    auto prf_value = blink::mojom::PRFValues::New();
+    prf_value->first = salt1;
+    std::vector<blink::mojom::PRFValuesPtr> inputs;
+    inputs.emplace_back(std::move(prf_value));
+    auto result = assertion(std::move(inputs), 1,
+                            device::UserVerificationRequirement::kDiscouraged);
+    ASSERT_NE(result->first, salt1_eval);
   }
 
   // Should be able to evaluate two points at once.

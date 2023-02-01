@@ -192,6 +192,12 @@ void FidoDeviceAuthenticator::OnHaveEphemeralKeyForGetAssertion(
     return;
   }
   options.pin_key_agreement = std::move(*key);
+  if (!request.pin_protocol) {
+    // If `chosen_pin_uv_auth_protocol_` is `nullopt` then hmac_secret support
+    // isn't advertised and the caller should never have requested it.
+    DCHECK(chosen_pin_uv_auth_protocol_);
+    request.pin_protocol = chosen_pin_uv_auth_protocol_;
+  }
   DoGetAssertion(std::move(request), std::move(options), std::move(callback));
 }
 
