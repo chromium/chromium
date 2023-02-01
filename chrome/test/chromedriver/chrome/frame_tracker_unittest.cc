@@ -31,17 +31,67 @@ TEST(FrameTracker, GetContextIdForFrame) {
   ASSERT_EQ("", context_id);
   ASSERT_TRUE(tracker.GetContextIdForFrame("f", &context_id).IsOk());
   ASSERT_EQ("100", context_id);
+}
 
-  base::Value::Dict nav_params;
-  nav_params.SetByDottedPath("frame.parentId", "1");
+TEST(FrameTracker, GetContextIdForFrameAfterContextsClear) {
+  StubDevToolsClient client;
+  FrameTracker tracker(&client);
+  std::string context_id;
+  std::string frame = "f";
+
+  const char context[] =
+      "{\"uniqueId\":\"100\",\"auxData\":{\"frameId\":\"f\",\"isDefault\":true}"
+      "}";
+  base::Value::Dict params;
+  params.Set("context", base::test::ParseJson(context));
   ASSERT_EQ(kOk,
-            tracker.OnEvent(&client, "Page.frameNavigated", nav_params).code());
-  ASSERT_TRUE(tracker.GetContextIdForFrame("f", &context_id).IsOk());
-  nav_params.clear();
+            tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
+                .code());
+  ASSERT_TRUE(tracker.GetContextIdForFrame(frame, &context_id).IsOk());
+  ASSERT_EQ("100", context_id);
+  params.clear();
   ASSERT_EQ(kOk,
-            tracker.OnEvent(&client, "Page.frameNavigated", nav_params).code());
+            tracker.OnEvent(&client, "Runtime.executionContextsCleared", params)
+                .code());
   ASSERT_EQ(kNoSuchExecutionContext,
-            tracker.GetContextIdForFrame("f", &context_id).code());
+            tracker.GetContextIdForFrame(frame, &context_id).code());
+}
+
+TEST(FrameTracker, GetContextForDestroyedFrame) {
+  StubDevToolsClient client;
+  FrameTracker tracker(&client);
+  std::string context_id;
+  base::Value::Dict params;
+
+  const char context_bad[] =
+      "{\"uniqueId\":\"543\",\"auxData\":{\"frameId\":\"bad\",\"isDefault\":"
+      "true}"
+      "}";
+  params.Set("context", base::test::ParseJson(context_bad));
+  ASSERT_EQ(kOk,
+            tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
+                .code());
+
+  const char context_good[] =
+      "{\"uniqueId\":\"123\",\"auxData\":{\"frameId\":\"good\",\"isDefault\":"
+      "true}"
+      "}";
+  params.Set("context", base::test::ParseJson(context_good));
+  ASSERT_EQ(kOk,
+            tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
+                .code());
+
+  params.clear();
+  params.Set("executionContextUniqueId", "543");
+  ASSERT_EQ(
+      kOk, tracker.OnEvent(&client, "Runtime.executionContextDestroyed", params)
+               .code());
+
+  ASSERT_EQ("", context_id);
+  ASSERT_TRUE(tracker.GetContextIdForFrame("good", &context_id).IsOk());
+  ASSERT_EQ("123", context_id);
+  ASSERT_EQ(kNoSuchExecutionContext,
+            tracker.GetContextIdForFrame("bad", &context_id).code());
 }
 
 TEST(FrameTracker, AuxData) {

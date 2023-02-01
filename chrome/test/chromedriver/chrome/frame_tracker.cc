@@ -129,22 +129,17 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
     if (is_default && !frame_id.empty())
       frame_to_context_map_[frame_id] = *context_id;
   } else if (method == "Runtime.executionContextDestroyed") {
-    const base::Value::Dict* context = params.FindDict("context");
-    // TODO(nechaev): Interpret the missing 'context' as an error
-    // after https://crbug.com/chromedriver/4120 is fixed.
-    if (context) {
-      const std::string* context_id = context->FindString("uniqueId");
-      if (!context_id) {
-        std::string json;
-        base::JSONWriter::Write(*context, &json);
-        return Status(kUnknownError,
-                      method + " has invalid 'context': " + json);
-      }
-      for (auto entry : frame_to_context_map_) {
-        if (entry.second == *context_id) {
-          frame_to_context_map_.erase(entry.first);
-          break;
-        }
+    const std::string* context_id =
+        params.FindString("executionContextUniqueId");
+    if (!context_id) {
+      return Status(kUnknownError,
+                    method + " contains no unique context id information");
+    }
+
+    for (auto entry : frame_to_context_map_) {
+      if (entry.second == *context_id) {
+        frame_to_context_map_.erase(entry.first);
+        break;
       }
     }
   } else if (method == "Runtime.executionContextsCleared") {
@@ -159,16 +154,10 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
   } else if (method == "Page.frameDetached") {
     if (const std::string* frame_id = params.FindString("frameId")) {
       attached_frames_.erase(*frame_id);
-      // TODO(nechaev): Remove the following line
-      // after https://crbug.com/chromedriver/4120 is fixed.
-      frame_to_context_map_.erase(*frame_id);
     } else {
       return Status(kUnknownError,
                     "missing frameId in Page.frameDetached event");
     }
-  } else if (method == "Page.frameNavigated") {
-    if (!params.FindByDottedPath("frame.parentId"))
-      frame_to_context_map_.clear();
   } else if (method == "Target.attachedToTarget") {
     const std::string* type = params.FindStringByDottedPath("targetInfo.type");
     if (!type)
