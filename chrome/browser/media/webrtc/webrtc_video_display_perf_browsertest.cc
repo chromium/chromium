@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <string>
 #include <tuple>
 
 #include "base/json/json_reader.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
@@ -151,11 +153,12 @@ std::vector<double> ParseGoogMaxDecodeFromWebrtcInternalsTab(
                             base::CompareCase::SENSITIVE)) {
           continue;
         }
-        const base::Value* values_entry = stat_entry.second.FindKey({"values"});
-        if (!values_entry)
+        const std::string* values_entry =
+            stat_entry.second.GetDict().FindString("values");
+        if (!values_entry) {
           continue;
-        base::StringTokenizer values_tokenizer(values_entry->GetString(),
-                                               "[,]");
+        }
+        base::StringTokenizer values_tokenizer(*values_entry, "[,]");
         while (values_tokenizer.GetNext()) {
           if (values_tokenizer.token_is_delim())
             continue;
