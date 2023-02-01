@@ -992,9 +992,9 @@ chromium-metrics-reviews@google.com.
   <token key="Capturer">
     <variant name="DirectX" summary="DirectX based"/>
     <variant name="Magnifier" summary="Magnifier based"/>
-    <variant name="ScreenGDI" summary="GDI based screen"/>
+    <variant name="ScreenGdi" summary="GDI based screen"/>
     <variant name="Wgc" summary="WGC based"/>
-    <variant name="WindowGDI" summary="GDI based window"/>
+    <variant name="WindowGdi" summary="GDI based window"/>
   </token>
 </histogram>
 
