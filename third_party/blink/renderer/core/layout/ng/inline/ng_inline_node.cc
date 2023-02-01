@@ -407,8 +407,12 @@ inline bool NeedsShaping(const NGInlineItem& item) {
     return false;
   // Text item with length==0 exists to maintain LayoutObject states such as
   // ClearNeedsLayout, but not needed to shape.
-  if (!item.Length())
+  if (!item.Length()) {
     return false;
+  }
+  if (item.IsUnsafeToReuseShapeResult()) {
+    return true;
+  }
   const ShapeResult* shape_result = item.TextShapeResult();
   if (!shape_result)
     return true;
@@ -1451,6 +1455,11 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     // "32" is heuristic, most major sites are up to 8 or so, wikipedia is 21.
     Vector<ShapeResult::ShapeRange, 32> text_item_ranges;
     text_item_ranges.ReserveInitialCapacity(num_text_items);
+    const bool has_ligatures =
+        shape_result->NumGlyphs() < shape_result->NumCharacters();
+    if (has_ligatures) {
+      shape_result->EnsurePositionData();
+    }
     for (; index < end_index; index++) {
       NGInlineItem& item = (*items)[index];
       if (item.Type() != NGInlineItem::kText || !item.Length())
@@ -1466,6 +1475,14 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
           ShapeResult::CreateEmpty(*shape_result.get());
       text_item_ranges.emplace_back(item.StartOffset(), item.EndOffset(),
                                     item_result.get());
+      if (has_ligatures && item.EndOffset() < shape_result->EndIndex() &&
+          shape_result->CachedNextSafeToBreakOffset(item.EndOffset()) !=
+              item.EndOffset()) {
+        // Note: We should not reuse `ShapeResult` ends with ligature glyph.
+        // e.g. <div>f<span>i</div> to <div>f</div> with ligature "fi".
+        // See http://crbug.com/1409702
+        item.SetUnsafeToReuseShapeResult();
+      }
       item.shape_result_ = std::move(item_result);
     }
     DCHECK_EQ(text_item_ranges.size(), num_text_items);

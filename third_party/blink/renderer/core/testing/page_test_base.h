@@ -102,6 +102,11 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   // See external/wpt/css/fonts/ahem/README for more about the 'Ahem' font.
   static void LoadAhem(LocalFrame&);
 
+  // Install the font specified by `font_path` as `family_name` in `frame`.
+  static void LoadFontFromFile(LocalFrame& fame,
+                               String font_path,
+                               const AtomicString& family_name);
+
   static void LoadNoto(LocalFrame&);
 
   static std::string ToSimpleLayoutTree(const LayoutObject& layout_object);

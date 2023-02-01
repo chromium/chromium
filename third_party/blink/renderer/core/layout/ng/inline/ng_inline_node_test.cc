@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
@@ -157,6 +158,13 @@ class NGInlineNodeTest : public RenderingTest {
       }
     }
     EXPECT_FALSE(expected);
+  }
+
+  // "Google Sans" has ligatures, e.g. "fi", "tt", etc.
+  void LoadGoogleSans() {
+    LoadFontFromFile(GetFrame(),
+                     test::CoreTestDataPath("GoogleSans-Regular.ttf"),
+                     "Google Sans");
   }
 
   Persistent<LayoutNGBlockFlow> layout_block_flow_;
@@ -1533,6 +1541,35 @@ TEST_F(NGInlineNodeTest, ReuseFirstNonSafeRtl) {
       StringView(data->text_content, item_v.StartOffset(), item_v.Length()),
       "V");
   EXPECT_TRUE(NGInlineNode::NeedsShapingForTesting(item_v));
+}
+
+// http://crbug.com/1409702
+TEST_F(NGInlineNodeTest, ShouldNotResueLigature) {
+  LoadGoogleSans();
+  InsertStyleElement("#sample { font-family: 'Google Sans'; }");
+  SetBodyContent("<div id=sample>abf<span>i</span></div>");
+  Element& sample = *GetElementById("sample");
+
+  // `shape_result_before` has a ligature "fi".
+  const LayoutText& layout_text =
+      *To<Text>(sample.firstChild())->GetLayoutObject();
+  const ShapeResult& shape_result_before =
+      *layout_text.InlineItems().begin()->TextShapeResult();
+  ASSERT_EQ(3u, shape_result_before.NumGlyphs());
+
+  const LayoutText& layout_text_i =
+      *To<Text>(sample.lastChild()->firstChild())->GetLayoutObject();
+  const ShapeResult& shape_result_i =
+      *layout_text_i.InlineItems().begin()->TextShapeResult();
+  ASSERT_EQ(0u, shape_result_i.NumGlyphs());
+
+  // To <div id=sample>abf</div>
+  sample.lastChild()->remove();
+  UpdateAllLifecyclePhasesForTest();
+
+  const ShapeResult& shape_result_after =
+      *layout_text.InlineItems().begin()->TextShapeResult();
+  EXPECT_NE(&shape_result_before, &shape_result_after);
 }
 
 TEST_F(NGInlineNodeTest, InitialLetter) {
