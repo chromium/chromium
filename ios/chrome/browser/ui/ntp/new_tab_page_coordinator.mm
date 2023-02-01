@@ -274,6 +274,16 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   self.webState = self.browser->GetWebStateList()->GetActiveWebState();
   DCHECK(self.webState);
 
+  // Start observing WebStateList changes.
+  _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
+  self.browser->GetWebStateList()->AddObserver(_webStateListObserver.get());
+
+  // Start observing SceneState changes.
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  [sceneState addObserver:self];
+  self.sceneInForeground =
+      sceneState.activationLevel >= SceneActivationLevelForegroundInactive;
   // Configures incognito NTP if user is in incognito mode.
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     DCHECK(!self.incognitoViewController);
@@ -282,12 +292,24 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
     self.incognitoViewController =
         [[IncognitoViewController alloc] initWithUrlLoader:URLLoader];
     self.started = YES;
+    [self ntpDidChangeVisibility:YES];
     return;
   }
+
+  // NOTE: anything that executes below WILL NOT execute for OffTheRecord
+  // browsers!
 
   [self initializeServices];
   [self initializeNTPComponents];
   [self startObservers];
+
+  // Do not focus on omnibox for voice over if there are other screens to
+  // show.
+  AppState* appState = sceneState.appState;
+  [appState addObserver:self];
+  if (appState.initStage < InitStageFinal) {
+    self.NTPViewController.focusAccessibilityOmniboxWhenViewAppears = NO;
+  }
 
   // Updates feed asynchronously if the account is subject to parental controls.
   [self updateFeedVisibilityForSupervision];
@@ -310,17 +332,29 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   if (!self.started)
     return;
 
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
-    self.incognitoViewController = nil;
-    self.started = NO;
-    return;
-  }
-  self.viewPresented = NO;
-  [self updateVisible];
+  self.browser->GetWebStateList()->RemoveObserver(_webStateListObserver.get());
+  _webStateListObserver.reset();
+  _webState = nullptr;
 
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
   [sceneState removeObserver:self];
+
+  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+    self.incognitoViewController = nil;
+    self.started = NO;
+    self.viewPresented = NO;
+    [self updateVisible];
+    return;
+  }
+
+  // NOTE: anything that executes below WILL NOT execute for OffTheRecord
+  // browsers!
+
+  [sceneState.appState removeObserver:self];
+
+  self.viewPresented = NO;
+  [self updateVisible];
 
   [self.feedManagementCoordinator stop];
   self.feedManagementCoordinator = nil;
@@ -370,9 +404,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   _prefObserverBridge.reset();
   _discoverFeedObserverBridge.reset();
   _identityObserverBridge.reset();
-  self.browser->GetWebStateList()->RemoveObserver(_webStateListObserver.get());
-  _webStateListObserver.reset();
-  _webState = nullptr;
 
   self.started = NO;
 }
@@ -537,25 +568,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   // Start observing DiscoverFeedService.
   _discoverFeedObserverBridge = std::make_unique<DiscoverFeedObserverBridge>(
       self, self.discoverFeedService);
-
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-  [sceneState addObserver:self];
-  self.sceneInForeground =
-      sceneState.activationLevel >= SceneActivationLevelForegroundInactive;
-
-  AppState* appState = sceneState.appState;
-  [appState addObserver:self];
-
-  // Do not focus on omnibox for voice over if there are other screens to
-  // show.
-  if (appState.initStage < InitStageFinal) {
-    self.NTPViewController.focusAccessibilityOmniboxWhenViewAppears = NO;
-  }
-
-  // Start observing WebStateList changes.
-  _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
-  self.browser->GetWebStateList()->AddObserver(_webStateListObserver.get());
 }
 
 // Creates all the NTP components.

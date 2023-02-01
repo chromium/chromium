@@ -72,10 +72,11 @@ class NewTabPageCoordinatorTest : public PlatformTest {
       browser_ = std::make_unique<TestBrowser>(otr_state);
     } else {
       browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-      scene_state_ = OCMClassMock([SceneState class]);
-      SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
       StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
     }
+    scene_state_ = OCMClassMock([SceneState class]);
+    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
+
     coordinator_ =
         [[NewTabPageCoordinator alloc] initWithBrowser:browser_.get()];
     coordinator_.baseViewController = base_view_controller_;
@@ -152,6 +153,7 @@ TEST_F(NewTabPageCoordinatorTest, StartOffTheRecord) {
   [coordinator_ start];
   UIViewController* viewController = [coordinator_ viewController];
   EXPECT_TRUE([viewController isKindOfClass:[IncognitoViewController class]]);
+  [coordinator_ stop];
 }
 
 // Tests that if the NTP should/shouldn't be showing Start upon -start, that it
@@ -219,23 +221,27 @@ TEST_F(NewTabPageCoordinatorTest, DidNavigate) {
 // Test that NTPCoordinator's DidChangeActiveWebState will change the
 // `webState` property as well as the NTP's visibility appropriately.
 TEST_F(NewTabPageCoordinatorTest, DidChangeActiveWebState) {
-  CreateCoordinator(/*off_the_record=*/false);
-  SetupCommandHandlerMocks();
-  [coordinator_ start];
-  [coordinator_ sceneState:nil
-      transitionedToActivationLevel:SceneActivationLevelForegroundInactive];
-  EXPECT_TRUE(coordinator_.visible);
+  // Test normal and incognito modes.
+  for (bool off_the_record : {false, true}) {
+    CreateCoordinator(off_the_record);
+    SetupCommandHandlerMocks();
+    [coordinator_ start];
+    [coordinator_ sceneState:nil
+        transitionedToActivationLevel:SceneActivationLevelForegroundInactive];
+    EXPECT_TRUE(coordinator_.visible);
 
-  // Insert a non-NTP WebState.
-  InsertWebState(CreateWebStateWithURL(GURL("chrome://version")));
-  EXPECT_EQ(coordinator_.webState, nullptr);
-  EXPECT_FALSE(coordinator_.visible);
+    // Insert a non-NTP WebState.
+    InsertWebState(CreateWebStateWithURL(GURL("chrome://version")));
+    EXPECT_EQ(coordinator_.webState, nullptr);
+    EXPECT_FALSE(coordinator_.visible);
 
-  // Insert an NTP webstate.
-  InsertWebState(CreateWebStateWithURL(GURL("chrome://newtab")));
-  EXPECT_EQ(coordinator_.webState, web_state_);
-  EXPECT_TRUE(coordinator_.visible);
+    // Insert an NTP webstate.
+    InsertWebState(CreateWebStateWithURL(GURL("chrome://newtab")));
+    EXPECT_EQ(coordinator_.webState, web_state_);
+    EXPECT_TRUE(coordinator_.visible);
 
-  [coordinator_ stop];
-  EXPECT_EQ(coordinator_.webState, nullptr);
+    [coordinator_ stop];
+    EXPECT_EQ(coordinator_.webState, nullptr);
+    coordinator_ = nil;
+  }
 }
