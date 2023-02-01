@@ -70,4 +70,16 @@ std::unique_ptr<Config> ParseConfigFromString(const std::string& config_str) {
 
   return config;
 }
+
+base::flat_set<proto::SegmentId> GetAllSegmentIdsFromConfigs(
+    const std::vector<std::unique_ptr<Config>>& configs) {
+  base::flat_set<proto::SegmentId> all_segment_ids;
+  for (const auto& config : configs) {
+    for (const auto& segment_id : config->segments) {
+      all_segment_ids.insert(segment_id.first);
+    }
+  }
+  return all_segment_ids;
+}
+
 }  // namespace segmentation_platform

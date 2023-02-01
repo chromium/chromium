@@ -23,8 +23,6 @@ static_library("internal") {
     "config_parser.h",
     "constants.cc",
     "constants.h",
-    "data_collection/dummy_training_data_collector.cc",
-    "data_collection/dummy_training_data_collector.h",
     "data_collection/training_data_cache.cc",
     "data_collection/training_data_cache.h",
     "data_collection/training_data_collector.cc",

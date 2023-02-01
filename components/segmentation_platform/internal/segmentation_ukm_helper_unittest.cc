@@ -71,7 +71,14 @@ class SegmentationUkmHelperTest : public testing::Test {
 
   ~SegmentationUkmHelperTest() override = default;
 
-  void SetUp() override { test_recorder_.Purge(); }
+  void SetUp() override {
+    InitializeUkmHelper();
+    test_recorder_.Purge();
+  }
+
+  void InitializeUkmHelper() {
+    SegmentationUkmHelper::GetInstance()->Initialize();
+  }
 
   void ExpectUkmMetrics(const base::StringPiece entry_name,
                         const std::vector<base::StringPiece>& keys,
@@ -91,20 +98,6 @@ class SegmentationUkmHelperTest : public testing::Test {
     EXPECT_EQ(0u, test_recorder_.GetEntriesByName(entry_name).size());
   }
 
-  void InitializeAllowedSegmentIds(const std::string& allowed_ids) {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSegmentationStructuredMetricsFeature,
-          {{kSegmentIdsAllowedForReportingKey, allowed_ids}}}},
-        {features::kSegmentationDefaultReportingSegments});
-    SegmentationUkmHelper::GetInstance()->Initialize();
-  }
-
-  void DisableStructureMetrics() {
-    feature_list_.InitAndDisableFeature(
-        features::kSegmentationStructuredMetricsFeature);
-    SegmentationUkmHelper::GetInstance()->Initialize();
-  }
-
  protected:
   base::test::TaskEnvironment task_environment_;
   ukm::TestAutoSetUkmRecorder test_recorder_;
@@ -114,7 +107,6 @@ class SegmentationUkmHelperTest : public testing::Test {
 // Tests that basic execution results recording works properly.
 TEST_F(SegmentationUkmHelperTest, TestExecutionResultReporting) {
   // Allow results for OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB to be recorded.
-  InitializeAllowedSegmentIds("4");
   ModelProvider::Request input_tensors = {0.1, 0.7, 0.8, 0.5};
   SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
       proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors, 0.6);
@@ -139,8 +131,6 @@ TEST_F(SegmentationUkmHelperTest, TestExecutionResultReporting) {
 
 // Tests that the training data collection recording works properly.
 TEST_F(SegmentationUkmHelperTest, TestTrainingDataCollectionReporting) {
-  // Allow results for OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB to be recorded.
-  InitializeAllowedSegmentIds("4");
   ModelProvider::Request input_tensors = {0.1};
   ModelProvider::Response outputs = {1.0, 0.0};
   std::vector<int> output_indexes = {2, 3};
@@ -172,38 +162,31 @@ TEST_F(SegmentationUkmHelperTest, TestTrainingDataCollectionReporting) {
                    });
 }
 
-// Tests that tensor uploading is disabled if
-// kSegmentationStructuredMetricsFeature is disabled.
-TEST_F(SegmentationUkmHelperTest, TestDisabledStructuredMetrics) {
-  DisableStructureMetrics();
-  proto::SegmentInfo segment_info = CreateTestSegmentInfo(
-      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, true);
+// Tests tensor uploading for default allowed list.
+TEST_F(SegmentationUkmHelperTest, TestDefaultAllowedList) {
+  proto::SegmentInfo segment_info =
+      CreateTestSegmentInfo(proto::OPTIMIZATION_TARGET_UNKNOWN, false);
   EXPECT_FALSE(
       SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info));
-}
-
-// Tests that tensor uploading is disabled for segment IDs that are not in the
-// allowed list.
-TEST_F(SegmentationUkmHelperTest, TestNotAllowedSegmentId) {
-  InitializeAllowedSegmentIds("7, 8");
-  proto::SegmentInfo segment_info = CreateTestSegmentInfo(
-      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, false);
-  EXPECT_FALSE(
-      SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info));
-}
-
-// Tests that tensor uploading is enabled through finch param.
-TEST_F(SegmentationUkmHelperTest, TestUploadTensorsAllowedFromParam) {
-  InitializeAllowedSegmentIds("4, 7, 8");
-  proto::SegmentInfo segment_info = CreateTestSegmentInfo(
+  segment_info = CreateTestSegmentInfo(
       proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, false);
   EXPECT_TRUE(
       SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info));
 }
 
+// Tests that tensor uploading if default allowed list is disabled.
+TEST_F(SegmentationUkmHelperTest, TestDisallowDefaultAllowedList) {
+  feature_list_.InitAndDisableFeature(
+      features::kSegmentationDefaultReportingSegments);
+  InitializeUkmHelper();
+  proto::SegmentInfo segment_info = CreateTestSegmentInfo(
+      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, false);
+  EXPECT_FALSE(
+      SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info));
+}
+
 // Tests that tensor uploading is enabled through metadata.
 TEST_F(SegmentationUkmHelperTest, TestUploadTensorsAllowedFromMetadata) {
-  InitializeAllowedSegmentIds("7, 8");
   proto::SegmentInfo segment_info = CreateTestSegmentInfo(
       proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, true);
   EXPECT_TRUE(
@@ -237,7 +220,6 @@ TEST_F(SegmentationUkmHelperTest, TooManyInputTensors) {
   base::HistogramTester tester;
   std::string histogram_name(
       "SegmentationPlatform.StructuredMetrics.TooManyTensors.Count");
-  InitializeAllowedSegmentIds("4");
   ModelProvider::Request input_tensors(100, 0.1);
   ukm::SourceId source_id =
       SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
@@ -250,7 +232,6 @@ TEST_F(SegmentationUkmHelperTest, TooManyInputTensors) {
 
 // Tests output validation for |RecordTrainingData|.
 TEST_F(SegmentationUkmHelperTest, OutputsValidation) {
-  InitializeAllowedSegmentIds("4");
   ModelProvider::Request input_tensors{0.1};
 
   // outputs, output_indexes size doesn't match.

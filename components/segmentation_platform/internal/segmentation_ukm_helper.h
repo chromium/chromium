@@ -71,12 +71,9 @@ class SegmentationUkmHelper {
   static bool AllowedToUploadData(base::TimeDelta signal_storage_length,
                                   base::Clock* clock);
 
-  // Gets a set of segment IDs that are allowed to upload metrics.
-  const base::flat_set<SegmentId>& allowed_segment_ids() {
-    return allowed_segment_ids_;
-  }
-
  private:
+  void Initialize();
+
   bool AddInputsToUkm(ukm::builders::Segmentation_ModelExecution* ukm_builder,
                       SegmentId segment_id,
                       int64_t model_version,
@@ -90,8 +87,6 @@ class SegmentationUkmHelper {
   friend class SegmentationUkmHelperTest;
   SegmentationUkmHelper();
   ~SegmentationUkmHelper();
-
-  void Initialize();
 
   base::flat_set<SegmentId> allowed_segment_ids_;
 };

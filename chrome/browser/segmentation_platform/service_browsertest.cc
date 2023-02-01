@@ -47,8 +47,6 @@ class SegmentationPlatformTest : public InProcessBrowserTest {
         {base::test::FeatureRefAndParams(features::kSegmentationPlatformFeature,
                                          {}),
          base::test::FeatureRefAndParams(
-             features::kSegmentationStructuredMetricsFeature, {}),
-         base::test::FeatureRefAndParams(
              features::kSegmentationPlatformUkmEngine, {}),
          base::test::FeatureRefAndParams(
              features::kSegmentationPlatformLowEngagementFeature,

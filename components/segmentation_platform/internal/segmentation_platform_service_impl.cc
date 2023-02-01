@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/segmentation_platform/internal/config_parser.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/execution/processing/sync_device_info_observer.h"
@@ -39,16 +40,6 @@ namespace {
 
 using proto::SegmentId;
 
-base::flat_set<SegmentId> GetAllSegmentIds(
-    const std::vector<std::unique_ptr<Config>>& configs) {
-  base::flat_set<SegmentId> all_segment_ids;
-  for (const auto& config : configs) {
-    for (const auto& segment_id : config->segments)
-      all_segment_ids.insert(segment_id.first);
-  }
-  return all_segment_ids;
-}
-
 }  // namespace
 
 SegmentationPlatformServiceImpl::InitParams::InitParams() = default;
@@ -62,7 +53,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       platform_options_(PlatformOptions::CreateDefault()),
       input_delegate_holder_(std::move(init_params->input_delegate_holder)),
       configs_(std::move(init_params->configs)),
-      all_segment_ids_(GetAllSegmentIds(configs_)),
+      all_segment_ids_(GetAllSegmentIdsFromConfigs(configs_)),
       field_trial_register_(std::move(init_params->field_trial_register)),
       profile_prefs_(init_params->profile_prefs.get()),
       creation_time_(clock_->Now()) {

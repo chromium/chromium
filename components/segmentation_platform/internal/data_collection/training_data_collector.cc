@@ -6,10 +6,7 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
-#include "components/segmentation_platform/internal/data_collection/dummy_training_data_collector.h"
 #include "components/segmentation_platform/internal/data_collection/training_data_collector_impl.h"
-#include "components/segmentation_platform/public/features.h"
 
 namespace segmentation_platform {
 
@@ -21,14 +18,9 @@ std::unique_ptr<TrainingDataCollector> TrainingDataCollector::Create(
     std::vector<std::unique_ptr<Config>>* configs,
     PrefService* profile_prefs,
     base::Clock* clock) {
-  if (base::FeatureList::IsEnabled(
-          features::kSegmentationStructuredMetricsFeature)) {
-    return std::make_unique<TrainingDataCollectorImpl>(
-        processor, histogram_signal_handler, storage_service, configs,
-        profile_prefs, clock);
-  }
-
-  return std::make_unique<DummyTrainingDataCollector>();
+  return std::make_unique<TrainingDataCollectorImpl>(
+      processor, histogram_signal_handler, storage_service, configs,
+      profile_prefs, clock);
 }
 
 TrainingDataCollector::TrainingDataCollector() = default;

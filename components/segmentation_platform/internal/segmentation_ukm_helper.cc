@@ -88,36 +88,6 @@ const UkmMemberFn kSegmentationUkmOutputMethods[] = {
     &Segmentation_ModelExecution::SetActualResult5,
     &Segmentation_ModelExecution::SetActualResult6};
 
-base::flat_set<SegmentId> GetSegmentIdsAllowedForReporting() {
-  // TODO(crbug.com/1406404): Get allowed segment Ids from database.
-  if (base::FeatureList::IsEnabled(segmentation_platform::features::
-                                       kSegmentationDefaultReportingSegments)) {
-    return std::vector<SegmentId>{
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2};
-  }
-  std::vector<std::string> segment_ids = base::SplitString(
-      base::GetFieldTrialParamValueByFeature(
-          segmentation_platform::features::
-              kSegmentationStructuredMetricsFeature,
-          segmentation_platform::kSegmentIdsAllowedForReportingKey),
-      ",;", base::WhitespaceHandling::TRIM_WHITESPACE,
-      base::SplitResult::SPLIT_WANT_NONEMPTY);
-  base::flat_set<SegmentId> result;
-  for (const auto& id : segment_ids) {
-    int segment_id;
-    if (base::StringToInt(id, &segment_id))
-      result.emplace(static_cast<SegmentId>(segment_id));
-  }
-  return result;
-}
-
 }  // namespace
 
 namespace segmentation_platform {
@@ -128,14 +98,28 @@ SegmentationUkmHelper::SegmentationUkmHelper() {
 
 SegmentationUkmHelper::~SegmentationUkmHelper() = default;
 
-void SegmentationUkmHelper::Initialize() {
-  allowed_segment_ids_ = GetSegmentIdsAllowedForReporting();
-}
-
 // static
 SegmentationUkmHelper* SegmentationUkmHelper::GetInstance() {
   static base::NoDestructor<SegmentationUkmHelper> helper;
   return helper.get();
+}
+
+void SegmentationUkmHelper::Initialize() {
+  // TODO(crbug.com/1406404): Migrate models for these segments to use
+  // `upload_tensors`.
+  allowed_segment_ids_.clear();
+  if (base::FeatureList::IsEnabled(segmentation_platform::features::
+                                       kSegmentationDefaultReportingSegments)) {
+    allowed_segment_ids_ = base::flat_set<SegmentId>{
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2};
+  }
 }
 
 ukm::SourceId SegmentationUkmHelper::RecordModelExecutionResult(
@@ -236,13 +220,8 @@ bool SegmentationUkmHelper::AddOutputsToUkm(
 
 bool SegmentationUkmHelper::CanUploadTensors(
     const proto::SegmentInfo& segment_info) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kSegmentationStructuredMetricsFeature)) {
-    return false;
-  }
   return segment_info.model_metadata().upload_tensors() ||
-         allowed_segment_ids_.contains(
-             static_cast<int>(segment_info.segment_id()));
+         allowed_segment_ids_.contains(segment_info.segment_id());
 }
 
 // static

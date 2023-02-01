@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "components/segmentation_platform/internal/config_parser.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/data_collection/training_data_cache.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
@@ -122,7 +123,7 @@ void TrainingDataCollectorImpl::OnModelMetadataUpdated() {
 
 void TrainingDataCollectorImpl::OnServiceInitialized() {
   base::flat_set<SegmentId> segment_ids =
-      SegmentationUkmHelper::GetInstance()->allowed_segment_ids();
+      GetAllSegmentIdsFromConfigs(*configs_);
   if (segment_ids.empty()) {
     return;
   }
