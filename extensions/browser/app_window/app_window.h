@@ -71,7 +71,7 @@ class AppWindowContents {
   // Called when the native window changes.
   virtual void NativeWindowChanged(NativeAppWindow* native_app_window) = 0;
 
-  // Called when the native window closes. |send_oncloded| is flag to indicate
+  // Called when the native window closes. |send_onclosed| is flag to indicate
   // whether the OnClosed event should be sent. It is true except when the
   // native window is closed before AppWindowCreateFunction responds.
   virtual void NativeWindowClosed(bool send_onclosed) = 0;
