@@ -30,6 +30,10 @@ ProgressStatus::~ProgressStatus() = default;
 ProgressStatus::ProgressStatus(ProgressStatus&& other) = default;
 ProgressStatus& ProgressStatus::operator=(ProgressStatus&& other) = default;
 
+bool ProgressStatus::IsPaused() const {
+  return state == State::kPaused;
+}
+
 bool ProgressStatus::IsCompleted() const {
   return state == State::kSuccess || state == State::kError ||
          state == State::kCancelled;

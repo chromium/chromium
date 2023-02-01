@@ -120,6 +120,9 @@ struct ProgressStatus {
   ProgressStatus(ProgressStatus&& other);
   ProgressStatus& operator=(ProgressStatus&& other);
 
+  // True if the task is in kPaused state.
+  bool IsPaused() const;
+
   // True if the task is in a terminal state and won't receive further updates.
   bool IsCompleted() const;
 
