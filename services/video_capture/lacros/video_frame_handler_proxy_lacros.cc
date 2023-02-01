@@ -119,7 +119,32 @@ void VideoFrameHandlerProxyLacros::OnNewBuffer(
 void VideoFrameHandlerProxyLacros::OnFrameReadyInBuffer(
     crosapi::mojom::ReadyFrameInBufferPtr buffer,
     std::vector<crosapi::mojom::ReadyFrameInBufferPtr> scaled_buffers) {
-  if (handler_in_process_) {
+  if (handler_.is_bound()) {
+    if (!access_permission_proxy_map_) {
+      access_permission_proxy_map_ = new AccessPermissionProxyMap();
+      mojo::PendingRemote<mojom::VideoFrameAccessHandler> pending_remote;
+      mojo::MakeSelfOwnedReceiver<mojom::VideoFrameAccessHandler>(
+          std::make_unique<VideoFrameAccessHandlerProxy>(
+              access_permission_proxy_map_),
+          pending_remote.InitWithNewPipeAndPassReceiver());
+      handler_->OnFrameAccessHandlerReady(std::move(pending_remote));
+    }
+
+    access_permission_proxy_map_->InsertAccessPermission(
+        buffer->buffer_id, std::move(buffer->access_permission));
+    mojom::ReadyFrameInBufferPtr video_capture_buffer =
+        ToVideoCaptureBuffer(std::move(buffer));
+    std::vector<mojom::ReadyFrameInBufferPtr> video_capture_scaled_buffers;
+    for (auto& b : scaled_buffers) {
+      access_permission_proxy_map_->InsertAccessPermission(
+          b->buffer_id, std::move(b->access_permission));
+      video_capture_scaled_buffers.push_back(
+          ToVideoCaptureBuffer(std::move(b)));
+    }
+
+    handler_->OnFrameReadyInBuffer(std::move(video_capture_buffer),
+                                   std::move(video_capture_scaled_buffers));
+  } else if (handler_in_process_) {
     std::vector<media::ReadyFrameInBuffer> media_scaled_buffers;
     for (auto& b : scaled_buffers) {
       media_scaled_buffers.push_back(ConvertToMediaReadyFrame(std::move(b)));
@@ -128,32 +153,7 @@ void VideoFrameHandlerProxyLacros::OnFrameReadyInBuffer(
     handler_in_process_->OnFrameReadyInBuffer(
         ConvertToMediaReadyFrame(std::move(buffer)),
         std::move(media_scaled_buffers));
-    return;
   }
-
-  if (!access_permission_proxy_map_) {
-    access_permission_proxy_map_ = new AccessPermissionProxyMap();
-    mojo::PendingRemote<mojom::VideoFrameAccessHandler> pending_remote;
-    mojo::MakeSelfOwnedReceiver<mojom::VideoFrameAccessHandler>(
-        std::make_unique<VideoFrameAccessHandlerProxy>(
-            access_permission_proxy_map_),
-        pending_remote.InitWithNewPipeAndPassReceiver());
-    handler_->OnFrameAccessHandlerReady(std::move(pending_remote));
-  }
-
-  access_permission_proxy_map_->InsertAccessPermission(
-      buffer->buffer_id, std::move(buffer->access_permission));
-  mojom::ReadyFrameInBufferPtr video_capture_buffer =
-      ToVideoCaptureBuffer(std::move(buffer));
-  std::vector<mojom::ReadyFrameInBufferPtr> video_capture_scaled_buffers;
-  for (auto& b : scaled_buffers) {
-    access_permission_proxy_map_->InsertAccessPermission(
-        b->buffer_id, std::move(b->access_permission));
-    video_capture_scaled_buffers.push_back(ToVideoCaptureBuffer(std::move(b)));
-  }
-
-  handler_->OnFrameReadyInBuffer(std::move(video_capture_buffer),
-                                 std::move(video_capture_scaled_buffers));
 }
 
 void VideoFrameHandlerProxyLacros::OnBufferRetired(int buffer_id) {
