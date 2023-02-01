@@ -13,9 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
-#include "components/autofill/core/common/autofill_l10n_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
@@ -337,7 +335,6 @@ class AutofillProfileComparator {
                      NameInfo& info) const;
 
  private:
-  l10n::CaseInsensitiveCompare case_insensitive_compare_;
   const std::string app_locale_;
 };
 

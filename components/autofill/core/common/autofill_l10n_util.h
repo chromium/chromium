@@ -19,6 +19,10 @@ namespace l10n {
 std::unique_ptr<icu::Collator> GetCollatorForLocale(const icu::Locale& locale);
 
 // Assists with locale-aware case insensitive string comparisons.
+// The `collator_` member is initialized in the constructor, which triggers the
+// loading of locale-specific rules. While these rules are cached, loading them
+// for the first time can be slow. Avoid adding this class as member variable to
+// other classes for this reason. See e.g. crbug.com/1410875.
 class CaseInsensitiveCompare {
  public:
   CaseInsensitiveCompare();
