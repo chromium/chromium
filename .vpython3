@@ -116,9 +116,6 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/tabulate-py3"
   version: "version:0.8.9"
-  match_tag: <
-    platform: "manylinux1_x86_64"
-  >
 >
 wheel: <
   name: "infra/python/wheels/typed-ast/${vpython_platform}"
