@@ -95,7 +95,7 @@ BASE_FEATURE(kAutofillInferCountryCallingCode,
 // TODO(crbug.com/1295721): Cleanup when launched.
 BASE_FEATURE(kAutofillComplementCountryEarly,
              "AutofillComplementCountryEarly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, label inference considers strings entirely made up of  '(', ')'
 // and '-' as valid labels.
