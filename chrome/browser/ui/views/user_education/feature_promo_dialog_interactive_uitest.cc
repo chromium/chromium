@@ -315,8 +315,15 @@ class FeaturePromoDialogIntentChipTest : public FeaturePromoDialogTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(https://crbug.com/1412122): flaky on chromeos.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InvokeUi_IPH_IntentChip DISABLED_InvokeUi_IPH_IntentChip
+#else
+#define MAYBE_InvokeUi_IPH_IntentChip InvokeUi_IPH_IntentChip
+#endif
+
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogIntentChipTest,
-                       InvokeUi_IPH_IntentChip) {
+                       MAYBE_InvokeUi_IPH_IntentChip) {
   set_baseline("3564824");
 
   ASSERT_TRUE(embedded_test_server()->Start());
