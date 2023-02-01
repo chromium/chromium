@@ -751,7 +751,9 @@ void MediaFoundationStreamWrapper::ReportEncryptionType(
     const scoped_refptr<DecoderBuffer>& buffer) {
   auto encryption_type = EncryptionType::kClear;
   if (IsEncrypted()) {
-    bool is_buffer_encrypted = buffer->decrypt_config();
+    // Treat EOS as clear buffer which should be rare.
+    bool is_buffer_encrypted =
+        !buffer->end_of_stream() && buffer->decrypt_config();
     encryption_type = !is_buffer_encrypted
                           ? EncryptionType::kEncryptedWithClearLead
                           : EncryptionType::kEncrypted;

@@ -1073,7 +1073,9 @@ void DecoderStream<StreamType>::ReportEncryptionType(
                           ? EncryptionType::kEncryptedWithClearLead
                           : EncryptionType::kEncrypted;
   } else if (traits_->GetDecoderConfig(stream_).is_encrypted()) {
-    bool is_buffer_encrypted = buffer->decrypt_config();
+    // Treat EOS as clear buffer which should be rare.
+    bool is_buffer_encrypted =
+        !buffer->end_of_stream() && buffer->decrypt_config();
     encryption_type = !is_buffer_encrypted
                           ? EncryptionType::kEncryptedWithClearLead
                           : EncryptionType::kEncrypted;
