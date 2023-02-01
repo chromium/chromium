@@ -5,18 +5,12 @@
 export type PersonalDataChangedListener =
     (addresses: chrome.autofillPrivate.AddressEntry[],
      creditCards: chrome.autofillPrivate.CreditCardEntry[],
-     ibans: chrome.autofillPrivate.IbanEntry[],
-     accountInfo?: chrome.autofillPrivate.AccountInfo) => void;
+     ibans: chrome.autofillPrivate.IbanEntry[]) => void;
 
 /**
  * Interface for all callbacks to the autofill API.
  */
 export interface AutofillManagerProxy {
-  /**
-   * Gets currently signed-in user account info, or undefined if not signed-in.
-   */
-  getAccountInfo(): Promise<chrome.autofillPrivate.AccountInfo|undefined>;
-
   /**
    * Add an observer to the list of personal data.
    */
@@ -46,10 +40,6 @@ export interface AutofillManagerProxy {
  * Implementation that accesses the private API.
  */
 export class AutofillManagerImpl implements AutofillManagerProxy {
-  getAccountInfo(): Promise<chrome.autofillPrivate.AccountInfo|undefined> {
-    return chrome.autofillPrivate.getAccountInfo();
-  }
-
   setPersonalDataManagerListener(listener: PersonalDataChangedListener) {
     chrome.autofillPrivate.onPersonalDataChanged.addListener(listener);
   }

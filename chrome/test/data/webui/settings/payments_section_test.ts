@@ -311,7 +311,7 @@ suite('PaymentsSection', function() {
         (creditCard: chrome.autofillPrivate.CreditCardEntry) => {
           (PaymentsManagerImpl.getInstance() as TestPaymentsManager)
               .lastCallback.setPersonalDataManagerListener!
-              ([], [creditCard], [], {email: 'stub-user@example.com'});
+              ([], [creditCard], []);
           flush();
         };
 

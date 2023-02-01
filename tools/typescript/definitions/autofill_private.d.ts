@@ -108,7 +108,7 @@ declare global {
         countryCode: string;
       }
 
-      export function getAccountInfo(): Promise<AccountInfo|undefined>;
+      export function getAccountInfo(): Promise<AccountInfo>;
       export function saveAddress(address: AddressEntry): void;
       export function getCountryList(): Promise<CountryEntry[]>;
       export function getAddressComponents(
@@ -131,7 +131,7 @@ declare global {
 
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
-           ibans: IbanEntry[], accountInfo?: AccountInfo) => void>;
+           ibans: IbanEntry[], accountInfo: AccountInfo) => void>;
     }
   }
 }

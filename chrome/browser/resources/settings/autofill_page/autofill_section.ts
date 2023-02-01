@@ -47,7 +47,6 @@ export interface SettingsAutofillSectionElement {
     addressSharedMenu: CrActionMenuElement,
     addAddress: CrButtonElement,
     addressList: HTMLElement,
-    menuEditAddress: HTMLElement,
     menuRemoveAddress: HTMLElement,
     noAddressesLabel: HTMLElement,
   };
@@ -81,7 +80,6 @@ export class SettingsAutofillSectionElement extends
   prefs: {[key: string]: any};
   addresses: chrome.autofillPrivate.AddressEntry[];
   activeAddress: chrome.autofillPrivate.AddressEntry|null;
-  private accountInfo_?: chrome.autofillPrivate.AccountInfo;
   private showAddressDialog_: boolean;
   private showAddressRemoveConfirmationDialog_: boolean;
   private activeDialogAnchor_: HTMLElement|null;
@@ -112,14 +110,10 @@ export class SettingsAutofillSectionElement extends
         (addressList: chrome.autofillPrivate.AddressEntry[]) => {
           this.addresses = addressList;
         };
-    const setAccountListener =
-        (accountInfo?: chrome.autofillPrivate.AccountInfo) => {
-          this.accountInfo_ = accountInfo;
-        };
+
     const setPersonalDataListener: PersonalDataChangedListener =
-        (addressList, _cardList, _ibans, accountInfo?) => {
+        (addressList, _cardList) => {
           this.addresses = addressList;
-          this.accountInfo_ = accountInfo;
         };
 
     // Remember the bound reference in order to detach.
@@ -127,7 +121,6 @@ export class SettingsAutofillSectionElement extends
 
     // Request initial data.
     this.autofillManager_.getAddressList().then(setAddressesListener);
-    this.autofillManager_.getAccountInfo().then(setAccountListener);
 
     // Listen for changes.
     this.autofillManager_.setPersonalDataManagerListener(

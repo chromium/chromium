@@ -250,9 +250,8 @@ suite('PasswordsAndForms', function() {
       const addressList = [createAddressEntry(), createAddressEntry()];
       const cardList = [createCreditCardEntry(), createCreditCardEntry()];
       const ibanList = [createIbanEntry(), createIbanEntry()];
-      const accountInfo = {email: 'stub-user@example.com'};
       autofillManager.lastCallback.setPersonalDataManagerListener!
-          (addressList, cardList, ibanList, accountInfo);
+          (addressList, cardList, ibanList);
       flush();
 
       assertEquals(
@@ -278,9 +277,8 @@ suite('PasswordsAndForms', function() {
       const addressList = [createAddressEntry(), createAddressEntry()];
       const cardList = [createCreditCardEntry(), createCreditCardEntry()];
       const ibanList = [createIbanEntry(), createIbanEntry()];
-      const accountInfo = {email: 'stub-user@example.com'};
       paymentsManager.lastCallback.setPersonalDataManagerListener!
-          (addressList, cardList, ibanList, accountInfo);
+          (addressList, cardList, ibanList);
       flush();
 
       assertEquals(
@@ -306,9 +304,8 @@ suite('PasswordsAndForms', function() {
       const addressList = [createAddressEntry(), createAddressEntry()];
       const cardList = [createCreditCardEntry(), createCreditCardEntry()];
       const ibanList = [createIbanEntry(), createIbanEntry()];
-      const accountInfo = {email: 'stub-user@example.com'};
       paymentsManager.lastCallback.setPersonalDataManagerListener!
-          (addressList, cardList, ibanList, accountInfo);
+          (addressList, cardList, ibanList);
       flush();
 
       assertEquals(
