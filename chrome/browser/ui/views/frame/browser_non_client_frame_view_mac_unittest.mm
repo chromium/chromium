@@ -59,26 +59,3 @@ TEST(BrowserNonClientFrameViewMacTest, GetCaptionButtonPlaceholderBounds) {
   const gfx::Rect expected_trailing_bounds = gfx::Rect(715, 0, 85, 40);
   EXPECT_EQ(trailing_bounds, expected_trailing_bounds);
 }
-
-TEST(BrowserNonClientFrameViewMacTest, GetWebAppFrameToolbarAvailableBounds) {
-  const gfx::Size frame(800, 40);
-  const int y = 0;
-  const int caption_button_container_width = 75;
-
-  const gfx::Rect ltr_available_bounds =
-      BrowserNonClientFrameViewMac::GetWebAppFrameToolbarAvailableBounds(
-          false /* is_rtl */, frame, y, caption_button_container_width);
-  const gfx::Rect expected_ltr_available_bounds =
-      gfx::Rect(caption_button_container_width, y,
-                frame.width() - caption_button_container_width, frame.height());
-
-  EXPECT_EQ(ltr_available_bounds, expected_ltr_available_bounds);
-
-  const gfx::Rect rtl_available_bounds =
-      BrowserNonClientFrameViewMac::GetWebAppFrameToolbarAvailableBounds(
-          true /* is_rtl */, frame, y, caption_button_container_width);
-  const gfx::Rect expected_rtl_available_bounds = gfx::Rect(
-      0, y, frame.width() - caption_button_container_width, frame.height());
-
-  EXPECT_EQ(rtl_available_bounds, expected_rtl_available_bounds);
-}

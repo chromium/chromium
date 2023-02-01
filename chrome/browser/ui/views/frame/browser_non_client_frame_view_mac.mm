@@ -577,21 +577,6 @@ void BrowserNonClientFrameViewMac::LayoutTitleBarForWebApp() {
                              window_title_->CalculatePreferredSize().width()));
 }
 
-gfx::Rect BrowserNonClientFrameViewMac::GetWebAppFrameToolbarAvailableBounds(
-    bool is_rtl,
-    const gfx::Size& frame,
-    int y,
-    int caption_button_container_width) {
-  if (is_rtl) {
-    return gfx::Rect(0, 0, frame.width() - caption_button_container_width,
-                     frame.height());
-  } else {
-    return gfx::Rect(caption_button_container_width, 0,
-                     frame.width() - caption_button_container_width,
-                     frame.height());
-  }
-}
-
 gfx::Rect BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
     const gfx::Rect& frame,
     const gfx::Insets& caption_button_insets) {
