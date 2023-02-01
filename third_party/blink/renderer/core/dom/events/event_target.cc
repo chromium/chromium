@@ -445,10 +445,6 @@ bool EventTarget::AddEventListenerInternal(
       !execution_context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kUnload,
           ReportOptions::kReportOnFailure)) {
-    // If the Permissions-Policy unload feature is not enabled, then unload
-    // should never be disabled.
-    DCHECK(RuntimeEnabledFeatures::PermissionsPolicyUnloadEnabled(
-        execution_context));
     return false;
   }
 
