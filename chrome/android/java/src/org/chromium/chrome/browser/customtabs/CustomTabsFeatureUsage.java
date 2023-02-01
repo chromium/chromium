@@ -47,7 +47,9 @@ public class CustomTabsFeatureUsage {
             CustomTabsFeature.EXTRA_ENABLE_URLBAR_HIDING,
             CustomTabsFeature.EXTRA_AUTO_TRANSLATE_LANGUAGE,
             CustomTabsFeature.EXTRA_INTENT_FEATURE_OVERRIDES,
-            CustomTabsFeature.CTF_PARTIAL_SIDE_SHEET, CustomTabsFeature.COUNT})
+            CustomTabsFeature.CTF_PARTIAL_SIDE_SHEET,
+            CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP,
+            CustomTabsFeature.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, CustomTabsFeature.COUNT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CustomTabsFeature {
         /** Special enum for the start of a session. */
@@ -96,9 +98,11 @@ public class CustomTabsFeatureUsage {
         int EXTRA_AUTO_TRANSLATE_LANGUAGE = 42;
         int EXTRA_INTENT_FEATURE_OVERRIDES = 43;
         int CTF_PARTIAL_SIDE_SHEET = 44;
+        int EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP = 45;
+        int EXTRA_INITIAL_ACTIVITY_WIDTH_PX = 46;
 
         /** Total count of entries. */
-        int COUNT = 45;
+        int COUNT = 47;
     }
 
     // Whether flag-enabled or not.

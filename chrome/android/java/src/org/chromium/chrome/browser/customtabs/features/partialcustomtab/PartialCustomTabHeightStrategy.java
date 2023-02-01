@@ -85,6 +85,8 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     }
 
     private final AnimatorListener mSpinnerFadeoutAnimatorListener;
+    private final @Px int mUnclampedInitialHeight;
+    private final boolean mIsFixedHeight;
 
     private @Px int mFullyExpandedAdjustmentHeight;
     private TabAnimator mTabAnimator;
@@ -127,8 +129,8 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
             ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
             boolean isTablet, boolean interactWithBackground,
             PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
-        super(activity, initialHeight, isFixedHeight, onResizedCallback, fullscreenManager,
-                isTablet, interactWithBackground, handleStrategyFactory);
+        super(activity, onResizedCallback, fullscreenManager, isTablet, interactWithBackground,
+                handleStrategyFactory);
 
         int animTime = mActivity.getResources().getInteger(android.R.integer.config_mediumAnimTime);
         mTabAnimator = new TabAnimator(this, animTime, this::onMoveEnd);
@@ -150,6 +152,8 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
 
         mPositionUpdater = mVersionCompat::updatePosition;
 
+        mUnclampedInitialHeight = initialHeight;
+        mIsFixedHeight = isFixedHeight;
         mHeight = MATCH_PARENT;
         mWidth = MATCH_PARENT;
     }

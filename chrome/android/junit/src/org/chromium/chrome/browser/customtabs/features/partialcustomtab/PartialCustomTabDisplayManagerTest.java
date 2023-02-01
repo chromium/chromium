@@ -31,18 +31,22 @@ import org.chromium.chrome.test.util.browser.Features;
 @LooperMode(Mode.PAUSED)
 @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
 public class PartialCustomTabDisplayManagerTest {
+    private boolean mFullscreen;
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Rule
     public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
-    private boolean mFullscreen;
+    private PartialCustomTabDisplayManager createPcctDisplayManager() {
+        return createPcctDisplayManager(800, 2000);
+    }
 
-    private PartialCustomTabDisplayManager createPcctDisplayManager(@Px int heightPx) {
+    private PartialCustomTabDisplayManager createPcctDisplayManager(
+            @Px int heightPx, @Px int widthPx) {
         PartialCustomTabDisplayManager displayManager = new PartialCustomTabDisplayManager(
-                mPCCTTestRule.mActivity, heightPx, false, mPCCTTestRule.mOnResizedCallback,
-                mPCCTTestRule.mActivityLifecycleDispatcher, mPCCTTestRule.mFullscreenManager, false,
-                true);
+                mPCCTTestRule.mActivity, heightPx, widthPx, 840, false,
+                mPCCTTestRule.mOnResizedCallback, mPCCTTestRule.mActivityLifecycleDispatcher,
+                mPCCTTestRule.mFullscreenManager, false, true);
         var sizeStrategyCreator = displayManager.getSizeStrategyCreatorForTesting();
         SizeStrategyCreator testSizeStrategyCreator = (type) -> {
             var strategy = sizeStrategyCreator.createForType(type);
@@ -58,7 +62,7 @@ public class PartialCustomTabDisplayManagerTest {
     @Test
     public void create_BottomSheetStrategy() {
         mPCCTTestRule.configPortraitMode();
-        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(2000);
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
 
         assertEquals("Bottom-Sheet PCCT should be created", PartialCustomTabType.BOTTOM_SHEET,
                 displayManager.getActiveStrategyType());
@@ -67,7 +71,7 @@ public class PartialCustomTabDisplayManagerTest {
     @Test
     public void create_SideSheetStrategy() {
         mPCCTTestRule.configLandscapeMode();
-        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(2000);
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
 
         assertEquals("Side-Sheet PCCT should be created", PartialCustomTabType.SIDE_SHEET,
                 displayManager.getActiveStrategyType());
@@ -76,7 +80,7 @@ public class PartialCustomTabDisplayManagerTest {
     @Test
     public void transitionFromBottomSheetToSideSheetWhenOrientationChangedToLandscape() {
         mPCCTTestRule.configPortraitMode();
-        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(2000);
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
 
         assertEquals("Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
@@ -93,7 +97,7 @@ public class PartialCustomTabDisplayManagerTest {
     @Test
     public void transitionFromSideSheetToBottomSheetWhenOrientationChangedToPortrait() {
         mPCCTTestRule.configLandscapeMode();
-        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(2000);
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
 
         assertEquals("Side-Sheet should be the active strategy", PartialCustomTabType.SIDE_SHEET,
                 displayManager.getActiveStrategyType());
@@ -110,7 +114,7 @@ public class PartialCustomTabDisplayManagerTest {
     @Test
     public void dontTransitionIfOrientationDoesNotChange() {
         mPCCTTestRule.configPortraitMode();
-        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(2000);
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
 
         assertEquals("Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
@@ -123,7 +127,7 @@ public class PartialCustomTabDisplayManagerTest {
     @Test
     public void rotateInFullscreenMode() {
         mPCCTTestRule.configLandscapeMode();
-        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(2000);
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
 
         mPCCTTestRule.mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
         displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);

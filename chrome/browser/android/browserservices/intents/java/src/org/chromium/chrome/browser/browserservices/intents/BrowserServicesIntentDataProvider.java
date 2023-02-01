@@ -504,6 +504,14 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
+     * @return The value in pixels of the breakpoint where Side Sheets behave as Bottom Sheets.
+     *          It will return 0 if there is no value set.
+     */
+    public int getActivityBreakPoint() {
+        return 0;
+    }
+
+    /**
      * Returns the {@link CloseButtonPosition}.
      */
     public @CloseButtonPosition int getCloseButtonPosition() {

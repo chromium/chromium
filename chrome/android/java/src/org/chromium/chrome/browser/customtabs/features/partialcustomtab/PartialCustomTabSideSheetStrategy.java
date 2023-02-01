@@ -35,16 +35,16 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     private ValueAnimator mCloseAnimator;
 
-    public PartialCustomTabSideSheetStrategy(Activity activity, @Px int initialHeight,
-            boolean isFixedHeight, CustomTabHeightStrategy.OnResizedCallback onResizedCallback,
+    public PartialCustomTabSideSheetStrategy(Activity activity, @Px int initialWidth,
+            CustomTabHeightStrategy.OnResizedCallback onResizedCallback,
             FullscreenManager fullscreenManager, boolean isTablet, boolean interactWithBackground,
             PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
-        super(activity, initialHeight, isFixedHeight, onResizedCallback, fullscreenManager,
-                isTablet, interactWithBackground, handleStrategyFactory);
+        super(activity, onResizedCallback, fullscreenManager, isTablet, interactWithBackground,
+                handleStrategyFactory);
 
-        // TODO(crbug.com/1406104) Allow customization for the side-sheet width.
-        //  For now it's half of the window.
-        mUnclampedInitialWidth = mVersionCompat.getDisplayWidth() / 2;
+        // TODO(crbug.com/1406104) Implement logic for correct side sheet width
+        mUnclampedInitialWidth =
+                initialWidth == 0 ? mVersionCompat.getDisplayWidth() / 2 : initialWidth;
         mPositionUpdater = this::updatePosition;
 
         setupCloseAnimation();

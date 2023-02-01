@@ -28,7 +28,9 @@ public class PartialCustomTabDisplayManager
     static final int CREATE_STRATEGY_DELAY_CONFIG_CHANGE_MS = 150;
 
     private final Activity mActivity;
+    private final int mBreakPointDp;
     private final @Px int mUnclampedInitialHeight;
+    private final @Px int mUnclampedInitialWidth;
     private final boolean mIsFixedHeight;
     private final OnResizedCallback mOnResizedCallback;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -52,11 +54,13 @@ public class PartialCustomTabDisplayManager
     private SizeStrategyCreator mSizeStrategyCreator = this::createSizeStrategy;
 
     public PartialCustomTabDisplayManager(Activity activity, @Px int initialHeight,
-            boolean isFixedHeight, OnResizedCallback onResizedCallback,
-            ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
-            boolean isTablet, boolean interactWithBackground) {
+            @Px int initialWidth, int breakPointDp, boolean isFixedHeight,
+            OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher,
+            FullscreenManager fullscreenManager, boolean isTablet, boolean interactWithBackground) {
         mActivity = activity;
         mUnclampedInitialHeight = initialHeight;
+        mUnclampedInitialWidth = initialWidth;
+        mBreakPointDp = breakPointDp;
         mIsFixedHeight = isFixedHeight;
         mOnResizedCallback = onResizedCallback;
         mFullscreenManager = fullscreenManager;
@@ -196,9 +200,9 @@ public class PartialCustomTabDisplayManager
                         mHandleStrategyFactory);
             }
             case PartialCustomTabType.SIDE_SHEET: {
-                return new PartialCustomTabSideSheetStrategy(mActivity, mUnclampedInitialHeight,
-                        mIsFixedHeight, mOnResizedCallback, mFullscreenManager, mIsTablet,
-                        mInteractWithBackground, mHandleStrategyFactory);
+                return new PartialCustomTabSideSheetStrategy(mActivity, mUnclampedInitialWidth,
+                        mOnResizedCallback, mFullscreenManager, mIsTablet, mInteractWithBackground,
+                        mHandleStrategyFactory);
             }
             default: {
                 assert false : "Partial Custom Tab type not supported: " + type;

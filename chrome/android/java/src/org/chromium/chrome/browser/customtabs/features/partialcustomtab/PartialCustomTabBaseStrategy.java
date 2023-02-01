@@ -37,8 +37,6 @@ import java.util.function.BooleanSupplier;
 public abstract class PartialCustomTabBaseStrategy
         extends CustomTabHeightStrategy implements FullscreenManager.Observer {
     protected final Activity mActivity;
-    protected final @Px int mUnclampedInitialHeight;
-    protected final boolean mIsFixedHeight;
     protected final OnResizedCallback mOnResizedCallback;
     protected final FullscreenManager mFullscreenManager;
     protected final boolean mIsTablet;
@@ -93,13 +91,10 @@ public abstract class PartialCustomTabBaseStrategy
         int FULL_SIZE = 3;
     }
 
-    public PartialCustomTabBaseStrategy(Activity activity, @Px int initialHeight,
-            boolean isFixedHeight, OnResizedCallback onResizedCallback,
+    public PartialCustomTabBaseStrategy(Activity activity, OnResizedCallback onResizedCallback,
             FullscreenManager fullscreenManager, boolean isTablet, boolean interactWithBackground,
             PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
         mActivity = activity;
-        mUnclampedInitialHeight = initialHeight;
-        mIsFixedHeight = isFixedHeight;
         mOnResizedCallback = onResizedCallback;
         mIsTablet = isTablet;
         mInteractWithBackground = interactWithBackground;
