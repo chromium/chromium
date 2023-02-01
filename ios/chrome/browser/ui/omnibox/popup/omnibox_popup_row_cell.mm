@@ -332,12 +332,12 @@ BOOL IsMultilineSearchSuggestionEnabled() {
   DCHECK(self.imageLayoutGuide);
   DCHECK(self.textLayoutGuide);
 
-  // The text should extend to the cell's trailing edge when there is no
-  // trailing button.
+  // When there is no trailing button, the text should extend to the cell's
+  // trailing edge with a padding.
   NSLayoutConstraint* stackViewToCellTrailing =
       [self.textStackView.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:kTextTrailingMargin];
+                         constant:-kTextTrailingMargin];
   stackViewToCellTrailing.priority = UILayoutPriorityDefaultHigh;
   self.textTrailingConstraint = stackViewToCellTrailing;
 
