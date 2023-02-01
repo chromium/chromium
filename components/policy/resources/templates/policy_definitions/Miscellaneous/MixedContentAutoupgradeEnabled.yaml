@@ -3,7 +3,7 @@ desc: |-
   Chrome will attempt to upgrade some types of mixed content (HTTP on an HTTPS site) subresources on iOS.
   See https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md for details.
 
-  The feature will be enabled by default. Setting the policy to Enabled or leaving it wil leave the feature enabled.
+  The feature will be enabled by default. Setting the policy to Enabled or leaving it unset will leave the feature enabled.
 
   Setting the policy to Disabled disables the feature.
 
