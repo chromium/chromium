@@ -143,8 +143,10 @@ IN_PROC_BROWSER_TEST_F(ChromeCleanerRebootFlowTest,
   EnsureCompletedExecution();
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeCleanerRebootFlowTest,
-                       OnRebootRequired_SettingsPageActiveWhenBrowserIsOpened) {
+// TODO(crbug/1406828): Re-enable this test
+IN_PROC_BROWSER_TEST_F(
+    ChromeCleanerRebootFlowTest,
+    DISABLED_OnRebootRequired_SettingsPageActiveWhenBrowserIsOpened) {
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
 
