@@ -15,10 +15,12 @@ import json
 from util import build_utils
 
 
-
 # Set of unicode characters that do not render with fonts available on ChromeOS
+# TODO(b:267370102) add font(s) such that there are no more invalid characters
 INVALID_CHARACTERS = set([
     '\u2688\u0325',
+    '\ufe52\ufe20',
+    '\u0644',
 ])
 
 
