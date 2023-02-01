@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/containers/lru_cache.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
 #include "base/memory/raw_ptr.h"
