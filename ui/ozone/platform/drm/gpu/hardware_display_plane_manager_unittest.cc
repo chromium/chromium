@@ -5,6 +5,8 @@
 #include <drm_fourcc.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <xf86drmMode.h>
+
 #include <memory>
 #include <utility>
 
@@ -12,6 +14,7 @@
 #include "base/files/platform_file.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -63,6 +66,12 @@ class HardwareDisplayPlaneManagerTest
                                  const std::string& property_name);
 
   void PerformPageFlip(size_t crtc_idx, HardwareDisplayPlaneList* state);
+  void PerformPageFlip(size_t crtc_idx,
+                       HardwareDisplayPlaneList* state,
+                       DrmOverlayPlaneList& assigns);
+  void PerformFailingPageFlip(size_t crtc_idx,
+                              HardwareDisplayPlaneList* state,
+                              DrmOverlayPlaneList& assigns);
 
   void SetUp() override;
 
@@ -102,12 +111,38 @@ void HardwareDisplayPlaneManagerTest::PerformPageFlip(
   DrmOverlayPlaneList assigns;
   scoped_refptr<DrmFramebuffer> xrgb_buffer = CreateBuffer(kDefaultBufferSize);
   assigns.emplace_back(xrgb_buffer, nullptr);
+  PerformPageFlip(crtc_idx, state, assigns);
+}
+
+void HardwareDisplayPlaneManagerTest::PerformPageFlip(
+    size_t crtc_idx,
+    HardwareDisplayPlaneList* state,
+    DrmOverlayPlaneList& assigns) {
   fake_drm_->plane_manager()->BeginFrame(state);
   ASSERT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
       state, assigns, fake_drm_->crtc_property(crtc_idx).id));
   scoped_refptr<PageFlipRequest> page_flip_request =
       base::MakeRefCounted<PageFlipRequest>(base::TimeDelta());
+
+  fake_drm_->set_commit_expectation(true);
+
   ASSERT_TRUE(
+      fake_drm_->plane_manager()->Commit(state, page_flip_request, nullptr));
+}
+
+void HardwareDisplayPlaneManagerTest::PerformFailingPageFlip(
+    size_t crtc_idx,
+    HardwareDisplayPlaneList* state,
+    DrmOverlayPlaneList& assigns) {
+  fake_drm_->plane_manager()->BeginFrame(state);
+  ASSERT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
+      state, assigns, fake_drm_->crtc_property(crtc_idx).id));
+  scoped_refptr<PageFlipRequest> page_flip_request =
+      base::MakeRefCounted<PageFlipRequest>(base::TimeDelta());
+
+  fake_drm_->set_commit_expectation(false);
+
+  ASSERT_FALSE(
       fake_drm_->plane_manager()->Commit(state, page_flip_request, nullptr));
 }
 
@@ -746,6 +781,128 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, MultipleFramesDifferentPlanes) {
       &state_, assigns, fake_drm_->crtc_property(0).id));
   EXPECT_EQ(2u, state_.plane_list.size());
   EXPECT_NE(state_.plane_list[0], state_.plane_list[1]);
+}
+
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, PlanePinningAndUnpinning) {
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
+      /*crtc_count*/ 2,
+      /*planes_per_crtc=*/1,
+      /*movable_planes=*/1);
+  fake_drm_->InitializeState(drm_state, /*use_atomic=*/true);
+
+  DrmOverlayPlaneList assigns;
+  assigns.emplace_back(fake_buffer_, nullptr);
+
+  DrmOverlayPlaneList assigns_with_overlay;
+  assigns_with_overlay.emplace_back(fake_buffer_, nullptr);
+  assigns_with_overlay.emplace_back(CreateBuffer(gfx::Size(1, 1)), nullptr);
+
+  auto get_overlay_owner = [&]() {
+    for (const auto& plane : fake_drm_->plane_manager()->planes()) {
+      if (plane->type() == DRM_PLANE_TYPE_OVERLAY) {
+        return plane->owning_crtc();
+      }
+    }
+    NOTREACHED();
+    return UINT32_MAX;
+  };
+
+  uint32_t crtc_0 = fake_drm_->crtc_property(0).id;
+  uint32_t crtc_1 = fake_drm_->crtc_property(1).id;
+  HardwareDisplayPlaneList list_0;
+  HardwareDisplayPlaneList list_1;
+
+  EXPECT_EQ(0u, get_overlay_owner());
+
+  PerformPageFlip(0, &list_0, assigns_with_overlay);
+  EXPECT_EQ(crtc_0, get_overlay_owner())
+      << "Assigning a plane should pin it to the CRTC.";
+  fake_drm_->RunCallbacks();
+
+  EXPECT_FALSE(fake_drm_->plane_manager()->AssignOverlayPlanes(
+      &list_1, assigns_with_overlay, crtc_1))
+      << "Pinned planes should be unassignable while they're pinned.";
+
+  PerformPageFlip(0, &list_0, assigns);
+  EXPECT_EQ(0u, get_overlay_owner())
+      << "Assigning without overlays should unpin the overlay.";
+
+  EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
+      &list_1, assigns_with_overlay, crtc_1))
+      << "Previously pinned planes should be available for use after "
+         "unpinning.";
+}
+
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, PlanesUnpinnedOnFailedFlip) {
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
+      /*crtc_count*/ 2,
+      /*planes_per_crtc=*/1,
+      /*movable_planes=*/1);
+  fake_drm_->InitializeState(drm_state, /*use_atomic=*/true);
+
+  DrmOverlayPlaneList assigns_with_overlay;
+  assigns_with_overlay.emplace_back(fake_buffer_, nullptr);
+  assigns_with_overlay.emplace_back(CreateBuffer(gfx::Size(1, 1)), nullptr);
+
+  auto get_overlay_owner = [&]() {
+    for (const auto& plane : fake_drm_->plane_manager()->planes()) {
+      if (plane->type() == DRM_PLANE_TYPE_OVERLAY) {
+        return plane->owning_crtc();
+      }
+    }
+    NOTREACHED();
+    return UINT32_MAX;
+  };
+
+  uint32_t crtc_0 = fake_drm_->crtc_property(0).id;
+  HardwareDisplayPlaneList hdpl;
+
+  EXPECT_EQ(0u, get_overlay_owner());
+
+  PerformPageFlip(0, &hdpl, assigns_with_overlay);
+  EXPECT_EQ(crtc_0, get_overlay_owner())
+      << "Assigning a plane should pin it to the CRTC.";
+  fake_drm_->RunCallbacks();
+
+  PerformFailingPageFlip(0, &hdpl, assigns_with_overlay);
+  EXPECT_EQ(0u, get_overlay_owner())
+      << "A failed flip should result in the overlay being freed again.";
+}
+
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, PlanesUnpinnedOnDisable) {
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
+      /*crtc_count*/ 2,
+      /*planes_per_crtc=*/1,
+      /*movable_planes=*/1);
+  fake_drm_->InitializeState(drm_state, /*use_atomic=*/true);
+
+  DrmOverlayPlaneList assigns_with_overlay;
+  assigns_with_overlay.emplace_back(fake_buffer_, nullptr);
+  assigns_with_overlay.emplace_back(CreateBuffer(gfx::Size(1, 1)), nullptr);
+
+  auto get_overlay_owner = [&]() {
+    for (const auto& plane : fake_drm_->plane_manager()->planes()) {
+      if (plane->type() == DRM_PLANE_TYPE_OVERLAY) {
+        return plane->owning_crtc();
+      }
+    }
+    NOTREACHED();
+    return UINT32_MAX;
+  };
+
+  uint32_t crtc_0 = fake_drm_->crtc_property(0).id;
+  HardwareDisplayPlaneList hdpl;
+
+  EXPECT_EQ(0u, get_overlay_owner());
+
+  PerformPageFlip(0, &hdpl, assigns_with_overlay);
+  EXPECT_EQ(crtc_0, get_overlay_owner())
+      << "Assigning a plane should pin it to the CRTC.";
+  fake_drm_->RunCallbacks();
+
+  fake_drm_->plane_manager()->DisableOverlayPlanes(&hdpl);
+  EXPECT_EQ(0u, get_overlay_owner())
+      << "After disabling, the pinned overlay owner should be reset.";
 }
 
 TEST_P(HardwareDisplayPlaneManagerAtomicTest,

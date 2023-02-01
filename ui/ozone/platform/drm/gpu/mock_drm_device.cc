@@ -6,11 +6,13 @@
 
 #include <stdint.h>
 #include <xf86drm.h>
+#include <xf86drmMode.h>
 
 #include <cstdint>
 #include <memory>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -213,10 +215,13 @@ MockDrmDevice::MockDrmState::CreateStateWithAllProperties() {
 MockDrmDevice::MockDrmState
 MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
     size_t crtc_count,
-    size_t planes_per_crtc) {
+    size_t planes_per_crtc,
+    size_t movable_planes) {
   MockDrmState state = CreateStateWithAllProperties();
+  std::vector<uint32_t> crtc_ids;
   for (size_t i = 0; i < crtc_count; ++i) {
     const auto& crtc = state.AddCrtcAndConnector().first;
+    crtc_ids.push_back(crtc.id);
 
     state.AddPlane(crtc.id, DRM_PLANE_TYPE_PRIMARY);
     for (size_t j = 0; j < planes_per_crtc - 1; ++j) {
@@ -224,6 +229,11 @@ MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
     }
     state.AddPlane(crtc.id, DRM_PLANE_TYPE_CURSOR);
   }
+
+  for (size_t i = 0; i < movable_planes; ++i) {
+    state.AddPlane(crtc_ids, DRM_PLANE_TYPE_OVERLAY);
+  }
+
   return state;
 }
 
@@ -255,20 +265,25 @@ MockDrmDevice::MockDrmState::AddCrtcAndConnector() {
 MockDrmDevice::PlaneProperties& MockDrmDevice::MockDrmState::AddPlane(
     uint32_t crtc_id,
     uint32_t type) {
+  return AddPlane(std::vector<uint32_t>{crtc_id}, type);
+}
+
+MockDrmDevice::PlaneProperties& MockDrmDevice::MockDrmState::AddPlane(
+    const std::vector<uint32_t>& crtc_ids,
+    uint32_t type) {
   uint32_t next_plane_id = GetNextId(plane_properties, kPlaneOffset);
 
-  size_t crtc_idx = UINT32_MAX;
+  size_t crtc_mask = 0u;
   for (size_t i = 0; i < crtc_properties.size(); ++i) {
-    if (crtc_properties[i].id == crtc_id) {
-      crtc_idx = i;
-      break;
+    if (base::Contains(crtc_ids, crtc_properties[i].id)) {
+      crtc_mask |= (1 << i);
     }
   }
-  CHECK(crtc_idx != UINT32_MAX) << "Could not find crtc with id " << crtc_id;
+  CHECK(crtc_mask != 0) << "Unable to create crtc_mask";
 
   auto& plane = plane_properties.emplace_back();
   plane.id = next_plane_id;
-  plane.crtc_mask = (1 << crtc_idx);
+  plane.crtc_mask = crtc_mask;
   for (const auto& pair : kPlaneRequiredPropertyNames) {
     plane.properties.push_back({.id = pair.first, .value = 0});
     if (!base::Contains(property_names, pair.first))

@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -26,6 +27,7 @@
 #include "ui/ozone/platform/drm/gpu/crtc_controller.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
+#include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
@@ -93,7 +95,7 @@ class HardwareDisplayControllerTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  void InitializeDrmDevice(bool use_atomic);
+  void InitializeDrmDevice(bool use_atomic, size_t movable_planes = 0);
   void SchedulePageFlip(DrmOverlayPlaneList planes);
   void OnSubmission(gfx::SwapResult swap_result,
                     gfx::GpuFenceHandle release_fence);
@@ -111,6 +113,16 @@ class HardwareDisplayControllerTest : public testing::Test {
     std::unique_ptr<GbmBuffer> buffer = drm_->gbm_device()->CreateBuffer(
         DRM_FORMAT_XRGB8888, kOverlaySize, GBM_BO_USE_SCANOUT);
     return DrmFramebuffer::AddFramebuffer(drm_, buffer.get(), kOverlaySize);
+  }
+
+  std::vector<HardwareDisplayPlane*> GetMovableOverlays() {
+    std::vector<HardwareDisplayPlane*> out;
+    for (const auto& plane : drm_->plane_manager()->planes()) {
+      if (plane->GetCompatibleCrtcIds().size() > 1) {
+        out.push_back(plane.get());
+      }
+    }
+    return out;
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -146,7 +158,8 @@ void HardwareDisplayControllerTest::TearDown() {
   drm_ = nullptr;
 }
 
-void HardwareDisplayControllerTest::InitializeDrmDevice(bool use_atomic) {
+void HardwareDisplayControllerTest::InitializeDrmDevice(bool use_atomic,
+                                                        size_t movable_planes) {
   // This will change the plane_manager of the drm.
   // HardwareDisplayController is tied to the plane_manager CRTC states.
   // Destruct the controller before destructing the plane manager its CRTC
@@ -158,7 +171,7 @@ void HardwareDisplayControllerTest::InitializeDrmDevice(bool use_atomic) {
       kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
-      /*crtc_count=*/2, /*planes_per_crtc*/ 2);
+      /*crtc_count=*/2, /*planes_per_crtc*/ 2, movable_planes);
   drm_->InitializeState(drm_state, use_atomic);
   primary_crtc_ = drm_->crtc_property(0).id;
   secondary_crtc_ = drm_->crtc_property(1).id;
@@ -1192,6 +1205,171 @@ TEST_F(HardwareDisplayControllerTest, MultiplePlanesModeset) {
                                    .modeset_framebuffers,
                                plane.buffer));
   }
+}
+
+TEST_F(HardwareDisplayControllerTest, CheckPinningAfterPageFlip) {
+  InitializeDrmDevice(/*use_atomic=*/true, /*movable_planes=*/1);
+
+  DrmOverlayPlaneList modeset_planes;
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  EXPECT_TRUE(ModesetWithPlanes(modeset_planes));
+  EXPECT_EQ(1, drm_->get_commit_count());
+
+  DrmOverlayPlane page_flip_plane(CreateBuffer(), nullptr);
+  std::vector<DrmOverlayPlane> page_flip_planes;
+  page_flip_planes.push_back(page_flip_plane.Clone());
+  page_flip_planes.push_back(page_flip_plane.Clone());
+  page_flip_planes.push_back(page_flip_plane.Clone());
+
+  SchedulePageFlip((std::move(page_flip_planes)));
+  drm_->RunCallbacks();
+  EXPECT_EQ(1, successful_page_flips_count_);
+
+  size_t in_use_planes = 0;
+  for (auto& plane : drm_->plane_manager()->planes()) {
+    if (plane->in_use()) {
+      EXPECT_EQ(controller_->crtc_controllers()[0]->crtc(),
+                plane->owning_crtc());
+      in_use_planes++;
+    }
+  }
+  EXPECT_EQ(3u, in_use_planes);
+}
+
+TEST_F(HardwareDisplayControllerTest, CheckPinningAfterFailedPageFlip) {
+  InitializeDrmDevice(/*use_atomic=*/true, /*movable_planes=*/1);
+
+  DrmOverlayPlaneList modeset_planes;
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  EXPECT_TRUE(ModesetWithPlanes(modeset_planes));
+  EXPECT_EQ(1, drm_->get_commit_count());
+
+  // InitializeDrmDevice created 2 crtcs with 2 planes, plus a movable plane.
+  // Try to fill 'em up:
+  auto flip_all_planes = [&]() {
+    DrmOverlayPlane page_flip_plane(CreateBuffer(), nullptr);
+    std::vector<DrmOverlayPlane> page_flip_planes;
+    page_flip_planes.push_back(page_flip_plane.Clone());
+    page_flip_planes.push_back(page_flip_plane.Clone());
+    page_flip_planes.push_back(page_flip_plane.Clone());
+
+    SchedulePageFlip((std::move(page_flip_planes)));
+    drm_->RunCallbacks();
+  };
+
+  flip_all_planes();
+  EXPECT_EQ(1, successful_page_flips_count_);
+  EXPECT_FALSE(last_presentation_feedback_.failed());
+
+  drm_->set_commit_expectation(false);
+  flip_all_planes();
+  EXPECT_TRUE(last_presentation_feedback_.failed());
+
+  size_t in_use_planes =
+      base::ranges::count_if(drm_->plane_manager()->planes(),
+                             [](const auto& plane) { return plane->in_use(); });
+  EXPECT_EQ(0u, in_use_planes) << "Planes, including pinned planes, should not "
+                                  "be in use after a failed flip.";
+}
+
+TEST_F(HardwareDisplayControllerTest,
+       PinnedPlanesAreRespectedDuringModesetting) {
+  InitializeDrmDevice(/*use_atomic=*/true, /*movable_planes=*/1);
+
+  DrmOverlayPlaneList modeset_planes;
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+
+  HardwareDisplayPlane* movable_plane = GetMovableOverlays()[0];
+  movable_plane->set_in_use(true);
+  movable_plane->set_owning_crtc(drm_->crtc_property(1).id);
+
+  ASSERT_FALSE(controller_->HasCrtc(drm_, movable_plane->owning_crtc()));
+  EXPECT_FALSE(ModesetWithPlanes(modeset_planes))
+      << "Modesetting should fail if it requires a movable plane that is "
+         "already pinned to a different CRTC.";
+  EXPECT_EQ(0, drm_->get_commit_count());
+
+  movable_plane->set_in_use(false);
+  movable_plane->set_owning_crtc(0);
+
+  EXPECT_TRUE(ModesetWithPlanes(modeset_planes))
+      << "Modesetting with movable planes should work once those movable "
+         "planes are available to use.";
+  EXPECT_EQ(1, drm_->get_commit_count());
+}
+
+TEST_F(HardwareDisplayControllerTest, AddingAndRemovingCrtcsWithMovablePlanes) {
+  InitializeDrmDevice(/*use_atomic=*/true, /*movable_planes=*/1);
+
+  controller_->AddCrtc(std::make_unique<CrtcController>(
+      drm_, secondary_crtc_, drm_->connector_property(1).id));
+
+  DrmOverlayPlaneList modeset_planes;
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+
+  EXPECT_FALSE(ModesetWithPlanes(modeset_planes))
+      << "Should not modeset when two CRTCs both need the movable overlay "
+         "plane.";
+
+  modeset_planes.pop_back();
+  EXPECT_TRUE(ModesetWithPlanes(modeset_planes))
+      << "Modesetting should work when neigher CRTC needs the movable overlay "
+         "plane";
+
+  {
+    DrmOverlayPlaneList flip_planes;
+    flip_planes.emplace_back(CreateBuffer(), nullptr);
+    flip_planes.emplace_back(CreateBuffer(), nullptr);
+    flip_planes.emplace_back(CreateBuffer(), nullptr);
+    SchedulePageFlip(std::move(flip_planes));
+    drm_->RunCallbacks();
+    EXPECT_TRUE(last_presentation_feedback_.failed())
+        << "Only one of the CRTCs should be able to use an additional plane.";
+  }
+
+  {
+    DrmOverlayPlaneList flip_planes;
+    flip_planes.emplace_back(CreateBuffer(), nullptr);
+    flip_planes.emplace_back(CreateBuffer(), nullptr);
+    SchedulePageFlip(std::move(flip_planes));
+    drm_->RunCallbacks();
+    EXPECT_FALSE(last_presentation_feedback_.failed())
+        << "Both CRTCs should be able to flip with their own overlays.";
+  }
+
+  auto removed_crtc = controller_->RemoveCrtc(drm_, secondary_crtc_);
+  EXPECT_TRUE(removed_crtc);
+  {
+    DrmOverlayPlaneList flip_planes;
+    flip_planes.emplace_back(CreateBuffer(), nullptr);
+    flip_planes.emplace_back(CreateBuffer(), nullptr);
+    flip_planes.emplace_back(CreateBuffer(), nullptr);
+    SchedulePageFlip(std::move(flip_planes));
+    drm_->RunCallbacks();
+    EXPECT_FALSE(last_presentation_feedback_.failed())
+        << "With only one CRTC to flip, we should be able to use the movable "
+           "plane again.";
+  }
+}
+
+TEST_F(HardwareDisplayControllerTest,
+       ModesettingWithMirroringAndMultipleMovablePlanes) {
+  InitializeDrmDevice(/*use_atomic=*/true, /*movable_planes=*/2);
+
+  controller_->AddCrtc(std::make_unique<CrtcController>(
+      drm_, secondary_crtc_, drm_->connector_property(1).id));
+
+  DrmOverlayPlaneList modeset_planes;
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+
+  EXPECT_TRUE(ModesetWithPlanes(modeset_planes))
+      << "Should be able modeset with two CRTCs and two movable planes.";
 }
 
 }  // namespace ui

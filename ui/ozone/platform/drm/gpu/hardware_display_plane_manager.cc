@@ -141,9 +141,13 @@ base::flat_set<uint32_t> HardwareDisplayPlaneManager::CrtcMaskToCrtcIds(
 bool HardwareDisplayPlaneManager::IsCompatible(HardwareDisplayPlane* plane,
                                                const DrmOverlayPlane& overlay,
                                                uint32_t crtc_id) const {
-  if (plane->in_use() || plane->type() == DRM_PLANE_TYPE_CURSOR ||
-      !plane->CanUseForCrtcId(crtc_id))
+  bool ownership_compatible =
+      plane->owning_crtc() == 0 || plane->owning_crtc() == crtc_id;
+  if (plane->in_use() || !ownership_compatible ||
+      plane->type() == DRM_PLANE_TYPE_CURSOR ||
+      !plane->CanUseForCrtcId(crtc_id)) {
     return false;
+  }
 
   const uint32_t format =
       overlay.enable_blend ? overlay.buffer->framebuffer_pixel_format()

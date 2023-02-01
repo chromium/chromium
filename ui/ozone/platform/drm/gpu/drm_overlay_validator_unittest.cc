@@ -26,6 +26,7 @@
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_window.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
+#include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
@@ -95,6 +96,16 @@ class DrmOverlayValidatorTest : public testing::Test {
     return status;
   }
 
+  std::vector<HardwareDisplayPlane*> GetMovablePlanes() {
+    std::vector<HardwareDisplayPlane*> planes;
+    for (const auto& plane : drm_->plane_manager()->planes()) {
+      if (plane->GetCompatibleCrtcIds().size() > 1) {
+        planes.push_back(plane.get());
+      }
+    }
+    return planes;
+  }
+
  protected:
   struct PlaneState {
     std::vector<uint32_t> formats;
@@ -104,7 +115,9 @@ class DrmOverlayValidatorTest : public testing::Test {
     std::vector<PlaneState> planes;
   };
 
-  void InitDrmStatesAndControllers(const std::vector<CrtcState>& crtc_states);
+  void InitDrmStatesAndControllers(
+      const std::vector<CrtcState>& crtc_states,
+      const std::vector<PlaneState>& movable_planes = {});
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
@@ -136,13 +149,13 @@ void DrmOverlayValidatorTest::SetUp() {
 }
 
 void DrmOverlayValidatorTest::InitDrmStatesAndControllers(
-    const std::vector<CrtcState>& crtc_states) {
+    const std::vector<CrtcState>& crtc_states,
+    const std::vector<PlaneState>& movable_planes) {
   size_t plane_count = crtc_states[0].planes.size();
   for (const auto& crtc_state : crtc_states) {
     ASSERT_EQ(plane_count, crtc_state.planes.size())
         << "MockDrmDevice::CreateStateWithDefaultObjects currently expects the "
-           "same number "
-           "of planes per CRTC";
+           "same number of planes per CRTC";
   }
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
@@ -152,8 +165,10 @@ void DrmOverlayValidatorTest::InitDrmStatesAndControllers(
       kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
 
   uint32_t blob_id = kInFormatsBlobIdBase + 1;
+  std::vector<uint32_t> crtc_ids;
   for (const auto& crtc_state : crtc_states) {
     const auto& crtc = drm_state.AddCrtcAndConnector().first;
+    crtc_ids.push_back(crtc.id);
 
     for (size_t i = 0; i < crtc_state.planes.size(); ++i) {
       uint32_t new_blob_id = blob_id++;
@@ -165,6 +180,15 @@ void DrmOverlayValidatorTest::InitDrmStatesAndControllers(
       plane.SetProp(kInFormatsPropId, new_blob_id);
     }
   }
+
+  for (const auto& movable_plane : movable_planes) {
+    uint32_t new_blob_id = blob_id++;
+    drm_->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
+        new_blob_id, movable_plane.formats, {}));
+    auto& plane = drm_state.AddPlane(crtc_ids, DRM_PLANE_TYPE_OVERLAY);
+    plane.SetProp(kInFormatsPropId, new_blob_id);
+  }
+
   drm_->InitializeState(drm_state, /*use_atomic=*/true);
 
   SetupControllers();
@@ -636,6 +660,44 @@ TEST_F(DrmOverlayValidatorTest, TwoOfSixIgnored_OneCommit) {
   // Only 1 commit was needed because the two unpromoted candidates were
   // excluded before testing.
   EXPECT_EQ(drm_->get_commit_count() - setup_commits, 1);
+}
+
+TEST_F(DrmOverlayValidatorTest, PinnedPlanesCantBeReused) {
+  std::vector<CrtcState> crtc_states = {
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}},
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}}};
+  std::vector<PlaneState> movable_planes = {{.formats = {DRM_FORMAT_XRGB8888}}};
+  InitDrmStatesAndControllers(crtc_states, movable_planes);
+
+  auto* movable_plane = GetMovablePlanes()[0];
+  movable_plane->set_in_use(true);
+  movable_plane->set_owning_crtc(drm_->crtc_property(1).id);
+
+  auto results =
+      overlay_validator_->TestPageFlip(overlay_params_, DrmOverlayPlaneList());
+  EXPECT_EQ(results[0], OVERLAY_STATUS_ABLE)
+      << "The primary plane should still be usable.";
+  EXPECT_EQ(results[1], OVERLAY_STATUS_NOT)
+      << "The overlay plane should not be available.";
+}
+
+TEST_F(DrmOverlayValidatorTest, UnpinnedMovablePlanesCanBeUsed) {
+  std::vector<CrtcState> crtc_states = {
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}},
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}}};
+  std::vector<PlaneState> movable_planes = {{.formats = {DRM_FORMAT_XRGB8888}}};
+  InitDrmStatesAndControllers(crtc_states, movable_planes);
+
+  auto* movable_plane = GetMovablePlanes()[0];
+  ASSERT_EQ(0u, movable_plane->owning_crtc());
+  ASSERT_FALSE(movable_plane->in_use());
+
+  auto results =
+      overlay_validator_->TestPageFlip(overlay_params_, DrmOverlayPlaneList());
+  EXPECT_EQ(results[0], OVERLAY_STATUS_ABLE)
+      << "The primary plane should still be usable.";
+  EXPECT_EQ(results[1], OVERLAY_STATUS_ABLE)
+      << "The overlay plane should be available since it is not pinned.";
 }
 
 }  // namespace ui

@@ -209,21 +209,24 @@ void HardwareDisplayPlaneManagerAtomic::SetAtomicPropsForCommit(
   }
 
   for (HardwareDisplayPlane* plane : plane_list->old_plane_list) {
-    if (!base::Contains(plane_list->plane_list, plane)) {
-      // |plane| is shared state between |old_plane_list| and |plane_list|.
-      // When we call BeginFrame(), we reset in_use since we need to be able to
-      // allocate the planes as needed. The current frame might not need to use
-      // |plane|, thus |plane->in_use()| would be false even though the previous
-      // frame used it. It's existence in |old_plane_list| is sufficient to
-      // signal that |plane| was in use previously.
-      plane->set_in_use(false);
-      HardwareDisplayPlaneAtomic* atomic_plane =
-          static_cast<HardwareDisplayPlaneAtomic*>(plane);
-      atomic_plane->AssignPlaneProps(
-          0, 0, gfx::Rect(), gfx::Rect(), gfx::OVERLAY_TRANSFORM_NONE,
-          base::kInvalidPlatformFile, DRM_FORMAT_INVALID, false);
-      atomic_plane->SetPlaneProps(atomic_request);
+    if (base::Contains(plane_list->plane_list, plane)) {
+      continue;
     }
+
+    // |plane| is shared state between |old_plane_list| and |plane_list|.
+    // When we call BeginFrame(), we reset in_use since we need to be able to
+    // allocate the planes as needed. The current frame might not need to use
+    // |plane|, thus |plane->in_use()| would be false even though the previous
+    // frame used it. It's existence in |old_plane_list| is sufficient to
+    // signal that |plane| was in use previously.
+    plane->set_in_use(false);
+    plane->set_owning_crtc(0);
+    HardwareDisplayPlaneAtomic* atomic_plane =
+        static_cast<HardwareDisplayPlaneAtomic*>(plane);
+    atomic_plane->AssignPlaneProps(
+        0, 0, gfx::Rect(), gfx::Rect(), gfx::OVERLAY_TRANSFORM_NONE,
+        base::kInvalidPlatformFile, DRM_FORMAT_INVALID, false);
+    atomic_plane->SetPlaneProps(atomic_request);
   }
 
   for (uint32_t crtc : crtcs) {
