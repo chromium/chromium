@@ -174,7 +174,7 @@ std::string FetchWithCredentials(content::RenderFrameHost* frame,
                                  const GURL& url,
                                  const bool cors_enabled) {
   constexpr char script[] = R"(
-      fetch($1, {mode: $2, credentials: 'include'})
+      fetch($1, {method: 'GET', mode: $2, credentials: 'include'})
       .then((result) => result.text());
     )";
   const std::string mode = cors_enabled ? "cors" : "no-cors";
