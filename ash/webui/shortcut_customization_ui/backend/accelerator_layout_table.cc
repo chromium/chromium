@@ -5,13 +5,12 @@
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include <string>
 
-#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
