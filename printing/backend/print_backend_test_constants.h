@@ -40,16 +40,20 @@ struct OptionalSampleCapabilities {
 
 inline const PrinterSemanticCapsAndDefaults::Paper kPaperA3{
     /*display_name=*/"A3", /*vendor_id=*/"67",
-    /*size_um=*/gfx::Size(7016, 9921)};
+    /*size_um=*/gfx::Size(7016, 9921),
+    /*printable_area_um=*/gfx::Rect(0, 0, 7016, 9921)};
 inline const PrinterSemanticCapsAndDefaults::Paper kPaperA4{
     /*display_name=*/"A4", /*vendor_id=*/"12",
-    /*size_um=*/gfx::Size(4961, 7016)};
+    /*size_um=*/gfx::Size(4961, 7016),
+    /*printable_area_um=*/gfx::Rect(100, 200, 500, 800)};
 inline const PrinterSemanticCapsAndDefaults::Paper kPaperLetter{
     /*display_name=*/"Letter", /*vendor_id=*/"45",
-    /*size_um=*/gfx::Size(5100, 6600)};
+    /*size_um=*/gfx::Size(5100, 6600),
+    /*printable_area_um=*/gfx::Rect(0, 0, 5100, 6600)};
 inline const PrinterSemanticCapsAndDefaults::Paper kPaperLedger{
     /*display_name=*/"Ledger", /*vendor_id=*/"89",
-    /*size_um=*/gfx::Size(6600, 10200)};
+    /*size_um=*/gfx::Size(6600, 10200),
+    /*printable_area_um=*/gfx::Rect(0, 0, 6600, 10200)};
 
 #if BUILDFLAG(IS_CHROMEOS)
 inline const AdvancedCapability kAdvancedCapability1(

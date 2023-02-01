@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "printing/units.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -109,6 +110,7 @@ PrinterSemanticCapsAndDefaults::Paper ParsePaper(base::StringPiece value) {
   PrinterSemanticCapsAndDefaults::Paper paper;
   paper.vendor_id = std::string(value);
   paper.size_um = DimensionsToMicrons(dimensions);
+  paper.printable_area_um = gfx::Rect(paper.size_um);
   // Omits the final token describing the media dimensions.
   pieces.pop_back();
   paper.display_name = base::JoinString(pieces, " ");

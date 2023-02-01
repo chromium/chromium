@@ -12,6 +12,7 @@
 #include "printing/backend/mojom/print_backend.mojom-shared.h"
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace mojo {
@@ -58,6 +59,10 @@ struct StructTraits<printing::mojom::PaperDataView,
   static const gfx::Size& size_um(
       const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
     return p.size_um;
+  }
+  static const gfx::Rect& printable_area_um(
+      const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
+    return p.printable_area_um;
   }
 
   static bool Read(printing::mojom::PaperDataView data,

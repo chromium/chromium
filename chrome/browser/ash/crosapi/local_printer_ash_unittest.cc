@@ -56,6 +56,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -228,7 +229,7 @@ class TestLocalPrinterAshWithPrinterConfigurer : public TestLocalPrinterAsh {
 class LocalPrinterAshTestBase : public testing::Test {
  public:
   const std::vector<PrinterSemanticCapsAndDefaults::Paper> kPapers = {
-      {"bar", "vendor", {600, 600}}};
+      {"bar", "vendor", gfx::Size(600, 600), gfx::Rect(0, 0, 600, 600)}};
 
   LocalPrinterAshTestBase() = default;
   LocalPrinterAshTestBase(const LocalPrinterAshTestBase&) = delete;
@@ -1035,7 +1036,7 @@ TEST(LocalPrinterAsh, StatusToMojom) {
 class LocalPrinterAshWithOAuth2Test : public testing::Test {
  public:
   const std::vector<PrinterSemanticCapsAndDefaults::Paper> kPapers = {
-      {"bar", "vendor", {600, 600}}};
+      {"bar", "vendor", gfx::Size(600, 600), gfx::Rect(0, 0, 600, 600)}};
 
   LocalPrinterAshWithOAuth2Test() = default;
   LocalPrinterAshWithOAuth2Test(const LocalPrinterAshWithOAuth2Test&) = delete;

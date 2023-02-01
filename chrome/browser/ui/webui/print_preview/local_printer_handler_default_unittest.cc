@@ -24,6 +24,8 @@
 #include "printing/print_job_constants.h"
 #include "printing/printing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "chrome/browser/printing/print_backend_service_manager.h"
@@ -294,8 +296,8 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
                   bool is_default,
                   bool requires_elevated_permissions) {
     auto caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
-    caps->papers.emplace_back(
-        PrinterSemanticCapsAndDefaults::Paper{"bar", "vendor", {600, 600}});
+    caps->papers.emplace_back(PrinterSemanticCapsAndDefaults::Paper{
+        "bar", "vendor", gfx::Size(600, 600), gfx::Rect(0, 0, 600, 600)});
     auto basic_info = std::make_unique<PrinterBasicInfo>(
         id, display_name, description,
         /*printer_status=*/0, is_default, PrinterBasicInfoOptions{});

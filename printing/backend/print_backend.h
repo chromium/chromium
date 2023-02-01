@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "printing/mojom/print.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -191,6 +192,9 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
     std::string display_name;
     std::string vendor_id;
     gfx::Size size_um;
+
+    // Origin (x,y) is at the bottom-left.
+    gfx::Rect printable_area_um;
 
     bool operator==(const Paper& other) const;
   };

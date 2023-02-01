@@ -22,11 +22,13 @@ struct PrinterBasicInfo {
 // Paper used by printer semantic capabilities and defaults.
 // Corresponds to `printing::PrinterSemanticCapsAndDefaults::Paper` in
 // printing/backend/print_backend.h.
+// For backwards compatibility, `printable_area_um` must be optional.
 [Stable]
 struct Paper {
   string display_name;
   string vendor_id;
   gfx.mojom.Size size_um;
+  [MinVersion=1] gfx.mojom.Rect? printable_area_um;
 };
 
 // An advanced capability value for ChromeOS printing.
