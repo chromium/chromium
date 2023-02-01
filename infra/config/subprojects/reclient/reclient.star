@@ -536,6 +536,7 @@ ci.builder(
         category = "win",
         short_name = "detcross",
     ),
+    builderless = True,
     execution_timeout = 12 * time.hour,
     service_account = "chromium-cq-staging-builder@chops-service-accounts.iam.gserviceaccount.com",
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
