@@ -37,7 +37,7 @@ Then, run `taskschd.msc`, click `Task Scheduler Library`, and run a
 On Windows, and with a system-wide Omaha 3, use `regedit.exe` to open the key
 `HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Google\Update\ClientState\{430FD4D0-B729-4F61-AA34-91526481799D}\cohort`
 and set the value of `hint` (`REG_SZ`) to `chromium-updater-opt-in`. Then,
-delete the `LastChecked` value from `HKEY_CURRENT_USER\SOFTWARE\Google\Update`.
+delete the `LastChecked` value from `HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Google\Update`.
 Then, run `taskschd.msc`, click `Task Scheduler Library`, and run a
 `GoogleUpdateTaskMachineUA` task.
 
@@ -66,10 +66,10 @@ running:
 `sudo /Library/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --wake --system`
 
 (Windows, per-user):
-`%LOCALAPPDATA%\Google\GoogleUpdater\updater.exe --wake`
+`%LOCALAPPDATA%\Google\GoogleUpdater\*\updater.exe --wake`
 
 (Windows, system-wide) in command prompt running as admin:
-`%PROGRAMFILES(X86)%\Google\GoogleUpdater --wake --system`
+`%PROGRAMFILES(X86)%\Google\GoogleUpdater\*\updater.exe --wake --system`
 
 ## Step 5: Removing Chromium Updater
 To remove Chromium Updater from your system, run:
@@ -80,7 +80,7 @@ On macOS, and with a per-user updater, run:
 On macOS, and with a system-wide updater, run:
 `sudo /Library/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --uninstall --system`
 
-On Windows, and with a per-user updater, run `%LOCALAPPDATA%\Google\GoogleUpdater\updater.exe --uninstall`, then use `regedit.exe` to open the key
+On Windows, and with a per-user updater, run `%LOCALAPPDATA%\Google\GoogleUpdater\*\updater.exe --uninstall`, then use `regedit.exe` to open the key
 `HKEY_CURRENT_USER\SOFTWARE\Google\Update\ClientState\{430FD4D0-B729-4F61-AA34-91526481799D}\cohort`
 and set the value of `hint` (`REG_SZ`) to `` (empty string).
 
