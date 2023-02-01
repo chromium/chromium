@@ -1884,7 +1884,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Ist die Richtlinie nicht konfiguriert, wird keine Aktion ausgeführt.
 
-      Der Mindestgrenzwert beträgt 5 Minuten.
+      Der minimale Schwellenwert beträgt 5 Minuten.
 
       Die Nutzereingabe wird von den Betriebssystem-APIs definiert. Hierzu zählen beispielsweise das Bewegen der Maus oder die Eingabe über die Tastatur.</translation>
 <translation id="2773288106548584039">Unterstützung älterer Browser</translation>
