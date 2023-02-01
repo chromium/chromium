@@ -37,8 +37,9 @@ SocketFactory::SocketFactory(net::NetLog* net_log,
     client_socket_factory_ =
         url_request_context->GetNetworkSessionContext()->client_socket_factory;
   }
-  if (!client_socket_factory_)
+  if (!client_socket_factory_) {
     client_socket_factory_ = net::ClientSocketFactory::GetDefaultFactory();
+  }
 }
 
 SocketFactory::~SocketFactory() = default;
@@ -60,8 +61,14 @@ void SocketFactory::CreateRestrictedUDPSocket(
     mojo::PendingRemote<mojom::UDPSocketListener> listener,
     mojom::NetworkContext::CreateRestrictedUDPSocketCallback callback) {
   auto udp_socket = std::make_unique<UDPSocket>(std::move(listener), net_log_);
-  DCHECK_EQ(mode, mojom::RestrictedUDPSocketMode::CONNECTED);
-  udp_socket->Connect(addr, std::move(options), std::move(callback));
+  switch (mode) {
+    case mojom::RestrictedUDPSocketMode::BOUND:
+      udp_socket->Bind(addr, std::move(options), std::move(callback));
+      break;
+    case mojom::RestrictedUDPSocketMode::CONNECTED:
+      udp_socket->Connect(addr, std::move(options), std::move(callback));
+      break;
+  }
   restricted_udp_socket_receivers_.Add(
       std::make_unique<RestrictedUDPSocket>(std::move(udp_socket),
                                             traffic_annotation),

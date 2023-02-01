@@ -27,6 +27,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedUDPSocket
   // blink::mojom::RestrictedUDPSocket:
   void ReceiveMore(uint32_t num_additional_datagrams) override;
   void Send(base::span<const uint8_t> data, SendCallback callback) override;
+  void SendTo(base::span<const uint8_t> data,
+              const net::HostPortPair& dest_addr,
+              SendToCallback callback) override;
 
  private:
   std::unique_ptr<UDPSocket> udp_socket_;

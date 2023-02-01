@@ -38,7 +38,13 @@ class FakeRestrictedUDPSocket
     : public network::mojom::blink::RestrictedUDPSocket {
  public:
   void Send(base::span<const uint8_t> data, SendCallback callback) override {
-    NOTIMPLEMENTED();
+    NOTREACHED();
+  }
+
+  void SendTo(base::span<const uint8_t> data,
+              const net::HostPortPair& dest_addr,
+              SendToCallback callback) override {
+    NOTREACHED();
   }
 
   void ReceiveMore(uint32_t num_additional_datagrams) override {

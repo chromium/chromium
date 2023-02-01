@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/read_only_buffer.mojom";
+import "services/network/public/mojom/network_param.mojom";
 
 // The mode that RestrictedUDPSocket is operating in.
 // See Connect() and Bind() methods of network.mojom.UDPSocket for more details.
@@ -29,8 +30,21 @@ interface RestrictedUDPSocket {
   // times (errors also count), unless the connection is closed before that.
   ReceiveMore(uint32 num_additional_datagrams);
 
-  // Sends a UDP datagram. Upon successfully handing the data to the OS,
-  // |result| is net::OK. On failure, |result| is a network error code.
+  // Sends a UDP datagram |data|.
+  // Upon successfully handing the data to the OS, |result| is net::OK.
+  // On failure, |result| is a network error code.
+  // Note that this call is only valid in CONNECTED mode, otherwise it will
+  // immediately fail with an error.
   Send(mojo_base.mojom.ReadOnlyBuffer data)
+      => (int32 result);
+
+  // Sends a UDP datagram to a particular destination |dest_addr|.
+  // Possible hosts are currently limited to raw IPv4/IPv6 addresses, i.e.
+  // no DNS resolution takes place on the receiving side.
+  // Upon successfully handing the data to the OS, |result| is net::OK.
+  // On failure, |result| is a network error code.
+  // Note that this call is only valid in BOUND mode, otherwise it will
+  // immediately fail with an error.
+  SendTo(mojo_base.mojom.ReadOnlyBuffer data, HostPortPair dest_addr)
       => (int32 result);
 };

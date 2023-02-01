@@ -43,6 +43,12 @@ class FakeRestrictedUDPSocket
     std::move(callback).Run(net::Error::OK);
   }
 
+  void SendTo(base::span<const uint8_t> data,
+              const net::HostPortPair& dest_addr,
+              SendToCallback callback) override {
+    NOTREACHED();
+  }
+
   void ReceiveMore(uint32_t num_additional_datagrams) override { NOTREACHED(); }
 
   const Vector<uint8_t>& GetReceivedData() const { return data_; }

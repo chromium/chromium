@@ -3253,21 +3253,32 @@ TEST_F(NetworkContextTest, CreateRestrictedUDPSocket) {
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
   // Create a server socket to listen for incoming datagrams.
-  test::UDPSocketListenerImpl listener;
-  mojo::Receiver<mojom::UDPSocketListener> listener_receiver(&listener);
+  test::UDPSocketListenerImpl socket_listener;
+  mojo::Receiver<mojom::UDPSocketListener> socket_listener_receiver(
+      &socket_listener);
 
+  mojo::Remote<mojom::RestrictedUDPSocket> server_socket;
   net::IPEndPoint server_addr(GetLocalHostWithAnyPort());
-  mojo::Remote<mojom::UDPSocket> server_socket;
-  network_context->CreateUDPSocket(
-      server_socket.BindNewPipeAndPassReceiver(),
-      listener_receiver.BindNewPipeAndPassRemote());
-  test::UDPSocketTestHelper helper(&server_socket);
-  ASSERT_EQ(net::OK, helper.BindSync(server_addr, nullptr, &server_addr));
+  {
+    base::test::TestFuture<int32_t, const absl::optional<net::IPEndPoint>&>
+        create_future;
+    network_context->CreateRestrictedUDPSocket(
+        server_addr, mojom::RestrictedUDPSocketMode::BOUND,
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+        /*options=*/nullptr, server_socket.BindNewPipeAndPassReceiver(),
+        socket_listener_receiver.BindNewPipeAndPassRemote(),
+        create_future.GetCallback());
+    ASSERT_EQ(create_future.Get<0>(), net::OK);
+    server_addr = *create_future.Get<1>();
+  }
 
   // Create a client socket to send datagrams.
+  test::UDPSocketListenerImpl client_listener;
+  mojo::Receiver<mojom::UDPSocketListener> client_listener_receiver(
+      &client_listener);
+
   mojo::Remote<mojom::RestrictedUDPSocket> client_socket;
   net::IPEndPoint client_addr(GetLocalHostWithAnyPort());
-
   {
     base::test::TestFuture<int32_t, const absl::optional<net::IPEndPoint>&>
         create_future;
@@ -3275,7 +3286,8 @@ TEST_F(NetworkContextTest, CreateRestrictedUDPSocket) {
         server_addr, mojom::RestrictedUDPSocketMode::CONNECTED,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         /*options=*/nullptr, client_socket.BindNewPipeAndPassReceiver(),
-        mojo::NullRemote(), create_future.GetCallback());
+        client_listener_receiver.BindNewPipeAndPassRemote(),
+        create_future.GetCallback());
     ASSERT_EQ(create_future.Get<0>(), net::OK);
     client_addr = *create_future.Get<1>();
   }
@@ -3296,16 +3308,43 @@ TEST_F(NetworkContextTest, CreateRestrictedUDPSocket) {
     }
   }
 
-  listener.WaitForReceivedResults(kDatagramCount);
-  EXPECT_EQ(kDatagramCount, listener.results().size());
+  socket_listener.WaitForReceivedResults(kDatagramCount);
+  EXPECT_EQ(kDatagramCount, socket_listener.results().size());
 
   int i = 0;
-  for (const auto& result : listener.results()) {
+  for (const auto& result : socket_listener.results()) {
     EXPECT_EQ(net::OK, result.net_error);
     EXPECT_EQ(result.src_addr, client_addr);
     EXPECT_EQ(CreateTestMessage(static_cast<uint8_t>(i), kDatagramSize),
               result.data.value());
     i++;
+  }
+
+  // And now the other way round.
+  client_socket->ReceiveMore(kDatagramCount);
+
+  for (size_t j = 0; j < kDatagramCount; ++j) {
+    std::vector<uint8_t> test_msg(
+        CreateTestMessage(static_cast<uint8_t>(j), kDatagramSize));
+    {
+      base::test::TestFuture<int32_t> send_future;
+      server_socket->SendTo(test_msg,
+                            net::HostPortPair::FromIPEndPoint(client_addr),
+                            send_future.GetCallback());
+      ASSERT_EQ(send_future.Get(), net::OK);
+    }
+  }
+
+  client_listener.WaitForReceivedResults(kDatagramCount);
+  EXPECT_EQ(kDatagramCount, client_listener.results().size());
+
+  int j = 0;
+  for (const auto& result : client_listener.results()) {
+    EXPECT_EQ(net::OK, result.net_error);
+    EXPECT_FALSE(result.src_addr);
+    EXPECT_EQ(CreateTestMessage(static_cast<uint8_t>(j), kDatagramSize),
+              result.data.value());
+    j++;
   }
 }
 

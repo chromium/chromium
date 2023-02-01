@@ -4,6 +4,10 @@
 
 #include "services/network/test/test_restricted_udp_socket.h"
 
+#include "base/notreached.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
 namespace network {
@@ -24,6 +28,20 @@ void TestRestrictedUDPSocket::Send(base::span<const uint8_t> data,
       data,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::move(callback));
+}
+
+void TestRestrictedUDPSocket::SendTo(base::span<const uint8_t> data,
+                                     const net::HostPortPair& dest_addr,
+                                     SendToCallback callback) {
+  if (net::IPAddress address; address.AssignFromIPLiteral(dest_addr.host())) {
+    udp_socket_->SendTo(
+        net::IPEndPoint(std::move(address), dest_addr.port()), data,
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+        std::move(callback));
+    return;
+  }
+
+  NOTIMPLEMENTED();
 }
 
 }  // namespace network
