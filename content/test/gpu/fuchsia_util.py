@@ -30,4 +30,4 @@ def RunTestOnFuchsiaDevice(script_type):
   script_cmd = [script, script_type, '--out-dir', script_args.out_dir]
   script_cmd.extend(rest_args)
 
-  return subprocess.run(script_cmd, check=True).returncode
+  return subprocess.run(script_cmd, check=False).returncode
