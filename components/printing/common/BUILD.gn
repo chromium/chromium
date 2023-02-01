@@ -57,5 +57,6 @@ source_set("unit_tests") {
     "//printing/backend",
     "//printing/backend:test_support",
     "//testing/gtest",
+    "//ui/gfx/geometry:geometry",
   ]
 }

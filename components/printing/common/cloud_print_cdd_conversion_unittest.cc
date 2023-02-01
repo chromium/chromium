@@ -9,6 +9,7 @@
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_test_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace cloud_print {
 
@@ -112,6 +113,38 @@ constexpr char kExpectedSupportedContentType[] = R"json([
     "content_type": "application/pdf"
   }
 ])json";
+
+constexpr char kExpectedMediaSizeWithWiderPaper[] = R"json({
+  "option": [
+    {
+      "custom_display_name": "A4",
+      "height_microns": 7016,
+      "vendor_id": "12",
+      "width_microns": 4961
+    }, {
+      "custom_display_name": "Letter",
+      "height_microns": 6600,
+      "is_default": true,
+      "vendor_id": "45",
+      "width_microns": 5100
+    }, {
+      "custom_display_name": "NA_INDEX_3X5",
+      "height_microns": 127000,
+      "name": "NA_INDEX_3X5",
+      "vendor_id": "15",
+      "width_microns": 76200
+    }, {
+      "custom_display_name": "A3",
+      "height_microns": 9921,
+      "vendor_id": "67",
+      "width_microns": 7016
+    }, {
+      "custom_display_name": "Ledger",
+      "height_microns": 10200,
+      "vendor_id": "89",
+      "width_microns": 6600
+    }
+]})json";
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kExpectedPinSupportedTrue[] = R"json({
@@ -271,6 +304,26 @@ TEST(CloudPrintCddConversionTest, CollateDefaultIsFalse) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   base::ExpectDictValue(base::test::ParseJson(kExpectedCollateDefaultFalse),
                         *printer_dict, "collate");
+}
+
+TEST(CloudPrintCddConversionTest, WiderPaper) {
+  // Test that a Paper that has a larger width swaps its width and height when
+  // converting to a CDD.
+  printing::PrinterSemanticCapsAndDefaults input =
+      printing::GenerateSamplePrinterSemanticCapsAndDefaults({});
+  input.papers.push_back(printing::PrinterSemanticCapsAndDefaults::Paper(
+      "NA_INDEX_3X5", "15", gfx::Size(127000, 76200)));
+  const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
+  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+
+  ASSERT_TRUE(printer_dict);
+#if BUILDFLAG(IS_CHROMEOS)
+  ASSERT_EQ(9u, printer_dict->size());
+#else
+  ASSERT_EQ(8u, printer_dict->size());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  base::ExpectDictValue(base::test::ParseJson(kExpectedMediaSizeWithWiderPaper),
+                        *printer_dict, "media_size");
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
