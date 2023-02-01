@@ -109445,6 +109445,14 @@ Called by update_scheduler_enums.py.-->
   <int value="3" label="Supports both SCS and MSCS"/>
 </enum>
 
+<enum name="WiFiBadPassphraseServiceType">
+  <int value="0"
+      label="Not user-initiated connection; not previously connected"/>
+  <int value="1" label="Not user-initiated connection; previously connected"/>
+  <int value="2" label="User-initiated connection; not previously connected"/>
+  <int value="3" label="User-initiated connection; previously connected"/>
+</enum>
+
 <enum name="WiFiBSSTransitionManagementSupport">
   <int value="0" label="Accept"/>
   <int value="1" label="Reject unspecified"/>

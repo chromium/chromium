@@ -2679,6 +2679,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.WiFi.BadPassphraseServiceType"
+    enum="WiFiBadPassphraseServiceType" expires_after="2023-12-01">
+  <owner>yichenyu@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric. This is recorded when a connection failure is
+    due to bad-passphrase and indicates whether the attempt is initated by users
+    or not and if the service has been previously connected.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.WiFi.BSSTransitionManagementSupport"
     enum="WiFiBSSTransitionManagementSupport" expires_after="2023-12-01">
   <owner>matthewmwang@chromium.org</owner>
