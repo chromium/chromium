@@ -11,13 +11,13 @@ source_set("pinned_tabs") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
-    ":features",
     ":pinned_tabs_ui",
     "//base",
     "//components/favicon/ios:ios",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/main",
+    "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_collection_commands",
@@ -41,8 +41,8 @@ source_set("pinned_tabs_ui") {
     "pinned_tabs_view_controller.mm",
   ]
   deps = [
-    ":features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
@@ -53,13 +53,4 @@ source_set("pinned_tabs_ui") {
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
-}
-
-source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  public_deps = [ "//base" ]
 }
