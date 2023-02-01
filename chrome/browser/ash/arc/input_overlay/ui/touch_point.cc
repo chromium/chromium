@@ -20,8 +20,6 @@ namespace arc::input_overlay {
 
 namespace {
 
-constexpr int kTouchPointShadowElevation = 5;
-
 constexpr int kDotCenterDiameter = 14;
 constexpr int kDotInsideStrokeThickness = 1;
 constexpr int kDotOutsideStrokeThickness = 3;
@@ -501,6 +499,23 @@ TouchPoint* TouchPoint::Show(views::View* parent,
   return touch_point_ptr;
 }
 
+gfx::Size TouchPoint::GetSize(ActionType action_type) {
+  int size = 0;
+  switch (action_type) {
+    case ActionType::TAP:
+      size = kDotCenterDiameter + kDotInsideStrokeThickness * 2 +
+             kDotOutsideStrokeThickness * 2;
+      break;
+    case ActionType::MOVE:
+      size = kCrossCenterLength + kCrossInsideStrokeThickness * 2 +
+             kCrossOutsideStrokeThickness * 2;
+      break;
+    default:
+      NOTREACHED();
+  }
+  return gfx::Size(size, size);
+}
+
 TouchPoint::TouchPoint(const gfx::Point& center_pos)
     : center_pos_(center_pos) {}
 
@@ -522,8 +537,13 @@ void TouchPoint::Init() {
   SetSize(size);
   SetPosition(gfx::Point(std::max(0, center_pos_.x() - size.width() / 2),
                          std::max(0, center_pos_.y() - size.height() / 2)));
+}
 
-  std::make_unique<ash::ViewShadow>(this, kTouchPointShadowElevation);
+void TouchPoint::OnCenterPositionChanged(const gfx::Point& point) {
+  center_pos_ = point;
+  auto size = touch_outside_stroke_->size();
+  SetPosition(gfx::Point(std::max(0, center_pos_.x() - size.width() / 2),
+                         std::max(0, center_pos_.y() - size.height() / 2)));
 }
 
 void TouchPoint::SetToDefault() {

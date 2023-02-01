@@ -64,7 +64,8 @@ class ActionMove::ActionMoveMouseView : public ActionView {
       return;
 
     int radius = std::max(kActionMoveMinRadius, action_->GetUIRadius());
-    labels_ = ActionLabel::Show(this, ActionType::MOVE, *input_binding, radius);
+    labels_ = ActionLabel::Show(this, ActionType::MOVE, *input_binding, radius,
+                                allow_reposition_);
   }
 
   // TODO(b/241966781): rewrite for Beta once design is ready.
@@ -104,7 +105,7 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     int radius = std::max(kActionMoveMinRadius, action_->GetUIRadius());
     auto* action_move = static_cast<ActionMove*>(action_);
     action_move->set_move_distance(radius / 2);
-    set_touch_point_center(gfx::Point(radius, radius));
+    SetTouchPointCenter(gfx::Point(radius, radius));
     UpdateTrashButtonPosition();
 
     InputElement* input_binding =
@@ -114,8 +115,8 @@ class ActionMove::ActionMoveKeyView : public ActionView {
 
     const auto& keys = input_binding->keys();
     if (labels_.empty()) {
-      labels_ =
-          ActionLabel::Show(this, ActionType::MOVE, *input_binding, radius);
+      labels_ = ActionLabel::Show(this, ActionType::MOVE, *input_binding,
+                                  radius, allow_reposition_);
     } else {
       DCHECK(labels_.size() == keys.size());
       for (size_t i = 0; i < keys.size(); i++)
@@ -192,7 +193,8 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     DCHECK_LT(top, bottom);
 
     const int radius = std::max(kActionMoveMinRadius, action_->GetUIRadius());
-    auto size = gfx::Size(radius * 2, radius * 2);
+    auto size = allow_reposition_ ? TouchPoint::GetSize(ActionType::MOVE)
+                                  : gfx::Size(radius * 2, radius * 2);
     size.SetToMax(gfx::Size(right - left, bottom - top));
     SetSize(size);
     SetPositionFromCenterPosition(action_->GetUICenterPosition());

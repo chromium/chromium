@@ -68,7 +68,18 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
 
   if (!editable_ && mode == DisplayMode::kEdit)
     return;
+
+  // Set display mode for ActionLabel first and then other components update the
+  // layout according to ActionLabel.
+  if (!editing_label) {
+    for (auto* label : labels_)
+      label->SetDisplayMode(mode);
+  } else {
+    editing_label->SetDisplayMode(mode);
+  }
+
   if (mode == DisplayMode::kView) {
+    display_mode_ = DisplayMode::kView;
     RemoveEditButton();
     RemoveTrashButton();
     if (!IsInputBound(action_->GetCurrentDisplayedInput()))
@@ -77,19 +88,13 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
       RemoveTouchPoint();
   }
   if (mode == DisplayMode::kEdit) {
+    display_mode_ = DisplayMode::kEdit;
     AddEditButton();
     AddTrashButton();
     if (!IsInputBound(*action_->current_input()))
       SetVisible(true);
     if (allow_reposition_)
       AddTouchPoint();
-  }
-
-  if (!editing_label) {
-    for (auto* label : labels_)
-      label->SetDisplayMode(mode);
-  } else {
-    editing_label->SetDisplayMode(mode);
   }
 }
 
@@ -247,6 +252,12 @@ bool ActionView::ApplyKeyReleased(const ui::KeyEvent& event) {
   return true;
 }
 
+void ActionView::SetTouchPointCenter(const gfx::Point& touch_point_center) {
+  touch_point_center_ = touch_point_center;
+  if (touch_point_)
+    touch_point_->OnCenterPositionChanged(touch_point_center_);
+}
+
 void ActionView::AddEditButton() {
   if (!show_edit_button_ || !editable_ || menu_entry_)
     return;
@@ -307,6 +318,7 @@ void ActionView::AddTouchPoint(ActionType action_type) {
     return;
 
   touch_point_ = TouchPoint::Show(this, action_type, touch_point_center_);
+  ChildPreferredSizeChanged(touch_point_);
 }
 
 void ActionView::RemoveTouchPoint() {
@@ -315,6 +327,7 @@ void ActionView::RemoveTouchPoint() {
 
   RemoveChildViewT(touch_point_);
   touch_point_ = nullptr;
+  ChildPreferredSizeChanged(nullptr);
 }
 
 void ActionView::UpdateTrashButtonPosition() {

@@ -22,21 +22,24 @@
 
 namespace arc::input_overlay {
 namespace {
-// UI specs.
-constexpr int kSideInset = 6;
-constexpr gfx::Size kLabelSize(32, 32);
-constexpr int kLabelMargin = 2;
-constexpr int kCornerRadiusView = 6;
-constexpr int kIconSize = 20;
+// UI specs - Alpha.
+constexpr int kSideInsetAlpha = 6;
+constexpr gfx::Size kLabelSizeAlpha(32, 32);
+constexpr int kLabelMarginAlpha = 2;
+constexpr int kCornerRadiusAlpha = 6;
+constexpr int kFontSizeAlpha = 16;
+// For ActionTap.
+constexpr int kLabelPositionToSideAlpha = 36;
+// For ActionMove.
+constexpr int kLabelOffsetAlpha = 49;
+// About focus ring - Alpha.
+// Gap between focus ring outer edge to label.
+constexpr float kHaloInsetAlpha = -6;
+// Thickness of focus ring.
+constexpr float kHaloThicknessAlpha = 4;
+
 constexpr char kFontStyle[] = "Google Sans";
-constexpr int kFontSize = 16;
-constexpr int kLabelPositionToSide = 36;
-
-// TODO(b/241966781): remove this and replace it with image asset for beta.
-constexpr char kMouseCursorLock[] = "mouse cursor lock (esc)";
-
-// Offset by label center for Action move.
-constexpr int kLabelOffset = 49;
+constexpr int kIconSize = 20;
 
 // About colors.
 constexpr SkColor kViewModeForeColor = SkColorSetA(SK_ColorBLACK, 0x29);
@@ -46,12 +49,21 @@ constexpr SkColor kEditedUnboundBgColor = gfx::kGoogleRed300;
 constexpr SkColor kViewTextColor = SK_ColorWHITE;
 constexpr SkColor kEditTextColor = gfx::kGoogleGrey900;
 
+// UI specs - AlphaV2.
+constexpr gfx::Size kLabelSize(22, 22);
+constexpr int kCornerRadius = 4;
+constexpr int kFontSize = 14;
+constexpr int kSideInset = 4;
+// For ActionMove.
+constexpr int kCrossPadding = 8;  // 4 + 4(kCrossOutsideStrokeThickness)
 // About focus ring.
 // Gap between focus ring outer edge to label.
-constexpr float kHaloInset = -6;
+constexpr float kHaloInset = -5;
 // Thickness of focus ring.
-constexpr float kHaloThickness = 4;
+constexpr float kHaloThickness = 3;
 
+// TODO(b/241966781): remove this and replace it with image asset.
+constexpr char kMouseCursorLock[] = "mouse cursor lock (esc)";
 constexpr char kUnknownBind[] = "?";
 
 // Arrow symbols for arrow keys.
@@ -84,38 +96,43 @@ class ActionLabelTap : public ActionLabel {
  public:
   ActionLabelTap(int radius,
                  MouseAction mouse_action,
-                 TapLabelPosition label_position)
-      : ActionLabel(radius, mouse_action), label_position_(label_position) {
+                 TapLabelPosition label_position,
+                 bool allow_reposition)
+      : ActionLabel(radius, mouse_action, allow_reposition),
+        label_position_(label_position) {
     DCHECK(mouse_action == MouseAction::PRIMARY_CLICK ||
            mouse_action == MouseAction::SECONDARY_CLICK);
   }
 
   ActionLabelTap(int radius,
                  const std::string& text,
-                 TapLabelPosition label_position)
-      : ActionLabel(radius, text), label_position_(label_position) {}
+                 TapLabelPosition label_position,
+                 bool allow_reposition)
+      : ActionLabel(radius, text, allow_reposition),
+        label_position_(label_position) {}
 
   ~ActionLabelTap() override = default;
 
   void UpdateBoundsAlpha() override {
     auto label_size = CalculatePreferredSize();
     SetSize(label_size);
-    int width = std::max(
-        radius_ * 2, radius_ * 2 - kLabelPositionToSide + label_size.width());
+    int width =
+        std::max(radius_ * 2 - kLabelPositionToSideAlpha + label_size.width(),
+                 radius_ * 2);
     switch (label_position_) {
       case TapLabelPosition::kBottomLeft:
-        SetPosition(
-            gfx::Point(0, radius_ * 2 - label_size.height() - kLabelMargin));
-        static_cast<ActionView*>(parent())->set_touch_point_center(
+        SetPosition(gfx::Point(
+            0, radius_ * 2 - label_size.height() - kLabelMarginAlpha));
+        static_cast<ActionView*>(parent())->SetTouchPointCenter(
             gfx::Point(width - radius_, radius_));
         break;
       case TapLabelPosition::kBottomRight:
         SetPosition(
-            gfx::Point(label_size.width() > kLabelPositionToSide
+            gfx::Point(label_size.width() > kLabelPositionToSideAlpha
                            ? width - label_size.width()
-                           : width - kLabelPositionToSide,
-                       radius_ * 2 - label_size.height() - kLabelMargin));
-        static_cast<ActionView*>(parent())->set_touch_point_center(
+                           : width - kLabelPositionToSideAlpha,
+                       radius_ * 2 - label_size.height() - kLabelMarginAlpha));
+        static_cast<ActionView*>(parent())->SetTouchPointCenter(
             gfx::Point(radius_, radius_));
         break;
       default:
@@ -123,15 +140,73 @@ class ActionLabelTap : public ActionLabel {
     }
   }
 
+  void UpdateBounds() override {
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kSideInset)));
+    const auto label_size = CalculatePreferredSize();
+    SetSize(label_size);
+    auto* action_view = static_cast<ActionView*>(parent());
+    if (display_mode_ == DisplayMode::kView) {
+      SetLabelPositionForViewMode(label_size);
+      return;
+    }
+    DCHECK_EQ(display_mode_, DisplayMode::kEdit);
+
+    switch (label_position_) {
+      case TapLabelPosition::kBottomLeft:
+        SetPosition(
+            gfx::Point(0, touch_point_size_.height() + kOffsetToTouchPoint));
+        action_view->SetTouchPointCenter(
+            gfx::Point(label_size.width() + touch_point_size_.width() / 2 +
+                           kOffsetToTouchPoint,
+                       touch_point_size_.height() / 2));
+        break;
+      case TapLabelPosition::kBottomRight:
+        SetPosition(
+            gfx::Point(touch_point_size_.width() + kOffsetToTouchPoint,
+                       touch_point_size_.height() + kOffsetToTouchPoint));
+        action_view->SetTouchPointCenter(gfx::Point(
+            touch_point_size_.width() / 2, touch_point_size_.height() / 2));
+        break;
+      case TapLabelPosition::kTopLeft:
+        SetPosition(gfx::Point());
+        action_view->SetTouchPointCenter(
+            gfx::Point(label_size.width() + kOffsetToTouchPoint +
+                           touch_point_size_.width() / 2,
+                       label_size.height() + kOffsetToTouchPoint +
+                           touch_point_size_.height() / 2));
+        break;
+      case TapLabelPosition::kTopRight:
+        SetPosition(
+            gfx::Point(touch_point_size_.width() + kOffsetToTouchPoint, 0));
+        action_view->SetTouchPointCenter(gfx::Point(
+            touch_point_size_.width() / 2, label_size.height() +
+                                               kOffsetToTouchPoint +
+                                               touch_point_size_.height() / 2));
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
  private:
+  void SetLabelPositionForViewMode(const gfx::Size& label_size) {
+    SetPosition(gfx::Point());
+    static_cast<ActionView*>(parent())->SetTouchPointCenter(
+        gfx::Point(label_size.width() / 2, label_size.height() / 2));
+  }
+
   TapLabelPosition label_position_ = TapLabelPosition::kTopLeft;
 };
 
 class ActionLabelMove : public ActionLabel {
  public:
-  ActionLabelMove(int radius, const std::string& text, int index)
-      : ActionLabel(radius, text, index) {}
-  ActionLabelMove(int radius, MouseAction mouse) : ActionLabel(radius, mouse) {}
+  ActionLabelMove(int radius,
+                  const std::string& text,
+                  int index,
+                  bool allow_reposition)
+      : ActionLabel(radius, text, index, allow_reposition) {}
+  ActionLabelMove(int radius, MouseAction mouse, bool allow_reposition)
+      : ActionLabel(radius, mouse, allow_reposition) {}
 
   ~ActionLabelMove() override = default;
 
@@ -142,13 +217,32 @@ class ActionLabelMove : public ActionLabel {
       int x = kDirection[index_][0];
       int y = kDirection[index_][1];
       SetPosition(gfx::Point(
-          radius_ + x * (radius_ - kLabelOffset) - label_size.width() / 2,
-          radius_ + y * (radius_ - kLabelOffset) - label_size.height() / 2));
+          radius_ + x * (radius_ - kLabelOffsetAlpha) - label_size.width() / 2,
+          radius_ + y * (radius_ - kLabelOffsetAlpha) -
+              label_size.height() / 2));
     } else {
       SetPosition(gfx::Point());
-      static_cast<ActionView*>(parent())->set_touch_point_center(
+      static_cast<ActionView*>(parent())->SetTouchPointCenter(
           gfx::Point(label_size.width() / 2, label_size.height() / 2));
     }
+  }
+
+  void UpdateBounds() override {
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 0)));
+    auto label_size = CalculatePreferredSize();
+    SetSize(label_size);
+    // TODO(b/241966781): Mouse is not supported yet.
+    DCHECK_EQ(mouse_action_, MouseAction::NONE);
+    auto center = touch_point_size_.width() / 2;
+    int offset_to_center =
+        touch_point_size_.width() / 2 - kCrossPadding - label_size.height() / 2;
+    int x = center + kDirection[index_][0] * offset_to_center -
+            label_size.width() / 2;
+    int y = center + kDirection[index_][1] * offset_to_center -
+            label_size.height() / 2;
+    SetPosition(gfx::Point(x, y));
+    static_cast<ActionView*>(parent())->SetTouchPointCenter(
+        gfx::Point(center, center));
   }
 };
 
@@ -227,8 +321,10 @@ std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
                                             ActionType action_type,
                                             const InputElement& input_element,
                                             int radius,
+                                            bool allow_reposition,
                                             TapLabelPosition label_position) {
   std::vector<ActionLabel*> labels;
+  gfx::Size touch_point_size;
 
   switch (action_type) {
     case ActionType::TAP:
@@ -236,17 +332,19 @@ std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
         DCHECK_EQ(1u, input_element.keys().size());
         labels.emplace_back(
             parent->AddChildView(std::make_unique<ActionLabelTap>(
-                radius, GetDisplayText(input_element.keys()[0]),
-                label_position)));
+                radius, GetDisplayText(input_element.keys()[0]), label_position,
+                allow_reposition)));
       } else if (IsMouseBound(input_element)) {
         labels.emplace_back(
             parent->AddChildView(std::make_unique<ActionLabelTap>(
-                radius, input_element.mouse_action(), label_position)));
+                radius, input_element.mouse_action(), label_position,
+                allow_reposition)));
       } else {
         labels.emplace_back(
             parent->AddChildView(std::make_unique<ActionLabelTap>(
-                radius, kUnknownBind, label_position)));
+                radius, kUnknownBind, label_position, allow_reposition)));
       }
+      touch_point_size = TouchPoint::GetSize(ActionType::TAP);
       break;
 
     case ActionType::MOVE:
@@ -255,18 +353,21 @@ std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
         for (size_t i = 0; i < kActionMoveKeysSize; i++) {
           labels.emplace_back(
               parent->AddChildView(std::make_unique<ActionLabelMove>(
-                  radius, GetDisplayText(keys[i]), i)));
+                  radius, GetDisplayText(keys[i]), i, allow_reposition)));
         }
       } else if (IsMouseBound(input_element)) {
-        labels.emplace_back(parent->AddChildView(
-            std::make_unique<ActionLabelMove>(radius, kMouseCursorLock, 0)));
+        labels.emplace_back(
+            parent->AddChildView(std::make_unique<ActionLabelMove>(
+                radius, kMouseCursorLock, 0, allow_reposition)));
         NOTIMPLEMENTED();
       } else {
         for (size_t i = 0; i < kActionMoveKeysSize; i++) {
-          labels.emplace_back(parent->AddChildView(
-              std::make_unique<ActionLabelMove>(radius, kUnknownBind, i)));
+          labels.emplace_back(
+              parent->AddChildView(std::make_unique<ActionLabelMove>(
+                  radius, kUnknownBind, i, allow_reposition)));
         }
       }
+      touch_point_size = TouchPoint::GetSize(ActionType::MOVE);
       break;
 
     default:
@@ -274,8 +375,10 @@ std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
       break;
   }
 
-  for (auto* label : labels)
+  for (auto* label : labels) {
     label->Init();
+    label->set_touch_point_size(touch_point_size);
+  }
 
   return labels;
 }
@@ -283,25 +386,37 @@ std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
 void ActionLabel::Init() {
   SetRequestFocusOnPress(true);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kSideInset)));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(0, allow_reposition_ ? kSideInset : kSideInsetAlpha)));
   SetAccessibleName(mouse_action_ == MouseAction::NONE
                         ? label()->GetText()
                         : base::UTF8ToUTF16(GetClassName()));
 }
 
-ActionLabel::ActionLabel(int radius, MouseAction mouse_action)
-    : radius_(radius), mouse_action_(mouse_action) {}
+ActionLabel::ActionLabel(int radius,
+                         MouseAction mouse_action,
+                         bool allow_reposition)
+    : radius_(radius),
+      mouse_action_(mouse_action),
+      allow_reposition_(allow_reposition) {}
 
-ActionLabel::ActionLabel(int radius, const std::string& text)
-    : views::LabelButton(views::Button::PressedCallback(),
-                         base::UTF8ToUTF16(text)),
-      radius_(radius) {}
-
-ActionLabel::ActionLabel(int radius, const std::string& text, int index)
+ActionLabel::ActionLabel(int radius,
+                         const std::string& text,
+                         bool allow_reposition)
     : views::LabelButton(views::Button::PressedCallback(),
                          base::UTF8ToUTF16(text)),
       radius_(radius),
-      index_(index) {
+      allow_reposition_(allow_reposition) {}
+
+ActionLabel::ActionLabel(int radius,
+                         const std::string& text,
+                         int index,
+                         bool allow_reposition)
+    : views::LabelButton(views::Button::PressedCallback(),
+                         base::UTF8ToUTF16(text)),
+      radius_(radius),
+      index_(index),
+      allow_reposition_(allow_reposition) {
   DCHECK(index_ >= 0 && index_ < kActionMoveKeysSize);
 }
 
@@ -368,12 +483,12 @@ bool ActionLabel::ClearFocus() {
 
 gfx::Size ActionLabel::CalculatePreferredSize() const {
   auto size = LabelButton::CalculatePreferredSize();
-  size.SetToMax(kLabelSize);
+  size.SetToMax(allow_reposition_ ? kLabelSize : kLabelSizeAlpha);
   return size;
 }
 
 void ActionLabel::ChildPreferredSizeChanged(View* child) {
-  UpdateBoundsAlpha();
+  allow_reposition_ ? UpdateBounds() : UpdateBoundsAlpha();
   LabelButton::ChildPreferredSizeChanged(this);
 }
 
@@ -420,10 +535,12 @@ void ActionLabel::OnBlur() {
 }
 
 void ActionLabel::SetToViewMode() {
+  display_mode_ = DisplayMode::kView;
   ClearFocus();
   SetInstallFocusRingOnFocus(false);
-  label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL, kFontSize,
-                                     gfx::Font::Weight::BOLD));
+  label()->SetFontList(gfx::FontList(
+      {kFontStyle}, gfx::Font::NORMAL,
+      allow_reposition_ ? kFontSize : kFontSizeAlpha, gfx::Font::Weight::BOLD));
   SetEnabledTextColors(kViewTextColor);
 
   if (mouse_action_ != MouseAction::NONE) {
@@ -441,20 +558,24 @@ void ActionLabel::SetToViewMode() {
   SetBackground(views::CreateRoundedRectBackground(
       color_utils::GetResultingPaintColor(kViewModeForeColor,
                                           kViewModeBackColor),
-      kCornerRadiusView));
+      allow_reposition_ ? kCornerRadius : kCornerRadiusAlpha));
   SetPreferredSize(CalculatePreferredSize());
 }
 
 void ActionLabel::SetToEditMode() {
+  display_mode_ = DisplayMode::kEdit;
+
   if (IsInputUnbound())
     SetVisible(true);
 
   SetInstallFocusRingOnFocus(true);
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                kCornerRadiusView);
+  views::InstallRoundRectHighlightPathGenerator(
+      this, gfx::Insets(),
+      allow_reposition_ ? kCornerRadius : kCornerRadiusAlpha);
   auto* focus_ring = views::FocusRing::Get(this);
-  focus_ring->SetHaloInset(kHaloInset);
-  focus_ring->SetHaloThickness(kHaloThickness);
+  focus_ring->SetHaloInset(allow_reposition_ ? kHaloInset : kHaloInsetAlpha);
+  focus_ring->SetHaloThickness(allow_reposition_ ? kHaloThickness
+                                                 : kHaloThicknessAlpha);
   focus_ring->SetHasFocusPredicate([](views::View* view) {
     return view->IsMouseHovered() || view->HasFocus();
   });
@@ -476,16 +597,11 @@ void ActionLabel::SetToEditMode() {
 }
 
 void ActionLabel::SetToEditDefault() {
-  label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL, kFontSize,
-                                     gfx::Font::Weight::BOLD));
+  label()->SetFontList(gfx::FontList(
+      {kFontStyle}, gfx::Font::NORMAL,
+      allow_reposition_ ? kFontSize : kFontSizeAlpha, gfx::Font::Weight::BOLD));
   views::FocusRing::Get(this)->SetColorId(absl::nullopt);
-  if (IsInputUnbound()) {
-    SetBackground(views::CreateRoundedRectBackground(kEditedUnboundBgColor,
-                                                     kCornerRadiusView));
-  } else {
-    SetBackground(views::CreateRoundedRectBackground(kEditModeBgColor,
-                                                     kCornerRadiusView));
-  }
+  SetBackgroundForEdit();
 }
 
 void ActionLabel::SetToEditHover() {
@@ -494,20 +610,14 @@ void ActionLabel::SetToEditHover() {
 }
 
 void ActionLabel::SetToEditFocus() {
-  label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL, kFontSize,
-                                     gfx::Font::Weight::BOLD));
+  label()->SetFontList(gfx::FontList(
+      {kFontStyle}, gfx::Font::NORMAL,
+      allow_reposition_ ? kFontSize : kFontSizeAlpha, gfx::Font::Weight::BOLD));
   SetPreferredSize(CalculatePreferredSize());
-  if (IsInputUnbound()) {
-    views::FocusRing::Get(this)->SetColorId(
-        ui::kColorAshActionLabelFocusRingError);
-    SetBackground(views::CreateRoundedRectBackground(kEditedUnboundBgColor,
-                                                     kCornerRadiusView));
-  } else {
-    views::FocusRing::Get(this)->SetColorId(
-        ui::kColorAshActionLabelFocusRingEdit);
-    SetBackground(views::CreateRoundedRectBackground(kEditModeBgColor,
-                                                     kCornerRadiusView));
-  }
+  views::FocusRing::Get(this)->SetColorId(
+      IsInputUnbound() ? ui::kColorAshActionLabelFocusRingError
+                       : ui::kColorAshActionLabelFocusRingEdit);
+  SetBackgroundForEdit();
 }
 
 void ActionLabel::SetToEditError() {
@@ -517,8 +627,15 @@ void ActionLabel::SetToEditError() {
 
 void ActionLabel::SetToEditUnbindInput() {
   SetPreferredSize(CalculatePreferredSize());
-  SetBackground(views::CreateRoundedRectBackground(kEditedUnboundBgColor,
-                                                   kCornerRadiusView));
+  SetBackground(views::CreateRoundedRectBackground(
+      kEditedUnboundBgColor,
+      allow_reposition_ ? kCornerRadius : kCornerRadiusAlpha));
+}
+
+void ActionLabel::SetBackgroundForEdit() {
+  SetBackground(views::CreateRoundedRectBackground(
+      IsInputUnbound() ? kEditedUnboundBgColor : kEditModeBgColor,
+      allow_reposition_ ? kCornerRadius : kCornerRadiusAlpha));
 }
 
 bool ActionLabel::IsInputUnbound() {

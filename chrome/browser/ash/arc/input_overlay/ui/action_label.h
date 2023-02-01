@@ -28,11 +28,15 @@ class ActionLabel : public views::LabelButton {
       ActionType action_type,
       const InputElement& input_element,
       int radius,
+      bool allow_reposition,
       TapLabelPosition label_position = TapLabelPosition::kTopLeft);
 
-  ActionLabel(int radius, MouseAction mouse_action);
-  ActionLabel(int radius, const std::string& text);
-  ActionLabel(int radius, const std::string& text, int index);
+  ActionLabel(int radius, MouseAction mouse_action, bool allow_reposition);
+  ActionLabel(int radius, const std::string& text, bool allow_reposition);
+  ActionLabel(int radius,
+              const std::string& text,
+              int index,
+              bool allow_reposition);
 
   ActionLabel(const ActionLabel&) = delete;
   ActionLabel& operator=(const ActionLabel&) = delete;
@@ -51,6 +55,7 @@ class ActionLabel : public views::LabelButton {
   // The label layout design is updated. This is used to update bounds
   // for Alpha version.
   virtual void UpdateBoundsAlpha() = 0;
+  virtual void UpdateBounds() = 0;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -65,11 +70,18 @@ class ActionLabel : public views::LabelButton {
     mouse_action_ = mouse_action;
   }
 
+  void set_touch_point_size(gfx::Size size) { touch_point_size_ = size; }
+
  protected:
   int radius_ = 0;
   size_t index_ = 0;
 
   MouseAction mouse_action_ = MouseAction::NONE;
+
+  DisplayMode display_mode_ = DisplayMode::kView;
+  // This view needs to set position relative to the size of TouchPoint.
+  // ActionTap and ActionView have different TouchPoint size.
+  gfx::Size touch_point_size_;
 
  private:
   void SetToViewMode();
@@ -85,7 +97,11 @@ class ActionLabel : public views::LabelButton {
   // In edit mode when the input is unbound.
   void SetToEditUnbindInput();
 
+  void SetBackgroundForEdit();
+
   bool IsInputUnbound();
+
+  bool allow_reposition_;
 };
 }  // namespace arc::input_overlay
 

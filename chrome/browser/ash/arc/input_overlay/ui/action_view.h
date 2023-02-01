@@ -90,6 +90,8 @@ class ActionView : public views::View {
   bool ApplyKeyPressed(const ui::KeyEvent& event);
   bool ApplyKeyReleased(const ui::KeyEvent& event);
 
+  void SetTouchPointCenter(const gfx::Point& touch_point_center);
+
   Action* action() { return action_; }
   const std::vector<ActionLabel*>& labels() const { return labels_; }
   TouchPoint* touch_point() { return touch_point_; }
@@ -102,9 +104,7 @@ class ActionView : public views::View {
   }
   int unbind_label_index() { return unbind_label_index_; }
 
-  void set_touch_point_center(const gfx::Point& touch_point_center) {
-    touch_point_center_ = touch_point_center;
-  }
+  gfx::Point touch_point_center() const { return touch_point_center_; }
 
  protected:
   void UpdateTrashButtonPosition();
@@ -128,6 +128,16 @@ class ActionView : public views::View {
   // TODO(cuicuirunan): Enable or remove this after MVP.
   bool show_edit_button_ = false;
 
+  // Touch point only shows up in the edit mode for users to align the position.
+  // This view owns the touch point as one of its children and |touch_point_|
+  // is for quick access.
+  raw_ptr<TouchPoint> touch_point_ = nullptr;
+  DisplayMode display_mode_ = DisplayMode::kView;
+
+  // TODO(b/260937747): Update or remove when removing flags
+  // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
+  bool allow_reposition_;
+
  private:
   void AddEditButton();
   void RemoveEditButton();
@@ -149,16 +159,10 @@ class ActionView : public views::View {
   int unbind_label_index_ = kDefaultLabelIndex;
   // The position when starting to drag.
   gfx::Point start_drag_event_pos_;
-  // Touch point only shows up in the edit mode for users to align the position.
-  // This view owns the touch point as one of its children and |touch_point_|
-  // is for quick access.
-  raw_ptr<TouchPoint> touch_point_ = nullptr;
+
   // TODO(b/250900717): Update when the final UX/UI is ready.
   raw_ptr<views::ImageButton> trash_button_ = nullptr;
 
-  // TODO(b/260937747): Update or remove when removing flags
-  // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
-  bool allow_reposition_;
   // Corresponding to |kArcInputOverlayBeta| flag to turn on/off the editor
   // feature of adding or removing actions.
   bool beta_;

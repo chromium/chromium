@@ -29,6 +29,7 @@ class TouchPoint : public views::View {
   static TouchPoint* Show(views::View* parent,
                           ActionType action_type,
                           const gfx::Point& center_pos);
+  static gfx::Size GetSize(ActionType action_type);
 
   explicit TouchPoint(const gfx::Point& center_pos);
   TouchPoint(const TouchPoint&) = delete;
@@ -36,6 +37,8 @@ class TouchPoint : public views::View {
   ~TouchPoint() override;
 
   virtual void Init();
+
+  void OnCenterPositionChanged(const gfx::Point& point);
 
   void SetToDefault();
   void SetToHover();

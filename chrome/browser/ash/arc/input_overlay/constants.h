@@ -21,6 +21,10 @@ constexpr int kDirection[kActionMoveKeysSize][kAxisSize] = {{0, -1},
                                                             {0, 1},
                                                             {1, 0}};
 
+// From ActionTap AlphaV2 design. There is the label offset to touch point in
+// the edit mode.
+constexpr int kOffsetToTouchPoint = -1;  // 2 - 3(kDotOutsideStrokeThickness)
+
 // Display mode for display overlay.
 enum class DisplayMode {
   kNone,
