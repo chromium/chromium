@@ -128,7 +128,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       absl::optional<GURL> render_url,
       std::vector<GURL> ad_component_urls,
       std::string winning_group_ad_metadata,
-      std::vector<GURL> debug_loss_report_urls,
       std::map<
           url::Origin,
           std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>

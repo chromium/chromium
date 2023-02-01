@@ -63,13 +63,16 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
     const blink::AuctionConfig& auction_config,
+    const url::Origin& frame_origin,
     network::mojom::ClientSecurityStatePtr client_security_state,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback) {
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
       auction_worklet_manager, interest_group_manager, DetermineKAnonMode(),
-      std::move(auction_config), std::move(client_security_state),
+      std::move(auction_config), frame_origin, std::move(client_security_state),
+      std::move(url_loader_factory),
       std::move(is_interest_group_api_allowed_callback),
       std::move(abort_receiver), std::move(callback)));
   instance->StartAuction();
@@ -194,6 +197,9 @@ void AuctionRunner::FailAuction(
       debug_win_report_urls, debug_loss_report_urls);
   // Shouldn't have any win report URLs if nothing won the auction.
   DCHECK(debug_win_report_urls.empty());
+  interest_group_manager_->EnqueueReports(
+      InterestGroupManagerImpl::ReportType::kDebugLoss, debug_loss_report_urls,
+      frame_origin_, *client_security_state_, url_loader_factory_);
 
   UpdateInterestGroupsPostAuction();
 
@@ -202,7 +208,6 @@ void AuctionRunner::FailAuction(
                            /*render_url=*/absl::nullopt,
                            /*ad_component_urls=*/{},
                            /*winning_group_ad_metadata=*/std::string(),
-                           std::move(debug_loss_report_urls),
                            auction_.TakePrivateAggregationRequests(),
                            std::move(interest_groups_that_bid),
                            auction_.GetKAnonKeysToJoin(), auction_.TakeErrors(),
@@ -214,12 +219,16 @@ AuctionRunner::AuctionRunner(
     InterestGroupManagerImpl* interest_group_manager,
     auction_worklet::mojom::KAnonymityBidMode kanon_mode,
     const blink::AuctionConfig& auction_config,
+    const url::Origin& frame_origin,
     network::mojom::ClientSecurityStatePtr client_security_state,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback)
     : interest_group_manager_(interest_group_manager),
+      frame_origin_(frame_origin),
       client_security_state_(std::move(client_security_state)),
+      url_loader_factory_(std::move(url_loader_factory)),
       is_interest_group_api_allowed_callback_(
           is_interest_group_api_allowed_callback),
       abort_receiver_(this, std::move(abort_receiver)),
@@ -291,7 +300,9 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
   auto errors = auction_.TakeErrors();
 
   std::unique_ptr<InterestGroupAuctionReporter> reporter =
-      auction_.CreateReporter(std::move(owned_auction_config_));
+      auction_.CreateReporter(std::move(owned_auction_config_), frame_origin_,
+                              client_security_state_.Clone(),
+                              url_loader_factory_);
   DCHECK(reporter);
 
   state_ = State::kSucceeded;
@@ -299,7 +310,7 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
       this, /*manually_aborted=*/false, std::move(winning_group_key),
       auction_.top_bid()->bid->render_url,
       auction_.top_bid()->bid->ad_components,
-      std::move(winning_group_ad_metadata), /*debug_loss_report_urls=*/{},
+      std::move(winning_group_ad_metadata),
       // In this case, the reporter has all the private aggregation requests.
       std::map<url::Origin, PrivateAggregationRequests>(),
       std::move(interest_groups_that_bid), auction_.GetKAnonKeysToJoin(),

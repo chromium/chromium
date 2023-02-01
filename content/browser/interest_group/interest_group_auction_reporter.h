@@ -116,10 +116,17 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   // All passed in raw pointers, including those in *BidInfo fields must outlive
   // the created InterestGroupAuctionReporter.
+  //
+  // `frame_origin` is the origin of the frame that ran the auction.
+  // `client_security_state` is the ClientSecurityState of the frame.
+  // `url_loader_factory` is used to send reports.
   InterestGroupAuctionReporter(
       InterestGroupManagerImpl* interest_group_manager,
       AuctionWorkletManager* auction_worklet_manager,
       std::unique_ptr<blink::AuctionConfig> auction_config,
+      const url::Origin& frame_origin,
+      network::mojom::ClientSecurityStatePtr client_security_state,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       WinningBidInfo winning_bid_info,
       SellerWinningBidInfo top_level_seller_winning_bid_info,
       absl::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
@@ -136,10 +143,6 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   // Starts running reporting scripts.
   //
-  // `frame_origin` is the origin of the frame that ran the auction.
-  // `client_security_state` is the ClientSecurityState of the frame.
-  // `url_loader_factory` is used to send reports.
-  //
   // `callback` will be invoked once all reporting scripts have completed, and
   // the callback returned by OnNavigateToWinningAdCallback() has been invoked,
   // at which point reports not managed by the InterestGroupAuctionReporter
@@ -148,10 +151,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // TODO(https://crbug.com/1394777): Make InterestGroupAuctionReporter send all
   // reports itself, and decouple its lifetime from the frame, so that it can
   // continue running scripts after a frame is navigated away from.
-  void Start(const url::Origin& frame_origin,
-             network::mojom::ClientSecurityStatePtr client_security_state,
-             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-             base::OnceClosure callback);
+  void Start(base::OnceClosure callback);
 
   // Returns a callback that should be invoked once a fenced frame has been
   // navigated to the winning ad. May be invoked multiple times, safe to invoke
@@ -259,14 +259,14 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
 
-  url::Origin frame_origin_;
-  network::mojom::ClientSecurityStatePtr client_security_state_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
   // Top-level AuctionConfig. It owns the `auction_config` objects pointed at by
   // the the top-level SellerWinningBidInfo. If there's a component auction
   // SellerWinningBidInfo, it points to an AuctionConfig contained within it.
   const std::unique_ptr<blink::AuctionConfig> auction_config_;
+
+  const url::Origin frame_origin_;
+  const network::mojom::ClientSecurityStatePtr client_security_state_;
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   const WinningBidInfo winning_bid_info_;
   const SellerWinningBidInfo top_level_seller_winning_bid_info_;

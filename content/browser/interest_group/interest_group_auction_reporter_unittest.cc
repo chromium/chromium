@@ -138,15 +138,15 @@ class InterestGroupAuctionReporterTest
     interest_group_auction_reporter_ = std::make_unique<
         InterestGroupAuctionReporter>(
         interest_group_manager_impl_.get(), &auction_worklet_manager_,
-        std::move(auction_config_), std::move(winning_bid_info_),
+        std::move(auction_config_), kFrameOrigin,
+        frame_client_security_state_.Clone(),
+        dummy_report_shared_url_loader_factory_, std::move(winning_bid_info_),
         std::move(seller_winning_bid_info_),
         std::move(component_seller_winning_bid_info_),
         std::move(debug_win_report_urls_), std::move(debug_loss_report_urls_),
         std::map<url::Origin,
                  InterestGroupAuctionReporter::PrivateAggregationRequests>());
     interest_group_auction_reporter_->Start(
-        kFrameOrigin, frame_client_security_state_.Clone(),
-        dummy_report_shared_url_loader_factory_,
         base::BindOnce(&InterestGroupAuctionReporterTest::OnCompleteCallback,
                        base::Unretained(this)));
   }

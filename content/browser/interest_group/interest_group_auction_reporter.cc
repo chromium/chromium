@@ -74,6 +74,9 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     InterestGroupManagerImpl* interest_group_manager,
     AuctionWorkletManager* auction_worklet_manager,
     std::unique_ptr<blink::AuctionConfig> auction_config,
+    const url::Origin& frame_origin,
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     WinningBidInfo winning_bid_info,
     SellerWinningBidInfo top_level_seller_winning_bid_info,
     absl::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
@@ -84,6 +87,9 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     : interest_group_manager_(interest_group_manager),
       auction_worklet_manager_(auction_worklet_manager),
       auction_config_(std::move(auction_config)),
+      frame_origin_(frame_origin),
+      client_security_state_(std::move(client_security_state)),
+      url_loader_factory_(std::move(url_loader_factory)),
       winning_bid_info_(std::move(winning_bid_info)),
       top_level_seller_winning_bid_info_(
           std::move(top_level_seller_winning_bid_info)),
@@ -94,25 +100,17 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
       private_aggregation_requests_(std::move(private_aggregation_requests)) {
   DCHECK(interest_group_manager_);
   DCHECK(auction_worklet_manager_);
+  DCHECK(url_loader_factory_);
+  DCHECK(client_security_state_);
 }
 
 InterestGroupAuctionReporter ::~InterestGroupAuctionReporter() = default;
 
-void InterestGroupAuctionReporter::Start(
-    const url::Origin& frame_origin,
-    network::mojom::ClientSecurityStatePtr client_security_state,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::OnceClosure callback) {
+void InterestGroupAuctionReporter::Start(base::OnceClosure callback) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "fledge", "reporting_phase", top_level_seller_winning_bid_info_.trace_id);
 
   DCHECK(!callback_);
-  DCHECK(url_loader_factory);
-  DCHECK(client_security_state);
-
-  frame_origin_ = frame_origin;
-  client_security_state_ = std::move(client_security_state);
-  url_loader_factory_ = std::move(url_loader_factory);
 
   callback_ = std::move(callback);
   RequestSellerWorklet(&top_level_seller_winning_bid_info_,

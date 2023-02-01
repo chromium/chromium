@@ -1340,7 +1340,10 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
 
 std::unique_ptr<InterestGroupAuctionReporter>
 InterestGroupAuction::CreateReporter(
-    std::unique_ptr<blink::AuctionConfig> auction_config) {
+    std::unique_ptr<blink::AuctionConfig> auction_config,
+    const url::Origin& frame_origin,
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   DCHECK(!load_interest_groups_phase_callback_);
   DCHECK(!bidding_and_scoring_phase_callback_);
   DCHECK_EQ(*final_auction_result_, AuctionResult::kSuccess);
@@ -1433,7 +1436,8 @@ InterestGroupAuction::CreateReporter(
 
   return std::make_unique<InterestGroupAuctionReporter>(
       interest_group_manager_, auction_worklet_manager_,
-      std::move(auction_config), std::move(winning_bid_info),
+      std::move(auction_config), frame_origin, std::move(client_security_state),
+      std::move(url_loader_factory), std::move(winning_bid_info),
       std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
       std::move(debug_win_report_urls), std::move(debug_loss_report_urls),

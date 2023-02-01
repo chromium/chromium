@@ -317,8 +317,8 @@ void AdAuctionServiceImpl::RunAdAuction(
   }
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
-      &auction_worklet_manager_, &GetInterestGroupManager(), config,
-      GetClientSecurityState(),
+      &auction_worklet_manager_, &GetInterestGroupManager(), config, origin(),
+      GetClientSecurityState(), GetRefCountedTrustedURLLoaderFactory(),
       base::BindRepeating(&AdAuctionServiceImpl::IsInterestGroupAPIAllowed,
                           base::Unretained(this)),
       std::move(abort_receiver),
@@ -593,7 +593,6 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     absl::optional<GURL> render_url,
     std::vector<GURL> ad_component_urls,
     std::string winning_group_ad_metadata,
-    std::vector<GURL> debug_loss_report_urls,
     std::map<url::Origin,
              std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
         private_aggregation_requests,
@@ -647,10 +646,6 @@ void AdAuctionServiceImpl::OnAuctionComplete(
       auction_result_metrics->ReportAuctionResult(
           AdAuctionResultMetrics::AuctionResult::kFailed);
     }
-    GetInterestGroupManager().EnqueueReports(
-        InterestGroupManagerImpl::ReportType::kDebugLoss,
-        debug_loss_report_urls, origin(), *GetClientSecurityState(),
-        GetRefCountedTrustedURLLoaderFactory());
     return;
   }
 
@@ -659,8 +654,6 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   DCHECK(private_aggregation_requests.empty());
   // Should always be present with a render_url.
   DCHECK(winning_group_key);
-  // Should have been passed to the reporter in this case.
-  DCHECK(debug_loss_report_urls.empty());
   DCHECK(!winning_group_ad_metadata.empty());
   DCHECK(blink::IsValidFencedFrameURL(*render_url));
   DCHECK(urn_uuid.is_valid());
@@ -694,15 +687,11 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   // callback returned by the InterestGroupAuctionReporter's
   // OnNavitationToWinningAdCallback() method (invoked just above).
   reporters_.emplace_front(std::move(reporter));
-  reporters_.front()->Start(
-      origin(), GetClientSecurityState(),
-      GetRefCountedTrustedURLLoaderFactory(),
-      base::BindOnce(
-          &AdAuctionServiceImpl::OnReporterComplete, base::Unretained(this),
-          reporters_.begin(), std::move(urn_uuid),
-          std::move(*winning_group_key), std::move(winning_group_ad_metadata),
-          std::move(fenced_frame_reporter), std::move(interest_groups_that_bid),
-          std::move(k_anon_keys_to_join)));
+  reporters_.front()->Start(base::BindOnce(
+      &AdAuctionServiceImpl::OnReporterComplete, base::Unretained(this),
+      reporters_.begin(), std::move(urn_uuid), std::move(*winning_group_key),
+      std::move(winning_group_ad_metadata), std::move(fenced_frame_reporter),
+      std::move(interest_groups_that_bid), std::move(k_anon_keys_to_join)));
   if (auction_result_metrics) {
     auction_result_metrics->ReportAuctionResult(
         AdAuctionResultMetrics::AuctionResult::kSucceeded);

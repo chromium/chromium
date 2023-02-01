@@ -1376,7 +1376,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     abortable_ad_auction_.reset();
     auction_runner_ = AuctionRunner::CreateAndStart(
         auction_worklet_manager_.get(), interest_group_manager_.get(),
-        std::move(auction_config), /*client_security_state=*/nullptr,
+        std::move(auction_config), frame_origin_, GetClientSecurityState(),
+        dummy_report_shared_url_loader_factory_,
         IsInterestGroupApiAllowedCallback(),
         abortable_ad_auction_.BindNewPipeAndPassReceiver(),
         base::BindOnce(&AuctionRunnerTest::OnAuctionComplete,
@@ -1397,7 +1398,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       absl::optional<GURL> render_url,
       std::vector<GURL> ad_component_urls,
       std::string winning_group_ad_metadata,
-      std::vector<GURL> debug_loss_report_urls,
       std::map<url::Origin, PrivateAggregationRequests>
           private_aggregation_requests,
       blink::InterestGroupSet interest_groups_that_bid,
@@ -1423,7 +1423,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     result_.winning_group_ad_metadata = std::move(winning_group_ad_metadata);
     result_.report_urls.clear();
     result_.errors = std::move(errors);
-    result_.debug_loss_report_urls = std::move(debug_loss_report_urls);
+    result_.debug_loss_report_urls.clear();
     result_.debug_win_report_urls.clear();
     result_.ad_beacon_map = ReportingMetadata();
     result_.interest_groups_that_bid = std::move(interest_groups_that_bid);
@@ -1432,12 +1432,22 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     result_.k_anon_keys_to_join = std::move(k_anon_keys_to_join);
 
     if (!reporter) {
+      result_.debug_loss_report_urls =
+          interest_group_manager_->TakeReportUrlsOfType(
+              InterestGroupManagerImpl::ReportType::kDebugLoss);
+
+      // There should be no reports of any other type queued.
+      interest_group_manager_->ExpectReports({});
+
       EXPECT_FALSE(result_.winning_group_id);
       EXPECT_FALSE(result_.ad_url);
       EXPECT_TRUE(result_.ad_component_urls.empty());
       auction_run_loop_->Quit();
       return;
     }
+
+    // No reports should have been queued yet, on success.
+    interest_group_manager_->ExpectReports({});
 
     EXPECT_TRUE(result_.winning_group_id);
     EXPECT_TRUE(result_.ad_url);
@@ -1450,9 +1460,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
     reporter_ = std::move(reporter);
 
-    reporter_->Start(frame_origin_, GetClientSecurityState(),
-                     dummy_report_shared_url_loader_factory_,
-                     base::BindOnce(&AuctionRunnerTest::OnReportingComplete,
+    reporter_->Start(base::BindOnce(&AuctionRunnerTest::OnReportingComplete,
                                     base::Unretained(this)));
     // Invoke callback immediately, so as not to block reporter completion.
     reporter_->OnNavigateToWinningAdCallback().Run();
