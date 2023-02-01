@@ -78,6 +78,7 @@ source_set("internal") {
     "//mojo/public/c/system",
     "//net",
     "//services/device/public/mojom:mojom",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
     "//services/service_manager/public/cpp:cpp",

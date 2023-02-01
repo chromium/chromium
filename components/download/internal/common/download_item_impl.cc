@@ -62,6 +62,7 @@
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -387,7 +388,7 @@ DownloadItemImpl::DownloadItemImpl(
     ukm_download_id_ = download_entry->ukm_download_id;
     bytes_wasted_ = download_entry->bytes_wasted;
   } else {
-    ukm_download_id_ = GetUniqueDownloadId();
+    ukm_download_id_ = ukm::NoURLSourceId();
   }
   Init(false /* not actively downloading */, TYPE_HISTORY_IMPORT);
 }
@@ -1521,7 +1522,7 @@ void DownloadItemImpl::Init(bool active,
         "download", "DownloadItemActive",
         TRACE_ID_WITH_SCOPE("DownloadItemActive", download_id_),
         "download_item", std::move(active_data));
-    ukm_download_id_ = GetUniqueDownloadId();
+    ukm_download_id_ = ukm::NoURLSourceId();
   } else {
     TRACE_EVENT_INSTANT1("download", "DownloadItemActive",
                          TRACE_EVENT_SCOPE_THREAD, "download_item",

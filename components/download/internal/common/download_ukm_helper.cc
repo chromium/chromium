@@ -46,7 +46,7 @@ void DownloadUkmHelper::RecordDownloadInterrupted(
     int resulting_file_size,
     const base::TimeDelta& time_since_start,
     int64_t bytes_wasted) {
-  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  ukm::SourceId source_id = ukm::NoURLSourceId();
   ukm::builders::Download_Interrupted builder(source_id);
   builder.SetDownloadId(download_id)
       .SetReason(static_cast<int>(reason))
@@ -65,7 +65,7 @@ void DownloadUkmHelper::RecordDownloadResumed(
     int download_id,
     ResumeMode mode,
     const base::TimeDelta& time_since_start) {
-  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  ukm::SourceId source_id = ukm::NoURLSourceId();
   ukm::builders::Download_Resumed(source_id)
       .SetDownloadId(download_id)
       .SetMode(static_cast<int>(mode))
@@ -78,7 +78,7 @@ void DownloadUkmHelper::RecordDownloadCompleted(
     int resulting_file_size,
     const base::TimeDelta& time_since_start,
     int64_t bytes_wasted) {
-  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  ukm::SourceId source_id = ukm::NoURLSourceId();
   ukm::builders::Download_Completed(source_id)
       .SetDownloadId(download_id)
       .SetResultingFileSize(
