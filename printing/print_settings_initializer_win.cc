@@ -9,6 +9,7 @@
 #include "printing/backend/win_helper.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
+#include "printing/printing_utils.h"
 
 namespace printing {
 
@@ -111,6 +112,9 @@ void PrintSettingsInitializerWin::InitPrintSettings(
   int dpi_x = GetDeviceCaps(hdc, LOGPIXELSX);
   int dpi_y = GetDeviceCaps(hdc, LOGPIXELSY);
   print_settings->set_dpi_xy(dpi_x, dpi_y);
+  int dpi = print_settings->dpi();
+  DCHECK_EQ(print_settings->device_units_per_inch(), dpi);
+
   const int kAlphaCaps = SB_CONST_ALPHA | SB_PIXEL_ALPHA;
   print_settings->set_supports_alpha_blend(
       (GetDeviceCaps(hdc, SHADEBLENDCAPS) & kAlphaCaps) == kAlphaCaps);
@@ -118,30 +122,20 @@ void PrintSettingsInitializerWin::InitPrintSettings(
   DCHECK_EQ(GetDeviceCaps(hdc, SCALINGFACTORX), 0);
   DCHECK_EQ(GetDeviceCaps(hdc, SCALINGFACTORY), 0);
 
-  // Initialize `page_setup_device_units_`.
   // Blink doesn't support different dpi settings in X and Y axis. However,
   // some printers use them. So, to avoid a bad page calculation, scale page
   // size components based on the dpi in the appropriate dimension.
-  int dpi = print_settings->dpi();
-  gfx::Size physical_size_device_units(
+  gfx::Size physical_size_scaled(
       GetDeviceCaps(hdc, PHYSICALWIDTH) * dpi / dpi_x,
       GetDeviceCaps(hdc, PHYSICALHEIGHT) * dpi / dpi_y);
-  gfx::Rect printable_area_device_units(
-      GetDeviceCaps(hdc, PHYSICALOFFSETX) * dpi / dpi_x,
-      GetDeviceCaps(hdc, PHYSICALOFFSETY) * dpi / dpi_y,
-      GetDeviceCaps(hdc, HORZRES) * dpi / dpi_x,
-      GetDeviceCaps(hdc, VERTRES) * dpi / dpi_y);
-
-  // Sanity check the printable_area: we've seen crashes caused by a printable
-  // area rect of 0, 0, 0, 0, so it seems some drivers don't set it.
-  if (printable_area_device_units.IsEmpty() ||
-      !gfx::Rect(physical_size_device_units)
-           .Contains(printable_area_device_units)) {
-    printable_area_device_units = gfx::Rect(physical_size_device_units);
-  }
-  DCHECK_EQ(print_settings->device_units_per_inch(), dpi);
-  print_settings->SetPrinterPrintableArea(physical_size_device_units,
-                                          printable_area_device_units, false);
+  gfx::Rect printable_area_device_units = GetPrintableAreaDeviceUnits(hdc);
+  gfx::Rect printable_area_scaled =
+      gfx::Rect(printable_area_device_units.x() * dpi / dpi_x,
+                printable_area_device_units.y() * dpi / dpi_y,
+                printable_area_device_units.width() * dpi / dpi_x,
+                printable_area_device_units.height() * dpi / dpi_y);
+  print_settings->SetPrinterPrintableArea(physical_size_scaled,
+                                          printable_area_scaled, false);
 
   print_settings->set_color(IsDevModeWithColor(&dev_mode)
                                 ? mojom::ColorModel::kColor

@@ -26,6 +26,10 @@
 #include "ui/gfx/geometry/size.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
+
 namespace printing {
 
 namespace {
@@ -132,6 +136,26 @@ gfx::Rect GetCenteredPageContentRect(const gfx::Size& paper_size,
     content_rect.set_y(content_rect.y() + diff / 2);
   }
   return content_rect;
+}
+
+gfx::Rect GetPrintableAreaDeviceUnits(HDC hdc) {
+  DCHECK(hdc);
+
+  gfx::Size physical_size_device_units(GetDeviceCaps(hdc, PHYSICALWIDTH),
+                                       GetDeviceCaps(hdc, PHYSICALHEIGHT));
+  gfx::Rect printable_area_device_units(
+      GetDeviceCaps(hdc, PHYSICALOFFSETX), GetDeviceCaps(hdc, PHYSICALOFFSETY),
+      GetDeviceCaps(hdc, HORZRES), GetDeviceCaps(hdc, VERTRES));
+
+  // Sanity check the printable_area: we've seen crashes caused by a printable
+  // area rect of 0, 0, 0, 0, so it seems some drivers don't set it.
+  if (printable_area_device_units.IsEmpty() ||
+      !gfx::Rect(physical_size_device_units)
+           .Contains(printable_area_device_units)) {
+    printable_area_device_units = gfx::Rect(physical_size_device_units);
+  }
+
+  return printable_area_device_units;
 }
 #endif  // BUILDFLAG(IS_WIN)
 
