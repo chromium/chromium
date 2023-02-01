@@ -272,7 +272,6 @@ void PasswordGenerationPopupViewViews::Hide() {
 void PasswordGenerationPopupViewViews::UpdateState() {
   RemoveAllChildViews();
   password_view_ = nullptr;
-  help_styled_label_ = nullptr;
   CreateLayoutAndChildren();
 }
 
@@ -336,12 +335,12 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
                           kHorizontalMargin)));
   }
 
-  password_view_ = new GeneratedPasswordBox();
-  password_view_->SetBorder(views::CreateEmptyBorder(
+  auto password_view = std::make_unique<GeneratedPasswordBox>();
+  password_view->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kVerticalPadding, kHorizontalMargin, kVerticalPadding,
                         kHorizontalMargin)));
-  password_view_->Init(controller_);
-  AddChildView(password_view_.get());
+  password_view->Init(controller_);
+  password_view_ = AddChildView(std::move(password_view));
   PasswordSelectionUpdated();
 
   base::RepeatingClosure open_password_manager_closure = base::BindRepeating(
@@ -352,28 +351,23 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
       },
       base::Unretained(this));
 
-  help_styled_label_ = AddChildView(CreateGooglePasswordManagerLabel(
-      /*text_message_id=*/
-      IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER,
-      /*link_message_id=*/
-      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
-      controller_->GetPrimaryAccountEmail(), open_password_manager_closure));
+  views::StyledLabel* help_label =
+      AddChildView(CreateGooglePasswordManagerLabel(
+          /*text_message_id=*/
+          IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER,
+          /*link_message_id=*/
+          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
+          controller_->GetPrimaryAccountEmail(),
+          open_password_manager_closure));
 
-  help_styled_label_->SetBorder(views::CreateEmptyBorder(
+  help_label->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kVerticalPadding, kHorizontalMargin, kVerticalPadding,
                         kHorizontalMargin)));
+  help_label->SetDisplayedOnBackgroundColor(ui::kColorBubbleFooterBackground);
 }
 
 bool PasswordGenerationPopupViewViews::FullPopupVisible() const {
   return password_view_;
-}
-
-void PasswordGenerationPopupViewViews::OnThemeChanged() {
-  autofill::AutofillPopupBaseView::OnThemeChanged();
-  if (help_styled_label_) {
-    help_styled_label_->SetDisplayedOnBackgroundColor(
-        GetFooterBackgroundColor());
-  }
 }
 
 void PasswordGenerationPopupViewViews::OnPaint(gfx::Canvas* canvas) {

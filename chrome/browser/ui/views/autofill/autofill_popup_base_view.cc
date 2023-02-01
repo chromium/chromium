@@ -109,10 +109,6 @@ int AutofillPopupBaseView::GetHorizontalPadding() {
   return GetHorizontalMargin();
 }
 
-SkColor AutofillPopupBaseView::GetFooterBackgroundColor() const {
-  return GetColorProvider()->GetColor(ui::kColorBubbleFooterBackground);
-}
-
 ui::ColorId AutofillPopupBaseView::GetSeparatorColorId() const {
   return ui::kColorMenuSeparator;
 }
@@ -462,7 +458,6 @@ gfx::NativeView AutofillPopupBaseView::container_view() {
 }
 
 BEGIN_METADATA(AutofillPopupBaseView, views::WidgetDelegateView)
-ADD_READONLY_PROPERTY_METADATA(SkColor, FooterBackgroundColor)
 ADD_READONLY_PROPERTY_METADATA(ui::ColorId, SeparatorColorId)
 ADD_READONLY_PROPERTY_METADATA(SkColor, WarningColor)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, ContentAreaBounds)

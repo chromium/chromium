@@ -12,10 +12,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 class PasswordGenerationPopupController;
 
-namespace views {
-class StyledLabel;
-}
-
 class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
                                          public PasswordGenerationPopupView {
  public:
@@ -58,16 +54,12 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
   bool FullPopupVisible() const;
 
   // views:Views implementation.
-  void OnThemeChanged() override;
   void OnPaint(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize() const override;
 
   // Sub view that displays the actual generated password.
   raw_ptr<GeneratedPasswordBox, DanglingUntriaged> password_view_ = nullptr;
-
-  // The footer label.
-  raw_ptr<views::StyledLabel, DanglingUntriaged> help_styled_label_ = nullptr;
 
   // Controller for this view. Weak reference.
   base::WeakPtr<PasswordGenerationPopupController> controller_;
