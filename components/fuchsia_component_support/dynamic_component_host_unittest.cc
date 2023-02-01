@@ -84,8 +84,7 @@ fidl::InterfaceHandle<fuchsia::io::Directory> GetSvcFromChildArgs(
     root_dir->Open(fuchsia::io::OpenFlags::RIGHT_READABLE |
                        fuchsia::io::OpenFlags::RIGHT_WRITABLE |
                        fuchsia::io::OpenFlags::DIRECTORY,
-                   fuchsia::io::MODE_TYPE_DIRECTORY, path.value(),
-                   services_handle.NewRequest());
+                   {}, path.value(), services_handle.NewRequest());
     return fidl::InterfaceHandle<fuchsia::io::Directory>(
         services_handle.TakeChannel());
   }
