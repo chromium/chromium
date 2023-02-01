@@ -16,6 +16,7 @@
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace safe_browsing {
 
@@ -121,9 +122,17 @@ void RendererURLLoaderThrottle::WillProcessResponse(
       "SafeBrowsing.RendererThrottle.IsCheckCompletedOnProcessResponse",
       check_completed);
   if (is_start_request_called_) {
+    base::TimeTicks process_time = base::TimeTicks::Now();
     base::UmaHistogramTimes(
         "SafeBrowsing.RendererThrottle.IntervalBetweenStartAndProcess",
-        base::TimeTicks::Now() - start_request_time_);
+        process_time - start_request_time_);
+    bool is_response_from_cache = response_head->was_fetched_via_cache &&
+                                  !response_head->network_accessed;
+    base::UmaHistogramTimes(
+        base::StrCat(
+            {"SafeBrowsing.RendererThrottle.IntervalBetweenStartAndProcess",
+             is_response_from_cache ? ".FromCache" : ".FromNetwork"}),
+        process_time - start_request_time_);
     is_start_request_called_ = false;
   }
 

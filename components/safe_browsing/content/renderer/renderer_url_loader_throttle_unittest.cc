@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,7 +61,8 @@ TEST_F(SBRendererUrlLoaderThrottleTest, DefersHttpsUrl) {
   request.url = url;
   throttle_->WillStartRequest(&request, &defer);
 
-  throttle_->WillProcessResponse(url, /*response_head=*/nullptr, &defer);
+  auto response_head = network::mojom::URLResponseHead::New();
+  throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_TRUE(defer);
 }
 
@@ -71,7 +73,8 @@ TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferChromeUrl) {
   request.url = url;
   throttle_->WillStartRequest(&request, &defer);
 
-  throttle_->WillProcessResponse(url, /*response_head=*/nullptr, &defer);
+  auto response_head = network::mojom::URLResponseHead::New();
+  throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_FALSE(defer);
 }
 

@@ -393,9 +393,17 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
       "SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse",
       check_completed);
   if (is_start_request_called_) {
+    base::TimeTicks process_time = base::TimeTicks::Now();
     base::UmaHistogramTimes(
         "SafeBrowsing.BrowserThrottle.IntervalBetweenStartAndProcess",
-        base::TimeTicks::Now() - start_request_time_);
+        process_time - start_request_time_);
+    bool is_response_from_cache = response_head->was_fetched_via_cache &&
+                                  !response_head->network_accessed;
+    base::UmaHistogramTimes(
+        base::StrCat(
+            {"SafeBrowsing.BrowserThrottle.IntervalBetweenStartAndProcess",
+             is_response_from_cache ? ".FromCache" : ".FromNetwork"}),
+        process_time - start_request_time_);
     is_start_request_called_ = false;
   }
 
