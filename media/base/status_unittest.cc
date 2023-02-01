@@ -68,7 +68,7 @@ struct TraitsWithCustomUKMSerializer {
   enum class Codes { kFoo, kBar };
   static constexpr StatusGroupType Group() { return "UKMSerializerCode"; }
   static uint32_t PackExtraData(const internal::StatusData& info) {
-    auto maybe_key = info.data.FindIntKey("might_exist_key");
+    auto maybe_key = info.data.GetDict().FindInt("might_exist_key");
     if (maybe_key.has_value())
       return *maybe_key * 77;
     return 0;

@@ -22,9 +22,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
 
-namespace media {
-
-namespace internal {
+namespace media::internal {
 
 // Serializing any const or reference combination.
 template <typename T>
@@ -79,7 +77,7 @@ struct MediaSerializer<absl::optional<OptType>> {
   }
 };
 
-// Sometimes raw strings wont template match to a char*.
+// Sometimes raw strings won't template match to a char*.
 template <int len>
 struct MediaSerializer<char[len]> {
   static inline base::Value Serialize(const char* code) {
@@ -130,7 +128,7 @@ struct MediaSerializer<float> {
 // the FIELD_SERIALIZE method can be used whenever the result is a dict named
 // |result|.
 #define FIELD_SERIALIZE(NAME, CONSTEXPR) \
-  result.SetKey(NAME, MediaSerialize(CONSTEXPR))
+  result.Set(NAME, MediaSerialize(CONSTEXPR))
 
 // Class (simple)
 template <>
@@ -263,12 +261,12 @@ struct MediaSerializer<VideoTransformation> {
 template <>
 struct MediaSerializer<VideoColorSpace> {
   static inline base::Value Serialize(const VideoColorSpace& value) {
-    base::Value result(base::Value::Type::DICT);
+    base::Value::Dict result;
     FIELD_SERIALIZE("primaries", value.primaries);
     FIELD_SERIALIZE("transfer", value.transfer);
     FIELD_SERIALIZE("matrix", value.matrix);
     FIELD_SERIALIZE("range", value.range);
-    return result;
+    return base::Value(std::move(result));
   }
 };
 
@@ -277,7 +275,7 @@ template <>
 struct MediaSerializer<gfx::HDRMetadata> {
   static base::Value Serialize(const gfx::HDRMetadata& value) {
     // TODO(tmathmeyer) serialize more fields here potentially.
-    base::Value result(base::Value::Type::DICT);
+    base::Value::Dict result;
     FIELD_SERIALIZE(
         "luminance range",
         base::StringPrintf("%.2f => %.2f",
@@ -290,7 +288,7 @@ struct MediaSerializer<gfx::HDRMetadata> {
             "[r:%.4f,%.4f, g:%.4f,%.4f, b:%.4f,%.4f, wp:%.4f,%.4f]",
             primaries.fRX, primaries.fRY, primaries.fGX, primaries.fGY,
             primaries.fBX, primaries.fBY, primaries.fWX, primaries.fWY));
-    return result;
+    return base::Value(std::move(result));
   }
 };
 
@@ -298,7 +296,7 @@ struct MediaSerializer<gfx::HDRMetadata> {
 template <>
 struct MediaSerializer<AudioDecoderConfig> {
   static base::Value Serialize(const AudioDecoderConfig& value) {
-    base::Value result(base::Value::Type::DICT);
+    base::Value::Dict result;
     FIELD_SERIALIZE("codec", value.codec());
     FIELD_SERIALIZE("profile", value.profile());
     FIELD_SERIALIZE("bytes per channel", value.bytes_per_channel());
@@ -318,9 +316,9 @@ struct MediaSerializer<AudioDecoderConfig> {
     // defined for int64_t, (long vs long long) so format specifiers dont work.
     std::ostringstream preroll;
     preroll << value.seek_preroll().InMicroseconds() << "us";
-    result.SetStringKey("seek preroll", preroll.str());
+    result.Set("seek preroll", preroll.str());
 
-    return result;
+    return base::Value(std::move(result));
   }
 };
 
@@ -338,7 +336,7 @@ struct MediaSerializer<VideoDecoderConfig::AlphaMode> {
 template <>
 struct MediaSerializer<VideoDecoderConfig> {
   static base::Value Serialize(const VideoDecoderConfig& value) {
-    base::Value result(base::Value::Type::DICT);
+    base::Value::Dict result;
     FIELD_SERIALIZE("codec", value.codec());
     FIELD_SERIALIZE("profile", value.profile());
     FIELD_SERIALIZE("alpha mode", value.alpha_mode());
@@ -350,7 +348,7 @@ struct MediaSerializer<VideoDecoderConfig> {
     FIELD_SERIALIZE("orientation", value.video_transformation());
     FIELD_SERIALIZE("color space", value.color_space_info());
     FIELD_SERIALIZE("hdr metadata", value.hdr_metadata());
-    return result;
+    return base::Value(std::move(result));
   }
 };
 
@@ -358,13 +356,13 @@ struct MediaSerializer<VideoDecoderConfig> {
 template <>
 struct MediaSerializer<TextTrackConfig> {
   static base::Value Serialize(const TextTrackConfig& value) {
-    base::Value result(base::Value::Type::DICT);
+    base::Value::Dict result;
     FIELD_SERIALIZE("kind", value.kind());
     FIELD_SERIALIZE("language", value.language());
     if (value.label().length()) {
       FIELD_SERIALIZE("label", value.label());
     }
-    return result;
+    return base::Value(std::move(result));
   }
 };
 
@@ -420,7 +418,7 @@ struct MediaSerializer<BufferingStateChangeReason> {
 template <SerializableBufferingStateType T>
 struct MediaSerializer<SerializableBufferingState<T>> {
   static base::Value Serialize(const SerializableBufferingState<T>& value) {
-    base::Value result(base::Value::Type::DICT);
+    base::Value::Dict result;
     FIELD_SERIALIZE("state", value.state);
 
     switch (value.reason) {
@@ -436,9 +434,9 @@ struct MediaSerializer<SerializableBufferingState<T>> {
     }
 
     if (T == SerializableBufferingStateType::kPipeline)
-      result.SetBoolKey("for_suspended_start", value.suspended_start);
+      result.Set("for_suspended_start", value.suspended_start);
 
-    return result;
+    return base::Value(std::move(result));
   }
 };
 
@@ -458,7 +456,7 @@ struct MediaSerializer<TypedStatus<T>> {
 template <>
 struct MediaSerializer<StatusData> {
   static base::Value Serialize(const StatusData& status) {
-    base::Value result(base::Value::Type::DICT);
+    base::Value::Dict result;
     // TODO: replace code with a stringified version, since
     // this representation will only go to medialog anyway.
     FIELD_SERIALIZE(StatusConstants::kCodeKey, status.code);
@@ -468,7 +466,7 @@ struct MediaSerializer<StatusData> {
     FIELD_SERIALIZE(StatusConstants::kDataKey, status.data);
     if (status.cause)
       FIELD_SERIALIZE(StatusConstants::kCauseKey, *status.cause);
-    return result;
+    return base::Value(std::move(result));
   }
 };
 
@@ -476,11 +474,11 @@ struct MediaSerializer<StatusData> {
 template <>
 struct MediaSerializer<base::Location> {
   static base::Value Serialize(const base::Location& value) {
-    base::Value result(base::Value::Type::DICT);
+    base::Value::Dict result;
     FIELD_SERIALIZE(StatusConstants::kFileKey,
                     value.file_name() ? value.file_name() : "unknown");
     FIELD_SERIALIZE(StatusConstants::kLineKey, value.line_number());
-    return result;
+    return base::Value(std::move(result));
   }
 };
 
@@ -577,8 +575,6 @@ struct MediaSerializer<gfx::ColorSpace::RangeID> {
 
 #undef FIELD_SERIALIZE
 
-}  // namespace internal
-
-}  // namespace media
+}  // namespace media::internal
 
 #endif  // MEDIA_BASE_MEDIA_SERIALIZERS_H_

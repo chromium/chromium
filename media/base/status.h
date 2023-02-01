@@ -369,14 +369,14 @@ class MEDIA_EXPORT TypedStatus {
   template <typename D>
   TypedStatus<T>&& WithData(const char* key, const D& value) && {
     DCHECK(data_);
-    data_->data.SetKey(key, MediaSerialize(value));
+    data_->data.GetDict().Set(key, MediaSerialize(value));
     return std::move(*this);
   }
 
   template <typename D>
   void WithData(const char* key, const D& value) & {
     DCHECK(data_);
-    data_->data.SetKey(key, MediaSerialize(value));
+    data_->data.GetDict().Set(key, MediaSerialize(value));
   }
 
   // Add |cause| as the error that triggered this one.
