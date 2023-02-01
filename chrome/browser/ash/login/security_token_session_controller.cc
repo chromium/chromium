@@ -125,7 +125,7 @@ void LoadStoredChallengeResponseSpkiKeysForUser(
     base::flat_set<std::string>* extension_ids) {
   // TODO(crbug.com/1164373) This approach does not work for ephemeral users.
   // Instead, only get the certificate that was actually used on the last login.
-  const base::Value known_user_value =
+  const base::Value::List known_user_value =
       user_manager::KnownUser(local_state).GetChallengeResponseKeys(account_id);
   std::vector<DeserializedChallengeResponseKey>
       deserialized_challenge_response_keys;

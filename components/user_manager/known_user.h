@@ -191,7 +191,7 @@ class USER_MANAGER_EXPORT KnownUser final {
   void SetChallengeResponseKeys(const AccountId& account_id,
                                 base::Value::List value);
 
-  base::Value GetChallengeResponseKeys(const AccountId& account_id);
+  base::Value::List GetChallengeResponseKeys(const AccountId& account_id);
 
   void SetLastOnlineSignin(const AccountId& account_id, base::Time time);
 

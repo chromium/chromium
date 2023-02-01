@@ -28,7 +28,7 @@ base::Value::List SerializeChallengeResponseKeysForKnownUser(
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
 bool DeserializeChallengeResponseKeyFromKnownUser(
-    const base::Value& pref_value,
+    const base::Value::List& pref_value,
     std::vector<DeserializedChallengeResponseKey>*
         deserialized_challenge_response_keys);
 

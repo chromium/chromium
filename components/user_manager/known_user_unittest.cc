@@ -417,7 +417,7 @@ TEST_F(KnownUserTest, ReauthReason) {
 
 TEST_F(KnownUserTest, ChallengeResponseKeys) {
   KnownUser known_user(local_state());
-  EXPECT_TRUE(known_user.GetChallengeResponseKeys(kDefaultAccountId).is_none());
+  EXPECT_TRUE(known_user.GetChallengeResponseKeys(kDefaultAccountId).empty());
 
   base::Value::List challenge_response_keys;
   challenge_response_keys.Append("key1");
