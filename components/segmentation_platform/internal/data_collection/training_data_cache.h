@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATA_COLLECTION_TRAINING_DATA_CACHE_H_
 
 #include "base/containers/flat_map.h"
+#include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/public/model_provider.h"
@@ -28,6 +29,7 @@ class TrainingDataCache {
   // Stores the inputs for a segment given a request ID.
   void StoreInputs(proto::SegmentId segment_id,
                    RequestId request_id,
+                   base::Time prediction_time,
                    const ModelProvider::Request& inputs);
 
   // Retrieves and deletes the inputs for a segment given a request ID from the

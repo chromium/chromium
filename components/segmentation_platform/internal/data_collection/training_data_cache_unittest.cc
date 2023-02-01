@@ -45,10 +45,14 @@ TEST_F(TrainingDataCacheTest, GetTrainingDataFromEmptyCache) {
 
 TEST_F(TrainingDataCacheTest, GetTrainingDataFromCache) {
   ModelProvider::Request data = {1, 2, 3};
-  training_data_cache_->StoreInputs(kSegmentId, kRequestId, data);
+  base::Time test_time = base::Time::Now();
+  training_data_cache_->StoreInputs(kSegmentId, kRequestId, test_time, data);
   auto training_data =
       training_data_cache_->GetInputsAndDelete(kSegmentId, kRequestId);
   EXPECT_TRUE(training_data.has_value());
+  EXPECT_EQ(test_time,
+            base::Time::FromDeltaSinceWindowsEpoch(
+                base::Microseconds(training_data->decision_timestamp())));
   for (int i = 0; i < training_data.value().inputs_size(); i++) {
     EXPECT_EQ(data[i], training_data.value().inputs(i));
   }

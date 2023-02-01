@@ -17,13 +17,14 @@ TrainingDataCache::~TrainingDataCache() = default;
 
 void TrainingDataCache::StoreInputs(SegmentId segment_id,
                                     RequestId request_id,
+                                    base::Time prediction_time,
                                     const ModelProvider::Request& inputs) {
   TrainingData training_data;
   for (const auto& input : inputs) {
     training_data.add_inputs(input);
   }
   training_data.set_decision_timestamp(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+      prediction_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   cache[segment_id][request_id] = std::move(training_data);
 }

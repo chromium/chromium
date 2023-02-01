@@ -271,6 +271,23 @@ message TrainingOutputs {
     // List of triggers, whichever is hit first is used to upload the training
     // data.
     repeated ObservationTrigger observation_trigger = 2;
+
+    // Only for PERIODIC trigger. The prediction and observation times can be
+    // exact or flexible. The exact prediction setting forces the prediction
+    // time to be the time at which the segment selection or classification
+    // result was changed. The input features will be collected till the
+    // prediction time. Flexible prediction time setting allows the collector to
+    // pick any point in the past as the prediction time, usually pick the
+    // current time. The training data collection is triggered once a day with a
+    // rolling window whenever Chrome is active. This setting uploads more
+    // training data samples. By default the prediction time is FLEXIBLE. The
+    // exact observation time setting will be used only in case of exact
+    // prediction case and the observation starts exactly after prediction time.
+    // Flexible observation can be used to get most recent user behavior by
+    // setting observation time to the time of upload, which could be later than
+    // end of the observation period. By default the observation time is EXACT.
+    optional bool use_exact_prediction_time = 3;
+    optional bool use_flexible_observation_time = 4;
   }
   optional TriggerConfig trigger_config = 2;
 }

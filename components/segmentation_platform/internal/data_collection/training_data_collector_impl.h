@@ -57,6 +57,8 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
                                 base::HistogramBase::Sample sample) override;
 
  private:
+  struct TrainingTimings;
+
   void OnGetSegmentsInfoList(DefaultModelManager::SegmentInfoList segment_list);
 
   void ReportForSegmentsInfoList(
@@ -76,6 +78,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
 
   void OnGetTrainingTensorsAtDecisionTime(
       TrainingDataCache::RequestId request_id,
+      const TrainingTimings& training_request,
       const proto::SegmentInfo& segment_info,
       bool has_error,
       const ModelProvider::Request& input_tensors,
@@ -101,6 +104,10 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   // meet the collection requirement.
   bool CanReportTrainingData(const proto::SegmentInfo& segment_info,
                              bool include_output);
+
+  TrainingTimings ComputeDecisionTiming(const proto::SegmentInfo& info) const;
+  base::Time ComputeObservationTiming(const proto::SegmentInfo& info,
+                                      base::Time prediction_time) const;
 
   const raw_ptr<SegmentInfoDatabase> segment_info_database_;
   const raw_ptr<processing::FeatureListQueryProcessor>
