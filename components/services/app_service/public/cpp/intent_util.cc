@@ -368,70 +368,69 @@ bool ExtensionMatched(const std::string& file_name,
 }
 
 base::Value ConvertIntentToValue(const apps::IntentPtr& intent) {
-  base::Value intent_value(base::Value::Type::DICT);
-  intent_value.SetStringKey(kActionKey, intent->action);
+  base::Value::Dict intent_value;
+  intent_value.Set(kActionKey, intent->action);
 
   if (intent->url.has_value()) {
     DCHECK(intent->url.value().is_valid());
-    intent_value.SetStringKey(kUrlKey, intent->url.value().spec());
+    intent_value.Set(kUrlKey, intent->url.value().spec());
   }
 
   if (intent->mime_type.has_value() && !intent->mime_type.value().empty())
-    intent_value.SetStringKey(kMimeTypeKey, intent->mime_type.value());
+    intent_value.Set(kMimeTypeKey, intent->mime_type.value());
 
   if (!intent->files.empty()) {
-    base::Value file_urls_list(base::Value::Type::LIST);
+    base::Value::List file_urls_list;
     for (const auto& file : intent->files) {
       DCHECK(file->url.is_valid());
       file_urls_list.Append(base::Value(file->url.spec()));
     }
-    intent_value.SetKey(kFileUrlsKey, std::move(file_urls_list));
+    intent_value.Set(kFileUrlsKey, std::move(file_urls_list));
   }
 
   if (intent->activity_name.has_value() &&
       !intent->activity_name.value().empty()) {
-    intent_value.SetStringKey(kActivityNameKey, intent->activity_name.value());
+    intent_value.Set(kActivityNameKey, intent->activity_name.value());
   }
 
   if (intent->drive_share_url.has_value()) {
     DCHECK(intent->drive_share_url.value().is_valid());
-    intent_value.SetStringKey(kDriveShareUrlKey,
-                              intent->drive_share_url.value().spec());
+    intent_value.Set(kDriveShareUrlKey, intent->drive_share_url.value().spec());
   }
 
   if (intent->share_text.has_value() && !intent->share_text.value().empty())
-    intent_value.SetStringKey(kShareTextKey, intent->share_text.value());
+    intent_value.Set(kShareTextKey, intent->share_text.value());
 
   if (intent->share_title.has_value() && !intent->share_title.value().empty())
-    intent_value.SetStringKey(kShareTitleKey, intent->share_title.value());
+    intent_value.Set(kShareTitleKey, intent->share_title.value());
 
   if (intent->start_type.has_value() && !intent->start_type.value().empty())
-    intent_value.SetStringKey(kStartTypeKey, intent->start_type.value());
+    intent_value.Set(kStartTypeKey, intent->start_type.value());
 
   if (!intent->categories.empty()) {
-    base::Value categories(base::Value::Type::LIST);
+    base::Value::List categories;
     for (const auto& category : intent->categories) {
-      categories.Append(base::Value(category));
+      categories.Append(category);
     }
-    intent_value.SetKey(kCategoriesKey, std::move(categories));
+    intent_value.Set(kCategoriesKey, std::move(categories));
   }
 
   if (intent->data.has_value() && !intent->data.value().empty())
-    intent_value.SetStringKey(kDataKey, intent->data.value());
+    intent_value.Set(kDataKey, intent->data.value());
 
   if (intent->ui_bypassed.has_value()) {
-    intent_value.SetBoolKey(kUiBypassedKey, intent->ui_bypassed.value());
+    intent_value.Set(kUiBypassedKey, intent->ui_bypassed.value());
   }
 
   if (!intent->extras.empty()) {
-    base::Value extras(base::Value::Type::DICT);
+    base::Value::Dict extras;
     for (const auto& extra : intent->extras) {
-      extras.SetStringKey(extra.first, extra.second);
+      extras.Set(extra.first, extra.second);
     }
-    intent_value.SetKey(kExtrasKey, std::move(extras));
+    intent_value.Set(kExtrasKey, std::move(extras));
   }
 
-  return intent_value;
+  return base::Value(std::move(intent_value));
 }
 
 absl::optional<std::string> GetStringValueFromDict(

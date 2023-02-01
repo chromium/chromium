@@ -31,10 +31,9 @@ base::Value::Dict ConvertConditionToDict(const apps::ConditionPtr& condition) {
   base::Value::Dict condition_dict;
   condition_dict.Set(apps::kConditionTypeKey,
                      static_cast<int>(condition->condition_type));
-  base::Value condition_values_list(base::Value::Type::LIST);
+  base::Value::List condition_values_list;
   for (auto& condition_value : condition->condition_values) {
-    condition_values_list.Append(
-        base::Value(ConvertConditionValueToDict(condition_value)));
+    condition_values_list.Append(ConvertConditionValueToDict(condition_value));
   }
   condition_dict.Set(apps::kConditionValuesKey,
                      std::move(condition_values_list));
@@ -45,7 +44,7 @@ base::Value::List ConvertIntentFilterToList(
     const apps::IntentFilterPtr& intent_filter) {
   base::Value::List intent_filter_list;
   for (auto& condition : intent_filter->conditions) {
-    intent_filter_list.Append(base::Value(ConvertConditionToDict(condition)));
+    intent_filter_list.Append(ConvertConditionToDict(condition));
   }
   return intent_filter_list;
 }

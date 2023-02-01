@@ -25,13 +25,12 @@ ShareTarget::Files& ShareTarget::Files::operator=(ShareTarget::Files&&) =
 ShareTarget::Files::~Files() = default;
 
 base::Value ShareTarget::Files::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICT);
-  root.SetStringKey("name", name);
-  base::Value& accept_json =
-      *root.SetKey("accept", base::Value(base::Value::Type::LIST));
+  base::Value::Dict root;
+  root.Set("name", name);
+  base::Value::List& accept_json = *root.EnsureList("accept");
   for (const std::string& entry : accept)
     accept_json.Append(entry);
-  return root;
+  return base::Value(std::move(root));
 }
 
 ShareTarget::Params::Params() = default;
@@ -49,15 +48,14 @@ ShareTarget::Params& ShareTarget::Params::operator=(ShareTarget::Params&&) =
 ShareTarget::Params::~Params() = default;
 
 base::Value ShareTarget::Params::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICT);
-  root.SetStringKey("title", title);
-  root.SetStringKey("text", text);
-  root.SetStringKey("url", url);
-  base::Value& files_json =
-      *root.SetKey("files", base::Value(base::Value::Type::LIST));
+  base::Value::Dict root;
+  root.Set("title", title);
+  root.Set("text", text);
+  root.Set("url", url);
+  base::Value::List& files_json = *root.EnsureList("files");
   for (const auto& files_entry : files)
     files_json.Append(files_entry.AsDebugValue());
-  return root;
+  return base::Value(std::move(root));
 }
 
 ShareTarget::ShareTarget() = default;
