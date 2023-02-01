@@ -343,38 +343,15 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
 
 }  // namespace
 
-class AutofillMetricsTest : public AutofillMetricsBaseTest {
+class AutofillMetricsTest : public AutofillMetricsBaseTest,
+                            public testing::Test {
  public:
   using AutofillMetricsBaseTest::AutofillMetricsBaseTest;
   ~AutofillMetricsTest() override = default;
 
-  [[nodiscard]] FormData CreateEmptyForm() {
-    FormData form;
-    form.host_frame = test::MakeLocalFrameToken();
-    form.unique_renderer_id = test::MakeFormRendererId();
-    form.name = u"TestForm";
-    form.url = GURL("https://example.com/form.html");
-    form.action = GURL("https://example.com/submit.html");
-    form.main_frame_origin =
-        url::Origin::Create(autofill_client_->form_origin());
-    return form;
-  }
+  void SetUp() override { SetUpHelper(); }
 
-  [[nodiscard]] FormData CreateForm(std::vector<FormFieldData> fields) {
-    FormData form = CreateEmptyForm();
-    form.fields = std::move(fields);
-    return form;
-  }
-
-  // Forwards to test::CreateTestFormField(). This is a hack meant as an
-  // intermediate step towards removing the out-parameters from
-  // autofill_form_util.h.
-  template <typename... Args>
-  [[nodiscard]] FormFieldData CreateField(Args... args) {
-    FormFieldData field;
-    test::CreateTestFormField(args..., &field);
-    return field;
-  }
+  void TearDown() override { TearDownHelper(); }
 };
 
 // Test parameter indicates if the metrics are being logged for a form in an
@@ -4538,121 +4515,6 @@ TEST_P(AutofillMetricsIFrameTest,
           Bucket(
               FORM_EVENT_LOCAL_SUGGESTION_FILLED_FOR_AN_EXISTING_SERVER_CARD_ONCE,
               1)));
-}
-
-// Test that we log preflight calls for credit card unmasking.
-TEST_F(AutofillMetricsTest, CreditCardUnmaskingPreflightCall) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillCreditCardAuthentication);
-  std::string preflight_call_metric =
-      "Autofill.BetterAuth.CardUnmaskPreflightCalled";
-  std::string preflight_latency_metric =
-      "Autofill.BetterAuth.CardUnmaskPreflightDuration";
-
-  FormData form =
-      CreateForm({CreateField("Credit card", "cardnum", "", "text")});
-
-  std::vector<ServerFieldType> field_types = {CREDIT_CARD_NUMBER};
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Create local cards and set user as eligible for FIDO authentication.
-    base::HistogramTester histogram_tester;
-    RecreateCreditCards(/*include_local_credit_card=*/true,
-                        /*include_masked_server_credit_card=*/false,
-                        /*include_full_server_credit_card=*/false,
-                        /*masked_card_is_enrolled_for_virtual_card=*/false);
-    SetFidoEligibility(true);
-    autofill_manager().DidShowSuggestions(/*is_new_popup=*/true, form,
-                                          form.fields[0]);
-    // If no masked server cards are available, then no preflight call is made.
-    histogram_tester.ExpectTotalCount(preflight_call_metric, 0);
-    histogram_tester.ExpectTotalCount(preflight_latency_metric, 0);
-  }
-
-  {
-    // Create masked server cards and set user as ineligible for FIDO
-    // authentication.
-    base::HistogramTester histogram_tester;
-    RecreateCreditCards(/*include_local_credit_card=*/false,
-                        /*include_masked_server_credit_card=*/true,
-                        /*include_full_server_credit_card=*/false,
-                        /*masked_card_is_enrolled_for_virtual_card=*/false);
-    SetFidoEligibility(false);
-    autofill_manager().DidShowSuggestions(/*is_new_popup=*/true, form,
-                                          form.fields[0]);
-    // If user is not verifiable, then no preflight call is made.
-    histogram_tester.ExpectTotalCount(preflight_call_metric, 0);
-    histogram_tester.ExpectTotalCount(preflight_latency_metric, 0);
-  }
-
-  {
-    // Create full server cards and set user as eligible for FIDO
-    // authentication.
-    base::HistogramTester histogram_tester;
-    RecreateCreditCards(/*include_local_credit_card=*/false,
-                        /*include_masked_server_credit_card=*/false,
-                        /*include_full_server_credit_card=*/true,
-                        /*masked_card_is_enrolled_for_virtual_card=*/false);
-    SetFidoEligibility(false);
-    autofill_manager().DidShowSuggestions(/*is_new_popup=*/true, form,
-                                          form.fields[0]);
-    // If no masked server cards are available, then no preflight call is made.
-    histogram_tester.ExpectTotalCount(preflight_call_metric, 0);
-    histogram_tester.ExpectTotalCount(preflight_latency_metric, 0);
-  }
-
-  {
-    // Create masked server cards and set user as eligible for FIDO
-    // authentication.
-    base::HistogramTester histogram_tester;
-    RecreateCreditCards(/*include_local_credit_card=*/false,
-                        /*include_masked_server_credit_card=*/true,
-                        /*include_full_server_credit_card=*/false,
-                        /*masked_card_is_enrolled_for_virtual_card=*/false);
-    SetFidoEligibility(true);
-    autofill_manager().DidShowSuggestions(/*is_new_popup=*/true, form,
-                                          form.fields[0]);
-    autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
-        MakeFrontendId({.credit_card_id = kTestMaskedCardId}));
-    // Preflight call is made only if a masked server card is available and the
-    // user is eligible for FIDO authentication (except iOS).
-#if BUILDFLAG(IS_IOS)
-    histogram_tester.ExpectTotalCount(preflight_call_metric, 0);
-    histogram_tester.ExpectTotalCount(preflight_latency_metric, 0);
-#else
-    histogram_tester.ExpectTotalCount(preflight_call_metric, 1);
-    histogram_tester.ExpectTotalCount(preflight_latency_metric, 1);
-#endif
-  }
-
-  {
-    // Create all types of cards and set user as eligible for FIDO
-    // authentication.
-    base::HistogramTester histogram_tester;
-    RecreateCreditCards(/*include_local_credit_card=*/true,
-                        /*include_masked_server_credit_card=*/true,
-                        /*include_full_server_credit_card=*/true,
-                        /*masked_card_is_enrolled_for_virtual_card=*/false);
-    SetFidoEligibility(true);
-    autofill_manager().DidShowSuggestions(/*is_new_popup=*/true, form,
-                                          form.fields[0]);
-    autofill_manager().FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
-        MakeFrontendId({.credit_card_id = kTestMaskedCardId}));
-    // Preflight call is made only if a masked server card is available and the
-    // user is eligible for FIDO authentication (except iOS).
-#if BUILDFLAG(IS_IOS)
-    histogram_tester.ExpectTotalCount(preflight_call_metric, 0);
-    histogram_tester.ExpectTotalCount(preflight_latency_metric, 0);
-#else
-    histogram_tester.ExpectTotalCount(preflight_call_metric, 1);
-    histogram_tester.ExpectTotalCount(preflight_latency_metric, 1);
-#endif
-  }
 }
 
 // Test that we log submitted form events for credit cards.

@@ -34,15 +34,16 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void, ExecuteCommand, (int), (override));
 };
 
-class AutofillMetricsBaseTest : public testing::Test {
+class AutofillMetricsBaseTest {
  public:
   explicit AutofillMetricsBaseTest(bool is_in_any_main_frame = true);
-  ~AutofillMetricsBaseTest() override;
-
-  void SetUp() override;
-  void TearDown() override;
+  virtual ~AutofillMetricsBaseTest();
 
  protected:
+  void SetUpHelper();
+
+  void TearDownHelper();
+
   void CreateAmbiguousProfiles();
 
   // Removes all existing profiles and creates one profile.
@@ -167,6 +168,34 @@ class AutofillMetricsBaseTest : public testing::Test {
   int MakeFrontendId(
       const TestBrowserAutofillManager::MakeFrontendIdParams& params) {
     return autofill_manager().MakeFrontendId(params);
+  }
+
+  [[nodiscard]] FormData CreateEmptyForm() {
+    FormData form;
+    form.host_frame = test::MakeLocalFrameToken();
+    form.unique_renderer_id = test::MakeFormRendererId();
+    form.name = u"TestForm";
+    form.url = GURL("https://example.com/form.html");
+    form.action = GURL("https://example.com/submit.html");
+    form.main_frame_origin =
+        url::Origin::Create(autofill_client_->form_origin());
+    return form;
+  }
+
+  [[nodiscard]] FormData CreateForm(std::vector<FormFieldData> fields) {
+    FormData form = CreateEmptyForm();
+    form.fields = std::move(fields);
+    return form;
+  }
+
+  // Forwards to test::CreateTestFormField(). This is a hack meant as an
+  // intermediate step towards removing the out-parameters from
+  // autofill_form_util.h.
+  template <typename... Args>
+  [[nodiscard]] FormFieldData CreateField(Args... args) {
+    FormFieldData field;
+    test::CreateTestFormField(args..., &field);
+    return field;
   }
 
   TestBrowserAutofillManager& autofill_manager() {
