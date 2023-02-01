@@ -38,10 +38,6 @@
 #include "ui/aura/env.h"
 #endif
 
-#if BUILDFLAG(IS_FUCHSIA)
-#include "ui/ozone/public/ozone_switches.h"
-#endif
-
 namespace content {
 
 class UnitTestTestSuite::UnitTestEventListener
@@ -147,13 +143,6 @@ UnitTestTestSuite::UnitTestTestSuite(
   // This is safe to call multiple times.
   mojo::core::InitFeatures();
   InitializeMojo();
-
-#if BUILDFLAG(IS_FUCHSIA)
-  // Use headless ozone platform on Fuchsia by default.
-  // TODO(crbug.com/865172): Remove this flag.
-  if (!command_line->HasSwitch(switches::kOzonePlatform))
-    command_line->AppendSwitchASCII(switches::kOzonePlatform, "headless");
-#endif
 
   DCHECK(test_suite);
   test_host_resolver_ = std::make_unique<TestHostResolver>();
