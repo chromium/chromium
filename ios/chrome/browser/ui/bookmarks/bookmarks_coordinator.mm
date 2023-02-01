@@ -468,24 +468,36 @@ enum class PresentedState {
 
 #pragma mark - BookmarksFolderChooserCoordinatorDelegate
 
-- (void)bookmarksFolderChooserCoordinatorShouldStop:
-    (BookmarksFolderChooserCoordinator*)coordinator {
+- (void)
+    bookmarksFolderChooserCoordinatorDidConfirm:
+        (BookmarksFolderChooserCoordinator*)coordinator
+                             withSelectedFolder:
+                                 (const bookmarks::BookmarkNode*)folder
+                                    editedNodes:
+                                        (const std::set<
+                                            const bookmarks::BookmarkNode*>&)
+                                            editedNodes {
   if (self.currentPresentedState != PresentedState::FOLDER_SELECTION) {
     return;
   }
   DCHECK(_folderChooserCoordinator);
+  DCHECK(folder);
   DCHECK(_URLs);
 
-  const bookmarks::BookmarkNode* selectedFolder =
-      _folderChooserCoordinator.selectedFolder;
   [_folderChooserCoordinator stop];
   _folderChooserCoordinator = nil;
 
-  if (selectedFolder) {
-    [self.snackbarCommandsHandler
-        showSnackbarMessage:[self.mediator addBookmarks:_URLs
-                                               toFolder:selectedFolder]];
-  }
+  [self.snackbarCommandsHandler
+      showSnackbarMessage:[self.mediator addBookmarks:_URLs toFolder:folder]];
+  _URLs = nil;
+  self.currentPresentedState = PresentedState::NONE;
+}
+
+- (void)bookmarksFolderChooserCoordinatorDidCancel:
+    (BookmarksFolderChooserCoordinator*)coordinator {
+  DCHECK(_folderChooserCoordinator);
+  [_folderChooserCoordinator stop];
+  _folderChooserCoordinator = nil;
   _URLs = nil;
   self.currentPresentedState = PresentedState::NONE;
 }

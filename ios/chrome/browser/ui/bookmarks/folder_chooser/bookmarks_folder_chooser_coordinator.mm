@@ -118,13 +118,15 @@
 
 - (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
     didFinishWithFolder:(const bookmarks::BookmarkNode*)folder {
-  _selectedFolder = folder;
-  [_delegate bookmarksFolderChooserCoordinatorShouldStop:self];
+  [_delegate
+      bookmarksFolderChooserCoordinatorDidConfirm:self
+                               withSelectedFolder:folder
+                                      editedNodes:folderPicker.editedNodes];
 }
 
 - (void)folderPickerDidCancel:
     (BookmarksFolderChooserViewController*)folderPicker {
-  [_delegate bookmarksFolderChooserCoordinatorShouldStop:self];
+  [_delegate bookmarksFolderChooserCoordinatorDidCancel:self];
 }
 
 - (void)folderPickerDidDismiss:
@@ -132,7 +134,7 @@
   DCHECK(_navigationController);
   _navigationController = nil;
   _navigationControllerDelegate = nil;
-  [_delegate bookmarksFolderChooserCoordinatorShouldStop:self];
+  [_delegate bookmarksFolderChooserCoordinatorDidCancel:self];
 }
 
 @end

@@ -19,7 +19,7 @@ class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
-@protocol BookmarksFolderChooserViewControllerDelegate
+@protocol BookmarksFolderChooserViewControllerDelegate <NSObject>
 // Called when a bookmark folder is selected. `folder` is the newly selected
 // folder.
 - (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
@@ -28,6 +28,9 @@ class BookmarkNode;
 // the Back button.
 - (void)folderPickerDidCancel:
     (BookmarksFolderChooserViewController*)folderPicker;
+// TODO(crbug.com/1405746): Remove this method after migrating
+// UIAdaptivePresentationControllerDelegate from
+// BookmarksFolderChooserViewController to BookmarksFolderChooserCoordinator.
 // Called when the user dismisses the picker by swiping down.
 - (void)folderPickerDidDismiss:
     (BookmarksFolderChooserViewController*)folderPicker;

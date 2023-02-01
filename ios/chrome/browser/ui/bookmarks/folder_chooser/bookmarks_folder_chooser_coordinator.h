@@ -26,8 +26,7 @@ class BookmarkNode;
 // The view will hide `hiddenNodes`. This is to make sure a folder cannot be
 // moved into one of its children.
 - (instancetype)
-    initWithNavigationController:
-        (TableViewNavigationController*)navigationController
+    initWithNavigationController:(UINavigationController*)navigationController
                          browser:(Browser*)browser
                      hiddenNodes:
                          (const std::set<const bookmarks::BookmarkNode*>&)
@@ -42,11 +41,6 @@ class BookmarkNode;
 // Coordinator's delegate.
 @property(nonatomic, weak) id<BookmarksFolderChooserCoordinatorDelegate>
     delegate;
-// Is `nil` if the folder is not yet selected, or if the user canceled the
-// dialog. The value is set just before
-// `bookmarksFolderChooserCoordinatorShouldStop:` is called.
-@property(nonatomic, assign, readonly)
-    const bookmarks::BookmarkNode* selectedFolder;
 
 @end
 
