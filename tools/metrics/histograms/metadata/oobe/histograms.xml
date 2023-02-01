@@ -200,6 +200,13 @@ chromium-metrics-reviews@google.com.
   <variant name="UserCreation" summary="User Creation Screen"/>
 </variants>
 
+<variants name="UpdateStage">
+  <variant name="Check"/>
+  <variant name="Download"/>
+  <variant name="Finalize"/>
+  <variant name="Verify"/>
+</variants>
+
 <histogram name="OOBE.ArcTermsOfServiceScreen.ReviewFollowingSetup"
     enum="BooleanChecked" expires_after="2023-04-01">
   <owner>dkuzmin@google.com</owner>
@@ -709,44 +716,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OOBE.UpdateScreen.StageTime.Check" units="ms"
+<histogram name="OOBE.UpdateScreen.StageTime.{UpdateStage}" units="ms"
     expires_after="2023-06-18">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
-    Time spent on Checking of the ChromeOS update. Recorded when the stage is
-    done and the next stage is about to start.
+    Time spent on {UpdateStage} stage of the ChromeOS update. Recorded when the
+    stage is done and the next is about to start.
   </summary>
-</histogram>
-
-<histogram name="OOBE.UpdateScreen.StageTime.Download" units="ms"
-    expires_after="2023-02-12">
-  <owner>dkuzmin@google.com</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Time spent on Downloading of the ChromeOS update. Recorded when the stage is
-    done and the next stage is about to start.
-  </summary>
-</histogram>
-
-<histogram name="OOBE.UpdateScreen.StageTime.Finalize" units="ms"
-    expires_after="2023-02-12">
-  <owner>dkuzmin@google.com</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Time spent on Finalizing of the ChromeOS update. Recorded when the stage is
-    done and the next stage is about to start.
-  </summary>
-</histogram>
-
-<histogram name="OOBE.UpdateScreen.StageTime.Verify" units="ms"
-    expires_after="2023-02-12">
-  <owner>dkuzmin@google.com</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Time spent on Verifying of the ChromeOS update. Recorded when the stage is
-    done and the next stage is about to start.
-  </summary>
+  <token key="UpdateStage" variants="UpdateStage"/>
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.UpdateDownloadingTime" units="ms"
