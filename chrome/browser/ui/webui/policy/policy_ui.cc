@@ -48,14 +48,13 @@ std::string GetOsInfo() {
 
 // Returns the version information to be displayed on the chrome://policy/logs
 // page.
-base::Value GetVersionInfo() {
-  base::Value version_info(base::Value::Type::DICT);
+base::Value::Dict GetVersionInfo() {
+  base::Value::Dict version_info;
 
-  version_info.SetStringPath("revision", version_info::GetLastChange());
-  version_info.SetStringPath("version", version_info::GetVersionNumber());
-  version_info.SetStringPath("deviceOs", GetOsInfo());
-  version_info.SetPath("variations",
-                       base::Value(version_ui::GetVariationsList()));
+  version_info.Set("revision", version_info::GetLastChange());
+  version_info.Set("version", version_info::GetVersionNumber());
+  version_info.Set("deviceOs", GetOsInfo());
+  version_info.Set("variations", version_ui::GetVariationsList());
 
   return version_info;
 }
