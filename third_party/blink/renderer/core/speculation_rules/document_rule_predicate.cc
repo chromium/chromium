@@ -226,9 +226,7 @@ class CSSSelectorPredicate : public DocumentRulePredicate {
       : style_rules_(std::move(style_rules)) {}
 
   bool Matches(const HTMLAnchorElement& link) const override {
-    // TODO(crbug.com/1371522): We should be able to assert that style is clean
-    // here (i.e. we have computed the latest matched selectors for a link),
-    // otherwise we might be using stale results and preloading extra URLs.
+    DCHECK(!link.GetDocument().NeedsLayoutTreeUpdate());
     // TODO(crbug.com/1371522): We need to deal with "display: none" elements,
     // they will not have a ComputedStyle (even if style is clean).
     const ComputedStyle* computed_style = link.GetComputedStyle();

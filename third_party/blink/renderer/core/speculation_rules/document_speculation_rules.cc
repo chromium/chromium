@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -296,8 +297,27 @@ void DocumentSpeculationRules::DocumentBaseURLChanged() {
 void DocumentSpeculationRules::LinkMatchedSelectorsUpdated(
     HTMLAnchorElement* link) {
   DCHECK(initialized_);
+
+  if (selectors_.empty()) {
+    // After the last ruleset with selectors is removed, this method is called
+    // during UpdateStyle on every link that had at least one matching selector.
+    // Removing the rule set would have already invalidated these links and
+    // queued a microtask update, so we can safely return early here. This will
+    // also avoid an unnecessary update in the case where UpdateStyle is called
+    // after we've already run the microtask update.
+    DCHECK(!link->GetComputedStyle()->DocumentRulesSelectors());
+    return;
+  }
+
   InvalidateLink(link);
   QueueUpdateSpeculationCandidates();
+}
+
+void DocumentSpeculationRules::DocumentStyleUpdated() {
+  if (pending_update_state_ ==
+      PendingUpdateState::kUpdateWithCleanStylePending) {
+    UpdateSpeculationCandidates();
+  }
 }
 
 void DocumentSpeculationRules::Trace(Visitor* visitor) const {
@@ -324,21 +344,41 @@ mojom::blink::SpeculationHost* DocumentSpeculationRules::GetHost() {
 }
 
 void DocumentSpeculationRules::QueueUpdateSpeculationCandidates() {
-  if (has_pending_update_)
+  if (pending_update_state_ != PendingUpdateState::kNoUpdatePending) {
     return;
+  }
+
+  // If there are any "selector_matches" predicates in any of the rule sets and
+  // style isn't clean, we don't need to enqueue a microtask to run
+  // UpdateSpeculationCandidates, and instead wait for DocumentStyleUpdated to
+  // be called.
+  if (!selectors_.empty() && GetSupplementable()->NeedsLayoutTreeUpdate()) {
+    SetPendingUpdateState(PendingUpdateState::kUpdateWithCleanStylePending);
+    return;
+  }
 
   auto* execution_context = GetSupplementable()->GetExecutionContext();
   if (!execution_context)
     return;
 
-  has_pending_update_ = true;
+  SetPendingUpdateState(PendingUpdateState::kUpdatePending);
   execution_context->GetAgent()->event_loop()->EnqueueMicrotask(
       WTF::BindOnce(&DocumentSpeculationRules::UpdateSpeculationCandidates,
                     WrapWeakPersistent(this)));
 }
 
 void DocumentSpeculationRules::UpdateSpeculationCandidates() {
-  has_pending_update_ = false;
+  DCHECK_NE(pending_update_state_, PendingUpdateState::kNoUpdatePending);
+
+  // Style may be invalidated after we enqueue a microtask, in which case we
+  // wait for style to be clean before proceeding.
+  if (!selectors_.empty() && GetSupplementable()->NeedsLayoutTreeUpdate()) {
+    SetPendingUpdateState(PendingUpdateState::kUpdateWithCleanStylePending);
+    return;
+  }
+
+  // We are actually performing the update below, so mark as no update pending.
+  SetPendingUpdateState(PendingUpdateState::kNoUpdatePending);
 
   mojom::blink::SpeculationHost* host = GetHost();
   auto* execution_context = GetSupplementable()->GetExecutionContext();
@@ -588,6 +628,15 @@ void DocumentSpeculationRules::UpdateSelectors() {
 
   selectors_ = std::move(selectors);
   GetSupplementable()->GetStyleEngine().DocumentRulesSelectorsChanged();
+}
+
+void DocumentSpeculationRules::SetPendingUpdateState(
+    PendingUpdateState new_state) {
+  PendingUpdateState old_state = pending_update_state_;
+  // This is the only invalid state transition.
+  DCHECK(!(old_state == PendingUpdateState::kUpdateWithCleanStylePending &&
+           new_state == PendingUpdateState::kUpdatePending));
+  pending_update_state_ = new_state;
 }
 
 }  // namespace blink

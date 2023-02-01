@@ -2247,6 +2247,10 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
 
   UnblockLoadEventAfterLayoutTreeUpdate();
 
+  if (auto* document_rules = DocumentSpeculationRules::FromIfExists(*this)) {
+    document_rules->DocumentStyleUpdated();
+  }
+
   TRACE_EVENT_END1("blink,devtools.timeline", "UpdateLayoutTree",
                    "elementCount", element_count);
 

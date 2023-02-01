@@ -4064,9 +4064,9 @@ void Element::NotifyIfMatchedDocumentRulesSelectorsChanged(
     return;
   }
   if (old_document_rules_selectors != new_document_rules_selectors) {
-    HTMLAnchorElement* link = nullptr;
-    link = HasTagName(html_names::kATag) ? To<HTMLAnchorElement>(this)
-                                         : To<HTMLAreaElement>(this);
+    HTMLAnchorElement* link = HasTagName(html_names::kATag)
+                                  ? To<HTMLAnchorElement>(this)
+                                  : To<HTMLAreaElement>(this);
     DocumentSpeculationRules::From(GetDocument())
         .LinkMatchedSelectorsUpdated(link);
   }
