@@ -285,6 +285,7 @@ NSAttributedString* calculatorText() {
   self = [super init];
   if (self) {
     _isURL = YES;
+    _isWrapping = NO;
     _text = [[NSAttributedString alloc] initWithString:@""];
     _detailText = [[NSAttributedString alloc] initWithString:@""];
     _numberOfLines = 1;

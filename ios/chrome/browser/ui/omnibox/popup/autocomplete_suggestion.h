@@ -62,6 +62,8 @@ typedef NS_ENUM(NSUInteger, SuggestTileType) {
 @property(nonatomic, readonly) NSString* matchTypeIconAccessibilityIdentifier;
 /// Whether this is a search suggestion (as opposed to URL suggestion)
 @property(nonatomic, readonly, getter=isMatchTypeSearch) BOOL matchTypeSearch;
+/// Whether the text of the suggestion can wrap on multiple lines.
+@property(nonatomic, readonly) BOOL isWrapping;
 /// For URL suggestions, the URL that the match represents.
 @property(nonatomic, readonly) CrURL* destinationUrl;
 

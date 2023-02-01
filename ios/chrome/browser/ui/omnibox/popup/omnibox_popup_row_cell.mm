@@ -495,7 +495,7 @@ BOOL IsMultilineSearchSuggestionEnabled() {
           ? [self highlightedAttributedStringWithString:suggestion.text]
           : suggestion.text;
   if (base::FeatureList::IsEnabled(kOmniboxMultilineSearchSuggest) &&
-      suggestion.isMatchTypeSearch) {
+      suggestion.isWrapping) {
     self.textTruncatingLabel.numberOfLines = kSearchSuggestNumberOfLines;
     base::i18n::TextDirection textDirection = base::i18n::GetStringDirection(
         base::SysNSStringToUTF16(self.textTruncatingLabel.text));
@@ -510,7 +510,7 @@ BOOL IsMultilineSearchSuggestionEnabled() {
     self.textTruncatingLabel.numberOfLines = 1;
   }
   [self updateTextConstraints:IsMultilineSearchSuggestionEnabled() &&
-                              suggestion.isMatchTypeSearch];
+                              suggestion.isWrapping];
 
   // URLs have have special layout requirements.
   self.detailTruncatingLabel.displayAsURL = suggestion.isURL;

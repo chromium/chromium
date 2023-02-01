@@ -32,6 +32,7 @@
 @property(nonatomic, strong) UIImage* matchTypeIcon;
 @property(nonatomic, strong) NSString* matchTypeIconAccessibilityIdentifier;
 @property(nonatomic, getter=isMatchTypeSearch) BOOL matchTypeSearch;
+@property(nonatomic, readonly) BOOL isWrapping;
 @property(nonatomic, strong) CrURL* destinationUrl;
 @property(nonatomic, strong) NSNumber* suggestionGroupId;
 @property(nonatomic, strong) NSNumber* suggestionSectionId;

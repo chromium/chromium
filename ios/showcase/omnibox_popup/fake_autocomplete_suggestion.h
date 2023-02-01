@@ -34,6 +34,7 @@
 @property(nonatomic) UIImage* matchTypeIcon;
 @property(nonatomic) NSString* matchTypeIconAccessibilityIdentifier;
 @property(nonatomic, getter=isMatchTypeSearch) BOOL matchTypeSearch;
+@property(nonatomic, readonly) BOOL isWrapping;
 @property(nonatomic) CrURL* destinationUrl;
 
 // Simple suggestion with text.
