@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -96,6 +97,10 @@ class CONTENT_EXPORT RateLimitTable {
   [[nodiscard]] bool ClearDataForSourceIds(
       sql::Database* db,
       const std::vector<StoredSource::Id>& source_ids);
+
+  void AppendRateLimitDataKeys(
+      sql::Database* db,
+      std::vector<AttributionDataModel::DataKey>& keys);
 
  private:
   [[nodiscard]] bool AddRateLimit(sql::Database* db,

@@ -606,6 +606,25 @@ TEST_F(AttributionStorageSqlTest, ClearData_KeepRateLimitData) {
   }
 }
 
+TEST_F(AttributionStorageSqlTest, DeleteAttributionDataByDataKey) {
+  OpenDatabase();
+  storage()->StoreSource(SourceBuilder().Build());
+
+  std::vector keys = storage()->GetAllDataKeys();
+  ASSERT_THAT(keys, SizeIs(1));
+
+  storage()->DeleteByDataKey(keys[0]);
+
+  CloseDatabase();
+
+  sql::Database raw_db;
+  ASSERT_TRUE(raw_db.Open(db_path()));
+  {
+    sql::Statement s(raw_db.GetUniqueStatement("SELECT * FROM sources"));
+    ASSERT_FALSE(s.Step());
+  }
+}
+
 TEST_F(AttributionStorageSqlTest, MaxSourcesPerOrigin) {
   OpenDatabase();
   delegate()->set_max_sources_per_origin(2);

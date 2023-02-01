@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <functional>
 #include <iterator>
 #include <limits>
 #include <string>
@@ -50,6 +51,7 @@
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "net/base/schemeful_site.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -2926,6 +2928,40 @@ absl::optional<AttributionReport> AttributionStorageSql::GetReport(
   }
 
   return ReadAggregatableAttributionReportFromStatement(statement);
+}
+
+std::vector<AttributionDataModel::DataKey>
+AttributionStorageSql::GetAllDataKeys() {
+  // We don't bother creating the DB here if it doesn't exist, because it's not
+  // possible for there to be any data to return if there's no DB
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
+    return {};
+  }
+
+  std::vector<AttributionDataModel::DataKey> keys;
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kGetSourcesDataKeysSql));
+
+  while (statement.Step()) {
+    url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(0));
+    if (reporting_origin.opaque()) {
+      continue;
+    }
+    keys.emplace_back(std::move(reporting_origin));
+  }
+
+  rate_limit_table_.AppendRateLimitDataKeys(db_.get(), keys);
+  return base::flat_set<AttributionDataModel::DataKey>(std::move(keys))
+      .extract();
+}
+
+void AttributionStorageSql::DeleteByDataKey(
+    const AttributionDataModel::DataKey& key) {
+  ClearData(base::Time::Min(), base::Time::Max(),
+            base::BindRepeating(std::equal_to<blink::StorageKey>(),
+                                blink::StorageKey(key.reporting_origin())),
+            /*delete_rate_limit_data=*/true);
 }
 
 }  // namespace content

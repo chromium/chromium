@@ -802,18 +802,19 @@ void AttributionManagerImpl::OnClearDataComplete() {
   NotifyReportsChanged(AttributionReport::Type::kAggregatableAttribution);
 }
 
-// TODO(crbug.com/1407369): Propagate calls to storage
 void AttributionManagerImpl::GetAllDataKeys(
     base::OnceCallback<void(std::vector<AttributionManager::DataKey>)>
         callback) {
-  std::move(callback).Run({});
+  attribution_storage_.AsyncCall(&AttributionStorage::GetAllDataKeys)
+      .Then(std::move(callback));
 }
 
-// TODO(crbug.com/1407369): Propagate calls to storage
 void AttributionManagerImpl::RemoveAttributionDataByDataKey(
     const AttributionManager::DataKey& data_key,
     base::OnceClosure callback) {
-  std::move(callback).Run();
+  attribution_storage_.AsyncCall(&AttributionStorage::DeleteByDataKey)
+      .WithArgs(data_key)
+      .Then(std::move(callback));
 }
 
 void AttributionManagerImpl::GetReportsToSend() {

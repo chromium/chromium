@@ -25,6 +25,7 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -914,6 +915,32 @@ TEST_F(RateLimitTableTest, SourceAllowedForDestinationLimit) {
       RateLimitInput::Source("https://a.s1.test", "https://a.d3.test",
                              "https://a.r1.test", base::Time::Now());
   EXPECT_EQ(RateLimitResult::kAllowed, SourceAllowedForDestinationLimit(input));
+}
+
+TEST_F(RateLimitTableTest, GetAttributionDataKeyList) {
+  auto expected_1 = AttributionDataModel::DataKey(
+      url::Origin::Create(GURL("https://a.r.test")));
+  auto expected_2 = AttributionDataModel::DataKey(
+      url::Origin::Create(GURL("https://b.r.test")));
+
+  ASSERT_TRUE(table_.AddRateLimitForSource(
+      &db_,
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://a.r.test"))
+          .BuildStored()));
+
+  ASSERT_TRUE(table_.AddRateLimitForAttribution(
+      &db_, AttributionInfoBuilder(
+                SourceBuilder()
+                    .SetReportingOrigin(
+                        *SuitableOrigin::Deserialize("https://b.r.test"))
+                    .BuildStored())
+                .Build()));
+
+  std::vector<AttributionDataModel::DataKey> keys;
+  table_.AppendRateLimitDataKeys(&db_, keys);
+
+  EXPECT_THAT(keys, ElementsAre(expected_1, expected_2));
 }
 
 }  // namespace content
