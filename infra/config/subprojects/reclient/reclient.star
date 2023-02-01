@@ -559,6 +559,7 @@ ci.builder(
         ),
     ),
     builderless = True,
+    execution_timeout = 12 * time.hour,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
