@@ -100,7 +100,8 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
 
   void FlushAndSubmitIfNecessary(
       std::vector<GrBackendSemaphore> signal_semaphores,
-      SharedContextState* const shared_context_state);
+      SharedContextState* const shared_context_state,
+      SkiaImageRepresentation::ScopedWriteAccess* access);
 
   bool BeginAccess(bool readonly,
                    AccessStream access_stream,
