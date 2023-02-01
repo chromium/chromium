@@ -177,8 +177,8 @@ chromium-metrics-reviews@google.com.
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
-    Would only be true. Recorded whenever an unusual timestamp is encounted when
-    enqueuing a record, which will be rejected.
+    Would only be true. Recorded whenever an unusual timestamp is encountered
+    when enqueuing a record, which will be rejected.
   </summary>
 </histogram>
 
