@@ -128,6 +128,9 @@ public class ContentUiEventHandler implements UserData {
      * (see app/keyboard_codes_win.h)
      * Note that these are not the same set as KeyEvent.isSystemKey:
      * for instance, AKEYCODE_MEDIA_* will be dispatched to webkit*.
+     * 3. KEYCODE_SYSRQ is the keycode received when Print screen is pressed
+     * on a hardware keyboard. Do not propagate this to allow Android Platform
+     * to take a screenshot.
      */
     private static boolean shouldPropagateKeyEvent(KeyEvent event) {
         int keyCode = event.getKeyCode();
@@ -136,8 +139,8 @@ public class ContentUiEventHandler implements UserData {
                 || keyCode == KeyEvent.KEYCODE_ENDCALL || keyCode == KeyEvent.KEYCODE_POWER
                 || keyCode == KeyEvent.KEYCODE_HEADSETHOOK || keyCode == KeyEvent.KEYCODE_CAMERA
                 || keyCode == KeyEvent.KEYCODE_FOCUS || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
-                || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE
-                || keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+                || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE || keyCode == KeyEvent.KEYCODE_VOLUME_UP
+                || keyCode == KeyEvent.KEYCODE_SYSRQ) {
             return false;
         }
         return true;
