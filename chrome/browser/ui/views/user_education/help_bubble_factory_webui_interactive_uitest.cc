@@ -45,14 +45,6 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   HelpBubbleFactoryWebUIInteractiveUiTest() = default;
   ~HelpBubbleFactoryWebUIInteractiveUiTest() override = default;
 
-  void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
-    // TODO(crbug.com/1399570): this is a workaround for a side search bug that
-    // can randomly close the side panel.
-    auto* config = SideSearchConfig::Get(browser()->profile());
-    config->set_skip_on_template_url_changed_for_testing(true);
-  }
-
   auto ShowHelpBubble(ElementSpecifier element) {
     return InAnyContext(
         AfterShow(

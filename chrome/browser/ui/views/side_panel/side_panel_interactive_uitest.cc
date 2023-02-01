@@ -37,12 +37,6 @@ class SidePanelInteractiveTest : public InteractiveBrowserTest {
     set_open_about_blank_on_browser_launch(true);
     InteractiveBrowserTest::SetUp();
   }
-
-  void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
-    auto* config = SideSearchConfig::Get(browser()->profile());
-    config->set_skip_on_template_url_changed_for_testing(true);
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, ToggleSidePanelVisibility) {
