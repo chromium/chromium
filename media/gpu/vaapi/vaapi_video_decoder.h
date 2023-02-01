@@ -217,7 +217,6 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoColorSpace color_space_;
   absl::optional<gfx::HDRMetadata> hdr_metadata_;
-  bool is_rtc_;
 
   // Aspect ratio from the config.
   VideoAspectRatio aspect_ratio_;
