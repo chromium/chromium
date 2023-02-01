@@ -118,7 +118,7 @@ struct ComponentRegistration {
 // notifications are fired, like COMPONENT_UPDATER_STARTED and
 // COMPONENT_UPDATE_FOUND. See notification_type.h for more details.
 //
-// All methods are safe to call ONLY from the browser's main thread.
+// All methods are safe to call ONLY from the browser's main sequence.
 class ComponentUpdateService {
  public:
   using Observer = update_client::UpdateClient::Observer;
@@ -164,7 +164,7 @@ class ComponentUpdateService {
   // This method is used to trigger an on-demand update for component |id|.
   // This can be used when loading a resource that depends on this component.
   //
-  // |callback| is called on the main thread once the on-demand update is
+  // |callback| is called on the main sequence once the on-demand update is
   // complete, regardless of success. |callback| may be called immediately
   // within the method body.
   //

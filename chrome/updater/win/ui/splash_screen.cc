@@ -51,7 +51,7 @@ SplashScreen::SplashScreen(const std::u16string& bundle_name)
 }
 
 SplashScreen::~SplashScreen() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/1059094) this assert may fire when the dtor is called
   // while the window is fading out.
@@ -60,7 +60,7 @@ SplashScreen::~SplashScreen() {
 }
 
 void SplashScreen::Show() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(WindowState::STATE_CREATED, state_);
 
   if (FAILED(Initialize()))
@@ -72,7 +72,7 @@ void SplashScreen::Show() {
 }
 
 void SplashScreen::Dismiss(base::OnceClosure on_close_closure) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // After the splash screen is dismissed, but before the progress UI is shown,
   // there is a brief period of time when there are no windows for the current
@@ -112,7 +112,7 @@ void SplashScreen::Dismiss(base::OnceClosure on_close_closure) {
 }
 
 HRESULT SplashScreen::Initialize() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsWindow());
   DCHECK(state_ == WindowState::STATE_CREATED);
 
@@ -163,7 +163,7 @@ HRESULT SplashScreen::Initialize() {
 }
 
 void SplashScreen::EnableSystemButtons(bool enable) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   constexpr LONG kSysStyleMask = WS_MINIMIZEBOX | WS_SYSMENU | WS_MAXIMIZEBOX;
 
@@ -182,7 +182,7 @@ void SplashScreen::EnableSystemButtons(bool enable) {
 }
 
 void SplashScreen::InitProgressBar() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   progress_bar_.SubclassWindow(GetDlgItem(IDC_PROGRESS));
 
@@ -193,7 +193,7 @@ void SplashScreen::InitProgressBar() {
 }
 
 LRESULT SplashScreen::OnTimer(UINT, WPARAM, LPARAM, BOOL& handled) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == WindowState::STATE_FADING);
   DCHECK_GT(alpha_index_, 0);
   if (--alpha_index_) {
@@ -208,7 +208,7 @@ LRESULT SplashScreen::OnTimer(UINT, WPARAM, LPARAM, BOOL& handled) {
 }
 
 LRESULT SplashScreen::OnClose(UINT, WPARAM, LPARAM, BOOL& handled) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SwitchToState(WindowState::STATE_CLOSED);
   DestroyWindow();
   handled = true;
@@ -216,7 +216,7 @@ LRESULT SplashScreen::OnClose(UINT, WPARAM, LPARAM, BOOL& handled) {
 }
 
 LRESULT SplashScreen::OnDestroy(UINT, WPARAM, LPARAM, BOOL& handled) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (timer_created_) {
     DCHECK(IsWindow());
     KillTimer(kClosingTimerID);
@@ -227,7 +227,7 @@ LRESULT SplashScreen::OnDestroy(UINT, WPARAM, LPARAM, BOOL& handled) {
 }
 
 void SplashScreen::SwitchToState(WindowState new_state) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = new_state;
   switch (new_state) {
     case WindowState::STATE_CREATED:
@@ -248,7 +248,7 @@ void SplashScreen::SwitchToState(WindowState new_state) {
 }
 
 void SplashScreen::Close() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ != WindowState::STATE_CLOSED && IsWindow())
     PostMessage(WM_CLOSE, 0, 0);
 }

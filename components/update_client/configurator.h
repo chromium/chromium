@@ -118,7 +118,7 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
 
   // Returns a PrefService that the update_client can use to store persistent
   // update information. The PrefService must outlive the entire update_client,
-  // and be safe to access from the thread the update_client is constructed
+  // and be safe to access from the sequence the update_client is constructed
   // on.
   // Returning null is safe and will disable any functionality that requires
   // persistent storage.
@@ -128,7 +128,7 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
   // to update information (namely active bit, last active/rollcall days)
   // normally stored in the user extension profile.
   // Similar to PrefService, ActivityDataService must outlive the entire
-  // update_client, and be safe to access from the thread the update_client
+  // update_client, and be safe to access from the sequence the update_client
   // is constructed on.
   // Returning null is safe and will disable any functionality that requires
   // accessing to the information provided by ActivityDataService.

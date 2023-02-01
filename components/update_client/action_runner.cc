@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/update_client/component.h"
 #include "components/update_client/task_traits.h"
@@ -19,14 +19,12 @@ namespace update_client {
 
 ActionRunner::ActionRunner(const Component& component)
     : component_(component),
-      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+      main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
-ActionRunner::~ActionRunner() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-}
+ActionRunner::~ActionRunner() = default;
 
 void ActionRunner::Run(Callback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto action_handler = component_->crx_component()->action_handler;
   if (!action_handler) {
@@ -53,7 +51,7 @@ void ActionRunner::Run(Callback callback) {
 }
 
 void ActionRunner::Handle(const base::FilePath& crx_path) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto action_handler = component_->crx_component()->action_handler;
   DCHECK(action_handler);

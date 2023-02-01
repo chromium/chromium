@@ -19,9 +19,9 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/component_updater/component_installer.h"
@@ -113,7 +113,7 @@ CrxUpdateService::CrxUpdateService(scoped_refptr<Configurator> config,
 }
 
 CrxUpdateService::~CrxUpdateService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (auto& item : ready_callbacks_) {
     std::move(item.second).Run();
@@ -125,18 +125,18 @@ CrxUpdateService::~CrxUpdateService() {
 }
 
 void CrxUpdateService::AddObserver(Observer* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   update_client_->AddObserver(observer);
 }
 
 void CrxUpdateService::RemoveObserver(Observer* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   update_client_->RemoveObserver(observer);
 }
 
 base::Version CrxUpdateService::GetRegisteredVersion(
     const std::string& app_id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Version registered_version =
       std::make_unique<update_client::PersistedData>(
           config_->GetPrefService(), config_->GetActivityDataService())
@@ -147,7 +147,7 @@ base::Version CrxUpdateService::GetRegisteredVersion(
 }
 
 void CrxUpdateService::Start() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "CrxUpdateService starting up. "
           << "First update attempt will take place in "
           << config_->InitialDelay() << " seconds. "
@@ -164,7 +164,7 @@ void CrxUpdateService::Start() {
 
 // Stops the update loop. In flight operations will be completed.
 void CrxUpdateService::Stop() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "CrxUpdateService stopping";
   scheduler_->Stop();
   update_client_->Stop();
@@ -174,7 +174,7 @@ void CrxUpdateService::Stop() {
 // it will be replaced.
 bool CrxUpdateService::RegisterComponent(
     const ComponentRegistration& component) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (component.app_id.empty() || !component.version.IsValid() ||
       !component.installer) {
     return false;
@@ -210,7 +210,7 @@ bool CrxUpdateService::RegisterComponent(
 }
 
 bool CrxUpdateService::UnregisterComponent(const std::string& id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = components_.find(id);
   if (it == components_.end())
     return false;
@@ -227,7 +227,7 @@ bool CrxUpdateService::UnregisterComponent(const std::string& id) {
 }
 
 bool CrxUpdateService::DoUnregisterComponent(const std::string& id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(ready_callbacks_.find(id) == ready_callbacks_.end());
 
@@ -244,7 +244,7 @@ bool CrxUpdateService::DoUnregisterComponent(const std::string& id) {
 }
 
 std::vector<std::string> CrxUpdateService::GetComponentIDs() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::string> ids;
   for (const auto& it : components_)
     ids.push_back(it.first);
@@ -252,7 +252,7 @@ std::vector<std::string> CrxUpdateService::GetComponentIDs() const {
 }
 
 std::vector<ComponentInfo> CrxUpdateService::GetComponents() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<ComponentInfo> result;
   auto data = std::make_unique<update_client::PersistedData>(
       config_->GetPrefService(), config_->GetActivityDataService());
@@ -265,7 +265,7 @@ std::vector<ComponentInfo> CrxUpdateService::GetComponents() const {
 }
 
 OnDemandUpdater& CrxUpdateService::GetOnDemandUpdater() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return *this;
 }
 
@@ -294,20 +294,20 @@ update_client::CrxComponent CrxUpdateService::ToCrxComponent(
 
 absl::optional<ComponentRegistration> CrxUpdateService::GetComponent(
     const std::string& id) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return component_updater::GetComponent(components_, id);
 }
 
 const CrxUpdateItem* CrxUpdateService::GetComponentState(
     const std::string& id) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto it(component_states_.find(id));
   return it != component_states_.end() ? &it->second : nullptr;
 }
 
 void CrxUpdateService::MaybeThrottle(const std::string& id,
                                      base::OnceClosure callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto it = components_.find(id);
   if (it != components_.end()) {
     DCHECK_EQ(it->first, id);
@@ -324,11 +324,11 @@ void CrxUpdateService::MaybeThrottle(const std::string& id,
 void CrxUpdateService::OnDemandUpdate(const std::string& id,
                                       Priority priority,
                                       Callback callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!GetComponent(id)) {
     if (!callback.is_null()) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback),
                                     update_client::Error::INVALID_ARGUMENT));
     }
@@ -339,7 +339,7 @@ void CrxUpdateService::OnDemandUpdate(const std::string& id,
 }
 
 bool CrxUpdateService::OnDemandUpdateWithCooldown(const std::string& id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(GetComponent(id));
 
@@ -359,7 +359,7 @@ bool CrxUpdateService::OnDemandUpdateWithCooldown(const std::string& id) {
 void CrxUpdateService::OnDemandUpdateInternal(const std::string& id,
                                               Priority priority,
                                               Callback callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UMA_HISTOGRAM_ENUMERATION("ComponentUpdater.Calls", UPDATE_TYPE_MANUAL,
                             UPDATE_TYPE_COUNT);
@@ -382,13 +382,13 @@ void CrxUpdateService::OnDemandUpdateInternal(const std::string& id,
 
 bool CrxUpdateService::CheckForUpdates(
     UpdateScheduler::OnFinishedCallback on_finished) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UMA_HISTOGRAM_ENUMERATION("ComponentUpdater.Calls", UPDATE_TYPE_AUTOMATIC,
                             UPDATE_TYPE_COUNT);
 
   if (components_order_.empty()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(on_finished));
     return true;
   }
@@ -412,7 +412,7 @@ bool CrxUpdateService::CheckForUpdates(
 
 bool CrxUpdateService::GetComponentDetails(const std::string& id,
                                            CrxUpdateItem* item) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // First, if this component is currently being updated, return its state from
   // the update client.
@@ -432,7 +432,7 @@ bool CrxUpdateService::GetComponentDetails(const std::string& id,
 
 std::vector<absl::optional<CrxComponent>> CrxUpdateService::GetCrxComponents(
     const std::vector<std::string>& ids) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<absl::optional<CrxComponent>> crxs;
   for (absl::optional<ComponentRegistration> item :
        component_updater::GetCrxComponents(components_, ids)) {
@@ -445,7 +445,7 @@ std::vector<absl::optional<CrxComponent>> CrxUpdateService::GetCrxComponents(
 void CrxUpdateService::OnUpdateComplete(Callback callback,
                                         const base::TimeTicks& start_time,
                                         update_client::Error error) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Update completed with error " << static_cast<int>(error);
 
   UMA_HISTOGRAM_BOOLEAN("ComponentUpdater.UpdateCompleteResult",
@@ -464,13 +464,13 @@ void CrxUpdateService::OnUpdateComplete(Callback callback,
   }
 
   if (!callback.is_null()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), error));
   }
 }
 
 void CrxUpdateService::OnEvent(Events event, const std::string& id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Unblock all throttles for the component.
   if (event == Observer::Events::COMPONENT_UPDATED ||

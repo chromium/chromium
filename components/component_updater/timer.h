@@ -6,7 +6,7 @@
 #define COMPONENTS_COMPONENT_UPDATER_TIMER_H_
 
 #include "base/functional/callback.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -30,7 +30,7 @@ class Timer {
  private:
   void OnDelay();
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::OneShotTimer timer_;
 

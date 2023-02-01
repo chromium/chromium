@@ -18,7 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -140,7 +140,7 @@ class LoopHandler {
   void Handle(Callback callback) {
     ++cnt_;
     if (cnt_ >= max_cnt_) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(quit_closure_));
     }
     std::move(callback).Run(update_client::Error::NONE);

@@ -43,12 +43,14 @@ class TestConfiguration : public Configuration {
 }  // namespace
 
 class UpdaterInstallerConfigurationTest : public ::testing::Test {
- protected:
-  UpdaterInstallerConfigurationTest() = default;
+ public:
   UpdaterInstallerConfigurationTest(const UpdaterInstallerConfigurationTest&) =
       delete;
   UpdaterInstallerConfigurationTest& operator=(
       const UpdaterInstallerConfigurationTest&) = delete;
+
+ protected:
+  UpdaterInstallerConfigurationTest() = default;
 };
 
 // Test that the operation type is CLEANUP iff --cleanup is on the cmdline.

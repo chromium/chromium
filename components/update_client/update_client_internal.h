@@ -14,7 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/update_checker.h"
 #include "components/update_client/update_client.h"
@@ -65,7 +65,7 @@ class UpdateClientImpl : public UpdateClient {
 
   void NotifyObservers(Observer::Events event, const std::string& id);
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // True if Stop method has been called.
   bool is_stopped_ = false;

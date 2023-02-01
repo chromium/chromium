@@ -14,8 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
-#include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/update_client/persisted_data.h"
@@ -24,7 +24,6 @@
 
 namespace base {
 class SequencedTaskRunner;
-class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace component_updater {
@@ -212,7 +211,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
   void ComponentReady(base::Value::Dict manifest);
   void UninstallOnTaskRunner();
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::FilePath current_install_dir_;
   base::Version current_version_;
@@ -223,7 +222,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Posts responses back to the main thread.
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   FRIEND_TEST_ALL_PREFIXES(ComponentInstallerTest, SelectComponentVersion);
 };

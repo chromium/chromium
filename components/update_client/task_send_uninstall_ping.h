@@ -10,7 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "components/update_client/task.h"
 #include "components/update_client/update_client.h"
 
@@ -51,7 +51,7 @@ class TaskSendUninstallPing : public Task {
   // it has been canceled.
   void TaskComplete(Error error);
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<UpdateEngine> update_engine_;
   const CrxComponent crx_component_;
   const int reason_;

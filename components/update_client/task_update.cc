@@ -7,7 +7,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_engine.h"
 
@@ -29,12 +29,10 @@ TaskUpdate::TaskUpdate(
       crx_state_change_callback_(crx_state_change_callback),
       callback_(std::move(callback)) {}
 
-TaskUpdate::~TaskUpdate() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-}
+TaskUpdate::~TaskUpdate() = default;
 
 void TaskUpdate::Run() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (ids_.empty()) {
     TaskComplete(Error::INVALID_ARGUMENT);
@@ -53,27 +51,25 @@ void TaskUpdate::Run() {
 }
 
 void TaskUpdate::Cancel() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cancelled_ = true;
   cancel_callback_.Run();
 }
 
 std::vector<std::string> TaskUpdate::GetIds() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ids_;
 }
 
 void TaskUpdate::TaskComplete(Error error) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // NOTE: Do not post the callback_ directly to the task thread to ensure the
-  // UpdateClient reference (to which the callback is bound) does not get
-  // released before the callback is run during shutdown, when the task runner
-  // gets destroyed.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&TaskUpdate::RunCallback, this, error));
 }
 
 void TaskUpdate::RunCallback(Error error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback_).Run(this, error);
 }
 

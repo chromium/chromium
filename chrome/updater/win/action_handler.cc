@@ -25,6 +25,8 @@ namespace updater {
 class ActionHandler : public update_client::ActionHandler {
  public:
   ActionHandler() = default;
+  ActionHandler(const ActionHandler&) = delete;
+  ActionHandler& operator=(const ActionHandler&) = delete;
 
  private:
   using Result =
@@ -38,9 +40,6 @@ class ActionHandler : public update_client::ActionHandler {
 
   // For Windows, the action is a path to an EXE file.
   static Result RunCommand(const base::FilePath& exe_path);
-
-  ActionHandler(const ActionHandler&) = delete;
-  ActionHandler& operator=(const ActionHandler&) = delete;
 };
 
 void ActionHandler::Handle(const base::FilePath& action,

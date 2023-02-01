@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "components/update_client/test_configurator.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -121,7 +121,7 @@ void URLLoaderPostInterceptor::Pause() {
 
 void URLLoaderPostInterceptor::Resume() {
   is_paused_ = false;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         if (!pending_expectations_.size())
           return;
@@ -180,7 +180,7 @@ void URLLoaderPostInterceptor::InitializeWithInterceptor() {
           const std::string response_body(expectation.second.response_body);
 
           if (url_job_request_ready_callback_) {
-            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, std::move(url_job_request_ready_callback_));
           }
 

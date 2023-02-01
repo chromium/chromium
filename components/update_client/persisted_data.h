@@ -31,9 +31,9 @@ class ActivityDataService;
 // update data that outlives the browser process and isn't exposed outside of
 // update_client.
 //
-// The public methods of this class should be called only on the thread that
-// initializes it - which also has to match the thread the PrefService has been
-// initialized on.
+// The public methods of this class should be called only on the sequence that
+// initializes it - which also has to match the sequence the PrefService has
+// been initialized on.
 class PersistedData {
  public:
   // Constructs a provider using the specified |pref_service| and

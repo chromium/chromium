@@ -16,7 +16,7 @@
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/strings/strcat.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/buildflags.h"
 #include "components/update_client/component.h"
@@ -117,9 +117,7 @@ UpdateEngine::UpdateEngine(
 #endif
 }
 
-UpdateEngine::~UpdateEngine() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-}
+UpdateEngine::~UpdateEngine() = default;
 
 base::RepeatingClosure UpdateEngine::Update(
     bool is_foreground,
@@ -128,17 +126,17 @@ base::RepeatingClosure UpdateEngine::Update(
     UpdateClient::CrxDataCallback crx_data_callback,
     UpdateClient::CrxStateChangeCallback crx_state_change_callback,
     Callback callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (ids.empty()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), Error::INVALID_ARGUMENT));
     return base::DoNothing();
   }
 
   if (IsThrottled(is_foreground)) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), Error::RETRY_LATER));
     return base::DoNothing();
   }
@@ -147,7 +145,7 @@ base::RepeatingClosure UpdateEngine::Update(
   const std::vector<absl::optional<CrxComponent>> crx_components =
       std::move(crx_data_callback).Run(ids);
   if (crx_components.size() < ids.size()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), Error::BAD_CRX_DATA_CALLBACK));
     return base::DoNothing();
@@ -191,7 +189,7 @@ base::RepeatingClosure UpdateEngine::Update(
     }
   }
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(update_context->components_to_check_for_updates.empty()
                          ? &UpdateEngine::HandleComponent
@@ -205,7 +203,7 @@ base::RepeatingClosure UpdateEngine::Update(
 }
 
 void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(update_context);
 
   // Make the components transition from |kNew| to |kChecking| state.
@@ -227,7 +225,7 @@ void UpdateEngine::UpdateCheckResultsAvailable(
     ErrorCategory error_category,
     int error,
     int retry_after_sec) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(update_context);
 
   update_context->retry_after_sec = retry_after_sec;
@@ -254,7 +252,7 @@ void UpdateEngine::UpdateCheckResultsAvailable(
       component->SetUpdateCheckResult(absl::nullopt,
                                       ErrorCategory::kUpdateCheck, error);
     }
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&UpdateEngine::UpdateCheckComplete, this,
                                   update_context));
     return;
@@ -298,14 +296,14 @@ void UpdateEngine::UpdateCheckResultsAvailable(
     }
   }
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateEngine::UpdateCheckComplete, this, update_context));
 }
 
 void UpdateEngine::UpdateCheckComplete(
     scoped_refptr<UpdateContext> update_context) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(update_context);
 
   for (const auto& id : update_context->components_to_check_for_updates) {
@@ -319,14 +317,14 @@ void UpdateEngine::UpdateCheckComplete(
     component->Handle(base::DoNothing());
   }
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateEngine::HandleComponent, this, update_context));
 }
 
 void UpdateEngine::HandleComponent(
     scoped_refptr<UpdateContext> update_context) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(update_context);
 
   auto& queue = update_context->component_queue;
@@ -336,7 +334,7 @@ void UpdateEngine::HandleComponent(
                             ? Error::UPDATE_CHECK_ERROR
                             : Error::NONE;
 
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&UpdateEngine::UpdateComplete, this,
                                   update_context, error));
     return;
@@ -349,7 +347,7 @@ void UpdateEngine::HandleComponent(
 
   auto& next_update_delay = update_context->next_update_delay;
   if (!next_update_delay.is_zero() && component->IsUpdateAvailable()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&UpdateEngine::HandleComponent, this, update_context),
         next_update_delay);
@@ -364,7 +362,7 @@ void UpdateEngine::HandleComponent(
 
 void UpdateEngine::HandleComponentComplete(
     scoped_refptr<UpdateContext> update_context) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(update_context);
 
   auto& queue = update_context->component_queue;
@@ -390,25 +388,25 @@ void UpdateEngine::HandleComponentComplete(
     }
   }
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, std::move(callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 void UpdateEngine::UpdateComplete(scoped_refptr<UpdateContext> update_context,
                                   Error error) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(update_context);
 
   const auto num_erased = update_contexts_.erase(update_context->session_id);
   DCHECK_EQ(1u, num_erased);
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(update_context->callback), error));
 }
 
 bool UpdateEngine::GetUpdateState(const std::string& id,
                                   CrxUpdateItem* update_item) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& context : update_contexts_) {
     const auto& components = context.second->components;
     const auto it = components.find(id);
@@ -421,7 +419,7 @@ bool UpdateEngine::GetUpdateState(const std::string& id,
 }
 
 bool UpdateEngine::IsThrottled(bool is_foreground) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_foreground || throttle_updates_until_.is_null())
     return false;
@@ -437,7 +435,7 @@ bool UpdateEngine::IsThrottled(bool is_foreground) const {
 void UpdateEngine::SendUninstallPing(const CrxComponent& crx_component,
                                      int reason,
                                      Callback callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const std::string& id = crx_component.app_id;
 
@@ -467,7 +465,7 @@ void UpdateEngine::SendUninstallPing(const CrxComponent& crx_component,
 
   update_context->component_queue.push(id);
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateEngine::HandleComponent, this, update_context));
 }

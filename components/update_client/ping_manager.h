@@ -9,7 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 
 namespace update_client {
 
@@ -42,7 +42,7 @@ class PingManager : public base::RefCountedThreadSafe<PingManager> {
  private:
   friend class base::RefCountedThreadSafe<PingManager>;
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
   const scoped_refptr<Configurator> config_;
 };
 

@@ -43,15 +43,14 @@
 // The UpdateClient class features a subject-observer interface to observe
 // the CRX state changes during an update.
 //
-// The threading model for this code assumes that most of the code in the
-// public interface runs on a SingleThreadTaskRunner.
-// This task runner corresponds to the browser UI thread in many cases. There
-// are parts of the installer interface that run on blocking task runners, which
-// are usually threads in a thread pool.
+// Most of the code in the public interface runs on a SequencedTaskRunner. This
+// task runner corresponds to the browser UI thread but it can be any other
+// sequenced task runner. There are parts of the installer interface that run
+// on blocking task runners, which are usually sequences managed by the thread
+// pool.
 //
-// Using the UpdateClient is relatively easy. This assumes that the client
-// of this code has already implemented the observer interface as needed, and
-// can provide an installer, as described below.
+// Using the UpdateClient requires creating an instance, adding observers, and
+// providing an installer instance, as shown below:
 //
 //    std::unique_ptr<UpdateClient> update_client(UpdateClientFactory(...));
 //    update_client->AddObserver(&observer);
@@ -200,7 +199,7 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
   using ProgressCallback = base::RepeatingCallback<void(int progress)>;
   using Callback = base::OnceCallback<void(const Result& result)>;
 
-  // Called on the main thread when there was a problem unpacking or
+  // Called on the main sequence when there was a problem unpacking or
   // verifying the CRX. |error| is a non-zero value which is only meaningful
   // to the caller.
   virtual void OnUpdateError(int error) = 0;
@@ -269,6 +268,7 @@ using InstallerAttributes = std::map<std::string, std::string>;
 struct CrxComponent {
   CrxComponent();
   CrxComponent(const CrxComponent& other);
+  CrxComponent& operator=(const CrxComponent& other);
   ~CrxComponent();
 
   // Optional SHA256 hash of the CRX's public key. If not supplied, the

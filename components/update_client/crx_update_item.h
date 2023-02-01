@@ -21,6 +21,7 @@ namespace update_client {
 struct CrxUpdateItem {
   CrxUpdateItem();
   CrxUpdateItem(const CrxUpdateItem& other);
+  CrxUpdateItem& operator=(const CrxUpdateItem& other);
   ~CrxUpdateItem();
 
   ComponentState state;

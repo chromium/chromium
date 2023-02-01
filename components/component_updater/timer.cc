@@ -12,14 +12,13 @@ namespace component_updater {
 Timer::Timer() = default;
 
 Timer::~Timer() {
-  DCHECK(thread_checker_.CalledOnValidThread());
   Stop();
 }
 
 void Timer::Start(base::TimeDelta initial_delay,
                   base::TimeDelta delay,
                   const base::RepeatingClosure& user_task) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   delay_ = delay;
   user_task_ = user_task;
@@ -29,12 +28,12 @@ void Timer::Start(base::TimeDelta initial_delay,
 }
 
 void Timer::Stop() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   timer_.Stop();
 }
 
 void Timer::OnDelay() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   user_task_.Run();
 

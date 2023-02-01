@@ -20,12 +20,11 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -66,14 +65,14 @@ ComponentInstaller::ComponentInstaller(
     : current_version_(kNullVersion),
       installer_policy_(std::move(installer_policy)),
       action_handler_(action_handler),
-      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+      main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 ComponentInstaller::~ComponentInstaller() = default;
 
 void ComponentInstaller::Register(ComponentUpdateService* cus,
                                   base::OnceClosure callback,
                                   base::TaskPriority task_priority) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(cus);
 
   std::vector<uint8_t> public_key_hash;
@@ -89,7 +88,7 @@ void ComponentInstaller::Register(RegisterCallback register_callback,
                                   base::OnceClosure callback,
                                   base::TaskPriority task_priority,
                                   const base::Version& registered_version) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), task_priority,
@@ -230,7 +229,7 @@ bool ComponentInstaller::GetInstalledFile(const std::string& file,
 }
 
 bool ComponentInstaller::Uninstall() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ComponentInstaller::UninstallOnTaskRunner, this));
@@ -498,7 +497,7 @@ void ComponentInstaller::FinishRegistration(
     RegisterCallback register_callback,
     base::OnceClosure callback) {
   VLOG(1) << __func__ << " for " << installer_policy_->GetName();
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   current_install_dir_ = registration_info->install_dir;
   current_version_ = registration_info->version;

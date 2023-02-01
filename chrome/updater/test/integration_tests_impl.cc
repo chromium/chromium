@@ -36,7 +36,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -619,10 +618,7 @@ void StressUpdateService(UpdaterScope scope) {
           UpdaterScope scope,
           scoped_refptr<base::SequencedTaskRunner> task_runner,
           LoopClosure loop_closure) {
-        auto service_task_runner =
-            base::ThreadPool::CreateSingleThreadTaskRunner(
-                {}, base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-        service_task_runner->PostDelayedTask(
+        base::ThreadPool::CreateSequencedTaskRunner({})->PostDelayedTask(
             FROM_HERE,
             base::BindLambdaForTesting([scope, task_runner, loop_closure]() {
               auto update_service = CreateUpdateServiceProxy(scope);

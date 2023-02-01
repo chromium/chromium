@@ -67,12 +67,12 @@ OmahaWnd::OmahaWnd(int dialog_id, WTL::CMessageLoop* message_loop, HWND parent)
 }
 
 OmahaWnd::~OmahaWnd() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsWindow());
 }
 
 HRESULT OmahaWnd::Initialize() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!Create(parent_)) {
     VLOG(1) << "Failed to create the window";
@@ -165,7 +165,7 @@ LRESULT OmahaWnd::OnCancel(WORD, WORD id, HWND, BOOL& handled) {
 }
 
 void OmahaWnd::Show() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow() || IsWindowVisible())
     return;
 

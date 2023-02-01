@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/updater/splash_screen.h"
@@ -80,7 +80,7 @@ class SplashScreen : public CAxDialogImpl<SplashScreen>,
                     LPARAM lparam,
                     BOOL& handled);  // NOLINT
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // State of the object.
   WindowState state_;

@@ -14,7 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/update_client/buildflags.h"
 #include "components/update_client/component.h"
@@ -60,9 +60,9 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   bool GetUpdateState(const std::string& id, CrxUpdateItem* update_state);
 
   // Update the given app ids. Returns a closure that can be called to trigger
-  // cancellation of the operation. `update_callback` will be called when the
+  // cancellation of the operation. `update_callback` is called when the
   // operation is complete (even if cancelled). The cancellation callback
-  // should be called only on the main thread.
+  // must be called only on the main sequence.
   base::RepeatingClosure Update(
       bool is_foreground,
       bool is_install,
@@ -99,7 +99,7 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   // occurs too soon.
   bool IsThrottled(bool is_foreground) const;
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<Configurator> config_;
   UpdateChecker::Factory update_checker_factory_;
   scoped_refptr<PingManager> ping_manager_;

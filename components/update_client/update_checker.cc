@@ -19,9 +19,9 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/component.h"
@@ -78,7 +78,7 @@ class UpdateCheckerImpl : public UpdateChecker {
                          int error,
                          int retry_after_sec);
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   const scoped_refptr<Configurator> config_;
   raw_ptr<PersistedData> metadata_ = nullptr;
@@ -91,14 +91,14 @@ UpdateCheckerImpl::UpdateCheckerImpl(scoped_refptr<Configurator> config,
     : config_(config), metadata_(metadata) {}
 
 UpdateCheckerImpl::~UpdateCheckerImpl() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void UpdateCheckerImpl::CheckForUpdates(
     scoped_refptr<UpdateContext> context,
     const base::flat_map<std::string, std::string>& additional_attributes,
     UpdateCheckCallback update_check_callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   update_check_callback_ = std::move(update_check_callback);
 
@@ -142,7 +142,7 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
     const base::flat_map<std::string, std::string>& additional_attributes,
     const UpdaterStateAttributes& updater_state_attributes,
     const std::set<std::string>& active_ids) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (urls.empty()) {
     UpdateCheckFailed(ErrorCategory::kUpdateCheck,
@@ -250,7 +250,7 @@ void UpdateCheckerImpl::OnRequestSenderComplete(
     int error,
     const std::string& response,
     int retry_after_sec) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error) {
     VLOG(1) << "RequestSender failed " << error;
@@ -279,7 +279,7 @@ void UpdateCheckerImpl::UpdateCheckSucceeded(
     scoped_refptr<UpdateContext> context,
     const ProtocolParser::Results& results,
     int retry_after_sec) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const int daynum = results.daystart_elapsed_days;
   for (const auto& result : results.list) {
@@ -305,17 +305,17 @@ void UpdateCheckerImpl::UpdateCheckSucceeded(
     return;
   }
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                              std::move(reply));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(reply));
 }
 
 void UpdateCheckerImpl::UpdateCheckFailed(ErrorCategory error_category,
                                           int error,
                                           int retry_after_sec) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(0, error);
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(update_check_callback_), absl::nullopt,
                      error_category, error, retry_after_sec));

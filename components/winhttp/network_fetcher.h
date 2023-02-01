@@ -26,13 +26,13 @@
 #include "url/gurl.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace winhttp {
 
 // Implements a network fetcher in terms of WinHTTP. The class is ref-counted
-// as it is accessed from the main thread and the worker threads in WinHTTP.
+// as it is accessed from the main sequence and the worker threads in WinHTTP.
 class NetworkFetcher : public base::RefCountedThreadSafe<NetworkFetcher> {
  public:
   using FetchCompleteCallback = base::OnceCallback<void(int response_code)>;
@@ -113,7 +113,7 @@ class NetworkFetcher : public base::RefCountedThreadSafe<NetworkFetcher> {
   void WriteDataToFileComplete(bool is_eof);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   const raw_ref<const HINTERNET>
       session_handle_;  // Owned by NetworkFetcherFactory.

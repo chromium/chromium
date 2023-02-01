@@ -15,7 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -29,7 +29,7 @@ namespace update_client {
 // When multiple urls and downloaders exists, first all the urls are tried, in
 // the order they are provided in the StartDownload function argument. After
 // that, the download request is routed to the next downloader in the chain.
-// The members of this class expect to be called from the main thread only.
+// The members of this class expect to be called from the main sequence only.
 class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
  public:
   struct DownloadMetrics {
@@ -115,7 +115,7 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
   // Returns the url which is currently being downloaded from.
   GURL url() const;
 
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner() const {
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner() const {
     return main_task_runner_;
   }
 
@@ -130,8 +130,8 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Used to post callbacks to the main thread.
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  // Used to post callbacks to the main sequence.
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   std::vector<GURL> urls_;
 

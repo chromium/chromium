@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/win/atl.h"
 #include "chrome/updater/win/install_progress_observer.h"
 #include "chrome/updater/win/ui/complete_wnd.h"
@@ -86,7 +86,7 @@ class InstallStoppedWnd : public CAxDialogImpl<InstallStoppedWnd>,
                     LPARAM lparam,
                     BOOL& handled);  // NOLINT
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   raw_ptr<WTL::CMessageLoop> message_loop_ = nullptr;
   HWND parent_ = nullptr;
@@ -189,7 +189,7 @@ class ProgressWnd : public CompleteWnd, public InstallProgressObserver {
     STATE_END,
   };
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   States cur_state_ = States::STATE_INIT;
 

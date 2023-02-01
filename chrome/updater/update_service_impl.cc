@@ -533,7 +533,7 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
                        ? persisted_data_->GetExistenceCheckerPath(app_id)
                        : base::FilePath());
 
-  // Create a thread runner that:
+  // Create a task runner that:
   //   1) has SequencedTaskRunner::CurrentDefaultHandle set, to run
   //      `state_update` callback.
   //   2) may block, since `RunApplicationInstaller` blocks.

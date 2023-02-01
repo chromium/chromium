@@ -7,12 +7,12 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "components/update_client/update_client.h"
 
 namespace base {
 class FilePath;
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }  // namespace base
 
 namespace update_client {
@@ -25,23 +25,22 @@ class ActionRunner {
 
   explicit ActionRunner(const Component& component);
   ~ActionRunner();
+  ActionRunner(const ActionRunner&) = delete;
+  ActionRunner& operator=(const ActionRunner&) = delete;
 
   void Run(Callback run_complete);
 
  private:
   void Handle(const base::FilePath& crx_path);
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   const raw_ref<const Component> component_;
 
-  // Used to post callbacks to the main thread.
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  // Used to post callbacks to the main sequence.
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   Callback callback_;
-
-  ActionRunner(const ActionRunner&) = delete;
-  ActionRunner& operator=(const ActionRunner&) = delete;
 };
 
 }  // namespace update_client

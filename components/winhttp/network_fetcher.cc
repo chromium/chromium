@@ -24,7 +24,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/win/windows_version.h"
@@ -63,8 +63,7 @@ void CrackUrl(const GURL& url,
 NetworkFetcher::NetworkFetcher(
     const HINTERNET& session_handle,
     scoped_refptr<ProxyConfiguration> proxy_configuration)
-    : main_thread_task_runner_(
-          base::SingleThreadTaskRunner::GetCurrentDefault()),
+    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       session_handle_(session_handle),
       proxy_configuration_(proxy_configuration) {}
 
@@ -571,8 +570,8 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
       break;
   }
   if (callback) {
-    network_fetcher->main_thread_task_runner_->PostTask(FROM_HERE,
-                                                        std::move(callback));
+    network_fetcher->main_task_runner_->PostTask(FROM_HERE,
+                                                 std::move(callback));
   }
 }
 

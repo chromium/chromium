@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/updater/updater_scope.h"
@@ -130,7 +130,7 @@ class OmahaWnd : public CAxDialogImpl<OmahaWnd>,
   void MaybeRequestExitProcess();
   void RequestExitProcess();
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   raw_ptr<WTL::CMessageLoop> message_loop_;
   HWND parent_;

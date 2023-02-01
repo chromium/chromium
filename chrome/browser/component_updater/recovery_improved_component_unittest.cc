@@ -56,6 +56,8 @@ class TestActionHandler : public RecoveryComponentActionHandler {
       : RecoveryComponentActionHandler(
             {std::begin(kKeyHashTest), std::end(kKeyHashTest)},
             crx_file::VerifierFormat::CRX3) {}
+  TestActionHandler(const TestActionHandler&) = delete;
+  TestActionHandler& operator=(const TestActionHandler&) = delete;
 
  protected:
   ~TestActionHandler() override = default;
@@ -65,9 +67,6 @@ class TestActionHandler : public RecoveryComponentActionHandler {
   base::CommandLine MakeCommandLine(
       const base::FilePath& unpack_path) const override;
   void Elevate(Callback callback) override;
-
-  TestActionHandler(const TestActionHandler&) = delete;
-  TestActionHandler& operator=(const TestActionHandler&) = delete;
 };
 
 base::CommandLine TestActionHandler::MakeCommandLine(

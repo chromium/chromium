@@ -22,6 +22,8 @@ class Configuration {
 
   Configuration();
   ~Configuration();
+  Configuration(const Configuration&) = delete;
+  Configuration& operator=(const Configuration&) = delete;
 
   // Initializes this instance on the basis of the process's command line.
   bool Initialize(HMODULE module);
@@ -46,10 +48,6 @@ class Configuration {
   Operation operation_ = INSTALL_PRODUCT;
   bool is_system_level_ = false;
   bool has_invalid_switch_ = false;
-
- private:
-  Configuration(const Configuration&) = delete;
-  Configuration& operator=(const Configuration&) = delete;
 };
 
 }  // namespace updater

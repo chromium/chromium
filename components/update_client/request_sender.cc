@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/client_update_protocol/ecdsa.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/network.h"
@@ -50,9 +50,7 @@ const std::string& SelectCupServerProof(
 RequestSender::RequestSender(scoped_refptr<Configurator> config)
     : config_(config) {}
 
-RequestSender::~RequestSender() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-}
+RequestSender::~RequestSender() = default;
 
 void RequestSender::Send(
     const std::vector<GURL>& urls,
@@ -60,7 +58,7 @@ void RequestSender::Send(
     const std::string& request_body,
     bool use_signing,
     RequestSenderCallback request_sender_callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   urls_ = urls;
   request_extra_headers_ = request_extra_headers;
@@ -87,7 +85,7 @@ void RequestSender::Send(
 void RequestSender::SendInternal() {
   DCHECK(cur_url_ != urls_.end());
   DCHECK(cur_url_->is_valid());
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   GURL url(*cur_url_);
 
@@ -104,7 +102,7 @@ void RequestSender::SendInternal() {
 
   network_fetcher_ = config_->GetNetworkFetcherFactory()->Create();
   if (!network_fetcher_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&RequestSender::SendInternalComplete,
                        base::Unretained(this),
@@ -129,7 +127,7 @@ void RequestSender::SendInternalComplete(
 
   if (!error) {
     if (!use_signing_) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(request_sender_callback_), 0,
                                     response_body, retry_after_sec));
       return;
@@ -140,7 +138,7 @@ void RequestSender::SendInternalComplete(
     if (signer_->ValidateResponse(
             response_body,
             SelectCupServerProof(response_cup_server_proof, response_etag))) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(request_sender_callback_), 0,
                                     response_body, retry_after_sec));
       return;
@@ -154,7 +152,7 @@ void RequestSender::SendInternalComplete(
   // A positive |retry_after_sec| is a hint from the server that the client
   // should not send further request until the cooldown has expired.
   if (retry_after_sec <= 0 && ++cur_url_ != urls_.end() &&
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&RequestSender::SendInternal,
                                     base::Unretained(this)))) {
     return;
@@ -176,7 +174,7 @@ void RequestSender::OnNetworkFetcherComplete(
     const std::string& header_etag,
     const std::string& xheader_cup_server_proof,
     int64_t xheader_retry_after_sec) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   VLOG(1) << "Request completed from url: " << original_url.spec();
 
@@ -192,7 +190,7 @@ void RequestSender::OnNetworkFetcherComplete(
   if (original_url.SchemeIsCryptographic() && error > 0)
     retry_after_sec = base::saturated_cast<int>(xheader_retry_after_sec);
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&RequestSender::SendInternalComplete,
                      base::Unretained(this), error,
@@ -201,7 +199,7 @@ void RequestSender::OnNetworkFetcherComplete(
 }
 
 void RequestSender::HandleSendError(int error, int retry_after_sec) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(request_sender_callback_), error,
                                 std::string(), retry_after_sec));
 }

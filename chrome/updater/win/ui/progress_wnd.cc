@@ -84,7 +84,7 @@ InstallStoppedWnd::InstallStoppedWnd(WTL::CMessageLoop* message_loop,
 }
 
 InstallStoppedWnd::~InstallStoppedWnd() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsWindow())
     CloseWindow();
 }
@@ -94,7 +94,7 @@ BOOL InstallStoppedWnd::PreTranslateMessage(MSG* msg) {
 }
 
 HRESULT InstallStoppedWnd::CloseWindow() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsWindow());
   ::EnableWindow(parent_, true);
   return DestroyWindow() ? S_OK : HRESULTFromLastError();
@@ -141,7 +141,7 @@ ProgressWnd::ProgressWnd(WTL::CMessageLoop* message_loop, HWND parent)
                   parent) {}
 
 ProgressWnd::~ProgressWnd() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsWindow());
   cur_state_ = States::STATE_END;
 }
@@ -175,7 +175,7 @@ LRESULT ProgressWnd::OnInitDialog(UINT message,
 // Otherwise, the InstallStoppedWnd is displayed and the window is closed only
 // if the user chooses cancel.
 bool ProgressWnd::MaybeCloseWindow() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_close_enabled())
     return false;
 
@@ -303,7 +303,7 @@ void ProgressWnd::HandleCancelRequest() {
 }
 
 void ProgressWnd::OnCheckingForUpdate() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow())
     return;
 
@@ -318,7 +318,7 @@ void ProgressWnd::OnCheckingForUpdate() {
 void ProgressWnd::OnUpdateAvailable(const std::u16string& app_id,
                                     const std::u16string& app_name,
                                     const std::u16string& version_string) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!IsWindow())
     return;
@@ -326,7 +326,7 @@ void ProgressWnd::OnUpdateAvailable(const std::u16string& app_id,
 
 void ProgressWnd::OnWaitingToDownload(const std::u16string& app_id,
                                       const std::u16string& app_name) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow())
     return;
 
@@ -344,7 +344,7 @@ void ProgressWnd::OnDownloading(const std::u16string& app_id,
                                 const std::u16string& app_name,
                                 int time_remaining_ms,
                                 int pos) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow())
     return;
 
@@ -394,7 +394,7 @@ void ProgressWnd::OnDownloading(const std::u16string& app_id,
 void ProgressWnd::OnWaitingRetryDownload(const std::u16string& app_id,
                                          const std::u16string& app_name,
                                          const base::Time& next_retry_time) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow())
     return;
 
@@ -414,7 +414,7 @@ void ProgressWnd::OnWaitingRetryDownload(const std::u16string& app_id,
 void ProgressWnd::OnWaitingToInstall(const std::u16string& app_id,
                                      const std::u16string& app_name,
                                      bool* /*can_start_install*/) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow())
     return;
 
@@ -431,7 +431,7 @@ void ProgressWnd::OnInstalling(const std::u16string& app_id,
                                const std::u16string& app_name,
                                int time_remaining_ms,
                                int pos) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow())
     return;
 
@@ -448,7 +448,7 @@ void ProgressWnd::OnInstalling(const std::u16string& app_id,
 }
 
 void ProgressWnd::OnPause() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow())
     return;
 
@@ -516,7 +516,7 @@ std::wstring ProgressWnd::GetBundleCompletionErrorMessages(
 }
 
 void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!CompleteWnd::OnComplete())
     return;
