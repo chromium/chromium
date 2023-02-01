@@ -18,7 +18,11 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include <memory>
+#include <vector>
+
+#include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 
 #if defined(ANDROID)
 // Work-around for buggy headers in Android's NDK
@@ -876,13 +880,7 @@ class EqualityStressTest {
     }
   }
 
-  ~EqualityStressTest() {
-    for (std::vector<ArgValue*>::iterator iter = arg_values_.begin();
-         iter != arg_values_.end();
-         ++iter) {
-      DeleteArgValue(*iter);
-    }
-  }
+  ~EqualityStressTest() = default;
 
   ResultExpr Policy(int sysno) {
     DCHECK(SandboxBPF::IsValidSyscallNumber(sysno));
@@ -895,7 +893,7 @@ class EqualityStressTest {
     } else {
       // ToErrorCode() turns an ArgValue object into an ErrorCode that is
       // suitable for use by a sandbox policy.
-      return ToErrorCode(arg_values_[sysno]);
+      return ToErrorCode(arg_values_[sysno].get());
     }
   }
 
@@ -920,20 +918,20 @@ class EqualityStressTest {
   }
 
  private:
+  struct Tests;
   struct ArgValue {
     int argno;  // Argument number to inspect.
-    int size;   // Number of test cases (must be > 0).
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #overlapping
-    RAW_PTR_EXCLUSION struct Tests {
-      uint32_t k_value;            // Value to compare syscall arg against.
-      int err;                     // If non-zero, errno value to return.
-      raw_ptr<struct ArgValue>
-          arg_value;  // Otherwise, more args needs inspecting.
-    }* tests;
-    int err;                     // If none of the tests passed, this is what
-    raw_ptr<struct ArgValue>
-        arg_value;  // we'll return (this is the "else" branch).
+    int err;    // If none of the tests passed, this is what
+                // we'll return (this is the "else" branch).
+    std::vector<Tests> tests;
+    std::unique_ptr<ArgValue> next;
+  };
+
+  struct Tests {
+    uint32_t k_value;  // Value to compare syscall arg against.
+    int err;           // If non-zero, errno value to return.
+                       // Otherwise, more args needs inspecting.
+    std::unique_ptr<ArgValue> arg_value;
   };
 
   bool IsReservedSyscall(int sysno) {
@@ -951,12 +949,14 @@ class EqualityStressTest {
            sysno == __NR_exit_group || sysno == __NR_restart_syscall;
   }
 
-  ArgValue* RandomArgValue(int argno, int args_mask, int remaining_args) {
+  std::unique_ptr<ArgValue> RandomArgValue(int argno,
+                                           int args_mask,
+                                           int remaining_args) {
     // Create a new ArgValue and fill it with random data. We use as bit mask
     // to keep track of the system call parameters that have previously been
     // set; this ensures that we won't accidentally define a contradictory
     // set of equality tests.
-    struct ArgValue* arg_value = new ArgValue();
+    auto arg_value = std::make_unique<ArgValue>();
     args_mask |= 1 << argno;
     arg_value->argno = argno;
 
@@ -972,13 +972,13 @@ class EqualityStressTest {
 
     // Create a couple of different test cases with randomized values that
     // we want to use when comparing system call parameter number "argno".
-    arg_value->size = rand() % fan_out + 1;
-    arg_value->tests = new ArgValue::Tests[arg_value->size];
+    arg_value->tests.resize(rand() % fan_out + 1);
 
     uint32_t k_value = rand();
-    for (int n = 0; n < arg_value->size; ++n) {
+    for (auto& test : arg_value->tests) {
       // Ensure that we have unique values
       k_value += rand() % (RAND_MAX / (kMaxFanOut + 1)) + 1;
+      test.k_value = k_value;
 
       // There are two possible types of nodes. Either this is a leaf node;
       // in that case, we have completed all the equality tests that we
@@ -987,13 +987,12 @@ class EqualityStressTest {
       // expression; in that case, we have to recursively add tests for some
       // of system call parameters that we have not yet included in our
       // tests.
-      arg_value->tests[n].k_value = k_value;
       if (!remaining_args || (rand() & 1)) {
-        arg_value->tests[n].err = (rand() % 1000) + 1;
-        arg_value->tests[n].arg_value = nullptr;
+        test.err = 1 + (rand() % 1000);
+        test.arg_value = nullptr;
       } else {
-        arg_value->tests[n].err = 0;
-        arg_value->tests[n].arg_value =
+        test.err = 0;
+        test.arg_value =
             RandomArgValue(RandomArg(args_mask), args_mask, remaining_args - 1);
       }
     }
@@ -1002,10 +1001,10 @@ class EqualityStressTest {
     // node, or we can randomly add another couple of tests.
     if (!remaining_args || (rand() & 1)) {
       arg_value->err = (rand() % 1000) + 1;
-      arg_value->arg_value = nullptr;
+      arg_value->next = nullptr;
     } else {
       arg_value->err = 0;
-      arg_value->arg_value =
+      arg_value->next =
           RandomArgValue(RandomArg(args_mask), args_mask, remaining_args - 1);
     }
     // We have now built a new (sub-)tree of ArgValues defining a set of
@@ -1027,57 +1026,31 @@ class EqualityStressTest {
     return argno;
   }
 
-  void DeleteArgValue(ArgValue* arg_value) {
-    // Delete an ArgValue and all of its child nodes. This requires
-    // recursively descending into the tree.
-    if (arg_value) {
-      if (arg_value->size) {
-        for (int n = 0; n < arg_value->size; ++n) {
-          if (!arg_value->tests[n].err) {
-            DeleteArgValue(arg_value->tests[n].arg_value);
-          }
-        }
-        delete[] arg_value->tests;
-      }
-      if (!arg_value->err) {
-        DeleteArgValue(arg_value->arg_value);
-      }
-      delete arg_value;
-    }
-  }
-
   ResultExpr ToErrorCode(ArgValue* arg_value) {
     // Compute the ResultExpr that should be returned, if none of our
     // tests succeed (i.e. the system call parameter doesn't match any
     // of the values in arg_value->tests[].k_value).
-    ResultExpr err;
-    if (arg_value->err) {
-      // If this was a leaf node, return the errno value that we expect to
-      // return from the BPF filter program.
-      err = Error(arg_value->err);
-    } else {
-      // If this wasn't a leaf node yet, recursively descend into the rest
-      // of the tree. This will end up adding a few more SandboxBPF::Cond()
-      // tests to our ErrorCode.
-      err = ToErrorCode(arg_value->arg_value);
-    }
+    // If this was a leaf node, return the errno value that we expect to
+    // return from the BPF filter program.
+    // If this wasn't a leaf node yet, recursively descend into the rest
+    // of the tree. This will end up adding a few more SandboxBPF::Cond()
+    // tests to our ErrorCode.
+    ResultExpr err = arg_value->err ? Error(arg_value->err)
+                                    : ToErrorCode(arg_value->next.get());
 
     // Now, iterate over all the test cases that we want to compare against.
     // This builds a chain of SandboxBPF::Cond() tests
     // (aka "if ... elif ... elif ... elif ... fi")
-    for (int n = arg_value->size; n-- > 0;) {
-      ResultExpr matched;
+    for (auto& test : base::Reversed(arg_value->tests)) {
       // Again, we distinguish between leaf nodes and subtrees.
-      if (arg_value->tests[n].err) {
-        matched = Error(arg_value->tests[n].err);
-      } else {
-        matched = ToErrorCode(arg_value->tests[n].arg_value);
-      }
+      ResultExpr matched =
+          test.err ? Error(test.err) : ToErrorCode(test.arg_value.get());
+
       // For now, all of our tests are limited to 32bit.
       // We have separate tests that check the behavior of 32bit vs. 64bit
       // conditional expressions.
       const Arg<uint32_t> arg(arg_value->argno);
-      err = If(arg == arg_value->tests[n].k_value, matched).Else(err);
+      err = If(arg == test.k_value, matched).Else(err);
     }
     return err;
   }
@@ -1087,25 +1060,21 @@ class EqualityStressTest {
     // Iterate over all the k_values in arg_value.tests[] and verify that
     // we see the expected return values from system calls, when we pass
     // the k_value as a parameter in a system call.
-    for (int n = arg_value.size; n-- > 0;) {
-      mismatched += arg_value.tests[n].k_value;
-      args[arg_value.argno] = arg_value.tests[n].k_value;
-      if (arg_value.tests[n].err) {
-        VerifyErrno(sysno, args, arg_value.tests[n].err);
+    for (auto& test : base::Reversed(arg_value.tests)) {
+      mismatched += test.k_value;
+      args[arg_value.argno] = test.k_value;
+      if (test.err) {
+        VerifyErrno(sysno, args, test.err);
       } else {
-        Verify(sysno, args, *arg_value.tests[n].arg_value);
+        Verify(sysno, args, *test.arg_value);
       }
     }
-  // Find a k_value that doesn't match any of the k_values in
-  // arg_value.tests[]. In most cases, the current value of "mismatched"
-  // would fit this requirement. But on the off-chance that it happens
-  // to collide, we double-check.
-  try_again:
-    for (int n = arg_value.size; n-- > 0;) {
-      if (mismatched == arg_value.tests[n].k_value) {
-        ++mismatched;
-        goto try_again;
-      }
+    // Find a k_value that doesn't match any of the k_values in
+    // arg_value.tests[]. In most cases, the current value of "mismatched"
+    // would fit this requirement. But on the off-chance that it happens
+    // to collide, we double-check.
+    while (base::Contains(arg_value.tests, mismatched, &Tests::k_value)) {
+      ++mismatched;
     }
     // Now verify that we see the expected return value from system calls,
     // if we pass a value that doesn't match any of the conditions (i.e. this
@@ -1114,7 +1083,7 @@ class EqualityStressTest {
     if (arg_value.err) {
       VerifyErrno(sysno, args, arg_value.err);
     } else {
-      Verify(sysno, args, *arg_value.arg_value);
+      Verify(sysno, args, *arg_value.next);
     }
     // Reset args[arg_value.argno]. This is not technically needed, but it
     // makes it easier to reason about the correctness of our tests.
@@ -1133,7 +1102,7 @@ class EqualityStressTest {
 
   // Vector of ArgValue trees. These trees define all the possible boolean
   // expressions that we want to turn into a BPF filter program.
-  std::vector<ArgValue*> arg_values_;
+  std::vector<std::unique_ptr<ArgValue>> arg_values_;
 
   // Don't increase these values. We are pushing the limits of the maximum
   // BPF program that the kernel will allow us to load. If the values are
