@@ -27,7 +27,7 @@ base::Value ParseTextFragments(const GURL& url) {
   if (fragments.empty())
     return {};
 
-  base::Value parsed(base::Value::Type::LIST);
+  base::Value::List parsed;
   for (const std::string& fragment : fragments) {
     absl::optional<TextFragment> opt_frag =
         TextFragment::FromEscapedString(fragment);
@@ -36,7 +36,7 @@ base::Value ParseTextFragments(const GURL& url) {
     }
   }
 
-  return parsed;
+  return base::Value(std::move(parsed));
 }
 
 bool SplitUrlTextFragmentDirective(const std::string& full_url,
