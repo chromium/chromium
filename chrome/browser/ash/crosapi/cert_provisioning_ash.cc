@@ -51,6 +51,16 @@ constexpr mojom::CertProvisioningProcessState AshToMojoState(
       return mojom::CertProvisioningProcessState::kFailed;
     case CertProvisioningWorkerState::kCanceled:
       return mojom::CertProvisioningProcessState::kCanceled;
+    case CertProvisioningWorkerState::kReadyForNextOperation:
+      return mojom::CertProvisioningProcessState::kReadyForNextOperation;
+    case CertProvisioningWorkerState::kAuthorizeInstructionReceived:
+      return mojom::CertProvisioningProcessState::kAuthorizeInstructionReceived;
+    case CertProvisioningWorkerState::kProofOfPossessionInstructionReceived:
+      return mojom::CertProvisioningProcessState::
+          kProofOfPossessionInstructionReceived;
+    case CertProvisioningWorkerState::kImportCertificateInstructionReceived:
+      return mojom::CertProvisioningProcessState::
+          kImportCertificateInstructionReceived;
   }
 }
 

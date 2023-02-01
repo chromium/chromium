@@ -15060,6 +15060,10 @@ Called by update_protocol_commands_enum.py.-->
   <int value="9" label="kInconsistentDataError"/>
   <int value="10" label="kFailed"/>
   <int value="11" label="kCanceled"/>
+  <int value="12" label="kReadyForNextOperation"/>
+  <int value="13" label="kAuthorizeInstructionReceived"/>
+  <int value="14" label="kProofOfPossessionInstructionReceived"/>
+  <int value="15" label="kImportCertificateInstructionReceived"/>
 </enum>
 
 <enum name="CertVerifierTrialComparisonResult">

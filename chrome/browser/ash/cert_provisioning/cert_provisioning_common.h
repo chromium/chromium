@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
@@ -50,18 +51,75 @@ enum class CertScope { kUser = 0, kDevice = 1, kMaxValue = kDevice };
 // enums.xml should be updated.
 enum class CertProvisioningWorkerState {
   kInitState = 0,
-  kKeypairGenerated = 1,
-  kStartCsrResponseReceived = 2,
+  kKeypairGenerated = 1,          // Unused in "dynamic" flow.
+  kStartCsrResponseReceived = 2,  // Unused in "dynamic" flow.
   kVaChallengeFinished = 3,
   kKeyRegistered = 4,
   kKeypairMarked = 5,
   kSignCsrFinished = 6,
-  kFinishCsrResponseReceived = 7,
+  kFinishCsrResponseReceived = 7,  // Unused in "dynamic" flow.
   kSucceeded = 8,
   kInconsistentDataError = 9,
   kFailed = 10,
   kCanceled = 11,
-  kMaxValue = kCanceled,
+
+  // The following states are only used in the "dynamic" flow.
+  // The worker is ready for next server-provided operation.
+  kReadyForNextOperation = 12,
+  // The worker has received an "Authorize" instruction.
+  kAuthorizeInstructionReceived = 13,
+  // The worker has received a "Proof of Possession" instruction.
+  kProofOfPossessionInstructionReceived = 14,
+  // The worker has received an "Import Certificate" instruction.
+  kImportCertificateInstructionReceived = 15,
+
+  kMaxValue = kImportCertificateInstructionReceived,
+};
+
+// All states that are allowed in a "static" flow.
+inline constexpr base::EnumSet<CertProvisioningWorkerState,
+                               CertProvisioningWorkerState::kInitState,
+                               CertProvisioningWorkerState::kMaxValue>
+    kStaticWorkerStates = {
+        CertProvisioningWorkerState::kInitState,
+        CertProvisioningWorkerState::kKeypairGenerated,
+        CertProvisioningWorkerState::kStartCsrResponseReceived,
+        CertProvisioningWorkerState::kVaChallengeFinished,
+        CertProvisioningWorkerState::kKeyRegistered,
+        CertProvisioningWorkerState::kKeypairMarked,
+        CertProvisioningWorkerState::kSignCsrFinished,
+        CertProvisioningWorkerState::kFinishCsrResponseReceived,
+        CertProvisioningWorkerState::kSucceeded,
+        CertProvisioningWorkerState::kInconsistentDataError,
+        CertProvisioningWorkerState::kFailed,
+        CertProvisioningWorkerState::kCanceled};
+
+// All states that are allowed in a "dynamic" flow.
+inline constexpr base::EnumSet<CertProvisioningWorkerState,
+                               CertProvisioningWorkerState::kInitState,
+                               CertProvisioningWorkerState::kMaxValue>
+    kDynamicWorkerStates = {
+        CertProvisioningWorkerState::kInitState,
+        CertProvisioningWorkerState::kVaChallengeFinished,
+        CertProvisioningWorkerState::kKeyRegistered,
+        CertProvisioningWorkerState::kKeypairMarked,
+        CertProvisioningWorkerState::kSignCsrFinished,
+        CertProvisioningWorkerState::kSucceeded,
+        CertProvisioningWorkerState::kInconsistentDataError,
+        CertProvisioningWorkerState::kFailed,
+        CertProvisioningWorkerState::kCanceled,
+        CertProvisioningWorkerState::kReadyForNextOperation,
+        CertProvisioningWorkerState::kAuthorizeInstructionReceived,
+        CertProvisioningWorkerState::kProofOfPossessionInstructionReceived,
+        CertProvisioningWorkerState::kImportCertificateInstructionReceived};
+
+// Location where a generated key has been persisted by a "dynamic" flow worker.
+// These values are used in serialization and should be changed carefully.
+enum class KeyLocation {
+  kNone = 0,
+  kVaDatabase = 1,
+  kPkcs11Token = 2,
+  kMaxValue = kPkcs11Token
 };
 
 // Types of the requests sent from the certificate provisioning client to the

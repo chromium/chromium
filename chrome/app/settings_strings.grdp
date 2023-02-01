@@ -1276,6 +1276,18 @@
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_CANCELED" desc="Status description of a certificate provisioning process that has been canceled">
         Canceled
       </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_READY_FOR_NEXT_OPERATION" desc="Status description of a certificate provisioning process that is waiting for the next operation">
+        Waiting for the next operation
+      </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_AUTHORIZE_INSTRUCTION_RECEIVED" desc="Status description of a certificate provisioning process that has received a Authorize instruction">
+        <ph name="AUTHORIZE_INSTRUCTION_NAME">"Authorize"</ph> instruction received
+      </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_PROOF_OF_POSSESSION_INSTRUCTION_RECEIVED" desc="Status description of a certificate provisioning process that has received a Sign Data instruction">
+        <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME">"Proof of Possession"</ph> instruction received
+      </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_IMPORT_CERTIFICATE_INSTRUCTION_RECEIVED" desc="Status description of a certificate provisioning process that has received a Import Certificate instruction">
+        <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME">"Import Certificate"</ph> instruction received
+      </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_CERTIFICATE_PROFILE_NAME" desc="Label of the field that displays the human-readable client certificate profile name of a certificate provisioning process">
         Certificate Profile Name
       </message>

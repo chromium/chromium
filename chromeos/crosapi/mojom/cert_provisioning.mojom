@@ -19,11 +19,17 @@ enum CertProvisioningProcessState {
   kSignCsrFinished = 6,
   kFinishCsrResponseReceived = 7,
   kSucceeded = 8,
-  // The states below should never be sent, but it's good for diagnostic
+  // The 3 states below should never be sent, but it's good for diagnostic
   // purposes to be able to recognize them if it still happens.
   kInconsistentDataError = 9,
   kFailed = 10,
   kCanceled = 11,
+
+  // States only used in the "dynamic" flow.
+  [MinVersion=2] kReadyForNextOperation = 12,
+  [MinVersion=2] kAuthorizeInstructionReceived = 13,
+  [MinVersion=2] kProofOfPossessionInstructionReceived = 14,
+  [MinVersion=2] kImportCertificateInstructionReceived = 15,
 };
 
 [Stable]

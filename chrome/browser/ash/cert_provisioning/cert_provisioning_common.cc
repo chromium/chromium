@@ -107,6 +107,14 @@ std::string CertificateProvisioningWorkerStateToString(
       return "Failed";
     case CertProvisioningWorkerState::kCanceled:
       return "Canceled";
+    case CertProvisioningWorkerState::kReadyForNextOperation:
+      return "ReadyForNextOperation";
+    case CertProvisioningWorkerState::kAuthorizeInstructionReceived:
+      return "AuthorizeInstructionReceived";
+    case CertProvisioningWorkerState::kProofOfPossessionInstructionReceived:
+      return "ProofOfPossessionInstructionReceived";
+    case CertProvisioningWorkerState::kImportCertificateInstructionReceived:
+      return "ImportCertificateInstructionReceived";
   }
 }
 

@@ -48,10 +48,54 @@ std::unique_ptr<CertProvisioningWorker> CertProvisioningWorkerFactory::Create(
     CertProvisioningWorkerCallback result_callback) {
   RecordEvent(cert_profile.protocol_version, cert_scope,
               CertProvisioningEvent::kWorkerCreated);
-  return std::make_unique<CertProvisioningWorkerStatic>(
-      cert_scope, profile, pref_service, cert_profile, cert_provisioning_client,
-      std::move(invalidator), std::move(state_change_callback),
-      std::move(result_callback));
+  switch (cert_profile.protocol_version) {
+    case ProtocolVersion::kStatic:
+      return std::make_unique<CertProvisioningWorkerStatic>(
+          cert_scope, profile, pref_service, cert_profile,
+          cert_provisioning_client, std::move(invalidator),
+          std::move(state_change_callback), std::move(result_callback));
+    case ProtocolVersion::kDynamic:
+      return std::make_unique<CertProvisioningWorkerDynamic>(
+          cert_scope, profile, pref_service, cert_profile,
+          cert_provisioning_client, std::move(invalidator),
+          std::move(state_change_callback), std::move(result_callback));
+  }
+}
+
+std::unique_ptr<CertProvisioningWorker> CreateAndDeserializeWorker(
+    ProtocolVersion protocol_version,
+    CertScope cert_scope,
+    Profile* profile,
+    PrefService* pref_service,
+    const base::Value::Dict& saved_worker,
+    CertProvisioningClient* cert_provisioning_client,
+    std::unique_ptr<CertProvisioningInvalidator> invalidator,
+    base::RepeatingClosure state_change_callback,
+    CertProvisioningWorkerCallback result_callback) {
+  switch (protocol_version) {
+    case ProtocolVersion::kStatic: {
+      auto worker = std::make_unique<CertProvisioningWorkerStatic>(
+          cert_scope, profile, pref_service, CertProfile(),
+          cert_provisioning_client, std::move(invalidator),
+          std::move(state_change_callback), std::move(result_callback));
+      if (!CertProvisioningSerializer::DeserializeWorker(saved_worker,
+                                                         worker.get())) {
+        return {};
+      }
+      return worker;
+    }
+    case ProtocolVersion::kDynamic: {
+      auto worker = std::make_unique<CertProvisioningWorkerDynamic>(
+          cert_scope, profile, pref_service, CertProfile(),
+          cert_provisioning_client, std::move(invalidator),
+          std::move(state_change_callback), std::move(result_callback));
+      if (!CertProvisioningSerializer::DeserializeWorker(saved_worker,
+                                                         worker.get())) {
+        return {};
+      }
+      return worker;
+    }
+  }
 }
 
 std::unique_ptr<CertProvisioningWorker>
@@ -64,19 +108,23 @@ CertProvisioningWorkerFactory::Deserialize(
     std::unique_ptr<CertProvisioningInvalidator> invalidator,
     base::RepeatingClosure state_change_callback,
     CertProvisioningWorkerCallback result_callback) {
-  auto worker = std::make_unique<CertProvisioningWorkerStatic>(
-      cert_scope, profile, pref_service, CertProfile(),
+  absl::optional<ProtocolVersion> protocol_version =
+      CertProvisioningSerializer::GetProtocolVersion(saved_worker);
+  if (!protocol_version) {
+    LOG(ERROR) << "Could not parse protocol version";
+    return {};
+  }
+  std::unique_ptr<CertProvisioningWorker> worker = CreateAndDeserializeWorker(
+      *protocol_version, cert_scope, profile, pref_service, saved_worker,
       cert_provisioning_client, std::move(invalidator),
       std::move(state_change_callback), std::move(result_callback));
-  if (!CertProvisioningSerializer::DeserializeWorker(saved_worker,
-                                                     worker.get())) {
-    // TODO(b:230478084): Replace with ProtocolVersion from deserialized
-    // CertProfile, if known.
-    RecordEvent(ProtocolVersion::kStatic, cert_scope,
+  if (!worker) {
+    RecordEvent(*protocol_version, cert_scope,
                 CertProvisioningEvent::kWorkerDeserializationFailed);
     return {};
   }
-  RecordEvent(ProtocolVersion::kStatic, cert_scope,
+  CHECK_EQ(worker->GetCertProfile().protocol_version, *protocol_version);
+  RecordEvent(*protocol_version, cert_scope,
               CertProvisioningEvent::kWorkerDeserialized);
   return worker;
 }
