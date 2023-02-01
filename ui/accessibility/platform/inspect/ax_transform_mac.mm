@@ -34,6 +34,13 @@ base::Value AXNSObjectToBaseValue(id value, const AXTreeIndexerMac* indexer) {
     return base::Value(AXNSArrayToBaseValue((NSArray*)value, indexer));
   }
 
+  // AXCustomContent
+  if (@available(macOS 11.0, *)) {
+    if ([value isKindOfClass:[AXCustomContent class]]) {
+      return base::Value(AXCustomContentToBaseValue((AXCustomContent*)value));
+    }
+  }
+
   // NSDictionary
   if ([value isKindOfClass:[NSDictionary class]]) {
     return base::Value(
@@ -184,6 +191,13 @@ base::Value::List AXNSArrayToBaseValue(NSArray* node_array,
   for (NSUInteger i = 0; i < [node_array count]; i++)
     list.Append(AXNSObjectToBaseValue([node_array objectAtIndex:i], indexer));
   return list;
+}
+
+base::Value::Dict AXCustomContentToBaseValue(AXCustomContent* content) {
+  base::Value::Dict value;
+  value.Set("label", base::SysNSStringToUTF16(content.label));
+  value.Set("value", base::SysNSStringToUTF16(content.value));
+  return value;
 }
 
 base::Value::Dict AXNSDictionaryToBaseValue(NSDictionary* dictionary_value,

@@ -257,11 +257,13 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
 )~~");
 }
 
+// This test proves AXCellForColumnAndRow([0, 0])=NULL because
+// NULL values are filtered by the dump tree formatter.
 IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributesIntArrayNilValue) {
   TestFormat(R"~~(<table role="grid"></table>)~~",
              {"AXCellForColumnAndRow([0, 0])=*"}, R"~~(AXWebArea
-++AXTable AXCellForColumnAndRow([0, 0])=NULL
+++AXTable
 ++++AXGroup
 )~~");
 }

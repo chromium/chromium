@@ -3,10 +3,12 @@
   div.accessibilityCustomContent[0].label
   div.accessibilityCustomContent[0].value
   div.accessibilityAttributeValue(AXHelp)
+  div_with_tooltip.accessibilityCustomContent[0].label
+  div_with_tooltip.accessibilityCustomContent[0].value
   div_with_tooltip.accessibilityAttributeValue(AXHelp)
 -->
 <!--
-Note, this test will only run when macOS is greater or equal to 11. The purpose of the test is to show that AXHelp DOES NOT surface the aria-description string beginning with macOS 11 (instead, it can be found in AXCustomContent).
+Note, this test will only run when macOS is greater or equal to 11. The purpose of the test is to show that, beginning with macOS 11, AXHelp DOES NOT surface the aria-description string or the content of aria-describedby (instead, it can be found in AXCustomContent).
 -->
 <!DOCTYPE html>
 <html>
