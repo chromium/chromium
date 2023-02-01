@@ -65,12 +65,6 @@ enum DCLayerResult {
   kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA,
 };
 
-enum : size_t {
-  kTextureResourceIndex = 0,
-  kYPlaneResourceIndex = 0,
-  kUVPlaneResourceIndex = 1,
-};
-
 gfx::RectF GetExpandedRectWithPixelMovingFilter(
     const AggregatedRenderPassDrawQuad* rpdq,
     float max_pixel_movement) {
@@ -138,12 +132,10 @@ DCLayerResult ValidateYUVQuad(
 void FromYUVQuad(const YUVVideoDrawQuad* quad,
                  const gfx::Transform& transform_to_root_target,
                  DCLayerOverlayCandidate* dc_layer) {
-  // Direct composition path only supports single NV12 buffer, or two buffers
-  // one each for Y and UV planes.
+  // Direct composition path only supports a single NV12 buffer.
   DCHECK(quad->y_plane_resource_id() && quad->u_plane_resource_id());
   DCHECK_EQ(quad->u_plane_resource_id(), quad->v_plane_resource_id());
-  dc_layer->resources[kYPlaneResourceIndex] = quad->y_plane_resource_id();
-  dc_layer->resources[kUVPlaneResourceIndex] = quad->u_plane_resource_id();
+  dc_layer->resource_id = quad->y_plane_resource_id();
 
   dc_layer->z_order = 1;
   dc_layer->content_rect = gfx::ToNearestRect(quad->ya_tex_coord_rect());
@@ -200,7 +192,7 @@ DCLayerResult ValidateTextureQuad(
 void FromTextureQuad(const TextureDrawQuad* quad,
                      const gfx::Transform& transform_to_root_target,
                      DCLayerOverlayCandidate* dc_layer) {
-  dc_layer->resources[kTextureResourceIndex] = quad->resource_id();
+  dc_layer->resource_id = quad->resource_id();
   dc_layer->z_order = 1;
   dc_layer->content_rect = gfx::Rect(quad->resource_size_in_pixels());
   dc_layer->quad_rect = quad->rect;

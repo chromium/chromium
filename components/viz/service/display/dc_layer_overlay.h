@@ -35,14 +35,13 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayCandidate {
   DCLayerOverlayCandidate& operator=(const DCLayerOverlayCandidate& other);
   ~DCLayerOverlayCandidate();
 
-  // Resource ids for video Y and UV planes, a single NV12 image, or a swap
-  // chain image. See DirectCompositionSurfaceWin for details.
-  enum : size_t { kNumResources = 2 };
-  ResourceId resources[kNumResources] = {kInvalidResourceId};
+  // Resource id for a single NV12 image or a swap chain image. See
+  // DCLayerOverlayImage for details.
+  ResourceId resource_id = kInvalidResourceId;
 
-  // Mailboxes corresponding to |resources|. This is populated in SkiaRenderer
+  // Mailbox corresponding to |resource_id|. This is populated in SkiaRenderer
   // for accessing the textures on the GPU thread.
-  gpu::Mailbox mailbox[kNumResources];
+  gpu::Mailbox mailbox;
 
   // Stacking order relative to backbuffer which has z-order 0.
   int z_order = 1;

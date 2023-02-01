@@ -2685,23 +2685,23 @@ void SkiaRenderer::ScheduleOverlays() {
   }
 #elif BUILDFLAG(IS_WIN)
   for (auto& dc_layer_overlay : current_frame()->overlay_list) {
-    for (size_t i = 0; i < DCLayerOverlayCandidate::kNumResources; ++i) {
-      ResourceId resource_id = dc_layer_overlay.resources[i];
-      if (resource_id == kInvalidResourceId)
-        break;
-
-      // Resources will be unlocked after the next SwapBuffers() is completed.
-      locks.emplace_back(resource_provider(), resource_id);
-      auto& lock = locks.back();
-
-      // Sync tokens ensure the texture to be overlaid is available before
-      // scheduling it for display.
-      if (lock.sync_token().HasData())
-        sync_tokens.push_back(lock.sync_token());
-
-      dc_layer_overlay.mailbox[i] = lock.mailbox();
+    ResourceId resource_id = dc_layer_overlay.resource_id;
+    if (resource_id == kInvalidResourceId) {
+      continue;
     }
-    DCHECK(!dc_layer_overlay.mailbox[0].IsZero());
+
+    // Resources will be unlocked after the next SwapBuffers() is completed.
+    locks.emplace_back(resource_provider(), resource_id);
+    auto& lock = locks.back();
+
+    // Sync tokens ensure the texture to be overlaid is available before
+    // scheduling it for display.
+    if (lock.sync_token().HasData()) {
+      sync_tokens.push_back(lock.sync_token());
+    }
+
+    dc_layer_overlay.mailbox = lock.mailbox();
+    DCHECK(!dc_layer_overlay.mailbox.IsZero());
   }
 #elif BUILDFLAG(IS_APPLE)
   for (CALayerOverlay& ca_layer_overlay : current_frame()->overlay_list) {

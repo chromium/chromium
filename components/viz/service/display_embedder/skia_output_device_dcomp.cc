@@ -204,7 +204,7 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays) {
   for (auto& dc_layer : overlays) {
     // Only use the first shared image mailbox for accessing as an overlay.
-    const gpu::Mailbox& mailbox = dc_layer.mailbox[0];
+    const gpu::Mailbox& mailbox = dc_layer.mailbox;
     absl::optional<gl::DCLayerOverlayImage> overlay_image =
         BeginOverlayAccess(mailbox);
     if (!overlay_image) {
