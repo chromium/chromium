@@ -402,7 +402,7 @@ class SettingsInputMethodOptionsPageElement extends
    */
   private updatePref_(optionName: OptionType, newValue: OptionValue): void {
     // Get the existing settings dictionary, in order to update it later.
-    // |PrefsBehavior.setPrefValue| will update Cros Prefs only if the reference
+    // |PrefsMixin.setPrefValue| will update Cros Prefs only if the reference
     // of variable has changed, so we need to copy the current content into a
     // new variable.
     const updatedSettings: PrefsObjectType = {};
