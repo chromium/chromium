@@ -6,12 +6,27 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import './check_mark_wrapper.js';
 
+import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './categories.html.js';
-import {BackgroundCollection, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
+import {BackgroundCollection, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
+
+export enum CategoryType {
+  NONE,
+  CLASSIC,
+  LOCAL,
+  COLOR,
+  COLLECTION,
+}
+
+export interface SelectedCategory {
+  type: CategoryType;
+  collectionId?: string;
+}
 
 export interface CategoriesElement {
   $: {
@@ -35,10 +50,30 @@ export class CategoriesElement extends PolymerElement {
   static get properties() {
     return {
       collections_: Array,
+      theme_: Object,
+      selectedCategory_: {
+        type: Object,
+        computed: 'computeSelectedCategory_(theme_, collections_)',
+      },
+      isClassicChromeSelected_: {
+        type: Boolean,
+        computed: 'computeIsClassicChromeSelected_(selectedCategory_)',
+      },
+      isLocalImageSelected_: {
+        type: Boolean,
+        computed: 'computeIsLocalImageSelected_(selectedCategory_)',
+      },
+      isChromeColorsSelected_: {
+        type: Boolean,
+        computed: 'computeIsChromeColorsSelected_(selectedCategory_)',
+      },
     };
   }
 
   private collections_: BackgroundCollection[];
+  private selectedCategory_: SelectedCategory;
+  private theme_: Theme;
+  private setThemeListenerId_: number|null = null;
 
   private pageHandler_: CustomizeChromePageHandlerInterface;
 
@@ -50,9 +85,65 @@ export class CategoriesElement extends PolymerElement {
     });
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.setThemeListenerId_ =
+        CustomizeChromeApiProxy.getInstance()
+            .callbackRouter.setTheme.addListener((theme: Theme) => {
+              this.theme_ = theme;
+            });
+    this.pageHandler_.updateTheme();
+    FocusOutlineManager.forDocument(document);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
+        this.setThemeListenerId_!);
+  }
+
+  private computeSelectedCategory_() {
+    if (!this.theme_) {
+      return {type: CategoryType.NONE};
+    }
+    if (!this.theme_.backgroundImage) {
+      if (!this.theme_.foregroundColor) {
+        return {type: CategoryType.CLASSIC};
+      }
+      return {type: CategoryType.COLOR};
+    }
+    if (this.theme_.backgroundImage.isUploadedImage) {
+      return {type: CategoryType.LOCAL};
+    }
+    if (this.theme_.backgroundImage.collectionId) {
+      return {
+        type: CategoryType.COLLECTION,
+        collectionId: this.theme_.backgroundImage.collectionId,
+      };
+    }
+    return {type: CategoryType.NONE};
+  }
+
+  private computeIsClassicChromeSelected_() {
+    return this.selectedCategory_.type === CategoryType.CLASSIC;
+  }
+
+  private computeIsLocalImageSelected_() {
+    return this.selectedCategory_.type === CategoryType.LOCAL;
+  }
+
+  private computeIsChromeColorsSelected_() {
+    return this.selectedCategory_.type === CategoryType.COLOR;
+  }
+
+  private isCollectionSelected_(id: string) {
+    return this.selectedCategory_.type === CategoryType.COLLECTION &&
+        this.selectedCategory_.collectionId === id;
+  }
+
   private onClassicChromeClick_() {
-    this.pageHandler_.removeBackgroundImage();
     this.pageHandler_.setDefaultColor();
+    this.pageHandler_.removeBackgroundImage();
   }
 
   private async onUploadImageClick_() {

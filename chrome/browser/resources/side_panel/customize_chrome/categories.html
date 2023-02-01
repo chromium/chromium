@@ -33,10 +33,6 @@
     place-self: stretch;
   }
 
-  .tile:focus {
-    box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
-  }
-
   .image-container {
     background-color: var(--google-grey-100);
     overflow: hidden;
@@ -147,6 +143,27 @@
     transform: translate(-50%, -50%);
     width: 32px;
   }
+
+  .tile:nth-child(-n+4) customize-chrome-check-mark-wrapper {
+    --customize-chrome-check-mark-wrapper-end: -6px;
+    --customize-chrome-check-mark-wrapper-size: 24px;
+    --customize-chrome-check-mark-wrapper-top: -9px;
+  }
+
+  .tile customize-chrome-check-mark-wrapper {
+    --customize-chrome-check-mark-wrapper-end: -4px;
+    --customize-chrome-check-mark-wrapper-size: 20px;
+    --customize-chrome-check-mark-wrapper-top: -6px;
+  }
+
+  customize-chrome-check-mark-wrapper[checked] .image-container {
+    padding-top: calc(100% - 4px);
+    width: calc(100% - 4px);
+  }
+
+  :host-context(.focus-outline-visible) .tile:focus {
+    box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+  }
 </style>
 <div id="headerContainer">
   <cr-icon-button on-click="onBackClick_" id="backButton"
@@ -156,36 +173,52 @@
 </div>
 <cr-grid columns="6">
   <div class="tile" tabindex="0" id="classicChromeTile"
-      role="button" on-click="onClassicChromeClick_">
-    <div class="image-container">
-      <img id="miniNewTabPage" src="icons/corner_new_tab_page.svg"></img>
-    </div>
+      role="button" on-click="onClassicChromeClick_"
+      aria-checked$="[[isClassicChromeSelected_]]">
+    <customize-chrome-check-mark-wrapper
+        checked="[[isClassicChromeSelected_]]">
+      <div class="image-container">
+        <img id="miniNewTabPage" src="icons/corner_new_tab_page.svg"></img>
+      </div>
+    </customize-chrome-check-mark-wrapper>
     <div class="label">$i18n{classicChrome}</div>
   </div>
   <div class="tile" tabindex="0" id="uploadImageTile"
-      role="button" on-click="onUploadImageClick_">
-    <div class="image-container">
-      <div id="uploadIcon" class="cr-icon"></div>
-    </div>
+      role="button" on-click="onUploadImageClick_"
+      aria-checked$="[[isLocalImageSelected_]]">
+    <customize-chrome-check-mark-wrapper
+        checked="[[isLocalImageSelected_]]">
+      <div class="image-container">
+        <div id="uploadIcon" class="cr-icon"></div>
+      </div>
+    </customize-chrome-check-mark-wrapper>
     <div class="label">$i18n{uploadImage}</div>
   </div>
   <div class="tile" tabindex="0" id="chromeColorsTile"
-      role="button" on-click="onChromeColorsClick_">
-    <div class="image-container">
-      <div class="chrome-color"></div>
-      <div class="chrome-color"></div>
-    </div>
+      role="button" on-click="onChromeColorsClick_"
+      aria-checked$="[[isChromeColorsSelected_]]">
+    <customize-chrome-check-mark-wrapper
+        checked="[[isChromeColorsSelected_]]">
+      <div class="image-container">
+        <div class="chrome-color"></div>
+        <div class="chrome-color"></div>
+      </div>
+    </customize-chrome-check-mark-wrapper>
     <div class="label">$i18n{chromeColors}</div>
   </div>
   <template is="dom-repeat" id="collectionsRepeat" items="[[collections_]]">
     <div class="tile collection" tabindex="0" role="button"
-        on-click="onCollectionClick_">
-      <div class="image-container">
-        <img is="cr-auto-img"
-            auto-src="[[item.previewImageUrl.url]]"
-            draggable="false">
-        </img>
-      </div>
+        on-click="onCollectionClick_"
+        aria-checked$="[[isCollectionSelected_(item.id, selectedCategory_)]]">
+      <customize-chrome-check-mark-wrapper
+          checked="[[isCollectionSelected_(item.id, selectedCategory_)]]">
+        <div class="image-container">
+          <img is="cr-auto-img"
+              auto-src="[[item.previewImageUrl.url]]"
+              draggable="false">
+          </img>
+        </div>
+      </customize-chrome-check-mark-wrapper>
       <div class="label">[[item.label]]</div>
     </div>
   </template>
