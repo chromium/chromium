@@ -413,29 +413,25 @@ WebDragData DataObject::ToWebDragData() {
               original_item->FilenameExtension();
           binary_data_item.content_disposition = original_item->Title();
         } else if (original_item->IsFilename()) {
-          if (auto* file = original_item->GetAsFile()) {
-            if (file->HasBackingFile()) {
-              auto& filename_item =
-                  item.emplace<WebDragData::FilenameItem>();
-              filename_item.filename = file->GetPath();
-              filename_item.display_name = file->name();
-            } else if (!file->FileSystemURL().IsEmpty()) {
-              auto& file_system_file_item =
-                  item.emplace<WebDragData::FileSystemFileItem>();
-              file_system_file_item.url = file->FileSystemURL();
-              file_system_file_item.size = file->size();
-              file_system_file_item.file_system_id =
-                  original_item->FileSystemId();
-            } else {
-              // TODO(http://crbug.com/394955): support dragging constructed
-              // Files across renderers.
-              auto& string_item =
-                  item.emplace<WebDragData::StringItem>();
-              string_item.type = "text/plain";
-              string_item.data = file->name();
-            }
+          auto* file = original_item->GetAsFile();
+          if (file->HasBackingFile()) {
+            auto& filename_item =
+                item_list[i].emplace<WebDragData::FilenameItem>();
+            filename_item.filename = file->GetPath();
+            filename_item.display_name = file->name();
+          } else if (!file->FileSystemURL().IsEmpty()) {
+            auto& file_system_file_item =
+                item_list[i].emplace<WebDragData::FileSystemFileItem>();
+            file_system_file_item.url = file->FileSystemURL();
+            file_system_file_item.size = file->size();
+            file_system_file_item.file_system_id =
+                original_item->FileSystemId();
           } else {
-            NOTREACHED();
+            // TODO(http://crbug.com/394955): support dragging constructed
+            // Files across renderers.
+            auto& string_item = item_list[i].emplace<WebDragData::StringItem>();
+            string_item.type = "text/plain";
+            string_item.data = file->name();
           }
         } else {
           NOTREACHED();
