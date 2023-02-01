@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_DENYLIST_H_
-#define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_DENYLIST_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_DENYLIST_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_DENYLIST_H_
 
 #include <stddef.h>
 
@@ -20,6 +20,8 @@ class FilePath;
 }
 
 class GURL;
+
+namespace supervised_users {
 
 // Compact list of (SHA1 hashes of) blocked hosts.
 // Checking for URLs is thread-safe, loading is not.
@@ -59,4 +61,6 @@ class SupervisedUserDenylist {
   base::WeakPtrFactory<SupervisedUserDenylist> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_DENYLIST_H_
+}  // namespace supervised_users
+
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_DENYLIST_H_

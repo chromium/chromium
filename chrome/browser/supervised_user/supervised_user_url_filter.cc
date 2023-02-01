@@ -16,9 +16,9 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/supervised_user/kids_management_url_checker_client.h"
-#include "chrome/browser/supervised_user/supervised_user_denylist.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/common/url_constants.h"
+#include "components/supervised_user/core/common/supervised_user_denylist.h"
 #include "components/url_matcher/url_util.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
@@ -502,7 +502,7 @@ SupervisedUserURLFilter::GetDefaultFilteringBehavior() const {
 }
 
 void SupervisedUserURLFilter::SetDenylist(
-    const SupervisedUserDenylist* denylist) {
+    const supervised_users::SupervisedUserDenylist* denylist) {
   denylist_ = denylist;
 }
 

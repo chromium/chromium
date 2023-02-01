@@ -7412,8 +7412,6 @@ static_library("browser") {
       "supervised_user/parental_control_metrics.cc",
       "supervised_user/parental_control_metrics.h",
       "supervised_user/permission_request_creator.h",
-      "supervised_user/supervised_user_denylist.cc",
-      "supervised_user/supervised_user_denylist.h",
       "supervised_user/supervised_user_google_auth_navigation_throttle.cc",
       "supervised_user/supervised_user_google_auth_navigation_throttle.h",
       "supervised_user/supervised_user_interstitial.cc",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_denylist.h"
+#include "components/supervised_user/core/common/supervised_user_denylist.h"
 
 #include <algorithm>
 #include <cstring>
@@ -15,6 +15,8 @@
 #include "base/task/thread_pool.h"
 #include "url/gurl.h"
 
+namespace supervised_users {
+
 namespace {
 
 std::unique_ptr<std::vector<SupervisedUserDenylist::Hash>>
@@ -23,12 +25,14 @@ ReadFromBinaryFileOnFileThread(const base::FilePath& path) {
       new std::vector<SupervisedUserDenylist::Hash>);
 
   base::MemoryMappedFile file;
-  if (!file.Initialize(path))
+  if (!file.Initialize(path)) {
     return host_hashes;
+  }
 
   size_t size = file.length();
-  if (size <= 0 || size % base::kSHA1Length != 0)
+  if (size <= 0 || size % base::kSHA1Length != 0) {
     return host_hashes;
+  }
 
   size_t hash_count = size / base::kSHA1Length;
   host_hashes->resize(hash_count);
@@ -86,6 +90,9 @@ void SupervisedUserDenylist::OnReadFromFileCompleted(
   host_hashes_.swap(*host_hashes);
   LOG_IF(WARNING, host_hashes_.empty()) << "Got empty denylist";
 
-  if (!done_callback.is_null())
+  if (!done_callback.is_null()) {
     done_callback.Run();
+  }
 }
+
+}  // namespace supervised_users

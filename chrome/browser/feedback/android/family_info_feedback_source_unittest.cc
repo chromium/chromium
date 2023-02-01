@@ -20,12 +20,12 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/supervised_user/child_accounts/family_info_fetcher.h"
-#include "chrome/browser/supervised_user/supervised_user_denylist.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/test/test_support_jni_headers/FamilyInfoFeedbackSourceTestBridge_jni.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/common/supervised_user_denylist.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -117,7 +117,8 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
 
   FamilyInfoFetcher::FamilyMemberRole role_;
   raw_ptr<SupervisedUserService> supervised_user_service_;
-  SupervisedUserDenylist deny_list_ = SupervisedUserDenylist();
+  supervised_users::SupervisedUserDenylist deny_list_ =
+      supervised_users::SupervisedUserDenylist();
 
  private:
   // Creates a Java instance of FamilyInfoFeedbackSource.

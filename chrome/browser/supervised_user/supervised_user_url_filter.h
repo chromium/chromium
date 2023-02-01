@@ -19,11 +19,14 @@
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 
 class GURL;
-class SupervisedUserDenylist;
 
 namespace base {
 class TaskRunner;
 }
+
+namespace supervised_users {
+class SupervisedUserDenylist;
+}  // namespace supervised_users
 
 namespace content {
 class WebContents;
@@ -195,7 +198,7 @@ class SupervisedUserURLFilter {
   FilteringBehavior GetDefaultFilteringBehavior() const;
 
   // Sets the static denylist of blocked hosts.
-  void SetDenylist(const SupervisedUserDenylist* denylist);
+  void SetDenylist(const supervised_users::SupervisedUserDenylist* denylist);
   // Returns whether the static denylist is set up.
   bool HasDenylist() const;
 
@@ -273,7 +276,7 @@ class SupervisedUserURLFilter {
   std::map<std::string, bool> host_map_;
 
   // Not owned.
-  raw_ptr<const SupervisedUserDenylist> denylist_;
+  raw_ptr<const supervised_users::SupervisedUserDenylist> denylist_;
 
   std::unique_ptr<safe_search_api::URLChecker> async_url_checker_;
 

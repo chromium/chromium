@@ -6611,6 +6611,7 @@ test("unit_tests") {
       "//components/signin/core/browser",
       "//components/signin/public/android:signin_java_test_support",
       "//components/supervised_user/core/browser/proto",
+      "//components/supervised_user/core/common",
       "//components/ukm:test_support",
       "//components/webapk:proto",
       "//components/webapps/browser",
