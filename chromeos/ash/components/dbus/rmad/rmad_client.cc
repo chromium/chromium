@@ -51,6 +51,7 @@ class RmadClientImpl : public RmadClient {
       chromeos::DBusMethodCallback<rmad::GetLogReply> callback) override;
 
   void SaveLog(
+      const std::string& diagnostics_log_text,
       chromeos::DBusMethodCallback<rmad::SaveLogReply> callback) override;
 
   void RecordBrowserActionMetric(
@@ -477,9 +478,11 @@ void RmadClientImpl::GetLog(
 }
 
 void RmadClientImpl::SaveLog(
+    const std::string& diagnostics_log_text,
     chromeos::DBusMethodCallback<rmad::SaveLogReply> callback) {
   dbus::MethodCall method_call(rmad::kRmadInterfaceName, rmad::kSaveLogMethod);
   dbus::MessageWriter writer(&method_call);
+  writer.AppendString(diagnostics_log_text);
   rmad_proxy_->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&RmadClientImpl::OnProtoReply<rmad::SaveLogReply>,

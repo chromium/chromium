@@ -16,6 +16,7 @@ static_library("backend") {
   ]
 
   deps = [
+    "//ash",
     "//ash/public/cpp:cpp",
     "//ash/webui/shimless_rma/mojom",
     "//chromeos/ash/components/dbus",
@@ -42,10 +43,13 @@ source_set("unit_tests") {
 
   deps = [
     ":backend",
+    "//ash",
+    "//ash:test_support",
     "//ash/public/cpp:cpp",
     "//ash/webui/shimless_rma/mojom",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components:test_support",
     "//chromeos/ash/components/dbus:test_support",
     "//chromeos/ash/components/dbus/rmad",
     "//chromeos/ash/components/dbus/rmad:rmad_proto",

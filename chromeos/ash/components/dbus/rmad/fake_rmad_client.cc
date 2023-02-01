@@ -212,7 +212,9 @@ void FakeRmadClient::GetLog(
 }
 
 void FakeRmadClient::SaveLog(
+    const std::string& diagnostics_log_text,
     chromeos::DBusMethodCallback<rmad::SaveLogReply> callback) {
+  diagnostics_logs_text_ = diagnostics_log_text;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
@@ -372,6 +374,10 @@ void FakeRmadClient::SetSaveLogReply(const std::string& save_path,
 void FakeRmadClient::SetRecordBrowserActionMetricReply(
     rmad::RmadErrorCode error) {
   record_browser_action_metric_reply_.set_error(error);
+}
+
+std::string FakeRmadClient::GetDiagnosticsLogsText() const {
+  return diagnostics_logs_text_;
 }
 
 void FakeRmadClient::TriggerErrorObservation(rmad::RmadErrorCode error) {
