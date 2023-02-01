@@ -745,6 +745,7 @@ chrome.fileManagerPrivate.IOTaskParams;
  *   conflictName: (string|undefined),
  *   conflictIsDirectory: (boolean|undefined),
  *   conflictMultiple: (boolean|undefined),
+ *   conflictTargetUrl: (string|undefined),
  * }}
  */
 chrome.fileManagerPrivate.PauseParams;

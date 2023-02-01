@@ -1015,6 +1015,9 @@ dictionary PauseParams {
 
   // Set true if there are potentially multiple conflicted file names.
   boolean? conflictMultiple;
+
+  // The conflict copy or move target URL.
+  DOMString? conflictTargetUrl;
 };
 
 // Resume IO Task parameters, see file_manager::io_task::ResumeParams.

@@ -77,6 +77,9 @@ struct PauseParams {
 
   // Set true if there are potentially multiple conflicted file names.
   bool conflict_multiple = false;
+
+  // The conflict copy or move target URL.
+  std::string conflict_target_url;
 };
 
 // Resume I/O task parameters.
