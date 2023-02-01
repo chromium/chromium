@@ -1374,10 +1374,12 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
 void Node::ClearNeedsStyleRecalc() {
   node_flags_ &= ~kStyleChangeMask;
   ClearFlag(kForceReattachLayoutTree);
-
-  auto* element = DynamicTo<Element>(this);
-  if (element && HasRareData())
+  if (!HasRareData()) {
+    return;
+  }
+  if (auto* element = DynamicTo<Element>(this)) {
     element->SetAnimationStyleChange(false);
+  }
 }
 
 bool Node::InActiveDocument() const {
