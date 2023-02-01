@@ -21,3 +21,12 @@ void ClearDefaultBrowserPromoData() {
   }
   [defaults removeObjectForKey:kDefaultBrowserUtilsKey];
 }
+
+void SetObjectInStorageForKey(NSString* key, NSObject* data) {
+  NSMutableDictionary<NSString*, NSObject*>* dict =
+      [[NSMutableDictionary alloc] init];
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  dict[key] = data;
+
+  [defaults setObject:dict forKey:kDefaultBrowserUtilsKey];
+}
