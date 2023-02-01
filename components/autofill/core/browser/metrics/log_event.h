@@ -49,6 +49,18 @@ enum class SkipStatus {
   kMaxValue = kFillingLimitReachedType
 };
 
+// Enum for different data types filled during autofill filling events,
+// including those of the SingleFieldFormFiller.
+// Values are recorded as metrics and must not change or be reused.
+enum class FillDataType {
+  kUndefined = 0,
+  kAutofillProfile = 1,
+  kCreditCard = 2,
+  kSingleFieldFormFillerAutocomplete = 3,
+  kSingleFieldFormFillerIban = 4,
+  kSingleFieldFormFillerPromoCode = 5,
+};
+
 // Compare two field log events of absl::monostate.
 bool AreCollapsible(const absl::monostate& event1,
                     const absl::monostate& event2);
@@ -69,6 +81,13 @@ bool AreCollapsible(const AskForValuesToFillFieldLogEvent& event1,
 template <typename IsRequired = void>
 struct TriggerFillFieldLogEventImpl {
   FillEventId fill_event_id = GetNextFillEventId();
+  // The type of filled data for the autofil event.
+  FillDataType data_type = IsRequired();
+  // The country_code associated with the information filled. Only present for
+  // autofill addresses (i.e. `AutofillEventType::kAutofillProfile`).
+  std::string associated_country_code = IsRequired();
+  // The time at which the event occurred.
+  base::Time timestamp = IsRequired();
 };
 using TriggerFillFieldLogEvent = TriggerFillFieldLogEventImpl<>;
 

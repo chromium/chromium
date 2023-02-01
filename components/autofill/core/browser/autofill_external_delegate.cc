@@ -260,7 +260,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
       driver_->RendererShouldFillFieldWithValue(query_field_.global_id(),
                                                 suggestion.main_text.value);
       manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
-                                                suggestion.frontend_id);
+                                                suggestion.frontend_id,
+                                                query_form_, query_field_);
       break;
     case POPUP_ITEM_ID_SCAN_CREDIT_CARD:
       manager_->client()->ScanCreditCard(base::BindOnce(
@@ -292,7 +293,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
     case POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS:
       manager_->OnSeePromoCodeOfferDetailsSelected(
           suggestion.GetPayload<GURL>(), suggestion.main_text.value,
-          suggestion.frontend_id);
+          suggestion.frontend_id, query_form_, query_field_);
       break;
     default:
       if (suggestion.frontend_id > 0) {  // Denotes an Autofill suggestion.

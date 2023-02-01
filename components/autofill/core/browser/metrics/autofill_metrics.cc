@@ -2606,7 +2606,12 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       }
     }
 
-    if (absl::holds_alternative<TriggerFillFieldLogEvent>(log_event)) {
+    if (auto* event = absl::get_if<TriggerFillFieldLogEvent>(&log_event)) {
+      // Ignore events which are not address or credit card fill events.
+      if (event->data_type != FillDataType::kAutofillProfile &&
+          event->data_type != FillDataType::kCreditCard) {
+        continue;
+      }
       suggestion_was_accepted = OptionalBoolean::kTrue;
     }
 

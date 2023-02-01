@@ -175,9 +175,10 @@ class AutofillManager
   // Invoked when the |form| needs to be autofilled, the |bounding_box| is
   // a window relative value of |field|.
   // |bounding_box| are viewport coordinates.
-  // |touch_to_fill_eligible| indicates if the Touch To Fill surface could be
-  // used for showing suggestion. Note that it doesn't guarantee the given form
-  // input field is eligible for autofilling.
+  // |form_element_was_clicked| indicates if any of the form fields were
+  // clicked/tapped. Used to understand if the Touch To Fill or the Fast
+  // Checkout surface could be used for showing suggestions. Note that it
+  // doesn't guarantee the given form input field is eligible for autofilling.
   // Virtual for testing.
   virtual void OnAskForValuesToFill(
       const FormData& form,

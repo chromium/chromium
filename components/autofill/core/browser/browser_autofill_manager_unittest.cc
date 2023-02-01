@@ -43,6 +43,7 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
+#include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_iban_manager.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
@@ -52,6 +53,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_external_delegate.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
@@ -799,7 +801,14 @@ class BrowserAutofillManagerTest : public testing::Test {
   auto Equal(const TriggerFillFieldLogEvent& expected) {
     return VariantWith<TriggerFillFieldLogEvent>(
         AllOf(Field("fill_event_id", &TriggerFillFieldLogEvent::fill_event_id,
-                    expected.fill_event_id)));
+                    expected.fill_event_id),
+              Field("data_type", &TriggerFillFieldLogEvent::data_type,
+                    expected.data_type),
+              Field("associated_country_code",
+                    &TriggerFillFieldLogEvent::associated_country_code,
+                    expected.associated_country_code),
+              Field("timestamp", &TriggerFillFieldLogEvent::timestamp,
+                    expected.timestamp)));
   }
 
   // Matches a FillFieldLogEvent by equality of fields. Use FillEventId(-1) if
@@ -1342,13 +1351,9 @@ TEST_F(BrowserAutofillManagerTest,
 // Test that the call is properly forwarded to its SingleFieldFormFillRouter.
 TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
   std::u16string test_value = u"TestValue";
-  EXPECT_CALL(*single_field_form_fill_router_,
-              OnSingleFieldSuggestionSelected(test_value,
-                                              POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY))
-      .Times(1);
-
-  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  FormFieldData field = form.fields[0];
 
   EXPECT_CALL(*single_field_form_fill_router_,
               OnSingleFieldSuggestionSelected(test_value,
@@ -1356,7 +1361,15 @@ TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
+      test_value, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, form, field);
+
+  EXPECT_CALL(*single_field_form_fill_router_,
+              OnSingleFieldSuggestionSelected(test_value,
+                                              POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY))
+      .Times(1);
+
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
+      test_value, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, form, field);
 
   EXPECT_CALL(
       *single_field_form_fill_router_,
@@ -1364,7 +1377,7 @@ TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, POPUP_ITEM_ID_IBAN_ENTRY);
+      test_value, POPUP_ITEM_ID_IBAN_ENTRY, form, field);
 
   EXPECT_CALL(*single_field_form_fill_router_,
               OnSingleFieldSuggestionSelected(
@@ -1372,7 +1385,7 @@ TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
+      test_value, POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY, form, field);
 }
 
 // Test that we return all address profile suggestions when all form fields
@@ -4053,8 +4066,9 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_AutocompleteOff) {
   FormData form = CreateTestCreditCardFormData(true, false);
 
   // Set the autocomplete=off on all fields.
-  for (FormFieldData field : form.fields)
+  for (FormFieldData field : form.fields) {
     field.should_autocomplete = false;
+  }
 
   FormsSeen({form});
 
@@ -5370,7 +5384,8 @@ class BrowserAutofillManagerWithLogEventsTest
   BrowserAutofillManagerWithLogEventsTest() {
     scoped_features_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillLogUKMEventsWithSampleRate,
-                              features::kAutofillParsingPatternProvider},
+                              features::kAutofillParsingPatternProvider,
+                              features::kAutofillFeedback},
         /*disabled_features=*/{});
   }
 
@@ -5450,6 +5465,7 @@ class BrowserAutofillManagerWithLogEventsTest
 // Test that we record TriggerFillFieldLogEvent for the field we click to show
 // the autofill suggestion and FillFieldLogEvent for every field in the form.
 TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
+  TestAutofillClock clock(AutofillClock::Now());
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -5490,7 +5506,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
       expected_events.push_back(TriggerFillFieldLogEvent{
           .fill_event_id = trigger_fill_field_log_event->fill_event_id,
-      });
+          .data_type = FillDataType::kAutofillProfile,
+          .associated_country_code = "US",
+          .timestamp = AutofillClock::Now()});
     }
     // All filled fields share the same expected FillFieldLogEvent.
     // The first TriggerFillFieldLogEvent determines the fill_event_id for
@@ -5511,6 +5529,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
 // field has nothing to fill or the field contains a user typed value already.
 TEST_F(BrowserAutofillManagerWithLogEventsTest,
        LogEventsFillPartlyManuallyFilledForm) {
+  TestAutofillClock clock(AutofillClock::Now());
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -5567,9 +5586,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
     if (autofill_field_ptr->parseable_label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
-      expected_events.push_back(TriggerFillFieldLogEvent{
-          .fill_event_id = fill_event_id,
-      });
+      expected_events.push_back(
+          TriggerFillFieldLogEvent{.fill_event_id = fill_event_id,
+                                   .data_type = FillDataType::kAutofillProfile,
+                                   .associated_country_code = "US",
+                                   .timestamp = AutofillClock::Now()});
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = fill_event_id,
           .had_value_before_filling = OptionalBoolean::kTrue,
@@ -5613,6 +5634,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 // Test that we record FillFieldLogEvents after filling a form twice, the first
 // time some field values are missing when autofilling.
 TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
+  TestAutofillClock clock(AutofillClock::Now());
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -5692,11 +5714,15 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
       expected_events.push_back(TriggerFillFieldLogEvent{
           .fill_event_id = trigger_fill_field_log_event1->fill_event_id,
-      });
+          .data_type = FillDataType::kAutofillProfile,
+          .associated_country_code = "US",
+          .timestamp = AutofillClock::Now()});
       expected_events.push_back(expected_fill_field_log_event1);
       expected_events.push_back(TriggerFillFieldLogEvent{
           .fill_event_id = trigger_fill_field_log_event2->fill_event_id,
-      });
+          .data_type = FillDataType::kAutofillProfile,
+          .associated_country_code = "US",
+          .timestamp = AutofillClock::Now()});
       expected_events.push_back(expected_fill_field_log_event2);
     } else if (autofill_field_ptr->parseable_label() == u"Phone Number" ||
                autofill_field_ptr->parseable_label() == u"Email") {
@@ -5724,6 +5750,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
 
 // Test that we record user typing log event correctly after autofill.
 TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
+  TestAutofillClock clock(AutofillClock::Now());
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -5787,7 +5814,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
       expected_events.push_back(TriggerFillFieldLogEvent{
           .fill_event_id = trigger_fill_field_log_event->fill_event_id,
-      });
+          .data_type = FillDataType::kAutofillProfile,
+          .associated_country_code = "US",
+          .timestamp = AutofillClock::Now()});
       expected_events.push_back(expected_fill_field_log_event);
       expected_events.push_back(TypingFieldLogEvent{
           .has_value_after_typing = OptionalBoolean::kTrue,
@@ -5804,6 +5833,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
 // and fills the credit card form with a suggestion.
 TEST_F(BrowserAutofillManagerWithLogEventsTest,
        LogEventsAutofillSuggestionsOrTouchToFill) {
+  TestAutofillClock clock(AutofillClock::Now());
   FormData form;
   CreateTestCreditCardFormData(&form, /*is_https=*/true,
                                /*use_month_type=*/false);
@@ -5865,7 +5895,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
       });
       expected_events.push_back(TriggerFillFieldLogEvent{
           .fill_event_id = trigger_fill_field_log_event->fill_event_id,
-      });
+          .data_type = FillDataType::kCreditCard,
+          .associated_country_code = "",
+          .timestamp = AutofillClock::Now()});
       // The "Name on Card" field is the trigger field, so it contains the
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
       expected_events.push_back(expected_fill_field_log_event);
@@ -6830,8 +6862,8 @@ class DeterminePossibleFieldTypesForUploadOfSelectTest
 TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
        DeterminePossibleFieldTypesForUploadOfSelect) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatureState(
-      features::kAutofillVoteForSelectOptionValues, GetParam());
+  features.InitWithFeatureState(features::kAutofillVoteForSelectOptionValues,
+                                GetParam());
 
   // Set up a profile and no credit cards.
   std::vector<AutofillProfile> profiles(1);

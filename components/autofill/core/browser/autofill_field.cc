@@ -398,9 +398,11 @@ void AutofillField::AppendLogEventIfNotRepeated(
   // |field_log_events_| reaches certain threshold, e.g. 1000.
 
   // Disable it for now until we find a selection criterion to select forms to
-  // be recorded into UKM.
+  // be recorded into UKM. Always enable for clients with
+  // `features::kAutofillFeedback` enabled.
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillLogUKMEventsWithSampleRate)) {
+          features::kAutofillLogUKMEventsWithSampleRate) &&
+      !base::FeatureList::IsEnabled(features::kAutofillFeedback)) {
     return;
   }
 

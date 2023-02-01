@@ -9973,9 +9973,9 @@ TEST_F(AutofillMetricsTest, FormInteractionsAreCounted) {
   SimulateUserChangedTextField(form, field);
   // Simulate Autocomplete filling twice.
   autofill_manager().OnSingleFieldSuggestionSelected(
-      u"", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
+      u"", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, form, field);
   autofill_manager().OnSingleFieldSuggestionSelected(
-      u"", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
+      u"", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, form, field);
   // Simulate Autofill filling.
   FillTestProfile(form);
   SubmitForm(form);

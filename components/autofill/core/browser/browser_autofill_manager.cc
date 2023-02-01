@@ -201,6 +201,49 @@ void LogValuePatternsMetric(const FormData& form) {
   }
 }
 
+FillDataType GetEventTypeFromSingleFieldSuggestionFrontendId(int frontend_id) {
+  switch (static_cast<PopupItemId>(frontend_id)) {
+    case POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY:
+      return FillDataType::kSingleFieldFormFillerAutocomplete;
+    case POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY:
+      return FillDataType::kSingleFieldFormFillerPromoCode;
+    case POPUP_ITEM_ID_IBAN_ENTRY:
+      return FillDataType::kSingleFieldFormFillerIban;
+    case POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
+    case POPUP_ITEM_ID_PASSWORD_ENTRY:
+    case POPUP_ITEM_ID_SEPARATOR:
+    case POPUP_ITEM_ID_CLEAR_FORM:
+    case POPUP_ITEM_ID_AUTOFILL_OPTIONS:
+    case POPUP_ITEM_ID_DATALIST_ENTRY:
+    case POPUP_ITEM_ID_SCAN_CREDIT_CARD:
+    case POPUP_ITEM_ID_TITLE:
+    case POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
+    case POPUP_ITEM_ID_USERNAME_ENTRY:
+    case POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
+    case POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY:
+    case POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS:
+    case POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN:
+    case POPUP_ITEM_ID_USE_VIRTUAL_CARD:
+    case POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE:
+    case POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY:
+    case POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY:
+    case POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN:
+    case POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY:
+    case POPUP_ITEM_ID_MIXED_FORM_MESSAGE:
+    case POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY:
+    case POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL:
+    case POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS:
+    case POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE:
+      NOTREACHED();
+  }
+  NOTREACHED();
+  return FillDataType::kUndefined;
+}
+
+std::string FetchCountryCodeFromProfile(const AutofillProfile* profile) {
+  return base::UTF16ToUTF8(profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
+}
+
 void LogLanguageMetrics(const translate::LanguageState* language_state) {
   if (language_state) {
     AutofillMetrics::LogFieldParsingTranslatedFormLanguageMetric(
@@ -1591,9 +1634,20 @@ void BrowserAutofillManager::RemoveCurrentSingleFieldSuggestion(
 
 void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
-    int frontend_id) {
+    int frontend_id,
+    const FormData& form,
+    const FormFieldData& field) {
   single_field_form_fill_router_->OnSingleFieldSuggestionSelected(value,
                                                                   frontend_id);
+
+  AutofillField* autofill_trigger_field = GetAutofillField(form, field);
+  if (!autofill_trigger_field) {
+    return;
+  }
+  autofill_trigger_field->AppendLogEventIfNotRepeated(TriggerFillFieldLogEvent{
+      .data_type = GetEventTypeFromSingleFieldSuggestionFrontendId(frontend_id),
+      .associated_country_code = "",
+      .timestamp = AutofillClock::Now()});
 }
 
 void BrowserAutofillManager::OnUserHideSuggestions(const FormData& form,
@@ -2143,7 +2197,19 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   // Log events on the field which triggers the Autofill suggestion.
   absl::optional<FillEventId> fill_event_id;
   if (action == mojom::RendererFormDataAction::kFill) {
-    TriggerFillFieldLogEvent trigger_fill_field_log_event;
+    std::string country_code;
+    if (const autofill::AutofillProfile** address =
+            absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
+      country_code = FetchCountryCodeFromProfile(*address);
+    }
+
+    TriggerFillFieldLogEvent trigger_fill_field_log_event =
+        TriggerFillFieldLogEvent{
+            .data_type = is_credit_card ? FillDataType::kCreditCard
+                                        : FillDataType::kAutofillProfile,
+            .associated_country_code = country_code,
+            .timestamp = AutofillClock::Now()};
+
     autofill_trigger_field->AppendLogEventIfNotRepeated(
         trigger_fill_field_log_event);
     fill_event_id = trigger_fill_field_log_event.fill_event_id;
@@ -3317,9 +3383,11 @@ void BrowserAutofillManager::ReportAutofillWebOTPMetrics(bool used_web_otp) {
 void BrowserAutofillManager::OnSeePromoCodeOfferDetailsSelected(
     const GURL& offer_details_url,
     const std::u16string& value,
-    int frontend_id) {
+    int frontend_id,
+    const FormData& form,
+    const FormFieldData& field) {
   client()->OpenPromoCodeOfferDetailsURL(offer_details_url);
-  OnSingleFieldSuggestionSelected(value, frontend_id);
+  OnSingleFieldSuggestionSelected(value, frontend_id, form, field);
 }
 
 void BrowserAutofillManager::SetAutofillSuggestionMethod(

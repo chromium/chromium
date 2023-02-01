@@ -205,7 +205,9 @@ class BrowserAutofillManager : public AutofillManager,
   // Invoked when the user selected |value| in a suggestions list from single
   // field filling. |frontend_id| is the PopupItemId of the suggestion.
   void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       int frontend_id);
+                                       int frontend_id,
+                                       const FormData& form,
+                                       const FormFieldData& field);
 
   // Invoked when the user selects the "Hide Suggestions" item in the
   // Autocomplete drop-down.
@@ -307,7 +309,9 @@ class BrowserAutofillManager : public AutofillManager,
   // then logs that the promo code suggestions footer was selected.
   void OnSeePromoCodeOfferDetailsSelected(const GURL& offer_details_url,
                                           const std::u16string& value,
-                                          int frontend_id);
+                                          int frontend_id,
+                                          const FormData& form,
+                                          const FormFieldData& field);
 
   // Sets where the accepted autofill suggestion came from: touch to fill,
   // keyboard accessory, etc.
@@ -452,7 +456,8 @@ class BrowserAutofillManager : public AutofillManager,
   void OnAfterProcessParsedForms(const DenseSet<FormType>& form_types) override;
 
  private:
-  // Keeps track of the filling context for a form, used to make refill attemps.
+  // Keeps track of the filling context for a form, used to make refill
+  // attempts.
   struct FillingContext {
     // |profile_or_credit_card| contains either AutofillProfile or CreditCard
     // and must be non-null.
