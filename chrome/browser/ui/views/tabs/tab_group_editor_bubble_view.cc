@@ -76,6 +76,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -511,8 +512,9 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     save_group_toggle_->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP));
 
-    bool is_saved =
+    const bool is_saved =
         tab_strip_model->group_model()->GetTabGroup(group_)->IsSaved();
+
     save_group_toggle_->SetIsOn(is_saved);
   }
 
@@ -531,8 +533,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       &kUngroupIcon));
 
   AddChildView(CreateMenuItem(
-      TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP,
-      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP),
+      TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP, GetTextForCloseButton(),
       base::BindRepeating(&TabGroupEditorBubbleView::CloseGroupPressed,
                           base::Unretained(this)),
       &kCloseGroupIcon));
@@ -614,7 +615,8 @@ tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
 }
 
 void TabGroupEditorBubbleView::UpdateGroup() {
-  absl::optional<int> selected_element = color_selector_->GetSelectedElement();
+  const absl::optional<int> selected_element =
+      color_selector_->GetSelectedElement();
   const TabStripModel *const model = browser_->tab_strip_model();
   TabGroup *const tab_group = model->group_model()->GetTabGroup(group_);
 
@@ -629,14 +631,36 @@ void TabGroupEditorBubbleView::UpdateGroup() {
         base::UserMetricsAction("TabGroups_TabGroupBubble_ColorChanged"));
   }
 
+  views::LabelButton* const close_or_delete_button =
+      views::AsViewClass<views::LabelButton>(
+          GetViewByID(TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP));
+  CHECK(close_or_delete_button);
+  close_or_delete_button->SetText(GetTextForCloseButton());
+
   tab_groups::TabGroupVisualData new_data(title_field_->GetText(),
                                           updated_color,
                                           current_visual_data->is_collapsed());
   tab_group->SetVisualData(new_data, tab_group->IsCustomized());
 }
 
+const std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() {
+  if (!base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
+    return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP);
+  }
+
+  const bool is_saved = browser_->tab_strip_model()
+                            ->group_model()
+                            ->GetTabGroup(group_)
+                            ->IsSaved();
+
+  return is_saved ? l10n_util::GetStringUTF16(
+                        IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP)
+                  : l10n_util::GetStringUTF16(
+                        IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP);
+}
+
 void TabGroupEditorBubbleView::OnSaveTogglePressed() {
-  SavedTabGroupKeyedService* saved_tab_group_service =
+  SavedTabGroupKeyedService* const saved_tab_group_service =
       SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
   CHECK(saved_tab_group_service);
 
