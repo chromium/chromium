@@ -5280,6 +5280,21 @@
             ]
         }
     ],
+    "GoogleTtsWithLanguagePacks": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExperimentalAccessibilityGoogleTtsLanguagePacks"
+                    ]
+                }
+            ]
+        }
+    ],
     "GridAndGroupAndroidM5": [
         {
             "platforms": [
@@ -6751,21 +6766,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "HandwritingLegacyRecognition"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LanguagePacksTts": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ExperimentalAccessibilityGoogleTtsLanguagePacks"
                     ]
                 }
             ]
