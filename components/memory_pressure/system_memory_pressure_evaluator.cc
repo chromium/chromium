@@ -13,7 +13,7 @@
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include "components/memory_pressure/system_memory_pressure_evaluator_fuchsia.h"
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 #include "components/memory_pressure/system_memory_pressure_evaluator_mac.h"
 #elif BUILDFLAG(IS_WIN)
 #include "components/memory_pressure/system_memory_pressure_evaluator_win.h"
@@ -35,7 +35,7 @@ SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
   return std::make_unique<
       memory_pressure::SystemMemoryPressureEvaluatorFuchsia>(
       monitor->CreateVoter());
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   return std::make_unique<memory_pressure::mac::SystemMemoryPressureEvaluator>(
       monitor->CreateVoter());
 #elif BUILDFLAG(IS_WIN)
