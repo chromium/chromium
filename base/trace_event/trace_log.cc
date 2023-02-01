@@ -55,6 +55,7 @@
 #include "base/tracing/perfetto_platform.h"
 #include "third_party/perfetto/include/perfetto/ext/trace_processor/export_json.h"  // nogncheck
 #include "third_party/perfetto/include/perfetto/trace_processor/trace_processor_storage.h"  // nogncheck
+#include "third_party/perfetto/include/perfetto/tracing/console_interceptor.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"  // nogncheck
 #include "third_party/perfetto/protos/perfetto/config/interceptor_config.gen.h"  // nogncheck
 #include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.gen.h"  // nogncheck

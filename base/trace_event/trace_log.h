@@ -31,11 +31,16 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
+
 namespace perfetto {
 namespace trace_processor {
 class TraceProcessorStorage;
 }  // namespace trace_processor
 }  // namespace perfetto
+
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 namespace base {
 class RefCountedString;
