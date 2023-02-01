@@ -22,6 +22,8 @@ swarming.pool_realm(
     ],
 )
 
+swarming.pool_realm(name = "pools/ci.shadow")
+
 swarming.pool_realm(name = "pools/try")
 
 swarming.pool_realm(
