@@ -9049,13 +9049,6 @@ const FeatureEntry kFeatureEntries[] = {
          "HighEfficiencyModeAvailable")},
 #endif
 
-    {"autofill-enable-merchant-opt-out-error-dialog",
-     flag_descriptions::kAutofillEnableMerchantOptOutErrorDialogName,
-     flag_descriptions::kAutofillEnableMerchantOptOutErrorDialogDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableMerchantOptOutErrorDialog)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"binding-manager-connection-limit",
      flag_descriptions::kBindingManagerConnectionLimitName,

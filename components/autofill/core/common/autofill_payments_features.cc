@@ -79,14 +79,6 @@ BASE_FEATURE(kAutofillEnableManualFallbackForVirtualCards,
              "AutofillEnableManualFallbackForVirtualCards",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, if the user attempts to use a virtual card on a website
-// where the merchant has opted out of virtual cards, a descriptive error
-// message will appear letting the user know that the merchant has opted
-// out.
-BASE_FEATURE(kAutofillEnableMerchantOptOutErrorDialog,
-             "AutofillEnableMerchantOptOutErrorDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, a notification will be displayed on page navigation if the
 // domain has an eligible merchant promo code offer or reward.
 BASE_FEATURE(kAutofillEnableOfferNotificationForPromoCodes,

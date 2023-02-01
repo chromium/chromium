@@ -368,34 +368,30 @@ void UnmaskCardRequest::ParseResponse(const base::Value::Dict& response) {
     NOTREACHED();
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableMerchantOptOutErrorDialog)) {
-    const base::Value::Dict* decline_details =
-        response.FindDict("decline_details");
-    if (decline_details) {
-      AutofillErrorDialogContext autofill_error_dialog_context;
+  const base::Value::Dict* decline_details =
+      response.FindDict("decline_details");
+  if (decline_details) {
+    AutofillErrorDialogContext autofill_error_dialog_context;
 
-      const std::string* user_message_title =
-          decline_details->FindString("user_message_title");
-      if (user_message_title && !user_message_title->empty()) {
-        autofill_error_dialog_context.server_returned_title =
-            *user_message_title;
-      }
+    const std::string* user_message_title =
+        decline_details->FindString("user_message_title");
+    if (user_message_title && !user_message_title->empty()) {
+      autofill_error_dialog_context.server_returned_title = *user_message_title;
+    }
 
-      const std::string* user_message_description =
-          decline_details->FindString("user_message_description");
-      if (user_message_description && !user_message_description->empty()) {
-        autofill_error_dialog_context.server_returned_description =
-            *user_message_description;
-      }
+    const std::string* user_message_description =
+        decline_details->FindString("user_message_description");
+    if (user_message_description && !user_message_description->empty()) {
+      autofill_error_dialog_context.server_returned_description =
+          *user_message_description;
+    }
 
-      // Only set the |autofill_error_dialog_context| in |response_details_| if
-      // both the title and description were returned from the server.
-      if (autofill_error_dialog_context.server_returned_title &&
-          autofill_error_dialog_context.server_returned_description) {
-        response_details_.autofill_error_dialog_context =
-            autofill_error_dialog_context;
-      }
+    // Only set the |autofill_error_dialog_context| in |response_details_| if
+    // both the title and description were returned from the server.
+    if (autofill_error_dialog_context.server_returned_title &&
+        autofill_error_dialog_context.server_returned_description) {
+      response_details_.autofill_error_dialog_context =
+          autofill_error_dialog_context;
     }
   }
 }
