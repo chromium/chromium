@@ -123,9 +123,9 @@ INSTANTIATE_TEST_SUITE_P(,
 
 // Test that CreateSaneScanner handles scanners which don't report an rs value.
 TEST(CreateSaneScanner, NoRsValue) {
-  absl::optional<Scanner> maybe_scanner =
-      CreateSaneScanner("name", ZeroconfScannerDetector::kEsclServiceType,
-                        "none", IpAddressFromString("101.102.103.104"), 8080);
+  absl::optional<Scanner> maybe_scanner = CreateSaneScanner(
+      "name", ZeroconfScannerDetector::kEsclServiceType, absl::nullopt,
+      IpAddressFromString("101.102.103.104"), 8080);
 
   ASSERT_TRUE(maybe_scanner.has_value());
 
@@ -147,8 +147,8 @@ TEST(CreateSaneScanner, InvalidIpAddress) {
 // Test that CreateSaneScanner fails for a generic, non-Epson scanner.
 TEST(CreateSaneScanner, GenericNonEpsonScanner) {
   absl::optional<Scanner> maybe_scanner = CreateSaneScanner(
-      "name", ZeroconfScannerDetector::kGenericScannerServiceType, "none",
-      IpAddressFromString("101.102.103.104"), 8080);
+      "name", ZeroconfScannerDetector::kGenericScannerServiceType,
+      absl::nullopt, IpAddressFromString("101.102.103.104"), 8080);
 
   EXPECT_FALSE(maybe_scanner.has_value());
 }

@@ -40,19 +40,19 @@ void SetSchemeAndProtocol(const std::string& service_type,
 // name on success and an empty string on failure.
 std::string CreateDeviceName(const std::string& name,
                              const std::string& scheme,
-                             const std::string& rs,
+                             const absl::optional<std::string>& rs,
                              const net::IPAddress& ip_address,
                              int port,
                              const std::string& backend_prefix) {
   std::string path;
-  if (rs == "none") {
+  if (!rs.has_value()) {
     path = "eSCL/";
-  } else if (!rs.empty()) {
+  } else if (!rs->empty()) {
     // Some scanners report rs=/eSCL instead of rs=eSCL. This causes problems
     // without our URL construction, so trim any leading slashes here. We also
     // trim trailing slashes in case any scanners report rs=eSCL/, since we
     // append a slash after.
-    base::TrimString(rs, "/", &path);
+    base::TrimString(rs.value(), "/", &path);
     path += "/";
   }
 
@@ -80,7 +80,7 @@ std::string CreateDeviceName(const std::string& name,
 
 absl::optional<Scanner> CreateSaneScanner(const std::string& name,
                                           const std::string& service_type,
-                                          const std::string& rs,
+                                          const absl::optional<std::string>& rs,
                                           const net::IPAddress& ip_address,
                                           int port,
                                           bool usable) {

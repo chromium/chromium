@@ -67,11 +67,11 @@ class ParsedMetadata {
   ParsedMetadata& operator=(const ParsedMetadata&) = delete;
   ~ParsedMetadata() = default;
 
-  const std::string& rs() const { return rs_; }
+  const absl::optional<std::string>& rs() const { return rs_; }
 
  private:
   // Used to construct the path for a device name URL.
-  std::string rs_ = "none";
+  absl::optional<std::string> rs_;
 };
 
 // Attempts to create a Scanner using the information in |service_description|

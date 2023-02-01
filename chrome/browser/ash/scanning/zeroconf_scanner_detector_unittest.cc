@@ -39,8 +39,9 @@ MATCHER_P(ScannerIsEqual, expected_scanner, "") {
 }
 
 MATCHER_P(ScannersAreEqual, expected_scanners, "") {
-  if (arg.size() != expected_scanners.size())
+  if (arg.size() != expected_scanners.size()) {
     return false;
+  }
 
   std::vector<Scanner> sorted_expected = expected_scanners;
   std::vector<Scanner> sorted_actual = arg;
@@ -52,8 +53,9 @@ MATCHER_P(ScannersAreEqual, expected_scanners, "") {
             [](const Scanner& a, const Scanner& b) -> bool {
               return a.display_name < b.display_name;
             });
-  for (size_t i = 0; i < sorted_expected.size(); ++i)
+  for (size_t i = 0; i < sorted_expected.size(); ++i) {
     EXPECT_THAT(sorted_actual[i], ScannerIsEqual(sorted_expected[i]));
+  }
 
   return true;
 }
@@ -91,7 +93,7 @@ int GetPortFor(const std::string& name) {
 // MakeServiceDescription().
 Scanner MakeExpectedScanner(const std::string& name,
                             const std::string& service_type,
-                            const std::string& rs) {
+                            const absl::optional<std::string>& rs) {
   const net::IPAddress ip_address = GetIPAddressFor(name);
   const int port = GetPortFor(name);
   auto scanner = CreateSaneScanner(name, service_type, rs, ip_address, port);
@@ -101,8 +103,9 @@ Scanner MakeExpectedScanner(const std::string& name,
 // Merges all of the Scanners in |scanners| into a single Scanner. Used to
 // create the expected result of a scanner announced by more than one lister.
 Scanner MergeScanners(const std::vector<Scanner>& scanners) {
-  if (scanners.empty())
+  if (scanners.empty()) {
     return Scanner();
+  }
 
   Scanner merged_scanner = scanners[0];
   for (auto it = std::next(scanners.begin()); it != scanners.end(); ++it) {
@@ -118,15 +121,18 @@ Scanner MergeScanners(const std::vector<Scanner>& scanners) {
 // Creates a deterministic ServiceDescription based on the service name and
 // type. See the note on MakeExpectedScanner() above. This must be kept in sync
 // with MakeExpectedScanner().
-ServiceDescription MakeServiceDescription(const std::string& name,
-                                          const std::string& service_type,
-                                          const std::string& rs) {
+ServiceDescription MakeServiceDescription(
+    const std::string& name,
+    const std::string& service_type,
+    const absl::optional<std::string>& rs) {
   ServiceDescription service_description;
   service_description.service_name = base::StrCat({name, ".", service_type});
   service_description.address.set_host(base::StrCat({name, ".local"}));
   service_description.address.set_port(GetPortFor(name));
   service_description.ip_address = GetIPAddressFor(name);
-  service_description.metadata.push_back(base::StrCat({"rs=", rs}));
+  if (rs.has_value()) {
+    service_description.metadata.push_back(base::StrCat({"rs=", rs.value()}));
+  }
   return service_description;
 }
 
@@ -343,7 +349,7 @@ TEST_F(ZeroconfScannerDetectorTest, InvalidMetadata) {
   CreateDetector();
   CompleteTasks();
   std::vector<Scanner> expected_scanners = {MakeExpectedScanner(
-      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, "none")};
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, absl::nullopt)};
   EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
 }
 
@@ -401,22 +407,22 @@ TEST_F(ZeroconfScannerDetectorTest, Rs) {
 // the device name.
 TEST_F(ZeroconfScannerDetectorTest, NoRs) {
   escl_lister_->Announce(MakeServiceDescription(
-      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, "none"));
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, absl::nullopt));
   CreateDetector();
   CompleteTasks();
   std::vector<Scanner> expected_scanners = {MakeExpectedScanner(
-      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, "none")};
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, absl::nullopt)};
   EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
 }
 
 // Test that a detected scanner can be removed.
 TEST_F(ZeroconfScannerDetectorTest, RemoveAddedScanner) {
   escl_lister_->Announce(MakeServiceDescription(
-      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, "none"));
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, absl::nullopt));
   CreateDetector();
   CompleteTasks();
   std::vector<Scanner> expected_scanners = {MakeExpectedScanner(
-      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, "none")};
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, absl::nullopt)};
   EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
   escl_lister_->Remove("Scanner1");
   CompleteTasks();
@@ -427,11 +433,11 @@ TEST_F(ZeroconfScannerDetectorTest, RemoveAddedScanner) {
 // Test that removing an undetected scanner is ignored.
 TEST_F(ZeroconfScannerDetectorTest, RemoveUnaddedScanner) {
   escl_lister_->Announce(MakeServiceDescription(
-      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, "none"));
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, absl::nullopt));
   CreateDetector();
   CompleteTasks();
   std::vector<Scanner> expected_scanners = {MakeExpectedScanner(
-      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, "none")};
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType, absl::nullopt)};
   EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
   escl_lister_->Remove("Scanner2");
   CompleteTasks();
@@ -466,26 +472,26 @@ TEST_F(ZeroconfScannerDetectorTest, CacheFlush) {
   escl_lister_->Announce(MakeServiceDescription(
       "Scanner1", ZeroconfScannerDetector::kEsclServiceType, ""));
   escl_lister_->Announce(MakeServiceDescription(
-      "Scanner2", ZeroconfScannerDetector::kEsclServiceType, "none"));
+      "Scanner2", ZeroconfScannerDetector::kEsclServiceType, absl::nullopt));
   escls_lister_->Announce(MakeServiceDescription(
       "Scanner3", ZeroconfScannerDetector::kEsclsServiceType, ""));
   escls_lister_->Announce(MakeServiceDescription(
       "Scanner4", ZeroconfScannerDetector::kEsclsServiceType, "test"));
   escl_lister_->Announce(MakeServiceDescription(
-      "Scanner5", ZeroconfScannerDetector::kEsclServiceType, "none"));
+      "Scanner5", ZeroconfScannerDetector::kEsclServiceType, absl::nullopt));
   CreateDetector();
   CompleteTasks();
   std::vector<Scanner> expected_scanners = {
       MakeExpectedScanner("Scanner1", ZeroconfScannerDetector::kEsclServiceType,
                           ""),
       MakeExpectedScanner("Scanner2", ZeroconfScannerDetector::kEsclServiceType,
-                          "none"),
+                          absl::nullopt),
       MakeExpectedScanner("Scanner3",
                           ZeroconfScannerDetector::kEsclsServiceType, ""),
       MakeExpectedScanner("Scanner4",
                           ZeroconfScannerDetector::kEsclsServiceType, "test"),
       MakeExpectedScanner("Scanner5", ZeroconfScannerDetector::kEsclServiceType,
-                          "none")};
+                          absl::nullopt)};
   EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
   escls_lister_->Clear();
   CompleteTasks();
