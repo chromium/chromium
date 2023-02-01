@@ -268,8 +268,14 @@ void AddStrings(content::WebUIDataSource* html_source) {
       "images/profile_type_choice_left_illustration.svg",
       IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_LEFT_ILLUSTRATION_SVG);
   html_source->AddResourcePath(
+      "images/profile_type_choice_left_illustration_dark.svg",
+      IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_LEFT_ILLUSTRATION_DARK_SVG);
+  html_source->AddResourcePath(
       "images/profile_type_choice_right_illustration.svg",
       IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_RIGHT_ILLUSTRATION_SVG);
+  html_source->AddResourcePath(
+      "images/profile_type_choice_right_illustration_dark.svg",
+      IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_RIGHT_ILLUSTRATION_DARK_SVG);
 }
 
 }  // namespace
