@@ -292,45 +292,60 @@ CompositorFrameReporter::ProcessedVizBreakdown::Iterator::Iterator(
     bool skip_swap_start_to_swap_end)
     : owner_(owner), skip_swap_start_to_swap_end_(skip_swap_start_to_swap_end) {
   DCHECK(owner_);
+  SkipBreakdownsIfNecessary();
 }
 
 CompositorFrameReporter::ProcessedVizBreakdown::Iterator::~Iterator() = default;
 
 bool CompositorFrameReporter::ProcessedVizBreakdown::Iterator::IsValid() const {
-  return index_ < std::size(owner_->list_) && owner_->list_[index_];
+  return index_ < std::size(owner_->list_);
 }
 
 void CompositorFrameReporter::ProcessedVizBreakdown::Iterator::Advance() {
-  DCHECK(IsValid());
+  DCHECK(HasValue());
   index_++;
-  if (static_cast<VizBreakdown>(index_) == VizBreakdown::kSwapStartToSwapEnd &&
-      skip_swap_start_to_swap_end_) {
-    index_++;
-  }
+  SkipBreakdownsIfNecessary();
 }
 
 VizBreakdown
 CompositorFrameReporter::ProcessedVizBreakdown::Iterator::GetBreakdown() const {
-  DCHECK(IsValid());
+  DCHECK(HasValue());
   return static_cast<VizBreakdown>(index_);
 }
 
 base::TimeTicks
 CompositorFrameReporter::ProcessedVizBreakdown::Iterator::GetStartTime() const {
-  DCHECK(IsValid());
+  DCHECK(HasValue());
   return owner_->list_[index_]->first;
 }
 
 base::TimeTicks
 CompositorFrameReporter::ProcessedVizBreakdown::Iterator::GetEndTime() const {
-  DCHECK(IsValid());
+  DCHECK(HasValue());
   return owner_->list_[index_]->second;
 }
 
 base::TimeDelta
 CompositorFrameReporter::ProcessedVizBreakdown::Iterator::GetDuration() const {
-  DCHECK(IsValid());
+  DCHECK(HasValue());
   return owner_->list_[index_]->second - owner_->list_[index_]->first;
+}
+
+bool CompositorFrameReporter::ProcessedVizBreakdown::Iterator::HasValue()
+    const {
+  DCHECK(IsValid());
+  return owner_->list_[index_].has_value();
+}
+
+void CompositorFrameReporter::ProcessedVizBreakdown::Iterator::
+    SkipBreakdownsIfNecessary() {
+  while (IsValid() &&
+         (!HasValue() ||
+          (GetBreakdown() ==
+               CompositorFrameReporter::VizBreakdown::kSwapStartToSwapEnd &&
+           skip_swap_start_to_swap_end_))) {
+    index_++;
+  }
 }
 
 // CompositorFrameReporter::ProcessedVizBreakdown ==============================

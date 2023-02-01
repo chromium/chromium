@@ -103,19 +103,25 @@ class CC_EXPORT CompositorFrameReporter {
     kStageTypeCount
   };
 
+  // Note that the values of `VizBreakdown` enum should be defined in order,
+  // (i.e. a breakdown that happens earlier in the pipeline should appear
+  // earlier in `VizBreakdown`) for traces to record them correctly. The only
+  // exception is `kSwapStartToSwapEnd` and its breakdowns as we either record
+  // the former or the latter in a trace, but not both.
   enum class VizBreakdown {
     kSubmitToReceiveCompositorFrame = 0,
     kReceivedCompositorFrameToStartDraw = 1,
     kStartDrawToSwapStart = 2,
     kSwapStartToSwapEnd = 3,
-    kSwapEndToPresentationCompositorFrame = 4,
 
     // This is a breakdown of SwapStartToSwapEnd stage which is optionally
     // recorded if querying these timestamps is supported by the platform.
-    kSwapStartToBufferAvailable = 5,
-    kBufferAvailableToBufferReady = 6,
-    kBufferReadyToLatch = 7,
-    kLatchToSwapEnd = 8,
+    kSwapStartToBufferAvailable = 4,
+    kBufferAvailableToBufferReady = 5,
+    kBufferReadyToLatch = 6,
+    kLatchToSwapEnd = 7,
+
+    kSwapEndToPresentationCompositorFrame = 8,
     kBreakdownCount
   };
 
@@ -216,6 +222,9 @@ class CC_EXPORT CompositorFrameReporter {
       base::TimeDelta GetDuration() const;
 
      private:
+      bool HasValue() const;
+      void SkipBreakdownsIfNecessary();
+
       raw_ptr<const ProcessedVizBreakdown> owner_;
       const bool skip_swap_start_to_swap_end_;
 

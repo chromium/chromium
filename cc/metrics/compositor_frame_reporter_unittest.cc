@@ -214,8 +214,8 @@ class CompositorFrameReporterTest : public testing::Test {
   }
 
   void VerifyLatencyInfo(
-      CompositorFrameReporter::CompositorLatencyInfo& expected_info,
-      CompositorFrameReporter::CompositorLatencyInfo& actual_info) {
+      const CompositorFrameReporter::CompositorLatencyInfo& expected_info,
+      const CompositorFrameReporter::CompositorLatencyInfo& actual_info) {
     EXPECT_EQ(expected_info.top_level_stages, actual_info.top_level_stages);
     EXPECT_EQ(expected_info.blink_breakdown_stages,
               actual_info.blink_breakdown_stages);
@@ -933,8 +933,8 @@ TEST_F(CompositorFrameReporterTest, StageLatencyGeneralPrediction) {
       base::Microseconds(1),  base::Microseconds(4)};
   expected_latency_predictions1.viz_breakdown_stages = {
       base::Microseconds(1), base::Microseconds(2), base::Microseconds(3),
-      base::Microseconds(4), base::Microseconds(5), base::Microseconds(0),
-      base::Microseconds(0), base::Microseconds(0), base::Microseconds(0)};
+      base::Microseconds(4), base::Microseconds(0), base::Microseconds(0),
+      base::Microseconds(0), base::Microseconds(0), base::Microseconds(5)};
   expected_latency_predictions1.total_latency = base::Microseconds(85);
   expected_latency_predictions1.total_blink_latency = base::Microseconds(55);
   expected_latency_predictions1.total_viz_latency = base::Microseconds(15);
@@ -953,8 +953,8 @@ TEST_F(CompositorFrameReporterTest, StageLatencyGeneralPrediction) {
       base::Microseconds(1),  base::Microseconds(4)};
   expected_latency_predictions2.viz_breakdown_stages = {
       base::Microseconds(1), base::Microseconds(2), base::Microseconds(3),
-      base::Microseconds(4), base::Microseconds(5), base::Microseconds(0),
-      base::Microseconds(0), base::Microseconds(0), base::Microseconds(0)};
+      base::Microseconds(4), base::Microseconds(0), base::Microseconds(0),
+      base::Microseconds(0), base::Microseconds(0), base::Microseconds(5)};
   expected_latency_predictions2.total_latency = base::Microseconds(28);
   expected_latency_predictions2.total_blink_latency = base::Microseconds(55);
   expected_latency_predictions2.total_viz_latency = base::Microseconds(15);
@@ -1156,11 +1156,11 @@ TEST_F(CompositorFrameReporterTest, StageLatencyLargeDurationPrediction) {
       base::Microseconds(200000),  base::Microseconds(100000),
       base::Microseconds(400000)};
   expected_latency_predictions1.viz_breakdown_stages = {
-      base::Microseconds(1000000), base::Microseconds(2000000),
-      base::Microseconds(3000000), base::Microseconds(0),
-      base::Microseconds(5000000), base::Microseconds(15000000),
-      base::Microseconds(700000),  base::Microseconds(800000),
-      base::Microseconds(1000000)};
+      base::Microseconds(1000000),  base::Microseconds(2000000),
+      base::Microseconds(3000000),  base::Microseconds(0),
+      base::Microseconds(15000000), base::Microseconds(700000),
+      base::Microseconds(800000),   base::Microseconds(1000000),
+      base::Microseconds(5000000)};
   expected_latency_predictions1.total_latency = base::Microseconds(62000000);
   expected_latency_predictions1.total_blink_latency =
       base::Microseconds(5500000);
@@ -1184,9 +1184,9 @@ TEST_F(CompositorFrameReporterTest, StageLatencyLargeDurationPrediction) {
   expected_latency_predictions2.viz_breakdown_stages = {
       base::Microseconds(625000),  base::Microseconds(875000),
       base::Microseconds(1500000), base::Microseconds(0),
-      base::Microseconds(1706075), base::Microseconds(9750000),
-      base::Microseconds(925000),  base::Microseconds(1100000),
-      base::Microseconds(1893925)};
+      base::Microseconds(9750000), base::Microseconds(925000),
+      base::Microseconds(1100000), base::Microseconds(1893925),
+      base::Microseconds(1706075)};
   expected_latency_predictions2.total_latency = base::Microseconds(43977650);
   expected_latency_predictions2.total_blink_latency =
       base::Microseconds(4375000);
@@ -1226,9 +1226,9 @@ TEST_F(CompositorFrameReporterTest, StageLatencyLargeDurationPrediction) {
   actual_latency_predictions2.viz_breakdown_stages = {
       base::Microseconds(500000),  base::Microseconds(500000),
       base::Microseconds(1000000), base::Microseconds(0),
-      base::Microseconds(608100),  base::Microseconds(8000000),
-      base::Microseconds(1000000), base::Microseconds(1200000),
-      base::Microseconds(2191900)};
+      base::Microseconds(8000000), base::Microseconds(1000000),
+      base::Microseconds(1200000), base::Microseconds(2191900),
+      base::Microseconds(608100)};
   actual_latency_predictions2.total_latency = base::Microseconds(37970200);
   actual_latency_predictions2.total_blink_latency = base::Microseconds(4000000);
   actual_latency_predictions2.total_viz_latency = base::Microseconds(15000000);
@@ -1295,9 +1295,9 @@ TEST_F(CompositorFrameReporterTest, StageLatencyMultiplePrediction) {
   expected_latency_predictions.viz_breakdown_stages = {
       base::Microseconds(330000), base::Microseconds(23000),
       base::Microseconds(170000), base::Microseconds(280000),
-      base::Microseconds(30000),  base::Microseconds(0),
       base::Microseconds(0),      base::Microseconds(0),
-      base::Microseconds(0)};
+      base::Microseconds(0),      base::Microseconds(0),
+      base::Microseconds(30000)};
   expected_latency_predictions.total_latency = base::Microseconds(850500);
   expected_latency_predictions.total_blink_latency = base::Microseconds(0);
   expected_latency_predictions.total_viz_latency = base::Microseconds(833000);
@@ -1331,9 +1331,9 @@ TEST_F(CompositorFrameReporterTest, StageLatencyMultiplePrediction) {
   expected_latency_predictions.viz_breakdown_stages = {
       base::Microseconds(330000), base::Microseconds(23000),
       base::Microseconds(170000), base::Microseconds(280000),
-      base::Microseconds(30000),  base::Microseconds(0),
       base::Microseconds(0),      base::Microseconds(0),
-      base::Microseconds(0)};
+      base::Microseconds(0),      base::Microseconds(0),
+      base::Microseconds(30000)};
   expected_latency_predictions.total_latency = base::Microseconds(850500);
   expected_latency_predictions.total_blink_latency = base::Microseconds(0);
   expected_latency_predictions.total_viz_latency = base::Microseconds(833000);
@@ -1385,9 +1385,9 @@ TEST_F(CompositorFrameReporterTest, StageLatencyMultiplePrediction) {
   expected_latency_predictions.viz_breakdown_stages = {
       base::Microseconds(330000), base::Microseconds(23000),
       base::Microseconds(170000), base::Microseconds(280000),
-      base::Microseconds(30000),  base::Microseconds(0),
       base::Microseconds(0),      base::Microseconds(0),
-      base::Microseconds(0)};
+      base::Microseconds(0),      base::Microseconds(0),
+      base::Microseconds(30000)};
   expected_latency_predictions.total_latency = base::Microseconds(850750);
   expected_latency_predictions.total_blink_latency = base::Microseconds(0);
   expected_latency_predictions.total_viz_latency = base::Microseconds(833000);
@@ -1439,9 +1439,9 @@ TEST_F(CompositorFrameReporterTest, StageLatencyMultiplePrediction) {
   expected_latency_predictions.viz_breakdown_stages = {
       base::Microseconds(330000), base::Microseconds(23000),
       base::Microseconds(170000), base::Microseconds(280000),
-      base::Microseconds(30000),  base::Microseconds(0),
       base::Microseconds(0),      base::Microseconds(0),
-      base::Microseconds(0)};
+      base::Microseconds(0),      base::Microseconds(0),
+      base::Microseconds(30000)};
   expected_latency_predictions.total_latency = base::Microseconds(850750);
   expected_latency_predictions.total_blink_latency = base::Microseconds(0);
   expected_latency_predictions.total_viz_latency = base::Microseconds(833000);
@@ -1528,9 +1528,9 @@ TEST_F(CompositorFrameReporterTest, StageLatencyMultiplePrediction) {
   expected_latency_predictions.viz_breakdown_stages = {
       base::Microseconds(332500), base::Microseconds(22250),
       base::Microseconds(167500), base::Microseconds(280750),
-      base::Microseconds(30000),  base::Microseconds(0),
       base::Microseconds(0),      base::Microseconds(0),
-      base::Microseconds(0)};
+      base::Microseconds(0),      base::Microseconds(0),
+      base::Microseconds(30000)};
   expected_latency_predictions.total_latency = base::Microseconds(877387);
   expected_latency_predictions.total_blink_latency = base::Microseconds(60000);
   expected_latency_predictions.total_viz_latency = base::Microseconds(833000);
