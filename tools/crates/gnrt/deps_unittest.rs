@@ -6,6 +6,7 @@ use rust_gtest_interop::prelude::*;
 
 use gnrt_lib::deps::*;
 
+use std::collections::HashSet;
 use std::str::FromStr;
 
 use cargo_platform::Platform;
@@ -14,7 +15,7 @@ use semver::Version;
 #[gtest(DepsTest, CollectDependenciesOnSampleOutput)]
 fn test() {
     let metadata: cargo_metadata::Metadata = serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
-    let mut dependencies = collect_dependencies(&metadata, None);
+    let mut dependencies = collect_dependencies(&metadata, None, None);
     dependencies.sort_by(|left, right| {
         left.package_name.cmp(&right.package_name).then(left.version.cmp(&right.version))
     });
@@ -321,7 +322,7 @@ fn test() {
     let metadata: cargo_metadata::Metadata = serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
 
     // Start from "foo" workspace member.
-    let mut dependencies = collect_dependencies(&metadata, Some(vec!["foo".to_string()]));
+    let mut dependencies = collect_dependencies(&metadata, Some(vec!["foo".to_string()]), None);
     dependencies.sort_by(|left, right| {
         left.package_name.cmp(&right.package_name).then(left.version.cmp(&right.version))
     });
@@ -346,6 +347,24 @@ fn test() {
         dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
         &["alloc", "std"]
     );
+}
+
+#[gtest(DepsTest, ExcludeDependency)]
+fn test() {
+    let metadata: cargo_metadata::Metadata = serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
+
+    let deps_with_exclude =
+        collect_dependencies(&metadata, None, Some(vec!["serde_derive".to_string()]));
+    let deps_without_exclude = collect_dependencies(&metadata, None, None);
+
+    let pkgs_with_exclude: HashSet<&str> =
+        deps_with_exclude.iter().map(|dep| dep.package_name.as_str()).collect();
+    let pkgs_without_exclude: HashSet<&str> =
+        deps_without_exclude.iter().map(|dep| dep.package_name.as_str()).collect();
+    let mut diff: Vec<&str> =
+        pkgs_without_exclude.difference(&pkgs_with_exclude).copied().collect();
+    diff.sort_unstable();
+    expect_eq!(diff, ["proc-macro2", "quote", "serde_derive", "syn", "unicode-ident",]);
 }
 
 // test_metadata.json contains the output of "cargo metadata" run in

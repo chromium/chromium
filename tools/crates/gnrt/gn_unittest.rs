@@ -23,6 +23,7 @@ fn test() {
                     epoch: Some(Epoch::Major(1)),
                     crate_type: "rlib".to_string(),
                     crate_root: "crate/src/lib.rs".to_string(),
+                    no_std: false,
                     edition: "2021".to_string(),
                     cargo_pkg_version: "1.2.3".to_string(),
                     cargo_pkg_authors: Some("Somebody <somebody@foo.org>".to_string()),
@@ -54,7 +55,7 @@ fn test() {
     };
     expect_eq_diff(
         format!("{}", build_file.display()),
-        r#"# Copyright 2022 The Chromium Authors
+        r#"# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -109,6 +110,7 @@ variables = []
                         epoch: Some(Epoch::Major(1)),
                         crate_type: "rlib".to_string(),
                         crate_root: "crate/src/lib.rs".to_string(),
+                        no_std: false,
                         edition: "2021".to_string(),
                         cargo_pkg_version: "1.2.3".to_string(),
                         cargo_pkg_authors: None,
@@ -137,7 +139,7 @@ variables = []
     };
     expect_eq_diff(
         format!("{}", build_file.display()),
-        r#"# Copyright 2022 The Chromium Authors
+        r#"# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -182,6 +184,7 @@ testonly = true
                     epoch: Some(Epoch::Major(1)),
                     crate_type: "rlib".to_string(),
                     crate_root: "crate/src/lib.rs".to_string(),
+                    no_std: false,
                     edition: "2021".to_string(),
                     cargo_pkg_version: "1.2.3".to_string(),
                     cargo_pkg_authors: None,
@@ -228,7 +231,7 @@ testonly = true
     };
     expect_eq_diff(
         format!("{}", build_file.display()),
-        r#"# Copyright 2022 The Chromium Authors
+        r#"# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 

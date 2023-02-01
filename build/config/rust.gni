@@ -37,6 +37,12 @@ declare_args() {
   # TODO(https://crbug.com/1245714): fix std handling and check `current_os`.
   use_chromium_rust_toolchain = target_os == "linux" && host_os == "linux"
 
+  # Build libstd locally with GN and use that instead of the prebuilts, where
+  # applicable. If this is false the prebuilt libstd will always be used. If
+  # true, the local build is only used with the Chromium Rust toolchain and only
+  # on supported platforms and GN targets.
+  enable_local_libstd = true
+
   # Chromium currently has a Rust toolchain for Android and Linux, but
   # if you wish to experiment on more platforms you can use this
   # argument to specify an alternative toolchain.
@@ -179,6 +185,33 @@ if (is_linux) {
 }
 
 assert(!toolchain_has_rust || rust_abi_target != "")
+
+# This variable is passed to the Rust libstd build.
+rust_target_arch = ""
+if (current_cpu == "x86") {
+  rust_target_arch = "x86"
+} else if (current_cpu == "x64") {
+  rust_target_arch = "x86_64"
+} else if (current_cpu == "arm") {
+  rust_target_arch = "arm"
+} else if (current_cpu == "arm64") {
+  rust_target_arch = "aarch64"
+} else if (current_cpu == "mipsel") {
+  rust_target_arch = "mips"
+} else if (current_cpu == "mips64el") {
+  rust_target_arch = "mips64"
+} else if (current_cpu == "s390x") {
+  rust_target_arch = "s390x"
+} else if (current_cpu == "ppc64") {
+  rust_target_arch = "powerpc64"
+} else if (current_cpu == "riscv64") {
+  rust_target_arch = "riscv64"
+}
+
+assert(!toolchain_has_rust || rust_target_arch != "")
+
+# Determine whether the local libstd can and should be built.
+local_libstd_supported = enable_local_libstd && use_chromium_rust_toolchain
 
 # Arguments for Rust invocation.
 # This is common between gcc/clang, Mac and Windows toolchains so specify once,

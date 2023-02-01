@@ -1,0 +1,16 @@
+[package]
+name = "fake_root"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+test = { path = "../../../../third_party/rust-toolchain/lib/rustlib/src/rust/library/test" }
+
+[dependencies.std]
+path = "../../../../third_party/rust-toolchain/lib/rustlib/src/rust/library/std"
+features = ["backtrace", "profiler"]
+
+[patch.crates-io]
+rustc-std-workspace-core = { path = '../../../../third_party/rust-toolchain/lib/rustlib/src/rust/library/rustc-std-workspace-core' }
+rustc-std-workspace-alloc = { path = '../../../../third_party/rust-toolchain/lib/rustlib/src/rust/library/rustc-std-workspace-alloc' }
+rustc-std-workspace-std = { path = '../../../../third_party/rust-toolchain/lib/rustlib/src/rust/library/rustc-std-workspace-std' }

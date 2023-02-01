@@ -30,7 +30,11 @@ impl BuildFile {
     /// Return a `fmt::Display` instance for the build file. Formatting this
     /// will write an entire valid BUILD.gn file.
     pub fn display(&self) -> impl '_ + fmt::Display {
-        BuildFileFormatter { build_file: self }
+        BuildFileFormatter { build_file: self, with_preamble: true }
+    }
+
+    pub fn display_no_preamble(&self) -> impl '_ + fmt::Display {
+        BuildFileFormatter { build_file: self, with_preamble: false }
     }
 }
 
@@ -49,6 +53,7 @@ pub struct RuleConcrete {
     pub epoch: Option<Epoch>,
     pub crate_type: String,
     pub crate_root: String,
+    pub no_std: bool,
     pub edition: String,
     pub cargo_pkg_version: String,
     pub cargo_pkg_authors: Option<String>,
@@ -82,6 +87,12 @@ pub enum Rule {
     },
 }
 
+impl Rule {
+    pub fn display<'a>(&'a self, name: &'a str) -> impl 'a + fmt::Display {
+        RuleFormatter { rule: self, name }
+    }
+}
+
 /// A (possibly conditional) dependency on another GN rule.
 ///
 /// Has an `Ord` instance based on an arbitrary ordering of `Condition`s so that
@@ -108,7 +119,7 @@ impl RuleDep {
 ///   script for each package.
 /// * `deps_visibility` is the visibility for each package, defining if it can
 ///   be used outside of third-party code and outside of tests.
-pub fn build_files_from_deps<'a, 'b, Iter: IntoIterator<Item = &'a deps::Package>>(
+pub fn build_files_from_chromium_deps<'a, 'b, Iter: IntoIterator<Item = &'a deps::Package>>(
     deps: Iter,
     paths: &'b paths::ChromiumPaths,
     metadata: &HashMap<ChromiumVendoredCrate, CargoPackage>,
@@ -118,7 +129,7 @@ pub fn build_files_from_deps<'a, 'b, Iter: IntoIterator<Item = &'a deps::Package
 ) -> HashMap<ChromiumVendoredCrate, BuildFile> {
     deps.into_iter()
         .filter_map(|dep| {
-            make_build_file_for_dep(
+            make_build_file_for_chromium_dep(
                 dep,
                 paths,
                 metadata,
@@ -130,9 +141,95 @@ pub fn build_files_from_deps<'a, 'b, Iter: IntoIterator<Item = &'a deps::Package
         .collect()
 }
 
+pub fn build_file_from_std_deps<'a, 'b, Iter: IntoIterator<Item = &'a deps::Package>>(
+    deps: Iter,
+    paths: &'b paths::ChromiumPaths,
+    extra_gn_for_pkg_name: &HashMap<String, String>,
+) -> BuildFile {
+    let rules = deps
+        .into_iter()
+        .map(|dep| {
+            build_rule_from_std_dep(
+                dep,
+                paths,
+                &extra_gn_for_pkg_name.get(&dep.package_name).map(|s| s.as_str()).unwrap_or(""),
+            )
+        })
+        .collect();
+
+    BuildFile { rules }
+}
+
+pub fn build_rule_from_std_dep(
+    dep: &deps::Package,
+    paths: &paths::ChromiumPaths,
+    extra_gn: &str,
+) -> (String, Rule) {
+    let lib_target = dep.lib_target.as_ref().expect("dependency had no lib target");
+    let crate_root_from_src = paths.to_gn_abs_path(&lib_target.root).unwrap();
+    let normalize_target_name = |package_name: &str| package_name.replace("-", "_");
+    let cargo_pkg_authors =
+        if dep.authors.is_empty() { None } else { Some(dep.authors.join(", ")) };
+
+    let mut rule = RuleConcrete {
+        crate_name: None,
+        epoch: None,
+        crate_type: "rlib".to_string(),
+        crate_root: format!("//{crate_root_from_src}"),
+        no_std: true,
+        edition: dep.edition.clone(),
+        cargo_pkg_version: dep.version.to_string(),
+        cargo_pkg_authors,
+        cargo_pkg_name: dep.package_name.clone(),
+        cargo_pkg_description: dep.description.clone(),
+        deps: vec![],
+        dev_deps: vec![],
+        build_deps: vec![],
+        aliased_deps: vec![],
+        features: vec![],
+        build_root: None,
+        build_script_outputs: vec![],
+        gn_variables_lib: extra_gn.to_string(),
+    };
+
+    rule.features = dep
+        .dependency_kinds
+        .get(&deps::DependencyKind::Normal)
+        .map(|pki| pki.features.clone())
+        .unwrap_or(vec![]);
+
+    // Enumerate the dependencies of each kind for the package.
+    for (gn_deps, cargo_deps) in
+        [(&mut rule.deps, &dep.dependencies), (&mut rule.build_deps, &dep.build_dependencies)]
+    {
+        for dep_of_dep in cargo_deps {
+            let cond = match &dep_of_dep.platform {
+                None => Condition::Always,
+                Some(p) => Condition::If(platform_to_condition(p)),
+            };
+            let target_name = normalize_target_name(&dep_of_dep.package_name);
+            let dep_rule = format!(":{target_name}");
+            gn_deps.push(RuleDep { cond, rule: dep_rule });
+
+            if target_name != dep_of_dep.use_name {
+                rule.aliased_deps
+                    .push((dep_of_dep.use_name.clone(), format!(":{target_name}__rlib")));
+            }
+        }
+    }
+
+    (
+        normalize_target_name(&dep.package_name),
+        Rule::Concrete {
+            common: RuleCommon { testonly: false, public_visibility: true },
+            details: rule,
+        },
+    )
+}
+
 /// Generate the `BuildFile` for `dep`, or return `None` if no rules would be
 /// present.
-fn make_build_file_for_dep(
+fn make_build_file_for_chromium_dep(
     dep: &deps::Package,
     paths: &paths::ChromiumPaths,
     metadata: &HashMap<ChromiumVendoredCrate, CargoPackage>,
@@ -163,6 +260,7 @@ fn make_build_file_for_dep(
         epoch: None,
         crate_type: String::new(),
         crate_root: String::new(),
+        no_std: false,
         edition: package_metadata.edition.0.clone(),
         cargo_pkg_version: package_metadata.version.to_string(),
         cargo_pkg_authors: cargo_pkg_authors,
@@ -324,37 +422,45 @@ fn make_build_file_for_dep(
 /// file.
 struct BuildFileFormatter<'a> {
     build_file: &'a BuildFile,
+    with_preamble: bool,
 }
 
 impl<'a> fmt::Display for BuildFileFormatter<'a> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write_build_file(f, self.build_file)
+        write_build_file(f, self.build_file, self.with_preamble)
     }
 }
 
-fn write_build_file<W: fmt::Write>(mut writer: W, build_file: &BuildFile) -> fmt::Result {
-    writeln!(writer, "{COPYRIGHT_HEADER}\n")?;
-    writeln!(writer, r#"import("//build/rust/cargo_crate.gni")"#)?;
-    writeln!(writer, "")?;
+fn write_build_file<W: fmt::Write>(
+    mut writer: W,
+    build_file: &BuildFile,
+    with_preamble: bool,
+) -> fmt::Result {
+    if with_preamble {
+        writeln!(writer, "{COPYRIGHT_HEADER}\n")?;
+        writeln!(writer, r#"import("//build/rust/cargo_crate.gni")"#)?;
+        writeln!(writer, "")?;
+    }
+
     for (name, rule) in &build_file.rules {
         // Don't use writeln!, each rule adds a trailing newline.
-        write!(writer, "{}", RuleFormatter { name: &name, rule: &rule })?;
+        write!(writer, "{}", RuleFormatter { rule: &rule, name: &name })?;
     }
     Ok(())
 }
 
 /// `Rule` wrapper with a `Display` impl. Displays the `Rule` as a GN rule.
 struct RuleFormatter<'a> {
-    name: &'a str,
     rule: &'a Rule,
+    name: &'a str,
 }
 
 impl<'a> fmt::Display for RuleFormatter<'a> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self.rule {
-            Rule::Concrete { common, details } => write_concrete(f, self.name, common, details),
+            Rule::Concrete { common, details } => write_concrete(f, &self.name, common, details),
             Rule::Group { common, concrete_target } => {
-                write_group(f, self.name, common, concrete_target)
+                write_group(f, &self.name, common, concrete_target)
             }
         }
     }
@@ -383,6 +489,9 @@ fn write_concrete<W: fmt::Write>(
     }
 
     writeln!(writer, "crate_root = \"{}\"", details.crate_root)?;
+    if details.no_std {
+        writeln!(writer, "no_std = true")?;
+    }
     // TODO(crbug.com/1291994): actually support unit test generation.
     writeln!(writer, "\n# Unit tests skipped. Generate with --with-tests to include them.")?;
     writeln!(writer, "build_native_rust_unit_tests = false")?;
@@ -672,7 +781,7 @@ static TARGET_OS_TO_GN_CONDITION: &'static [(&'static str, &'static str)] = &[
     ("windows", "is_win"),
 ];
 
-static COPYRIGHT_HEADER: &'static str = "# Copyright 2022 The Chromium Authors
+static COPYRIGHT_HEADER: &'static str = "# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.";
 

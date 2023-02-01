@@ -144,6 +144,12 @@ impl Default for Edition {
     }
 }
 
+impl std::fmt::Display for Edition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct CargoPatch {

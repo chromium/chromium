@@ -236,7 +236,7 @@ template("rust_target") {
         # target that depends on a rust target directly may need access to Cxx
         # as well, which means it must appear in public_deps.
         public_deps += [ "//build/rust:cxx_cppdeps" ]
-      } else {
+      } else if (!defined(invoker.no_std) || !invoker.no_std) {
         # If C++ depends on and links in the library, we need to make sure C++
         # links in the Rust stdlib. This is orthogonal to if the library exports
         # bindings for C++ to use.
@@ -259,7 +259,9 @@ template("rust_target") {
       _rust_public_deps += [ ":${_target_name}_cxx_generated" ]
     }
 
-    _rust_deps += [ "//build/rust/std:std_for_rustc" ]
+    if (!defined(invoker.no_std) || !invoker.no_std) {
+      _rust_deps += [ "//build/rust/std:prebuilt_std_for_rustc" ]
+    }
 
     # You must go through the groups above to get to these targets.
     _visibility = []

@@ -174,7 +174,7 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
     // depend on.
     let mut command = cargo_metadata::MetadataCommand::new();
     command.current_dir(&paths.third_party);
-    let dependencies = deps::collect_dependencies(&command.exec().unwrap(), None);
+    let dependencies = deps::collect_dependencies(&command.exec().unwrap(), None, None);
 
     // Compare cargo's dependency resolution with the crates we have on disk. We
     // want to ensure:
@@ -232,14 +232,15 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
         return ExitCode::FAILURE;
     }
 
-    let build_files: HashMap<ChromiumVendoredCrate, gn::BuildFile> = gn::build_files_from_deps(
-        &dependencies,
-        &paths,
-        &crates.iter().cloned().collect(),
-        &build_script_outputs,
-        &deps_visibility,
-        &gn_variables_libs,
-    );
+    let build_files: HashMap<ChromiumVendoredCrate, gn::BuildFile> =
+        gn::build_files_from_chromium_deps(
+            &dependencies,
+            &paths,
+            &crates.iter().cloned().collect(),
+            &build_script_outputs,
+            &deps_visibility,
+            &gn_variables_libs,
+        );
 
     // Before modifying anything make sure we have a one-to-one mapping of
     // discovered crates and build file data.
@@ -299,17 +300,37 @@ fn generate_for_std(_args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> E
     // Run `cargo metadata` from the std package in the Rust source tree (which
     // is a workspace).
     let mut command = cargo_metadata::MetadataCommand::new();
-    command.current_dir(paths.rust_std);
-    // Ensure we use exactly the dependency versions specified in the Rust
-    // source's Cargo.lock. This is the only officially tested libstd.
-    command.other_options(["--locked".to_string(), "--offline".to_string()]);
+    command.current_dir(paths.std_fake_root);
 
-    // Compute the set of crates we need to build to build libstd.
-    let dependencies =
-        deps::collect_dependencies(&command.exec().unwrap(), Some(vec!["std".to_string()]));
+    // Use offline to constrain dependency resolution to those in the Rust src
+    // tree and vendored crates. Ideally, we'd use "--locked" and use the
+    // upstream Cargo.lock, but this is not straightforward since the rust-src
+    // component is not a full Cargo workspace. Since the vendor dir we package
+    // is generated with "--locked", the outcome should be the same.
+    command.other_options(vec!["--offline".to_string()]);
 
-    // Collect the set of third-party dependencies vendored in the Rust source
-    // package.
+    // Compute the set of crates we need to build to build libstd. Note this
+    // contains a few kinds of entries:
+    // * Rust workspace packages (e.g. core, alloc, std, unwind, etc)
+    // * Non-workspace packages supplied in Rust source tree (e.g. stdarch)
+    // * Vendored third-party crates (e.g. compiler_builtins, libc, etc)
+    // * rust-std-workspace-* shim packages which direct std crates.io
+    //   dependencies to the correct lib{core,alloc,std} when depended on by the
+    //   Rust codebase (see
+    //   https://github.com/rust-lang/rust/tree/master/library/rustc-std-workspace-core)
+    //
+    // libtest is the root of the std crate dependency tree, so start there.
+    let mut dependencies =
+        deps::collect_dependencies(&command.exec().unwrap(), Some(vec!["test".to_string()]), None);
+
+    dependencies.sort_unstable_by(|a, b| {
+        a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
+    });
+
+    let third_party_deps = dependencies.iter().filter(|dep| !dep.is_local).collect::<Vec<_>>();
+
+    // Check that all resolved third party deps are available. First, collect
+    // the set of third-party dependencies vendored in the Rust source package.
     let vendored_crates: HashMap<StdVendoredCrate, manifest::CargoPackage> =
         crates::collect_std_vendored_crates(paths.rust_src_vendor).unwrap().into_iter().collect();
 
@@ -318,32 +339,7 @@ fn generate_for_std(_args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> E
     // generated for these crates separately from std, alloc, and core which
     // need special treatment.
     let src_prefix = paths.root.join(paths.rust_src);
-    for dep in &dependencies {
-        // Skip workspace members. They are not third-party deps in this
-        // context.
-        if dep.is_workspace_member {
-            continue;
-        }
-
-        // Skip "rust-std-workspace-*" deps, which are shims to allow std to
-        // depend on third-party crates. See
-        // https://github.com/rust-lang/rust/tree/master/library/rustc-std-workspace-core
-        if dep.package_name.starts_with("rustc-std-workspace-") {
-            continue;
-        }
-
-        // Skip crates in stdarch, which is a separate workspace in the same
-        // source tree.
-        if dep.package_name.starts_with("std_detect") {
-            continue;
-        }
-
-        // Skip "rustc-workspace-hack", which is irrelevant to the standard
-        // library build.
-        if dep.package_name.starts_with("rustc-workspace-hack") {
-            continue;
-        }
-
+    for dep in third_party_deps.iter() {
         // Only process deps with a library target: we are producing build rules
         // for the standard library, so transitive binary dependencies don't
         // make sense.
@@ -352,38 +348,51 @@ fn generate_for_std(_args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> E
             None => continue,
         };
 
-        if !lib.root.starts_with(&src_prefix) {
+        if !lib.root.canonicalize().unwrap().starts_with(&src_prefix) {
             println!(
                 "Found dependency that was not locally available: {} {}",
                 dep.package_name, dep.version
             );
+            println!("{dep:?}");
             return ExitCode::FAILURE;
         }
 
-        let (crate_id, _): (&StdVendoredCrate, _) =
-            match vendored_crates.get_key_value(&StdVendoredCrate {
-                name: dep.package_name.clone(),
-                version: dep.version.clone(),
-                // Placeholder value for lookup.
-                is_latest: false,
-            }) {
-                Some(id) => id,
-                None => {
-                    println!(
-                        "Resolved dependency does not match any vendored crate: {} {}",
-                        dep.package_name, dep.version
-                    );
-                    return ExitCode::FAILURE;
-                }
-            };
-
-        // To test, print the list of needed vendored crates and the path of
-        // dependency edges leading to them.
-        println!("{crate_id}");
-        for next in &dep.dependency_path {
-            println!("  {next}");
+        match vendored_crates.get_key_value(&StdVendoredCrate {
+            name: dep.package_name.clone(),
+            version: dep.version.clone(),
+            // Placeholder value for lookup.
+            is_latest: false,
+        }) {
+            Some(_) => (),
+            None => {
+                println!(
+                    "Resolved dependency does not match any vendored crate: {} {}",
+                    dep.package_name, dep.version
+                );
+                return ExitCode::FAILURE;
+            }
         }
     }
+
+    // TODO(crbug.com/1368806):
+    // * Find a more sustainable way to supply these extra args, preferably in a
+    //   config file somewhere.
+    // * Supply `-Zforce-unstable-if-unmarked` to all std crates, which ensures deps
+    //   of std aren't visible to consumers.
+    let mut extra_gn = HashMap::new();
+    // std requires:
+    // * cfg(backtrace_in_libstd) because it directly includes .rs files from the
+    //   backtrace code rather than including it as a dependency. backtrace's
+    //   implementation has special-purpose code to handle this.
+    // * STD_ENV_ARCH is referenced in architecture-dependent code.
+    extra_gn.insert("std".to_string(), "rustflags = [\"--cfg=backtrace_in_libstd\"]\nrustenv = [\"STD_ENV_ARCH=$rust_target_arch\"]".to_string());
+    // libc requires:
+    // * cfg(libc_align) for new enough rustc, which is normally provided by
+    //   build.rs but we don't run build scripts for std crates.
+    extra_gn.insert("libc".to_string(), "rustflags = [\"--cfg=libc_align\"]".to_string());
+
+    let build_file = gn::build_file_from_std_deps(dependencies.iter(), paths, &extra_gn);
+    write_build_file(&paths.std_build.join("BUILD.gn"), &build_file).unwrap();
 
     ExitCode::SUCCESS
 }
@@ -397,22 +406,19 @@ fn build_file_path(crate_id: &ChromiumVendoredCrate, paths: &paths::ChromiumPath
 }
 
 fn write_build_file(path: &Path, build_file: &gn::BuildFile) -> io::Result<()> {
-    let output_handle = fs::File::create(path).unwrap();
+    let output_handle = fs::File::create(path)?;
 
-    // Run our GN output through the official formatter. The gn invocation will
-    // write directly to the output file.
-    let mut formatter = process::Command::new("gn")
+    // Spawn a child process to format GN rules. The formatted GN is written to
+    // the file `output_handle`.
+    let mut child = process::Command::new("gn")
         .arg("format")
         .arg("--stdin")
         .stdin(process::Stdio::piped())
         .stdout(output_handle)
-        .spawn()
-        .unwrap();
+        .spawn()?;
 
-    write!(io::BufWriter::new(formatter.stdin.take().unwrap()), "{}", build_file.display())?;
-
-    let status = formatter.wait()?;
-    check_exit_status(status, "formatting GN output")
+    write!(io::BufWriter::new(child.stdin.take().unwrap()), "{}", build_file.display())?;
+    check_exit_status(child.wait()?, "formatting GN output")
 }
 
 fn check_exit_status(status: process::ExitStatus, cmd_msg: &str) -> io::Result<()> {

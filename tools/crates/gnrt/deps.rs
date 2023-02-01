@@ -14,14 +14,24 @@ use std::path::PathBuf;
 pub use cargo_metadata::DependencyKind;
 pub use semver::Version;
 
+/// Uniquely identifies a `Package` in a particular set of dependencies. The
+/// representation is an implementation detail and may not be unique between
+/// different sets of metadata.
+pub use cargo_metadata::PackageId;
+
 /// A single transitive dependency of a root crate. Includes information needed
 /// for generating build files later.
 #[derive(Clone, Debug)]
 pub struct Package {
+    /// Package ID in a particular set of dependencies.
+    pub id: PackageId,
     /// The package name as used by cargo.
     pub package_name: String,
     /// The package version as used by cargo.
     pub version: Version,
+    pub description: Option<String>,
+    pub authors: Vec<String>,
+    pub edition: String,
     /// This package's dependencies. Each element cross-references another
     /// `Package` by name and version.
     pub dependencies: Vec<DepOfDep>,
@@ -150,14 +160,23 @@ impl std::fmt::Display for LibType {
 /// rustc invocation: e.g. a package may have a lib crate as well as multiple
 /// binary crates.
 ///
-/// Optionally, `roots` specifies from which packages to traverse the dependency
+/// `roots` optionally specifies from which packages to traverse the dependency
 /// graph (likely the root packages to generate build files for). This overrides
 /// the usual behavior, which traverses from all workspace members and the root
 /// workspace package. The package names in `roots` should still only contain
 /// workspace members.
+///
+/// `exclude` optionally lists packages to exclude from dependency resolution.
+/// Listed packages will still be included in upstream dependency lists, but
+/// downstream dependencies will not be explored. E.g. if `bar` is listed, and
+/// `foo` -> `bar` -> `baz` is in the dependency graph, `foo` will have `bar` as
+/// a `DepOfDep` entry, but neither `bar` nor `baz` will be included in the
+/// output. The intended use-case is when build rules for certain packages must
+/// be written manually.
 pub fn collect_dependencies(
     metadata: &cargo_metadata::Metadata,
     roots: Option<Vec<String>>,
+    exclude: Option<Vec<String>>,
 ) -> Vec<Package> {
     // The metadata is split into two parts:
     // 1. A list of packages and associated info: targets (e.g. lib, bin,
@@ -188,11 +207,21 @@ pub fn collect_dependencies(
     // since it is not actually built.
     let fake_root: &cargo_metadata::PackageId = resolved_graph.root.as_ref().unwrap();
 
+    let exclude = match exclude {
+        Some(exclude) => metadata
+            .packages
+            .iter()
+            .filter_map(|pkg| if exclude.contains(&pkg.name) { Some(&pkg.id) } else { None })
+            .collect(),
+        None => HashSet::new(),
+    };
+
     // `explore_node`, our recursive depth-first traversal function, needs to
     // share state between stack frames. Construct the shared state.
     let mut traversal_state = TraversalState {
         dep_graph: &dep_graph,
         root: fake_root,
+        exclude,
         visited: HashSet::new(),
         path: Vec::new(),
         dependencies: HashMap::new(),
@@ -225,7 +254,11 @@ pub fn collect_dependencies(
         let node: &cargo_metadata::Node = traversal_state.dep_graph.nodes.get(id).unwrap();
         let package: &cargo_metadata::Package = traversal_state.dep_graph.packages.get(id).unwrap();
 
+        dep.id = package.id.clone();
         dep.package_name = package.name.clone();
+        dep.description = package.description.clone();
+        dep.authors = package.authors.clone();
+        dep.edition = package.edition.clone();
 
         // TODO(crbug.com/1291994): Resolve features independently per kind
         // and platform. This may require using the unstable unit-graph feature:
@@ -321,6 +354,8 @@ struct TraversalState<'a> {
     dep_graph: &'a MetadataGraph<'a>,
     /// The fake root package that we exclude from `dependencies`.
     root: &'a cargo_metadata::PackageId,
+    /// Set of packages to exclude from traversal.
+    exclude: HashSet<&'a cargo_metadata::PackageId>,
     /// Set of packages already visited by `explore_node`.
     visited: HashSet<&'a cargo_metadata::PackageId>,
     /// The path of package IDs to the current node. For human consumption.
@@ -337,11 +372,19 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
         return;
     }
 
+    if state.exclude.contains(&node.id) {
+        return;
+    }
+
     // Helper to insert a placeholder `Dependency` into a map. We fill in the
     // fields later.
     let init_dep = |path| Package {
+        id: PackageId { repr: String::new() },
         package_name: String::new(),
         version: Version::new(0, 0, 0),
+        description: None,
+        authors: Vec::new(),
+        edition: String::new(),
         dependencies: Vec::new(),
         build_dependencies: Vec::new(),
         dev_dependencies: Vec::new(),
@@ -363,6 +406,10 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
         // node multiple times, but this is OK since we'll skip it in the
         // recursive call.
         let target_node: &cargo_metadata::Node = state.dep_graph.nodes.get(&dep_edge.pkg).unwrap();
+        if state.exclude.contains(&target_node.id) {
+            continue;
+        }
+
         explore_node(state, target_node);
 
         // Merge this with the existing entry for the dep.

@@ -90,6 +90,16 @@ group("deps") {
             [ "test_rust_shared_library:test_rust_shared_library_unittests" ]
       }
     }
+
+    if (local_libstd_supported) {
+      deps += [ "test_local_std" ]
+      if (target_has_exe) {
+        deps += [ "test_local_std:test_local_std_exe" ]
+      }
+      if (can_build_rust_unit_tests) {
+        deps += [ "test_local_std:test_local_std_unittests" ]
+      }
+    }
   }
 }
 
