@@ -244,6 +244,13 @@ html[chrome-refresh-2023] {
   --cr-fallback-color-on-secondary-container: rgb(0, 29, 53);
   --cr-fallback-color-on-surface-rgb: 31, 31, 31;
   --cr-fallback-color-on-surface: rgb(var(--cr-fallback-color-on-surface-rgb));
+  --cr-fallback-color-on-surface-variant: rgb(68, 71, 70);
+
+  /* Typography */
+  --cr-primary-text-color: var(--color-primary-foreground,
+      var(--cr-fallback-color-on-surface));
+  --cr-secondary-text-color: var(--color-secondary-foreground,
+      var(--cr-fallback-color-on-surface-variant));
 
   /* Layout */
   --cr-button-height: 36px;
@@ -259,5 +266,6 @@ html[chrome-refresh-2023] {
     --cr-fallback-color-secondary-container: rgb(0, 74, 119);
     --cr-fallback-color-on-secondary-container: rgb(194, 231, 255);
     --cr-fallback-color-on-surface-rgb: 227, 227, 227;
+    --cr-fallback-color-on-surface-variant: rgb(196, 199, 197);
   }
 }
