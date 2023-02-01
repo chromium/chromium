@@ -1254,16 +1254,16 @@ void EventRouter::DispatchPendingEvent(
 void EventRouter::SetRegisteredEvents(const std::string& extension_id,
                                       const std::set<std::string>& events,
                                       RegisteredEventType type) {
-  base::Value events_value(base::Value::Type::LIST);
-  for (auto iter = events.cbegin(); iter != events.cend(); ++iter) {
-    events_value.Append(*iter);
+  base::Value::List events_list;
+  for (const auto& event : events) {
+    events_list.Append(event);
   }
   const char* pref_key = type == RegisteredEventType::kLazy
                              ? kRegisteredLazyEvents
                              : kRegisteredServiceWorkerEvents;
   extension_prefs_->UpdateExtensionPref(
       extension_id, pref_key,
-      base::Value::ToUniquePtrValue(std::move(events_value)));
+      std::make_unique<base::Value>(std::move(events_list)));
 }
 
 void EventRouter::AddFilterToEvent(const std::string& event_name,

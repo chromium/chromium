@@ -147,7 +147,7 @@ TEST_F(PermissionsManagerUnittest, AddAndRemoveRestrictedSite) {
   const std::string expected_url_pattern = "http://a.example.com/*";
   std::set<url::Origin> set_with_url;
   set_with_url.insert(url);
-  base::Value value_with_url(base::Value::Type::LIST);
+  base::Value::List value_with_url;
   value_with_url.Append(url.Serialize());
 
   // Verify the restricted sites list is empty.
@@ -190,7 +190,7 @@ TEST_F(PermissionsManagerUnittest, AddAndRemovePermittedSite) {
   const std::string expected_url_pattern = "http://a.example.com/*";
   std::set<url::Origin> set_with_url;
   set_with_url.insert(url);
-  base::Value value_with_url(base::Value::Type::LIST);
+  base::Value::List value_with_url;
   value_with_url.Append(url.Serialize());
 
   // Verify the permitted sites list is empty.

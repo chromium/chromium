@@ -16,12 +16,13 @@ namespace bluetooth_low_energy {
 
 namespace {
 
-// Converts a list of CharacteristicProperty to a base::Value of strings.
-base::Value CharacteristicPropertiesToValue(
+// Converts a list of CharacteristicProperty to a base::Value::List of strings.
+base::Value::List CharacteristicPropertiesToList(
     const std::vector<CharacteristicProperty> properties) {
-  base::Value property_list(base::Value::Type::LIST);
-  for (auto iter = properties.cbegin(); iter != properties.cend(); ++iter)
-    property_list.Append(ToString(*iter));
+  base::Value::List property_list;
+  for (const auto& property : properties) {
+    property_list.Append(ToString(property));
+  }
   return property_list;
 }
 
@@ -33,7 +34,7 @@ base::Value::Dict CharacteristicToValue(Characteristic& from) {
   // failing.
   std::vector<CharacteristicProperty> properties = std::move(from.properties);
   base::Value::Dict to = from.ToValue();
-  to.Set("properties", CharacteristicPropertiesToValue(properties));
+  to.Set("properties", CharacteristicPropertiesToList(properties));
   return to;
 }
 
@@ -49,7 +50,7 @@ base::Value::Dict DescriptorToValue(Descriptor& from) {
 
   base::Value::Dict* chrc_value = to.FindDict("characteristic");
   DCHECK(chrc_value);
-  chrc_value->Set("properties", CharacteristicPropertiesToValue(properties));
+  chrc_value->Set("properties", CharacteristicPropertiesToList(properties));
   return to;
 }
 

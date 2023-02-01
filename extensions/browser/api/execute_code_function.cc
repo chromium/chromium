@@ -246,13 +246,13 @@ void ExecuteCodeFunction::OnExecuteCodeFinished(
 
   // Place the root frame result at the beginning.
   std::iter_swap(root_frame_result, results.begin());
-  base::Value result_list(base::Value::Type::LIST);
+  base::Value::List result_list;
   for (auto& result : results) {
     if (result.error.empty())
       result_list.Append(std::move(result.value));
   }
 
-  Respond(OneArgument(std::move(result_list)));
+  Respond(OneArgument(base::Value(std::move(result_list))));
 }
 
 }  // namespace extensions

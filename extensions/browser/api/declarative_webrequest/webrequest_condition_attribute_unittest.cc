@@ -265,7 +265,7 @@ base::Value::Dict GetDictFromArray(
           break;
         }
         case base::Value::Type::LIST:  // Just append to the list.
-          entry->Append(*value);
+          entry->GetList().Append(*value);
           break;
         default:
           NOTREACHED();  // We never put other Values here.
