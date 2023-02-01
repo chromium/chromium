@@ -19,5 +19,8 @@ build_webui("build") {
     "//ui/webui/resources:library",
     "//ui/webui/resources/mojo:library",
   ]
-  ts_definitions = [ "read_anything.d.ts" ]
+  ts_definitions = [
+    "read_anything.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
 }

@@ -7,6 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {ReadAnythingElement} from 'chrome://read-anything-side-panel.top-chrome/app.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('ReadAnythingAppTest', () => {
   let readAnythingApp: ReadAnythingElement;
@@ -15,6 +16,27 @@ suite('ReadAnythingAppTest', () => {
   // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
   // rest of the Read Anything feature, which we are not testing here.
   chrome.readAnything.onConnected = () => {};
+
+  // This is called by readAnythingApp onselectionchange. It is usually
+  // implemented by ReadAnythingAppController which forwards these arguments to
+  // the browser process in the form of an AXEventNotificationDetail. Instead,
+  // we capture the arguments here and verify their values. Since
+  // onselectionchange is called asynchronously, the test must wait for this
+  // function to be called; therefore we fire a custom event
+  // on-selection-change-for-text here for the test to await.
+  chrome.readAnything.onSelectionChange =
+      (anchorNodeId: number, anchorOffset: number, focusNodeId: number,
+       focusOffset: number) => {
+        readAnythingApp.shadowRoot!.dispatchEvent(
+            new CustomEvent('on-selection-change-for-test', {
+              detail: {
+                anchorNodeId: anchorNodeId,
+                anchorOffset: anchorOffset,
+                focusNodeId: focusNodeId,
+                focusOffset: focusOffset,
+              },
+            }));
+      };
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -693,6 +715,67 @@ suite('ReadAnythingAppTest', () => {
     assertContainerInnerHTML(expected);
   });
 
+  test('updateContent setSelectedText', async () => {
+    // root htmlTag='#document' id=1
+    // ++staticText name='Hello' id=2
+    // ++staticText name='World' id=3
+    // ++staticText name='Friend' id=4
+    const axTree = {
+      rootId: 1,
+      nodes: [
+        {
+          id: 1,
+          role: 'rootWebArea',
+          htmlTag: '#document',
+          childIds: [2, 3, 4],
+        },
+        {
+          id: 2,
+          role: 'staticText',
+          name: 'Hello',
+        },
+        {
+          id: 3,
+          role: 'staticText',
+          name: 'World',
+        },
+        {
+          id: 4,
+          role: 'staticText',
+          name: 'Friend',
+        },
+      ],
+    };
+    chrome.readAnything.setContentForTesting(axTree, [1]);
+    const expected = '<div>HelloWorldFriend</div>';
+    assertContainerInnerHTML(expected);
+
+    // Create a selection of "elloWorldFr". The anchor node has id 2 and the
+    // focus node has id 4.
+    const outerDiv =
+        readAnythingApp.shadowRoot!.getElementById(
+                                       'container')!.firstElementChild;
+    const range = new Range();
+    range.setStart(outerDiv!.firstChild!, 1);
+    range.setEnd(outerDiv!.lastChild!, 2);
+    const selection = readAnythingApp.shadowRoot!.getSelection();
+    selection!.removeAllRanges();
+    selection!.addRange(range);
+
+    // When the selection is set, readAnythingApp listens for the selection
+    // change event and calls chrome.readAnything.onSelectionChange. This test
+    // overrides that method and fires a custom event
+    // 'on-selection-change-for-test' with the parameters to onSelectionChange
+    // stored in details. Here, we check the values of the parameters of
+    // onSelectionChange.
+    const onSelectionChangeEvent = await eventToPromise(
+        'on-selection-change-for-test', readAnythingApp.shadowRoot!);
+    assertEquals(onSelectionChangeEvent.detail.anchorNodeId, 2);
+    assertEquals(onSelectionChangeEvent.detail.anchorOffset, 1);
+    assertEquals(onSelectionChangeEvent.detail.focusNodeId, 4);
+    assertEquals(onSelectionChangeEvent.detail.focusOffset, 2);
+  });
+
   test('updateContent textDirection', () => {
     // root htmlTag='#document' id=1
     // ++paragraph htmlTag='p' id=2 direction='ltr'
@@ -966,6 +1049,50 @@ suite('ReadAnythingAppTest', () => {
     };
     chrome.readAnything.setContentForTesting(axTree, []);
     const expected = '<div></div>';
+    assertContainerInnerHTML(expected);
+  });
+
+  test('updateContent interactiveElement', () => {
+    // root htmlTag='#document' id=1
+    // ++paragraph htmlTag='p' id=2
+    // ++++staticText name='hello world' id=3
+    // ++button htmlTag='button' id=4
+    // ++++staticText name='button text' id=5
+    const axTree = {
+      rootId: 1,
+      nodes: [
+        {
+          id: 1,
+          role: 'rootWebArea',
+          htmlTag: '#document',
+          childIds: [2, 4],
+        },
+        {
+          id: 2,
+          role: 'paragraph',
+          htmlTag: 'p',
+          childIds: [3],
+        },
+        {
+          id: 3,
+          role: 'staticText',
+          name: 'hello world',
+        },
+        {
+          id: 4,
+          role: 'button',
+          htmlTag: 'button',
+          childIds: [5],
+        },
+        {
+          id: 5,
+          role: 'staticText',
+          name: 'button text',
+        },
+      ],
+    };
+    chrome.readAnything.setContentForTesting(axTree, [2, 4]);
+    const expected = '<div><p>hello world</p></div>';
     assertContainerInnerHTML(expected);
   });
 });

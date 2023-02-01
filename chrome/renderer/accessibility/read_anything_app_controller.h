@@ -113,6 +113,10 @@ class ReadAnythingAppController
   bool IsOverline(ui::AXNodeID ax_node_id) const;
   void OnConnected();
   void OnLinkClicked(ui::AXNodeID ax_node_id) const;
+  void OnSelectionChange(ui::AXNodeID anchor_node_id,
+                         int anchor_offset,
+                         ui::AXNodeID focus_node_id,
+                         int focus_offset) const;
 
   void Distill();
   void Draw();
@@ -161,12 +165,15 @@ class ReadAnythingAppController
                           int letter_spacing);
   AXTreeDistiller* SetDistillerForTesting(
       std::unique_ptr<AXTreeDistiller> distiller);
+  void SetPageHandlerForTesting(
+      mojo::PendingRemote<read_anything::mojom::PageHandler> page_handler);
 
   double GetLetterSpacingValue(
       read_anything::mojom::Spacing letter_spacing) const;
   double GetLineSpacingValue(read_anything::mojom::Spacing line_spacing) const;
 
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id) const;
+  bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) const;
 
   bool NodeIsContentNode(ui::AXNodeID ax_node_id) const;
 
@@ -178,7 +185,7 @@ class ReadAnythingAppController
 
   // State:
 
-  // AXTrees of all of the web contents in the browser’s tab strip.
+  // AXTrees of web contents in the browser’s tab strip.
   std::map<ui::AXTreeID, std::unique_ptr<ui::AXSerializableTree>> trees_;
 
   // The AXTreeID of the currently active web contents.

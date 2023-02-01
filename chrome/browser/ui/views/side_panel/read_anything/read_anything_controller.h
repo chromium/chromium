@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
 
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -73,7 +71,13 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   // ReadAnythingPageHandler::Delegate:
   void OnUIReady() override;
   void OnUIDestroyed() override;
-  void OnLinkClicked(const GURL& url, bool open_in_new_tab) override;
+  void OnLinkClicked(const ui::AXTreeID& target_tree_id,
+                     const ui::AXNodeID& target_node_id) override;
+  void OnSelectionChange(const ui::AXTreeID& target_tree_id,
+                         const ui::AXNodeID& anchor_node_id,
+                         int anchor_offset,
+                         const ui::AXNodeID& focus_node_id,
+                         int focus_offset) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -85,8 +89,16 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   // Notifies the model that the AXTreeID has changed.
   void NotifyActiveAXTreeIDChanged();
 
+  // Create a web contents observer for the active tab and enable web
+  // contents-only accessibility. This causes AXTreeSerializer to reset and send
+  // accessibility events of the AXTree when it is re-serialized. The WebUI
+  // receives these events and stores a copy of each web contents' AXTree. If
+  // the UI was destroyed, it stops receiving events. OnUIReady is called when
+  // it is re-created, indicating that it needs to restore its copy of each
+  // web contents' AXTree.
+  void ObserveAccessibilityEventsOnActiveTab();
+
   const raw_ptr<ReadAnythingModel> model_;
-  std::vector<ReadAnythingModel::Observer*> observers_;
 
   // ReadAnythingController is owned by ReadAnythingCoordinator which is a
   // browser user data, so this pointer is always valid.
