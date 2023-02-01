@@ -120,7 +120,8 @@ template("chrome_common_shared_library") {
 
     # Handle VR JNI registration and dependencies.
     if (!_is_webview && enable_vr) {
-      if (_export_java_symbols) {
+      if (_export_java_symbols && (!defined(invoker.enable_jni_multiplexing) ||
+                                   !invoker.enable_jni_multiplexing)) {
         # NOTE: While this file is named *_monochrome.cc, it just contains an
         # empty vr::RegisterJni() function that returns true.
         sources += [ "../browser/android/vr/register_jni_monochrome.cc" ]
@@ -136,6 +137,9 @@ template("chrome_common_shared_library") {
         }
       }
     }
+
+    # We check this variable last, so sometimes it isn't used to decide which registration to use.
+    not_needed([ "enable_jni_multiplexing" ])
 
     if (_generate_partitions) {
       partitions = []

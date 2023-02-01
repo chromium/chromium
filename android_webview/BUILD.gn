@@ -90,7 +90,9 @@ standalone_system_webview_apk_tmpl("system_webview_no_weblayer_apk") {
       [ "//third_party/androidx:androidx_recyclerview_recyclerview_java" ]
 }
 
+_main_webview_bundle_target = ":system_webview_bundle"
 if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
+  _main_webview_bundle_target = ":system_webview_64_bundle"
   group("system_webview_bundle") {
     deps = [ ":system_webview_64_bundle" ]
   }
@@ -389,6 +391,13 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
   }
 }
 
+if (allow_jni_multiplexing && current_toolchain == default_toolchain) {
+  generate_jni_registration("webview_jni_registration") {
+    targets = [ _main_webview_bundle_target ]
+    enable_jni_multiplexing = true
+  }
+}
+
 # The shared library used by standalone WebView.
 template("libwebviewchromium_tmpl") {
   shared_library(target_name) {
@@ -399,6 +408,9 @@ template("libwebviewchromium_tmpl") {
       "//android_webview/nonembedded",
       "//third_party/blink/public:blink",
     ]
+    if (allow_jni_multiplexing) {
+      deps += [ ":webview_jni_registration($default_toolchain)" ]
+    }
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
     configs += [
       "//build/config/android:hide_all_but_jni",
@@ -430,6 +442,10 @@ template("webview_alternate_library") {
       "//android_webview/lib:webview_entry_point",
       "//android_webview/nonembedded",
     ]
+    if (allow_jni_multiplexing) {
+      deps += [ ":webview_jni_registration($default_toolchain)" ]
+      enable_jni_multiplexing = true
+    }
     is_webview = true
   }
 }

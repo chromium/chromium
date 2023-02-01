@@ -222,7 +222,9 @@ if (enable_java_templates) {
         if (!is_robolectric && use_hashed_jni_names) {
           args += [ "--use_proxy_hash" ]
         }
-        if (!is_robolectric && enable_jni_multiplexing) {
+
+        if (!is_robolectric && defined(invoker.enable_jni_multiplexing) &&
+            invoker.enable_jni_multiplexing) {
           args += [ "--enable_jni_multiplexing" ]
         }
         if (defined(invoker.namespace)) {
@@ -450,16 +452,20 @@ if (enable_java_templates && is_android) {
 
       _manual_jni_registration = defined(invoker.manual_jni_registration) &&
                                  invoker.manual_jni_registration
+      _enable_jni_multiplexing = defined(invoker.enable_jni_multiplexing) &&
+                                 invoker.enable_jni_multiplexing
+      if (_manual_jni_registration) {
+        args += [ "--manual-jni-registration" ]
+      }
+      if (_enable_jni_multiplexing) {
+        args += [ "--enable-jni-multiplexing" ]
+      }
 
-      if (_manual_jni_registration || enable_jni_multiplexing) {
+      if ((!defined(invoker.prevent_header_output) ||
+           !invoker.prevent_header_output) &&
+          (_manual_jni_registration || _enable_jni_multiplexing)) {
         assert(current_toolchain == default_toolchain,
                "We do not need >1 toolchain copies of the same header.")
-        if (_manual_jni_registration) {
-          args += [ "--manual-jni-registration" ]
-        }
-        if (enable_jni_multiplexing) {
-          args += [ "--enable-jni-multiplexing" ]
-        }
 
         _subdir = rebase_path(target_gen_dir, root_gen_dir)
         _jni_header_output =
@@ -2389,8 +2395,6 @@ if (enable_java_templates && is_android) {
   #     generated is solely controlled by this flag. Otherwise, the default behavior
   #     is NativeLibraries.java will only be generated for the base module/apk when
   #     its `shared_libraries` is not empty.
-  #   manual_jni_registration: If true, causes the ${target_name}__final_jni target
-  #     to additionally output a header file for use with manual JNI registration.
   #   jni_file_exclusions: List of source path to exclude from the
   #     final_jni step.
   #   aapt_locale_allowlist: If set, all locales not in this list will be
@@ -3028,8 +3032,8 @@ if (enable_java_templates && is_android) {
       generate_jni_registration("${_template_name}__final_jni") {
         forward_variables_from(invoker,
                                [
+                                 "enable_jni_multiplexing",
                                  "enable_native_mocks",
-                                 "manual_jni_registration",
                                  "require_native_mocks",
                                ])
         if (defined(invoker.bundle_target)) {
@@ -3040,6 +3044,7 @@ if (enable_java_templates && is_android) {
         if (defined(invoker.jni_file_exclusions)) {
           file_exclusions = invoker.jni_file_exclusions
         }
+        prevent_header_output = true
       }
       _srcjar_deps += [ ":${_template_name}__final_jni" ]
     } else {
@@ -3561,6 +3566,7 @@ if (enable_java_templates && is_android) {
                                "data_deps",
                                "deps",
                                "enable_lint",
+                               "enable_jni_multiplexing",
                                "enable_multidex",
                                "enable_native_mocks",
                                "enable_proguard_checks",
@@ -3586,7 +3592,6 @@ if (enable_java_templates && is_android) {
                                "lint_suppressions_file",
                                "loadable_modules",
                                "manifest_package",
-                               "manual_jni_registration",
                                "max_sdk_version",
                                "mergeable_android_manifests",
                                "product_config_java_packages",
@@ -3698,6 +3703,7 @@ if (enable_java_templates && is_android) {
                                "data",
                                "data_deps",
                                "deps",
+                               "enable_jni_multiplexing",
                                "enable_multidex",
                                "expected_android_manifest",
                                "expected_android_manifest_base",
@@ -3717,7 +3723,6 @@ if (enable_java_templates && is_android) {
                                "product_config_java_packages",
                                "main_component_library",
                                "manifest_package",
-                               "manual_jni_registration",
                                "max_sdk_version",
                                "min_sdk_version",
                                "mergeable_android_manifests",

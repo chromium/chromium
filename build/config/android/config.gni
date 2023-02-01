@@ -291,17 +291,13 @@ if (is_android || is_chromeos) {
     use_hashed_jni_names = !is_java_debug
 
     # Enables JNI multiplexing to reduce JNI native methods overhead.
-    enable_jni_multiplexing = false
+    allow_jni_multiplexing = false
 
     # Enables trace event injection on Android views with bytecode rewriting.
     # This adds an additional step on android_app_bundle_module targets that
     # adds trace events to some methods in android.view.View subclasses.
     enable_trace_event_bytecode_rewriting =
         !is_java_debug && android_channel != "stable"
-  }
-
-  if (enable_jni_multiplexing) {
-    use_hashed_jni_names = false
   }
 
   # Host stuff -----------------------------------------------------------------

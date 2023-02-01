@@ -706,6 +706,8 @@ ${NATIVES}\
       params = _GetParamsListForMultiplex(signature[1], with_types=False)
       values = {
           'SWITCH_NUM': native.switch_num,
+          # We are forced to call the generated stub instead of the impl because
+          # the impl is not guaranteed to have a globally unique name.
           'STUB_NAME': self.helper.GetStubName(native),
           'PARAMS': params,
       }

@@ -7,6 +7,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/library_loader/library_loader_hooks.h"
 
+#if defined(JNI_REGISTRATION_REQUIRED)
+#include "android_webview/webview_jni_registration_generated.h"
+#endif
 #if defined(WEBVIEW_INCLUDES_WEBLAYER)
 #include "weblayer/app/jni_onload.h"
 #include "weblayer/browser/web_view_compatibility_helper_impl.h"

@@ -48,12 +48,17 @@ source_set("jni_sample_native_side") {
   ]
 }
 
+generate_jni_registration("jni_registration") {
+  targets = [ ":jni_sample_java" ]
+  manual_jni_registration = true
+}
+
 shared_library("jni_sample_lib") {
   sources = [ "sample_entry_point.cc" ]
 
   deps = [
+    ":jni_registration",
     ":jni_sample_native_side",
-    ":sample_jni_apk__final_jni",  # For registration_header
     "//base",
   ]
 }
@@ -63,7 +68,6 @@ android_apk("sample_jni_apk") {
   android_manifest = "AndroidManifest.xml"
   deps = [ ":jni_sample_java" ]
   shared_libraries = [ ":jni_sample_lib" ]
-  manual_jni_registration = true
 }
 
 # Serves to test that generated bindings compile properly.

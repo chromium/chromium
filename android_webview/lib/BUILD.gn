@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/config.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//weblayer/variables.gni")
@@ -68,9 +69,15 @@ source_set("webview_entry_point") {
     "//base",
   ]
   sources = [ "webview_entry_point.cc" ]
+  defines = []
+
+  if (allow_jni_multiplexing) {
+    defines += [ "JNI_REGISTRATION_REQUIRED" ]
+    deps += [ "//android_webview:webview_jni_registration($default_toolchain)" ]
+  }
 
   if (webview_includes_weblayer) {
-    defines = [ "WEBVIEW_INCLUDES_WEBLAYER" ]
+    defines += [ "WEBVIEW_INCLUDES_WEBLAYER" ]
     deps += [ "//weblayer:weblayer_lib_webview" ]
   }
 }

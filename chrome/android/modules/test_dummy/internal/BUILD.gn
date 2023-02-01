@@ -42,5 +42,8 @@ if (current_toolchain == default_toolchain) {
     targets = [ "//chrome/browser/test_dummy/internal:java" ]
     manual_jni_registration = true
     namespace = "test_dummy"
+    if (allow_jni_multiplexing) {
+      enable_jni_multiplexing = true
+    }
   }
 }

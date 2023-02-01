@@ -278,6 +278,10 @@ template("chrome_public_common_apk_or_module_tmpl") {
       custom_assertion_handler = crash_reporting_assertion_handler
     }
 
+    if (allow_jni_multiplexing) {
+      enable_jni_multiplexing = true
+    }
+
     if (!defined(version_name)) {
       version_name = chrome_version_name
     }
