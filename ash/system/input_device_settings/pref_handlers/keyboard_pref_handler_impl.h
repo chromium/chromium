@@ -28,6 +28,7 @@ class ASH_EXPORT KeyboardPrefHandlerImpl : public KeyboardPrefHandler {
 
  private:
   mojom::KeyboardSettingsPtr GetNewKeyboardSettings(
+      PrefService* prefs,
       const mojom::Keyboard& keyboard);
   mojom::KeyboardSettingsPtr RetreiveKeyboardSettings(
       PrefService* prefs,

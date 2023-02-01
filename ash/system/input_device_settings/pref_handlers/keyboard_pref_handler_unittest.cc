@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
+#include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler_impl.h"
 
@@ -24,6 +26,11 @@ const std::string kDictFakeValue = "fake_value";
 const std::string kKeyboardKey1 = "device_key1";
 const std::string kKeyboardKey2 = "device_key2";
 const std::string kKeyboardKey3 = "device_key3";
+
+const int kGlobalAutoRepeatDelay = 1000;
+const int kGlobalAutoRepeatInterval = 1000;
+const bool kGlobalAutoRepeatEnabled = false;
+const bool kGlobalSendFunctionKeys = false;
 
 const mojom::KeyboardSettings kKeyboardSettingsDefault(
     /*modifier_remappings=*/{},
@@ -92,6 +99,14 @@ class KeyboardPrefHandlerTest : public AshTestBase {
 
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kKeyboardDeviceSettingsDictPref);
+    pref_service_->registry()->RegisterIntegerPref(prefs::kXkbAutoRepeatDelay,
+                                                   kGlobalAutoRepeatDelay);
+    pref_service_->registry()->RegisterIntegerPref(
+        prefs::kXkbAutoRepeatInterval, kGlobalAutoRepeatInterval);
+    pref_service_->registry()->RegisterBooleanPref(prefs::kXkbAutoRepeatEnabled,
+                                                   kGlobalAutoRepeatEnabled);
+    pref_service_->registry()->RegisterBooleanPref(prefs::kSendFunctionKeys,
+                                                   kGlobalSendFunctionKeys);
   }
 
   void CheckKeyboardSettingsAndDictAreEqual(
@@ -367,6 +382,24 @@ TEST_F(KeyboardPrefHandlerTest, InvalidModifierRemappings) {
       settings_dict->FindDict(prefs::kKeyboardSettingModifierRemappings);
   ASSERT_NE(nullptr, modifier_remappings_dict);
   EXPECT_EQ(invalid_modifier_remappings, *modifier_remappings_dict);
+}
+
+TEST_F(KeyboardPrefHandlerTest, KeyboardObserveredInTransitionPeriod) {
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kKeyboardKey1;
+  Shell::Get()->input_device_tracker()->OnKeyboardConnected(keyboard);
+  // Initialize keyboard settings for the device and check that the global
+  // prefs were used as defaults.
+  mojom::KeyboardSettingsPtr settings =
+      CallInitializeKeyboardSettings(keyboard.device_key);
+  ASSERT_EQ(settings->auto_repeat_enabled, kGlobalAutoRepeatEnabled);
+  ASSERT_EQ(settings->auto_repeat_interval,
+            base::Milliseconds(kGlobalAutoRepeatInterval));
+  ASSERT_EQ(settings->auto_repeat_delay,
+            base::Milliseconds(kGlobalAutoRepeatDelay));
+  ASSERT_EQ(settings->top_row_are_fkeys, kGlobalSendFunctionKeys);
+  ASSERT_EQ(settings->suppress_meta_fkey_rewrites,
+            kDefaultSuppressMetaFKeyRewrites);
 }
 
 class KeyboardSettingsPrefConversionTest

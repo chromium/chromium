@@ -46,6 +46,9 @@ class ASH_EXPORT InputDeviceTracker
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
+  bool WasDevicePreviouslyConnected(InputDeviceCategory category,
+                                    const base::StringPiece& device_key) const;
+
  private:
   void Init(PrefService* pref_service);
   void RecordDeviceConnected(InputDeviceCategory category,
@@ -53,6 +56,9 @@ class ASH_EXPORT InputDeviceTracker
 
   void ResetPrefMembers();
   void RecordConnectedDevices();
+
+  StringListPrefMember* GetObservedDevicesForCategory(
+      InputDeviceCategory category) const;
 
   std::unique_ptr<StringListPrefMember> keyboard_observed_devices_;
   std::unique_ptr<StringListPrefMember> mouse_observed_devices_;

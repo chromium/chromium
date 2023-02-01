@@ -483,6 +483,10 @@ class ASH_EXPORT Shell : public SessionObserver,
     return input_device_settings_controller_.get();
   }
 
+  InputDeviceTracker* input_device_tracker() {
+    return input_device_tracker_.get();
+  }
+
   EventClientImpl* event_client() { return event_client_.get(); }
   EventTransformationHandler* event_transformation_handler() {
     return event_transformation_handler_.get();

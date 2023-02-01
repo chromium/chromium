@@ -61,6 +61,15 @@ void InputDeviceTracker::OnActiveUserPrefServiceChanged(
   RecordConnectedDevices();
 }
 
+bool InputDeviceTracker::WasDevicePreviouslyConnected(
+    InputDeviceCategory category,
+    const base::StringPiece& device_key) const {
+  const auto* observed_devices = GetObservedDevicesForCategory(category);
+  return observed_devices
+             ? base::Contains(observed_devices->GetValue(), device_key)
+             : false;
+}
+
 void InputDeviceTracker::RecordConnectedDevices() {
   const auto keyboards =
       Shell::Get()->input_device_settings_controller()->GetConnectedKeyboards();
@@ -84,22 +93,7 @@ void InputDeviceTracker::Init(PrefService* pref_service) {
 void InputDeviceTracker::RecordDeviceConnected(
     InputDeviceCategory category,
     const base::StringPiece& device_key) {
-  StringListPrefMember* observed_devices = nullptr;
-  switch (category) {
-    case InputDeviceCategory::kMouse:
-      observed_devices = mouse_observed_devices_.get();
-      break;
-    case InputDeviceCategory::kKeyboard:
-      observed_devices = keyboard_observed_devices_.get();
-      break;
-    case InputDeviceCategory::kPointingStick:
-      observed_devices = pointing_stick_observed_devices_.get();
-      break;
-    case InputDeviceCategory::kTouchpad:
-      observed_devices = touchpad_observed_devices_.get();
-      break;
-  }
-
+  auto* const observed_devices = GetObservedDevicesForCategory(category);
   // If `observed_devices` is null, that means we are not yet in a valid chrome
   // session.
   if (!observed_devices) {
@@ -112,6 +106,20 @@ void InputDeviceTracker::RecordDeviceConnected(
   if (!base::Contains(previously_observed_devices, device_key)) {
     previously_observed_devices.emplace_back(device_key);
     observed_devices->SetValue(previously_observed_devices);
+  }
+}
+
+StringListPrefMember* InputDeviceTracker::GetObservedDevicesForCategory(
+    InputDeviceCategory category) const {
+  switch (category) {
+    case InputDeviceCategory::kMouse:
+      return mouse_observed_devices_.get();
+    case InputDeviceCategory::kKeyboard:
+      return keyboard_observed_devices_.get();
+    case InputDeviceCategory::kPointingStick:
+      return pointing_stick_observed_devices_.get();
+    case InputDeviceCategory::kTouchpad:
+      return touchpad_observed_devices_.get();
   }
 }
 
