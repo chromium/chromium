@@ -1567,8 +1567,6 @@ class DictationUITest : public DictationTest {
 #define MAYBE_ResetsToStandbyModeAfterFinalSpeechResult \
   DISABLED_ResetsToStandbyModeAfterFinalSpeechResult
 #define MAYBE_DisplaysMacroSuccess DISABLED_DisplaysMacroSuccess
-#define MAYBE_HiddenWhenDictationDeactivates \
-  DISABLED_HiddenWhenDictationDeactivates
 #define MAYBE_StandbyHints DISABLED_StandbyHints
 #define MAYBE_HintsShownWhenTextCommitted DISABLED_HintsShownWhenTextCommitted
 #define MAYBE_HintsShownAfterTextSelected DISABLED_HintsShownAfterTextSelected
@@ -1581,7 +1579,6 @@ class DictationUITest : public DictationTest {
 #define MAYBE_ResetsToStandbyModeAfterFinalSpeechResult \
   ResetsToStandbyModeAfterFinalSpeechResult
 #define MAYBE_DisplaysMacroSuccess DisplaysMacroSuccess
-#define MAYBE_HiddenWhenDictationDeactivates HiddenWhenDictationDeactivates
 #define MAYBE_StandbyHints StandbyHints
 #define MAYBE_HintsShownWhenTextCommitted HintsShownWhenTextCommitted
 #define MAYBE_HintsShownAfterTextSelected HintsShownAfterTextSelected
@@ -1653,7 +1650,8 @@ IN_PROC_BROWSER_TEST_P(DictationUITest,
                     /*hints=*/absl::optional<std::vector<std::u16string>>());
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HiddenWhenDictationDeactivates) {
+// Times out on CrOS. b/264535324
+IN_PROC_BROWSER_TEST_P(DictationUITest, DISABLED_HiddenWhenDictationDeactivates) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   WaitForProperties(/*visible=*/true,
