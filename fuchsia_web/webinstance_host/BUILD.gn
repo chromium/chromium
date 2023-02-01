@@ -80,7 +80,10 @@ source_set("webinstance_host_v1") {
     "web_instance_host_internal.h",
     "web_instance_host_v1.cc",
   ]
-  public = [ "web_instance_host_v1.h" ]
+  public = [
+    "web_instance_host_constants.h",
+    "web_instance_host_v1.h",
+  ]
   deps = [
     "//base",
     "//base:base_static",

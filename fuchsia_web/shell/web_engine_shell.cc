@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/ui/policy/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fdio/directory.h>
@@ -29,18 +28,16 @@
 #include "build/build_config.h"
 #include "fuchsia_web/common/init_logging.h"
 #include "fuchsia_web/shell/remote_debugging_port.h"
+#include "fuchsia_web/webinstance_host/web_instance_host_constants.h"
 #include "fuchsia_web/webinstance_host/web_instance_host_v1.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "url/gurl.h"
-
-fuchsia::sys::ComponentControllerPtr component_controller_;
 
 namespace {
 
 constexpr char kHeadlessSwitch[] = "headless";
 constexpr char kEnableProtectedMediaIdentifier[] =
     "enable-protected-media-identifier";
-constexpr char kWebEnginePackageName[] = "web-engine-package-name";
 constexpr char kUseWebInstance[] = "use-web-instance";
 constexpr char kEnableWebInstanceTmp[] = "enable-web-instance-tmp";
 
@@ -48,8 +45,8 @@ void PrintUsage() {
   std::cerr << "Usage: "
             << base::CommandLine::ForCurrentProcess()->GetProgram().BaseName()
             << " [--" << kRemoteDebuggingPortSwitch << "] [--"
-            << kHeadlessSwitch << "] [--" << kWebEnginePackageName
-            << "=name] URL. [--] [--{extra_flag1}] "
+            << kHeadlessSwitch << "] [--" << switches::kWithWebui
+            << "] URL [--] [--{extra_flag1}] "
             << "[--{extra_flag2}]" << std::endl
             << "Setting " << kRemoteDebuggingPortSwitch << " to 0 will "
             << "automatically choose an available port." << std::endl
@@ -70,44 +67,6 @@ GURL GetUrlFromArgs(const base::CommandLine::StringVector& args) {
     return GURL();
   }
   return url;
-}
-
-fuchsia::web::ContextProviderPtr ConnectToContextProvider(
-    base::StringPiece web_engine_package_name_override,
-    const base::CommandLine::StringVector& extra_command_line_arguments) {
-  sys::ComponentContext* const component_context =
-      base::ComponentContextForProcess();
-
-  // If there are no additional command-line arguments then use the
-  // system instance of the ContextProvider.
-  if (extra_command_line_arguments.empty() &&
-      web_engine_package_name_override.empty()) {
-    return component_context->svc()->Connect<fuchsia::web::ContextProvider>();
-  }
-
-  base::StringPiece web_engine_package_name =
-      web_engine_package_name_override.empty()
-          ? "web_engine"
-          : web_engine_package_name_override;
-
-  // Launch a private ContextProvider instance, with the desired command-line
-  // arguments.
-  fuchsia::sys::LauncherPtr launcher;
-  component_context->svc()->Connect(launcher.NewRequest());
-
-  fuchsia::sys::LaunchInfo launch_info;
-  launch_info.url = base::StringPrintf(
-      "fuchsia-pkg://fuchsia.com/%s#meta/context_provider.cmx",
-      web_engine_package_name.data());
-  launch_info.arguments = extra_command_line_arguments;
-  fidl::InterfaceHandle<fuchsia::io::Directory> service_directory;
-  launch_info.directory_request = service_directory.NewRequest();
-
-  launcher->CreateComponent(std::move(launch_info),
-                            component_controller_.NewRequest());
-
-  sys::ServiceDirectory web_engine_service_dir(std::move(service_directory));
-  return web_engine_service_dir.Connect<fuchsia::web::ContextProvider>();
 }
 
 }  // namespace
@@ -135,6 +94,7 @@ int main(int argc, char** argv) {
   const bool use_context_provider = !command_line->HasSwitch(kUseWebInstance);
   const bool enable_web_instance_tmp =
       command_line->HasSwitch(kEnableWebInstanceTmp);
+  const bool with_webui = command_line->HasSwitch(switches::kWithWebui);
 
   base::CommandLine::StringVector additional_args = command_line->GetArgs();
   GURL url(GetUrlFromArgs(additional_args));
@@ -143,14 +103,24 @@ int main(int argc, char** argv) {
     return 1;
   }
 
+  // Remove the url since we don't pass it into WebEngine
+  additional_args.erase(additional_args.begin());
+
   if (enable_web_instance_tmp && use_context_provider) {
     LOG(ERROR) << "Cannot use --enable-web-instance-tmp without "
                << "--use-web-instance";
     return 1;
   }
 
-  // Remove the url since we don't pass it into WebEngine
-  additional_args.erase(additional_args.begin());
+  if (with_webui && use_context_provider) {
+    LOG(ERROR) << "Cannot use --with-webui without --use-web-instance";
+    return 1;
+  }
+
+  if (!additional_args.empty() && use_context_provider) {
+    LOG(ERROR) << "Cannot use extra args without --use-web-instance";
+    return 1;
+  }
 
   // Set up the content directory fuchsia-pkg://shell-data/, which will host
   // the files stored under //fuchsia_web/shell/data.
@@ -212,9 +182,10 @@ int main(int argc, char** argv) {
   fuchsia::io::DirectoryHandle tmp_directory;
 
   if (use_context_provider) {
-    web_context_provider = ConnectToContextProvider(
-        command_line->GetSwitchValueASCII(kWebEnginePackageName),
-        additional_args);
+    // Connect to the system instance of the ContextProvider.
+    web_context_provider = base::ComponentContextForProcess()
+                               ->svc()
+                               ->Connect<fuchsia::web::ContextProvider>();
     web_context_provider->Create(std::move(create_context_params),
                                  context.NewRequest());
   } else {

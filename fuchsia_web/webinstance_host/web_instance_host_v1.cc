@@ -37,6 +37,7 @@
 #include "components/fuchsia_component_support/feedback_registration.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "fuchsia_web/webinstance_host/fuchsia_web_debug_proxy.h"
+#include "fuchsia_web/webinstance_host/web_instance_host_constants.h"
 #include "fuchsia_web/webinstance_host/web_instance_host_internal.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
@@ -281,7 +282,7 @@ zx_status_t WebInstanceHostV1::CreateInstanceForContextWithCopiedArgs(
   // TODO(1010222): Make kWebInstanceComponentUrl a relative component URL, and
   // remove this workaround.
   launch_info.url =
-      base::CommandLine::ForCurrentProcess()->HasSwitch("with-webui")
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kWithWebui)
           ? kWebInstanceWithWebUiComponentUrl
           : kWebInstanceComponentUrl;
   launch_info.flat_namespace = fuchsia::sys::FlatNamespace::New();
