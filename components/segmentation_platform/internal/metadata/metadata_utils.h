@@ -94,9 +94,12 @@ bool HasExpiredOrUnavailableResult(const proto::SegmentInfo& segment_info,
 bool HasFreshResults(const proto::SegmentInfo& segment_info,
                      const base::Time& now);
 
-// Helper method to read the time unit from the proto.
+// Helper method to read the time unit from the metadata proto.
 base::TimeDelta GetTimeUnit(
     const proto::SegmentationModelMetadata& model_metadata);
+
+// Helper method to convert the time unit to TimeDelta unit
+base::TimeDelta ConvertToTimeDelta(proto::TimeUnit time_unit);
 
 // Conversion methods between SignalKey::Kind and proto::SignalType.
 SignalKey::Kind SignalTypeToSignalKind(proto::SignalType signal_type);

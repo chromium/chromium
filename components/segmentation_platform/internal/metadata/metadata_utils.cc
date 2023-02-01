@@ -274,6 +274,10 @@ bool HasFreshResults(const proto::SegmentInfo& segment_info,
 base::TimeDelta GetTimeUnit(
     const proto::SegmentationModelMetadata& model_metadata) {
   proto::TimeUnit time_unit = model_metadata.time_unit();
+  return ConvertToTimeDelta(time_unit);
+}
+
+base::TimeDelta ConvertToTimeDelta(proto::TimeUnit time_unit) {
   switch (time_unit) {
     case proto::TimeUnit::YEAR:
       return base::Days(365);

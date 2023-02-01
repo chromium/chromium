@@ -9,6 +9,18 @@ option java_outer_classname = "OutputConfigProto";
 
 package segmentation_platform.proto;
 
+// Used as time unit for rest of this proto.
+enum TimeUnit {
+  UNKNOWN_TIME_UNIT = 0;
+  YEAR = 1;
+  MONTH = 2;
+  WEEK = 3;
+  DAY = 4;
+  HOUR = 5;
+  MINUTE = 6;
+  SECOND = 7;
+}
+
 // Defines what type of model is supplied. Results are based on which
 // classifier/regressor the model is in.
 message Predictor {
@@ -86,17 +98,20 @@ message Predictor {
   }
 }
 
-// TTL for the result.
+// TTL for the result, unit in TimeUnit.
 message PredictedResultTTL {
   // TTL for the predicted result can be optionally configured based on the top
-  // result. For example, for a ClassificationResult with `ordered_labels` B, A,
-  // C, the TTL value of B in `top_label_to_ttl_map` will be used as the result
-  // TTL. This field is only valid for Classifier predictor (binary, multi class
-  // and binned).
-  map<string, int64> top_label_to_ttl_map = 1;
+  // result. For example, for a ClassificationResult with
+  // `ordered_labels` B, A, C, the TTL value of B in `top_label_to_ttl_map` will
+  // be used as the result TTL. This field is only valid for Classifier
+  // predictor (binary, multi class and binned).
+  map<string, uint64> top_label_to_ttl_map = 1;
 
   // TTL when no other TTL is specified for a particular label.
-  optional int64 default_ttl = 2;
+  optional uint64 default_ttl = 2;
+
+  // The time unit to be used for TTL.
+  optional TimeUnit time_unit = 3;
 }
 
 // Specified by client in the metadata on how to interpret the model results.

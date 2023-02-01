@@ -38,18 +38,6 @@ message VersionInfo {
   optional int32 metadata_cur_version = 2;
 }
 
-// Used as time unit for rest of this proto.
-enum TimeUnit {
-  UNKNOWN_TIME_UNIT = 0;
-  YEAR = 1;
-  MONTH = 2;
-  WEEK = 3;
-  DAY = 4;
-  HOUR = 5;
-  MINUTE = 6;
-  SECOND = 7;
-}
-
 // Used to identify the source of the model whether it is a client side or
 // server side model.
 enum ModelSource {
