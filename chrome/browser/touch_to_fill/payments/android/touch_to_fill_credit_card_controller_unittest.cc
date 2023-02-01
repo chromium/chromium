@@ -13,6 +13,9 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/form_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,14 +42,12 @@ class MockTouchToFillCreditCardViewImpl
   MOCK_METHOD(void, Hide, ());
 };
 
-class MockContentAutofillDriver : public autofill::ContentAutofillDriver {
+class MockAutofillManager : public autofill::TestBrowserAutofillManager {
  public:
-  MockContentAutofillDriver()
-      : autofill::ContentAutofillDriver(nullptr, nullptr) {}
-  MockContentAutofillDriver(const MockContentAutofillDriver&) = delete;
-  MockContentAutofillDriver& operator=(const MockContentAutofillDriver&) =
-      delete;
-  ~MockContentAutofillDriver() override = default;
+  using autofill::TestBrowserAutofillManager::TestBrowserAutofillManager;
+  MockAutofillManager(const MockAutofillManager&) = delete;
+  MockAutofillManager& operator=(const MockAutofillManager&) = delete;
+  ~MockAutofillManager() override = default;
 
   MOCK_METHOD(void, SetShouldSuppressKeyboard, (bool), (override));
 };
@@ -54,7 +55,7 @@ class MockContentAutofillDriver : public autofill::ContentAutofillDriver {
 class MockTouchToFillDelegateImpl : public autofill::TouchToFillDelegate {
  public:
   MockTouchToFillDelegateImpl() {
-    ON_CALL(*this, GetDriver).WillByDefault(Return(&driver_));
+    ON_CALL(*this, GetManager).WillByDefault(Return(&manager_));
     ON_CALL(*this, ShouldShowScanCreditCard).WillByDefault(Return(true));
   }
   ~MockTouchToFillDelegateImpl() override = default;
@@ -68,7 +69,7 @@ class MockTouchToFillDelegateImpl : public autofill::TouchToFillDelegate {
               (int query_id,
                const autofill::FormData& form,
                const autofill::FormFieldData& field));
-  MOCK_METHOD(autofill::AutofillDriver*, GetDriver, (), (override));
+  MOCK_METHOD(autofill::AutofillManager*, GetManager, (), (override));
   MOCK_METHOD(bool, HideTouchToFill, (), ());
   MOCK_METHOD(bool, ShouldShowScanCreditCard, (), (override));
   MOCK_METHOD(void, ScanCreditCard, (), (override));
@@ -78,7 +79,9 @@ class MockTouchToFillDelegateImpl : public autofill::TouchToFillDelegate {
   MOCK_METHOD(void, OnDismissed, (bool dismissed_by_user), (override));
 
  private:
-  MockContentAutofillDriver driver_;
+  autofill::TestAutofillClient client_;
+  autofill::TestAutofillDriver driver_;
+  MockAutofillManager manager_{&driver_, &client_};
   base::WeakPtrFactory<MockTouchToFillDelegateImpl> weak_factory_{this};
 };
 

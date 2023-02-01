@@ -46,7 +46,7 @@ enum class TouchToFillCreditCardTriggerOutcome {
 constexpr const char kUmaTouchToFillCreditCardTriggerOutcome[] =
     "Autofill.TouchToFill.CreditCard.TriggerOutcome";
 
-class AutofillDriver;
+class AutofillManager;
 class BrowserAutofillManager;
 
 // Delegate for in-browser Touch To Fill (TTF) surface display and selection.
@@ -83,7 +83,7 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
   virtual void Reset();
 
   // TouchToFillDelegate:
-  AutofillDriver* GetDriver() override;
+  AutofillManager* GetManager() override;
   bool ShouldShowScanCreditCard() override;
   void ScanCreditCard() override;
   void OnCreditCardScanned(const CreditCard& card) override;

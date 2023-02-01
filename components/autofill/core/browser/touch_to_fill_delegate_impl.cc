@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
-#include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -71,7 +71,7 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
     outcome = TouchToFillCreditCardTriggerOutcome::kNoValidCards;
   }
   // Trigger only if the UI is available.
-  if (!manager_->driver()->CanShowAutofillUi()) {
+  if (!manager_->CanShowAutofillUi()) {
     outcome = TouchToFillCreditCardTriggerOutcome::kCannotShowAutofillUi;
   }
   // Finally try showing the surface
@@ -111,8 +111,8 @@ void TouchToFillDelegateImpl::Reset() {
   ttf_credit_card_state_ = TouchToFillState::kShouldShow;
 }
 
-AutofillDriver* TouchToFillDelegateImpl::GetDriver() {
-  return manager_->driver();
+AutofillManager* TouchToFillDelegateImpl::GetManager() {
+  return manager_;
 }
 
 bool TouchToFillDelegateImpl::ShouldShowScanCreditCard() {

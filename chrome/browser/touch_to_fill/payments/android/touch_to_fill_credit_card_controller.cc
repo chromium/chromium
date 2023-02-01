@@ -6,7 +6,7 @@
 #include "base/android/jni_string.h"
 #include "chrome/browser/touch_to_fill/payments/android/jni_headers/TouchToFillCreditCardControllerBridge_jni.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 
 namespace autofill {
@@ -46,8 +46,7 @@ void TouchToFillCreditCardController::Hide() {
 
 void TouchToFillCreditCardController::SetShouldSuppressKeyboard(bool suppress) {
   if (delegate_) {
-    static_cast<ContentAutofillDriver*>(delegate_->GetDriver())
-        ->SetShouldSuppressKeyboard(suppress);
+    delegate_->GetManager()->SetShouldSuppressKeyboard(suppress);
   }
 }
 

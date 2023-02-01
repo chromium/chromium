@@ -9,7 +9,7 @@
 
 namespace autofill {
 
-class AutofillDriver;
+class AutofillManager;
 
 // An interface for interaction with the bottom sheet UI controller, which is
 // `TouchToFillCreditCardController` on Android. The delegate will supply the
@@ -18,7 +18,7 @@ class TouchToFillDelegate {
  public:
   virtual ~TouchToFillDelegate() = default;
 
-  virtual AutofillDriver* GetDriver() = 0;
+  virtual AutofillManager* GetManager() = 0;
 
   virtual bool ShouldShowScanCreditCard() = 0;
   virtual void ScanCreditCard() = 0;

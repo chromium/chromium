@@ -29,16 +29,6 @@ namespace autofill {
 
 namespace {
 
-class MockAutofillDriver : public TestAutofillDriver {
- public:
-  MockAutofillDriver() = default;
-  MockAutofillDriver(const MockAutofillDriver&) = delete;
-  MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
-  ~MockAutofillDriver() override = default;
-
-  MOCK_METHOD(bool, CanShowAutofillUi, (), (const, override));
-};
-
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() = default;
@@ -117,6 +107,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const FormData& form,
                const FormFieldData& field),
               (override));
+  MOCK_METHOD(bool, CanShowAutofillUi, (), (const, override));
 };
 
 }  // namespace
@@ -130,7 +121,7 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     autofill_client_.GetPersonalDataManager()->SetPrefService(
         autofill_client_.GetPrefs());
-    autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>();
+    autofill_driver_ = std::make_unique<TestAutofillDriver>();
     browser_autofill_manager_ =
         std::make_unique<NiceMock<MockBrowserAutofillManager>>(
             autofill_driver_.get(), &autofill_client_);
@@ -151,7 +142,8 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
         .WillByDefault(Return(PopupType::kCreditCards));
     ON_CALL(autofill_client_, IsTouchToFillCreditCardSupported)
         .WillByDefault(Return(true));
-    ON_CALL(*autofill_driver_, CanShowAutofillUi).WillByDefault(Return(true));
+    ON_CALL(*browser_autofill_manager_, CanShowAutofillUi)
+        .WillByDefault(Return(true));
     ON_CALL(autofill_client_, ShowTouchToFillCreditCard)
         .WillByDefault(Return(true));
     // Calling HideTouchToFillCreditCard in production code leads to that
@@ -183,7 +175,7 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   test::AutofillEnvironment autofill_environment_;
   NiceMock<MockAutofillClient> autofill_client_;
-  std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
+  std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<MockBrowserAutofillManager> browser_autofill_manager_;
   raw_ptr<TouchToFillDelegateImpl> touch_to_fill_delegate_;
   base::HistogramTester histogram_tester_;
@@ -373,7 +365,8 @@ TEST_F(TouchToFillDelegateImplUnitTest,
 TEST_F(TouchToFillDelegateImplUnitTest,
        TryToShowTouchToFillFailsIfCanNotShowUi) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  EXPECT_CALL(*autofill_driver_, CanShowAutofillUi).WillOnce(Return(false));
+  EXPECT_CALL(*browser_autofill_manager_, CanShowAutofillUi)
+      .WillOnce(Return(false));
 
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
