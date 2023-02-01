@@ -180,7 +180,10 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   // Update SubresourceLoad metrics.
   virtual void UpdateSubresourceLoadMetrics(
       uint32_t number_of_subresources_loaded,
-      uint32_t number_of_subresource_loads_handled_by_service_worker) {}
+      uint32_t number_of_subresource_loads_handled_by_service_worker,
+      bool pervasive_payload_requested,
+      int64_t pervasive_bytes_fetched,
+      int64_t total_bytes_fetched) {}
 };
 
 }  // namespace blink

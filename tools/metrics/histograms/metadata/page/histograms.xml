@@ -691,6 +691,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.CacheTransparency.PaintTiming.NavigationToFirstContentfulPaint"
+    units="ms" expires_after="2023-07-01">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    The time from navigation start to first &quot;contentful&quot; paint. This
+    metric is recorded iff the page loads and the event happens in the
+    foreground.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.CacheTransparency.PaintTiming.NavigationToLargestContentfulPaint2"
+    units="ms" expires_after="2023-07-01">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    The time from navigation start to the time the largest content (text or
+    image) is first painted, across all frames. This metric is recorded at the
+    end of each page load or the latest time when we can reliably record, iff
+    the page loads and the event happens in the foreground.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.FencedFrames.InteractiveTiming.FirstInputDelay4"
     units="ms" expires_after="2023-06-01">
   <owner>lbrady@google.com</owner>

@@ -18,6 +18,8 @@ source_set("browser") {
     "observers/assert_page_load_metrics_observer.h",
     "observers/back_forward_cache_page_load_metrics_observer.cc",
     "observers/back_forward_cache_page_load_metrics_observer.h",
+    "observers/cache_transparency_page_load_metrics_observer.cc",
+    "observers/cache_transparency_page_load_metrics_observer.h",
     "observers/click_input_tracker.cc",
     "observers/click_input_tracker.h",
     "observers/core/largest_contentful_paint_handler.cc",

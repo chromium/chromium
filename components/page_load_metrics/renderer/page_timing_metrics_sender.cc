@@ -88,7 +88,10 @@ void PageTimingMetricsSender::DidObserveLoadingBehavior(
 
 void PageTimingMetricsSender::DidObserveSubresourceLoad(
     uint32_t number_of_subresources_loaded,
-    uint32_t number_of_subresource_loads_handled_by_service_worker) {
+    uint32_t number_of_subresource_loads_handled_by_service_worker,
+    bool pervasive_payload_requested,
+    int64_t pervasive_bytes_fetched,
+    int64_t total_bytes_fetched) {
   if (!subresource_load_metrics_) {
     subresource_load_metrics_ = mojom::SubresourceLoadMetrics::New();
   }
@@ -96,7 +99,12 @@ void PageTimingMetricsSender::DidObserveSubresourceLoad(
           number_of_subresources_loaded &&
       subresource_load_metrics_
               ->number_of_subresource_loads_handled_by_service_worker ==
-          number_of_subresource_loads_handled_by_service_worker) {
+          number_of_subresource_loads_handled_by_service_worker &&
+      subresource_load_metrics_->pervasive_payload_requested ==
+          pervasive_payload_requested &&
+      subresource_load_metrics_->pervasive_bytes_fetched ==
+          pervasive_bytes_fetched &&
+      subresource_load_metrics_->total_bytes_fetched == total_bytes_fetched) {
     return;
   }
   subresource_load_metrics_->number_of_subresources_loaded =
@@ -104,6 +112,10 @@ void PageTimingMetricsSender::DidObserveSubresourceLoad(
   subresource_load_metrics_
       ->number_of_subresource_loads_handled_by_service_worker =
       number_of_subresource_loads_handled_by_service_worker;
+  subresource_load_metrics_->pervasive_payload_requested =
+      pervasive_payload_requested;
+  subresource_load_metrics_->total_bytes_fetched = total_bytes_fetched;
+  subresource_load_metrics_->pervasive_bytes_fetched = pervasive_bytes_fetched;
   EnsureSendTimer();
 }
 

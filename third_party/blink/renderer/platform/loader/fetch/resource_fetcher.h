@@ -241,7 +241,9 @@ class PLATFORM_EXPORT ResourceFetcher
                           base::TimeTicks finish_time,
                           LoaderFinishType,
                           uint32_t inflight_keepalive_bytes,
-                          bool should_report_corb_blocking);
+                          bool should_report_corb_blocking,
+                          bool pervasive_payload_requested,
+                          int64_t bytes_fetched);
   void HandleLoaderError(Resource*,
                          base::TimeTicks finish_time,
                          const ResourceError&,
@@ -556,6 +558,13 @@ class PLATFORM_EXPORT ResourceFetcher
   // The number of sub resource loads that a service worker fetch handler
   // called respondWith. i.e. no fallback to network.
   uint32_t number_of_subresource_loads_handled_by_service_worker_ = 0;
+  // Whether a pervasive payload (aka sub resource) was requested. Once this is
+  // set as true, it will be true for all future updates in a page load.
+  bool pervasive_payload_requested_ = false;
+  // Number of bytes fetched by the network for pervasive payloads on a page.
+  int64_t pervasive_bytes_fetched_ = 0;
+  // Total number of bytes fetched by the network.
+  int64_t total_bytes_fetched_ = 0;
 };
 
 class ResourceCacheValidationSuppressor {

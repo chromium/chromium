@@ -276,6 +276,7 @@ class PLATFORM_EXPORT ResourceLoader final
   struct DeferredFinishLoadingInfo {
     base::TimeTicks response_end_time;
     bool should_report_corb_blocking;
+    absl::optional<bool> pervasive_payload_requested;
   };
   absl::optional<DeferredFinishLoadingInfo> deferred_finish_loading_info_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_body_loader_;

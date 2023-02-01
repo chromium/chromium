@@ -13613,6 +13613,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Network.CacheTransparency">
+  <obsolete>
+    Deprecated in Jan 2023 in favor of Network.CacheTransparency2.
+  </obsolete>
   <owner>nidhijaju@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>
@@ -13632,6 +13635,40 @@ be describing additional metrics about the same event.
         </statistics>
       </history>
     </aggregation>
+  </metric>
+  <metric name="TotalBytesFetched">
+    <summary>
+      Records the total bytes fetched by the network.
+    </summary>
+  </metric>
+</event>
+
+<event name="Network.CacheTransparency2">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Metrics for Cache Transparency which aims to allow a list of pervasive
+    payloads to be specified and cached in a single-keyed cache to improve
+    loading performance. Recorded for each navigation and subresource load.
+  </summary>
+  <metric name="FoundPervasivePayload" enum="Boolean">
+    <summary>
+      Records whether a requested resource's URL matched with any of the URLs in
+      the Cache Transparency Pervasive Payloads List.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PervasiveBytesFetched">
+    <summary>
+      Records the number of bytes fetched by the network for pervasive payloads
+      on a page.
+    </summary>
   </metric>
   <metric name="TotalBytesFetched">
     <summary>
@@ -15943,6 +15980,14 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PageLoad.CacheTransparencyEnabled" singular="True">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Recorded for page loads where Cache Transparency is enabled.
+  </summary>
+</event>
+
 <event name="PageLoad.FromGoogleSearch" singular="True">
   <owner>sullivan@chromium.org</owner>
   <owner>mushan@chromium.org</owner>
@@ -16020,6 +16065,15 @@ be describing additional metrics about the same event.
       to record PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.
     </summary>
   </metric>
+</event>
+
+<event name="PageLoad.PervasivePayloadsEnabled" singular="True">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Recorded for page loads where the pervasive payloads list is inputted to
+    Chrome.
+  </summary>
 </event>
 
 <event name="PageLoad.ServiceWorkerControlled" singular="True">
