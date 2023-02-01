@@ -14,95 +14,95 @@ import "url/mojom/url.mojom";
 // The list of all HTML autocomplete field mode hints supported by Chrome.
 // See [ http://is.gd/whatwg_autocomplete ] for the full list of specced hints.
 enum HtmlFieldMode {
-  kNone,
-  kBilling,
-  kShipping,
+  kNone = 0,
+  kBilling = 1,
+  kShipping = 2,
 };
 
 // The list of all HTML autocomplete field type hints supported by Chrome.
 // See [ http://is.gd/whatwg_autocomplete ] for the full list of specced hints.
 enum HtmlFieldType {
   // Default type.
-  kUnspecified,
+  kUnspecified = 0,
 
   // Name types.
-  kName,
-  kHonorificPrefix,
-  kGivenName,
-  kAdditionalName,
-  kFamilyName,
+  kName = 1,
+  kHonorificPrefix = 2,
+  kGivenName = 3,
+  kAdditionalName = 4,
+  kFamilyName = 5,
 
   // Business types.
-  kOrganization,
+  kOrganization = 6,
 
   // Address types.
-  kStreetAddress,
-  kAddressLine1,
-  kAddressLine2,
-  kAddressLine3,
-  kAddressLevel1,   // For U.S. addresses, corresponds to the state.
-  kAddressLevel2,   // For U.S. addresses, corresponds to the city.
-  kAddressLevel3,   // An area that is more specific than LEVEL2.
-  kCountryCode,     // The ISO 3166-1-alpha-2 country code.
-  kCountryName,     // The localized country name.
-  kPostalCode,
-  kFullAddress,     // The complete address, formatted for display.
+  kStreetAddress = 7,
+  kAddressLine1 = 8,
+  kAddressLine2 = 9,
+  kAddressLine3 = 10,
+  kAddressLevel1 = 11,   // For U.S. addresses, corresponds to the state.
+  kAddressLevel2 = 12,   // For U.S. addresses, corresponds to the city.
+  kAddressLevel3 = 13,   // An area that is more specific than LEVEL2.
+  kCountryCode = 14,     // The ISO 3166-1-alpha-2 country code.
+  kCountryName = 15,     // The localized country name.
+  kPostalCode = 16,
+  kFullAddress = 17,     // The complete address, formatted for display.
 
   // Credit card types.
-  kCreditCardNameFull,
-  kCreditCardNameFirst,
-  kCreditCardNameLast,
-  kCreditCardNumber,
-  kCreditCardExp,
-  kCreditCardExpMonth,
-  kCreditCardExpYear,
-  kCreditCardVerificationCode,
-  kCreditCardType,
+  kCreditCardNameFull = 18,
+  kCreditCardNameFirst = 19,
+  kCreditCardNameLast = 20,
+  kCreditCardNumber = 21,
+  kCreditCardExp = 22,
+  kCreditCardExpMonth = 23,
+  kCreditCardExpYear = 24,
+  kCreditCardVerificationCode = 25,
+  kCreditCardType = 26,
 
   // Phone number types.
-  kTel,
-  kTelCountryCode,
-  kTelNational,
-  kTelAreaCode,
-  kTelLocal,
-  kTelLocalPrefix,
-  kTelLocalSuffix,
-  kTelExtension,
+  kTel = 27,
+  kTelCountryCode = 28,
+  kTelNational = 29,
+  kTelAreaCode = 30,
+  kTelLocal = 31,
+  kTelLocalPrefix = 32,
+  kTelLocalSuffix = 33,
+  kTelExtension = 34,
 
   // Email.
-  kEmail,
+  kEmail = 35,
 
   // Birthdate.
-  kBirthdateDay,
-  kBirthdateMonth,
-  kBirthdateYear,
+  kBirthdateDay = 36,
+  kBirthdateMonth = 37,
+  kBirthdateYear = 38,
 
   // Transaction details.
-  kTransactionAmount,
-  kTransactionCurrency,
+  kTransactionAmount = 39,
+  kTransactionCurrency = 40,
 
   // Variants of type hints specified in the HTML specification that are
   // inferred based on a field's 'maxlength' attribute.
-  kAdditionalNameInitial,
-  kCreditCardExpDate2DigitYear,
-  kCreditCardExpDate4DigitYear,
-  kCreditCardExp2DigitYear,
-  kCreditCardExp4DigitYear,
+  kAdditionalNameInitial = 41,
+  kCreditCardExpDate2DigitYear = 42,
+  kCreditCardExpDate4DigitYear = 43,
+  kCreditCardExp2DigitYear = 44,
+  kCreditCardExp4DigitYear = 45,
 
   // Universal Payment Interface - Virtual Payment Address.
-  kUpiVpa,
+  kUpiVpa = 46,
 
   // Phone number verification one-time-codes.
-  kOneTimeCode,
+  kOneTimeCode = 47,
 
   // Promo code for merchant sites.
-  kMerchantPromoCode,
+  kMerchantPromoCode = 48,
 
   // International Bank Account Number (IBAN) for banking and merchant sites.
-  kIban,
+  kIban = 49,
 
   // Non-standard autocomplete types.
-  kUnrecognized,
+  kUnrecognized = 50,
 };
 
 // Events observed by the Password Manager that indicate either that a form is

@@ -10391,10 +10391,11 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
   // Create a profile.
   RecreateProfile(/*is_server=*/false);
   FormData form = CreateForm({CreateField("State", "state", "", "text"),
-                              CreateField("Street", "street", "", "text")});
+                              CreateField("Street", "street", "", "text"),
+                              CreateField("Number", "", "", "text")});
 
-  std::vector<ServerFieldType> field_types = {ADDRESS_HOME_STATE,
-                                              ADDRESS_HOME_STREET_ADDRESS};
+  std::vector<ServerFieldType> field_types = {
+      ADDRESS_HOME_STATE, ADDRESS_HOME_STREET_ADDRESS, NO_SERVER_DATA};
 
   autofill_manager().AddSeenForm(form, field_types);
 
@@ -10413,7 +10414,8 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
   autofill_manager().AddSeenForm(form, field_types);
 
   {
-    // Simulating submission with filled local data.
+    // Simulating submission with filled local data. The third field cannot be
+    // autofilled because its type cannot be predicated.
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields[0], gfx::RectF(), AutoselectFirstSuggestion(false),
         FormElementWasClicked(true));
@@ -10428,13 +10430,15 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
 
     entries =
         test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
-    ASSERT_EQ(2u, entries.size());
+    ASSERT_EQ(3u, entries.size());
 
     for (size_t i = 0; i < entries.size(); ++i) {
       SCOPED_TRACE(testing::Message() << i);
       using UFIT = UkmFieldInfoType;
       const auto* const entry = entries[i];
 
+      SkipStatus status =
+          i == 2 ? SkipStatus::kNoFillableGroup : SkipStatus::kNotSkipped;
       std::map<std::string, int64_t> expected = {
           {UFIT::kFormSessionIdentifierName,
            AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
@@ -10445,20 +10449,21 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
            Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
           {UFIT::kWasFocusedName, i == 0},
           {UFIT::kIsFocusableName, true},
-          {UFIT::kWasAutofilledName, true},
+          {UFIT::kWasAutofilledName, i != 2},
           {UFIT::kAutofillSkippedStatusName,
-           DenseSet<SkipStatus>{SkipStatus::kNotSkipped}.to_uint64()},
+           DenseSet<SkipStatus>{status}.to_uint64()},
           {UFIT::kWasRefillName, false},
           {UFIT::kHadValueBeforeFillingName, false},
-          {UFIT::kFilledValueWasModifiedName, false},
-          {UFIT::kHadTypedOrFilledValueAtSubmissionName, true},
+          {UFIT::kUserTypedIntoFieldName, i == 0},
+          {UFIT::kHadTypedOrFilledValueAtSubmissionName, i != 2},
       };
       if (i == 0) {
         expected[UFIT::kSuggestionWasAvailableName] = true;
         expected[UFIT::kSuggestionWasShownName] = true;
         expected[UFIT::kSuggestionWasAcceptedName] = true;
-        expected[UFIT::kUserTypedIntoFieldName] = true;
-        expected[UFIT::kFilledValueWasModifiedName] = true;
+      }
+      if (i != 2) {
+        expected[UFIT::kFilledValueWasModifiedName] = i == 0;
       }
 
       EXPECT_EQ(expected.size(), entry->metrics.size());
@@ -10552,6 +10557,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
         {UFIT::kIsFocusableName, true},
         {UFIT::kRankInFieldSignatureGroupName, 1},
         {UFIT::kWasFocusedName, false},
+        {UFIT::kUserTypedIntoFieldName, false},
     };
     if (heuristic_types[i] != UNKNOWN_TYPE) {
       expected.merge(std::map<std::string, int64_t>({

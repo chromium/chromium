@@ -2562,7 +2562,8 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       suggestion_was_shown |= event->suggestion_is_shown;
       if (suggestion_was_shown == OptionalBoolean::kTrue &&
           suggestion_was_accepted == OptionalBoolean::kUndefined) {
-        // Only switch from unknown to false on the first suggestion.
+        // Initialize suggestion_was_accepted to a defined value when the first
+        // time the suggestion is shown.
         suggestion_was_accepted = OptionalBoolean::kFalse;
       }
     }
@@ -2578,7 +2579,8 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       had_value_after_filling = event->had_value_after_filling;
       if (was_autofilled == OptionalBoolean::kTrue &&
           filled_value_was_modified == OptionalBoolean::kUndefined) {
-        // Only switch from unknown to false on the first filling.
+        // Initialize filled_value_was_modified to a defined value when the
+        // field is filled for the first time.
         filled_value_was_modified = OptionalBoolean::kFalse;
       }
       ++autofill_count;
@@ -2658,7 +2660,8 @@ void AutofillMetrics::FormInteractionsUkmLogger::
           AutofillMetrics::FieldGlobalIdToHash64Bit(field.global_id()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetWasFocused(OptionalBooleanToBool(was_focused))
-      .SetIsFocusable(field.IsFocusable());
+      .SetIsFocusable(field.IsFocusable())
+      .SetUserTypedIntoField(OptionalBooleanToBool(user_typed_into_field));
 
   if (was_focused == OptionalBoolean::kTrue) {
     builder
@@ -2678,10 +2681,6 @@ void AutofillMetrics::FormInteractionsUkmLogger::
             OptionalBooleanToBool(had_value_before_filling))
         .SetAutofillSkippedStatus(autofill_skipped_status.to_uint64())
         .SetWasRefill(autofill_count > 1);
-  }
-
-  if (user_typed_into_field == OptionalBoolean::kTrue) {
-    builder.SetUserTypedIntoField(OptionalBooleanToBool(user_typed_into_field));
   }
 
   if (filled_value_was_modified != OptionalBoolean::kUndefined) {
