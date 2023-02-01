@@ -54,6 +54,7 @@ config("tflite_flags") {
     "FARMHASH_NO_CXX_STRING",
     "NEON2SSE_DISABLE_PERFORMANCE_WARNING",
     "TF_LITE_STRIP_ERROR_STRINGS",
+    "TFL_STATIC_LIBRARY_BUILD",
   ]
 
   if (build_tflite_with_xnnpack) {
