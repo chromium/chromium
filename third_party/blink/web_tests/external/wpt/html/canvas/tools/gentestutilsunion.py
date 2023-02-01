@@ -263,6 +263,8 @@ def _generate_test(test: Mapping[str, str], templates: Mapping[str, str],
 
     timeout = ('\n<meta name="timeout" content="%s">' %
                test['timeout'] if 'timeout' in test else '')
+    timeout_js = ('// META: timeout=%s\n' % test['timeout']
+                  if 'timeout' in test else '')
 
     scripts = ''
     for s in test.get('scripts', []):
@@ -316,6 +318,7 @@ def _generate_test(test: Mapping[str, str], templates: Mapping[str, str],
         'fonts': fonts,
         'fonthack': fonthack,
         'timeout': timeout,
+        'timeout_js': timeout_js,
         'canvas': canvas,
         'width': width,
         'height': height,
@@ -337,26 +340,18 @@ def _generate_test(test: Mapping[str, str], templates: Mapping[str, str],
     if html_canvas_cfg.enabled:
         pathlib.Path(f'{canvas_path}.html').write_text(
             templates['w3ccanvas'] % template_params, 'utf-8')
+
     if offscreen_canvas_cfg.enabled:
+        offscreen_template = templates['w3coffscreencanvas']
+        worker_template = templates['w3cworker']
         if ('then(t_pass, t_fail);' in code_canvas):
-            temp_offscreen = templates['w3coffscreencanvas'].replace(
-                't.done();\n', '')
-            temp_worker = templates['w3cworker'].replace('t.done();\n', '')
-            pathlib.Path(f'{offscreen_path}.html').write_text(
-                temp_offscreen % template_params, 'utf-8')
-            timeout = ('// META: timeout=%s\n' %
-                       test['timeout'] if 'timeout' in test else '')
-            template_params['timeout'] = timeout
-            pathlib.Path(f'{offscreen_path}.worker.js').write_text(
-                temp_worker % template_params, 'utf-8')
-        else:
-            pathlib.Path(f'{offscreen_path}.html').write_text(
-                templates['w3coffscreencanvas'] % template_params, 'utf-8')
-            timeout = ('// META: timeout=%s\n' %
-                       test['timeout'] if 'timeout' in test else '')
-            template_params['timeout'] = timeout
-            pathlib.Path(f'{offscreen_path}.worker.js').write_text(
-                templates['w3cworker'] % template_params, 'utf-8')
+            offscreen_template = offscreen_template.replace('t.done();\n', '')
+            worker_template = worker_template.replace('t.done();\n', '')
+
+        pathlib.Path(f'{offscreen_path}.html').write_text(
+            offscreen_template % template_params, 'utf-8')
+        pathlib.Path(f'{offscreen_path}.worker.js').write_text(
+            worker_template % template_params, 'utf-8')
 
 
 def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
