@@ -108,6 +108,11 @@ class CONTENT_EXPORT SiteInstanceGroup
   // observers, and may trigger deletion of proxies.
   void DecrementActiveFrameCount();
 
+  // Returns true if `group` is in the same BrowsingInstance as `this`. This
+  // behaves similarly to SiteInstance::IsRelatedSiteInstance, but can only be
+  // used when a SiteInstanceGroup is available.
+  bool IsRelatedSiteInstanceGroup(SiteInstanceGroup* group);
+
   // Get the number of active frames which belong to this SiteInstanceGroup. If
   // there are no active frames left, all frames in this SiteInstanceGroup can
   // be safely discarded.

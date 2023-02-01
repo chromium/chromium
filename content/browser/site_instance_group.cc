@@ -67,6 +67,10 @@ void SiteInstanceGroup::DecrementActiveFrameCount() {
   }
 }
 
+bool SiteInstanceGroup::IsRelatedSiteInstanceGroup(SiteInstanceGroup* group) {
+  return browsing_instance_id() == group->browsing_instance_id();
+}
+
 void SiteInstanceGroup::RenderProcessHostDestroyed(RenderProcessHost* host) {
   DCHECK_EQ(process_->GetID(), host->GetID());
   process_->RemoveObserver(this);

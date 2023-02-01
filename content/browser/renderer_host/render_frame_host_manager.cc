@@ -744,8 +744,8 @@ void RenderFrameHostManager::PrepareForCollectingPage(
         // This avoids including the proxy created when starting a
         // new cross-process, cross-BrowsingInstance navigation, as well as any
         // restored proxies which are also in a different BrowsingInstance.
-        if (rfh->GetSiteInstance()->IsRelatedSiteInstance(
-                it.second->GetSiteInstance())) {
+        if (rfh->GetSiteInstance()->group()->IsRelatedSiteInstanceGroup(
+                it.second->site_instance_group())) {
           render_view_hosts->insert(
               it.second->GetRenderViewHost()->GetSafeRef());
         }
@@ -771,7 +771,7 @@ void RenderFrameHostManager::PrepareForCollectingPage(
                 kLegacyOneToOneWithFrameTreeNode);
 
   // Prepare the proxies.
-  SiteInstanceImpl* instance = main_render_frame_host->GetSiteInstance();
+  SiteInstanceGroup* group = main_render_frame_host->GetSiteInstance()->group();
 
   // Store the proxies only for main frame in the primary FrameTree because the
   // FrameTreeNode gets reused for back/forward cache. It is not needed to
@@ -782,7 +782,7 @@ void RenderFrameHostManager::PrepareForCollectingPage(
     // This avoids including the proxy created when starting a
     // new cross-process, cross-BrowsingInstance navigation, as well as any
     // restored proxies which are also in a different BrowsingInstance.
-    if (instance->IsRelatedSiteInstance(it.second->GetSiteInstance())) {
+    if (group->IsRelatedSiteInstanceGroup(it.second->site_instance_group())) {
       DCHECK(base::Contains(*render_view_hosts,
                             it.second->GetRenderViewHost()->GetSafeRef()));
       (*proxy_hosts)[it.first] = std::move(it.second);
@@ -3377,7 +3377,7 @@ void RenderFrameHostManager::CreateProxiesForChildFrame(FrameTreeNode* child) {
     // since the outer delegate does not need to interact with them.
     //
     // TODO(alexmos): This is potentially redundant with the
-    // IsRelatedSiteInstance() check below.  Verify this and remove if so.
+    // IsRelatedSiteInstanceGroup() check below.  Verify this and remove if so.
     if (pair.second.get() == outer_delegate_proxy)
       continue;
 
@@ -3392,8 +3392,8 @@ void RenderFrameHostManager::CreateProxiesForChildFrame(FrameTreeNode* child) {
     // trigger inconsistencies and crashes if the old document was stored in
     // BackForwardCache and later restored (since this preserves all of the
     // subframe FrameTreeNodes and proxies).  See https://crbug.com/1243541.
-    if (!pair.second->GetSiteInstance()->IsRelatedSiteInstance(
-            render_frame_host_->GetSiteInstance())) {
+    if (!pair.second->site_instance_group()->IsRelatedSiteInstanceGroup(
+            render_frame_host_->GetSiteInstance()->group())) {
       continue;
     }
 
@@ -4061,8 +4061,9 @@ void RenderFrameHostManager::CommitPending(
       const auto& proxy = it.second;
       // The outer delegate proxy is *always* cross-browsing context group, but
       // it is the only proxy we must preserve.
-      if (!render_frame_host_->GetSiteInstance()->IsRelatedSiteInstance(
-              proxy->GetSiteInstance()) &&
+      if (!render_frame_host_->GetSiteInstance()
+               ->group()
+               ->IsRelatedSiteInstanceGroup(proxy->site_instance_group()) &&
           proxy.get() != GetProxyToOuterDelegate()) {
         removed_proxies.push_back(proxy.get());
       }

@@ -517,8 +517,8 @@ void RenderFrameProxyHost::RouteMessageEvent(
   // TODO(alexmos, lazyboy):  The check for browser plugin guest currently
   // requires going through the delegate.  It should be refactored and
   // performed here once OOPIF support in <webview> is further along.
-  SiteInstanceImpl* target_site_instance = target_rfh->GetSiteInstance();
-  if (!target_site_instance->IsRelatedSiteInstance(GetSiteInstance()) &&
+  SiteInstanceGroup* target_group = target_rfh->GetSiteInstance()->group();
+  if (!target_group->IsRelatedSiteInstanceGroup(site_instance_group()) &&
       !target_rfh->delegate()->ShouldRouteMessageEvent(target_rfh)) {
     return;
   }
@@ -561,13 +561,12 @@ void RenderFrameProxyHost::RouteMessageEvent(
       // https://crbug.com/485520 for discussion on why this is ok).
       // The proxy may be in a different BrowsingContextState in the case of
       // postMessages exchanged across inner and outer delegates.
-      RenderFrameProxyHost* source_proxy_in_target_site_instance_group =
+      RenderFrameProxyHost* source_proxy_in_target_group =
           source_rfh->browsing_context_state()->GetRenderFrameProxyHost(
-              target_site_instance->group(),
+              target_group,
               BrowsingContextState::ProxyAccessMode::kAllowOuterDelegate);
-      if (source_proxy_in_target_site_instance_group) {
-        translated_source_token =
-            source_proxy_in_target_site_instance_group->GetFrameToken();
+      if (source_proxy_in_target_group) {
+        translated_source_token = source_proxy_in_target_group->GetFrameToken();
       }
 
       source_page_ukm_source_id = source_rfh->GetPageUkmSourceId();
@@ -630,7 +629,8 @@ void RenderFrameProxyHost::RouteCloseEvent() {
   // as the request came from a RenderFrameHost in the same BrowsingInstance.
   // We receive this from a WebViewImpl when it receives a request to close
   // the window containing the active RenderFrameHost.
-  if (GetSiteInstance()->IsRelatedSiteInstance(rfh->GetSiteInstance())) {
+  if (site_instance_group()->IsRelatedSiteInstanceGroup(
+          rfh->GetSiteInstance()->group())) {
     rfh->ClosePage();
   }
 }
