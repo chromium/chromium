@@ -393,6 +393,9 @@ GLTextureOzoneImageRepresentation::Create(
       GLOzoneImageRepresentationShared::CreateShared(
           backing, std::move(pixmap), plane,
           /*is_passthrough=*/false, cached_texture_holders);
+  if (texture_holders.empty()) {
+    return nullptr;
+  }
   return base::WrapUnique<GLTextureOzoneImageRepresentation>(
       new GLTextureOzoneImageRepresentation(manager, backing, tracker,
                                             std::move(texture_holders)));
@@ -447,6 +450,9 @@ GLTexturePassthroughOzoneImageRepresentation::Create(
       GLOzoneImageRepresentationShared::CreateShared(
           backing, std::move(pixmap), plane,
           /*is_passthrough=*/true, cached_texture_holders);
+  if (texture_holders.empty()) {
+    return nullptr;
+  }
   return base::WrapUnique<GLTexturePassthroughOzoneImageRepresentation>(
       new GLTexturePassthroughOzoneImageRepresentation(
           manager, backing, tracker, std::move(texture_holders)));
