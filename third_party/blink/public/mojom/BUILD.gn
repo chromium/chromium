@@ -5,6 +5,7 @@
 import("//build/config/ui.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/blink/public/public_features.gni")
+import("//third_party/blink/renderer/config.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -39,10 +40,6 @@ mojom("mojom_platform") {
     "choosers/date_time_chooser.mojom",
     "choosers/file_chooser.mojom",
     "choosers/popup_menu.mojom",
-    "chromeos/system_extensions/hid/cros_hid.mojom",
-    "chromeos/system_extensions/managed_device_health_services/telemetry/cros_telemetry.mojom",
-    "chromeos/system_extensions/managed_device_health_services/telemetry/nullable_primitives.mojom",
-    "chromeos/system_extensions/window_management/cros_window_management.mojom",
     "clipboard/clipboard.mojom",
     "close_watcher/close_listener.mojom",
     "commit_result/commit_result.mojom",
@@ -241,6 +238,15 @@ mojom("mojom_platform") {
 
   if (is_mac) {
     sources += [ "input/text_input_host.mojom" ]
+  }
+
+  if (use_blink_extensions_chromeos) {
+    sources += [
+      "chromeos/system_extensions/hid/cros_hid.mojom",
+      "chromeos/system_extensions/managed_device_health_services/telemetry/cros_telemetry.mojom",
+      "chromeos/system_extensions/managed_device_health_services/telemetry/nullable_primitives.mojom",
+      "chromeos/system_extensions/window_management/cros_window_management.mojom",
+    ]
   }
 
   public_deps = [
