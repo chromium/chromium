@@ -6,9 +6,9 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_onc_util.h"
@@ -38,8 +38,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace rollback_network_config {
+namespace ash::rollback_network_config {
 
 namespace {
 
@@ -192,101 +191,76 @@ bool NetworkExists(const std::string& guid) {
 }
 
 void SetUpDeviceWideNetworkConfig(const base::Value& config) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<const std::string&, const std::string&> result;
   managed_network_configuration_handler()->CreateConfiguration(
-      kDeviceUserHash, config,
-      base::BindLambdaForTesting(
-          [&](const std::string& service_path, const std::string& guid) {
-            run_loop.Quit();
-          }),
+      kDeviceUserHash, config, result.GetCallback(),
       base::BindOnce(&PrintErrorAndFail));
-  run_loop.Run();
+  ASSERT_TRUE(result.Wait()) << "Failed to configure " << config;
 }
 
 void SetPropertiesForExistingNetwork(const std::string& guid,
                                      const base::Value& config) {
-  base::RunLoop run_loop;
   ASSERT_TRUE(NetworkExists(guid));
+
   const ash::NetworkState* network_state =
       network_state_handler()->GetNetworkStateFromGuid(guid);
+
+  base::test::TestFuture<void> signal;
   managed_network_configuration_handler()->SetProperties(
-      network_state->path(), config,
-      base::BindLambdaForTesting([&]() { run_loop.Quit(); }),
+      network_state->path(), config, signal.GetCallback(),
       base::BindOnce(&PrintErrorAndFail));
-  run_loop.Run();
+  ASSERT_TRUE(signal.Wait()) << "Failed to set " << config << " for " << guid;
 }
 
 base::Value GetProperties(const std::string userhash, const std::string& guid) {
-  base::RunLoop run_loop;
-  base::Value result;
+  base::test::TestFuture<const std::string&, absl::optional<base::Value>,
+                         absl::optional<std::string>>
+      result;
   managed_network_configuration_handler()->GetProperties(
-      userhash, GetServicePath(guid),
-      base::BindLambdaForTesting([&](const std::string& service_path,
-                                     absl::optional<base::Value> properties,
-                                     absl::optional<std::string> error) {
-        ASSERT_TRUE(properties.has_value());
-        result = std::move(*properties);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  return result;
+      userhash, GetServicePath(guid), result.GetCallback());
+  absl::optional<base::Value> properties = std::get<1>(result.Take());
+  EXPECT_TRUE(properties.has_value());
+  return std::move(properties.value());
 }
 
 base::Value GetManagedProperties(const std::string userhash,
                                  const std::string& guid) {
-  base::RunLoop run_loop;
-  base::Value result;
+  base::test::TestFuture<const std::string&, absl::optional<base::Value>,
+                         absl::optional<std::string>>
+      result;
   managed_network_configuration_handler()->GetManagedProperties(
-      userhash, GetServicePath(guid),
-      base::BindLambdaForTesting([&](const std::string& service_path,
-                                     absl::optional<base::Value> properties,
-                                     absl::optional<std::string> error) {
-        ASSERT_TRUE(properties.has_value());
-        result = std::move(*properties);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  return result;
+      userhash, GetServicePath(guid), result.GetCallback());
+
+  absl::optional<base::Value> properties = std::get<1>(result.Take());
+  EXPECT_TRUE(properties.has_value());
+  return std::move(properties.value());
 }
 
 std::string GetPskPassphrase(const std::string& guid) {
-  base::RunLoop run_loop;
-  std::string result;
+  base::test::TestFuture<const std::string&> passphrase;
   shill_service_client()->GetWiFiPassphrase(
-      dbus::ObjectPath(GetServicePath(guid)),
-      base::BindLambdaForTesting([&](const std::string& password) {
-        result = password;
-        run_loop.Quit();
-      }),
+      dbus::ObjectPath(GetServicePath(guid)), passphrase.GetCallback(),
       base::BindOnce(&PrintErrorAndMessageAndFail));
-  run_loop.Run();
-  return result;
+  return passphrase.Get();
 }
 
 std::string GetEapPassphrase(const std::string& guid) {
-  base::RunLoop run_loop;
-  std::string result;
+  base::test::TestFuture<const std::string&> passphrase;
   shill_service_client()->GetEapPassphrase(
-      dbus::ObjectPath(GetServicePath(guid)),
-      base::BindLambdaForTesting([&](const std::string& password) {
-        result = password;
-        run_loop.Quit();
-      }),
+      dbus::ObjectPath(GetServicePath(guid)), passphrase.GetCallback(),
       base::BindOnce(&PrintErrorAndMessageAndFail));
-  run_loop.Run();
-  return result;
+  return passphrase.Get();
 }
 
 void RemoveNetwork(const std::string& guid) {
   const ash::NetworkState* network_state =
       network_state_handler()->GetNetworkStateFromGuid(guid);
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::Value result;
+
+  base::test::TestFuture<void> signal;
   managed_network_configuration_handler()->RemoveConfiguration(
-      network_state->path(),
-      base::BindLambdaForTesting([&]() { run_loop.Quit(); }),
+      network_state->path(), signal.GetCallback(),
       base::BindOnce(&PrintErrorAndFail));
-  run_loop.Run();
+  ASSERT_TRUE(signal.Wait()) << "Failed to remove " << guid;
 }
 
 }  // namespace
@@ -335,25 +309,16 @@ class RollbackNetworkConfigTest : public testing::Test {
   }
 
   std::string Export() {
-    base::RunLoop run_loop;
-    std::string result;
-    rollback_network_config_->RollbackConfigExport(
-        base::BindLambdaForTesting([&](const std::string& config) {
-          result = config;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return result;
+    base::test::TestFuture<const std::string&> config;
+    rollback_network_config_->RollbackConfigExport(config.GetCallback());
+    return config.Get();
   }
 
   void Import(const std::string& config) {
-    base::RunLoop run_loop;
-    rollback_network_config_->RollbackConfigImport(
-        config, base::BindLambdaForTesting([&](bool success) {
-          EXPECT_TRUE(success);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    base::test::TestFuture<bool> result;
+    rollback_network_config_->RollbackConfigImport(config,
+                                                   result.GetCallback());
+    EXPECT_TRUE(result.Get()) << "Failed to import " << config;
   }
 
   // Exports network data, resets all network configuration including policies
@@ -890,5 +855,4 @@ TEST_F(RollbackNetworkConfigTest, MultipleNetworks) {
   EXPECT_TRUE(NetworkExists(eap_ethernet_guid));
 }
 
-}  // namespace rollback_network_config
-}  // namespace ash
+}  // namespace ash::rollback_network_config
