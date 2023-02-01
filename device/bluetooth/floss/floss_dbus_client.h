@@ -176,6 +176,8 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnServiceChanged[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterServer[];
 extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterServer[];
+extern DEVICE_BLUETOOTH_EXPORT const char kServerConnect[];
+extern DEVICE_BLUETOOTH_EXPORT const char kServerDisconnect[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnServerRegistered[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnServerConnectionState[];

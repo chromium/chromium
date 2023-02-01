@@ -263,6 +263,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
   void RemoveObserver(FlossGattClientObserver* observer);
   void RemoveObserver(FlossGattServerObserver* observer);
 
+  // TODO(@sarveshkalwit): Rename client functions, ex. Connect->ClientConnect
   // Create a GATT client connection to a remote device on given transport.
   virtual void Connect(ResponseCallback<Void> callback,
                        const std::string& remote_device,
@@ -349,6 +350,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
                                           const int32_t timeout,
                                           const uint16_t min_ce_len,
                                           const uint16_t max_ce_len);
+
+  // Create a GATT server connection to a remote device on given transport.
+  virtual void ServerConnect(ResponseCallback<Void> callback,
+                             const std::string& remote_device,
+                             const BluetoothTransport& transport);
+
+  // Disconnect GATT for given device.
+  virtual void ServerDisconnect(ResponseCallback<Void> callback,
+                                const std::string& remote_device);
 
   // Initialize the gatt client for the given adapter.
   void Init(dbus::Bus* bus,

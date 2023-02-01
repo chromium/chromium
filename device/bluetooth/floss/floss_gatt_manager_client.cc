@@ -348,6 +348,24 @@ void FlossGattManagerClient::UpdateConnectionParameters(
                        latency, timeout, min_ce_len, max_ce_len);
 }
 
+void FlossGattManagerClient::ServerConnect(
+    ResponseCallback<Void> callback,
+    const std::string& remote_device,
+    const BluetoothTransport& transport) {
+  // Connect immediately, instead of when next seen.
+  const bool is_direct = true;
+
+  CallGattMethod<Void>(std::move(callback), gatt::kServerConnect, server_id_,
+                       remote_device, is_direct, transport);
+}
+
+void FlossGattManagerClient::ServerDisconnect(
+    ResponseCallback<Void> callback,
+    const std::string& remote_device) {
+  CallGattMethod<Void>(std::move(callback), gatt::kServerDisconnect, server_id_,
+                       remote_device);
+}
+
 void FlossGattManagerClient::Init(dbus::Bus* bus,
                                   const std::string& service_name,
                                   const int adapter_index) {
