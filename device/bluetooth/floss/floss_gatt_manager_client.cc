@@ -205,7 +205,7 @@ void FlossGattManagerClient::Connect(ResponseCallback<Void> callback,
                                      const std::string& remote_device,
                                      const BluetoothTransport& transport) {
   // Gatt client connections occur immediately instead of when next seen.
-  const bool is_direct = true;
+  constexpr bool is_direct = true;
 
   // Opportunistic connections should be false because we want connections to
   // immediately fail with timeout if it doesn't work out.
@@ -353,7 +353,7 @@ void FlossGattManagerClient::ServerConnect(
     const std::string& remote_device,
     const BluetoothTransport& transport) {
   // Connect immediately, instead of when next seen.
-  const bool is_direct = true;
+  constexpr bool is_direct = true;
 
   CallGattMethod<Void>(std::move(callback), gatt::kServerConnect, server_id_,
                        remote_device, is_direct, transport);
