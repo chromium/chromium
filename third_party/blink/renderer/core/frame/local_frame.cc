@@ -529,6 +529,14 @@ bool LocalFrame::NavigationShouldReplaceCurrentHistoryEntry(
     return false;
   }
 
+  // When a navigation is requested via the navigation API with
+  // { history: "push" } specified, this should override all implicit
+  // conversions to a replacing navigation.
+  if (request.ForceHistoryPush() == mojom::blink::ForceHistoryPush::kYes) {
+    DCHECK(!ShouldMaintainTrivialSessionHistory());
+    return false;
+  }
+
   // Non-user navigation before the page has finished firing onload should not
   // create a new back/forward item. The spec only explicitly mentions this in
   // the context of navigating an iframe.

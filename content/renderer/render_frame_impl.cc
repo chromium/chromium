@@ -5794,7 +5794,8 @@ void RenderFrameImpl::BeginNavigationInternal(
           load_flags, info->url_request.GetSkipServiceWorker(),
           blink::GetRequestContextTypeForWebURLRequest(info->url_request),
           blink::GetMixedContentContextTypeForWebURLRequest(info->url_request),
-          is_form_submission, was_initiated_by_link_click, searchable_form_url,
+          is_form_submission, was_initiated_by_link_click,
+          info->force_history_push, searchable_form_url,
           searchable_form_encoding, client_side_redirect_url,
           std::move(devtools_initiator),
           info->url_request.TrustTokenParams()

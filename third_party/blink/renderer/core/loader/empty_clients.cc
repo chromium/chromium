@@ -108,6 +108,7 @@ void EmptyLocalFrameClient::BeginNavigation(
     WebNavigationType,
     NavigationPolicy,
     WebFrameLoadType,
+    mojom::blink::ForceHistoryPush,
     bool,
     // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
     bool,

@@ -512,6 +512,7 @@ void LocalFrameClientImpl::BeginNavigation(
     WebNavigationType type,
     NavigationPolicy policy,
     WebFrameLoadType frame_load_type,
+    mojom::blink::ForceHistoryPush force_history_push,
     bool is_client_redirect,
     bool is_unfenced_top_navigation,
     mojom::blink::TriggeringEventInfo triggering_event_info,
@@ -538,6 +539,7 @@ void LocalFrameClientImpl::BeginNavigation(
   navigation_info->url_request.CopyFrom(WrappedResourceRequest(request));
   navigation_info->requestor_base_url = requestor_base_url;
   navigation_info->frame_type = frame_type;
+  navigation_info->force_history_push = force_history_push;
   navigation_info->navigation_type = type;
   navigation_info->navigation_policy = static_cast<WebNavigationPolicy>(policy);
   navigation_info->has_transient_user_activation = request.HasUserGesture();

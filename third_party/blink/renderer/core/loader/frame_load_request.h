@@ -36,6 +36,7 @@
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-blink.h"
 #include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
 #include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -197,6 +198,13 @@ struct CORE_EXPORT FrameLoadRequest {
 
   const KURL& GetRequestorBaseURL() const { return requestor_base_url_; }
 
+  void SetForceHistoryPush() {
+    force_history_push_ = mojom::blink::ForceHistoryPush::kYes;
+  }
+  mojom::blink::ForceHistoryPush ForceHistoryPush() const {
+    return force_history_push_;
+  }
+
  private:
   LocalDOMWindow* origin_window_;
   ResourceRequest resource_request_;
@@ -229,6 +237,9 @@ struct CORE_EXPORT FrameLoadRequest {
   // process as a remote frame.
   // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
   bool is_unfenced_top_navigation_ = false;
+
+  mojom::blink::ForceHistoryPush force_history_push_ =
+      mojom::blink::ForceHistoryPush::kNo;
 };
 
 }  // namespace blink

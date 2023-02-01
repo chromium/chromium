@@ -843,6 +843,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       resource_request, request.GetRequestorBaseURL(), request.GetFrameType(),
       origin_window, nullptr /* document_loader */, navigation_type,
       request.GetNavigationPolicy(), frame_load_type,
+      request.ForceHistoryPush(),
       CalculateClientRedirectPolicy(
           request.ClientRedirectReason(), frame_load_type,
           IsOnInitialEmptyDocument()) == ClientRedirectPolicy::kClientRedirect,

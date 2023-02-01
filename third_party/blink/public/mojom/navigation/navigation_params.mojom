@@ -72,6 +72,15 @@ enum NavigationType {
   DIFFERENT_DOCUMENT,
 };
 
+// Used by the renderer to indicate a case where a standard navigation that
+// pushes a history entry must not be implicity converted to replace the current
+// history entry. Ignored if the current NavigationEntry is the initial entry,
+// which must always be replaced.
+enum ForceHistoryPush {
+  kYes,
+  kNo,
+};
+
 // Provided by the renderer ----------------------------------------------------
 //
 // This struct holds parameters sent by the renderer to the browser, that are
@@ -104,6 +113,12 @@ struct BeginNavigationParams {
 
   // Whether or not the navigation has been initiated by a link click.
   bool was_initiated_by_link_click = false;
+
+  // If true, override cases where a WebFrameLoadType::kStandard navigation
+  // is implicitly converted to a kReplaceCurrentItem navigation. Ignored if
+  // the current NavigationEntry is the initial entry, which must always be
+  // replaced.
+  ForceHistoryPush force_history_push = ForceHistoryPush.kNo;
 
   // See WebSearchableFormData for a description of these.
   url.mojom.Url searchable_form_url;

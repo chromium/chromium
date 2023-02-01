@@ -1119,7 +1119,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       net::LOAD_NORMAL, false /* skip_service_worker */,
       blink::mojom::RequestContextType::LOCATION,
       blink::mojom::MixedContentContextType::kBlockable, is_form_submission,
-      false /* was_initiated_by_link_click */, GURL() /* searchable_form_url */,
+      false /* was_initiated_by_link_click */,
+      blink::mojom::ForceHistoryPush::kNo, GURL() /* searchable_form_url */,
       std::string() /* searchable_form_encoding */,
       GURL() /* client_side_redirect_url */,
       absl::nullopt /* devtools_initiator_info */,
@@ -8305,6 +8306,14 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
   // Never replace if there is no NavigationEntry to replace.
   if (!frame_tree_node_->navigator().controller().GetEntryCount())
     return false;
+
+  // The NavigationAPI allows a page to request a navigation that pushes even in
+  // situations where the browser would implicitly convert the navigation to
+  // a replace.
+  if (begin_params_->force_history_push ==
+      blink::mojom::ForceHistoryPush::kYes) {
+    return false;
+  }
 
   // Reloads and history navigations have special handling and don't need to
   // set |common_params_->should_replace_current_entry|.

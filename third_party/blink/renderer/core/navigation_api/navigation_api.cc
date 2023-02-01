@@ -517,28 +517,16 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
           "URL.");
     }
 
-    if (completed_url == window_->Url()) {
+    if (frame->ShouldMaintainTrivialSessionHistory()) {
       return EarlyErrorResult(
           script_state, DOMExceptionCode::kNotSupportedError,
           "A \"push\" navigation was explicitly requested, but only a "
-          "\"replace\" navigation is possible when navigating to the current "
-          "URL.");
+          "\"replace\" navigation is possible when navigating in a trivial "
+          "session history context, which maintains only one session history "
+          "entry.");
     }
 
-    // The NavigationShouldReplaceCurrentHistoryEntry() check corresponds to the
-    // spec's check on whether the document is completely loaded, plus a couple
-    // of checks related to behind-a-flag features (portals and fenced frames).
-    // Eventually if portals and fenced frames make their way into the HTML
-    // Standard, they will need to modify the navigation API sections as well,
-    // probably by factoring out something similar in the spec as we have done
-    // in our implementation.
-    if (frame->NavigationShouldReplaceCurrentHistoryEntry(
-            request, WebFrameLoadType::kStandard)) {
-      return EarlyErrorResult(
-          script_state, DOMExceptionCode::kNotSupportedError,
-          "A \"push\" navigation was explicitly requested but only a "
-          "\"replace\" navigation is possible for this window.");
-    }
+    request.SetForceHistoryPush();
   }
 
   // The spec also converts "auto" to "replace" here if the document is not

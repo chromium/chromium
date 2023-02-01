@@ -410,7 +410,7 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
           blink::mojom::MixedContentContextType::kBlockable,
           false /* is_form_submission */,
           false /* was_initiated_by_link_click */,
-          GURL() /* searchable_form_url */,
+          blink::mojom::ForceHistoryPush::kNo, GURL() /* searchable_form_url */,
           std::string() /* searchable_form_encoding */,
           GURL() /* client_side_redirect_url */,
           absl::nullopt /* devtools_initiator_info */,
