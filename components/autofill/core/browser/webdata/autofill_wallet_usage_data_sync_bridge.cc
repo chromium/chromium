@@ -21,9 +21,6 @@ namespace {
 // Address to this variable used as the user data key.
 const int kAutofillWalletUsageDataSyncBridgeUserDataKey = 0;
 
-// Prefix used as the client tag for Virtual Card Usage Data.
-constexpr char kVirtualCardUsageDataClientTagPrefix[] = "VirtualCardUsageData";
-
 }  // namespace
 
 // static
@@ -100,16 +97,7 @@ void AutofillWalletUsageDataSyncBridge::GetAllDataForDebugging(
 std::string AutofillWalletUsageDataSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
   DCHECK(entity_data.specifics.has_autofill_wallet_usage());
-  const sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData&
-      virtual_card_usage_data = entity_data.specifics.autofill_wallet_usage()
-                                    .virtual_card_usage_data();
-
-  return base::JoinString(
-      {kVirtualCardUsageDataClientTagPrefix,
-       base::NumberToString(virtual_card_usage_data.instrument_id()),
-       virtual_card_usage_data.merchant_url(),
-       virtual_card_usage_data.merchant_app_package()},
-      "|");
+  return entity_data.specifics.autofill_wallet_usage().guid();
 }
 
 std::string AutofillWalletUsageDataSyncBridge::GetStorageKey(

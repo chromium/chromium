@@ -442,19 +442,20 @@ TEST_F(AutofillSyncBridgeUtilTest, IsOfferSpecificsValid) {
 TEST_F(AutofillSyncBridgeUtilTest, WalletUsageSpecificsFromWalletUsageData) {
   sync_pb::AutofillWalletUsageSpecifics usage_specifics;
   AutofillWalletUsageData usage_data =
-      test::GetAutofillWalletUsageDataForVirtualCard();
+      AutofillWalletUsageData::ForVirtualCard(test::GetVirtualCardUsageData1());
   SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(usage_data,
                                                              &usage_specifics);
 
+  EXPECT_EQ(usage_specifics.guid(),
+            *usage_data.virtual_card_usage_data().usage_data_id());
   EXPECT_EQ(usage_specifics.virtual_card_usage_data().instrument_id(),
-            usage_data.virtual_card_usage_data().instrument_id.value());
+            *usage_data.virtual_card_usage_data().instrument_id());
   EXPECT_EQ(
-      usage_specifics.virtual_card_usage_data().virtual_card_last_four(),
-      usage_data.virtual_card_usage_data().virtual_card_last_four.value());
+      base::UTF8ToUTF16(
+          usage_specifics.virtual_card_usage_data().virtual_card_last_four()),
+      *usage_data.virtual_card_usage_data().virtual_card_last_four());
   EXPECT_EQ(usage_specifics.virtual_card_usage_data().merchant_url(),
-            usage_data.virtual_card_usage_data().merchant_origin.Serialize());
-  EXPECT_EQ(usage_specifics.virtual_card_usage_data().merchant_app_package(),
-            usage_data.virtual_card_usage_data().merchant_app_package);
+            usage_data.virtual_card_usage_data().merchant_origin().Serialize());
 }
 
 }  // namespace

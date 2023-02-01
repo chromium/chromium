@@ -14,35 +14,57 @@
 namespace autofill {
 
 // Usage data information related to a virtual card.
-struct VirtualCardUsageData {
+class VirtualCardUsageData {
  public:
-  // Represents the unique identifier for the actual card hat the virtual card
+  // Represents the unique identifier for the actual card that the virtual card
   // is linked to. Used to access more information regarding the actual and
   // virtual card from Payments server. Originally generated in the Payments
   // server.
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, int64_t>;
 
+  // Represents the unique identifier for the specific Virtual Card Usage Data.
+  // Originally generated in Chrome Sync server and used as a table key in
+  // the Autofill Table.
+  using UsageDataId = base::StrongAlias<class UsageDataIdTag, std::string>;
+
   // Represents the last four digits of the virtual card.
   using VirtualCardLastFour =
-      base::StrongAlias<class VirtualCardLastFourTag, std::string>;
+      base::StrongAlias<class VirtualCardLastFourTag, std::u16string>;
 
-  VirtualCardUsageData();
+  VirtualCardUsageData(UsageDataId usage_data_id,
+                       InstrumentId instrument_id,
+                       VirtualCardLastFour virtual_card_last_four,
+                       url::Origin merchant_origin);
   VirtualCardUsageData(const VirtualCardUsageData&);
   VirtualCardUsageData& operator=(const VirtualCardUsageData&);
   ~VirtualCardUsageData();
 
-  InstrumentId instrument_id = InstrumentId(0);
+  friend bool operator==(const VirtualCardUsageData& a,
+                         const VirtualCardUsageData& b);
+  friend bool operator!=(const VirtualCardUsageData& a,
+                         const VirtualCardUsageData& b);
 
-  VirtualCardLastFour virtual_card_last_four;
+  InstrumentId instrument_id() const { return instrument_id_; }
+
+  UsageDataId usage_data_id() const { return usage_data_id_; }
+
+  VirtualCardLastFour virtual_card_last_four() const {
+    return virtual_card_last_four_;
+  }
+
+  url::Origin merchant_origin() const { return merchant_origin_; }
+
+ private:
+  UsageDataId usage_data_id_;
+
+  InstrumentId instrument_id_ = InstrumentId(0);
+
+  VirtualCardLastFour virtual_card_last_four_;
 
   // The origin of the merchant url the virtual card was retrieved on. May not
   // be set if accessed from an Android application. Example:
   // https://www.walmart.com.
-  url::Origin merchant_origin;
-
-  // The app package on Android OS the virtual card was retrieved on. May not be
-  // set if accessed from Chrome browser. Example: com.walmart.android.
-  std::string merchant_app_package;
+  url::Origin merchant_origin_;
 };
 
 // Contains various information related to the usages of a specific payment

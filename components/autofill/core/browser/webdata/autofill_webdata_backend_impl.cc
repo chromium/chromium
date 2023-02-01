@@ -659,7 +659,7 @@ std::unique_ptr<WDTypedResult>
 AutofillWebDataBackendImpl::GetAutofillVirtualCardUsageData(WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<std::unique_ptr<VirtualCardUsageData>> virtual_card_usage_data;
-  AutofillTable::FromWebDatabase(db)->GetVirtualCardUsageData(
+  AutofillTable::FromWebDatabase(db)->GetAllVirtualCardUsageData(
       &virtual_card_usage_data);
   return std::make_unique<
       WDResult<std::vector<std::unique_ptr<VirtualCardUsageData>>>>(

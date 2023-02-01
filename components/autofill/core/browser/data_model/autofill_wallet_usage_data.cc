@@ -6,7 +6,15 @@
 
 namespace autofill {
 
-VirtualCardUsageData::VirtualCardUsageData() = default;
+VirtualCardUsageData::VirtualCardUsageData(
+    UsageDataId usage_data_id,
+    InstrumentId instrument_id,
+    VirtualCardLastFour virtual_card_last_four,
+    url::Origin merchant_origin)
+    : usage_data_id_(usage_data_id),
+      instrument_id_(instrument_id),
+      virtual_card_last_four_(virtual_card_last_four),
+      merchant_origin_(merchant_origin) {}
 
 VirtualCardUsageData::VirtualCardUsageData(const VirtualCardUsageData&) =
     default;
@@ -15,6 +23,14 @@ VirtualCardUsageData& VirtualCardUsageData::operator=(
     const VirtualCardUsageData&) = default;
 
 VirtualCardUsageData::~VirtualCardUsageData() = default;
+
+bool operator==(const VirtualCardUsageData& a, const VirtualCardUsageData& b) {
+  return *a.usage_data_id() == *b.usage_data_id();
+}
+
+bool operator!=(const VirtualCardUsageData& a, const VirtualCardUsageData& b) {
+  return *a.usage_data_id() != *b.usage_data_id();
+}
 
 // static
 AutofillWalletUsageData AutofillWalletUsageData::ForVirtualCard(

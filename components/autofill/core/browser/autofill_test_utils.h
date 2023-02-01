@@ -322,9 +322,9 @@ AutofillOfferData GetPromoCodeOfferData(
     bool is_expired = false,
     int64_t offer_id = 333);
 
-// Return an Autofill Wallet Usage Data with dummy info specifically for a
-// Virtual Card.
-AutofillWalletUsageData GetAutofillWalletUsageDataForVirtualCard();
+// Return an Usage Data with dummy info specifically for a Virtual Card.
+VirtualCardUsageData GetVirtualCardUsageData1();
+VirtualCardUsageData GetVirtualCardUsageData2();
 
 // For each type in `types`, this function creates a challenge option with dummy
 // info that has the specific type.

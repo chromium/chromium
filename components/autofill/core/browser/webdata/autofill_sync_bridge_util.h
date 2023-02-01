@@ -19,7 +19,7 @@ class AutofillTable;
 class CreditCard;
 struct CreditCardCloudTokenData;
 struct PaymentsCustomerData;
-struct VirtualCardUsageData;
+class VirtualCardUsageData;
 
 // Returns the specified |id| encoded in / decoded from base 64.
 std::string GetBase64EncodedId(const std::string& id);

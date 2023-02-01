@@ -45,7 +45,7 @@ using testing::Return;
 const char kLocaleString[] = "en-US";
 const char kDefaultCacheGuid[] = "CacheGuid";
 const std::string kExpectedClientTagAndStorageKey =
-    "VirtualCardUsageData|12345|https://www.google.com|google";
+    "VirtualCardUsageData|12345|google|https://www.google.com";
 
 }  // namespace
 
@@ -115,7 +115,7 @@ class AutofillWalletUsageDataSyncBridgeTest : public testing::Test {
 TEST_F(AutofillWalletUsageDataSyncBridgeTest, VerifyGetClientTag) {
   AutofillWalletUsageSpecifics specifics;
   AutofillWalletUsageData data =
-      test::GetAutofillWalletUsageDataForVirtualCard();
+      AutofillWalletUsageData::ForVirtualCard(test::GetVirtualCardUsageData1());
   SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(data, &specifics);
 
   sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData
@@ -128,7 +128,7 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, VerifyGetClientTag) {
 TEST_F(AutofillWalletUsageDataSyncBridgeTest, VerifyGetStorageKey) {
   AutofillWalletUsageSpecifics specifics;
   AutofillWalletUsageData data =
-      test::GetAutofillWalletUsageDataForVirtualCard();
+      AutofillWalletUsageData::ForVirtualCard(test::GetVirtualCardUsageData1());
   SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(data, &specifics);
 
   sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData
