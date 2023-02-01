@@ -375,7 +375,11 @@ export class Panel extends PanelInterface {
         binding.keySeq = await KeyUtil.keySequenceToString(keySeq, true);
         const titleMsgId = CommandStore.messageForCommand(command);
         if (!titleMsgId) {
-          console.error('No localization for: ' + command);
+          // Title messages are intentionally missing for some keyboard
+          // shortcuts.
+          if (!(command in COMMANDS_WITH_NO_MSG_ID)) {
+            console.error('No localization for: ' + command);
+          }
           binding.title = '';
           continue;
         }
@@ -1306,6 +1310,21 @@ Panel.ACTION_TO_MSG_ID = {
   showContextMenu: 'show_context_menu',
   longClick: 'force_long_click_on_current_item',
 };
+
+const COMMANDS_WITH_NO_MSG_ID = [
+  'nativeNextCharacter',
+  'nativePreviousCharacter',
+  'nativeNextWord',
+  'nativePreviousWord',
+  'enableLogging',
+  'disableLogging',
+  'dumpTree',
+  'showActionsMenu',
+  'enableChromeVoxArcSupportForCurrentApp',
+  'disableChromeVoxArcSupportForCurrentApp',
+  'showTalkBackKeyboardShortcuts',
+  'copy',
+];
 
 window.addEventListener('load', async () => await Panel.init(), false);
 
