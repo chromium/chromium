@@ -36,8 +36,6 @@ const CGFloat kInactiveItemScale = 0.95;
 
 @implementation GridTransitionAnimation
 
-@synthesize activeCell = _activeCell;
-
 @synthesize animations = _animations;
 @synthesize layout = _layout;
 @synthesize duration = _duration;
@@ -59,6 +57,10 @@ const CGFloat kInactiveItemScale = 0.95;
 
 - (id<UIViewImplicitlyAnimating>)animator {
   return self.animations;
+}
+
+- (UIView*)activeCell {
+  return self.layout.activeItem.cell;
 }
 
 #pragma mark - UIView
@@ -417,7 +419,6 @@ const CGFloat kInactiveItemScale = 0.95;
   }
   [self positionItemInGrid:self.layout.activeItem];
   [self.layout.activeItem.cell positionCellViews];
-  self.activeCell = self.layout.activeItem.cell;
   [self positionItemInGrid:self.layout.selectionItem];
 }
 
