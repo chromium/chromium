@@ -47,7 +47,7 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
     }
   }
 
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  CardMetadataLoggingContext metadata_logging_context;
   metadata_logging_context.card_metadata_available =
       card_product_description_available || card_art_image_available;
 

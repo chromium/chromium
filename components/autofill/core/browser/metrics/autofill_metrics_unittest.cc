@@ -6012,6 +6012,11 @@ class AutofillMetricsTestForCardMetadata
   bool card_art_image_enabled() { return card_art_image_enabled_; }
   bool card_metadata_available() { return card_metadata_available_; }
   bool card_has_linked_virtual_card() { return card_has_linked_virtual_card_; }
+  bool card_metadata_shown() {
+    return card_metadata_available_ &&
+           (card_product_name_enabled_ || card_art_image_enabled_ ||
+            card_has_linked_virtual_card_);
+  }
 
  private:
   const bool card_product_name_enabled_;
@@ -6029,9 +6034,58 @@ INSTANTIATE_TEST_SUITE_P(All,
                                           testing::Bool(),
                                           testing::Bool()));
 
+TEST_P(AutofillMetricsTestForCardMetadata, LogCardMetadataFormEventsMetrics) {
+  constexpr char card1Id[] = "10000000-0000-0000-0000-000000000001";
+  constexpr char card2Id[] = "10000000-0000-0000-0000-000000000002";
+
+  FormData form =
+      CreateForm({CreateField("Month", "card_month", "", "text"),
+                  CreateField("Year", "card_year", "", "text"),
+                  CreateField("CVC", "cvc", "", "text"),
+                  CreateField("Credit card", "cardnum", "", "text")});
+
+  std::vector<ServerFieldType> field_types = {
+      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
+      CREDIT_CARD_VERIFICATION_CODE, CREDIT_CARD_NUMBER};
+
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Add 2 masked server cards.
+  CreditCard card1 = test::GetRandomCreditCard(CreditCard::MASKED_SERVER_CARD);
+  card1.set_guid(card1Id);
+  CreditCard card2 = test::GetRandomCreditCard(CreditCard::MASKED_SERVER_CARD);
+  card2.set_guid(card2Id);
+  // Set card2 as the virtual card.
+  if (card_has_linked_virtual_card()) {
+    card2.set_virtual_card_enrollment_state(
+        CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  }
+  // Set metadata to card2.
+  if (card_metadata_available()) {
+    card2.set_product_description(u"card_description");
+    card2.set_card_art_url(GURL("https://www.example.com/cardart.png"));
+  }
+  personal_data().AddServerCreditCard(card1);
+  personal_data().AddServerCreditCard(card2);
+  personal_data().Refresh();
+
+  // Simulate activating the autofill popup for the credit card field.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
+  autofill_manager().DidShowSuggestions(/*has_autofill_suggestions=*/true, form,
+                                        form.fields.back());
+
+  // Verify that if metadata is shown for any of the cards, it is logged.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
+                     Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN,
+                            card_metadata_shown())));
+}
+
 // Test that we log card metadata related metrics only when card metadata is
 // available.
-TEST_P(AutofillMetricsTestForCardMetadata, LogCardMetadataMetrics) {
+TEST_P(AutofillMetricsTestForCardMetadata, LogCardMetadataLatencyMetrics) {
   base::TimeTicks now = AutofillTickClock::NowTicks();
   TestAutofillTickClock test_clock;
   test_clock.SetNowTicks(now);

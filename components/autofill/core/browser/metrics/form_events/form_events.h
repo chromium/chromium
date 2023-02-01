@@ -143,6 +143,10 @@ enum FormEvent {
   // after being autofilled. Recorded once per form.
   FORM_EVENT_AUTOFILLED_FIELD_CLEARED_BY_JAVASCRIPT_AFTER_FILL_ONCE = 57,
 
+  // Suggestions were shown, and they included a credit card that had metadata
+  // shown.
+  FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN = 58,
+
   NUM_FORM_EVENTS,
 };
 

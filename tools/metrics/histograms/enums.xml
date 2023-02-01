@@ -7129,6 +7129,8 @@ others/histograms.xml -->
   <int value="57"
       label="Autofilled field was cleared by JavaScript within
              kLimitBeforeRefill (1s) after being filled (once)"/>
+  <int value="58"
+      label="Suggestions shown and included a card that had metadata shown"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">

@@ -66,6 +66,12 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
                                             sync_state, off_the_record);
 
   suggestion_shown_timestamp_ = AutofillTickClock::NowTicks();
+
+  // Log if metadata is shown for any of the suggestions.
+  if (metadata_logging_context_.card_product_description_shown ||
+      metadata_logging_context_.card_art_image_shown) {
+    Log(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN, form);
+  }
 }
 
 void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
