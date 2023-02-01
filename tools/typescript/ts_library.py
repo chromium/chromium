@@ -54,6 +54,7 @@ def _is_sourcemap_enabled(tsconfig):
 
 def main(argv):
   parser = argparse.ArgumentParser()
+  parser.add_argument('--raw_deps', nargs='*')
   parser.add_argument('--deps', nargs='*')
   parser.add_argument('--gen_dir', required=True)
   parser.add_argument('--path_mappings', nargs='*')
@@ -141,10 +142,24 @@ def main(argv):
 
   # Handle path mappings, for example chrome://resources/ URLs.
   path_mappings = collections.defaultdict(list)
-  for (dep, mappings) in GetDepToPathMappings(args.root_gen_dir).items():
-    for (url, dir) in mappings:
-      path_mappings[url].append(os.path.join('./', dir))
-      path_mappings['chrome:' + url].append(os.path.join('./', dir))
+
+  if args.deps is not None:
+    tsconfig['references'] = [{'path': dep} for dep in args.deps]
+
+    assert args.raw_deps is not None
+    dep_to_path_mappings = GetDepToPathMappings(args.root_gen_dir)
+
+    for dep in args.raw_deps:
+      if dep not in dep_to_path_mappings:
+        assert not (dep.startswith("//ui/webui/resources")
+                    and dep.endswith(':build_ts'))
+        # Dependencies outside of ui/webui/resources are not inferred yet.
+        continue
+
+      mappings = dep_to_path_mappings[dep]
+      for (url, dir) in mappings:
+        path_mappings[url].append(os.path.join('./', dir))
+        path_mappings['chrome:' + url].append(os.path.join('./', dir))
 
   if args.path_mappings is not None:
     for m in args.path_mappings:
@@ -152,9 +167,6 @@ def main(argv):
       path_mappings[mapping[0]].append(os.path.join('./', mapping[1]))
 
   tsconfig['compilerOptions']['paths'] = path_mappings
-
-  if args.deps is not None:
-    tsconfig['references'] = [{'path': dep} for dep in args.deps]
 
   tsconfig_file = f'tsconfig_{args.output_suffix}.json'
   _write_tsconfig_json(args.gen_dir, tsconfig, tsconfig_file)

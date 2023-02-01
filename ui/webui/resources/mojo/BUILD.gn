@@ -47,6 +47,10 @@ ts_library("library") {
     "//url/mojom:url_mojom_origin_js__generator",
   ]
 
+  path_mappings = [ "//resources/mojo/*|" +
+                    rebase_path("$root_gen_dir/ui/webui/resources/tsc/mojo/*",
+                                target_gen_dir) ]
+
   if (is_chromeos_ash) {
     in_files += [
       "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js",

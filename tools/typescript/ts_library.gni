@@ -91,8 +91,16 @@ template("ts_library") {
     }
 
     if (defined(deps)) {
-      args += [ "--deps" ]
+      args += [ "--raw_deps" ]
+      foreach(_dep, deps) {
+        # Pass all dependency names to the script, because they are needed to
+        # automatically infer path mappings. Normalize their form, because
+        # |deps| can hold relative paths.
+        args +=
+            [ get_label_info(_dep, "dir") + ":" + get_label_info(_dep, "name") ]
+      }
 
+      args += [ "--deps" ]
       foreach(dep, deps) {
         name = get_label_info(dep, "name")
         args += [ rebase_path(get_label_info(dep, "dir"), ".") +
