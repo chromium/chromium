@@ -170,19 +170,18 @@ std::string CreateLibAssistantConfig(
     absl::optional<std::string> s3_server_uri_override,
     absl::optional<std::string> device_id_override) {
   using Value = base::Value;
-  using Type = base::Value::Type;
 
-  Value config(Type::DICT);
+  Value::Dict config;
 
-  Value device(Type::DICT);
-  device.SetKey("board_name", Value(base::SysInfo::GetLsbReleaseBoard()));
-  device.SetKey("board_revision", Value("1"));
+  Value::Dict device;
+  device.Set("board_name", base::SysInfo::GetLsbReleaseBoard());
+  device.Set("board_revision", "1");
   absl::optional<std::string> version = chromeos::version_loader::GetVersion(
       chromeos::version_loader::VERSION_FULL);
-  device.SetKey("embedder_build_info", Value(version.value_or("0.0.0.0")));
-  device.SetKey("model_id", Value(chromeos::assistant::kModelId));
-  device.SetKey("model_revision", Value(1));
-  config.SetKey("device", std::move(device));
+  device.Set("embedder_build_info", version.value_or("0.0.0.0"));
+  device.Set("model_id", chromeos::assistant::kModelId);
+  device.Set("model_revision", 1);
+  config.Set("device", std::move(device));
 
   // Enables Libassistant gRPC server for V2.
   if (assistant::features::IsLibAssistantV2Enabled()) {
@@ -193,34 +192,34 @@ std::string CreateLibAssistantConfig(
         chromeos::assistant::GetHttpConnectionServiceAddress(
             is_chromeos_device);
 
-    Value libas_server(Type::DICT);
-    libas_server.SetKey("libas_server_address", Value(server_addresses));
-    libas_server.SetKey("enable_display_service", Value(true));
-    libas_server.SetKey("enable_http_connection_service", Value(true));
-    config.SetKey("libas_server", std::move(libas_server));
+    Value::Dict libas_server;
+    libas_server.Set("libas_server_address", server_addresses);
+    libas_server.Set("enable_display_service", true);
+    libas_server.Set("enable_http_connection_service", true);
+    config.Set("libas_server", std::move(libas_server));
   }
 
-  Value discovery(Type::DICT);
-  discovery.SetKey("enable_mdns", Value(false));
-  config.SetKey("discovery", std::move(discovery));
+  Value::Dict discovery;
+  discovery.Set("enable_mdns", false);
+  config.Set("discovery", std::move(discovery));
 
-  Value internal(Type::DICT);
-  internal.SetKey("surface_type", Value("OPA_CROS"));
+  Value::Dict internal;
+  internal.Set("surface_type", "OPA_CROS");
 
   std::string user_agent;
   CreateUserAgent(&user_agent);
-  internal.SetKey("user_agent", Value(user_agent));
+  internal.Set("user_agent", user_agent);
 
   // Prevent LibAssistant from automatically playing ready message TTS during
   // the startup sequence when the version of LibAssistant has been upgraded.
-  internal.SetKey("override_ready_message", Value(true));
+  internal.Set("override_ready_message", true);
 
   // Set DeviceProperties.visibility to Visibility::PRIVATE.
   // See //libassistant/shared/proto/device_properties.proto.
-  internal.SetKey("visibility", Value("PRIVATE"));
+  internal.Set("visibility", "PRIVATE");
 
   if (ShouldLogToFile()) {
-    Value logging(Type::DICT);
+    Value::Dict logging;
     std::string log_dir("/var/log/chrome/");
     if (ShouldPutLogsInHomeDirectory()) {
       base::FilePath log_path =
@@ -234,65 +233,66 @@ std::string CreateLibAssistantConfig(
       log_dir = log_path.value();
     }
 
-    logging.SetKey("directory", Value(log_dir));
+    logging.Set("directory", log_dir);
     // Maximum disk space consumed by all log files. There are 5 rotating log
     // files on disk.
-    logging.SetKey("max_size_kb", Value(3 * 1024));
+    logging.Set("max_size_kb", 3 * 1024);
     // Empty "output_type" disables logging to stderr.
-    logging.SetKey("output_type", Value(Type::LIST));
-    config.SetKey("logging", std::move(logging));
+    logging.Set("output_type", Value::List());
+    config.Set("logging", std::move(logging));
   } else {
     // Print logs to console if running in desktop or test mode.
-    internal.SetKey("disable_log_files", Value(true));
+    internal.Set("disable_log_files", true);
   }
 
   // Enable logging.
-  internal.SetBoolKey("enable_logging", true);
+  internal.Set("enable_logging", true);
 
   // This only enables logging to local disk combined with the flag above. When
   // user choose to file a Feedback report, user can examine the log and choose
   // to upload the log with the report or not.
-  internal.SetBoolKey("logging_opt_in", true);
+  internal.Set("logging_opt_in", true);
 
   // Allows libassistant to automatically toggle signed-out mode depending on
   // whether it has auth_tokens.
-  internal.SetBoolKey("enable_signed_out_mode", true);
+  internal.Set("enable_signed_out_mode", true);
 
-  config.SetKey("internal", std::move(internal));
+  config.Set("internal", std::move(internal));
 
-  Value audio_input(Type::DICT);
+  Value::Dict audio_input;
   // Skip sending speaker ID selection info to disable user verification.
-  audio_input.SetKey("should_send_speaker_id_selection_info", Value(false));
+  audio_input.Set("should_send_speaker_id_selection_info", false);
 
-  Value sources(Type::LIST);
-  Value dict(Type::DICT);
-  dict.SetKey("enable_eraser",
-              Value(assistant::features::IsAudioEraserEnabled()));
-  dict.SetKey("enable_eraser_toggling",
-              Value(assistant::features::IsAudioEraserEnabled()));
+  Value::List sources;
+  Value::Dict dict;
+  dict.Set("enable_eraser", assistant::features::IsAudioEraserEnabled());
+  dict.Set("enable_eraser_toggling",
+           assistant::features::IsAudioEraserEnabled());
   sources.Append(std::move(dict));
-  audio_input.SetKey("sources", std::move(sources));
+  audio_input.Set("sources", std::move(sources));
 
-  config.SetKey("audio_input", std::move(audio_input));
+  config.Set("audio_input", std::move(audio_input));
 
   if (assistant::features::IsLibAssistantBetaBackendEnabled())
-    config.SetStringPath("internal.backend_type", "BETA_DOGFOOD");
+    config.SetByDottedPath("internal.backend_type", "BETA_DOGFOOD");
 
   // Use http unless we're using the fake s3 server, which requires grpc.
   if (s3_server_uri_override)
-    config.SetStringPath("internal.transport_type", "GRPC");
+    config.SetByDottedPath("internal.transport_type", "GRPC");
   else
-    config.SetStringPath("internal.transport_type", "HTTP");
+    config.SetByDottedPath("internal.transport_type", "HTTP");
 
   if (device_id_override)
-    config.SetStringPath("internal.cast_device_id", device_id_override.value());
+    config.SetByDottedPath("internal.cast_device_id",
+                           device_id_override.value());
 
-  config.SetBoolPath("internal.enable_on_device_assistant_tts_as_text", true);
+  config.SetByDottedPath("internal.enable_on_device_assistant_tts_as_text",
+                         true);
 
   // Finally add in the server uri override.
   if (s3_server_uri_override) {
-    config.SetStringPath("testing.s3_grpc_server_uri",
-                         s3_server_uri_override.value());
+    config.SetByDottedPath("testing.s3_grpc_server_uri",
+                           s3_server_uri_override.value());
   }
 
   std::string json;
