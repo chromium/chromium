@@ -27,6 +27,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_space.h"
 
 struct wp_content_type_v1;
+struct zwp_keyboard_shortcuts_inhibitor_v1;
 struct zwp_linux_buffer_release_v1;
 struct zcr_blending_v1;
 
@@ -347,6 +348,7 @@ class WaylandSurface {
   wl::Object<wl_surface> surface_;
   wl::Object<wp_viewport> viewport_;
   wl::Object<zcr_blending_v1> blending_;
+  wl::Object<zwp_keyboard_shortcuts_inhibitor_v1> keyboard_shortcuts_inhibitor_;
   wl::Object<zwp_linux_surface_synchronization_v1> surface_sync_;
   wl::Object<overlay_prioritized_surface> overlay_priority_surface_;
   wl::Object<augmented_surface> augmented_surface_;
