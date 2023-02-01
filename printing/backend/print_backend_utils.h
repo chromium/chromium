@@ -7,7 +7,12 @@
 
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
+#include "printing/buildflags/buildflags.h"
+
+#if BUILDFLAG(USE_CUPS)
+#include "printing/backend/cups_printer.h"
 #include "printing/backend/print_backend.h"
+#endif  // BUILDFLAG(USE_CUPS)
 
 namespace gfx {
 class Size;
@@ -27,14 +32,19 @@ enum class Unit {
 COMPONENT_EXPORT(PRINT_BACKEND)
 gfx::Size ParsePaperSize(base::StringPiece value);
 
+#if BUILDFLAG(USE_CUPS)
 // Parses the media name expressed by `value` into a Paper. Returns an
 // empty Paper if `value` does not contain the display name nor the dimension,
 // or if `value` contains a prefix of media sizes not meant for users' eyes.
+// `margins` is used to calculate the Paper's printable area.
 // We don't handle l10n here. We do populate the display_name member with the
 // prettified vendor ID, but fully expect the caller to clobber this if a better
 // localization exists.
 COMPONENT_EXPORT(PRINT_BACKEND)
-PrinterSemanticCapsAndDefaults::Paper ParsePaper(base::StringPiece value);
+PrinterSemanticCapsAndDefaults::Paper ParsePaper(
+    base::StringPiece value,
+    const CupsPrinter::CupsMediaMargins& margins);
+#endif  // BUILDFLAG(USE_CUPS)
 
 }  // namespace printing
 

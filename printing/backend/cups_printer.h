@@ -53,6 +53,8 @@ class COMPONENT_EXPORT(PRINT_BACKEND) CupsPrinter : public CupsOptionProvider {
   // Represents the margins that CUPS reports for some given media.
   // Its members are valued in PWG units (100ths of mm).
   // This struct approximates a cups_size_t, which is BLRT.
+  // `bottom`, `left`, `right`, and `top` express inward encroachment by
+  // margins, away from the edges of the paper.
   struct CupsMediaMargins {
     int bottom;
     int left;
@@ -130,7 +132,7 @@ class COMPONENT_EXPORT(PRINT_BACKEND) CupsPrinter : public CupsOptionProvider {
   //
   // Returns all zeroes if the CUPS API call fails.
   virtual CupsMediaMargins GetMediaMarginsByName(
-      const std::string& media_id) = 0;
+      const std::string& media_id) const = 0;
 };
 
 }  // namespace printing

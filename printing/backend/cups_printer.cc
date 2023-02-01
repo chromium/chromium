@@ -244,7 +244,8 @@ class CupsPrinterImpl : public CupsPrinter {
     return status == IPP_STATUS_OK;
   }
 
-  CupsMediaMargins GetMediaMarginsByName(const std::string& media_id) override {
+  CupsMediaMargins GetMediaMarginsByName(
+      const std::string& media_id) const override {
     cups_size_t cups_media;
     if (!EnsureDestInfo() ||
         !cupsGetDestMediaByName(cups_http_, destination_.get(),

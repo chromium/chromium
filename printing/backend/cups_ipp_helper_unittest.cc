@@ -13,7 +13,7 @@
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "printing/backend/cups_printer.h"
+#include "printing/backend/mock_cups_printer.h"
 #include "printing/backend/print_backend_utils.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,16 +30,26 @@ MATCHER(AdvancedCapabilityName, "") {
   return std::get<0>(arg).name == std::get<1>(arg);
 }
 
-class MockCupsOptionProvider : public CupsOptionProvider {
+class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
  public:
-  ~MockCupsOptionProvider() override = default;
+  MockCupsPrinterWithMarginsAndAttributes() = default;
+  ~MockCupsPrinterWithMarginsAndAttributes() override = default;
 
+  // CupsPrinter:
+  CupsMediaMargins GetMediaMarginsByName(
+      const std::string& media_id) const override {
+    const auto margins = margins_.find(media_id);
+    return margins != margins_.end() ? margins->second : CupsMediaMargins();
+  }
+
+  // CupsOptionProvider:
   ipp_attribute_t* GetSupportedOptionValues(
       const char* option_name) const override {
     const auto attr = supported_attributes_.find(option_name);
     return attr != supported_attributes_.end() ? attr->second : nullptr;
   }
 
+  // CupsOptionProvider:
   std::vector<base::StringPiece> GetSupportedOptionValueStrings(
       const char* option_name) const override {
     ipp_attribute_t* attr = GetSupportedOptionValues(option_name);
@@ -60,16 +70,23 @@ class MockCupsOptionProvider : public CupsOptionProvider {
     return strings;
   }
 
+  // CupsOptionProvider:
   ipp_attribute_t* GetDefaultOptionValue(
       const char* option_name) const override {
     const auto attr = default_attributes_.find(option_name);
     return attr != default_attributes_.end() ? attr->second : nullptr;
   }
 
+  // CupsOptionProvider:
   bool CheckOptionSupported(const char* name,
                             const char* value) const override {
     NOTREACHED();
     return false;
+  }
+
+  void SetMediaMarginsByName(base::StringPiece media_id,
+                             const CupsMediaMargins& margins) {
+    margins_[media_id] = margins;
   }
 
   void SetSupportedOptions(base::StringPiece name, ipp_attribute_t* attribute) {
@@ -83,13 +100,14 @@ class MockCupsOptionProvider : public CupsOptionProvider {
  private:
   std::map<base::StringPiece, ipp_attribute_t*> supported_attributes_;
   std::map<base::StringPiece, ipp_attribute_t*> default_attributes_;
+  std::map<base::StringPiece, CupsMediaMargins> margins_;
 };
 
 class PrintBackendCupsIppHelperTest : public ::testing::Test {
  protected:
   void SetUp() override {
     ipp_ = ippNew();
-    printer_ = std::make_unique<MockCupsOptionProvider>();
+    printer_ = std::make_unique<MockCupsPrinterWithMarginsAndAttributes>();
   }
 
   void TearDown() override {
@@ -98,7 +116,7 @@ class PrintBackendCupsIppHelperTest : public ::testing::Test {
   }
 
   raw_ptr<ipp_t> ipp_;
-  std::unique_ptr<MockCupsOptionProvider> printer_;
+  std::unique_ptr<MockCupsPrinterWithMarginsAndAttributes> printer_;
 };
 
 ipp_attribute_t* MakeInteger(ipp_t* ipp, int value) {
@@ -128,9 +146,11 @@ ipp_attribute_t* MakeStringCollection(ipp_t* ipp,
 }
 
 TEST_F(PrintBackendCupsIppHelperTest, DefaultPaper) {
-  EXPECT_EQ(ParsePaper(""), DefaultPaper(*printer_));
+  const CupsPrinter::CupsMediaMargins kMargins = {10, 10, 10, 10};
+  EXPECT_EQ(ParsePaper("", kMargins), DefaultPaper(*printer_));
   printer_->SetOptionDefault("media", MakeString(ipp_, "iso_a4_210x297mm"));
-  EXPECT_EQ(ParsePaper("iso_a4_210x297mm"), DefaultPaper(*printer_));
+  printer_->SetMediaMarginsByName("iso_a4_210x297mm", kMargins);
+  EXPECT_EQ(ParsePaper("iso_a4_210x297mm", kMargins), DefaultPaper(*printer_));
 }
 
 TEST_F(PrintBackendCupsIppHelperTest, CopiesCapable) {

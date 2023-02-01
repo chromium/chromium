@@ -10,11 +10,17 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/units.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
+
+#if BUILDFLAG(USE_CUPS)
+#include "printing/backend/cups_printer.h"
+#endif  // BUILDFLAG(USE_CUPS)
 
 namespace printing {
 
@@ -99,7 +105,10 @@ gfx::Size ParsePaperSize(base::StringPiece value) {
   return DimensionsToMicrons(dimensions);
 }
 
-PrinterSemanticCapsAndDefaults::Paper ParsePaper(base::StringPiece value) {
+#if BUILDFLAG(USE_CUPS)
+PrinterSemanticCapsAndDefaults::Paper ParsePaper(
+    base::StringPiece value,
+    const CupsPrinter::CupsMediaMargins& margins) {
   std::vector<base::StringPiece> pieces = GetStringPiecesIfValid(value);
   if (pieces.empty()) {
     return PrinterSemanticCapsAndDefaults::Paper();
@@ -110,12 +119,27 @@ PrinterSemanticCapsAndDefaults::Paper ParsePaper(base::StringPiece value) {
   PrinterSemanticCapsAndDefaults::Paper paper;
   paper.vendor_id = std::string(value);
   paper.size_um = DimensionsToMicrons(dimensions);
-  paper.printable_area_um = gfx::Rect(paper.size_um);
+
+  // The margins of the printable area are expressed in PWG units (100ths of
+  // mm).
+  int printable_area_left_um = margins.left * kMicronsPerPwgUnit;
+  int printable_area_bottom_um = margins.bottom * kMicronsPerPwgUnit;
+  int printable_area_width_um =
+      paper.size_um.width() -
+      ((margins.left + margins.right) * kMicronsPerPwgUnit);
+  int printable_area_length_um =
+      paper.size_um.height() -
+      ((margins.top + margins.bottom) * kMicronsPerPwgUnit);
+  paper.printable_area_um =
+      gfx::Rect(printable_area_left_um, printable_area_bottom_um,
+                printable_area_width_um, printable_area_length_um);
+
   // Omits the final token describing the media dimensions.
   pieces.pop_back();
   paper.display_name = base::JoinString(pieces, " ");
 
   return paper;
 }
+#endif  // BUILDFLAG(USE_CUPS)
 
 }  // namespace printing
