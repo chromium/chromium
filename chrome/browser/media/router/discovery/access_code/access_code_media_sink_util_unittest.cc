@@ -235,4 +235,20 @@ TEST_F(AccessCodeMediaSinkUtilTest, AddSinkResultMetricsHelper) {
             AccessCodeCastAddSinkResult::kProfileSyncError);
 }
 
+TEST_F(AccessCodeMediaSinkUtilTest, GetIPEndPointFromValueDict) {
+  DiscoveryDevice discovery_device_proto = BuildDiscoveryDeviceProto();
+  auto cast_sink =
+      CreateAccessCodeMediaSink(discovery_device_proto).first.value();
+  media_router::CastSinkExtraData cast_sink_data = cast_sink.cast_data();
+  cast_sink_data.discovery_type =
+      CastDiscoveryType::kAccessCodeRememberedDevice;
+  cast_sink.set_cast_data(cast_sink_data);
+
+  auto value_dict =
+      std::move(*CreateValueDictFromMediaSinkInternal(cast_sink).GetIfDict());
+
+  EXPECT_EQ(GetIPEndPointFromValueDict(value_dict).value(),
+            cast_sink.cast_data().ip_endpoint);
+}
+
 }  // namespace media_router

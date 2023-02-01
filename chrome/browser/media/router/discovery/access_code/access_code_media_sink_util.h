@@ -30,6 +30,9 @@ absl::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
 AccessCodeCastAddSinkResult AddSinkResultMetricsHelper(
     AddSinkResultCode result);
 
+absl::optional<net::IPEndPoint> GetIPEndPointFromValueDict(
+    const base::Value::Dict& value_dict);
+
 }  // namespace media_router
 
 #endif  // CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_MEDIA_SINK_UTIL_H_

@@ -29,7 +29,9 @@ class AccessCodeCastPrefUpdater {
   virtual ~AccessCodeCastPrefUpdater();
 
   // Sets the key for the given |sink| id with the actual |sink| itself. This
-  // function will overwrite a sink id if it already exists.
+  // function will overwrite a sink id if it already exists. If ip_endpoints
+  // already exist with the given |sink| id, those entries will be removed from
+  // the pref service.
   void UpdateDevicesDict(const MediaSinkInternal& sink);
 
   // Sets the key for the |sink_id| with the time it is added. This is
@@ -65,8 +67,18 @@ class AccessCodeCastPrefUpdater {
   // not there in the first place.
   void RemoveSinkIdFromDeviceAddedTimeDict(const MediaSink::Id sink_id);
 
+  // Returns a list of media sink id's of stored media sinks whose ip endpoints
+  // are identical to the given ip_endpoint. If no existing ip endpoints are
+  // found, the list will be empty.
+  std::vector<MediaSink::Id> GetMatchingIPEndPoints(
+      net::IPEndPoint ip_endpoint);
+
   void ClearDevicesDict();
   void ClearDeviceAddedTimeDict();
+
+  // Sets the key for the given |sink| id with the actual |sink| itself. This
+  // function will overwrite a sink id if it already exists.
+  void UpdateDevicesDictForTest(const MediaSinkInternal& sink);
 
   base::WeakPtr<AccessCodeCastPrefUpdater> GetWeakPtr();
 

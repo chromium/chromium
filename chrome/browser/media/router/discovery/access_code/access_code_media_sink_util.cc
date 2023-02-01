@@ -262,4 +262,29 @@ AccessCodeCastAddSinkResult AddSinkResultMetricsHelper(
   }
 }
 
+absl::optional<net::IPEndPoint> GetIPEndPointFromValueDict(
+    const base::Value::Dict& value_dict) {
+  const auto* extra_data_dict = value_dict.FindDict(kExtraDataDictKey);
+  if (!extra_data_dict) {
+    return absl::nullopt;
+  }
+
+  net::IPAddress ip_address;
+  const std::string* ip_address_string =
+      extra_data_dict->FindString(kIpAddressKey);
+  if (!ip_address_string) {
+    return absl::nullopt;
+  }
+  if (!ip_address.AssignFromIPLiteral(*ip_address_string)) {
+    return absl::nullopt;
+  }
+
+  absl::optional<int> port = extra_data_dict->FindInt(kPortKey);
+  if (!port.has_value()) {
+    return absl::nullopt;
+  }
+
+  return net::IPEndPoint(ip_address, port.value());
+}
+
 }  // namespace media_router

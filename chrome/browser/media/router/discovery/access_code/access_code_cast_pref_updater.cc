@@ -38,7 +38,15 @@ void AccessCodeCastPrefUpdater::UpdateDevicesDict(
     const MediaSinkInternal& sink) {
   ScopedDictPrefUpdate update(pref_service_, prefs::kAccessCodeCastDevices);
 
-  // TODO(b/231748126): Add IP based-deduping for storing Access Code Cast Sinks
+  // In order to make sure that the same sink won't be added to the network
+  // multiple times, we use ip-based deduping of stored media sinks to
+  // ensure that the same sink (possibly with a different older stored named)
+  // isn't stored twice in the cast list.
+  for (auto existing_sink_ids :
+       GetMatchingIPEndPoints(sink.cast_data().ip_endpoint)) {
+    update->Remove(existing_sink_ids);
+  }
+
   update->Set(sink.id(), CreateValueDictFromMediaSinkInternal(sink));
 }
 
@@ -85,8 +93,9 @@ const base::Value* AccessCodeCastPrefUpdater::GetMediaSinkInternalValueBySinkId(
   // nullptr.
   const auto* device_value = device_dict.Find(sink_id);
 
-  if (!device_value)
+  if (!device_value) {
     return nullptr;
+  }
   return device_value;
 }
 
@@ -98,8 +107,9 @@ absl::optional<base::Time> AccessCodeCastPrefUpdater::GetDeviceAddedTime(
   // nullptr.
   auto* device_Added_value = device_Added_dict.Find(sink_id);
 
-  if (!device_Added_value)
+  if (!device_Added_value) {
     return absl::nullopt;
+  }
   return base::ValueToTime(device_Added_value);
 }
 
@@ -123,6 +133,39 @@ void AccessCodeCastPrefUpdater::ClearDevicesDict() {
 void AccessCodeCastPrefUpdater::ClearDeviceAddedTimeDict() {
   pref_service_->SetDict(prefs::kAccessCodeCastDeviceAdditionTime,
                          base::Value::Dict());
+}
+
+std::vector<MediaSink::Id> AccessCodeCastPrefUpdater::GetMatchingIPEndPoints(
+    net::IPEndPoint ip_endpoint) {
+  std::vector<MediaSink::Id> duplicate_sinks;
+
+  const auto& devices_dict = GetDevicesDict();
+
+  // Iterate through device dictionaries, fetch ip_endpoints, and then check if
+  // these ip_endpoint match the ip_endpoint argument.
+  for (auto sink_id_keypair : devices_dict) {
+    const auto* dict_value = sink_id_keypair.second.GetIfDict();
+    if (!dict_value) {
+      break;
+    }
+
+    auto fetched_ip_endpoint = GetIPEndPointFromValueDict(*dict_value);
+    if (!fetched_ip_endpoint.has_value()) {
+      break;
+    }
+
+    if (ip_endpoint == fetched_ip_endpoint) {
+      duplicate_sinks.push_back(sink_id_keypair.first);
+    }
+  }
+  return duplicate_sinks;
+}
+
+void AccessCodeCastPrefUpdater::UpdateDevicesDictForTest(
+    const MediaSinkInternal& sink) {
+  ScopedDictPrefUpdate update(pref_service_, prefs::kAccessCodeCastDevices);
+
+  update->Set(sink.id(), CreateValueDictFromMediaSinkInternal(sink));
 }
 
 base::WeakPtr<AccessCodeCastPrefUpdater>

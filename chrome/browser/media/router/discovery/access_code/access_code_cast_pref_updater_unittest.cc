@@ -198,4 +198,95 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestClearDeviceAddedTimeDict) {
   EXPECT_TRUE(pref_updater()->GetDeviceAddedTimeDict().empty());
 }
 
+TEST_F(AccessCodeCastPrefUpdaterTest, TestGetMatchingIPEndPoints) {
+  MediaSinkInternal cast_sink = CreateCastSink(1);
+  MediaSinkInternal cast_sink2 = CreateCastSink(2);
+  MediaSinkInternal cast_sink3 = CreateCastSink(3);
+
+  pref_updater()->UpdateDevicesDictForTest(cast_sink);
+
+  EXPECT_FALSE(pref_updater()
+                   ->GetMatchingIPEndPoints(cast_sink2.cast_data().ip_endpoint)
+                   .size());
+  EXPECT_EQ(pref_updater()
+                ->GetMatchingIPEndPoints(cast_sink.cast_data().ip_endpoint)
+                .size(),
+            1u);
+  EXPECT_EQ(pref_updater()
+                ->GetMatchingIPEndPoints(cast_sink.cast_data().ip_endpoint)
+                .front(),
+            cast_sink.sink().id());
+}
+
+TEST_F(AccessCodeCastPrefUpdaterTest, TestGetMatchingIPEndPointsIdenticalIPs) {
+  MediaSinkInternal cast_sink = CreateCastSink(1);
+  MediaSinkInternal cast_sink2 = CreateCastSink(2);
+  MediaSinkInternal cast_sink3 = CreateCastSink(3);
+
+  // Set the ip_endpoint of cast_sink2 to the ip_endpoint of cast_sink.
+  cast_sink2.set_cast_data(cast_sink.cast_data());
+
+  pref_updater()->UpdateDevicesDictForTest(cast_sink);
+  pref_updater()->UpdateDevicesDictForTest(cast_sink2);
+  pref_updater()->UpdateDevicesDictForTest(cast_sink3);
+
+  EXPECT_EQ(pref_updater()
+                ->GetMatchingIPEndPoints(cast_sink.cast_data().ip_endpoint)
+                .size(),
+            2u);
+
+  std::vector<MediaSink::Id> expected_vector{cast_sink.sink().id(),
+                                             cast_sink2.sink().id()};
+  EXPECT_EQ(
+      pref_updater()->GetMatchingIPEndPoints(cast_sink.cast_data().ip_endpoint),
+      expected_vector);
+}
+
+TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDevicesDictIdenticalIPs) {
+  MediaSinkInternal cast_sink = CreateCastSink(1);
+  MediaSinkInternal cast_sink2 = CreateCastSink(2);
+  MediaSinkInternal cast_sink3 = CreateCastSink(3);
+
+  // Set the ip_endpoint of cast_sink2 to the ip_endpoint of cast_sink.
+  cast_sink2.set_cast_data(cast_sink.cast_data());
+
+  pref_updater()->UpdateDevicesDict(cast_sink);
+
+  // This add will overwrite the original storage of the cast_sink, since
+  // cast_sink2 has the same ip_endpoint.
+  pref_updater()->UpdateDevicesDict(cast_sink2);
+  pref_updater()->UpdateDevicesDict(cast_sink3);
+
+  // There should only be two devices stored since two ip_endpoints were
+  // identical.
+  EXPECT_EQ(pref_updater()->GetDevicesDict().size(), 2u);
+
+  auto expected_sink_ids = base::Value::List();
+  expected_sink_ids.Append(cast_sink2.id());
+  expected_sink_ids.Append(cast_sink3.id());
+
+  EXPECT_EQ(pref_updater()->GetSinkIdsFromDevicesDict(), expected_sink_ids);
+}
+
+TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDevicesDictDifferentIPs) {
+  MediaSinkInternal cast_sink = CreateCastSink(1);
+  MediaSinkInternal cast_sink2 = CreateCastSink(2);
+  MediaSinkInternal cast_sink3 = CreateCastSink(3);
+
+  pref_updater()->UpdateDevicesDict(cast_sink);
+  pref_updater()->UpdateDevicesDict(cast_sink2);
+  pref_updater()->UpdateDevicesDict(cast_sink3);
+
+  // There should only be two devices stored since two ip_endpoints were
+  // identical.
+  EXPECT_EQ(pref_updater()->GetDevicesDict().size(), 3u);
+
+  auto expected_sink_ids = base::Value::List();
+  expected_sink_ids.Append(cast_sink.id());
+  expected_sink_ids.Append(cast_sink2.id());
+  expected_sink_ids.Append(cast_sink3.id());
+
+  EXPECT_EQ(pref_updater()->GetSinkIdsFromDevicesDict(), expected_sink_ids);
+}
+
 }  // namespace media_router
