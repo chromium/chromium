@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -36,7 +37,7 @@
 
 namespace partition_alloc::internal {
 
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
 
 namespace {
 
@@ -422,6 +423,6 @@ PageCharacteristics page_characteristics;
 
 #endif  // BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64)
 
-#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
 }  // namespace partition_alloc::internal

@@ -11,12 +11,12 @@
 
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 
 #include <cstddef>
 #include <cstdint>
 
-#if !PA_CONFIG(HAS_64_BITS_POINTERS)
+#if !BUILDFLAG(HAS_64_BIT_POINTERS)
 #error "pkey support requires 64 bit pointers"
 #endif
 

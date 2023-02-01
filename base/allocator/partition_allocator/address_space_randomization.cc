@@ -4,8 +4,8 @@
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/random.h"
 #include "build/build_config.h"
 
@@ -18,7 +18,7 @@ namespace partition_alloc {
 uintptr_t GetRandomPageBase() {
   uintptr_t random = static_cast<uintptr_t>(internal::RandomValue());
 
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
   random <<= 32ULL;
   random |= static_cast<uintptr_t>(internal::RandomValue());
 
@@ -26,7 +26,7 @@ uintptr_t GetRandomPageBase() {
   // OS and build configuration.
   random &= internal::ASLRMask();
   random += internal::ASLROffset();
-#else   // PA_CONFIG(HAS_64_BITS_POINTERS)
+#else  // BUILDFLAG(HAS_64_BIT_POINTERS)
 #if BUILDFLAG(IS_WIN)
   // On win32 host systems the randomization plus huge alignment causes
   // excessive fragmentation. Plus most of these systems lack ASLR, so the
@@ -40,7 +40,7 @@ uintptr_t GetRandomPageBase() {
 #endif  // BUILDFLAG(IS_WIN)
   random &= internal::ASLRMask();
   random += internal::ASLROffset();
-#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
   PA_DCHECK(!(random & internal::PageAllocationGranularityOffsetMask()));
   return random;

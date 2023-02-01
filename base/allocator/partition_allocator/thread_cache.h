@@ -27,7 +27,7 @@
 #include "base/allocator/partition_allocator/partition_tls.h"
 #include "build/build_config.h"
 
-#if defined(ARCH_CPU_X86_64) && PA_CONFIG(HAS_64_BITS_POINTERS)
+#if defined(ARCH_CPU_X86_64) && BUILDFLAG(HAS_64_BIT_POINTERS)
 #include <algorithm>
 #endif
 
@@ -43,13 +43,13 @@ namespace tools {
 //
 // These two values were chosen randomly, and in particular neither is a valid
 // pointer on most 64 bit architectures.
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
 constexpr uintptr_t kNeedle1 = 0xe69e32f3ad9ea63;
 constexpr uintptr_t kNeedle2 = 0x9615ee1c5eb14caf;
 #else
 constexpr uintptr_t kNeedle1 = 0xe69e32f3;
 constexpr uintptr_t kNeedle2 = 0x9615ee1c;
-#endif
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
 // This array contains, in order:
 // - kNeedle1
@@ -535,7 +535,7 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   internal::PartitionFreelistEntry* entry = bucket.freelist_head;
   // TODO(lizeb): Consider removing once crbug.com/1382658 is fixed.
 #if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64) && \
-    PA_CONFIG(HAS_64_BITS_POINTERS)
+    BUILDFLAG(HAS_64_BIT_POINTERS)
   // x86_64 architecture now supports 57 bits of address space, as of Ice Lake
   // for Intel. However Chrome OS systems do not ship with kernel support for
   // it, but with 48 bits, so all canonical addresses have the upper 16 bits
@@ -543,7 +543,8 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   // by the kernel).
   constexpr uintptr_t kCanonicalPointerMask = (1ULL << 48) - 1;
   PA_CHECK(!(reinterpret_cast<uintptr_t>(entry) & ~kCanonicalPointerMask));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64) &&
+        // BUILDFLAG(HAS_64_BIT_POINTERS)
 
   // Passes the bucket size to |GetNext()|, so that in case of freelist
   // corruption, we know the bucket size that lead to the crash, helping to
@@ -566,7 +567,7 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
 PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
                                                uintptr_t slot_start) {
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY) && defined(ARCH_CPU_X86_64) && \
-    PA_CONFIG(HAS_64_BITS_POINTERS)
+    BUILDFLAG(HAS_64_BIT_POINTERS)
   // We see freelist corruption crashes happening in the wild.  These are likely
   // due to out-of-bounds accesses in the previous slot, or to a Use-After-Free
   // somewhere in the code.
@@ -618,7 +619,7 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
     address_aligned += 4;
   }
 #endif  // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY) && defined(ARCH_CPU_X86_64) &&
-        // PA_CONFIG(HAS_64_BITS_POINTERS)
+        // BUILDFLAG(HAS_64_BIT_POINTERS)
 
   auto* entry = internal::PartitionFreelistEntry::EmplaceAndInitForThreadCache(
       slot_start, bucket.freelist_head);

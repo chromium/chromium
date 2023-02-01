@@ -13,6 +13,7 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
@@ -133,7 +134,7 @@ struct RawPtrBackupRefImpl {
 #endif
       AcquireInternal(address);
     } else {
-#if !PA_CONFIG(HAS_64_BITS_POINTERS)
+#if !BUILDFLAG(HAS_64_BIT_POINTERS)
 #if PA_HAS_BUILTIN(__builtin_constant_p)
       // Similarly to `IsSupportedAndNotNull` above, elide the
       // `BanSuperPageFromBRPPool` call if the compiler can prove that `address`
@@ -148,7 +149,7 @@ struct RawPtrBackupRefImpl {
         partition_alloc::internal::AddressPoolManagerBitmap::
             BanSuperPageFromBRPPool(address);
       }
-#endif  // !PA_CONFIG(HAS_64_BITS_POINTERS)
+#endif  // !BUILDFLAG(HAS_64_BIT_POINTERS)
     }
 
     return ptr;

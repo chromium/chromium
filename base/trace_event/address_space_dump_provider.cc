@@ -6,7 +6,6 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -44,11 +43,11 @@ class AddressSpaceStatsDumperImpl final
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
     // The configurable pool is only available on 64-bit platforms.
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
     dump->AddScalar(
         "configurable_pool_usage", MemoryAllocatorDump::kUnitsBytes,
         address_space_stats->configurable_pool_stats.usage * kSuperPageSize);
-#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
     // Pkey pool usage is applicable with the appropriate buildflag.
 #if BUILDFLAG(ENABLE_PKEYS)
@@ -59,7 +58,7 @@ class AddressSpaceStatsDumperImpl final
 
     // Additionally, largest possible reservation is also available on
     // 64-bit platforms.
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
     dump->AddScalar(
         "regular_pool_largest_reservation", MemoryAllocatorDump::kUnitsBytes,
         address_space_stats->regular_pool_stats.largest_available_reservation *
@@ -81,14 +80,14 @@ class AddressSpaceStatsDumperImpl final
         address_space_stats->pkey_pool_stats.largest_available_reservation *
             kSuperPageSize);
 #endif  // BUILDFLAG(ENABLE_PKEYS)
-#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
-#if !PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if !BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     dump->AddScalar("blocklist_size", MemoryAllocatorDump::kUnitsObjects,
                     address_space_stats->blocklist_size);
     dump->AddScalar("blocklist_hit_count", MemoryAllocatorDump::kUnitsObjects,
                     address_space_stats->blocklist_hit_count);
-#endif  // !PA_CONFIG(HAS_64_BITS_POINTERS) &&
+#endif  // !BUILDFLAG(HAS_64_BIT_POINTERS) &&
         // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     return;
   }

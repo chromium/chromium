@@ -737,7 +737,7 @@ void PartitionRoot<thread_safe>::DestructForTesting() {
     uintptr_t address = SuperPagesBeginFromExtent(curr);
     size_t size =
         internal::kSuperPageSize * curr->number_of_consecutive_super_pages;
-#if !PA_CONFIG(HAS_64_BITS_POINTERS)
+#if !BUILDFLAG(HAS_64_BIT_POINTERS)
     internal::AddressPoolManager::GetInstance().MarkUnused(pool_handle, address,
                                                            size);
 #endif
@@ -754,7 +754,7 @@ void PartitionRoot<thread_safe>::EnableMac11MallocSizeHackForTesting() {
 }
 #endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && !PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && !BUILDFLAG(HAS_64_BIT_POINTERS)
 namespace {
 std::atomic<bool> g_reserve_brp_guard_region_called;
 // An address constructed by repeating `kQuarantinedByte` shouldn't never point
@@ -790,7 +790,7 @@ void ReserveBackupRefPtrGuardRegionIfNeeded() {
 }
 }  // namespace
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
-        // !PA_CONFIG(HAS_64_BITS_POINTERS)
+        // !BUILDFLAG(HAS_64_BIT_POINTERS)
 
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
@@ -819,12 +819,12 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     // running on the right hardware.
     ::partition_alloc::internal::InitializeMTESupportIfNeeded();
 
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
     // Reserve address space for partition alloc.
     internal::PartitionAddressSpace::Init();
 #endif
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && !PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && !BUILDFLAG(HAS_64_BIT_POINTERS)
     ReserveBackupRefPtrGuardRegionIfNeeded();
 #endif
 

@@ -21,7 +21,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_bucket.h"
@@ -138,7 +137,7 @@ struct SlotSpanMetadata {
   PartitionBucket<thread_safe>* const bucket = nullptr;
 
   // CHECK()ed in AllocNewSlotSpan().
-#if PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(IS_APPLE)
   // System page size is not a constant on Apple OSes, but is either 4 or 16kiB
   // (1 << 12 or 1 << 14), as checked in PartitionRoot::Init(). And
   // PartitionPageSize() is 4 times the OS page size.
@@ -155,7 +154,7 @@ struct SlotSpanMetadata {
   // larger, so it doesn't have as many slots.
   static constexpr size_t kMaxSlotsPerSlotSpan =
       PartitionPageSize() / kSmallestBucket;
-#endif  // PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(IS_APPLE)
   // The maximum number of bits needed to cover all currently supported OSes.
   static constexpr size_t kMaxSlotsPerSlotSpanBits = 13;
   static_assert(kMaxSlotsPerSlotSpan < (1 << kMaxSlotsPerSlotSpanBits), "");

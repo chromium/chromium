@@ -10,8 +10,8 @@
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 
 namespace partition_alloc::internal {
@@ -28,7 +28,7 @@ bool IsOutOfMemory(DWORD error) {
     case ERROR_COMMITMENT_MINIMUM:
       // Page file is too small.
     case ERROR_COMMITMENT_LIMIT:
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
     // Not enough memory resources are available to process this command.
     //
     // It is not entirely clear whether this error pertains to out of address

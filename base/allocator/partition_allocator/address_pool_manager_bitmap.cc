@@ -7,7 +7,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 
-#if !PA_CONFIG(HAS_64_BITS_POINTERS)
+#if !BUILDFLAG(HAS_64_BIT_POINTERS)
 
 namespace partition_alloc::internal {
 
@@ -34,4 +34,4 @@ std::atomic_size_t AddressPoolManagerBitmap::blocklist_hit_count_;
 
 }  // namespace partition_alloc::internal
 
-#endif  // !PA_CONFIG(HAS_64_BITS_POINTERS)
+#endif  // !BUILDFLAG(HAS_64_BIT_POINTERS)

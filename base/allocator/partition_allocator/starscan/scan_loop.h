@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/starscan/starscan_fwd.h"
@@ -93,12 +94,12 @@ template <typename Derived>
 void ScanLoop<Derived>::RunUnvectorized(uintptr_t begin, uintptr_t end) {
   PA_SCAN_DCHECK(!(begin % sizeof(uintptr_t)));
   PA_SCAN_DCHECK(!(end % sizeof(uintptr_t)));
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
   // If the read value is a pointer into the PA region, it's likely
   // MTE-tagged. Piggyback on |mask| to untag, for efficiency.
   const uintptr_t mask = Derived::RegularPoolMask() & kPtrUntagMask;
   const uintptr_t base = Derived::RegularPoolBase();
-#endif
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
   for (; begin < end; begin += sizeof(uintptr_t)) {
     // Read the region word-by-word. Everything that we read is a potential
     // pointer to or inside an object on heap. Such an object should be
@@ -106,13 +107,13 @@ void ScanLoop<Derived>::RunUnvectorized(uintptr_t begin, uintptr_t end) {
     //
     // Keep it MTE-untagged. See DisableMTEScope for details.
     const uintptr_t maybe_ptr = *reinterpret_cast<uintptr_t*>(begin);
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
     if (PA_LIKELY((maybe_ptr & mask) != base))
       continue;
 #else
     if (!maybe_ptr)
       continue;
-#endif
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
     derived().CheckPointer(maybe_ptr);
   }
 }

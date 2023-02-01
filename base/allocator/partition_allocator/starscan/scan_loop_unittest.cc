@@ -5,12 +5,13 @@
 #include "base/allocator/partition_allocator/starscan/scan_loop.h"
 
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "build/build_config.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
 
 namespace partition_alloc::internal {
 
@@ -168,4 +169,4 @@ TEST(PartitionAllocScanLoopTest, VectorizedNEON) {
 
 }  // namespace partition_alloc::internal
 
-#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)

@@ -9,8 +9,8 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 
 namespace partition_alloc::internal {
@@ -39,13 +39,13 @@ constexpr size_t OrderSubIndexMask(uint8_t order) {
          (kNumBucketsPerOrderBits + 1);
 }
 
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
 #define PA_BITS_PER_SIZE_T 64
 static_assert(kBitsPerSizeT == 64, "");
 #else
 #define PA_BITS_PER_SIZE_T 32
 static_assert(kBitsPerSizeT == 32, "");
-#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
 inline constexpr uint8_t kOrderIndexShift[PA_BITS_PER_SIZE_T + 1] = {
     OrderIndexShift(0),  OrderIndexShift(1),  OrderIndexShift(2),

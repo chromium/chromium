@@ -1422,7 +1422,7 @@ TEST_P(PartitionAllocTest, IsValidPtrDelta) {
                            kMaxBucketed + SystemPageSize(),
                            kMaxBucketed + PartitionPageSize(),
                            kSuperPageSize};
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
   constexpr size_t kFarFarAwayDelta = 512 * kGiB;
 #else
   constexpr size_t kFarFarAwayDelta = kGiB;
@@ -2502,7 +2502,7 @@ TEST_P(PartitionAllocDeathTest, LargeAllocs) {
 // is reached.
 // TODO(bartekn): Enable in the BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) case.
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    (PA_CONFIG(HAS_64_BITS_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
+    (BUILDFLAG(HAS_64_BIT_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
 
 // Check that our immediate double-free detection works.
 TEST_P(PartitionAllocDeathTest, ImmediateDoubleFree) {
@@ -2543,7 +2543,7 @@ TEST_P(PartitionAllocDeathTest, NumAllocatedSlotsDoubleFree) {
 }
 
 #endif  // !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-        // (PA_CONFIG(HAS_64_BITS_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
+        // (BUILDFLAG(HAS_64_BIT_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
 
 // Check that guard pages are present where expected.
 TEST_P(PartitionAllocDeathTest, DirectMapGuardPages) {
@@ -4220,7 +4220,7 @@ TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrShouldReport) {
   EXPECT_TRUE(ref_count->Release());
 }
 
-#if !PA_CONFIG(HAS_64_BITS_POINTERS)
+#if !BUILDFLAG(HAS_64_BIT_POINTERS)
 TEST_P(PartitionAllocTest, BackupRefPtrGuardRegion) {
   if (!UseBRPPool()) {
     return;
@@ -4244,7 +4244,7 @@ TEST_P(PartitionAllocTest, BackupRefPtrGuardRegion) {
     FreePages(allocated_address, alignment);
   }
 }
-#endif  // !PA_CONFIG(HAS_64_BITS_POINTERS)
+#endif  // !BUILDFLAG(HAS_64_BIT_POINTERS)
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)

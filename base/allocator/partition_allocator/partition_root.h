@@ -962,13 +962,13 @@ class ScopedSyscallTimer {
 PA_ALWAYS_INLINE uintptr_t
 PartitionAllocGetDirectMapSlotStartInBRPPool(uintptr_t address) {
   PA_DCHECK(IsManagedByPartitionAllocBRPPool(address));
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
   // Use this variant of GetDirectMapReservationStart as it has better
   // performance.
   uintptr_t offset = OffsetInBRPPool(address);
   uintptr_t reservation_start =
       GetDirectMapReservationStart(address, kBRPPoolHandle, offset);
-#else
+#else  // BUILDFLAG(HAS_64_BIT_POINTERS)
   uintptr_t reservation_start = GetDirectMapReservationStart(address);
 #endif
   if (!reservation_start) {

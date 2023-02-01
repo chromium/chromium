@@ -34,7 +34,7 @@ AddressPoolManager& AddressPoolManager::GetInstance() {
   return singleton_;
 }
 
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
 
 namespace {
 
@@ -299,7 +299,7 @@ bool AddressPoolManager::GetStats(AddressSpaceStats* stats) {
   return true;
 }
 
-#else  // PA_CONFIG(HAS_64_BITS_POINTERS)
+#else  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
 static_assert(
     kSuperPageSize % AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap ==
@@ -531,7 +531,7 @@ bool AddressPoolManager::GetStats(AddressSpaceStats* stats) {
   return true;
 }
 
-#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
 void AddressPoolManager::DumpStats(AddressSpaceStatsDumper* dumper) {
   AddressSpaceStats stats{};

@@ -13,6 +13,7 @@
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/tagging.h"
@@ -260,7 +261,7 @@ constexpr size_t kSuperPageOffsetMask = kSuperPageAlignment - 1;
 constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
 
 // PartitionAlloc's address space is split into pools. See `glossary.md`.
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
 #if BUILDFLAG(ENABLE_PKEYS)
 constexpr size_t kNumPools = 4;
 #else
@@ -282,7 +283,7 @@ constexpr size_t kPoolMaxSize = 8 * kGiB;
 #else
 constexpr size_t kPoolMaxSize = 16 * kGiB;
 #endif
-#else  // PA_CONFIG(HAS_64_BITS_POINTERS)
+#else  // BUILDFLAG(HAS_64_BIT_POINTERS)
 constexpr size_t kNumPools = 2;
 constexpr size_t kPoolMaxSize = 4 * kGiB;
 #endif
@@ -327,7 +328,7 @@ constexpr PA_ALWAYS_INLINE size_t MaxSuperPagesInPool() {
   return kMaxSuperPagesInPool;
 }
 
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
 // In 64-bit mode, the direct map allocation granularity is super page size,
 // because this is the reservation granularity of the pools.
 constexpr PA_ALWAYS_INLINE size_t DirectMapAllocationGranularity() {
@@ -337,7 +338,7 @@ constexpr PA_ALWAYS_INLINE size_t DirectMapAllocationGranularity() {
 constexpr PA_ALWAYS_INLINE size_t DirectMapAllocationGranularityShift() {
   return kSuperPageShift;
 }
-#else   // PA_CONFIG(HAS_64_BITS_POINTERS)
+#else   // BUILDFLAG(HAS_64_BIT_POINTERS)
 // In 32-bit mode, address space is space is a scarce resource. Use the system
 // allocation granularity, which is the lowest possible address space allocation
 // unit. However, don't go below partition page size, so that pool bitmaps
@@ -351,7 +352,7 @@ PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
 DirectMapAllocationGranularityShift() {
   return std::max(PageAllocationGranularityShift(), PartitionPageShift());
 }
-#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
 DirectMapAllocationGranularityOffsetMask() {

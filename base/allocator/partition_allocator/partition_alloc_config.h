@@ -23,47 +23,32 @@
 // 4. Do not use PA_CONFIG() when defining config macros, or it will lead to
 //    recursion. Either use #if/#else, or PA_CONFIG_MY_SETTING() directly.
 // 5. Try to use constexpr instead of macros wherever possible.
-// TODO(bartekn): Convert macros to constexpr as much as possible.
+// TODO(bartekn): Convert macros to constexpr or BUILDFLAG as much as possible.
 #define PA_CONFIG(flag) (PA_CONFIG_##flag())
 
-// ARCH_CPU_64_BITS implies 64-bit instruction set, but not necessarily 64-bit
-// address space. The only known case where address space is 32-bit is NaCl.
-// In theory, PartitionAlloc isn't built on NaCl, however,
-// BUILDFLAG(USE_PARTITION_ALLOC) isn't used well enough to prevent this header
-// from being included in NaCl targets, thus triggering the below assert.
-// Therefore, we have to exclude the NaCl case explicitly.
-// TODO(bartekn): Remove when BUILDFLAG(HAS_64_BIT_POINTERS) is confirmed to
-// work well.
-#define PA_CONFIG_HAS_64_BITS_POINTERS() \
-  (defined(ARCH_CPU_64_BITS) && !BUILDFLAG(IS_NACL))
-#if PA_CONFIG(HAS_64_BITS_POINTERS) && !BUILDFLAG(HAS_64_BIT_POINTERS)
-#error "Mismatch"
-#endif
-#if !PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(HAS_64_BIT_POINTERS)
-#error "Mismatch"
-#endif
-// Assert that the above heuristic is accurate on supported configurations.
-#if PA_CONFIG(HAS_64_BITS_POINTERS)
+// Assert that the heuristic in partition_alloc.gni is accurate on supported
+// configurations.
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
 static_assert(sizeof(void*) == 8, "");
 #else
 static_assert(sizeof(void*) != 8, "");
 #endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
 // PCScan supports 64 bits only and is disabled outside Chromium.
-#if PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(USE_STARSCAN)
+#if BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(USE_STARSCAN)
 #define PA_CONFIG_ALLOW_PCSCAN() 1
 #else
 #define PA_CONFIG_ALLOW_PCSCAN() 0
 #endif
 
-#if PA_CONFIG(HAS_64_BITS_POINTERS) && \
+#if BUILDFLAG(HAS_64_BIT_POINTERS) && \
     (defined(__ARM_NEON) || defined(__ARM_NEON__)) && defined(__ARM_FP)
 #define PA_CONFIG_STARSCAN_NEON_SUPPORTED() 1
 #else
 #define PA_CONFIG_STARSCAN_NEON_SUPPORTED() 0
 #endif
 
-#if PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(IS_IOS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(IS_IOS)
 // Allow PA to select an alternate pool size at run-time before initialization,
 // rather than using a single constexpr value.
 //
@@ -74,19 +59,19 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_CONFIG_DYNAMICALLY_SELECT_POOL_SIZE() 1
 #else
 #define PA_CONFIG_DYNAMICALLY_SELECT_POOL_SIZE() 0
-#endif  // PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(IS_IOS)
 
 // Puts the regular and BRP pools right next to each other, so that we can
 // check "belongs to one of the two pools" with a single bitmask operation.
 //
 // This setting is specific to 64-bit, as 32-bit has a different implementation.
-#if PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(GLUE_CORE_POOLS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(GLUE_CORE_POOLS)
 #define PA_CONFIG_GLUE_CORE_POOLS() 1
 #else
 #define PA_CONFIG_GLUE_CORE_POOLS() 0
 #endif
 
-#if PA_CONFIG(HAS_64_BITS_POINTERS) && \
+#if BUILDFLAG(HAS_64_BIT_POINTERS) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
 #include <linux/version.h>
 // TODO(bikineev): Enable for ChromeOS.
@@ -94,7 +79,7 @@ static_assert(sizeof(void*) != 8, "");
   (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0))
 #else
 #define PA_CONFIG_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED() 0
-#endif  // PA_CONFIG(HAS_64_BITS_POINTERS) &&
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS) &&
         // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
 
 #if PA_CONFIG(ALLOW_PCSCAN)
@@ -105,7 +90,7 @@ static_assert(sizeof(void*) != 8, "");
 #else
 // The card table is permanently disabled for 32-bit.
 #define PA_CONFIG_STARSCAN_USE_CARD_TABLE() 0
-#endif  // PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(USE_STARSCAN)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(USE_STARSCAN)
 
 // Use batched freeing when sweeping pages. This builds up a freelist in the
 // scanner thread and appends to the slot-span's freelist only once.
@@ -190,7 +175,7 @@ static_assert(sizeof(void*) != 8, "");
 static_assert(sizeof(void*) == 8);
 #endif
 
-#if PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#if BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 #define PA_CONFIG_USE_OOB_POISON() 1
 #else
 #define PA_CONFIG_USE_OOB_POISON() 0
@@ -201,7 +186,7 @@ static_assert(sizeof(void*) == 8);
 // Only applicable to code with 64-bit pointers. Currently conflicts with true
 // hardware MTE.
 #if BUILDFLAG(ENABLE_MTE_CHECKED_PTR_SUPPORT) && \
-    PA_CONFIG(HAS_64_BITS_POINTERS) && !PA_CONFIG(HAS_MEMORY_TAGGING)
+    BUILDFLAG(HAS_64_BIT_POINTERS) && !PA_CONFIG(HAS_MEMORY_TAGGING)
 static_assert(sizeof(void*) == 8);
 #define PA_CONFIG_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS() 1
 #else
@@ -327,7 +312,7 @@ constexpr bool kUseLazyCommit = false;
 // This feature is only enabled with 64-bit environment because pools work
 // differently with 32-bits pointers (see glossary).
 #if BUILDFLAG(ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS) && \
-    PA_CONFIG(HAS_64_BITS_POINTERS)
+    BUILDFLAG(HAS_64_BIT_POINTERS)
 #define PA_CONFIG_ENABLE_SHADOW_METADATA() 1
 #else
 #define PA_CONFIG_ENABLE_SHADOW_METADATA() 0
@@ -346,7 +331,7 @@ constexpr bool kUseLazyCommit = false;
 
 // Enables compressed (4-byte) pointers that can point within the core pools
 // (Regular + BRP).
-#if PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#if BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 #define PA_CONFIG_POINTER_COMPRESSION() 1
 
 #if !PA_CONFIG(GLUE_CORE_POOLS)
@@ -360,7 +345,7 @@ constexpr bool kUseLazyCommit = false;
 // TODO(1376980): Address MTE once it's enabled.
 #error "Compressed pointers don't support tag in the upper bits"
 #endif
-#else  // PA_CONFIG(HAS_64_BITS_POINTERS) &&
+#else  // BUILDFLAG(HAS_64_BIT_POINTERS) &&
        // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 #define PA_CONFIG_POINTER_COMPRESSION() 0
 #endif
