@@ -23,7 +23,9 @@
 
 namespace autofill {
 
+#if BUILDFLAG(IS_ANDROID)
 using features::kAutofillKeyboardAccessory;
+#endif
 using mojom::FocusedFieldType;
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;

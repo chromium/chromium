@@ -344,12 +344,6 @@ BASE_FEATURE(kAutofillHighlightOnlyChangedValuesInPreviewMode,
              "AutofillHighlightOnlyChangedValuesInPreviewMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Autofill suggestions are displayed in the keyboard accessory
-// instead of the regular popup.
-BASE_FEATURE(kAutofillKeyboardAccessory,
-             "AutofillKeyboardAccessory",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, Autofill will use new logic to strip both prefixes
 // and suffixes when setting FormStructure::parseable_name_
 BASE_FEATURE(kAutofillLabelAffixRemoval,
@@ -618,6 +612,12 @@ BASE_FEATURE(kAutofillLogUKMEventsWithSampleRate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+// When enabled, Autofill suggestions are displayed in the keyboard accessory
+// instead of the regular popup.
+BASE_FEATURE(kAutofillKeyboardAccessory,
+             "AutofillKeyboardAccessory",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the Autofill manual fallback for Addresses and Payments is
 // present on Android.
 BASE_FEATURE(kAutofillManualFallbackAndroid,

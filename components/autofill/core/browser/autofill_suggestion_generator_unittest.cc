@@ -1164,8 +1164,9 @@ class AutofillSuggestionGeneratorTestForOffer
     : public AutofillSuggestionGeneratorTest,
       public testing::WithParamInterface<bool> {
  public:
-  AutofillSuggestionGeneratorTestForOffer()
-      : keyboard_accessory_offer_enabled_(GetParam()) {
+  AutofillSuggestionGeneratorTestForOffer() {
+#if BUILDFLAG(IS_ANDROID)
+    keyboard_accessory_offer_enabled_ = GetParam();
     if (keyboard_accessory_offer_enabled_) {
       scoped_feature_keyboard_accessory_offer_.InitWithFeatures(
           {features::kAutofillKeyboardAccessory,
@@ -1176,16 +1177,23 @@ class AutofillSuggestionGeneratorTestForOffer
           {}, {features::kAutofillKeyboardAccessory,
                features::kAutofillEnableOffersInClankKeyboardAccessory});
     }
+#endif
   }
   ~AutofillSuggestionGeneratorTestForOffer() override = default;
 
   bool keyboard_accessory_offer_enabled() {
+#if BUILDFLAG(IS_ANDROID)
     return keyboard_accessory_offer_enabled_;
+#else
+    return false;
+#endif
   }
 
+#if BUILDFLAG(IS_ANDROID)
  private:
-  const bool keyboard_accessory_offer_enabled_;
+  bool keyboard_accessory_offer_enabled_;
   base::test::ScopedFeatureList scoped_feature_keyboard_accessory_offer_;
+#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1196,12 +1204,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 // card has card linked offer available.
 TEST_P(AutofillSuggestionGeneratorTestForOffer,
        CreateCreditCardSuggestion_ServerCardWithOffer) {
-#if !BUILDFLAG(IS_ANDROID)
-  // Skip the test with experiment enabled on non-Android platform.
-  if (keyboard_accessory_offer_enabled())
-    return;
-#endif
-
   // Create a server card.
   CreditCard server_card1 =
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");

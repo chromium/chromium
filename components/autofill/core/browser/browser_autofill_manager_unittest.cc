@@ -1085,12 +1085,18 @@ std::string SuggestionMatchingTest::MakeMobileLabel(
 class CreditCardSuggestionTest : public BrowserAutofillManagerTest,
                                  public testing::WithParamInterface<bool> {
  protected:
-  CreditCardSuggestionTest() : is_keyboard_accessory_enabled_(GetParam()) {}
+  CreditCardSuggestionTest() {
+#if BUILDFLAG(IS_ANDROID)
+    is_keyboard_accessory_enabled_ = GetParam();
+#endif
+  }
 
   void SetUp() override {
     BrowserAutofillManagerTest::SetUp();
+#if BUILDFLAG(IS_ANDROID)
     feature_list_keyboard_accessory_.InitWithFeatureState(
         features::kAutofillKeyboardAccessory, is_keyboard_accessory_enabled_);
+#endif
     feature_list_card_metadata_and_product_name_.InitWithFeatures(
         /* enabled_features */ {},
         /* disabled_features */ {features::kAutofillEnableVirtualCardMetadata,
@@ -1106,9 +1112,11 @@ class CreditCardSuggestionTest : public BrowserAutofillManagerTest,
   }
 
  private:
+#if BUILDFLAG(IS_ANDROID)
+  bool is_keyboard_accessory_enabled_;
+#endif
   base::test::ScopedFeatureList feature_list_keyboard_accessory_;
   base::test::ScopedFeatureList feature_list_card_metadata_and_product_name_;
-  const bool is_keyboard_accessory_enabled_;
 };
 
 // Test that calling OnFormsSeen with an empty set of forms (such as when
