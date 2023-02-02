@@ -3564,7 +3564,6 @@ crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-template-computed-nogrid
 crbug.com/618969 external/wpt/css/css-grid/subgrid/independent-formatting-context.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/item-percentage-height-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/line-names-007.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/line-names-008.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-002.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-003.html [ Failure ]

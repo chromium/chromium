@@ -44,21 +44,29 @@ NGGridLineResolver::NGGridLineResolver(
   if (subgrid_area.rows.IsTranslatedDefinite())
     subgridded_row_span_size_ = subgrid_area.SpanSize(kForRows);
 
-  auto MergeNamedGridLinesWithParent = [](NamedGridLinesMap& subgrid_map,
-                                          const NamedGridLinesMap& parent_map,
-                                          GridSpan subgrid_span) -> void {
+  auto MergeNamedGridLinesWithParent =
+      [](NamedGridLinesMap& subgrid_map, const NamedGridLinesMap& parent_map,
+         GridSpan subgrid_span, bool is_opposite_direction_to_parent) -> void {
     // Update `subgrid_map` to a merged map from a parent grid or subgrid map
     // (`parent_map`). The map is a key-value store with keys as the line name
     // and the value as an array of ascending indices.
     for (auto& pair : parent_map) {
+      // TODO(kschmi) : Benchmark whether this is faster with an std::map, which
+      // would eliminate the need for sorting and removing duplicates below.
+      // Perf will vary based on the number of named lines defined.
       Vector<wtf_size_t, 16> merged_list;
       for (const auto& position : pair.value) {
-        // Filter out parent named lines are are out of the subgrid range. Also
+        // Filter out parent named lines that are out of the subgrid range. Also
         // offset entries by `subgrid_start_line` before inserting them into the
         // merged map so they are all relative to offset 0. These are already in
         // ascending order so there's no need to sort.
-        if (subgrid_span.Contains(position))
-          merged_list.push_back(position - subgrid_span.StartLine());
+        if (subgrid_span.Contains(position)) {
+          if (is_opposite_direction_to_parent) {
+            merged_list.push_back(subgrid_span.EndLine() - position);
+          } else {
+            merged_list.push_back(position - subgrid_span.StartLine());
+          }
+        }
       }
 
       // If there's a name collision, merge the values and sort. These are from
@@ -68,7 +76,21 @@ NGGridLineResolver::NGGridLineResolver(
       if (existing_entry != subgrid_map.end()) {
         for (auto& value : existing_entry->value)
           merged_list.push_back(value);
+
         std::sort(merged_list.begin(), merged_list.end());
+
+        // Remove any duplicated entries in the sorted list. Duplicates can
+        // occur when the parent grid and the subgrid define line names with the
+        // same name at the same index. It doesn't matter which one takes
+        // precedence (grid vs subgrid), as long as there is only a single entry
+        // per index. Without this call, there will be bugs when we need to
+        // iterate over the nth entry with a given name (e.g. "a 5") - the
+        // duplicate will make all entries past it off-by-one.
+        // `std::unique` doesn't change the size of the vector (it just moves
+        // duplicates to the end), so we need to erase the duplicates via the
+        // iterator returned.
+        merged_list.erase(std::unique(merged_list.begin(), merged_list.end()),
+                          merged_list.end());
       }
 
       // Override the existing subgrid's line names map with the new merged list
@@ -191,11 +213,16 @@ NGGridLineResolver::NGGridLineResolver(
     }
   };
 
+  // TODO(kschmi) - Account for orthogonal writing modes and swap rows/columns.
+  const bool is_opposite_direction_to_parent =
+      (grid_style.GetWritingDirection() !=
+       parent_line_resolver.style_->GetWritingDirection());
+
   if (subgrid_area.columns.IsTranslatedDefinite()) {
     MergeNamedGridLinesWithParent(
         *subgridded_columns_merged_explicit_grid_line_names_,
         parent_line_resolver.ExplicitNamedLinesMap(kForColumns),
-        subgrid_area.columns);
+        subgrid_area.columns, is_opposite_direction_to_parent);
     MergeImplicitLinesWithParent(
         *subgridded_columns_merged_implicit_grid_line_names_,
         parent_line_resolver.ImplicitNamedLinesMap(kForColumns),
@@ -204,8 +231,8 @@ NGGridLineResolver::NGGridLineResolver(
   if (subgrid_area.rows.IsTranslatedDefinite()) {
     MergeNamedGridLinesWithParent(
         *subgridded_rows_merged_explicit_grid_line_names_,
-        parent_line_resolver.ExplicitNamedLinesMap(kForRows),
-        subgrid_area.rows);
+        parent_line_resolver.ExplicitNamedLinesMap(kForRows), subgrid_area.rows,
+        is_opposite_direction_to_parent);
     MergeImplicitLinesWithParent(
         *subgridded_rows_merged_implicit_grid_line_names_,
         parent_line_resolver.ImplicitNamedLinesMap(kForRows),
