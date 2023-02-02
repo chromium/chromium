@@ -915,6 +915,9 @@ void TokenPreloadScanner::ScanCommon(
           --template_count_;
         return;
       }
+      if (template_count_) {
+        return;
+      }
       if (Match(tag_impl, html_names::kStyleTag)) {
         if (in_style_)
           css_scanner_.Reset();
@@ -935,8 +938,21 @@ void TokenPreloadScanner::ScanCommon(
     case HTMLToken::kStartTag: {
       const StringImpl* tag_impl = TagImplFor(token.Data());
       if (Match(tag_impl, html_names::kTemplateTag)) {
-        ++template_count_;
-        return;
+        bool is_declarative_shadow_root = false;
+        const HTMLToken::Attribute* shadowrootmode_attribute =
+            token.GetAttributeItem(html_names::kShadowrootmodeAttr);
+        if (shadowrootmode_attribute) {
+          String shadowrootmode_value(shadowrootmode_attribute->Value());
+          is_declarative_shadow_root =
+              EqualIgnoringASCIICase(shadowrootmode_value, "open") ||
+              EqualIgnoringASCIICase(shadowrootmode_value, "closed");
+        }
+        // If this is a declarative shadow root <template shadowrootmode>
+        // element *and* we're not already inside a non-DSD <template> element,
+        // then we leave the template count at zero. Otherwise, increment it.
+        if (!(is_declarative_shadow_root && !template_count_)) {
+          ++template_count_;
+        }
       }
       if (template_count_)
         return;
