@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
-#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -61,7 +60,7 @@ const ComputedStyle* ComputedStyleForLengthResolving(
   return context ? ComputedStyleForLengthResolving(*context) : nullptr;
 }
 
-const ComputedStyle* RootElementStyle(const SVGElement& element) {
+const ComputedStyle* RootElementStyle(const Element& element) {
   if (auto* document_element = element.GetDocument().documentElement()) {
     if (element != document_element) {
       return document_element->GetComputedStyle();
@@ -69,24 +68,6 @@ const ComputedStyle* RootElementStyle(const SVGElement& element) {
   }
   return nullptr;
 }
-
-class SVGLengthConversionData : public CSSToLengthConversionData {
-  STACK_ALLOCATED();
-
- public:
-  SVGLengthConversionData(const SVGElement& context, const ComputedStyle& style)
-      : CSSToLengthConversionData(&style,
-                                  &style,
-                                  RootElementStyle(context),
-                                  context.GetDocument().GetLayoutView(),
-                                  CSSToLengthConversionData::ContainerSizes(
-                                      context.ParentOrShadowHostElement()),
-                                  1.0f,
-                                  ignored_flags_) {}
-
- private:
-  CSSToLengthConversionData::Flags ignored_flags_ = 0;
-};
 
 float ObjectBoundingBoxUnitToUserUnits(const Length& length,
                                        float ref_dimension) {
@@ -109,6 +90,21 @@ float ObjectBoundingBoxUnitToUserUnits(const Length& length,
 }
 
 }  // namespace
+
+SVGLengthConversionData::SVGLengthConversionData(const Element& context,
+                                                 const ComputedStyle& style)
+    : CSSToLengthConversionData(&style,
+                                &style,
+                                RootElementStyle(context),
+                                context.GetDocument().GetLayoutView(),
+                                CSSToLengthConversionData::ContainerSizes(
+                                    context.ParentOrShadowHostElement()),
+                                1.0f,
+                                ignored_flags_) {}
+
+SVGLengthConversionData::SVGLengthConversionData(const LayoutObject& object)
+    : SVGLengthConversionData(To<Element>(*object.GetNode()),
+                              object.StyleRef()) {}
 
 SVGLengthContext::SVGLengthContext(const SVGElement* context)
     : context_(context) {}
@@ -192,26 +188,6 @@ float SVGLengthContext::ResolveValue(const CSSPrimitiveValue& primitive_value,
   const SVGLengthConversionData conversion_data(*context_, *style);
   const Length& length = primitive_value.ConvertToLength(conversion_data);
   return ValueForLength(length, 1.0f, mode);
-}
-
-Length SVGLengthContext::ConvertToLength(const SVGLength& length) const {
-  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
-  if (!style) {
-    return Length::Fixed(0);
-  }
-  const SVGLengthConversionData conversion_data(*context_, *style);
-  return length.AsCSSPrimitiveValue().ConvertToLength(conversion_data);
-}
-
-LengthPoint SVGLengthContext::ConvertToLengthPoint(const SVGLength& x,
-                                                   const SVGLength& y) const {
-  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
-  if (!style) {
-    return LengthPoint(Length::Fixed(0), Length::Fixed(0));
-  }
-  const SVGLengthConversionData conversion_data(*context_, *style);
-  return LengthPoint(x.AsCSSPrimitiveValue().ConvertToLength(conversion_data),
-                     y.AsCSSPrimitiveValue().ConvertToLength(conversion_data));
 }
 
 float SVGLengthContext::ValueForLength(const UnzoomedLength& unzoomed_length,

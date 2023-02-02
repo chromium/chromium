@@ -105,6 +105,17 @@ bool SVGLength::operator==(const SVGLength& other) const {
   return unit_mode_ == other.unit_mode_ && value_ == other.value_;
 }
 
+Length SVGLength::ConvertToLength(
+    const SVGLengthConversionData& conversion_data) const {
+  return value_->ConvertToLength(conversion_data);
+}
+
+float SVGLength::Value(const SVGLengthConversionData& conversion_data,
+                       float dimension) const {
+  return FloatValueForLength(value_->ConvertToLength(conversion_data),
+                             dimension);
+}
+
 float SVGLength::Value(const SVGLengthContext& context) const {
   if (IsCalculated() || HasContainerRelativeUnits())
     return context.ResolveValue(AsCSSPrimitiveValue(), UnitMode());

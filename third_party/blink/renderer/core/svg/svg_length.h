@@ -32,8 +32,9 @@
 
 namespace blink {
 
+class Length;
 class QualifiedName;
-
+class SVGLengthConversionData;
 class SVGLengthTearOff;
 
 class CORE_EXPORT SVGLength final : public SVGListablePropertyBase {
@@ -78,6 +79,8 @@ class CORE_EXPORT SVGLength final : public SVGListablePropertyBase {
   bool operator==(const SVGLength&) const;
   bool operator!=(const SVGLength& other) const { return !operator==(other); }
 
+  Length ConvertToLength(const SVGLengthConversionData&) const;
+  float Value(const SVGLengthConversionData&, float dimension) const;
   float Value(const SVGLengthContext&) const;
   void SetValue(float, const SVGLengthContext&);
   void SetValueAsNumber(float);

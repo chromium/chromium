@@ -96,11 +96,10 @@ std::unique_ptr<PathPositionMapper> LayoutSVGTextPath::LayoutPath() const {
     author_path_length = computed_path_length;
   }
 
-  const SVGLengthContext context(&text_path_element);
-  const Length& start_offset =
-      context.ConvertToLength(*text_path_element.startOffset()->CurrentValue());
+  const SVGLengthConversionData conversion_data(*this);
   float path_start_offset =
-      FloatValueForLength(start_offset, author_path_length);
+      text_path_element.startOffset()->CurrentValue()->Value(
+          conversion_data, author_path_length);
   path_start_offset *= offset_scale;
 
   return std::make_unique<PathPositionMapper>(path_data, computed_path_length,

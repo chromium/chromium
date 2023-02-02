@@ -24,6 +24,7 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -176,7 +177,9 @@ gfx::PointF LayoutSVGResourceGradient::ResolvePoint(
     const SVGLength& y) const {
   NOT_DESTROYED();
   const SVGLengthContext context(GetElement());
-  const LengthPoint& point = context.ConvertToLengthPoint(x, y);
+  const SVGLengthConversionData conversion_data(*this);
+  const LengthPoint point(x.ConvertToLength(conversion_data),
+                          y.ConvertToLength(conversion_data));
   return PointForLengthPoint(point, MakeViewport(context, point, type));
 }
 
@@ -184,7 +187,8 @@ float LayoutSVGResourceGradient::ResolveRadius(SVGUnitTypes::SVGUnitType type,
                                                const SVGLength& r) const {
   NOT_DESTROYED();
   const SVGLengthContext context(GetElement());
-  const Length& radius = context.ConvertToLength(r);
+  const SVGLengthConversionData conversion_data(*this);
+  const Length& radius = r.ConvertToLength(conversion_data);
   return FloatValueForLength(radius,
                              MakeViewportDimension(context, radius, type));
 }
