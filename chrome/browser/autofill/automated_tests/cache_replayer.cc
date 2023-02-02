@@ -32,8 +32,7 @@
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "third_party/zlib/google/compression_utils.h"
 
-namespace autofill {
-namespace test {
+namespace autofill::test {
 
 using base::JSONParserOptions;
 using base::JSONReader;
@@ -436,17 +435,13 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
   return ServerCacheReplayer::Status{ServerCacheReplayer::StatusCode::kOk, ""};
 }
 
-// Finds the Autofill server Query node in dictionary node. Gives nullptr if
-// cannot find the node or |domain_dict| is invalid. The |domain_dict| has to
-// outlive any usage of the returned value node pointers.
+// Finds the Autofill server Query nodes in a dictionary node. The |domain| has
+// to outlive any usage of the returned value node pointers.
 std::vector<QueryNode> FindQueryNodesInDomainDict(
-    const base::Value& domain_dict,
+    const base::Value::Dict& domain,
     const std::string& url_prefix) {
-  if (!domain_dict.is_dict()) {
-    return {};
-  }
   std::vector<QueryNode> nodes;
-  for (auto pair : domain_dict.DictItems()) {
+  for (auto pair : domain) {
     if (pair.first.find(url_prefix) != std::string::npos) {
       nodes.push_back(QueryNode{GURL(pair.first), &pair.second});
     }
@@ -493,12 +488,19 @@ ServerCacheReplayer::Status PopulateCacheFromJSONFile(
   }
 
   {
-    const base::Value* domain_node =
-        root_node.FindPath({"Requests", kApiServerDomain});
-    std::vector<QueryNode> query_nodes =
-        domain_node
-            ? FindQueryNodesInDomainDict(*domain_node, kApiServerUrlGetPrefix)
-            : std::vector<QueryNode>();
+    std::vector<QueryNode> query_nodes;
+    const base::Value::Dict* root_node_dict = root_node.GetIfDict();
+    if (root_node_dict) {
+      const base::Value::Dict* requests = root_node_dict->FindDict("Requests");
+      if (requests) {
+        const base::Value::Dict* domain_node =
+            requests->FindDict(kApiServerDomain);
+        if (domain_node) {
+          query_nodes =
+              FindQueryNodesInDomainDict(*domain_node, kApiServerUrlGetPrefix);
+        }
+      }
+    }
 
     // Fill cache with the content of each Query node. There are 3 possible
     // situations: (1) there is a single Query node that contains POST requests
@@ -905,5 +907,4 @@ bool ServerUrlLoader::InterceptAutofillRequest(
   return false;
 }
 
-}  // namespace test
-}  // namespace autofill
+}  // namespace autofill::test
