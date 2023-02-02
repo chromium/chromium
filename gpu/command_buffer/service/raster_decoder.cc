@@ -999,12 +999,6 @@ RasterDecoderImpl::RasterDecoderImpl(
 }
 
 RasterDecoderImpl::~RasterDecoderImpl() {
-  // Client can call BeginRasterChromium and then channel can be closed and
-  // decoder destroyed. Finish raster first.
-  if (sk_surface_ || scoped_shared_image_raster_write_) {
-    DoEndRasterCHROMIUM();
-  }
-
   shared_context_state_->RemoveContextLostObserver(this);
 }
 
@@ -1071,32 +1065,18 @@ void RasterDecoderImpl::Destroy(bool have_context) {
 
   DCHECK(!have_context || shared_context_state_->context()->IsCurrent(nullptr));
 
+  // Client can call BeginRasterChromium and then channel can be closed and
+  // decoder destroyed. Finish raster first.
+  // Note: `have_context` is always false for Vulkan, so we don't gate this code
+  // on it.
+  if (sk_surface_ || scoped_shared_image_raster_write_) {
+    DoEndRasterCHROMIUM();
+  }
+
   if (have_context) {
     if (use_gpu_raster_) {
       transfer_cache()->DeleteAllEntriesForDecoder(raster_decoder_id_);
     }
-
-    // Make sure we flush any pending skia work on this context.
-    if (sk_surface_) {
-      GrFlushInfo flush_info = {
-          .fNumSemaphores = end_semaphores_.size(),
-          .fSignalSemaphores = end_semaphores_.data(),
-      };
-      AddVulkanCleanupTaskForSkiaFlush(
-          shared_context_state_->vk_context_provider(), &flush_info);
-      auto result = sk_surface_->flush(flush_info);
-      DCHECK(result == GrSemaphoresSubmitted::kYes || end_semaphores_.empty());
-      end_semaphores_.clear();
-      sk_surface_ = nullptr;
-    }
-
-    if (gr_context())
-      gr_context()->flushAndSubmit();
-
-    scoped_shared_image_write_.reset();
-    shared_image_.reset();
-    sk_surface_for_testing_.reset();
-    paint_op_shared_image_provider_.reset();
   }
 
   if (query_manager_) {
