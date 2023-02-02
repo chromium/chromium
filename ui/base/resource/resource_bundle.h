@@ -213,6 +213,10 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
       LottieThemedImageParseFunction parse_lottie_as_themed_still_image);
 #endif
 
+  // Exposed for testing, otherwise use GetSharedInstance().
+  explicit ResourceBundle(Delegate* delegate);
+  ~ResourceBundle();
+
   ResourceBundle(const ResourceBundle&) = delete;
   ResourceBundle& operator=(const ResourceBundle&) = delete;
 
@@ -438,10 +442,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   class BitmapImageSource;
 
   using IdToStringMap = std::unordered_map<int, std::u16string>;
-
-  // Ctor/dtor are private, since we're a singleton.
-  explicit ResourceBundle(Delegate* delegate);
-  ~ResourceBundle();
 
   // Shared initialization.
   static void InitSharedInstance(Delegate* delegate);

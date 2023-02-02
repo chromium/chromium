@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -134,7 +134,7 @@ class ResourceBundleTest : public testing::Test {
 
   // Overridden from testing::Test:
   void TearDown() override {
-    delete resource_bundle_;
+    resource_bundle_.reset();
     if (temp_dir_.IsValid())
       ASSERT_TRUE(temp_dir_.Delete());
   }
@@ -144,14 +144,13 @@ class ResourceBundleTest : public testing::Test {
   // ResourceBundle.
   ResourceBundle* CreateResourceBundle(ResourceBundle::Delegate* delegate) {
     DCHECK(!resource_bundle_);
-
-    resource_bundle_ = new ResourceBundle(delegate);
-    return resource_bundle_;
+    resource_bundle_ = std::make_unique<ResourceBundle>(delegate);
+    return resource_bundle_.get();
   }
 
  protected:
   base::ScopedTempDir temp_dir_;
-  raw_ptr<ResourceBundle> resource_bundle_;
+  std::unique_ptr<ResourceBundle> resource_bundle_;
 };
 
 TEST_F(ResourceBundleTest, DelegateGetPathForResourcePack) {
