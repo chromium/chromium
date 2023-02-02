@@ -3447,7 +3447,13 @@ GLES2Decoder* GLES2Decoder::Create(
                                            outputter, group);
   }
 
+// Allow linux to run fuzzers.
+#if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER) || BUILDFLAG(IS_LINUX)
   return new GLES2DecoderImpl(client, command_buffer_service, outputter, group);
+#else
+  LOG(FATAL) << "Validating command decoder is not supported.";
+  return nullptr;
+#endif
 }
 
 GLES2DecoderImpl::GLES2DecoderImpl(
