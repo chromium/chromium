@@ -323,6 +323,11 @@ public class FeedStream implements Stream {
             }
         }
 
+        @Override
+        public void openWebFeed(String webFeedName) {
+            mActionDelegate.openWebFeed(webFeedName);
+        }
+
         private void openSuggestionUrl(
                 String url, int disposition, boolean inGroup, OpenUrlOptions openOptions) {
             boolean inNewTab = (disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB

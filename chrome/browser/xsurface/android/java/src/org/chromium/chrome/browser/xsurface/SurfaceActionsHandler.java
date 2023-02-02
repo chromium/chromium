@@ -182,6 +182,12 @@ public interface SurfaceActionsHandler {
     default void updateWebFeedFollowState(WebFeedFollowUpdate update) {}
 
     /**
+     * Opens a specific WebFeed by name.
+     * @param webFeedName the relevant web feed name.
+     */
+    default void openWebFeed(String webFeedName) {}
+
+    /**
      * Navigates a new tab in group to a particular URL.
      * @param url The url for which to navigate.
      * @param actionSourceView The View from which the user tap originated. May be null.
