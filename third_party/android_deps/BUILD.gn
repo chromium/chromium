@@ -1344,7 +1344,9 @@ if (!limit_android_deps) {
       ":io_grpc_grpc_context_java",
       "//third_party/android_deps:guava_android_java",
     ]
-    bypass_platform_checks = true
+
+    # https://crbug.com/1412551
+    requires_android = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1371,7 +1373,9 @@ if (!limit_android_deps) {
       "//third_party/android_deps:guava_android_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
     ]
-    bypass_platform_checks = true
+
+    # https://crbug.com/1412551
+    requires_android = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1384,7 +1388,9 @@ if (!limit_android_deps) {
       ":io_grpc_grpc_api_java",
       "//third_party/android_deps:guava_android_java",
     ]
-    bypass_platform_checks = true
+
+    # https://crbug.com/1412551
+    requires_android = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2066,6 +2072,9 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+
+    # https://crbug.com/1412551
+    requires_android = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2185,7 +2194,9 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/androidx:*",
     ]
-    bypass_platform_checks = true
+
+    # https://crbug.com/1412551
+    requires_android = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2209,7 +2220,9 @@ if (!limit_android_deps) {
       ":org_codehaus_mojo_animal_sniffer_annotations_java",
       "//third_party/android_deps:guava_android_java",
     ]
-    bypass_platform_checks = true
+
+    # https://crbug.com/1412551
+    requires_android = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

@@ -611,16 +611,19 @@ class BuildConfigGenerator extends DefaultTask {
 
         if (dependencyId.startsWith('org_robolectric')) {
             sb.append('  is_robolectric = true\n')
-        } else if (dependencyId.startsWith('io_grpc_') && dependencyExtension == 'jar') {
-            // Skip platform checks since it depends on
-            // accessibility_test_framework_java which requires_android.
-            sb.append('  bypass_platform_checks = true\n')
         }
         if (dependencyExtension == 'aar' &&
                 (dependencyId.startsWith('androidx') || dependencyId.startsWith('com_android_support'))) {
             // The androidx and com_android_support libraries have duplicate resources such as
             // 'primary_text_default_material_dark'.
             sb.append('  resource_overlay = true\n')
+        }
+        if (dependencyExtension == 'jar' && (
+                dependencyId.contains('android') ||
+                dependencyId.startsWith('io_grpc_') ||
+                dependencyId == 'google_firebase_firebase_encoders')) {
+            sb.append('  # https://crbug.com/1412551\n')
+            sb.append('  requires_android = true\n')
         }
 
         switch (dependencyId) {

@@ -1329,6 +1329,7 @@ if (enable_java_templates && is_android) {
       "input_jars_paths",
       "mergeable_android_manifests",
       "proguard_configs",
+      "requires_android",
     ]
     _invoker_deps = []
     if (defined(invoker.deps)) {
