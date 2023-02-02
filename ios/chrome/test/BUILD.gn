@@ -346,6 +346,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history:unit_tests",
     "//ios/chrome/browser/ui/post_restore_signin:unit_tests",
     "//ios/chrome/browser/ui/presenters:unit_tests",
+    "//ios/chrome/browser/ui/price_notifications/cells:unit_tests",
     "//ios/chrome/browser/ui/promos_manager:unit_tests",
     "//ios/chrome/browser/ui/reading_list:unit_tests",
     "//ios/chrome/browser/ui/recent_tabs:unit_tests",

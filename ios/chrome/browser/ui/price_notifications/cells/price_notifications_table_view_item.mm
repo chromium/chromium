@@ -190,8 +190,6 @@ UIStackView* CreateLoadingScreen(UIView* track_button, UIView* menu_button) {
 // The imageview that is displayed on the leading edge of the cell.
 @property(nonatomic, strong)
     PriceNotificationsImageContainerView* priceNotificationsImageContainerView;
-// The button that starts the price tracking process.
-@property(nonatomic, strong) UIButton* trackButton;
 
 @end
 
