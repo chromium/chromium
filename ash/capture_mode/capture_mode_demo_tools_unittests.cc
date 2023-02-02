@@ -901,8 +901,8 @@ TEST_P(CaptureModeDemoToolsTestWithAllSources,
   const auto& layers_vector = demo_tools_test_api.GetMouseHighlightLayers();
   auto* event_generator = GetEventGenerator();
 
-  for (auto point : {inner_rect.CenterPoint(), inner_rect.origin(),
-                     inner_rect.bottom_right()}) {
+  for (const auto point : {inner_rect.CenterPoint(), inner_rect.origin(),
+                           inner_rect.bottom_right()}) {
     event_generator->MoveMouseTo(point);
     event_generator->PressLeftButton();
     event_generator->ReleaseLeftButton();
@@ -1048,8 +1048,29 @@ class ProjectorCaptureModeDemoToolsTest : public CaptureModeDemoToolsTest {
   ProjectorCaptureModeIntegrationHelper projector_helper_;
 };
 
+// Tests that the demo tools feature will be enabled by default in a
+// projector-initiated capture mode session and this overwritten configuration
+// will not be carried over to a normal capture mode session.
+TEST_F(ProjectorCaptureModeDemoToolsTest, EnableDemoToolsByDefault) {
+  CaptureModeController* capture_mode_controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  EXPECT_TRUE(capture_mode_controller->IsActive());
+  EXPECT_FALSE(capture_mode_controller->enable_demo_tools());
+
+  capture_mode_controller->Stop();
+  StartProjectorModeSession();
+  EXPECT_TRUE(capture_mode_controller->IsActive());
+  EXPECT_TRUE(
+      capture_mode_controller->capture_mode_session()->is_in_projector_mode());
+  EXPECT_TRUE(capture_mode_controller->enable_demo_tools());
+
+  capture_mode_controller->Stop();
+  capture_mode_controller->Start(CaptureModeEntryType::kQuickSettings);
+  EXPECT_FALSE(capture_mode_controller->enable_demo_tools());
+}
+
 // Tests that the pointer (mouse and touch) highlight will be disabled when
-// annotating and re-enabled after stopping annotating in
+// annotating and re-enabled after stopping the annotation in a
 // projector-initiated capture mode.
 TEST_F(ProjectorCaptureModeDemoToolsTest,
        DisablePointerHighlightWithAnnotatorEnabled) {
@@ -1058,7 +1079,7 @@ TEST_F(ProjectorCaptureModeDemoToolsTest,
   auto* capture_mode_controller = CaptureModeController::Get();
   capture_mode_controller->SetSource(CaptureModeSource::kFullscreen);
   StartProjectorModeSession();
-  capture_mode_controller->EnableDemoTools(/*enable=*/true);
+  EXPECT_TRUE(capture_mode_controller->enable_demo_tools());
   EXPECT_TRUE(
       capture_mode_controller->capture_mode_session()->is_in_projector_mode());
   StartVideoRecordingImmediately();
@@ -1146,10 +1167,13 @@ TEST_F(ProjectorCaptureModeDemoToolsTest,
     histogram_tester.ExpectBucketCount(histogram_name,
                                        test_case.enable_demo_tools, 0);
     auto* controller = CaptureModeController::Get();
-    controller->SetType(CaptureModeType::kVideo);
     controller->SetSource(CaptureModeSource::kFullscreen);
 
+    // Start a projector-initiated capture mode sesession, the demo tools
+    // feature will be enabled by default. `EnableDemoTools` to ensure that the
+    // test coverage includes both enabled and disabled cases.
     StartProjectorModeSession();
+    EXPECT_TRUE(controller->enable_demo_tools());
     controller->EnableDemoTools(test_case.enable_demo_tools);
     EXPECT_TRUE(controller->IsActive());
     EXPECT_TRUE(controller->capture_mode_session()->is_in_projector_mode());
@@ -1160,8 +1184,8 @@ TEST_F(ProjectorCaptureModeDemoToolsTest,
 
     controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
     WaitForCaptureFileToBeSaved();
-    histogram_tester.ExpectBucketCount(histogram_name,
-                                       test_case.enable_demo_tools, 1);
+    histogram_tester.ExpectBucketCount(
+        histogram_name, test_case.enable_demo_tools, /*expected_count=*/1);
   }
 }
 

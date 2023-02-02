@@ -266,8 +266,9 @@ class ASH_EXPORT CaptureModeController
   void StartVideoRecordingImmediatelyForTesting();
 
   // Restores the capture mode configurations that include the `type_`,
-  // `source_` and `enable_audio_recording_` if any of them gets overridden in
-  // the projector-initiated capture mode session.
+  // `source_`, `enable_audio_recording_`, `recording_type_` and
+  // `enable_demo_tools_` if any of them gets overridden in the
+  // projector-initiated capture mode session.
   void MaybeRestoreCachedCaptureConfigurations();
 
   CaptureModeDelegate* delegate_for_testing() const { return delegate_.get(); }
@@ -287,6 +288,7 @@ class ASH_EXPORT CaptureModeController
     CaptureModeSource source;
     RecordingType recording_type;
     bool audio_on;
+    bool demo_tools_enabled;
   };
 
   // Called by |video_recording_watcher_| when the display on which recording is
