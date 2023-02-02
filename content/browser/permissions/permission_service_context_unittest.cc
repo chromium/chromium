@@ -11,7 +11,9 @@
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/weak_document_ptr.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/test/test_render_frame_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
@@ -74,7 +76,8 @@ class PermissionServiceContextTest : public RenderViewHostTestHarness {
     render_frame_host_impl_ =
         static_cast<RenderFrameHostImpl*>(render_frame_host);
     permission_service_context_ =
-        PermissionServiceContext::GetForCurrentDocument(render_frame_host);
+        PermissionServiceContext::GetOrCreateForCurrentDocument(
+            render_frame_host);
   }
 
   std::unique_ptr<TestPermissionObserver> CreateSubscription(
@@ -141,9 +144,28 @@ TEST_F(PermissionServiceContextTest,
   // After dispatching changed events when the render frame host is active,
   // the event counter should increment as expected.
   EXPECT_EQ(observer->change_event_count(), 1U);
+
+  // Same origin child sub-frame should also receive changed events but should
+  // not double increment the parent's counter.
+  RenderFrameHost* child =
+      RenderFrameHostTester::For(render_frame_host())->AppendChild("");
+  RenderFrameHostTester::For(child)->InitializeRenderFrameIfNeeded();
+  auto navigation_simulator =
+      content::NavigationSimulator::CreateRendererInitiated(GURL(kTestUrl),
+                                                            child);
+  navigation_simulator->Commit();
+  child = navigation_simulator->GetFinalRenderFrameHost();
+  auto* permission_service_context =
+      PermissionServiceContext::GetOrCreateForCurrentDocument(child);
+  auto observer_child = std::make_unique<TestPermissionObserver>();
+  permission_service_context->CreateSubscription(
+      PermissionType::GEOLOCATION, url::Origin::Create(GURL(kTestUrl)),
+      blink::mojom::PermissionStatus::ASK, blink::mojom::PermissionStatus::ASK,
+      observer_child->GetRemote());
   SimulatePermissionChangedEvent(blink::PermissionType::GEOLOCATION,
                                  blink::mojom::PermissionStatus::ASK);
   EXPECT_EQ(observer->change_event_count(), 2U);
+  EXPECT_EQ(observer_child->change_event_count(), 1U);
 
   // Simulate the render frame host is put into the back/forward cache
   render_frame_host()->DidEnterBackForwardCache();
@@ -158,6 +180,7 @@ TEST_F(PermissionServiceContextTest,
 
   // Now the change events should not should increment the counter.
   EXPECT_EQ(observer->change_event_count(), 2U);
+  EXPECT_EQ(observer_child->change_event_count(), 1U);
 
   // Simulate the render frame host is back to active state by setting the
   // lifecycle state.
@@ -171,6 +194,7 @@ TEST_F(PermissionServiceContextTest,
   // Since the render frame host is active, the dispatched events should
   // increment the counter.
   EXPECT_EQ(observer->change_event_count(), 3U);
+  EXPECT_EQ(observer_child->change_event_count(), 2U);
 }
 
 TEST_F(PermissionServiceContextTest,
