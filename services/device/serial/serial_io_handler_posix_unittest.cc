@@ -22,28 +22,28 @@ class SerialIoHandlerPosixTest : public testing::Test {
 
   void Initialize(bool parity_check_enabled,
                   const char* chars_stashed,
-                  int num_chars_stashed) {
+                  size_t num_chars_stashed) {
     serial_io_handler_posix_->error_detect_state_ = ErrorDetectState::NO_ERROR;
     serial_io_handler_posix_->parity_check_enabled_ = parity_check_enabled;
     serial_io_handler_posix_->num_chars_stashed_ = num_chars_stashed;
-    for (int i = 0; i < num_chars_stashed; ++i) {
+    for (size_t i = 0; i < num_chars_stashed; ++i) {
       serial_io_handler_posix_->chars_stashed_[i] = chars_stashed[i];
     }
   }
 
   void TestHelper(char* buffer,
-                  int buffer_len,
-                  int bytes_read,
+                  size_t buffer_len,
+                  size_t bytes_read,
                   ErrorDetectState error_detect_state_expected,
                   const char* chars_stashed_expected,
-                  int num_chars_stashed_expected,
+                  size_t num_chars_stashed_expected,
                   const char* buffer_expected,
-                  int new_bytes_read_expected,
+                  size_t new_bytes_read_expected,
                   bool break_detected_expected,
                   bool parity_error_detected_expected) {
     bool break_detected = false;
     bool parity_error_detected = false;
-    int new_bytes_read = serial_io_handler_posix_->CheckReceiveError(
+    size_t new_bytes_read = serial_io_handler_posix_->CheckReceiveError(
         base::make_span(reinterpret_cast<uint8_t*>(buffer), buffer_len),
         bytes_read, break_detected, parity_error_detected);
 
@@ -51,12 +51,12 @@ class SerialIoHandlerPosixTest : public testing::Test {
               serial_io_handler_posix_->error_detect_state_);
     EXPECT_EQ(num_chars_stashed_expected,
               serial_io_handler_posix_->num_chars_stashed_);
-    for (int i = 0; i < num_chars_stashed_expected; ++i) {
+    for (size_t i = 0; i < num_chars_stashed_expected; ++i) {
       EXPECT_EQ(chars_stashed_expected[i],
                 static_cast<char>(serial_io_handler_posix_->chars_stashed_[i]));
     }
     EXPECT_EQ(new_bytes_read_expected, new_bytes_read);
-    for (int i = 0; i < new_bytes_read_expected; ++i) {
+    for (size_t i = 0; i < new_bytes_read_expected; ++i) {
       EXPECT_EQ(buffer_expected[i], buffer[i]);
     }
     EXPECT_EQ(break_detected_expected, break_detected);
@@ -69,11 +69,11 @@ class SerialIoHandlerPosixTest : public testing::Test {
 
 // 'a' 'b' 'c'
 TEST_F(SerialIoHandlerPosixTest, NoErrorReadOnce) {
-  for (int buffer_len = 3; buffer_len <= 20; ++buffer_len) {
+  for (size_t buffer_len = 3; buffer_len <= 20; ++buffer_len) {
     Initialize(true, "", 0);
 
     char buffer[30] = {'a', 'b', 'c'};
-    int bytes_read = 3;
+    size_t bytes_read = 3;
     TestHelper(buffer, buffer_len, bytes_read, ErrorDetectState::NO_ERROR, "",
                0, "abc", 3, false, false);
   }
@@ -82,11 +82,11 @@ TEST_F(SerialIoHandlerPosixTest, NoErrorReadOnce) {
 // 'a' 'b'
 // 'c'
 TEST_F(SerialIoHandlerPosixTest, NoErrorReadTwiceBytesReadTwoAndOne) {
-  for (int buffer_len = 2; buffer_len <= 20; ++buffer_len) {
+  for (size_t buffer_len = 2; buffer_len <= 20; ++buffer_len) {
     Initialize(true, "", 0);
 
     char buffer_1[30] = {'a', 'b'};
-    int bytes_read = 2;
+    size_t bytes_read = 2;
     TestHelper(buffer_1, buffer_len, bytes_read, ErrorDetectState::NO_ERROR, "",
                0, "ab", 2, false, false);
 
@@ -100,11 +100,11 @@ TEST_F(SerialIoHandlerPosixTest, NoErrorReadTwiceBytesReadTwoAndOne) {
 // 'a'
 // 'b' c'
 TEST_F(SerialIoHandlerPosixTest, NoErrorReadTwiceBytesReadOneAndTwo) {
-  for (int buffer_len = 2; buffer_len <= 20; ++buffer_len) {
+  for (size_t buffer_len = 2; buffer_len <= 20; ++buffer_len) {
     Initialize(true, "", 0);
 
     char buffer_1[30] = {'a'};
-    int bytes_read = 1;
+    size_t bytes_read = 1;
     TestHelper(buffer_1, buffer_len, bytes_read, ErrorDetectState::NO_ERROR, "",
                0, "a", 1, false, false);
 
@@ -119,11 +119,11 @@ TEST_F(SerialIoHandlerPosixTest, NoErrorReadTwiceBytesReadOneAndTwo) {
 // 'b'
 // 'c'
 TEST_F(SerialIoHandlerPosixTest, NoErrorReadThreeTimes) {
-  for (int buffer_len = 1; buffer_len <= 20; ++buffer_len) {
+  for (size_t buffer_len = 1; buffer_len <= 20; ++buffer_len) {
     Initialize(true, "", 0);
 
     char buffer_1[30] = {'a'};
-    int bytes_read = 1;
+    size_t bytes_read = 1;
     TestHelper(buffer_1, buffer_len, bytes_read, ErrorDetectState::NO_ERROR, "",
                0, "a", 1, false, false);
 
@@ -141,11 +141,11 @@ TEST_F(SerialIoHandlerPosixTest, NoErrorReadThreeTimes) {
 
 // '\377' '\0' '\0'
 TEST_F(SerialIoHandlerPosixTest, BreakReadOnce) {
-  for (int buffer_len = 3; buffer_len <= 20; ++buffer_len) {
+  for (size_t buffer_len = 3; buffer_len <= 20; ++buffer_len) {
     Initialize(true, "", 0);
 
     char buffer[30] = {'\377', '\0', '\0'};
-    int bytes_read = 3;
+    size_t bytes_read = 3;
     TestHelper(buffer, buffer_len, bytes_read, ErrorDetectState::NO_ERROR, "",
                0, "", 0, true, false);
   }
@@ -153,11 +153,11 @@ TEST_F(SerialIoHandlerPosixTest, BreakReadOnce) {
 
 // 'a' 'b' '\377' '\0' '\0' 'c' 'd' 'e'
 TEST_F(SerialIoHandlerPosixTest, BreakReadOnceHasBytesBeforeAndAfterBreak) {
-  for (int buffer_len = 8; buffer_len <= 20; ++buffer_len) {
+  for (size_t buffer_len = 8; buffer_len <= 20; ++buffer_len) {
     Initialize(true, "", 0);
 
     char buffer[30] = {'a', 'b', '\377', '\0', '\0', 'c', 'd', 'e'};
-    int bytes_read = 8;
+    size_t bytes_read = 8;
     TestHelper(buffer, buffer_len, bytes_read, ErrorDetectState::NO_ERROR, "",
                0, "abcde", 5, true, false);
   }
@@ -166,11 +166,11 @@ TEST_F(SerialIoHandlerPosixTest, BreakReadOnceHasBytesBeforeAndAfterBreak) {
 // '\377' '\0'
 // '\0'
 TEST_F(SerialIoHandlerPosixTest, BreakReadTwiceBytesReadTwoAndOne) {
-  for (int buffer_len = 2; buffer_len <= 20; ++buffer_len) {
+  for (size_t buffer_len = 2; buffer_len <= 20; ++buffer_len) {
     Initialize(true, "", 0);
 
     char buffer_1[30] = {'\377', '\0'};
-    int bytes_read = 2;
+    size_t bytes_read = 2;
     TestHelper(buffer_1, buffer_len, bytes_read, ErrorDetectState::MARK_0_SEEN,
                "\377\0", 2, "", 0, false, false);
 
@@ -185,11 +185,11 @@ TEST_F(SerialIoHandlerPosixTest, BreakReadTwiceBytesReadTwoAndOne) {
 // '\0' 'd' 'e'
 TEST_F(SerialIoHandlerPosixTest,
        BreakReadTwiceBytesReadTwoAndOneHasBytesBeforeAndAfterBreak) {
-  for (int buffer_len = 5; buffer_len <= 20; ++buffer_len) {
+  for (size_t buffer_len = 5; buffer_len <= 20; ++buffer_len) {
     Initialize(true, "", 0);
 
     char buffer_1[30] = {'a', 'b', 'c', '\377', '\0'};
-    int bytes_read = 5;
+    size_t bytes_read = 5;
     TestHelper(buffer_1, buffer_len, bytes_read, ErrorDetectState::MARK_0_SEEN,
                "\377\0", 2, "abc", 3, false, false);
 
@@ -203,11 +203,11 @@ TEST_F(SerialIoHandlerPosixTest,
 // '\377'
 // '\0' '\0'
 TEST_F(SerialIoHandlerPosixTest, BreakReadTwiceBytesReadOneAndTwo) {
-  for (int buffer_len = 2; buffer_len <= 20; ++buffer_len) {
+  for (size_t buffer_len = 2; buffer_len <= 20; ++buffer_len) {
     Initialize(true, "", 0);
 
     char buffer_1[30] = {'\377'};
-    int bytes_read = 1;
+    size_t bytes_read = 1;
     TestHelper(buffer_1, buffer_len, bytes_read,
                ErrorDetectState::MARK_377_SEEN, "\377", 1, "", 0, false, false);
 
@@ -222,11 +222,11 @@ TEST_F(SerialIoHandlerPosixTest, BreakReadTwiceBytesReadOneAndTwo) {
 // '\0' '\0' 'c'
 TEST_F(SerialIoHandlerPosixTest,
        BreakReadTwiceBytesReadOneAndTwoHasBytesBeforeAndAfterBreak) {
-  for (int buffer_len = 3; buffer_len <= 20; ++buffer_len) {
+  for (size_t buffer_len = 3; buffer_len <= 20; ++buffer_len) {
     Initialize(true, "", 0);
 
     char buffer_1[30] = {'a', 'b', '\377'};
-    int bytes_read = 3;
+    size_t bytes_read = 3;
     TestHelper(buffer_1, buffer_len, bytes_read,
                ErrorDetectState::MARK_377_SEEN, "\377", 1, "ab", 2, false,
                false);
@@ -242,11 +242,11 @@ TEST_F(SerialIoHandlerPosixTest,
 // '\0'
 // '\0'
 TEST_F(SerialIoHandlerPosixTest, BreakReadThreeTimes) {
-  for (int buffer_len = 1; buffer_len <= 20; ++buffer_len) {
+  for (size_t buffer_len = 1; buffer_len <= 20; ++buffer_len) {
     Initialize(true, "", 0);
 
     char buffer_1[30] = {'\377'};
-    int bytes_read = 1;
+    size_t bytes_read = 1;
     TestHelper(buffer_1, buffer_len, bytes_read,
                ErrorDetectState::MARK_377_SEEN, "\377", 1, "", 0, false, false);
 
@@ -267,11 +267,11 @@ TEST_F(SerialIoHandlerPosixTest, BreakReadThreeTimes) {
 // '\0' 'b'
 TEST_F(SerialIoHandlerPosixTest,
        BreakReadThreeTimesHasBytesBeforeAndAfterBreak) {
-  for (int buffer_len = 2; buffer_len <= 20; ++buffer_len) {
+  for (size_t buffer_len = 2; buffer_len <= 20; ++buffer_len) {
     Initialize(true, "", 0);
 
     char buffer_1[30] = {'a', '\377'};
-    int bytes_read = 2;
+    size_t bytes_read = 2;
     TestHelper(buffer_1, buffer_len, bytes_read,
                ErrorDetectState::MARK_377_SEEN, "\377", 1, "a", 1, false,
                false);
@@ -290,11 +290,11 @@ TEST_F(SerialIoHandlerPosixTest,
 
 // '\377' '\0' 'a'
 TEST_F(SerialIoHandlerPosixTest, ParityErrorReadOnce) {
-  for (int buffer_len = 3; buffer_len <= 20; ++buffer_len) {
+  for (size_t buffer_len = 3; buffer_len <= 20; ++buffer_len) {
     Initialize(true, "", 0);
 
     char buffer[30] = {'\377', '\0', 'a'};
-    int bytes_read = 3;
+    size_t bytes_read = 3;
     TestHelper(buffer, buffer_len, bytes_read, ErrorDetectState::NO_ERROR, "",
                0, "", 0, false, true);
   }
@@ -303,11 +303,11 @@ TEST_F(SerialIoHandlerPosixTest, ParityErrorReadOnce) {
 // 'b' 'c' '\377' '\0' 'a' 'd'
 TEST_F(SerialIoHandlerPosixTest,
        ParityErrorReadOnceHasBytesBeforeAndAfterParityError) {
-  for (int buffer_len = 6; buffer_len <= 20; ++buffer_len) {
+  for (size_t buffer_len = 6; buffer_len <= 20; ++buffer_len) {
     Initialize(true, "", 0);
 
     char buffer[30] = {'b', 'c', '\377', '\0', 'a', 'd'};
-    int bytes_read = 6;
+    size_t bytes_read = 6;
     TestHelper(buffer, buffer_len, bytes_read, ErrorDetectState::NO_ERROR, "",
                0, "bcd", 3, false, true);
   }

@@ -38,10 +38,10 @@ class SerialIoHandlerPosix : public SerialIoHandler {
   bool SetControlSignals(
       const mojom::SerialHostControlSignals& control_signals) override;
   mojom::SerialConnectionInfoPtr GetPortInfo() const override;
-  int CheckReceiveError(base::span<uint8_t> buffer,
-                        int bytes_read,
-                        bool& break_detected,
-                        bool& parity_error_detected);
+  size_t CheckReceiveError(base::span<uint8_t> buffer,
+                           size_t bytes_read,
+                           bool& break_detected,
+                           bool& parity_error_detected);
 
  private:
   friend class SerialIoHandler;
@@ -69,7 +69,7 @@ class SerialIoHandlerPosix : public SerialIoHandler {
   ErrorDetectState error_detect_state_;
   bool parity_check_enabled_;
   uint8_t chars_stashed_[2];
-  int num_chars_stashed_;
+  size_t num_chars_stashed_;
 };
 
 }  // namespace device

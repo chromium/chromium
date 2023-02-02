@@ -338,7 +338,7 @@ void SerialIoHandlerPosix::AttemptRead() {
     } else {
       bool break_detected = false;
       bool parity_error_detected = false;
-      int new_bytes_read =
+      size_t new_bytes_read =
           CheckReceiveError(pending_read_buffer(), bytes_read, break_detected,
                             parity_error_detected);
 
@@ -572,14 +572,14 @@ mojom::SerialConnectionInfoPtr SerialIoHandlerPosix::GetPortInfo() const {
 //
 // break/parity error sequences are removed from the byte stream
 // '\377' '\377' sequence is replaced with '\377'
-int SerialIoHandlerPosix::CheckReceiveError(base::span<uint8_t> buffer,
-                                            int bytes_read,
-                                            bool& break_detected,
-                                            bool& parity_error_detected) {
-  int new_bytes_read = num_chars_stashed_;
-  DCHECK_LE(new_bytes_read, 2);
+size_t SerialIoHandlerPosix::CheckReceiveError(base::span<uint8_t> buffer,
+                                               size_t bytes_read,
+                                               bool& break_detected,
+                                               bool& parity_error_detected) {
+  size_t new_bytes_read = num_chars_stashed_;
+  DCHECK_LE(new_bytes_read, 2u);
 
-  for (int i = 0; i < bytes_read; ++i) {
+  for (size_t i = 0; i < bytes_read; ++i) {
     uint8_t ch = buffer[i];
     if (new_bytes_read == 0) {
       chars_stashed_[0] = ch;
@@ -596,7 +596,7 @@ int SerialIoHandlerPosix::CheckReceiveError(base::span<uint8_t> buffer,
         }
         break;
       case ErrorDetectState::MARK_377_SEEN:
-        DCHECK_GE(new_bytes_read, 2);
+        DCHECK_GE(new_bytes_read, 2u);
         if (ch == 0) {
           error_detect_state_ = ErrorDetectState::MARK_0_SEEN;
         } else {
@@ -612,7 +612,7 @@ int SerialIoHandlerPosix::CheckReceiveError(base::span<uint8_t> buffer,
         }
         break;
       case ErrorDetectState::MARK_0_SEEN:
-        DCHECK_GE(new_bytes_read, 3);
+        DCHECK_GE(new_bytes_read, 3u);
         if (ch == 0) {
           break_detected = true;
           new_bytes_read -= 3;
@@ -670,7 +670,7 @@ int SerialIoHandlerPosix::CheckReceiveError(base::span<uint8_t> buffer,
     // right shift two bytes to store bytes from chars_stashed_[]
     memmove(&buffer[2], &buffer[0], new_bytes_read - 2);
   }
-  memcpy(&buffer[0], chars_stashed_, std::min(new_bytes_read, 2));
+  memcpy(&buffer[0], chars_stashed_, std::min<size_t>(new_bytes_read, 2));
   memcpy(chars_stashed_, tmp, num_chars_stashed_);
   return new_bytes_read;
 }
