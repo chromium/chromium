@@ -42,7 +42,6 @@
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/touch_to_fill/touch_to_fill_webauthn_credential.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller_impl.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
@@ -72,6 +71,7 @@
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/http_auth_manager_impl.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -468,32 +468,17 @@ void ChromePasswordManagerClient::ShowPasswordManagerErrorMessage(
 void ChromePasswordManagerClient::ShowTouchToFill(
     PasswordManagerDriver* driver,
     autofill::mojom::SubmissionReadinessState submission_readiness) {
-  std::vector<TouchToFillWebAuthnCredential> webauthn_credentials;
   auto* webauthn_delegate = GetWebAuthnCredentialsDelegateForDriver(driver);
-  if (webauthn_delegate) {
-    const absl::optional<std::vector<autofill::Suggestion>>& suggestions =
-        webauthn_delegate->GetWebAuthnSuggestions();
-    if (suggestions.has_value()) {
-      base::ranges::transform(*suggestions,
-                              std::back_inserter(webauthn_credentials),
-                              [](const auto& suggestion) {
-                                return TouchToFillWebAuthnCredential(
-                                    TouchToFillWebAuthnCredential::Username(
-                                        suggestion.main_text.value),
-                                    TouchToFillWebAuthnCredential::BackendId(
-                                        (suggestion.template GetPayload<
-                                             autofill::Suggestion::BackendId>())
-                                            .value()));
-                              });
-    }
+  std::vector<password_manager::PasskeyCredential> passkeys;
+  if (webauthn_delegate && webauthn_delegate->GetPasskeys().has_value()) {
+    passkeys = *webauthn_delegate->GetPasskeys();
   }
-
   GetOrCreateTouchToFillController()->Show(
       credential_cache_
           .GetCredentialStore(url::Origin::Create(
               driver->GetLastCommittedURL().DeprecatedGetOriginAsURL()))
           .GetCredentials(),
-      webauthn_credentials,
+      passkeys,
       std::make_unique<TouchToFillControllerAutofillDelegate>(
           this, GetBiometricAuthenticator(), driver->AsWeakPtr(),
           submission_readiness));

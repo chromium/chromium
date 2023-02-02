@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -33,10 +34,10 @@ class ChromeWebAuthnCredentialsDelegate
 
   // password_manager::WebAuthnCredentialsDelegate:
   void LaunchWebAuthnFlow() override;
-  void SelectWebAuthnCredential(std::string backend_id) override;
-  const absl::optional<std::vector<autofill::Suggestion>>&
-  GetWebAuthnSuggestions() const override;
-  void RetrieveWebAuthnSuggestions(base::OnceClosure callback) override;
+  void SelectPasskey(const std::string& backend_id) override;
+  const absl::optional<std::vector<password_manager::PasskeyCredential>>&
+  GetPasskeys() const override;
+  void RetrievePasskeys(base::OnceClosure callback) override;
 
   // Method for providing a list of WebAuthn user entities that can be provided
   // as autofill suggestions. This is called when a WebAuthn Conditional UI
@@ -52,14 +53,13 @@ class ChromeWebAuthnCredentialsDelegate
   const raw_ptr<content::WebContents> web_contents_;
 
  private:
-  // List of autofill suggestions populated from an authenticator from a call
-  // to RetrieveWebAuthnSuggestions, and returned to the client via
-  // GetWebAuthnSuggestions.
-  // |suggestions_| is nullopt until populated by a WebAuthn request, and reset
+  // List of passkeys populated from an authenticator from a call to
+  // RetrievePasskeys, and returned to the client via GetPasskeys.
+  // |passkeys_| is nullopt until populated by a WebAuthn request, and reset
   // to nullopt when the request is cancelled.
-  absl::optional<std::vector<autofill::Suggestion>> suggestions_;
+  absl::optional<std::vector<password_manager::PasskeyCredential>> passkeys_;
 
-  base::OnceClosure retrieve_suggestions_callback_;
+  base::OnceClosure retrieve_passkeys_callback_;
 
   base::WeakPtrFactory<ChromeWebAuthnCredentialsDelegate> weak_ptr_factory_{
       this};

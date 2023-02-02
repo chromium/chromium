@@ -180,8 +180,7 @@ PasswordFormManager::PasswordFormManager(
     WebAuthnCredentialsDelegate* delegate =
         client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
     if (delegate) {
-      delegate->RetrieveWebAuthnSuggestions(
-          async_predictions_waiter_.CreateClosure());
+      delegate->RetrievePasskeys(async_predictions_waiter_.CreateClosure());
     }
   }
   votes_uploader_.StoreInitialFieldValues(*observed_form());
@@ -732,7 +731,7 @@ bool PasswordFormManager::WebAuthnCredentialsAvailable() const {
   WebAuthnCredentialsDelegate* delegate =
       client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
   if (delegate) {
-    return delegate->GetWebAuthnSuggestions().has_value();
+    return delegate->GetPasskeys().has_value();
   }
   return false;
 }

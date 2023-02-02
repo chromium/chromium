@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <iterator>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -478,7 +479,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           password_client_->IsIncognito());
       password_client_
           ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
-          ->SelectWebAuthnCredential(
+          ->SelectPasskey(
               absl::holds_alternative<autofill::Suggestion::BackendId>(
                   suggestion.payload)
                   ? absl::get<autofill::Suggestion::BackendId>(
@@ -721,24 +722,35 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
   WebAuthnCredentialsDelegate* delegate =
       password_client_->GetWebAuthnCredentialsDelegateForDriver(
           password_manager_driver_);
-  absl::optional<std::vector<autofill::Suggestion>> webauthn_suggestions;
-  if (show_webauthn_credentials && delegate) {
-    webauthn_suggestions = delegate->GetWebAuthnSuggestions();
-  }
-  if (webauthn_suggestions.has_value()) {
-    for (auto& suggestion : *webauthn_suggestions) {
-      suggestion.custom_icon = page_favicon_;
-    }
-    suggestions.insert(suggestions.end(), webauthn_suggestions->begin(),
-                       webauthn_suggestions->end());
+  // |uses_passkeys| is used on desktop only to offer a way to sign in with a
+  // passkey on another device. On Android this is always false. It also will
+  // not be set on iOS since |show_webauthn_credentials| is always false.
+  bool uses_passkeys = false;
+  if (show_webauthn_credentials && delegate &&
+      delegate->GetPasskeys().has_value()) {
+#if !BUILDFLAG(IS_ANDROID)
+    uses_passkeys = true;
+#endif
+    std::u16string label = l10n_util::GetStringUTF16(
+        password_manager::GetPlatformAuthenticatorLabel());
+    base::ranges::transform(
+        *delegate->GetPasskeys(), std::back_inserter(suggestions),
+        [label, this](const auto& passkey) {
+          autofill::Suggestion suggestion(passkey.username().value());
+          suggestion.icon = "globeIcon";
+          suggestion.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
+          suggestion.custom_icon = page_favicon_;
+          suggestion.payload =
+              autofill::Suggestion::BackendId(passkey.id().value());
+          if (!label.empty()) {
+            suggestion.labels = {{autofill::Suggestion::Text(label)}};
+          }
+          return suggestion;
+        });
   }
 
   if (!fill_data_ && !show_account_storage_optin &&
-      !show_account_storage_resignin &&
-#if !BUILDFLAG(IS_ANDROID)
-      !webauthn_suggestions.has_value() &&
-#endif  // !BUILDFLAG(IS_ANDROID)
-      suggestions.empty()) {
+      !show_account_storage_resignin && !uses_passkeys && suggestions.empty()) {
     // Probably the credential was deleted in the mean time.
     return suggestions;
   }
@@ -752,10 +764,10 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
 
 #if !BUILDFLAG(IS_ANDROID)
   // Add "Sign in with another device" button.
-  if (webauthn_suggestions.has_value()) {
+  if (uses_passkeys) {
     suggestions.push_back(CreateWebAuthnEntry());
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 
   // Add password generation entry, if available.
   if (offers_generation) {

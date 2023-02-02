@@ -10,14 +10,15 @@
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller_delegate.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view_factory.h"
-#include "chrome/browser/touch_to_fill/touch_to_fill_webauthn_credential.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/url_formatter/elide_url.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace {
+using password_manager::PasskeyCredential;
 using password_manager::UiCredential;
 
 std::vector<UiCredential> SortCredentials(
@@ -42,13 +43,13 @@ TouchToFillController::~TouchToFillController() = default;
 
 void TouchToFillController::Show(
     base::span<const UiCredential> credentials,
-    base::span<TouchToFillWebAuthnCredential> webauthn_credentials,
+    base::span<PasskeyCredential> passkey_credentials,
     std::unique_ptr<TouchToFillControllerDelegate> delegate) {
   DCHECK(!delegate_);
   delegate_ = std::move(delegate);
 
-  delegate_->OnShow(credentials, webauthn_credentials);
-  if (credentials.empty() && webauthn_credentials.empty()) {
+  delegate_->OnShow(credentials, passkey_credentials);
+  if (credentials.empty() && passkey_credentials.empty()) {
     // Ideally this should never happen. However, in case we do end up invoking
     // Show() without credentials, we should not show Touch To Fill to the user
     // and treat this case as dismissal, in order to restore the soft keyboard.
@@ -64,7 +65,7 @@ void TouchToFillController::Show(
       url,
       TouchToFillView::IsOriginSecure(
           network::IsOriginPotentiallyTrustworthy(url::Origin::Create(url))),
-      SortCredentials(credentials), webauthn_credentials,
+      SortCredentials(credentials), passkey_credentials,
       delegate_->ShouldTriggerSubmission());
 }
 
@@ -77,11 +78,11 @@ void TouchToFillController::OnCredentialSelected(
                                  base::Unretained(this)));
 }
 
-void TouchToFillController::OnWebAuthnCredentialSelected(
-    const TouchToFillWebAuthnCredential& credential) {
+void TouchToFillController::OnPasskeyCredentialSelected(
+    const PasskeyCredential& credential) {
   view_.reset();
   // Unretained is safe here because TouchToFillController owns the delegate.
-  delegate_->OnWebAuthnCredentialSelected(
+  delegate_->OnPasskeyCredentialSelected(
       credential, base::BindOnce(&TouchToFillController::ActionCompleted,
                                  base::Unretained(this)));
 }

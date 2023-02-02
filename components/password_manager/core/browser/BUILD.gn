@@ -131,6 +131,8 @@ static_library("browser") {
     "old_google_credentials_cleaner.h",
     "origin_credential_store.cc",
     "origin_credential_store.h",
+    "passkey_credential.cc",
+    "passkey_credential.h",
     "password_access_authenticator.cc",
     "password_access_authenticator.h",
     "password_account_storage_settings_watcher.cc",

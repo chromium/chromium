@@ -10,11 +10,11 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace password_manager {
+class PasskeyCredential;
 class UiCredential;
 }
 
 class GURL;
-class TouchToFillWebAuthnCredential;
 
 // Delegate interface for TouchToFillController, to be implemented by
 // owner-specified classes.
@@ -25,7 +25,7 @@ class TouchToFillControllerDelegate {
   // Called by the controller before the view is shown.
   virtual void OnShow(
       base::span<const password_manager::UiCredential> credentials,
-      base::span<TouchToFillWebAuthnCredential> webauthn_credentials) = 0;
+      base::span<password_manager::PasskeyCredential> passkey_credentials) = 0;
 
   // Informs the controller that the user has made a selection. Invokes both
   // FillSuggestion() and TouchToFillDismissed() on |driver_|. No-op if
@@ -34,10 +34,10 @@ class TouchToFillControllerDelegate {
       const password_manager::UiCredential& credential,
       base::OnceClosure action_completed) = 0;
 
-  // Informs the controller that the user has made a selection. Invokes
+  // Informs the controller that the user has selected a passkey. Invokes
   // TouchToFillDismissed() and initiates a WebAuthn sign-in.
-  virtual void OnWebAuthnCredentialSelected(
-      const TouchToFillWebAuthnCredential& credential,
+  virtual void OnPasskeyCredentialSelected(
+      const password_manager::PasskeyCredential& credential,
       base::OnceClosure action_completed) = 0;
 
   // Informs the controller that the user has tapped the "Manage Passwords"

@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -50,8 +51,8 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
             features::kPasswordReuseDetectionEnabled)) {
       return;
     }
-    ON_CALL(webauthn_credentials_delegate_, GetWebAuthnSuggestions)
-        .WillByDefault(testing::ReturnRef(webauthn_suggestions_));
+    ON_CALL(webauthn_credentials_delegate_, GetPasskeys)
+        .WillByDefault(testing::ReturnRef(passkeys_));
 
     // Initializes and configures prefs.
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
@@ -100,7 +101,7 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   scoped_refptr<testing::NiceMock<MockPasswordStoreInterface>> password_store_ =
       new testing::NiceMock<MockPasswordStoreInterface>;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
-  absl::optional<std::vector<autofill::Suggestion>> webauthn_suggestions_;
+  absl::optional<std::vector<PasskeyCredential>> passkeys_;
   bool is_incognito_ = false;
   raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;

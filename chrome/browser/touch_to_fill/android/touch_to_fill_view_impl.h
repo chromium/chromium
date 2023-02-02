@@ -14,6 +14,11 @@ namespace gfx {
 class Image;
 }
 
+namespace password_manager {
+class PasskeyCredential;
+class UiCredential;
+}  // namespace password_manager
+
 class TouchToFillController;
 
 // This class provides an implementation of the TouchToFillView interface and
@@ -28,7 +33,7 @@ class TouchToFillViewImpl : public TouchToFillView {
       const GURL& url,
       IsOriginSecure is_origin_secure,
       base::span<const password_manager::UiCredential> credentials,
-      base::span<const TouchToFillWebAuthnCredential> webauthn_credentials,
+      base::span<const password_manager::PasskeyCredential> passkey_credentials,
       bool trigger_submission) override;
   void OnCredentialSelected(
       const password_manager::UiCredential& credential) override;

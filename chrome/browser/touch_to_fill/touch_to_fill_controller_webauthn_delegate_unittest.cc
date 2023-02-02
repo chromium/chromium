@@ -9,10 +9,10 @@
 #include "base/base64.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
-#include "chrome/browser/touch_to_fill/touch_to_fill_webauthn_credential.h"
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
@@ -22,6 +22,7 @@
 
 namespace {
 
+using password_manager::PasskeyCredential;
 using password_manager::UiCredential;
 using IsOriginSecure = TouchToFillView::IsOriginSecure;
 using ::testing::ElementsAreArray;
@@ -72,7 +73,7 @@ struct MockTouchToFillView : public TouchToFillView {
               (const GURL&,
                IsOriginSecure,
                base::span<const UiCredential>,
-               base::span<const TouchToFillWebAuthnCredential>,
+               base::span<const PasskeyCredential>,
                bool),
               (override));
   MOCK_METHOD(void, OnCredentialSelected, (const UiCredential&));
@@ -134,10 +135,9 @@ class TouchToFillControllerWebAuthnTest
 };
 
 TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectCredential) {
-  TouchToFillWebAuthnCredential credential(
-      (TouchToFillWebAuthnCredential::Username(UserName1())),
-      TouchToFillWebAuthnCredential::BackendId(UserId1AsString()));
-  std::vector<TouchToFillWebAuthnCredential> credentials({credential});
+  PasskeyCredential credential((PasskeyCredential::Username(UserName1())),
+                               PasskeyCredential::BackendId(UserId1AsString()));
+  std::vector<PasskeyCredential> credentials({credential});
 
   EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                            ElementsAreArray(std::vector<UiCredential>()),
@@ -147,18 +147,17 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectCredential) {
                                   MakeTouchToFillControllerDelegate());
 
   EXPECT_CALL(request_delegate(), OnWebAuthnAccountSelected(UserId1AsVector()));
-  touch_to_fill_controller().OnWebAuthnCredentialSelected(credentials[0]);
+  touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[0]);
 }
 
 TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectWithMultipleCredential) {
-  TouchToFillWebAuthnCredential credential1(
-      (TouchToFillWebAuthnCredential::Username(UserName1())),
-      TouchToFillWebAuthnCredential::BackendId(UserId1AsString()));
-  TouchToFillWebAuthnCredential credential2(
-      (TouchToFillWebAuthnCredential::Username(UserName2())),
-      TouchToFillWebAuthnCredential::BackendId(UserId2AsString()));
-  std::vector<TouchToFillWebAuthnCredential> credentials(
-      {credential1, credential2});
+  PasskeyCredential::Username passkeyName(UserName1());
+  PasskeyCredential credential1(
+      passkeyName, PasskeyCredential::BackendId(UserId1AsString()));
+  PasskeyCredential credential2(
+      (PasskeyCredential::Username(UserName2())),
+      PasskeyCredential::BackendId(UserId2AsString()));
+  std::vector<PasskeyCredential> credentials({credential1, credential2});
 
   EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                            ElementsAreArray(std::vector<UiCredential>()),
@@ -168,14 +167,14 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectWithMultipleCredential) {
                                   MakeTouchToFillControllerDelegate());
 
   EXPECT_CALL(request_delegate(), OnWebAuthnAccountSelected(UserId2AsVector()));
-  touch_to_fill_controller().OnWebAuthnCredentialSelected(credentials[1]);
+  touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[1]);
 }
 
 TEST_F(TouchToFillControllerWebAuthnTest, ShowAndCancel) {
-  TouchToFillWebAuthnCredential credential(
-      (TouchToFillWebAuthnCredential::Username(UserName1())),
-      TouchToFillWebAuthnCredential::BackendId(UserId1AsString()));
-  std::vector<TouchToFillWebAuthnCredential> credentials({credential});
+  PasskeyCredential::Username passkeyName(UserName1());
+  PasskeyCredential credential(passkeyName,
+                               PasskeyCredential::BackendId(UserId1AsString()));
+  std::vector<PasskeyCredential> credentials({credential});
 
   EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                            ElementsAreArray(std::vector<UiCredential>()),

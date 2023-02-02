@@ -15,11 +15,11 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace password_manager {
+class PasskeyCredential;
 class UiCredential;
 }  // namespace password_manager
 
 class TouchToFillControllerDelegate;
-class TouchToFillWebAuthnCredential;
 
 class TouchToFillController {
  public:
@@ -29,9 +29,9 @@ class TouchToFillController {
   ~TouchToFillController();
 
   // Instructs the controller to show the provided |credentials| and
-  // |webauthn_credentials| to the user.
+  // |passkey_credentials| to the user.
   void Show(base::span<const password_manager::UiCredential> credentials,
-            base::span<TouchToFillWebAuthnCredential> webauthn_credentials,
+            base::span<password_manager::PasskeyCredential> passkey_credentials,
             std::unique_ptr<TouchToFillControllerDelegate> delegate);
 
   // Informs the controller that the user has made a selection. Invokes both
@@ -39,10 +39,10 @@ class TouchToFillController {
   // repeatedly.
   void OnCredentialSelected(const password_manager::UiCredential& credential);
 
-  // Informs the controller that the user has made a selection. Invokes
+  // Informs the controller that the user has selected a passkey. Invokes
   // TouchToFillDismissed() and initiates a WebAuthn sign-in.
-  void OnWebAuthnCredentialSelected(
-      const TouchToFillWebAuthnCredential& credential);
+  void OnPasskeyCredentialSelected(
+      const password_manager::PasskeyCredential& credential);
 
   // Informs the controller that the user has tapped the "Manage Passwords"
   // button. This will open the password preferences.

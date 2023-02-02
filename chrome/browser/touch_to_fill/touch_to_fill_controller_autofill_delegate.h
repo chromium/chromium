@@ -18,6 +18,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace password_manager {
+class PasskeyCredential;
 class PasswordManagerClient;
 class PasswordManagerDriver;
 class UiCredential;
@@ -25,7 +26,6 @@ class UiCredential;
 
 class ChromePasswordManagerClient;
 class TouchToFillController;
-class TouchToFillWebAuthnCredential;
 
 // Delegate interface for TouchToFillController being used in an autofill
 // context.
@@ -44,7 +44,7 @@ class TouchToFillControllerAutofillDelegate
     kSelectedCredential = 0,
     kDismissed = 1,
     kSelectedManagePasswords = 2,
-    kSelectedWebAuthnCredential = 3,
+    kSelectedPasskeyCredential = 3,
   };
 
   // The final outcome that closes the Touch To Fill sheet.
@@ -57,8 +57,8 @@ class TouchToFillControllerAutofillDelegate
     kSheetDismissed = 1,
     kReauthenticationFailed = 2,
     kManagePasswordsSelected = 3,
-    kWebAuthnCredentialSelected = 4,
-    kMaxValue = kWebAuthnCredentialSelected,
+    kPasskeyCredentialSelected = 4,
+    kMaxValue = kPasskeyCredentialSelected,
   };
 
   // No-op constructor for tests.
@@ -81,13 +81,13 @@ class TouchToFillControllerAutofillDelegate
   ~TouchToFillControllerAutofillDelegate() override;
 
   // TouchToFillControllerDelegate:
-  void OnShow(
-      base::span<const password_manager::UiCredential> credentials,
-      base::span<TouchToFillWebAuthnCredential> webauthn_credentials) override;
+  void OnShow(base::span<const password_manager::UiCredential> credentials,
+              base::span<password_manager::PasskeyCredential>
+                  passkey_credentials) override;
   void OnCredentialSelected(const password_manager::UiCredential& credential,
                             base::OnceClosure action_completed) override;
-  void OnWebAuthnCredentialSelected(
-      const TouchToFillWebAuthnCredential& credential,
+  void OnPasskeyCredentialSelected(
+      const password_manager::PasskeyCredential& credential,
       base::OnceClosure action_completed) override;
   void OnManagePasswordsSelected(base::OnceClosure action_completed) override;
   void OnDismiss(base::OnceClosure action_completed) override;

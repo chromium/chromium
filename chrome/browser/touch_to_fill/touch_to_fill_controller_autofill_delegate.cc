@@ -11,10 +11,10 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
-#include "chrome/browser/touch_to_fill/touch_to_fill_webauthn_credential.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -96,7 +96,7 @@ TouchToFillControllerAutofillDelegate::
 
 void TouchToFillControllerAutofillDelegate::OnShow(
     base::span<const password_manager::UiCredential> credentials,
-    base::span<TouchToFillWebAuthnCredential> webauthn_credentials) {
+    base::span<password_manager::PasskeyCredential> passkey_credentials) {
   DCHECK(driver_);
 
   trigger_submission_ = ::ShouldTriggerSubmission(submission_readiness_,
@@ -111,7 +111,7 @@ void TouchToFillControllerAutofillDelegate::OnShow(
       .Record(ukm::UkmRecorder::Get());
 
   base::UmaHistogramCounts100("PasswordManager.TouchToFill.NumCredentialsShown",
-                              credentials.size() + webauthn_credentials.size());
+                              credentials.size() + passkey_credentials.size());
 }
 
 void TouchToFillControllerAutofillDelegate::OnCredentialSelected(
@@ -138,16 +138,16 @@ void TouchToFillControllerAutofillDelegate::OnCredentialSelected(
       /*use_last_valid_auth=*/true);
 }
 
-void TouchToFillControllerAutofillDelegate::OnWebAuthnCredentialSelected(
-    const TouchToFillWebAuthnCredential& credential,
+void TouchToFillControllerAutofillDelegate::OnPasskeyCredentialSelected(
+    const password_manager::PasskeyCredential& credential,
     base::OnceClosure action_complete) {
   if (!driver_)
     return;
 
   password_client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get())
-      ->SelectWebAuthnCredential(credential.id().value());
+      ->SelectPasskey(credential.id().value());
 
-  CleanUpDriverAndReportOutcome(TouchToFillOutcome::kWebAuthnCredentialSelected,
+  CleanUpDriverAndReportOutcome(TouchToFillOutcome::kPasskeyCredentialSelected,
                                 /*show_virtual_keyboard=*/false);
   std::move(action_complete).Run();
 }

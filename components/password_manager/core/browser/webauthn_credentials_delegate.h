@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
@@ -24,22 +24,21 @@ class WebAuthnCredentialsDelegate {
   // security keys to sign-in.
   virtual void LaunchWebAuthnFlow() = 0;
 
-  // Called when the user selects a WebAuthn credential from the autofill
-  // suggestion list. The selected credential must be from the list
-  // returned by the last call to GetWebAuthnSuggestions().
-  virtual void SelectWebAuthnCredential(std::string backend_id) = 0;
+  // Called when the user selects a passkey from the autofill suggestion list
+  // The selected credential must be from the list returned by the last call to
+  // GetPasskeys().
+  virtual void SelectPasskey(const std::string& backend_id) = 0;
 
-  // Returns the list of eligible WebAuthn credentials to fulfill an ongoing
-  // WebAuthn request if one has been received and is active. Returns
-  // absl::nullopt otherwise.
-  virtual const absl::optional<std::vector<autofill::Suggestion>>&
-  GetWebAuthnSuggestions() const = 0;
+  // Returns the list of eligible passkeys to fulfill an ongoing WebAuthn
+  // request if one has been received and is active. Returns absl::nullopt
+  // otherwise.
+  virtual const absl::optional<std::vector<PasskeyCredential>>& GetPasskeys()
+      const = 0;
 
-  // Initiates retrieval of discoverable WebAuthn credentials from the platform
-  // authenticator. |callback| is invoked when credentials have been received,
-  // which could be immediately.
-  virtual void RetrieveWebAuthnSuggestions(
-      base::OnceCallback<void()> callback) = 0;
+  // Initiates retrieval of passkeys from the platform authenticator.
+  // |callback| is invoked when credentials have been received, which could be
+  // immediately.
+  virtual void RetrievePasskeys(base::OnceCallback<void()> callback) = 0;
 };
 
 }  // namespace password_manager

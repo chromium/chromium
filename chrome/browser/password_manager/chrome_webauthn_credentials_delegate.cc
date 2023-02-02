@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -23,6 +24,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
 #endif
+
+using password_manager::PasskeyCredential;
 
 ChromeWebAuthnCredentialsDelegate::ChromeWebAuthnCredentialsDelegate(
     content::WebContents* web_contents)
@@ -42,8 +45,8 @@ void ChromeWebAuthnCredentialsDelegate::LaunchWebAuthnFlow() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
-    std::string backend_id) {
+void ChromeWebAuthnCredentialsDelegate::SelectPasskey(
+    const std::string& backend_id) {
   // `backend_id` is the base64-encoded credential ID. See
   // `OnCredentialsReceived()` for where these are encoded.
   absl::optional<std::vector<uint8_t>> selected_credential_id =
@@ -68,25 +71,25 @@ void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-const absl::optional<std::vector<autofill::Suggestion>>&
-ChromeWebAuthnCredentialsDelegate::GetWebAuthnSuggestions() const {
-  return suggestions_;
+const absl::optional<std::vector<PasskeyCredential>>&
+ChromeWebAuthnCredentialsDelegate::GetPasskeys() const {
+  return passkeys_;
 }
 
-void ChromeWebAuthnCredentialsDelegate::RetrieveWebAuthnSuggestions(
+void ChromeWebAuthnCredentialsDelegate::RetrievePasskeys(
     base::OnceClosure callback) {
-  if (suggestions_.has_value()) {
+  if (passkeys_.has_value()) {
     // Entries were already populated from the WebAuthn request.
     std::move(callback).Run();
     return;
   }
 
-  retrieve_suggestions_callback_ = std::move(callback);
+  retrieve_passkeys_callback_ = std::move(callback);
 }
 
 void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
     const std::vector<device::DiscoverableCredentialMetadata>& credentials) {
-  std::vector<autofill::Suggestion> suggestions;
+  std::vector<PasskeyCredential> passkeys;
 
   for (const auto& credential : credentials) {
     std::u16string name;
@@ -95,30 +98,21 @@ void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
     } else {
       name = l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
     }
-    autofill::Suggestion suggestion(std::move(name));
-
-    std::u16string label = l10n_util::GetStringUTF16(
-        password_manager::GetPlatformAuthenticatorLabel());
-    if (!label.empty()) {
-      suggestion.labels = {{autofill::Suggestion::Text(label)}};
-    }
-    suggestion.icon = "globeIcon";
-    suggestion.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
-    suggestion.payload =
-        autofill::Suggestion::BackendId(base::Base64Encode(credential.cred_id));
-    suggestions.push_back(std::move(suggestion));
+    passkeys.emplace_back(
+        PasskeyCredential::Username(name),
+        PasskeyCredential::BackendId(base::Base64Encode(credential.cred_id)));
   }
 
-  suggestions_ = std::move(suggestions);
+  passkeys_ = std::move(passkeys);
 
-  if (retrieve_suggestions_callback_) {
-    std::move(retrieve_suggestions_callback_).Run();
+  if (retrieve_passkeys_callback_) {
+    std::move(retrieve_passkeys_callback_).Run();
   }
 }
 
 void ChromeWebAuthnCredentialsDelegate::NotifyWebAuthnRequestAborted() {
-  suggestions_ = absl::nullopt;
-  if (retrieve_suggestions_callback_) {
-    std::move(retrieve_suggestions_callback_).Run();
+  passkeys_ = absl::nullopt;
+  if (retrieve_passkeys_callback_) {
+    std::move(retrieve_passkeys_callback_).Run();
   }
 }

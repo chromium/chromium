@@ -11,10 +11,10 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
-#include "chrome/browser/touch_to_fill/touch_to_fill_webauthn_credential.h"
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -27,7 +27,7 @@ TouchToFillControllerWebAuthnDelegate::
 
 void TouchToFillControllerWebAuthnDelegate::OnShow(
     base::span<const password_manager::UiCredential> credentials,
-    base::span<TouchToFillWebAuthnCredential> webauthn_credentials) {}
+    base::span<password_manager::PasskeyCredential> webauthn_credentials) {}
 
 void TouchToFillControllerWebAuthnDelegate::OnCredentialSelected(
     const password_manager::UiCredential& credential,
@@ -35,8 +35,8 @@ void TouchToFillControllerWebAuthnDelegate::OnCredentialSelected(
   NOTIMPLEMENTED();
 }
 
-void TouchToFillControllerWebAuthnDelegate::OnWebAuthnCredentialSelected(
-    const TouchToFillWebAuthnCredential& credential,
+void TouchToFillControllerWebAuthnDelegate::OnPasskeyCredentialSelected(
+    const password_manager::PasskeyCredential& credential,
     base::OnceClosure action_complete) {
   request_delegate_->OnWebAuthnAccountSelected(
       *base::Base64Decode(credential.id().value()));

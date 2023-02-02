@@ -12,11 +12,11 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace password_manager {
+class PasskeyCredential;
 class UiCredential;
 }  // namespace password_manager
 
 class WebAuthnRequestDelegateAndroid;
-class TouchToFillWebAuthnCredential;
 
 // Derived TouchToFillController class specific for use with non-conditional
 // WebAuthn sign-in. It does not integrate with the password manager because it
@@ -37,13 +37,13 @@ class TouchToFillControllerWebAuthnDelegate
   ~TouchToFillControllerWebAuthnDelegate() override;
 
   // TouchToFillControllerDelegate:
-  void OnShow(
-      base::span<const password_manager::UiCredential> credentials,
-      base::span<TouchToFillWebAuthnCredential> webauthn_credentials) override;
+  void OnShow(base::span<const password_manager::UiCredential> credentials,
+              base::span<password_manager::PasskeyCredential>
+                  passkey_credentials) override;
   void OnCredentialSelected(const password_manager::UiCredential& credential,
                             base::OnceClosure action_completed) override;
-  void OnWebAuthnCredentialSelected(
-      const TouchToFillWebAuthnCredential& credential,
+  void OnPasskeyCredentialSelected(
+      const password_manager::PasskeyCredential& credential,
       base::OnceClosure action_completed) override;
   void OnManagePasswordsSelected(base::OnceClosure action_completed) override;
   void OnDismiss(base::OnceClosure action_completed) override;
