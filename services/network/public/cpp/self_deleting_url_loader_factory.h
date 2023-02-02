@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_SELF_DELETING_URL_LOADER_FACTORY_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_SELF_DELETING_URL_LOADER_FACTORY_H_
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -54,7 +55,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) SelfDeletingURLLoaderFactory
   // `mojo::ReportBadMessage()` function, since calling this method promptly
   // disconnects the receiver, preventing further (potentially bad) messages
   // from being processed.
-  void ReportBadMessage(const std::string& message);
+  NOT_TAIL_CALLED void ReportBadMessage(const std::string& message);
 
   THREAD_CHECKER(thread_checker_);
 

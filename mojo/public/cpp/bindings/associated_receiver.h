@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -296,7 +297,7 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // message dispatch. If you need to do asynchronous work before determining
   // the legitimacy of a message, use GetBadMessageCallback() and retain its
   // result until ready to invoke or discard it.
-  void ReportBadMessage(const std::string& error) {
+  NOT_TAIL_CALLED void ReportBadMessage(const std::string& error) {
     GetBadMessageCallback().Run(error);
   }
 

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
@@ -289,7 +290,7 @@ class Receiver {
   // message dispatch. If you need to do asynchronous work before determining
   // the legitimacy of a message, use GetBadMessageCallback() and retain its
   // result until ready to invoke or discard it.
-  void ReportBadMessage(base::StringPiece error) {
+  NOT_TAIL_CALLED void ReportBadMessage(base::StringPiece error) {
     GetBadMessageCallback().Run(error);
   }
 

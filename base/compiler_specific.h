@@ -64,7 +64,7 @@
 // folding of multiple identical caller functions into a single signature. To
 // prevent code folding, see NO_CODE_FOLDING() in base/debug/alias.h.
 // Use like:
-//   void NOT_TAIL_CALLED FooBar();
+//   NOT_TAIL_CALLED void FooBar();
 #if defined(__clang__) && HAS_ATTRIBUTE(not_tail_called)
 #define NOT_TAIL_CALLED __attribute__((not_tail_called))
 #else

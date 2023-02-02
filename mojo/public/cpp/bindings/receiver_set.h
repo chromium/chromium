@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -347,7 +348,7 @@ class ReceiverSetBase {
   // asynchronous work before you can determine the legitimacy of a message, use
   // GetBadMessageCallback() and retain its result until you're ready to invoke
   // or discard it.
-  void ReportBadMessage(const std::string& error) {
+  NOT_TAIL_CALLED void ReportBadMessage(const std::string& error) {
     GetBadMessageCallback().Run(error);
   }
 

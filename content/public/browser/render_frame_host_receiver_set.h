@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/active_url_message_filter.h"
@@ -101,7 +102,7 @@ class CONTENT_EXPORT RenderFrameHostReceiverSet : public WebContentsObserver {
   // processing (e.g. posting a task that then reports a the bad message), use
   // `GetMessageCallback()` and pass the returned callback to the async task
   // that needs to report the message as bad.
-  void ReportBadMessage(const std::string& message) {
+  NOT_TAIL_CALLED void ReportBadMessage(const std::string& message) {
     receivers_.ReportBadMessage(message);
   }
 
