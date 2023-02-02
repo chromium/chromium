@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
-#include "base/fuchsia/filtered_service_directory.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
@@ -30,7 +29,7 @@
 #include "fuchsia_web/runners/cast/cast_streaming.h"
 #include "fuchsia_web/runners/cast/pending_cast_component.h"
 #include "fuchsia_web/runners/common/web_content_runner.h"
-#include "fuchsia_web/webinstance_host/web_instance_host_v1.h"
+#include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "url/gurl.h"
 
 namespace {
@@ -39,44 +38,6 @@ namespace {
 // dependencies required.
 constexpr char kAudioCapturerWithEchoCancellationSwitch[] =
     "audio-capturer-with-echo-cancellation";
-
-// List of services in CastRunner's Service Directory that will be passed
-// through to each WebEngine instance it creates. Each service in
-// web_instance.cmx/.cml must appear on a line below, and cast_runner.cml
-// must include all of these services.
-static constexpr const char* kServices[] = {
-    "fuchsia.accessibility.semantics.SemanticsManager",
-    "fuchsia.buildinfo.Provider",
-    "fuchsia.camera3.DeviceWatcher",
-    "fuchsia.device.NameProvider",
-    "fuchsia.fonts.Provider",
-    "fuchsia.hwinfo.Product",
-    "fuchsia.input.virtualkeyboard.ControllerCreator",
-    "fuchsia.intl.PropertyProvider",
-    "fuchsia.legacymetrics.MetricsRecorder",
-    "fuchsia.logger.LogSink",
-    "fuchsia.media.Audio",
-    "fuchsia.media.AudioDeviceEnumerator",
-    "fuchsia.media.ProfileProvider",
-    "fuchsia.media.SessionAudioConsumerFactory",
-    "fuchsia.media.drm.PlayReady",
-    "fuchsia.media.drm.Widevine",
-    "fuchsia.mediacodec.CodecFactory",
-    "fuchsia.memorypressure.Provider",
-    "fuchsia.net.interfaces.State",
-    "fuchsia.net.name.Lookup",
-    "fuchsia.posix.socket.Provider",
-    "fuchsia.process.Launcher",
-    "fuchsia.settings.Display",
-    "fuchsia.sysmem.Allocator",
-    "fuchsia.tracing.perfetto.ProducerConnector",
-    "fuchsia.tracing.provider.Registry",
-    "fuchsia.ui.composition.Allocator",
-    "fuchsia.ui.composition.Flatland",
-    "fuchsia.ui.input3.Keyboard",
-    "fuchsia.ui.scenic.Scenic",
-    "fuchsia.vulkan.loader.Loader",
-};
 
 // Names used to partition the Runner's persistent storage for different uses.
 constexpr char kCdmDataSubdirectoryName[] = "cdm_data";
@@ -203,32 +164,18 @@ void SetCdmParamsForMainContext(fuchsia::web::CreateContextParams* params) {
 
 }  // namespace
 
-CastRunner::CastRunner(WebInstanceHostV1& web_instance_host, Options options)
+CastRunner::CastRunner(WebInstanceHost& web_instance_host, Options options)
     : web_instance_host_(web_instance_host),
       is_headless_(options.headless),
       disable_codegen_(options.disable_codegen),
-      main_services_(std::make_unique<base::FilteredServiceDirectory>(
-          base::ComponentContextForProcess()->svc())),
       main_context_(std::make_unique<WebContentRunner>(
           base::BindRepeating(
-              &WebInstanceHostV1::CreateInstanceForContextWithCopiedArgs,
+              &WebInstanceHost::CreateInstanceForContextWithCopiedArgs,
               base::Unretained(&web_instance_host_.get())),
           base::BindRepeating(&CastRunner::GetMainWebInstanceConfig,
-                              base::Unretained(this)))),
-      isolated_services_(std::make_unique<base::FilteredServiceDirectory>(
-          base::ComponentContextForProcess()->svc())) {
+                              base::Unretained(this)))) {
   // Delete persisted data staged for deletion during the previous run.
   DeleteStagedForDeletionDirectoryIfExists();
-
-  // Specify the services to connect via the Runner process' service directory.
-  for (const char* name : kServices) {
-    zx_status_t status = main_services_->AddService(name);
-    ZX_CHECK(status == ZX_OK, status)
-        << "AddService(" << name << ") to main failed";
-    status = isolated_services_->AddService(name);
-    ZX_CHECK(status == ZX_OK, status)
-        << "AddService(" << name << ") to isolated failed";
-  }
 
   // Fetch the list of CORS-exempt headers to apply for all components launched
   // under this Runner.
@@ -426,10 +373,6 @@ WebContentRunner::WebInstanceConfig CastRunner::GetMainWebInstanceConfig() {
   config.params.set_user_agent_product("CrKey");
   config.params.set_user_agent_version(chromecast::kFrozenCrKeyValue);
 
-  zx_status_t status = main_services_->ConnectClient(
-      config.params.mutable_service_directory()->NewRequest());
-  ZX_CHECK(status == ZX_OK, status) << "ConnectClient failed";
-
   if (!disable_vulkan_for_test_) {
     SetCdmParamsForMainContext(&config.params);
   }
@@ -459,10 +402,6 @@ CastRunner::GetIsolatedWebInstanceConfigWithFuchsiaDirs(
   config.params.set_remote_debugging_port(kEphemeralRemoteDebuggingPort);
   config.params.set_content_directories(std::move(content_directories));
 
-  zx_status_t status = isolated_services_->ConnectClient(
-      config.params.mutable_service_directory()->NewRequest());
-  ZX_CHECK(status == ZX_OK, status) << "ConnectClient failed";
-
   return config;
 }
 
@@ -472,12 +411,6 @@ CastRunner::GetIsolatedWebInstanceConfigForCastStreaming() {
 
   ApplyCastStreamingContextParams(&config.params);
   config.params.set_remote_debugging_port(kEphemeralRemoteDebuggingPort);
-
-  // TODO(crbug.com/1069746): Use a different FilteredServiceDirectory for Cast
-  // Streaming Contexts.
-  zx_status_t status = main_services_->ConnectClient(
-      config.params.mutable_service_directory()->NewRequest());
-  ZX_CHECK(status == ZX_OK, status) << "ConnectClient failed";
 
   return config;
 }
@@ -509,7 +442,7 @@ WebContentRunner* CastRunner::CreateIsolatedRunner(
   // Create an isolated context which will own the CastComponent.
   auto context = std::make_unique<WebContentRunner>(
       base::BindRepeating(
-          &WebInstanceHostV1::CreateInstanceForContextWithCopiedArgs,
+          &WebInstanceHost::CreateInstanceForContextWithCopiedArgs,
           base::Unretained(&web_instance_host_.get())),
       std::move(config));
   context->SetOnEmptyCallback(

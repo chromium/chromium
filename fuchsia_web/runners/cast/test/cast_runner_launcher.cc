@@ -77,6 +77,11 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
               // to test components. Route the cast_runner sub-directory of this
               // to the launched cast_runner component.
               Directory{.name = "config-data", .subdir = "cast_runner"},
+              // And route the web_engine sub-directory as required by
+              // WebInstanceHost.
+              Directory{.name = "config-data",
+                        .as = "config-data-for-web-instance",
+                        .subdir = "web_engine"},
               Directory{.name = "root-ssl-certificates"},
               Protocol{fuchsia::buildinfo::Provider::Name_},
               Protocol{fuchsia::intl::PropertyProvider::Name_},
