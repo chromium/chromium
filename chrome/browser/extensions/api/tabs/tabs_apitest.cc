@@ -113,8 +113,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
       << message_;
 }
 
-// http://crbug.com/521410
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabMuted) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabMuted) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics", {.extension_url = "muted.html"}))
       << message_;
 }
