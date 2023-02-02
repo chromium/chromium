@@ -184,16 +184,13 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal(
 
   // Create the view for all RenderViewHosts that don't have a
   // RenderWidgetHostViewChildFrame view.
-  for (auto& render_view_host :
-       portal_contents_->GetPrimaryFrameTree().render_view_hosts()) {
-    if (!render_view_host.second->GetWidget()->GetView() ||
-        !render_view_host.second->GetWidget()
-             ->GetView()
-             ->IsRenderWidgetHostViewChildFrame()) {
-      CreatePortalRenderWidgetHostView(portal_contents_.get(),
-                                       render_view_host.second);
-    }
-  }
+  portal_contents_->GetPrimaryFrameTree().ForEachRenderViewHost(
+      [this](RenderViewHostImpl* rvh) {
+        if (!rvh->GetWidget()->GetView() ||
+            !rvh->GetWidget()->GetView()->IsRenderWidgetHostViewChildFrame()) {
+          CreatePortalRenderWidgetHostView(portal_contents_.get(), rvh);
+        }
+      });
 
   RenderFrameProxyHost* proxy_host =
       portal_contents_->GetPrimaryMainFrame()->GetProxyToOuterDelegate();
@@ -618,11 +615,10 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
     // attached to an outer WebContents, and may not have an outer frame tree
     // node created (i.e. CreateProxyAndAttachPortal isn't called). In this
     // case, we can skip a few of the detachment steps above.
-    for (auto& render_view_host :
-         portal_contents_->GetPrimaryFrameTree().render_view_hosts()) {
-      CreatePortalRenderWidgetHostView(portal_contents_.get(),
-                                       render_view_host.second);
-    }
+    portal_contents_->GetPrimaryFrameTree().ForEachRenderViewHost(
+        [this](RenderViewHostImpl* rvh) {
+          CreatePortalRenderWidgetHostView(portal_contents_.get(), rvh);
+        });
     successor_contents = portal_contents_.ReleaseOwnership();
   }
   DCHECK(!portal_contents_.OwnsContents());

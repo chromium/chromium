@@ -384,6 +384,64 @@ IN_PROC_BROWSER_TEST_P(SpeculativeRenderViewHostTest,
   EXPECT_FALSE(frame_tree.speculative_render_view_host());
 }
 
+// Check that FrameTree::ForEachRenderViewHost includes the speculative
+// RenderViewHost when one exists.
+IN_PROC_BROWSER_TEST_P(SpeculativeRenderViewHostTest, ForEachRenderViewHost) {
+  // Disable BFCache because otherwise the BrowsingInstances will be proactively
+  // swapped and the navigation will not be same-SiteInstanceGroup, which is
+  // the only case a speculative RenderViewHost is used.
+  DisableBackForwardCache(
+      BackForwardCacheImpl::TEST_ASSUMES_NO_RENDER_FRAME_CHANGE);
+
+  StartEmbeddedServer();
+
+  // Open a page in SiteInstanceGroup A.
+  GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  // Navigate to a different page in SiteInstanceGroup A. Stop the navigation
+  // when there's a speculative RenderFrameHost for page 2.
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  GURL url2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  TestNavigationManager navigation(web_contents, url2);
+  shell()->LoadURL(url2);
+  EXPECT_TRUE(navigation.WaitForRequestStart());
+
+  // Check that the speculative RenderViewHost exists, and that it matches the
+  // RenderViewHost of the speculative RenderFrameHost.
+  FrameTree& frame_tree = web_contents->GetPrimaryFrameTree();
+  RenderFrameHostImpl* speculative_rfh =
+      frame_tree.root()->render_manager()->speculative_frame_host();
+  EXPECT_TRUE(speculative_rfh);
+  RenderViewHostImpl* speculative_rvh =
+      frame_tree.speculative_render_view_host();
+  EXPECT_TRUE(speculative_rvh);
+
+  // Iterate over all RenderViewHosts, which should include the speculative
+  // RenderViewHost.
+  bool is_speculative = false;
+  frame_tree.ForEachRenderViewHost(
+      [&is_speculative, speculative_rvh](RenderViewHostImpl* rvh) {
+        if (rvh->is_speculative()) {
+          EXPECT_EQ(rvh, speculative_rvh);
+          is_speculative = true;
+        }
+      });
+  EXPECT_TRUE(is_speculative);
+
+  // Once the navigation finishes, there should no longer be a speculative
+  // RenderViewHost to iterate over.
+  EXPECT_TRUE(navigation.WaitForNavigationFinished());
+  is_speculative = false;
+  frame_tree.ForEachRenderViewHost([&is_speculative](RenderViewHostImpl* rvh) {
+    if (rvh->is_speculative()) {
+      is_speculative = true;
+    }
+  });
+  EXPECT_FALSE(is_speculative);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     SpeculativeRenderViewHostTest,

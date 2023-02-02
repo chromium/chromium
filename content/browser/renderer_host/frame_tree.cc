@@ -223,6 +223,17 @@ FrameTree::~FrameTree() {
 #endif
 }
 
+void FrameTree::ForEachRenderViewHost(
+    base::FunctionRef<void(RenderViewHostImpl*)> on_host) {
+  if (speculative_render_view_host_) {
+    on_host(speculative_render_view_host_.get());
+  }
+
+  for (auto& rvh : render_view_host_map_) {
+    on_host(rvh.second);
+  }
+}
+
 void FrameTree::MakeSpeculativeRVHCurrent() {
   CHECK(speculative_render_view_host_);
 
