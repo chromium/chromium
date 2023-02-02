@@ -8,6 +8,7 @@ import android.net.Uri;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.url.GURL;
@@ -215,6 +216,10 @@ public interface ContextMenuItemDelegate {
      * @param title The title text to be shown for this item in the reading list.
      */
     void onReadLater(GURL url, String title);
+
+    default void onMarkAds(ContextMenuParams params) {
+
+    }
 
     default boolean canMoveTab() {
         return false;

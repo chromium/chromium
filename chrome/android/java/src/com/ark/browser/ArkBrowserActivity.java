@@ -18,6 +18,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.ViewCompat;
 
+import com.ark.browser.adblock.AdBlock;
+import com.ark.browser.adblock.AdblockPlusHelper;
 import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.settings.AppConfig;
@@ -88,6 +90,10 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
     @Override
     protected void onPreCreate() {
         super.onPreCreate();
+
+        // 加载广告规则
+        AdBlock.loadHosts(this);
+        AdblockPlusHelper.loadAdFromFile(this);
 
         translucentStatusBar(this, true);
 

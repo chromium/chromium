@@ -136,6 +136,18 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // highlight/fragment.
   bool opened_from_highlight = false;
 
+  std::u16string class_attribute;
+
+  std::u16string id_attribute;
+
+  std::u16string tag_name;
+
+  std::u16string parent_class_attribute;
+
+  std::u16string parent_id_attribute;
+
+  std::u16string parent_tag_name;
+
  private:
   void Assign(const UntrustworthyContextMenuParams& other);
 };

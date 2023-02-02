@@ -485,6 +485,26 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   if (html_element) {
     data.title_text = html_element->title().Utf8();
     data.alt_text = html_element->AltText().Utf8();
+    data.class_attribute = html_element->GetClassAttribute().Utf8();
+    data.id_attribute = html_element->GetIdAttribute().Utf8();
+    data.tag_name = html_element->tagName().Utf8();
+    LOG(ERROR) << "ContextMenuController:111-- html_element->OuterHTMLAsString=" << html_element->outerHTML().Utf8();
+    LOG(ERROR) << "ContextMenuController:111-- html_element->InnerHTMLAsString=" << html_element->innerHTML().Utf8();
+    LOG(ERROR) << "ContextMenuController:111--class_attribute=" << data.class_attribute;
+    LOG(ERROR) << "ContextMenuController:111-id_attribute=" << data.id_attribute;
+    LOG(ERROR) << "ContextMenuController:111-tag_name=" << data.tag_name;
+
+    auto* parent_element = DynamicTo<HTMLElement>(html_element->parentElement());
+    if (parent_element) {
+      data.parent_class_attribute = parent_element->GetClassAttribute().Utf8();
+      data.parent_id_attribute = parent_element->GetIdAttribute().Utf8();
+      data.parent_tag_name = parent_element->tagName().Utf8();
+      LOG(ERROR) << "ContextMenuController:parent111--class_attribute=" << data.parent_class_attribute;
+      LOG(ERROR) << "ContextMenuController:parent111--id_attribute=" << data.parent_id_attribute;
+      LOG(ERROR) << "ContextMenuController:parent111--tag_name=" << data.parent_tag_name;
+      LOG(ERROR) << "ContextMenuController:parent111-- parent_element->OuterHTMLAsString=" << parent_element->outerHTML().Utf8();
+      LOG(ERROR) << "ContextMenuController:parent111-- parent_element->InnerHTMLAsString=" << parent_element->innerHTML().Utf8();
+    }
   }
   if (!result.AbsoluteMediaURL().IsEmpty() ||
       result.GetMediaStreamDescriptor()) {
@@ -760,11 +780,13 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   data.selection_rect = ComputeSelectionRect(selected_frame);
   data.source_type = source_type;
 
+  // TODO add 自由复制kMenuFreeCopyTouch
   const bool from_touch = source_type == kMenuSourceTouch ||
                           source_type == kMenuSourceLongPress ||
                           source_type == kMenuSourceLongTap;
-  if (from_touch && !ShouldShowContextMenuFromTouch(data))
-    return false;
+  // TODO 将结果传给java层，让用户确认是否强制弹出context menu
+  // if (from_touch && !ShouldShowContextMenuFromTouch(data))
+  //   return false;
 
   absl::optional<gfx::Point> host_context_menu_location;
   auto* main_frame =

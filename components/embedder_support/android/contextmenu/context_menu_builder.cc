@@ -38,7 +38,13 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
           ConvertUTF16ToJavaString(env, title_text),
           url::GURLAndroid::FromNativeGURL(env, sanitizedReferrer),
           static_cast<int>(params.referrer_policy), can_save, params.x,
-          params.y, params.source_type, params.opened_from_highlight));
+          params.y, params.source_type, params.opened_from_highlight,
+          ConvertUTF16ToJavaString(env, params.class_attribute),
+          ConvertUTF16ToJavaString(env, params.id_attribute),
+          ConvertUTF16ToJavaString(env, params.tag_name),
+          ConvertUTF16ToJavaString(env, params.parent_class_attribute),
+          ConvertUTF16ToJavaString(env, params.parent_id_attribute),
+          ConvertUTF16ToJavaString(env, params.parent_tag_name)));
 }
 
 content::ContextMenuParams* ContextMenuParamsFromJavaObject(

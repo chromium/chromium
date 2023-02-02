@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import com.ark.browser.adblock.AdblockPlusHelper;
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.core.utils.PolicyAuditor;
@@ -349,15 +350,25 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
 
         @Override
         public void didFirstVisuallyNonEmptyPaint() {
+            ArkLogger.e(this, "didFirstVisuallyNonEmptyPaint");
             mTab.cacheThumbnail();
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
                 observers.next().didFirstVisuallyNonEmptyPaint(mTab);
             }
+            AdblockPlusHelper.markAds(mTab, mTab.getUrl().getSpec());
+        }
+
+        @Override
+        public void primaryMainDocumentElementAvailable() {
+            ArkLogger.e(this, "primaryMainDocumentElementAvailable");
+            mTab.cacheThumbnail();
+            AdblockPlusHelper.markAds(mTab, mTab.getUrl().getSpec());
         }
 
         @Override
         public void didChangeThemeColor() {
+            mTab.cacheThumbnail();
             mTab.updateThemeColor(mTab.getWebContents().getThemeColor());
         }
 

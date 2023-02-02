@@ -66,6 +66,18 @@ struct ContextMenuData {
   // The encoding for the frame in context.
   std::string frame_encoding;
 
+  std::string class_attribute;
+
+  std::string id_attribute;
+
+  std::string tag_name;
+
+  std::string parent_class_attribute;
+
+  std::string parent_id_attribute;
+
+  std::string parent_tag_name;
+
   enum MediaFlags {
     kMediaNone = 0x0,
     kMediaInError = 0x1,

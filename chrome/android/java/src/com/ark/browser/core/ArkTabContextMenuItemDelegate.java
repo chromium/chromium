@@ -11,10 +11,12 @@ import android.net.MailTo;
 import android.net.Uri;
 import android.provider.Browser;
 import android.provider.ContactsContract;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import com.ark.browser.adblock.AdblockPlusHelper;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.TabListManager;
@@ -22,6 +24,7 @@ import com.zpj.toast.ZToast;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.IntentHandler;
@@ -34,6 +37,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -298,6 +302,30 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
         CustomTabsIntent.setAlwaysUseBrowserUI(intent);
         IntentUtils.safeStartActivity(mTab.getContext(), intent);
+    }
+
+    @Override
+    public void onMarkAds(ContextMenuParams params) {
+        if (mTab != null && mTab.getWebContents() != null) {
+            String pageUrl = params.getPageUrl().getSpec();
+            String srcUrl = params.getSrcUrl().getSpec();
+            markAd(pageUrl, params.getTagName(), params.getIdAttribute(), params.getClassAttribute(), srcUrl);
+            markAd(pageUrl, params.getParentTagName(), params.getParentIdAttribute(),
+                    params.getParentClassAttribute(), srcUrl);
+        }
+    }
+
+    private void markAd(String pageUrl, String tag, String id, String classAttribute, String srcUrl) {
+        if (!TextUtils.isEmpty(tag) && tag.toLowerCase().equals("body")) {
+            return;
+        }
+        String js = AdblockPlusHelper.getAdblockJs(tag, id, srcUrl);
+        Log.d("MarkAd", "js=" + js);
+        if (!js.isEmpty()) {
+            mTab.getWebContents().evaluateJavaScript(js, null);
+            AdblockPlusHelper.appendMarkAsAd(ContextUtils.getApplicationContext(),
+                    pageUrl, tag, classAttribute, id, srcUrl);
+        }
     }
 
     @Override

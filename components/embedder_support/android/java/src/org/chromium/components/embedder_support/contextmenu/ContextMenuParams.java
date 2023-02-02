@@ -41,6 +41,13 @@ public class ContextMenuParams {
 
     private final boolean mOpenedFromHighlight;
 
+    private final String mClassAttribute;
+    private final String mIdAttribute;
+    private final String mTagName;
+    private final String mParentClassAttribute;
+    private final String mParentIdAttribute;
+    private final String mParentTagName;
+
     @CalledByNative
     private long getNativePointer() {
         return mNativePtr;
@@ -172,11 +179,37 @@ public class ContextMenuParams {
         return mOpenedFromHighlight;
     }
 
+    public String getClassAttribute() {
+        return mClassAttribute;
+    }
+
+    public String getIdAttribute() {
+        return mIdAttribute;
+    }
+
+    public String getTagName() {
+        return mTagName;
+    }
+
+    public String getParentClassAttribute() {
+        return mParentClassAttribute;
+    }
+
+    public String getParentIdAttribute() {
+        return mParentIdAttribute;
+    }
+
+    public String getParentTagName() {
+        return mParentTagName;
+    }
+
     @VisibleForTesting
     public ContextMenuParams(long nativePtr, @ContextMenuDataMediaType int mediaType, GURL pageUrl,
             GURL linkUrl, String linkText, GURL unfilteredLinkUrl, GURL srcUrl, String titleText,
             Referrer referrer, boolean canSaveMedia, int triggeringTouchXDp, int triggeringTouchYDp,
-            @MenuSourceType int sourceType, boolean openedFromHighlight) {
+            @MenuSourceType int sourceType, boolean openedFromHighlight,
+            String classAttribute, String idAttribute, String tagName,
+            String parentClassAttribute, String parentIdAttribute, String parentTagName) {
         mNativePtr = nativePtr;
         mPageUrl = pageUrl;
         mLinkUrl = linkUrl;
@@ -194,6 +227,13 @@ public class ContextMenuParams {
         mTriggeringTouchYDp = triggeringTouchYDp;
         mSourceType = sourceType;
         mOpenedFromHighlight = openedFromHighlight;
+
+        mClassAttribute = classAttribute;
+        mIdAttribute = idAttribute;
+        mTagName  = tagName;
+        mParentClassAttribute = parentClassAttribute;
+        mParentIdAttribute = parentIdAttribute;
+        mParentTagName  = parentTagName;
     }
 
     @CalledByNative
@@ -201,13 +241,16 @@ public class ContextMenuParams {
             GURL pageUrl, GURL linkUrl, String linkText, GURL unfilteredLinkUrl, GURL srcUrl,
             String titleText, GURL sanitizedReferrer, int referrerPolicy, boolean canSaveMedia,
             int triggeringTouchXDp, int triggeringTouchYDp, @MenuSourceType int sourceType,
-            boolean openedFromHighlight) {
+            boolean openedFromHighlight, String classAttribute, String idAttribute, String tagName,
+            String parentClassAttribute, String parentIdAttribute, String parentTagName) {
         // TODO(https://crbug.com/783819): Convert Referrer to use GURL.
         Referrer referrer = sanitizedReferrer.isEmpty()
                 ? null
                 : new Referrer(sanitizedReferrer.getSpec(), referrerPolicy);
         return new ContextMenuParams(nativePtr, mediaType, pageUrl, linkUrl, linkText,
                 unfilteredLinkUrl, srcUrl, titleText, referrer, canSaveMedia, triggeringTouchXDp,
-                triggeringTouchYDp, sourceType, openedFromHighlight);
+                triggeringTouchYDp, sourceType, openedFromHighlight,
+                classAttribute, idAttribute, tagName,
+                parentClassAttribute, parentIdAttribute, parentTagName);
     }
 }

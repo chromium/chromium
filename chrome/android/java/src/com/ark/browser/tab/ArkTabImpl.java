@@ -20,6 +20,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 
 import com.ark.browser.ArkBrowserActivity;
+import com.ark.browser.adblock.AdblockPlusHelper;
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.core.ArkWindowAndroid;
@@ -696,7 +697,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public void stopLoading() {
-        cacheThumbnail();
         if (isLoading()) {
             RewindableIterator<TabObserver> observers = getTabObservers();
             while (observers.hasNext()) {
@@ -704,6 +704,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             }
         }
         if (getWebContents() != null) getWebContents().stop();
+        cacheThumbnail();
     }
 
     @Override
@@ -1062,6 +1063,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * @param url URL that was loaded.
      */
     void didFinishPageLoad(GURL url) {
+        AdblockPlusHelper.markAds(this, getUrl().getSpec());
         updateTitle();
 
         for (TabObserver observer : mObservers) observer.onPageLoadFinished(this, url);

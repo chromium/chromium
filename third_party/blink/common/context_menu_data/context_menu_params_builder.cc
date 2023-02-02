@@ -64,6 +64,12 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
   params.suggested_filename = base::UTF8ToUTF16(data.suggested_filename);
   params.input_field_type = data.input_field_type;
   params.opened_from_highlight = data.opened_from_highlight;
+  params.class_attribute = base::UTF8ToUTF16(data.class_attribute);
+  params.id_attribute = base::UTF8ToUTF16(data.id_attribute);
+  params.tag_name = base::UTF8ToUTF16(data.tag_name);
+  params.parent_class_attribute = base::UTF8ToUTF16(data.parent_class_attribute);
+  params.parent_id_attribute = base::UTF8ToUTF16(data.parent_id_attribute);
+  params.parent_tag_name = base::UTF8ToUTF16(data.parent_tag_name);
 
   for (const auto& suggestion : data.dictionary_suggestions)
     params.dictionary_suggestions.push_back(suggestion);
