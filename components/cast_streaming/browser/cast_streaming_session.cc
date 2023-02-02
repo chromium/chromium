@@ -337,19 +337,25 @@ void CastStreamingSession::ReceiverSessionClient::OnReceiversDestroying(
     playback_command_dispatcher_->OnRemotingSessionEnded();
   }
 
+  preloaded_audio_buffer_ = absl::nullopt;
+  preloaded_video_buffer_ = absl::nullopt;
+
   switch (reason) {
     case ReceiversDestroyingReason::kEndOfSession:
       client_->OnSessionEnded();
       break;
     case ReceiversDestroyingReason::kRenegotiated:
       if (playback_command_dispatcher_) {
-        DCHECK(!is_flush_pending_);
-
-        DVLOG(1) << "Calling Flush()";
-        is_flush_pending_ = true;
-        playback_command_dispatcher_->Flush(base::BindOnce(
-            &CastStreamingSession::ReceiverSessionClient::OnFlushComplete,
-            weak_factory_.GetWeakPtr()));
+        if (is_flush_pending_) {
+          DLOG(WARNING)
+              << "Skipping call to Flush() because one is already in progress";
+        } else {
+          DVLOG(1) << "Calling Flush()";
+          is_flush_pending_ = true;
+          playback_command_dispatcher_->Flush(base::BindOnce(
+              &CastStreamingSession::ReceiverSessionClient::OnFlushComplete,
+              weak_factory_.GetWeakPtr()));
+        }
       }
       client_->OnSessionReinitializationPending();
       break;
