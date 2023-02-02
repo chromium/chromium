@@ -804,7 +804,6 @@ Document::Document(const DocumentInit& initializer,
           this,
           &Document::DidAssociateFormControlsTimerFired),
       parser_sync_policy_(kAllowDeferredParsing),
-      node_count_(0),
       // Use the source id from the document initializer if it is available.
       // Otherwise, generate a new source id to cover any cases that don't
       // receive a valid source id, this for example includes but is not limited

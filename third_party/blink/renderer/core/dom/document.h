@@ -1636,7 +1636,6 @@ class CORE_EXPORT Document : public ContainerNode,
     DCHECK_GT(node_count_, 0);
     node_count_--;
   }
-  int NodeCount() const { return node_count_; }
 #endif  // DCHECK_IS_ON()
 
   SnapCoordinator& GetSnapCoordinator();
@@ -2456,7 +2455,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Member<IntersectionObserverController> intersection_observer_controller_;
 
-  int node_count_;
+#if DCHECK_IS_ON()
+  int node_count_ = 0;
+#endif
 
   Member<SnapCoordinator> snap_coordinator_;
 
