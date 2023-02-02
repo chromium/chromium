@@ -72,6 +72,8 @@ public class MainActivity
     private static final String SHARED_PREF_CLOSE_POSITION = "ClosePosition";
     private static final String SHARED_PREF_COLOR = "Color";
     private static final String SHARED_PREF_HEIGHT = "Height";
+    private static final String SHARED_PREF_WIDTH = "Width";
+    private static final String SHARED_PREF_BREAKPOINT = "Breakpoint";
     private static final String SHARED_PREF_PROGRESS = "Progress";
     private static final String SHARED_PREF_HEIGHT_RESIZABLE = "HeightResizable";
     private static final String SHARED_PREF_SITES = "Sites";
@@ -90,6 +92,11 @@ public class MainActivity
      * Minimal height the bottom sheet CCT should show is half of the display height.
      */
     private static final float MINIMAL_HEIGHT_RATIO = 0.5f;
+    /**
+     * Minimal height the side sheet CCT should show is a third of the display height.
+     */
+    private static final float MINIMAL_WIDTH_RATIO = 0.33f;
+    private static final int DEFAULT_BREAKPOINT = 840;
     private AutoCompleteTextView mEditUrl;
     private CustomTabsSession mCustomTabsSession;
     private CustomTabsClient mClient;
@@ -116,12 +123,18 @@ public class MainActivity
     private CheckBox mUrlHidingCheckbox;
     private CheckBox mBackgroundInteractCheckbox;
     private CheckBox mForceEngagementSignalsCheckbox;
+    private TextView mPcctBreakpointLabel;
+    private SeekBar mPcctBreakpointSlider;
     private TextView mPcctInitialHeightLabel;
     private SeekBar mPcctInitialHeightSlider;
+    private SeekBar mPcctInitialWidthSlider;
+    private TextView mPcctInitialWidthLabel;
     private SharedPreferences mSharedPref;
     private CustomTabsPackageHelper mCustomTabsPackageHelper;
     private @Px int mMaxHeight;
     private @Px int mInitialHeight;
+    private @Px int mMaxWidth;
+    private @Px int mInitialWidth;
 
     /**
      * Once per second, asks the framework for the process importance, and logs any change.
@@ -193,6 +206,8 @@ public class MainActivity
         initializeToggles();
         initializeCornerRadiusSlider();
         initializeHeightSlider();
+        initializeWidthSlider();
+        initializeBreakpointSlider();
         initializeCheckBoxes();
         initializeCctSpinner();
         initializeButtons();
@@ -459,7 +474,7 @@ public class MainActivity
     }
 
     private void initializeHeightSlider() {
-        mMaxHeight = getMaximumPossibleHeight();
+        mMaxHeight = getMaximumPossibleSizePx();
         mInitialHeight = (int) (mMaxHeight * MINIMAL_HEIGHT_RATIO);
         mPcctInitialHeightSlider = findViewById(R.id.pcct_initial_height_slider);
         mPcctInitialHeightLabel = findViewById(R.id.pcct_initial_height_slider_label);
@@ -473,6 +488,54 @@ public class MainActivity
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mPcctInitialHeightLabel.setText(getString(R.string.px_template, progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+    }
+
+    private void initializeWidthSlider() {
+        mMaxWidth = getMaximumPossibleSizePx();
+        mInitialWidth = (int) (mMaxWidth * MINIMAL_WIDTH_RATIO);
+        mPcctInitialWidthSlider = findViewById(R.id.pcct_initial_width_slider);
+        mPcctInitialWidthLabel = findViewById(R.id.pcct_initial_width_slider_label);
+        mPcctInitialWidthSlider.setMax(mMaxWidth);
+        int sharedWidth = mSharedPref.getInt(SHARED_PREF_WIDTH, -1);
+        mPcctInitialWidthSlider.setProgress(sharedWidth != -1 ? sharedWidth : mInitialWidth);
+        mPcctInitialWidthLabel.setText(
+                getString(R.string.px_template, mPcctInitialWidthSlider.getProgress()));
+        mPcctInitialWidthSlider.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mPcctInitialWidthLabel.setText(getString(R.string.px_template, progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+    }
+
+    private void initializeBreakpointSlider() {
+        int maxBreakpointDp = getMaximumPossibleSizeDp();
+        mPcctBreakpointSlider = findViewById(R.id.pcct_breakpoint_slider);
+        mPcctBreakpointLabel = findViewById(R.id.pcct_breakpoint_slider_label);
+        mPcctBreakpointSlider.setMax(maxBreakpointDp);
+        int sharedBreakpoint = mSharedPref.getInt(SHARED_PREF_BREAKPOINT, -1);
+        mPcctBreakpointSlider.setProgress(
+                sharedBreakpoint != -1 ? sharedBreakpoint : DEFAULT_BREAKPOINT);
+        mPcctBreakpointLabel.setText(
+                getString(R.string.dp_template, mPcctBreakpointSlider.getProgress()));
+        mPcctBreakpointSlider.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mPcctBreakpointLabel.setText(getString(R.string.dp_template, progress));
             }
 
             @Override
@@ -625,6 +688,16 @@ public class MainActivity
                             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL",
                             pcctInitialHeightPx);
                 }
+                int pcctInitialWidthPx = mPcctInitialWidthSlider.getProgress();
+                if (pcctInitialWidthPx != 0) {
+                    customTabsIntent.intent.putExtra(
+                            "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_WIDTH_PX",
+                            pcctInitialWidthPx);
+                }
+                int pcctBreakpointDp = mPcctBreakpointSlider.getProgress();
+                customTabsIntent.intent.putExtra(
+                        "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_BREAKPOINT_DP",
+                        pcctBreakpointDp);
                 if (!mPcctHeightResizableCheckbox.isChecked()) {
                     customTabsIntent.intent.putExtra(
                             "androidx.browser.customtabs.extra.ACTIVITY_HEIGHT_RESIZE_BEHAVIOR",
@@ -662,6 +735,8 @@ public class MainActivity
             customTabsIntent.launchUrl(this, Uri.parse(url));
 
             editor.putInt(SHARED_PREF_HEIGHT, mPcctInitialHeightSlider.getProgress());
+            editor.putInt(SHARED_PREF_WIDTH, mPcctInitialWidthSlider.getProgress());
+            editor.putInt(SHARED_PREF_BREAKPOINT, mPcctBreakpointSlider.getProgress());
             editor.putInt(SHARED_PREF_PROGRESS, mToolbarCornerRadiusSlider.getProgress());
             int toolbarCheck =
                     session != null && mBottomToolbarCheckbox.isChecked() ? CHECKED : UNCHECKED;
@@ -799,7 +874,7 @@ public class MainActivity
         mClient = null;
     }
 
-    private @Px int getMaximumPossibleHeight() {
+    private @Px int getMaximumPossibleSizePx() {
         @Px
         int res = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -811,5 +886,9 @@ public class MainActivity
             res = Math.max(displayMetrics.widthPixels, displayMetrics.heightPixels);
         }
         return res;
+    }
+
+    private int getMaximumPossibleSizeDp() {
+        return (int) (getMaximumPossibleSizePx() / getResources().getDisplayMetrics().density);
     }
 }
