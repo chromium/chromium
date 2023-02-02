@@ -22,9 +22,13 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
 
+constexpr int kTimeSinceDownloadCompletedUpdateSeconds = 60;
+
 class DownloadBubbleRowViewTest : public TestWithBrowserView {
  public:
-  DownloadBubbleRowViewTest() {
+  DownloadBubbleRowViewTest()
+      : TestWithBrowserView(
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
   }
 
@@ -43,8 +47,14 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
     row_list_view_ = std::make_unique<DownloadBubbleRowListView>(
         /*is_partial_view=*/true, browser());
     row_view_ = std::make_unique<DownloadBubbleRowView>(
-        DownloadItemModel::Wrap(&download_item_), row_list_view_.get(),
-        button->bubble_controller(), button, browser());
+        DownloadItemModel::Wrap(
+            &download_item_,
+            std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>()),
+        row_list_view_.get(), button->bubble_controller(), button, browser());
+  }
+
+  void FastForward(base::TimeDelta time) {
+    task_environment()->FastForwardBy(time);
   }
 
   DownloadBubbleRowView* row_view() { return row_view_.get(); }
@@ -82,6 +92,23 @@ TEST_F(DownloadBubbleRowViewTest, CopyAcceleratorCopiesFile) {
   EXPECT_EQ(filenames[0].path, target_path);
 
   clipboard->DestroyClipboardForCurrentThread();
+}
+
+TEST_F(DownloadBubbleRowViewTest, UpdateTimeFromCompletedDownload) {
+  ON_CALL(*download_item(), GetState())
+      .WillByDefault(Return(download::DownloadItem::COMPLETE));
+  ON_CALL(*download_item(), GetEndTime())
+      .WillByDefault(Return(base::Time::Now()));
+  row_view()->OnDownloadUpdated();
+  // Get starting label for a finished download and ensure it stays
+  // the same until one timer interval.
+  std::u16string row_label = row_view()->GetSecondaryLabelTextForTesting();
+  FastForward(base::Seconds(kTimeSinceDownloadCompletedUpdateSeconds - 1));
+  EXPECT_EQ(row_label, row_view()->GetSecondaryLabelTextForTesting());
+  // After a timer interval, check to make sure that the label has
+  // changed.
+  FastForward(base::Seconds(kTimeSinceDownloadCompletedUpdateSeconds));
+  EXPECT_NE(row_label, row_view()->GetSecondaryLabelTextForTesting());
 }
 
 }  // namespace

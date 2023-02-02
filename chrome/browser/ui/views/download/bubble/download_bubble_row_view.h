@@ -86,6 +86,8 @@ class DownloadBubbleRowView : public views::View,
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;
 
+  const std::u16string& GetSecondaryLabelTextForTesting();
+
   DownloadUIModel* model() { return model_.get(); }
 
   DownloadUIModel::BubbleUIInfo& ui_info() { return ui_info_; }
@@ -117,6 +119,7 @@ class DownloadBubbleRowView : public views::View,
   // Update the DownloadBubbleRowView's members.
   void UpdateRow(bool initial_setup);
 
+  void UpdateStatusText();
   void UpdateButtons();
   void UpdateProgressBar();
   void UpdateLabels();
@@ -232,6 +235,9 @@ class DownloadBubbleRowView : public views::View,
 
   // A timer for accessible alerts of progress updates
   base::RepeatingTimer accessible_alert_in_progress_timer_;
+
+  // A timer for updating the status text string.
+  base::RepeatingTimer update_status_text_timer_;
 
   base::WeakPtrFactory<DownloadBubbleRowView> weak_factory_{this};
 };
