@@ -491,6 +491,16 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-webview-13-x64-dbg",
+    mirrors = [
+        "ci/Android x64 Builder (dbg)",
+        "ci/android-webview-13-x64-dbg-tests",
+    ],
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-webview-pie-x86-wpt-fyi-rel",
     mirrors = ["ci/android-webview-pie-x86-wpt-fyi-rel"],
     goma_backend = None,

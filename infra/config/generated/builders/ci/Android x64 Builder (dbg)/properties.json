@@ -128,6 +128,38 @@
                 "project": "chromium"
               }
             }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "android-webview-13-x64-dbg-tests",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-android-archive",
+              "builder_group": "chromium.android.fyi",
+              "execution_mode": "TEST",
+              "legacy_android_config": {
+                "config": "x64_builder_mb"
+              },
+              "legacy_chromium_config": {
+                "build_config": "Debug",
+                "config": "android",
+                "target_bits": 64,
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Android x64 Builder (dbg)",
+                "project": "chromium"
+              }
+            }
           }
         ]
       },
@@ -153,6 +185,11 @@
           "bucket": "ci",
           "builder": "android-webview-12-x64-dbg-tests",
           "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "android-webview-13-x64-dbg-tests",
+          "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -166,6 +203,10 @@
         },
         {
           "builder": "android-webview-12-x64-dbg",
+          "group": "tryserver.chromium.android"
+        },
+        {
+          "builder": "android-webview-13-x64-dbg",
           "group": "tryserver.chromium.android"
         }
       ]
