@@ -98,8 +98,9 @@ std::ostream& operator<<(std::ostream& out,
 
 bool operator==(const TriggerRegistration& a, const TriggerRegistration& b) {
   auto tie = [](const TriggerRegistration& reg) {
-    return std::make_tuple(reg.debug_key, reg.aggregatable_dedup_key,
-                           reg.event_triggers, reg.aggregatable_trigger_data,
+    return std::make_tuple(reg.filters, reg.not_filters, reg.debug_key,
+                           reg.aggregatable_dedup_key, reg.event_triggers,
+                           reg.aggregatable_trigger_data,
                            reg.aggregatable_values, reg.debug_reporting,
                            reg.aggregation_coordinator);
   };
