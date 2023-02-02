@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -50,6 +51,7 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace policy {
@@ -162,19 +164,48 @@ class ServicePropertyValueWatcher : public ash::ShillPropertyChangedObserver {
       return;
     }
     values_.push_back(value.GetString());
+    if (wait_for_value_state_ &&
+        wait_for_value_state_->predicate.Run(value.GetString())) {
+      wait_for_value_state_->run_loop.Quit();
+    }
   }
 
   // Returns all values that the property passed to the constructor had since
   // this instance has been created.
   const std::vector<std::string>& GetValues() { return values_; }
 
+  void WaitForNonEmptyValue() {
+    WaitForValue(base::BindRepeating(
+        [](const std::string& value) { return !value.empty(); }));
+  }
+
  private:
+  using ValuePredicate = base::RepeatingCallback<bool(const std::string&)>;
+
+  struct WaitForValueState {
+    explicit WaitForValueState(ValuePredicate predicate)
+        : predicate(predicate) {}
+
+    ValuePredicate predicate;
+    base::RunLoop run_loop;
+  };
+
+  void WaitForValue(ValuePredicate predicate) {
+    if (!values_.empty() && predicate.Run(values_.back())) {
+      return;
+    }
+    wait_for_value_state_.emplace(predicate);
+    wait_for_value_state_->run_loop.Run();
+    wait_for_value_state_.reset();
+  }
+
   ash::ShillServiceClient::TestInterface* const shill_service_client_test_;
 
   const std::string service_path_;
   const std::string property_name_;
 
   std::vector<std::string> values_;
+  absl::optional<WaitForValueState> wait_for_value_state_;
 };
 
 // Registers itself as ash::NetworkPolicyObserver and records events for
@@ -322,6 +353,38 @@ class CrosNetworkConfigGuidsAvailableWaiter
   mojo::Receiver<network_mojom::CrosNetworkConfigObserver>
       cros_network_config_observer_receiver_{this};
 };
+
+std::string OncPolicyToSelectClientCert(const std::string& guid,
+                                        const std::string& ssid,
+                                        const std::string& issuer_common_name,
+                                        const std::string& identity) {
+  return base::StringPrintf(R"(
+    {
+      "NetworkConfigurations": [
+        {
+          "GUID": "%s",
+          "Name": "OncPolicyToSelectClientCert",
+          "Type": "WiFi",
+          "WiFi": {
+             "EAP":  {
+              "Outer": "EAP-TLS",
+              "ClientCertType": "Pattern",
+              "Identity": "%s",
+              "ClientCertPattern": {
+                "Issuer": {
+                  "CommonName": "%s"
+                }
+              }
+             },
+             "SSID": "%s",
+             "Security": "WPA-EAP"
+          }
+        }
+      ]
+    })",
+                            guid.c_str(), identity.c_str(),
+                            issuer_common_name.c_str(), ssid.c_str());
+}
 
 }  // namespace
 
@@ -513,6 +576,23 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     cros_network_config_->GetNetworkState(
         guid, network_state_props_ptr.GetCallback());
     return network_state_props_ptr.Take();
+  }
+
+  network_mojom::NetworkCertificatePtr CrosNetworkConfigFindClientCert(
+      const std::string& ui_name) {
+    ash::network_config::CrosNetworkConfig cros_network_config;
+    base::test::TestFuture<std::vector<network_mojom::NetworkCertificatePtr>,
+                           std::vector<network_mojom::NetworkCertificatePtr>>
+        future;
+    cros_network_config.GetNetworkCertificates(future.GetCallback());
+    std::vector<network_mojom::NetworkCertificatePtr> client_certs =
+        std::get<1>(future.Take());
+    for (auto& client_cert : client_certs) {
+      if (client_cert->issued_to == ui_name) {
+        return std::move(client_cert);
+      }
+    }
+    return {};
   }
 
   // Extracts the UIData dictionary from the shill UIData property of the
@@ -1086,38 +1166,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, DoesNotWipeCertSettings) {
   ServicePropertyValueWatcher eap_identity_watcher(
       shill_service_client_test_, kServiceWifi1, shill::kEapIdentityProperty);
 
-  const char kDeviceONCTemplate[] = R"(
-    {
-      "NetworkConfigurations": [
-        {
-          "GUID": "{DeviceLevelWifiGuid}",
-          "Name": "DeviceLevelWifiName",
-          "Type": "WiFi",
-          "WiFi": {
-             "AutoConnect": false,
-             "EAP":  {
-              "Outer": "EAP-TLS",
-              "ClientCertType": "Pattern",
-              "Identity": "%s",
-              "ClientCertPattern": {
-                "Issuer": {
-                  "CommonName": "%s"
-                }
-              }
-             },
-             "SSID": "DeviceLevelWifiSsid",
-             "Security": "WPA-EAP"
-          }
-        }
-      ]
-    })";
-  std::string device_onc_with_identity_1 = base::StringPrintf(
-      kDeviceONCTemplate, "identity_1", kCertIssuerCommonName);
-  std::string device_onc_with_identity_2 = base::StringPrintf(
-      kDeviceONCTemplate, "identity_2", kCertIssuerCommonName);
-
-  SetDeviceOpenNetworkConfiguration(device_onc_with_identity_1,
-                                    /*wait_applied=*/true);
+  SetDeviceOpenNetworkConfiguration(
+      OncPolicyToSelectClientCert("DeviceLevelWifiGuid", "DeviceLevelWifiSsid",
+                                  /*issuer_common_name=*/kCertIssuerCommonName,
+                                  /*identity=*/"identity_1"),
+      /*wait_applied=*/true);
 
   // Verify that the EAP.CertId and EAP.KeyId properties are present and not
   // empty, i.e. that a client certificate has been selected.
@@ -1128,8 +1181,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, DoesNotWipeCertSettings) {
 
   EXPECT_THAT(eap_identity_watcher.GetValues(), ElementsAre("identity_1"));
 
-  SetDeviceOpenNetworkConfiguration(device_onc_with_identity_2,
-                                    /*wait_applied=*/true);
+  SetDeviceOpenNetworkConfiguration(
+      OncPolicyToSelectClientCert("DeviceLevelWifiGuid", "DeviceLevelWifiSsid",
+                                  /*issuer_common_name=*/kCertIssuerCommonName,
+                                  /*identity=*/"identity_2"),
+      /*wait_applied=*/true);
 
   // Verify that the EAP.CertId and EAP.KeyId properties have not been changed
   // to anything else (also not an empty string).
@@ -1153,32 +1209,12 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   Add8021xWifiService(kServiceWifi1, "DeviceLevelWifiGuidOrig",
                       "DeviceLevelWifiSsid", shill::kStateIdle);
 
-  const char kDeviceONC1[] = R"(
-    {
-      "NetworkConfigurations": [
-        {
-          "GUID": "{DeviceLevelWifiGuid}",
-          "Name": "DeviceLevelWifiName",
-          "Type": "WiFi",
-          "WiFi": {
-             "AutoConnect": false,
-             "EAP":  {
-              "Outer": "EAP-TLS",
-              "ClientCertType": "Pattern",
-              "Identity": "${DEVICE_SERIAL_NUMBER}",
-              "ClientCertPattern": {
-                "Issuer": {
-                  "Organization": "Example Inc."
-                }
-              }
-             },
-             "SSID": "DeviceLevelWifiSsid",
-             "Security": "WPA-EAP"
-          }
-        }
-      ]
-    })";
-  SetDeviceOpenNetworkConfiguration(kDeviceONC1, /*wait_applied=*/true);
+  SetDeviceOpenNetworkConfiguration(
+      OncPolicyToSelectClientCert("{DeviceLevelWifiGuid}",
+                                  "DeviceLevelWifiSsid",
+                                  /*issuer_common_name=*/"Example Inc.",
+                                  /*identity=*/"${DEVICE_SERIAL_NUMBER}"),
+      /*wait_applied=*/true);
 
   {
     const base::Value* wifi_service_properties =
@@ -1215,34 +1251,12 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   Add8021xWifiService(kServiceWifi1, "DeviceLevelWifiGuidOrig",
                       "DeviceLevelWifiSsid", shill::kStateIdle);
 
-  std::string kDeviceONC1 =
-      base::StringPrintf(R"(
-    {
-      "NetworkConfigurations": [
-        {
-          "GUID": "{DeviceLevelWifiGuid}",
-          "Name": "DeviceLevelWifiName",
-          "Type": "WiFi",
-          "WiFi": {
-             "AutoConnect": false,
-             "EAP":  {
-              "Outer": "EAP-TLS",
-              "ClientCertType": "Pattern",
-              "Identity": "%s",
-              "ClientCertPattern": {
-                "Issuer": {
-                  "CommonName": "%s"
-                }
-              }
-             },
-             "SSID": "DeviceLevelWifiSsid",
-             "Security": "WPA-EAP"
-          }
-        }
-      ]
-    })",
-                         kIdentityPolicyValue, kCertIssuerCommonName);
-  SetDeviceOpenNetworkConfiguration(kDeviceONC1, /*wait_applied=*/true);
+  SetDeviceOpenNetworkConfiguration(
+      OncPolicyToSelectClientCert("{DeviceLevelWifiGuid}",
+                                  "DeviceLevelWifiSsid",
+                                  /*issuer_common_name=*/kCertIssuerCommonName,
+                                  /*identity=*/kIdentityPolicyValue),
+      /*wait_applied=*/true);
 
   {
     const base::Value* wifi_service_properties =
@@ -1273,32 +1287,12 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                                     ->username_hash();
   shill_profile_client_test_->AddProfile(kUserProfilePath, user_hash);
 
-  const char kUserONC1[] = R"(
-    {
-      "NetworkConfigurations": [
-        {
-          "GUID": "{UserLevelWifiGuid}",
-          "Name": "UserLevelWifiName",
-          "Type": "WiFi",
-          "WiFi": {
-             "AutoConnect": false,
-             "EAP":  {
-              "Outer": "EAP-TLS",
-              "ClientCertType": "Pattern",
-              "Identity": "${LOGIN_EMAIL}",
-              "ClientCertPattern": {
-                "Issuer": {
-                  "Organization": "Example Inc."
-                }
-              }
-             },
-             "SSID": "UserLevelWifiSsid",
-             "Security": "WPA-EAP"
-          }
-        }
-      ]
-    })";
-  SetUserOpenNetworkConfiguration(user_hash, kUserONC1, /*wait_applied=*/true);
+  SetUserOpenNetworkConfiguration(
+      user_hash,
+      OncPolicyToSelectClientCert("{UserLevelWifiGuid}", "UserLevelWifiSsid",
+                                  /*issuer_common_name=*/"Example Inc.",
+                                  /*identity=*/"${LOGIN_EMAIL}"),
+      /*wait_applied=*/true);
 
   {
     const base::Value* wifi_service_properties =
@@ -1551,6 +1545,142 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, FixEthernetUIDataGUID) {
     absl::optional<base::Value::Dict> ui_data = GetUIDataDict(kServiceEth);
     ASSERT_TRUE(ui_data);
     EXPECT_EQ(GetGUIDFromUIData(*ui_data), kEthernetGuid);
+  }
+}
+
+// Tests that a client certificate that has been resolved from a
+// ClientCertPattern gets propated to the UI, specifically to the
+// CrosNetworkConfig layer.
+IN_PROC_BROWSER_TEST_F(
+    NetworkPolicyApplicationTest,
+    DevicePolicyClientCertPatternSuccessResultPropagatedToUi) {
+  const char* kCertKeyFilename = "client_3.pk8";
+  const char* kCertFilename = "client_3.pem";
+  const char* kCertIssuerCommonName = "E CA";
+  const char* kCertSubjectCommonName = "Client Cert F";
+  ASSERT_NO_FATAL_FAILURE(ImportCert(net::GetTestCertsDirectory(),
+                                     kCertFilename, kCertKeyFilename));
+
+  Add8021xWifiService(kServiceWifi1, "DeviceLevelWifiGuidOrig",
+                      "DeviceLevelWifiSsid", shill::kStateOnline);
+
+  SetDeviceOpenNetworkConfiguration(
+      OncPolicyToSelectClientCert("{DeviceLevelWifiGuid}",
+                                  "DeviceLevelWifiSsid",
+                                  /*issuer_common_name=*/kCertIssuerCommonName,
+                                  /*identity=*/"TestIdentity"),
+      /*wait_applied=*/true);
+
+  {
+    auto expected_client_cert =
+        CrosNetworkConfigFindClientCert(kCertSubjectCommonName);
+    ASSERT_TRUE(expected_client_cert)
+        << "Couldn't find cert " << kCertSubjectCommonName;
+
+    auto properties =
+        CrosNetworkConfigGetManagedProperties("{DeviceLevelWifiGuid}");
+    ASSERT_TRUE(properties);
+    ASSERT_EQ(properties->type_properties->which(),
+              network_mojom::NetworkTypeManagedProperties::Tag::kWifi);
+    const auto& eap = properties->type_properties->get_wifi()->eap;
+
+    // Check the selected certificate
+    ASSERT_TRUE(eap->client_cert_pkcs11_id);
+    EXPECT_EQ(eap->client_cert_pkcs11_id->active_value,
+              expected_client_cert->pem_or_id);
+    EXPECT_EQ(eap->client_cert_pkcs11_id->policy_source,
+              network_mojom::PolicySource::kDevicePolicyEnforced);
+    ASSERT_EQ(eap->client_cert_pkcs11_id->policy_value,
+              absl::make_optional(expected_client_cert->pem_or_id));
+
+    // The type should be "PKCS11Id" in the UI.
+    ASSERT_TRUE(eap->client_cert_type);
+    EXPECT_EQ(eap->client_cert_type->active_value, onc::client_cert::kPKCS11Id);
+    EXPECT_EQ(eap->client_cert_type->policy_source,
+              network_mojom::PolicySource::kDevicePolicyEnforced);
+    EXPECT_EQ(eap->client_cert_type->policy_value, onc::client_cert::kPKCS11Id);
+  }
+}
+
+// Tests that resolution of a ClientCertPattern is tirggered when a client
+// certificate is imported.
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
+                       DevicePolicyClientCertResolutionTriggeredOnCertImport) {
+  const char* kCertKeyFilename = "client_3.pk8";
+  const char* kCertFilename = "client_3.pem";
+  const char* kCertIssuerCommonName = "E CA";
+  const char* kCertSubjectCommonName = "Client Cert F";
+
+  Add8021xWifiService(kServiceWifi1, "DeviceLevelWifiGuidOrig",
+                      "DeviceLevelWifiSsid", shill::kStateOnline);
+
+  SetDeviceOpenNetworkConfiguration(
+      OncPolicyToSelectClientCert("{DeviceLevelWifiGuid}",
+                                  "DeviceLevelWifiSsid",
+                                  /*issuer_common_name=*/kCertIssuerCommonName,
+                                  /*identity=*/"TestIdentity"),
+      /*wait_applied=*/true);
+
+  {
+    // The  ClientCertPattern could not be resolved yet, the UI (the
+    // CrosNetworkConfig layer) gets an empty PKCS11Id.
+    auto properties =
+        CrosNetworkConfigGetManagedProperties("{DeviceLevelWifiGuid}");
+    ASSERT_TRUE(properties);
+    ASSERT_EQ(properties->type_properties->which(),
+              network_mojom::NetworkTypeManagedProperties::Tag::kWifi);
+    const auto& eap = properties->type_properties->get_wifi()->eap;
+
+    // Check that the selected certificate field is empty.
+    ASSERT_TRUE(eap->client_cert_pkcs11_id);
+    EXPECT_EQ(eap->client_cert_pkcs11_id->active_value, std::string());
+    EXPECT_EQ(eap->client_cert_pkcs11_id->policy_source,
+              network_mojom::PolicySource::kDevicePolicyEnforced);
+    EXPECT_EQ(eap->client_cert_pkcs11_id->policy_value, std::string());
+
+    // The type should still be "PKCS11Id" for the UI layer to indicate an empty
+    // selection.
+    ASSERT_TRUE(eap->client_cert_type);
+    EXPECT_EQ(eap->client_cert_type->active_value, onc::client_cert::kPKCS11Id);
+    EXPECT_EQ(eap->client_cert_type->policy_source,
+              network_mojom::PolicySource::kDevicePolicyEnforced);
+    EXPECT_EQ(eap->client_cert_type->policy_value, onc::client_cert::kPKCS11Id);
+  }
+
+  ServicePropertyValueWatcher eap_cert_id_watcher(
+      shill_service_client_test_, kServiceWifi1, shill::kEapCertIdProperty);
+  ASSERT_NO_FATAL_FAILURE(ImportCert(net::GetTestCertsDirectory(),
+                                     kCertFilename, kCertKeyFilename));
+  eap_cert_id_watcher.WaitForNonEmptyValue();
+
+  {
+    auto expected_client_cert =
+        CrosNetworkConfigFindClientCert(kCertSubjectCommonName);
+    ASSERT_TRUE(expected_client_cert)
+        << "Couldn't find cert " << kCertSubjectCommonName;
+
+    auto properties =
+        CrosNetworkConfigGetManagedProperties("{DeviceLevelWifiGuid}");
+    ASSERT_TRUE(properties);
+    ASSERT_EQ(properties->type_properties->which(),
+              network_mojom::NetworkTypeManagedProperties::Tag::kWifi);
+    const auto& eap = properties->type_properties->get_wifi()->eap;
+
+    // Check the selected certificate
+    ASSERT_TRUE(eap->client_cert_pkcs11_id);
+    EXPECT_EQ(eap->client_cert_pkcs11_id->active_value,
+              expected_client_cert->pem_or_id);
+    EXPECT_EQ(eap->client_cert_pkcs11_id->policy_source,
+              network_mojom::PolicySource::kDevicePolicyEnforced);
+    ASSERT_EQ(eap->client_cert_pkcs11_id->policy_value,
+              absl::make_optional(expected_client_cert->pem_or_id));
+
+    // The type should be "PKCS11Id" in the UI.
+    ASSERT_TRUE(eap->client_cert_type);
+    EXPECT_EQ(eap->client_cert_type->active_value, onc::client_cert::kPKCS11Id);
+    EXPECT_EQ(eap->client_cert_type->policy_source,
+              network_mojom::PolicySource::kDevicePolicyEnforced);
+    EXPECT_EQ(eap->client_cert_type->policy_value, onc::client_cert::kPKCS11Id);
   }
 }
 
