@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "build/build_config.h"
-#include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/services/print_compositor/public/cpp/print_service_mojo_types.h"
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
 #include "components/strings/grit/components_strings.h"
@@ -61,14 +60,6 @@ ContentToFrameMap ConvertContentInfoMap(
     content_frame_map[content_id] = GenerateFrameGuid(rfh);
   }
   return content_frame_map;
-}
-
-void BindDiscardableSharedMemoryManagerOnIOThread(
-    mojo::PendingReceiver<
-        discardable_memory::mojom::DiscardableSharedMemoryManager> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
-      std::move(receiver));
 }
 
 }  // namespace
@@ -362,15 +353,6 @@ mojom::PrintCompositor* PrintCompositeClient::CreateCompositeRequest(
           .WithDisplayName(IDS_PRINT_COMPOSITOR_SERVICE_DISPLAY_NAME)
           .Pass());
 
-  mojo::PendingRemote<discardable_memory::mojom::DiscardableSharedMemoryManager>
-      discardable_memory_manager;
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &BindDiscardableSharedMemoryManagerOnIOThread,
-          discardable_memory_manager.InitWithNewPipeAndPassReceiver()));
-  compositor_->SetDiscardableSharedMemoryManager(
-      std::move(discardable_memory_manager));
   compositor_->SetWebContentsURL(web_contents()->GetLastCommittedURL());
   compositor_->SetUserAgent(user_agent_);
 

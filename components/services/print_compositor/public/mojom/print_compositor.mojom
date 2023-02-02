@@ -4,7 +4,6 @@
 
 module printing.mojom;
 
-import "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "url/mojom/url.mojom";
@@ -21,13 +20,6 @@ interface PrintCompositor {
     kContentFormatError = 2,
     kCompositingFailure = 3,
   };
-
-  // Provides an interface for managing discardable shared memory regions. Must
-  // be called before other methods on this interface if performing compositing
-  // operations.
-  SetDiscardableSharedMemoryManager(
-      pending_remote<discardable_memory.mojom.DiscardableSharedMemoryManager>
-          manager);
 
   // Notifies that a subframe is unavailable, such as the render frame process
   // hosting it crashed or terminated. The subframe will be composited with no

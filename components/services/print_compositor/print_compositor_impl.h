@@ -45,10 +45,10 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
  public:
   // Creates an instance with an optional Mojo receiver (may be null) and
   // optional initialization of the runtime environment necessary for
-  // compositing operations. |io_task_runner| is used for shared memory
-  // management, if and only if |SetDiscardableSharedMemoryManager()| is
-  // eventually called, which may not be the case in unit tests. In practice,
-  // |initialize_environment| is only false in unit tests.
+  // compositing operations. `io_task_runner` is used for shared memory
+  // management, if and only if there is a receiver, which may not be the case
+  // in unit tests. In practice, `initialize_environment` is only false in unit
+  // tests.
   PrintCompositorImpl(
       mojo::PendingReceiver<mojom::PrintCompositor> receiver,
       bool initialize_environment,
@@ -60,10 +60,6 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   ~PrintCompositorImpl() override;
 
   // mojom::PrintCompositor
-  void SetDiscardableSharedMemoryManager(
-      mojo::PendingRemote<
-          discardable_memory::mojom::DiscardableSharedMemoryManager> manager)
-      override;
   void NotifyUnavailableSubframe(uint64_t frame_guid) override;
   void AddSubframeContent(
       uint64_t frame_guid,

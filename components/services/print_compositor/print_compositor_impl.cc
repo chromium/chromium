@@ -38,6 +38,9 @@
 #include "third_party/blink/public/platform/platform.h"
 #endif
 
+using MojoDiscardableSharedMemoryManager =
+    discardable_memory::mojom::DiscardableSharedMemoryManager;
+
 namespace printing {
 
 PrintCompositorImpl::PrintCompositorImpl(
@@ -45,8 +48,19 @@ PrintCompositorImpl::PrintCompositorImpl(
     bool initialize_environment,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : io_task_runner_(std::move(io_task_runner)) {
-  if (receiver)
+  if (receiver) {
     receiver_.Bind(std::move(receiver));
+
+    mojo::PendingRemote<MojoDiscardableSharedMemoryManager> manager_remote;
+    content::ChildThread::Get()->BindHostReceiver(
+        manager_remote.InitWithNewPipeAndPassReceiver());
+    DCHECK(io_task_runner_);
+    discardable_shared_memory_manager_ = base::MakeRefCounted<
+        discardable_memory::ClientDiscardableSharedMemoryManager>(
+        std::move(manager_remote), io_task_runner_);
+    base::DiscardableMemoryAllocator::SetInstance(
+        discardable_shared_memory_manager_.get());
+  }
 
   if (!initialize_environment)
     return;
@@ -81,19 +95,6 @@ PrintCompositorImpl::~PrintCompositorImpl() {
 #if BUILDFLAG(IS_WIN)
   content::UninitializeDWriteFontProxy();
 #endif
-}
-
-void PrintCompositorImpl::SetDiscardableSharedMemoryManager(
-    mojo::PendingRemote<
-        discardable_memory::mojom::DiscardableSharedMemoryManager> manager) {
-  // Set up discardable memory manager.
-  mojo::PendingRemote<discardable_memory::mojom::DiscardableSharedMemoryManager>
-      manager_remote(std::move(manager));
-  discardable_shared_memory_manager_ = base::MakeRefCounted<
-      discardable_memory::ClientDiscardableSharedMemoryManager>(
-      std::move(manager_remote), io_task_runner_);
-  base::DiscardableMemoryAllocator::SetInstance(
-      discardable_shared_memory_manager_.get());
 }
 
 void PrintCompositorImpl::NotifyUnavailableSubframe(uint64_t frame_guid) {
