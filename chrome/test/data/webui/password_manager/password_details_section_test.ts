@@ -148,4 +148,155 @@ suite('PasswordDetailsSectionTest', function() {
       assertDeepEquals(entries[index]!.password, group.entries[index]);
     }
   });
+
+  test('Details section closes when password deleted', async function() {
+    const group = createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, username: 'test1'}),
+      ],
+    });
+    passwordManager.data.groups = [group];
+    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+
+    const section = document.createElement('password-details-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    assertEquals(
+        1,
+        section.shadowRoot!.querySelectorAll('password-details-card').length);
+
+    // Assert that details section subscribed as a listener.
+    assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
+
+    // Clear groups and invoke password changes.
+    passwordManager.data.groups = [];
+    passwordManager.listeners.savedPasswordListChangedListener([]);
+    await passwordManager.whenCalled('getCredentialGroups');
+
+    assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
+  });
+
+  test('Details section ignores irrelevant updates', async function() {
+    const group = createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, username: 'test1'}),
+      ],
+    });
+    passwordManager.data.groups = [group];
+    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+
+    const section = document.createElement('password-details-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    assertEquals(
+        1,
+        section.shadowRoot!.querySelectorAll('password-details-card').length);
+
+    // Assert that details section subscribed as a listener.
+    assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
+
+    // Invoke password changes to trigger group refresh logic even though
+    // nothing has changed.
+    passwordManager.listeners.savedPasswordListChangedListener([]);
+    await passwordManager.whenCalled('getCredentialGroups');
+
+    // Verify no calls were made to requestCredentialsDetails().
+    assertEquals(0, passwordManager.getCallCount('requestCredentialsDetails'));
+    // Verify details page is still visible.
+    assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
+    assertEquals(
+        1,
+        section.shadowRoot!.querySelectorAll('password-details-card').length);
+  });
+
+  test('Details section updates info when id changed', async function() {
+    const group = createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, username: 'test1'}),
+      ],
+    });
+    passwordManager.data.groups = [group];
+    passwordManager.setRequestCredentialsDetailsResponse(group.entries);
+    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+
+    const section = document.createElement('password-details-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    assertEquals(
+        1,
+        section.shadowRoot!.querySelectorAll('password-details-card').length);
+
+    // Assert that details section subscribed as a listener.
+    assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
+
+    // Update id and invoke password changes.
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 1, username: 'test1'}),
+      ],
+    })];
+    passwordManager.listeners.savedPasswordListChangedListener([]);
+    await passwordManager.whenCalled('getCredentialGroups');
+    await passwordManager.whenCalled('requestCredentialsDetails');
+
+    // Verify details page is still visible.
+    assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
+    assertEquals(
+        1,
+        section.shadowRoot!.querySelectorAll('password-details-card').length);
+  });
+
+  test('Url is updated based on new group info', async function() {
+    const group = createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 1, username: 'test1'}),
+        createPasswordEntry({id: 2, username: 'test2'}),
+      ],
+    });
+    passwordManager.data.groups = [group];
+    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+
+    const section = document.createElement('password-details-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    await new Promise(resolve => setTimeout(resolve));
+
+    assertEquals(
+        2,
+        section.shadowRoot!.querySelectorAll('password-details-card').length);
+
+    // Assert that details section subscribed as a listener.
+    assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
+
+    // Delete one credential in the group and invoke password changes.
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.de',
+      credentials: [
+        createPasswordEntry({id: 1, username: 'test1'}),
+      ],
+    })];
+    passwordManager.setRequestCredentialsDetailsResponse(
+        passwordManager.data.groups[0]!.entries);
+    passwordManager.listeners.savedPasswordListChangedListener([]);
+    await passwordManager.whenCalled('getCredentialGroups');
+    await passwordManager.whenCalled('requestCredentialsDetails');
+    await flushTasks();
+
+    // Verify details page is still visible and path is matching new group name.
+    assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
+    assertEquals(
+        '/passwords/test.de', Router.getInstance().currentRoute.path());
+    assertEquals(
+        1,
+        section.shadowRoot!.querySelectorAll('password-details-card').length);
+  });
 });
