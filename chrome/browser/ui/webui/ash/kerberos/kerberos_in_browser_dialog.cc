@@ -40,14 +40,14 @@ void KerberosInBrowserDialog::AdjustWidgetInitParams(
 KerberosInBrowserDialog::KerberosInBrowserDialog(
     base::OnceClosure close_dialog_closure)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIKerberosInBrowserURL),
-                              /* title */ std::u16string()),
+                              /*title=*/std::u16string()),
       close_dialog_closure_(std::move(close_dialog_closure)) {
   DCHECK(!g_dialog);
   g_dialog = this;
 }
 
 KerberosInBrowserDialog::~KerberosInBrowserDialog() {
-  if (!close_dialog_closure_.is_null()) {
+  if (close_dialog_closure_) {
     std::move(close_dialog_closure_).Run();
   }
 
@@ -75,7 +75,7 @@ void KerberosInBrowserDialog::Show(base::OnceClosure close_dialog_closure) {
     return;
   }
 
-  // Will be deleted by |SystemWebDialogDelegate::OnDialogClosed|.
+  // Will be deleted by `SystemWebDialogDelegate::OnDialogClosed`.
   g_dialog = new KerberosInBrowserDialog(std::move(close_dialog_closure));
   g_dialog->ShowSystemDialog();
 

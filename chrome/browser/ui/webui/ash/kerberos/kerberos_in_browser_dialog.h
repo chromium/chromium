@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_KERBEROS_KERBEROS_IN_BROWSER_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_KERBEROS_KERBEROS_IN_BROWSER_DIALOG_H_
 
-#include "base/gtest_prod_util.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 
 namespace ash {
