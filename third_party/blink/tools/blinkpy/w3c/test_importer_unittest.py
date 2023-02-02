@@ -151,8 +151,7 @@ class TestImporterTest(LoggingTestCase):
             try_job_results={
                 Build('builder-a', 123): TryJobStatus('COMPLETED', 'FAILURE'),
             })
-        importer.fetch_new_expectations_and_baselines = lambda: None
-        importer.fetch_wpt_override_expectations = lambda: None
+        importer.fetch_new_expectations_and_baselines = lambda builders: None
         success = importer.update_expectations_for_cl()
         self.assertTrue(success)
         self.assertLog([

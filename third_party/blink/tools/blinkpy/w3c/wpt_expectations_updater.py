@@ -67,8 +67,6 @@ class WPTExpectationsUpdater(object):
                              for p in self.expectations_files()}
         self._test_expectations = TestExpectations(
             self.port, expectations_dict=expectations_dict)
-        self.testid_prefix = "ninja://:blink_wpt_tests/"
-        self.test_suite = "blink_wpt_tests"
 
     def expectations_files(self):
         """Returns list of expectations files.
@@ -146,58 +144,7 @@ class WPTExpectationsUpdater(object):
         raise ValueError('"%s" flag-specific suite on "%s" not found' %
                          (flag_specific, builder))
 
-    def update_expectations_for_flag_specific(self, flag_specific):
-        """Adds test expectations lines for flag specific builders.
-
-        Returns:
-            A pair: A set of tests that should be rebaselined, and a dictionary
-            mapping tests that couldn't be rebaselined to lists of expectation
-            lines written to flag specific test expectations.
-        """
-        # TODO(crbug.com/1344709): This method has no coverage and should be
-        # merged with `update_expectations`.
-        self.port.wpt_manifest.cache_clear()
-
-        issue_number = self.get_issue_number()
-        if issue_number == 'None':
-            raise ScriptError('No issue on current branch.')
-
-        # TODO(crbug.com/1406978): Retrieve builder names from the config
-        # instead of hardcoding.
-        builder = 'linux-blink-rel'
-        builder_names = [builder]
-        test_suite = self.suite_for_builder(builder, flag_specific)
-
-        build_to_status = self.git_cl.latest_try_jobs(
-            builder_names=builder_names,
-            patchset=self.patchset)
-        if not build_to_status:
-            raise ScriptError('No try job information was collected.')
-
-        # Here we build up a dict of failing test results for all platforms.
-        test_expectations = {}
-        for build, job_status in build_to_status.items():
-            if (job_status.result == 'SUCCESS' and
-                    not self.options.include_unexpected_pass):
-                continue
-            # Temporary logging for https://crbug.com/1154650
-            result_dicts = self.get_failing_results_dicts(build, test_suite)
-            _log.info('Merging failing results dicts for %s', build)
-            for result_dict in result_dicts:
-                test_expectations = self.merge_dicts(
-                    test_expectations, result_dict)
-
-        generic_expectations = TestExpectations(self.port)
-
-        # Do not create expectations for tests which should have baseline
-        tests_to_rebaseline, test_expectations = self.get_tests_to_rebaseline(
-            test_expectations)
-        exp_lines_dict = self.write_to_test_expectations(test_expectations,
-                                                         flag_specific,
-                                                         generic_expectations)
-        return tests_to_rebaseline, exp_lines_dict
-
-    def update_expectations(self):
+    def update_expectations(self, flag_specific: Optional[str] = None):
         """Adds test expectations lines.
 
         Returns:
@@ -228,9 +175,17 @@ class WPTExpectationsUpdater(object):
             if (job_status.result == 'SUCCESS' and
                     not self.options.include_unexpected_pass):
                 continue
+            try:
+                suite = self.suite_for_builder(build.builder_name,
+                                               flag_specific)
+            except ValueError:
+                _log.debug(
+                    'Builder %s does not run flag-specific suite %s, skipping',
+                    build.builder_name, flag_specific or '(generic)')
+                continue
             # Temporary logging for https://crbug.com/1154650
-            result_dicts = self.get_failing_results_dicts(build, self.test_suite)
-            _log.info('Merging failing results dicts for %s', build)
+            result_dicts = self.get_failing_results_dicts(build, suite)
+            _log.info('Merging failing results dicts for %s, %s', build, suite)
             for result_dict in result_dicts:
                 test_expectations = self.merge_dicts(
                     test_expectations, result_dict)
@@ -262,7 +217,8 @@ class WPTExpectationsUpdater(object):
         # Do not create expectations for tests which should have baseline
         tests_to_rebaseline, test_expectations = self.get_tests_to_rebaseline(
             test_expectations)
-        exp_lines_dict = self.write_to_test_expectations(test_expectations)
+        exp_lines_dict = self.write_to_test_expectations(
+            test_expectations, flag_specific)
         return tests_to_rebaseline, exp_lines_dict
 
     def add_results_for_configs_without_results(self, test_expectations,
@@ -337,6 +293,10 @@ class WPTExpectationsUpdater(object):
             If results could be fetched but none are failing,
             this will return an empty list.
         """
+        # TODO(crbug.com/1149035): Use `TestResultFetcher.gather_results` to
+        # dedupe `generate_failing_results_dict_from_resultdb` into
+        # `generate_failing_results_dict`. Also, remove the webdriver special
+        # case that fetches from test-results.appspot.com.
 
         func = lambda x: (x["variant"]["def"]["test_suite"] == test_suite)
         test_results_list = []
@@ -370,23 +330,24 @@ class WPTExpectationsUpdater(object):
                 self.host.results_fetcher.fetch_webdriver_test_results(
                     build, mst))
 
-        webdriver_test_results = filter(None, webdriver_test_results)
+        webdriver_test_results = list(filter(None, webdriver_test_results))
         if not test_results_list and not webdriver_test_results:
             _log.warning('No results for build %s', build)
             self.configs_with_no_results.extend(self.get_builder_configs(build))
             return []
 
         unexpected_test_results = []
+        test_id_prefix = 'ninja://:%s/' % test_suite
         unexpected_test_results.append(
             self.generate_failing_results_dict_from_resultdb(
-                build, test_results_list))
+                build, test_results_list, test_id_prefix))
 
         for results_set in webdriver_test_results:
             results_dict = self.generate_failing_results_dict(
                 build, results_set)
             if results_dict:
                 unexpected_test_results.append(results_dict)
-        unexpected_test_results = filter(None, unexpected_test_results)
+        unexpected_test_results = list(filter(None, unexpected_test_results))
         return unexpected_test_results
 
     def _get_web_test_results(self, build):
@@ -409,7 +370,11 @@ class WPTExpectationsUpdater(object):
         return self.host.builders.port_name_for_builder_name(
             build.builder_name)
 
-    def generate_failing_results_dict_from_resultdb(self, build, results_list):
+    def generate_failing_results_dict_from_resultdb(
+            self,
+            build,
+            results_list,
+            test_id_prefix: str = 'ninja://:blink_wpt_tests/'):
         """Makes a dict with results for one platform.
 
         Args:
@@ -433,7 +398,7 @@ class WPTExpectationsUpdater(object):
         config = configs[0]
         test_dict = defaultdict(set)
         for result in results_list:
-            test_name = result["testId"][len(self.testid_prefix):]
+            test_name = result["testId"][len(test_id_prefix):]
             if not self._is_wpt_test(test_name):
                 continue
             if result["status"] == "SKIP":
@@ -900,9 +865,9 @@ class WPTExpectationsUpdater(object):
                     builder_name).lower())
         return frozenset(all_platform_specifiers)
 
-    def write_to_test_expectations(self, test_expectations,
-                                   flag_specific=None,
-                                   generic_expectations=None):
+    def write_to_test_expectations(self,
+                                   test_expectations,
+                                   flag_specific: Optional[str] = None):
         """Writes the given lines to the TestExpectations file.
 
         The place in the file where the new lines are inserted is after a marker
@@ -920,7 +885,7 @@ class WPTExpectationsUpdater(object):
         """
         if flag_specific:
             line_dict, configs_to_remove = self.create_line_dict_for_flag_specific(
-                test_expectations, generic_expectations)
+                test_expectations, TestExpectations(self.port))
         else:
             line_dict, configs_to_remove = self.create_line_dict(test_expectations)
         if not line_dict:

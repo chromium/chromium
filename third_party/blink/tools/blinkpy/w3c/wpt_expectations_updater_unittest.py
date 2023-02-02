@@ -37,6 +37,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 'port_name': 'test-mac-mac10.10',
                 'specifiers': ['Mac10.10', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'blink_wpt_tests (with patch)': {},
+                },
             },
             'MOCK Try Mac10.11': {
                 'port_name': 'test-mac-mac10.11',
@@ -52,8 +55,8 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 'steps': {
                     'blink_web_tests (with patch)': {},
                     'blink_wpt_tests (with patch)': {},
-                    'flag_specific_blink_wpt_tests (with patch)': {
-                        'flag_specific': 'flag-specific',
+                    'fake_flag_blink_wpt_tests (with patch)': {
+                        'flag_specific': 'fake-flag',
                     },
                 },
             },
@@ -118,8 +121,8 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         self.assertEqual(updater.suite_for_builder('MOCK Try Trusty'),
                          'blink_wpt_tests')
         self.assertEqual(
-            updater.suite_for_builder('MOCK Try Trusty', 'flag-specific'),
-            'flag_specific_blink_wpt_tests')
+            updater.suite_for_builder('MOCK Try Trusty', 'fake-flag'),
+            'fake_flag_blink_wpt_tests')
 
     def test_run_single_platform_failure(self):
         """Tests the main run method in a case where one test fails on one platform."""
@@ -177,6 +180,63 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             '# ====== New tests from wpt-importer added here ======\n'
             'crbug.com/626703 [ Mac10.10 ] external/wpt/test/path.html [ Timeout ]\n'
         )
+
+    def test_run_single_flag_specific_failure(self):
+        """Tests the main run method in a case where one test fails on one
+        flag-specific suite.
+        """
+        host = self.mock_host()
+
+        # Fill in an initial value for TestExpectations
+        expectations_path = \
+            host.port_factory.get().path_to_flag_specific_expectations_file('fake-flag')
+        host.filesystem.write_text_file(
+            expectations_path, WPTExpectationsUpdater.MARKER_COMMENT + '\n')
+
+        # Set up fake try job results.
+        updater = WPTExpectationsUpdater(host)
+        updater.git_cl = MockGitCL(
+            updater.host, {
+                Build('MOCK Try Mac10.10', 333, 'Build-1'):
+                TryJobStatus('COMPLETED', 'SUCCESS'),
+                Build('MOCK Try Mac10.11', 111, 'Build-2'):
+                TryJobStatus('COMPLETED', 'SUCCESS'),
+                Build('MOCK Try Trusty', 222, 'Build-3'):
+                TryJobStatus('COMPLETED', 'FAILURE'),
+                Build('MOCK Try Precise', 333, 'Build-4'):
+                TryJobStatus('COMPLETED', 'SUCCESS'),
+                Build('MOCK Try Win10', 444, 'Build-5'):
+                TryJobStatus('COMPLETED', 'SUCCESS'),
+                Build('MOCK Try Win7', 555, 'Build-6'):
+                TryJobStatus('COMPLETED', 'SUCCESS'),
+            })
+
+        # Set up failing results for one try bot. It shouldn't matter what
+        # results are for the other builders since we shouldn't need to even
+        # fetch results, since the try job status already tells us that all
+        # of the tests passed.
+        result = """
+            {
+                "testId": "ninja://:fake_flag_blink_wpt_tests/external/wpt/test/path.html",
+                "variant": {
+                    "def": {
+                        "builder": "linux-blink-rel",
+                        "os": "Ubuntu-18.04",
+                        "test_suite": "fake_flag_blink_wpt_tests"
+                    }
+                },
+                "status": "ABORT"
+            }
+            """
+        host.results_fetcher.set_results_to_resultdb(
+            Build('MOCK Try Trusty', 222, 'Build-3'), [json.loads(result)] * 3)
+
+        # `updater.run` does not update flag-specific expectations.
+        updater.update_expectations('fake-flag')
+        self.assertEqual(
+            host.filesystem.read_text_file(expectations_path),
+            '# ====== New tests from wpt-importer added here ======\n'
+            'crbug.com/626703 external/wpt/test/path.html [ Timeout ]\n')
 
     def test_get_failing_results_dict_only_passing_results(self):
         host = self.mock_host()
