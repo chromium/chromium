@@ -7,6 +7,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/safe_browsing/core/common/safe_browsing_settings_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -79,8 +80,7 @@
   self.mediator.handler = self;
   self.viewController.modelDelegate = self.mediator;
   DCHECK(self.baseNavigationController);
-  base::RecordAction(
-      base::UserMetricsAction("Options_ShowSafeBrowsingEnhancedProtection"));
+  safe_browsing::LogShowEnhancedProtectionAction();
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
 }
