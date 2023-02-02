@@ -184,6 +184,7 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1412394")
     public void testDismissIphItem() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
