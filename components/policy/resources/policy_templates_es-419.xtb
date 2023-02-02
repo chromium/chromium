@@ -5509,6 +5509,27 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6261643884958898336">Enviar la información de identificación de la máquina</translation>
 <translation id="6265892395051519509">Permite el acceso a los sensores en estos sitios</translation>
 <translation id="6266043141694454734">Determina si se usarán Chrome Root Store y el verificador de certificados integrado para verificar los certificados de servidores</translation>
+<translation id="6267130578410325007">Esta política permite el agrupamiento en clústeres de agentes con clave de origen de forma predeterminada.
+
+El encabezado del HTTP Origin-Agent-Cluster controla si un documento está
+aislado en un clúster de agentes con clave de origen o bien en un
+clúster con clave de sitio. Esto tiene repercusiones en la seguridad ya que un clúster de agentes con clave de origen
+permite el aislamiento de documentos por origen. La consecuencia
+visible de esto para el desarrollador es que el descriptor de acceso de document.domain ya no podrá
+establecerse.
+
+El comportamiento predeterminado cuando no se establece un encabezado Origin-Agent-Cluster
+cambia en M111 de clave de sitio a clave de origen.
+
+Si habilitas o no estableces la política, el navegador seguirá la
+nueva configuración predeterminada de esa versión en adelante.
+
+Si la inhabilitas, se revierte este cambio y
+los documentos que no contengan encabezados Origin-Agent-Cluster se asignarán a
+los clústeres de agentes con clave de sitio. Como consecuencia, el descriptor de acceso de document.domain
+podrá establecerse de forma predeterminada. Esto coincide con el comportamiento heredado.
+
+Para obtener más información, consulta https://developer.chrome.com/blog/immutable-document-domain/.</translation>
 <translation id="6270615143812355589">Habilitar la entrada de audio</translation>
 <translation id="6270791075656665237">Inhabilitar QUIC</translation>
 <translation id="6273015149273504999">
@@ -6458,6 +6479,23 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si se establece como obligatoria, los usuarios no podrán cambiarla ni anularla.
 
       Si no la estableces, se ubicará la biblioteca de forma predeterminada en la parte inferior de la pantalla y el usuario podrá cambiar su posición.</translation>
+<translation id="7037853989942016900">Esta política controla la refactorización reciente de las APIs de Graphics3D en el complemento PPAPI.
+
+La migración solo afecta los detalles de implementación internos y no debe
+cambiar ningún comportamiento. Sin embargo, esta política se puede usar en caso de que las aplicaciones PPAPI
+no funcionen como se espera.
+
+Si no estableces la política o la habilitas, el navegador decidirá
+qué implementación se utiliza.
+Si la inhabilitas, el navegador usará la implementación anterior
+hasta que la política venza.
+
+Si tienes que utilizar la política, informa un error en crbug.com en el que expliques tu
+caso de uso. La política está programada para ofrecerse a través de la versión 114 de <ph name="PRODUCT_NAME" />, después de lo cual
+se quitará la implementación anterior.
+
+NOTA: Solo los procesos del renderizado recién iniciado reflejarán los cambios de esta
+política mientras se esté ejecutando el navegador.</translation>
 <translation id="7039815268521168329">Mostrar el flujo de Voice Match de Asistente de Google durante la configuración inicial</translation>
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
 <translation id="7044883996351280650">Controlar el servicio de restablecimiento y copias de seguridad</translation>

@@ -392,6 +392,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeமில் திறக்கப்படும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றை ஏற்கிறீர்கள். <ph name="BEGIN_LINK3" />தனியுரிமைக் கொள்கையையும்<ph name="END_LINK3" /> ஏற்கிறீர்கள்.</translation>
 <translation id="3091010850649238832">கிளிப்போர்டில் உள்ளவற்றைக் காட்டும்</translation>
 <translation id="3098745985164956033">உங்களுக்கான விளக்கங்களை மேம்படுத்த, படங்கள் Googleளுக்கு அனுப்பப்படும்</translation>
+<translation id="3104179992611025423">இந்த உலாவியை உங்கள் பெற்றோர் நிர்வகிக்கின்றனர்</translation>
 <translation id="3114507951000454849">இன்றைய செய்திகளைப் படியுங்கள் <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">இந்தக் கார்டுடன் இணைத்துள்ளீர்கள்</translation>
 <translation id="3123734510202723619">அறிவிப்புகள்</translation>
@@ -401,6 +402,7 @@
 <translation id="3157931365184549694">மீட்டமை</translation>
 <translation id="3166827708714933426">தாவல் மற்றும் சாளரத்திற்கான ஷார்ட்கட்கள்</translation>
 <translation id="316694332262407393">ஏற்கெனவே இது Chromeமில் திறந்துள்ளது.</translation>
+<translation id="3167258285411721858">நீங்கள் <ph name="HOST_NAME" />க்கான மொபைல் தளத்தைக் கோரலாம்</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">விளம்பர அளவீடு</translation>
 <translation id="3207960819495026254">புக்மார்க் செய்யப்பட்டது</translation>
@@ -434,6 +436,7 @@
 <translation id="3297344142967351106">குரல் உதவி</translation>
 <translation id="3303414029551471755">உள்ளடக்கத்தைப் பதிவிறக்குவதைத் தொடரவா?</translation>
 <translation id="3305795716056605962">மேலும் விருப்பங்கள் பட்டனைக் கிளிக் செய்து, பக்கங்களை மொழிபெயர்க்கலாம்</translation>
+<translation id="3319664549618064419">இந்தத் தளம் காட்டப்படும் விதத்தை இன்னும் சிறப்பாக்க டெஸ்க்டாப் தளத்திற்கு மாற்றுங்கள்</translation>
 <translation id="3334729583274622784">ஃபைல் நீட்டிப்பை மாற்றவா?</translation>
 <translation id="3341262203274374114">பின்தொடர்வதை நிறுத்த முடியவில்லை. ஏதோ தவறாகிவிட்டது.</translation>
 <translation id="3359667936385849800">எனது தற்போதைய சேவை வழங்குநரைப் பயன்படுத்து</translation>
@@ -1467,6 +1470,7 @@
 <translation id="8849001918648564819">மறைக்கப்பட்டுள்ளது</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, தாவல்</translation>
 <translation id="8854223127042600341">உங்கள் ஆஃப்லைன் ஃபைல்களைப் பாருங்கள்</translation>
+<translation id="885480114717186641">நீங்கள் <ph name="HOST_NAME" />க்கான டெஸ்க்டாப் தளத்தைக் கோரலாம்</translation>
 <translation id="8856607253650333758">விளக்கங்களைப் பெறுக</translation>
 <translation id="8856931513242997049">அறிவிப்புக்கான அனுமதிச் செயல்முறை மூடப்பட்டது</translation>
 <translation id="8873817150012960745">தேடுவதற்கு இங்கே தட்டவும்</translation>

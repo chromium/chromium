@@ -186,6 +186,7 @@
 <translation id="1161575384898972166">क्लाइंट प्रमाणपत्र निर्यात करने के लिए, कृपया <ph name="TOKEN_NAME" /> में साइन इन करें.</translation>
 <translation id="116173250649946226">आपके एडमिन ने डिफ़ॉल्ट थीम सेट की है. इसे बदला नहीं जा सकता.</translation>
 <translation id="1162213688509394031">शीर्षक बार छिपाएं</translation>
+<translation id="1162479191445552288">डिवाइस चालू होने पर ऐप्लिकेशन लॉन्च करें</translation>
 <translation id="1163931534039071049">फ़्रेम का स्रोत &amp;देखें</translation>
 <translation id="1164891049599601209">यह पासवर्ड धोखाधड़ी वाली साइट पर डाला गया था</translation>
 <translation id="1165039591588034296">गड़बड़ी</translation>
@@ -564,6 +565,7 @@
     सर्वर काम कर रहा है या नहीं, अपनी प्रॉक्सी सेटिंग देखें या अपने नेटवर्क व्यवस्थापक से
     संपर्क करें. अगर आपको नहीं लगता कि आप प्रॉक्सी सर्वर का उपयोग कर रहे हैं,
     तो अपनी <ph name="LINK_START" />प्रॉक्सी सेटिंग<ph name="LINK_END" /> एडजस्ट करें.</translation>
+<translation id="1510882959204224895">विंडो में खोलें</translation>
 <translation id="1511997356770098059">इस सुरक्षा कुंजी में साइन इन डेटा सेव नहीं किया जा सकता</translation>
 <translation id="1512210426710821809">इसे पहले जैसा करने का अकेला तरीका <ph name="IDS_SHORT_PRODUCT_OS_NAME" /> को फिर से इंस्टॉल करना है</translation>
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> को सुरक्षित किया गया. इसके मालिक से इसे सबकी पहुंच में लाने के लिए कहें.</translation>
@@ -1278,6 +1280,7 @@
 <translation id="2114820389966440614">"हाल की बेहतरीन फ़ोटो" और दूसरी यादें यहां देखें</translation>
 <translation id="2114896190328250491"><ph name="NAME" /> की फ़ोटो</translation>
 <translation id="2114995631896158695">कोई सिम कार्ड नहीं डाला गया</translation>
+<translation id="2116020356255810305">डिवाइस के चालू होने पर, ऐप्लिकेशन लॉन्च होने की सुविधा चालू करें</translation>
 <translation id="2116619964159595185">आम तौर पर साइटें, कम ऊर्जा वाले बीकन, हेल्थ या फ़िटनेस ट्रैकर या स्मार्ट लाइट बल्ब को सेट अप या सिंक करने जैसी सुविधाओं के लिए ब्लूटूथ डिवाइसों से कनेक्ट करती हैं</translation>
 <translation id="2117655453726830283">अगली स्लाइड</translation>
 <translation id="2119349053129246860"><ph name="APP" /> में खोलें</translation>
@@ -5038,6 +5041,7 @@
 <translation id="5555639311269196631">हॉटस्पॉट बंद करें</translation>
 <translation id="5556459405103347317">फिर लोड करें</translation>
 <translation id="5558129378926964177">ज़ूम &amp;इन करें</translation>
+<translation id="5558247502209241936">ऐप्लिकेशन को विंडो में खोलने की सुविधा चालू करें</translation>
 <translation id="55601339223879446">डिसप्ले के भीतर अपने डेस्कटॉप की सीमाएं समायोजित करें</translation>
 <translation id="5561162485081632007">नुकसान पहुंचाने वाली घटनाएं होने पर उनकी पहचान करता है और उनके बारे में आपको चेतावनी देता है.</translation>
 <translation id="5562781907504170924">यह टैब किसी ब्लूटूथ डिवाइस से कनेक्ट है.</translation>
@@ -5333,6 +5337,7 @@
 <translation id="5836999627049108525">वह भाषा जिससे अनुवाद करना है</translation>
 <translation id="583756221537636748">केस</translation>
 <translation id="5839524803417937122"><ph name="SEARCH_ENGINE" /> की मदद से इमेज में खोजें</translation>
+<translation id="5840318881868981258">अपने Google खाते, <ph name="ACCOUNT" /> में</translation>
 <translation id="5840680448799937675">फ़ाइलों को हमेशा ऑफ़लाइन शेयर किया जाएगा</translation>
 <translation id="5841270259333717135">ईथरनेट कॉन्फ़िगर करें</translation>
 <translation id="5842497610951477805">ब्लूटूथ चालू है</translation>
@@ -5934,6 +5939,7 @@
 <translation id="6400360390396538896">हमेशा <ph name="ORIGIN" /> पर</translation>
 <translation id="6401458660421980302">इस टैब को किसी दूसरे डिवाइस पर भेजने के लिए, उस डिवाइस पर जाकर Chrome में साइन इन करें</translation>
 <translation id="6401597285454423070">आपके कंप्यूटर में एक 'ट्रस्टेड प्लैटफ़ॉर्म मॉड्यूल' (टीपीएम) सुरक्षा डिवाइस होता है. इसका इस्तेमाल ChromeOS में कई ज़रूरी सुरक्षा सुविधाओं को लागू करने के लिए किया जाता है. ज़्यादा जानने के लिए Chromebook के सहायता केंद्र पर जाएं: https://support.google.com/chromebook/?p=tpm</translation>
+<translation id="6402624310818737708">अपने Google खाते, <ph name="ACCOUNT" /> में</translation>
 <translation id="6404187344102273690">Chromebook गेमिंग</translation>
 <translation id="6404511346730675251">बुकमार्क में बदलाव करें</translation>
 <translation id="6406303162637086258">ब्राउज़र पुनर्प्रारंभ को सिम्युलेट करें</translation>
