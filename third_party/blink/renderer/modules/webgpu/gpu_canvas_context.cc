@@ -93,7 +93,7 @@ SkColorInfo GPUCanvasContext::CanvasRenderingContextSkColorInfo() const {
 }
 
 void GPUCanvasContext::Stop() {
-  DetachSwapBuffers();
+  ReplaceDrawingBuffer(/*destroy_swap_buffers*/ true);
   stopped_ = true;
 }
 
@@ -109,7 +109,20 @@ void GPUCanvasContext::Reshape(int width, int height) {
     return;
   }
 
-  ResizeSwapbuffers(gfx::Size(width, height));
+  // Steps for canvas context resizing:
+  // 1. Replace the drawing buffer of context.
+  ReplaceDrawingBuffer(/* destroy_swap_buffers */ false);
+
+  // 2. Let configuration be context.[[configuration]]
+  // 3. If configuration is not null:
+  //   1. Set context.[[textureDescriptor]] to the GPUTextureDescriptor for the
+  //      canvas and configuration(canvas, configuration).
+  texture_descriptor_.size = {static_cast<uint32_t>(width),
+                              static_cast<uint32_t>(height), 1};
+
+  // If we don't notify the host that something has changed it may never check
+  // for the new cc::Layer.
+  Host()->SetNeedsCompositingUpdate();
 }
 
 scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage() {
@@ -356,9 +369,10 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   texture_descriptor_.size = {static_cast<uint32_t>(host_size.width()),
                               static_cast<uint32_t>(host_size.height()), 1};
 
-  // This needs to happen early so that if any validation fails the swapbuffers
-  // are not created and getCurrentTexture() will return an error GPUTexture.
-  DetachSwapBuffers();
+  // Reconfiguring the context discards previous drawing buffers but we also
+  // destroy the swap buffers so that any validation error below will cause
+  // swap_buffers_ to be nullptr and getCurrentTexture() to fail.
+  ReplaceDrawingBuffer(/*destroy_swap_buffers*/ true);
 
   // Store the configured device separately, even if the configuration fails, so
   // that errors can be generated in the appropriate error scope.
@@ -427,19 +441,6 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
       break;
   }
 
-  ResizeSwapbuffers(host_size);
-}
-
-void GPUCanvasContext::ResizeSwapbuffers(gfx::Size size) {
-  texture_descriptor_.size = {static_cast<uint32_t>(size.width()),
-                              static_cast<uint32_t>(size.height()), 1};
-
-  // The spec indicates that when the canvas is resized the current texture is
-  // discarded and a new one allocated in it's place immediately.
-  if (swap_buffers_) {
-    ReplaceCurrentTexture();
-  }
-
   // If we don't notify the host that something has changed it may never check
   // for the new cc::Layer.
   Host()->SetNeedsCompositingUpdate();
@@ -450,7 +451,7 @@ void GPUCanvasContext::unconfigure() {
     return;
   }
 
-  DetachSwapBuffers();
+  ReplaceDrawingBuffer(/*destroy_swap_buffers*/ true);
 
   // When developers call unconfigure from the page, one of the reasons for
   // doing so is to expressly release the GPUCanvasContext's device reference.
@@ -459,16 +460,6 @@ void GPUCanvasContext::unconfigure() {
   alpha_clearer_ = nullptr;
   device_ = nullptr;
   configured_ = false;
-}
-
-void GPUCanvasContext::DetachSwapBuffers() {
-  if (swap_buffers_) {
-    // Tell any previous swapbuffers that it will no longer be used and can
-    // destroy all its resources (and produce errors when used).
-    swap_buffers_->Neuter();
-    swap_buffers_ = nullptr;
-  }
-  texture_ = nullptr;
 }
 
 GPUTexture* GPUCanvasContext::getCurrentTexture(
@@ -480,12 +471,6 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   }
   DCHECK(device_);
 
-  if (!swap_buffers_) {
-    device_->InjectError(WGPUErrorType_Validation,
-                         "context configuration is invalid.");
-    return GPUTexture::CreateError(device_, &texture_descriptor_);
-  }
-
   // Calling getCurrentTexture returns a texture that is valid until the
   // animation frame it gets presented. If getCurrentTexture is called multiple
   // time, the same texture should be returned. |texture_| is set to null when
@@ -493,23 +478,19 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   if (texture_ && !new_texture_required_) {
     return texture_;
   }
+  new_texture_required_ = false;
 
-  return ReplaceCurrentTexture();
-}
+  if (!swap_buffers_) {
+    device_->InjectError(WGPUErrorType_Validation,
+                         "context configuration is invalid.");
+    return GPUTexture::CreateError(device_, &texture_descriptor_);
+  }
 
-GPUTexture* GPUCanvasContext::ReplaceCurrentTexture() {
-  DCHECK(device_);
-  DCHECK(swap_buffers_);
+  ReplaceDrawingBuffer(/* destroy_swap_buffers */ false);
 
   // Simply requesting a new canvas texture with WebGPU is enough to mark it as
   // "dirty", so always call DidDraw() when a new texture is created.
   DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
-
-  if (texture_) {
-    swap_buffers_->DiscardCurrentSwapBuffer();
-  }
-
-  texture_ = nullptr;
 
   SkAlphaType alpha_type = alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
                                ? kOpaque_SkAlphaType
@@ -517,6 +498,16 @@ GPUTexture* GPUCanvasContext::ReplaceCurrentTexture() {
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       swap_buffers_->GetNewTexture(texture_descriptor_, alpha_type);
   if (!mailbox_texture) {
+    // Try to give a helpful message for the most common cause for mailbox
+    // texture creation failure.
+    if (texture_descriptor_.size.width == 0 ||
+        texture_descriptor_.size.height == 0) {
+      device_->InjectError(WGPUErrorType_Validation,
+                           "Could not create a swapchain texture of size 0.");
+    } else {
+      device_->InjectError(WGPUErrorType_Validation,
+                           "Could not create the swapchain texture.");
+    }
     texture_ = GPUTexture::CreateError(device_, &texture_descriptor_);
     return texture_;
   }
@@ -528,9 +519,22 @@ GPUTexture* GPUCanvasContext::ReplaceCurrentTexture() {
       device_, texture_descriptor_.format,
       static_cast<WGPUTextureUsage>(texture_descriptor_.usage),
       std::move(mailbox_texture));
-  new_texture_required_ = false;
-
   return texture_;
+}
+
+void GPUCanvasContext::ReplaceDrawingBuffer(bool destroy_swap_buffers) {
+  if (texture_) {
+    DCHECK(swap_buffers_);
+    swap_buffers_->DiscardCurrentSwapBuffer();
+    texture_ = nullptr;
+  }
+
+  if (swap_buffers_ && destroy_swap_buffers) {
+    // Tell any previous swapbuffers that it will no longer be used and can
+    // destroy all its resources (and produce errors when used).
+    swap_buffers_->Neuter();
+    swap_buffers_ = nullptr;
+  }
 }
 
 void GPUCanvasContext::FinalizeFrame(bool /*printing*/) {

@@ -113,8 +113,7 @@ class GPUCanvasContext : public CanvasRenderingContext,
 
  private:
   void DetachSwapBuffers();
-  GPUTexture* ReplaceCurrentTexture();
-  void ResizeSwapbuffers(gfx::Size size);
+  void ReplaceDrawingBuffer(bool destroy_swap_buffers);
   void InitializeAlphaModePipeline(WGPUTextureFormat format);
 
   void FinalizeFrame(bool) override;
