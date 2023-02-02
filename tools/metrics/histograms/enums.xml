@@ -108021,6 +108021,7 @@ This is true even if the type has been removed from the mojom file.
   <int value="4" label="SessionStartFailure"/>
   <int value="5" label="GetFrameFailure"/>
   <int value="6" label="FrameDropped"/>
+  <int value="7" label="CreateDispatcherQueueFailure"/>
 </enum>
 
 <enum name="WebRtcWgcCaptureSessionGetFrameResult">
