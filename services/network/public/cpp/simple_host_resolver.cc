@@ -17,8 +17,9 @@ namespace network {
 class SimpleHostResolverImpl : public SimpleHostResolver,
                                public ResolveHostClientBase {
  public:
-  explicit SimpleHostResolverImpl(mojom::NetworkContext* network_context)
-      : network_context_(network_context) {
+  explicit SimpleHostResolverImpl(
+      mojo::PendingRemote<mojom::HostResolver> resolver)
+      : resolver_(std::move(resolver)) {
     receivers_.set_disconnect_handler(
         base::BindRepeating(&SimpleHostResolverImpl::OnReceiverDisconnected,
                             base::Unretained(this)));
@@ -29,10 +30,11 @@ class SimpleHostResolverImpl : public SimpleHostResolver,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       mojom::ResolveHostParametersPtr optional_parameters,
       ResolveHostCallback callback) override {
+    DCHECK(resolver_.is_bound());
     mojo::PendingReceiver<mojom::ResolveHostClient> receiver;
-    network_context_->ResolveHost(std::move(host), network_anonymization_key,
-                                  std::move(optional_parameters),
-                                  receiver.InitWithNewPipeAndPassRemote());
+    resolver_->ResolveHost(std::move(host), network_anonymization_key,
+                           std::move(optional_parameters),
+                           receiver.InitWithNewPipeAndPassRemote());
     receivers_.Add(this, std::move(receiver), std::move(callback));
   }
 
@@ -60,7 +62,7 @@ class SimpleHostResolverImpl : public SimpleHostResolver,
              /*endpoint_results_with_metadata=*/absl::nullopt);
   }
 
-  const raw_ptr<mojom::NetworkContext> network_context_;
+  mojo::Remote<mojom::HostResolver> resolver_;
   mojo::ReceiverSet<mojom::ResolveHostClient,
                     SimpleHostResolver::ResolveHostCallback>
       receivers_;
@@ -68,8 +70,18 @@ class SimpleHostResolverImpl : public SimpleHostResolver,
 
 // static
 std::unique_ptr<SimpleHostResolver> SimpleHostResolver::Create(
-    network::mojom::NetworkContext* network_context) {
-  return std::make_unique<SimpleHostResolverImpl>(network_context);
+    network::mojom::NetworkContext* network_context,
+    const absl::optional<net::DnsConfigOverrides>& config_overrides) {
+  mojo::PendingRemote<network::mojom::HostResolver> resolver;
+  network_context->CreateHostResolver(
+      config_overrides, resolver.InitWithNewPipeAndPassReceiver());
+  return std::make_unique<SimpleHostResolverImpl>(std::move(resolver));
+}
+
+// static
+std::unique_ptr<SimpleHostResolver> SimpleHostResolver::CreateForTesting(
+    mojo::PendingRemote<network::mojom::HostResolver> resolver) {
+  return std::make_unique<SimpleHostResolverImpl>(std::move(resolver));
 }
 
 }  // namespace network
