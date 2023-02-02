@@ -51,7 +51,6 @@ namespace content {
 class BrowserChildProcessHostImpl;
 
 #if BUILDFLAG(IS_MAC)
-class BrowserChildProcessBackgroundedBridge;
 class CATransactionGPUCoordinator;
 #endif
 
@@ -255,11 +254,6 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
 
 #if BUILDFLAG(IS_MAC)
   scoped_refptr<CATransactionGPUCoordinator> ca_transaction_gpu_coordinator_;
-
-  // Ensures the backgrounded state of the GPU process mirrors the backgrounded
-  // state of the browser process.
-  std::unique_ptr<BrowserChildProcessBackgroundedBridge>
-      browser_child_process_backgrounded_bridge_;
 #endif
 
   // Track the URLs of the pages which have live offscreen contexts,

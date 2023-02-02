@@ -9956,7 +9956,6 @@ if (!is_android) {
         "../browser/focus_ring_browsertest_mac.h",
         "../browser/focus_ring_browsertest_mac.mm",
         "../browser/global_keyboard_shortcuts_mac_browsertest.mm",
-        "../browser/gpu/browser_child_process_backgrounded_bridge_interactive_uitest.mm",
         "../browser/notifications/notification_interactive_uitest_mac.mm",
         "../browser/spellchecker/spellcheck_mac_view_interactive_uitest.mm",
         "../browser/ui/cocoa/apps/quit_with_apps_controller_mac_interactive_uitest.mm",
