@@ -202,4 +202,14 @@ public class BackPressManager implements Destroyable {
     public void resetLastCalledHandlerForTesting() {
         mLastCalledHandlerForTesting = -1;
     }
+
+    @VisibleForTesting
+    public static String getHistogramForTesting() {
+        return HISTOGRAM;
+    }
+
+    @VisibleForTesting
+    public static int getHistogramValueForTesting(int type) {
+        return sMetricsMap.get(type);
+    }
 }

@@ -76,6 +76,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.MetricsUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -114,6 +115,7 @@ import org.chromium.chrome.features.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -1701,19 +1703,28 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(false).when(mCarouselOrSingleTabSwitcherModuleController).isDialogVisible();
 
         doReturn(true).when(mSecondaryTasksSurfaceController).isDialogVisible();
-        mediator.onBackPressed();
+        doReturn(true).when(mSecondaryTasksSurfaceController).onBackPressed();
+        int startSurface =
+                BackPressManager.getHistogramValueForTesting(BackPressHandler.Type.START_SURFACE);
+        MetricsUtils.HistogramDelta startSurfaceBackPressRecord = new MetricsUtils.HistogramDelta(
+                BackPressManager.getHistogramForTesting(), startSurface);
+        Assert.assertTrue(mediator.onBackPressed());
         verify(mCarouselOrSingleTabSwitcherModuleController, never()).onBackPressed();
         verify(mSecondaryTasksSurfaceController).onBackPressed();
+        Assert.assertEquals(1, startSurfaceBackPressRecord.getDelta());
 
         doReturn(false).when(mSecondaryTasksSurfaceController).isDialogVisible();
-        verify(mSecondaryTasksSurfaceController).onBackPressed();
+        doReturn(false).when(mSecondaryTasksSurfaceController).onBackPressed();
+        Assert.assertFalse(verify(mSecondaryTasksSurfaceController).onBackPressed());
+        Assert.assertEquals(1, startSurfaceBackPressRecord.getDelta());
 
         mediator.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
         mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
         Assert.assertEquals(StartSurfaceState.SHOWN_TABSWITCHER, mediator.getStartSurfaceState());
-        mediator.onBackPressed();
+        Assert.assertTrue(mediator.onBackPressed());
         Assert.assertEquals("Should return to home page on back press.",
                 StartSurfaceState.SHOWN_HOMEPAGE, mediator.getStartSurfaceState());
+        Assert.assertEquals(2, startSurfaceBackPressRecord.getDelta());
     }
 
     /**
