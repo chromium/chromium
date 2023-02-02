@@ -40,10 +40,8 @@ void FakeCastAgent::OnStart() {
   for (const auto& [name, on_connect_closure] : on_connect_) {
     ASSERT_EQ(outgoing()->AddPublicService(
                   std::make_unique<vfs::Service>(
-                      [on_connect_closure = on_connect_closure](
-                          zx::channel, async_dispatcher_t*) {
-                        on_connect_closure.Run();
-                      }),
+                      [closure = on_connect_closure](
+                          zx::channel, async_dispatcher_t*) { closure.Run(); }),
                   name),
               ZX_OK);
   }
