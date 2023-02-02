@@ -43,7 +43,6 @@ BASE_DECLARE_FEATURE(kNtpLogo);
 BASE_DECLARE_FEATURE(kNtpMiddleSlotPromo);
 BASE_DECLARE_FEATURE(kNtpMiddleSlotPromoDismissal);
 BASE_DECLARE_FEATURE(kNtpModulesLoadTimeoutMilliseconds);
-BASE_DECLARE_FEATURE(kNtpModulesParams);
 BASE_DECLARE_FEATURE(kNtpModulesOrder);
 BASE_DECLARE_FEATURE(kNtpModulesDragAndDrop);
 BASE_DECLARE_FEATURE(kNtpModulesFirstRunExperience);
@@ -83,8 +82,6 @@ extern const base::FeatureParam<std::string>
 
 // Parameter determining the module load timeout.
 extern const char kNtpModulesLoadTimeoutMillisecondsParam[];
-// Parameter determining the modules' maximum display width.
-extern const char kNtpModulesMaxWidthParam[];
 // Parameter determining the module order.
 extern const char kNtpModulesOrderParam[];
 // Parameter determining the type of cart data used to render module.
@@ -135,9 +132,6 @@ extern const char kNtpRecipeTasksModuleExperimentGroupParam[];
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
-
-// Returns the maximum allowed width for modules if any.
-absl::optional<int> GetModulesMaxWidthPixels();
 
 // Returns a list of module IDs ordered by how they should appear on the NTP.
 std::vector<std::string> GetModulesOrder();

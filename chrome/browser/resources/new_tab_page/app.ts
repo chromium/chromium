@@ -422,13 +422,6 @@ export class AppElement extends PolymerElement {
           });
     }
     FocusOutlineManager.forDocument(document);
-
-    if (loadTimeData.valueExists('modulesMaxWidthPx')) {
-      this.updateStyles({
-        '--ntp-module-max-width':
-            `${loadTimeData.getInteger('modulesMaxWidthPx')}px`,
-      });
-    }
   }
 
   override disconnectedCallback() {
