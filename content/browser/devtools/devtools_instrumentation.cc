@@ -1745,6 +1745,10 @@ protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
         kFormLabelHasNeitherForNorNestedInput:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormLabelHasNeitherForNorNestedInput;
+    case blink::mojom::GenericIssueErrorType::
+        kFormLabelForMatchesNonExistingIdError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormLabelForMatchesNonExistingIdError;
   }
 }
 

@@ -1358,6 +1358,36 @@ FormFieldData* SearchForFormControlByName(
   return it != end ? it->first : nullptr;
 }
 
+void EmitDevtoolsIssueForLabelWithoutControl(
+    WebLabelElement label,
+    bool label_for_matches_names_attribute) {
+  static base::NoDestructor<WebString> kFor("for");
+  if (!label.HasAttribute(*kFor)) {
+    // Label has neither for attribute nor a control element was found.
+    label.GetDocument().GetFrame()->AddGenericIssue(
+        blink::mojom::GenericIssueErrorType::
+            kFormLabelHasNeitherForNorNestedInput,
+        label.GetDevToolsNodeId());
+  } else if (!label_for_matches_names_attribute) {
+    // Label has for attribute but no labellable element whose id OR name
+    // matches it.
+    // This issue is not emitted in case an element has a name that matches it,
+    // instead we emit kFormLabelForNameError to educate developers that labels
+    // should be linked to element ids.
+    label.GetDocument().GetFrame()->AddGenericIssue(
+        GenericIssueErrorType::kFormLabelForMatchesNonExistingIdError,
+        label.GetDevToolsNodeId());
+  } else {
+    // Add a DevTools issue informing the developer that the `label`'s for-
+    // attribute is pointing to the name of a field, even though the ID should
+    // be used.
+    // TODO(crbug.com/1339277): Use `root` once the feature is launched.
+    label.GetDocument().GetFrame()->AddGenericIssue(
+        GenericIssueErrorType::kFormLabelForNameError,
+        label.GetDevToolsNodeId());
+  }
+}
+
 // Considers all <label> descendents of `root`, looks at their corresponding
 // control and matches them to the fields in `field_set`. The corresponding
 // control is either a descendent of the label or an input specified by id in
@@ -1384,18 +1414,15 @@ void MatchLabelsAndFields(
     auto label_source = AssignedLabelSource::kId;
 
     if (control.IsNull()) {
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableDevtoolsIssues) &&
-          !label.HasAttribute(*kFor)) {
-        label.GetDocument().GetFrame()->AddGenericIssue(
-            blink::mojom::GenericIssueErrorType::
-                kFormLabelHasNeitherForNorNestedInput,
-            label.GetDevToolsNodeId());
-      }
       // Sometimes site authors will incorrectly specify the corresponding
       // field element's name rather than its id, so we compensate here.
       field_data = SearchForFormControlByName(label.GetAttribute(*kFor).Utf16(),
                                               field_set, label_source);
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableDevtoolsIssues)) {
+        EmitDevtoolsIssueForLabelWithoutControl(
+            label, label_source == AssignedLabelSource::kName);
+      }
     } else if (control.IsFormControlElement()) {
       WebFormControlElement form_control = control.To<WebFormControlElement>();
       if (form_control.FormControlTypeForAutofill() == *kHidden)
@@ -1442,17 +1469,6 @@ void MatchLabelsAndFields(
     field_data->label += label_text;
     field_data->label_source = FormFieldData::LabelSource::kFor;
     base::UmaHistogramEnumeration(kAssignedLabelSourceHistogram, label_source);
-
-    if (label_source == AssignedLabelSource::kName &&
-        base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
-      // Add a DevTools issue informing the developer that the `label`'s for-
-      // attribute is pointing to the name of a field, even though the ID should
-      // be used.
-      // TODO(crbug.com/1339277): Use `root` once the feature is launched.
-      label.GetDocument().GetFrame()->AddGenericIssue(
-          GenericIssueErrorType::kFormLabelForNameError,
-          label.GetDevToolsNodeId());
-    }
   }
 }
 
