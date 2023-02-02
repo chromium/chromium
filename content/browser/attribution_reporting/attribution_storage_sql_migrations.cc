@@ -744,6 +744,25 @@ bool MigrateToVersion44(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion45(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // `MigrateToVersion34`.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  static constexpr char kRenameSql[] =
+      "ALTER TABLE event_level_reports "
+      "RENAME COLUMN destination_origin TO context_origin";
+  if (!db->Execute(kRenameSql)) {
+    return false;
+  }
+
+  meta_table->SetVersionNumber(45);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
@@ -808,6 +827,11 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 43) {
     if (!MigrateToVersion44(db, meta_table)) {
+      return false;
+    }
+  }
+  if (meta_table->GetVersionNumber() == 44) {
+    if (!MigrateToVersion45(db, meta_table)) {
       return false;
     }
   }

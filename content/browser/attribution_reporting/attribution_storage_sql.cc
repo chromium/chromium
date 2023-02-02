@@ -70,11 +70,11 @@ namespace content {
 // Version number of the database.
 // TODO: remove the active_unattributed_sources_by_site_reporting_origin index
 // during the next DB migration.
-const int AttributionStorageSql::kCurrentVersionNumber = 44;
+const int AttributionStorageSql::kCurrentVersionNumber = 45;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 44;
+const int AttributionStorageSql::kCompatibleVersionNumber = 45;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -622,18 +622,16 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
       DCHECK_LT(common_info.source_time(), fake_report.trigger_time);
       DCHECK_LT(fake_report.trigger_time, fake_report.report_time);
 
-      // Use the destination site itself as the destination origin to meet the
-      // same-site requirement and because the origin itself is never included
-      // in the report, only the site.
-      auto fake_destination_origin =
-          SuitableOrigin::Create(common_info.DestinationSite().GetURL());
-      DCHECK(fake_destination_origin.has_value());
-
+      // Set the `context_origin` to be the source origin for fake reports,
+      // as these reports are generated only via the source site's context.
+      // The fake destinations are not relevant to the context that
+      // actually created the report.
       if (!StoreEventLevelReport(
               source_id, fake_report.trigger_data, fake_report.trigger_time,
               fake_report.report_time,
               /*priority=*/0, delegate_->NewReportID(),
-              /*trigger_debug_key=*/absl::nullopt, *fake_destination_origin)) {
+              /*trigger_debug_key=*/absl::nullopt,
+              /*context_origin=*/common_info.source_origin())) {
         return StoreSourceResult(StorableSource::Result::kInternalError);
       }
 
@@ -1172,7 +1170,7 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
     int num_conversions,
     absl::optional<AttributionReport>& replaced_report,
     absl::optional<AttributionReport>& dropped_report,
-    const SuitableOrigin& destination_origin) {
+    const SuitableOrigin& context_origin) {
   if (report.attribution_info().source.active_state() ==
       StoredSource::ActiveState::kReachedEventLevelAttributionLimit) {
     dropped_report = std::move(report);
@@ -1227,7 +1225,7 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
             attribution_info.source.source_id(), event_level_data->trigger_data,
             attribution_info.time, report.report_time(),
             event_level_data->priority, report.external_report_id(),
-            attribution_info.debug_key, destination_origin);
+            attribution_info.debug_key, context_origin);
     if (!id) {
       return EventLevelResult::kInternalError;
     }
@@ -1286,14 +1284,14 @@ AttributionStorageSql::StoreEventLevelReport(
     int64_t priority,
     const base::GUID& external_report_id,
     absl::optional<uint64_t> trigger_debug_key,
-    const SuitableOrigin& destination_origin) {
+    const SuitableOrigin& context_origin) {
   DCHECK(external_report_id.is_valid());
 
   static constexpr char kStoreReportSql[] =
       "INSERT INTO event_level_reports"
       "(source_id,trigger_data,trigger_time,report_time,"
       "priority,failed_send_attempts,external_report_id,debug_key,"
-      "destination_origin)"
+      "context_origin)"
       "VALUES(?,?,?,?,?,0,?,?,?)";
   sql::Statement store_report_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kStoreReportSql));
@@ -1304,7 +1302,7 @@ AttributionStorageSql::StoreEventLevelReport(
   store_report_statement.BindInt64(4, priority);
   store_report_statement.BindString(5, external_report_id.AsLowercaseString());
   BindUint64OrNull(store_report_statement, 6, trigger_debug_key);
-  store_report_statement.BindString(7, destination_origin.Serialize());
+  store_report_statement.BindString(7, context_origin.Serialize());
   if (!store_report_statement.Run()) {
     return absl::nullopt;
   }
@@ -2226,9 +2224,10 @@ bool AttributionStorageSql::CreateSchema() {
   // trigger was registered, and should be used for clearing site data.
   // |report_time| is the time a <report, source> pair should be
   // reported, and is specified by |delegate_|.
-  // |destination_origin| is the origin on which the trigger was registered; it
-  // may differ from the sources table's corresponding destination_origin, but
-  // both must be same-site with respect to each other.
+  // |context_origin| is the origin that secondarily owns the report for
+  // data-deletion purposes. For real reports, it is the destination origin on
+  // which the trigger was registered. For fake reports, it is the source
+  // origin.
   //
   // |id| uses AUTOINCREMENT to ensure that IDs aren't reused over
   // the lifetime of the DB.
@@ -2243,7 +2242,7 @@ bool AttributionStorageSql::CreateSchema() {
       "failed_send_attempts INTEGER NOT NULL,"
       "external_report_id TEXT NOT NULL,"
       "debug_key INTEGER,"
-      "destination_origin TEXT NOT NULL)";
+      "context_origin TEXT NOT NULL)";
   if (!db_->Execute(kConversionTableSql)) {
     return false;
   }

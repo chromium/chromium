@@ -4,7 +4,7 @@ BEGIN TRANSACTION;
 
 CREATE TABLE sources(source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,source_event_id INTEGER NOT NULL,source_origin TEXT NOT NULL,destination_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,source_time INTEGER NOT NULL,expiry_time INTEGER NOT NULL,event_report_window_time INTEGER NOT NULL,aggregatable_report_window_time INTEGER NOT NULL,num_attributions INTEGER NOT NULL,event_level_active INTEGER NOT NULL,aggregatable_active INTEGER NOT NULL,destination_site TEXT NOT NULL,source_type INTEGER NOT NULL,attribution_logic INTEGER NOT NULL,priority INTEGER NOT NULL,source_site TEXT NOT NULL,debug_key INTEGER,aggregatable_budget_consumed INTEGER NOT NULL,aggregatable_source BLOB NOT NULL,filter_data BLOB NOT NULL);
 
-CREATE TABLE event_level_reports(report_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,source_id INTEGER NOT NULL,trigger_data INTEGER NOT NULL,trigger_time INTEGER NOT NULL,report_time INTEGER NOT NULL,priority INTEGER NOT NULL,failed_send_attempts INTEGER NOT NULL,external_report_id TEXT NOT NULL,debug_key INTEGER,destination_origin TEXT NOT NULL);
+CREATE TABLE event_level_reports(report_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,source_id INTEGER NOT NULL,trigger_data INTEGER NOT NULL,trigger_time INTEGER NOT NULL,report_time INTEGER NOT NULL,priority INTEGER NOT NULL,failed_send_attempts INTEGER NOT NULL,external_report_id TEXT NOT NULL,debug_key INTEGER,context_origin TEXT NOT NULL);
 
 CREATE TABLE rate_limits(id INTEGER PRIMARY KEY NOT NULL,scope INTEGER NOT NULL,source_id INTEGER NOT NULL,source_site TEXT NOT NULL,destination_site TEXT NOT NULL,context_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,time INTEGER NOT NULL,source_expiry_or_attribution_time INTEGER NOT NULL);
 
@@ -17,8 +17,8 @@ CREATE TABLE aggregatable_contributions(aggregation_id INTEGER NOT NULL,contribu
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
 INSERT INTO meta VALUES('mmap_status','-1');
-INSERT INTO meta VALUES('version','44');
-INSERT INTO meta VALUES('last_compatible_version','44');
+INSERT INTO meta VALUES('version','45');
+INSERT INTO meta VALUES('last_compatible_version','45');
 
 CREATE INDEX sources_by_active_destination_site_reporting_origin ON sources(event_level_active,aggregatable_active,destination_site,reporting_origin);
 
@@ -45,7 +45,5 @@ CREATE INDEX aggregate_source_id_idx ON aggregatable_report_metadata(source_id);
 CREATE INDEX aggregate_trigger_time_idx ON aggregatable_report_metadata(trigger_time);
 
 CREATE INDEX aggregate_report_time_idx ON aggregatable_report_metadata(report_time);
-
-INSERT INTO event_level_reports VALUES(0,1,2,3,4,5,6,7,8,'https://a.d.test');
 
 COMMIT;

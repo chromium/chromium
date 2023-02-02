@@ -814,4 +814,55 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion43ToCurrent) {
   histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
 }
 
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion44ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(44), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    {
+      static constexpr char kSql[] =
+          "SELECT destination_origin FROM event_level_reports";
+      sql::Statement s(db.GetUniqueStatement(kSql));
+
+      ASSERT_TRUE(s.Step());
+      ASSERT_EQ("https://a.d.test", s.ColumnString(0));
+      ASSERT_FALSE(s.Step());
+    }
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    // Check version.
+    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
+              VersionFromDatabase(&db));
+
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
+
+    {
+      static constexpr char kSql[] =
+          "SELECT context_origin FROM event_level_reports";
+      sql::Statement s(db.GetUniqueStatement(kSql));
+
+      ASSERT_TRUE(s.Step());
+      ASSERT_EQ("https://a.d.test", s.ColumnString(0));
+      ASSERT_FALSE(s.Step());
+    }
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
 }  // namespace content

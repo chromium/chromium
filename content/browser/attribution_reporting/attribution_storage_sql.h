@@ -216,7 +216,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       int64_t priority,
       const base::GUID& external_report_id,
       absl::optional<uint64_t> trigger_debug_key,
-      const attribution_reporting::SuitableOrigin& destination_origin)
+      const attribution_reporting::SuitableOrigin& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   absl::optional<AttributionReport> ReadReportFromStatement(sql::Statement&)
@@ -271,7 +271,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       int num_conversions,
       absl::optional<AttributionReport>& replaced_report,
       absl::optional<AttributionReport>& dropped_report,
-      const attribution_reporting::SuitableOrigin& destination_origin)
+      const attribution_reporting::SuitableOrigin& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is

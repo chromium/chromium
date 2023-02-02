@@ -1169,7 +1169,7 @@ TEST_F(AttributionStorageSqlTest, ReportTablesStoreDestinationOrigin) {
 
   {
     sql::Statement s(raw_db.GetUniqueStatement(
-        "SELECT destination_origin FROM event_level_reports"));
+        "SELECT context_origin FROM event_level_reports"));
     ASSERT_TRUE(s.Step());
     ASSERT_EQ(s.ColumnString(0), kDestinationOriginB);
   }
@@ -1182,7 +1182,7 @@ TEST_F(AttributionStorageSqlTest, ReportTablesStoreDestinationOrigin) {
   }
 }
 
-TEST_F(AttributionStorageSqlTest, FakeReportUsesDestinationSiteAsOrigin) {
+TEST_F(AttributionStorageSqlTest, FakeReportUsesSourceOriginAsContext) {
   OpenDatabase();
 
   delegate()->set_randomized_response(
@@ -1191,10 +1191,13 @@ TEST_F(AttributionStorageSqlTest, FakeReportUsesDestinationSiteAsOrigin) {
            .trigger_time = base::Time::Now() + base::Microseconds(1),
            .report_time = base::Time::Now() + base::Microseconds(2)}});
 
-  storage()->StoreSource(SourceBuilder()
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://a.d.test"))
-                             .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceOrigin(*SuitableOrigin::Deserialize("https://a.s.test"))
+          .SetDestinationOrigin(
+              *SuitableOrigin::Deserialize("https://b.d.test"))
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r.test"))
+          .Build());
 
   CloseDatabase();
 
@@ -1203,9 +1206,9 @@ TEST_F(AttributionStorageSqlTest, FakeReportUsesDestinationSiteAsOrigin) {
 
   {
     sql::Statement s(raw_db.GetUniqueStatement(
-        "SELECT destination_origin FROM event_level_reports"));
+        "SELECT context_origin FROM event_level_reports"));
     ASSERT_TRUE(s.Step());
-    ASSERT_EQ(s.ColumnString(0), "https://d.test");
+    ASSERT_EQ(s.ColumnString(0), "https://a.s.test");
   }
 }
 
