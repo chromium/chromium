@@ -116,7 +116,7 @@ void V4L2FrameRateControl::UpdateFrameRate() {
       TRACE_EVENT0("media,gpu", "V4L2 VIDIOC_S_PARM call failed");
     }
 
-    VLOG(1) << "Average framerate: " << frame_duration_avg.ToHz();
+    DVLOG(4) << "Average framerate: " << frame_duration_avg.ToHz();
   }
 }
 
