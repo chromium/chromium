@@ -16,7 +16,8 @@ namespace cast_streaming {
 
 PlaybackCommandDispatcher::PlaybackCommandDispatcher(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    mojo::AssociatedRemote<mojom::RendererController> control_configuration)
+    mojo::AssociatedRemote<mojom::RendererController> control_configuration,
+    remoting::RendererRpcCallTranslator::FlushUntilCallback flush_until_cb)
     : RpcInitializationCallHandlerBase(base::BindRepeating(
           &PlaybackCommandDispatcher::SendRemotingRpcMessageToRemote,
           base::Unretained(this))),
@@ -38,7 +39,8 @@ PlaybackCommandDispatcher::PlaybackCommandDispatcher(
       weak_factory_.GetWeakPtr());
   renderer_call_translator_ =
       std::make_unique<remoting::RendererRpcCallTranslator>(
-          std::move(message_processor_callback), muxer_.get());
+          std::move(message_processor_callback), muxer_.get(),
+          std::move(flush_until_cb));
 }
 
 PlaybackCommandDispatcher::~PlaybackCommandDispatcher() {

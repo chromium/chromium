@@ -82,8 +82,10 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
 
   if (renderer_controls) {
     playback_command_dispatcher_ = std::make_unique<PlaybackCommandDispatcher>(
-        task_runner,
-        std::move(renderer_controls.value().control_configuration));
+        task_runner, std::move(renderer_controls.value().control_configuration),
+        base::BindRepeating(
+            &CastStreamingSession::ReceiverSessionClient::OnFlushUntil,
+            weak_factory_.GetWeakPtr()));
     playback_command_dispatcher_->RegisterCommandSource(
         std::move(renderer_controls.value().external_renderer_controls));
   }
@@ -361,6 +363,17 @@ void CastStreamingSession::ReceiverSessionClient::OnFlushComplete() {
   is_flush_pending_ = false;
   if (start_session_cb_) {
     std::move(start_session_cb_).Run();
+  }
+}
+
+void CastStreamingSession::ReceiverSessionClient::OnFlushUntil(
+    uint32_t audio_count,
+    uint32_t video_count) {
+  if (audio_consumer_) {
+    audio_consumer_->FlushUntil(audio_count);
+  }
+  if (video_consumer_) {
+    video_consumer_->FlushUntil(video_count);
   }
 }
 

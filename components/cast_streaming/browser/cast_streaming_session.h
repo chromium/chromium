@@ -169,6 +169,9 @@ class CastStreamingSession {
     // Called upon completion of a Flush call initiated by this class.
     void OnFlushComplete();
 
+    // Called when a RPC_FLUSH_UNTIL call is received from the remoting sender.
+    void OnFlushUntil(uint32_t audio_count, uint32_t video_count);
+
     // remoting::PlaybackCommandDispatcher::Client implementation.
     void StartStreamingSession(
         StreamingInitializationInfo initialization_info) override;

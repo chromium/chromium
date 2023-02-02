@@ -4,6 +4,9 @@
 
 #include "components/cast_streaming/browser/stream_consumer.h"
 
+#include <algorithm>
+
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/public/features.h"
@@ -97,6 +100,10 @@ void StreamConsumer::OnFramesReady(int next_frame_buffer_size) {
   MaybeSendNextFrame();
 }
 
+void StreamConsumer::FlushUntil(uint32_t frame_id) {
+  skip_until_frame_id_ = frame_id;
+}
+
 void StreamConsumer::MaybeSendNextFrame() {
   if (!is_read_pending_ || pending_buffer_remaining_bytes_ > 0) {
     return;
@@ -110,7 +117,6 @@ void StreamConsumer::MaybeSendNextFrame() {
     return;
   }
 
-  no_frames_available_cb_.Reset();
   on_new_frame_.Run();
 
   void* buffer = nullptr;
@@ -124,6 +130,27 @@ void StreamConsumer::MaybeSendNextFrame() {
     return;
   }
 
+  openscreen::cast::EncodedFrame encoded_frame;
+
+  // Write to temporary storage in case we need to drop this frame.
+  pending_buffer_offset_ = 0;
+  encoded_frame = receiver_->ConsumeNextFrame(
+      base::span<uint8_t>(pending_buffer_, buffer_size));
+
+  // If the frame occurs before the id we want to flush until, drop it and try
+  // again.
+  // TODO(crbug.com/1412561): Move this logic to Openscreen.
+  if (encoded_frame.frame_id <
+      openscreen::cast::FrameId(int64_t{skip_until_frame_id_})) {
+    VLOG(1) << "Skipping Frame " << encoded_frame.frame_id;
+    MaybeSendNextFrame();
+    return;
+  }
+
+  skip_until_frame_id_ = 0;
+  no_frames_available_cb_.Reset();
+
+  pending_buffer_remaining_bytes_ = buffer_size;
   MojoResult result = data_pipe_->BeginWriteData(
       &buffer, &mojo_buffer_size, MOJO_BEGIN_WRITE_DATA_FLAG_NONE);
 
@@ -137,28 +164,18 @@ void StreamConsumer::MaybeSendNextFrame() {
     return;
   }
 
-  openscreen::cast::EncodedFrame encoded_frame;
-  size_t bytes_written = 0;
-
-  if (mojo_buffer_size < buffer_size) {
-    DVLOG(2) << "[ssrc:" << receiver_->ssrc() << "] "
-             << "Mojo data pipe full";
-
-    // The |data_pipe_| buffer cannot take the full frame, write to
-    // |pending_buffer_| instead.
-    encoded_frame = receiver_->ConsumeNextFrame(
-        absl::Span<uint8_t>(pending_buffer_, buffer_size));
-
-    // Write as much as we can to the |data_pipe_| buffer.
+  // Write as much as we can to the |data_pipe_| buffer.
+  int bytes_written;
+  if (buffer_size <= mojo_buffer_size) {
+    memcpy(buffer, pending_buffer_, buffer_size);
+    pending_buffer_offset_ = buffer_size;
+    pending_buffer_remaining_bytes_ = 0;
+    bytes_written = buffer_size;
+  } else {
     memcpy(buffer, pending_buffer_, mojo_buffer_size);
     pending_buffer_offset_ = mojo_buffer_size;
     pending_buffer_remaining_bytes_ = buffer_size - mojo_buffer_size;
     bytes_written = mojo_buffer_size;
-  } else {
-    // Write directly to the |data_pipe_| buffer.
-    encoded_frame = receiver_->ConsumeNextFrame(
-        absl::Span<uint8_t>(static_cast<uint8_t*>(buffer), buffer_size));
-    bytes_written = buffer_size;
   }
 
   result = data_pipe_->EndWriteData(bytes_written);

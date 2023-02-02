@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/browser/remoting_session_client.h"
 #include "components/cast_streaming/browser/renderer_control_multiplexer.h"
+#include "components/cast_streaming/browser/renderer_rpc_call_translator.h"
 #include "components/cast_streaming/browser/rpc_demuxer_stream_handler.h"
 #include "components/cast_streaming/browser/rpc_initialization_call_handler_base.h"
 #include "components/cast_streaming/browser/streaming_initialization_info.h"
@@ -50,7 +51,8 @@ class PlaybackCommandDispatcher
  public:
   PlaybackCommandDispatcher(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      mojo::AssociatedRemote<mojom::RendererController> control_configuration);
+      mojo::AssociatedRemote<mojom::RendererController> control_configuration,
+      remoting::RendererRpcCallTranslator::FlushUntilCallback flush_until_cb);
   ~PlaybackCommandDispatcher() override;
 
   void RegisterCommandSource(

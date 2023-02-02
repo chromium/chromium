@@ -11,11 +11,15 @@ namespace cast_streaming::remoting {
 
 RendererRpcCallTranslator::RendererRpcCallTranslator(
     RpcMessageProcessor processor,
-    media::mojom::Renderer* renderer)
-    : message_processor_(std::move(processor)),
+    media::mojom::Renderer* renderer,
+    FlushUntilCallback flush_until_cb)
+    : flush_until_cb_(std::move(flush_until_cb)),
+      message_processor_(std::move(processor)),
       renderer_client_receiver_(this),
       renderer_(std::move(renderer)),
-      weak_factory_(this) {}
+      weak_factory_(this) {
+  DCHECK(flush_until_cb_);
+}
 
 RendererRpcCallTranslator::~RendererRpcCallTranslator() = default;
 
@@ -36,6 +40,7 @@ void RendererRpcCallTranslator::OnRpcFlush(uint32_t audio_count,
                                            uint32_t video_count) {
   renderer_->Flush(base::BindOnce(&RendererRpcCallTranslator::OnFlushCompleted,
                                   weak_factory_.GetWeakPtr(), handle_));
+  flush_until_cb_.Run(audio_count, video_count);
 }
 
 void RendererRpcCallTranslator::OnRpcStartPlayingFrom(base::TimeDelta time) {

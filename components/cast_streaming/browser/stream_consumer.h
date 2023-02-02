@@ -53,6 +53,9 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   // available when this callback first tries to read them.
   void ReadFrame(base::OnceClosure no_frames_available_cb);
 
+  // Skips frames until one with id |frame_id| or later arrives.
+  void FlushUntil(uint32_t frame_id);
+
  private:
   // Maximum frame size that OnFramesReady() can accept.
   static constexpr uint32_t kMaxFrameSize = 512 * 1024;
@@ -71,6 +74,10 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   // openscreen::cast::Receiver::Consumer implementation.
   void OnFramesReady(int next_frame_buffer_size) override;
 
+  // This receiver should skip all frames with id less than this value. Set by a
+  // call to FlushUntil() and 0 when no flush is ongoing.
+  uint32_t skip_until_frame_id_ = 0;
+
   const raw_ptr<openscreen::cast::Receiver> receiver_;
   mojo::ScopedDataPipeProducerHandle data_pipe_;
   const FrameReceivedCB frame_received_cb_;
@@ -82,10 +89,10 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   uint8_t pending_buffer_[kMaxFrameSize];
 
   // Current offset for data |pending_buffer_| to be written to |data_pipe_|.
-  size_t pending_buffer_offset_ = 0;
+  int pending_buffer_offset_ = 0;
 
   // Remaining bytes to write from |pending_buffer_| to |data_pipe_|.
-  size_t pending_buffer_remaining_bytes_ = 0;
+  int pending_buffer_remaining_bytes_ = 0;
 
   // Offset for frames playout time. This is initialized by the first frame.
   base::TimeDelta playout_offset_ = base::TimeDelta::Max();

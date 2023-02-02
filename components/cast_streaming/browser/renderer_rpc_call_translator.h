@@ -31,13 +31,15 @@ class RendererRpcCallTranslator : public media::mojom::RendererClient,
   using RpcMessageProcessor = base::RepeatingCallback<void(
       openscreen::cast::RpcMessenger::Handle handle,
       std::unique_ptr<openscreen::cast::RpcMessage>)>;
+  using FlushUntilCallback = base::RepeatingCallback<void(uint32_t, uint32_t)>;
 
   // |renderer| is the remote media::mojom::Renderer to which commands
   // translated from proto messages should be sent.
   // |processor| is responsible for handling any proto messages ready to be sent
   // out.
   explicit RendererRpcCallTranslator(RpcMessageProcessor processor,
-                                     media::mojom::Renderer* renderer);
+                                     media::mojom::Renderer* renderer,
+                                     FlushUntilCallback flush_until_cb);
   ~RendererRpcCallTranslator() override;
 
   // Sets the |handle| to be used for future outgoing RPC calls.
@@ -82,6 +84,10 @@ class RendererRpcCallTranslator : public media::mojom::RendererClient,
   // Signifies whether the Initialize() command has been sent to the Renderer,
   // which will only be done once over the duration of this instance's lifetime.
   bool has_been_initialized_ = false;
+
+  // Called as part of responding to an OnRpcFlush() call, to inform the owning
+  // class that in-flight frames should be flushed.
+  FlushUntilCallback flush_until_cb_;
 
   RpcMessageProcessor message_processor_;
 
