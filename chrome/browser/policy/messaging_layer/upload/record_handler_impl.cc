@@ -13,14 +13,17 @@
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/thread_annotations.h"
 #include "base/token.h"
 #include "base/values.h"
-#include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
+#include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
@@ -68,29 +71,27 @@ absl::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
 
 // ReportUploader handles enqueuing events on the `report_queue_`.
 class RecordHandlerImpl::ReportUploader
-    : public TaskRunnerContext<DmServerUploadService::CompletionResponse> {
+    : public TaskRunnerContext<CompletionResponse> {
  public:
   ReportUploader(
       bool need_encryption_key,
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation,
-      DmServerUploadService::CompletionCallback upload_complete_cb,
-      DmServerUploadService::EncryptionKeyAttachedCallback
-          encryption_key_attached_cb,
+      CompletionCallback upload_complete_cb,
+      EncryptionKeyAttachedCallback encryption_key_attached_cb,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
 
  private:
   ~ReportUploader() override;
 
   void OnStart() override;
-  void OnCompletion(
-      const DmServerUploadService::CompletionResponse& result) override;
+  void OnCompletion(const CompletionResponse& result) override;
 
   void StartUpload();
   void OnUploadComplete(StatusOr<base::Value::Dict> response);
   void HandleFailedUpload(Status status);
-  void HandleSuccessfulUpload();
-  void Complete(DmServerUploadService::CompletionResponse result);
+  void HandleSuccessfulUpload(base::Value::Dict last_response);
+  void Complete(CompletionResponse result);
 
   // Returns a gap record if it is necessary. Expects the contents of the
   // failedUploadedRecord field in the response:
@@ -108,50 +109,44 @@ class RecordHandlerImpl::ReportUploader
   StatusOr<SequenceInformation> SequenceInformationValueToProto(
       const base::Value::Dict& value);
 
-  bool need_encryption_key_;
-  std::vector<EncryptedRecord> records_;
-  ScopedReservation scoped_reservation_;
+  bool need_encryption_key_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<EncryptedRecord> records_ GUARDED_BY_CONTEXT(sequence_checker_);
+  ScopedReservation scoped_reservation_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Encryption key delivery callback.
-  DmServerUploadService::EncryptionKeyAttachedCallback
-      encryption_key_attached_cb_;
-
-  // Last successful response to be processed.
-  // Note: I could not find a way to pass it as a parameter,
-  // so it is a class member variable. |last_response_| must be processed before
-  // any attempt to retry calling the client, otherwise it will be overwritten.
-  base::Value::Dict last_response_;
-
-  // When a record fails to be processed on the server, |ReportUploader| creates
-  // a gap record to upload in its place.
-  EncryptedRecord gap_record_;
+  EncryptionKeyAttachedCallback encryption_key_attached_cb_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Set for the highest record being uploaded.
-  absl::optional<SequenceInformation> highest_sequence_information_;
+  absl::optional<SequenceInformation> highest_sequence_information_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Set to |true| if force_confirm flag is present. |false| by default.
-  bool force_confirm_{false};
+  bool force_confirm_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 RecordHandlerImpl::ReportUploader::ReportUploader(
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
-    DmServerUploadService::CompletionCallback completion_cb,
-    DmServerUploadService::EncryptionKeyAttachedCallback
-        encryption_key_attached_cb,
+    CompletionCallback completion_cb,
+    EncryptionKeyAttachedCallback encryption_key_attached_cb,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
-    : TaskRunnerContext<DmServerUploadService::CompletionResponse>(
-          std::move(completion_cb),
-          sequenced_task_runner),
+    : TaskRunnerContext<CompletionResponse>(std::move(completion_cb),
+                                            sequenced_task_runner),
       need_encryption_key_(need_encryption_key),
       records_(std::move(records)),
       scoped_reservation_(std::move(scoped_reservation)),
-      encryption_key_attached_cb_(std::move(encryption_key_attached_cb)) {}
+      encryption_key_attached_cb_(std::move(encryption_key_attached_cb)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 RecordHandlerImpl::ReportUploader::~ReportUploader() = default;
 
 void RecordHandlerImpl::ReportUploader::OnStart() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (records_.empty() && !need_encryption_key_) {
     Status empty_records =
         Status(error::INVALID_ARGUMENT, "records_ was empty");
@@ -163,10 +158,16 @@ void RecordHandlerImpl::ReportUploader::OnStart() {
   StartUpload();
 }
 
+void RecordHandlerImpl::ReportUploader::OnCompletion(
+    const CompletionResponse& result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // In case `OnUploadComplete` was skipped for whatever reason,
+  // release the reservation (do not wait for destructor to do that).
+  ScopedReservation release(std::move(scoped_reservation_));
+}
+
 void RecordHandlerImpl::ReportUploader::StartUpload() {
-  auto response_cb =
-      base::BindOnce(&RecordHandlerImpl::ReportUploader::OnUploadComplete,
-                     base::Unretained(this));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::UmaHistogramCounts1000("Browser.ERP.RecordsPerUpload", records_.size());
 
@@ -175,20 +176,24 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
     request_builder.AddRecord(std::move(record), scoped_reservation_);
   }
 
+  // Records have been captured in the request, safe to clear the vector.
+  records_.clear();
+
   // Assign random UUID as the request id for server side log correlation
   const auto request_id = base::Token::CreateRandom().ToString();
   request_builder.SetRequestId(request_id);
 
   auto request_result = request_builder.Build();
   if (!request_result.has_value()) {
-    std::move(response_cb)
-        .Run(Status(error::FAILED_PRECONDITION, "Failure to build request"));
+    HandleFailedUpload(
+        Status(error::FAILED_PRECONDITION, "Failure to build request"));
     return;
   }
 
-  // Records have been captured in the request, safe to clear the vector.
-  records_.clear();
-
+  auto response_cb = base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&RecordHandlerImpl::ReportUploader::OnUploadComplete,
+                     base::Unretained(this)));
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -200,31 +205,25 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
           std::move(request_result.value()), std::move(response_cb)));
 }
 
-void RecordHandlerImpl::ReportUploader::OnCompletion(
-    const DmServerUploadService::CompletionResponse& result) {
-  // In case |OnUploadComplete| was skipped for whatever reason.
-  ScopedReservation release(std::move(scoped_reservation_));
-}
-
 void RecordHandlerImpl::ReportUploader::OnUploadComplete(
     StatusOr<base::Value::Dict> response) {
-  // Release reservation right away, since we no londer keep
-  // |base::Value::Dict request| it was referring to.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Release reservation right away, since we no londer need to keep
+  // `base::Value::Dict request` it was referring to.
   scoped_reservation_.Reduce(0uL);
 
   if (!response.ok()) {
-    Schedule(&RecordHandlerImpl::ReportUploader::HandleFailedUpload,
-             base::Unretained(this), response.status());
+    HandleFailedUpload(response.status());
     return;
   }
-  last_response_ = std::move(response.ValueOrDie());
-  Schedule(&RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload,
-           base::Unretained(this));
+
+  HandleSuccessfulUpload(std::move(response.ValueOrDie()));
 }
 
 void RecordHandlerImpl::ReportUploader::HandleFailedUpload(Status status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (highest_sequence_information_.has_value()) {
-    Complete(DmServerUploadService::SuccessfulUploadResponse{
+    Complete(SuccessfulUploadResponse{
         .sequence_information =
             std::move(highest_sequence_information_.value()),
         .force_confirm = force_confirm_});
@@ -234,7 +233,9 @@ void RecordHandlerImpl::ReportUploader::HandleFailedUpload(Status status) {
   Complete(status);
 }
 
-void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
+void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
+    base::Value::Dict last_response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // {{{Note}}} ERP Response Payload Overview
   //
   //  {
@@ -251,7 +252,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   //                                         // adjustment is enabled.
   //  }
   const base::Value::Dict* last_succeed_uploaded_record =
-      last_response_.FindDict("lastSucceedUploadedRecord");
+      last_response.FindDict("lastSucceedUploadedRecord");
   if (last_succeed_uploaded_record != nullptr) {
     auto seq_info_result =
         SequenceInformationValueToProto(*last_succeed_uploaded_record);
@@ -265,14 +266,14 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   }
 
   // Handle forceConfirm flag, if present.
-  const auto force_confirm_flag = last_response_.FindBool("forceConfirm");
+  const auto force_confirm_flag = last_response.FindBool("forceConfirm");
   if (force_confirm_flag.has_value() && force_confirm_flag.value()) {
     force_confirm_ = true;
   }
 
   // Handle enableUploadSizeAdjustment flag, if present.
   const auto enable_upload_size_adjustment =
-      last_response_.FindBool("enableUploadSizeAdjustment");
+      last_response.FindBool("enableUploadSizeAdjustment");
   if (enable_upload_size_adjustment.has_value()) {
     EventUploadSizeController::Enabler::Set(
         enable_upload_size_adjustment.value());
@@ -283,7 +284,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   // the response indicates success or failure, and whether the client
   // set attach_encryption_settings to true in request.
   const base::Value::Dict* signed_encryption_key_record =
-      last_response_.FindDict("encryptionSettings");
+      last_response.FindDict("encryptionSettings");
   if (signed_encryption_key_record != nullptr) {
     const std::string* public_key_str =
         signed_encryption_key_record->FindString("publicKey");
@@ -309,7 +310,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
 
   // Check if a record was unprocessable on the server.
   const base::Value::Dict* failed_uploaded_record =
-      last_response_.FindDictByDottedPath(
+      last_response.FindDictByDottedPath(
           "firstFailedUploadedRecord.failedUploadedRecord");
   if (!force_confirm_ && failed_uploaded_record != nullptr) {
     // The record we uploaded previously was unprocessable by the server, if the
@@ -337,7 +338,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   // No more records to process. Return the highest_sequence_information_ if
   // available.
   if (highest_sequence_information_.has_value()) {
-    Complete(DmServerUploadService::SuccessfulUploadResponse{
+    Complete(SuccessfulUploadResponse{
         .sequence_information =
             std::move(highest_sequence_information_.value()),
         .force_confirm = force_confirm_});
@@ -350,6 +351,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
 absl::optional<EncryptedRecord>
 RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequenceInformation(
     const base::Value::Dict& sequence_information) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!highest_sequence_information_.has_value()) {
     LOG(ERROR) << "highest_sequence_information_ has no value.";
     return absl::nullopt;
@@ -382,7 +384,7 @@ RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequenceInformation(
 }
 
 void RecordHandlerImpl::ReportUploader::Complete(
-    DmServerUploadService::CompletionResponse completion_result) {
+    CompletionResponse completion_result) {
   Schedule(&RecordHandlerImpl::ReportUploader::Response, base::Unretained(this),
            completion_result);
 }
@@ -434,8 +436,9 @@ RecordHandlerImpl::ReportUploader::SequenceInformationValueToProto(
   return proto;
 }
 
-RecordHandlerImpl::RecordHandlerImpl()
-    : sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
+RecordHandlerImpl::RecordHandlerImpl(
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
+    : sequenced_task_runner_(sequenced_task_runner) {}
 
 RecordHandlerImpl::~RecordHandlerImpl() = default;
 
@@ -443,9 +446,8 @@ void RecordHandlerImpl::HandleRecords(
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
-    DmServerUploadService::CompletionCallback upload_complete_cb,
-    DmServerUploadService::EncryptionKeyAttachedCallback
-        encryption_key_attached_cb) {
+    CompletionCallback upload_complete_cb,
+    EncryptionKeyAttachedCallback encryption_key_attached_cb) {
   Start<RecordHandlerImpl::ReportUploader>(
       need_encryption_key, std::move(records), std::move(scoped_reservation),
       std::move(upload_complete_cb), std::move(encryption_key_attached_cb),

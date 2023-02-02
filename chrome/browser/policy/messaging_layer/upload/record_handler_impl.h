@@ -11,7 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
-#include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
+#include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
@@ -23,25 +23,25 @@ namespace reporting {
 // the server, cancelling any in progress reports if a new report is added.
 // For that reason `RecordHandlerImpl` ensures that only one report is ever
 // processed at one time by forming a queue.
-class RecordHandlerImpl : public DmServerUploadService::RecordHandler {
+class RecordHandlerImpl : public RecordHandler {
  public:
-  RecordHandlerImpl();
+  explicit RecordHandlerImpl(
+      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
   ~RecordHandlerImpl() override;
 
   // Base class RecordHandler method implementation.
-  void HandleRecords(bool need_encryption_key,
-                     std::vector<EncryptedRecord> record,
-                     ScopedReservation scoped_reservation,
-                     DmServerUploadService::CompletionCallback upload_complete,
-                     DmServerUploadService::EncryptionKeyAttachedCallback
-                         encryption_key_attached_cb) override;
+  void HandleRecords(
+      bool need_encryption_key,
+      std::vector<EncryptedRecord> record,
+      ScopedReservation scoped_reservation,
+      CompletionCallback upload_complete,
+      EncryptionKeyAttachedCallback encryption_key_attached_cb) override;
 
  private:
-  // Helper |ReportUploader| class handles enqueuing events on the
-  // |report_queue_|.
+  // Helper `ReportUploader` class handles events being uploaded.
   class ReportUploader;
 
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 };
 
 }  // namespace reporting

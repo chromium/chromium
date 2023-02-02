@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
+#include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
 
 #include <memory>
 #include <utility>
@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -25,10 +24,6 @@
 #include "content/public/browser/browser_thread.h"
 
 namespace reporting {
-
-using DmServerUploader = DmServerUploadService::DmServerUploader;
-
-DmServerUploadService::RecordHandler::RecordHandler() = default;
 
 DmServerUploader::DmServerUploader(
     bool need_encryption_key,
@@ -66,13 +61,17 @@ void DmServerUploader::OnStart() {
   }
 
   if (!encrypted_records_.empty()) {
-    ProcessRecords();
+    const auto process_status = ProcessRecords();
+    if (!process_status.ok()) {
+      Complete(process_status);
+      return;
+    }
   }
 
   HandleRecords();
 }
 
-void DmServerUploader::ProcessRecords() {
+Status DmServerUploader::ProcessRecords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status process_status;
 
@@ -87,20 +86,21 @@ void DmServerUploader::ProcessRecords() {
     process_status = IsRecordValid(encrypted_record, expected_generation_id,
                                    expected_sequencing_id);
     if (!process_status.ok()) {
-      LOG(ERROR) << "Record was received out of order from the StorageModule";
+      LOG(ERROR) << "Record was invalid or received out of order";
       break;
     }
-    records_added += 1;
-    expected_sequencing_id++;
+    ++records_added;
+    ++expected_sequencing_id;
   }
 
   if (records_added == 0) {
-    Complete(process_status);
-    return;
+    // No valid records found, report failure.
+    return process_status;
   }
 
-  // Discarding the remaining records.
+  // Some records are valid, discard the rest and continue.
   encrypted_records_.resize(records_added);
+  return Status::StatusOK();
 }
 
 void DmServerUploader::HandleRecords() {
@@ -148,39 +148,5 @@ Status DmServerUploader::IsRecordValid(
   }
 
   return Status::StatusOK();
-}
-
-void DmServerUploadService::Create(
-    base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
-        created_cb) {
-  auto uploader = base::WrapUnique(new DmServerUploadService());
-  InitRecordHandler(std::move(uploader), std::move(created_cb));
-}
-
-DmServerUploadService::DmServerUploadService()
-    : sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
-
-DmServerUploadService::~DmServerUploadService() = default;
-
-Status DmServerUploadService::EnqueueUpload(
-    bool need_encryption_key,
-    std::vector<EncryptedRecord> records,
-    ScopedReservation scoped_reservation,
-    ReportSuccessfulUploadCallback report_upload_success_cb,
-    EncryptionKeyAttachedCallback encryption_key_attached_cb) {
-  Start<DmServerUploader>(need_encryption_key, std::move(records),
-                          std::move(scoped_reservation), handler_.get(),
-                          std::move(report_upload_success_cb),
-                          std::move(encryption_key_attached_cb),
-                          base::DoNothing(), sequenced_task_runner_);
-  return Status::StatusOK();
-}
-
-void DmServerUploadService::InitRecordHandler(
-    std::unique_ptr<DmServerUploadService> uploader,
-    base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
-        created_cb) {
-  uploader->handler_ = std::make_unique<RecordHandlerImpl>();
-  std::move(created_cb).Run(std::move(uploader));
 }
 }  // namespace reporting

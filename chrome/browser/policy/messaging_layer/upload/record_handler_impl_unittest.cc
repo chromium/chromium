@@ -13,9 +13,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
+#include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
@@ -86,6 +87,8 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
   bool force_confirm() const { return std::get<1>(GetParam()); }
 
   content::BrowserTaskEnvironment task_environment_;
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunner({});
 
   policy::MockCloudPolicyClient mock_client_;
   ReportingServerConnector::TestEnvironment test_env_{&mock_client_};
@@ -124,7 +127,7 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
       BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
   const auto force_confirm_by_server = force_confirm();
 
-  DmServerUploadService::SuccessfulUploadResponse expected_response{
+  SuccessfulUploadResponse expected_response{
       .sequence_information = test_records.second.back().sequence_information(),
       .force_confirm = force_confirm()};
 
@@ -134,9 +137,9 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
           ResponseBuilder().SetForceConfirm(force_confirm_by_server))));
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
-  test::TestEvent<DmServerUploadService::CompletionResponse> responder_event;
+  test::TestEvent<CompletionResponse> responder_event;
 
-  RecordHandlerImpl handler;
+  RecordHandlerImpl handler(sequenced_task_runner_);
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), responder_event.cb(),
                         encryption_key_attached_event.repeating_cb());
@@ -173,15 +176,16 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
           })));
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
-  test::TestEvent<DmServerUploadService::CompletionResponse> responder_event;
+  test::TestEvent<CompletionResponse> responder_event;
 
-  RecordHandlerImpl handler;
+  RecordHandlerImpl handler(sequenced_task_runner_);
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), responder_event.cb(),
                         encryption_key_attached_event.repeating_cb());
 
   auto response = responder_event.result();
-  EXPECT_EQ(response.status().error_code(), error::INTERNAL);
+  EXPECT_THAT(response.status(),
+              Property(&Status::error_code, Eq(error::INTERNAL)));
 }
 
 TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
@@ -210,15 +214,16 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
           })));
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
-  test::TestEvent<DmServerUploadService::CompletionResponse> responder_event;
+  test::TestEvent<CompletionResponse> responder_event;
 
-  RecordHandlerImpl handler;
+  RecordHandlerImpl handler(sequenced_task_runner_);
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), responder_event.cb(),
                         encryption_key_attached_event.repeating_cb());
 
   auto response = responder_event.result();
-  EXPECT_EQ(response.status().error_code(), error::INTERNAL);
+  EXPECT_THAT(response.status(),
+              Property(&Status::error_code, Eq(error::INTERNAL)));
 }
 
 TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
@@ -235,15 +240,16 @@ TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
   EXPECT_CALL(mock_client_, UploadEncryptedReport(_, _, _)).Times(0);
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
-  test::TestEvent<DmServerUploadService::CompletionResponse> responder_event;
+  test::TestEvent<CompletionResponse> responder_event;
 
-  RecordHandlerImpl handler;
+  RecordHandlerImpl handler(sequenced_task_runner_);
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), responder_event.cb(),
                         encryption_key_attached_event.repeating_cb());
 
   auto response = responder_event.result();
-  EXPECT_EQ(response.status().error_code(), error::FAILED_PRECONDITION);
+  EXPECT_THAT(response.status(),
+              Property(&Status::error_code, Eq(error::FAILED_PRECONDITION)));
 }
 
 TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
@@ -257,18 +263,17 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
       .WillOnce(MakeUploadEncryptedReportAction(
           std::move(ResponseBuilder().SetNull(true))));
 
-  test::TestEvent<DmServerUploadService::CompletionResponse> response_event;
+  test::TestEvent<CompletionResponse> response_event;
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
 
-  RecordHandlerImpl handler;
+  RecordHandlerImpl handler(sequenced_task_runner_);
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), response_event.cb(),
                         encryption_key_attached_event.repeating_cb());
 
   const auto response = response_event.result();
-  EXPECT_THAT(response,
-              Property(&DmServerUploadService::CompletionResponse::status,
-                       Property(&Status::error_code, Eq(error::DATA_LOSS))));
+  EXPECT_THAT(response.status(),
+              Property(&Status::error_code, Eq(error::DATA_LOSS)));
 
   EXPECT_TRUE(encryption_key_attached_event.no_result());
 }
@@ -280,7 +285,7 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
       BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
   const auto force_confirm_by_server = force_confirm();
 
-  const DmServerUploadService::SuccessfulUploadResponse expected_response{
+  const SuccessfulUploadResponse expected_response{
       .sequence_information =
           test_records.second.rbegin()->sequence_information(),
       .force_confirm = force_confirm()};
@@ -298,10 +303,10 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
             ResponseBuilder().SetForceConfirm(force_confirm_by_server))));
   }
 
-  test::TestEvent<DmServerUploadService::CompletionResponse> response_event;
+  test::TestEvent<CompletionResponse> response_event;
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
 
-  RecordHandlerImpl handler;
+  RecordHandlerImpl handler(sequenced_task_runner_);
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), response_event.cb(),
                         encryption_key_attached_event.repeating_cb());
@@ -338,17 +343,16 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
           })));
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
-  test::TestEvent<DmServerUploadService::CompletionResponse> response_event;
+  test::TestEvent<CompletionResponse> response_event;
 
-  RecordHandlerImpl handler;
+  RecordHandlerImpl handler(sequenced_task_runner_);
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), response_event.cb(),
                         encryption_key_attached_event.repeating_cb());
 
   const auto response = response_event.result();
-  EXPECT_THAT(response,
-              Property(&DmServerUploadService::CompletionResponse::status,
-                       Property(&Status::error_code, Eq(error::INTERNAL))));
+  EXPECT_THAT(response.status(),
+              Property(&Status::error_code, Eq(error::INTERNAL)));
 
   EXPECT_TRUE(encryption_key_attached_event.no_result());
 }
@@ -360,7 +364,7 @@ TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
       BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
   const auto force_confirm_by_server = force_confirm();
 
-  DmServerUploadService::SuccessfulUploadResponse expected_response{
+  SuccessfulUploadResponse expected_response{
       .sequence_information = test_records.second.back().sequence_information(),
       .force_confirm = force_confirm()};
 
@@ -369,8 +373,8 @@ TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
       .WillOnce(MakeUploadEncryptedReportAction(std::move(
           ResponseBuilder().SetForceConfirm(force_confirm_by_server))));
 
-  test::TestEvent<DmServerUploadService::CompletionResponse> responder_event;
-  RecordHandlerImpl handler;
+  test::TestEvent<CompletionResponse> responder_event;
+  RecordHandlerImpl handler(sequenced_task_runner_);
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), responder_event.cb(),
                         base::DoNothing());
