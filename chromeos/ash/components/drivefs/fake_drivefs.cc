@@ -174,26 +174,33 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
         const base::FilePath path = item_ptr->path;
         const drivefs::mojom::FileMetadata* metadata = item_ptr->metadata.get();
         if (!query.empty()) {
-          return !base::Contains(base::ToLowerASCII(path.BaseName().value()),
-                                 query);
+          if (!base::Contains(base::ToLowerASCII(path.BaseName().value()),
+                              query)) {
+            return true;
+          }
         }
         if (params_->available_offline) {
-          return !metadata->available_offline && IsLocal(metadata->type);
+          if (!metadata->available_offline && IsLocal(metadata->type)) {
+            return true;
+          }
         }
         if (params_->shared_with_me) {
-          return !metadata->shared;
+          if (!metadata->shared) {
+            return true;
+          }
         }
         if (!mime_types.empty()) {
           std::string content_mime_type = metadata->content_mime_type;
-          if (content_mime_type.empty()) {
-            return true;
-          }
-          if (base::ranges::none_of(
-                  mime_types,
-                  [content_mime_type](const std::string& mime_type) {
-                    return net::MatchesMimeType(mime_type, content_mime_type);
-                  })) {
-            return true;
+          // If we do not know the MIME type the file may or may not match. Thus
+          // we only test MIME type match if we know the files MIME type.
+          if (!content_mime_type.empty()) {
+            if (base::ranges::none_of(
+                    mime_types,
+                    [content_mime_type](const std::string& mime_type) {
+                      return net::MatchesMimeType(mime_type, content_mime_type);
+                    })) {
+              return true;
+            }
           }
         }
         return false;
