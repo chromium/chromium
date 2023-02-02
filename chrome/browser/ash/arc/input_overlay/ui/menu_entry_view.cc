@@ -7,6 +7,7 @@
 #include "ash/app_list/app_list_util.h"
 #include "ash/style/style_util.h"
 #include "base/cxx17_backports.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
@@ -55,9 +56,10 @@ MenuEntryView::MenuEntryView(
     OnPositionChangedCallback on_position_changed_callback)
     : views::ImageButton(std::move(pressed_callback)),
       on_position_changed_callback_(on_position_changed_callback) {
-  auto game_icon =
-      ui::ImageModel::FromVectorIcon(vector_icons::kVideogameAssetOutlineIcon,
-                                     SK_ColorBLACK, kMenuEntryIconSize);
+  auto game_icon = ui::ImageModel::FromVectorIcon(
+      allow_reposition_ ? kGameControlsGamepadIcon
+                        : vector_icons::kVideogameAssetOutlineIcon,
+      SK_ColorBLACK, kMenuEntryIconSize);
   SetImageModel(views::Button::STATE_NORMAL, game_icon);
   SetBackground(views::CreateRoundedRectBackground(kDefaultColor,
                                                    kMenuEntryCornerRadius));
