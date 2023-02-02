@@ -796,6 +796,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaHiddenFocusCorrections) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-hidden-focus-corrections.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaHiddenFocusedButton) {
   RunAriaTest(FILE_PATH_LITERAL("aria-hidden-focused-button.html"));
 }

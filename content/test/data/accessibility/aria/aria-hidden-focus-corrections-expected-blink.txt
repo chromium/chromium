@@ -1,0 +1,26 @@
+# These are results for cases that are technically allowed despite forbidden by
+# the spec: a focusable node (due to its role, or due to having a tabindex)
+# is not allowed to be aria-hidden. Chromium ensures these nodes do get a name
+# anyway in most cases.
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++tree
+++++++++group ignored invisible
+++++++++++treeItem invisible name='outer aria-hidden' selected=false
+++++++++++++staticText ignored invisible name='outer aria-hidden'
+++++++++++treeItem invisible name='outer aria-hidden, grandchildren' selected=false
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText ignored invisible name='outer aria-hidden, grandchildren'
+++++++++group
+++++++++++treeItem invisible name='direct aria-hidden' selected=false
+++++++++++++staticText ignored invisible name='direct aria-hidden'
+++++++++++treeItem invisible name='direct aria-hidden, grandchildren' selected=false
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText ignored invisible name='direct aria-hidden, grandchildren'
+++++++++++treeItem selected=false
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText ignored invisible name='inner aria-hidden, grandchildren'

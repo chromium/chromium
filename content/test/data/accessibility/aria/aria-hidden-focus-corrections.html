@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<div role="tree" id="tree">
+  <div role="group" aria-hidden="true">
+    <div role="treeitem" tabindex="0">
+      outer aria-hidden
+    </div>
+    <div role="treeitem" tabindex="0">
+      <div>
+        <div>outer aria-hidden, grandchildren</div>
+      </div>
+    </div>
+  </div>
+  <div role="group">
+    <div role="treeitem" tabindex="0" aria-hidden="true">
+      direct aria-hidden
+    </div>
+    <div role="treeitem" tabindex="0" aria-hidden="true">
+      <div>
+        <div>direct aria-hidden, grandchildren</div>
+      </div>
+    </div>
+    <div role="treeitem" tabindex="0">
+      <div aria-hidden="true">
+        <div>inner aria-hidden, grandchildren</div>
+      </div>
+    </div>
+  </div>
+</div>
