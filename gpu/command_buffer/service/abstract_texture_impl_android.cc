@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/abstract_texture_impl.h"
+#include "gpu/command_buffer/service/abstract_texture_impl_android.h"
 
 #include <utility>
 
@@ -16,7 +16,6 @@
 #include "ui/gl/scoped_make_current.h"
 
 namespace gpu {
-namespace gles2 {
 
 AbstractTextureImpl::AbstractTextureImpl(GLenum target,
                                          GLenum internal_format,
@@ -46,8 +45,9 @@ AbstractTextureImpl::AbstractTextureImpl(GLenum target,
 AbstractTextureImpl::~AbstractTextureImpl() {
   // If context is not lost, then the texture should be destroyed on same
   // context it was create on.
-  if (have_context_)
+  if (have_context_) {
     DCHECK_EQ(api_, gl::g_current_gl_context);
+  }
 
   texture_->RemoveLightweightRef(have_context_);
 }
@@ -109,7 +109,7 @@ AbstractTextureImplPassthrough::AbstractTextureImplPassthrough(
   api_->glGenTexturesFn(1, &service_id);
 
   GLint prev_texture = 0;
-  api_->glGetIntegervFn(GetTextureBindingQuery(target), &prev_texture);
+  api_->glGetIntegervFn(gles2::GetTextureBindingQuery(target), &prev_texture);
 
   api_->glBindTextureFn(target, service_id);
   api_->glTexParameteriFn(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -119,15 +119,17 @@ AbstractTextureImplPassthrough::AbstractTextureImplPassthrough(
 
   glBindTexture(target, prev_texture);
 
-  texture_ = new TexturePassthrough(service_id, target, internal_format, width,
+  texture_ =
+      new gles2::TexturePassthrough(service_id, target, internal_format, width,
                                     height, depth, border, format, type);
 }
 
 AbstractTextureImplPassthrough::~AbstractTextureImplPassthrough() {
   // If context is not lost, then the texture should be destroyed on the same
   // context it was create on.
-  if (have_context_)
+  if (have_context_) {
     DCHECK_EQ(api_, gl::g_current_gl_context);
+  }
 }
 
 TextureBase* AbstractTextureImplPassthrough::GetTextureBase() const {
@@ -172,5 +174,4 @@ void AbstractTextureImplPassthrough::NotifyOnContextLost() {
   have_context_ = false;
 }
 
-}  // namespace gles2
 }  // namespace gpu

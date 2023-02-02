@@ -70,7 +70,7 @@ class ImageReaderGLOwnerTest : public testing::Test {
     std::unique_ptr<MockAbstractTexture> texture =
         std::make_unique<MockAbstractTexture>(texture_id_);
     abstract_texture_ = texture->AsWeakPtr();
-    image_reader_ = TextureOwner::Create(
+    image_reader_ = new ImageReaderGLOwner(
         std::move(texture), SecureMode(), std::move(context_state),
         features::NeedThreadSafeAndroidMedia()
             ? base::MakeRefCounted<gpu::RefCountedLockForTest>()

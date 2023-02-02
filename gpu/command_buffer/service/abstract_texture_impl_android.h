@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_COMMAND_BUFFER_SERVICE_ABSTRACT_TEXTURE_IMPL_H_
-#define GPU_COMMAND_BUFFER_SERVICE_ABSTRACT_TEXTURE_IMPL_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_ABSTRACT_TEXTURE_IMPL_ANDROID_H_
+#define GPU_COMMAND_BUFFER_SERVICE_ABSTRACT_TEXTURE_IMPL_ANDROID_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "gpu/command_buffer/service/abstract_texture.h"
+#include "gpu/command_buffer/service/abstract_texture_android.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace gl {
@@ -20,10 +20,10 @@ namespace gpu {
 namespace gles2 {
 class Texture;
 class TexturePassthrough;
-
-// Implementation of AbstractTexture which creates gles2::Texture on current
-// context.
-class GPU_GLES2_EXPORT AbstractTextureImpl : public AbstractTexture {
+}  // namespace gles2
+// Implementation of AbstractTextureAndroid which creates gles2::Texture on
+// current context.
+class GPU_GLES2_EXPORT AbstractTextureImpl : public AbstractTextureAndroid {
  public:
   AbstractTextureImpl(GLenum target,
                       GLenum internal_format,
@@ -35,7 +35,7 @@ class GPU_GLES2_EXPORT AbstractTextureImpl : public AbstractTexture {
                       GLenum type);
   ~AbstractTextureImpl() override;
 
-  // AbstractTexture implementation.
+  // AbstractTextureAndroid implementation.
   TextureBase* GetTextureBase() const override;
   void SetParameteri(GLenum pname, GLint param) override;
 #if BUILDFLAG(IS_ANDROID)
@@ -53,13 +53,14 @@ class GPU_GLES2_EXPORT AbstractTextureImpl : public AbstractTexture {
 
  private:
   bool have_context_ = true;
-  raw_ptr<Texture, DanglingUntriaged> texture_;
+  raw_ptr<gles2::Texture, DanglingUntriaged> texture_;
   raw_ptr<gl::GLApi, DanglingUntriaged> api_ = nullptr;
 };
 
-// Implementation of AbstractTexture which creates gles2::TexturePassthrough on
-// current context.
-class GPU_GLES2_EXPORT AbstractTextureImplPassthrough : public AbstractTexture {
+// Implementation of AbstractTextureAndroid which creates
+// gles2::TexturePassthrough on current context.
+class GPU_GLES2_EXPORT AbstractTextureImplPassthrough
+    : public AbstractTextureAndroid {
  public:
   AbstractTextureImplPassthrough(GLenum target,
                                  GLenum internal_format,
@@ -71,7 +72,7 @@ class GPU_GLES2_EXPORT AbstractTextureImplPassthrough : public AbstractTexture {
                                  GLenum type);
   ~AbstractTextureImplPassthrough() override;
 
-  // AbstractTexture implementation.
+  // AbstractTextureAndroid implementation.
   TextureBase* GetTextureBase() const override;
   void SetParameteri(GLenum pname, GLint param) override;
 #if BUILDFLAG(IS_ANDROID)
@@ -89,11 +90,10 @@ class GPU_GLES2_EXPORT AbstractTextureImplPassthrough : public AbstractTexture {
 
  private:
   bool have_context_ = true;
-  scoped_refptr<TexturePassthrough> texture_;
+  scoped_refptr<gles2::TexturePassthrough> texture_;
   raw_ptr<gl::GLApi, DanglingUntriaged> api_ = nullptr;
 };
 
-}  // namespace gles2
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_SERVICE_ABSTRACT_TEXTURE_IMPL_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_ABSTRACT_TEXTURE_IMPL_ANDROID_H_

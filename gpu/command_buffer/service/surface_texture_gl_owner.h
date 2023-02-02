@@ -50,9 +50,10 @@ class GPU_GLES2_EXPORT SurfaceTextureGLOwner : public TextureOwner {
 
  private:
   friend class TextureOwner;
+  friend class SurfaceTextureGLOwnerTest;
   friend class SurfaceTextureTransformTest;
 
-  SurfaceTextureGLOwner(std::unique_ptr<gles2::AbstractTexture> texture,
+  SurfaceTextureGLOwner(std::unique_ptr<AbstractTextureAndroid> texture,
                         scoped_refptr<SharedContextState> context_state);
   ~SurfaceTextureGLOwner() override;
 

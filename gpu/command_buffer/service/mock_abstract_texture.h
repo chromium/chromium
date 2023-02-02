@@ -6,14 +6,14 @@
 #define GPU_COMMAND_BUFFER_SERVICE_MOCK_ABSTRACT_TEXTURE_H_
 
 #include "base/memory/weak_ptr.h"
-#include "gpu/command_buffer/service/abstract_texture.h"
+#include "gpu/command_buffer/service/abstract_texture_android.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace gpu {
 
 // SupportsWeakPtr so it's easy to tell when it has been destroyed.
 class MockAbstractTexture
-    : public ::testing::NiceMock<gpu::gles2::AbstractTexture>,
+    : public ::testing::NiceMock<gpu::AbstractTextureAndroid>,
       public base::SupportsWeakPtr<MockAbstractTexture> {
  public:
   MockAbstractTexture();

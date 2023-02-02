@@ -64,6 +64,7 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
 
  private:
   friend class TextureOwner;
+  friend class ImageReaderGLOwnerTest;
   class ScopedHardwareBufferImpl;
 
   // Manages ownership of the latest image retrieved from AImageReader and
@@ -87,7 +88,7 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
     base::ScopedFD ready_fence_;
   };
 
-  ImageReaderGLOwner(std::unique_ptr<gles2::AbstractTexture> texture,
+  ImageReaderGLOwner(std::unique_ptr<AbstractTextureAndroid> texture,
                      Mode secure_mode,
                      scoped_refptr<SharedContextState> context_state,
                      scoped_refptr<RefCountedLock> drdc_lock);

@@ -16,7 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -66,15 +65,12 @@ static void AllocateTextureOwnerOnGpuThread(
     return;
   }
 
-  std::move(init_cb).Run(gpu::TextureOwner::Create(
-      gpu::TextureOwner::CreateTexture(shared_context_state),
-      GetTextureOwnerMode(overlay_mode), shared_context_state,
-      std::move(drdc_lock)));
+  std::move(init_cb).Run(
+      gpu::TextureOwner::Create(GetTextureOwnerMode(overlay_mode),
+                                shared_context_state, std::move(drdc_lock)));
 }
 
 }  // namespace
-
-using gpu::gles2::AbstractTexture;
 
 VideoFrameFactoryImpl::VideoFrameFactoryImpl(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,

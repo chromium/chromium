@@ -15,7 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
-#include "gpu/command_buffer/service/abstract_texture.h"
+#include "gpu/command_buffer/service/abstract_texture_android.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_make_current.h"
@@ -47,7 +47,7 @@ std::unique_ptr<ui::ScopedMakeCurrent> MakeCurrentIfNeeded(
 }  // namespace
 
 SurfaceTextureGLOwner::SurfaceTextureGLOwner(
-    std::unique_ptr<gles2::AbstractTexture> texture,
+    std::unique_ptr<AbstractTextureAndroid> texture,
     scoped_refptr<SharedContextState> context_state)
     : TextureOwner(true /*binds_texture_on_update */,
                    std::move(texture),

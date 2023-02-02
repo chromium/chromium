@@ -12,7 +12,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/abstract_texture_impl.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
@@ -94,11 +93,9 @@ StreamTexture::StreamTexture(
     int32_t route_id,
     mojo::PendingAssociatedReceiver<mojom::StreamTexture> receiver,
     scoped_refptr<SharedContextState> context_state)
-    : texture_owner_(
-          TextureOwner::Create(TextureOwner::CreateTexture(context_state),
-                               GetTextureOwnerMode(),
-                               context_state,
-                               /*drdc_lock=*/nullptr)),
+    : texture_owner_(TextureOwner::Create(GetTextureOwnerMode(),
+                                          context_state,
+                                          /*drdc_lock=*/nullptr)),
       has_pending_frame_(false),
       channel_(channel),
       route_id_(route_id),

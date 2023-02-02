@@ -9,8 +9,8 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/abstract_texture.h"
-#include "gpu/command_buffer/service/abstract_texture_impl.h"
+#include "gpu/command_buffer/service/abstract_texture_android.h"
+#include "gpu/command_buffer/service/abstract_texture_impl_android.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/video_image_reader_image_backing.h"
@@ -94,15 +94,15 @@ absl::optional<VulkanYCbCrInfo> AndroidVideoImageBacking::GetYcbcrInfo(
   return absl::optional<VulkanYCbCrInfo>(ycbcr_info);
 }
 
-std::unique_ptr<gles2::AbstractTexture>
+std::unique_ptr<AbstractTextureAndroid>
 AndroidVideoImageBacking::GenAbstractTexture(const bool passthrough) {
-  std::unique_ptr<gles2::AbstractTexture> texture;
+  std::unique_ptr<AbstractTextureAndroid> texture;
   if (passthrough) {
-    texture = std::make_unique<gles2::AbstractTextureImplPassthrough>(
+    texture = std::make_unique<AbstractTextureImplPassthrough>(
         GL_TEXTURE_EXTERNAL_OES, GL_RGBA, size().width(), size().height(), 1, 0,
         GL_RGBA, GL_UNSIGNED_BYTE);
   } else {
-    texture = std::make_unique<gles2::AbstractTextureImpl>(
+    texture = std::make_unique<AbstractTextureImpl>(
         GL_TEXTURE_EXTERNAL_OES, GL_RGBA, size().width(), size().height(), 1, 0,
         GL_RGBA, GL_UNSIGNED_BYTE);
   }

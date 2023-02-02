@@ -25,10 +25,8 @@ class ScopedHardwareBufferFenceSync;
 }  // namespace base
 
 namespace gpu {
+class AbstractTextureAndroid;
 class TextureBase;
-namespace gles2 {
-class AbstractTexture;
-}  // namespace gles2
 
 // A Texture wrapper interface that creates and maintains ownership of the
 // attached GL or Vulkan texture. The texture is destroyed with the object.
@@ -56,18 +54,14 @@ class GPU_GLES2_EXPORT TextureOwner
     kAImageReaderSecureSurfaceControl,
     kSurfaceTextureInsecure
   };
+
   static scoped_refptr<TextureOwner> Create(
-      std::unique_ptr<gles2::AbstractTexture> texture,
       Mode mode,
       scoped_refptr<SharedContextState> context_state,
       scoped_refptr<RefCountedLock> drdc_lock);
 
   TextureOwner(const TextureOwner&) = delete;
   TextureOwner& operator=(const TextureOwner&) = delete;
-
-  // Create a texture that's appropriate for a TextureOwner.
-  static std::unique_ptr<gles2::AbstractTexture> CreateTexture(
-      scoped_refptr<SharedContextState> context_state);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner() {
     return task_runner_;
@@ -149,28 +143,28 @@ class GPU_GLES2_EXPORT TextureOwner
 
   // |texture| is the texture that we'll own.
   TextureOwner(bool binds_texture_on_update,
-               std::unique_ptr<gles2::AbstractTexture> texture,
+               std::unique_ptr<AbstractTextureAndroid> texture,
                scoped_refptr<SharedContextState> context_state);
   ~TextureOwner() override;
 
   // Called when |texture_| signals that the platform texture will be destroyed.
   virtual void ReleaseResources() = 0;
 
-  gles2::AbstractTexture* texture() const { return texture_.get(); }
+  AbstractTextureAndroid* texture() const { return texture_.get(); }
 
  private:
   friend class MockTextureOwner;
 
   // To be used by MockTextureOwner.
   TextureOwner(bool binds_texture_on_update,
-               std::unique_ptr<gles2::AbstractTexture> texture);
+               std::unique_ptr<AbstractTextureAndroid> texture);
 
   // Set to true if the updating the image for this owner will automatically
   // bind it to the texture target.
   const bool binds_texture_on_update_;
 
   scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<gles2::AbstractTexture> texture_;
+  std::unique_ptr<AbstractTextureAndroid> texture_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 

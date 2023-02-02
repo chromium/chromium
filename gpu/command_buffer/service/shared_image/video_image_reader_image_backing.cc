@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/abstract_texture_android.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -173,7 +174,7 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
       SharedImageManager* manager,
       VideoImageReaderImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<gles2::AbstractTexture> texture,
+      std::unique_ptr<AbstractTextureAndroid> texture,
       scoped_refptr<RefCountedLock> drdc_lock)
       : GLTextureImageRepresentation(manager, backing, tracker),
         RefCountedLockHelperDrDc(std::move(drdc_lock)),
@@ -223,7 +224,7 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
   }
 
  private:
-  std::unique_ptr<gles2::AbstractTexture> texture_;
+  std::unique_ptr<AbstractTextureAndroid> texture_;
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
       scoped_hardware_buffer_;
 };
@@ -237,7 +238,7 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
       SharedImageManager* manager,
       VideoImageReaderImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<gles2::AbstractTexture> abstract_texture,
+      std::unique_ptr<AbstractTextureAndroid> abstract_texture,
       scoped_refptr<RefCountedLock> drdc_lock)
       : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
         RefCountedLockHelperDrDc(std::move(drdc_lock)),
@@ -290,7 +291,7 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
   }
 
  private:
-  std::unique_ptr<gles2::AbstractTexture> abstract_texture_;
+  std::unique_ptr<AbstractTextureAndroid> abstract_texture_;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
       scoped_hardware_buffer_;
