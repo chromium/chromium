@@ -1539,10 +1539,6 @@ const char kGalleryAppPdfEditNotificationDescription[] =
     "Shows a notification to provide an option to open Gallery app for a "
     "downloaded pdf file";
 
-const char kGlobalMediaControlsForCastName[] = "Global Media Controls for Cast";
-const char kGlobalMediaControlsForCastDescription[] =
-    "Shows Cast sessions in the Global Media Controls UI.";
-
 const char kMediaRemotingWithoutFullscreenName[] =
     "Media Remoting without videos in fullscreen mode";
 const char kMediaRemotingWithoutFullscreenDescription[] =

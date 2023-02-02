@@ -860,9 +860,6 @@ extern const char kFullUserAgentDescription[];
 extern const char kGalleryAppPdfEditNotificationName[];
 extern const char kGalleryAppPdfEditNotificationDescription[];
 
-extern const char kGlobalMediaControlsForCastName[];
-extern const char kGlobalMediaControlsForCastDescription[];
-
 extern const char kMediaRemotingWithoutFullscreenName[];
 extern const char kMediaRemotingWithoutFullscreenDescription[];
 

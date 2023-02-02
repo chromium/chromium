@@ -601,11 +601,6 @@ BASE_FEATURE(kGlobalMediaControlsAutoDismiss,
 BASE_FEATURE(kGlobalMediaControlsCrOSUpdatedUI,
              "GlobalMediaControlsCrOSUpdatedUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Show Cast sessions in Global Media Controls.
-BASE_FEATURE(kGlobalMediaControlsForCast,
-             "GlobalMediaControlsForCast",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

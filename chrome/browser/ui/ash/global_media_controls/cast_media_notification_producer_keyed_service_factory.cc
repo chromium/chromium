@@ -31,8 +31,7 @@ CastMediaNotificationProducerKeyedServiceFactory::GetInstance() {
 KeyedService*
 CastMediaNotificationProducerKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!media_router::MediaRouterEnabled(context) ||
-      !base::FeatureList::IsEnabled(media::kGlobalMediaControlsForCast)) {
+  if (!media_router::MediaRouterEnabled(context)) {
     return nullptr;
   }
   return new CastMediaNotificationProducerKeyedService(
