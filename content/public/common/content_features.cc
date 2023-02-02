@@ -583,6 +583,14 @@ BASE_FEATURE(kIsolatedWebApps,
              "IsolatedWebApps",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable support for IWA Controlled Frame. This gates allowing IWAs to provide
+// a functional Controlled Frame tag to IWA apps.
+// See https://github.com/chasephillips/controlled-frame/blob/main/EXPLAINER.md
+// for more info.
+BASE_FEATURE(kIwaControlledFrame,
+             "IwaControlledFrame",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables process isolation of fenced content (content inside fenced frames)
 // from non-fenced content. See
 // https://github.com/WICG/fenced-frame/blob/master/explainer/process_isolation.md

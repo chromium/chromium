@@ -688,6 +688,9 @@ extern const char kEnableIsolatedWebAppsDescription[];
 extern const char kEnableIsolatedWebAppDevModeName[];
 extern const char kEnableIsolatedWebAppDevModeDescription[];
 
+extern const char kEnableIwaControlledFrameName[];
+extern const char kEnableIwaControlledFrameDescription[];
+
 extern const char kEnableLensStandaloneFlagId[];
 extern const char kEnableLensStandaloneName[];
 extern const char kEnableLensStandaloneDescription[];

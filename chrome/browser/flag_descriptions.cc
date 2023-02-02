@@ -1084,6 +1084,13 @@ const char kEnableIsolatedWebAppDevModeName[] =
 const char kEnableIsolatedWebAppDevModeDescription[] =
     "Enables the installation of unverified Isolated Web Apps";
 
+const char kEnableIwaControlledFrameName[] = "Enable IWA Controlled Frame";
+const char kEnableIwaControlledFrameDescription[] =
+    "Enables experimental support for IWA Controlled Frame. "
+    "See "
+    "https://github.com/chasephillips/controlled-frame/blob/main/EXPLAINER.md "
+    "for more information.";
+
 const char kEnableRgbKeyboardName[] = "Enable RGB Keyboard Support";
 const char kEnableRgbKeyboardDescription[] =
     "Enable RGB Keyboard support on supported devices.";
