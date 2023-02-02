@@ -315,10 +315,26 @@ void CaptureModeSessionFocusCycler::HighlightableView::ClickView() {
   DCHECK(view);
 
   views::Button* button = views::Button::AsButton(view);
-  if (!button)
+  if (!button) {
     return;
-  button->AcceleratorPressed(ui::Accelerator(ui::VKEY_SPACE, /*modifiers=*/0));
+  }
+
+  // `button` such as the close button or the capture button may be destroyed
+  // after `AcceleratorPressed`, which will cause UAF. Use a `WeakPtr` to detect
+  // this and skip `NotifyAccessibilityEvent` in this case.
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+
+  if (button->AcceleratorPressed(
+          ui::Accelerator(ui::VKEY_SPACE, /*modifiers=*/0)) &&
+      weak_ptr) {
+    button->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+  }
 }
+
+CaptureModeSessionFocusCycler::HighlightableView::HighlightableView() = default;
+
+CaptureModeSessionFocusCycler::HighlightableView::~HighlightableView() =
+    default;
 
 // -----------------------------------------------------------------------------
 // CaptureModeSessionFocusCycler::HighlightableWindow:
