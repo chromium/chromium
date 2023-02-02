@@ -332,6 +332,35 @@ TEST_F(AutofillProfileImportProcessTest, ImportSupersetProfile_kAccount) {
               testing::ElementsAreArray(existing_profiles));
 }
 
+// Tests that an import cannot cause a silent update of a `kAccount` profile, if
+// the feature parameter is disabled.
+TEST_F(AutofillProfileImportProcessTest,
+       ImportSilentUpdate_kAccount_DisabledFeature) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(
+      features::kAutofillAccountProfilesUnionView,
+      {{features::kAutofillEnableSilentUpdatesForAccountProfiles.name,
+        "false"}});
+
+  AutofillProfile account_profile = test::UpdateableStandardProfile();
+  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  std::vector<AutofillProfile> existing_profiles = {account_profile};
+  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
+
+  // The `observed_profile` is of type `kLocalOrSyncable`. This should not
+  // prevent silent-updating a `kAccount` profile.
+  ProfileImportProcess import_data(
+      /*observed_profile=*/test::StandardProfile(), "en_US", url_,
+      &personal_data_manager_,
+      /*allow_only_silent_updates=*/true);
+
+  import_data.AcceptWithoutPrompt();
+
+  EXPECT_FALSE(import_data.ProfilesChanged());
+  EXPECT_THAT(import_data.GetResultingProfiles(),
+              testing::ElementsAre(account_profile));
+}
+
 // Tests that an import can cause a silent update of a `kAccount` profile, if
 // the feature parameter is enabled.
 TEST_F(AutofillProfileImportProcessTest, ImportSilentUpdate_kAccount) {

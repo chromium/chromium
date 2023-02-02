@@ -183,6 +183,8 @@ void ProfileImportProcess::DetermineProfileImportType() {
         features::kAutofillEnableSilentUpdatesForAccountProfiles.Get()) {
       merged_profile.set_modification_date(AutofillClock::Now());
       updated_profiles_.emplace_back(merged_profile);
+    } else {
+      ++number_of_unchanged_profiles;
     }
   }
 
