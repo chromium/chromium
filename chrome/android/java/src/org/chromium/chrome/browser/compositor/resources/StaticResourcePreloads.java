@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.resources;
 import android.content.Context;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -20,8 +21,8 @@ public class StaticResourcePreloads {
     /** A list of resources to load synchronously once the compositor is initialized. */
     private static final int[] sSynchronousResources = new int[] {
             R.drawable.bg_tabstrip_tab,
-            R.drawable.bg_tabstrip_tab_detached,
-            R.drawable.bg_tabstrip_tab_folio,
+            TabUiThemeUtil.getTSRDetachedResource(),
+            TabUiThemeUtil.getTSRFolioResource(),
             R.drawable.btn_tab_close_normal,
             R.drawable.ic_new_tab_button,
             R.drawable.spinner,

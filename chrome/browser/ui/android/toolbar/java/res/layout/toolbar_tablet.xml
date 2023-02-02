@@ -17,7 +17,7 @@ found in the LICENSE file.
     android:layout_height="@dimen/toolbar_height_no_shadow"
     android:layout_marginTop="@dimen/tab_strip_height"
     android:background="@macro/default_bg_color"
-    android:paddingStart="@dimen/tablet_toolbar_start_padding" >
+     >
 
     <LinearLayout
         android:id="@+id/toolbar_tablet_layout"

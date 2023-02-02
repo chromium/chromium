@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
@@ -73,8 +73,6 @@ public class StripLayoutHelperManagerTest {
     @After
     public void tearDown() {
         TabStripSceneLayer.setTestFlag(false);
-        TabUiFeatureUtilities.setTabStripRedesignEnableDetachedForTesting(false);
-        TabUiFeatureUtilities.setTabStripRedesignEnableFolioForTesting(false);
     }
 
     private void initializeTest() {
@@ -85,7 +83,7 @@ public class StripLayoutHelperManagerTest {
     @Test
     @Feature("Tab Strip Redesign")
     public void testGetBackgroundColorDetached() {
-        TabUiFeatureUtilities.setTabStripRedesignEnableDetachedForTesting(true);
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
         assertEquals(ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_0),
                 mStripLayoutHelperManager.getBackgroundColor());
     }
@@ -93,7 +91,7 @@ public class StripLayoutHelperManagerTest {
     @Test
     @Feature("Tab Strip Redesign")
     public void testGetBackgroundColorFolio() {
-        TabUiFeatureUtilities.setTabStripRedesignEnableFolioForTesting(true);
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
         mStripLayoutHelperManager.onContextChanged(mContext);
         assertEquals(ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_2),
                 mStripLayoutHelperManager.getBackgroundColor());

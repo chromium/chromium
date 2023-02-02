@@ -12,9 +12,4 @@ found in the LICENSE file.
             <solid android:color="@android:color/black" />
         </shape>
     </item>
-    <item
-        android:top="25dp"
-        android:bottom="0px">
-      <nine-patch android:src="@drawable/toolbar_background" />
-  </item>
 </layer-list>

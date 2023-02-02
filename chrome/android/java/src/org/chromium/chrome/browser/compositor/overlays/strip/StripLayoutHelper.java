@@ -50,8 +50,10 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
@@ -127,7 +129,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final float TAB_OVERLAP_WIDTH_LARGE_DP = 28.f;
     private static final float TAB_WIDTH_SMALL = 108.f;
     private static final float TAB_WIDTH_MEDIUM = 156.f;
-    private static final float MAX_TAB_WIDTH_DP = 265.f;
     private static final float REORDER_MOVE_START_THRESHOLD_DP = 50.f;
     private static final float REORDER_EDGE_SCROLL_MAX_SPEED_DP = 1000.f;
     private static final float REORDER_EDGE_SCROLL_START_MIN_DP = 87.4f;
@@ -261,7 +262,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 ? TAB_OVERLAP_WIDTH_LARGE_DP
                 : TAB_OVERLAP_WIDTH_DP;
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+            if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
                 mNewTabButtonWidth = NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP_FOLIO;
             } else {
                 mNewTabButtonWidth = NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP_DETACHED;
@@ -280,7 +281,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 : 0;
         mMinTabWidth = TabUiFeatureUtilities.getTabMinWidth();
 
-        mMaxTabWidth = MAX_TAB_WIDTH_DP;
+        mMaxTabWidth = TabUiThemeUtil.getMaxTabStripTabWidthDp();
         mReorderMoveStartThreshold = REORDER_MOVE_START_THRESHOLD_DP;
         mUpdateHost = updateHost;
         mRenderHost = renderHost;
@@ -294,7 +295,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
             // Set new tab button background resource based on which TSR is enabled, background has
             // different size.
-            if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+            if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
                 // Tab strip redesign folio enabled, bg size 36 * 36.
                 mNewTabButton = new TintedCompositorButton(context,
                         NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP_FOLIO,
@@ -311,7 +312,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             }
 
             // Primary container for default bg color.
-            int defaultBackgroundTint = TabUiThemeProvider.getDefaultContainerColor(context);
+            int defaultNTBBackgroundTint = TabUiThemeProvider.getDefaultNTBContainerColor(context);
 
             // Primary @ 20% for default pressed bg color.
             int pressedBackgroundTint = androidx.core.graphics.ColorUtils.setAlphaComponent(
@@ -319,7 +320,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     (int) (NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY * 255));
 
             // Surface 2 baseline for folio, surface 3 baseline for detached incognito bg color.
-            int incognitoBackgroundTint = TabUiFeatureUtilities.isTabStripFolioEnabled()
+            int incognitoBackgroundTint = TabManagementFieldTrial.isTabStripFolioEnabled()
                     ? context.getResources().getColor(R.color.default_bg_color_dark_elev_2_baseline)
                     : context.getResources().getColor(
                             R.color.default_bg_color_dark_elev_3_baseline);
@@ -331,12 +332,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             // Tab strip redesign new tab button night mode bg color.
             if (ColorUtils.inNightMode(context)) {
                 // Surface 1 for folio night mode bg color.
-                if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
-                    defaultBackgroundTint =
+                if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
+                    defaultNTBBackgroundTint =
                             ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1);
                 } else {
                     // Primary @ 15% for detached night mode bg color.
-                    defaultBackgroundTint = androidx.core.graphics.ColorUtils.setAlphaComponent(
+                    defaultNTBBackgroundTint = androidx.core.graphics.ColorUtils.setAlphaComponent(
                             SemanticColorUtils.getDefaultIconColorAccent1(context),
                             (int) (NEW_TAB_BUTTON_DARK_DETACHED_OPACITY * 255));
                 }
@@ -344,7 +345,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 pressedBackgroundTint =
                         ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_5);
             }
-            mNewTabButton.setBackgroundTint(defaultBackgroundTint, pressedBackgroundTint,
+            mNewTabButton.setBackgroundTint(defaultNTBBackgroundTint, pressedBackgroundTint,
                     incognitoBackgroundTint, incognitoBackgroundPressedTint);
 
             // No pressed state color change for new tab button icon when TSR enabled.
@@ -1958,7 +1959,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         // 7. Lift the TSR folio container off the toolbar.
-        if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+        if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
             updateFolioTabAttachState(mInteractingTab, false, animationList);
         }
 
@@ -2002,7 +2003,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         // 5. Reattach the TSR folio container to the toolbar.
-        if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+        if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
             updateFolioTabAttachState(mInteractingTab, true, animationList);
         }
 
@@ -2205,7 +2206,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             float opacity = visible ? TAB_OPACITY_VISIBLE_BACKGROUND : TAB_OPACITY_HIDDEN;
             tab.setContainerOpacity(opacity);
 
-            if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+            if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
                 updateFolioTabAttachState(tab, !visible, null);
             }
         }

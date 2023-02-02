@@ -9,10 +9,13 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Looper;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStub;
@@ -21,6 +24,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
@@ -30,6 +34,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ConstraintsChecker;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
@@ -150,13 +155,33 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             // On tablet, draw a fake tab strip and toolbar until the compositor is
             // ready to draw the real tab strip. (On phone, the toolbar is made entirely
             // of Android views, which are already initialized.)
-            final Drawable backgroundDrawable =
-                    AppCompatResources.getDrawable(getContext(), R.drawable.toolbar_background)
-                            .mutate();
-            backgroundDrawable.setTint(
-                    ChromeColors.getDefaultThemeColor(getContext(), isIncognito));
-            backgroundDrawable.setTintMode(PorterDuff.Mode.MULTIPLY);
-            setBackground(backgroundDrawable);
+
+            if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+                Drawable bgdColor = new ColorDrawable(
+                        TabUiThemeUtil.getTabStripBackgroundColor(getContext(), isIncognito));
+                Drawable bdgTabImage = ResourcesCompat.getDrawable(getContext().getResources(),
+                        TabUiThemeUtil.getTSRTabResource(), getContext().getTheme());
+                bdgTabImage.setTint(
+                        TabUiThemeUtil.getTabStripContainerColor(getContext(), false, true));
+                LayerDrawable backgroundDrawable =
+                        new LayerDrawable(new Drawable[] {bgdColor, bdgTabImage});
+                // Set image size to match tab size.
+                backgroundDrawable.setPadding(0, 0, 0, 0);
+                backgroundDrawable.setLayerSize(1,
+                        ViewUtils.dpToPx(getContext(), TabUiThemeUtil.getMaxTabStripTabWidthDp()),
+                        mToolbar.getTabStripHeight());
+                // Tab should show up at start of layer based on layout.
+                backgroundDrawable.setLayerGravity(1, Gravity.START);
+                setBackground(backgroundDrawable);
+            } else {
+                final Drawable backgroundDrawable =
+                        AppCompatResources.getDrawable(getContext(), R.drawable.toolbar_background)
+                                .mutate();
+                backgroundDrawable.setTint(
+                        ChromeColors.getDefaultThemeColor(getContext(), isIncognito));
+                backgroundDrawable.setTintMode(PorterDuff.Mode.MULTIPLY);
+                setBackground(backgroundDrawable);
+            }
         }
     }
 

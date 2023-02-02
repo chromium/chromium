@@ -1,6 +1,7 @@
 include_rules = [
   "+base/test/android",
   "+chrome/android/features/start_surface",
+  "+chrome/android/features/tab_ui/public",
   "+components/browser_ui/styles/android",
   "+components/dom_distiller/core/android",
   "+components/embedder_support/android",

@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
@@ -139,7 +139,7 @@ public class LayerTitleCache {
         boolean isBold = false;
 
         // Bold title text for TSR detached.
-        if (TabUiFeatureUtilities.isTabStripDetachedEnabled()) {
+        if (TabManagementFieldTrial.isTabStripDetachedEnabled()) {
             if (mTabModelSelector == null) {
                 return titleString;
             }
