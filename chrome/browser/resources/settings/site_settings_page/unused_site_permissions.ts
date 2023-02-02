@@ -139,6 +139,7 @@ export class SettingsUnusedSitePermissionsElement extends
   private unusedSitePermissionsReviewListExpanded_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private shouldRefocusExpandButton_: boolean = false;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -295,6 +296,14 @@ export class SettingsUnusedSitePermissionsElement extends
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyCheckUnusedSitePermissionsSecondaryLabel',
             this.sites_.length);
+    // Focus on the expand button after the undo button is clicked and sites are
+    // loaded again.
+    if (this.shouldRefocusExpandButton_) {
+      this.shouldRefocusExpandButton_ = false;
+      const expandButton = this.shadowRoot!.querySelector('cr-expand-button');
+      assert(expandButton);
+      expandButton.focus();
+    }
   }
 
   private onListExpandedChanged_(isExpanded: boolean) {
@@ -333,6 +342,7 @@ export class SettingsUnusedSitePermissionsElement extends
         assertNotReached();
     }
     this.lastUserAction_ = null;
+    this.shouldRefocusExpandButton_ = true;
     this.$.undoToast.hide();
   }
 

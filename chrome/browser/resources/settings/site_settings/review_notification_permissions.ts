@@ -414,11 +414,9 @@ export class SettingsReviewNotificationPermissionsElement extends
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyCheckNotificationPermissionReviewSecondaryLabel',
             this.sites_.length);
-    /**
-     * Focus on the expand button after the undo button is clicked and sites are
-     * loaded again.
-     */
-    if (this.sites_.length !== 0 && this.shouldRefocusExpandButton_) {
+    // Focus on the expand button after the undo button is clicked and sites are
+    // loaded again.
+    if (this.shouldRefocusExpandButton_) {
       this.shouldRefocusExpandButton_ = false;
       const expandButton = this.shadowRoot!.querySelector('cr-expand-button');
       assert(expandButton);
