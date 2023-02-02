@@ -6060,17 +6060,17 @@
   {
     "name": "request-desktop-site-additions",
     "owners": [ "shuyng@google.com", "twellington", "clank-app-team@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
     "name": "request-desktop-site-defaults",
     "owners": [ "aishwaryarj", "twellington", "clank-app-team@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 114
   },
   {
     "name": "request-desktop-site-defaults-downgrade",
     "owners": [ "aishwaryarj", "twellington", "clank-app-team@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 114
   },
   {
     "name": "request-desktop-site-exceptions",
@@ -6083,11 +6083,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "request-desktop-site-for-tablets",
-    "owners": [ "gangwu@chromium.org", "fgorski@chromium.org" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "request-desktop-site-per-site-iph",
     "owners": [ "aishwaryarj@google.com", "twellington", "clank-app-team@google.com" ],
     "expiry_milestone": 114
@@ -6095,7 +6090,7 @@
   {
     "name": "request-desktop-site-zoom",
     "owners": [ "aishwaryarj@google.com", "twellington", "clank-app-team@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 114
   },
   {
     "name": "restore-session-from-cache",
