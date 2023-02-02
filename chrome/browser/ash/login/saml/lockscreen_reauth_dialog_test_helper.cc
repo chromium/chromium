@@ -4,11 +4,10 @@
 
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 
-#include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_captive_portal_dialog.h"
@@ -263,40 +262,39 @@ test::JSChecker LockScreenReauthDialogTestHelper::SigninFrameJS() {
 }
 
 void LockScreenReauthDialogTestHelper::WaitForAuthenticatorToLoad() {
-  base::RunLoop run_loop;
-  if (!main_handler_->IsAuthenticatorLoaded(run_loop.QuitClosure())) {
-    run_loop.Run();
+  base::test::TestFuture<void> future;
+  if (!main_handler_->IsAuthenticatorLoaded(future.GetCallback())) {
+    EXPECT_TRUE(future.Wait());
   }
 }
 
 void LockScreenReauthDialogTestHelper::WaitForReauthDialogToClose() {
-  base::RunLoop run_loop;
-  if (!reauth_dialog_->IsClosedForTesting(run_loop.QuitClosure())) {
-    run_loop.Run();
+  base::test::TestFuture<void> future;
+  if (!reauth_dialog_->IsClosedForTesting(future.GetCallback())) {
+    EXPECT_TRUE(future.Wait());
   }
 }
 
 void LockScreenReauthDialogTestHelper::WaitForReauthDialogToLoad() {
-  base::RunLoop run_loop;
-  if (!reauth_dialog_->IsLoadedForTesting(run_loop.QuitClosure())) {
-    run_loop.Run();
+  base::test::TestFuture<void> future;
+  if (!reauth_dialog_->IsLoadedForTesting(future.GetCallback())) {
+    EXPECT_TRUE(future.Wait());
   }
 }
 
 void LockScreenReauthDialogTestHelper::WaitForNetworkDialogToLoad() {
   CHECK(reauth_dialog_);
-  base::RunLoop run_loop;
-  if (!reauth_dialog_->IsNetworkDialogLoadedForTesting(
-          run_loop.QuitClosure())) {
-    run_loop.Run();
+  base::test::TestFuture<void> future;
+  if (!reauth_dialog_->IsNetworkDialogLoadedForTesting(future.GetCallback())) {
+    EXPECT_TRUE(future.Wait());
   }
 }
 
 void LockScreenReauthDialogTestHelper::WaitForCaptivePortalDialogToLoad() {
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
   if (!reauth_dialog_->IsCaptivePortalDialogLoadedForTesting(
-          run_loop.QuitClosure())) {
-    run_loop.Run();
+          future.GetCallback())) {
+    EXPECT_TRUE(future.Wait());
   }
 
   captive_portal_dialog_ =
@@ -304,18 +302,16 @@ void LockScreenReauthDialogTestHelper::WaitForCaptivePortalDialogToLoad() {
 }
 
 void LockScreenReauthDialogTestHelper::WaitForCaptivePortalDialogToShow() {
-  base::RunLoop run_loop;
-  if (!captive_portal_dialog_->IsDialogShownForTesting(
-          run_loop.QuitClosure())) {
-    run_loop.Run();
+  base::test::TestFuture<void> future;
+  if (!captive_portal_dialog_->IsDialogShownForTesting(future.GetCallback())) {
+    EXPECT_TRUE(future.Wait());
   }
 }
 
 void LockScreenReauthDialogTestHelper::WaitForCaptivePortalDialogToClose() {
-  base::RunLoop run_loop;
-  if (!captive_portal_dialog_->IsDialogClosedForTesting(
-          run_loop.QuitClosure())) {
-    run_loop.Run();
+  base::test::TestFuture<void> future;
+  if (!captive_portal_dialog_->IsDialogClosedForTesting(future.GetCallback())) {
+    EXPECT_TRUE(future.Wait());
   }
 }
 
