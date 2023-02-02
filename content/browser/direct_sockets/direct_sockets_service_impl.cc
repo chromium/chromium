@@ -5,7 +5,6 @@
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 
 #include "build/build_config.h"
-#include "content/browser/direct_sockets/resolve_host_and_open_socket.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/isolated_context_util.h"
 #include "content/public/browser/browser_thread.h"
@@ -15,18 +14,18 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
-#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/simple_host_resolver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/restricted_udp_socket.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-shared.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
@@ -98,12 +97,20 @@ content::DirectSocketsDelegate* GetDelegate() {
   return GetContentClient()->browser()->GetDirectSocketsDelegate();
 }
 
+#if BUILDFLAG(ENABLE_MDNS)
+bool ResemblesMulticastDNSName(base::StringPiece hostname) {
+  return base::EndsWith(hostname, ".local") ||
+         base::EndsWith(hostname, ".local.");
+}
+#endif  // !BUILDFLAG(ENABLE_MDNS)
+
 }  // namespace
 
 DirectSocketsServiceImpl::DirectSocketsServiceImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver)
-    : DocumentService(*render_frame_host, std::move(receiver)) {}
+    : DocumentService(*render_frame_host, std::move(receiver)),
+      resolver_(network::SimpleHostResolver::Create(GetNetworkContext())) {}
 
 DirectSocketsServiceImpl::~DirectSocketsServiceImpl() = default;
 
@@ -145,13 +152,23 @@ void DirectSocketsServiceImpl::OpenTCPSocket(
     return;
   }
 
-  ResolveHostAndOpenSocket::Create(
-      std::move(remote_addr),
+  network::mojom::ResolveHostParametersPtr parameters =
+      network::mojom::ResolveHostParameters::New();
+#if BUILDFLAG(ENABLE_MDNS)
+  if (ResemblesMulticastDNSName(remote_addr.host())) {
+    parameters->source = net::HostResolverSource::MULTICAST_DNS;
+  }
+#endif  // !BUILDFLAG(ENABLE_MDNS)
+
+  // Unretained(this) is safe here because the callback will be owned by
+  // |resolver_| which in turn is owned by |this|.
+  resolver_->ResolveHost(
+      network::mojom::HostResolverHost::NewHostPortPair(std::move(remote_addr)),
+      net::NetworkAnonymizationKey::CreateTransient(), std::move(parameters),
       base::BindOnce(&DirectSocketsServiceImpl::OnResolveCompleteForTCPSocket,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(options),
+                     base::Unretained(this), std::move(options),
                      std::move(receiver), std::move(observer),
-                     std::move(callback)))
-      ->Start(GetNetworkContext());
+                     std::move(callback)));
 }
 
 void DirectSocketsServiceImpl::OpenUDPSocket(
@@ -184,13 +201,24 @@ void DirectSocketsServiceImpl::OpenUDPSocket(
       return;
     }
 
-    ResolveHostAndOpenSocket::Create(
-        std::move(remote_addr),
+    network::mojom::ResolveHostParametersPtr parameters =
+        network::mojom::ResolveHostParameters::New();
+#if BUILDFLAG(ENABLE_MDNS)
+    if (ResemblesMulticastDNSName(remote_addr.host())) {
+      parameters->source = net::HostResolverSource::MULTICAST_DNS;
+    }
+#endif  // !BUILDFLAG(ENABLE_MDNS)
+
+    // Unretained(this) is safe here because the callback will be owned by
+    // |resolver_| which in turn is owned by |this|.
+    resolver_->ResolveHost(
+        network::mojom::HostResolverHost::NewHostPortPair(
+            std::move(remote_addr)),
+        net::NetworkAnonymizationKey::CreateTransient(), std::move(parameters),
         base::BindOnce(&DirectSocketsServiceImpl::OnResolveCompleteForUDPSocket,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(options),
+                       base::Unretained(this), std::move(options),
                        std::move(receiver), std::move(listener),
-                       std::move(callback)))
-        ->Start(GetNetworkContext());
+                       std::move(callback)));
   } else {
     // Handle BOUND mode request.
     DCHECK(options->local_addr);
@@ -243,7 +271,9 @@ void DirectSocketsServiceImpl::OnResolveCompleteForTCPSocket(
     mojo::PendingRemote<network::mojom::SocketObserver> observer,
     OpenTCPSocketCallback callback,
     int result,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const net::ResolveErrorInfo&,
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&) {
   if (result != net::OK) {
     std::move(callback).Run(result, absl::nullopt, absl::nullopt,
                             mojo::ScopedDataPipeConsumerHandle(),
@@ -269,7 +299,9 @@ void DirectSocketsServiceImpl::OnResolveCompleteForUDPSocket(
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
     OpenUDPSocketCallback callback,
     int result,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const net::ResolveErrorInfo&,
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&) {
   if (result != net::OK) {
     std::move(callback).Run(result, absl::nullopt, absl::nullopt);
     return;

@@ -5,21 +5,21 @@
 #ifndef CONTENT_BROWSER_DIRECT_SOCKETS_DIRECT_SOCKETS_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_DIRECT_SOCKETS_DIRECT_SOCKETS_SERVICE_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/address_list.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 
-namespace network::mojom {
+namespace network {
+class SimpleHostResolver;
+namespace mojom {
 class NetworkContext;
-}  // namespace network::mojom
+}  // namespace mojom
+}  // namespace network
 
 namespace content {
 
@@ -63,7 +63,9 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       mojo::PendingRemote<network::mojom::SocketObserver>,
       OpenTCPSocketCallback,
       int result,
-      const absl::optional<net::AddressList>& resolved_addresses);
+      const net::ResolveErrorInfo&,
+      const absl::optional<net::AddressList>& resolved_addresses,
+      const absl::optional<net::HostResolverEndpointResults>&);
 
   void OnResolveCompleteForUDPSocket(
       blink::mojom::DirectUDPSocketOptionsPtr,
@@ -71,9 +73,11 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       mojo::PendingRemote<network::mojom::UDPSocketListener>,
       OpenUDPSocketCallback,
       int result,
-      const absl::optional<net::AddressList>& resolved_addresses);
+      const net::ResolveErrorInfo&,
+      const absl::optional<net::AddressList>& resolved_addresses,
+      const absl::optional<net::HostResolverEndpointResults>&);
 
-  base::WeakPtrFactory<DirectSocketsServiceImpl> weak_ptr_factory_{this};
+  std::unique_ptr<network::SimpleHostResolver> resolver_;
 };
 
 }  // namespace content
