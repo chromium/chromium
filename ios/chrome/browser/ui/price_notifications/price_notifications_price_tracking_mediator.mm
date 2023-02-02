@@ -13,6 +13,7 @@
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/payments/core/currency_formatter.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
+#import "ios/chrome/browser/ui/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
 #import "ios/web/public/web_state.h"
@@ -120,6 +121,14 @@ using PriceNotificationItems =
         }
         [weakSelf didStopTrackingItem:item];
       }));
+}
+
+- (void)navigateToWebpageForItem:(PriceNotificationsTableViewItem*)item {
+  DCHECK(item.tracking);
+  self.webState->OpenURL(web::WebState::OpenURLParams(
+      item.entryURL, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_GENERATED, /*is_renderer_initiated=*/false));
+  [self.handler hidePriceNotifications];
 }
 
 #pragma mark - Private

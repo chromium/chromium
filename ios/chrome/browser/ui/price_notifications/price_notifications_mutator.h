@@ -18,6 +18,10 @@
 // Stops price tracking the `item`.
 - (void)stopTrackingItem:(PriceNotificationsTableViewItem*)item;
 
+// Navigates the current WebState to `item`'s webpage and closes the Price
+// Tracking UI.
+- (void)navigateToWebpageForItem:(PriceNotificationsTableViewItem*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_MUTATOR_H_

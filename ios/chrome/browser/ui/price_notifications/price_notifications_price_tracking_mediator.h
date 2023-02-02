@@ -10,6 +10,7 @@
 
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_mutator.h"
 
+@protocol PriceNotificationsCommands;
 @protocol PriceNotificationsConsumer;
 
 namespace bookmarks {
@@ -43,6 +44,8 @@ class WebState;
 - (instancetype)init NS_UNAVAILABLE;
 
 @property(nonatomic, weak) id<PriceNotificationsConsumer> consumer;
+
+@property(nonatomic, weak) id<PriceNotificationsCommands> handler;
 
 @end
 

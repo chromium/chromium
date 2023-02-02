@@ -97,6 +97,53 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   return kVerticalTableViewSectionSpacing;
 }
 
+- (NSIndexPath*)tableView:(UITableView*)tableView
+    willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (@available(iOS 16.0, *)) {
+    return [super tableView:tableView willSelectRowAtIndexPath:indexPath];
+    ;
+  }
+
+  PriceNotificationsTableViewItem* item =
+      base::mac::ObjCCastStrict<PriceNotificationsTableViewItem>(
+          [self.tableViewModel itemAtIndexPath:indexPath]);
+
+  if (!item.tracking) {
+    return nil;
+  }
+
+  return [super tableView:tableView willSelectRowAtIndexPath:indexPath];
+}
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (@available(iOS 16.0, *)) {
+    return;
+  }
+
+  PriceNotificationsTableViewItem* item =
+      base::mac::ObjCCastStrict<PriceNotificationsTableViewItem>(
+          [self.tableViewModel itemAtIndexPath:indexPath]);
+  [self.mutator navigateToWebpageForItem:item];
+}
+
+- (BOOL)tableView:(UITableView*)tableView
+    canPerformPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
+  PriceNotificationsTableViewItem* item =
+      base::mac::ObjCCastStrict<PriceNotificationsTableViewItem>(
+          [self.tableViewModel itemAtIndexPath:indexPath]);
+
+  return item.tracking;
+}
+
+- (void)tableView:(UITableView*)tableView
+    performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
+  PriceNotificationsTableViewItem* item =
+      base::mac::ObjCCastStrict<PriceNotificationsTableViewItem>(
+          [self.tableViewModel itemAtIndexPath:indexPath]);
+  [self.mutator navigateToWebpageForItem:item];
+}
+
 #pragma mark - PriceNotificationsConsumer
 
 - (void)setTrackableItem:(PriceNotificationsTableViewItem*)trackableItem

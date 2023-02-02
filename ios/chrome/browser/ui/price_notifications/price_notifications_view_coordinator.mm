@@ -63,6 +63,8 @@
                  imageFetcher:std::move(imageFetcher)
                      webState:webState];
   self.mediator.consumer = self.tableViewController;
+  self.mediator.handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PriceNotificationsCommands);
   self.tableViewController.mutator = self.mediator;
   self.tableViewController.snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
