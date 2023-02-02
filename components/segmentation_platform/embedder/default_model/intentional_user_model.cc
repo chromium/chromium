@@ -23,8 +23,8 @@ constexpr SegmentId kIntentionalUserSegmentId =
     SegmentId::INTENTIONAL_USER_SEGMENT;
 // Store 28 buckets of input data (28 days).
 constexpr int64_t kIntentionalUserSignalStorageLength = 28;
-// Wait until we have 28 buckets of input data to run the model (28 days).
-constexpr int64_t kIntentionalUserMinSignalCollectionLength = 28;
+// Wait until we have 7 days of data.
+constexpr int64_t kIntentionalUserMinSignalCollectionLength = 7;
 // Threshold for our heuristic, if the user launched Chrome directly at least 2
 // times in the last 28 days then we consider them an intentional user.
 constexpr int64_t kIntentionalLaunchThreshold = 2;
