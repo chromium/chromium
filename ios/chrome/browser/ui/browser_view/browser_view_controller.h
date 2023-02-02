@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
 
+@protocol ApplicationCommands;
 class Browser;
 @class BookmarksCoordinator;
 @class BrowserContainerViewController;
@@ -70,6 +71,7 @@ typedef struct {
   id<HelpCommands> helpHandler;
   id<PopupMenuCommands> popupMenuCommandsHandler;
   id<SnackbarCommands> snackbarCommandsHandler;
+  id<ApplicationCommands> applicationCommandsHandler;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

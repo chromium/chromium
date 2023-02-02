@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -402,6 +403,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Command handler for snackbar commands
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
+// Command handler for application commands
+@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
+
 // The FullscreenController.
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
@@ -492,7 +496,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.helpHandler = dependencies.helpHandler;
     self.popupMenuCommandsHandler = dependencies.popupMenuCommandsHandler;
     self.snackbarCommandsHandler = dependencies.snackbarCommandsHandler;
-
+    self.applicationCommandsHandler = dependencies.applicationCommandsHandler;
     dependencies.lensCoordinator.delegate = self;
 
     _inNewTabAnimation = NO;
@@ -525,16 +529,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - Public Properties
 
-- (id<ApplicationCommands,
-      BrowserCommands,
+- (id<BrowserCommands,
       BrowserCoordinatorCommands,
       FindInPageCommands,
       PasswordBreachCommands,
       ToolbarCommands>)dispatcher {
   return static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
-         FindInPageCommands, PasswordBreachCommands, ToolbarCommands>>(
-      self.commandDispatcher);
+      id<BrowserCommands, BrowserCoordinatorCommands, FindInPageCommands,
+         PasswordBreachCommands, ToolbarCommands>>(self.commandDispatcher);
 }
 
 - (UIView*)contentArea {
@@ -2599,8 +2601,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)displaySavedPasswordList {
-  [self.dispatcher showSavedPasswordsSettingsFromViewController:self
-                                               showCancelButton:YES];
+  [self.applicationCommandsHandler
+      showSavedPasswordsSettingsFromViewController:self
+                                  showCancelButton:YES];
 }
 
 #pragma mark - WebStateContainerViewProvider
@@ -2737,7 +2740,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   switch (action) {
     case OverscrollAction::NEW_TAB:
       base::RecordAction(base::UserMetricsAction("MobilePullGestureNewTab"));
-      [self.dispatcher
+      [self.applicationCommandsHandler
           openURLInNewTab:[OpenNewTabCommand
                               commandWithIncognito:_isOffTheRecord]];
       break;
@@ -3399,9 +3402,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                     action:@selector(authenticateIncognitoContent)
           forControlEvents:UIControlEventTouchUpInside];
 
-      DCHECK(self.dispatcher);
+      DCHECK(self.applicationCommandsHandler);
       [self.blockingView.tabSwitcherButton
-                 addTarget:self.dispatcher
+                 addTarget:self.applicationCommandsHandler
                     action:@selector(displayRegularTabSwitcherInGridLayout)
           forControlEvents:UIControlEventTouchUpInside];
     }
