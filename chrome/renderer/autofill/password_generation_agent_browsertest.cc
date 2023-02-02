@@ -1253,6 +1253,10 @@ TEST_F(PasswordGenerationAgentTest, GenerationAvailableByRendererIds) {
 }
 
 TEST_F(PasswordGenerationAgentTest, SuggestionPreviewTest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordGenerationPreviewOnHover);
+
   LoadHTMLWithUserGesture(kAccountCreationFormHTML);
   WebDocument document = GetMainFrame()->GetDocument();
   SetFoundFormEligibleForGeneration(password_generation_,

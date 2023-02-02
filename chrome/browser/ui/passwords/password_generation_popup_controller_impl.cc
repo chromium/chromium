@@ -60,6 +60,11 @@ namespace {
 // version of the generation popup.
 constexpr int kMinCharsForMinimizedPopup = 6;
 
+bool IsPasswordGenerationSuggestionsPreviewEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordGenerationPreviewOnHover);
+}
+
 }  // namespace
 
 // Handles registration for key events with RenderFrameHost.
@@ -371,12 +376,16 @@ void PasswordGenerationPopupControllerImpl::ViewDestroyed() {
 
 void PasswordGenerationPopupControllerImpl::SelectionCleared() {
   PasswordSelected(false);
-  driver_->ClearPreviewedForm();
+  if (IsPasswordGenerationSuggestionsPreviewEnabled()) {
+    driver_->ClearPreviewedForm();
+  }
 }
 
 void PasswordGenerationPopupControllerImpl::SetSelected() {
   PasswordSelected(true);
-  driver_->PreviewGenerationSuggestion(current_generated_password_);
+  if (IsPasswordGenerationSuggestionsPreviewEnabled()) {
+    driver_->PreviewGenerationSuggestion(current_generated_password_);
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)
