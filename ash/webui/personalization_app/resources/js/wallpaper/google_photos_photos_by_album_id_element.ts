@@ -12,12 +12,12 @@ import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-thresh
 import '../../css/wallpaper.css.js';
 import '../../css/common.css.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isGooglePhotosSharedAlbumsEnabled} from '../load_time_booleans.js';
 import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
 import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStateError} from '../personalization_state.js';
@@ -83,7 +83,7 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
       isSharedAlbumsEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isGooglePhotosSharedAlbumsEnabled');
+          return isGooglePhotosSharedAlbumsEnabled();
         },
       },
 

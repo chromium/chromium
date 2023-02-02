@@ -9,10 +9,8 @@
 
 import './ambient/ambient_preview_large_element.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-
+import {isAmbientModeAllowed, isDarkLightModeEnabled, isRgbKeyboardSupported} from './load_time_booleans.js';
 import {getTemplate} from './personalization_main_element.html.js';
-import {isAmbientModeAllowed} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 export class PersonalizationMain extends WithPersonalizationStore {
@@ -27,19 +25,25 @@ export class PersonalizationMain extends WithPersonalizationStore {
   static get properties() {
     return {
       path: String,
+      isDarkLightModeEnabled_: {
+        type: Boolean,
+        value() {
+          return isDarkLightModeEnabled();
+        },
+      },
+      isAmbientModeAllowed_: {
+        type: Boolean,
+        value() {
+          return isAmbientModeAllowed();
+        },
+      },
+      isRgbKeyboardSupported_: {
+        type: Boolean,
+        value() {
+          return isRgbKeyboardSupported();
+        },
+      },
     };
-  }
-
-  private isDarkLightModeEnabled_(): boolean {
-    return loadTimeData.getBoolean('isDarkLightModeEnabled');
-  }
-
-  private isAmbientModeAllowed_(): boolean {
-    return isAmbientModeAllowed();
-  }
-
-  private isRgbKeyboardSupported_(): boolean {
-    return loadTimeData.getBoolean('isRgbKeyboardSupported');
   }
 }
 

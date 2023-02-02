@@ -12,9 +12,9 @@
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../../css/wallpaper.css.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
+import {isDarkLightModeEnabled} from '../load_time_booleans.js';
 import {CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -247,7 +247,7 @@ export class WallpaperImages extends WithPersonalizationStore {
 
     const imageArr = images[collectionId]!;
 
-    if (loadTimeData.getBoolean('isDarkLightModeEnabled')) {
+    if (isDarkLightModeEnabled()) {
       return getDarkLightImageTiles(isDarkModeActive, imageArr);
     } else {
       return getRegularImageTiles(imageArr);

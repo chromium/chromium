@@ -13,7 +13,6 @@ import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../common/icons.html.js';
 import '../../css/wallpaper.css.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {CurrentWallpaper, WallpaperLayout, WallpaperType} from '../personalization_app.mojom-webui.js';
@@ -131,13 +130,6 @@ export class WallpaperSelected extends WithPersonalizationStore {
         type: String,
         value: null,
       },
-
-      showPreviewButton_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('fullScreenPreviewEnabled');
-        },
-      },
     };
   }
 
@@ -162,7 +154,6 @@ export class WallpaperSelected extends WithPersonalizationStore {
   private fillIcon_: string;
   private centerIcon_: string;
   private error_: string;
-  private showPreviewButton_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

@@ -35,6 +35,7 @@ non_web_component_files = [
   "js/keyboard_backlight/keyboard_backlight_observer.ts",
   "js/keyboard_backlight/keyboard_backlight_reducers.ts",
   "js/keyboard_backlight/keyboard_backlight_state.ts",
+  "js/load_time_booleans.ts",
   "js/personalization_actions.ts",
   "js/personalization_app.ts",
   "js/personalization_metrics_logger.ts",

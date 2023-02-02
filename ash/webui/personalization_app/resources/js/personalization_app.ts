@@ -41,6 +41,7 @@ import './wallpaper/index.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
+import {isJellyEnabled} from './load_time_booleans.js';
 import {emptyState} from './personalization_state.js';
 import {PersonalizationStore} from './personalization_store.js';
 
@@ -123,7 +124,7 @@ if (link) {
 }
 document.title = loadTimeData.getString('personalizationTitle');
 
-if (loadTimeData.getBoolean('isJellyEnabled')) {
+if (isJellyEnabled()) {
   // After the Jelly experiment is launched, add the link directly to
   // `index.html`.
   const link = document.createElement('link');

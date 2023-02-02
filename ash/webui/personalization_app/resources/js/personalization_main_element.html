@@ -35,16 +35,16 @@
   </user-preview>
   <div id="middle">
     <wallpaper-preview>
-      <template is="dom-if" if="[[isDarkLightModeEnabled_()]]">
+      <template is="dom-if" if="[[isDarkLightModeEnabled_]]">
         <personalization-theme></personalization-theme>
       </template>
     </wallpaper-preview>
-    <template is="dom-if" if="[[isAmbientModeAllowed_()]]">
+    <template is="dom-if" if="[[isAmbientModeAllowed_]]">
       <ambient-preview-large>
       </ambient-preview-large>
     </template>
   </div>
-  <template is="dom-if" if="[[isRgbKeyboardSupported_()]]">
+  <template is="dom-if" if="[[isRgbKeyboardSupported_]]">
     <keyboard-backlight></keyboard-backlight>
   </template>
 </div>

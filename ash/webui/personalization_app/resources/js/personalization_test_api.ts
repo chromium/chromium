@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
+import {isGooglePhotosIntegrationEnabled} from './load_time_booleans.js';
 import {PersonalizationStore} from './personalization_store.js';
 import {setFullscreenEnabledAction} from './wallpaper/wallpaper_actions.js';
 import {getWallpaperProvider} from './wallpaper/wallpaper_interface_provider.js';
@@ -17,10 +17,6 @@ function enterFullscreen() {
   const store = PersonalizationStore.getInstance();
   assert(!!store);
   store.dispatch(setFullscreenEnabledAction(true));
-}
-
-function isGooglePhotosIntegrationEnabled(): boolean {
-  return loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled');
 }
 
 function makeTransparent() {

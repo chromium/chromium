@@ -11,9 +11,9 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import '../../css/wallpaper.css.js';
 import '../../css/common.css.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
+import {isGooglePhotosSharedAlbumsEnabled} from '../load_time_booleans.js';
 import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -96,7 +96,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
       isSharedAlbumsEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isGooglePhotosSharedAlbumsEnabled');
+          return isGooglePhotosSharedAlbumsEnabled();
         },
       },
     };

@@ -15,8 +15,7 @@ import './ambient_zero_state_svg_element.js';
 import '../../css/common.css.js';
 import '../../css/cros_button_style.css.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-
+import {isScreenSaverPreviewEnabled} from '../load_time_booleans.js';
 import {AmbientUiVisibility} from '../personalization_app.mojom-webui.js';
 
 import {startScreenSaverPreview} from './ambient_controller.js';
@@ -49,11 +48,18 @@ export class AmbientPreviewSmall extends AmbientPreviewBase {
         type: Number,
         value: null,
       },
+      isScreenSaverPreviewEnabled_: {
+        type: Boolean,
+        value() {
+          return isScreenSaverPreviewEnabled();
+        },
+      },
     };
   }
 
   private screenSaverPreviewActive_: boolean;
   private ambientUiVisibility_: AmbientUiVisibility|null;
+  private isScreenSaverPreviewEnabled_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -64,10 +70,6 @@ export class AmbientPreviewSmall extends AmbientPreviewBase {
 
   private computeScreenSaverPreviewActive_(): boolean {
     return this.ambientUiVisibility_ === AmbientUiVisibility.kPreview;
-  }
-
-  private isScreenSaverPreviewEnabled_() {
-    return loadTimeData.getBoolean('isScreenSaverPreviewEnabled');
   }
 
   private startScreenSaverPreview_(event: Event) {

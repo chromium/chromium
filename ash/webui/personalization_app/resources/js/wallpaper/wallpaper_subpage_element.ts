@@ -7,8 +7,7 @@
  * personalization SWA.
  */
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-
+import {isGooglePhotosIntegrationEnabled} from '../load_time_booleans.js';
 import {CurrentWallpaper, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -33,12 +32,19 @@ export class WallpaperSubpage extends WithPersonalizationStore {
         value: null,
         observer: 'onCurrentSelectedChanged_',
       },
+      isGooglePhotosIntegrationEnabled_: {
+        type: Boolean,
+        value() {
+          return isGooglePhotosIntegrationEnabled();
+        },
+      },
     };
   }
 
   path: string;
   queryParams: Record<string, string>;
   private currentSelected_: CurrentWallpaper|null;
+  private isGooglePhotosIntegrationEnabled_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -61,19 +67,12 @@ export class WallpaperSubpage extends WithPersonalizationStore {
   }
 
   private shouldShowGooglePhotosCollection_(path: string): boolean {
-    return this.isGooglePhotosIntegrationEnabled_() &&
+    return this.isGooglePhotosIntegrationEnabled_ &&
         path === Paths.GOOGLE_PHOTOS_COLLECTION;
   }
 
   private shouldShowLocalCollection_(path: string): boolean {
     return path === Paths.LOCAL_COLLECTION;
-  }
-
-  /**
-   * Whether Google Photos integration is enabled.
-   */
-  private isGooglePhotosIntegrationEnabled_(): boolean {
-    return loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled');
   }
 }
 

@@ -8,10 +8,10 @@
  * polymer element.
  */
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 
+import {isAmbientModeManaged, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {setErrorAction} from '../personalization_actions.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -61,13 +61,13 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
       isPersonalizationJellyEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isPersonalizationJellyEnabled');
+          return isPersonalizationJellyEnabled();
         },
       },
       isAmbientModeManaged_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isAmbientModeManaged');
+          return isAmbientModeManaged();
         },
       },
     };

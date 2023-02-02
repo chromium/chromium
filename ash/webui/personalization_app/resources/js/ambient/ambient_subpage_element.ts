@@ -15,12 +15,12 @@ import './animation_theme_list_element.js';
 import './toggle_row_element.js';
 import './topic_source_list_element.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isAmbientModeAllowed, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
-import {isAmbientModeAllowed, Paths} from '../personalization_router_element.js';
+import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {setAmbientModeEnabled} from './ambient_controller.js';
@@ -71,7 +71,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
       isPersonalizationJellyEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isPersonalizationJellyEnabled');
+          return isPersonalizationJellyEnabled();
         },
       },
     };
