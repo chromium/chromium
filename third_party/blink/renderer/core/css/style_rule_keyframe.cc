@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 
 #include <memory>
+
+#include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
