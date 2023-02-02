@@ -9,30 +9,14 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {AudioDevice as AudioDeviceMojom, AudioDeviceType, AudioSystemProperties as AudioSystemPropertiesMojom, CrosAudioConfigInterface, MuteState} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
-
-// TODO(b/260277007): Remove enum and update imports when mojo updated with
-// AudioEffectState.
-export enum AudioEffectState {
-  NOT_SUPPORTED,
-  NOT_ENABLED,
-  ENABLED,
-}
-
-// TODO(b/260277007): Remove type alias and unused types when mojo updated to
-// handle noise cancellation.
-export interface FakeAudioDevice extends AudioDeviceMojom {
-  noiseCancellationState: AudioEffectState;
-}
-
-export type AudioDevice = AudioDeviceMojom&Partial<FakeAudioDevice>;
+import {AudioDevice, AudioDeviceType, AudioEffectState, AudioSystemProperties, CrosAudioConfigInterface, MuteState} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
 
 export const defaultFakeMicJack: AudioDevice = {
   id: BigInt(1),
   displayName: 'Mic Jack',
   isActive: true,
   deviceType: AudioDeviceType.kInternalMic,
-  noiseCancellationState: AudioEffectState.NOT_SUPPORTED,
+  noiseCancellationState: AudioEffectState.kNotSupported,
 };
 
 export const fakeSpeakerActive: AudioDevice = {
@@ -40,7 +24,7 @@ export const fakeSpeakerActive: AudioDevice = {
   displayName: 'Speaker',
   isActive: true,
   deviceType: AudioDeviceType.kInternalSpeaker,
-  noiseCancellationState: AudioEffectState.NOT_SUPPORTED,
+  noiseCancellationState: AudioEffectState.kNotSupported,
 };
 
 export const fakeMicJackInactive: AudioDevice = {
@@ -48,7 +32,7 @@ export const fakeMicJackInactive: AudioDevice = {
   displayName: 'Mic Jack',
   isActive: false,
   deviceType: AudioDeviceType.kInternalSpeaker,
-  noiseCancellationState: AudioEffectState.NOT_SUPPORTED,
+  noiseCancellationState: AudioEffectState.kNotSupported,
 };
 
 export const defaultFakeSpeaker: AudioDevice = {
@@ -56,7 +40,7 @@ export const defaultFakeSpeaker: AudioDevice = {
   displayName: 'Speaker',
   isActive: false,
   deviceType: AudioDeviceType.kInternalSpeaker,
-  noiseCancellationState: AudioEffectState.NOT_SUPPORTED,
+  noiseCancellationState: AudioEffectState.kNotSupported,
 };
 
 export const fakeInternalFrontMic: AudioDevice = {
@@ -64,7 +48,7 @@ export const fakeInternalFrontMic: AudioDevice = {
   displayName: 'FrontMic',
   isActive: true,
   deviceType: AudioDeviceType.kFrontMic,
-  noiseCancellationState: AudioEffectState.NOT_ENABLED,
+  noiseCancellationState: AudioEffectState.kNotEnabled,
 };
 
 export const fakeBluetoothMic: AudioDevice = {
@@ -72,7 +56,7 @@ export const fakeBluetoothMic: AudioDevice = {
   displayName: 'Bluetooth Mic',
   isActive: false,
   deviceType: AudioDeviceType.kBluetoothNbMic,
-  noiseCancellationState: AudioEffectState.NOT_SUPPORTED,
+  noiseCancellationState: AudioEffectState.kNotSupported,
 };
 
 export const fakeInternalMicActive: AudioDevice = {
@@ -80,17 +64,8 @@ export const fakeInternalMicActive: AudioDevice = {
   displayName: 'Internal Mic',
   isActive: true,
   deviceType: AudioDeviceType.kInternalMic,
-  noiseCancellationState: AudioEffectState.NOT_SUPPORTED,
+  noiseCancellationState: AudioEffectState.kNotSupported,
 };
-
-// TODO(b/260277007): Remove type alias and unused types when mojo updated to
-// handle audio input.
-export interface FakeAudioSystemProperties extends AudioSystemPropertiesMojom {
-  inputDevices: AudioDevice[];
-}
-
-export type AudioSystemProperties =
-    AudioSystemPropertiesMojom&Partial<FakeAudioSystemProperties>;
 
 export interface FakePropertiesObserverInterface {
   onPropertiesUpdated(properties: AudioSystemProperties): void;
@@ -170,12 +145,12 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
 
     const activeIndex = this.audioSystemProperties.inputDevices.findIndex(
         (device: AudioDevice) => device.isActive &&
-            device.noiseCancellationState !== AudioEffectState.NOT_SUPPORTED);
+            device.noiseCancellationState !== AudioEffectState.kNotSupported);
     if (activeIndex === -1) {
       return;
     }
     const nextState: AudioEffectState =
-        enabled ? AudioEffectState.ENABLED : AudioEffectState.NOT_ENABLED;
+        enabled ? AudioEffectState.kEnabled : AudioEffectState.kNotEnabled;
     this.audioSystemProperties.inputDevices[activeIndex]!
         .noiseCancellationState = nextState;
     this.notifyAudioSystemPropertiesUpdated();

@@ -187,7 +187,7 @@ suite('FakeCrosAudioConfig', function() {
         const ncSupportedNotEnabled = fakeCrosAudioConfig.createAudioDevice(
             fakeCrosAudioConfig.fakeInternalFrontMic, /*isActive=*/ true);
         ncSupportedNotEnabled.noiseCancellationState =
-            fakeCrosAudioConfig.AudioEffectState.NOT_ENABLED;
+            crosAudioConfigMojomWebui.AudioEffectState.kNotEnabled;
 
         /** @type {AudioSystemProperties} */
         const defaultNoiseCancellation = {
@@ -203,7 +203,7 @@ suite('FakeCrosAudioConfig', function() {
         const ncSupportedEnabled = fakeCrosAudioConfig.createAudioDevice(
             fakeCrosAudioConfig.fakeInternalFrontMic, /*isActive=*/ true);
         ncSupportedEnabled.noiseCancellationState =
-            fakeCrosAudioConfig.AudioEffectState.ENABLED;
+            crosAudioConfigMojomWebui.AudioEffectState.kEnabled;
 
         /** @type {AudioSystemProperties} */
         const enabledNoiseCancellation = {
@@ -224,7 +224,7 @@ suite('FakeCrosAudioConfig', function() {
         const ncNotSupported = fakeCrosAudioConfig.createAudioDevice(
             fakeCrosAudioConfig.fakeInternalFrontMic, /*isActive=*/ true);
         ncNotSupported.noiseCancellationState =
-            fakeCrosAudioConfig.AudioEffectState.NOT_SUPPORTED;
+            crosAudioConfigMojomWebui.AudioEffectState.kNotSupported;
 
         /** @type {AudioSystemProperties} */
         const noNoiseCancellation = {

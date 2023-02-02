@@ -300,6 +300,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void RequestNoiseCancellationSupported(
       OnNoiseCancellationSupportedCallback callback);
 
+  // Simulate noise cancellation support in a test.
+  void SetNoiseCancellationSupportedForTesting(bool supported);
+
   // Whether there is alternative input/output audio device.
   bool has_alternative_input() const;
   bool has_alternative_output() const;

@@ -18,16 +18,14 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AudioSystemPropertiesObserverReceiver, MuteState} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
+import {AudioDevice, AudioEffectState, AudioSystemProperties, AudioSystemPropertiesObserverReceiver, MuteState} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {getTemplate} from './audio.html.js';
 import {CrosAudioConfigInterface, getCrosAudioConfig} from './cros_audio_config.js';
-// TODO(b/260277007): Update import to get `AudioSystemProperties` from
-// `cros_audio_config.mojom-webui.js` once mojo updated to handle audio input.
-import {AudioDevice, AudioEffectState, AudioSystemProperties, FakeCrosAudioConfig} from './fake_cros_audio_config.js';
+import {FakeCrosAudioConfig} from './fake_cros_audio_config.js';
 
 /** Utility for keeping percent in inclusive range of [0,100].  */
 function clampPercent(percent: number): number {
@@ -124,10 +122,10 @@ class SettingsAudioElement extends SettingsAudioElementBase {
         (device: AudioDevice) => device.isActive);
     this.isNoiseCancellationEnabled_ =
         (activeInputDevice?.noiseCancellationState ===
-         AudioEffectState.ENABLED);
+         AudioEffectState.kEnabled);
     this.isNoiseCancellationSupported_ =
         !(activeInputDevice?.noiseCancellationState ===
-          AudioEffectState.NOT_SUPPORTED);
+          AudioEffectState.kNotSupported);
     this.outputVolume_ = this.audioSystemProperties_.outputVolumePercent;
   }
 

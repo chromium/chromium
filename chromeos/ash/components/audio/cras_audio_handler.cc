@@ -541,6 +541,10 @@ void CrasAudioHandler::HandleGetNoiseCancellationSupported(
   std::move(callback).Run();
 }
 
+void CrasAudioHandler::SetNoiseCancellationSupportedForTesting(bool supported) {
+  noise_cancellation_supported_ = supported;
+}
+
 void CrasAudioHandler::SetKeyboardMicActive(bool active) {
   const AudioDevice* keyboard_mic = GetKeyboardMic();
   if (!keyboard_mic)

@@ -25,6 +25,14 @@ enum AudioDeviceType {
   kOther
 };
 
+// Represents if a given audio effect (ex. Noise Canellation) is supported by
+// a device and if it does support, is that audio effect enabled.
+enum AudioEffectState {
+  kNotSupported,
+  kNotEnabled,
+  kEnabled,
+};
+
 // Represents the mute state of a user's audio device.
 enum MuteState {
   // The device is not muted.
@@ -57,6 +65,9 @@ struct AudioDevice {
 
   // The type of the device.
   AudioDeviceType device_type;
+
+  // The state of the noise cancellation audio effect.
+  AudioEffectState noise_cancellation_state;
 };
 
 // Represents the audio state of the Audio system.
