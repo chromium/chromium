@@ -1557,52 +1557,39 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
   SetBackground(
       views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
 
-  // If kAutofillVisualImprovementsForSuggestionUi is enabled, introduce an
-  // additional view with a vertical padding that wraps the full content of the
-  // popup. This is similar to the padding_wrapper used in the scroll area, but
+  // `content_view` wraps the full content of the popup and provides vertical
+  // padding. This is similar to `padding_wrapper` used in the scroll area, but
   // it allows to add a padding below the footer.
-  // Create the view and set the convenience pointers defined above.
-  std::unique_ptr<views::View> content_padding_wrapper =
-      std::make_unique<views::View>();
-
-  raw_ptr<views::BoxLayout> content_layout =
-      content_padding_wrapper->SetLayoutManager(
-          std::make_unique<views::BoxLayout>(
-              views::BoxLayout::Orientation::kVertical));
-
-  // This adds a padding area on the top and the bottom of the popup content.
-  content_padding_wrapper->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(GetContentsVerticalPadding(), 0)));
-
-  raw_ptr<views::View> content_view =
-      AddChildView(std::move(content_padding_wrapper));
-
-  content_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kStart);
+  raw_ptr<views::BoxLayoutView> content_view = AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetInsideBorderInsets(
+              gfx::Insets::VH(GetContentsVerticalPadding(), 0))
+          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
+          .Build());
 
   if (!rows_.empty()) {
     // Create a container to wrap the "regular" (non-footer) rows.
-    std::unique_ptr<views::View> body_container =
-        std::make_unique<views::View>();
-    views::BoxLayout* body_layout =
-        body_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kVertical));
-    body_layout->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kStart);
+    std::unique_ptr<views::BoxLayoutView> body_container =
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kVertical)
+            .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
+            .Build();
     for (raw_ptr<AutofillPopupRowView> row : rows_) {
       body_container->AddChildView(row.get());
     }
 
-    auto scroll_view = std::make_unique<views::ScrollView>();
-    scroll_view->SetBackgroundThemeColorId(ui::kColorDropdownBackground);
-    scroll_view->SetHorizontalScrollBarMode(
-        views::ScrollView::ScrollBarMode::kDisabled);
+    std::unique_ptr<views::ScrollView> scroll_view =
+        views::Builder<views::ScrollView>()
+            .SetBackgroundThemeColorId(ui::kColorDropdownBackground)
+            .SetHorizontalScrollBarMode(
+                views::ScrollView::ScrollBarMode::kDisabled)
+            .SetDrawOverflowIndicator(false)
+            .ClipHeightTo(0, body_container->GetPreferredSize().height())
+            .Build();
     body_container_ = scroll_view->SetContents(std::move(body_container));
-    scroll_view->SetDrawOverflowIndicator(false);
-    scroll_view->ClipHeightTo(0, body_container_->GetPreferredSize().height());
-
     scroll_view_ = content_view->AddChildView(std::move(scroll_view));
-    content_layout->SetFlexForView(scroll_view_.get(), 1);
+    content_view->SetFlexForView(scroll_view_.get(), 1);
   }
 
   if (footer_item_line_numbers.empty()) {
@@ -1631,7 +1618,7 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
     footer_container->AddChildView(rows_.back().get());
   }
 
-  content_layout->SetFlexForView(
+  content_view->SetFlexForView(
       content_view->AddChildView(std::move(footer_container)), 0);
 }
 
