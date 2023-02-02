@@ -903,7 +903,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
     color_desc.resolveTarget = nullptr;
     color_desc.loadOp = wgpu::LoadOp::Clear;
     color_desc.storeOp = wgpu::StoreOp::Store;
-    color_desc.clearColor = {0, 255, 0, 255};
+    color_desc.clearValue = {0, 255, 0, 255};
 
     wgpu::RenderPassDescriptor renderPassDesc = {};
     renderPassDesc.colorAttachmentCount = 1;
