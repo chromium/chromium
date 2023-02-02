@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
@@ -184,11 +183,6 @@ public class FreIntentCreator {
         // We must be on a tablet (where FRE is a dialog).
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(caller)) return false;
 
-        // Caller must use a theme with @drawable/window_background (the same background
-        // used by TabbedModeFRE).
-        TypedArray a = caller.obtainStyledAttributes(new int[] {android.R.attr.windowBackground});
-        int backgroundResourceId = a.getResourceId(0 /* index */, 0);
-        a.recycle();
-        return (backgroundResourceId == org.chromium.chrome.R.drawable.window_background);
+        return true;
     }
 }
