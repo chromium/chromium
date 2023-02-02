@@ -187,7 +187,7 @@ TEST_F(IpcNetworkManagerTest, DeterminesVPNFromMacAddress) {
   std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
   ASSERT_EQ(1uL, networks.size());
   ASSERT_EQ(rtc::ADAPTER_TYPE_VPN, networks[0]->type());
-  ASSERT_EQ(rtc::ADAPTER_TYPE_ETHERNET, networks[0]->underlying_type_for_vpn());
+  ASSERT_EQ(rtc::ADAPTER_TYPE_UNKNOWN, networks[0]->underlying_type_for_vpn());
 }
 
 // Test that IpcNetworkManager doesn't classify this mac as VPN.

@@ -126,8 +126,10 @@ void IpcNetworkManager::OnNetworkListChanged(
     }
     rtc::AdapterType underlying_adapter_type = rtc::ADAPTER_TYPE_UNKNOWN;
     if (it->mac_address.has_value() && IsVpnMacAddress(*it->mac_address)) {
-      underlying_adapter_type = adapter_type;
       adapter_type = rtc::ADAPTER_TYPE_VPN;
+      // With MAC-based detection we do not know the
+      // underlying adapter type.
+      underlying_adapter_type = rtc::ADAPTER_TYPE_UNKNOWN;
     }
     auto network = CreateNetwork(it->name, it->name, prefix, it->prefix_length,
                                  adapter_type);
