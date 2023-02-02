@@ -193,11 +193,11 @@ BASE_FEATURE(kPartitionAllocPCScanEagerClearing,
 // In addition to heap, scan also the stack of the current mutator.
 BASE_FEATURE(kPartitionAllocPCScanStackScanning,
              "PartitionAllocPCScanStackScanning",
-#if defined(PA_PCSCAN_STACK_SUPPORTED)
+#if BUILDFLAG(PCSCAN_STACK_SUPPORTED)
              FEATURE_ENABLED_BY_DEFAULT
 #else
              FEATURE_DISABLED_BY_DEFAULT
-#endif  // defined(PA_PCSCAN_STACK_SUPPORTED)
+#endif  // BUILDFLAG(PCSCAN_STACK_SUPPORTED)
 );
 
 BASE_FEATURE(kPartitionAllocDCScan,

@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
@@ -135,12 +136,12 @@ namespace {
 }  // namespace
 
 void Stack::IteratePointers(StackVisitor* visitor) const {
-#if defined(PA_PCSCAN_STACK_SUPPORTED)
+#if BUILDFLAG(PCSCAN_STACK_SUPPORTED)
   PAPushAllRegistersAndIterateStack(this, visitor, &IteratePointersImpl);
   // No need to deal with callee-saved registers as they will be kept alive by
   // the regular conservative stack iteration.
   IterateSafeStackIfNecessary(visitor);
-#endif
+#endif  // BUILDFLAG(PCSCAN_STACK_SUPPORTED)
 }
 
 }  // namespace partition_alloc::internal

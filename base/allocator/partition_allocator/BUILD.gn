@@ -289,19 +289,20 @@ component("partition_alloc") {
   }
   if (use_starscan) {
     if (current_cpu == "x64") {
-      defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+      assert(pcscan_stack_supported)
       sources += [ "starscan/stack/asm/x64/push_registers_asm.cc" ]
     } else if (current_cpu == "x86") {
-      defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+      assert(pcscan_stack_supported)
       sources += [ "starscan/stack/asm/x86/push_registers_asm.cc" ]
     } else if (current_cpu == "arm") {
-      defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+      assert(pcscan_stack_supported)
       sources += [ "starscan/stack/asm/arm/push_registers_asm.cc" ]
     } else if (current_cpu == "arm64") {
-      defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+      assert(pcscan_stack_supported)
       sources += [ "starscan/stack/asm/arm64/push_registers_asm.cc" ]
     } else {
       # To support a trampoline for another arch, please refer to v8/src/heap/base.
+      assert(!pcscan_stack_supported)
     }
   }
   public_deps = [
@@ -444,6 +445,7 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
 
     "USE_STARSCAN=$use_starscan",
+    "PCSCAN_STACK_SUPPORTED=$pcscan_stack_supported",
 
     "ENABLE_PKEYS=$enable_pkeys",
   ]
