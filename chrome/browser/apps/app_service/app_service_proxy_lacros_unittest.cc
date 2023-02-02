@@ -41,14 +41,15 @@ TEST(AppServiceProxyLacrosTest, Launch) {
   proxy.SetCrosapiAppServiceProxyForTesting(&mock_proxy);
 
   base::RunLoop waiter;
-  LaunchResult result;
   proxy.LaunchAppWithUrl(
       kAppId, event_flag, GURL(kUrl), launch_source,
       std::make_unique<WindowInfo>(display::kDefaultDisplayId),
-      base::BindLambdaForTesting([&](LaunchResult&& result_arg) {
-        EXPECT_EQ(result_arg.state, LaunchResult::State::SUCCESS);
-        waiter.Quit();
-      }));
+      base::BindOnce(
+          [](base::OnceClosure callback, LaunchResult&& result_arg) {
+            EXPECT_EQ(LaunchResult::State::SUCCESS, result_arg.state);
+            std::move(callback).Run();
+          },
+          waiter.QuitClosure()));
   mock_proxy.Wait();
   waiter.Run();
 

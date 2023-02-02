@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -53,22 +54,14 @@ std::string AppServiceTest::GetAppName(const std::string& app_id) const {
 gfx::ImageSkia AppServiceTest::LoadAppIconBlocking(AppType app_type,
                                                    const std::string& app_id,
                                                    int32_t size_hint_in_dip) {
-  gfx::ImageSkia image_skia;
-  base::RunLoop run_loop;
-
+  base::test::TestFuture<apps::IconValuePtr> future;
   app_service_proxy_->LoadIcon(
       app_type, app_id, IconType::kStandard, size_hint_in_dip,
-      false /* allow_placeholder_icon */,
-      base::BindOnce(
-          [](gfx::ImageSkia* icon, base::OnceClosure load_app_icon_callback,
-             IconValuePtr icon_value) {
-            DCHECK_EQ(IconType::kStandard, icon_value->icon_type);
-            *icon = icon_value->uncompressed;
-            std::move(load_app_icon_callback).Run();
-          },
-          &image_skia, run_loop.QuitClosure()));
-  run_loop.Run();
-  return image_skia;
+      /*allow_placeholder_icon=*/false, future.GetCallback());
+
+  auto icon = future.Take();
+  DCHECK_EQ(IconType::kStandard, icon->icon_type);
+  return icon->uncompressed;
 }
 
 bool AppServiceTest::AreIconImageEqual(const gfx::ImageSkia& src,

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
@@ -54,37 +55,30 @@ class AppInstanceWaiter : public apps::InstanceRegistry::Observer {
 };
 
 std::vector<std::string> GetContextMenuForApp(const std::string& app_id) {
-  std::vector<std::string> items;
-  base::RunLoop run_loop;
   ash::ShelfItemDelegate* delegate =
       ash::ShelfModel::Get()->GetShelfItemDelegate(ash::ShelfID(app_id));
-  delegate->GetContextMenu(
-      /*display_id=*/0,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<ui::SimpleMenuModel> model) {
-            items.reserve(model->GetItemCount());
-            for (size_t i = 0; i < model->GetItemCount(); ++i) {
-              items.push_back(base::UTF16ToUTF8(model->GetLabelAt(i)));
-            }
 
-            run_loop.Quit();
-          }));
-  run_loop.Run();
+  base::test::TestFuture<std::unique_ptr<ui::SimpleMenuModel>> future;
+  delegate->GetContextMenu(
+      /*display_id=*/0, future.GetCallback());
+
+  auto model = future.Take();
+  std::vector<std::string> items;
+  for (size_t i = 0; i < model->GetItemCount(); ++i) {
+    items.push_back(base::UTF16ToUTF8(model->GetLabelAt(i)));
+  }
   return items;
 }
 
 void SelectContextMenuForApp(const std::string& app_id, size_t index) {
-  base::RunLoop run_loop;
   ash::ShelfItemDelegate* delegate =
       ash::ShelfModel::Get()->GetShelfItemDelegate(ash::ShelfID(app_id));
+
+  base::test::TestFuture<std::unique_ptr<ui::SimpleMenuModel>> future;
   delegate->GetContextMenu(
-      /*display_id=*/0, base::BindLambdaForTesting(
-                            [&](std::unique_ptr<ui::SimpleMenuModel> model) {
-                              DCHECK(index < model->GetItemCount());
-                              model->ActivatedAt(index, /*event_flags=*/0);
-                              run_loop.Quit();
-                            }));
-  run_loop.Run();
+      /*display_id=*/0, future.GetCallback());
+  auto model = future.Take();
+  model->ActivatedAt(index, /*event_flags=*/0);
 }
 
 }  // namespace

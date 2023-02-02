@@ -124,13 +124,11 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
       }
     }
 
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool> future;
     icon_manager_->WriteData(app_id, std::move(icon_bitmaps), {}, {},
-                             base::BindLambdaForTesting([&](bool success) {
-                               EXPECT_TRUE(success);
-                               run_loop.Quit();
-                             }));
-    run_loop.Run();
+                             future.GetCallback());
+    bool success = future.Get();
+    EXPECT_TRUE(success);
   }
 
   void GenerateWebAppIcon(const std::string& app_id,
@@ -139,34 +137,23 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
                           apps::ScaleToSize scale_to_size_in_px,
                           gfx::ImageSkia& output_image_skia,
                           bool skip_icon_effects = false) {
-    base::RunLoop run_loop;
-    icon_manager().ReadIcons(
-        app_id, purpose, sizes_px,
-        base::BindOnce(
-            [](gfx::ImageSkia* image_skia, int size_in_dip,
-               apps::ScaleToSize scale_to_size_in_px,
-               base::OnceClosure load_app_icon_callback,
-               std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-              for (auto it : scale_to_size_in_px) {
-                int icon_size_in_px =
-                    gfx::ScaleToFlooredSize(gfx::Size(size_in_dip, size_in_dip),
-                                            it.first)
-                        .width();
+    base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> future;
+    icon_manager().ReadIcons(app_id, purpose, sizes_px, future.GetCallback());
+    auto icon_bitmaps = future.Take();
 
-                SkBitmap bitmap = icon_bitmaps[it.second];
-                if (bitmap.width() != icon_size_in_px) {
-                  bitmap = skia::ImageOperations::Resize(
-                      bitmap, skia::ImageOperations::RESIZE_LANCZOS3,
-                      icon_size_in_px, icon_size_in_px);
-                }
-                image_skia->AddRepresentation(
-                    gfx::ImageSkiaRep(bitmap, it.first));
-              }
-              std::move(load_app_icon_callback).Run();
-            },
-            &output_image_skia, kSizeInDip, scale_to_size_in_px,
-            run_loop.QuitClosure()));
-    run_loop.Run();
+    for (auto [scale, size_in_px] : scale_to_size_in_px) {
+      int icon_size_in_px =
+          gfx::ScaleToFlooredSize(gfx::Size(kSizeInDip, kSizeInDip), scale)
+              .width();
+
+      SkBitmap bitmap = icon_bitmaps[size_in_px];
+      if (bitmap.width() != icon_size_in_px) {
+        bitmap = skia::ImageOperations::Resize(
+            bitmap, skia::ImageOperations::RESIZE_LANCZOS3, icon_size_in_px,
+            icon_size_in_px);
+      }
+      output_image_skia.AddRepresentation(gfx::ImageSkiaRep(bitmap, scale));
+    }
 
     if (!skip_icon_effects) {
       extensions::ChromeAppIcon::ResizeFunction resize_function;
@@ -240,38 +227,22 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
   void LoadIconFromWebApp(const std::string& app_id,
                           apps::IconEffects icon_effects,
                           gfx::ImageSkia& output_image_skia) {
-    base::RunLoop run_loop;
-
-    auto icon_type = apps::IconType::kUncompressed;
-    icon_type = apps::IconType::kStandard;
-
-    apps::LoadIconFromWebApp(
-        profile(), icon_type, kSizeInDip, app_id, icon_effects,
-        base::BindOnce(
-            [](gfx::ImageSkia* image, base::OnceClosure load_app_icon_callback,
-               apps::IconValuePtr icon) {
-              *image = icon->uncompressed;
-              std::move(load_app_icon_callback).Run();
-            },
-            &output_image_skia, run_loop.QuitClosure()));
-    run_loop.Run();
-
+    base::test::TestFuture<apps::IconValuePtr> future;
+    apps::LoadIconFromWebApp(profile(), apps::IconType::kStandard, kSizeInDip,
+                             app_id, icon_effects, future.GetCallback());
+    auto icon = future.Take();
+    output_image_skia = icon->uncompressed;
     EnsureRepresentationsLoaded(output_image_skia);
   }
 
   apps::IconValuePtr LoadCompressedIconBlockingFromWebApp(
       const std::string& app_id,
       apps::IconEffects icon_effects) {
-    base::RunLoop run_loop;
-    apps::IconValuePtr icon_value;
-    apps::LoadIconFromWebApp(
-        profile(), apps::IconType::kCompressed, kSizeInDip, app_id,
-        icon_effects, base::BindLambdaForTesting([&](apps::IconValuePtr icon) {
-          icon_value = std::move(icon);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return icon_value;
+    base::test::TestFuture<apps::IconValuePtr> future;
+    apps::LoadIconFromWebApp(profile(), apps::IconType::kCompressed, kSizeInDip,
+                             app_id, icon_effects, future.GetCallback());
+    auto icon = future.Take();
+    return icon;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

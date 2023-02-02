@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(WebApkPolicyBrowserTest, DefaultInstallWebApk) {
   // installation.
   base::RunLoop run_loop;
   pref_registrar.Add(apps::webapk_prefs::kGeneratedWebApksPref,
-                     base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+                     run_loop.QuitClosure());
 
   const web_app::AppId app_id =
       web_app::InstallWebAppFromManifest(browser(), app_url);

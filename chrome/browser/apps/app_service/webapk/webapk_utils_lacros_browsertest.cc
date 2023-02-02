@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "components/webapk/webapk.pb.h"
@@ -26,23 +27,17 @@ IN_PROC_BROWSER_TEST_F(WebApkUtilsBrowserTest, GetWebApk) {
   const web_app::AppId app_id =
       web_app::InstallWebAppFromManifest(browser(), start_url);
 
-  std::string manifest_url;
-  webapk::WebAppManifest manifest;
-  base::RunLoop run_loop;
-  GetWebApkCreationParams(
-      profile(), app_id,
-      base::BindLambdaForTesting(
-          [&](crosapi::mojom::WebApkCreationParamsPtr webapk_creation_params) {
-            manifest_url = webapk_creation_params->manifest_url;
-            const std::vector<uint8_t>& webapk_manifest_proto_bytes =
-                webapk_creation_params->webapk_manifest_proto_bytes;
-            ASSERT_TRUE(
-                manifest.ParseFromArray(webapk_manifest_proto_bytes.data(),
-                                        webapk_manifest_proto_bytes.size()));
-            run_loop.Quit();
-          }));
-  run_loop.Run();
+  base::test::TestFuture<crosapi::mojom::WebApkCreationParamsPtr> future;
+  GetWebApkCreationParams(profile(), app_id, future.GetCallback());
 
+  auto webapk_creation_params = future.Take();
+
+  webapk::WebAppManifest manifest;
+  ASSERT_TRUE(manifest.ParseFromArray(
+      webapk_creation_params->webapk_manifest_proto_bytes.data(),
+      webapk_creation_params->webapk_manifest_proto_bytes.size()));
+
+  const std::string& manifest_url = webapk_creation_params->manifest_url;
   EXPECT_EQ(manifest_url, expected_manifest_url.spec());
   EXPECT_EQ(manifest.short_name(), "Charts web app");
   EXPECT_EQ(manifest.start_url(), start_url.spec());

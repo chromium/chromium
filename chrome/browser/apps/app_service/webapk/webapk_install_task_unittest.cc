@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
@@ -137,14 +138,11 @@ class WebApkInstallTaskTest : public testing::Test {
   void TearDown() override { arc_test_.TearDown(); }
 
   bool InstallWebApk(std::string app_id) {
-    bool install_success;
     apps::WebApkInstallTask install_task(profile(), app_id);
     base::RunLoop run_loop;
-    install_task.Start(base::BindLambdaForTesting([&](bool success) {
-      install_success = success;
-      run_loop.Quit();
-    }));
-    run_loop.Run();
+    base::test::TestFuture<bool> future;
+    install_task.Start(future.GetCallback());
+    bool install_success = future.Get();
     return install_success;
   }
 
@@ -311,15 +309,11 @@ TEST_F(WebApkInstallTaskTest, MinterTimeout) {
       switches::kWebApkServerUrl, test_server()->GetURL("/slow?1000").spec());
   base::HistogramTester histograms;
 
-  bool install_success;
   apps::WebApkInstallTask install_task(profile(), app_id);
   install_task.SetTimeoutForTesting(base::Milliseconds(100));
-  base::RunLoop run_loop;
-  install_task.Start(base::BindLambdaForTesting([&](bool success) {
-    install_success = success;
-    run_loop.Quit();
-  }));
-  run_loop.Run();
+  base::test::TestFuture<bool> future;
+  install_task.Start(future.GetCallback());
+  bool install_success = future.Get();
 
   ASSERT_FALSE(install_success);
   histograms.ExpectBucketCount(apps::kWebApkInstallResultHistogram,
