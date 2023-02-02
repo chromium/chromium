@@ -10,6 +10,7 @@
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/webauthn_security_utils.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "device/fido/features.h"
@@ -24,79 +25,6 @@
 #include "url/url_util.h"
 
 namespace content {
-
-namespace {
-
-// Returns AuthenticatorStatus::SUCCESS if the caller origin is in principle
-// authorized to make WebAuthn requests, and an error if it fails one of the
-// criteria below.
-//
-// Reference https://url.spec.whatwg.org/#valid-domain-string and
-// https://html.spec.whatwg.org/multipage/origin.html#concept-origin-effective-domain.
-blink::mojom::AuthenticatorStatus OriginAllowedToMakeWebAuthnRequests(
-    url::Origin caller_origin) {
-  if (caller_origin.opaque()) {
-    return blink::mojom::AuthenticatorStatus::OPAQUE_DOMAIN;
-  }
-
-  // The scheme is required to be HTTP(S).  Given the
-  // |network::IsUrlPotentiallyTrustworthy| check below, HTTP is effectively
-  // restricted to just "localhost".
-  if (caller_origin.scheme() != url::kHttpScheme &&
-      caller_origin.scheme() != url::kHttpsScheme) {
-    return blink::mojom::AuthenticatorStatus::INVALID_PROTOCOL;
-  }
-
-  // TODO(https://crbug.com/1158302): Use IsOriginPotentiallyTrustworthy?
-  if (url::HostIsIPAddress(caller_origin.host()) ||
-      !network::IsUrlPotentiallyTrustworthy(caller_origin.GetURL())) {
-    return blink::mojom::AuthenticatorStatus::INVALID_DOMAIN;
-  }
-
-  return blink::mojom::AuthenticatorStatus::SUCCESS;
-}
-
-// Returns whether a caller origin is allowed to claim a given Relying Party ID.
-// It's valid for the requested RP ID to be a registrable domain suffix of, or
-// be equal to, the origin's effective domain.  Reference:
-// https://html.spec.whatwg.org/multipage/origin.html#is-a-registrable-domain-suffix-of-or-is-equal-to.
-bool OriginIsAllowedToClaimRelyingPartyId(
-    const std::string& claimed_relying_party_id,
-    const url::Origin& caller_origin) {
-  // `OriginAllowedToMakeWebAuthnRequests()` must have been called before.
-  DCHECK_EQ(OriginAllowedToMakeWebAuthnRequests(caller_origin),
-            blink::mojom::AuthenticatorStatus::SUCCESS);
-
-  if (claimed_relying_party_id.empty()) {
-    return false;
-  }
-
-  if (caller_origin.host() == claimed_relying_party_id) {
-    return true;
-  }
-
-  if (!caller_origin.DomainIs(claimed_relying_party_id)) {
-    return false;
-  }
-
-  if (!net::registry_controlled_domains::HostHasRegistryControlledDomain(
-          caller_origin.host(),
-          net::registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES) ||
-      !net::registry_controlled_domains::HostHasRegistryControlledDomain(
-          claimed_relying_party_id,
-          net::registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
-    // TODO(crbug.com/803414): Accept corner-case situations like the
-    // following origin: "https://login.awesomecompany", relying_party_id:
-    // "awesomecompany".
-    return false;
-  }
-
-  return true;
-}
-
-}  // namespace
 
 WebAuthRequestSecurityChecker::WebAuthRequestSecurityChecker(
     RenderFrameHost* host)

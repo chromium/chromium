@@ -30,6 +30,7 @@
 #include "components/webdata/common/web_data_service_base.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/webauthn_security_utils.h"
 #include "content/public/common/content_features.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -128,15 +129,10 @@ bool IsValid(const mojom::SecurePaymentConfirmationRequestPtr& request,
 // Determine if a given origin that is calling SPC with a given RP ID requires
 // the credentials to be third-party enabled (i.e., the calling party is not the
 // RP ID).
-//
-// TODO(crbug.com/1365347): Use OriginIsAllowedToClaimRelyingPartyId instead.
 bool RequiresThirdPartyPaymentBit(const url::Origin& caller_origin,
                                   const std::string& relying_party_id) {
-  // An origin may utilize credentials (without the third-party payment bit) for
-  // either its own exact domain (e.g. 'www.site.example' on www.site.example),
-  // or if it is in the same domain (e.g., 'site.example' on www.site.example).
-  return caller_origin.host() != relying_party_id &&
-         !caller_origin.DomainIs(relying_party_id);
+  return !content::OriginIsAllowedToClaimRelyingPartyId(relying_party_id,
+                                                        caller_origin);
 }
 
 }  // namespace
