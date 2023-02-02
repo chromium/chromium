@@ -135,20 +135,12 @@ ManagePasswordsUIController::~ManagePasswordsUIController() = default;
 
 void ManagePasswordsUIController::OnPasswordSubmitted(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
-  bool show_bubble = !form_manager->IsBlocklisted();
   DestroyPopups();
   save_fallback_timer_.Stop();
   passwords_data_.OnPendingPassword(std::move(form_manager));
-  if (show_bubble) {
-    const password_manager::InteractionsStats* stats =
-        GetCurrentInteractionStats();
-    const int show_threshold =
-        password_bubble_experiment::GetSmartBubbleDismissalThreshold();
-    if (stats && show_threshold > 0 && stats->dismissal_count >= show_threshold)
-      show_bubble = false;
-  }
-  if (show_bubble)
+  if (!IsSavingPromptBlockedExplicitlyOrImplicitly()) {
     bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  }
   UpdateBubbleAndIconVisibility();
 }
 
@@ -701,11 +693,33 @@ void ManagePasswordsUIController::OnDialogHidden() {
 
 void ManagePasswordsUIController::OnLeakDialogHidden() {
   dialog_controller_.reset();
-  if (GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
-      GetState() == password_manager::ui::PENDING_PASSWORD_STATE) {
+  if (GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE) {
     bubble_status_ = BubbleStatus::SHOULD_POP_UP;
     UpdateBubbleAndIconVisibility();
+    return;
   }
+  if (GetState() == password_manager::ui::PENDING_PASSWORD_STATE) {
+    if (!IsSavingPromptBlockedExplicitlyOrImplicitly()) {
+      bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+    }
+    UpdateBubbleAndIconVisibility();
+  }
+}
+
+bool ManagePasswordsUIController::IsSavingPromptBlockedExplicitlyOrImplicitly()
+    const {
+  PasswordFormManagerForUI* form_manager = passwords_data_.form_manager();
+  DCHECK(form_manager);
+  if (form_manager->IsBlocklisted()) {
+    return true;
+  }
+
+  const password_manager::InteractionsStats* stats =
+      GetCurrentInteractionStats();
+  const int show_threshold =
+      password_bubble_experiment::GetSmartBubbleDismissalThreshold();
+  return stats && show_threshold > 0 &&
+         stats->dismissal_count >= show_threshold;
 }
 
 bool ManagePasswordsUIController::AuthenticateUser() {

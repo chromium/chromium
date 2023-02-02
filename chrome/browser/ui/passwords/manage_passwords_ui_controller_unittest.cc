@@ -1416,6 +1416,7 @@ TEST_F(ManagePasswordsUIControllerTest, AuthenticateUserToRevealPasswords) {
 TEST_F(ManagePasswordsUIControllerTest, SaveBubbleAfterLeakCheck) {
   std::vector<const PasswordForm*> matches;
   auto test_form_manager = CreateFormManagerWithBestMatches(&matches);
+  MockPasswordFormManagerForUI* form_manager_ptr = test_form_manager.get();
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
   EXPECT_TRUE(controller()->opened_automatic_bubble());
@@ -1434,6 +1435,13 @@ TEST_F(ManagePasswordsUIControllerTest, SaveBubbleAfterLeakCheck) {
   // The bubble is gone.
   EXPECT_FALSE(controller()->opened_bubble());
 
+  // After closing the lead check dialog, the blocklisting will be checked again
+  // to decide whether to reopen the save prompt.
+  EXPECT_CALL(*form_manager_ptr, IsBlocklisted()).WillOnce(Return(false));
+  EXPECT_CALL(*form_manager_ptr, GetInteractionsStats())
+      .WillOnce(
+          Return(base::span<const password_manager::InteractionsStats>()));
+
   // Close the dialog.
   EXPECT_CALL(dialog_prompt, ControllerGone);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
@@ -1441,6 +1449,44 @@ TEST_F(ManagePasswordsUIControllerTest, SaveBubbleAfterLeakCheck) {
 
   // The save bubble is back.
   EXPECT_TRUE(controller()->opened_automatic_bubble());
+  ExpectIconAndControllerStateIs(password_manager::ui::PENDING_PASSWORD_STATE);
+}
+
+TEST_F(ManagePasswordsUIControllerTest,
+       NoSaveBubbleAfterLeakCheckForBlocklistedWebsites) {
+  std::vector<const PasswordForm*> matches;
+  auto test_form_manager =
+      CreateFormManagerWithBestMatches(&matches, /*is_blocklisted=*/true);
+  MockPasswordFormManagerForUI* form_manager_ptr = test_form_manager.get();
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
+
+  // Leak detection dialog hides the bubble.
+  PasswordLeakDialogMock dialog_prompt;
+  CredentialLeakDialogController* dialog_controller = nullptr;
+  EXPECT_CALL(*controller(), CreateCredentialLeakPrompt)
+      .WillOnce(DoAll(SaveArg<0>(&dialog_controller), Return(&dialog_prompt)));
+  EXPECT_CALL(dialog_prompt, ShowCredentialLeakPrompt);
+  controller()->OnCredentialLeak(
+      password_manager::CreateLeakType(password_manager::IsSaved(false),
+                                       password_manager::IsReused(false),
+                                       password_manager::IsSyncing(false)),
+      GURL(kExampleUrl), kExampleUsername);
+  // The bubble is gone.
+  EXPECT_FALSE(controller()->opened_bubble());
+
+  // After closing the lead check dialog, the blocklisting will be checked again
+  // to decide whether to reopen the save prompt.
+  EXPECT_CALL(*form_manager_ptr, IsBlocklisted()).WillOnce(Return(true));
+
+  // Close the dialog.
+  EXPECT_CALL(dialog_prompt, ControllerGone);
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  dialog_controller->OnAcceptDialog();
+
+  // The save bubble should not be opened because the website is blocklisted.
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
   ExpectIconAndControllerStateIs(password_manager::ui::PENDING_PASSWORD_STATE);
 }
 

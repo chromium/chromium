@@ -264,6 +264,13 @@ class ManagePasswordsUIController
            bubble_status_ == BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
   }
 
+  // Returns whether saving credentials prompts for the current form in
+  // |passwords_data_| is blocked due to explicit action of the user asking to
+  // never save passwords for this form, or because the user ignored the bubble
+  // multiple times that the browser will automatically suppress further save
+  // prompts.
+  bool IsSavingPromptBlockedExplicitlyOrImplicitly() const;
+
   // Returns the timeout for the manual save fallback.
   static base::TimeDelta GetTimeoutForSaveFallback();
 
