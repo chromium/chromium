@@ -60,7 +60,7 @@ template("optimize_js") {
     script = "//ios/web/public/js_messaging/optimize_js.py"
 
     inputs =
-        [ "//ios/web/public/js_messaging/rollup_plugin_src_path_resolver.js" ]
+        [ "//ios/web/public/js_messaging/rollup_plugin_src_path_resolver.mjs" ]
 
     output_js_file_name = get_path_info(invoker.primary_script, "file")
     output_js_file = "$target_gen_dir/" + output_js_file_name

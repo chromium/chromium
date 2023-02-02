@@ -79,7 +79,7 @@ template("optimize_webui") {
     }
     args += [ "--external_paths" ] + external_paths
 
-    inputs += [ "//chrome/browser/resources/tools/rollup_plugin.js" ]
+    inputs += [ "//chrome/browser/resources/tools/rollup_plugin.mjs" ]
     args += [ "--js_module_in_files" ] + invoker.js_module_in_files
 
     if (defined(invoker.out_manifest)) {

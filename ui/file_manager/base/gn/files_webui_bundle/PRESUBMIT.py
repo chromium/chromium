@@ -7,7 +7,7 @@ USE_PYTHON3 = True
 
 def _CheckChangeOnUploadOrCommit(input_api, output_api):
   results = []
-  webui_sources = set(['files_webui_bundle.py', 'rollup_plugin.js'])
+  webui_sources = set(['files_webui_bundle.py', 'rollup_plugin.mjs'])
   affected = input_api.AffectedFiles()
   affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
   if webui_sources.intersection(set(affected_files)):

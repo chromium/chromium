@@ -5,7 +5,7 @@
 /**
  * @fileoverview Plugin for rollup to correctly resolve resources.
  */
-const path = require('path');
+import * as path from 'path';
 
 function normalizeSlashes(filepath) {
   return filepath.replace(/\\/gi, '/');

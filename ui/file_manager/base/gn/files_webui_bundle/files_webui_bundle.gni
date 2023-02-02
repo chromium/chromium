@@ -86,7 +86,7 @@ template("files_webui_bundle") {
     args += [ "--external_paths" ] + external_paths
 
     inputs +=
-        [ "//ui/file_manager/base/gn/files_webui_bundle/rollup_plugin.js" ]
+        [ "//ui/file_manager/base/gn/files_webui_bundle/rollup_plugin.mjs" ]
     args += [ "--js_module_in_files" ] + invoker.js_module_in_files
 
     if (defined(invoker.out_manifest)) {

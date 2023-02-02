@@ -78,7 +78,7 @@ def _update_dep_file(in_folder, args, manifest):
 # from the bundle.
 def _generate_rollup_config(tmp_out_dir, path_to_plugin, in_path, host_url,
                             excludes, external_paths):
-  rollup_config_file = os.path.join(tmp_out_dir, 'rollup.config.js')
+  rollup_config_file = os.path.join(tmp_out_dir, 'rollup.config.mjs')
   config_content = r'''
     import plugin from '{plugin_path}';
     export default ({{
@@ -127,7 +127,8 @@ def _bundle_v3(tmp_out_dir, in_path, out_path, manifest_out_path, args,
                excludes, external_paths):
   if not os.path.exists(tmp_out_dir):
     os.makedirs(tmp_out_dir)
-  path_to_plugin = os.path.join(os.path.abspath(_HERE_PATH), 'rollup_plugin.js')
+  path_to_plugin = os.path.join(
+      os.path.abspath(_HERE_PATH), 'rollup_plugin.mjs')
   rollup_config_file = _generate_rollup_config(tmp_out_dir, path_to_plugin,
                                                in_path, args.host_url, excludes,
                                                external_paths)
