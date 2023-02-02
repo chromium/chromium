@@ -312,7 +312,7 @@ bool PinManager::CanPin(const mojom::FileMetadata& md, const Path& path) {
 }
 
 bool PinManager::Add(const Id id,
-                     const std::string& path,
+                     const Path& path,
                      const int64_t size,
                      const bool pinned) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -364,12 +364,10 @@ bool PinManager::Add(const mojom::FileMetadata& md, const Path& path) {
       << "Not pinned yet but already available offline: " << id << " "
       << Quote(path) << ": " << Quote(md);
 
-  return Add(id, path.value(), GetSize(md), md.pinned);
+  return Add(id, path, GetSize(md), md.pinned);
 }
 
-bool PinManager::Remove(const Id id,
-                        const std::string& path,
-                        int64_t transferred) {
+bool PinManager::Remove(const Id id, const Path& path, int64_t transferred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const Files::iterator it = files_to_track_.find(id);
@@ -395,7 +393,7 @@ bool PinManager::Remove(const Id id,
 }
 
 bool PinManager::Update(const Id id,
-                        const std::string& path,
+                        const Path& path,
                         const int64_t transferred,
                         const int64_t total) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -411,7 +409,7 @@ bool PinManager::Update(const Id id,
 }
 
 bool PinManager::Update(Files::value_type& entry,
-                        const std::string& path,
+                        const Path& path,
                         int64_t transferred,
                         int64_t total) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -686,7 +684,7 @@ void PinManager::PinSomeFiles() {
 
     DCHECK_EQ(it->first, id);
     File& file = it->second;
-    const std::string& path = file.path;
+    const Path& path = file.path;
 
     if (file.pinned) {
       VLOG(2) << "Already pinned: " << id << " " << Quote(path);
@@ -711,7 +709,7 @@ void PinManager::PinSomeFiles() {
 }
 
 void PinManager::OnFilePinned(const Id id,
-                              const std::string& path,
+                              const Path& path,
                               const drive::FileError status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -749,6 +747,8 @@ bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const Id id = Id(event.stable_id);
+  const Path path = Path(event.path);
+
   using State = mojom::ItemEvent::State;
   switch (event.state) {
     case State::kQueued:
@@ -758,34 +758,32 @@ bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
       [[fallthrough]];
 
     case State::kInProgress:
-      if (!Update(id, event.path, event.bytes_transferred,
-                  event.bytes_to_transfer)) {
+      if (!Update(id, path, event.bytes_transferred, event.bytes_to_transfer)) {
         return false;
       }
 
-      VLOG(3) << Quote(event.state) << " " << id << " " << Quote(event.path)
-              << ": " << Quote(event);
+      VLOG(3) << Quote(event.state) << " " << id << " " << Quote(path) << ": "
+              << Quote(event);
       VLOG_IF(2, !VLOG_IS_ON(3))
-          << Quote(event.state) << " " << id << " " << Quote(event.path);
+          << Quote(event.state) << " " << id << " " << Quote(path);
       return true;
 
     case State::kCompleted:
-      if (!Remove(id, event.path)) {
+      if (!Remove(id, path)) {
         return false;
       }
 
-      VLOG(3) << "Synced " << id << " " << Quote(event.path) << ": "
-              << Quote(event);
-      VLOG_IF(2, !VLOG_IS_ON(3)) << "Synced " << id << " " << Quote(event.path);
+      VLOG(3) << "Synced " << id << " " << Quote(path) << ": " << Quote(event);
+      VLOG_IF(2, !VLOG_IS_ON(3)) << "Synced " << id << " " << Quote(path);
       progress_.pinned_files++;
       return true;
 
     case State::kFailed:
-      if (!Remove(id, event.path, 0)) {
+      if (!Remove(id, path, 0)) {
         return false;
       }
 
-      LOG(ERROR) << Quote(event.state) << " " << id << " " << Quote(event.path)
+      LOG(ERROR) << Quote(event.state) << " " << id << " " << Quote(path)
                  << ": " << Quote(event);
       progress_.failed_files++;
       return true;
@@ -830,13 +828,12 @@ void PinManager::OnFileDeleted(const mojom::FileChange& event) {
 
   VLOG(1) << "Got FileChange " << Quote(event);
   const Id id = Id(event.stable_id);
-  const std::string& path = event.path.value();
+  const Path& path = event.path;
 
   drivefs_->SetPinnedByStableId(
       event.stable_id, /*pinned=*/false,
       base::BindOnce(
-          [](const Id id, const std::string& path,
-             const drive::FileError status) {
+          [](const Id id, const Path& path, const drive::FileError status) {
             if (status != drive::FILE_ERROR_OK) {
               LOG(ERROR) << "Cannot unpin " << id << " " << Quote(path) << ": "
                          << status;
@@ -861,7 +858,7 @@ void PinManager::OnFileModified(const mojom::FileChange& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const Id id = Id(event.stable_id);
-  const std::string& path = event.path.value();
+  const Path& path = event.path;
 
   const Files::iterator it = files_to_track_.find(id);
   if (it == files_to_track_.end()) {
@@ -905,7 +902,7 @@ void PinManager::CheckStalledFiles() {
 
   for (const auto& [id, file] : files_to_track_) {
     if (file.pinned && !file.in_progress) {
-      const std::string& path = file.path;
+      const Path& path = file.path;
       VLOG(2) << "Checking stalled " << id << " " << Quote(path);
       drivefs_->GetMetadataByStableId(
           static_cast<int64_t>(id),
@@ -922,7 +919,7 @@ void PinManager::CheckStalledFiles() {
 }
 
 void PinManager::OnMetadataRetrieved(const Id id,
-                                     const std::string& path,
+                                     const Path& path,
                                      const drive::FileError error,
                                      const mojom::FileMetadataPtr metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

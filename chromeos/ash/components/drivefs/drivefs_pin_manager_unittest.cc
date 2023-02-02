@@ -28,7 +28,6 @@ namespace drivefs::pinning {
 namespace {
 
 using base::BindOnce;
-using base::FilePath;
 using base::OnceCallback;
 using base::SequencedTaskRunner;
 using base::test::RunClosure;
@@ -55,6 +54,7 @@ using testing::Return;
 using testing::SizeIs;
 
 using Id = PinManager::Id;
+using Path = base::FilePath;
 
 // Shorthand way to represent drive files with the information that is relevant
 // for the pinning manager.
@@ -62,7 +62,7 @@ struct DriveItem {
   static int64_t counter;
   int64_t stable_id = ++counter;
   int64_t size = 0;
-  FilePath path;
+  Path path;
   FileMetadata::Type type = FileMetadata::Type::kFile;
   bool pinned = false;
   bool available_offline = false;
@@ -103,7 +103,7 @@ ACTION_P(PopulateSearchItems, items) {
     QueryItemPtr p = QueryItem::New();
     // Paths must be parented at "/root" to be considered for space
     // calculations.
-    p->path = item.path.empty() ? FilePath("/root/file.txt") : item.path;
+    p->path = item.path.empty() ? Path("/root/file.txt") : item.path;
     p->metadata = MakeMetadata(item);
     result.push_back(std::move(p));
   }
@@ -152,7 +152,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
 
   MOCK_METHOD(void,
               SetPinned,
-              (const FilePath&, bool, OnceCallback<void(FileError)>),
+              (const Path&, bool, OnceCallback<void(FileError)>),
               (override));
 
   MOCK_METHOD(void,
@@ -162,7 +162,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
 
   MOCK_METHOD(void,
               GetMetadata,
-              (const FilePath&, OnceCallback<void(FileError, FileMetadataPtr)>),
+              (const Path&, OnceCallback<void(FileError, FileMetadataPtr)>),
               (override));
 
   MOCK_METHOD(void,
@@ -176,7 +176,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
 
 class MockSpaceGetter {
  public:
-  MOCK_METHOD(void, GetFreeSpace, (const FilePath&, PinManager::SpaceResult));
+  MOCK_METHOD(void, GetFreeSpace, (const Path&, PinManager::SpaceResult));
 };
 
 class MockObserver : public PinManager::Observer {
@@ -233,7 +233,7 @@ class DriveFsPinManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
-  FilePath gcache_dir_;
+  Path gcache_dir_;
   MockSpaceGetter space_getter_;
   MockDriveFs drivefs_;
 };
@@ -243,7 +243,7 @@ TEST_F(DriveFsPinManagerTest, CanPin) {
   using Type = FileMetadata::Type;
   using CanPinStatus = FileMetadata::CanPinStatus;
 
-  FilePath path("/root/poi");
+  Path path("/root/poi");
   FileMetadata md;
   md.stable_id = 57;
   md.size = 1456754;
@@ -300,7 +300,7 @@ TEST_F(DriveFsPinManagerTest, CanPin) {
   EXPECT_TRUE(PinManager::CanPin(md, path));
 
   // File that is not under /root/... cannot be pinned.
-  path = FilePath("/shared/poi");
+  path = Path("/shared/poi");
   EXPECT_FALSE(PinManager::CanPin(md, path));
 }
 
@@ -317,11 +317,11 @@ TEST_F(DriveFsPinManagerTest, Add) {
   }
 
   const Id id1 = Id(549);
-  const string path1 = "Path 1";
+  const Path path1 = Path("Path 1");
   const int64_t size1 = 698248964;
 
   const Id id2 = Id(17);
-  const string path2 = "Path 2";
+  const Path path2 = Path("Path 2");
   const int64_t size2 = 78964533;
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
@@ -407,11 +407,11 @@ TEST_F(DriveFsPinManagerTest, Update) {
   }
 
   const Id id1 = Id(549);
-  const string path1 = "Path 1";
+  const Path path1 = Path("Path 1");
   const int64_t size1 = 2000;
 
   const Id id2 = Id(17);
-  const string path2 = "Path 2";
+  const Path path2 = Path("Path 2");
   const int64_t size2 = 5000;
 
   // Put in place a file to track.
@@ -607,10 +607,10 @@ TEST_F(DriveFsPinManagerTest, Remove) {
   }
 
   const Id id1 = Id(549);
-  const string path1 = "Path 1";
+  const Path path1 = Path("Path 1");
 
   const Id id2 = Id(17);
-  const string path2 = "Path 2";
+  const Path path2 = Path("Path 2");
 
   // Put in place a file to track.
   {
@@ -737,10 +737,10 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   }
 
   const Id id1 = Id(549);
-  const string path1 = "Path 1";
+  const Path path1 = Path("Path 1");
 
   const Id id2 = Id(17);
-  const string path2 = "Path 2";
+  const Path path2 = Path("Path 2");
 
   // Put in place a couple of files to track.
   {
@@ -762,7 +762,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   {
     ItemEvent event;
     event.stable_id = static_cast<int64_t>(id2);
-    event.path = path2;
+    event.path = path2.value();
     event.state = ItemEvent::State(-1);
     event.bytes_to_transfer = -1;
     event.bytes_transferred = -1;
@@ -785,7 +785,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   {
     ItemEvent event;
     event.stable_id = static_cast<int64_t>(id1);
-    event.path = path1;
+    event.path = path1.value();
     event.state = ItemEvent::State::kQueued;
     event.bytes_to_transfer = 0;
     EXPECT_TRUE(manager.OnSyncingEvent(event));
@@ -820,7 +820,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   {
     ItemEvent event;
     event.stable_id = static_cast<int64_t>(id1);
-    event.path = path1;
+    event.path = path1.value();
     event.state = ItemEvent::State::kInProgress;
     event.bytes_to_transfer = 10000;
     event.bytes_transferred = 5000;
@@ -856,7 +856,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   {
     ItemEvent event;
     event.stable_id = static_cast<int64_t>(id1);
-    event.path = path1;
+    event.path = path1.value();
     event.state = ItemEvent::State::kCompleted;
     event.bytes_to_transfer = -1;
     event.bytes_transferred = -1;
@@ -885,7 +885,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   {
     ItemEvent event;
     event.stable_id = static_cast<int64_t>(id2);
-    event.path = path2;
+    event.path = path2.value();
     event.state = ItemEvent::State::kFailed;
     event.bytes_to_transfer = -1;
     event.bytes_transferred = -1;
@@ -1104,14 +1104,13 @@ TEST_F(DriveFsPinManagerTest, DISABLED_OnlyUnpinnedItemsShouldGetPinned) {
 
   base::RunLoop run_loop;
 
-  vector<DriveItem> items = {
-      {.size = 128, .path = FilePath("/a")},
-      {.size = 128, .path = FilePath("/b")},
-      {.size = 128, .path = FilePath("/c"), .pinned = true}};
+  vector<DriveItem> items = {{.size = 128, .path = Path("/a")},
+                             {.size = 128, .path = Path("/b")},
+                             {.size = 128, .path = Path("/c"), .pinned = true}};
 
   ON_CALL(drivefs_, GetMetadata(_, _))
       .WillByDefault(
-          [&items](const FilePath& path,
+          [&items](const Path& path,
                    OnceCallback<void(FileError, FileMetadataPtr)> callback) {
             for (const DriveItem& item : items) {
               if (item.path == path) {
@@ -1182,8 +1181,8 @@ TEST_F(DriveFsPinManagerTest,
 
   base::RunLoop run_loop;
 
-  FilePath gdoc_path("/a.gdoc");
-  FilePath b_path("/b");
+  Path gdoc_path("/a.gdoc");
+  Path b_path("/b");
   const vector<DriveItem> items = {
       // The `a.gdoc` file will never receive an `OnSyncingStatusUpdate` and
       // thus needs to be removed via the periodic removal task.
@@ -1209,7 +1208,7 @@ TEST_F(DriveFsPinManagerTest,
       .WillOnce(RunOnceCallback<2>(FileError::FILE_ERROR_OK))
       // `RunOnceCallback` can't be chained together in a `DoAll` action
       // combinator, so use an inline lambda instead.
-      .WillOnce([&run_loop](const FilePath& path, bool pinned,
+      .WillOnce([&run_loop](const Path& path, bool pinned,
                             OnceCallback<void(FileError)> callback) {
         std::move(callback).Run(FileError::FILE_ERROR_OK);
         run_loop.QuitClosure().Run();
@@ -1272,7 +1271,7 @@ TEST_F(DriveFsPinManagerTest,
 
   base::RunLoop run_loop;
 
-  FilePath file_path("/b");
+  Path file_path("/b");
   const vector<DriveItem> items = {{.size = 128, .path = file_path}};
 
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(2);
@@ -1293,7 +1292,7 @@ TEST_F(DriveFsPinManagerTest,
       .Times(1)
       // `RunOnceCallback` can't be chained together in a `DoAll` action
       // combinator, so use an inline lambda instead.
-      .WillOnce([&run_loop](const FilePath& path, bool pinned,
+      .WillOnce([&run_loop](const Path& path, bool pinned,
                             OnceCallback<void(FileError)> callback) {
         std::move(callback).Run(FileError::FILE_ERROR_OK);
         run_loop.QuitClosure().Run();

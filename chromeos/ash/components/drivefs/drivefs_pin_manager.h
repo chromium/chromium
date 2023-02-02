@@ -227,7 +227,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   struct File {
     // Path inside the Drive folder.
     // TODO(b/265209836) Remove this field when not needed anymore.
-    std::string path;
+    Path path;
 
     // Number of bytes that have been transferred so far.
     int64_t transferred = 0;
@@ -256,7 +256,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Adds an item to the files to track.  Does nothing if an item with the same
   // ID already exists in the map. Updates the total number of bytes to transfer
   // and the required space. Returns whether an item was actually added.
-  bool Add(Id id, const std::string& path, int64_t size, bool pinned);
+  bool Add(Id id, const Path& path, int64_t size, bool pinned);
 
   // Adds an item to the files to track if it is of interest.
   bool Add(const mojom::FileMetadata& md, const Path& path);
@@ -265,18 +265,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // the map. Updates the total number of bytes transferred so far. If
   // `transferred` is negative, use the total expected size. Returns whether an
   // item was actually removed.
-  bool Remove(Id id, const std::string& path, int64_t transferred = -1);
+  bool Remove(Id id, const Path& path, int64_t transferred = -1);
 
   // Updates an item in the files to track. Does nothing if the item is not in
   // the map. Updates the total number of bytes transferred so far. Updates the
   // required space. If `transferred` or `total` is negative, then the matching
   // argument is ignored. Returns whether anything has actually been updated.
-  bool Update(Id id,
-              const std::string& path,
-              int64_t transferred,
-              int64_t total);
+  bool Update(Id id, const Path& path, int64_t transferred, int64_t total);
   bool Update(Files::value_type& entry,
-              const std::string& path,
+              const Path& path,
               int64_t transferred,
               int64_t total);
 
@@ -303,7 +300,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // emplaced. Note the file being pinned is just an update in drivefs, not the
   // actually completion of the file being downloaded, that is monitored via
   // `OnSyncingStatusUpdate`.
-  void OnFilePinned(Id id, const std::string& path, drive::FileError status);
+  void OnFilePinned(Id id, const Path& path, drive::FileError status);
 
   // Invoked at a regular interval to look at the map of in progress items and
   // ensure they are all still not available offline (i.e. still syncing). In
@@ -315,7 +312,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // nor it's final size, to ensure progress is adequately retrieved, this
   // method is used to get the total size to keep track of.
   void OnMetadataRetrieved(Id id,
-                           const std::string& path,
+                           const Path& path,
                            drive::FileError error,
                            mojom::FileMetadataPtr metadata);
 
