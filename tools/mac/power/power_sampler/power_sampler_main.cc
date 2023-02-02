@@ -347,21 +347,27 @@ int main(int argc, char** argv) {
   sigaction(SIGINT, &new_action, NULL);
 
   base::RepeatingTimer quit_timer;
-  quit_timer.Start(FROM_HERE, base::Seconds(1),
-                   BindRepeating(
-                       [](base::OnceClosure quit_closure) {
-                         if (should_quit_.load())
-                           std::move(quit_closure).Run();
-                       },
-                       run_loop.QuitClosure()));
+  quit_timer.Start(
+      FROM_HERE, base::Seconds(1),
+      BindRepeating(
+          [](base::RepeatingTimer* quit_timer) {
+            if (should_quit_.load()) {
+              std::cerr << "The application is waiting for the last-sample"
+                        << std::endl;
+              quit_timer->Stop();
+            }
+          },
+          base::Unretained(&quit_timer)));
 
   auto sample_closure = BindRepeating(
       [](power_sampler::SamplingController* controller,
-         base::OnceClosure quit_closure) {
-        if (controller->OnSamplingEvent())
+         base::OnceClosure quit_closure, base::RepeatingTimer* quit_timer) {
+        if (controller->OnSamplingEvent() || !quit_timer->IsRunning()) {
           std::move(quit_closure).Run();
+        }
       },
-      base::Unretained(&controller), run_loop.QuitClosure());
+      base::Unretained(&controller), run_loop.QuitClosure(),
+      base::Unretained(&quit_timer));
 
   controller.StartSession();
 
@@ -375,8 +381,6 @@ int main(int argc, char** argv) {
   }
 
   run_loop.Run();
-
-  quit_timer.Stop();
 
   controller.EndSession();
 
