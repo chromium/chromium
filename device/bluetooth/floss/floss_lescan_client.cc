@@ -71,6 +71,8 @@ void FlossLEScanClient::Init(dbus::Bus* bus,
       adapter::kOnScannerRegistered, &ScannerClientObserver::ScannerRegistered);
   exported_scanner_callback_manager_.AddMethod(
       adapter::kOnScanResult, &ScannerClientObserver::ScanResultReceived);
+  exported_scanner_callback_manager_.AddMethod(
+      adapter::kOnScanResultLost, &ScannerClientObserver::ScanResultLost);
 
   RegisterScannerCallback();
 }
@@ -164,6 +166,12 @@ void FlossLEScanClient::ScannerRegistered(device::BluetoothUUID uuid,
 void FlossLEScanClient::ScanResultReceived(ScanResult scan_result) {
   for (auto& observer : observers_) {
     observer.ScanResultReceived(scan_result);
+  }
+}
+
+void FlossLEScanClient::ScanResultLost(ScanResult scan_result) {
+  for (auto& observer : observers_) {
+    observer.ScanResultLost(scan_result);
   }
 }
 

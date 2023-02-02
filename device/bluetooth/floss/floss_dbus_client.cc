@@ -93,6 +93,7 @@ const char kOnDeviceDisconnected[] = "OnDeviceDisconnected";
 
 const char kOnScannerRegistered[] = "OnScannerRegistered";
 const char kOnScanResult[] = "OnScanResult";
+const char kOnScanResultLost[] = "OnScanResultLost";
 }  // namespace adapter
 
 namespace manager {

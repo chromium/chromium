@@ -167,6 +167,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossLEScanClient : public FlossDBusClient,
                          uint8_t scanner_id,
                          GattStatus status) override;
   void ScanResultReceived(ScanResult scan_result) override;
+  void ScanResultLost(ScanResult scan_result) override;
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
   raw_ptr<dbus::Bus> bus_ = nullptr;

@@ -96,6 +96,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceDisconnected[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnScannerRegistered[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnScanResult[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnScanResultLost[];
 }  // namespace adapter
 
 namespace manager {
