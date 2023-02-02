@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_SLIM_FRAME_SINK_CLIENT_H_
-#define CC_SLIM_FRAME_SINK_CLIENT_H_
+#ifndef CC_SLIM_FRAME_SINK_IMPL_CLIENT_H_
+#define CC_SLIM_FRAME_SINK_IMPL_CLIENT_H_
 
 #include "base/containers/flat_set.h"
 #include "cc/resources/ui_resource_manager.h"
@@ -14,9 +14,9 @@
 
 namespace cc::slim {
 
-class FrameSinkClient {
+class FrameSinkImplClient {
  public:
-  virtual ~FrameSinkClient() = default;
+  virtual ~FrameSinkImplClient() = default;
 
   virtual bool BeginFrame(const viz::BeginFrameArgs& args,
                           viz::CompositorFrame& out_frame,
@@ -27,8 +27,9 @@ class FrameSinkClient {
   virtual void DidPresentCompositorFrame(
       uint32_t frame_token,
       const viz::FrameTimingDetails& details) = 0;
+  virtual void DidLoseLayerTreeFrameSink() = 0;
 };
 
 }  // namespace cc::slim
 
-#endif  // CC_SLIM_FRAME_SINK_H_
+#endif  // CC_SLIM_FRAME_SINK_IMPL_CLIENT_H_
