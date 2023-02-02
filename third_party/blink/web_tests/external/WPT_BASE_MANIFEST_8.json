@@ -4499,6 +4499,13 @@
        {}
       ]
      ],
+     "outdent-in-meter-indented-by-legend-in-css-mode.html": [
+      "af20ea81283ba8ba3e277f239dd7ea85551c1e43",
+      [
+       null,
+       {}
+      ]
+     ],
      "outdent-indent-inserthorizontalrule-on-selectionchange.html": [
       "800d9d1969a8203443d525312ea9061fb0b67df3",
       [
@@ -393928,7 +393935,7 @@
      []
     ],
     "reshape.https.any-expected.txt": [
-     "37d148c4e1fd8377d2e1a2489d845a2e459ae42b",
+     "f1c00cca32caf3dcd5c299f3fccb31ee64d5e972",
      []
     ],
     "reshape.https.any.js.ini": [
@@ -393936,7 +393943,7 @@
      []
     ],
     "reshape.https.any.worker-expected.txt": [
-     "2e50ccf02fe544f05c362ca8997ef3920ee79692",
+     "4c87a07691bc291af48696e8797e0822f5416ba6",
      []
     ],
     "resources": {
