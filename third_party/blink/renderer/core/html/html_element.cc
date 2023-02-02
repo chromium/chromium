@@ -1439,15 +1439,34 @@ void HTMLElement::ShowPopoverInternal(ExceptionState* exception_state) {
   }
 
   // Queue the "opening" toggle event.
-  auto* after_event = ToggleEvent::CreateBubble(
-      event_type_names::kToggle, Event::Cancelable::kNo,
-      /*old_state*/ "open", /*new_state*/ "open");
+  String old_state = "closed";
+  ToggleEvent* after_event;
+  if (GetPopoverData()->hasPendingToggleEventTask()) {
+    // There's already a queued 'toggle' event. Cancel it and fire a new one
+    // keeping the original value for old_state.
+    old_state =
+        GetPopoverData()->pendingToggleEventStartedClosed() ? "closed" : "open";
+    GetPopoverData()->cancelPendingToggleEventTask();
+  } else {
+    GetPopoverData()->setPendingToggleEventStartedClosed(true);
+  }
+  after_event = ToggleEvent::CreateBubble(event_type_names::kToggle,
+                                          Event::Cancelable::kNo, old_state,
+                                          /*new_state*/ "open");
+  DCHECK_EQ(after_event->newState(), "open");
+  DCHECK_EQ(after_event->oldState(), old_state);
   DCHECK(after_event->bubbles());
   DCHECK(!after_event->cancelable());
-  DCHECK_EQ(after_event->oldState(), "open");
-  DCHECK_EQ(after_event->newState(), "open");
   after_event->SetTarget(this);
-  GetDocument().EnqueueAnimationFrameEvent(after_event);
+  GetPopoverData()->setPendingToggleEventTask(PostCancellableTask(
+      *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
+      WTF::BindOnce(
+          [](HTMLElement* element, ToggleEvent* event) {
+            DCHECK(element);
+            DCHECK(event);
+            element->DispatchEvent(*event);
+          },
+          WrapPersistent(this), WrapPersistent(after_event))));
 }
 
 // static
@@ -1630,15 +1649,34 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
   }
 
   // Queue the "closing" toggle event.
-  auto* after_event = ToggleEvent::CreateBubble(
-      event_type_names::kToggle, Event::Cancelable::kNo,
-      /*old_state*/ "closed", /*new_state*/ "closed");
+  String old_state = "open";
+  ToggleEvent* after_event;
+  if (GetPopoverData()->hasPendingToggleEventTask()) {
+    // There's already a queued 'toggle' event. Cancel it and fire a new one
+    // keeping the original value for old_state.
+    old_state =
+        GetPopoverData()->pendingToggleEventStartedClosed() ? "closed" : "open";
+    GetPopoverData()->cancelPendingToggleEventTask();
+  } else {
+    GetPopoverData()->setPendingToggleEventStartedClosed(false);
+  }
+  after_event = ToggleEvent::CreateBubble(event_type_names::kToggle,
+                                          Event::Cancelable::kNo, old_state,
+                                          /*new_state*/ "closed");
+  DCHECK_EQ(after_event->newState(), "closed");
+  DCHECK_EQ(after_event->oldState(), old_state);
   DCHECK(after_event->bubbles());
   DCHECK(!after_event->cancelable());
-  DCHECK_EQ(after_event->oldState(), "closed");
-  DCHECK_EQ(after_event->newState(), "closed");
   after_event->SetTarget(this);
-  GetDocument().EnqueueAnimationFrameEvent(after_event);
+  GetPopoverData()->setPendingToggleEventTask(PostCancellableTask(
+      *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
+      WTF::BindOnce(
+          [](HTMLElement* element, ToggleEvent* event) {
+            DCHECK(element);
+            DCHECK(event);
+            element->DispatchEvent(*event);
+          },
+          WrapPersistent(this), WrapPersistent(after_event))));
 
   Element* previously_focused_element =
       GetPopoverData()->previouslyFocusedElement();
