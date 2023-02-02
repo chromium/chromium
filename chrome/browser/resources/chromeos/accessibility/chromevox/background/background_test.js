@@ -2518,14 +2518,37 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ToggleScreen', async function() {
   await mockFeedback.replay();
 });
 
+// Tests the behavior of ChromeVox when Talkback is disabled and there is no
+// current focus. We set no focus by modifying the internal ChromeVox state.
 AX_TEST_F(
-    'ChromeVoxBackgroundTest', 'NoFocusTalkBackDisabled', async function() {
+    'ChromeVoxBackgroundTest', 'NoFocusTalkBackDisabledInternalState',
+    async function() {
       // Fire onCustomSpokenFeedbackEnabled event to communicate that Talkback
       // is off for the current app.
       this.dispatchOnCustomSpokenFeedbackToggledEvent(false);
       const mockFeedback = this.createMockFeedback();
       await this.runWithLoadedTree('<p>Test document</p>');
       ChromeVoxRange.set(null);
+      mockFeedback.call(doCmd('nextObject'))
+          .expectSpeech(
+              'No current ChromeVox focus. Press Alt+Shift+L to go to the ' +
+              'launcher.')
+          .call(doCmd('previousObject'))
+          .expectSpeech(
+              'No current ChromeVox focus. Press Alt+Shift+L to go to the ' +
+              'launcher.');
+      await mockFeedback.replay();
+    });
+
+// Tests the behavior of ChromeVox when Talkback is disabled and there is no
+// current focus. We set no focus by modifying the automation API.
+AX_TEST_F(
+    'ChromeVoxBackgroundTest', 'NoFocusTalkBackDisabledAutomation',
+    async function() {
+      this.dispatchOnCustomSpokenFeedbackToggledEvent(false);
+      const mockFeedback = this.createMockFeedback();
+      await this.runWithLoadedTree('<p>Test document</p>');
+      chrome.automation.getFocus = (callback) => callback(null);
       mockFeedback.call(doCmd('nextObject'))
           .expectSpeech(
               'No current ChromeVox focus. Press Alt+Shift+L to go to the ' +
