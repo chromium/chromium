@@ -59,11 +59,9 @@ class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
         std::move(cancel_cb).Run();
     }
 
+    net::CompletionOnceCallback callback;  // Must outlive `verify_result`.
     raw_ptr<net::CertVerifyResult> verify_result;
-    net::CompletionOnceCallback callback;
-
     base::OnceClosure cancel_cb;
-
     base::WeakPtrFactory<DummyRequest> weak_ptr_factory_{this};
   };
 
