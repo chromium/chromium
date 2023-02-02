@@ -1337,6 +1337,25 @@ const FeatureEntry::FeatureVariation kOmniboxDocumentProviderVariations[] = {
      kOmniboxDocumentProviderCapLowQualitySuggestionsTo1,
      std::size(kOmniboxDocumentProviderCapLowQualitySuggestionsTo1), nullptr}};
 
+const FeatureEntry::FeatureParam kShortcutBoostSearchAndUrl1414[] = {
+    {"ShortcutBoostSearchScore", "1414"},
+    {"ShortcutBoostUrlScore", "1414"}};
+const FeatureEntry::FeatureParam kShortcutBoostUrl1414[] = {
+    {"ShortcutBoostSearchScore", "0"},
+    {"ShortcutBoostUrlScore", "1414"}};
+const FeatureEntry::FeatureParam kShortcutBoostSearchAndUrl1200[] = {
+    {"ShortcutBoostSearchScore", "1200"},
+    {"ShortcutBoostUrlScore", "1200"}};
+
+const FeatureEntry::FeatureVariation kOmniboxShortcutBoostVariations[] = {
+    {"Searches & URLs - aggressive (1414)", kShortcutBoostSearchAndUrl1414,
+     std::size(kShortcutBoostSearchAndUrl1414), nullptr},
+    {"URLs - aggressive (1414)", kShortcutBoostUrl1414,
+     std::size(kShortcutBoostUrl1414), nullptr},
+    {"Searches & URLs - conservative (1200)", kShortcutBoostSearchAndUrl1200,
+     std::size(kShortcutBoostSearchAndUrl1200), nullptr},
+};
+
 // A limited number of combinations of the rich autocompletion params.
 const FeatureEntry::FeatureParam
     kOmniboxRichAutocompletionConservativeModerate[] = {
@@ -5207,6 +5226,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxDriveSuggestionsDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDocumentProvider,
                                     kOmniboxDocumentProviderVariations,
+                                    "OmniboxBundledExperimentV1")},
+    {"omnibox-shortcut-boost", flag_descriptions::kOmniboxShortcutBoostName,
+     flag_descriptions::kOmniboxShortcutBoostDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kShortcutBoost,
+                                    kOmniboxShortcutBoostVariations,
                                     "OmniboxBundledExperimentV1")},
     {"omnibox-rich-autocompletion-promising",
      flag_descriptions::kOmniboxRichAutocompletionPromisingName,

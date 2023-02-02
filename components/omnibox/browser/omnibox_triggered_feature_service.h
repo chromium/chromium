@@ -29,7 +29,8 @@ class OmniboxTriggeredFeatureService {
     kRemoteSearchFeature = 6,
     // Like `kRemoteSearchFeature`, but for the `ZeroSearchProvider`.
     kRemoteZeroSuggestFeature = 7,
-    kMaxValue = kRemoteZeroSuggestFeature,
+    kShortcutBoost = 8,
+    kMaxValue = kShortcutBoost,
   };
   using Features = std::set<Feature>;
 

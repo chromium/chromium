@@ -17,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,6 +31,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/shortcuts_provider_test_util.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -833,6 +835,122 @@ TEST_F(ShortcutsProviderTest, Score) {
   auto shortcut_b_frequent = MakeShortcut(u"size______12", days_ago(1), 13);
   auto score_b_frequent = CalculateAggregateScore("a", {&shortcut_b_frequent});
   EXPECT_GT(score_b_frequent, score_b);
+}
+
+TEST_F(ShortcutsProviderTest, ScoreBoost) {
+  // The max score a shortcut can have if not boosted.
+  const int kMaxUnboostedScore = 1199;
+
+  auto create_shortcut_data = [](std::string text, bool is_search,
+                                 int visit_count) -> TestShortcutData {
+    std::string desitnation_string =
+        "https://" + text + ".com/" + base::NumberToString(visit_count);
+    return {GetGuid(),
+            text,
+            text,
+            desitnation_string,
+            AutocompleteMatch::DocumentType::NONE,
+            "",
+            "",
+            "",
+            "",
+            ui::PageTransition::PAGE_TRANSITION_TYPED,
+            is_search ? AutocompleteMatchType::SEARCH_SUGGEST
+                      : AutocompleteMatchType::HISTORY_URL,
+            is_search ? "google" : "",
+            1,
+            visit_count * 1};
+  };
+
+  TestShortcutData shortcut_data[] = {
+      create_shortcut_data("only-searches", true, 1),
+      create_shortcut_data("only-urls", false, 2),
+      create_shortcut_data("only-urls", false, 1),
+      create_shortcut_data("searches-before-urls", true, 2),
+      create_shortcut_data("searches-before-urls", false, 1),
+      create_shortcut_data("urls-before-searches", false, 2),
+      create_shortcut_data("urls-before-searches", true, 1),
+  };
+
+  PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
+                                       shortcut_data, std::size(shortcut_data));
+
+  OmniboxTriggeredFeatureService* trigger_service =
+      client_->GetOmniboxTriggeredFeatureService();
+  OmniboxTriggeredFeatureService::Feature trigger_feature =
+      OmniboxTriggeredFeatureService::Feature::kShortcutBoost;
+
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      omnibox::kShortcutBoost, {{"ShortcutBoostUrlScore", "1300"}});
+
+  {
+    // Searches shouldn't be boosted since the appropriate param is not set.
+    trigger_service->ResetSession();
+    AutocompleteInput input(u"only-searches", metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    provider_->Start(input, false);
+    const auto& matches = provider_->matches();
+    EXPECT_EQ(matches.size(), 1u);
+    EXPECT_EQ(matches[0].destination_url.spec(), "https://only-searches.com/1");
+    EXPECT_LE(matches[0].relevance, kMaxUnboostedScore);
+    EXPECT_FALSE(
+        trigger_service->GetFeatureTriggeredInSession(trigger_feature));
+  }
+
+  {
+    // Only the 1st URL should be boosted.
+    trigger_service->ResetSession();
+    AutocompleteInput input(u"only-urls", metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    provider_->Start(input, false);
+    const auto& matches = provider_->matches();
+    EXPECT_EQ(matches.size(), 2u);
+    EXPECT_EQ(matches[0].destination_url.spec(), "https://only-urls.com/2");
+    EXPECT_EQ(matches[1].destination_url.spec(), "https://only-urls.com/1");
+    EXPECT_LE(matches[0].relevance, 1300);
+    EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
+    EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
+  }
+
+  {
+    // URLs should only boosted if they're 1st of all matches (including
+    // searches).
+    trigger_service->ResetSession();
+    AutocompleteInput input(u"searches-before-urls",
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    provider_->Start(input, false);
+    const auto& matches = provider_->matches();
+    EXPECT_EQ(matches.size(), 2u);
+    EXPECT_EQ(matches[0].destination_url.spec(),
+              "https://searches-before-urls.com/2");
+    EXPECT_EQ(matches[1].destination_url.spec(),
+              "https://searches-before-urls.com/1");
+    EXPECT_LE(matches[0].relevance, kMaxUnboostedScore);
+    EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
+    EXPECT_FALSE(
+        trigger_service->GetFeatureTriggeredInSession(trigger_feature));
+  }
+
+  {
+    // URLs should only boosted if they're 1st of all matches (including
+    // searches).
+    trigger_service->ResetSession();
+    AutocompleteInput input(u"urls-before-searches",
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    provider_->Start(input, false);
+    const auto& matches = provider_->matches();
+    EXPECT_EQ(matches.size(), 2u);
+    EXPECT_EQ(matches[0].destination_url.spec(),
+              "https://urls-before-searches.com/2");
+    EXPECT_EQ(matches[1].destination_url.spec(),
+              "https://urls-before-searches.com/1");
+    EXPECT_EQ(matches[0].relevance, 1300);
+    EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
+    EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
+  }
 }
 
 #if !BUILDFLAG(IS_IOS)

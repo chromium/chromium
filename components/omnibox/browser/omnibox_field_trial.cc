@@ -907,6 +907,15 @@ bool IsShortcutExpandingEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kShortcutExpanding);
 }
 
+// Shortcut boost
+const base::FeatureParam<int> kShortcutBoostSearchScore(
+    &omnibox::kShortcutBoost,
+    "ShortcutBoostSearchScore",
+    0);
+const base::FeatureParam<int> kShortcutBoostUrlScore(&omnibox::kShortcutBoost,
+                                                     "ShortcutBoostUrlScore",
+                                                     0);
+
 // Rich autocompletion.
 
 bool IsRichAutocompletionEnabled() {

@@ -1212,6 +1212,9 @@ extern const char kOmniboxOnClobberFocusTypeOnContentDescription[];
 extern const char kOmniboxShortBookmarkSuggestionsName[];
 extern const char kOmniboxShortBookmarkSuggestionsDescription[];
 
+extern const char kOmniboxShortcutBoostName[];
+extern const char kOmniboxShortcutBoostDescription[];
+
 extern const char kOmniboxShortcutExpandingName[];
 extern const char kOmniboxShortcutExpandingDescription[];
 

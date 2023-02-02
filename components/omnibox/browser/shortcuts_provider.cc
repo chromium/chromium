@@ -34,6 +34,7 @@
 #include "components/omnibox/browser/history_cluster_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -296,20 +297,29 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
     }
   }
 
-  static const bool boost_enabled =
-      base::FeatureList::IsEnabled(omnibox::kShortcutBoost);
-  if (!shortcut_matches.empty() && boost_enabled) {
+  if (!shortcut_matches.empty() &&
+      base::FeatureList::IsEnabled(omnibox::kShortcutBoost)) {
     // Promote the shortcut with most hits to compete for the default slot.
     // Won't necessarily be the highest scoring shortcut, as scoring also
     // depends on visit times and input length. Therefore, has to be done before
     // the partial sort before to ensure the match isn't erased. The match may
     // be not-allowed-to-be-default, in which case, it'll be competing for top
-    // slot in the URL grouped suggestions.
-    base::ranges::max_element(shortcut_matches, {},
-                              [](const auto& shortcut_match) {
-                                return shortcut_match.aggregate_number_of_hits;
-                              })
-        ->relevance = HistoryURLProvider::kScoreForBestInlineableResult + 1;
+    // slot in the URL grouped suggestions. This won't affect the scores of
+    // other shortcuts, as they're already scored less than
+    // `kShortcutsProviderDefaultMaxRelevance`.
+    const auto best_match = base::ranges::max_element(
+        shortcut_matches, {}, [](const auto& shortcut_match) {
+          return shortcut_match.aggregate_number_of_hits;
+        });
+    int boost_score = AutocompleteMatch::IsSearchType(best_match->type)
+                          ? OmniboxFieldTrial::kShortcutBoostSearchScore.Get()
+                          : OmniboxFieldTrial::kShortcutBoostUrlScore.Get();
+    if (boost_score > best_match->relevance) {
+      client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+          OmniboxTriggeredFeatureService::Feature::kShortcutBoost);
+      max_relevance = boost_score;
+      best_match->relevance = max_relevance;
+    }
   }
 
   // Find best matches.

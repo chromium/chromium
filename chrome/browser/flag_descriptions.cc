@@ -2201,6 +2201,10 @@ const char kOmniboxShortBookmarkSuggestionsDescription[] =
     "Match very short input words to beginning of words in bookmark "
     "suggestions.";
 
+const char kOmniboxShortcutBoostName[] = "Omnibox shortcut boosting";
+const char kOmniboxShortcutBoostDescription[] =
+    "Promote shortcuts to be default when available.";
+
 const char kOmniboxShortcutExpandingName[] = "Omnibox shortcut expanding";
 const char kOmniboxShortcutExpandingDescription[] =
     "Expand the last word in the shortcut text to be a complete word from the "

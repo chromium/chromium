@@ -549,6 +549,13 @@ extern const base::FeatureParam<std::string> kBookmarkPathsCounterfactual;
 // Shortcut Expanding.
 bool IsShortcutExpandingEnabled();
 
+// Shortcut boost
+// The scores to use for boosting search and URL suggestions respectively.
+// Default to 1414 (`kScoreForBestInlineableResult` + 1). Setting to 0 will
+// prevent boosting.
+extern const base::FeatureParam<int> kShortcutBoostSearchScore;
+extern const base::FeatureParam<int> kShortcutBoostUrlScore;
+
 // Rich autocompletion.
 bool IsRichAutocompletionEnabled();
 bool RichAutocompletionShowAdditionalText();

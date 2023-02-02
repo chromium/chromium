@@ -59560,6 +59560,7 @@ from previous Chrome versions.
   <int value="-1025125875" label="AssistantTimersV2:disabled"/>
   <int value="-1024731815" label="MessagesForAndroidNearOomReduction:enabled"/>
   <int value="-1024687559" label="ShortcutCustomization:enabled"/>
+  <int value="-1024644761" label="OmniboxShortcutBoost:enabled"/>
   <int value="-1024065253" label="EnableWireGuard:disabled"/>
   <int value="-1022971520" label="enable-search-button-in-omnibox-for-str"/>
   <int value="-1022281869" label="ArcRtVcpuDualCore:enabled"/>
@@ -61608,6 +61609,7 @@ from previous Chrome versions.
   <int value="149272550" label="OmitCorsClientCert:disabled"/>
   <int value="149336730" label="UseMojoVideoDecoderForPepper:enabled"/>
   <int value="149914698" label="SearchReadyOmnibox:disabled"/>
+  <int value="150193246" label="OmniboxShortcutBoost:disabled"/>
   <int value="150820177"
       label="SafeBrowsingEnhancedProtectionMessageInInterstitials:enabled"/>
   <int value="151022756" label="ArcAvailableForChildAccount:disabled"/>
