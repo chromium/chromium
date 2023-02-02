@@ -128,6 +128,10 @@ class BrowserChildProcessHostImpl
 
   static void HistogramBadMessageTerminated(ProcessType process_type);
 
+#if !BUILDFLAG(IS_ANDROID)
+  void SetProcessBackgrounded(bool is_background);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_ANDROID)
   void EnableWarmUpConnection();
   void DumpProcessStack();

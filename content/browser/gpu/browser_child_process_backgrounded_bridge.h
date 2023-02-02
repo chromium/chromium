@@ -1,0 +1,51 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CONTENT_BROWSER_GPU_BROWSER_CHILD_PROCESS_BACKGROUNDED_BRIDGE_H_
+#define CONTENT_BROWSER_GPU_BROWSER_CHILD_PROCESS_BACKGROUNDED_BRIDGE_H_
+
+#include <objc/objc.h>
+
+#include "base/memory/raw_ptr.h"
+#include "base/process/port_provider_mac.h"
+#include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace content {
+
+class BrowserChildProcessHostImpl;
+
+// This class ensures that the backgrounded state of `process` mirrors the
+// backgrounded state of the browser process.
+class CONTENT_EXPORT BrowserChildProcessBackgroundedBridge
+    : public base::PortProvider::Observer {
+ public:
+  explicit BrowserChildProcessBackgroundedBridge(
+      BrowserChildProcessHostImpl* process);
+  ~BrowserChildProcessBackgroundedBridge() override;
+
+  // Sets a callback that is invoked whenever a process is foregrounded or
+  // backgrounded by an instance of this class.
+  static void SetCallbackForTesting(
+      base::RepeatingCallback<void(int, bool)> callback);
+
+ private:
+  void Initialize();
+
+  void OnReceivedTaskPort(base::ProcessHandle process) override;
+
+  void OnForeground();
+  void OnBackground();
+
+  raw_ptr<BrowserChildProcessHostImpl> process_;
+
+  // Registration IDs for NSApplicationDidBecomeActiveNotification and
+  // NSApplicationDidResignActiveNotification.
+  id did_become_active_observer_;
+  id did_resign_active_observer_;
+};
+
+}  // namespace content
+
+#endif  // CONTENT_BROWSER_GPU_BROWSER_CHILD_PROCESS_BACKGROUNDED_BRIDGE_H_
