@@ -302,20 +302,19 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 // page corresponding to the extension.
 TEST_F(ExtensionsMenuMainPageViewUnitTest,
        SitePermissionsButtonOpensSubpageForCorrectExtension) {
-  std::u16string kExtensionA = u"Extension A";
-  InstallExtensionWithHostPermissions(base::UTF16ToUTF8(kExtensionA),
-                                      {"<all_urls>"});
+  auto extensionA =
+      InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
   InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
 
   ShowMenu();
 
   std::vector<InstalledExtensionMenuItemView*> items = menu_items();
   ASSERT_EQ(items.size(), 2u);
-  EXPECT_EQ(items[0]->view_controller()->GetActionName(), kExtensionA);
+  EXPECT_EQ(items[0]->view_controller()->GetId(), extensionA->id());
 
   ClickSitePermissionsButton(items[0]);
 
   ExtensionsMenuSitePermissionsPage* page = site_permissions_page();
   ASSERT_TRUE(page);
-  EXPECT_EQ(page->GetExtensionNameForTesting(), kExtensionA);
+  EXPECT_EQ(page->GetExtensionIdForTesting(), extensionA->id());
 }

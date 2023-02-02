@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_VIEW_H_
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_page_view.h"
+#include "extensions/common/extension_id.h"
 
 namespace ui {
 class ImageModel;
@@ -18,6 +19,7 @@ class ExtensionsMenuSitePermissionsPage : public ExtensionsMenuPageView {
   explicit ExtensionsMenuSitePermissionsPage(
       std::u16string extension_name,
       ui::ImageModel extension_icon,
+      extensions::ExtensionId extension_id,
       ExtensionsMenuNavigationHandler* navigation_handler);
   ExtensionsMenuSitePermissionsPage(const ExtensionsMenuSitePermissionsPage&) =
       delete;
@@ -29,10 +31,10 @@ class ExtensionsMenuSitePermissionsPage : public ExtensionsMenuPageView {
   void Update(content::WebContents* web_contents) override;
 
   // Accessors used by tests:
-  std::u16string GetExtensionNameForTesting() { return extension_name_; }
+  extensions::ExtensionId GetExtensionIdForTesting() { return extension_id_; }
 
  private:
-  std::u16string extension_name_;
+  extensions::ExtensionId extension_id_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
