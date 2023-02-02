@@ -46,7 +46,7 @@ CSSValue* ComputedCSSValueBuilder::Build(CSSValue* value) const {
     return image_value->ValueWithURLMadeAbsolute();
   }
   if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
-    return image_set_value->ValueWithURLsMadeAbsolute();
+    return image_set_value->ComputedCSSValue();
   }
   if (auto* image_crossfade = DynamicTo<cssvalue::CSSCrossfadeValue>(value)) {
     return MakeGarbageCollected<cssvalue::CSSCrossfadeValue>(

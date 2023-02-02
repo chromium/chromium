@@ -20,7 +20,17 @@ function testImageSetSerialization(isPrefixed) {
   // "Implementations must accept -webkit-image-set() as a parse-time alias of
   // image-set(). (It’s a valid value, with identical arguments to image-set(),
   // and is turned into image-set() during parsing.)"
-  const expected = `image-set(url("${path}test1.png") 1x, url("${path}test2.png") 2x)`;
+  // The resolution unit is expected to be converted to the canonical unit 'dppx'
+  // for computed style.
+  //   https://www.w3.org/TR/css-values-4/#resolution
+  // "All <resolution> units are compatible, and dppx is their canonical unit."
+  // https://www.w3.org/TR/css-values-4/#canonical-unit
+  // "When serializing computed values [CSSOM], compatible units are converted
+  // into a single canonical unit."
+  // https://www.w3.org/TR/cssom-1/#serializing-css-values
+  // "The resolution in dots per CSS pixel serialized as per <number> followed by
+  // the literal string 'dppx'."
+  const expected = `image-set(url("${path}test1.png") 1dppx, url("${path}test2.png") 2dppx)`;
 
   assert_equals(
     getComputedStyle(target).backgroundImage,

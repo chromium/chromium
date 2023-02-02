@@ -170,6 +170,7 @@ static bool HasDoubleValue(CSSPrimitiveValue::UnitType type) {
     case CSSPrimitiveValue::UnitType::kContainerMin:
     case CSSPrimitiveValue::UnitType::kContainerMax:
     case CSSPrimitiveValue::UnitType::kDotsPerPixel:
+    case CSSPrimitiveValue::UnitType::kX:
     case CSSPrimitiveValue::UnitType::kDotsPerInch:
     case CSSPrimitiveValue::UnitType::kDotsPerCentimeter:
     case CSSPrimitiveValue::UnitType::kFraction:

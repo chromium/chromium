@@ -1316,18 +1316,19 @@ CSSPrimitiveValue* ConsumeTime(CSSParserTokenRange& range,
 
 CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange& range) {
   const CSSParserToken& token = range.Peek();
+
   // Unlike the other types, calc() does not work with <resolution>.
   if (token.GetType() != kDimensionToken) {
     return nullptr;
   }
+
   CSSPrimitiveValue::UnitType unit = token.GetUnitType();
-  if (unit == CSSPrimitiveValue::UnitType::kDotsPerPixel ||
-      unit == CSSPrimitiveValue::UnitType::kDotsPerInch ||
-      unit == CSSPrimitiveValue::UnitType::kDotsPerCentimeter) {
-    return CSSNumericLiteralValue::Create(
-        range.ConsumeIncludingWhitespace().NumericValue(), unit);
+  if (!CSSPrimitiveValue::IsResolution(unit)) {
+    return nullptr;
   }
-  return nullptr;
+
+  return CSSNumericLiteralValue::Create(
+      range.ConsumeIncludingWhitespace().NumericValue(), unit);
 }
 
 // https://drafts.csswg.org/css-values-4/#ratio-value
@@ -3345,23 +3346,19 @@ static CSSValue* ConsumeImageSet(CSSParserTokenRange& range,
     if (args.Peek().GetType() != kDimensionToken &&
         RuntimeEnabledFeatures::CSSImageSetEnabled()) {
       image_set->Append(*CSSNumericLiteralValue::Create(
-          1, CSSPrimitiveValue::UnitType::kNumber));
+          1.0, CSSPrimitiveValue::UnitType::kX));
     } else {
-      const CSSParserToken& token = args.ConsumeIncludingWhitespace();
+      if (args.Peek().GetUnitType() != CSSPrimitiveValue::UnitType::kX &&
+          !RuntimeEnabledFeatures::CSSImageSetEnabled()) {
+        return nullptr;
+      }
 
-      if (token.GetType() != kDimensionToken) {
+      const CSSPrimitiveValue* resolution = ConsumeResolution(args);
+      if (resolution == nullptr || resolution->GetDoubleValue() <= 0.0) {
         return nullptr;
       }
-      if (token.Value() != "x") {
-        return nullptr;
-      }
-      DCHECK(token.GetUnitType() == CSSPrimitiveValue::UnitType::kDotsPerPixel);
-      double image_scale_factor = token.NumericValue();
-      if (image_scale_factor <= 0) {
-        return nullptr;
-      }
-      image_set->Append(*CSSNumericLiteralValue::Create(
-          image_scale_factor, CSSPrimitiveValue::UnitType::kNumber));
+
+      image_set->Append(*resolution);
     }
   } while (ConsumeCommaIncludingWhitespace(args));
 

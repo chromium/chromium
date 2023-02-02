@@ -114,6 +114,7 @@ CSSPrimitiveValue::UnitCategory CSSPrimitiveValue::UnitTypeToUnitCategory(
     case UnitType::kKilohertz:
       return CSSPrimitiveValue::kUFrequency;
     case UnitType::kDotsPerPixel:
+    case UnitType::kX:
     case UnitType::kDotsPerInch:
     case UnitType::kDotsPerCentimeter:
       return CSSPrimitiveValue::kUResolution;
@@ -790,6 +791,8 @@ const char* CSSPrimitiveValue::UnitTypeToString(UnitType type) {
       return "cm";
     case UnitType::kDotsPerPixel:
       return "dppx";
+    case UnitType::kX:
+      return "x";
     case UnitType::kDotsPerInch:
       return "dpi";
     case UnitType::kDotsPerCentimeter:

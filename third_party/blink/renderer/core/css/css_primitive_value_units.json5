@@ -84,7 +84,7 @@
     },
     {
       name: "x",
-      unit_type: "kDotsPerPixel",
+      unit_type: "kX",
     },
     {
       name: "vw",

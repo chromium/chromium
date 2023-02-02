@@ -142,6 +142,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kKilohertz,
     // Resolution
     kDotsPerPixel,
+    kX,  // Short alias for kDotsPerPixel
     kDotsPerInch,
     kDotsPerCentimeter,
     // Other units

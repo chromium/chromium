@@ -114,6 +114,8 @@ TEST_F(CSSPrimitiveValueTest, IsResolution) {
   EXPECT_FALSE(Create({5.0, UnitType::kNumber})->IsResolution());
   EXPECT_FALSE(Create({5.0, UnitType::kDegrees})->IsResolution());
   EXPECT_TRUE(Create({5.0, UnitType::kDotsPerPixel})->IsResolution());
+  EXPECT_TRUE(Create({5.0, UnitType::kX})->IsResolution());
+  EXPECT_TRUE(Create({5.0, UnitType::kDotsPerInch})->IsResolution());
   EXPECT_TRUE(Create({5.0, UnitType::kDotsPerCentimeter})->IsResolution());
 }
 

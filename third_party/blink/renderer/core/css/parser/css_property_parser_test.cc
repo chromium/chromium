@@ -674,101 +674,77 @@ TEST_F(CSSPropertyUseCounterTest, CSSPropertyBackgroundImageImageSet) {
   EXPECT_TRUE(IsCounted(feature));
 }
 
-TEST(CSSPropertyParserTest, ImageSetDefaultResolution) {
+void TestImageSetParsing(const String& testValue,
+                         const String& expectedCssText) {
   const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kBackgroundImage, "image-set(url(foo))",
+      CSSPropertyID::kBackgroundImage, testValue,
       StrictCSSParserContext(SecureContextMode::kSecureContext));
   ASSERT_NE(value, nullptr);
 
   const CSSValueList* val_list = To<CSSValueList>(value);
-  ASSERT_NE(val_list, nullptr);
   ASSERT_EQ(val_list->length(), 1U);
 
   const CSSImageSetValue& image_set_value =
-      To<CSSImageSetValue>(val_list->Last());
-  EXPECT_EQ("image-set(url(\"foo\") 1x)", image_set_value.CustomCSSText());
+      To<CSSImageSetValue>(val_list->First());
+  EXPECT_EQ(expectedCssText, image_set_value.CustomCSSText());
+}
+
+TEST(CSSPropertyParserTest, ImageSetDefaultResolution) {
+  TestImageSetParsing("image-set(url(foo))", "image-set(url(\"foo\") 1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetResolutionUnitX) {
+  TestImageSetParsing("image-set(url(foo) 3x)", "image-set(url(\"foo\") 3x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetResolutionUnitDppx) {
+  TestImageSetParsing("image-set(url(foo) 3dppx)",
+                      "image-set(url(\"foo\") 3dppx)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetResolutionUnitDpi) {
+  TestImageSetParsing("image-set(url(foo) 96dpi)",
+                      "image-set(url(\"foo\") 96dpi)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetResolutionUnitDpcm) {
+  TestImageSetParsing("image-set(url(foo) 37dpcm)",
+                      "image-set(url(\"foo\") 37dpcm)");
 }
 
 TEST(CSSPropertyParserTest, ImageSetUrlFunction) {
-  const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kBackgroundImage, "image-set(url('foo') 1x)",
-      StrictCSSParserContext(SecureContextMode::kSecureContext));
-  ASSERT_NE(value, nullptr);
-
-  const CSSValueList* val_list = To<CSSValueList>(value);
-  ASSERT_NE(val_list, nullptr);
-  ASSERT_EQ(val_list->length(), 1U);
-
-  const CSSImageSetValue& image_set_value =
-      To<CSSImageSetValue>(val_list->Last());
-  EXPECT_EQ("image-set(url(\"foo\") 1x)", image_set_value.CustomCSSText());
+  TestImageSetParsing("image-set(url('foo') 1x)", "image-set(url(\"foo\") 1x)");
 }
 
 TEST(CSSPropertyParserTest, ImageSetUrlFunctionEmptyStrUrl) {
-  const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kBackgroundImage, "image-set(url('') 1x)",
-      StrictCSSParserContext(SecureContextMode::kSecureContext));
-  ASSERT_NE(value, nullptr);
-
-  const CSSValueList* val_list = To<CSSValueList>(value);
-  ASSERT_NE(val_list, nullptr);
-  ASSERT_EQ(val_list->length(), 1U);
-
-  const CSSImageSetValue& image_set_value =
-      To<CSSImageSetValue>(val_list->Last());
-  EXPECT_EQ("image-set(url(\"\") 1x)", image_set_value.CustomCSSText());
+  TestImageSetParsing("image-set(url('') 1x)", "image-set(url(\"\") 1x)");
 }
 
 TEST(CSSPropertyParserTest, ImageSetUrlFunctionNoQuotationMarks) {
-  const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kBackgroundImage, "image-set(url(foo) 1x)",
-      StrictCSSParserContext(SecureContextMode::kSecureContext));
-  ASSERT_NE(value, nullptr);
-
-  const CSSValueList* val_list = To<CSSValueList>(value);
-  ASSERT_NE(val_list, nullptr);
-  ASSERT_EQ(val_list->length(), 1U);
-
-  const CSSImageSetValue& image_set_value =
-      To<CSSImageSetValue>(val_list->Last());
-  EXPECT_EQ("image-set(url(\"foo\") 1x)", image_set_value.CustomCSSText());
+  TestImageSetParsing("image-set(url(foo) 1x)", "image-set(url(\"foo\") 1x)");
 }
 
 TEST(CSSPropertyParserTest, ImageSetNoUrlFunction) {
-  const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kBackgroundImage, "image-set('foo' 1x)",
-      StrictCSSParserContext(SecureContextMode::kSecureContext));
-  ASSERT_NE(value, nullptr);
-
-  const CSSValueList* val_list = To<CSSValueList>(value);
-  ASSERT_NE(val_list, nullptr);
-  ASSERT_EQ(val_list->length(), 1U);
-
-  const CSSImageSetValue& image_set_value =
-      To<CSSImageSetValue>(val_list->Last());
-  EXPECT_EQ("image-set(url(\"foo\") 1x)", image_set_value.CustomCSSText());
+  TestImageSetParsing("image-set('foo' 1x)", "image-set(url(\"foo\") 1x)");
 }
 
 TEST(CSSPropertyParserTest, ImageSetEmptyStrUrl) {
+  TestImageSetParsing("image-set('' 1x)", "image-set(url(\"\") 1x)");
+}
+
+void TestImageSetParsingFailure(const String& testValue) {
   const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kBackgroundImage, "image-set('' 1x)",
+      CSSPropertyID::kBackgroundImage, testValue,
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  ASSERT_NE(value, nullptr);
+  ASSERT_EQ(value, nullptr);
+}
 
-  const CSSValueList* val_list = To<CSSValueList>(value);
-  ASSERT_NE(val_list, nullptr);
-  ASSERT_EQ(val_list->length(), 1U);
-
-  const CSSImageSetValue& image_set_value =
-      To<CSSImageSetValue>(val_list->Last());
-  EXPECT_EQ("image-set(url(\"\") 1x)", image_set_value.CustomCSSText());
+TEST(CSSPropertyParserTest, ImageSetEmpty) {
+  TestImageSetParsingFailure("image-set()");
 }
 
 TEST(CSSPropertyParserTest, ImageSetMissingUrl) {
-  const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kBackgroundImage, "image-set(1x)",
-      StrictCSSParserContext(SecureContextMode::kSecureContext));
-  ASSERT_EQ(value, nullptr);
+  TestImageSetParsingFailure("image-set(1x)");
 }
 
 TEST(CSSPropertyParserTest, InternalLightDarkAuthor) {

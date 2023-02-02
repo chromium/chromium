@@ -28,6 +28,7 @@
 #include <algorithm>
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -49,18 +50,14 @@ CSSImageSetValue::CSSImageSetValue()
 CSSImageSetValue::~CSSImageSetValue() = default;
 
 void CSSImageSetValue::FillImageSet() {
-  wtf_size_t length = this->length();
-  wtf_size_t i = 0;
-  while (i < length) {
-    wtf_size_t image_index = i;
+  for (wtf_size_t i = 0, length = this->length(); i < length; ++i) {
+    auto image_index = i;
 
     ++i;
     SECURITY_DCHECK(i < length);
-    const auto& scale_factor_value = To<CSSPrimitiveValue>(Item(i));
+    float scale_factor = To<CSSPrimitiveValue>(Item(i)).ComputeDotsPerPixel();
 
-    images_in_set_.push_back(
-        ImageWithScale{image_index, scale_factor_value.GetFloatValue()});
-    ++i;
+    images_in_set_.push_back(ImageWithScale{image_index, scale_factor});
   }
 
   // Sort the images so that they are stored in order from lowest resolution to
@@ -129,9 +126,7 @@ String CSSImageSetValue::CustomCSSText() const {
 
   result.Append("image-set(");
 
-  wtf_size_t length = this->length();
-  wtf_size_t i = 0;
-  while (i < length) {
+  for (wtf_size_t i = 0, length = this->length(); i < length; ++i) {
     if (i > 0) {
       result.Append(", ");
     }
@@ -144,12 +139,6 @@ String CSSImageSetValue::CustomCSSText() const {
     SECURITY_DCHECK(i < length);
     const CSSValue& scale_factor_value = Item(i);
     result.Append(scale_factor_value.CssText());
-    // FIXME: Eventually the scale factor should contain it's own unit
-    // http://wkb.ug/100120.
-    // For now 'x' is hard-coded in the parser, so we hard-code it here too.
-    result.Append('x');
-
-    ++i;
   }
 
   result.Append(')');
@@ -171,12 +160,27 @@ void CSSImageSetValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   CSSValueList::TraceAfterDispatch(visitor);
 }
 
-CSSImageSetValue* CSSImageSetValue::ValueWithURLsMadeAbsolute() {
+CSSImageSetValue* CSSImageSetValue::ComputedCSSValue() {
   auto* value = MakeGarbageCollected<CSSImageSetValue>();
   for (auto& item : *this) {
     auto* image_value = DynamicTo<CSSImageValue>(item.Get());
-    image_value ? value->Append(*image_value->ValueWithURLMadeAbsolute())
-                : value->Append(*item);
+    if (image_value != nullptr) {
+      value->Append(*image_value->ValueWithURLMadeAbsolute());
+      continue;
+    }
+
+    auto* resolution = DynamicTo<CSSNumericLiteralValue>(item.Get());
+    if (resolution != nullptr && resolution->IsResolution() &&
+        resolution->GetType() != CSSPrimitiveValue::UnitType::kDotsPerPixel &&
+        RuntimeEnabledFeatures::CSSImageSetEnabled()) {
+      auto* canonical_resolution = CSSNumericLiteralValue::Create(
+          resolution->ComputeDotsPerPixel(),
+          CSSPrimitiveValue::UnitType::kDotsPerPixel);
+      value->Append(*canonical_resolution);
+      continue;
+    }
+
+    value->Append(*item);
   }
 
   return value;

@@ -2296,11 +2296,6 @@ crbug.com/876485 fast/performance/performance-measure-null-exception.html [ Fail
 crbug.com/1400902 external/wpt/css/css-images/image-set/image-set-linear-gradient-rendering.html [ Failure ]
 crbug.com/1400902 external/wpt/css/css-images/image-set/image-set-radial-gradient-rendering.html [ Failure ]
 
-# image-set() does not yet support all resolution units
-crbug.com/1400903 external/wpt/css/css-images/image-set/image-set-dppx-rendering.html [ Failure ]
-crbug.com/1400903 external/wpt/css/css-images/image-set/image-set-dpi-rendering.html [ Failure ]
-crbug.com/1400903 external/wpt/css/css-images/image-set/image-set-dpi-rendering-2.html [ Failure ]
-
 # image-set() type function not yet supported
 crbug.com/1399341 external/wpt/css/css-images/image-set/image-set-type-rendering.html [ Failure ]
 crbug.com/1399341 external/wpt/css/css-images/image-set/image-set-type-rendering-2.html [ Failure ]

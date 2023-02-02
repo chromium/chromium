@@ -80,6 +80,7 @@ CSSNumericValueType::BaseType UnitTypeToBaseType(
     case UnitType::kKilohertz:
       return BaseType::kFrequency;
     case UnitType::kDotsPerPixel:
+    case UnitType::kX:
     case UnitType::kDotsPerInch:
     case UnitType::kDotsPerCentimeter:
       return BaseType::kResolution;

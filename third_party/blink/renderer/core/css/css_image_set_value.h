@@ -52,7 +52,7 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
 
   String CustomCSSText() const;
 
-  CSSImageSetValue* ValueWithURLsMadeAbsolute();
+  CSSImageSetValue* ComputedCSSValue();
 
   bool HasFailedOrCanceledSubresources() const;
 

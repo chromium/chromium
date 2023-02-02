@@ -291,6 +291,10 @@ class CSSUnitValues {
         value, CSSPrimitiveValue::UnitType::kDotsPerCentimeter);
   }
 
+  static CSSUnitValue* x(double value) {
+    return CSSUnitValue::Create(value, CSSPrimitiveValue::UnitType::kX);
+  }
+
   static CSSUnitValue* dppx(double value) {
     return CSSUnitValue::Create(value,
                                 CSSPrimitiveValue::UnitType::kDotsPerPixel);
