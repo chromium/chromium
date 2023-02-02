@@ -2105,14 +2105,8 @@ if (enable_java_templates && is_android) {
   # Supports all variables of java_library(), plus:
   #   deps: In addition to defining java deps, this can also include
   #     android_assets() and android_resources() targets.
-  #   alternative_android_sdk_ijar: if set, the given android_sdk_ijar file
-  #     replaces the default android_sdk_ijar.
-  #   alternative_android_sdk_ijar_dep: the target that generates
-  #      alternative_android_sdk_ijar, must be set if alternative_android_sdk_ijar
-  #      is used.
-  #   alternative_android_sdk_jar: actual jar corresponding to
-  #      alternative_android_sdk_ijar, must be set if alternative_android_sdk_ijar
-  #      is used.
+  #   alternative_android_sdk_dep: android_system_java_prebuilt target to use
+  #     in place of the default android.jar.
   #
   # Example
   #   android_library("foo_java") {
@@ -2160,14 +2154,6 @@ if (enable_java_templates && is_android) {
   # Supports all variables of java_library(), plus:
   #   deps: In addition to defining java deps, this can also include
   #     android_assets() and android_resources() targets.
-  #   alternative_android_sdk_ijar: if set, the given android_sdk_ijar file
-  #     replaces the default android_sdk_ijar.
-  #   alternative_android_sdk_ijar_dep: the target that generates
-  #      alternative_android_sdk_ijar, must be set if alternative_android_sdk_ijar
-  #      is used.
-  #   alternative_android_sdk_jar: actual jar corresponding to
-  #      alternative_android_sdk_ijar, must be set if alternative_android_sdk_ijar
-  #      is used.
   #
   # Example
   #   robolectric_library("foo_junit") {
@@ -4633,6 +4619,7 @@ if (enable_java_templates && is_android) {
     # Create android_java_prebuilt target for classes.jar.
     if (_scanned_files.has_classes_jar) {
       _java_library_vars = [
+        "alternative_android_sdk_dep",
         "bytecode_rewriter_target",
         "enable_bytecode_checks",
         "jar_excluded_patterns",

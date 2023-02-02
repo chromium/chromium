@@ -17,6 +17,11 @@ if (enable_java_templates) {
     jar_path = android_sdk_jar
   }
 
+  android_system_java_prebuilt("android_privacy_sandbox_sdk_java") {
+    jar_path = "public/platforms/android-TiramisuPrivacySandbox/android.jar"
+    output_name = "android.privacy-sandbox.jar"
+  }
+
   template("android_test_jar_with_manifest") {
     _manifest_output_path = "$target_gen_dir/$target_name/AndroidManifest.xml"
     _manifest_target = "${target_name}__manifest"
