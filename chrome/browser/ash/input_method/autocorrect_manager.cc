@@ -1118,8 +1118,7 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
 
 void AutocorrectManager::OnTextFieldContextualInfoChanged(
     const TextFieldContextualInfo& info) {
-  disabled_by_rule_ =
-      ImeRulesConfig::GetInstance()->IsAutoCorrectDisabled(info);
+  disabled_by_rule_ = IsAutoCorrectDisabled(info);
   if (disabled_by_rule_) {
     LogAssistiveAutocorrectInternalState(
         AutocorrectInternalStates::kAppIsInDenylist);

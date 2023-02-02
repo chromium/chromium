@@ -4,31 +4,12 @@
 
 #include "chrome/browser/ash/input_method/ime_rules_config.h"
 
-#include <vector>
-
 #include "ash/constants/app_types.h"
-#include "ash/constants/ash_features.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
 namespace input_method {
 namespace {
-
-const char kNormalAutocorrectRulesParams[] = R"(
-    {
-      "rules":{
-        "ac-domain-denylist":{
-          "items": [
-            "test",
-            "example",
-            "chromium",
-            "docs.google"
-          ]
-        }
-     }
-    })";
 
 TextFieldContextualInfo FakeTextFieldContextualInfo(GURL url) {
   TextFieldContextualInfo info;
@@ -36,29 +17,6 @@ TextFieldContextualInfo FakeTextFieldContextualInfo(GURL url) {
   return info;
 }
 }  // namespace
-
-using ::testing::UnorderedElementsAre;
-
-class ImeRulesConfigTest : public testing::Test {
- public:
-  ImeRulesConfigTest() = default;
-  ~ImeRulesConfigTest() override = default;
-
-  std::vector<std::string> GetAutocorrectDomainDenylistForTest() {
-    return ImeRulesConfig::GetInstance()->rule_auto_correct_domain_denylist_;
-  }
-};
-
-TEST_F(ImeRulesConfigTest, LoadRulesFromFieldTrial) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      ash::features::kImeRuleConfig,
-      {{"json_rules", kNormalAutocorrectRulesParams}});
-
-  EXPECT_THAT(
-      GetAutocorrectDomainDenylistForTest(),
-      UnorderedElementsAre("docs.google", "chromium", "example", "test"));
-}
 
 class ImeRulesConfigAutoCorrectDisabledTest
     : public testing::TestWithParam<std::string> {
@@ -85,8 +43,6 @@ INSTANTIATE_TEST_SUITE_P(
         "https://quizlet.com",
         "https://whatsapp.com",
 
-        "https://www.example.com",
-        "https://test.com.au",
         "https://www.youtube.com",
         "https://b.corp.google.com/134",
         "https://docs.google.com/document/d/documentId/edit",
@@ -96,14 +52,8 @@ INSTANTIATE_TEST_SUITE_P(
         "http://www.abc.smile.amazon.com.au/abc+com+au/some/other/text"));
 
 TEST_P(ImeRulesConfigAutoCorrectDisabledTest, IsAutoCorrectDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      ash::features::kImeRuleConfig,
-      {{"json_rules", kNormalAutocorrectRulesParams}});
-
-  auto* rules = ImeRulesConfig::GetInstance();
-  EXPECT_TRUE(rules->IsAutoCorrectDisabled(
-      FakeTextFieldContextualInfo(GURL(GetParam()))));
+  EXPECT_TRUE(
+      IsAutoCorrectDisabled(FakeTextFieldContextualInfo(GURL(GetParam()))));
 }
 
 class ImeRulesConfigAutoCorrectEnabledTest
@@ -131,14 +81,8 @@ INSTANTIATE_TEST_SUITE_P(
                     "http://.com/test"));
 
 TEST_P(ImeRulesConfigAutoCorrectEnabledTest, IsAutoCorrectEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      ash::features::kImeRuleConfig,
-      {{"json_rules", kNormalAutocorrectRulesParams}});
-
-  auto* rules = ImeRulesConfig::GetInstance();
-  EXPECT_FALSE(rules->IsAutoCorrectDisabled(
-      FakeTextFieldContextualInfo(GURL(GetParam()))));
+  EXPECT_FALSE(
+      IsAutoCorrectDisabled(FakeTextFieldContextualInfo(GURL(GetParam()))));
 }
 
 class ImeRulesConfigMultiWordSuggestDisabledTest
@@ -167,12 +111,7 @@ INSTANTIATE_TEST_SUITE_P(
                     "https://whatsapp.com"));
 
 TEST_P(ImeRulesConfigMultiWordSuggestDisabledTest, IsMultiWordSuggestDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      ash::features::kImeRuleConfig,
-      {{"json_rules", kNormalAutocorrectRulesParams}});
-  auto* rules = ImeRulesConfig::GetInstance();
-  EXPECT_TRUE(rules->IsMultiWordSuggestDisabled(GURL(GetParam())));
+  EXPECT_TRUE(IsMultiWordSuggestDisabled(GURL(GetParam())));
 }
 
 class ImeRulesConfigMultiWordSuggestEnabledTest
@@ -201,12 +140,7 @@ INSTANTIATE_TEST_SUITE_P(
                     "http://.com/test"));
 
 TEST_P(ImeRulesConfigMultiWordSuggestEnabledTest, IsMultiWordSuggestEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      ash::features::kImeRuleConfig,
-      {{"json_rules", kNormalAutocorrectRulesParams}});
-  auto* rules = ImeRulesConfig::GetInstance();
-  EXPECT_FALSE(rules->IsMultiWordSuggestDisabled(GURL(GetParam())));
+  EXPECT_FALSE(IsMultiWordSuggestDisabled(GURL(GetParam())));
 }
 
 }  // namespace input_method

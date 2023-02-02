@@ -4,14 +4,8 @@
 
 #include "chrome/browser/ash/input_method/ime_rules_config.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/json/json_reader.h"
-#include "base/logging.h"
-#include "base/memory/singleton.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/values.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/url_util.h"
 
@@ -19,22 +13,26 @@ namespace ash {
 namespace input_method {
 namespace {
 
-// String parameter containing the JSON-encoded rules dictionary.
-const char kJsonRulesDictKey[] = "json_rules";
+// The default denylist of domains that will turn off auto_correct feature.
+const char* kDefaultAutocorrectDomainDenylist[] = {
+    "amazon",
+    "b.corp.google",
+    "buganizer.corp.google",
+    "cider.corp.google",
+    "classroom.google",
+    "desmos",
+    "docs.google",
+    "facebook",
+    "instagram",
+    "outlook.live",
+    "outlook.office",
+    "quizlet",
+    "whatsapp",
+    "youtube",
+};
 
-constexpr base::FeatureParam<std::string> kFieldTrialParams{
-    &ash::features::kImeRuleConfig, kJsonRulesDictKey, ""};
-
-// Array of objects, containing the list of rules.
-const char kConfigRulesKey[] = "rules";
-
-// Array of strings, containing the list of items the rule will use.
-const char kConfigRuleItemsKey[] = "items";
-
-// String, rule name of autocorrect domain denylist, containing the list of
-// globally denylisted domains for auto correct..
-const char kAutocorrectDomainDenylistKey[] = "ac-domain-denylist";
-
+// The default denylist of domains and paths that will turn off multi word
+// suggestion feature.
 const char* kDefaultMultiwordSuggestDomainAndPathDenylist[][2] = {
     {"amazon", ""},
     {"b.corp.google", ""},
@@ -53,90 +51,8 @@ const char* kDefaultMultiwordSuggestDomainAndPathDenylist[][2] = {
     {"youtube", ""},
 };
 
-}  // namespace
-
-ImeRulesConfig::ImeRulesConfig() {
-  InitFromTrialParams();
-}
-
-ImeRulesConfig::~ImeRulesConfig() = default;
-
-void ImeRulesConfig::InitFromTrialParams() {
-  std::string params = kFieldTrialParams.Get();
-  if (params.empty()) {
-    VLOG(2) << "Field trial parameter not set";
-    return;
-  }
-  auto dict = base::JSONReader::ReadAndReturnValueWithError(params);
-  if (!dict.has_value() || !dict->is_dict()) {
-    VLOG(1) << "Failed to parse field trial params as JSON object: " << params;
-    if (VLOG_IS_ON(1)) {
-      if (dict.has_value())
-        VLOG(1) << "Expecting a dictionary";
-      else
-        VLOG(1) << dict.error().message << ", line: " << dict.error().line
-                << ", col: " << dict.error().column;
-    }
-    return;
-  }
-
-  // Read mandatory list of rules.
-  auto* rules = dict->FindDictKey(kConfigRulesKey);
-  if (rules == nullptr || !rules->is_dict()) {
-    VLOG(1) << "Field trial params did not contain rules";
-    return;
-  }
-
-  // Read optional rule for auto correct deny list.
-  auto* ac_domain_denylist = rules->FindDictKey(kAutocorrectDomainDenylistKey);
-  if (ac_domain_denylist == nullptr || !ac_domain_denylist->is_dict()) {
-    VLOG(1) << "Rules from config did not contain "
-            << kAutocorrectDomainDenylistKey;
-  } else {
-    // Read optional list of auto correct denylisted domains.
-    auto* ac_domains_items =
-        ac_domain_denylist->FindListKey(kConfigRuleItemsKey);
-    if (ac_domains_items != nullptr) {
-      for (const auto& domain : ac_domains_items->GetList()) {
-        if (domain.is_string()) {
-          rule_auto_correct_domain_denylist_.push_back(*domain.GetIfString());
-        }
-      }
-    }
-  }
-}
-
-bool ImeRulesConfig::IsAutoCorrectDisabled(
-    const TextFieldContextualInfo& info) {
-  // Check the default domain denylist rules.
-  for (const auto& domain : default_auto_correct_domain_denylist_) {
-    if (IsSubDomain(info.tab_url, domain)) {
-      return true;
-    }
-  }
-  // Check the rule domain denylist rules.
-  for (const auto& domain : rule_auto_correct_domain_denylist_) {
-    if (IsSubDomain(info.tab_url, domain)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool ImeRulesConfig::IsMultiWordSuggestDisabled(const GURL& url) {
-  // Check the default domain denylist rules
-  for (auto& domainAndPath : kDefaultMultiwordSuggestDomainAndPathDenylist) {
-    const base::StringPiece domain = domainAndPath[0];
-    const base::StringPiece path = domainAndPath[1];
-    if (IsSubDomainWithPathPrefix(url, domain, path)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool ImeRulesConfig::IsSubDomain(const GURL& url,
-                                 const base::StringPiece& domain) {
+// Checks if domain is a sub-domain of url
+bool IsSubDomain(const GURL& url, const base::StringPiece domain) {
   const size_t registryLength =
       net::registry_controlled_domains::GetRegistryLength(
           url, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
@@ -150,19 +66,35 @@ bool ImeRulesConfig::IsSubDomain(const GURL& url,
 
   return url::DomainIs(urlDomain, domain);
 }
+}  // namespace
 
-bool ImeRulesConfig::IsSubDomainWithPathPrefix(
-    const GURL& url,
-    const base::StringPiece& domain,
-    const base::StringPiece& path_prefix) {
+// Checks if url belongs to domain and has the path_prefix
+bool IsSubDomainWithPathPrefix(const GURL& url,
+                               const base::StringPiece domain,
+                               const base::StringPiece path_prefix) {
   return IsSubDomain(url, domain) && url.has_path() &&
          base::StartsWith(url.path(), path_prefix);
 }
 
-// static
-ImeRulesConfig* ImeRulesConfig::GetInstance() {
-  return base::Singleton<ImeRulesConfig>::get();
+bool IsAutoCorrectDisabled(const TextFieldContextualInfo& info) {
+  // Check the default domain denylist rules.
+  for (const char* domain : kDefaultAutocorrectDomainDenylist) {
+    if (IsSubDomain(info.tab_url, domain)) {
+      return true;
+    }
+  }
+  return false;
 }
 
+bool IsMultiWordSuggestDisabled(const GURL& url) {
+  // Check the default domain denylist rules
+  for (const auto& [domain, path] :
+       kDefaultMultiwordSuggestDomainAndPathDenylist) {
+    if (IsSubDomainWithPathPrefix(url, domain, path)) {
+      return true;
+    }
+  }
+  return false;
+}
 }  // namespace input_method
 }  // namespace ash

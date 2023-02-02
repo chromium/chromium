@@ -2,82 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-#include <vector>
-
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
 
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_IME_RULES_CONFIG_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_IME_RULES_CONFIG_H_
 
-namespace base {
-template <typename Type>
-struct DefaultSingletonTraits;
-}  // namespace base
-
 namespace ash {
 namespace input_method {
 
-// IME config that implements a rule check for IME features.
-class ImeRulesConfig {
- public:
-  ImeRulesConfig(const ImeRulesConfig&) = delete;
-  ImeRulesConfig& operator=(const ImeRulesConfig&) = delete;
+// Runs the rule check against contextual info.
+bool IsAutoCorrectDisabled(const TextFieldContextualInfo& info);
 
-  ~ImeRulesConfig();
+// Runs the rule check against url
+bool IsMultiWordSuggestDisabled(const GURL& url);
 
-  // Obtains the singleton instance.
-  static ImeRulesConfig* GetInstance();
-
-  // Runs the rule check against contextual info.
-  bool IsAutoCorrectDisabled(const TextFieldContextualInfo& info);
-
-  // Runs the rule check against url
-  bool IsMultiWordSuggestDisabled(const GURL& url);
-
-  // Checks if domain is a sub-domain of url
- private:
-  bool IsSubDomain(const GURL& url, const base::StringPiece& domain);
-
-  // Checks if url belongs to domain and has the path_prefix.
-  bool IsSubDomainWithPathPrefix(const GURL& url,
-                                 const base::StringPiece& domain,
-                                 const base::StringPiece& path_prefix);
-
- private:
-  ImeRulesConfig();
-
-  // For Singleton to be able to construct an instance.
-  friend struct base::DefaultSingletonTraits<ImeRulesConfig>;
-
-  friend class ImeRulesConfigTest;
-
-  // Initializes the config from IME rules trial parameters. If there is
-  // no trial or parsing fails, the rules will be empty and as such always
-  // allow any features.
-  void InitFromTrialParams();
-
-  // The rule-based denylist of domains that will turn off auto_correct feature.
-  std::vector<std::string> rule_auto_correct_domain_denylist_;
-  // The default denylist of domains that will turn off auto_correct feature.
-  std::vector<std::string> default_auto_correct_domain_denylist_{
-      "amazon",
-      "b.corp.google",
-      "buganizer.corp.google",
-      "cider.corp.google",
-      "classroom.google",
-      "desmos",
-      "docs.google",
-      "facebook",
-      "instagram",
-      "outlook.live",
-      "outlook.office",
-      "quizlet",
-      "whatsapp",
-      "youtube",
-  };
-};
-
+// Checks if url belongs to domain and has the path_prefix
+bool IsSubDomainWithPathPrefix(const GURL& url,
+                               const base::StringPiece domain,
+                               const base::StringPiece path_prefix);
 }  // namespace input_method
 }  // namespace ash
 
