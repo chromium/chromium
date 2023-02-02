@@ -331,8 +331,6 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
 crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DImageData [ Failure ]
 
-# Vulkan Swiftshader WebGPU interop - flipped destination image
-crbug.com/1307787 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUCopyExternalImage* [ Failure ]
 
 # Vulkan Swiftshader WebGPU interop - missing source image
 crbug.com/1307787 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
@@ -350,7 +348,6 @@ crbug.com/1395227 [ asan intel mac-x86_64 monterey release ] Pixel_WebGPUImportV
 crbug.com/1395227 [ mac-x86_64 mojave no-asan nvidia-0xfe9 release ] Pixel_WebGPUImportVideoFrame [ Failure ]
 crbug.com/1395227 [ amd-0x679e mac-x86_64 monterey no-asan release ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
 crbug.com/1395227 [ asan intel mac-x86_64 monterey release ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
-crbug.com/1395227 [ mac-x86_64 mojave no-asan nvidia-0xfe9 release ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
 crbug.com/1395227 [ amd-0x7340 release-x64 target-cpu-64 win ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
 crbug.com/1395227 [ win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 crbug.com/1395227 [ amd-0x7340 release-x64 target-cpu-64 win ] Pixel_WebGPUImportVideoFrame [ Failure ]
