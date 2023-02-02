@@ -49,7 +49,8 @@ class TabHandleLayer : public Layer {
                      float bottom_offset_y,
                      float close_button_padding,
                      float close_button_alpha,
-                     float divider_alpha,
+                     bool is_start_divider_visible,
+                     bool is_end_divider_visible,
                      bool is_loading,
                      float spinner_rotation,
                      float brightness,
@@ -67,7 +68,8 @@ class TabHandleLayer : public Layer {
   scoped_refptr<cc::slim::Layer> layer_;
   scoped_refptr<cc::slim::Layer> tab_;
   scoped_refptr<cc::slim::UIResourceLayer> close_button_;
-  scoped_refptr<cc::slim::UIResourceLayer> divider_;
+  scoped_refptr<cc::slim::UIResourceLayer> start_divider_;
+  scoped_refptr<cc::slim::UIResourceLayer> end_divider_;
   scoped_refptr<cc::slim::NinePatchLayer> decoration_tab_;
   scoped_refptr<cc::slim::NinePatchLayer> tab_outline_;
   scoped_refptr<cc::slim::Layer> title_layer_;

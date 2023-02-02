@@ -487,21 +487,53 @@ public class StripLayoutHelperTest {
         // Trigger update to set divider values.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
-        // Verify tabs 2 and 3's dividers are hidden due to selection.
-        float hiddenOpacity = StripLayoutHelper.DIVIDER_HIDDEN_OPACITY;
-        float visibleOpacity = StripLayoutHelper.DIVIDER_DEFAULT_OPACITY;
-        // clang-format off
-        assertEquals("First divider should always be hidden.",
-                hiddenOpacity, tabs[0].getDividerOpacity(), EPSILON);
-        assertEquals("Divider should be at default opacity.",
-                visibleOpacity, tabs[1].getDividerOpacity(), EPSILON);
-        assertEquals("Divider is adjacent to selected tab and should be hidden.",
-                hiddenOpacity, tabs[2].getDividerOpacity(), EPSILON);
-        assertEquals("Divider is adjacent to selected tab and should be hidden.",
-                hiddenOpacity, tabs[3].getDividerOpacity(), EPSILON);
-        assertEquals("Divider should be at default opacity.",
-                visibleOpacity, tabs[4].getDividerOpacity(), EPSILON);
-        // clang-format on
+        // Verify tabs 2 and 3's start dividers are hidden due to selection.
+        assertFalse(
+                "First start divider should always be hidden.", tabs[0].isStartDividerVisible());
+        assertTrue("Start divider should be visible.", tabs[1].isStartDividerVisible());
+        assertFalse("Start divider is for selected tab and should be hidden.",
+                tabs[2].isStartDividerVisible());
+        assertFalse("Start divider is adjacent to selected tab and should be hidden.",
+                tabs[3].isStartDividerVisible());
+        assertTrue("Start divider should be visible.", tabs[4].isStartDividerVisible());
+
+        // Verify only last tab's end divider is visible.
+        assertFalse("End divider should be hidden.", tabs[0].isEndDividerVisible());
+        assertFalse("End divider should be hidden.", tabs[1].isEndDividerVisible());
+        assertFalse("End divider should be hidden.", tabs[2].isEndDividerVisible());
+        assertFalse("End divider should be hidden.", tabs[3].isEndDividerVisible());
+        assertTrue("End divider should be visible.", tabs[4].isEndDividerVisible());
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testUpdateDividers_InReorderMode() {
+        // Setup with 5 tabs. Select 2nd tab.
+        initializeTest(false, false, true, 1, 5);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        // group 2nd and 3rd tab.
+        groupTabs(1, 3);
+
+        // Start reorder mode at 2nd tab
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(1);
+        // Trigger update to set divider values.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+        // Verify only 4th and 5th tab's start divider is visible.
+        assertFalse(
+                "First start divider should always be hidden.", tabs[0].isStartDividerVisible());
+        assertFalse("Start divider should be hidden.", tabs[1].isStartDividerVisible());
+        assertFalse("Start divider should be hidden.", tabs[2].isStartDividerVisible());
+        assertTrue("Start divider should be hidden.", tabs[3].isStartDividerVisible());
+        assertTrue("Start divider should be visible.", tabs[4].isStartDividerVisible());
+
+        // Verify end divider visible for 1st and 5th tab.
+        assertTrue("End divider should be visible.", tabs[0].isEndDividerVisible());
+        assertFalse("End divider should be hidden.", tabs[1].isEndDividerVisible());
+        assertFalse("End divider should be hidden.", tabs[2].isEndDividerVisible());
+        assertFalse("End divider should be hidden.", tabs[3].isEndDividerVisible());
+        assertTrue("End divider should be visible.", tabs[4].isEndDividerVisible());
     }
 
     @Test
