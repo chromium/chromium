@@ -16,6 +16,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/sessions/session_features.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
@@ -182,9 +183,13 @@ void DeserializeWebStateList(WebStateList* web_state_list,
     web::SerializableUserDataManager* user_data_manager =
         web::SerializableUserDataManager::FromWebState(web_state);
 
-    NSNumber* pinned_state = base::mac::ObjCCast<NSNumber>(
-        user_data_manager->GetValueForSerializationKey(kPinnedStateKey));
-    web_state_list->SetWebStatePinnedAt(index, [pinned_state boolValue]);
+    if (IsPinnedTabsEnabled()) {
+      // If Pinned Tabs feature has been disabled, add WebStates back as regular
+      // ones.
+      NSNumber* pinned_state = base::mac::ObjCCast<NSNumber>(
+          user_data_manager->GetValueForSerializationKey(kPinnedStateKey));
+      web_state_list->SetWebStatePinnedAt(index, [pinned_state boolValue]);
+    }
 
     NSNumber* boxed_opener_index = base::mac::ObjCCast<NSNumber>(
         user_data_manager->GetValueForSerializationKey(kOpenerIndexKey));
