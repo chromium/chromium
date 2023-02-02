@@ -173,6 +173,10 @@ void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
       frame->format() != PIXEL_FORMAT_NV12) {
     DLOG(ERROR) << "Unexpected pixel format: "
                 << VideoPixelFormatToString(frame->format());
+    if (vea_client_) {
+      vea_client_->NotifyError(
+          VideoEncodeAccelerator::Error::kInvalidArgumentError);
+    }
     return;
   }
 
