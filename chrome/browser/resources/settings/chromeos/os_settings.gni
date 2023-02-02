@@ -306,6 +306,7 @@ foreach(f, css_files) {
 
 non_web_component_files = [
   "chromeos/assert_extras.ts",
+  "chromeos/common/global_scroll_target_mixin.ts",
   "chromeos/common/types.ts",
   "chromeos/crostini_page/crostini_browser_proxy.ts",
   "chromeos/crostini_page/crostini_shared_usb_devices.ts",
@@ -323,7 +324,6 @@ non_web_component_files = [
   "chromeos/device_page/input_device_mojo_interface_provider.ts",
   "chromeos/device_page/input_device_settings_types.ts",
   "chromeos/ensure_lazy_loaded.ts",
-  "chromeos/global_scroll_target_behavior.js",
   "chromeos/google_assistant_page/google_assistant_browser_proxy.ts",
   "chromeos/guest_os/guest_os_browser_proxy.ts",
   "chromeos/icon.js",

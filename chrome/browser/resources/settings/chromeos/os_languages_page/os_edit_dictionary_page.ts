@@ -18,9 +18,9 @@ import '../../settings_shared.css.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
-import {DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GlobalScrollTargetBehavior, GlobalScrollTargetBehaviorInterface} from '../global_scroll_target_behavior.js';
+import {GlobalScrollTargetMixin} from '../common/global_scroll_target_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 
@@ -38,15 +38,9 @@ enum NewWordState {
   WORD_TOO_LONG = 3,
 }
 
-const OsSettingsEditDictionaryPageElementBase = I18nMixin(PolymerElement);
-
-const OsSettingsEditDictionaryPageElementBaseWithBehaviors =
-    mixinBehaviors(
-        // TODO(b/265559727): Remove GlobalScrollTargetBehavior if it is unused.
-        [GlobalScrollTargetBehavior],
-        OsSettingsEditDictionaryPageElementBase) as
-        typeof OsSettingsEditDictionaryPageElementBase &
-    (new (...args: any[]) => GlobalScrollTargetBehaviorInterface);
+// TODO(b/265559727): Remove GlobalScrollTargetMixin if it is unused.
+const OsSettingsEditDictionaryPageElementBase =
+    GlobalScrollTargetMixin(I18nMixin(PolymerElement));
 
 interface OsSettingsEditDictionaryPageElement {
   $: {
@@ -56,7 +50,7 @@ interface OsSettingsEditDictionaryPageElement {
 }
 
 class OsSettingsEditDictionaryPageElement extends
-    OsSettingsEditDictionaryPageElementBaseWithBehaviors {
+    OsSettingsEditDictionaryPageElementBase {
   static get is() {
     return 'os-settings-edit-dictionary-page' as const;
   }
@@ -70,17 +64,6 @@ class OsSettingsEditDictionaryPageElement extends
       newWordValue_: {
         type: String,
         value: '',
-      },
-
-      // TODO(b/265554350): Remove this property from properties() as it is
-      // already specified in GlobalScrollTargetBehavior, and move the default
-      // value to the field initializer.
-      /**
-       * Needed for GlobalScrollTargetBehavior.
-       */
-      subpageRoute: {
-        type: Object,
-        value: routes.OS_LANGUAGES_EDIT_DICTIONARY,
       },
 
       words_: Array,
@@ -110,8 +93,8 @@ class OsSettingsEditDictionaryPageElement extends
       LanguagesBrowserProxyImpl.getInstance().getLanguageSettingsPrivate();
 
   // Internal properties for mixins.
-  // From GlobalScrollTargetBehavior.
-  // protected override subpageRoute = routes.OS_LANGUAGES_EDIT_DICTIONARY;
+  // From GlobalScrollTargetMixin.
+  override subpageRoute = routes.OS_LANGUAGES_EDIT_DICTIONARY;
 
   // Internal state.
   private words_: string[] = [];

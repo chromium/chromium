@@ -32,7 +32,7 @@ import {Debouncer, DomIf, microTask, PolymerElement, timeOut} from 'chrome://res
 
 import {SettingsPrefsElement} from '../../prefs/prefs.js';
 import {castExists} from '../assert_extras.js';
-import {setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
+import {setGlobalScrollTarget} from '../common/global_scroll_target_mixin.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
 import {convertPrefToSettingMetric} from '../metrics_utils.js';
 import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';

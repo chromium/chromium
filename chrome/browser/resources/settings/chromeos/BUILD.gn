@@ -281,7 +281,6 @@ js_type_check("closure_compile_local_module") {
 
   deps = [
     ":deep_linking_behavior",
-    ":global_scroll_target_behavior",
     ":icon",
     ":lazy_load",
     ":metrics_recorder",
@@ -314,14 +313,6 @@ js_library("deep_linking_behavior") {
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:load_time_data.m",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
-  ]
-}
-
-js_library("global_scroll_target_behavior") {
-  deps = [
-    ":route_observer_behavior",
-    ":router",
-    "//ash/webui/common/resources:promise_resolver",
   ]
 }
 
