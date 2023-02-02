@@ -419,6 +419,7 @@ source_set("weblayer_lib_base") {
     "//components/crash/content/browser",
     "//components/crash/core/app",
     "//components/crash/core/common",
+    "//components/digital_asset_links",
     "//components/download/content/factory",
     "//components/download/content/public",
     "//components/download/public/background_service:public",

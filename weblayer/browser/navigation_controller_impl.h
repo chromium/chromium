@@ -165,6 +165,9 @@ class NavigationControllerImpl : public NavigationController,
   void CancelDelayedLoad();
   void ProcessDelayedLoad();
 
+  // |tab_| owns |this|.
+  TabImpl* tab_;
+
   base::ObserverList<NavigationObserver>::Unchecked observers_;
   std::map<content::NavigationHandle*, std::unique_ptr<NavigationImpl>>
       navigation_map_;

@@ -143,6 +143,14 @@ public final class TabImpl extends ITab.Stub {
     // Only non-null if scroll offsets have been requested.
     private @Nullable GestureStateListener mGestureStateListener;
 
+    private HeaderVerificationStatus mHeaderVerification;
+
+    enum HeaderVerificationStatus {
+        PENDING,
+        NOT_VALIDATED,
+        VALIDATED,
+    }
+
     private static class InternalAccessDelegateImpl
             implements ViewEventSink.InternalAccessDelegate {
         @Override
@@ -204,6 +212,22 @@ public final class TabImpl extends ITab.Stub {
         }
     }
 
+    class NativeStringCallback implements Callback<String> {
+        private IStringCallback mCallback;
+
+        NativeStringCallback(IStringCallback callback) {
+            mCallback = callback;
+        }
+
+        @Override
+        public void onResult(String result) {
+            try {
+                mCallback.onResult(result);
+            } catch (RemoteException e) {
+            }
+        }
+    }
+
     public static TabImpl fromWebContents(WebContents webContents) {
         if (webContents == null || webContents.isDestroyed()) return null;
         return TabImplJni.get().fromWebContents(webContents);
@@ -260,6 +284,8 @@ public final class TabImpl extends ITab.Stub {
         };
         mWebContents.addObserver(mWebContentsObserver);
 
+        mHeaderVerification = HeaderVerificationStatus.PENDING;
+
         mMediaStreamManager = new MediaStreamManager(this);
 
         mInterceptNavigationDelegateClient = new InterceptNavigationDelegateClientImpl(this);
@@ -310,6 +336,10 @@ public final class TabImpl extends ITab.Stub {
 
     public ITabClient getClient() {
         return mClient;
+    }
+
+    public void setHeaderVerification(HeaderVerificationStatus headerVerification) {
+        mHeaderVerification = headerVerification;
     }
 
     /**
@@ -714,6 +744,11 @@ public final class TabImpl extends ITab.Stub {
     @Override
     public void executeScript(String script, boolean useSeparateIsolate, IStringCallback callback) {
         StrictModeWorkaround.apply();
+        if (mHeaderVerification == HeaderVerificationStatus.VALIDATED) {
+            TabImplJni.get().executeScript(
+                    mNativeTab, script, useSeparateIsolate, new NativeStringCallback(callback));
+            return;
+        }
 
         WebLayerOriginVerificationScheduler originVerifier =
                 WebLayerOriginVerificationScheduler.getInstance();
@@ -731,17 +766,8 @@ public final class TabImpl extends ITab.Stub {
                 } catch (RemoteException e) {
                 }
             }
-
-            Callback<String> nativeCallback = new Callback<String>() {
-                @Override
-                public void onResult(String result) {
-                    try {
-                        callback.onResult(result);
-                    } catch (RemoteException e) {
-                    }
-                }
-            };
-            TabImplJni.get().executeScript(mNativeTab, script, useSeparateIsolate, nativeCallback);
+            TabImplJni.get().executeScript(
+                    mNativeTab, script, useSeparateIsolate, new NativeStringCallback(callback));
         });
     }
 

@@ -71,6 +71,8 @@ class NavigationImpl : public Navigation {
 
   void set_finished() { finished_ = true; }
 
+  void set_consenting_content(bool value) { is_consenting_content_ = value; }
+
 #if BUILDFLAG(IS_ANDROID)
   int GetState(JNIEnv* env) { return static_cast<int>(GetState()); }
   base::android::ScopedJavaLocalRef<jstring> GetUri(JNIEnv* env);
@@ -78,6 +80,7 @@ class NavigationImpl : public Navigation {
   int GetHttpStatusCode(JNIEnv* env) { return GetHttpStatusCode(); }
   base::android::ScopedJavaLocalRef<jobjectArray> GetResponseHeaders(
       JNIEnv* env);
+  jboolean GetIsConsentingContent(JNIEnv* env);
   bool IsSameDocument(JNIEnv* env) { return IsSameDocument(); }
   bool IsErrorPage(JNIEnv* env) { return IsErrorPage(); }
   bool IsDownload(JNIEnv* env) { return IsDownload(); }
@@ -114,6 +117,8 @@ class NavigationImpl : public Navigation {
     return java_navigation_;
   }
 #endif
+
+  std::string GetNormalizedHeader(const std::string& name);
 
   // Navigation implementation:
   GURL GetURL() override;
@@ -178,6 +183,8 @@ class NavigationImpl : public Navigation {
 
   // Whether this navigation has finished.
   bool finished_ = false;
+
+  bool is_consenting_content_ = false;
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_navigation_;

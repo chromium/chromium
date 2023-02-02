@@ -62,6 +62,8 @@ class BrowserImpl : public Browser {
   // Called from BrowserPersister when restore has completed.
   void OnRestoreCompleted();
 
+  const std::string& GetPackageName() { return package_name_; }
+
 #if BUILDFLAG(IS_ANDROID)
   bool CompositorHasSurface();
 
@@ -138,6 +140,7 @@ class BrowserImpl : public Browser {
 #if BUILDFLAG(IS_ANDROID)
   friend BrowserImpl* CreateBrowserForAndroid(
       ProfileImpl*,
+      const std::string&,
       const base::android::JavaParamRef<jobject>&);
 #endif
 
@@ -168,6 +171,7 @@ class BrowserImpl : public Browser {
   std::unique_ptr<BrowserPersister> browser_persister_;
   base::OnceClosure visible_security_state_changed_callback_for_tests_;
   PrefChangeRegistrar profile_pref_change_registrar_;
+  std::string package_name_;
 };
 
 }  // namespace weblayer

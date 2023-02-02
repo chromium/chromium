@@ -134,4 +134,8 @@ public class InstrumentationActivityTestRule
     public Context getContext() {
         return getActivity();
     }
+
+    public String getPackageName() {
+        return getActivity().getPackageName();
+    }
 }

@@ -419,15 +419,18 @@ void BrowserImpl::UpdateFragmentResumedState(bool state) {
 // friended, as it requires browser_impl.h to include BrowserImpl_jni.h, which
 // is problematic (meaning not really supported and generates compile errors).
 BrowserImpl* CreateBrowserForAndroid(ProfileImpl* profile,
+                                     const std::string& package_name,
                                      const JavaParamRef<jobject>& java_impl) {
   BrowserImpl* browser = new BrowserImpl(profile);
   browser->java_impl_ = java_impl;
+  browser->package_name_ = package_name;
   return browser;
 }
 
 static jlong JNI_BrowserImpl_CreateBrowser(
     JNIEnv* env,
     jlong profile,
+    const base::android::JavaParamRef<jstring>& package_name,
     const JavaParamRef<jobject>& java_impl) {
   // The android side does not trigger restore from the constructor as at the
   // time this is called not enough of WebLayer has been wired up. Specifically,
@@ -436,7 +439,8 @@ static jlong JNI_BrowserImpl_CreateBrowser(
   // fully created, leading to all sort of assertions if Tabs are created
   // and/or navigations start (which restore may trigger).
   return reinterpret_cast<intptr_t>(CreateBrowserForAndroid(
-      reinterpret_cast<ProfileImpl*>(profile), java_impl));
+      reinterpret_cast<ProfileImpl*>(profile),
+      base::android::ConvertJavaStringToUTF8(env, package_name), java_impl));
 }
 
 static void JNI_BrowserImpl_DeleteBrowser(JNIEnv* env, jlong browser) {

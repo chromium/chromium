@@ -102,7 +102,8 @@ public class BrowserImpl extends IBrowser.Stub {
             mFullPersistenceInfo.mPersistenceId = persistenceId;
         }
 
-        mNativeBrowser = BrowserImplJni.get().createBrowser(mProfile.getNativeProfile(), this);
+        mNativeBrowser = BrowserImplJni.get().createBrowser(
+                mProfile.getNativeProfile(), serviceContext.getPackageName(), this);
         mPasswordEchoEnabled = null;
 
         mBrowserFragmentImpl = new BrowserFragmentImpl(this, serviceContext);
@@ -406,7 +407,7 @@ public class BrowserImpl extends IBrowser.Stub {
 
     @NativeMethods
     interface Natives {
-        long createBrowser(long profile, BrowserImpl caller);
+        long createBrowser(long profile, String packageName, BrowserImpl caller);
         void deleteBrowser(long browser);
         void addTab(long nativeBrowserImpl, long nativeTab);
         TabImpl[] getTabs(long nativeBrowserImpl);

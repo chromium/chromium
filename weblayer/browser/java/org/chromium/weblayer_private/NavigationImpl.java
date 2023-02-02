@@ -108,6 +108,10 @@ public final class NavigationImpl extends INavigation.Stub {
         return Arrays.asList(NavigationImplJni.get().getResponseHeaders(mNativeNavigationImpl));
     }
 
+    public boolean getIsConsentingContent() {
+        return NavigationImplJni.get().getIsConsentingContent(mNativeNavigationImpl);
+    }
+
     @Override
     public boolean isSameDocument() {
         StrictModeWorkaround.apply();
@@ -320,6 +324,7 @@ public final class NavigationImpl extends INavigation.Stub {
         String[] getRedirectChain(long nativeNavigationImpl);
         int getHttpStatusCode(long nativeNavigationImpl);
         String[] getResponseHeaders(long nativeNavigationImpl);
+        boolean getIsConsentingContent(long nativeNavigationImpl);
         boolean isSameDocument(long nativeNavigationImpl);
         boolean isErrorPage(long nativeNavigationImpl);
         boolean isDownload(long nativeNavigationImpl);

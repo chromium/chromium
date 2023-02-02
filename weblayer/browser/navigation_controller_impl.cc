@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "components/digital_asset_links/response_header_verifier.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -19,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
+#include "weblayer/browser/browser_impl.h"
 #include "weblayer/browser/navigation_entry_data.h"
 #include "weblayer/browser/navigation_ui_data_impl.h"
 #include "weblayer/browser/page_impl.h"
@@ -108,7 +110,7 @@ class NavigationControllerImpl::NavigationThrottleImpl
 };
 
 NavigationControllerImpl::NavigationControllerImpl(TabImpl* tab)
-    : WebContentsObserver(tab->web_contents()) {}
+    : WebContentsObserver(tab->web_contents()), tab_(tab) {}
 
 NavigationControllerImpl::~NavigationControllerImpl() = default;
 
@@ -559,6 +561,13 @@ void NavigationControllerImpl::DidFinishNavigation(
   if (navigation_handle->HasCommitted() &&
       navigation_handle->GetNetErrorCode() == net::OK &&
       !navigation_handle->IsErrorPage()) {
+    if (!navigation_handle->IsSameDocument()) {
+      navigation->set_consenting_content(
+          digital_asset_links::ResponseHeaderVerifier::Verify(
+              tab_->browser()->GetPackageName(),
+              navigation->GetNormalizedHeader(
+                  digital_asset_links::kEmbedderAncestorHeader)));
+    }
 #if BUILDFLAG(IS_ANDROID)
     if (java_controller_) {
       TRACE_EVENT0("weblayer",
@@ -577,6 +586,7 @@ void NavigationControllerImpl::DidFinishNavigation(
     }
   } else {
 #if BUILDFLAG(IS_ANDROID)
+    navigation->set_consenting_content(false);
     if (java_controller_) {
       TRACE_EVENT0("weblayer",
                    "Java_NavigationControllerImpl_navigationFailed");
