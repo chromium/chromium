@@ -162,7 +162,8 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateLatestDeprecatedToCurrent) {
     sql::Database db;
     ASSERT_TRUE(db.Open(DbPath()));
 
-    sql::Statement s(db.GetUniqueStatement("SELECT COUNT(*) FROM conversions"));
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT COUNT(*) FROM event_level_reports"));
 
     ASSERT_TRUE(s.Step());
     ASSERT_EQ(1, s.ColumnInt(0));
@@ -193,110 +194,6 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateLatestDeprecatedToCurrent) {
   // DB creation histograms should be recorded.
   histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 1);
   histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 0);
-}
-
-TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion33ToCurrent) {
-  base::HistogramTester histograms;
-  LoadDatabase(GetVersionFilePath(33), DbPath());
-
-  // Verify pre-conditions.
-  {
-    sql::Database db;
-    ASSERT_TRUE(db.Open(DbPath()));
-    ASSERT_FALSE(db.DoesColumnExist("aggregatable_report_metadata",
-                                    "initial_report_time"));
-
-    sql::Statement s(
-        db.GetUniqueStatement("SELECT * FROM aggregatable_report_metadata"));
-
-    ASSERT_TRUE(s.Step());
-    ASSERT_EQ(6, s.ColumnInt(5));  // report_time
-    ASSERT_FALSE(s.Step());
-  }
-
-  MigrateDatabase();
-
-  // Verify schema is current.
-  {
-    sql::Database db;
-    ASSERT_TRUE(db.Open(DbPath()));
-
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
-
-    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
-              NormalizeSchema(db.GetSchema()));
-
-    // Verify that data is preserved across the migration.
-    sql::Statement s(
-        db.GetUniqueStatement("SELECT report_time,initial_report_time FROM "
-                              "aggregatable_report_metadata"));
-
-    ASSERT_TRUE(s.Step());
-    ASSERT_EQ(6, s.ColumnInt(0));
-    ASSERT_EQ(6, s.ColumnInt(1));
-    ASSERT_FALSE(s.Step());
-  }
-
-  // DB creation histograms should be recorded.
-  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
-  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
-}
-
-TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion34ToCurrent) {
-  base::HistogramTester histograms;
-  LoadDatabase(GetVersionFilePath(34), DbPath());
-
-  // Verify pre-conditions.
-  {
-    sql::Database db;
-    ASSERT_TRUE(db.Open(DbPath()));
-    ASSERT_FALSE(db.DoesColumnExist("rate_limits", "expiry_time"));
-
-    sql::Statement s(db.GetUniqueStatement("SELECT time FROM rate_limits"));
-
-    ASSERT_TRUE(s.Step());
-    ASSERT_EQ(9, s.ColumnInt64(0));
-    ASSERT_TRUE(s.Step());
-    ASSERT_EQ(9, s.ColumnInt64(0));
-    ASSERT_TRUE(s.Step());
-    ASSERT_EQ(9, s.ColumnInt64(0));
-    ASSERT_FALSE(s.Step());
-  }
-
-  MigrateDatabase();
-
-  // Verify schema is current.
-  {
-    sql::Database db;
-    ASSERT_TRUE(db.Open(DbPath()));
-
-    // Check version.
-    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
-              VersionFromDatabase(&db));
-
-    // Compare normalized schemas
-    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
-              NormalizeSchema(db.GetSchema()));
-
-    // Verify that data is preserved across the migration.
-    sql::Statement s(db.GetUniqueStatement(
-        "SELECT source_expiry_or_attribution_time FROM rate_limits"));
-
-    ASSERT_TRUE(s.Step());
-    ASSERT_EQ(7, s.ColumnInt64(0));  // with matching source
-    ASSERT_TRUE(s.Step());
-    EXPECT_EQ(9 + base::Days(30).InMicroseconds(),
-              s.ColumnInt64(0));  // without matching source
-    ASSERT_TRUE(s.Step());
-    EXPECT_EQ(9, s.ColumnInt64(0));  // for attribution
-    ASSERT_FALSE(s.Step());
-  }
-
-  // DB creation histograms should be recorded.
-  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
-  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
 }
 
 TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion35ToCurrent) {

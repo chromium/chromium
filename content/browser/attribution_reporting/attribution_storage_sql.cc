@@ -81,7 +81,7 @@ const int AttributionStorageSql::kCompatibleVersionNumber = 45;
 //
 // Note that all versions >=15 were introduced during the transitional state of
 // the Attribution Reporting API and can be removed when done.
-const int AttributionStorageSql::kDeprecatedVersionNumber = 32;
+const int AttributionStorageSql::kDeprecatedVersionNumber = 34;
 
 namespace {
 
