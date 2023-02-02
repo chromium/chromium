@@ -15,7 +15,7 @@ each histogram. Maybe add here or add a new performance controls one
 <histograms>
 
 <histogram name="PerformanceControls.BatterySaver.BubbleAction"
-    enum="BatterySaverBubbleActionType" expires_after="2023-03-01">
+    enum="BatterySaverBubbleActionType" expires_after="2023-07-09">
   <owner>agale@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
