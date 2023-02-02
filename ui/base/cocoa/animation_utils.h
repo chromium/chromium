@@ -5,7 +5,12 @@
 #ifndef UI_BASE_COCOA_ANIMATION_UTILS_H_
 #define UI_BASE_COCOA_ANIMATION_UTILS_H_
 
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_MAC)
 #import <Cocoa/Cocoa.h>
+#endif
+
 #import <QuartzCore/QuartzCore.h>
 
 // This class is a stack-based helper useful for unit testing of Cocoa UI,
@@ -18,7 +23,7 @@
 //  MyUnitTest() {
 //    WithNoAnimation at_all; // Turn off Cocoa auto animation in this scope.
 
-
+#if BUILDFLAG(IS_MAC)
 class WithNoAnimation {
  public:
   WithNoAnimation() {
@@ -30,6 +35,7 @@ class WithNoAnimation {
    [NSAnimationContext endGrouping];
   }
 };
+#endif
 
 // Disables actions within a scope.
 class ScopedCAActionDisabler {

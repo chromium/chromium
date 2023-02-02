@@ -111,10 +111,10 @@ extern NSString* const kUTTypeWebKitWebURLsWithTitles;
 
 // ----- ANDROID MIME TYPES -----
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern const char kMimeTypeImageURI[];
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // ----- OTHER RELATED CONSTANTS -----
 

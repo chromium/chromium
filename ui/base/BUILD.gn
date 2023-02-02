@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
+import("//build/config/features.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/linux/pangocairo/pangocairo.gni")
 import("//build/config/locales.gni")
@@ -363,6 +364,14 @@ component("base") {
 
   if (!is_ios) {
     sources += [
+      "user_activity/user_activity_detector.cc",
+      "user_activity/user_activity_detector.h",
+      "user_activity/user_activity_observer.h",
+    ]
+  }
+
+  if (use_blink) {
+    sources += [
       "accelerators/accelerator.cc",
       "accelerators/accelerator.h",
       "accelerators/accelerator_manager.cc",
@@ -386,12 +395,9 @@ component("base") {
       "text/bytes_formatting.h",
       "themed_vector_icon.cc",
       "themed_vector_icon.h",
-      "user_activity/user_activity_detector.cc",
-      "user_activity/user_activity_detector.h",
-      "user_activity/user_activity_observer.h",
     ]
 
-    if (!is_android) {
+    if (!is_android && !is_ios) {
       sources += [
         "menu_source_utils.cc",
         "menu_source_utils.h",
@@ -502,8 +508,7 @@ component("base") {
     deps += [ "//third_party/re2" ]
   }
 
-  if (!is_ios) {
-    # iOS does not use Chromium-specific code for event handling.
+  if (use_blink) {
     public_deps += [
       "//ui/base/clipboard:file_info",
       "//ui/events:dom_keycode_converter",
@@ -521,10 +526,12 @@ component("base") {
     ]
     public_deps += [ "//ui/events:event_constants" ]
     deps += [ ":l10n_util_ios" ]
-    deps -= [
-      "//ui/events",
-      "//ui/events/devices",
-    ]
+    if (!use_blink) {
+      deps -= [
+        "//ui/events",
+        "//ui/events/devices",
+      ]
+    }
   }
 
   if (is_win) {
@@ -714,7 +721,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
   }
 }
 
-if (!is_ios) {
+if (use_blink) {
   group("goldctl") {
     data = []
 
@@ -1056,10 +1063,12 @@ test("ui_base_unittests") {
       "test/ios/ui_image_test_utils_unittest.mm",
     ]
     deps += [ ":l10n_util_ios" ]
-    deps -= [
-      "//ui/events:events_base",
-      "//ui/events:test_support",
-    ]
+    if (!use_blink) {
+      deps -= [
+        "//ui/events:events_base",
+        "//ui/events:test_support",
+      ]
+    }
   } else {  # !is_ios
     sources += [
       "accelerators/accelerator_manager_unittest.cc",

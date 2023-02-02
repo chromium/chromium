@@ -10,4 +10,24 @@ TouchScreensAvailability GetTouchScreensAvailability() {
   return TouchScreensAvailability::ENABLED;
 }
 
+int MaxTouchPoints() {
+  return 5;
+}
+
+int GetAvailablePointerTypes() {
+  return POINTER_TYPE_COARSE;
+}
+
+int GetAvailableHoverTypes() {
+  return HOVER_TYPE_HOVER;
+}
+
+PointerType GetPrimaryPointerType(int available_pointer_types) {
+  return POINTER_TYPE_COARSE;
+}
+
+HoverType GetPrimaryHoverType(int available_hover_types) {
+  return HOVER_TYPE_NONE;
+}
+
 }  // namespace ui

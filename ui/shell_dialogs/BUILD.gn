@@ -75,6 +75,10 @@ component("shell_dialogs") {
     ]
   }
 
+  if (is_ios) {
+    sources += [ "select_file_dialog_ios.mm" ]
+  }
+
   if (is_win) {
     sources += [
       "base_shell_dialog_win.cc",
