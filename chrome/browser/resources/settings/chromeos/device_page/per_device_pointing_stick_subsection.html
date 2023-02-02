@@ -1,0 +1,53 @@
+<style include="settings-shared">
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .subsection {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .subsection > settings-toggle-button,
+  .subsection > .settings-box  {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+</style>
+<div id="pointingStick">
+  <h2>[[pointingStick.name]]</h2>
+  <div class="subsection">
+    <div class="settings-box">
+      <div class="start settings-box-text"
+          id="pointingStickSwapButtonLabel">
+        $i18n{pointingStickPrimaryButton}
+      </div>
+      <settings-dropdown-menu id="pointingStickSwapButtonDropdown"
+          aria-labeledby="pointingStickSwapButtonLabel"
+          pref="{{primaryRightPref}}"
+          menu-options="[[swapPrimaryOptions]]"
+          deep-link-focus-id$=
+              "[[Setting.kPointingStickSwapPrimaryButtons]]">
+      </settings-dropdown-menu>
+      </div>
+      <settings-toggle-button id="pointingStickAcceleration"
+          class="hr"
+          pref="{{accelerationPref}}"
+          label="$i18n{pointingStickAccelerationLabel}"
+          deep-link-focus-id$="[[Setting.kPointingStickAcceleration]]">
+      </settings-toggle-button>
+      <div class="settings-box">
+      <div class="start" id="pointingStickSpeedLabel" aria-hidden="true">
+        $i18n{pointingStickSpeed}
+      </div>
+      <settings-slider id="pointingStickSpeedSlider"
+          pref="{{sensitivityPref}}"
+          ticks="[[sensitivityValues]]"
+          label-aria="$i18n{pointingStickSpeed}"
+          label-min="$i18n{pointerSlow}"
+          label-max="$i18n{pointerFast}"
+          deep-link-focus-id$="[[Setting.kPointingStickSpeed]]">
+      </settings-slider>
+    </div>
+  </div>
+</div>

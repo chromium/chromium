@@ -1,1 +1,5 @@
-<div id="perDevicePointingStickSubpageTitle">$i18n{pointingStickTitle}</div>
+<template is="dom-repeat" items="[[pointingSticks]]" as="pointingStick">
+  <settings-per-device-pointing-stick-subsection
+      pointing-stick="[[pointingStick]]">
+  </settings-per-device-pointing-stick-subsection>
+</template>

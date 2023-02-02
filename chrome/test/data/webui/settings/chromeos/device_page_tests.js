@@ -1324,8 +1324,6 @@ suite('SettingsDevicePage', function() {
       assertEquals(
           routes.PER_DEVICE_POINTING_STICK,
           Router.getInstance().getCurrentRoute());
-      assertTrue(isVisible(perDevicePointingStickPage.shadowRoot.querySelector(
-          '#perDevicePointingStickSubpageTitle')));
     });
   });
 
