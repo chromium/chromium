@@ -8568,71 +8568,7 @@
             ],
             "experiments": [
                 {
-                    "name": "enabled_double_key_v2",
-                    "enable_features": [
-                        "EnableDoubleKeyNetworkAnonymizationKey",
-                        "ForceIsolationInfoFrameOriginToTopLevelFrame",
-                        "PartitionConnectionsByNetworkIsolationKey",
-                        "PartitionDomainReliabilityByNetworkIsolationKey",
-                        "PartitionHttpServerPropertiesByNetworkIsolationKey",
-                        "PartitionNelAndReportingByNetworkIsolationKey",
-                        "PartitionSSLSessionsByNetworkIsolationKey",
-                        "SplitHostCacheByNetworkIsolationKey"
-                    ],
-                    "disable_features": [
-                        "EnableCrossSiteFlagNetworkAnonymizationKey"
-                    ]
-                },
-                {
-                    "name": "enabled_triple_key_v2",
-                    "enable_features": [
-                        "PartitionConnectionsByNetworkIsolationKey",
-                        "PartitionDomainReliabilityByNetworkIsolationKey",
-                        "PartitionHttpServerPropertiesByNetworkIsolationKey",
-                        "PartitionNelAndReportingByNetworkIsolationKey",
-                        "PartitionSSLSessionsByNetworkIsolationKey",
-                        "SplitHostCacheByNetworkIsolationKey"
-                    ],
-                    "disable_features": [
-                        "EnableCrossSiteFlagNetworkAnonymizationKey",
-                        "EnableDoubleKeyNetworkAnonymizationKey",
-                        "ForceIsolationInfoFrameOriginToTopLevelFrame"
-                    ]
-                },
-                {
-                    "name": "enabled_triple_nik_double_nak_v2",
-                    "enable_features": [
-                        "EnableDoubleKeyNetworkAnonymizationKey",
-                        "PartitionConnectionsByNetworkIsolationKey",
-                        "PartitionDomainReliabilityByNetworkIsolationKey",
-                        "PartitionHttpServerPropertiesByNetworkIsolationKey",
-                        "PartitionNelAndReportingByNetworkIsolationKey",
-                        "PartitionSSLSessionsByNetworkIsolationKey",
-                        "SplitHostCacheByNetworkIsolationKey"
-                    ],
-                    "disable_features": [
-                        "EnableCrossSiteFlagNetworkAnonymizationKey",
-                        "ForceIsolationInfoFrameOriginToTopLevelFrame"
-                    ]
-                },
-                {
-                    "name": "enabled_triple_nik_cross_site_flag_nak_v2",
-                    "enable_features": [
-                        "EnableCrossSiteFlagNetworkAnonymizationKey",
-                        "PartitionConnectionsByNetworkIsolationKey",
-                        "PartitionDomainReliabilityByNetworkIsolationKey",
-                        "PartitionHttpServerPropertiesByNetworkIsolationKey",
-                        "PartitionNelAndReportingByNetworkIsolationKey",
-                        "PartitionSSLSessionsByNetworkIsolationKey",
-                        "SplitHostCacheByNetworkIsolationKey"
-                    ],
-                    "disable_features": [
-                        "EnableDoubleKeyNetworkAnonymizationKey",
-                        "ForceIsolationInfoFrameOriginToTopLevelFrame"
-                    ]
-                },
-                {
-                    "name": "enabled_triple_nik_cross_site_flag_nak_v",
+                    "name": "enabled_triple_nik_cross_site_flag_nak_rollout",
                     "enable_features": [
                         "EnableCrossSiteFlagNetworkAnonymizationKey",
                         "PartitionConnectionsByNetworkIsolationKey",

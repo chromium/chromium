@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Violation report status OK. Cannot read properties of undefined (reading 'body')
+PASS No report to parent.
+Harness: the test ran to completion.
+
