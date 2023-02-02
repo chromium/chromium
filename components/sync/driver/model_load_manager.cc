@@ -11,6 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_error.h"
@@ -129,6 +131,10 @@ void ModelLoadManager::LoadDesiredTypes() {
   // Note: |preferred_types_without_errors_| might be modified during iteration
   // (e.g. in ModelLoadCallback()), so make a copy.
   const ModelTypeSet types = preferred_types_without_errors_;
+
+  // Start timer to measure time for loading to complete.
+  load_models_elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
+
   for (ModelType type : types) {
     auto dtc_iter = controllers_->find(type);
     DCHECK(dtc_iter != controllers_->end());
@@ -151,6 +157,13 @@ void ModelLoadManager::LoadDesiredTypes() {
       dtc->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
                 std::move(stop_callback));
     }
+  }
+
+  if (base::FeatureList::IsEnabled(syncer::kSyncEnableLoadModelsTimeout)) {
+    // Start a timeout timer for load.
+    load_models_timeout_timer_.Start(FROM_HERE,
+                                     kSyncLoadModelsTimeoutDuration.Get(), this,
+                                     &ModelLoadManager::OnLoadModelsTimeout);
   }
   // It's possible that all models are already loaded.
   NotifyDelegateIfReadyForConfigure();
@@ -197,8 +210,9 @@ void ModelLoadManager::ModelLoadCallback(ModelType type,
 
   // This happens when slow loading type is disabled by new configuration or
   // the model came unready during loading.
-  if (!preferred_types_without_errors_.Has(type))
+  if (!preferred_types_without_errors_.Has(type)) {
     return;
+  }
 
   DCHECK(!loaded_types_.Has(type));
   loaded_types_.Put(type);
@@ -214,8 +228,45 @@ void ModelLoadManager::NotifyDelegateIfReadyForConfigure() {
     return;
   }
 
+  // It may be possible that `load_models_elapsed_timer_` was never set. For eg.
+  // if StopDatatype() was called before Initialize().
+  if (load_models_elapsed_timer_) {
+    base::UmaHistogramMediumTimes("Sync.ModelLoadManager.LoadModelsElapsedTime",
+                                  load_models_elapsed_timer_->Elapsed());
+    // Needs to be measured only when NotifyDelegateIfReadyForConfigure() is
+    // called for the first time after all types have been loaded.
+    load_models_elapsed_timer_.reset();
+  }
+
+  // Cancel the timer since all the desired types are now loaded.
+  load_models_timeout_timer_.Stop();
+
   notified_about_ready_for_configure_ = true;
   delegate_->OnAllDataTypesReadyForConfigure();
+}
+
+void ModelLoadManager::OnLoadModelsTimeout() {
+  DCHECK(base::FeatureList::IsEnabled(syncer::kSyncEnableLoadModelsTimeout));
+  DCHECK(!loaded_types_.HasAll(preferred_types_without_errors_));
+
+  const ModelTypeSet types = preferred_types_without_errors_;
+  for (ModelType type : types) {
+    if (!loaded_types_.Has(type)) {
+      base::UmaHistogramEnumeration("Sync.ModelLoadManager.LoadModelsTimeout",
+                                    ModelTypeHistogramValue(type));
+      // All the types which have not loaded yet are removed from
+      // `preferred_types_without_errors_`. This will cause ModelLoadCallback()
+      // to stop these types when they finish loading. The intention here is to
+      // not wait for these types and continue with connecting the loaded data
+      // types, while also ensuring the DataTypeManager does not think the
+      // datatype is stopped before the controller actually comes to a stopped
+      // state.
+      preferred_types_without_errors_.Remove(type);
+    }
+  }
+  // Stop waiting for the data types to load and go ahead with connecting the
+  // loaded types.
+  NotifyDelegateIfReadyForConfigure();
 }
 
 }  // namespace syncer

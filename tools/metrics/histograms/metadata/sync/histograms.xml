@@ -736,6 +736,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.ModelLoadManager.LoadModelsElapsedTime" units="ms"
+    expires_after="2023-11-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records the time taken for all data types to finish loading, initiated from
+    ModelLoadManager::LoadModels().
+  </summary>
+</histogram>
+
+<histogram name="Sync.ModelLoadManager.LoadModelsTimeout" enum="SyncModelTypes"
+    expires_after="2023-11-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Recorded whenever a data type fails to complete loading, called from
+    ModelLoadManager::LoadModels(), before the timeout. This type is ignored and
+    the rest of types which have loaded are marked ready for configuration. This
+    type would ultimately be stopped once gets out of MODEL_STARTING state.
+  </summary>
+</histogram>
+
 <histogram name="Sync.ModelTypeBlockedDueToUndecryptableUpdate"
     enum="SyncModelTypes" expires_after="2023-03-26">
   <owner>victorvianna@google.com</owner>

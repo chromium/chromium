@@ -175,6 +175,20 @@ BASE_DECLARE_FEATURE(kSyncDoNotPropagateBrowserShutdownToDataTypes);
 // Enables codepath to allow clearing metadata when the data type is stopped.
 BASE_DECLARE_FEATURE(kSyncAllowClearingMetadataWhenDataTypeIsStopped);
 
+// Enabled by default, this acts as a kill switch for a timeout introduced over
+// loading of models for enabled types in ModelLoadManager. When enabled, it
+// skips waiting for types not loaded yet and tries to stop them once they
+// finish loading.
+BASE_DECLARE_FEATURE(kSyncEnableLoadModelsTimeout);
+
+// Timeout duration for loading data types in ModelLoadManager.
+// TODO(crbug.com/992340): Update the timeout duration based on uma metrics
+// Sync.ModelLoadManager.LoadModelsElapsedTime
+inline constexpr base::FeatureParam<base::TimeDelta>
+    kSyncLoadModelsTimeoutDuration{&kSyncEnableLoadModelsTimeout,
+                                   "sync_load_models_timeout_duration",
+                                   base::Seconds(30)};
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

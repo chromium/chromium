@@ -56,7 +56,8 @@ class SyncModelLoadManagerTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   testing::NiceMock<MockModelLoadManagerDelegate> delegate_;
   DataTypeController::TypeMap controllers_;
 };
@@ -644,6 +645,38 @@ TEST_F(SyncModelLoadManagerTest,
   EXPECT_EQ(GetController(APPS)->state(), DataTypeController::MODEL_LOADED);
   // BOOKMARKS remains in STOPPING state.
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
+}
+
+// Test that if one of the type is stuck at loading,
+// OnAllDataTypesReadyForConfigure will get called after a timeout.
+TEST_F(SyncModelLoadManagerTest, ShouldTimeoutIfNotAllTypesLoaded) {
+  // Create two controllers with delayed model load. Both should block
+  // configuration.
+  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
+  GetController(BOOKMARKS)->model()->EnableManualModelStart();
+  GetController(APPS)->model()->EnableManualModelStart();
+
+  // No calls to OnAllDataTypesReadyForConfigure() yet.
+  EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure).Times(0);
+
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
+  ModelTypeSet types(BOOKMARKS, APPS);
+
+  model_load_manager.Initialize(/*preferred_types_without_errors=*/types,
+                                /*preferred_types=*/types,
+                                BuildConfigureContext());
+
+  // Simulate successful loading of APPS only.
+  GetController(APPS)->model()->SimulateModelStartFinished();
+  ASSERT_EQ(GetController(APPS)->state(), DataTypeController::MODEL_LOADED);
+  // BOOKMARKS blocks the configuration.
+  ASSERT_EQ(GetController(BOOKMARKS)->state(),
+            DataTypeController::MODEL_STARTING);
+
+  EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure);
+  // Types not loaded till now are skipped.
+  task_environment_.FastForwardBy(kSyncLoadModelsTimeoutDuration.Get());
 }
 
 }  // namespace syncer

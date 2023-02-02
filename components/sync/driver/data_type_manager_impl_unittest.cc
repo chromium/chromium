@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/driver/configure_context.h"
@@ -266,7 +267,8 @@ class SyncDataTypeManagerImplTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   DataTypeController::TypeMap controllers_;
   FakeModelTypeConfigurer configurer_;
   FakeDataTypeManagerObserver observer_;
@@ -1663,6 +1665,50 @@ TEST_F(SyncDataTypeManagerImplTest, ShouldDoNothingForAlreadyFailedTypes) {
       BOOKMARKS,
       SyncError(FROM_HERE, SyncError::DATATYPE_ERROR, "Test error", BOOKMARKS));
   EXPECT_FALSE(dtm_->needs_reconfigure_for_test());
+}
+
+// Tests that data types which time out are ultimately skipped during
+// configuration.
+TEST_F(SyncDataTypeManagerImplTest, ShouldFinishConfigureIfSomeTypesTimeout) {
+  // Create two controllers, but one with a delayed model load.
+  AddController(BOOKMARKS);
+  GetController(BOOKMARKS)->model()->EnableManualModelStart();
+  AddController(PREFERENCES);
+
+  SetConfigureStartExpectation();
+  SetConfigureDoneExpectation(
+      DataTypeManager::OK,
+      BuildStatusTable(ModelTypeSet(), ModelTypeSet(BOOKMARKS),
+                       ModelTypeSet()));
+
+  Configure(ModelTypeSet(BOOKMARKS, PREFERENCES));
+
+  // BOOKMARKS blocks configuration.
+  EXPECT_TRUE(configurer_.connected_types().Empty());
+  EXPECT_EQ(DataTypeController::MODEL_LOADED,
+            GetController(PREFERENCES)->state());
+  EXPECT_EQ(DataTypeController::MODEL_STARTING,
+            GetController(BOOKMARKS)->state());
+
+  // Fast-forward to time out.
+  task_environment_.FastForwardBy(kSyncLoadModelsTimeoutDuration.Get());
+
+  // BOOKMARKS is ignored and PREFERENCES is connected.
+  EXPECT_EQ(configurer_.connected_types(), ModelTypeSet(PREFERENCES));
+  EXPECT_EQ(DataTypeController::MODEL_STARTING,
+            GetController(BOOKMARKS)->state());
+
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  FinishDownload(ModelTypeSet(PREFERENCES), ModelTypeSet(BOOKMARKS));
+  // BOOKMARKS is skipped and signalled to stop.
+  EXPECT_EQ(DataTypeController::STOPPING, GetController(BOOKMARKS)->state());
+  // DataTypeManager will be notified for reconfiguration.
+  EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
+
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  FinishDownload(ModelTypeSet(PREFERENCES), ModelTypeSet());
+  // DataTypeManager finishes configuration.
+  EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
 }
 
 }  // namespace syncer

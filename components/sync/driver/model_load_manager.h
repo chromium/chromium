@@ -5,11 +5,19 @@
 #ifndef COMPONENTS_SYNC_DRIVER_MODEL_LOAD_MANAGER_H_
 #define COMPONENTS_SYNC_DRIVER_MODEL_LOAD_MANAGER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/data_type_controller.h"
 #include "components/sync/engine/shutdown_reason.h"
+
+namespace base {
+class ElapsedTimer;
+}  // namespace base
 
 namespace syncer {
 
@@ -89,6 +97,10 @@ class ModelLoadManager {
   // Initialize().
   void NotifyDelegateIfReadyForConfigure();
 
+  // Called by `load_models_timeout_timer_`. Issues stop signal (with
+  // error) to controllers for all types which have not started till now.
+  void OnLoadModelsTimeout();
+
   // Set of all registered controllers.
   const raw_ptr<const DataTypeController::TypeMap> controllers_;
 
@@ -102,6 +114,14 @@ class ModelLoadManager {
 
   // Data types that are loaded.
   ModelTypeSet loaded_types_;
+
+  // Timer to track LoadDesiredTypes() timeout. All types not loaded by now are
+  // treated as having errors.
+  base::OneShotTimer load_models_timeout_timer_;
+
+  // Timer to measure time by which all types have finished loading (or timed
+  // out).
+  std::unique_ptr<base::ElapsedTimer> load_models_elapsed_timer_;
 
   bool notified_about_ready_for_configure_ = false;
 
