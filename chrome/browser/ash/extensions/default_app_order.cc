@@ -188,7 +188,7 @@ void GetDefault(std::vector<std::string>* app_ids) {
   // clang-format on
 
   if (chromeos::features::IsCloudGamingDeviceEnabled()) {
-    app_ids->push_back(web_app::kCloudGamingPartnerPlatform);
+    app_ids->push_back(web_app::kNvidiaGeForceNowAppId);
   }
 }
 

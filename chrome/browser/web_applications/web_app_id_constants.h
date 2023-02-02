@@ -23,8 +23,9 @@ inline constexpr char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
 //     "https://canvas.apps.chrome/"))
 inline constexpr char kCanvasAppId[] = "ieailfmhaghpphfffooibmlghaeopach";
 
-// TODO(crbug.com/1334053)
-inline constexpr char kCloudGamingPartnerPlatform[] =
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
+//     "https://play.geforcenow.com/mall/"))
+inline constexpr char kNvidiaGeForceNowAppId[] =
     "egmafekfmcnknbdlbfbhafbllplmjlhn";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(

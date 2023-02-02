@@ -39,7 +39,7 @@ std::vector<StaticAppId> GetDefaultPinnedApps() {
   };
 
   if (chromeos::features::IsCloudGamingDeviceEnabled()) {
-    app_ids.push_back(web_app::kCloudGamingPartnerPlatform);
+    app_ids.push_back(web_app::kNvidiaGeForceNowAppId);
     app_ids.push_back(web_app::kStadiaAppId);
   }
 
