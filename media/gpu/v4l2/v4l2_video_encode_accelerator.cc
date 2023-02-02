@@ -287,6 +287,9 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   TRACE_EVENT0("media,gpu", "V4L2VEA::InitializeTask");
 
+  // Set kInitialized here so that NotifyError() is invoked from here.
+  encoder_state_ = kInitialized;
+
   native_input_mode_ =
       config.storage_type.value_or(Config::StorageType::kShmem) ==
       Config::StorageType::kGpuMemoryBuffer;
@@ -348,7 +351,6 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config) {
     return;
   }
 
-  encoder_state_ = kInitialized;
   uint32_t bitrate_mode = V4L2_MPEG_VIDEO_BITRATE_MODE_CBR;
   switch (config.bitrate.mode()) {
     case Bitrate::Mode::kConstant:

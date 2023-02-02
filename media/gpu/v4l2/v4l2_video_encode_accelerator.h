@@ -106,7 +106,8 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // Internal state of the encoder.
   enum State {
     kUninitialized,  // Initialize() not yet called.
-    kInitialized,    // Initialize() returned true; ready to start encoding.
+    kInitialized,    // Initialize() returned true. The encoding is ready after
+                     // InitializeTask() completes successfully.
     kEncoding,       // Encoding frames.
     kFlushing,       // Flushing frames.
     kError,          // Error in encoder state.
