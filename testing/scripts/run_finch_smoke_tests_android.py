@@ -1058,8 +1058,7 @@ class WebViewFinchTestCase(FinchTestCase):
   @contextlib.contextmanager
   def _install_webview_with_tool(self):
     """Install WebView with the WebView installer tool"""
-    original_webview_provider = (
-        self._device.GetWebViewUpdateServiceDump()['CurrentWebViewPackage'])
+    original_webview_provider = self._device.GetWebViewProvider()
     current_webview_provider = None
 
     try:
@@ -1088,8 +1087,7 @@ class WebViewFinchTestCase(FinchTestCase):
       assert exit_code == 0, (
           'The WebView installer tool failed to install WebView')
 
-      current_webview_provider = (
-        self._device.GetWebViewUpdateServiceDump()['CurrentWebViewPackage'])
+      current_webview_provider = self._device.GetWebViewProvider()
       yield
     finally:
       self._device.SetWebViewImplementation(original_webview_provider)
