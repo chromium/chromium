@@ -2478,4 +2478,12 @@ void LocalDOMWindow::SetIsPictureInPictureWindow() {
   is_picture_in_picture_window_ = true;
 }
 
+bool LocalDOMWindow::HasStorageAccess() const {
+  return has_storage_access_;
+}
+
+void LocalDOMWindow::SetHasStorageAccess() {
+  has_storage_access_ = true;
+}
+
 }  // namespace blink

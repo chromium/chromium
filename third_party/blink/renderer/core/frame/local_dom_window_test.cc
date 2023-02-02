@@ -342,4 +342,11 @@ TEST_F(LocalDOMWindowTest, NavigationId) {
   GetFrame().DomWindow()->IncrementNavigationId();
   EXPECT_EQ(3u, GetFrame().DomWindow()->GetNavigationId());
 }
+
+TEST_F(LocalDOMWindowTest, HasStorageAccess) {
+  EXPECT_FALSE(GetFrame().DomWindow()->HasStorageAccess());
+  GetFrame().DomWindow()->SetHasStorageAccess();
+  EXPECT_TRUE(GetFrame().DomWindow()->HasStorageAccess());
+}
+
 }  // namespace blink

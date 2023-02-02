@@ -194,6 +194,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
       // current JS file would be used as source_file instead.
       const String& source_file = g_empty_string) const final;
   void SetIsInBackForwardCache(bool) final;
+  bool HasStorageAccess() const final;
 
   void AddConsoleMessageImpl(ConsoleMessage*, bool discard_duplicates) final;
 
@@ -521,6 +522,10 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     is_picture_in_picture_window_ = is_picture_in_picture;
   }
 
+  // Sets the HasStorageAccess member. Note that it can only be granted for a
+  // given window, it cannot be taken away.
+  void SetHasStorageAccess();
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -662,6 +667,10 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // like bfcache navigation or soft navigation. It increments when navigations
   // of these types occur.
   uint32_t navigation_id_ = 1;
+
+  // Records whether this window has obtained storage access. It cannot be
+  // revoked once set to true.
+  bool has_storage_access_ = false;
 };
 
 template <>

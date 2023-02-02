@@ -484,6 +484,11 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
     ExecutionContext* context_;
   };
 
+  // Returns true if this execution context has obtained storage access via the
+  // Storage Access API. In practice, this can only return true for
+  // LocalDOMWindows.
+  virtual bool HasStorageAccess() const { return false; }
+
  protected:
   explicit ExecutionContext(v8::Isolate* isolate, Agent*);
   ExecutionContext(const ExecutionContext&) = delete;
