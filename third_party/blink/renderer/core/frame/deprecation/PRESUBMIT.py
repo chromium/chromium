@@ -64,15 +64,57 @@ def _CheckDeprecation(input_api, output_api):
                     'deprecation.json5 items must all contain a non-empty "translation_note" value.'
                 )
             ]
-        if 'web_features' not in deprecation or not deprecation['web_features']:
+        if 'web_features' in deprecation and deprecation['web_features']:
+            sorted_web_features = sorted(deprecation['web_features'],
+                                         key=lambda s: s.lower())
+            if deprecation['web_features'] != sorted_web_features:
+                differ = difflib.Differ()
+                diff = differ.compare(deprecation['web_features'],
+                                      sorted_web_features)
+                return [
+                    output_api.PresubmitError(
+                        'deprecation.json5 items web_features must be sorted alphabetically. '
+                        'Diff of web_features data order follows:',
+                        long_text='\n'.join(diff))
+                ]
+        else:
             return [
                 output_api.PresubmitError(
                     'deprecation.json5 items must all contain a non-empty list of "web_features".'
                 )
             ]
+        if 'chrome_status_feature' in deprecation:
+            if not deprecation['chrome_status_feature']:
+                return [
+                    output_api.PresubmitError(
+                        'deprecation.json5 items can omit chrome_status_feature, but if included it must have a value.'
+                    )
+                ]
+            if deprecation[
+                    'chrome_status_feature'] < 1000000000000000 or deprecation[
+                        'chrome_status_feature'] > 9999999999999999:
+                return [
+                    output_api.PresubmitError(
+                        'deprecation.json5 items with a chrome_status_feature must have one in the valid range.'
+                    )
+                ]
+        if 'milestone' in deprecation:
+            if not deprecation['milestone']:
+                return [
+                    output_api.PresubmitError(
+                        'deprecation.json5 items can omit milestone, but if included it must have a value.'
+                    )
+                ]
+            if deprecation['milestone'] < 1 or deprecation['milestone'] > 1000:
+                return [
+                    output_api.PresubmitError(
+                        'deprecation.json5 items with a milestone must have one in the valid range.'
+                    )
+                ]
 
     # Parse deprecations for ordering.
-    deprecation_names_sorted = sorted(deprecation_names)
+    deprecation_names_sorted = sorted(deprecation_names,
+                                      key=lambda s: s.lower())
     if deprecation_names == deprecation_names_sorted:
         return []
     differ = difflib.Differ()
