@@ -5,6 +5,7 @@
 import("//base/trace_event/tracing.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
@@ -275,7 +276,7 @@ source_set("protobuf_support") {
   ]
 }
 
-if (!is_ios) {
+if (use_blink) {
   component("wtf_support") {
     sources = [
       "array_traits_web_vector.h",

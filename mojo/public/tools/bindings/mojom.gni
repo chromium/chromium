@@ -16,6 +16,7 @@ import("//ui/webui/webui_features.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//build/toolchain/kythe.gni")
 import("//components/nacl/features.gni")
@@ -713,6 +714,10 @@ template("mojom") {
       enabled_features += [ "is_win" ]
     }
 
+    if (is_apple) {
+      enabled_features += [ "is_apple" ]
+    }
+
     action(parser_target_name) {
       allow_remote = true
       custom_processor = "mojom_parser"
@@ -1143,7 +1148,7 @@ template("mojom") {
     component_macro_suffix = ""
   }
   if ((!defined(invoker.disable_variants) || !invoker.disable_variants) &&
-      !is_ios) {
+      use_blink) {
     blink_variant = {
       variant = "blink"
       component_macro_suffix = "_BLINK"
