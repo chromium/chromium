@@ -164,7 +164,7 @@ TEST(IdentifiableTokenBuilderTest, LotsOfRandomPartitions) {
   //   |<--------->:<------------>:<---    ..  ...->:<---------------------->|
   //   |           :              :        ..  ...  :                        |
   //   0      partitions[0]  partitions[1] .. partitions[n-1] kLargeBufferSize
-  std::vector<int> partitions;
+  std::vector<size_t> partitions;
   for (int i = 0; i < partition_count; ++i)
     partitions.push_back(base::RandInt(0, kLargeBufferSize));
   std::sort(partitions.begin(), partitions.end());
@@ -172,12 +172,12 @@ TEST(IdentifiableTokenBuilderTest, LotsOfRandomPartitions) {
   std::string trace;
   base::StringAppendF(&trace, "Partitions[%d]={0", partition_count + 2);
   for (auto p : partitions)
-    base::StringAppendF(&trace, ", %d", p);
+    base::StringAppendF(&trace, ", %zu", p);
   base::StringAppendF(&trace, ", %zu}", kLargeBufferSize);
   SCOPED_TRACE(trace);
 
   IdentifiableTokenBuilder partitioned_sample;
-  int low = 0;
+  size_t low = 0;
   for (auto high : partitions) {
     ASSERT_LE(low, high);
     partitioned_sample.AddBytes(base::make_span(&data[low], high - low));
