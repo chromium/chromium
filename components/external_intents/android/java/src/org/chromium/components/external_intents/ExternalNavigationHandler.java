@@ -1584,11 +1584,11 @@ public class ExternalNavigationHandler {
         if (!mDelegate.maybeSetTargetPackage(targetIntent, resolvingInfos)) {
             requiresIntentChooser = isInsecureIntentToOtherBrowser(targetIntent, resolvingInfos,
                     isIntentWithSupportedProtocol, resolveActivity, intentHasExtras);
-        }
 
-        if (shouldAvoidShowingDisambiguationPrompt(
-                    isExternalProtocol, intentDataUrl, resolvingInfos, resolveActivity)) {
-            return OverrideUrlLoadingResult.forNoOverride();
+            if (shouldAvoidShowingDisambiguationPrompt(
+                        isExternalProtocol, intentDataUrl, resolvingInfos, resolveActivity)) {
+                return OverrideUrlLoadingResult.forNoOverride();
+            }
         }
 
         if (requiresPromptForExternalIntent) {
