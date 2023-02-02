@@ -26,6 +26,14 @@ constexpr int kDefaultSensitivity = 3;
 constexpr bool kDefaultReverseScrolling = false;
 constexpr bool kDefaultAccelerationEnabled = true;
 constexpr bool kDefaultScrollAcceleration = true;
+
+// Touchpad setting defaults.
+constexpr bool kDefaultTapToClickEnabled = true;
+constexpr bool kDefaultTapDraggingEnabled = false;
+constexpr bool kDefaultThreeFingerClickEnabled = false;
+constexpr bool kDefaultHapticFeedbackEnabled = false;
+constexpr int kDefaultHapticSensitivity = 3;
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_DEFAULTS_H_

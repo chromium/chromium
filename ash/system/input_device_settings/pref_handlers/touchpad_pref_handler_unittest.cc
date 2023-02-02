@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/pref_handlers/touchpad_pref_handler_impl.h"
 
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -18,6 +19,18 @@ const std::string kDictFakeValue = "fake_value";
 
 const std::string kTouchpadKey1 = "device_key1";
 const std::string kTouchpadKey2 = "device_key2";
+
+const mojom::TouchpadSettings kTouchpadSettingsDefault(
+    /*sensitivity=*/kDefaultSensitivity,
+    /*reverse_scrolling=*/kDefaultReverseScrolling,
+    /*acceleration_enabled=*/kDefaultAccelerationEnabled,
+    /*tap_to_click_enabled=*/kDefaultTapToClickEnabled,
+    /*three_finger_click_enabled=*/kDefaultThreeFingerClickEnabled,
+    /*tap_dragging_enabled=*/kDefaultTapDraggingEnabled,
+    /*scroll_sensitivity=*/kDefaultSensitivity,
+    /*scroll_acceleration=*/kDefaultScrollAcceleration,
+    /*haptic_sensitivity=*/kDefaultSensitivity,
+    /*haptic_enabled);=*/kDefaultHapticFeedbackEnabled);
 
 const mojom::TouchpadSettings kTouchpadSettings1(
     /*sensitivity=*/1,
@@ -133,6 +146,16 @@ class TouchpadPrefHandlerTest : public AshTestBase {
     pref_handler_->UpdateTouchpadSettings(pref_service_.get(), *touchpad);
   }
 
+  mojom::TouchpadSettingsPtr CallInitializeTouchpadSettings(
+      const std::string& device_key) {
+    mojom::TouchpadPtr touchpad = mojom::Touchpad::New();
+    touchpad->device_key = device_key;
+
+    pref_handler_->InitializeTouchpadSettings(pref_service_.get(),
+                                              touchpad.get());
+    return std::move(touchpad->settings);
+  }
+
  protected:
   std::unique_ptr<TouchpadPrefHandlerImpl> pref_handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
@@ -216,6 +239,53 @@ TEST_F(TouchpadPrefHandlerTest, UpdateSettings) {
   ASSERT_NE(nullptr, unchanged_settings_dict);
   CheckTouchpadSettingsAndDictAreEqual(kTouchpadSettings2,
                                        *unchanged_settings_dict);
+}
+
+TEST_F(TouchpadPrefHandlerTest, NewSettingAddedRoundTrip) {
+  mojom::TouchpadSettings test_settings = kTouchpadSettings1;
+  test_settings.reverse_scrolling = !kDefaultReverseScrolling;
+
+  CallUpdateTouchpadSettings(kTouchpadKey1, test_settings);
+  auto devices_dict =
+      pref_service_->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
+  auto* settings_dict = devices_dict.FindDict(kTouchpadKey1);
+
+  // Remove key from the dict to mock adding a new setting in the future.
+  settings_dict->Remove(prefs::kTouchpadSettingReverseScrolling);
+  pref_service_->SetDict(prefs::kTouchpadDeviceSettingsDictPref,
+                         std::move(devices_dict));
+
+  // Initialize keyboard settings for the device and check that
+  // "new settings" match their default values.
+  mojom::TouchpadSettingsPtr settings =
+      CallInitializeTouchpadSettings(kTouchpadKey1);
+  EXPECT_EQ(kDefaultReverseScrolling, settings->reverse_scrolling);
+
+  // Reset "new settings" to the values that match `test_settings` and check
+  // that the rest of the fields are equal.
+  settings->reverse_scrolling = !kDefaultReverseScrolling;
+  EXPECT_EQ(test_settings, *settings);
+}
+
+TEST_F(TouchpadPrefHandlerTest, NewTouchpadDefaultSettings) {
+  mojom::TouchpadSettingsPtr settings =
+      CallInitializeTouchpadSettings(kTouchpadKey1);
+  EXPECT_EQ(*settings, kTouchpadSettingsDefault);
+  settings = CallInitializeTouchpadSettings(kTouchpadKey2);
+  EXPECT_EQ(*settings, kTouchpadSettingsDefault);
+
+  auto devices_dict =
+      pref_service_->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
+  ASSERT_EQ(2u, devices_dict.size());
+  auto* settings_dict = devices_dict.FindDict(kTouchpadKey1);
+  ASSERT_NE(nullptr, settings_dict);
+  CheckTouchpadSettingsAndDictAreEqual(kTouchpadSettingsDefault,
+                                       *settings_dict);
+
+  settings_dict = devices_dict.FindDict(kTouchpadKey2);
+  ASSERT_NE(nullptr, settings_dict);
+  CheckTouchpadSettingsAndDictAreEqual(kTouchpadSettingsDefault,
+                                       *settings_dict);
 }
 
 class TouchpadSettingsPrefConversionTest
