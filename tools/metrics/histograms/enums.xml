@@ -73363,6 +73363,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="163" label="Dictation only Pumpkin DLC downloaded"/>
   <int value="164" label="Dictation only SODA DLC downloaded"/>
   <int value="165" label="Google One offer"/>
+  <int value="166" label="Lock Screen"/>
 </enum>
 
 <enum name="NotificationDatabaseStatus">
