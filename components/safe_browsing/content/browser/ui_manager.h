@@ -142,6 +142,25 @@ class SafeBrowsingUIManager : public BaseUIManager {
   // |resource| is the unsafe resource for which the warning is displayed.
   void StartDisplayingBlockingPage(const UnsafeResource& resource);
 
+  // Determines whether a specific lookup is eligible for the
+  // SafeBrowsingLookupMechanism experiment. Once determined, it posts that
+  // result to the |callback| via the |callback_task_runner|.
+  // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
+  void CheckLookupMechanismExperimentEligibility(
+      security_interstitials::UnsafeResource resource,
+      base::OnceCallback<void(bool)> callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
+
+  // Helper function that calls |CheckLookupMechanismExperimentEligibility|
+  // first and then |StartDisplayingBlockingPage|. This is lumped into one
+  // method to ensure that the former is performed first on this thread, since
+  // the latter can affect the results of the former.
+  // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
+  void CheckExperimentEligibilityAndStartBlockingPage(
+      security_interstitials::UnsafeResource resource,
+      base::OnceCallback<void(bool)> callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
+
   // Called to stop or shutdown operations on the UI thread. This may be called
   // multiple times during the life of the UIManager. Should be called
   // on UI thread. If shutdown is true, the manager is disabled permanently.

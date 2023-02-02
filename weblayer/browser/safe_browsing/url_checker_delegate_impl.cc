@@ -126,4 +126,23 @@ safe_browsing::BaseUIManager* UrlCheckerDelegateImpl::GetUIManager() {
   return ui_manager_.get();
 }
 
+void UrlCheckerDelegateImpl::CheckLookupMechanismExperimentEligibility(
+    const security_interstitials::UnsafeResource& resource,
+    base::OnceCallback<void(bool)> callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  // Amongst other constraints, this function is only eligible to be called if
+  // BrowserUrlLoaderThrottle's CheckerOnIO has is_mechanism_experiment_allowed
+  // = true, which is only the case for Desktop.
+  NOTREACHED();
+}
+void UrlCheckerDelegateImpl::CheckExperimentEligibilityAndStartBlockingPage(
+    const security_interstitials::UnsafeResource& resource,
+    base::OnceCallback<void(bool)> callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  // Amongst other constraints, this function is only eligible to be called if
+  // BrowserUrlLoaderThrottle's CheckerOnIO has is_mechanism_experiment_allowed
+  // = true, which is only the case for Desktop.
+  NOTREACHED();
+}
+
 }  // namespace weblayer

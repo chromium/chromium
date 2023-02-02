@@ -128,10 +128,10 @@ class BrowserURLLoaderThrottle::CheckerOnIO
     }
 
     if (is_mechanism_experiment_allowed_ &&
-        request_destination == network::mojom::RequestDestination::kDocument &&
-        !(load_flags & net::LOAD_PREFETCH)) {
+        request_destination == network::mojom::RequestDestination::kDocument) {
       mechanism_experimenter_ =
-          base::MakeRefCounted<SafeBrowsingLookupMechanismExperimenter>();
+          base::MakeRefCounted<SafeBrowsingLookupMechanismExperimenter>(
+              /*is_prefetch=*/load_flags & net::LOAD_PREFETCH);
     }
     url_checker_ = std::make_unique<SafeBrowsingUrlCheckerImpl>(
         headers, load_flags, request_destination, has_user_gesture,

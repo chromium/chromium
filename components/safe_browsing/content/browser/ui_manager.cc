@@ -175,6 +175,41 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   DisplayBlockingPage(resource);
 }
 
+void SafeBrowsingUIManager::CheckLookupMechanismExperimentEligibility(
+    security_interstitials::UnsafeResource resource,
+    base::OnceCallback<void(bool)> callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  content::WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
+  auto determine_if_is_prerender = [resource, web_contents]() {
+    const content::GlobalRenderFrameHostId rfh_id(resource.render_process_id,
+                                                  resource.render_frame_id);
+    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
+    return web_contents->IsPrerenderedFrame(resource.frame_tree_node_id) ||
+           (rfh && rfh->GetLifecycleState() ==
+                       content::RenderFrameHost::LifecycleState::kPrerendering);
+  };
+  // These checks parallel the ones performed by StartDisplayingBlockingPage to
+  // determine if a blocking page would be shown for a mainframe URL. The
+  // experiment is only eligible if the blocking page would be shown.
+  bool is_ineligible =
+      !web_contents ||
+      delegate_->GetNoStatePrefetchContentsIfExists(web_contents) ||
+      determine_if_is_prerender() ||
+      delegate_->IsHostingExtension(web_contents) || IsAllowlisted(resource);
+  callback_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), !is_ineligible));
+}
+
+void SafeBrowsingUIManager::CheckExperimentEligibilityAndStartBlockingPage(
+    security_interstitials::UnsafeResource resource,
+    base::OnceCallback<void(bool)> callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  CheckLookupMechanismExperimentEligibility(resource, std::move(callback),
+                                            callback_task_runner);
+  StartDisplayingBlockingPage(resource);
+}
+
 bool SafeBrowsingUIManager::ShouldSendHitReport(const HitReport& hit_report,
                                                 WebContents* web_contents) {
   return web_contents &&

@@ -298,4 +298,17 @@ void AwUrlCheckerDelegateImpl::StartDisplayingDefaultBlockingPage(
                                 false /* showed_interstitial */));
 }
 
+void AwUrlCheckerDelegateImpl::CheckLookupMechanismExperimentEligibility(
+    const security_interstitials::UnsafeResource& resource,
+    base::OnceCallback<void(bool)> callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  NOTREACHED();
+}
+void AwUrlCheckerDelegateImpl::CheckExperimentEligibilityAndStartBlockingPage(
+    const security_interstitials::UnsafeResource& resource,
+    base::OnceCallback<void(bool)> callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  NOTREACHED();
+}
+
 }  // namespace android_webview
