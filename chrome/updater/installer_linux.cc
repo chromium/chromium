@@ -16,6 +16,7 @@ AppInstallerResult RunApplicationInstaller(
     const base::FilePath& installer_path,
     const std::string& arguments,
     const absl::optional<base::FilePath>& install_data_file,
+    bool usage_stats_enabled,
     const base::TimeDelta& timeout,
     InstallProgressCallback /*progress_callback*/) {
   base::LaunchOptions options;
