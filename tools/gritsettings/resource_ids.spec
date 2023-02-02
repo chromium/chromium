@@ -1105,7 +1105,7 @@
   "<(DEVTOOLS_GRD_PATH).grd": {
     # In debug build, devtools frontend sources are not bundled and therefore
     # includes a lot of individual resources
-    "META": {"sizes": {"includes": [2100],}},
+    "META": {"sizes": {"includes": [2200],}},
     "includes": [4940],
   },
 
