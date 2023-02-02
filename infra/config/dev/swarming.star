@@ -22,7 +22,14 @@ swarming.pool_realm(
     ],
 )
 
-swarming.pool_realm(name = "pools/ci.shadow")
+# TODO(crbug.com/1114804): remove this realm after the experiment on
+# shadow_pool for led builds completes.
+swarming.pool_realm(
+    name = "pools/ci.shadow",
+    projects = [
+        "infra",
+    ],
+)
 
 swarming.pool_realm(name = "pools/try")
 
