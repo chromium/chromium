@@ -7388,6 +7388,7 @@
                 "android",
                 "ios",
                 "linux",
+                "mac",
                 "windows"
             ],
             "experiments": [
