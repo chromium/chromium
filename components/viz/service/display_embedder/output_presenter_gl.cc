@@ -104,7 +104,7 @@ gl::OverlayImage PresenterImageGL::GetOverlayImage(
   }
 #if BUILDFLAG(IS_OZONE)
   return scoped_overlay_read_access_->GetNativePixmap();
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   return scoped_overlay_read_access_->GetIOSurface();
 #elif BUILDFLAG(IS_ANDROID)
   return scoped_overlay_read_access_->GetAHardwareBufferFenceSync();
@@ -249,7 +249,7 @@ void OutputPresenterGL::PostSubBuffer(
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback,
     gfx::FrameData data) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   presenter_->SetCALayerErrorCode(ca_layer_error_code_);
 #endif
 
@@ -404,7 +404,7 @@ void OutputPresenterGL::SetVSyncDisplayID(int64_t display_id) {
   presenter_->SetVSyncDisplayID(display_id);
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 void OutputPresenterGL::SetCALayerErrorCode(
     gfx::CALayerResult ca_layer_error_code) {
   ca_layer_error_code_ = ca_layer_error_code;

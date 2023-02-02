@@ -69,7 +69,7 @@ viz_component("resource_format_utils") {
 
 # TODO(rivr): To reduce link times, merge these context provider components
 # into a single gr_context_provider component.
-if (is_mac) {
+if (is_apple) {
   viz_component("metal_context_provider") {
     output_name = "viz_metal_context_provider"
 
@@ -366,7 +366,7 @@ viz_component("common") {
   if (enable_vulkan) {
     public_deps += [ ":vulkan_context_provider" ]
   }
-  if (is_mac) {
+  if (is_apple) {
     public_deps += [ ":metal_context_provider" ]
   }
   if (skia_use_dawn) {

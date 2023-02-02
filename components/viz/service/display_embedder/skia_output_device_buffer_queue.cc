@@ -87,7 +87,7 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
   }
 
   bool IsInUseByWindowServer() const {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     if (!scoped_read_access_)
       return false;
     return scoped_read_access_->IsInUseByWindowServer();
@@ -491,7 +491,7 @@ void SkiaOutputDeviceBufferQueue::PostSubBuffer(
     DCHECK(submitted_image_);
   }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   presenter_->SetCALayerErrorCode(frame.ca_layer_error_code);
 #endif
 

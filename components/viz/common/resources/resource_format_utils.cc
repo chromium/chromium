@@ -47,7 +47,7 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
     case ETC1:
       return kRGB_888x_SkColorType;
     case P010:
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
       DLOG(ERROR) << "Sampling of P010 resources must be done per-plane.";
 #endif
       return kRGBA_1010102_SkColorType;
@@ -59,12 +59,12 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
     // YUV images are sampled as RGB.
     case YVU_420:
     case YUV_420_BIPLANAR:
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
       DLOG(ERROR) << "Sampling of YUV_420 resources must be done per-plane.";
 #endif
       return kRGB_888x_SkColorType;
     case YUVA_420_TRIPLANAR:
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
       DLOG(ERROR) << "Sampling of YUVA_420 resources must be done per-plane.";
 #endif
       return kRGBA_8888_SkColorType;
@@ -373,7 +373,7 @@ unsigned int TextureStorageFormat(ResourceFormat format,
     case ETC1:
       return GL_ETC1_RGB8_OES;
     case P010:
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
       DLOG(ERROR) << "Sampling of P010 resources must be done per-plane.";
 #endif
       return GL_RGB10_A2_EXT;
@@ -382,12 +382,12 @@ unsigned int TextureStorageFormat(ResourceFormat format,
       return GL_RGB10_A2_EXT;
     case YVU_420:
     case YUV_420_BIPLANAR:
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
       DLOG(ERROR) << "Sampling of YUV_420 resources must be done per-plane.";
 #endif
       return GL_RGB8_OES;
     case YUVA_420_TRIPLANAR:
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
       DLOG(ERROR) << "Sampling of YUVA_420 resources must be done per-plane.";
 #endif
       return GL_RGBA8_OES;
@@ -408,7 +408,7 @@ bool IsGpuMemoryBufferFormatSupported(ResourceFormat format) {
     // candidate.
     case RED_8:
 #endif
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     case BGRX_8888:
     case RGBX_8888:
 #endif
@@ -427,7 +427,7 @@ bool IsGpuMemoryBufferFormatSupported(ResourceFormat format) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     case RED_8:
 #endif
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_APPLE)
     case BGRX_8888:
     case RGBX_8888:
 #endif

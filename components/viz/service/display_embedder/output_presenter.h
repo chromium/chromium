@@ -150,7 +150,7 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
   virtual void SetGpuVSyncEnabled(bool enabled) {}
   virtual void SetVSyncDisplayID(int64_t display_id) {}
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   virtual void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) {}
 #endif
 };

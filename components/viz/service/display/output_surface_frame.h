@@ -48,7 +48,7 @@ class VIZ_SERVICE_EXPORT OutputSurfaceFrame {
   // Metadata containing information to draw a delegated ink trail using
   // platform APIs.
   std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
 #endif
 };

@@ -157,7 +157,7 @@ BASE_FEATURE(kDynamicSchedulerForClients,
              "DynamicSchedulerForClients",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 BASE_FEATURE(kMacCAOverlayQuad,
              "MacCAOverlayQuads",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -107,7 +107,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     std::vector<ui::LatencyInfo> latency_info;
     int64_t seq = -1;
     bool top_controls_visible_height_changed = false;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
 #endif
     absl::optional<int64_t> choreographer_vsync_id;

@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
@@ -383,7 +384,12 @@ CALayerOverlay& CALayerOverlay::operator=(const CALayerOverlay& other) =
     default;
 
 CALayerOverlayProcessor::CALayerOverlayProcessor()
-    : overlays_allowed_(ui::RemoteLayerAPISupported()),
+    :
+#if BUILDFLAG(IS_MAC)
+      overlays_allowed_(ui::RemoteLayerAPISupported()),
+#else
+      overlays_allowed_(true),
+#endif
       enable_ca_renderer_(base::FeatureList::IsEnabled(kCARenderer)),
       enable_hdr_underlays_(base::FeatureList::IsEnabled(kHDRUnderlays)) {
   if (base::FeatureList::IsEnabled(features::kMacCAOverlayQuad)) {

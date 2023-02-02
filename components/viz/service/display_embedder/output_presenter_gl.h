@@ -67,7 +67,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
   bool SupportsGpuVSync() const final;
   void SetGpuVSyncEnabled(bool enabled) final;
   void SetVSyncDisplayID(int64_t display_id) final;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) final;
 #endif
 
@@ -84,7 +84,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
       shared_image_representation_factory_;
   uint32_t shared_image_usage_;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   gfx::CALayerResult ca_layer_error_code_ = gfx::kCALayerSuccess;
 #endif
 };

@@ -292,7 +292,7 @@ viz_component("service") {
     }
   }
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
       "display/ca_layer_overlay.cc",
       "display/ca_layer_overlay.h",

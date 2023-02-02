@@ -37,6 +37,9 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "components/viz/service/display_embedder/software_output_device_mac.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
 #include "ui/base/cocoa/remote_layer_api.h"
 #endif
 

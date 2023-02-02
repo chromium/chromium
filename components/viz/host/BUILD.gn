@@ -60,7 +60,7 @@ viz_component("host") {
     "//ui/gfx/geometry",
   ]
 
-  if (is_mac) {
+  if (is_apple) {
     deps += [ "//ui/accelerated_widget_mac" ]
   }
 

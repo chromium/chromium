@@ -900,7 +900,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
       last_top_controls_visible_height_ = *frame.top_controls_visible_height;
     }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     swap_frame_data.ca_layer_error_code =
         overlay_processor_->GetCALayerErrorCode();
 #endif
