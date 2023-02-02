@@ -98,6 +98,8 @@ std::ostream& operator<<(std::ostream& os, const VersionInfo& version_info) {
   os << "- Version Info: " << std::endl;
   os << "  - Ash Chrome: " << version_info.ash_chrome << std::endl;
   os << "  - Platform: " << version_info.platform << std::endl;
+  os << "  - Channel: " << version_info::GetChannelString(version_info.channel)
+     << std::endl;
   return os;
 }
 

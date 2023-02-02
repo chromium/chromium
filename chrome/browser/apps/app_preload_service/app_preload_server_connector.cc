@@ -160,7 +160,9 @@ void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
   const bool server_error =
       net_error != net::OK || (response_code >= 500 && response_code < 600);
   if (server_error) {
-    LOG(ERROR) << "Server error.";
+    LOG(ERROR) << "Server error. "
+               << "Response code: " << response_code
+               << ". Net error: " << net_error;
     std::move(callback).Run(absl::nullopt);
     return;
   }
