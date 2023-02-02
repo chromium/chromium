@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_test_helpers.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
@@ -2107,6 +2108,37 @@ TEST_F(DocumentSimTest, HeaderPreloadRemoveReaddClient) {
 
   Element* target = GetDocument().QuerySelector(".target");
   EXPECT_EQ(100, target->OffsetWidth());
+}
+
+TEST_F(DocumentTest, ActiveModalDialog) {
+  SetHtmlInnerHTML(R"HTML(
+    <dialog id="modal"></dialog>
+    <dialog popover id="popover"></dialog>
+  )HTML");
+
+  HTMLDialogElement* modal =
+      DynamicTo<HTMLDialogElement>(GetDocument().getElementById("modal"));
+  HTMLDialogElement* popover =
+      DynamicTo<HTMLDialogElement>(GetDocument().getElementById("popover"));
+
+  ASSERT_TRUE(modal);
+  ASSERT_TRUE(popover);
+
+  EXPECT_EQ(GetDocument().ActiveModalDialog(), nullptr);
+
+  NonThrowableExceptionState exception_state;
+  modal->showModal(exception_state);
+
+  EXPECT_EQ(GetDocument().ActiveModalDialog(), modal);
+  ASSERT_FALSE(GetDocument().TopLayerElements().empty());
+  EXPECT_EQ(GetDocument().TopLayerElements().back(), modal);
+
+  popover->showPopover(exception_state);
+
+  // The popover is the last of the top layer elements, but it's not modal.
+  ASSERT_FALSE(GetDocument().TopLayerElements().empty());
+  EXPECT_EQ(GetDocument().TopLayerElements().back(), popover);
+  EXPECT_EQ(GetDocument().ActiveModalDialog(), modal);
 }
 
 }  // namespace blink

@@ -150,11 +150,13 @@ void HTMLDialogElement::close(const String& return_value) {
 
   if (!FastHasAttribute(html_names::kOpenAttr))
     return;
-  SetBooleanAttribute(html_names::kOpenAttr, false);
-  SetIsModal(false);
 
   Document& document = GetDocument();
   HTMLDialogElement* old_modal_dialog = document.ActiveModalDialog();
+
+  SetBooleanAttribute(html_names::kOpenAttr, false);
+  SetIsModal(false);
+
   document.RemoveFromTopLayer(this);
   InertSubtreesChanged(document, old_modal_dialog);
 
