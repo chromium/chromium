@@ -15,6 +15,14 @@ namespace blink {
 namespace internal {
 
 namespace {
+bool ParseMajorVersion(int in, network::mojom::TrustTokenMajorVersion* out) {
+  if (in == 1) {
+    *out = network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1;
+    return true;
+  } else {
+    return false;
+  }
+}
 bool ParseOperation(const String& in,
                     network::mojom::TrustTokenOperationType* out) {
   if (in == "token-request") {
@@ -54,6 +62,15 @@ network::mojom::blink::TrustTokenParamsPtr TrustTokenParamsFromJson(
     return nullptr;
 
   auto ret = network::mojom::blink::TrustTokenParams::New();
+
+  // |version| is required.
+  int version;
+  if (!object->GetInteger("version", &version)) {
+    return nullptr;
+  }
+  if (!ParseMajorVersion(version, &ret->version)) {
+    return nullptr;
+  }
 
   // |operation| is required.
   String operation;

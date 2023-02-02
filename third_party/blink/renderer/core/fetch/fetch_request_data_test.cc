@@ -56,6 +56,7 @@ TEST(FetchRequestDataTest, CheckTrustTokenParamsAreCopiedWithCreate) {
       ::blink::SecurityOrigin::CreateFromString("https://bbb.example"));
   WTF::Vector<WTF::String> additional_signed_headers = {"aaa", "bbb"};
   auto trust_token_params = network::mojom::blink::TrustTokenParams::New(
+      network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1,
       network::mojom::TrustTokenOperationType::kRedemption,
       network::mojom::TrustTokenRefreshPolicy::kUseCached,
       /* custom_key_commitment=*/"custom_key_commitment",

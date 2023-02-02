@@ -65,6 +65,13 @@ TrustTokenRequestHelperTest::ExecuteFinalizeAndWaitForResult(
   return future.Get();
 }
 
+int TrustTokenEnumToInt(mojom::TrustTokenMajorVersion version) {
+  if (version == mojom::TrustTokenMajorVersion::kPrivateStateTokenV1) {
+    return 1;
+  }
+  return 0;
+}
+
 std::string TrustTokenEnumToString(mojom::TrustTokenOperationType operation) {
   switch (operation) {
     case mojom::TrustTokenOperationType::kIssuance:
@@ -118,10 +125,12 @@ TrustTokenTestParameters& TrustTokenTestParameters::operator=(
     const TrustTokenTestParameters&) = default;
 
 TrustTokenTestParameters::TrustTokenTestParameters(
+    network::mojom::TrustTokenMajorVersion version,
     network::mojom::TrustTokenOperationType operation,
     absl::optional<network::mojom::TrustTokenRefreshPolicy> refresh_policy,
     absl::optional<std::vector<std::string>> issuer_specs)
-    : operation(operation),
+    : version(version),
+      operation(operation),
       refresh_policy(refresh_policy),
       issuer_specs(issuer_specs) {}
 
@@ -131,7 +140,9 @@ SerializeTrustTokenParametersAndConstructExpectation(
   auto trust_token_params = mojom::TrustTokenParams::New();
 
   base::Value::Dict parameters;
+  parameters.Set("version", TrustTokenEnumToInt(input.version));
   parameters.Set("operation", TrustTokenEnumToString(input.operation));
+  trust_token_params->version = input.version;
   trust_token_params->operation = input.operation;
 
   if (input.refresh_policy.has_value()) {

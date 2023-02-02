@@ -256,7 +256,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest, TrustTokenIssuance) {
   std::string command = content::JsReplace(R"(
   (async () => {
     try {
-      await fetch("/issue", {trustToken: {operation: 'token-request'}});
+      await fetch("/issue", {trustToken: {version: 1,
+                                          operation: 'token-request'}});
       return await document.hasPrivateToken($1, 'private-state-token');
     } catch {
       return false;

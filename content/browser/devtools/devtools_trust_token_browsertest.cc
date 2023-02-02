@@ -68,13 +68,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-request' } })
+        { trustToken: { version: 1, operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-redemption' } })
+        { trustToken: { version: 1, operation: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
 
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
   // 3) Issue another redemption, and verify its served from cache.
   EXPECT_EQ("NoModificationAllowedError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-redemption' } })
+        { trustToken: { version: 1, operation: 'token-redemption' } })
         .catch(err => err.name); )",
                                       server_.GetURL("a.test", "/redeem"))));
 
@@ -128,9 +128,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, FetchEndToEnd) {
   // request.
   std::string command = R"(
   (async () => {
-    await fetch('/issue', {trustToken: {operation: 'token-request'}});
-    await fetch('/redeem', {trustToken: {operation: 'token-redemption'}});
-    await fetch('/sign', {trustToken: {operation: 'send-redemption-record',
+    await fetch('/issue', {trustToken: {version: 1,
+                                        operation: 'token-request'}});
+    await fetch('/redeem', {trustToken: {version: 1,
+                                         operation: 'token-redemption'}});
+    await fetch('/sign', {trustToken: {version: 1,
+                                       operation: 'send-redemption-record',
                                   issuers: [$1]}});
     return 'Success'; })(); )";
 
@@ -164,8 +167,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, IframeEndToEnd) {
   // request.
   std::string command = R"(
   (async () => {
-    await fetch('/issue', {trustToken: {operation: 'token-request'}});
-    await fetch('/redeem', {trustToken: {operation: 'token-redemption'}});
+    await fetch('/issue', {trustToken: {version: 1,
+                                        operation: 'token-request'}});
+    await fetch('/redeem', {trustToken: {version: 1,
+                                         operation: 'token-redemption'}});
     return 'Success'; })(); )";
 
   // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
@@ -190,10 +195,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, IframeEndToEnd) {
     load_observer.WaitForNavigationFinished();
   };
 
-  execute_op_via_iframe("/sign", JsReplace(
-                                     R"({"operation": "send-redemption-record",
+  execute_op_via_iframe(
+      "/sign", JsReplace(
+                   R"({"version": 1, "operation": "send-redemption-record",
               "issuers": [$1]})",
-                                     IssuanceOriginFromHost("a.test")));
+                   IssuanceOriginFromHost("a.test")));
 
   // 4) Verify that we received three successful events.
   WaitForMatchingNotification("Network.trustTokenOperationDone",
@@ -224,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
 
   // 3) Request some Trust Tokens.
   EXPECT_EQ("OperationError", EvalJs(shell(), R"(fetch('/issue',
-        { trustToken: { operation: 'token-request' } })
+        { trustToken: { version: 1, operation: 'token-request' } })
         .then(()=>'Success').catch(err => err.name); )"));
 
   // 4) Verify that we received an Trust Token operation failed event.
@@ -251,7 +257,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, GetTrustTokens) {
   // 4) Request some Trust Tokens.
   std::string command = R"(
   (async () => {
-    await fetch('/issue', {trustToken: {operation: 'token-request'}});
+    await fetch('/issue', {trustToken: {version: 1,
+                                        operation: 'token-request'}});
     return 'Success'; })(); )";
 
   // We use EvalJs here, not ExecJs, because EvalJs waits for promises to

@@ -341,6 +341,8 @@ void KAnonymityServiceClient::JoinSetSendRequest(
       url::Origin::Create(GURL(features::kKAnonymityServiceAuthServer.Get()));
   network::mojom::TrustTokenParamsPtr params =
       network::mojom::TrustTokenParams::New();
+  params->version =
+      network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1;
   params->operation = network::mojom::TrustTokenOperationType::kRedemption;
   params->refresh_policy = network::mojom::TrustTokenRefreshPolicy::kRefresh;
   params->custom_key_commitment = key_and_id.key_commitment;

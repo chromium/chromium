@@ -9,7 +9,7 @@
 
     promise_test(function () {
         return fetch('/wpt_internal/trust-tokens/resources/trust_token_issuance.py', {
-            trustToken: { operation: 'token-request' }
+            trustToken: { version: 1, operation: 'token-request' }
         }).then(function (response) {
             assert_equals(response.status, 200);
             assert_equals(response.headers.get('Sec-Trust-Token'), null);
@@ -18,7 +18,7 @@
 
     promise_test(function () {
         return fetch('/wpt_internal/trust-tokens/resources/trust_token_redemption.py', {
-            trustToken: { operation: 'token-redemption' }
+            trustToken: { version: 1, operation: 'token-redemption' }
         }).then(function (response) {
             assert_equals(response.status, 200);
             assert_equals(response.headers.get('Sec-Trust-Token'), null);
@@ -29,6 +29,7 @@
         const host_info = get_host_info();
         return fetch('/wpt_internal/trust-tokens/resources/trust_token_send_redemption_record.py', {
             trustToken: {
+                version: 1,
                 operation: 'send-redemption-record',
                 issuers: [host_info.ORIGIN]
             }
@@ -36,4 +37,14 @@
             assert_equals(response.status, 200);
         })
     }, 'Send redemption record succeeds.');
+
+  test(function() {
+      assert_throws_js(TypeError,
+                       () => new Request('https://some-issuer.test',
+                                         {trustToken: {
+                                             version: 2,
+                                             operation: 'token-request'
+                                         }}),
+                       'Throws a TypeError due to invalid version number');
+  }, 'Creating a request with invalid token version number throws');
 </script>

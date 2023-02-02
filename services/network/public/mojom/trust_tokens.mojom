@@ -7,6 +7,13 @@ module network.mojom;
 import "url/mojom/origin.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
+// Supported Trust Token versions. A new item is added to this enum when a new
+// version is available. Version resolution will be carried based on the
+// version specified in TrustTokenParams.
+enum TrustTokenMajorVersion {
+  kPrivateStateTokenV1,
+};
+
 // TrustTokenProtocolVersion enumerates the versions of Trust Token that the
 // client knows about. Different versions represent different configuration
 // flows, data structure meanings, etc and may require clearing the database
@@ -119,6 +126,9 @@ enum TrustTokenSignRequestData {
 // operation.
 struct TrustTokenParams {
   // Required.
+  TrustTokenMajorVersion version;
+
+  // Required.
   TrustTokenOperationType operation;
 
   // Required exactly when "operation" is "kRedemption"; specifies whether the
@@ -208,6 +218,8 @@ struct TrustTokenVerificationKey {
 };
 
 struct TrustTokenKeyCommitmentResult {
+  TrustTokenMajorVersion version;
+
   // |protocol_version| is the Trust Token version that this key commitment is
   // for.
   TrustTokenProtocolVersion protocol_version;

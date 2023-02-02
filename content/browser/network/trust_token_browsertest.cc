@@ -160,10 +160,13 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEnd) {
 
   std::string command = R"(
   (async () => {
-    await fetch("/issue", {trustToken: {operation: 'token-request'}});
-    await fetch("/redeem", {trustToken: {operation: 'token-redemption'}});
-    await fetch("/sign", {trustToken: {operation: 'send-redemption-record',
-                                  issuers: [$1]}});
+    await fetch("/issue", {trustToken: {version: 1,
+                                        operation: 'token-request'}});
+    await fetch("/redeem", {trustToken: {version: 1,
+                                         operation: 'token-redemption'}});
+    await fetch("/sign", {trustToken: {version: 1,
+                                       operation: 'send-redemption-record',
+                                       issuers: [$1]}});
     return "Success"; })(); )";
 
   // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
@@ -191,6 +194,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
     let request = new XMLHttpRequest();
     request.open('GET', '/issue');
     request.setTrustToken({
+      version: 1,
       operation: 'token-request'
     });
     let promise = new Promise((res, rej) => {
@@ -202,6 +206,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
     request = new XMLHttpRequest();
     request.open('GET', '/redeem');
     request.setTrustToken({
+      version: 1,
       operation: 'token-redemption'
     });
     promise = new Promise((res, rej) => {
@@ -213,6 +218,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
     request = new XMLHttpRequest();
     request.open('GET', '/sign');
     request.setTrustToken({
+      version: 1,
       operation: 'send-redemption-record',
       issuers: [$1]
     });
@@ -242,8 +248,10 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeSendRedemptionRecord) {
 
   std::string command = R"(
   (async () => {
-    await fetch("/issue", {trustToken: {operation: 'token-request'}});
-    await fetch("/redeem", {trustToken: {operation: 'token-redemption'}});
+    await fetch("/issue", {trustToken: {version: 1,
+                                        operation: 'token-request'}});
+    await fetch("/redeem", {trustToken: {version: 1,
+                                         operation: 'token-redemption'}});
     return "Success";
   })())";
 
@@ -267,7 +275,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeSendRedemptionRecord) {
   };
 
   execute_op_via_iframe("/sign", JsReplace(
-                                     R"({"operation": "send-redemption-record",
+                                     R"({"version": 1,
+              "operation": "send-redemption-record",
               "issuers": [$1]})",
                                      IssuanceOriginFromHost("a.test")));
 
@@ -334,7 +343,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, HasTrustTokenAfterIssuance) {
 
   std::string command = JsReplace(R"(
   (async () => {
-    await fetch("/issue", {trustToken: {operation: 'token-request'}});
+    await fetch("/issue", {trustToken: {version: 1,
+                                        operation: 'token-request'}});
     return await document.hasPrivateToken($1, 'private-state-token');
   })();)",
                                   IssuanceOriginFromHost("a.test"));
@@ -358,7 +368,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   // This sign operation will fail, because we don't have a redemption record in
   // storage, a prerequisite. However, the failure shouldn't be fatal.
   std::string command = JsReplace(R"((async () => {
-      await fetch("/sign", {trustToken: {operation: 'send-redemption-record',
+      await fetch("/sign", {trustToken: {version: 1,
+                                         operation: 'send-redemption-record',
                                          issuers: [$1]}});
       return "Success";
       })(); )",
@@ -385,9 +396,12 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
 
   std::string command = R"(
   (async () => {
-    await fetch("/issue", {trustToken: {operation: 'token-request'}});
-    await fetch("/redeem", {trustToken: {operation: 'token-redemption'}});
-    await fetch("/sign", {trustToken: {operation: 'send-redemption-record',
+    await fetch("/issue", {trustToken: {version: 1,
+                                        operation: 'token-request'}});
+    await fetch("/redeem", {trustToken: {version: 1,
+                                         operation: 'token-redemption'}});
+    await fetch("/sign", {trustToken: {version: 1,
+                                       operation: 'send-redemption-record',
                                   issuers: [$1]}});
     return "Success"; })(); )";
 
@@ -440,9 +454,12 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsTimers) {
 
   std::string command = R"(
   (async () => {
-    await fetch("/issue", {trustToken: {operation: 'token-request'}});
-    await fetch("/redeem", {trustToken: {operation: 'token-redemption'}});
-    await fetch("/sign", {trustToken: {operation: 'send-redemption-record',
+    await fetch("/issue", {trustToken: {version: 1,
+                                        operation: 'token-request'}});
+    await fetch("/redeem", {trustToken: {version: 1,
+                                         operation: 'token-redemption'}});
+    await fetch("/sign", {trustToken: {version: 1,
+                                       operation: 'send-redemption-record',
                                   issuers: [$1]}});
     return "Success"; })(); )";
 
@@ -487,23 +504,23 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsNetErrorCodes) {
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
   EXPECT_THAT(
-      EvalJs(shell(),
-             JsReplace(
-                 R"(fetch($1, {trustToken: {operation: 'token-request'}})
+      EvalJs(shell(), JsReplace(
+                          R"(fetch($1, {trustToken: {version: 1,
+                                            operation: 'token-request'}})
                    .then(() => "Unexpected success!")
                    .catch(err => err.message);)",
-                 IssuanceOriginFromHost("no-cert-for-this.domain")))
+                          IssuanceOriginFromHost("no-cert-for-this.domain")))
           .ExtractString(),
       HasSubstr("Failed to fetch"));
 
   EXPECT_THAT(
-      EvalJs(shell(),
-             JsReplace(
-                 R"(fetch($1, {trustToken: {operation: 'send-redemption-record',
+      EvalJs(shell(), JsReplace(
+                          R"(fetch($1, {trustToken: {version: 1,
+                                         operation: 'send-redemption-record',
                  issuers: ['https://nonexistent-issuer.example']}})
                    .then(() => "Unexpected success!")
                    .catch(err => err.message);)",
-                 IssuanceOriginFromHost("no-cert-for-this.domain")))
+                          IssuanceOriginFromHost("no-cert-for-this.domain")))
           .ExtractString(),
       HasSubstr("Failed to fetch"));
 
@@ -522,14 +539,13 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsNetErrorCodes) {
 
   // Attempt a redemption against 'a.test'; we don't have a token for this
   // domain, so it should fail.
-  EXPECT_EQ(
-      "InvalidStateError",
-      EvalJs(shell(),
-             JsReplace(
-                 R"(fetch($1, {trustToken: {operation: 'token-redemption'}})
+  EXPECT_EQ("InvalidStateError",
+            EvalJs(shell(), JsReplace(
+                                R"(fetch($1, {trustToken: {version: 1,
+                                            operation: 'token-redemption'}})
                    .then(() => "Unexpected success!")
                    .catch(err => err.name);)",
-                 IssuanceOriginFromHost("a.test"))));
+                                IssuanceOriginFromHost("a.test"))));
 
   content::FetchHistogramsFromChildProcesses();
 
@@ -555,7 +571,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
   EXPECT_EQ("TypeError", EvalJs(shell(),
                                 R"(fetch("/cross-site/b.test/issue", {
                                      redirect: 'error',
-                                     trustToken: {operation: 'token-request'}
+                                     trustToken: {version: 1,
+                                                  operation: 'token-request'}
                                    })
                                    .then(() => "Unexpected success!")
                                    .catch(err => err.name);)"));
@@ -567,10 +584,10 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
 
   // Since issuance failed, there should be no tokens to redeem, so redemption
   // should fail:
-  EXPECT_EQ(
-      "OperationError",
-      EvalJs(shell(),
-             R"(fetch("/redeem", {trustToken: {operation: 'token-redemption'}})
+  EXPECT_EQ("OperationError",
+            EvalJs(shell(),
+                   R"(fetch("/redeem", {trustToken: {version: 1,
+                                               operation: 'token-redemption'}})
                    .then(() => "Unexpected success!")
                    .catch(err => err.name);)"));
 
@@ -591,7 +608,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
       GURL(IssuanceOriginFromHost("a.test")).Resolve("/issue");
   EXPECT_THAT(EvalJs(shell(), JsReplace(R"(fetch($1, {
   mode: 'no-cors',
-                  trustToken: {operation: 'token-request'}})
+                  trustToken: {version: 1,
+                               operation: 'token-request'}})
                    .then(() => "Unexpected success!")
                    .catch(err => err.message);)",
                                         site_a_issuance_url))
@@ -618,7 +636,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, OperationsRequireSecureContext) {
 
   // 1. Confirm that the Fetch interface doesn't work:
   std::string command =
-      R"(fetch("/issue", {trustToken: {operation: 'token-request'}})
+      R"(fetch("/issue", {trustToken: {version: 1,
+                                       operation: 'token-request'}})
            .catch(error => error.message);)";
   EXPECT_THAT(EvalJs(shell(), command).ExtractString(),
               HasSubstr("secure context"));
@@ -653,7 +672,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IssuanceRequiresKeys) {
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
 
   std::string command = R"(
-    fetch('/issue', {trustToken: {operation: 'token-request'}})
+    fetch('/issue', {trustToken: {version: 1,
+                                  operation: 'token-request'}})
     .then(() => 'Success').catch(err => err.name); )";
 
   // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
@@ -676,7 +696,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
   EXPECT_EQ("OperationError", EvalJs(shell(), R"(fetch('/issue',
-        { trustToken: { operation: 'token-request' } })
+        { trustToken: { version: 1, operation: 'token-request' } })
         .then(()=>'Success').catch(err => err.name); )"));
 }
 
@@ -691,7 +711,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, CrossOriginIssuanceWorks) {
   EXPECT_EQ(
       "Success",
       EvalJs(shell(), JsReplace(R"(
-            fetch($1, { trustToken: { operation: 'token-request' } })
+            fetch($1, { trustToken: { version: 1,
+                                      operation: 'token-request' } })
             .then(()=>'Success'); )",
                                 server_.GetURL("sub1.b.test", "/issue"))));
 }
@@ -706,7 +727,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, CrossSiteIssuanceWorks) {
   // because it sets the port correctly.
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
-            fetch($1, { trustToken: { operation: 'token-request' } })
+            fetch($1, { trustToken: { version: 1,
+                                      operation: 'token-request' } })
             .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
 }
@@ -738,7 +760,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   }
 
   EXPECT_EQ("OperationError", EvalJs(shell(), R"(
-            fetch('/issue', { trustToken: { operation: 'token-request' } })
+            fetch('/issue', { trustToken: { version: 1,
+                                            operation: 'token-request' } })
             .then(() => 'Success').catch(error => error.name); )"));
 }
 
@@ -757,7 +780,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL start_url = server_.GetURL("a.test", "/title1.html");
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
-  std::string command = R"(fetch($1, {trustToken: {operation: 'token-request'}})
+  std::string command = R"(fetch($1, {trustToken: {version: 1,
+                                                 operation: 'token-request'}})
                              .then(() => "Success")
                              .catch(error => error.name);)";
 
@@ -795,7 +819,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
   std::string command = R"(fetch($1, {mode: 'no-cors',
-                                      trustToken: {operation: 'token-request'}})
+                                      trustToken: {version: 1,
+                                                 operation: 'token-request'}})
                              .then(() => "Success")
                              .catch(error => error.name);)";
 
@@ -829,7 +854,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   ASSERT_TRUE(NavigateToURL(shell(), file_url));
 
   std::string command =
-      R"(fetch($1, {trustToken: {operation: 'token-request'}})
+      R"(fetch($1, {trustToken: {version: 1,
+                                 operation: 'token-request'}})
            .catch(error => error.name);)";
 
   // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
@@ -854,7 +880,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
   std::string command =
-      R"(fetch("/issue", {trustToken: {operation: 'token-request'}})
+      R"(fetch("/issue", {trustToken: {version: 1,
+                                       operation: 'token-request'}})
                              .then(() => "Success")
                              .catch(error => error.name);)";
 
@@ -867,7 +894,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   ASSERT_TRUE(NavigateToURL(shell(), file_url));
 
   // Redemption from a page with a file:// top frame origin should fail.
-  command = R"(fetch($1, {trustToken: {operation: 'token-redemption'}})
+  command = R"(fetch($1, {trustToken: {version: 1,
+                                       operation: 'token-redemption'}})
                  .catch(error => error.name);)";
   EXPECT_EQ(
       "InvalidStateError",
@@ -927,7 +955,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   EXPECT_EQ("Success", EvalJs(root->child_at(0)->current_frame_host(),
                               JsReplace(R"(
                               fetch($1, {mode: 'no-cors',
-                                         trustToken: {operation: 'token-request'}
+                                         trustToken: {version: 1,
+                                                    operation: 'token-request'}
                                          }).then(()=>'Success');)",
                                         server_.GetURL("a.test", "/issue"))));
 }
@@ -945,7 +974,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IssuanceWithAbsentKeyFails) {
   GURL start_url = server_.GetURL("a.test", "/title1.html");
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
-  std::string command = R"(fetch($1, {trustToken: {operation: 'token-request'}})
+  std::string command = R"(fetch($1, {trustToken: {version: 1,
+                                                   operation: 'token-request'}})
                              .then(() => "Success")
                              .catch(error => error.name);)";
   EXPECT_EQ(
@@ -982,6 +1012,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                               JsReplace(R"(
                               fetch($1, {mode: 'no-cors',
                                          trustToken: {
+                                             version: 1,
                                              operation: 'send-redemption-record',
                                              issuers: [
                                                  'https://issuer.example'
@@ -996,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionRequiresKeys) {
 
   EXPECT_EQ("InvalidStateError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-redemption' } })
+        { trustToken: { version: 1,operation: 'token-redemption' } })
         .then(() => 'Success')
         .catch(err => err.name); )",
                                       server_.GetURL("a.test", "/redeem"))));
@@ -1010,7 +1041,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionRequiresTokens) {
 
   EXPECT_EQ("OperationError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-redemption' } })
+        { trustToken: { version: 1, operation: 'token-redemption' } })
         .then(() => 'Success')
         .catch(err => err.name); )",
                                       server_.GetURL("a.test", "/redeem"))));
@@ -1026,13 +1057,13 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-request' } })
+        { trustToken: { version: 1, operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
 
   EXPECT_EQ("OperationError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-redemption' } })
+        { trustToken: { version: 1, operation: 'token-redemption' } })
         .then(() => 'Success')
         .catch(err => err.name); )",
                                       server_.GetURL("b.test", "/redeem"))));
@@ -1048,13 +1079,13 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
   EXPECT_EQ("Success", EvalJs(shell(), R"(fetch('/issue',
-        { trustToken: { operation: 'token-request' } })
+        { trustToken: { version: 1, operation: 'token-request' } })
         .then(()=>'Success'); )"));
 
   // Send a redemption request to the issuance endpoint, which should error out
   // for the obvious reason that it isn't an issuance request:
   EXPECT_EQ("OperationError", EvalJs(shell(), R"(fetch('/issue',
-        { trustToken: { operation: 'token-redemption' } })
+        { trustToken: { version: 1, operation: 'token-redemption' } })
         .then(() => 'Success')
         .catch(err => err.name); )"));
 }
@@ -1069,19 +1100,19 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-request' } })
+        { trustToken: { version: 1, operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-redemption' } })
+        { trustToken: { version: 1, operation: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
 
   EXPECT_EQ("NoModificationAllowedError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-redemption' } })
+        { trustToken: { version: 1, operation: 'token-redemption' } })
         .catch(err => err.name); )",
                                       server_.GetURL("a.test", "/redeem"))));
 }
@@ -1096,19 +1127,19 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-request' } })
+        { trustToken: { version: 1, operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-redemption' } })
+        { trustToken: { version: 1, operation: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-redemption',
+        { trustToken: { version: 1, operation: 'token-redemption',
                         refreshPolicy: 'refresh' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
@@ -1127,19 +1158,19 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   // succeed.
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-request' } })
+        { trustToken: { version: 1, operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("b.test", "/issue"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-redemption' } })
+        { trustToken: { version: 1, operation: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("b.test", "/redeem"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-redemption',
+        { trustToken: { version: 1, operation: 'token-redemption',
                         refreshPolicy: 'refresh' } })
         .then(()=>'Success').catch(err => err.name); )",
                                       server_.GetURL("b.test", "/redeem"))));
@@ -1165,13 +1196,13 @@ IN_PROC_BROWSER_TEST_F(
   // https://b.test:<PORT>.
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-request' } })
+        { trustToken: { version: 1, operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-request' } })
+        { trustToken: { version: 1, operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("b.test", "/issue"))));
 
@@ -1179,13 +1210,15 @@ IN_PROC_BROWSER_TEST_F(
   // that redirecting a request will renew the request's Trust Tokens state.
   EXPECT_EQ("Success", EvalJs(shell(), R"(
       fetch('/cross-site/b.test/redeem',
-        { trustToken: { mode: 'cors', operation: 'token-redemption' } })
+        { trustToken: { mode: 'cors', version: 1, operation: 'token-redemption' } })
         .then(()=>'Success'); )"));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
       fetch('/sign',
-        { trustToken: { operation: 'send-redemption-record', issuers: [$1],
+        { trustToken: { version: 1,
+                        operation: 'send-redemption-record',
+                        issuers: [$1],
         } }).then(()=>'Success');)",
                                       IssuanceOriginFromHost("b.test"))));
 
@@ -1200,7 +1233,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
       fetch('/sign',
-        { trustToken: { operation: 'send-redemption-record', issuers: [$1],
+        { trustToken: { version: 1,
+                        operation: 'send-redemption-record',
+                        issuers: [$1],
         } }).then(()=>'Success');)",
                                       IssuanceOriginFromHost("a.test"))));
 
@@ -1228,7 +1263,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ("Success", EvalJs(shell(), R"(
       fetch('/issue',
-        { trustToken: { operation: 'token-request' } })
+        { trustToken: { version: 1, operation: 'token-request' } })
         .then(()=>'Success'); )"));
 
   // `mode: 'no-cors'` on redemption has the effect that that redirecting a
@@ -1236,13 +1271,15 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Success", EvalJs(shell(), R"(
       fetch('/cross-site/b.test/redeem',
         { mode: 'no-cors',
-          trustToken: { operation: 'token-redemption' } })
+          trustToken: { version: 1, operation: 'token-redemption' } })
         .then(()=>'Success'); )"));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
       fetch('/sign',
-        { trustToken: { operation: 'send-redemption-record', issuers: [$1]
+        { trustToken: { version: 1,
+                        operation: 'send-redemption-record',
+                        issuers: [$1]
         } })
         .then(()=>'Success'); )",
                                       IssuanceOriginFromHost("a.test"))));
@@ -1258,7 +1295,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
       fetch('/sign',
-        { trustToken: { operation: 'send-redemption-record', issuers: [$1]
+        { trustToken: { version: 1,
+                        operation: 'send-redemption-record',
+                        issuers: [$1]
         } })
             .then(()=>'Success'); )",
                                       IssuanceOriginFromHost("b.test"))));
@@ -1290,7 +1329,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ("Success", EvalJs(shell(), R"(
       fetch('/issue',
-        { trustToken: { operation: 'token-request' } })
+        { trustToken: { version: 1, operation: 'token-request' } })
         .then(()=>'Success'); )"));
 
   // The redemption should succeed after the redirect, yielding an a.test
@@ -1299,7 +1338,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Success", EvalJs(shell(), R"(
       fetch('/cross-site/b.test/redeem',
         { mode: 'no-cors',
-          trustToken: { operation: 'token-redemption' } })
+          trustToken: { version: 1, operation: 'token-redemption' } })
         .then(()=>'Success'); )"));
 }
 
@@ -1313,9 +1352,12 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   std::string command = R"(
   (async () => {
     try {
-      await fetch("/issue", {trustToken: {operation: 'token-request'}});
-      await fetch("/redeem", {trustToken: {operation: 'token-redemption'}});
+      await fetch("/issue", {trustToken: {version: 1,
+                                          operation: 'token-request'}});
+      await fetch("/redeem", {trustToken: {version: 1,
+                                           operation: 'token-redemption'}});
       await fetch("/sign", {trustToken: {
+        version: 1,
         operation: 'send-redemption-record',
         issuers: [$1]}  // b.test, set below
       });
@@ -1359,9 +1401,12 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndWithServiceWorker) {
   const std::string trust_token_fetch_snippet = R"(
   (async () => {
     if (navigator.serviceWorker.controller === null) return "NotServiceWorker";
-    await fetch("/issue", {trustToken: {operation: 'token-request'}});
-    await fetch("/redeem", {trustToken: {operation: 'token-redemption'}});
-    await fetch("/sign", {trustToken: {operation: 'send-redemption-record',
+    await fetch("/issue", {trustToken: {version: 1,
+                                        operation: 'token-request'}});
+    await fetch("/redeem", {trustToken: {version: 1,
+                                         operation: 'token-redemption'}});
+    await fetch("/sign", {trustToken: {version: 1,
+                                       operation: 'send-redemption-record',
                                   issuers: [$1]}});
     return "TTSuccess"; })(); )";
 
@@ -1391,26 +1436,28 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionLimit) {
   // issue options.batch_size many tokens
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-request' } })
+        { trustToken: { version: 1, operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-redemption' } })
+        { trustToken: { version: 1, operation: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-redemption',
+        { trustToken: { version: 1,
+                        operation: 'token-redemption',
                         refreshPolicy: 'refresh' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
   // third redemption should fail
   EXPECT_EQ("Error",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { operation: 'token-redemption',
+        { trustToken: { version: 1,
+                        operation: 'token-redemption',
                         refreshPolicy: 'refresh' } })
         .then(()=>'Success')
         .catch(()=>'Error'); )",

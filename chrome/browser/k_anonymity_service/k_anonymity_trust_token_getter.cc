@@ -446,6 +446,8 @@ void KAnonymityTrustTokenGetter::FetchTrustToken() {
 
   network::mojom::TrustTokenParamsPtr params =
       network::mojom::TrustTokenParams::New();
+  params->version =
+      network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1;
   params->operation = network::mojom::TrustTokenOperationType::kIssuance;
   params->custom_key_commitment = key_commitment->key_and_id.key_commitment;
   resource_request->trust_token_params = *params;

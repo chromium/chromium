@@ -15,11 +15,12 @@ class DOMException;
 
 // Converts an IDL trustToken object to its Mojo counterpart.
 // The elements of trustToken (and of TrustTokenParams) comprise:
+// - a version type, always populated
 // - an operation type, always populated
 // - remaining elements partitioned into groups of parameters used for specific
 // operations.
 //
-// The method sets only |operation| and the fields corresponding to the
+// The method sets |version|, |operation| and the fields corresponding to the
 // operation specified by |operation|, namely
 // - for issuance, no additional fields;
 // - for redemption, |refresh_policy|;

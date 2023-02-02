@@ -51,7 +51,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsFetchUse) {
 
   std::string cmd = R"(
   (async () => {
-    await fetch("/page404.html", {trustToken: {operation: 'token-request'}});
+    await fetch("/page404.html", {trustToken: {version: 1,
+                                               operation: 'token-request'}});
   } )(); )";
 
   // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
