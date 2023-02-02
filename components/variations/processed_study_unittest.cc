@@ -384,7 +384,9 @@ TEST(ProcessedStudyTest, ValidateStudy) {
 }
 
 TEST(ProcessedStudyTest, ProcessedStudyAllAssignmentsToOneGroup) {
-  Study study;
+  Study study;   // Must outlive `processed_study`
+  Study study2;  // Must outlive `processed_study`
+
   study.set_name("study1");
   study.set_default_experiment_name("def");
   AddExperiment("def", 100, &study);
@@ -394,7 +396,6 @@ TEST(ProcessedStudyTest, ProcessedStudyAllAssignmentsToOneGroup) {
   EXPECT_TRUE(processed_study.all_assignments_to_one_group());
 
   AddExperiment("abc", 0, &study);
-
   AddExperiment("flag", 0, &study)->set_forcing_flag("flag_test1");
   EXPECT_TRUE(processed_study.Init(&study));
   EXPECT_TRUE(processed_study.all_assignments_to_one_group());
@@ -404,7 +405,6 @@ TEST(ProcessedStudyTest, ProcessedStudyAllAssignmentsToOneGroup) {
   EXPECT_FALSE(processed_study.all_assignments_to_one_group());
 
   // Try with default group and first group being at 0.
-  Study study2;
   study2.set_name("study2");
   study2.set_default_experiment_name("def");
   AddExperiment("def", 0, &study2);
