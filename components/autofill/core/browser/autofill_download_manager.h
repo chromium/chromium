@@ -127,7 +127,7 @@ class AutofillDownloadManager {
       base::WeakPtr<Observer> observer);
 
   // Returns true if the autofill server communication is enabled.
-  bool IsEnabled() const { return autofill_server_url_.is_valid(); }
+  bool IsEnabled() const;
 
   // Reset the upload history. This reduced space history prevents the autofill
   // download manager from uploading a multiple votes for a given form/event

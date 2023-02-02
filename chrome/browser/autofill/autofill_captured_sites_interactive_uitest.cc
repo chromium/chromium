@@ -246,6 +246,7 @@ class AutofillCapturedSitesInteractiveTest
     // elements in a form to determine if the form is ready for interaction.
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kAutofillAcrossIframes, {}},
+                              {features::kAutofillServerCommunication, {}},
                               {features::kAutofillShowTypePredictions, {}},
                               {features::kAutofillParsingPatternProvider,
                                {{"prediction_source", "nextgen"}}}},

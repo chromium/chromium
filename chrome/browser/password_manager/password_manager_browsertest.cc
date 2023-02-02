@@ -84,6 +84,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -134,6 +135,34 @@ class PasswordManagerBrowserTest : public PasswordManagerBrowserTestBase {
   }
 
   ~PasswordManagerBrowserTest() override = default;
+};
+
+// This fixture enables communication to the Autofill crowdsourcing server, but
+// denies any such requests.
+class PasswordManagerVotingBrowserTest : public PasswordManagerBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    PasswordManagerBrowserTest::SetUpOnMainThread();
+    url_loader_interceptor_ =
+        std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+            [](content::URLLoaderInterceptor::RequestParams* params) {
+              bool is_autofill_request =
+                  params->url_request.url.spec().find(
+                      "https://content-autofill.googleapis.com/") !=
+                  std::string::npos;
+              return is_autofill_request;
+            }));
+  }
+
+  void TearDownOnMainThread() override {
+    url_loader_interceptor_.reset();
+    PasswordManagerBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      autofill::features::kAutofillServerCommunication};
+  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
 // Test class for testing password manager with the BackForwardCache feature
@@ -929,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptIfLinkClicked) {
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PasswordManagerVotingBrowserTest,
                        VerifyPasswordGenerationUpload) {
   // Disable Autofill requesting access to AddressBook data. This causes
   // the test to hang on Mac.

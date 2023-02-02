@@ -137,10 +137,6 @@ GURL GetAutofillServerURL() {
                       switches::kAutofillServerURL);
   }
 
-  // If communication is disabled, leave the autofill server URL unset.
-  if (!base::FeatureList::IsEnabled(features::kAutofillServerCommunication))
-    return GURL();
-
   // Server communication is enabled. If there's an autofill server url param
   // use it, otherwise use the default.
   const std::string autofill_server_url_str =
@@ -611,6 +607,11 @@ AutofillDownloadManager::AutofillDownloadManager(AutofillClient* client)
                               /*log_manager=*/nullptr) {}
 
 AutofillDownloadManager::~AutofillDownloadManager() = default;
+
+bool AutofillDownloadManager::IsEnabled() const {
+  return autofill_server_url_.is_valid() &&
+         base::FeatureList::IsEnabled(features::kAutofillServerCommunication);
+}
 
 bool AutofillDownloadManager::StartQueryRequest(
     const std::vector<FormStructure*>& forms,

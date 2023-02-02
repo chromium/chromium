@@ -1190,6 +1190,11 @@ class AutofillInteractiveTest : public AutofillInteractiveTestBase {
 class AutofillInteractiveTestWithHistogramTester
     : public AutofillInteractiveTest {
  public:
+  AutofillInteractiveTestWithHistogramTester() {
+    feature_list_.InitWithFeatureState(features::kAutofillServerCommunication,
+                                       true);
+  }
+
   void SetUp() override {
     // Only allow requests to be loaded that are necessary for the test. This
     // allows a histogram to test properties of some specific requests.
@@ -1221,6 +1226,7 @@ class AutofillInteractiveTestWithHistogramTester
 
  private:
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test the basic form-fill flow.
