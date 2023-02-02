@@ -736,7 +736,7 @@ See your search engine’s instructions for deleting your search history, if app
         Search Image with Google
       </message>
       <message name="IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHGOOGLE_ALT_TEXT" desc="Context menu alternate text for option to search an image with Google [Length: 25em] [iOS only]">
-        Search inside image with Google
+        Search Inside Image with Google
       </message>
       <message name="IDS_IOS_COPY_VERSION_HINT" desc="The accessibility hint for the label showing the Chrome version. [iOS only]">
         Double tap to copy.
