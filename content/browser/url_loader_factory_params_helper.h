@@ -55,6 +55,7 @@ class URLLoaderFactoryParamsHelper {
           coep_reporter,
       RenderProcessHost* process,
       network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy,
+      net::CookieSettingOverrides cookie_setting_overrides,
       base::StringPiece debug_tag);
 
   // Creates URLLoaderFactoryParams to be used by |isolated_world_origin| hosted
@@ -68,11 +69,13 @@ class URLLoaderFactoryParamsHelper {
       const url::Origin& main_world_origin,
       const net::IsolationInfo& isolation_info,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy);
+      network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy,
+      net::CookieSettingOverrides cookie_setting_overrides);
 
   static network::mojom::URLLoaderFactoryParamsPtr CreateForPrefetch(
       RenderFrameHostImpl* frame,
-      network::mojom::ClientSecurityStatePtr client_security_state);
+      network::mojom::ClientSecurityStatePtr client_security_state,
+      net::CookieSettingOverrides cookie_setting_overrides);
 
   // Creates URLLoaderFactoryParams for either fetching the worker script or for
   // fetches initiated from a worker.

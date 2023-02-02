@@ -491,6 +491,7 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
     bool third_party_cookies_enabled,
+    net::CookieSettingOverrides cookie_setting_overrides,
     const CacheTransparencySettings* cache_transparency_settings)
     : url_request_context_(context.GetUrlRequestContext()),
       network_context_client_(context.GetNetworkContextClient()),
@@ -729,6 +730,9 @@ URLLoader::URLLoader(
         request.net_log_reference_info.value());
   }
 
+  for (net::CookieSettingOverride cso : cookie_setting_overrides) {
+    url_request_->cookie_setting_overrides().Put(cso);
+  }
   if (request.is_outermost_main_frame &&
       network::cors::IsCorsEnabledRequestMode(request_mode_)) {
     url_request_->cookie_setting_overrides().Put(

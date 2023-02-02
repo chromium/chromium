@@ -238,6 +238,7 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_document_created.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
@@ -1149,6 +1150,51 @@ bool CoopSuppressOpener(const RenderFrameHostImpl* opener) {
   }
 }
 
+// Checks Blink runtime-enabled feature (BREF) for third-party cookie
+// deprecation user bypass. This pulls the BREF from the committed frame
+// context; for a committing navigation the overload taking a NavigationRequest
+// should be called. For a subframe, the BREF is pulled from the main frame
+// context. If the main frame has no committed navigation (eg. an empty
+// initial document), then false is returned.
+// TODO(crbug.com/1386190): Follow up on whether any inner page scenarios
+// (eg. portals, guestview) require escaping out using GetOutermostMainFrame
+// or GetOutermostMainFrameOrEmbedder.
+// TODO(crbug.com/1386190): Currently a popup frame is an empty doc that returns
+// false. Follow up on whether it should instead use the BREF from its opener.
+bool GetIsThirdPartyCookiesUserBypassEnabled(RenderFrameHostImpl& frame) {
+  RenderFrameHost* main_frame = frame.GetMainFrame();
+  auto* document_data =
+      RuntimeFeatureStateDocumentData::GetForCurrentDocument(main_frame);
+  if (document_data) {
+    blink::RuntimeFeatureStateReadContext read_context =
+        document_data->runtime_feature_read_context();
+    return read_context.IsThirdPartyCookiesUserBypassEnabled();
+  }
+  return false;
+}
+
+// Checks Blink runtime-enabled feature (BREF) for third-party cookie
+// deprecation user bypass. This pulls the BREF from a pending navigation
+// request context; for a committed frame the overload taking a
+// RenderFrameHostImpl should be called. For a subframe, the BREF is *not*
+// pulled from the pending navigation request and is instead pulled from the
+// committed context on the main frame.
+// The passed in NavigationRequest must have a non-null RFH.
+// TODO(crbug.com/1386190): Follow up on whether any inner page scenarios
+// (eg. portals, guestview) require escaping out using GetOutermostMainFrame
+// or GetOutermostMainFrameOrEmbedder.
+bool GetIsThirdPartyCookiesUserBypassEnabled(
+    NavigationRequest& navigation_request) {
+  if (navigation_request.IsInMainFrame()) {
+    blink::RuntimeFeatureStateContext state_context =
+        navigation_request.GetRuntimeFeatureStateContext();
+    return state_context.IsThirdPartyCookiesUserBypassEnabled();
+  }
+  DCHECK(navigation_request.GetRenderFrameHost());
+  return GetIsThirdPartyCookiesUserBypassEnabled(
+      *navigation_request.GetRenderFrameHost());
+}
+
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -1167,6 +1213,12 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
         DetermineAfterCommitWhetherToForbidTrustTokenRedemption(frame);
     result.ukm_source_id_ =
         ukm::SourceIdObj::FromInt64(frame.GetPageUkmSourceId());
+
+    if (GetIsThirdPartyCookiesUserBypassEnabled(frame)) {
+      result.cookie_setting_overrides_.Put(
+          net::CookieSettingOverride::kForceThirdPartyByUser);
+    }
+
     return result;
   }
 
@@ -1200,6 +1252,11 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
           DetermineWhetherToForbidTrustTokenRedemption(
               navigation_request.GetRenderFrameHost(),
               navigation_request.commit_params(), result.origin());
+
+      if (GetIsThirdPartyCookiesUserBypassEnabled(navigation_request)) {
+        result.cookie_setting_overrides_.Put(
+            net::CookieSettingOverride::kForceThirdPartyByUser);
+      }
     }
 
     return result;
@@ -1269,6 +1326,10 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
 
   const ukm::SourceIdObj& ukm_source_id() const { return ukm_source_id_; }
 
+  const net::CookieSettingOverrides& cookie_setting_overrides() const {
+    return cookie_setting_overrides_;
+  }
+
  private:
   // Private constructor - please go through the static For... methods.
   SubresourceLoaderFactoriesConfig() = default;
@@ -1280,6 +1341,7 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
       coep_reporter_;
   network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy_;
   ukm::SourceIdObj ukm_source_id_;
+  net::CookieSettingOverrides cookie_setting_overrides_;
 };
 
 struct PendingNavigation {
@@ -2520,7 +2582,8 @@ RenderFrameHostImpl::CreateURLLoaderFactoriesForIsolatedWorlds(
         URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
             this, isolated_world_origin, config.origin(),
             config.isolation_info(), config.GetClientSecurityState(),
-            config.trust_token_redemption_policy());
+            config.trust_token_redemption_policy(),
+            config.cookie_setting_overrides());
 
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
     CreateNetworkServiceDefaultFactoryAndObserve(
@@ -7416,7 +7479,8 @@ RenderFrameHostImpl::CreateCrossOriginPrefetchLoaderFactoryBundle() {
       SubresourceLoaderFactoriesConfig::ForLastCommittedNavigation(*this);
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForPrefetch(
-          this, subresource_loader_factories_config.GetClientSecurityState());
+          this, subresource_loader_factories_config.GetClientSecurityState(),
+          subresource_loader_factories_config.cookie_setting_overrides());
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_default_factory;
   bool bypass_redirect_checks = false;
@@ -10192,7 +10256,8 @@ RenderFrameHostImpl::CreateURLLoaderFactoryParamsForMainWorld(
   return URLLoaderFactoryParamsHelper::CreateForFrame(
       this, config.origin(), config.isolation_info(),
       config.GetClientSecurityState(), config.GetCoepReporter(), GetProcess(),
-      config.trust_token_redemption_policy(), debug_tag);
+      config.trust_token_redemption_policy(), config.cookie_setting_overrides(),
+      debug_tag);
 }
 
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(
@@ -14518,6 +14583,12 @@ void RenderFrameHostImpl::DocumentAssociatedData::
 std::ostream& operator<<(std::ostream& o,
                          const RenderFrameHostImpl::LifecycleStateImpl& s) {
   return o << LifecycleStateImplToString(s);
+}
+
+net::CookieSettingOverrides RenderFrameHostImpl::GetCookieSettingOverrides() {
+  auto subresource_loader_factories_config =
+      SubresourceLoaderFactoriesConfig::ForLastCommittedNavigation(*this);
+  return subresource_loader_factories_config.cookie_setting_overrides();
 }
 
 }  // namespace content

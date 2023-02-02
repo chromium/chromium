@@ -646,7 +646,8 @@ struct URLLoaderOptions {
         std::move(trust_token_helper_factory), std::move(cookie_observer),
         std::move(trust_token_observer), std::move(url_loader_network_observer),
         std::move(devtools_observer), std::move(accept_ch_frame_observer),
-        third_party_cookies_enabled, cache_transparency_settings);
+        third_party_cookies_enabled, cookie_setting_overrides,
+        cache_transparency_settings);
   }
 
   int32_t options = mojom::kURLLoadOptionNone;
@@ -668,6 +669,7 @@ struct URLLoaderOptions {
   mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer =
       mojo::NullRemote();
   bool third_party_cookies_enabled = true;
+  net::CookieSettingOverrides cookie_setting_overrides;
   raw_ptr<CacheTransparencySettings> cache_transparency_settings = nullptr;
 
  private:
@@ -858,6 +860,7 @@ class URLLoaderTest : public testing::Test {
     url_loader_options.accept_ch_frame_observer =
         accept_ch_frame_observer_ ? accept_ch_frame_observer_->Bind()
                                   : mojo::NullRemote();
+    url_loader_options.cookie_setting_overrides = cookie_setting_overrides_;
     url_loader = url_loader_options.MakeURLLoader(
         context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.BindNewPipeAndPassReceiver(), request, client_.CreateRemote());
@@ -1046,6 +1049,10 @@ class URLLoaderTest : public testing::Test {
       MockAcceptCHFrameObserver* observer) {
     accept_ch_frame_observer_ = observer;
   }
+  void set_cookie_setting_overrides(
+      const net::CookieSettingOverrides& overrides) {
+    cookie_setting_overrides_ = overrides;
+  }
 
   // Convenience methods after calling Load();
   std::string mime_type() const {
@@ -1180,6 +1187,7 @@ class URLLoaderTest : public testing::Test {
   net::HttpRequestHeaders additional_headers_;
   mojom::IPAddressSpace target_ip_address_space_ =
       mojom::IPAddressSpace::kUnknown;
+  net::CookieSettingOverrides cookie_setting_overrides_;
 
   bool corb_enabled_ = false;
 
@@ -5940,6 +5948,29 @@ class ExpectBypassCacheInterceptor : public net::URLRequestInterceptor {
   }
 };
 
+class ExpectCookieSettingOverridesURLRequestInterceptor
+    : public net::URLRequestInterceptor {
+ public:
+  explicit ExpectCookieSettingOverridesURLRequestInterceptor(
+      net::CookieSettingOverrides cookie_setting_overrides,
+      bool* was_intercepted)
+      : cookie_setting_overrides_(cookie_setting_overrides),
+        was_intercepted_(was_intercepted) {}
+
+  // net::URLRequestInterceptor:
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
+    EXPECT_FALSE(*was_intercepted_);
+    EXPECT_EQ(request->cookie_setting_overrides(), cookie_setting_overrides_);
+    *was_intercepted_ = true;
+    return nullptr;
+  }
+
+ private:
+  const net::CookieSettingOverrides cookie_setting_overrides_;
+  bool* const was_intercepted_;
+};
+
 }  // namespace
 
 class URLLoaderSyncOrAsyncTrustTokenOperationTest
@@ -6970,6 +7001,20 @@ TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_IntervalTooShort) {
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(URLLoaderTest, CookieSettingOverridesCopiedToURLRequest) {
+  GURL url = test_server()->GetURL("/simple_page.html");
+  net::CookieSettingOverrides cookie_setting_overrides =
+      net::CookieSettingOverrides::All();
+  set_cookie_setting_overrides(cookie_setting_overrides);
+  bool was_intercepted = false;
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      url, std::make_unique<ExpectCookieSettingOverridesURLRequestInterceptor>(
+               cookie_setting_overrides, &was_intercepted));
+
+  EXPECT_THAT(Load(url), IsOk());
+  EXPECT_TRUE(was_intercepted);
+}
 
 using ExtraHeaders = std::vector<std::pair<std::string, std::string>>;
 

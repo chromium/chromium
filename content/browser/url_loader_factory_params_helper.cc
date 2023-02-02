@@ -10,6 +10,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
@@ -19,6 +20,7 @@
 #include "content/public/common/url_constants.h"
 #include "ipc/ipc_message.h"
 #include "net/base/isolation_info.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -56,6 +58,7 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
     network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy,
+    net::CookieSettingOverrides cookie_setting_overrides,
     base::StringPiece debug_tag) {
   DCHECK(process);
 
@@ -109,6 +112,8 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
   params->url_loader_network_observer = std::move(url_loader_network_observer);
   params->devtools_observer = std::move(devtools_observer);
 
+  params->cookie_setting_overrides = cookie_setting_overrides;
+
   params->debug_tag = std::string(debug_tag);
 
   return params;
@@ -127,6 +132,7 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
         coep_reporter,
     RenderProcessHost* process,
     network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy,
+    net::CookieSettingOverrides cookie_setting_overrides,
     base::StringPiece debug_tag) {
   return CreateParams(
       process,
@@ -140,7 +146,7 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
       frame->CreateCookieAccessObserver(),
       frame->CreateURLLoaderNetworkObserver(),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
-      trust_token_redemption_policy, debug_tag);
+      trust_token_redemption_policy, cookie_setting_overrides, debug_tag);
 }
 
 // static
@@ -151,7 +157,8 @@ URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
     const url::Origin& main_world_origin,
     const net::IsolationInfo& isolation_info,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy) {
+    network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy,
+    net::CookieSettingOverrides cookie_setting_overrides) {
   return CreateParams(
       frame->GetProcess(),
       isolated_world_origin,  // origin
@@ -165,13 +172,15 @@ URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
       frame->CreateCookieAccessObserver(),
       frame->CreateURLLoaderNetworkObserver(),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
-      trust_token_redemption_policy, "ParamHelper::CreateForIsolatedWorld");
+      trust_token_redemption_policy, cookie_setting_overrides,
+      "ParamHelper::CreateForIsolatedWorld");
 }
 
 network::mojom::URLLoaderFactoryParamsPtr
 URLLoaderFactoryParamsHelper::CreateForPrefetch(
     RenderFrameHostImpl* frame,
-    network::mojom::ClientSecurityStatePtr client_security_state) {
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    net::CookieSettingOverrides cookie_setting_overrides) {
   // The factory client |is_trusted| to control the |network_isolation_key| in
   // each separate request (rather than forcing the client to use the key
   // specified in URLLoaderFactoryParams).
@@ -191,12 +200,14 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
       frame->CreateURLLoaderNetworkObserver(),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
       network::mojom::TrustTokenRedemptionPolicy::kForbid,
-      "ParamHelper::CreateForPrefetch");
+      cookie_setting_overrides, "ParamHelper::CreateForPrefetch");
 }
 
 // static
 // TODO(crbug.com/1231019): make sure client_security_state is no longer nullptr
 // anywhere.
+// TODO(crbug.com/1386190): Investigate whether to support cookie setting
+// overrides (hardcoded empty set used for now).
 network::mojom::URLLoaderFactoryParamsPtr
 URLLoaderFactoryParamsHelper::CreateForWorker(
     RenderProcessHost* process,
@@ -227,10 +238,12 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       // is currently an open issue (as of 06/21/2022):
       // https://github.com/w3c/webappsec-permissions-policy/issues/207.
       network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit,
-      debug_tag);
+      net::CookieSettingOverrides(), debug_tag);
 }
 
 // static
+// TODO(crbug.com/1386190): Investigate whether to support cookie setting
+// overrides (hardcoded empty set used for now).
 network::mojom::URLLoaderFactoryParamsPtr
 URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
     RenderProcessHost* process,
@@ -262,18 +275,18 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
           early_hints.ip_address_space,
           network::mojom::PrivateNetworkRequestPolicy::kBlock);
 
-  return CreateParams(process, /*origin=*/tentative_origin,
-                      /*request_initiator_origin_lock=*/tentative_origin,
-                      /*is_trusted=*/false, /*top_frame_token=*/absl::nullopt,
-                      isolation_info, std::move(client_security_state),
-                      /*coep_reporter=*/mojo::NullRemote(),
-                      /*allow_universal_access_from_file_urls=*/false,
-                      /*is_for_isolated_world=*/false,
-                      std::move(cookie_observer),
-                      std::move(url_loader_network_observer),
-                      /*devtools_observer=*/mojo::NullRemote(),
-                      network::mojom::TrustTokenRedemptionPolicy::kForbid,
-                      "ParamHelper::CreateForEarlyHintsPreload");
+  return CreateParams(
+      process, /*origin=*/tentative_origin,
+      /*request_initiator_origin_lock=*/tentative_origin,
+      /*is_trusted=*/false, /*top_frame_token=*/absl::nullopt, isolation_info,
+      std::move(client_security_state),
+      /*coep_reporter=*/mojo::NullRemote(),
+      /*allow_universal_access_from_file_urls=*/false,
+      /*is_for_isolated_world=*/false, std::move(cookie_observer),
+      std::move(url_loader_network_observer),
+      /*devtools_observer=*/mojo::NullRemote(),
+      network::mojom::TrustTokenRedemptionPolicy::kForbid,
+      net::CookieSettingOverrides(), "ParamHelper::CreateForEarlyHintsPreload");
 }
 
 }  // namespace content

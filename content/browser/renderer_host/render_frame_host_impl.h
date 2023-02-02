@@ -2794,6 +2794,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // used on primary main frames.
   bool IsPageReadyToBeClosed();
 
+  // Checks Blink runtime-enabled features (BREF) to create and return
+  // a CookieSettingOverrides pertaining to the last committed document in the
+  // frame. Can only be called on a frame with a committed navigation.
+  net::CookieSettingOverrides GetCookieSettingOverrides();
+
  protected:
   friend class RenderFrameHostFactory;
 

@@ -11,7 +11,7 @@ namespace net {
 
 // An enum of possible overrides for cookie setting checks.
 // Use CookieSettingOverrides below for specifying any number of overrides
-// together.
+// together. The notion of no overrides is conveyable via an empty set.
 enum class CookieSettingOverride {
   // When specified, the user has indicated to force allowing third-party
   // cookies.

@@ -16,6 +16,7 @@ import "services/network/public/mojom/cert_verifier_service.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
+import "services/network/public/mojom/cookie_setting_overrides.mojom";
 import "services/network/public/mojom/cors_origin_pattern.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/default_credentials.mojom";
@@ -783,6 +784,10 @@ struct URLLoaderFactoryParams {
   // TODO(lukasza): https://crbug.com/1151008: Consider removing this
   // diagnostic aid once the bug is understood.
   string debug_tag = "";
+
+  // Lists all the cookie setting overrides that should be specified on
+  // each URLRequest.
+  CookieSettingOverrides cookie_setting_overrides;
 };
 
 // Callback interface for NetworkContext when routing identifiers aren't

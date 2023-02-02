@@ -27,6 +27,7 @@
 #include "net/base/load_states.h"
 #include "net/base/network_delegate.h"
 #include "net/base/transport_info.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "services/network/keepalive_statistics_recorder.h"
@@ -164,6 +165,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
       bool third_party_cookies_enabled,
+      net::CookieSettingOverrides cookie_setting_overrides,
       const CacheTransparencySettings* cache_transparency_settings);
 
   URLLoader(const URLLoader&) = delete;

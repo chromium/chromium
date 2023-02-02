@@ -336,6 +336,7 @@ mojom("url_loader_base") {
     "chunked_data_pipe_getter.mojom",
     "client_security_state.mojom",
     "content_security_policy.mojom",
+    "cookie_setting_overrides.mojom",
     "cors.mojom",
     "cross_origin_embedder_policy.mojom",
     "cross_origin_opener_policy.mojom",
@@ -639,6 +640,18 @@ mojom("url_loader_base") {
       ]
       traits_headers =
           [ "//services/network/public/cpp/load_timing_info_mojom_traits.h" ]
+      traits_public_deps = [ "//net" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.CookieSettingOverrides"
+          cpp = "::net::CookieSettingOverrides"
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/cookie_setting_overrides_mojom_traits.h",
+      ]
       traits_public_deps = [ "//net" ]
     },
   ]

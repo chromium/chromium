@@ -2853,6 +2853,18 @@
       status: {"Android": "stable"},
     },
     {
+      name: "ThirdPartyCookiesUserBypass",
+      status: "experimental",
+      browser_process_read_write_access: true,
+    },
+    // To enable the deprecation trial, use the
+    // `DisableThirdPartyStoragePartitioning` feature instead.
+    {
+      name: "ThirdPartyStoragePartitioning",
+      status: "experimental",
+      browser_process_read_write_access: true,
+    },
+    {
       name: "TimerThrottlingForBackgroundTabs",
       public: true,
       status: "stable",

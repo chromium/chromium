@@ -3111,6 +3111,7 @@ void NetworkHandler::LoadNetworkResource(
         frame->BuildClientSecurityState(),
         /**coep_reporter=*/mojo::NullRemote(), frame->GetProcess(),
         network::mojom::TrustTokenRedemptionPolicy::kForbid,
+        frame->GetCookieSettingOverrides(),
         "NetworkHandler::LoadNetworkResource");
 
     auto factory = CreateNetworkFactoryForDevTools(

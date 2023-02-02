@@ -330,6 +330,8 @@ component("cpp_base") {
   output_name = "network_cpp_base"
 
   sources = [
+    "cookie_setting_overrides_mojom_traits.cc",
+    "cookie_setting_overrides_mojom_traits.h",
     "cors/cors_error_status.cc",
     "cors/cors_error_status.h",
     "cors/cors_mojom_traits.cc",
@@ -464,6 +466,7 @@ source_set("tests") {
     "content_security_policy/csp_source_unittest.cc",
     "cookie_manager_mojom_traits_unittest.cc",
     "cookie_manager_shared_mojom_traits_unittest.cc",
+    "cookie_setting_overrides_mojom_traits_unittest.cc",
     "corb/corb_impl_unittest.cc",
     "cors/cors_mojom_traits_unittest.cc",
     "cors/cors_unittest.cc",
