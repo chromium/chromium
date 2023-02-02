@@ -15,7 +15,6 @@
 #include "ash/capture_mode/capture_mode_menu_toggle_button.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
-#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_settings_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
@@ -245,7 +244,7 @@ TEST_F(CaptureModeDemoToolsTest, ConsiderKeyEvent) {
   EXPECT_TRUE(GetCaptureModeSettingsWidget());
   views::ToggleButton* toggle_button = CaptureModeSettingsTestApi()
                                            .GetDemoToolsMenuToggleButton()
-                                           ->toggle_button();
+                                           ->toggle_button_for_testing();
 
   // The toggle button will be disabled by default, toggle the toggle button to
   // enable the demo tools feature.
@@ -300,7 +299,7 @@ TEST_F(CaptureModeDemoToolsTest, EntryPointTest) {
   EXPECT_TRUE(GetCaptureModeSettingsWidget());
   views::ToggleButton* toggle_button = CaptureModeSettingsTestApi()
                                            .GetDemoToolsMenuToggleButton()
-                                           ->toggle_button();
+                                           ->toggle_button_for_testing();
 
   // The toggle button will be disabled by default.
   EXPECT_FALSE(toggle_button->GetIsOn());
@@ -332,64 +331,13 @@ TEST_F(CaptureModeDemoToolsTest, EntryPointTest) {
   EXPECT_TRUE(GetCaptureModeSettingsWidget());
   toggle_button = CaptureModeSettingsTestApi()
                       .GetDemoToolsMenuToggleButton()
-                      ->toggle_button();
+                      ->toggle_button_for_testing();
   EXPECT_TRUE(toggle_button->GetIsOn());
   ClickOnView(toggle_button, event_generator);
   StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
   event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
   EXPECT_FALSE(GetCaptureModeDemoToolsController());
-}
-
-// Tests that the demo tools button is navigated and toggled correctly with
-// keyboard in the settings menu.
-TEST_F(CaptureModeDemoToolsTest, EntryPointFocusCyclerTest) {
-  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
-                                         CaptureModeType::kVideo);
-  auto* event_generator = GetEventGenerator();
-  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
-  CaptureModeSessionTestApi session_test_api(
-      controller->capture_mode_session());
-
-  // Check the initial focus of the focus ring.
-  EXPECT_EQ(FocusGroup::kNone, session_test_api.GetCurrentFocusGroup());
-
-  // Tab 6 times to reach the settings button.
-  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
-  EXPECT_EQ(FocusGroup::kSettingsClose,
-            session_test_api.GetCurrentFocusGroup());
-  EXPECT_TRUE(CaptureModeSessionFocusCycler::HighlightHelper::Get(
-                  session_test_api.GetCaptureModeBarView()->settings_button())
-                  ->has_focus());
-
-  // Press the space key and the settings menu will be opened.
-  SendKey(ui::VKEY_SPACE, event_generator, ui::EF_NONE);
-  EXPECT_TRUE(session_test_api.GetCaptureModeSettingsView());
-  EXPECT_EQ(FocusGroup::kPendingSettings,
-            session_test_api.GetCurrentFocusGroup());
-
-  // Tab 4 times to reach the demo tools toggle button.
-  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/4);
-  EXPECT_EQ(FocusGroup::kSettingsMenu, session_test_api.GetCurrentFocusGroup());
-
-  views::ToggleButton* toggle_button = CaptureModeSettingsTestApi()
-                                           .GetDemoToolsMenuToggleButton()
-                                           ->toggle_button();
-
-  // The demo tools toggle button will be disabled by default.
-  EXPECT_FALSE(toggle_button->GetIsOn());
-
-  // Press the space key to enable the toggle button.
-  SendKey(ui::VKEY_SPACE, event_generator, ui::EF_NONE);
-  EXPECT_TRUE(toggle_button->GetIsOn());
-
-  // Press the escape key and the focus will return to the settings button.
-  SendKey(ui::VKEY_ESCAPE, event_generator, ui::EF_NONE);
-  EXPECT_EQ(FocusGroup::kSettingsClose,
-            session_test_api.GetCurrentFocusGroup());
-  EXPECT_TRUE(CaptureModeSessionFocusCycler::HighlightHelper::Get(
-                  session_test_api.GetCaptureModeBarView()->settings_button())
-                  ->has_focus());
 }
 
 // Tests that the key combo viewer widget displays the expected contents on key

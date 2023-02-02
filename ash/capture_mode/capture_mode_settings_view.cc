@@ -12,7 +12,6 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
-#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -232,17 +231,8 @@ CaptureModeSettingsView::GetHighlightableItems() {
   audio_input_menu_group_->AppendHighlightableItems(highlightable_items);
   DCHECK(camera_menu_group_);
   camera_menu_group_->AppendHighlightableItems(highlightable_items);
-
-  if (demo_tools_menu_toggle_button_) {
-    highlightable_items.push_back(
-        CaptureModeSessionFocusCycler::HighlightHelper::Get(
-            demo_tools_menu_toggle_button_->toggle_button()));
-  }
-
-  if (save_to_menu_group_) {
+  if (save_to_menu_group_)
     save_to_menu_group_->AppendHighlightableItems(highlightable_items);
-  }
-
   return highlightable_items;
 }
 
@@ -406,7 +396,7 @@ void CaptureModeSettingsView::UpdateCameraMenuGroupVisibility(bool visible) {
 
 void CaptureModeSettingsView::OnDemoToolsButtonToggled() {
   const bool was_on = CaptureModeController::Get()->enable_demo_tools();
-  CaptureModeController::Get()->EnableDemoTools(/*enable=*/!was_on);
+  CaptureModeController::Get()->EnableDemoTools(!was_on);
 }
 
 BEGIN_METADATA(CaptureModeSettingsView, views::View)

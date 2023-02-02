@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -102,8 +101,7 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     virtual void ClickView();
 
    protected:
-    HighlightableView();
-    virtual ~HighlightableView();
+    virtual ~HighlightableView() = default;
 
     // TODO(crbug.com/1182456): This can result in multiple of these objects
     // thinking they have focus if CaptureModeSessionFocusCycler does not call
@@ -121,8 +119,6 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     // the focus ring) via calling `InvalidateFocusRingPath()`, which will set
     // this to back to `true`.
     bool needs_highlight_path_ = true;
-
-    base::WeakPtrFactory<HighlightableView> weak_ptr_factory_{this};
   };
 
   // An aura window that can be focused in capture session.
