@@ -318,7 +318,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   // CreateCustomWebContents() below to provide their own WebContents.
   virtual bool IsWebContentsCreationOverridden(
       SiteInstance* source_site_instance,
-      content::mojom::WindowContainerType window_container_type,
+      mojom::WindowContainerType window_container_type,
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url);
@@ -547,10 +547,9 @@ class CONTENT_EXPORT WebContentsDelegate {
   // request is denied, a call should be made to |callback| with an empty list
   // of devices. |request| has the details of the request (e.g. which of audio
   // and/or video devices are requested, and lists of available devices).
-  virtual void RequestMediaAccessPermission(
-      WebContents* web_contents,
-      const MediaStreamRequest& request,
-      content::MediaResponseCallback callback);
+  virtual void RequestMediaAccessPermission(WebContents* web_contents,
+                                            const MediaStreamRequest& request,
+                                            MediaResponseCallback callback);
 
   // Checks if we have permission to access the microphone or camera. Note that
   // this does not query the user. |type| must be MEDIA_DEVICE_AUDIO_CAPTURE
@@ -609,7 +608,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   // default behavior is suppressed.
   virtual bool SaveFrame(const GURL& url,
                          const Referrer& referrer,
-                         content::RenderFrameHost* rfh);
+                         RenderFrameHost* rfh);
 
   // Called when a suspicious navigation of the main frame has been blocked.
   // Allows the delegate to provide some UI to let the user know about the
@@ -705,10 +704,10 @@ class CONTENT_EXPORT WebContentsDelegate {
   // indication that the cache will be used.
   virtual bool IsBackForwardCacheSupported();
 
-  // Returns content::PreloadingEligibility::kEligible if Prerender2 (see
+  // Returns PreloadingEligibility::kEligible if Prerender2 (see
   // content/browser/preloading/prerender/README.md for details) is supported.
   // If it is not supported, returns the reason.
-  virtual content::PreloadingEligibility IsPrerender2Supported(
+  virtual PreloadingEligibility IsPrerender2Supported(
       WebContents& web_contents);
 
   // Requests the delegate to replace |predecessor_contents| with

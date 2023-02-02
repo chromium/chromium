@@ -122,7 +122,7 @@ bool WebContentsDelegate::OnGoToEntryOffset(int offset) {
 
 bool WebContentsDelegate::IsWebContentsCreationOverridden(
     SiteInstance* source_site_instance,
-    content::mojom::WindowContainerType window_container_type,
+    mojom::WindowContainerType window_container_type,
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url) {
@@ -224,12 +224,12 @@ void WebContentsDelegate::EnumerateDirectory(
 void WebContentsDelegate::RequestMediaAccessPermission(
     WebContents* web_contents,
     const MediaStreamRequest& request,
-    content::MediaResponseCallback callback) {
+    MediaResponseCallback callback) {
   LOG(ERROR) << "WebContentsDelegate::RequestMediaAccessPermission: "
              << "Not supported.";
   std::move(callback).Run(blink::mojom::StreamDevicesSet(),
                           blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
-                          std::unique_ptr<content::MediaStreamUI>());
+                          std::unique_ptr<MediaStreamUI>());
 }
 
 bool WebContentsDelegate::CheckMediaAccessPermission(
@@ -296,7 +296,7 @@ bool WebContentsDelegate::GuestSaveFrame(WebContents* guest_web_contents) {
 
 bool WebContentsDelegate::SaveFrame(const GURL& url,
                                     const Referrer& referrer,
-                                    content::RenderFrameHost* rfh) {
+                                    RenderFrameHost* rfh) {
   return false;
 }
 
@@ -354,11 +354,11 @@ bool WebContentsDelegate::IsBackForwardCacheSupported() {
   return false;
 }
 
-content::PreloadingEligibility WebContentsDelegate::IsPrerender2Supported(
+PreloadingEligibility WebContentsDelegate::IsPrerender2Supported(
     WebContents& web_contents) {
   // TODO(crbug.com/1382315): add
   // PreloadingEligibility::kPreloadingUnsupportedByWebContents
-  return content::PreloadingEligibility::kPreloadingDisabled;
+  return PreloadingEligibility::kPreloadingDisabled;
 }
 
 std::unique_ptr<WebContents> WebContentsDelegate::ActivatePortalWebContents(
