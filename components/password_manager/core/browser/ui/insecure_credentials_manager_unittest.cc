@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,6 +15,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -27,8 +29,8 @@ namespace password_manager {
 
 namespace {
 
-constexpr char kExampleCom[] = "https://example.com";
-constexpr char kExampleOrg[] = "https://example.org";
+constexpr char kExampleCom[] = "https://example.com/";
+constexpr char kExampleOrg[] = "https://example.org/";
 
 constexpr char16_t kUsername1[] = u"alice";
 constexpr char16_t kUsername2[] = u"bob";
@@ -96,6 +98,7 @@ class InsecureCredentialsManagerTest : public ::testing::Test {
   TestPasswordStore& store() { return *store_; }
   SavedPasswordsPresenter& presenter() { return presenter_; }
   InsecureCredentialsManager& provider() { return provider_; }
+  MockAffiliationService& affiliation_service() { return affiliation_service_; }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
@@ -124,7 +127,7 @@ class InsecureCredentialsManagerTest : public ::testing::Test {
   base::HistogramTester histogram_tester_;
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  FakeAffiliationService affiliation_service_;
+  MockAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr};
   InsecureCredentialsManager provider_{&presenter_, store_,
@@ -1177,6 +1180,35 @@ TEST_F(InsecureCredentialsManagerTest, UpdatingReusedPasswordFixesTheIssue) {
   updated_credential.password = kPassword216;
   presenter().EditSavedCredentials(CredentialUIEntry(form1),
                                    updated_credential);
+  RunUntilIdle();
+
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(), IsEmpty());
+}
+
+TEST_F(InsecureCredentialsManagerTest, ReuseCheckUsesAffiliationInfo) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordsGrouping);
+
+  // Setup two credentials with the same passwords that belong to two affiliated
+  // groups. Those should *not* be flagged for password reuse.
+  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  PasswordForm form2 = MakeSavedPassword(kExampleOrg, kUsername2, kPassword1);
+
+  // Setup affiliated groups.
+  std::vector<password_manager::GroupedFacets> grouped_facets(1);
+  Facet facet;
+  facet.uri = FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm);
+  grouped_facets[0].facets.push_back(facet);
+  facet.uri = FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm);
+  grouped_facets[0].facets.push_back(facet);
+  EXPECT_CALL(affiliation_service(), GetAllGroups)
+      .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
+
+  store().AddLogin(form1);
+  store().AddLogin(form2);
+  RunUntilIdle();
+  provider().StartReuseCheck();
   RunUntilIdle();
 
   EXPECT_THAT(provider().GetInsecureCredentialEntries(), IsEmpty());

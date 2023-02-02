@@ -90,7 +90,8 @@ void InsecureCredentialsManager::StartReuseCheck(
     base::OnceClosure on_check_done) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&BulkReuseCheck, presenter_->GetSavedPasswords()),
+      base::BindOnce(&BulkReuseCheck, presenter_->GetSavedPasswords(),
+                     presenter_->GetAffiliatedGroups()),
       base::BindOnce(&InsecureCredentialsManager::OnReuseCheckDone,
                      weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer())
           .Then(std::move(on_check_done)));

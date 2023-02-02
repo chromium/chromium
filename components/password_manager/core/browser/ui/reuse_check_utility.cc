@@ -15,6 +15,33 @@ namespace password_manager {
 
 namespace {
 
+// Extracts affiliation information from password grouping.
+std::map<std::string, int> MapSignonRelamsToAffiliationGroups(
+    const std::vector<AffiliatedGroup>& groups) {
+  std::map<std::string, int> signon_realm_to_group;
+  for (size_t i = 0; i < groups.size(); i++) {
+    for (const auto& credential : groups[i].GetCredentials()) {
+      for (const auto& facet : credential.facets) {
+        signon_realm_to_group[facet.signon_realm] = i;
+      }
+    }
+  }
+  return signon_realm_to_group;
+}
+
+bool AllCredentialsBelongToSameGroup(
+    const std::vector<const CredentialUIEntry*>& credentials,
+    const std::map<std::string, int>& signon_realm_to_group) {
+  std::set<int> group_ids;
+  for (auto* const credential : credentials) {
+    auto it = signon_realm_to_group.find(credential->GetFirstSignonRealm());
+    if (it != signon_realm_to_group.end()) {
+      group_ids.insert(it->second);
+    }
+  }
+  return group_ids.size() == 1;
+}
+
 // Username are considered equivalent if they have the same normalized format.
 // Empty usernames are skipped.
 bool AllUsernameAreEquivalent(
@@ -72,7 +99,6 @@ bool AllDomainsAreEquivalent(
       signon_realms.insert(facet.signon_realm);
     }
   }
-  // TODO(crbug.com/1406472): Check if domains are affiliated.
   // TODO(crbug.com/1406472): Check additionally for local networks.
   return signon_realms.size() == 1 || IsMainDomainEqual(signon_realms);
 }
@@ -80,7 +106,8 @@ bool AllDomainsAreEquivalent(
 }  // namespace
 
 base::flat_set<std::u16string> BulkReuseCheck(
-    const std::vector<CredentialUIEntry>& credentials) {
+    const std::vector<CredentialUIEntry>& credentials,
+    const std::vector<AffiliatedGroup>& groups) {
   std::unordered_map<std::u16string, std::vector<const CredentialUIEntry*>>
       password_to_credentials;
 
@@ -89,10 +116,17 @@ base::flat_set<std::u16string> BulkReuseCheck(
   }
 
   base::flat_set<std::u16string> reused_passwords;
+  auto signon_realm_to_group = MapSignonRelamsToAffiliationGroups(groups);
 
   for (const auto& [password, matching_credentials] : password_to_credentials) {
     // Skip password if it's used for a single credential.
     if (matching_credentials.size() == 1) {
+      continue;
+    }
+
+    // Password reuse within one affiliated group is ignored.
+    if (AllCredentialsBelongToSameGroup(matching_credentials,
+                                        signon_realm_to_group)) {
       continue;
     }
 
