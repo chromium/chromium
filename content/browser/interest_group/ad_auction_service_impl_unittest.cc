@@ -1321,6 +1321,52 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
             "https://example.com/new_render");
 }
 
+// Updates should succeed even when updating interest groups with no ads.
+TEST_F(AdAuctionServiceImplTest, UpdateGroupWithNoAds) {
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
+"trustedBiddingSignalsUrl":
+  "%s/interest_group/new_trusted_bidding_signals_url.json",
+"trustedBiddingSignalsKeys": ["new_key"]
+})",
+                                              kOriginStringA));
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.daily_update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
+  interest_group.trusted_bidding_signals_keys.emplace();
+  interest_group.trusted_bidding_signals_keys->push_back("key1");
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].interest_group;
+  EXPECT_EQ(group.name, kInterestGroupName);
+  ASSERT_TRUE(group.bidding_url.has_value());
+  EXPECT_EQ(
+      group.bidding_url->spec(),
+      base::StringPrintf("%s/interest_group/bidding_logic.js", kOriginStringA));
+  ASSERT_TRUE(group.daily_update_url.has_value());
+  EXPECT_EQ(group.daily_update_url->spec(),
+            base::StringPrintf("%s/interest_group/daily_update_partial.json",
+                               kOriginStringA));
+  ASSERT_TRUE(group.trusted_bidding_signals_url.has_value());
+  EXPECT_EQ(group.trusted_bidding_signals_url->spec(),
+            base::StringPrintf(
+                "%s/interest_group/new_trusted_bidding_signals_url.json",
+                kOriginStringA));
+  ASSERT_TRUE(group.trusted_bidding_signals_keys.has_value());
+  EXPECT_EQ(group.trusted_bidding_signals_keys->size(), 1u);
+  EXPECT_EQ(group.trusted_bidding_signals_keys.value()[0], "new_key");
+  EXPECT_FALSE(group.ads.has_value());
+}
+
 // Only set the ads field -- the other fields shouldn't be changed.
 TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
   network_responder_->RegisterUpdateResponse(
@@ -4582,6 +4628,47 @@ function scoreAd(
   ASSERT_EQ(c_group.ads->size(), 1u);
   EXPECT_EQ(c_group.ads.value()[0].render_url.spec(),
             "https://example.com/new_render");
+}
+
+// Like UpdatesInterestGroupsAfterSuccessfulAuction, but neither the interest
+// group nor the update have any ads.
+TEST_F(AdAuctionServiceImplTest, UpdatesInterestGroupsAfterAuctionNoAds) {
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
+"trustedBiddingSignalsUrl":
+  "%s/interest_group/new_trusted_bidding_signals_url.json",
+"trustedBiddingSignalsKeys": ["new_key"]
+})",
+                                              kOriginStringA));
+
+  blink::InterestGroup interest_group_a = CreateInterestGroup();
+  interest_group_a.daily_update_url = kUpdateUrlA;
+  interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  JoinInterestGroupAndFlush(interest_group_a);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_EQ(auction_result, absl::nullopt);
+
+  // Now that the auction has completed, check that the interest group updated.
+  task_environment()->RunUntilIdle();
+
+  auto a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  auto a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.trusted_bidding_signals_url.has_value());
+  EXPECT_EQ(a_group.trusted_bidding_signals_url->spec(),
+            base::StringPrintf(
+                "%s/interest_group/new_trusted_bidding_signals_url.json",
+                kOriginStringA));
+  ASSERT_TRUE(a_group.trusted_bidding_signals_keys.has_value());
+  EXPECT_EQ(a_group.trusted_bidding_signals_keys->size(), 1u);
+  EXPECT_EQ(a_group.trusted_bidding_signals_keys.value()[0], "new_key");
+  EXPECT_FALSE(a_group.ads.has_value());
 }
 
 // When sending reports, the next report request is feteched after the previous
