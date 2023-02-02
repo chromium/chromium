@@ -1113,6 +1113,80 @@ TEST_P(MLGraphXnnpackTest, GemmTest) {
   }
 }
 
+struct HardSwishTester {
+  MLGraphXnnpackTest* helper;
+  OperandInfo<float> input;
+  Vector<float> expected;
+
+  void Test(V8TestingScope& scope) {
+    // Build the graph.
+    auto* builder = CreateMLGraphBuilder(scope);
+    auto* input_operand =
+        BuildInput(scope, builder, "input", input.dimensions, input.type);
+    auto* output_operand =
+        builder->hardSwish(input_operand, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper->BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute the graph.
+    auto input_buffer =
+        CreateArrayBufferViewForOperand(input_operand, input.values);
+    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
+    auto* compute_exception = helper->ComputeGraph(
+        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<float>(output_buffer);
+    EXPECT_EQ(results.size(), expected.size());
+    for (wtf_size_t i = 0; i < expected.size(); ++i) {
+      EXPECT_FLOAT_EQ(results[i], expected[i]);
+    }
+  }
+};
+
+TEST_P(MLGraphXnnpackTest, HardSwishTest) {
+  V8TestingScope scope;
+  {
+    // Test hardSwish operator for 1-D tensor.
+    // The expected results should be the result of the nonlinear function, y =
+    // x * max(0, min(6, (x + 3))) / 6, applied to the input tensor,
+    // element-wise.
+    HardSwishTester{.helper = this,
+                    .input = {.type = V8MLOperandType::Enum::kFloat32,
+                              .dimensions = {2},
+                              .values = {-0.6, 0.6}},
+                    .expected = {-0.24, 0.36}}
+        .Test(scope);
+  }
+  {
+    // Test hardSwish operator for 2-D tensor.
+    HardSwishTester{.helper = this,
+                    .input = {.type = V8MLOperandType::Enum::kFloat32,
+                              .dimensions = {2, 2},
+                              .values = {-1.2, -0.6, 0.6, 1.2}},
+                    .expected = {-0.36, -0.24, 0.36, 0.84}}
+        .Test(scope);
+  }
+  {
+    // Test hardSwish operator for 3-D tensor.
+    HardSwishTester{.helper = this,
+                    .input = {.type = V8MLOperandType::Enum::kFloat32,
+                              .dimensions = {1, 2, 2},
+                              .values = {-1.2, -0.6, 0.6, 1.2}},
+                    .expected = {-0.36, -0.24, 0.36, 0.84}}
+        .Test(scope);
+  }
+  {
+    // Test hardSwish operator for 4-D tensor.
+    HardSwishTester{.helper = this,
+                    .input = {.type = V8MLOperandType::Enum::kFloat32,
+                              .dimensions = {1, 2, 2, 1},
+                              .values = {-1.2, -0.6, 0.6, 1.2}},
+                    .expected = {-0.36, -0.24, 0.36, 0.84}}
+        .Test(scope);
+  }
+}
+
 template <typename T>
 struct Pool2dTester {
   MLGraphXnnpackTest* helper;

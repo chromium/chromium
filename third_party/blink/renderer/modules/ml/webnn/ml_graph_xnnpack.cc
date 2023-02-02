@@ -711,6 +711,21 @@ xnn_status DefineXnnNodeForGemm(xnn_subgraph_t subgraph,
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForHardSwish(
+    xnn_subgraph_t subgraph,
+    const MLOperator* hardswish,
+    const OperandValueIdMap& operand_value_id_map,
+    String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(hardswish, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(hardswish, operand_value_id_map);
+  const uint32_t flags = 0;
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+      xnn_define_hardswish(subgraph, input_id, output_id, flags));
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
                                   const MLOperator* pool2d,
                                   const OperandValueIdMap& operand_value_id_map,
@@ -869,6 +884,10 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
     }
     case MLOperator::OperatorKind::kGemm:
       XNN_CHECK_STATUS(DefineXnnNodeForGemm(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    case MLOperator::OperatorKind::kHardSwish:
+      XNN_CHECK_STATUS(DefineXnnNodeForHardSwish(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     // Define XNNPACK Node for pool2d operators.
