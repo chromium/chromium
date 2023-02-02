@@ -61,6 +61,10 @@ ports::NodeName GetRandomNodeName() {
 }
 
 Channel::MessagePtr SerializeEventMessage(ports::ScopedEvent event) {
+  // https://linear.app/replay/issue/RUN-1243
+  recordreplay::Assert("[RUN-1243] NodeController::SerializeEventMessage eventType=%d",
+    event->type());
+
   if (event->type() == ports::Event::Type::kUserMessage) {
     // User message events must already be partially serialized.
     return UserMessageImpl::FinalizeEventMessage(
@@ -1124,6 +1128,10 @@ void NodeController::OnEventMessage(const ports::NodeName& from_node,
     DVLOG(1) << "Ignoring invalid or unknown event from " << from_node;
     return;
   }
+
+  // https://linear.app/replay/issue/RUN-1243
+  recordreplay::Assert("[RUN-1243] NodeController::OnEventMessage eventType=%d",
+    (int) event->type());
 
   node_->AcceptEvent(from_node, std::move(event));
 
