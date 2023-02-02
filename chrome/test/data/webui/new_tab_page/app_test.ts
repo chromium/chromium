@@ -643,6 +643,43 @@ suite('NewTabPageAppTest', () => {
       });
     });
 
+    [560, 672, 768].forEach(pageWidth => {
+      test(
+          `module width defaults to search box width rule applied for width: ${
+              pageWidth}px`,
+          () => {
+            document.body.setAttribute('style', `width:${pageWidth}px`);
+            const middleSlotPromo = $$(app, 'ntp-middle-slot-promo')!;
+            middleSlotPromo.dispatchEvent(
+                new Event('ntp-middle-slot-promo-loaded'));
+            const modules = $$(app, 'ntp-modules')!;
+            modules.dispatchEvent(new Event('modules-loaded'));
+            const searchBoxWidth =
+                window.getComputedStyle(app)
+                    .getPropertyValue('--ntp-search-box-width')
+                    .trim();
+
+            assertStyle(modules, 'width', `${searchBoxWidth}`);
+          });
+    });
+
+    test('modules max width media rule applied', async () => {
+      const sampleMaxWidthPx = 768;
+      loadTimeData.overrideValues({modulesMaxWidthPx: sampleMaxWidthPx});
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      document.body.setAttribute('style', `width:${sampleMaxWidthPx}px`);
+      app = document.createElement('ntp-app');
+      document.body.appendChild(app);
+      await flushTasks();
+
+      const middleSlotPromo = $$(app, 'ntp-middle-slot-promo')!;
+      middleSlotPromo.dispatchEvent(new Event('ntp-middle-slot-promo-loaded'));
+      const modules = $$(app, 'ntp-modules')!;
+      modules.dispatchEvent(new Event('modules-loaded'));
+
+      assertStyle(modules, 'width', `${sampleMaxWidthPx}px`);
+    });
+
     test('modules can open customize dialog', async () => {
       // Act.
       $$(app, 'ntp-modules')!.dispatchEvent(new Event('customize-module'));

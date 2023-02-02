@@ -4,6 +4,7 @@
 
 #include "components/search/ntp_features.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,6 +34,22 @@ TEST(NTPFeaturesTest, ModulesLoadTimeout) {
       {});
   timeout = GetModulesLoadTimeout();
   EXPECT_EQ(3, timeout.InSeconds());
+}
+
+TEST(NTPFeaturesTest, ModulesMaxWidthPixels) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  // If no value, return empty optional.
+  EXPECT_EQ(GetModulesMaxWidthPixels(), absl::nullopt);
+
+  // The value can be overridden.
+  scoped_feature_list_.Reset();
+  constexpr int kSampleWidth = 768;
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kNtpModulesParams,
+        {{kNtpModulesMaxWidthParam, base::NumberToString(kSampleWidth)}}}},
+      {});
+  EXPECT_EQ(GetModulesMaxWidthPixels(), absl::optional<int>{kSampleWidth});
 }
 
 TEST(NTPFeaturesTest, ModulesOrder) {
