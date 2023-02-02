@@ -277,8 +277,9 @@ class DownloadDeepScanningBrowserTestBase
       connector_url_ =
           "https://safebrowsing.google.com/safebrowsing/uploads/"
           "scan?device_token=dm_token&connector=OnFileDownloaded";
-      for (const std::string& tag : tags)
+      for (const std::string& tag : tags) {
         connector_url_ += ("&tag=" + tag);
+      }
     }
 
     test_sb_factory_->test_safe_browsing_service()
@@ -296,8 +297,9 @@ class DownloadDeepScanningBrowserTestBase
       connector_url_ =
           "https://safebrowsing.google.com/safebrowsing/uploads/"
           "scan?device_token=dm_token&connector=OnFileDownloaded";
-      for (const std::string& tag : tags)
+      for (const std::string& tag : tags) {
         connector_url_ += ("&tag=" + tag);
+      }
     }
 
     test_sb_factory_->test_safe_browsing_service()
@@ -431,29 +433,33 @@ class DownloadDeepScanningBrowserTestBase
                              /*is_consumer_scan_eligible=*/true)) {
         ASSERT_TRUE(
             GetUploadMetadata(GetDataPipeUploadData(request), &last_request_));
-        if (waiting_for_upload_closure_)
+        if (waiting_for_upload_closure_) {
           std::move(waiting_for_upload_closure_).Run();
+        }
       }
     } else {
       if (request.url == safe_browsing::CloudBinaryUploadService::GetUploadUrl(
                              /*is_consumer_scan_eligible=*/false)) {
         ASSERT_TRUE(
             GetUploadMetadata(GetDataPipeUploadData(request), &last_request_));
-        if (waiting_for_upload_closure_)
+        if (waiting_for_upload_closure_) {
           std::move(waiting_for_upload_closure_).Run();
+        }
       }
 
       if (request.url == connector_url_) {
         ASSERT_TRUE(
             GetUploadMetadata(GetDataPipeUploadData(request), &last_request_));
-        if (waiting_for_upload_closure_)
+        if (waiting_for_upload_closure_) {
           std::move(waiting_for_upload_closure_).Run();
+        }
       }
     }
 
     if (request.url == PPAPIDownloadRequest::GetDownloadRequestUrl()) {
-      if (waiting_for_metadata_closure_)
+      if (waiting_for_metadata_closure_) {
         std::move(waiting_for_metadata_closure_).Run();
+      }
     }
   }
 
@@ -789,8 +795,8 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
   EventReportValidator validator(client());
   validator.ExpectDangerousDeepScanningResult(
       /*url*/ url.spec(),
-      /*source*/ absl::nullopt,
-      /*destination*/ absl::nullopt,
+      /*source*/ "",
+      /*destination*/ "",
       /*filename*/ "zipfile_two_archives.zip",
       // sha256sum chrome/test/data/safe_browsing/download_protection/\
       // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
@@ -884,6 +890,8 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   EventReportValidator validator(client());
   validator.ExpectSensitiveDataEventAndDangerousDeepScanningResult(
       /*url*/ url.spec(),
+      /*source*/ "",
+      /*destination*/ "",
       /*filename*/ "zipfile_two_archives.zip",
       // sha256sum chrome/test/data/safe_browsing/download_protection/\
       // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
@@ -992,7 +1000,7 @@ IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
       /*mimetypes*/ &zip_types,
       /*size*/ 276,
       /*result*/ EventResultToString(EventResult::BLOCKED),
-      /*username*/ kUserName, /*scan_id*/ absl::nullopt);
+      /*username*/ kUserName);
 
   WaitForDownloadToFinish();
 
@@ -1073,11 +1081,14 @@ enum class ScanningVerdict { MALWARE, UNWANTED, SAFE };
 class MetadataCheckAndDeepScanningBrowserTest
     : public DownloadDeepScanningBrowserTestBase,
       public testing::WithParamInterface<
-          std::tuple<ClientDownloadResponse::Verdict, ScanningVerdict, bool>> {
+          std::tuple<ClientDownloadResponse::Verdict,
+                     ScanningVerdict,
+                     /*connectors_machine_scope*/ bool>> {
  public:
   MetadataCheckAndDeepScanningBrowserTest()
-      : DownloadDeepScanningBrowserTestBase(std::get<2>(GetParam()),
-                                            /*is_consumer=*/false) {}
+      : DownloadDeepScanningBrowserTestBase(
+            /*connectors_machine_scope=*/std::get<2>(GetParam()),
+            /*is_consumer=*/false) {}
 
   ClientDownloadResponse::Verdict metadata_check_verdict() const {
     return std::get<0>(GetParam());
@@ -1204,7 +1215,29 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(ScanningVerdict::MALWARE,
                         ScanningVerdict::UNWANTED,
                         ScanningVerdict::SAFE),
-        testing::Bool()));
+        testing::Bool()),
+    [](const ::testing::TestParamInfo<
+        std::tuple<ClientDownloadResponse::Verdict, ScanningVerdict, bool>>&
+           info) {
+      auto metadata_check_verdict = std::get<0>(info.param);
+      auto scanning_verdict = std::get<1>(info.param);
+      auto connectors_machine_scope = std::get<2>(info.param);
+      std::string name;
+      name += ClientDownloadResponse::Verdict_Name(metadata_check_verdict);
+      switch (scanning_verdict) {
+        case ScanningVerdict::MALWARE:
+          name += "_malware_";
+          break;
+        case ScanningVerdict::UNWANTED:
+          name += "_unwanted_";
+          break;
+        case ScanningVerdict::SAFE:
+          name += "_safe_";
+          break;
+      }
+      name += connectors_machine_scope ? "machinescope" : "userscope";
+      return name;
+    });
 
 IN_PROC_BROWSER_TEST_P(MetadataCheckAndDeepScanningBrowserTest, Test) {
   // This allows the blocking DM token reads happening on profile-Connector
@@ -1246,8 +1279,9 @@ IN_PROC_BROWSER_TEST_P(MetadataCheckAndDeepScanningBrowserTest, Test) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   WaitForMetadataCheck();
-  if (deep_scan_needed())
+  if (deep_scan_needed()) {
     WaitForDeepScanRequest();
+  }
 
   // Both the DLP and malware violations generate an event.
   std::set<std::string> zip_types = {"application/zip",
@@ -1257,30 +1291,47 @@ IN_PROC_BROWSER_TEST_P(MetadataCheckAndDeepScanningBrowserTest, Test) {
   if (threat_type.empty()) {
     validator.ExpectNoReport();
   } else {
-    // A scan ID is only expected when a deep scan is performed and when its
-    // result will be reported over the metadata check one.
-    auto scan_id =
-        deep_scan_needed() && scanning_verdict() != ScanningVerdict::SAFE
-            ? absl::optional<std::string>(last_request().request_token())
-            : absl::nullopt;
+    // Reporting of the source, destination and scan ID is only expected when a
+    // deep scan is performed and when its result will be reported over the
+    // metadata check result.
+    bool expect_dangerous_deep_scan =
+        deep_scan_needed() && scanning_verdict() != ScanningVerdict::SAFE;
 
-    validator.ExpectDangerousDeepScanningResult(
-        /*url*/ url.spec(),
-        /*source*/ absl::nullopt,
-        /*destination*/ absl::nullopt,
-        /*filename*/ "zipfile_two_archives.zip",
-        // sha256sum chrome/test/data/safe_browsing/download_protection/\
-        // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
-        /*sha*/
-        "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C",
-        /*threat_type*/ threat_type,
-        /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-        /*mimetypes*/ &zip_types,
-        /*size*/ 276,
-        /*result*/ EventResultToString(EventResult::WARNED),
-        /*username*/ kUserName,
-        /*scan_id*/ scan_id);
+    if (expect_dangerous_deep_scan) {
+      validator.ExpectDangerousDeepScanningResult(
+          /*url*/ url.spec(),
+          /*source*/ "",
+          /*destination*/ "",
+          /*filename*/ "zipfile_two_archives.zip",
+          // sha256sum chrome/test/data/safe_browsing/download_protection/\
+          // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
+          /*sha*/
+          "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C",
+          /*threat_type*/ threat_type,
+          /*trigger*/
+          extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+          /*mimetypes*/ &zip_types,
+          /*size*/ 276,
+          /*result*/ EventResultToString(EventResult::WARNED),
+          /*username*/ kUserName,
+          /*scan_id*/
+          absl::optional<std::string>(last_request().request_token()));
+    } else {
+      validator.ExpectDangerousDownloadEvent(
+          /*url*/ url.spec(),
+          /*filename*/ "zipfile_two_archives.zip",
+          // sha256sum chrome/test/data/safe_browsing/download_protection/\
+          // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
+          /*sha*/
+          "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C",
+          /*threat_type*/ threat_type,
+          /*trigger*/
+          extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+          /*mimetypes*/ &zip_types,
+          /*size*/ 276,
+          /*result*/ EventResultToString(EventResult::WARNED),
+          /*username*/ kUserName);
+    }
   }
 
   // The deep scanning malware verdict is returned asynchronously. It is not
@@ -1335,8 +1386,9 @@ class WaitForModalObserver : public DeepScanningRequest::Observer {
   }
 
   ~WaitForModalObserver() override {
-    if (request_)
+    if (request_) {
       request_->RemoveObserver(this);
+    }
   }
 
   void Wait() { run_loop_.Run(); }
@@ -1361,8 +1413,9 @@ class WaitForFinishObserver : public DeepScanningRequest::Observer {
   }
 
   ~WaitForFinishObserver() override {
-    if (request_)
+    if (request_) {
       request_->RemoveObserver(this);
+    }
   }
 
   void Wait() { run_loop_.Run(); }
@@ -1600,8 +1653,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
-      /*source*/ absl::nullopt,
-      /*destination*/ absl::nullopt,
+      /*source*/ "",
+      /*destination*/ "",
       /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
@@ -1666,8 +1719,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
-      /*source*/ absl::nullopt,
-      /*destination*/ absl::nullopt,
+      /*source*/ "",
+      /*destination*/ "",
       /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
@@ -1701,8 +1754,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   // download and move the file to its final destination.
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
-      /*source*/ absl::nullopt,
-      /*destination*/ absl::nullopt,
+      /*source*/ "",
+      /*destination*/ "",
       /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
@@ -1767,8 +1820,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
-      /*source*/ absl::nullopt,
-      /*destination*/ absl::nullopt,
+      /*source*/ "",
+      /*destination*/ "",
       /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
@@ -1864,8 +1917,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
-      /*source*/ absl::nullopt,
-      /*destination*/ absl::nullopt,
+      /*source*/ "",
+      /*destination*/ "",
       /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",

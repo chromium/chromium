@@ -101,10 +101,12 @@ void AddAnalysisConnectorVerdictToEvent(
 
 std::string ActionFromVerdictType(
     safe_browsing::RTLookupResponse::ThreatInfo::VerdictType verdict_type) {
-  if (verdict_type == safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS)
+  if (verdict_type == safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS) {
     return "BLOCK";
-  if (verdict_type == safe_browsing::RTLookupResponse::ThreatInfo::WARN)
+  }
+  if (verdict_type == safe_browsing::RTLookupResponse::ThreatInfo::WARN) {
     return "WARN";
+  }
   return "ACTION_UNKNOWN";
 }
 
@@ -190,8 +192,9 @@ std::unique_ptr<url_matcher::URLMatcher> CreateURLMatcherForOptInEvent(
     const enterprise_connectors::ReportingSettings& settings,
     const char* event_type) {
   const auto& it = settings.enabled_opt_in_events.find(event_type);
-  if (it == settings.enabled_opt_in_events.end())
+  if (it == settings.enabled_opt_in_events.end()) {
     return nullptr;
+  }
 
   std::unique_ptr<url_matcher::URLMatcher> matcher =
       std::make_unique<url_matcher::URLMatcher>();
@@ -432,8 +435,9 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
   event.Set(kKeyContentType, mime_type);
   // |content_size| can be set to -1 to indicate an unknown size, in
   // which case the field is not set.
-  if (content_size >= 0)
+  if (content_size >= 0) {
     event.Set(kKeyContentSize, base::Int64ToValue(content_size));
+  }
   event.Set(kKeyTrigger, kTriggerFileDownload);
   event.Set(kKeyEventResult, safe_browsing::EventResultToString(
                                  safe_browsing::EventResult::BYPASSED));
@@ -593,14 +597,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
-  // TODO(crbug.com/1363978): Remove `.empty()` checks once server-side
-  // understands source and destination.
-  if (!source.empty()) {
-    event.Set(kKeySource, source);
-  }
-  if (!destination.empty()) {
-    event.Set(kKeyDestination, destination);
-  }
+  event.Set(kKeySource, source);
+  event.Set(kKeyDestination, destination);
   event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyProfileUserName, GetProfileUserName());
@@ -656,14 +654,8 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
-  // TODO(crbug.com/1363978): Remove `.empty()` checks once server-side
-  // understands source and destination.
-  if (!source.empty()) {
-    event.Set(kKeySource, source);
-  }
-  if (!destination.empty()) {
-    event.Set(kKeyDestination, destination);
-  }
+  event.Set(kKeySource, source);
+  event.Set(kKeyDestination, destination);
   event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyProfileUserName, GetProfileUserName());
@@ -710,14 +702,8 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
-  // TODO(crbug.com/1363978): Remove `.empty()` checks once server-side
-  // understands source and destination.
-  if (!source.empty()) {
-    event.Set(kKeySource, source);
-  }
-  if (!destination.empty()) {
-    event.Set(kKeyDestination, destination);
-  }
+  event.Set(kKeySource, source);
+  event.Set(kKeyDestination, destination);
   event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyProfileUserName, GetProfileUserName());
@@ -766,14 +752,8 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
-  // TODO(crbug.com/1363978): Remove `.empty()` checks once server-side
-  // understands source and destination.
-  if (!source.empty()) {
-    event.Set(kKeySource, source);
-  }
-  if (!destination.empty()) {
-    event.Set(kKeyDestination, destination);
-  }
+  event.Set(kKeySource, source);
+  event.Set(kKeyDestination, destination);
   event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyProfileUserName, GetProfileUserName());

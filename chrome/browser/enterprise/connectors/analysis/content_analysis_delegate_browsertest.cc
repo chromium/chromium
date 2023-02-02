@@ -118,8 +118,9 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
     if (request->content_analysis_request().tags().empty()) {
       authorization_request_.swap(request);
 
-      if (should_automatically_authorize_)
+      if (should_automatically_authorize_) {
         ReturnAuthorizedResponse();
+      }
     } else {
       Request* request_raw = request.get();
       std::string file = request->filename();
@@ -416,8 +417,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
   safe_browsing::EventReportValidator validator(client());
   validator.ExpectDangerousDeepScanningResult(
       /*url*/ "about:blank",
-      /*source*/ absl::nullopt,
-      /*destination*/ absl::nullopt,
+      /*source*/ "",
+      /*destination*/ "",
       /*filename*/ "bad.exe",
       // printf "bad file content" | sha256sum |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -525,8 +526,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
   // equal to the length of the concatenated texts (2 * 100 * 'a').
   validator.ExpectSensitiveDataEvent(
       /*url*/ "about:blank",
-      /*source*/ absl::nullopt,
-      /*destination*/ absl::nullopt,
+      /*source*/ "",
+      /*destination*/ "",
       /*filename*/ "Text data",
       // The hash should not be included for string requests.
       /*sha*/ "",
@@ -597,6 +598,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
   safe_browsing::EventReportValidator validator(client());
   validator.ExpectUnscannedFileEvents(
       /*url*/ "about:blank",
+      /*source*/ "",
+      /*destination*/ "",
       {
           created_file_paths()[0].BaseName().AsUTF8Unsafe(),
           created_file_paths()[1].BaseName().AsUTF8Unsafe(),
@@ -641,8 +644,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
                     ContentAnalysisDelegate::Result& result) {
             ASSERT_TRUE(result.text_results.empty());
             ASSERT_EQ(result.paths_results.size(), 3u);
-            for (bool paths_result : result.paths_results)
+            for (bool paths_result : result.paths_results) {
               ASSERT_TRUE(paths_result);
+            }
             called = true;
           }),
       safe_browsing::DeepScanAccessPoint::UPLOAD);
@@ -733,8 +737,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   safe_browsing::EventReportValidator validator(client());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "about:blank",
-      /*source*/ absl::nullopt,
-      /*destination*/ absl::nullopt,
+      /*source*/ "",
+      /*destination*/ "",
       /*filename*/ "encrypted.zip",
       // sha256sum < chrome/test/data/safe_browsing/download_protection/\
       // encrypted.zip |  tr '[:lower:]' '[:upper:]'
@@ -828,8 +832,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   safe_browsing::EventReportValidator validator(client());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "about:blank",
-      /*source*/ absl::nullopt,
-      /*destination*/ absl::nullopt,
+      /*source*/ "",
+      /*destination*/ "",
       /*filename*/ "large.doc",
       // python3 -c "print('a' * (42 * 50 * 1024 * 1024), end='')" |\
       // sha256sum |  tr '[:lower:]' '[:upper:]'
@@ -991,6 +995,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       kScanId1, ContentAnalysisAcknowledgement::BLOCK);
   validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       /*url*/ "about:blank",
+      /*source*/ "",
+      /*destination*/ "",
       /*filename*/ "foo.doc",
       // printf "foo content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -1015,10 +1021,11 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   // If the delivery is not delayed, put the quit closure right after the events
   // are reported instead of when the dialog closes.
-  if (expected_result())
+  if (expected_result()) {
     validator.SetDoneClosure(run_loop.QuitClosure());
-  else
+  } else {
     SetQuitClosure(run_loop.QuitClosure());
+  }
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
@@ -1185,10 +1192,11 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
 
   // If the scan is blocking, we can call the quit closure when the dialog
   // closes. If it's not, call it at the end of the result callback.
-  if (blocking_scan())
+  if (blocking_scan()) {
     SetQuitClosure(run_loop.QuitClosure());
-  else
+  } else {
     quit_closure = run_loop.QuitClosure();
+  }
 
   ContentAnalysisDelegate::Data data;
   CreateFilesForTest({"file1.doc", "file2.doc"}, {"content1", "content2"},
@@ -1206,8 +1214,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
             ASSERT_TRUE(result.paths_results[0]);
             ASSERT_TRUE(result.paths_results[1]);
             called = true;
-            if (quit_closure.has_value())
+            if (quit_closure.has_value()) {
               quit_closure.value().Run();
+            }
           }),
       safe_browsing::DeepScanAccessPoint::UPLOAD);
 

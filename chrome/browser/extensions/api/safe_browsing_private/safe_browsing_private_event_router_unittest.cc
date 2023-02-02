@@ -79,6 +79,10 @@ constexpr char kConnectorsPrefValue[] = R"([
   }
 ])";
 
+constexpr char kUrl[] = "https://evil.com/sensitive_data.txt";
+constexpr char kSource[] = "exampleSource";
+constexpr char kDestination[] = "exampleDestination";
+
 }  // namespace
 
 class SafeBrowsingEventObserver : public TestEventRouter::EventObserver {
@@ -191,8 +195,8 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
 
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnAnalysisConnectorResult(
-            GURL("https://evil.com/sensitive_data.txt"), "", "",
-            "sensitive_data.txt", "sha256_of_data", "text/plain",
+            GURL(kUrl), kSource, kDestination, "sensitive_data.txt",
+            "sha256_of_data", "text/plain",
             SafeBrowsingPrivateEventRouter::kTriggerFileUpload, "scan_id",
             safe_browsing::DeepScanAccessPoint::UPLOAD, result, 12345,
             event_result);
@@ -223,8 +227,8 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   void TriggerOnUnscannedFileEvent(safe_browsing::EventResult result) {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnUnscannedFileEvent(
-            GURL("https://evil.com/sensitive_data.txt"), "", "",
-            "sensitive_data.txt", "sha256_of_data", "text/plain",
+            GURL(kUrl), kSource, kDestination, "sensitive_data.txt",
+            "sha256_of_data", "text/plain",
             SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
             safe_browsing::DeepScanAccessPoint::DOWNLOAD,
             "filePasswordProtected", 12345, result);
@@ -262,8 +266,9 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
 
     // If we are not enabling reporting, or if the client has already been
     // set for testing, just return.
-    if (!enabled)
+    if (!enabled) {
       return;
+    }
 
     if (client_ == nullptr) {
       // Set a mock cloud policy client in the router.
@@ -982,6 +987,11 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
       wrapper.FindDict(SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent);
   ASSERT_NE(nullptr, event);
 
+  EXPECT_EQ(kUrl, *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl));
+  EXPECT_EQ(kSource,
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeySource));
+  EXPECT_EQ(kDestination, *event->FindString(
+                              SafeBrowsingPrivateEventRouter::kKeyDestination));
   EXPECT_EQ("12345", *event->FindString(
                          SafeBrowsingPrivateEventRouter::kKeyContentSize));
   EXPECT_EQ("text/plain", *event->FindString(
@@ -1029,6 +1039,11 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
       wrapper.FindDict(SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent);
   ASSERT_NE(nullptr, event);
 
+  EXPECT_EQ(kUrl, *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl));
+  EXPECT_EQ(kSource,
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeySource));
+  EXPECT_EQ(kDestination, *event->FindString(
+                              SafeBrowsingPrivateEventRouter::kKeyDestination));
   EXPECT_EQ("12345", *event->FindString(
                          SafeBrowsingPrivateEventRouter::kKeyContentSize));
   EXPECT_EQ("text/plain", *event->FindString(
@@ -1193,6 +1208,11 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
       wrapper.FindDict(SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent);
   ASSERT_NE(nullptr, event);
 
+  EXPECT_EQ(kUrl, *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl));
+  EXPECT_EQ(kSource,
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeySource));
+  EXPECT_EQ(kDestination, *event->FindString(
+                              SafeBrowsingPrivateEventRouter::kKeyDestination));
   EXPECT_EQ("12345", *event->FindString(
                          SafeBrowsingPrivateEventRouter::kKeyContentSize));
   EXPECT_EQ("text/plain", *event->FindString(
@@ -1232,6 +1252,11 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
       wrapper.FindDict(SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent);
   ASSERT_NE(nullptr, event);
 
+  EXPECT_EQ(kUrl, *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl));
+  EXPECT_EQ(kSource,
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeySource));
+  EXPECT_EQ(kDestination, *event->FindString(
+                              SafeBrowsingPrivateEventRouter::kKeyDestination));
   EXPECT_EQ("12345", *event->FindString(
                          SafeBrowsingPrivateEventRouter::kKeyContentSize));
   EXPECT_EQ("text/plain", *event->FindString(
@@ -1517,8 +1542,9 @@ TEST_P(SafeBrowsingIsRealtimeReportingEnabledTest, CheckRealtimeReport) {
 
   // Make sure UploadSecurityEventReport was called the expected number of
   // times.
-  if (client_)
+  if (client_) {
     Mock::VerifyAndClearExpectations(client_.get());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

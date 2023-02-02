@@ -195,8 +195,9 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
       content::BrowserContext* browser_context) override {
     auto* profile = Profile::FromBrowserContext(browser_context);
     auto it = test_shared_loader_factory_map_.find(profile);
-    if (it == test_shared_loader_factory_map_.end())
+    if (it == test_shared_loader_factory_map_.end()) {
       return nullptr;
+    }
     return it->second;
   }
 
@@ -222,8 +223,9 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
 
   network::TestURLLoaderFactory* GetTestURLLoaderFactory(Profile* profile) {
     auto it = test_url_loader_factory_map_.find(profile);
-    if (it == test_url_loader_factory_map_.end())
+    if (it == test_url_loader_factory_map_.end()) {
       return nullptr;
+    }
     return it->second.get();
   }
 
@@ -485,8 +487,9 @@ class DownloadProtectionServiceTestBase
       const ClientDownloadRequest& request,
       const std::string& file_basename) {
     for (const auto& archived_binary : request.archived_binary()) {
-      if (archived_binary.file_basename() == file_basename)
+      if (archived_binary.file_basename() == file_basename) {
         return &archived_binary;
+      }
     }
     return nullptr;
   }
@@ -549,10 +552,12 @@ class DownloadProtectionServiceTestBase
       const base::FilePath& tmp_full_path,
       const base::FilePath& final_full_path) {
     url_chain_.clear();
-    for (std::string url_chain_item : url_chain_items)
-      url_chain_.push_back(GURL(url_chain_item));
-    if (url_chain_.empty())
-      url_chain_.push_back(GURL());
+    for (std::string url_chain_item : url_chain_items) {
+      url_chain_.emplace_back(url_chain_item);
+    }
+    if (url_chain_.empty()) {
+      url_chain_.emplace_back();
+    }
     referrer_ = GURL(referrer_url);
     tmp_path_ = tmp_full_path;
     final_path_ = final_full_path;
@@ -697,8 +702,9 @@ class DownloadProtectionServiceTestBase
     has_result_ = true;
 
     // Scanning has not completed in this case, allow it to continue.
-    if (result != DownloadCheckResult::ASYNC_SCANNING)
+    if (result != DownloadCheckResult::ASYNC_SCANNING) {
       std::move(quit_closure).Run();
+    }
   }
 
   void SyncCheckDoneCallback(DownloadCheckResult result) {
@@ -707,8 +713,9 @@ class DownloadProtectionServiceTestBase
   }
 
   testing::AssertionResult IsResult(DownloadCheckResult expected) {
-    if (!has_result_)
+    if (!has_result_) {
       return testing::AssertionFailure() << "No result";
+    }
     has_result_ = false;
     return result_ == expected ? testing::AssertionSuccess()
                                : testing::AssertionFailure()
@@ -908,7 +915,7 @@ TEST_F(DownloadProtectionServiceTest,
   SetAllowlistedDownloadSampleRate(0);
   {
     // With no referrer and just the bad url, should be marked DANGEROUS.
-    url_chain_.push_back(GURL("http://www.evil.com/bla.exe"));
+    url_chain_.emplace_back("http://www.evil.com/bla.exe");
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
@@ -940,8 +947,7 @@ TEST_F(DownloadProtectionServiceTest,
 
   {
     // Redirect from a site shouldn't be checked either.
-    url_chain_.insert(url_chain_.begin(),
-                      GURL("http://www.google.com/redirect"));
+    url_chain_.emplace(url_chain_.begin(), "http://www.google.com/redirect");
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
@@ -956,7 +962,7 @@ TEST_F(DownloadProtectionServiceTest,
   }
   {
     // Only if the final url is allowlisted should it be SAFE.
-    url_chain_.push_back(GURL("http://www.google.com/a.exe"));
+    url_chain_.emplace_back("http://www.google.com/a.exe");
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
@@ -995,7 +1001,7 @@ TEST_F(DownloadProtectionServiceTest,
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(GURL("http://www.allowlist.com/a.exe")))
       .WillRepeatedly(Return(true));
-  url_chain_.push_back(GURL("http://www.allowlist.com/a.exe"));
+  url_chain_.emplace_back("http://www.allowlist.com/a.exe");
   // Set sample rate to 1.00, so download_service_ will always send download
   // pings for allowlisted downloads.
   SetAllowlistedDownloadSampleRate(1.00);
@@ -2118,8 +2124,9 @@ TEST_F(DownloadProtectionServiceTest,
         base::BindLambdaForTesting(
             [&](const network::ResourceRequest& request) {
               upload_data = network::GetUploadData(request);
-              if (!upload_data.empty())
+              if (!upload_data.empty()) {
                 interceptor_run_loop.Quit();
+              }
             }));
 
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
@@ -2179,13 +2186,14 @@ TEST_F(DownloadProtectionServiceTest,
         base::BindLambdaForTesting(
             [&](const network::ResourceRequest& request) {
               upload_data = network::GetUploadData(request);
-              if (!upload_data.empty())
+              if (!upload_data.empty()) {
                 interceptor_run_loop.Quit();
+              }
             }));
 
     history::RedirectList redirects;
-    redirects.push_back(GURL("http://tab.com/ref1"));
-    redirects.push_back(GURL("http://tab.com/ref2"));
+    redirects.emplace_back("http://tab.com/ref1");
+    redirects.emplace_back("http://tab.com/ref2");
     redirects.push_back(tab_url);
     HistoryServiceFactory::GetForProfile(profile(),
                                          ServiceAccessType::EXPLICIT_ACCESS)
@@ -2240,8 +2248,8 @@ TEST_F(DownloadProtectionServiceTest,
 
 TEST_F(DownloadProtectionServiceTest, TestCheckDownloadUrl) {
   std::vector<GURL> url_chain;
-  url_chain.push_back(GURL("http://www.google.com/"));
-  url_chain.push_back(GURL("http://www.google.com/bla.exe"));
+  url_chain.emplace_back("http://www.google.com/");
+  url_chain.emplace_back("http://www.google.com/bla.exe");
   GURL referrer("http://www.google.com/");
   std::string hash = "hash";
 
@@ -2831,8 +2839,8 @@ TEST_F(DownloadProtectionServiceTest,
       0,  // expected_content_size
       safe_browsing::EventResultToString(
           safe_browsing::EventResult::BYPASSED),  // expected_result
-      "",                                         // expected_username
-      {} /* expected_scan_id */);
+      ""                                          // expected_username
+  );
 
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
   DownloadProtectionService::SetDownloadProtectionData(
@@ -2887,11 +2895,11 @@ TEST_F(DownloadProtectionServiceTest,
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
   EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
-      "",             // URL, not set in this test
-      absl::nullopt,  // source, not used for file downloads.
-      absl::nullopt,  // destination, not used for file downloads.
-      "a.exe",        // Simple filename without the directory
-      "68617368",     // SHA256 of the fake download
+      "",          // URL, not set in this test
+      "",          // source, not used for file downloads.
+      "",          // destination, not used for file downloads.
+      "a.exe",     // Simple filename without the directory
+      "68617368",  // SHA256 of the fake download
       extensions::SafeBrowsingPrivateEventRouter::
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
@@ -2949,8 +2957,8 @@ TEST_F(DownloadProtectionServiceTest,
       0,  // expected_content_size
       safe_browsing::EventResultToString(
           safe_browsing::EventResult::BYPASSED),  // expected_result
-      "",                                         // expected_username
-      {} /* expected_scan_id */);
+      ""                                          // expected_username
+  );
 
   download_service_->ReportDelayedBypassEvent(
       &item, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
@@ -2999,11 +3007,11 @@ TEST_F(DownloadProtectionServiceTest,
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
   EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
-      "",             // URL, not set in this test
-      absl::nullopt,  // source, not used for file downloads.
-      absl::nullopt,  // destination, not used for file downloads.
-      "a.exe",        // Simple filename without the directory
-      "68617368",     // SHA256 of the fake download
+      "",          // URL, not set in this test
+      "",          // source, not used for file downloads.
+      "",          // destination, not used for file downloads.
+      "a.exe",     // Simple filename without the directory
+      "68617368",  // SHA256 of the fake download
       extensions::SafeBrowsingPrivateEventRouter::
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
@@ -3060,11 +3068,11 @@ TEST_F(DownloadProtectionServiceTest,
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
   EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
-      "",             // URL, not set in this test
-      absl::nullopt,  // source, not used for file downloads.
-      absl::nullopt,  // destination, not used for file downloads.
-      "a.exe",        // Simple filename without the directory
-      "68617368",     // SHA256 of the fake download
+      "",          // URL, not set in this test
+      "",          // source, not used for file downloads.
+      "",          // destination, not used for file downloads.
+      "a.exe",     // Simple filename without the directory
+      "68617368",  // SHA256 of the fake download
       extensions::SafeBrowsingPrivateEventRouter::
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
@@ -3887,8 +3895,9 @@ TEST_F(DownloadProtectionServiceTest,
         base::BindLambdaForTesting(
             [&](const network::ResourceRequest& request) {
               upload_data = network::GetUploadData(request);
-              if (!upload_data.empty())
+              if (!upload_data.empty()) {
                 interceptor_run_loop.Quit();
+              }
             }));
 
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
@@ -3945,13 +3954,14 @@ TEST_F(DownloadProtectionServiceTest,
         base::BindLambdaForTesting(
             [&](const network::ResourceRequest& request) {
               upload_data = network::GetUploadData(request);
-              if (!upload_data.empty())
+              if (!upload_data.empty()) {
                 interceptor_run_loop.Quit();
+              }
             }));
 
     history::RedirectList redirects;
-    redirects.push_back(GURL("http://tab.com/ref1"));
-    redirects.push_back(GURL("http://tab.com/ref2"));
+    redirects.emplace_back("http://tab.com/ref1");
+    redirects.emplace_back("http://tab.com/ref2");
     redirects.push_back(tab_url);
     HistoryServiceFactory::GetForProfile(profile(),
                                          ServiceAccessType::EXPLICIT_ACCESS)
@@ -4353,9 +4363,9 @@ TEST_F(DeepScanningDownloadTest, PolicyEnabled) {
                             base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
 
-      EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
-      EXPECT_TRUE(HasClientDownloadRequest());
-      EXPECT_TRUE(test_upload_service->was_called());
+    EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
+    EXPECT_TRUE(HasClientDownloadRequest());
+    EXPECT_TRUE(test_upload_service->was_called());
   }
 }
 
@@ -4634,12 +4644,13 @@ class EnterpriseCsdDownloadTest : public DownloadProtectionServiceTestBase,
     // Enable the feature early to prevent race condition trying to access
     // the enabled features set.  This happens for example when the history
     // service is started below.
-    if (flag_enabled())
+    if (flag_enabled()) {
       EnableFeatures({kSafeBrowsingEnterpriseCsd,
                       kSafeBrowsingDisableConsumerCsdForEnterprise});
-    else
+    } else {
       DisableFeatures({kSafeBrowsingEnterpriseCsd,
                        kSafeBrowsingDisableConsumerCsdForEnterprise});
+    }
   }
 
   bool flag_enabled() const { return GetParam(); }
