@@ -1,0 +1,59 @@
+<style include="settings-shared">
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .subsection {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .subsection > settings-toggle-button {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+</style>
+<h2>[[keyboard.name]]</h2>
+<div class="subsection">
+  <settings-toggle-button
+      class="hr"
+      pref="{{topRowAreFunctionKeysPref}}"
+      label="$i18n{keyboardSendFunctionKeys}"
+      sub-label="$i18n{keyboardSendFunctionKeysDescription}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      class="hr"
+      pref="{{enableAutoRepeatPref}}"
+      label="$i18n{keyboardEnableAutoRepeat}">
+  </settings-toggle-button>
+  <iron-collapse
+      opened="[[enableAutoRepeatPref.value]]">
+    <div class="settings-box continuation embedded">
+      <div class="start" id="repeatDelayLabel" aria-hidden="true">
+        $i18n{keyRepeatDelay}
+      </div>
+      <settings-slider id="delaySlider"
+          pref="{{autoRepeatDelaysPref}}"
+          ticks="[[autoRepeatDelays]]"
+          disabled="[[!enableAutoRepeatPref.value]]"
+          label-aria="$i18n{keyRepeatDelay}"
+          label-min="$i18n{keyRepeatDelayLong}"
+          label-max="$i18n{keyRepeatDelayShort}">
+      </settings-slider>
+    </div>
+    <div class="settings-box continuation embedded">
+      <div class="start" id="repeatRateLabel" aria-hidden="true">
+        $i18n{keyRepeatRate}
+      </div>
+      <settings-slider id="repeatRateSlider"
+          pref="{{autoRepeatIntervalsPref}}"
+          ticks="[[autoRepeatIntervals]]"
+          disabled="[[
+              !enableAutoRepeatPref.value]]"
+          label-aria="$i18n{keyRepeatRate}"
+          label-min="$i18n{keyRepeatRateSlow}"
+          label-max="$i18n{keyRepeatRateFast}">
+      </settings-slider>
+    </div>
+  </iron-collapse>
+</div>

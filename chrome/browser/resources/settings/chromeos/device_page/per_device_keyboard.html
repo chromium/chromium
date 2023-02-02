@@ -1,1 +1,13 @@
-<div id="perDeviceKeyboardSubpageTitle">$i18n{perDeviceKeyboardTitle}</div>
+<style include="settings-shared"></style>
+<template is="dom-repeat" items="[[keyboards]]" as="keyboard">
+  <settings-per-device-keyboard-subsection keyboard="[[keyboard]]">
+  </settings-per-device-keyboard-subsection>
+</template>
+<cr-link-row id="keyboardShortcutViewer" class="hr"
+    on-click="onShowKeyboardShortcutViewerTap"
+    label="$i18n{showKeyboardShortcutViewer}" external></cr-link-row>
+<cr-link-row id="showLanguagesInput"
+    class="hr" on-click="onShowInputSettingsTap"
+    label="$i18n{keyboardShowInputSettings}"
+    role-description="$i18n{subpageArrowRoleDescription}">
+</cr-link-row>

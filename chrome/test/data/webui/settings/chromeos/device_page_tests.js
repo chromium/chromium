@@ -675,8 +675,6 @@ suite('SettingsDevicePage', function() {
     test('per-device keyboard subpage visibility', function() {
       assertEquals(
           routes.PER_DEVICE_KEYBOARD, Router.getInstance().getCurrentRoute());
-      assertTrue(isVisible(perDeviceKeyboardPage.shadowRoot.querySelector(
-          '#perDeviceKeyboardSubpageTitle')));
     });
 
     test('per-device keyboard page populated', function() {

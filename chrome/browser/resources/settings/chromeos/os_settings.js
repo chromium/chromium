@@ -21,6 +21,7 @@ import './device_page/input_device_mojo_interface_provider.js';
 import './device_page/input_device_settings_types.js';
 import './device_page/keyboard.js';
 import './device_page/per_device_keyboard.js';
+import './device_page/per_device_keyboard_subsection.js';
 import './device_page/per_device_mouse.js';
 import './device_page/per_device_mouse_subsection.js';
 import './device_page/per_device_pointing_stick.js';
@@ -157,6 +158,8 @@ export {fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads} from './devi
 export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_settings_provider.js';
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
 export {MetaKey} from './device_page/input_device_settings_types.js';
+export {SettingsPerDeviceKeyboardElement} from './device_page/per_device_keyboard.js';
+export {SettingsPerDeviceKeyboardSubsectionElement} from './device_page/per_device_keyboard_subsection.js';
 export {SettingsPerDeviceMouseSubsectionElement} from './device_page/per_device_mouse_subsection.js';
 export {SettingsPerDeviceTouchpadSubsectionElement} from './device_page/per_device_touchpad_subsection.js';
 export {GoogleAssistantBrowserProxyImpl} from './google_assistant_page/google_assistant_browser_proxy.js';

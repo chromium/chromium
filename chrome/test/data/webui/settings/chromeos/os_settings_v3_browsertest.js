@@ -497,6 +497,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['ParentalControlsPage', 'parental_controls_page_test.js'],
  ['PeoplePage', 'os_people_page_test.js'],
  ['PeoplePageQuickUnlock', 'quick_unlock_authenticate_browsertest_chromeos.js'],
+ ['PerDeviceKeyboard', 'per_device_keyboard_test.js'],
+ ['PerDeviceKeyboardSubsection', 'per_device_keyboard_subsection_test.js'],
  ['PerDeviceMouseSubsection', 'per_device_mouse_subsection_test.js'],
  ['PerDeviceTouchpadSubsection', 'per_device_touchpad_subsection_test.js'],
  [
