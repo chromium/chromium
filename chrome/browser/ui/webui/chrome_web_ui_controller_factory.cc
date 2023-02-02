@@ -1501,6 +1501,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
         GURL(chrome::kChromeUILockScreenNetworkURL),
         GURL(chrome::kChromeUILockScreenStartReauthURL),
         GURL(chrome::kChromeUIManageMirrorSyncURL),
+        GURL(chrome::kChromeUIManagementURL),
         GURL(chrome::kChromeUIMultiDeviceSetupUrl),
         GURL(chrome::kChromeUINetworkUrl),
         GURL(chrome::kChromeUIOfficeFallbackURL), GURL(chrome::kOsUINetworkURL),
