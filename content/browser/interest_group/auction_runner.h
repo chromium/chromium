@@ -70,9 +70,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // `private_aggregation_requests` Requests made to the Private Aggregation
   //  API. Keyed by reporting origin of the associated requests.
   //
-  // `interest_groups_that_bid` is a list of the interest groups that made bids
-  // in the auction. Empty if the auction didn't run to completion.
-  //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see.
   //
@@ -94,7 +91,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       std::string winning_group_ad_metadata,
       std::map<url::Origin, PrivateAggregationRequests>
           private_aggregation_requests,
-      blink::InterestGroupSet interest_groups_that_bid,
       base::flat_set<std::string> k_anon_keys_to_join,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter>

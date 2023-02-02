@@ -80,6 +80,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     WinningBidInfo winning_bid_info,
     SellerWinningBidInfo top_level_seller_winning_bid_info,
     absl::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
+    blink::InterestGroupSet interest_groups_that_bid,
     std::vector<GURL> debug_win_report_urls,
     std::vector<GURL> debug_loss_report_urls,
     std::map<url::Origin, PrivateAggregationRequests>
@@ -95,6 +96,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
           std::move(top_level_seller_winning_bid_info)),
       component_seller_winning_bid_info_(
           std::move(component_seller_winning_bid_info)),
+      interest_groups_that_bid_(std::move(interest_groups_that_bid)),
       debug_win_report_urls_(std::move(debug_win_report_urls)),
       debug_loss_report_urls_(std::move(debug_loss_report_urls)),
       private_aggregation_requests_(std::move(private_aggregation_requests)) {
@@ -102,6 +104,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
   DCHECK(auction_worklet_manager_);
   DCHECK(url_loader_factory_);
   DCHECK(client_security_state_);
+  DCHECK(!interest_groups_that_bid_.empty());
 }
 
 InterestGroupAuctionReporter ::~InterestGroupAuctionReporter() = default;
@@ -520,6 +523,9 @@ void InterestGroupAuctionReporter::OnNavigateToWinningAd() {
       std::move(debug_loss_report_urls_), frame_origin_,
       *client_security_state_, url_loader_factory_);
   debug_loss_report_urls_.clear();
+
+  interest_group_manager_->RecordInterestGroupBids(interest_groups_that_bid_);
+  interest_groups_that_bid_.clear();
 
   MaybeInvokeCallback();
 }

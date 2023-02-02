@@ -104,6 +104,11 @@ class InterestGroupAuctionReporterTest
     // `interest_group_manager_impl_` before that to avoid any leaks, since it
     // does work on other threads.
     interest_group_auction_reporter_.reset();
+
+    // All reports should have been observed. Not all tests observe all other
+    // fields, so don't check any of the others.
+    interest_group_manager_impl_->ExpectReports({});
+
     interest_group_manager_impl_.reset();
 
     RenderViewHostTestHarness::TearDown();
@@ -143,6 +148,9 @@ class InterestGroupAuctionReporterTest
         dummy_report_shared_url_loader_factory_, std::move(winning_bid_info_),
         std::move(seller_winning_bid_info_),
         std::move(component_seller_winning_bid_info_),
+        /*interest_groups_that_bid=*/
+        blink::InterestGroupSet{{kWinningBidderOrigin, kWinningBidderName},
+                                {kLosingBidderOrigin, kLosingBidderName}},
         std::move(debug_win_report_urls_), std::move(debug_loss_report_urls_),
         std::map<url::Origin,
                  InterestGroupAuctionReporter::PrivateAggregationRequests>());
@@ -274,6 +282,11 @@ class InterestGroupAuctionReporterTest
       GURL("https://winning.bidder.origin.test/bidder_script.js");
   const url::Origin kWinningBidderOrigin =
       url::Origin::Create(kWinningBidderScriptUrl);
+  const std::string kWinningBidderName = "winning interest group name";
+
+  const url::Origin kLosingBidderOrigin =
+      url::Origin::Create(GURL("https://losing.bidder.origin.test/"));
+  const std::string kLosingBidderName = "losing interest group name";
 
   const GURL kSellerScriptUrl =
       GURL("https://seller.origin.test/seller_script.js");
@@ -283,6 +296,10 @@ class InterestGroupAuctionReporterTest
       GURL("https://component.seller.origin.test/component_seller_script.js");
   const url::Origin kComponentSellerOrigin =
       url::Origin::Create(kComponentSellerScriptUrl);
+
+  const std::vector<blink::InterestGroupKey> kExpectedInterestGroupsThatBid{
+      {kWinningBidderOrigin, kWinningBidderName},
+      {kLosingBidderOrigin, kLosingBidderName}};
 
   std::vector<GURL> debug_win_report_urls_;
   std::vector<GURL> debug_loss_report_urls_;
@@ -717,6 +734,109 @@ TEST_F(InterestGroupAuctionReporterTest, DebugReportsLateNavigation) {
        {InterestGroupManagerImpl::ReportType::kDebugLoss, kDebugLossReport2}});
 
   WaitForCompletion();
+}
+
+// Check that bids are reported to the InterestGroupManager, in the case where
+// the fenced frame is navigated to before any reporting scripts have run.
+TEST_F(InterestGroupAuctionReporterTest, RecordBids) {
+  SetUpAndStartSingleSellerAuction();
+  EXPECT_THAT(interest_group_manager_impl_->TakeInterestGroupsThatBid(),
+              testing::UnorderedElementsAre());
+
+  // The bids should be reported immediately upon navigation.
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+  EXPECT_THAT(
+      interest_group_manager_impl_->TakeInterestGroupsThatBid(),
+      testing::UnorderedElementsAreArray(kExpectedInterestGroupsThatBid));
+
+  WaitForReportResultAndRunCallback(kSellerScriptUrl, absl::nullopt);
+  WaitForReportWinAndRunCallback(absl::nullopt);
+  WaitForCompletion();
+
+  // The bids should have been recorded only once.
+  EXPECT_THAT(interest_group_manager_impl_->TakeInterestGroupsThatBid(),
+              testing::UnorderedElementsAre());
+}
+
+// Check that bids are reported to the InterestGroupManager, in the case where
+// the fenced frame is navigated to only after all reporting scripts have been
+// run.
+TEST_F(InterestGroupAuctionReporterTest, RecordBidsLateNavigation) {
+  SetUpAndStartSingleSellerAuction();
+  EXPECT_THAT(interest_group_manager_impl_->TakeInterestGroupsThatBid(),
+              testing::UnorderedElementsAre());
+
+  WaitForReportResultAndRunCallback(kSellerScriptUrl, absl::nullopt);
+  WaitForReportWinAndRunCallback(absl::nullopt);
+
+  // Running reporting scripts should not cause any bids to be recorded.
+  EXPECT_THAT(interest_group_manager_impl_->TakeInterestGroupsThatBid(),
+              testing::UnorderedElementsAre());
+
+  // The bids should be recorded immediately upon navigation.
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+  EXPECT_THAT(
+      interest_group_manager_impl_->TakeInterestGroupsThatBid(),
+      testing::UnorderedElementsAreArray(kExpectedInterestGroupsThatBid));
+
+  WaitForCompletion();
+
+  // The bids should have been recorded only once.
+  EXPECT_THAT(interest_group_manager_impl_->TakeInterestGroupsThatBid(),
+              testing::UnorderedElementsAre());
+}
+
+// Test that no reports are sent and no bids recorded in the case that the
+// reporting scripts are successfully run, but the frame is never navigated to.
+TEST_F(InterestGroupAuctionReporterTest, NoNavigation) {
+  SetUpAndStartSingleSellerAuction();
+  WaitForReportResultAndRunCallback(kSellerScriptUrl, kSellerReportUrl);
+  WaitForReportWinAndRunCallback(kBidderReportUrl);
+  interest_group_auction_reporter_.reset();
+
+  EXPECT_THAT(interest_group_manager_impl_->TakeInterestGroupsThatBid(),
+              testing::UnorderedElementsAre());
+  interest_group_manager_impl_->ExpectReports({});
+}
+
+// Test multiple navigations result in only a single set of reports, and
+// interest groups that bid being recorded only once.
+TEST_F(InterestGroupAuctionReporterTest, MultipleNavigations) {
+  SetUpAndStartSingleSellerAuction();
+  base::RepeatingClosure callback =
+      interest_group_auction_reporter_->OnNavigateToWinningAdCallback();
+  callback.Run();
+  callback.Run();
+
+  WaitForReportResultAndRunCallback(kSellerScriptUrl, kSellerReportUrl);
+  callback.Run();
+  callback.Run();
+
+  WaitForReportWinAndRunCallback(kBidderReportUrl);
+  callback.Run();
+  callback.Run();
+
+  WaitForCompletion();
+  // It should be safe to invoke the callback after completion.
+  callback.Run();
+  callback.Run();
+
+  interest_group_auction_reporter_.reset();
+  // It should be safe to invoke the callback after the reporter has been
+  // destroyed.
+  callback.Run();
+  callback.Run();
+
+  // The bids should have been recorded only once.
+  EXPECT_THAT(
+      interest_group_manager_impl_->TakeInterestGroupsThatBid(),
+      testing::UnorderedElementsAreArray(kExpectedInterestGroupsThatBid));
+
+  // Reports should also have been sent only once.
+  interest_group_manager_impl_->ExpectReports(
+      {{InterestGroupManagerImpl::ReportType::kSendReportTo, kSellerReportUrl},
+       {InterestGroupManagerImpl::ReportType::kSendReportTo,
+        kBidderReportUrl}});
 }
 
 }  // namespace

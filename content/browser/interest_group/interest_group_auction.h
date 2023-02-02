@@ -435,7 +435,8 @@ class CONTENT_EXPORT InterestGroupAuction
       std::unique_ptr<blink::AuctionConfig> auction_config,
       const url::Origin& frame_origin,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      blink::InterestGroupSet interest_groups_that_bid);
 
   // Called by AuctionRunner (for component auctions, indirectly via
   // NotifyComponentConfigPromisesResolved) when all promises relevant to this

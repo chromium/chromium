@@ -132,7 +132,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
           url::Origin,
           std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
           private_aggregation_requests,
-      blink::InterestGroupSet interest_groups_that_bid,
       base::flat_set<std::string> k_anon_keys_to_join,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter> reporter);
@@ -143,7 +142,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       blink::InterestGroupKey winning_group_key,
       std::string winning_group_ad_metadata,
       scoped_refptr<FencedFrameReporter> fenced_frame_reporter,
-      blink::InterestGroupSet interest_groups_that_bid,
       base::flat_set<std::string> k_anon_keys_to_join);
 
   // Calls LogWebFeatureForCurrentPage() for the frame to inform it of FLEDGE

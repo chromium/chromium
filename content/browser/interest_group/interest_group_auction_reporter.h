@@ -130,6 +130,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       WinningBidInfo winning_bid_info,
       SellerWinningBidInfo top_level_seller_winning_bid_info,
       absl::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
+      blink::InterestGroupSet interest_groups_that_bid,
       std::vector<GURL> debug_win_report_urls,
       std::vector<GURL> debug_loss_report_urls,
       std::map<url::Origin, PrivateAggregationRequests>
@@ -271,6 +272,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   const WinningBidInfo winning_bid_info_;
   const SellerWinningBidInfo top_level_seller_winning_bid_info_;
   const absl::optional<SellerWinningBidInfo> component_seller_winning_bid_info_;
+
+  blink::InterestGroupSet interest_groups_that_bid_;
 
   base::OnceClosure callback_;
 

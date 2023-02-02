@@ -231,6 +231,9 @@ void InterestGroupManagerImpl::UpdateInterestGroupsOfOwners(
 
 void InterestGroupManagerImpl::RecordInterestGroupBids(
     const blink::InterestGroupSet& group_keys) {
+  if (group_keys.empty()) {
+    return;
+  }
   for (const auto& group_key : group_keys) {
     NotifyInterestGroupAccessed(InterestGroupObserverInterface::kBid,
                                 group_key.owner.Serialize(), group_key.name);

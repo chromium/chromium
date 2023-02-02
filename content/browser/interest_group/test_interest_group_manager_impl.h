@@ -9,18 +9,24 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 
-// An implementation of InterestGroupManagerImpl for tests. It tracks reports
-// queued by EnqueueReports(). It uses in-memory storage only, and does not send
-// any requests.
-class TestInterestGroupManagerImpl : public InterestGroupManagerImpl {
+// An implementation of InterestGroupManagerImpl for tests. It tracks a number
+// of calls to InterestGroupManagerImpl. Its EnqueueReports() overload uses
+// in-memory storage to track reports, rather than sending real network
+// requests. Other calls that are tracked do not block calls to the underlying
+// InterestGroupManagerImpl.
+class TestInterestGroupManagerImpl
+    : public InterestGroupManagerImpl,
+      public InterestGroupManagerImpl::InterestGroupObserverInterface {
  public:
   // Information about a report queued by an EnqueueReports() call. Doesn't
   // include values that are passed to the TestInterestGroupManagerImpl()
@@ -45,6 +51,7 @@ class TestInterestGroupManagerImpl : public InterestGroupManagerImpl {
 
   ~TestInterestGroupManagerImpl() override;
 
+  // InterestGroupManagerImpl implementation:
   void EnqueueReports(
       ReportType report_type,
       std::vector<GURL> report_urls,
@@ -53,15 +60,31 @@ class TestInterestGroupManagerImpl : public InterestGroupManagerImpl {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       override;
 
+  // InterestGroupManagerImpl::InterestGroupObserverInterface implementation:
+  //
+  // This is used instead of a virtual method for tracking bids, since it has
+  // all the information that's needed.
+  void OnInterestGroupAccessed(const base::Time& access_time,
+                               AccessType type,
+                               const std::string& owner_origin,
+                               const std::string& name) override;
+
+  // Clears all logged data. Does not affect state of the interest group
+  // database.
+  void ClearLoggedData();
+
   // Expect that reports queued by EnqueueReports() matches `expected_reports`.
   // Does not check report order. All queued reports are cleared after the
-  // comparison. Destructor logs a test failure if reports were queued after the
-  // last ExpectReports() call.
+  // comparison.
   void ExpectReports(const std::vector<Report>& expected_reports);
 
   // Alternate way of validating URLs. Returns all the URLs of the requested
-  // type, removing them from internals list of reports in the process.
+  // type, removing them from the internal list in the process.
   std::vector<GURL> TakeReportUrlsOfType(ReportType report_type);
+
+  // Returns all interest groups that bid, removing them from the internal list
+  // in the process.
+  std::vector<blink::InterestGroupKey> TakeInterestGroupsThatBid();
 
  private:
   const url::Origin expected_frame_origin_;
@@ -70,6 +93,7 @@ class TestInterestGroupManagerImpl : public InterestGroupManagerImpl {
       expected_url_loader_factory_;
 
   std::list<Report> reports_;
+  std::vector<blink::InterestGroupKey> interest_groups_that_bid_;
 };
 
 }  // namespace content

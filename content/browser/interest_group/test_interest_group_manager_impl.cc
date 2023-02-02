@@ -8,11 +8,13 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -31,10 +33,12 @@ TestInterestGroupManagerImpl::TestInterestGroupManagerImpl(
       expected_frame_origin_(expected_frame_origin),
       expected_client_security_state_(
           std::move(expected_client_security_state)),
-      expected_url_loader_factory_(std::move(expected_url_loader_factory)) {}
+      expected_url_loader_factory_(std::move(expected_url_loader_factory)) {
+  AddInterestGroupObserver(this);
+}
 
 TestInterestGroupManagerImpl::~TestInterestGroupManagerImpl() {
-  EXPECT_TRUE(reports_.empty());
+  RemoveInterestGroupObserver(this);
 }
 
 void TestInterestGroupManagerImpl::EnqueueReports(
@@ -49,6 +53,22 @@ void TestInterestGroupManagerImpl::EnqueueReports(
   for (const auto& report_url : report_urls) {
     reports_.emplace_back(Report{report_type, std::move(report_url)});
   }
+}
+
+void TestInterestGroupManagerImpl::OnInterestGroupAccessed(
+    const base::Time& access_time,
+    AccessType type,
+    const std::string& owner_origin,
+    const std::string& name) {
+  if (type == AccessType::kBid) {
+    interest_groups_that_bid_.emplace_back(
+        url::Origin::Create(GURL(owner_origin)), name);
+  }
+}
+
+void TestInterestGroupManagerImpl::ClearLoggedData() {
+  reports_.clear();
+  interest_groups_that_bid_.clear();
 }
 
 void TestInterestGroupManagerImpl::ExpectReports(
@@ -70,6 +90,11 @@ std::vector<GURL> TestInterestGroupManagerImpl::TakeReportUrlsOfType(
     ++it;
   }
   return out;
+}
+
+std::vector<blink::InterestGroupKey>
+TestInterestGroupManagerImpl::TakeInterestGroupsThatBid() {
+  return std::exchange(interest_groups_that_bid_, {});
 }
 
 }  // namespace content

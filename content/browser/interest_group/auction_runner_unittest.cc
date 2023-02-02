@@ -1114,7 +1114,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     ReportingMetadata ad_beacon_map;
     std::map<url::Origin, PrivateAggregationRequests>
         private_aggregation_requests;
-    blink::InterestGroupSet interest_groups_that_bid;
+    std::vector<blink::InterestGroupKey> interest_groups_that_bid;
     base::flat_set<std::string> k_anon_keys_to_join;
 
     std::vector<std::string> errors;
@@ -1372,6 +1372,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         interest_group_manager_->UpdateKAnonymity(kanon_data);
     }
 
+    interest_group_manager_->ClearLoggedData();
+
     auction_run_loop_ = std::make_unique<base::RunLoop>();
     abortable_ad_auction_.reset();
     auction_runner_ = AuctionRunner::CreateAndStart(
@@ -1400,7 +1402,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       std::string winning_group_ad_metadata,
       std::map<url::Origin, PrivateAggregationRequests>
           private_aggregation_requests,
-      blink::InterestGroupSet interest_groups_that_bid,
       base::flat_set<std::string> k_anon_keys_to_join,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter> reporter) {
@@ -1426,7 +1427,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     result_.debug_loss_report_urls.clear();
     result_.debug_win_report_urls.clear();
     result_.ad_beacon_map = ReportingMetadata();
-    result_.interest_groups_that_bid = std::move(interest_groups_that_bid);
+    result_.interest_groups_that_bid.clear();
     result_.private_aggregation_requests =
         std::move(private_aggregation_requests);
     result_.k_anon_keys_to_join = std::move(k_anon_keys_to_join);
@@ -1435,6 +1436,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       result_.debug_loss_report_urls =
           interest_group_manager_->TakeReportUrlsOfType(
               InterestGroupManagerImpl::ReportType::kDebugLoss);
+      result_.interest_groups_that_bid =
+          interest_group_manager_->TakeInterestGroupsThatBid();
 
       // There should be no reports of any other type queued.
       interest_group_manager_->ExpectReports({});
@@ -1479,6 +1482,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
             InterestGroupManagerImpl::ReportType::kDebugWin);
     result_.private_aggregation_requests =
         reporter_->TakePrivateAggregationRequests();
+    result_.interest_groups_that_bid =
+        interest_group_manager_->TakeInterestGroupsThatBid();
     const auto& report_errors = reporter_->errors();
     result_.errors.insert(result_.errors.end(), report_errors.begin(),
                           report_errors.end());

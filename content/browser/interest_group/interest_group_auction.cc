@@ -1345,7 +1345,8 @@ InterestGroupAuction::CreateReporter(
     std::unique_ptr<blink::AuctionConfig> auction_config,
     const url::Origin& frame_origin,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    blink::InterestGroupSet interest_groups_that_bid) {
   DCHECK(!load_interest_groups_phase_callback_);
   DCHECK(!bidding_and_scoring_phase_callback_);
   DCHECK_EQ(*final_auction_result_, AuctionResult::kSuccess);
@@ -1442,8 +1443,8 @@ InterestGroupAuction::CreateReporter(
       std::move(url_loader_factory), std::move(winning_bid_info),
       std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
-      std::move(debug_win_report_urls), std::move(debug_loss_report_urls),
-      TakePrivateAggregationRequests());
+      std::move(interest_groups_that_bid), std::move(debug_win_report_urls),
+      std::move(debug_loss_report_urls), TakePrivateAggregationRequests());
 }
 
 void InterestGroupAuction::NotifyConfigPromisesResolved() {

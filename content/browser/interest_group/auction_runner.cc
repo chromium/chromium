@@ -189,8 +189,8 @@ void AuctionRunner::FailAuction(
   DCHECK(callback_);
   state_ = State::kFailed;
 
-  // Can have loss report URLs if the auction failed because the seller rejected
-  // all bids.
+  // Can have loss report URLs if the auction failed because the seller
+  // rejected all bids.
   std::vector<GURL> debug_win_report_urls;
   std::vector<GURL> debug_loss_report_urls;
   auction_.TakeDebugReportUrlsAndFillInPrivateAggregationRequests(
@@ -202,6 +202,8 @@ void AuctionRunner::FailAuction(
       std::move(debug_loss_report_urls), frame_origin_, *client_security_state_,
       url_loader_factory_);
 
+  interest_group_manager_->RecordInterestGroupBids(interest_groups_that_bid);
+
   UpdateInterestGroupsPostAuction();
 
   std::move(callback_).Run(this, manually_aborted,
@@ -210,7 +212,6 @@ void AuctionRunner::FailAuction(
                            /*ad_component_urls=*/{},
                            /*winning_group_ad_metadata=*/std::string(),
                            auction_.TakePrivateAggregationRequests(),
-                           std::move(interest_groups_that_bid),
                            auction_.GetKAnonKeysToJoin(), auction_.TakeErrors(),
                            /*reporter=*/nullptr);
 }
@@ -303,7 +304,8 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
   std::unique_ptr<InterestGroupAuctionReporter> reporter =
       auction_.CreateReporter(std::move(owned_auction_config_), frame_origin_,
                               client_security_state_.Clone(),
-                              url_loader_factory_);
+                              url_loader_factory_,
+                              std::move(interest_groups_that_bid));
   DCHECK(reporter);
 
   state_ = State::kSucceeded;
@@ -314,8 +316,7 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
       std::move(winning_group_ad_metadata),
       // In this case, the reporter has all the private aggregation requests.
       std::map<url::Origin, PrivateAggregationRequests>(),
-      std::move(interest_groups_that_bid), auction_.GetKAnonKeysToJoin(),
-      std::move(errors), std::move(reporter));
+      auction_.GetKAnonKeysToJoin(), std::move(errors), std::move(reporter));
 }
 
 void AuctionRunner::UpdateInterestGroupsPostAuction() {
