@@ -293,6 +293,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "arc-vmm-swap",
+    "owners": [ "sstan" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "arc-window-predictor",
     "owners": [ "sstan" ],
     "expiry_milestone": 112
