@@ -554,8 +554,6 @@ void SearchProvider::UpdateMatches() {
     PersistTopSuggestions(&keyword_results_);
     ConvertResultsToAutocompleteMatches();
     EnforceConstraints();
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Omnibox.SearchProviderMatches",
-                                matches_.size(), 1, 6, 7);
     RecordTopSuggestion();
   }
 

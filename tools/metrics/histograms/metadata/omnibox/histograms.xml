@@ -1494,6 +1494,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.SearchProviderMatches" units="units"
     expires_after="2022-09-11">
+  <obsolete>
+    Obsolete as of M112.
+  </obsolete>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
