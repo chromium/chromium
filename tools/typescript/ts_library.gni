@@ -23,6 +23,7 @@ template("ts_library") {
     inputs = [
       "//tools/typescript/tsconfig_base.json",
       "//tools/typescript/path_mappings.py",
+      "//tools/typescript/validate_tsconfig.py",
     ]
     outputs = [ "$target_gen_dir/tsconfig_$target_name.json" ]
 

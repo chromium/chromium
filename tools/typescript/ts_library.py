@@ -19,6 +19,7 @@ import node
 import node_modules
 
 from path_mappings import GetDepToPathMappings
+from validate_tsconfig import ValidateTsconfigJson
 
 
 def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
@@ -28,42 +29,6 @@ def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
   with open(os.path.join(gen_dir, tsconfig_file), 'w') as generated_tsconfig:
     json.dump(tsconfig, generated_tsconfig, indent=2)
   return
-
-# Options configured by the ts_library should not be set separately.
-_tsconfig_compiler_options_mappings = {
-    'composite': 'composite=true',
-    'declaration': 'composite=true',
-    'tsBuildInfoFile': 'composite=true',
-    'rootDir': 'root_dir',
-    'outDir': 'out_dir',
-    'paths': 'path_mappings',
-}
-
-
-def _validate_tsconfig_json(tsconfig, tsconfig_file):
-  if 'files' in tsconfig:
-    return False, f'Invalid |files| flag detected in {tsconfig_file}.' + \
-        ' Use the dedicated |in_files| and |definitions| attributes in '+ \
-        'ts_library() to specify input files and definitions.'
-  if 'references' in tsconfig:
-    return False, f'Invalid |references| flag detected in ' + \
-        f'{tsconfig_file}.  Use the dedicated |deps| attribute in ' + \
-        'ts_library() to specify other ts_library() dependencies.'
-
-  # Special exception for material_web_components, which uses a large number
-  # of invalid attributes when invoking ts_library().
-  if 'third_party/material_web_components/tsconfig_base.json' in tsconfig_file:
-    return True, None
-
-  if 'compilerOptions' in tsconfig:
-    for param in _tsconfig_compiler_options_mappings.keys():
-      if param in tsconfig['compilerOptions']:
-        tslibrary_flag = _tsconfig_compiler_options_mappings[param]
-        return False, f'Invalid |{param}| flag detected in {tsconfig_file}.' + \
-            f' Use the dedicated |{tslibrary_flag}| attribute in '+ \
-            'ts_library() instead.'
-  return True, None
-
 
 def _is_sourcemap_enabled(tsconfig):
   if 'compilerOptions' in tsconfig:
@@ -115,8 +80,9 @@ def main(argv):
   with io.open(tsconfig_base_file, encoding='utf-8', mode='r') as f:
     tsconfig_base = json.loads(f.read())
 
-    is_tsconfig_valid, error = _validate_tsconfig_json(tsconfig_base,
-                                                       tsconfig_base_file)
+    is_tsconfig_valid, error = ValidateTsconfigJson(tsconfig_base,
+                                                    tsconfig_base_file,
+                                                    args.tsconfig_base is None)
     if not is_tsconfig_valid:
       raise AssertionError(error)
 
