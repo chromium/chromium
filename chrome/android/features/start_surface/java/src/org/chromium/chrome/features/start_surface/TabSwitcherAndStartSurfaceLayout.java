@@ -290,6 +290,17 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                 mStartSurface.showOverview(shouldAnimate);
                 return;
             }
+            // crbug/1412375: Callers of LayoutManager#showLayout(LayoutType.TAB_SWITCHER) may
+            // not have set the correct StartSurfaceState leading to the transition animation
+            // stalling. setStartSurfaceState(StartSurfaceState.SHOWING_TABSWITCHER) changes the
+            // GTS to be visible, i.e. calls setSecondaryTasksSurfaceVisibility(Visible).
+            // Without this behavior getGridTabListDelegate().runAnimationOnNextLayout() below
+            // won't run as the SecondaryTasksSurface which is the parent view of
+            // TabListRecyclerView remains invisible.
+            // This is a band-aid fix which won't be required once we launch the refactoring.
+            if (mStartSurface.getStartSurfaceState() != StartSurfaceState.SHOWING_TABSWITCHER) {
+                mStartSurface.setStartSurfaceState(StartSurfaceState.SHOWING_TABSWITCHER);
+            }
             // Ensure the SceneLayer image for the GTS is in the correct position by deferring until
             // the next layout pass.
             mDeferredAnimationRunnable = () -> {
