@@ -130,4 +130,9 @@ interface CrosAudioConfig {
   // Sets mute state for primary input device if device is not muted by physical
   // switch.
   SetInputMuted(bool muted);
+
+  // Sets whether noise cancellation is enabled or not. This is shared between
+  // different input devices, so changing the active input device will keep the
+  // enabled state from the previous active input device.
+  SetNoiseCancellationEnabled(bool enabled);
 };

@@ -180,12 +180,6 @@ class SettingsAudioElement extends SettingsAudioElementBase {
   /** Handles updates to noise cancellation state. */
   protected onNoiseCancellationEnabledChanged(
       enabled: SettingsAudioElement['isNoiseCancellationEnabled_']): void {
-    // TODO(b/260277007): Remove condition when setActiveDevice added to mojo
-    // definition.
-    if (!this.crosAudioConfig_.setNoiseCancellationEnabled) {
-      return;
-    }
-
     this.crosAudioConfig_.setNoiseCancellationEnabled(enabled);
   }
 

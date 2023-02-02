@@ -180,8 +180,14 @@ class CrosAudioConfigImplTest : public testing::Test {
   }
 
   void SetInputGainPercentFromFrontEnd(int gain_percent) {
-    // TODO(swifton): Replace RunUntilIdle with Run and QuitClosure.
+    // TODO(ashleydp): Replace RunUntilIdle with Run and QuitClosure.
     remote_->SetInputGainPercent(gain_percent);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SimulateSetNoiseCancellationEnabled(bool enabled) {
+    // TODO(ashleydp): Replace RunUntilIdle with Run and QuitClosure.
+    remote_->SetNoiseCancellationEnabled(enabled);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -254,6 +260,18 @@ class CrosAudioConfigImplTest : public testing::Test {
     fake_cras_audio_client_->InsertAudioNodeToList(
         GenerateAudioNode(node_info));
     base::RunLoop().RunUntilIdle();
+  }
+
+  bool GetNoiseCancellationState() {
+    return fake_cras_audio_client_->noise_cancellation_enabled();
+  }
+
+  bool GetNoiseCancellationStatePref() {
+    return audio_pref_handler_->GetNoiseCancellationState();
+  }
+
+  bool GetNoiseCancellationSupported() {
+    return cras_audio_handler_->noise_cancellation_supported();
   }
 
   void SetNoiseCancellationStatePref(bool enabled) {
@@ -490,6 +508,49 @@ TEST_F(CrosAudioConfigImplTest, HandleOutputMuteStateMutedByPolicy) {
   EXPECT_EQ(
       mojom::MuteState::kMutedByPolicy,
       fake_observer->last_audio_system_properties_.value()->output_mute_state);
+}
+
+TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+
+  // By default noise cancellation is disabled and not supported in this test.
+  ASSERT_FALSE(GetNoiseCancellationSupported());
+  ASSERT_FALSE(GetNoiseCancellationState());
+  ASSERT_FALSE(GetNoiseCancellationStatePref());
+
+  // Simulate trying to set noise cancellation.
+  SimulateSetNoiseCancellationEnabled(/*enabled=*/true);
+
+  // Since noise cancellation is not supported, noting is set.
+  ASSERT_FALSE(GetNoiseCancellationState());
+
+  // Turn on noise cancellation support.
+  SetNoiseCancellationSupported(/*supported=*/true);
+  ASSERT_TRUE(GetNoiseCancellationSupported());
+
+  // Now turning on noise cancellation should work.
+  SimulateSetNoiseCancellationEnabled(/*enabled=*/true);
+
+  // Add input audio nodes.
+  SetAudioNodes({kInternalMic, kUsbMic});
+  SetActiveInputNodes({kInternalMicId});
+
+  ASSERT_TRUE(GetNoiseCancellationState());
+  ASSERT_TRUE(GetNoiseCancellationStatePref());
+  ASSERT_EQ(mojom::AudioEffectState::kEnabled,
+            fake_observer->GetInputAudioDevice(1)->noise_cancellation_state);
+
+  // Change active node does not change noise cancellation state.
+  SetActiveInputNodes({kUsbMicId});
+
+  ASSERT_EQ(mojom::AudioEffectState::kEnabled,
+            fake_observer->GetInputAudioDevice(1)->noise_cancellation_state);
+
+  // Turn noise cancellation off.
+  SimulateSetNoiseCancellationEnabled(/*enabled=*/false);
+
+  ASSERT_FALSE(GetNoiseCancellationState());
+  ASSERT_FALSE(GetNoiseCancellationStatePref());
 }
 
 TEST_F(CrosAudioConfigImplTest, GetOutputAudioDevices) {

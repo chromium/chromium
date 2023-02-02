@@ -276,6 +276,23 @@ void CrosAudioConfigImpl::SetInputMuted(bool muted) {
                                   muted);
 }
 
+void CrosAudioConfigImpl::SetNoiseCancellationEnabled(bool enabled) {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+
+  // TODO(b/265077695): This check should be in CrasAudioHandler. It should also
+  // check for audio_effect in the active device to support noise cancellation.
+  if (!audio_handler->noise_cancellation_supported()) {
+    LOG(ERROR)
+        << "SetNoiseCancellationEnabled: Noise cancellation is not supported.";
+    return;
+  }
+
+  // TODO(b/265077695): put the SetNoiseCancellationPrefState code inside
+  // SetNoiseCancellationState in CrasAudioHandler.
+  audio_handler->SetNoiseCancellationState(enabled);
+  audio_handler->SetNoiseCancellationPrefState(enabled);
+}
+
 void CrosAudioConfigImpl::OnOutputNodeVolumeChanged(uint64_t node_id,
                                                     int volume) {
   NotifyObserversAudioSystemPropertiesChanged();

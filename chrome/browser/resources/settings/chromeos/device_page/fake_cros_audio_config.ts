@@ -89,7 +89,6 @@ export function createAudioDevice(
 
 export interface FakeCrosAudioConfigInterface extends CrosAudioConfigInterface {
   setInputGainPercent(percent: number): void;
-  setNoiseCancellationEnabled(enabled: boolean): void;
 }
 
 export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {

@@ -32,6 +32,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
   void SetInputGainPercent(uint8_t gain) override;
   void SetActiveDevice(uint64_t device_id) override;
   void SetInputMuted(bool muted) override;
+  void SetNoiseCancellationEnabled(bool enabled) override;
 
   // CrasAudioHandler::AudioObserver:
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override;
