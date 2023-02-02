@@ -370,6 +370,10 @@ std::string GetHistogramNameSliceForRequestSource(
     case ClusteringRequestSource::kJourneysPage:
       // This is named WebUI for legacy purposes.
       return ".WebUI";
+    case ClusteringRequestSource::kNewTabPage:
+      return ".NewTabPage";
+    // If you add something here, add to the ClusteringRequestSource variant at
+    // the top of history/histograms.xml.
     default:
       NOTREACHED();
   }
@@ -383,6 +387,7 @@ bool IsUIRequestSource(ClusteringRequestSource source) {
     case ClusteringRequestSource::kShortKeywordCacheRefresh:
       return false;
     case ClusteringRequestSource::kJourneysPage:
+    case ClusteringRequestSource::kNewTabPage:
       return true;
   }
 }

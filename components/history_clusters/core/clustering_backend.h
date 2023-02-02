@@ -16,9 +16,10 @@ enum class ClusteringRequestSource {
   kAllKeywordCacheRefresh = 0,
   kShortKeywordCacheRefresh = 1,
   kJourneysPage = 2,
+  kNewTabPage = 3,
 
   // New values go above here.
-  kMaxValue = kJourneysPage,
+  kMaxValue = kNewTabPage,
 };
 
 // An abstract interface for a swappable clustering backend.
