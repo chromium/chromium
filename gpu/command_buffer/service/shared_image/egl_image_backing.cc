@@ -300,12 +300,14 @@ std::unique_ptr<DawnImageRepresentation> EGLImageBacking::ProduceDawn(
     } else {
       gl_representation = ProduceGLTexture(manager, tracker);
     }
+    void* egl_image = nullptr;
     {
       AutoLock auto_lock(this);
-      return std::make_unique<DawnEGLImageRepresentation>(
-          std::move(gl_representation), egl_image_.get(), manager, this,
-          tracker, device);
+      egl_image = egl_image_.get();
     }
+    return std::make_unique<DawnEGLImageRepresentation>(
+        std::move(gl_representation), egl_image, manager, this, tracker,
+        device);
   }
 #endif  // BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   return nullptr;
