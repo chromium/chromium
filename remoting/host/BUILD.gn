@@ -475,6 +475,8 @@ static_library("common") {
       "utempter",
       "util",
     ]
+
+    deps += [ "//ui/events/platform/wayland:wayland_event_watcher" ]
   }
 
   if (is_linux) {
@@ -1046,6 +1048,7 @@ if (enable_me2me_host) {
       defines += [ "REMOTING_USE_X11" ]
       deps += [
         "//remoting/host/linux:wayland",
+        "//ui/events/platform/wayland:wayland_event_watcher",
         "//ui/events/platform/x11:x11",
       ]
       if (is_linux) {

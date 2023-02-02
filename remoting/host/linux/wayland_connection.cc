@@ -12,13 +12,23 @@ namespace remoting {
 WaylandConnection::WaylandConnection(std::string wl_socket)
     : wl_socket_(wl_socket),
       display_(wl_display_connect(wl_socket_.c_str())),
-      registry_(wl_display_get_registry(display_.get())) {
+      wrapped_display_(reinterpret_cast<struct wl_proxy*>(
+          wl_proxy_create_wrapper(display_))),
+      event_queue_(wl_display_create_queue(display_)) {
+  wl_proxy_set_queue(wrapped_display_.get(), event_queue_.get());
+  registry_ = wl_display_get_registry(
+      reinterpret_cast<wl_display*>(wrapped_display_.get()));
   wl_registry_add_listener(registry_.get(), &wl_registry_listener_, this);
-  timer_.Start(FROM_HERE, base::Microseconds(100), this,
-               &WaylandConnection::DispatchWaylandEvents);
+
+  event_watcher_ = ui::WaylandEventWatcher::CreateWaylandEventWatcher(
+      display_.get(), event_queue_.get());
+  event_watcher_->StartProcessingEvents();
 }
 
 WaylandConnection::~WaylandConnection() {
+  if (event_queue_) {
+    wl_event_queue_destroy(event_queue_.get());
+  }
   if (display_) {
     wl_display_disconnect(display_.get());
   }
@@ -67,24 +77,6 @@ uint32_t WaylandConnection::GetSeatId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(wayland_seat_.GetSeatId(), 0u);
   return wayland_seat_.GetSeatId();
-}
-
-void WaylandConnection::DispatchWaylandEvents() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(display_);
-  bool success = true;
-  if (wl_display_dispatch_pending(display_.get()) < 0) {
-    LOG(ERROR) << "Failed to dispatch requests to server, error: " << errno;
-    success = false;
-  }
-  if (wl_display_roundtrip(display_.get()) < 0) {
-    LOG(ERROR) << "Dispatched requests to wayland server failed, error: "
-               << errno;
-    success = false;
-  }
-  if (!success) {
-    timer_.Stop();
-  }
 }
 
 DesktopDisplayInfo WaylandConnection::GetCurrentDisplayInfo() const {

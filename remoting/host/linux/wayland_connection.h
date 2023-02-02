@@ -16,6 +16,7 @@
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/linux/wayland_display.h"
 #include "remoting/host/linux/wayland_seat.h"
+#include "ui/events/platform/wayland/wayland_event_watcher.h"
 
 namespace remoting {
 
@@ -35,8 +36,6 @@ class WaylandConnection {
   void SetSeatPresentCallback(WaylandSeat::OnSeatPresentCallback callback);
 
  private:
-  void DispatchWaylandEvents();
-
   static void OnGlobalEvent(void* data,
                             struct wl_registry* registry,
                             uint32_t name,
@@ -51,12 +50,14 @@ class WaylandConnection {
 
   std::string wl_socket_;
   base::raw_ptr<struct wl_display> display_ = nullptr;
+  base::raw_ptr<struct wl_proxy> wrapped_display_ = nullptr;
+  base::raw_ptr<struct wl_event_queue> event_queue_ = nullptr;
   base::raw_ptr<struct wl_registry> registry_ = nullptr;
   const struct wl_registry_listener wl_registry_listener_ = {
       .global = OnGlobalEvent,
       .global_remove = OnGlobalRemoveEvent,
   };
-  base::RepeatingTimer timer_;
+  std::unique_ptr<ui::WaylandEventWatcher> event_watcher_;
   WaylandDisplay wayland_display_;
   WaylandSeat wayland_seat_;
   uint32_t seat_id_ = 0;
