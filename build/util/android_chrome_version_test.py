@@ -172,6 +172,7 @@ class _VersionTest(unittest.TestCase):
     arch_trichrome_64_version_code = output['TRICHROME_64_VERSION_CODE']
     arch_trichrome_64_high_version_code = output[
         'TRICHROME_64_HIGH_VERSION_CODE']
+    arch_trichrome_auto_64_32_version_code = output['TRICHROME_AUTO_64_32_VERSION_CODE']
 
     self.assertEqual(arch_monochrome_32_version_code, '484400020')
     self.assertEqual(arch_monochrome_32_64_version_code, '484400023')
@@ -184,6 +185,7 @@ class _VersionTest(unittest.TestCase):
     self.assertEqual(arch_trichrome_64_32_version_code, '484400034')
     self.assertEqual(arch_trichrome_64_version_code, '484400035')
     self.assertEqual(arch_trichrome_64_high_version_code, '484400039')
+    self.assertEqual(arch_trichrome_auto_64_32_version_code, '484400054')
 
   def testGenerateVersionCodesAndroidArchX64(self):
     """Assert it handles different architectures correctly.
@@ -219,6 +221,7 @@ class _VersionTest(unittest.TestCase):
     arch_trichrome_version_code = output['TRICHROME_VERSION_CODE']
     arch_trichrome_64_32_version_code = output['TRICHROME_64_32_VERSION_CODE']
     arch_trichrome_64_version_code = output['TRICHROME_64_VERSION_CODE']
+    arch_trichrome_auto_64_32_version_code = output['TRICHROME_AUTO_64_32_VERSION_CODE']
 
     self.assertEqual(arch_monochrome_32_version_code, '484400021')
     self.assertEqual(arch_monochrome_32_64_version_code, '484400026')
@@ -230,6 +233,7 @@ class _VersionTest(unittest.TestCase):
     self.assertEqual(arch_trichrome_version_code, '484400036')
     self.assertEqual(arch_trichrome_64_32_version_code, '484400037')
     self.assertEqual(arch_trichrome_64_version_code, '484400038')
+    self.assertEqual(arch_trichrome_auto_64_32_version_code, '484400057')
 
   def testGenerateVersionCodesAndroidArchOrderArm(self):
     """Assert it handles different architectures correctly.
@@ -421,6 +425,16 @@ class _VersionCodeTest(unittest.TestCase):
     self.assertEqual(abi, 'arm_64_32')
     self.assertEqual(is_next_build, False)
 
+  def testArm_Auto_64_32Translate(self):
+    """Test for an auto build with Trichrome and arm_64_32."""
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '499900054')
+    self.assertEqual(build, 4999)
+    self.assertEqual(patch, 0)
+    self.assertEqual(package, 'TRICHROME_AUTO')
+    self.assertEqual(abi, 'arm_64_32')
+    self.assertEqual(is_next_build, False)
+
   def testArm_64BuildTranslate(self):
     """Test for a build with Trichrome and arm_64_high."""
     build, patch, package, abi, is_next_build = TranslateVersionCode(
@@ -458,6 +472,16 @@ class _VersionCodeTest(unittest.TestCase):
     self.assertEqual(build, 4999)
     self.assertEqual(patch, 0)
     self.assertEqual(package, 'CHROME_MODERN')
+    self.assertEqual(abi, 'x86_64_32')
+    self.assertEqual(is_next_build, False)
+
+  def testX86_Auto_64_32Translate(self):
+    """Test for an auto build with x86_64_32."""
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '499900057')
+    self.assertEqual(build, 4999)
+    self.assertEqual(patch, 0)
+    self.assertEqual(package, 'TRICHROME_AUTO')
     self.assertEqual(abi, 'x86_64_32')
     self.assertEqual(is_next_build, False)
 

@@ -65,6 +65,8 @@ if (is_mac) {
     _version_dictionary_template +=
         "trichrome_64_32_version_code = \"@TRICHROME_64_32_VERSION_CODE@\" "
     _version_dictionary_template +=
+        "trichrome_auto_64_32_version_code = \"@TRICHROME_AUTO_64_32_VERSION_CODE@\" "
+    _version_dictionary_template +=
         "trichrome_64_version_code = \"@TRICHROME_64_VERSION_CODE@\" "
     if (target_cpu == "arm64") {
       _version_dictionary_template += "trichrome_64_high_version_code = \"@TRICHROME_64_HIGH_VERSION_CODE@\" "
@@ -148,6 +150,7 @@ if (is_mac) {
                            "trichrome_32_version_code",
                            "trichrome_32_64_version_code",
                            "trichrome_64_32_version_code",
+                           "trichrome_auto_64_32_version_code",
                            "trichrome_64_version_code",
                            "trichrome_64_high_version_code",
                            "trichrome_beta_version_code",
@@ -193,6 +196,7 @@ if (is_android && current_toolchain == default_toolchain) {
       "TrichromeChrome3264: $trichrome_32_64_version_code",
       "TrichromeChrome6432: $trichrome_64_32_version_code",
       "TrichromeChrome64: $trichrome_64_version_code",
+      "TrichromeChromeAuto6432: $trichrome_auto_64_32_version_code",
     ]
     if (target_cpu == "arm64") {
       lines_to_write +=
