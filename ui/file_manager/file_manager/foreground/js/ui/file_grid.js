@@ -9,7 +9,7 @@ import {isRTL} from 'chrome://resources/ash/common/util.js';
 import {RateLimiter} from '../../../common/js/async_util.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
-import {util} from '../../../common/js/util.js';
+import {str, util} from '../../../common/js/util.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupValue} from '../file_list_model.js';
@@ -742,13 +742,20 @@ export class FileGrid extends Grid {
       listItem = /** @type {!FileGrid.Item} */ (listItem);
       this.decorateThumbnailBox_(listItem, entry);
       this.updateSharedStatus_(listItem, entry);
-      this.updateInlineSyncStatus_(listItem, entry);
       const {availableOffline, pinned} =
           this.metadataModel_.getCache(
               [entry], ['availableOffline', 'pinned'])[0] ||
           {};
+      const inlineStatus = listItem.querySelector('.inline-status');
+      // Clear the inline status' aria label and set it to "in progress",
+      // "queued", or "available offline" with the respective order of
+      // precedence if applicable.
+      inlineStatus.removeAttribute('aria-label');
       listItem.classList.toggle('dim-offline', availableOffline === false);
       listItem.classList.toggle('pinned', pinned);
+      inlineStatus.setAttribute(
+          'aria-label', pinned ? str('OFFLINE_COLUMN_LABEL') : '');
+      this.updateInlineSyncStatus_(listItem, entry);
       listItem.toggleAttribute(
           'disabled',
           filelist.isDlpBlocked(
@@ -926,15 +933,28 @@ export class FileGrid extends Grid {
     }
 
     const {syncStatus, progress} = metadata;
+    const inlineStatus = li.querySelector('.inline-status');
 
-    if (!syncStatus) {
+    if (!syncStatus || !inlineStatus) {
       return;
     }
 
-    li.setAttribute('data-sync-status', syncStatus);
-    li.querySelector('.progress')
+    switch (syncStatus) {
+      case chrome.fileManagerPrivate.SyncStatus.QUEUED:
+        inlineStatus.setAttribute('aria-label', str('QUEUED_LABEL'));
+        break;
+      case chrome.fileManagerPrivate.SyncStatus.IN_PROGRESS:
+        inlineStatus.setAttribute(
+            'aria-label',
+            `${str('IN_PROGRESS_LABEL')} - %${(progress * 100).toFixed()}`);
+        break;
+      default:
+        break;
+    }
+
+    inlineStatus.setAttribute('data-sync-status', syncStatus);
+    inlineStatus.querySelector('.progress')
         .setAttribute('progress', (progress || 0).toFixed(2));
-    // TODO(b/255474670): set sync status aria-label.
   }
 
   /**

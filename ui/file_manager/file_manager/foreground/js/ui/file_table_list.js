@@ -479,7 +479,6 @@ filelist.renderFileNameLabel = (doc, entry, locationInfo) => {
 filelist.renderInlineStatus = (doc) => {
   const iconDiv = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
   iconDiv.className = 'inline-status';
-  iconDiv.setAttribute('aria-label', str('OFFLINE_COLUMN_LABEL'));
 
   const inlineStatusIcon = doc.createElement('xf-icon');
   inlineStatusIcon.size = 'extra_small';
@@ -534,13 +533,38 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
         'external-media-root', !!externalProps.isExternalMedia);
   }
 
-  const {syncStatus, progress} = externalProps;
-  if (util.isInlineSyncStatusEnabled() && syncStatus) {
-    li.setAttribute('data-sync-status', syncStatus);
-    li.querySelector('.progress')
-        .setAttribute('progress', (progress || 0).toFixed(2));
+  const inlineStatus = li.querySelector('.inline-status');
+  if (inlineStatus) {
+    // TODO: use "XfIcon.types.OFFLINE*" instead when converting to TS.
+    inlineStatus.querySelector('xf-icon').type =
+        externalProps.pinned ? 'offline' : '';
+
+    // Clear the inline status' aria label and set it to "in progress",
+    // "queued", or "available offline" with the respective order of
+    // precedence if applicable.
+    inlineStatus.setAttribute(
+        'aria-label', externalProps.pinned ? str('OFFLINE_COLUMN_LABEL') : '');
+
+    const {syncStatus, progress} = externalProps;
+    if (util.isInlineSyncStatusEnabled() && syncStatus) {
+      switch (syncStatus) {
+        case chrome.fileManagerPrivate.SyncStatus.QUEUED:
+          inlineStatus.setAttribute('aria-label', str('QUEUED_LABEL'));
+          break;
+        case chrome.fileManagerPrivate.SyncStatus.IN_PROGRESS:
+          inlineStatus.setAttribute(
+              'aria-label',
+              `${str('IN_PROGRESS_LABEL')} - %${(progress * 100).toFixed()}`);
+          break;
+        default:
+          break;
+      }
+
+      li.setAttribute('data-sync-status', syncStatus);
+      li.querySelector('.progress')
+          .setAttribute('progress', (progress || 0).toFixed(2));
+    }
   }
-  // TODO(b/255474670): set sync status aria-label.
 };
 
 /**
