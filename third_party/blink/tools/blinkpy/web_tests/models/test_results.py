@@ -41,6 +41,7 @@ def build_test_result(driver_output, test_name, failures=None, **kwargs):
         failures.append(test_failures.PassWithStderr(driver_output))
     kwargs.setdefault('command', driver_output.command)
     kwargs.setdefault('image_diff_stats', driver_output.image_diff_stats)
+    kwargs.setdefault('test_type', driver_output.test_type)
     return TestResult(test_name, failures=failures, **kwargs)
 
 
@@ -61,7 +62,8 @@ class TestResult(object):
                  crash_site=None,
                  command=None,
                  typ_host=None,
-                 image_diff_stats=None):
+                 image_diff_stats=None,
+                 test_type=None):
         self.test_name = test_name
         self.failures = failures or []
         self.test_run_time = test_run_time or 0  # The time taken to execute the test itself.
@@ -76,6 +78,7 @@ class TestResult(object):
         self.retry_attempt = retry_attempt
         self.command = command
         self.image_diff_stats = image_diff_stats
+        self.test_type = test_type
 
         results = set([f.result for f in self.failures] or [ResultType.Pass])
         assert len(results) <= 2, (

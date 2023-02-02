@@ -488,6 +488,8 @@ class SingleTestRunner(object):
 
     def _compare_text(self, expected_driver_output, driver_output):
 
+        if expected_driver_output.text:
+            driver_output.test_type = 'text'
         if not expected_driver_output.text or not driver_output.text:
             return []
 
@@ -569,6 +571,8 @@ class SingleTestRunner(object):
         ]
 
     def _compare_audio(self, expected_driver_output, driver_output):
+        if expected_driver_output.audio:
+            driver_output.test_type = 'audio'
         if not expected_driver_output.audio or not driver_output.audio:
             return []
         if self._port.do_audio_results_differ(expected_driver_output.audio,
@@ -590,6 +594,8 @@ class SingleTestRunner(object):
         return output.replace('\r\r\n', '\r\n').replace('\r\n', '\n')
 
     def _compare_image(self, expected_driver_output, driver_output):
+        if expected_driver_output.image and expected_driver_output.image_hash:
+            driver_output.test_type = 'image'
         if not expected_driver_output.image or not expected_driver_output.image_hash:
             return []
         # The presence of an expected image, but a lack of an outputted image

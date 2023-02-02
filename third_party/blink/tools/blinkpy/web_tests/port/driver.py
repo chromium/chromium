@@ -150,6 +150,7 @@ class DriverOutput(object):
         self.error = error  # stderr output
         self.pid = pid
         self.command = command
+        self.test_type = None
 
     def has_stderr(self):
         return bool(self.error)
