@@ -36,7 +36,6 @@ suite('WallpaperFullscreenTest', function() {
     wallpaperProvider = mocks.wallpaperProvider;
     wallpaperProvider.isInTabletModeResponse = true;
     personalizationStore = mocks.personalizationStore;
-    loadTimeData.overrideValues({fullScreenPreviewEnabled: true});
   });
 
   teardown(async () => {

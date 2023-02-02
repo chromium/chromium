@@ -621,8 +621,6 @@ suite('Personalization app controller', () => {
 });
 
 suite('full screen mode', () => {
-  const fullscreenPreviewFeature = 'fullScreenPreviewEnabled';
-
   let wallpaperProvider: TestWallpaperProvider;
   let personalizationStore: TestPersonalizationStore;
 
@@ -632,67 +630,36 @@ suite('full screen mode', () => {
     personalizationStore.setReducersEnabled(true);
   });
 
-  test(
-      'enters full screen mode when in tablet and preview flag is set',
-      async () => {
-        await initializeBackdropData(wallpaperProvider, personalizationStore);
+  test('enters full screen mode when in tablet', async () => {
+    await initializeBackdropData(wallpaperProvider, personalizationStore);
 
-        assertFalse(personalizationStore.data.wallpaper.fullscreen);
+    assertFalse(personalizationStore.data.wallpaper.fullscreen);
 
-        loadTimeData.overrideValues({[fullscreenPreviewFeature]: false});
-        wallpaperProvider.isInTabletModeResponse = true;
+    wallpaperProvider.isInTabletModeResponse = true;
 
-        {
-          const selectWallpaperPromise = selectWallpaper(
-              wallpaperProvider.images![0]!, wallpaperProvider,
-              personalizationStore);
-          const [assetId, previewMode] =
-              await wallpaperProvider.whenCalled('selectWallpaper');
-          assertFalse(previewMode);
-          assertEquals(wallpaperProvider.images![0]!.assetId, assetId);
+    assertEquals(0, wallpaperProvider.getCallCount('makeTransparent'));
+    assertEquals(0, wallpaperProvider.getCallCount('makeOpaque'));
 
-          await selectWallpaperPromise;
-          assertEquals(
-              0, wallpaperProvider.getCallCount('makeTransparent'),
-              'makeTransparent is not called when fullscreen preview is off');
-          assertEquals(
-              0, wallpaperProvider.getCallCount('makeOpaque'),
-              'makeOpaque is not called when fullscreen preview is off');
+    const selectWallpaperPromise = selectWallpaper(
+        wallpaperProvider.images![0]!, wallpaperProvider, personalizationStore);
 
-          assertFalse(personalizationStore.data.wallpaper.fullscreen);
-        }
+    const [assetId, previewMode] =
+        await wallpaperProvider.whenCalled('selectWallpaper');
+    assertTrue(previewMode);
+    assertEquals(wallpaperProvider.images![0]!.assetId, assetId);
 
-        wallpaperProvider.reset();
+    await selectWallpaperPromise;
+    assertEquals(
+        1, wallpaperProvider.getCallCount('makeTransparent'),
+        'makeTransparent is called while calling selectWallpaper');
 
-        {
-          // Now with flag turned on.
-          loadTimeData.overrideValues({[fullscreenPreviewFeature]: true});
+    assertTrue(personalizationStore.data.wallpaper.fullscreen);
 
-          assertEquals(0, wallpaperProvider.getCallCount('makeTransparent'));
-          assertEquals(0, wallpaperProvider.getCallCount('makeOpaque'));
-
-          const selectWallpaperPromise = selectWallpaper(
-              wallpaperProvider.images![0]!, wallpaperProvider,
-              personalizationStore);
-
-          const [assetId, previewMode] =
-              await wallpaperProvider.whenCalled('selectWallpaper');
-          assertTrue(previewMode);
-          assertEquals(wallpaperProvider.images![0]!.assetId, assetId);
-
-          await selectWallpaperPromise;
-          assertEquals(
-              1, wallpaperProvider.getCallCount('makeTransparent'),
-              'makeTransparent is called while calling selectWallpaper');
-
-          assertTrue(personalizationStore.data.wallpaper.fullscreen);
-
-          await cancelPreviewWallpaper(wallpaperProvider);
-          assertEquals(
-              1, wallpaperProvider.getCallCount('makeOpaque'),
-              'makeOpaque is called while calling cancelPreviewWallpaper');
-        }
-      });
+    await cancelPreviewWallpaper(wallpaperProvider);
+    assertEquals(
+        1, wallpaperProvider.getCallCount('makeOpaque'),
+        'makeOpaque is called while calling cancelPreviewWallpaper');
+  });
 });
 
 suite('observes pendingState during wallpaper selection', () => {

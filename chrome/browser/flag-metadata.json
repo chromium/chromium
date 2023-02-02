@@ -7112,11 +7112,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "wallpaper-fullscreen-preview",
-    "owners": ["cowmoo@google.com", "assistive-eng@google.com"],
-    "expiry_milestone": 98
-  },
-  {
     "name": "wallpaper-google-photos-shared-albums",
     "owners": ["cowmoo@google.com", "assistive-eng@google.com"],
     "expiry_milestone": 120

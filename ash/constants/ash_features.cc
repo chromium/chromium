@@ -2111,11 +2111,6 @@ BASE_FEATURE(kWallpaperFastRefresh,
              "WallpaperFastRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable full screen wallpaper preview in new wallpaper experience.
-BASE_FEATURE(kWallpaperFullScreenPreview,
-             "WallpaperFullScreenPreview",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable using google photos shared albums for wallpaper.
 BASE_FEATURE(kWallpaperGooglePhotosSharedAlbums,
              "WallpaperGooglePhotosSharedAlbums",
@@ -3171,10 +3166,6 @@ bool IsViewPpdEnabled() {
 
 bool IsWallpaperFastRefreshEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperFastRefresh);
-}
-
-bool IsWallpaperFullScreenPreviewEnabled() {
-  return base::FeatureList::IsEnabled(kWallpaperFullScreenPreview);
 }
 
 bool IsWallpaperGooglePhotosSharedAlbumsEnabled() {

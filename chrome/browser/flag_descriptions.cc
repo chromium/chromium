@@ -3160,12 +3160,6 @@ const char kWallpaperFastRefreshDescription[] =
     "Allows developers to see a new wallpaper once every ten seconds rather "
     "than once per day when using the daily refresh feature.";
 
-const char kWallpaperFullScreenPreviewName[] =
-    "Enable wallpaper full screen preview UI";
-const char kWallpaperFullScreenPreviewDescription[] =
-    "Allows users to minimize all active windows to preview their current "
-    "wallpaper";
-
 const char kWallpaperGooglePhotosSharedAlbumsName[] =
     "Enable Google Photos shared albums for wallpaper";
 const char kWallpaperGooglePhotosSharedAlbumsDescription[] =

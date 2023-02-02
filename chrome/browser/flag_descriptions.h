@@ -1798,9 +1798,6 @@ extern const char kWalletServiceUseSandboxDescription[];
 extern const char kWallpaperFastRefreshName[];
 extern const char kWallpaperFastRefreshDescription[];
 
-extern const char kWallpaperFullScreenPreviewName[];
-extern const char kWallpaperFullScreenPreviewDescription[];
-
 extern const char kWallpaperGooglePhotosSharedAlbumsName[];
 extern const char kWallpaperGooglePhotosSharedAlbumsDescription[];
 

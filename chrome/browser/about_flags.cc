@@ -2672,8 +2672,6 @@ const FeatureEntry::FeatureVariation kLauncherItemSuggestVariations[] = {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kWallpaperFastRefreshInternalName[] = "wallpaper-fast-refresh";
-constexpr char kWallpaperFullScreenPreviewInternalName[] =
-    "wallpaper-fullscreen-preview";
 constexpr char kWallpaperGooglePhotosSharedAlbumsInternalName[] =
     "wallpaper-google-photos-shared-albums";
 constexpr char kWallpaperPerDeskName[] = "per-desk-wallpaper";
@@ -7730,10 +7728,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWallpaperFastRefreshName,
      flag_descriptions::kWallpaperFastRefreshDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWallpaperFastRefresh)},
-    {kWallpaperFullScreenPreviewInternalName,
-     flag_descriptions::kWallpaperFullScreenPreviewName,
-     flag_descriptions::kWallpaperFullScreenPreviewDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kWallpaperFullScreenPreview)},
     {kWallpaperGooglePhotosSharedAlbumsInternalName,
      flag_descriptions::kWallpaperGooglePhotosSharedAlbumsName,
      flag_descriptions::kWallpaperGooglePhotosSharedAlbumsDescription, kOsCrOS,

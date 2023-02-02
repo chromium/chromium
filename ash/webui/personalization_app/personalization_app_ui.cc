@@ -359,9 +359,6 @@ void PersonalizationAppUI::BindInterface(
 }
 
 void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
-  source->AddBoolean("fullScreenPreviewEnabled",
-                     features::IsWallpaperFullScreenPreviewEnabled());
-
   source->AddBoolean("isGooglePhotosIntegrationEnabled",
                      wallpaper_provider_->IsEligibleForGooglePhotos());
 
