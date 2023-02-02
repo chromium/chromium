@@ -74,7 +74,6 @@
 
 #if BUILDFLAG(USE_STARSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
-#include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #endif
 
 // We use this to make MEMORY_TOOL_REPLACES_ALLOCATOR behave the same for max
