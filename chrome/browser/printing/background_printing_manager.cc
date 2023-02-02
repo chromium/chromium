@@ -15,7 +15,6 @@
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 
 using content::BrowserContext;
@@ -73,16 +72,6 @@ void BackgroundPrintingManager::OwnPrintPreviewDialog(
       std::make_unique<Observer>(this, raw_preview_dialog);
   printing_contents.contents = std::move(preview_dialog);
   printing_contents_map_[raw_preview_dialog] = std::move(printing_contents);
-
-  // Activate the initiator.
-  PrintPreviewDialogController* dialog_controller =
-      PrintPreviewDialogController::GetInstance();
-  if (!dialog_controller)
-    return;
-  WebContents* initiator = dialog_controller->GetInitiator(raw_preview_dialog);
-  if (!initiator)
-    return;
-  initiator->GetDelegate()->ActivateContents(initiator);
 }
 
 void BackgroundPrintingManager::DeletePreviewContentsForBrowserContext(
