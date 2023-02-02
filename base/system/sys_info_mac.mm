@@ -30,18 +30,6 @@ namespace {
 
 bool g_is_cpu_security_mitigation_enabled = false;
 
-// Queries sysctlbyname() for the given key and returns the 32 bit integer value
-// from the system or absl::nullopt on failure.
-// https://github.com/apple/darwin-xnu/blob/2ff845c2e033bd0ff64b5b6aa6063a1f8f65aa32/bsd/sys/sysctl.h#L1224-L1225
-absl::optional<int> GetSysctlIntValue(const char* key_name) {
-  int value;
-  size_t len = sizeof(value);
-  if (sysctlbyname(key_name, &value, &len, nullptr, 0) != 0)
-    return absl::nullopt;
-  DCHECK_EQ(len, sizeof(value));
-  return value;
-}
-
 // Queries sysctlbyname() for the given key and returns the value from the
 // system or the empty string on failure.
 std::string GetSysctlStringValue(const char* key_name) {
@@ -109,25 +97,6 @@ std::string SysInfo::OperatingSystemArchitecture() {
     case mac::CPUType::kArm:
       return "arm64";
   }
-}
-
-// static
-int SysInfo::NumberOfEfficientProcessorsImpl() {
-  int num_perf_levels = GetSysctlIntValue("hw.nperflevels").value_or(1);
-  if (num_perf_levels == 1)
-    return 0;
-  DCHECK_GE(num_perf_levels, 2);
-
-  // Lower values of perflevel indicate higher-performance core types. See
-  // https://developer.apple.com/documentation/kernel/1387446-sysctlbyname/determining_system_capabilities?changes=l__5
-  int num_of_efficient_processors =
-      GetSysctlIntValue(
-          StringPrintf("hw.perflevel%d.logicalcpu", num_perf_levels - 1)
-              .c_str())
-          .value_or(0);
-  DCHECK_GE(num_of_efficient_processors, 0);
-
-  return num_of_efficient_processors;
 }
 
 // static

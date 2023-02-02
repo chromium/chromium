@@ -8,7 +8,7 @@
 #include "base/base_export.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
@@ -46,6 +46,10 @@ absl::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled();
 
 // Exposed for testing.
 BASE_EXPORT int NumberOfProcessors();
+
+#if BUILDFLAG(IS_APPLE)
+absl::optional<int> GetSysctlIntValue(const char* key_name);
+#endif
 
 }  // namespace internal
 

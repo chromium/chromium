@@ -2173,6 +2173,7 @@ component("base") {
       "synchronization/waitable_event_watcher_posix.cc",
       "threading/platform_thread_internal_posix.cc",
     ]
+    sources += [ "system/sys_info_apple.mm" ]
   }
 
   # Linux.
