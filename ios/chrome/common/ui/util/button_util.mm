@@ -27,14 +27,10 @@ UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
   primary_blue_button.titleLabel.adjustsFontForContentSizeCategory = NO;
   primary_blue_button.translatesAutoresizingMaskIntoConstraints = NO;
 
-  // TODO(crbug.com/1129483): Remove once minimum supported version for
-  // extensions is at least 14
-  if (@available(iOS 13.4, *)) {
-    if (pointer_interaction_enabled) {
-      primary_blue_button.pointerInteractionEnabled = YES;
-      primary_blue_button.pointerStyleProvider =
-          CreateOpaqueButtonPointerStyleProvider();
-    }
+  if (pointer_interaction_enabled) {
+    primary_blue_button.pointerInteractionEnabled = YES;
+    primary_blue_button.pointerStyleProvider =
+        CreateOpaqueButtonPointerStyleProvider();
   }
 
   return primary_blue_button;

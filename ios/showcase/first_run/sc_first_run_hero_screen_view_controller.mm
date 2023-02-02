@@ -87,10 +87,8 @@
                 action:@selector(didTapCustomActionButton)
       forControlEvents:UIControlEventTouchUpInside];
 
-  if (@available(iOS 13.4, *)) {
-    button.pointerInteractionEnabled = YES;
-    button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
-  }
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
 
   return button;
 }
