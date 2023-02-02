@@ -2,54 +2,125 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-# Optimize webui assumes that all resources hosted on chrome://resources are
-# in this directory and does not provide a way to override this assumption. To
-# prevent downstream optimize_webui calls from breaking we output all of our
-# files into the same path.
-chrome_resources_dir = "${root_gen_dir}/ui/webui/resources/tsc/mwc"
-
-# Compile lit_exports.js into a singular bundle we can host on
-# chrome://resources.
-optimize_webui("bundle_lit") {
-  host = "resources"
-  input = rebase_path("//third_party/material_web_components/", root_build_dir)
-  js_module_in_files = [ "lit_exports.js" ]
-
-  deps = []
-}
-
-copy("copy_tslib") {
-  sources = [ rebase_path(
-          "//third_party/material_web_components/components-chromium/node_modules/tslib/tslib.js",
-          root_build_dir) ]
-  outputs = [ "$chrome_resources_dir/tslib/tslib.js" ]
-}
-
-copy("copy_lit_bundle") {
-  sources = [ "$target_gen_dir/lit_exports.rollup.js" ]
-  outputs = [ "$chrome_resources_dir/lit/index.js" ]
-  deps = [ ":bundle_lit" ]
-}
-
 generate_grd("build_grdp") {
   grd_prefix = "material_web_components"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
-  input_files_base_dir = rebase_path(chrome_resources_dir, root_build_dir)
-  resource_path_prefix = "mwc"
+  out_grd = "${target_gen_dir}/${grd_prefix}_resources.grdp"
 
+  # TODO(b/229804752): Clean up and find the minimal set of necessary resources.
   input_files = [
-    "tslib/tslib.js",
+    "lit-element/decorators.js",
+    "lit-element/index.js",
+    "lit-element/lit-element.js",
+    "@lit/reactive-element/reactive-controller.js",
+    "@lit/reactive-element/decorators.js",
+    "@lit/reactive-element/decorators/state.js",
+    "@lit/reactive-element/decorators/query-async.js",
+    "@lit/reactive-element/decorators/event-options.js",
+    "@lit/reactive-element/decorators/query-assigned-elements.js",
+    "@lit/reactive-element/decorators/query.js",
+    "@lit/reactive-element/decorators/custom-element.js",
+    "@lit/reactive-element/decorators/query-assigned-nodes.js",
+    "@lit/reactive-element/decorators/base.js",
+    "@lit/reactive-element/decorators/query-all.js",
+    "@lit/reactive-element/decorators/property.js",
+    "@lit/reactive-element/reactive-element.js",
+    "@lit/reactive-element/css-tag.js",
+    "lit/directives/template-content.js",
+    "lit/directives/choose.js",
+    "lit/directives/when.js",
+    "lit/directives/live.js",
+    "lit/directives/if-defined.js",
+    "lit/directives/unsafe-svg.js",
+    "lit/directives/async-append.js",
+    "lit/directives/until.js",
+    "lit/directives/class-map.js",
+    "lit/directives/ref.js",
+    "lit/directives/async-replace.js",
+    "lit/directives/repeat.js",
+    "lit/directives/range.js",
+    "lit/directives/map.js",
+    "lit/directives/join.js",
+    "lit/directives/keyed.js",
+    "lit/directives/guard.js",
+    "lit/directives/style-map.js",
+    "lit/directives/unsafe-html.js",
+    "lit/directives/cache.js",
+    "lit/directive-helpers.js",
+    "lit/decorators.js",
+    "lit/directive.js",
+    "lit/static-html.js",
     "lit/index.js",
+    "lit/async-directive.js",
+    "lit/html.js",
+    "tslib/tslib.js",
+    "lit-html/lit-html.js",
+    "lit-html/directives/template-content.js",
+    "lit-html/directives/choose.js",
+    "lit-html/directives/when.js",
+    "lit-html/directives/live.js",
+    "lit-html/directives/if-defined.js",
+    "lit-html/directives/unsafe-svg.js",
+    "lit-html/directives/async-append.js",
+    "lit-html/directives/until.js",
+    "lit-html/directives/class-map.js",
+    "lit-html/directives/ref.js",
+    "lit-html/directives/async-replace.js",
+    "lit-html/directives/repeat.js",
+    "lit-html/directives/range.js",
+    "lit-html/directives/map.js",
+    "lit-html/directives/join.js",
+    "lit-html/directives/keyed.js",
+    "lit-html/directives/guard.js",
+    "lit-html/directives/style-map.js",
+    "lit-html/directives/unsafe-html.js",
+    "lit-html/directives/cache.js",
+    "lit-html/directives/private-async-helpers.js",
+    "lit-html/directive-helpers.js",
+    "lit-html/static.js",
+    "lit-html/directive.js",
+    "lit-html/async-directive.js",
+    "@material/base/observer-proxy.js",
+    "@material/base/observer-foundation.js",
+    "@material/base/observer.js",
+    "@material/base/index.js",
+    "@material/base/component.js",
+    "@material/base/types.js",
+    "@material/base/foundation.js",
+    "@material/mwc-base/base-element.js",
+    "@material/mwc-base/form-element.js",
+    "@material/mwc-base/utils.js",
+    "@material/mwc-base/observer.js",
+    "@material/mwc-base/aria-property.js",
+    "@material/ripple/constants.js",
+    "@material/ripple/index.js",
+    "@material/ripple/adapter.js",
+    "@material/ripple/util.js",
+    "@material/ripple/component.js",
+    "@material/ripple/types.js",
+    "@material/ripple/foundation.js",
+    "@material/mwc-button/demo_styles.css.js",
+    "@material/mwc-button/mwc-button.js",
+    "@material/mwc-button/styles.css.js",
+    "@material/mwc-button/mwc-button-base.js",
+    "@material/dom/focus-trap.js",
+    "@material/dom/keyboard.js",
+    "@material/dom/ponyfill.js",
+    "@material/dom/index.js",
+    "@material/dom/announce.js",
+    "@material/dom/events.js",
+    "@material/mwc-ripple/mwc-ripple.js",
+    "@material/mwc-ripple/mwc-ripple.css.js",
+    "@material/mwc-ripple/ripple-handlers.js",
+    "@material/mwc-ripple/mwc-ripple-base.js",
+    "@material/mwc-icon/mwc-icon-host.css.js",
+    "@material/mwc-icon/mwc-icon.js",
   ]
 
-  deps = [
-    ":copy_lit_bundle",
-    ":copy_tslib",
-  ]
+  input_files_base_dir = rebase_path("components-chromium/node_modules", "//")
+  resource_path_prefix = "mwc"
 }
 
 ts_library("library") {
@@ -167,14 +238,5 @@ ts_library("library") {
     "components-chromium/node_modules/@material/mwc-ripple/mwc-ripple.d.ts",
     "components-chromium/node_modules/@material/mwc-icon/mwc-icon-host.css.d.ts",
     "components-chromium/node_modules/@material/mwc-icon/mwc-icon.d.ts",
-  ]
-
-  # Client code that runs through optimize_webui will attempt to find lit
-  # resources in $chrome_resources_dir. As such if ts code depends on mwc
-  # it also needs to depend on the rules that move lit resources into
-  # $chrome_resources_dir.
-  extra_deps = [
-    ":copy_lit_bundle",
-    ":copy_tslib",
   ]
 }
