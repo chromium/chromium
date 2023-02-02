@@ -793,6 +793,20 @@ bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
   return false;
 }
 
+void PinManager::NotifyDelete(Id id, const Path& path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!Remove(id, path, 0)) {
+    VLOG(1) << "Not tracked: " << id << " " << Quote(path);
+    return;
+  }
+
+  VLOG(1) << "Stopped tracking " << id << " " << Quote(path);
+  progress_.failed_files++;
+  NotifyProgress();
+  PinSomeFiles();
+}
+
 void PinManager::OnUnmounted() {
   LOG(ERROR) << "DriveFS got unmounted";
 }
@@ -827,8 +841,8 @@ void PinManager::OnFileDeleted(const mojom::FileChange& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   VLOG(1) << "Got FileChange " << Quote(event);
-  const Id id = Id(event.stable_id);
   const Path& path = event.path;
+  const Id id = static_cast<Id>(event.stable_id);
 
   drivefs_->SetPinnedByStableId(
       event.stable_id, /*pinned=*/false,
@@ -843,15 +857,7 @@ void PinManager::OnFileDeleted(const mojom::FileChange& event) {
           },
           id, path));
 
-  if (!Remove(id, path, 0)) {
-    VLOG(1) << "Not tracked: " << id << " " << Quote(path);
-    return;
-  }
-
-  VLOG(1) << "Stopped tracking " << id << " " << Quote(path);
-  progress_.failed_files++;
-  NotifyProgress();
-  PinSomeFiles();
+  NotifyDelete(id, path);
 }
 
 void PinManager::OnFileModified(const mojom::FileChange& event) {

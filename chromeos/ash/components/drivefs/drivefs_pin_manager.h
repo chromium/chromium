@@ -171,6 +171,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Processes a syncing status event. Returns true if the event was useful.
   bool OnSyncingEvent(mojom::ItemEvent& event);
 
+  // Stable ID provided by DriveFS.
+  enum class Id : int64_t { kNone = 0 };
+
+  // Notify any ongoing syncing events that a delete operation has occurred.
+  void NotifyDelete(Id id, const Path& path);
+
   // drivefs::DriveFsHostObserver
   void OnSyncingStatusUpdate(const mojom::SyncingStatus& status) override;
   void OnUnmounted() override;
@@ -180,9 +186,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   void OnFileCreated(const mojom::FileChange& event);
   void OnFileDeleted(const mojom::FileChange& event);
   void OnFileModified(const mojom::FileChange& event);
-
-  // Stable ID provided by DriveFS.
-  enum class Id : int64_t { kNone = 0 };
 
   base::WeakPtr<PinManager> GetWeakPtr() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

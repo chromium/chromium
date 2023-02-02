@@ -177,14 +177,16 @@ class DeleteOperation {
       return;
     }
 
+    drive_ = drive_integration_service;
+
     if (ash::features::IsDriveFsBulkPinningEnabled()) {
       base::FilePath drive_path;
-      if (drive_integration_service->GetRelativeDrivePath(path_, &drive_path)) {
+      if (drive_->GetRelativeDrivePath(path_, &drive_path)) {
         // TODO(b/266168982): In the case this is a folder, only the folder will
         // get unpinned leaving all the children pinned. When the new method is
         // exposed (or parameter on the existing method) update the
         // implementation here.
-        drive_integration_service->GetDriveFsInterface()->GetMetadata(
+        drive_->GetDriveFsInterface()->GetMetadata(
             std::move(drive_path),
             base::BindOnce(&DeleteOperation::OnGotMetadata,
                            base::Unretained(this)));
@@ -202,11 +204,10 @@ class DeleteOperation {
     LOG_IF(ERROR, error != drive::FILE_ERROR_OK)
         << "Failed to get metadata: " << drive::FileErrorToString(error);
 
-    if (error == drive::FILE_ERROR_OK && metadata && metadata->pinned) {
-      auto* drive_integration_service =
-          drive::util::GetIntegrationServiceByProfile(profile_);
-      if (drive_integration_service) {
-        drive_integration_service->GetDriveFsInterface()->SetPinnedByStableId(
+    if (metadata) {
+      stable_id_ = metadata->stable_id;
+      if (error == drive::FILE_ERROR_OK && metadata->pinned && drive_) {
+        drive_->GetDriveFsInterface()->SetPinnedByStableId(
             metadata->stable_id, /*pinned=*/false,
             base::BindOnce(&DeleteOperation::OnUnpinFile,
                            base::Unretained(this)));
@@ -232,6 +233,18 @@ class DeleteOperation {
     base::File::Error error = base::DeletePathRecursively(path_)
                                   ? base::File::FILE_OK
                                   : base::File::FILE_ERROR_FAILED;
+    if (error == base::File::FILE_OK && drive_) {
+      if (drivefs::pinning::PinManager* const pin_manager =
+              drive_->GetPinManager()) {
+        // TODO(b/267225898): Local delete events are currently not sent via
+        // DriveFS, so for now notify the `PinManager` for local deletes.
+        using drivefs::pinning::PinManager;
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, base::BindOnce(&PinManager::NotifyDelete,
+                                      base::Unretained(pin_manager),
+                                      PinManager::Id(stable_id_), path_));
+      }
+    }
     origin_task_runner_->PostTask(FROM_HERE,
                                   base::BindOnce(std::move(callback_), error));
     origin_task_runner_->DeleteSoon(FROM_HERE, this);
@@ -239,9 +252,12 @@ class DeleteOperation {
 
   Profile* const profile_;
   const base::FilePath path_;
+  int64_t stable_id_ = -1;
   storage::AsyncFileUtil::StatusCallback callback_;
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
+
+  raw_ptr<drive::DriveIntegrationService> drive_ = nullptr;
 
   base::FilePath path_in_trash_;
 };
