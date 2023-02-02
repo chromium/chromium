@@ -30,6 +30,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -374,70 +375,63 @@ void DesksClient::LaunchDeskTemplate(
                              result.status, std::move(result.entry));
 }
 
-void DesksClient::LaunchEmptyDesk(LaunchDeskCallback callback,
-                                  const std::u16string& customized_desk_name) {
+base::expected<const base::GUID, DesksClient::DeskActionError>
+DesksClient::LaunchEmptyDesk(const std::u16string& customized_desk_name) {
   if (!desks_controller_->CanCreateDesks()) {
-    std::move(callback).Run(DeskActionError::kDesksCountCheckFailedError, {});
-    return;
+    return base::unexpected(DeskActionError::kDesksCountCheckFailedError);
   }
 
   // Don't launch desk if desk is being modified(activated/removed/switched) or
   // desk animation is in progress.
   if (desks_controller_->AreDesksBeingModified()) {
-    std::move(callback).Run(DeskActionError::kDesksBeingModifiedError, {});
-    return;
+    return base::unexpected(DeskActionError::kDesksBeingModifiedError);
   }
 
   const ash::Desk* new_desk = CreateEmptyDeskAndActivate(customized_desk_name);
-  std::move(callback).Run({}, new_desk->uuid());
+  return new_desk->uuid();
 }
 
-void DesksClient::RemoveDesk(const base::GUID& desk_uuid,
-                             bool combine_desk,
-                             ErrorHandlingCallBack callback) {
+absl::optional<DesksClient::DeskActionError> DesksClient::RemoveDesk(
+    const base::GUID& desk_uuid,
+    bool combine_desk) {
   // Return error if `desk_uuid` is invalid.
   if (!desk_uuid.is_valid()) {
-    std::move(callback).Run(DeskActionError::kInvalidIdError);
-    return;
+    return DeskActionError::kInvalidIdError;
   }
 
   ash::Desk* desk = desks_controller_->GetDeskByUuid(desk_uuid);
   // Can't clean up desk when desk identifier is incorrect.
   if (!desk) {
-    std::move(callback).Run(DeskActionError::kResourceNotFoundError);
-    return;
+    return DeskActionError::kResourceNotFoundError;
   }
 
   // Don't remove desk if desk is being modified(activated/removed/switched) or
   // desk animation is in progress.
   if (desks_controller_->AreDesksBeingModified()) {
-    std::move(callback).Run(DeskActionError::kDesksBeingModifiedError);
-    return;
+    return DeskActionError::kDesksBeingModifiedError;
   }
 
   // Can't clean up desk when there is no more than 1 desk left.
-  if (desks_controller_->CanRemoveDesks()) {
-    desks_controller_->RemoveDesk(desk, ash::DesksCreationRemovalSource::kApi,
-                                  combine_desk
-                                      ? ash::DeskCloseType::kCombineDesks
-                                      : ash::DeskCloseType::kCloseAllWindows);
-  } else {
-    std::move(callback).Run(DeskActionError::kDesksCountCheckFailedError);
-    return;
+  if (!desks_controller_->CanRemoveDesks()) {
+    return DeskActionError::kDesksCountCheckFailedError;
   }
-
-  std::move(callback).Run({});
+  desks_controller_->RemoveDesk(desk, ash::DesksCreationRemovalSource::kApi,
+                                combine_desk
+                                    ? ash::DeskCloseType::kCombineDesks
+                                    : ash::DeskCloseType::kCloseAllWindows);
+  return absl::nullopt;
 }
 
-void DesksClient::GetAllDesks(GetAllDesksCallback callback) {
+base::expected<std::vector<const ash::Desk*>, DesksClient::DeskActionError>
+DesksClient::GetAllDesks() {
+  // There should be at least one default desk.
+  if (desks_controller_->desks().empty()) {
+    return base::unexpected(DeskActionError::kUnknownError);
+  }
   std::vector<const ash::Desk*> desks;
   for (const auto& desk : desks_controller_->desks())
     desks.push_back(desk.get());
-  // There should be at least one default desk.
-  std::move(callback).Run(
-      desks.empty() ? absl::make_optional(DeskActionError::kUnknownError)
-                    : absl::nullopt,
-      desks);
+  return std::move(desks);
 }
 
 void DesksClient::LaunchAppsFromTemplate(
@@ -559,25 +553,22 @@ void DesksClient::NotifyMovedSingleInstanceApp(int32_t window_id) {
     id_to_tracker.second->OnMovedSingleInstanceApp(window_id);
 }
 
-void DesksClient::SetAllDeskPropertyByBrowserSessionId(
-    SessionID browser_session_id,
-    bool all_desk,
-    ErrorHandlingCallBack callback) {
+absl::optional<DesksClient::DeskActionError>
+DesksClient::SetAllDeskPropertyByBrowserSessionId(SessionID browser_session_id,
+                                                  bool all_desk) {
   if (!browser_session_id.is_valid()) {
-    std::move(callback).Run(DeskActionError::kInvalidIdError);
-    return;
+    return DeskActionError::kInvalidIdError;
   }
 
   aura::Window* window = GetWindowByBrowserSessionId(browser_session_id);
   if (!window) {
-    std::move(callback).Run(DeskActionError::kResourceNotFoundError);
-    return;
+    return DeskActionError::kResourceNotFoundError;
   }
   window->SetProperty(aura::client::kWindowWorkspaceKey,
                       all_desk
                           ? aura::client::kWindowWorkspaceVisibleOnAllWorkspaces
                           : aura::client::kWindowWorkspaceUnassignedWorkspace);
-  std::move(callback).Run(absl::nullopt);
+  return absl::nullopt;
 }
 
 base::GUID DesksClient::GetActiveDesk() {

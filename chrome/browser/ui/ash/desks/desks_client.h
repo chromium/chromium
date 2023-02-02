@@ -14,6 +14,7 @@
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/sessions/core/session_id.h"
@@ -106,11 +107,8 @@ class DesksClient : public ash::SessionObserver {
   // further uses of this method.
   void GetDeskTemplates(GetDeskTemplatesCallback callback);
 
-  using GetAllDesksCallback =
-      base::OnceCallback<void(absl::optional<DeskActionError> result,
-                              const std::vector<const ash::Desk*>&)>;
   // Returns the current available desks.
-  void GetAllDesks(GetAllDesksCallback callback);
+  base::expected<std::vector<const ash::Desk*>, DeskActionError> GetAllDesks();
 
   using GetTemplateJsonCallback =
       base::OnceCallback<void(absl::optional<DeskActionError> result,
@@ -141,17 +139,16 @@ class DesksClient : public ash::SessionObserver {
 
   // Launches an empty new desk. Desk name will be set to `customized_desk_name`
   // variant if it's provided, otherwise will be set to auto generated name.
-  void LaunchEmptyDesk(
-      LaunchDeskCallback callback,
+  base::expected<const base::GUID, DeskActionError> LaunchEmptyDesk(
       const std::u16string& customized_desk_name = std::u16string());
 
   using ErrorHandlingCallBack =
       base::OnceCallback<void(absl::optional<DeskActionError> result)>;
   // Remove a desk, close all windows if `close_all` set to true, otherwise
   // combine the windows to the active desk to the left.
-  void RemoveDesk(const base::GUID& desk_uuid,
-                  bool close_all,
-                  ErrorHandlingCallBack);
+  absl::optional<DesksClient::DeskActionError> RemoveDesk(
+      const base::GUID& desk_uuid,
+      bool close_all);
 
   // Uses `app_launch_handler_` to launch apps from the restore data found in
   // `desk_template`.
@@ -171,9 +168,9 @@ class DesksClient : public ash::SessionObserver {
   void NotifyMovedSingleInstanceApp(int32_t window_id);
 
   // Set the property of showing on all-desk or not to a window.
-  void SetAllDeskPropertyByBrowserSessionId(SessionID browser_session_id,
-                                            bool all_desk,
-                                            ErrorHandlingCallBack);
+  absl::optional<DesksClient::DeskActionError>
+  SetAllDeskPropertyByBrowserSessionId(SessionID browser_session_id,
+                                       bool all_desk);
 
   // Returns the UUID of active desk.
   base::GUID GetActiveDesk();

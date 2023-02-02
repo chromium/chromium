@@ -2490,12 +2490,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateAndCleanUpDesk) {
   // Creates a new window.
   CreateBrowser({});
   base::HistogramTester histogram_tester;
-  DesksClient::Get()->RemoveDesk(
-      desk_id, false,
-      base::BindLambdaForTesting(
-          [](absl::optional<DesksClient::DeskActionError> error) {
-            ASSERT_FALSE(error);
-          }));
+  ASSERT_FALSE(DesksClient::Get()->RemoveDesk(desk_id, false));
   waiter.Wait();
   // Record number of windows being closed per source.
   // NOTE: The template contains an existing browser with 1 tab created by
@@ -2559,14 +2554,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, RemoveWithInvalidDeskId) {
   EXPECT_EQ(1u, desks_controller->desks().size());
   // Construct an empty invalid desk_id.
   base::GUID desk_id;
-  DesksClient::Get()->RemoveDesk(
-      desk_id, false,
-      base::BindLambdaForTesting(
-          [](absl::optional<DesksClient::DeskActionError> error) {
-            EXPECT_EQ(DesksClient::DeskActionError::kInvalidIdError,
-                      error.value());
-          }));
-
+  EXPECT_THAT(DesksClient::Get()->RemoveDesk(desk_id, false),
+              testing::Optional(DesksClient::DeskActionError::kInvalidIdError));
   EXPECT_EQ(1u, desks_controller->desks().size());
 }
 
@@ -2580,23 +2569,14 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, GetAllDesksAndRemove) {
   base::RunLoop loop;
   // Retrieve desk id;
   base::GUID desk_id;
-  DesksClient::Get()->GetAllDesks(base::BindLambdaForTesting(
-      [&](absl::optional<DesksClient::DeskActionError> error,
-          const std::vector<const ash::Desk*>& desks) {
-        loop.Quit();
-        ASSERT_FALSE(error);
-        ASSERT_EQ(1u, desks_controller->desks().size());
-        desk_id = desks_controller->desks().at(0)->uuid();
-      }));
-  loop.Run();
+  auto desks = DesksClient::Get()->GetAllDesks();
+  ASSERT_TRUE(desks.has_value());
+  ASSERT_EQ(1u, desks.value().size());
+  desk_id = desks.value().at(0)->uuid();
 
-  DesksClient::Get()->RemoveDesk(
-      desk_id, false,
-      base::BindLambdaForTesting(
-          [](absl::optional<DesksClient::DeskActionError> error) {
-            EXPECT_EQ(DesksClient::DeskActionError::kDesksCountCheckFailedError,
-                      error);
-          }));
+  EXPECT_THAT(DesksClient::Get()->RemoveDesk(desk_id, false),
+              testing::Optional(
+                  DesksClient::DeskActionError::kDesksCountCheckFailedError));
 }
 
 // Tests launch an empty desk with `desk_name` provided.
@@ -2608,21 +2588,15 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchEmptyDeskWithProvidedName) {
   base::RunLoop loop;
   std::u16string desk_name(u"test");
   ash::DeskSwitchAnimationWaiter waiter;
-  DesksClient::Get()->LaunchEmptyDesk(
-      base::BindLambdaForTesting(
-          [&](absl::optional<DesksClient::DeskActionError> error,
-              const base::GUID& desk_uuid) {
-            loop.Quit();
-            ASSERT_FALSE(error);
-            // Launch one template, desk size should increase by 1.
-            ASSERT_EQ(2u, desks_controller->desks().size());
-            // `desk_name` should be set as provided
-            EXPECT_EQ(desk_name, desks_controller->desks().back()->name());
-            // `desk_uuid` should be returned.
-            EXPECT_GT(desk_uuid.AsLowercaseString().size(), 0u);
-          }),
-      desk_name);
-  loop.Run();
+  auto result = DesksClient::Get()->LaunchEmptyDesk(desk_name);
+
+  ASSERT_TRUE(result.has_value());
+  // Launch one template, desk size should increase by 1.
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  // `desk_name` should be set as provided
+  EXPECT_EQ(desk_name, desks_controller->desks().back()->name());
+  // `desk_uuid` should be returned.
+  EXPECT_GT(result.value().AsLowercaseString().size(), 0u);
   waiter.Wait();
 }
 
@@ -2634,20 +2608,14 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchEmptyDeskWithDefaultName) {
 
   base::RunLoop loop;
   ash::DeskSwitchAnimationWaiter waiter;
-  DesksClient::Get()->LaunchEmptyDesk(base::BindLambdaForTesting(
-      [&](absl::optional<DesksClient::DeskActionError> error,
-          const base::GUID& desk_uuid) {
-        loop.Quit();
-        ASSERT_FALSE(error);
-        // Launch one template, desk size should increase by 1.
-        ASSERT_EQ(2u, desks_controller->desks().size());
-        // `desk_name` should be set as default desk name
-        EXPECT_EQ(u"Desk 2", desks_controller->desks().back()->name());
-        // `desk_uuid` should be returned.
-        EXPECT_GT(desk_uuid.AsLowercaseString().size(), 0u);
-      }));
-  loop.Run();
-
+  auto result = DesksClient::Get()->LaunchEmptyDesk();
+  ASSERT_TRUE(result.has_value());
+  // Launch one template, desk size should increase by 1.
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  // `desk_name` should be set as default desk name
+  EXPECT_EQ(u"Desk 2", desks_controller->desks().back()->name());
+  // `desk_uuid` should be returned.
+  EXPECT_GT(result.value().AsLowercaseString().size(), 0u);
   waiter.Wait();
 }
 
@@ -2665,67 +2633,39 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SetWindowProperties) {
   SessionID browser_session_id =
       BrowserList::GetInstance()->get(0)->session_id();
 
-  base::RunLoop loop1;
   // Set to all-desk window.
-  DesksClient::Get()->SetAllDeskPropertyByBrowserSessionId(
-      browser_session_id, true,
-      base::BindLambdaForTesting(
-          [&](absl::optional<DesksClient::DeskActionError> error) {
-            loop1.Quit();
-            ASSERT_FALSE(error);
-            // Should have 1 all-desk window now.
-            EXPECT_EQ(1u,
-                      desks_controller->visible_on_all_desks_windows().size());
-          }));
-  loop1.Run();
+  // Assert no error.
+  ASSERT_FALSE(DesksClient::Get()->SetAllDeskPropertyByBrowserSessionId(
+      browser_session_id, true));
+  // Should have 1 all-desk window now.
+  EXPECT_EQ(1u, desks_controller->visible_on_all_desks_windows().size());
 
-  base::RunLoop loop2;
   // Unset all-desk window.
-  DesksClient::Get()->SetAllDeskPropertyByBrowserSessionId(
-      browser_session_id, false,
-      base::BindLambdaForTesting(
-          [&](absl::optional<DesksClient::DeskActionError> error) {
-            loop2.Quit();
-            ASSERT_FALSE(error);
-            // Should have no all-desk window now.
-            EXPECT_EQ(0u,
-                      desks_controller->visible_on_all_desks_windows().size());
-          }));
-  loop2.Run();
+  // Assert no error.
+  ASSERT_FALSE(DesksClient::Get()->SetAllDeskPropertyByBrowserSessionId(
+      browser_session_id, false));
+  // Should have no all-desk window now.
+  EXPECT_EQ(0u, desks_controller->visible_on_all_desks_windows().size());
 }
 
 // Tests immediate desk action should be throttled.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, ThrottleImmediateDeskAction) {
   base::GUID new_desk_id;
   ash::DeskSwitchAnimationWaiter waiter;
-  DesksClient::Get()->LaunchEmptyDesk(base::BindLambdaForTesting(
-      [&](absl::optional<DesksClient::DeskActionError> error,
-          const base::GUID& desk_uuid) { new_desk_id = desk_uuid; }));
+  auto result = DesksClient::Get()->LaunchEmptyDesk();
+  ASSERT_TRUE(result.has_value());
+  new_desk_id = result.value();
 
-  int remove_executed = 0;
-  DesksClient::Get()->RemoveDesk(
-      new_desk_id, false,
-      base::BindLambdaForTesting(
-          [&](absl::optional<DesksClient::DeskActionError> error) {
-            EXPECT_EQ(DesksClient::DeskActionError::kDesksBeingModifiedError,
-                      error.value());
-            remove_executed++;
-          }));
-  EXPECT_EQ(1, remove_executed);
+  EXPECT_THAT(DesksClient::Get()->RemoveDesk(new_desk_id, false),
+              testing::Optional(
+                  DesksClient::DeskActionError::kDesksBeingModifiedError));
 
-  int launch_executed = 0;
-  DesksClient::Get()->LaunchEmptyDesk(base::BindLambdaForTesting(
-      [&](absl::optional<DesksClient::DeskActionError> error,
-          const base::GUID& desk_uuid) {
-        EXPECT_EQ(DesksClient::DeskActionError::kDesksBeingModifiedError,
-                  error.value());
-        launch_executed++;
-      }));
-  EXPECT_EQ(1, launch_executed);
-  absl::optional<DesksClient::DeskActionError> error =
-      DesksClient::Get()->SwitchDesk(new_desk_id);
+  auto result1 = DesksClient::Get()->LaunchEmptyDesk();
   EXPECT_EQ(DesksClient::DeskActionError::kDesksBeingModifiedError,
-            error.value());
+            result1.error());
+  EXPECT_THAT(DesksClient::Get()->SwitchDesk(new_desk_id),
+              testing::Optional(
+                  DesksClient::DeskActionError::kDesksBeingModifiedError));
   waiter.Wait();
 }
 
@@ -2859,8 +2799,9 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SwitchToCurrentDesk) {
 
 // Tests switch to invalid desk should return error.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SwitchToInvalidDesk) {
-  EXPECT_EQ(DesksClient::Get()->SwitchDesk({}).value(),
-            DesksClient::DeskActionError::kResourceNotFoundError);
+  EXPECT_THAT(
+      DesksClient::Get()->SwitchDesk({}),
+      testing::Optional(DesksClient::DeskActionError::kResourceNotFoundError));
 }
 
 // Tests switch to different desk should be trigger desk animation.
@@ -2868,14 +2809,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SwitchToDifferentDesk) {
   base::GUID desk_uuid = DesksClient::Get()->GetActiveDesk();
 
   // Launches a new desk.
-  int launch_executed = 0;
-  DesksClient::Get()->LaunchEmptyDesk(base::BindLambdaForTesting(
-      [&](absl::optional<DesksClient::DeskActionError> error,
-          const base::GUID& desk_uuid) {
-        ASSERT_FALSE(error);
-        launch_executed++;
-      }));
-  EXPECT_EQ(1, launch_executed);
+  auto result = DesksClient::Get()->LaunchEmptyDesk();
+  ASSERT_TRUE(result.has_value());
 
   // Wait for launch desk animation to settle.
   ash::DeskSwitchAnimationWaiter waiter;

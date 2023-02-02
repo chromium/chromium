@@ -98,63 +98,42 @@ void WMDesksPrivateFeatureAsh::GetDeskTemplateJson(
 
 void WMDesksPrivateFeatureAsh::LaunchDesk(std::string desk_name,
                                           LaunchDeskCallback callback) {
-  DesksClient::Get()->LaunchEmptyDesk(
-      base::BindOnce(
-          [](LaunchDeskCallback callback,
-             absl::optional<DesksClient::DeskActionError> error,
-             const base::GUID& desk_uuid) {
-            if (error) {
-              std::move(callback).Run(GetStringError(error.value()), {});
-            } else {
-              std::move(callback).Run({}, desk_uuid);
-            }
-          },
-          std::move(callback)),
-      base::UTF8ToUTF16(desk_name));
+  auto result =
+      DesksClient::Get()->LaunchEmptyDesk(base::UTF8ToUTF16(desk_name));
+  if (!result.has_value()) {
+    std::move(callback).Run(GetStringError(result.error()), {});
+    return;
+  }
+  std::move(callback).Run({}, result.value());
 }
 
 void WMDesksPrivateFeatureAsh::RemoveDesk(const base::GUID& desk_uuid,
                                           bool combine_desk,
                                           RemoveDeskCallback callback) {
-  DesksClient::Get()->RemoveDesk(
-      desk_uuid, combine_desk,
-      base::BindOnce(
-          [](RemoveDeskCallback callback,
-             absl::optional<DesksClient::DeskActionError> error) {
-            std::move(callback).Run(error ? GetStringError(error.value()) : "");
-          },
-          std::move(callback)));
+  auto error = DesksClient::Get()->RemoveDesk(desk_uuid, combine_desk);
+  std::move(callback).Run(error ? GetStringError(error.value()) : "");
 }
 
 void WMDesksPrivateFeatureAsh::SetAllDeskProperty(
     int32_t window_id,
     bool all_desks,
     SetAllDeskPropertyCallback callback) {
-  DesksClient::Get()->SetAllDeskPropertyByBrowserSessionId(
-      SessionID::FromSerializedValue(window_id), all_desks,
-      base::BindOnce(
-          [](SetAllDeskPropertyCallback callback,
-             absl::optional<DesksClient::DeskActionError> error) {
-            std::move(callback).Run(error ? GetStringError(error.value()) : "");
-          },
-          std::move(callback)));
+  auto error = DesksClient::Get()->SetAllDeskPropertyByBrowserSessionId(
+      SessionID::FromSerializedValue(window_id), all_desks);
+  std::move(callback).Run(error ? GetStringError(error.value()) : "");
 }
 
 void WMDesksPrivateFeatureAsh::GetAllDesks(GetAllDesksCallback callback) {
-  DesksClient::Get()->GetAllDesks(base::BindOnce(
-      [](GetAllDesksCallback callback,
-         absl::optional<DesksClient::DeskActionError> error,
-         const std::vector<const ash::Desk*>& desks) {
-        if (error) {
-          std::move(callback).Run(GetStringError(error.value()), {});
-        } else {
-          std::vector<api::wm_desks_private::Desk> api_desks;
-          for (const ash::Desk* desk : desks)
-            api_desks.push_back(GetDeskFromAshDesk(*desk));
-          std::move(callback).Run({}, std::move(api_desks));
-        }
-      },
-      std::move(callback)));
+  auto result = DesksClient::Get()->GetAllDesks();
+  if (!result.has_value()) {
+    std::move(callback).Run(GetStringError(result.error()), {});
+    return;
+  }
+  std::vector<api::wm_desks_private::Desk> api_desks;
+  for (const ash::Desk* desk : result.value()) {
+    api_desks.push_back(GetDeskFromAshDesk(*desk));
+  }
+  std::move(callback).Run({}, std::move(api_desks));
 }
 
 void WMDesksPrivateFeatureAsh::SaveActiveDesk(SaveActiveDeskCallback callback) {

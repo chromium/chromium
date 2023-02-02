@@ -92,43 +92,28 @@ void DeskAsh::BindReceiver(
 
 void DeskAsh::LaunchEmptyDesk(const std::string& desk_name,
                               LaunchEmptyDeskCallback callback) {
-  DesksClient::Get()->LaunchEmptyDesk(
-      base::BindOnce(
-          [](LaunchEmptyDeskCallback callback,
-             absl::optional<DesksClient::DeskActionError> error,
-             const base::GUID& desk_uuid) {
-            if (error) {
-              std::move(callback).Run(
-                  crosapi::mojom::LaunchEmptyDeskResult::NewError(
-                      ToCrosApiError(error.value())));
-              return;
-            }
-            auto result =
-                crosapi::mojom::LaunchEmptyDeskResult::NewDeskId(desk_uuid);
-            std::move(callback).Run(std::move(result));
-          },
-          std::move(callback)),
-      base::UTF8ToUTF16(desk_name));
+  auto result =
+      DesksClient::Get()->LaunchEmptyDesk(base::UTF8ToUTF16(desk_name));
+  if (!result.has_value()) {
+    std::move(callback).Run(crosapi::mojom::LaunchEmptyDeskResult::NewError(
+        ToCrosApiError(result.error())));
+    return;
+  }
+  std::move(callback).Run(
+      crosapi::mojom::LaunchEmptyDeskResult::NewDeskId(result.value()));
 }
 
 void DeskAsh::RemoveDesk(const base::GUID& desk_uuid,
                          bool close_all,
                          RemoveDeskCallback callback) {
-  DesksClient::Get()->RemoveDesk(
-      desk_uuid, close_all,
-      base::BindOnce(
-          [](RemoveDeskCallback callback,
-             absl::optional<DesksClient::DeskActionError> error) {
-            if (error) {
-              std::move(callback).Run(
-                  crosapi::mojom::RemoveDeskResult::NewError(
-                      ToCrosApiError(error.value())));
-              return;
-            }
-            auto result = crosapi::mojom::RemoveDeskResult::NewSucceeded(true);
-            std::move(callback).Run(std::move(result));
-          },
-          std::move(callback)));
+  auto error = DesksClient::Get()->RemoveDesk(desk_uuid, close_all);
+  if (error) {
+    std::move(callback).Run(crosapi::mojom::RemoveDeskResult::NewError(
+        ToCrosApiError(error.value())));
+    return;
+  }
+  auto result = crosapi::mojom::RemoveDeskResult::NewSucceeded(true);
+  std::move(callback).Run(std::move(result));
 }
 
 void DeskAsh::GetTemplateJson(const base::GUID& uuid,
@@ -154,24 +139,18 @@ void DeskAsh::GetTemplateJson(const base::GUID& uuid,
 }
 
 void DeskAsh::GetAllDesks(GetAllDesksCallback callback) {
-  DesksClient::Get()->GetAllDesks(base::BindOnce(
-      [](GetAllDesksCallback callback,
-         absl::optional<DesksClient::DeskActionError> error,
-         const std::vector<const ash::Desk*>& desks) {
-        if (error) {
-          std::move(callback).Run(crosapi::mojom::GetAllDesksResult::NewError(
-              ToCrosApiError(error.value())));
-          return;
-        }
-        std::vector<crosapi::mojom::DeskModelPtr> cros_desks;
-        for (const auto* d : desks) {
-          cros_desks.push_back(ToDeskModel(d));
-        }
-        auto result =
-            crosapi::mojom::GetAllDesksResult::NewDesks(std::move(cros_desks));
-        std::move(callback).Run(std::move(result));
-      },
-      std::move(callback)));
+  auto result = DesksClient::Get()->GetAllDesks();
+  if (!result.has_value()) {
+    std::move(callback).Run(crosapi::mojom::GetAllDesksResult::NewError(
+        ToCrosApiError(result.error())));
+    return;
+  }
+  std::vector<crosapi::mojom::DeskModelPtr> cros_desks;
+  for (const auto* d : result.value()) {
+    cros_desks.push_back(ToDeskModel(d));
+  }
+  std::move(callback).Run(
+      crosapi::mojom::GetAllDesksResult::NewDesks(std::move(cros_desks)));
 }
 
 void DeskAsh::SaveActiveDesk(SaveActiveDeskCallback callback) {
