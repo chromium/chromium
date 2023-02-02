@@ -88,7 +88,7 @@ class AcceleratorConfigurationProvider
           shortcut_customization::mojom::AcceleratorConfigurationProvider>
           receiver);
 
-  void InitializeNonConfigurableAccelerators(NonConfigurableActionsMap);
+  void InitializeNonConfigurableAccelerators(NonConfigurableActionsMap mapping);
 
   const NonConfigurableActionsMap& GetNonConfigurableAcceleratorsForTesting() {
     return non_configurable_actions_mapping_;
