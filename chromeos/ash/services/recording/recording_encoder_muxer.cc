@@ -365,7 +365,7 @@ void RecordingEncoderMuxer::OnVideoEncoderInitialized(
 
   is_video_encoder_initialized_ = true;
   for (auto& frame : pending_video_frames_)
-    EncodeVideoImpl(frame);
+    EncodeVideoImpl(std::move(frame));
   pending_video_frames_.clear();
 }
 
@@ -390,9 +390,11 @@ void RecordingEncoderMuxer::EncodeVideoImpl(
   if (did_failure_occur())
     return;
 
-  video_visible_rect_sizes_.push(frame->visible_rect().size());
+  DCHECK(frame->metadata().reference_time);
+  encoded_video_params_.push(EncodedVideoFrameParams{
+      *frame->metadata().reference_time, frame->visible_rect().size()});
   video_encoder_->Encode(
-      frame, /*key_frame=*/false,
+      std::move(frame), /*key_frame=*/false,
       base::BindOnce(&RecordingEncoderMuxer::OnEncoderStatus,
                      weak_ptr_factory_.GetWeakPtr(), /*for_video=*/true));
 }
@@ -402,18 +404,20 @@ void RecordingEncoderMuxer::OnVideoEncoderOutput(
     absl::optional<media::VideoEncoder::CodecDescription> codec_description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  media::Muxer::VideoParameters params(video_visible_rect_sizes_.front(),
-                                       kMaxFrameRate, media::VideoCodec::kVP8,
-                                       kColorSpace);
-  video_visible_rect_sizes_.pop();
+  DCHECK(!encoded_video_params_.empty());
+  const auto& encoded_video_params = encoded_video_params_.front();
+  const media::Muxer::VideoParameters muxer_params(
+      encoded_video_params.visible_rect_size, kMaxFrameRate,
+      media::VideoCodec::kVP8, kColorSpace);
+  const base::TimeTicks timestamp = encoded_video_params.frame_reference_time;
+  encoded_video_params_.pop();
 
   // TODO(crbug.com/1143798): Explore changing the WebmMuxer so it doesn't work
   // with strings, to avoid copying the encoded data.
   std::string data{reinterpret_cast<const char*>(output.data.get()),
                    output.size};
-  webm_muxer_.OnEncodedVideo(params, std::move(data), std::string(),
-                             base::TimeTicks() + output.timestamp,
-                             output.key_frame);
+  webm_muxer_.OnEncodedVideo(muxer_params, std::move(data), std::string(),
+                             timestamp, output.key_frame);
 }
 
 void RecordingEncoderMuxer::OnAudioEncoded(

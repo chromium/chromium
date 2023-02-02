@@ -373,7 +373,8 @@ void RecordingService::OnFrameCaptured(
         .Run(*frame, content_rect);
   }
 
-  encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::EncodeVideo).WithArgs(frame);
+  encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::EncodeVideo)
+      .WithArgs(std::move(frame));
 }
 
 void RecordingService::OnNewCropVersion(uint32_t crop_version) {}

@@ -138,6 +138,19 @@ class RecordingEncoderMuxer {
     base::TimeTicks capture_time;
   };
 
+  // Gathers the video frame data needed when the frame is encoded and ready to
+  // be submitted to the muxer.
+  struct EncodedVideoFrameParams {
+    // The received video frame's reference time. See
+    // `media::VideoFrameMetadata::reference_time`.
+    base::TimeTicks frame_reference_time;
+
+    // The size of the visible region of the received video frame. Note that the
+    // visible rect sizes may change from frame to frame (e.g. when recording a
+    // window, and the window gets resized).
+    gfx::Size visible_rect_size;
+  };
+
   // Creates and initializes the audio encoder.
   void InitializeAudioEncoder(const media::AudioEncoder::Options& options);
 
@@ -163,8 +176,8 @@ class RecordingEncoderMuxer {
   // handled once initialization is complete.
   void EncodeVideoImpl(scoped_refptr<media::VideoFrame> frame);
 
-  // Called by the video encoder to provided the encoded video frame |output|,
-  // which will then by sent to muxer.
+  // Called by the video encoder to provide the encoded video frame `output`,
+  // which will then be sent to the muxer.
   void OnVideoEncoderOutput(
       media::VideoEncoderOutput output,
       absl::optional<media::VideoEncoder::CodecDescription> codec_description);
@@ -230,11 +243,10 @@ class RecordingEncoderMuxer {
   // in-flight frames at a time.
   size_t num_dropped_frames_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
-  // A queue containing the sizes of the visible region of the received video
-  // frame in the same order of their encoding. Note that the visible rect sizes
-  // may change from frame to frame (e.g. when recording a window, and the
-  // window gets resized).
-  base::queue<gfx::Size> video_visible_rect_sizes_
+  // A queue containing the parameters of the encoded video frames in the same
+  // order of their encoding. These parameters are used when submitting the
+  // video encoder output to the muxer. See `OnVideoEncoderOutput()`.
+  base::queue<EncodedVideoFrameParams> encoded_video_params_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // True once video encoder is initialized successfully.
