@@ -25,13 +25,14 @@
 namespace WTF {
 
 String::String(NSString* str) {
-  if (!str)
+  if (!str) {
     return;
+  }
 
   CFIndex size = CFStringGetLength(reinterpret_cast<CFStringRef>(str));
-  if (size == 0)
+  if (size == 0) {
     impl_ = StringImpl::empty_;
-  else {
+  } else {
     Vector<LChar, 1024> lchar_buffer(size);
     CFIndex used_buf_len;
     CFIndex convertedsize =

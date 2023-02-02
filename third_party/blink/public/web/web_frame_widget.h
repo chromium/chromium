@@ -155,7 +155,7 @@ class WebFrameWidget : public WebWidget {
   virtual void NotifyPresentationTime(
       base::OnceCallback<void(base::TimeTicks)> callback) = 0;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   virtual void NotifyCoreAnimationErrorCode(
       base::OnceCallback<void(gfx::CALayerResult)> callback) = 0;
 #endif

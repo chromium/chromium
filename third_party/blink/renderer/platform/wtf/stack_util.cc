@@ -129,7 +129,7 @@ void* GetStackStart() {
                   "glibc __libc_stack_end is present.";
   return nullptr;
 #endif
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   return pthread_get_stackaddr_np(pthread_self());
 #elif BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
 // On Windows stack limits for the current thread are available in

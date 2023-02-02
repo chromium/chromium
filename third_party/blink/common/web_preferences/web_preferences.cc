@@ -113,7 +113,7 @@ WebPreferences::WebPreferences()
 #endif
       supports_multiple_windows(true),
       viewport_enabled(false),
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       viewport_meta_enabled(true),
       auto_zoom_focused_editable_to_legible_scale(true),
       shrinks_viewport_contents_to_fit(true),
@@ -150,7 +150,7 @@ WebPreferences::WebPreferences()
       text_tracks_enabled(false),
       text_track_margin_percentage(0.0f),
       immersive_mode_enabled(false),
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
       double_tap_to_zoom_enabled(true),
 #else
       double_tap_to_zoom_enabled(false),
@@ -183,7 +183,7 @@ WebPreferences::WebPreferences()
       scroll_top_left_interop_enabled(true),
       disable_accelerated_small_canvases(false),
 #endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       default_minimum_page_scale_factor(0.25f),
       default_maximum_page_scale_factor(5.f),
 #elif BUILDFLAG(IS_MAC)

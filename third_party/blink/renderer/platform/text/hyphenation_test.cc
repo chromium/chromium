@@ -37,7 +37,7 @@ class HyphenationTest : public testing::Test {
  protected:
   void TearDown() override { LayoutLocale::ClearForTesting(); }
 
-#if defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_MAC)
+#if defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_APPLE)
   // Get a |Hyphenation| instance for the specified locale for testing.
   scoped_refptr<Hyphenation> GetHyphenation(const AtomicString& locale) {
 #if defined(USE_MINIKIN_HYPHENATION)
@@ -145,7 +145,7 @@ TEST_F(HyphenationTest, MapLocale) {
 }
 #endif
 
-#if defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_MAC)
+#if defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_APPLE)
 TEST_F(HyphenationTest, HyphenLocations) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
 #if BUILDFLAG(IS_ANDROID)
@@ -265,7 +265,7 @@ TEST_F(HyphenationTest, German) {
 
   Vector<wtf_size_t, 8> locations =
       hyphenation->HyphenLocations("konsonantien");
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   EXPECT_THAT(locations, ElementsAreArray({10, 8, 5, 3}));
 #else
   EXPECT_THAT(locations, ElementsAreArray({8, 5, 3}));
@@ -280,7 +280,7 @@ TEST_F(HyphenationTest, German) {
 }
 #endif
 
-#if defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_MAC)
+#if defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_APPLE)
 TEST_F(HyphenationTest, CapitalizedWords) {
   // Avoid hyphenating capitalized words for "en".
   if (scoped_refptr<Hyphenation> en = GetHyphenation("en-us")) {
@@ -402,6 +402,6 @@ TEST_F(HyphenationTest, Limits) {
 
   en->ResetLimits();
 }
-#endif  // defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_MAC)
+#endif  // defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_APPLE)
 
 }  // namespace blink

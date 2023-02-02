@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/platform/fonts/win/dwrite_font_format_support.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 #include "third_party/skia/include/ports/SkFontMgr_empty.h"
 #endif
 
@@ -148,7 +148,7 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::DefaultFontManager() {
 }
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::FreeTypeFontManager() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   return sk_sp<SkFontMgr>(SkFontMgr_New_Custom_Empty());
 #else
   return DefaultFontManager();
@@ -156,7 +156,7 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FreeTypeFontManager() {
 }
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForColrCpal() {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   return FreeTypeFontManager();
 #else
   return DefaultFontManager();

@@ -110,13 +110,13 @@ class CORE_EXPORT WebFrameWidgetImpl
   struct PromiseCallbacks {
     base::OnceCallback<void(base::TimeTicks)> swap_time_callback;
     base::OnceCallback<void(base::TimeTicks)> presentation_time_callback;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     base::OnceCallback<void(gfx::CALayerResult)>
         core_animation_error_code_callback;
 #endif
     bool IsEmpty() {
       return (!swap_time_callback &&
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
               !core_animation_error_code_callback &&
 #endif
               !presentation_time_callback);
@@ -333,7 +333,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       mojom::blink::ViewportIntersectionStatePtr intersection_state);
   void NotifyPresentationTime(
       base::OnceCallback<void(base::TimeTicks)> callback) override;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   void NotifyCoreAnimationErrorCode(
       base::OnceCallback<void(gfx::CALayerResult)> callback) override;
 #endif

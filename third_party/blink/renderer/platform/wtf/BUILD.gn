@@ -240,10 +240,10 @@ component("wtf") {
   # Rules changing the |sources| list are temporarily commented out, until
   # those files are actually moved to here.
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
-      "text/string_impl_mac.mm",
-      "text/string_mac.mm",
+      "text/string_apple.mm",
+      "text/string_impl_apple.mm",
     ]
   }
 

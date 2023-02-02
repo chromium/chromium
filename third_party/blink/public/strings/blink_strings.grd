@@ -64,7 +64,13 @@ below:
     <output filename="blink_strings_en-GB.pak" type="data_package" lang="en-GB" />
     <output filename="blink_strings_en-US.pak" type="data_package" lang="en" />
     <output filename="blink_strings_es.pak" type="data_package" lang="es" />
-    <output filename="blink_strings_es-419.pak" type="data_package" lang="es-419" />
+    <if expr="is_ios">
+      <!-- iOS uses es-MX for es-419 -->
+      <output filename="blink_strings_es-MX.pak" type="data_package" lang="es-419" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="blink_strings_es-419.pak" type="data_package" lang="es-419" />
+    </if>
     <output filename="blink_strings_et.pak" type="data_package" lang="et" />
     <output filename="blink_strings_eu.pak" type="data_package" lang="eu" />
     <output filename="blink_strings_fa.pak" type="data_package" lang="fa" />
@@ -105,7 +111,13 @@ below:
     <output filename="blink_strings_nb.pak" type="data_package" lang="no" />
     <output filename="blink_strings_pa.pak" type="data_package" lang="pa" />
     <output filename="blink_strings_pl.pak" type="data_package" lang="pl" />
-    <output filename="blink_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
+    <if expr="is_ios">
+      <!-- iOS uses pt for pt-BR -->
+      <output filename="blink_strings_pt.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="blink_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
+    </if>
     <output filename="blink_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
     <output filename="blink_strings_or.pak" type="data_package" lang="or" />
     <output filename="blink_strings_ro.pak" type="data_package" lang="ro" />

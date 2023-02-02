@@ -55,6 +55,10 @@ if (is_mac) {
   ]
 }
 
+if (is_ios) {
+  blink_core_sources_scroll += [ "scrollbar_theme_ios.cc" ]
+}
+
 if (use_aura) {
   blink_core_sources_scroll += [
     "scrollbar_theme_aura.cc",

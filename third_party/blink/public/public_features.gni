@@ -10,4 +10,4 @@ import("//build/config/ui.gni")
 enable_unhandled_tap = is_android
 
 # Use Minikin hyphenation engine.
-use_minikin_hyphenation = !is_mac
+use_minikin_hyphenation = !is_apple

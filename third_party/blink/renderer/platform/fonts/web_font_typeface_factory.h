@@ -9,9 +9,6 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#include "third_party/skia/include/ports/SkFontMgr_empty.h"
-#endif
 
 namespace blink {
 

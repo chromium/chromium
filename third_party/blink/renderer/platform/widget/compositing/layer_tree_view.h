@@ -126,7 +126,7 @@ class PLATFORM_EXPORT LayerTreeView
       uint32_t frame_token,
       base::OnceCallback<void(base::TimeTicks)> callback);
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   void AddCoreAnimationErrorCodeCallback(
       uint32_t frame_token,
       base::OnceCallback<void(gfx::CALayerResult)> callback);
@@ -172,7 +172,7 @@ class PLATFORM_EXPORT LayerTreeView
                 std::vector<base::OnceCallback<void(base::TimeTicks)>>>>
       presentation_callbacks_;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   base::circular_deque<std::pair<
       uint32_t,
       std::vector<base::OnceCallback<void(gfx::CALayerResult error_code)>>>>

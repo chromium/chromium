@@ -20,8 +20,9 @@ class HyphenationCF final : public Hyphenation {
 
   wtf_size_t LastHyphenLocation(const StringView& text,
                                 wtf_size_t before_index) const override {
-    if (!ShouldHyphenateWord(text))
+    if (!ShouldHyphenateWord(text)) {
       return 0;
+    }
     DCHECK_GE(text.length(), MinWordLength());
 
     DCHECK_GT(text.length(), MinSuffixLength());
@@ -31,12 +32,14 @@ class HyphenationCF final : public Hyphenation {
     const CFIndex result = CFStringGetHyphenationLocationBeforeIndex(
         text.ToString().Impl()->CreateCFString(), before_index,
         CFRangeMake(0, text.length()), 0, locale_cf_, 0);
-    if (result == kCFNotFound)
+    if (result == kCFNotFound) {
       return 0;
+    }
     DCHECK_GE(result, 0);
     DCHECK_LT(result, before_index);
-    if (result < MinPrefixLength())
+    if (result < MinPrefixLength()) {
       return 0;
+    }
     return static_cast<wtf_size_t>(result);
   }
 
@@ -46,8 +49,9 @@ class HyphenationCF final : public Hyphenation {
   // LastHyphenLocation() but does not support HyphenLocations().
   wtf_size_t FirstHyphenLocation(const StringView& text,
                                  wtf_size_t after_index) const override {
-    if (!ShouldHyphenateWord(text))
+    if (!ShouldHyphenateWord(text)) {
       return 0;
+    }
     DCHECK_GE(text.length(), MinWordLength());
 
     DCHECK_GE(MinPrefixLength(), 1u);
@@ -61,8 +65,9 @@ class HyphenationCF final : public Hyphenation {
     wtf_size_t hyphen_location = max_hyphen_location + 1;
     for (;;) {
       wtf_size_t previous = LastHyphenLocation(text, hyphen_location);
-      if (previous <= after_index)
+      if (previous <= after_index) {
         break;
+      }
       hyphen_location = previous;
     }
     return hyphen_location > max_hyphen_location ? 0 : hyphen_location;
@@ -78,8 +83,9 @@ scoped_refptr<Hyphenation> Hyphenation::PlatformGetHyphenation(
       locale.Impl()->CreateCFString());
   base::ScopedCFTypeRef<CFLocaleRef> locale_cf(
       CFLocaleCreate(kCFAllocatorDefault, locale_cf_string));
-  if (!CFStringIsHyphenationAvailableForLocale(locale_cf))
+  if (!CFStringIsHyphenationAvailableForLocale(locale_cf)) {
     return nullptr;
+  }
   scoped_refptr<Hyphenation> hyphenation(
       base::AdoptRef(new HyphenationCF(locale_cf)));
   hyphenation->Initialize(locale);

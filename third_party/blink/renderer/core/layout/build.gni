@@ -811,6 +811,13 @@ if (is_mac) {
   ]
 }
 
+if (is_ios) {
+  blink_core_sources_layout += [
+    "layout_theme_ios.h",
+    "layout_theme_ios.mm",
+  ]
+}
+
 if (is_win) {
   blink_core_sources_layout += [
     "layout_theme_font_provider_win.cc",
