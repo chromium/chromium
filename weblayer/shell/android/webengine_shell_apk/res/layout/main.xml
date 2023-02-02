@@ -18,6 +18,11 @@ found in the LICENSE file.
         android:text="x.x.x"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/url_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textUri" />
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"

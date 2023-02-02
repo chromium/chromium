@@ -5,6 +5,7 @@
 package org.chromium.webengine.shell;
 
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -25,9 +26,32 @@ public class DefaultObservers {
     private static final String TAG = "WEDefaultObservers";
 
     static class DefaultTabObserver extends TabObserver {
+        @Nullable
+        private EditText mUrlBar;
+        @Nullable
+        private Tab mTab;
+        @Nullable
+        private TabManager mTabManager;
+
+        public DefaultTabObserver(
+                @Nullable EditText urlBar, @Nullable Tab tab, @Nullable TabManager tabManager) {
+            mUrlBar = urlBar;
+            mTab = tab;
+            mTabManager = tabManager;
+        }
+        public DefaultTabObserver() {}
+
         @Override
         public void onVisibleUriChanged(@NonNull String uri) {
             Log.i(TAG, "received Tab Event: 'onVisibleUriChanged(" + uri + ")'");
+            if (mUrlBar == null) {
+                return;
+            }
+            if (mTabManager == null || mTabManager.getActiveTab() == null
+                    || !mTabManager.getActiveTab().equals(mTab)) {
+                return;
+            }
+            mUrlBar.setText(uri);
         }
 
         @Override
@@ -100,10 +124,13 @@ public class DefaultObservers {
         @Nullable
         private ProgressBar mProgressBar;
         @Nullable
+        private EditText mUrlBar;
+        @Nullable
         private TabManager mTabManager;
-        public DefaultTabListObserver(
-                @Nullable ProgressBar progressBar, @Nullable TabManager tabManager) {
+        public DefaultTabListObserver(@Nullable ProgressBar progressBar, @Nullable EditText urlBar,
+                @Nullable TabManager tabManager) {
             mProgressBar = progressBar;
+            mUrlBar = urlBar;
             mTabManager = tabManager;
         }
         public DefaultTabListObserver() {}
@@ -118,7 +145,7 @@ public class DefaultObservers {
             Log.i(TAG, "received TabList Event: 'onTabAdded'-event");
 
             // Recursively add tab and navigation observers to any new tab.
-            tab.registerTabObserver(new DefaultTabObserver());
+            tab.registerTabObserver(new DefaultTabObserver(mUrlBar, tab, mTabManager));
             tab.getNavigationController().registerNavigationObserver(
                     new DefaultNavigationObserver(mProgressBar, tab, mTabManager));
         }
