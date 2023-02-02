@@ -27,7 +27,6 @@ source_set("browsing_topics") {
     "//base",
     "//components/browsing_topics/common:common",
     "//components/browsing_topics/mojom:mojo_bindings",
-    "//components/content_settings/browser:browser",
     "//components/history/content/browser",
     "//components/history/core/browser",
     "//components/keyed_service/core",

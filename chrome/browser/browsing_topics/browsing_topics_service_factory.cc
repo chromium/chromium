@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/browsing_topics_service_impl.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
@@ -72,7 +73,9 @@ KeyedService* BrowsingTopicsServiceFactory::BuildServiceInstanceFor(
 
   return new BrowsingTopicsServiceImpl(
       profile->GetPath(), privacy_sandbox_settings, history_service,
-      site_data_manager, annotations_service);
+      site_data_manager, annotations_service,
+      base::BindRepeating(
+          content_settings::PageSpecificContentSettings::TopicAccessed));
 }
 
 bool BrowsingTopicsServiceFactory::ServiceIsCreatedWithBrowserContext() const {

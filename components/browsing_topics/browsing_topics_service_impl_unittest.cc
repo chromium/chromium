@@ -97,11 +97,14 @@ class TesterBrowsingTopicsService : public BrowsingTopicsServiceImpl {
       optimization_guide::PageContentAnnotationsService* annotations_service,
       base::queue<EpochTopics> mock_calculator_results,
       base::TimeDelta calculator_finish_delay)
-      : BrowsingTopicsServiceImpl(profile_path,
-                                  privacy_sandbox_settings,
-                                  history_service,
-                                  site_data_manager,
-                                  annotations_service),
+      : BrowsingTopicsServiceImpl(
+            profile_path,
+            privacy_sandbox_settings,
+            history_service,
+            site_data_manager,
+            annotations_service,
+            base::BindRepeating(
+                content_settings::PageSpecificContentSettings::TopicAccessed)),
         mock_calculator_results_(std::move(mock_calculator_results)),
         calculator_finish_delay_(calculator_finish_delay) {}
 

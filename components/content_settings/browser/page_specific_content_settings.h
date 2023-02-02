@@ -239,12 +239,12 @@ class PageSpecificContentSettings
   // Called when |api_origin| attempts to join an interest group via the
   // Interest Group API.
   static void InterestGroupJoined(content::RenderFrameHost* rfh,
-                                  const url::Origin api_origin,
+                                  const url::Origin& api_origin,
                                   bool blocked_by_policy);
 
   // Called when |api_origin| attempts to access browsing topics.
   static void TopicAccessed(content::RenderFrameHost* rfh,
-                            const url::Origin api_origin,
+                            const url::Origin& api_origin,
                             bool blocked_by_policy,
                             privacy_sandbox::CanonicalTopic topic);
 
@@ -351,12 +351,12 @@ class PageSpecificContentSettings
                               const std::string& name,
                               const blink::StorageKey& storage_key,
                               bool blocked_by_policy);
-  void OnInterestGroupJoined(const url::Origin api_origin,
+  void OnInterestGroupJoined(const url::Origin& api_origin,
                              bool blocked_by_policy);
-  void OnTopicAccessed(const url::Origin api_origin,
+  void OnTopicAccessed(const url::Origin& api_origin,
                        bool blocked_by_policy,
                        privacy_sandbox::CanonicalTopic topic);
-  void OnTrustTokenAccessed(const url::Origin api_origin, bool blocked);
+  void OnTrustTokenAccessed(const url::Origin& api_origin, bool blocked);
   void OnBrowsingDataAccessed(BrowsingDataModel::DataKey data_key,
                               BrowsingDataModel::StorageType storage_type,
                               bool blocked);

@@ -138,11 +138,14 @@ class TesterBrowsingTopicsService : public BrowsingTopicsServiceImpl {
       content::BrowsingTopicsSiteDataManager* site_data_manager,
       optimization_guide::PageContentAnnotationsService* annotations_service,
       base::OnceClosure calculation_finish_callback)
-      : BrowsingTopicsServiceImpl(profile_path,
-                                  privacy_sandbox_settings,
-                                  history_service,
-                                  site_data_manager,
-                                  annotations_service),
+      : BrowsingTopicsServiceImpl(
+            profile_path,
+            privacy_sandbox_settings,
+            history_service,
+            site_data_manager,
+            annotations_service,
+            base::BindRepeating(
+                content_settings::PageSpecificContentSettings::TopicAccessed)),
         calculation_finish_callback_(std::move(calculation_finish_callback)) {}
 
   ~TesterBrowsingTopicsService() override = default;
