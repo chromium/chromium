@@ -183,7 +183,6 @@ scoped_refptr<ThumbnailLayer> TabContentManager::GetOrCreateStaticLayer(
 }
 
 void TabContentManager::AttachTab(JNIEnv* env,
-                                  const JavaParamRef<jobject>& obj,
                                   const JavaParamRef<jobject>& jtab,
                                   jint tab_id) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
@@ -199,7 +198,6 @@ void TabContentManager::AttachTab(JNIEnv* env,
 }
 
 void TabContentManager::DetachTab(JNIEnv* env,
-                                  const JavaParamRef<jobject>& obj,
                                   const JavaParamRef<jobject>& jtab,
                                   jint tab_id) {
   scoped_refptr<cc::slim::Layer> current_layer = live_layer_list_[tab_id];
@@ -221,7 +219,6 @@ void TabContentManager::DetachTab(JNIEnv* env,
 
 content::RenderWidgetHostView* TabContentManager::GetRwhvForTab(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& tab) {
   TabAndroid* tab_android = TabAndroid::GetNativeTab(env, tab);
   DCHECK(tab_android);
@@ -249,7 +246,6 @@ content::RenderWidgetHostView* TabContentManager::GetRwhvForTab(
 
 void TabContentManager::CaptureThumbnail(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& tab,
     jfloat thumbnail_scale,
     jboolean write_to_cache,
@@ -259,7 +255,7 @@ void TabContentManager::CaptureThumbnail(
   DCHECK(tab_android);
   const int tab_id = tab_android->GetAndroidId();
 
-  content::RenderWidgetHostView* rwhv = GetRwhvForTab(env, obj, tab);
+  content::RenderWidgetHostView* rwhv = GetRwhvForTab(env, tab);
   if (!rwhv) {
     if (j_callback) {
       RunObjectCallbackAndroid(j_callback, nullptr);
@@ -280,7 +276,6 @@ void TabContentManager::CaptureThumbnail(
 }
 
 void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
-                                           const JavaParamRef<jobject>& obj,
                                            const JavaParamRef<jobject>& tab,
                                            const JavaParamRef<jobject>& bitmap,
                                            jfloat thumbnail_scale,
@@ -301,7 +296,6 @@ void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
 }
 
 void TabContentManager::InvalidateIfChanged(JNIEnv* env,
-                                            const JavaParamRef<jobject>& obj,
                                             jint tab_id,
                                             const JavaParamRef<jobject>& jurl) {
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
@@ -310,7 +304,6 @@ void TabContentManager::InvalidateIfChanged(JNIEnv* env,
 
 void TabContentManager::UpdateVisibleIds(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jintArray>& priority,
     jint primary_tab_id) {
   std::list<int> priority_ids;
@@ -333,15 +326,12 @@ void TabContentManager::NativeRemoveTabThumbnail(int tab_id) {
   thumbnail_cache_->Remove(tab_id);
 }
 
-void TabContentManager::RemoveTabThumbnail(JNIEnv* env,
-                                           const JavaParamRef<jobject>& obj,
-                                           jint tab_id) {
+void TabContentManager::RemoveTabThumbnail(JNIEnv* env, jint tab_id) {
   NativeRemoveTabThumbnail(tab_id);
 }
 
 void TabContentManager::GetEtc1TabThumbnail(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     jint tab_id,
     jdouble aspect_ratio,
     const base::android::JavaParamRef<jobject>& j_callback) {
@@ -417,16 +407,12 @@ void TabContentManager::SendThumbnailToJava(
   RunObjectCallbackAndroid(j_callback, j_bitmap);
 }
 
-void TabContentManager::SetCaptureMinRequestTimeForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    jint timeMs) {
+void TabContentManager::SetCaptureMinRequestTimeForTesting(JNIEnv* env,
+                                                           jint timeMs) {
   thumbnail_cache_->SetCaptureMinRequestTimeForTesting(timeMs);
 }
 
-jint TabContentManager::GetPendingReadbacksForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+jint TabContentManager::GetPendingReadbacksForTesting(JNIEnv* env) {
   return pending_tab_readbacks_.size();
 }
 

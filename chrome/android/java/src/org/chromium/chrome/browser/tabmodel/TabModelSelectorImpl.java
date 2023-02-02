@@ -155,7 +155,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
 
             @Override
             public void onPageLoadStarted(Tab tab, GURL url) {
-                mTabContentManager.invalidateTabThumbnail(tab.getId(), tab.getUrl());
+                mTabContentManager.invalidateIfChanged(tab.getId(), tab.getUrl());
             }
 
             @Override
