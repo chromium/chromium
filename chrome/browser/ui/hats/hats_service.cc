@@ -378,11 +378,17 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
   // Performance Controls surveys.
   survey_configs.emplace_back(
       &performance_manager::features::kPerformanceControlsPerformanceSurvey,
-      kHatsSurveyTriggerPerformanceControlsPerformance);
+      kHatsSurveyTriggerPerformanceControlsPerformance,
+      /*presupplied_trigger_id=*/absl::nullopt,
+      std::vector<std::string>{"high_efficiency_mode"},
+      std::vector<std::string>{"battery_saver_mode"});
   survey_configs.emplace_back(
       &performance_manager::features::
           kPerformanceControlsBatteryPerformanceSurvey,
-      kHatsSurveyTriggerPerformanceControlsBatteryPerformance);
+      kHatsSurveyTriggerPerformanceControlsBatteryPerformance,
+      /*presupplied_trigger_id=*/absl::nullopt,
+      std::vector<std::string>{"high_efficiency_mode"},
+      std::vector<std::string>{"battery_saver_mode"});
   survey_configs.emplace_back(
       &performance_manager::features::
           kPerformanceControlsHighEfficiencyOptOutSurvey,

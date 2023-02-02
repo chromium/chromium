@@ -25,6 +25,7 @@ enum class BatterySaverModeState {
 
 extern const char kBatterySaverModeState[];
 
+// Stores the timestamp of the last battery usage while unplugged.
 extern const char kLastBatteryUseTimestamp[];
 
 // The pref storing the list of URL patterns that prevent a tab from being
