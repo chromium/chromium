@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/desktop_display_layout_util.h"
@@ -84,6 +85,15 @@ std::string GetModeNameForOutput(x11::RandR::Output output) {
   // The name of the mode representing the current client view resolution. This
   // must be unique per Output, so that Outputs can be resized independently.
   return "CRD_" + base::NumberToString(base::to_underlying(output));
+}
+
+uint32_t GetDotClockForModeInfo() {
+  static int proc_num = base::SysInfo::NumberOfProcessors();
+  // Keep the proc_num logic in sync with linux_me2me_host.py
+  if (proc_num > 16) {
+    return 120 * 1e6;
+  }
+  return 60 * 1e6;
 }
 
 }  // namespace
@@ -439,7 +449,7 @@ x11::RandR::Mode DesktopResizerX11::UpdateMode(x11::RandR::Output output,
   x11::RandR::ModeInfo mode;
   mode.width = width;
   mode.height = height;
-  mode.dot_clock = 60 * 1e6;
+  mode.dot_clock = GetDotClockForModeInfo();
   mode.htotal = 1000;
   mode.vtotal = 1000;
   mode.name_len = mode_name.size();
