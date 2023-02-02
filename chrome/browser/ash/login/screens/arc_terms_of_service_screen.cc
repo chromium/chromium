@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
@@ -182,8 +181,6 @@ void ArcTermsOfServiceScreen::ShowImpl() {
   if (!view_)
     return;
 
-  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-      arc::prefs::kArcTermsShownInOobe, true);
   // Show the screen.
   view_->Show();
 }

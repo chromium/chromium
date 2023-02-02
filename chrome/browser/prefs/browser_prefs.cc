@@ -849,6 +849,11 @@ const char kEventSequenceResetCounter[] =
     "metrics.event_sequence.reset_counter";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 02/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kArcTermsShownInOobe[] = "arc.terms.shown_in_oobe";
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1148,8 +1153,12 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 01/2023.
   registry->RegisterListPref(kSendDownloadToCloudPref);
-}
 
+// Deprecated 02/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kArcTermsShownInOobe, false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 }  // namespace
 
 void RegisterLocalState(PrefRegistrySimple* registry) {
@@ -2215,6 +2224,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 01/2023
   profile_prefs->ClearPref(kSendDownloadToCloudPref);
+
+  // Added 02/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kArcTermsShownInOobe);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 

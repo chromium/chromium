@@ -43,7 +43,6 @@ ARC_EXPORT extern const char kArcShowResizeLockSplashScreenLimits[];
 ARC_EXPORT extern const char kArcSignedIn[];
 ARC_EXPORT extern const char kArcSkippedReportingNotice[];
 ARC_EXPORT extern const char kArcTermsAccepted[];
-ARC_EXPORT extern const char kArcTermsShownInOobe[];
 ARC_EXPORT extern const char kArcVisibleExternalStorages[];
 ARC_EXPORT extern const char kArcVmDataMigrationStatus[];
 ARC_EXPORT extern const char kArcIsManaged[];
