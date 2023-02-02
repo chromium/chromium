@@ -397,12 +397,15 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
     }
 
     const std::string& pattern_str = *pattern;
-    if (filters_map.find(pattern_str) == filters_map.end())
-      filters_map[pattern_str].Set("filters", base::Value::List());
+    // This adds a `pattern_str` entry to `filters_map` if not already present,
+    // and gets a pointer to its `filters` list, inserting an entry into the
+    // dictionary if needed.
+    base::Value::List* filter_list =
+        filters_map[pattern_str].EnsureList("filters");
 
     // Don't pass removed values from `pattern_filter`, because base::Values
     // read with JSONReader use a shared string buffer. Instead, Clone() here.
-    filters_map[pattern_str].Find("filters")->Append(filter->Clone());
+    filter_list->Append(filter->Clone());
   }
 
   for (const auto& it : filters_map) {
