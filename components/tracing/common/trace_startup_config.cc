@@ -310,8 +310,7 @@ bool TraceStartupConfig::ParseTraceConfigFileContent(
   if (!trace_config_dict)
     return false;
 
-  trace_config_ = base::trace_event::TraceConfig(
-      base::Value(std::move(*trace_config_dict)));
+  trace_config_ = base::trace_event::TraceConfig(std::move(*trace_config_dict));
 
   startup_duration_in_seconds_ =
       dict.FindInt(kStartupDurationParam).value_or(0);

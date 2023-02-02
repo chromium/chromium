@@ -55,7 +55,7 @@ BackgroundTracingConfigImpl::BackgroundTracingConfigImpl(
     : BackgroundTracingConfig(tracing_mode),
       category_preset_(BackgroundTracingConfigImpl::BENCHMARK_STARTUP) {}
 
-BackgroundTracingConfigImpl::~BackgroundTracingConfigImpl() {}
+BackgroundTracingConfigImpl::~BackgroundTracingConfigImpl() = default;
 
 // static
 std::string BackgroundTracingConfigImpl::CategoryPresetToString(
@@ -228,7 +228,7 @@ BackgroundTracingConfigImpl::PreemptiveFromDict(const base::Value::Dict& dict) {
 
   if (const base::Value::Dict* trace_config =
           dict.FindDict(kConfigTraceConfigKey)) {
-    config->trace_config_ = TraceConfig(base::Value(trace_config->Clone()));
+    config->trace_config_ = TraceConfig(trace_config->Clone());
     config->category_preset_ = CUSTOM_TRACE_CONFIG;
   } else if (const std::string* categories =
                  dict.FindString(kConfigCustomCategoriesKey)) {
@@ -276,7 +276,7 @@ BackgroundTracingConfigImpl::ReactiveFromDict(const base::Value::Dict& dict) {
   bool has_global_categories = false;
   if (const base::Value::Dict* trace_config =
           dict.FindDict(kConfigTraceConfigKey)) {
-    config->trace_config_ = TraceConfig(base::Value(trace_config->Clone()));
+    config->trace_config_ = TraceConfig(trace_config->Clone());
     config->category_preset_ = CUSTOM_TRACE_CONFIG;
     has_global_categories = true;
   } else if (const std::string* categories =

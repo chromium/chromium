@@ -17,7 +17,7 @@ class BackgroundTracingConfig;
 // about://tracing WebUI.
 class CONTENT_EXPORT TracingDelegate {
  public:
-  virtual ~TracingDelegate() {}
+  virtual ~TracingDelegate() = default;
 
   // This can be used to veto a particular background tracing scenario.
   virtual bool IsAllowedToBeginBackgroundScenario(
@@ -34,7 +34,7 @@ class CONTENT_EXPORT TracingDelegate {
   virtual bool IsSystemWideTracingEnabled();
 
   // Used to add any additional metadata to traces.
-  virtual absl::optional<base::Value> GenerateMetadataDict();
+  virtual absl::optional<base::Value::Dict> GenerateMetadataDict();
 };
 
 }  // namespace content

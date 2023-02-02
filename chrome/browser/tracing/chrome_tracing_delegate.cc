@@ -264,7 +264,8 @@ bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
 #endif
 }
 
-absl::optional<base::Value> ChromeTracingDelegate::GenerateMetadataDict() {
+absl::optional<base::Value::Dict>
+ChromeTracingDelegate::GenerateMetadataDict() {
   base::Value::Dict metadata_dict;
   std::vector<std::string> variations;
   variations::GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece(),
@@ -276,5 +277,5 @@ absl::optional<base::Value> ChromeTracingDelegate::GenerateMetadataDict() {
 
   metadata_dict.Set("field-trials", std::move(variations_list));
   metadata_dict.Set("revision", version_info::GetLastChange());
-  return base::Value(std::move(metadata_dict));
+  return metadata_dict;
 }

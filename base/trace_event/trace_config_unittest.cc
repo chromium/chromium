@@ -12,8 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -296,7 +295,7 @@ TEST(TraceConfigTest, ConstructDefaultTraceConfig) {
                tc_empty_category_filter.ToString().c_str());
   CheckDefaultTraceConfigBehavior(tc_empty_category_filter);
 
-  // Constructor from JSON formated config string.
+  // Constructor from JSON formatted config string.
   TraceConfig tc_empty_json_string("");
   EXPECT_STREQ("", tc_empty_json_string.ToCategoryFilterString().c_str());
   EXPECT_STREQ(kDefaultTraceConfigString,
@@ -304,7 +303,7 @@ TEST(TraceConfigTest, ConstructDefaultTraceConfig) {
   CheckDefaultTraceConfigBehavior(tc_empty_json_string);
 
   // Constructor from dictionary value.
-  TraceConfig tc_dict((Value(Value::Type::DICT)));
+  TraceConfig tc_dict(Value::Dict{});
   EXPECT_STREQ("", tc_dict.ToCategoryFilterString().c_str());
   EXPECT_STREQ(kDefaultTraceConfigString, tc_dict.ToString().c_str());
   CheckDefaultTraceConfigBehavior(tc_dict);
@@ -352,7 +351,7 @@ TEST(TraceConfigTest, DisabledByDefaultCategoryFilterString) {
 
 TEST(TraceConfigTest, TraceConfigFromDict) {
   // Passing in empty dictionary will result in default trace config.
-  TraceConfig tc((Value(Value::Type::DICT)));
+  TraceConfig tc(Value::Dict{});
   EXPECT_STREQ(kDefaultTraceConfigString, tc.ToString().c_str());
   EXPECT_EQ(RECORD_UNTIL_FULL, tc.GetTraceRecordMode());
   EXPECT_FALSE(tc.IsSystraceEnabled());
@@ -364,7 +363,7 @@ TEST(TraceConfigTest, TraceConfigFromDict) {
       JSONReader::Read(kDefaultTraceConfigString);
   ASSERT_TRUE(default_value);
   ASSERT_TRUE(default_value->is_dict());
-  TraceConfig default_tc(*default_value);
+  TraceConfig default_tc(default_value->GetDict());
   EXPECT_STREQ(kDefaultTraceConfigString, default_tc.ToString().c_str());
   EXPECT_EQ(RECORD_UNTIL_FULL, default_tc.GetTraceRecordMode());
   EXPECT_FALSE(default_tc.IsSystraceEnabled());
@@ -376,7 +375,7 @@ TEST(TraceConfigTest, TraceConfigFromDict) {
       JSONReader::Read(kCustomTraceConfigString);
   ASSERT_TRUE(custom_value);
   ASSERT_TRUE(custom_value->is_dict());
-  TraceConfig custom_tc(*custom_value);
+  TraceConfig custom_tc(custom_value->GetDict());
   std::string custom_tc_str = custom_tc.ToString();
   EXPECT_TRUE(custom_tc_str == kCustomTraceConfigString ||
               custom_tc_str ==
@@ -458,7 +457,7 @@ TEST(TraceConfigTest, TraceConfigFromValidString) {
   EXPECT_EQ(1u, event_filter.category_filter().excluded_categories().size());
   EXPECT_STREQ("unfiltered_cat",
                event_filter.category_filter().excluded_categories()[0].c_str());
-  EXPECT_FALSE(event_filter.filter_args().is_none());
+  EXPECT_FALSE(event_filter.filter_args().empty());
 
   std::string json_out;
   base::JSONWriter::Write(event_filter.filter_args(), &json_out);
@@ -732,5 +731,4 @@ TEST(TraceConfigTest, SystraceEventsSerialization) {
   EXPECT_TRUE(tc2.systrace_events().count("timer:tick_stop"));
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

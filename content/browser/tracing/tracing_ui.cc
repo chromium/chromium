@@ -265,20 +265,21 @@ bool TracingUI::GetTracingOptions(const std::string& data64,
     LOG(ERROR) << "Options were not valid JSON";
     return false;
   }
-  if (!options->is_dict()) {
+  base::Value::Dict* options_dict = options->GetIfDict();
+  if (!options_dict) {
     LOG(ERROR) << "Options must be dict";
     return false;
   }
 
   if (const std::string* stream_format =
-          options->FindStringKey(kStreamFormat)) {
+          options_dict->FindString(kStreamFormat)) {
     out_stream_format = *stream_format;
   } else {
     out_stream_format = kStreamFormatJSON;
   }
 
-  // New style options dictionary.
-  trace_config = base::trace_event::TraceConfig(*options);
+  // New-style options dictionary.
+  trace_config = base::trace_event::TraceConfig(*options_dict);
   return true;
 }
 

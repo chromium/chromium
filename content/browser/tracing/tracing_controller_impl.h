@@ -24,21 +24,13 @@
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace perfetto {
-namespace protos {
-namespace pbzero {
+namespace perfetto::protos::pbzero {
 class TracePacket;
-}  // namespace pbzero
-}  // namespace protos
-}  // namespace perfetto
+}  // namespace perfetto::protos::pbzero
 
-namespace base {
-
-namespace trace_event {
+namespace base::trace_event {
 class TraceConfig;
-}  // namespace trace_event
-
-}  // namespace base
+}  // namespace base::trace_event
 
 namespace tracing {
 class BaseAgent;
@@ -95,7 +87,7 @@ class TracingControllerImpl : public TracingController,
   ~TracingControllerImpl() override;
   void AddAgents();
   void ConnectToServiceIfNeeded();
-  absl::optional<base::Value> GenerateMetadataDict();
+  absl::optional<base::Value::Dict> GenerateMetadataDict();
   void GenerateMetadataPacket(perfetto::protos::pbzero::TracePacket* packet,
                               bool privacy_filtering_enabled);
 

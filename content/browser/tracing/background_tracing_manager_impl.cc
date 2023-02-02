@@ -425,7 +425,7 @@ bool BackgroundTracingManagerImpl::IsAllowedFinalization(
               is_crash_scenario));
 }
 
-absl::optional<base::Value>
+absl::optional<base::Value::Dict>
 BackgroundTracingManagerImpl::GenerateMetadataDict() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!active_scenario_)

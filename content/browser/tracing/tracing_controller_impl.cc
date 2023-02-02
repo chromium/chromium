@@ -252,7 +252,8 @@ void TracingControllerImpl::GenerateMetadataPacket(
 }
 
 // Can be called on any thread.
-absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
+absl::optional<base::Value::Dict>
+TracingControllerImpl::GenerateMetadataDict() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::Value::Dict metadata_dict;
 
@@ -377,7 +378,7 @@ absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
     }
   }
 
-  return base::Value(std::move(metadata_dict));
+  return metadata_dict;
 }
 
 TracingControllerImpl* TracingControllerImpl::GetInstance() {

@@ -24,12 +24,10 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace tracing {
-namespace mojom {
+namespace tracing::mojom {
 class BackgroundTracingAgent;
 class BackgroundTracingAgentProvider;
-}  // namespace mojom
-}  // namespace tracing
+}  // namespace tracing::mojom
 
 namespace content {
 namespace mojom {
@@ -162,7 +160,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   BackgroundTracingManagerImpl();
   ~BackgroundTracingManagerImpl() override;
 
-  absl::optional<base::Value> GenerateMetadataDict();
+  absl::optional<base::Value::Dict> GenerateMetadataDict();
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
       bool privacy_filtering_enabled);

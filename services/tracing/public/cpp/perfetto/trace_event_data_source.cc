@@ -181,27 +181,27 @@ void TraceEventMetadataSource::WriteMetadataPacket(
   }
 }
 
-absl::optional<base::Value>
+absl::optional<base::Value::Dict>
 TraceEventMetadataSource::GenerateTraceConfigMetadataDict() {
   AutoLockWithDeferredTaskPosting lock(lock_);
   if (chrome_config_.empty()) {
     return absl::nullopt;
   }
 
-  base::Value metadata_dict(base::Value::Type::DICT);
+  base::Value::Dict metadata;
   // If argument filtering is enabled, we need to check if the trace config is
   // allowlisted before emitting it.
   // TODO(eseckler): Figure out a way to solve this without calling directly
   // into IsMetadataAllowlisted().
   if (!parsed_chrome_config_->IsArgumentFilterEnabled() ||
       IsMetadataAllowlisted("trace-config")) {
-    metadata_dict.SetStringKey("trace-config", chrome_config_);
+    metadata.Set("trace-config", chrome_config_);
   } else {
-    metadata_dict.SetStringKey("trace-config", "__stripped__");
+    metadata.Set("trace-config", "__stripped__");
   }
 
   chrome_config_ = std::string();
-  return metadata_dict;
+  return metadata;
 }
 
 void TraceEventMetadataSource::GenerateMetadataFromGenerator(
@@ -273,10 +273,10 @@ void TraceEventMetadataSource::GenerateJsonMetadataFromGenerator(
   DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
 
   auto write_to_bundle = [&generator](ChromeEventBundle* bundle) {
-    absl::optional<base::Value> metadata_dict = generator.Run();
+    absl::optional<base::Value::Dict> metadata_dict = generator.Run();
     if (!metadata_dict)
       return;
-    for (auto it : metadata_dict->DictItems()) {
+    for (auto it : *metadata_dict) {
       auto* new_metadata = bundle->add_metadata();
       new_metadata->set_name(it.first.c_str());
 

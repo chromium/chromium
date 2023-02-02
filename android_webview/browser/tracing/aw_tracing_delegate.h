@@ -31,7 +31,7 @@ class AwTracingDelegate : public content::TracingDelegate {
       const content::BackgroundTracingConfig& config,
       bool requires_anonymized_data,
       bool is_crash_scenario) override;
-  absl::optional<base::Value> GenerateMetadataDict() override;
+  absl::optional<base::Value::Dict> GenerateMetadataDict() override;
 };
 
 }  // namespace android_webview

@@ -12,8 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 // Configuration of categories enabled and disabled in TraceConfig.
 class BASE_EXPORT TraceConfigCategoryFilter {
@@ -31,7 +30,7 @@ class BASE_EXPORT TraceConfigCategoryFilter {
   void InitializeFromString(const StringPiece& category_filter_string);
 
   // Initializes TraceConfigCategoryFilter object from the config dictionary.
-  void InitializeFromConfigDict(const Value& dict);
+  void InitializeFromConfigDict(const Value::Dict& dict);
 
   // Merges this with category filter config.
   void Merge(const TraceConfigCategoryFilter& config);
@@ -60,8 +59,8 @@ class BASE_EXPORT TraceConfigCategoryFilter {
   const StringList& disabled_categories() const { return disabled_categories_; }
 
  private:
-  void SetCategoriesFromIncludedList(const Value& included_list);
-  void SetCategoriesFromExcludedList(const Value& excluded_list);
+  void SetCategoriesFromIncludedList(const Value::List& included_list);
+  void SetCategoriesFromExcludedList(const Value::List& excluded_list);
 
   void AddCategoriesToDict(const StringList& categories,
                            const char* param,
@@ -76,7 +75,6 @@ class BASE_EXPORT TraceConfigCategoryFilter {
   StringList excluded_categories_;
 };
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event
 
 #endif  // BASE_TRACE_EVENT_TRACE_CONFIG_CATEGORY_FILTER_H_

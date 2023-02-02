@@ -912,8 +912,7 @@ void MetadataHasNamedValue(const google::protobuf::RepeatedPtrField<
                                perfetto::protos::ChromeMetadata>& metadata,
                            const char* name,
                            const T& value) {
-  for (int i = 0; i < metadata.size(); i++) {
-    auto& entry = metadata[i];
+  for (const auto& entry : metadata) {
     if (entry.name() == name) {
       HasMetadataValue(entry, value);
       return;
@@ -923,15 +922,15 @@ void MetadataHasNamedValue(const google::protobuf::RepeatedPtrField<
   NOTREACHED();
 }
 
-absl::optional<base::Value> AddJsonMetadataGenerator() {
-  base::Value metadata(base::Value::Type::DICT);
-  metadata.SetIntKey("foo_int", 42);
-  metadata.SetStringKey("foo_str", "bar");
-  metadata.SetBoolKey("foo_bool", true);
+absl::optional<base::Value::Dict> AddJsonMetadataGenerator() {
+  base::Value::Dict metadata;
+  metadata.Set("foo_int", 42);
+  metadata.Set("foo_str", "bar");
+  metadata.Set("foo_bool", true);
 
-  base::Value child_dict(base::Value::Type::DICT);
-  child_dict.SetStringKey("child_str", "child_val");
-  metadata.SetKey("child_dict", std::move(child_dict));
+  base::Value::Dict child_dict;
+  child_dict.Set("child_str", "child_val");
+  metadata.Set("child_dict", std::move(child_dict));
   return metadata;
 }
 
@@ -976,9 +975,9 @@ TEST_F(TraceEventDataSourceTest, MetadataGeneratorWhileTracing) {
 TEST_F(TraceEventDataSourceTest, MultipleMetadataGenerators) {
   auto* metadata_source = TraceEventMetadataSource::GetInstance();
   metadata_source->AddGeneratorFunction(base::BindRepeating([]() {
-    base::Value metadata(base::Value::Type::DICT);
-    metadata.SetIntKey("before_int", 42);
-    return absl::optional<base::Value>(std::move(metadata));
+    base::Value::Dict metadata;
+    metadata.Set("before_int", 42);
+    return absl::optional<base::Value::Dict>(std::move(metadata));
   }));
 
   StartMetaDataSource();
@@ -2049,15 +2048,15 @@ TEST_F(TraceEventDataSourceTest, FilteringEventWithFlagCopy) {
 TEST_F(TraceEventDataSourceTest, FilteringMetadataSource) {
   auto* metadata_source = TraceEventMetadataSource::GetInstance();
   metadata_source->AddGeneratorFunction(base::BindRepeating([]() {
-    base::Value metadata(base::Value::Type::DICT);
-    metadata.SetIntKey("foo_int", 42);
-    metadata.SetStringKey("foo_str", "bar");
-    metadata.SetBoolKey("foo_bool", true);
+    base::Value::Dict metadata;
+    metadata.Set("foo_int", 42);
+    metadata.Set("foo_str", "bar");
+    metadata.Set("foo_bool", true);
 
-    base::Value child_dict(base::Value::Type::DICT);
-    child_dict.SetStringKey("child_str", "child_val");
-    metadata.SetKey("child_dict", std::move(child_dict));
-    return absl::optional<base::Value>(std::move(metadata));
+    base::Value::Dict child_dict;
+    child_dict.Set("child_str", "child_val");
+    metadata.Set("child_dict", std::move(child_dict));
+    return absl::optional<base::Value::Dict>(std::move(metadata));
   }));
 
   StartMetaDataSource(/*privacy_filtering_enabled=*/true);
