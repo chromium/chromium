@@ -60,8 +60,8 @@ struct FrameTokenWithPredecessor {
 // where the Blink classes directly correspond to DOM elements.
 //
 // On the browser side, there are one-to-one correspondences
-//  - between FormData and AutofillField, and
-//  - between FormFieldData and FormStructure,
+//  - between FormData and FormStructure, and
+//  - between FormFieldData and AutofillField,
 // where AutofillField and FormStructure hold additional information, such as
 // Autofill type predictions and sectioning.
 //
