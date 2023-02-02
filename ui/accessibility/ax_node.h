@@ -17,6 +17,7 @@
 #include "base/containers/queue.h"
 #include "base/containers/stack.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -38,7 +39,7 @@ struct AXLanguageInfo;
 class AXTree;
 
 // This class is used to represent a node in an accessibility tree (`AXTree`).
-class AX_EXPORT AXNode final {
+class AX_EXPORT AXNode final : public base::SupportsWeakPtr<AXNode> {
  public:
   // Replacement character used to represent an embedded (or, additionally for
   // text navigation, an empty) object. Part of the Unicode Standard.
