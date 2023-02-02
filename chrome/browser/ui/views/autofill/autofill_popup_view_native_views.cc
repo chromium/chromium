@@ -314,36 +314,6 @@ namespace autofill {
 
 namespace {
 
-class SuggestionLabel : public views::Label {
- public:
-  METADATA_HEADER(SuggestionLabel);
-  SuggestionLabel(const std::u16string& text, AutofillPopupBaseView* popup);
-
-  // views::Label:
-  void OnThemeChanged() override;
-
- private:
-  raw_ptr<AutofillPopupBaseView> popup_;
-};
-
-SuggestionLabel::SuggestionLabel(const std::u16string& text,
-                                 AutofillPopupBaseView* popup)
-    : Label(text,
-            views::style::CONTEXT_DIALOG_BODY_TEXT,
-            ChromeTextStyle::STYLE_RED),
-      popup_(popup) {
-  SetMultiLine(true);
-  SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-}
-
-void SuggestionLabel::OnThemeChanged() {
-  views::Label::OnThemeChanged();
-  SetEnabledColor(popup_->GetWarningColor());
-}
-
-BEGIN_METADATA(SuggestionLabel, views::Label)
-END_METADATA
-
 // This represents a single selectable item. Subclasses distinguish between
 // footer and suggestion rows, which are structurally similar but have
 // distinct styling.
@@ -1264,15 +1234,20 @@ void AutofillPopupWarningView::CreateContent() {
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
 
-  int horizontal_margin = AutofillPopupBaseView::GetHorizontalMargin();
-  int vertical_margin = AutofillPopupBaseView::GetCornerRadius();
-
   SetUseDefaultFillLayout(true);
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(vertical_margin, horizontal_margin)));
+      gfx::Insets::VH(AutofillPopupBaseView::GetCornerRadius(),
+                      AutofillPopupBaseView::GetHorizontalMargin())));
 
-  AddChildView(std::make_unique<SuggestionLabel>(
-      controller->GetSuggestionMainTextAt(GetLineNumber()), popup_view()));
+  AddChildView(
+      views::Builder<views::Label>()
+          .SetText(controller->GetSuggestionMainTextAt(GetLineNumber()))
+          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+          .SetTextStyle(ChromeTextStyle::STYLE_RED)
+          .SetMultiLine(true)
+          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+          .SetEnabledColorId(ui::kColorAlertHighSeverity)
+          .Build());
 }
 
 }  // namespace

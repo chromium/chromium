@@ -113,10 +113,6 @@ ui::ColorId AutofillPopupBaseView::GetSeparatorColorId() const {
   return ui::kColorMenuSeparator;
 }
 
-SkColor AutofillPopupBaseView::GetWarningColor() const {
-  return GetColorProvider()->GetColor(ui::kColorAlertHighSeverity);
-}
-
 AutofillPopupBaseView::AutofillPopupBaseView(
     base::WeakPtr<AutofillPopupViewDelegate> delegate,
     views::Widget* parent_widget)
@@ -459,7 +455,6 @@ gfx::NativeView AutofillPopupBaseView::container_view() {
 
 BEGIN_METADATA(AutofillPopupBaseView, views::WidgetDelegateView)
 ADD_READONLY_PROPERTY_METADATA(ui::ColorId, SeparatorColorId)
-ADD_READONLY_PROPERTY_METADATA(SkColor, WarningColor)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, ContentAreaBounds)
 END_METADATA
 
