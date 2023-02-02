@@ -338,6 +338,7 @@ class CookieManagerTest : public testing::Test {
     }
     // Reset |cookie_service_remote_| to allow re-initialize with params
     // for FlushableCookieManagerTest and SessionCleanupCookieManagerTest.
+    service_wrapper_.reset();
     cookie_service_remote_.reset();
 
     connection_error_seen_ = false;
@@ -2675,28 +2676,32 @@ TEST_F(CookieManagerTest, CloningAndClientDestructVisible) {
   cookie_service_client()->CloneInterface(
       new_remote.BindNewPipeAndPassReceiver());
 
-  SynchronousCookieManager new_wrapper(new_remote.get());
+  {
+    // Can't outlive `new_remote`.
+    SynchronousCookieManager new_wrapper(new_remote.get());
 
-  // Set a cookie on the new interface and make sure it's visible on the
-  // old one.
-  EXPECT_TRUE(new_wrapper.SetCanonicalCookie(
-      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
-          "X", "Y", "www.other.host", "/", base::Time(), base::Time(),
-          base::Time(), base::Time(), /*secure=*/false,
-          /*httponly=*/false, net::CookieSameSite::LAX_MODE,
-          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false),
-      "https", true));
+    // Set a cookie on the new interface and make sure it's visible on the
+    // old one.
+    EXPECT_TRUE(new_wrapper.SetCanonicalCookie(
+        *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+            "X", "Y", "www.other.host", "/", base::Time(), base::Time(),
+            base::Time(), base::Time(), /*secure=*/false,
+            /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+            net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false),
+        "https", true));
 
-  std::vector<net::CanonicalCookie> cookies = service_wrapper()->GetCookieList(
-      GURL("http://www.other.host/"), net::CookieOptions::MakeAllInclusive(),
-      net::CookiePartitionKeyCollection());
-  ASSERT_EQ(1u, cookies.size());
-  EXPECT_EQ("X", cookies[0].Name());
-  EXPECT_EQ("Y", cookies[0].Value());
+    std::vector<net::CanonicalCookie> cookies =
+        service_wrapper()->GetCookieList(GURL("http://www.other.host/"),
+                                         net::CookieOptions::MakeAllInclusive(),
+                                         net::CookiePartitionKeyCollection());
+    ASSERT_EQ(1u, cookies.size());
+    EXPECT_EQ("X", cookies[0].Name());
+    EXPECT_EQ("Y", cookies[0].Value());
 
-  // After a synchronous round trip through the new client pointer, it
-  // should be reflected in the bindings seen on the server.
-  EXPECT_EQ(2u, service()->GetClientsBoundForTesting());
+    // After a synchronous round trip through the new client pointer, it
+    // should be reflected in the bindings seen on the server.
+    EXPECT_EQ(2u, service()->GetClientsBoundForTesting());
+  }
 
   new_remote.reset();
   base::RunLoop().RunUntilIdle();
