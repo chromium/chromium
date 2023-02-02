@@ -107,6 +107,9 @@ class WebGLConformanceIntegrationTestBase(
         'deqp/functional/gles3/transformfeedback/*',
         # crbug.com/1347970. Flaking for unknown reasons on Metal backend.
         'deqp/functional/gles3/textureshadow/*',
+        # crbug.com/1412460. Flaky timeouts on Mac Intel.
+        'deqp/functional/gles3/shadermatrix/*',
+        'deqp/functional/gles3/shaderoperator/*',
     }
 
   def _GetSerialTests(self) -> Set[str]:
