@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Reklamlar</translation>
 <translation id="1919950603503897840">Kontaktları seçin</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Ziyarət etdiyiniz bütün saytlar üçün mətn və şəkilləri böyüdün və ya kiçildin</translation>
 <translation id="1984937141057606926">İcazə verilir, üçüncü tərəf istisna olmaqla</translation>
 <translation id="1989112275319619282">Baxın</translation>
 <translation id="1994173015038366702">Sayt URL-i</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Səs</translation>
 <translation id="2148716181193084225">Bu gün</translation>
 <translation id="216989819110952009">Doroti və dostları gözlərini yaşıl eynəklə qoruduğu halda, əvvəlcə gözləri qamaşdı</translation>
+<translation id="2176704795966505152">Əsas menyuda zoom seçimini göstərin</translation>
 <translation id="2182457891543959921">Saytların ətrafınızdakı sahələrin 3D xəritəsini yaratmasına və ya kamera mövqeyini izləməsinə icazə verməzdən əvvəl icazə tələb edin (tövsiyə edilir)</translation>
 <translation id="2212565012507486665">Kukilərə icazə verin</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> tətbiqinə kameranıza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kameranı da aktiv edin.</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">Xüsusi sayt üçün kukilərə icazə verin.</translation>
 <translation id="4046123991198612571">Növbəti trek</translation>
 <translation id="4149994727733219643">İnternet səhifələr üçün sadələşdirilmiş görünüş</translation>
+<translation id="4151930093518524179">Defolt zoom</translation>
 <translation id="4165986682804962316">Sayt ayarları</translation>
 <translation id="4169549551965910670">USB cihazına qoşulub</translation>
 <translation id="4194328954146351878">Saytların NFC cihazlarındakı məlumatları görməsi və dəyişməsinə icazə verməzdən əvvəl soruşun (tövsiyə edilir)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> tətbiqinə mikrofonunuza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> mikrofonu da aktiv edin.</translation>
 <translation id="4566417217121906555">Mikrofonu susdurun</translation>
 <translation id="4570913071927164677">Ətraflı</translation>
+<translation id="4575264539271661854">Ziyarət etdiyiniz sayt üçün mətn və şəkilləri böyütməyi asanlaşdırın</translation>
 <translation id="4598549027014564149">Anonim rejimdə olduqda, saytlar müxtəlif saytlarda, eləcə də əlaqəli saytlarda axtarış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir. Axtarış fəaliyyətiniz reklamların fərdiləşdirilməsi kimi işlər üçün istifadə edilmir. Bəzi saytlardakı funksiyalar işləməyə bilər.</translation>
 <translation id="4645575059429386691">Valideyniniz tərəfindən idarə olunur</translation>
 <translation id="4670064810192446073">Virtual reallıq</translation>
@@ -383,6 +387,7 @@
 <translation id="8284326494547611709">Başlıqlar</translation>
 <translation id="8300705686683892304">Tədbiq tərəfindən idarə edilən</translation>
 <translation id="8324158725704657629">Daha soruşma</translation>
+<translation id="8362795839483915693">Ziyarət etdiyiniz saytlarda böyütmə və ya kiçiltmə edə bilərsiniz</translation>
 <translation id="8372893542064058268">Xüsusi sayt üçün Arxa fon Sinxronizasiyasına icazə verin.</translation>
 <translation id="8376384591331888629">Bu saytdakı üçüncü tərəf kukilər daxil olmaqla</translation>
 <translation id="83792324527827022">Sayt kamera və mikrofonunuzdan istifadə edir</translation>

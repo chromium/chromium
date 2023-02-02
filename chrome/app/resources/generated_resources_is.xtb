@@ -106,7 +106,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1085697365578766383">Villa við að ræsa sýndarvél. Reyndu aftur.</translation>
 <translation id="1087965115100412394">Ekki leyfa vefsvæðum að tengjast MIDI-tækjum</translation>
 <translation id="1088659085457112967">Opna lesstillingu</translation>
-<translation id="1089407731410758060">Skipta um þema</translation>
 <translation id="1090126737595388931">Engin bakgrunnsforrit í gangi</translation>
 <translation id="1090541560108055381">Gakktu úr skugga um að þessi kóði birtist í báðum tækjunum áður en þú parar</translation>
 <translation id="1091767800771861448">Ýttu á Esc til að sleppa þessu (ekki fyrir opinbera smíði).</translation>
@@ -551,6 +550,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1495677929897281669">Aftur á flipa</translation>
 <translation id="1500297251995790841">Óþekkt tæki [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Nánar um óstudd Chrome forrit</translation>
+<translation id="1501480321619201731">Eyða hópi</translation>
 <translation id="1503392482221435031">Sendir notkunarupplýsingar sjálfkrafa til Google. Þú getur kveikt eða slökkt á hrunskýrslum í stillingum tækisins.</translation>
 <translation id="150411034776756821">Fjarlægja <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Samnýttar möppur eru aðgengilegar í Windows á <ph name="BASE_DIR" />.</translation>
@@ -2113,7 +2113,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2835547721736623118">Raddgreiningarþjónusta</translation>
 <translation id="2836232638504556905">Til að halda áfram mun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deila nafni þínu, netfangi og prófílmynd með þessu vefsvæði. Sjá <ph name="BEGIN_LINK" />persónuverndarstefnu<ph name="END_LINK" /> vefsvæðisins.</translation>
 <translation id="2836269494620652131">Hrun</translation>
-<translation id="2836635946302913370">Kerfisstjóri hefur lokað á innskráningu með þessu notandanafni.</translation>
 <translation id="283669119850230892">Til að nota netið <ph name="NETWORK_ID" /> þarftu fyrst að ljúka við tenginguna við internetið hér fyrir neðan.</translation>
 <translation id="2838379631617906747">Setur upp</translation>
 <translation id="2839032553903800133">Tilkynningar útilokaðar</translation>
@@ -2922,6 +2921,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3602290021589620013">Forskoða</translation>
 <translation id="3602870520245633055">Prenta og skanna</translation>
 <translation id="3603622770190368340">Fá netvottorð</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} reikningur notar sama aðgangsorð}one{{COUNT} reikningur notar sama aðgangsorð}other{{COUNT} reikningar nota sama aðgangsorð}}</translation>
 <translation id="3605780360466892872">Hvítflibbi</translation>
 <translation id="3609277884604412258">Flýtileit</translation>
 <translation id="3610241585790874201">Má ekki vista gögn í tækinu</translation>
@@ -3630,7 +3630,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4244238649050961491">Finna fleiri pennaforrit</translation>
 <translation id="4246980464509998944">Frekari athugasemdir:</translation>
 <translation id="424726838611654458">Opna alltaf í Adobe Reader</translation>
-<translation id="4247901771970415646">Ekki hægt að samstilla við <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Tryggðu öryggi aðgangsorðanna gagnvart öryggisbrotum og öðrum öryggisvandamálum</translation>
 <translation id="4249248555939881673">Bíður eftir nettengingu...</translation>
 <translation id="4249373718504745892">Þessari síðu var bannað að fá aðgang að myndavélinni og hljóðnemanum.</translation>
@@ -3851,6 +3850,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4441147046941420429">Til að halda áfram skaltu fjarlægja öryggislykilinn úr tækinu, setja hann svo aftur inn og snerta hann</translation>
 <translation id="444134486829715816">Stækka...</translation>
 <translation id="4441928470323187829">Fest af stjórnandanum þínum</translation>
+<translation id="4442863809158514979">Skoða vefheimildir</translation>
 <translation id="4443536555189480885">&amp;Hjálp</translation>
 <translation id="4444304522807523469">Fá aðgang að skjalaskönnum sem tengdir eru um USB eða á staðarnetinu</translation>
 <translation id="4444512841222467874">Ef ekki er losað um pláss verða notendur og gögn fjarlægð sjálfkrafa.</translation>
@@ -5713,7 +5713,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="617213288191670920">Engum tungumálum bætt við</translation>
 <translation id="6173623053897475761">Sláðu aftur inn PIN-númerið</translation>
 <translation id="6175314957787328458">GUID Microsoft-léns</translation>
-<translation id="6176043333338857209">Kveikt verður tímabundið á Bluetooth meðan á samskiptum við öryggislykilinn þinn stendur</translation>
 <translation id="6178664161104547336">Veldu vottorð</translation>
 <translation id="6178682841350631965">Innskráningargögnin þín voru uppfærð</translation>
 <translation id="6180510783007738939">Línuverkfæri</translation>
@@ -7482,6 +7481,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="779308894558717334">Ljósgrænn</translation>
 <translation id="7793098747275782155">Dökkblár</translation>
 <translation id="7797571222998226653">Slökkt</translation>
+<translation id="7798504574384119986">Skoða vefheimildir</translation>
 <translation id="7798844538707273832">Lokað var sjálfkrafa á <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">Snúa rangsælis</translation>
 <translation id="7801679634091975683">Breytingar sem þú gerir hér eiga eingöngu við um Lacros Chrome vafra. Opnaðu Chrome vafrann og farðu í stillingar til að breyta stillingum Chrome vafrans.</translation>

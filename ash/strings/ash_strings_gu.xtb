@@ -420,9 +420,11 @@
 <translation id="3289674678944039601">અડૅપ્ટર વડે ચાર્જિંગ</translation>
 <translation id="3290356915286466215">અસુરક્ષિત</translation>
 <translation id="3294437725009624529">અતિથિ</translation>
+<translation id="3298690094479023523">તમારો પિન કે પાસવર્ડ હજી પણ ચકાસી શકાયો નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="3307642347673023554">લૅપટૉપ મોડ પર સ્વિચ થયા</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> હજીએ થોડા સમય પછી સાઇન ઇન કરી શકશે.</translation>
 <translation id="3321628682574733415">માતાપિતાનો કોડ ખોટો</translation>
+<translation id="332827762492701193">નોટિફિકેશન છુપાવેલા છે</translation>
 <translation id="3339826665088060472">સ્ક્રીન કૅપ્ચર, સ્ક્રીનશૉટ લેવા અને સ્ક્રીન રેકોર્ડિંગ કરવા માટેના ટૂલ છે</translation>
 <translation id="3340978935015468852">સેટિંગ</translation>
 <translation id="3341303451326249809">સ્ક્રીનશૉટ કૅપ્ચર કર્યો</translation>
@@ -559,6 +561,7 @@
 <translation id="4017989525502048489">લેઝર પૉઇન્ટર</translation>
 <translation id="401993194061514265">માર્કર ઉપલબ્ધ નથી. Screencast ફરીથી ખોલો.</translation>
 <translation id="4021716437419160885">નીચે સ્ક્રોલ કરો</translation>
+<translation id="4024840464866786680">જો તમે તમારો પિન અને પાસવર્ડ ભૂલી ગયા હો કે Google એકાઉન્ટનો તમારો પાસવર્ડ તાજેતરમાં બદલ્યો હોય, તો આ વપરાશકર્તાને રિકવર કરવાનો પ્રયાસ કરો.</translation>
 <translation id="4028481283645788203">વધુ સુરક્ષા માટે પાસવર્ડ જરૂરી છે</translation>
 <translation id="4032485810211612751"><ph name="HOURS" /> : <ph name="MINUTES" /> : <ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">તમે તમારી સ્ક્રીન શેર કરી રહ્યા છો</translation>
@@ -699,10 +702,12 @@
 <translation id="4735944890391795473">ડેસ્ક 12</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4740516757091333363">શું સાચવેલી ડેસ્ક ડિલીટ કરીએ?</translation>
+<translation id="4747410141429390146">નોટિફિકેશન જોવા માટે, કૃપા કરીને તેમને અનલૉક કરો</translation>
 <translation id="4752784485658729358">માત્ર 6 ડેસ્ક સાચવવાની મંજૂરી છે. કોઈ નવી ડેસ્ક સાચવવા માટે, કોઈ એક ડેસ્ક કાઢી નાખો.</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
 <translation id="4762573482154983647">ઍપ છુપાવો</translation>
 <translation id="4774338217796918551">આવતી કાલે <ph name="COME_BACK_TIME" /> વાગ્યે પાછા આવજો.</translation>
+<translation id="4776584068981882959">તમારો પાસવર્ડ હજી પણ ચકાસી શકાયો નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> માટેનો પાસવર્ડ </translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">ડેમો સત્રમાં Google Assistant ઉપલબ્ધ નથી.</translation>
@@ -842,6 +847,7 @@
 <translation id="5536723544185013515">તાજેતરની ઍપ, તાજેતરની બધી ઍપ ઍક્સેસ કરવા માટે ડાબી કે જમણી ઍરો કી વડે નૅવિગેટ કરો</translation>
 <translation id="553675580533261935">સત્રથી બહાર નીકળી રહ્યાં છે</translation>
 <translation id="5537725057119320332">કાસ્ટ કરો</translation>
+<translation id="5546397813406633847">વપરાશકર્તાને રિકવર કરો</translation>
 <translation id="554893713779400387">શ્રુતલેખન ટૉગલ કરો</translation>
 <translation id="5558091555391176027">નજીકના શેર સુવિધાની ઉચ્ચ દૃશ્યતા ટૉગલ કરો</translation>
 <translation id="5560420195677022218">તમારા <ph name="DEVICE_TYPE" /> પર તમારા ફોનની ઍપ જુઓ</translation>
@@ -858,6 +864,7 @@
 <translation id="5618148318840095371">અમે તમને વધુ સારા નેટવર્ક પર સ્વિચ કર્યા છે</translation>
 <translation id="5619862035903135339">વ્યવસ્થાપક પૉલિસીને કારણે સ્ક્રીન કૅપ્ચરની સુવિધા બંધ કરવામાં આવે છે</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">તમારો પાસવર્ડ ચકાસી શકાયો નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="5648021990716966815">માઇક જેક</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> તમને ધ્યાન આપવાની વિનંતી કરે છે.</translation>
 <translation id="5662075790140998213">ડેસ્ક 10</translation>
@@ -876,6 +883,7 @@
 <translation id="5707775774148071965">તમારા કેબલ કરતાં તમારું ડિવાઇસ ડેટાના વધુ ઊંચા દરને સપોર્ટ આપે છે. ડિવાઇસનું કાર્યપ્રદર્શન મર્યાદિત હોઈ શકે છે.</translation>
 <translation id="5710450975648804523">ખલેલ પાડશો નહીં ચાલુ છે</translation>
 <translation id="571295407079589142">મોબાઇલ ડેટા બંધ છે</translation>
+<translation id="5727460725221669831">જો તમે તમારો પાસવર્ડ ભૂલી ગયા હો કે Google એકાઉન્ટનો તમારો પાસવર્ડ તાજેતરમાં બદલ્યો હોય, તો આ વપરાશકર્તાને રિકવર કરવાનો પ્રયાસ કરો.</translation>
 <translation id="573413375004481890">આ ડિવાઇસ તમારા બધા ડિસ્પ્લેને સપોર્ટ કરી શક્યું નથી, તેથી એકને ડિસ્કનેક્ટ કરવામાં આવ્યું છે</translation>
 <translation id="5740328398383587084">નજીકના શેર</translation>
 <translation id="574392208103952083">મધ્યમ</translation>

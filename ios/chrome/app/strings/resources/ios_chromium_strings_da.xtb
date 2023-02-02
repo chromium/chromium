@@ -6,6 +6,7 @@
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">Hvis du vil gemme billeder, skal du trykke på Indstillinger for at give Chromium tilladelse til at føje billeder til din mappe</translation>
 <translation id="1289216811211435351">Skift til Chromium</translation>
+<translation id="1352919863522755794">Google Adgangskodeadministrator kunne ikke tjekke dine adgangskoder. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="1361748954329991663">Chromium er forældet. Hvis der ikke er en tilgængelig opdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det skyldes, at din enhed ikke længere understøtter nye Chromium-versioner.</translation>
 <translation id="1431818719585918472">Lad Chromium låse dine inkognitofaner.</translation>
 <translation id="1472013873724362412">Din konto fungerer ikke sammen med Chromium. Kontakt din domæneadministrator, eller brug en almindelig Google-konto til at logge ind.</translation>
@@ -35,6 +36,7 @@
 <translation id="2650312721222849884">Aktivér synkronisering for at se dine faner på alle de enheder, hvor du bruger Chromium</translation>
 <translation id="2684230048001240293">Angiv Chromium som standardbrowser for at synkronisere faner, adgangskoder og betalingsoplysninger på alle dine enheder</translation>
 <translation id="2730884209570016437">Chromium kan ikke bruge dit kamera, da det bruges af en anden app</translation>
+<translation id="2767464022270041271">Der er ingen gemte adgangskoder. Google Adgangskodeadministrator kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="2915596697727466327">Chromium bruger Face ID til at sikre autoriseret adgang til dine adgangskoder.</translation>
 <translation id="2918709798697875261">Din organisation kræver, at du forbliver logget ud af Chromium.</translation>
 <translation id="2942241131342758843">Brug som standard Chromium til at åbne links, søge efter widgets og udfylde adgangskoder automatisk i andre apps</translation>
@@ -57,6 +59,7 @@
 <translation id="4681781466797808448">Aktivér Chromium-scanner</translation>
 <translation id="4736424910885271643">Da din konto administreres af <ph name="HOSTED_DOMAIN" />, bliver dine Chromium-data ryddet fra denne enhed</translation>
 <translation id="4828317641996116749">Chromium kunne ikke tjekke alle adgangskoder. Prøv igen senere.</translation>
+<translation id="4840404732697892756">Google Adgangskodeadministrator kan tjekke dine adgangskoder, når du logger ind med din Google-konto.</translation>
 <translation id="4985291216379576555">Offline – Chromium kan ikke søge efter opdateringer</translation>
 <translation id="4996471330284142407">Få mere fra hånden med Chromium, der er enkelt, sikkert og hurtigere end nogensinde.</translation>
 <translation id="4999538639245140991">Da du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />, slettes dine Chromium-data på denne enhed. Dine data forbliver på din Google-konto.</translation>
@@ -67,6 +70,7 @@
 <translation id="5521125884468363740">Log ind, og aktivér synkronisering på alle de enheder, hvor du bruger Chromium, for at se dine faner på dem</translation>
 <translation id="5522297504975449419">Visse Chromium-funktioner er ikke længere tilgængelige.</translation>
 <translation id="5573014823074921752">Chromium-tip. Hvis du vil se flere faneindstillinger, skal du trykke på knappen Vis faner på værktøjslinjen og holde fingeren nede. Du finder knappen nederst eller øverst på skærmen.</translation>
+<translation id="5661521615548540542">Google Adgangskodeadministrator kunne ikke tjekke alle adgangskoder. Prøv igen senere.</translation>
 <translation id="5700709190537129682">Chromium kan ikke tjekke dine adgangskoder</translation>
 <translation id="5777187867430702742">Chromium-side</translation>
 <translation id="5945387852661427312">Du er ved at logge ind med en konto, der administreres af <ph name="DOMAIN" />, hvilket giver administratoren kontrol over dine Chromium-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chromium, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
@@ -113,6 +117,7 @@
 <translation id="8409374867500149834">Du har Chromiums stærkeste beskyttelse mod skadelige websites</translation>
 <translation id="858114650497379505">Du kan bruge de adgangskoder, du har gemt i Adgangskodeadministrator, i andre apps på din iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Forfatterne bag Chromium. Alle rettigheder forbeholdes.</translation>
+<translation id="8603022514504485810">Google Adgangskodeadministrator kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Beskytter dig i Chromium og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind.</translation>
 <translation id="8663480472502753423">Sørger for, at Chromium er opdateret</translation>
 <translation id="8685813584220679697">Log ind på dette website og Chromium.</translation>
@@ -126,6 +131,7 @@ Ting, du skal overveje:
 
   • Hvis du aktiverer synkronisering, kan metrics også omfatte oplysninger om de webadresser, du besøger.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Denne konto og data, som ikke er gemt, fjernes fra Chromium.</translation>
+<translation id="8857676124663337448">Google Adgangskodeadministrator kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>
 <translation id="894437814105052438">Når du er logget ud, synkroniserer Chromium ikke nye data med din Google-konto. De data, der tidligere er blevet synkroniseret, forbliver på din konto.</translation>
 <translation id="9022552996538154597">Log ind på Chromium</translation>
 <translation id="9059693977935746710">Du behøver ikke at huske denne adgangskode. Den gemmes i Adgangskodeadministrator for <ph name="EMAIL" /></translation>

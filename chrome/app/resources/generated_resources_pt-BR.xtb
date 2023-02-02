@@ -106,7 +106,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1085697365578766383">Erro ao iniciar a máquina virtual. Tente novamente.</translation>
 <translation id="1087965115100412394">Não permitir que os sites se conectem a dispositivos MIDI</translation>
 <translation id="1088659085457112967">Entrar no modo leitor</translation>
-<translation id="1089407731410758060">Mudar tema</translation>
 <translation id="1090126737595388931">Nenhum aplicativo de fundo sendo executado</translation>
 <translation id="1090541560108055381">Antes de parear, confira se é mostrado o mesmo código nos dois dispositivos</translation>
 <translation id="1091767800771861448">Pressione ESC para pular (versões não-oficiais apenas).</translation>
@@ -551,6 +550,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1495677929897281669">Voltar à guia</translation>
 <translation id="1500297251995790841">Dispositivo desconhecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Saiba mais sobre os apps do Chrome sem suporte</translation>
+<translation id="1501480321619201731">Excluir grupo</translation>
 <translation id="1503392482221435031">Envia automaticamente estatísticas de uso ao Google. É possível ativar ou desativar os relatórios de erros nas configurações do dispositivo.</translation>
 <translation id="150411034776756821">Remover <ph name="SITE" /></translation>
 <translation id="1504551620756424144">As pastas compartilhadas estão disponíveis no Windows em <ph name="BASE_DIR" />.</translation>
@@ -2113,7 +2113,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2835547721736623118">Serviço de reconhecimento de fala</translation>
 <translation id="2836232638504556905">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site. Consulte a <ph name="BEGIN_LINK" />Política de Privacidade<ph name="END_LINK" /> do site.</translation>
 <translation id="2836269494620652131">Falha</translation>
-<translation id="2836635946302913370">O login com este nome foi desativado pelo administrador.</translation>
 <translation id="283669119850230892">Para usar a rede <ph name="NETWORK_ID" />, conclua primeiro sua conexão com a Internet abaixo.</translation>
 <translation id="2838379631617906747">Instalando</translation>
 <translation id="2839032553903800133">Notificações bloqueadas</translation>
@@ -2621,6 +2620,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3315442055907669208">Entrar no modo leitor</translation>
 <translation id="3317459757438853210">Frente e verso</translation>
 <translation id="3317678681329786349">Câmera e microfone bloqueados</translation>
+<translation id="3319306431415395200">Traduzir texto na imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">"Navegação segura" (proteção contra sites perigosos) e outras configurações de segurança</translation>
 <translation id="3323521181261657960">Bônus! Você ganhou mais tempo de uso</translation>
 <translation id="3323577066981719144">As mudanças que você fizer aqui serão aplicadas apenas ao navegador Chrome. Abra o navegador Chrome Lacros e acesse as configurações se quiser fazer mudanças nele.</translation>
@@ -3632,7 +3632,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4244238649050961491">Encontrar mais apps para usar com a stylus</translation>
 <translation id="4246980464509998944">Outros comentários:</translation>
 <translation id="424726838611654458">Sempre abrir com o Adobe Reader</translation>
-<translation id="4247901771970415646">Não é possível sincronizar com <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Manter suas senhas protegidas contra violações de dados e outros problemas de segurança</translation>
 <translation id="4249248555939881673">Aguardando conexão da rede...</translation>
 <translation id="4249373718504745892">Esta página foi impedida de acessar sua câmera e seu microfone.</translation>
@@ -3853,6 +3852,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4441147046941420429">Para continuar, remova sua chave de segurança do dispositivo, reinsira-a e toque nela</translation>
 <translation id="444134486829715816">Expandir...</translation>
 <translation id="4441928470323187829">Fixada pelo administrador</translation>
+<translation id="4442863809158514979">Conferir permissões da Web</translation>
 <translation id="4443536555189480885">&amp;Ajuda</translation>
 <translation id="4444304522807523469">Acessar scanners de documentos acoplados via USB ou na rede local</translation>
 <translation id="4444512841222467874">Se não for disponibilizado mais espaço, é possível que usuários e dados sejam removidos automaticamente.</translation>
@@ -4851,6 +4851,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5382591305415226340">Gerenciar links compatíveis</translation>
 <translation id="5383377866517186886">A câmera está desativada nas preferências do sistema do Mac</translation>
 <translation id="5383740867328871413">Grupo sem nome: <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">A política da empresa mudou. O botão "Experimentos" foi adicionado à barra de ferramentas. Clique nele para abrir uma caixa de diálogo e ativar os experimentos.</translation>
 <translation id="5388885445722491159">Emparelhado</translation>
 <translation id="5390112241331447203">Incluir o arquivo system_logs.txt enviado nos relatórios de feedback.</translation>
@@ -5065,6 +5066,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5578059481725149024">Login automático</translation>
 <translation id="5581134892342029705">A tradução para o <ph name="LANGUAGE" /> foi concluída</translation>
 <translation id="558170650521898289">Verificação de driver de hardware do Windows da Microsoft</translation>
+<translation id="5581876958763461074">Todas as observações</translation>
 <translation id="5581972110672966454">Não é possível vincular o dispositivo ao domínio. Tente novamente ou entre em contato com o proprietário ou administrador do dispositivo. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Menu principal</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5716,7 +5718,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="617213288191670920">Nenhum idioma adicionado</translation>
 <translation id="6173623053897475761">Digite seu PIN novamente</translation>
 <translation id="6175314957787328458">GUID do domínio da Microsoft</translation>
-<translation id="6176043333338857209">O Bluetooth será temporariamente ativado para se comunicar com sua chave de segurança</translation>
 <translation id="6178664161104547336">Selecione um certificado</translation>
 <translation id="6178682841350631965">Seus dados de login foram atualizados</translation>
 <translation id="6180510783007738939">Ferramenta de linha</translation>
@@ -7485,6 +7486,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="779308894558717334">Verde-claro</translation>
 <translation id="7793098747275782155">Azul-escuro</translation>
 <translation id="7797571222998226653">Desativado</translation>
+<translation id="7798504574384119986">Conferir permissões da Web</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> bloqueada automaticamente</translation>
 <translation id="7800518121066352902">Girar no s&amp;entido anti-horário</translation>
 <translation id="7801679634091975683">As mudanças que você fizer aqui serão aplicadas apenas ao navegador Chrome Lacros. Abra o navegador Chrome e acesse as configurações para fazer mudanças nelas.</translation>
@@ -7700,6 +7702,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7990863024647916394">Voz em <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Configurações do acesso com interruptor</translation>
 <translation id="7992203134935383159">Sintetização de voz</translation>
+<translation id="7994515119120860317">Traduzir texto na imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">Prioridade de processo</translation>
 <translation id="7999229196265990314">Os seguintes arquivos foram criados:

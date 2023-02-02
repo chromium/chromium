@@ -3,6 +3,7 @@
 <translationbundle lang="kn">
 <translation id="1143896152279775643">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು <ph name="EMAIL" /> ನ Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1282031177488366470">Chrome ನ ವೈಶಿಷ್ಟ್ಯಗಳು ಮತ್ತು ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
+<translation id="1352919863522755794">Google Password Manager ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಕನೆಕ್ಷನ್ ಪರಿಶೀಲಿಸಿ ನೋಡಿ.</translation>
 <translation id="1462727070346936664">Chrome ನಿಂದ ಹೆಚ್ಚಿನ ಪ್ರಯೋಜನ ಪಡೆದುಕೊಳ್ಳಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="1479202195792305274">ನೀವು Google ಖಾತೆಯ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, Chrome ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="1493827051843127077">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾವತಿ ಮಾಹಿತಿಯನ್ನು ಸಿಂಕ್ ಮಾಡಲು Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಆಗಿ ಹೊಂದಿಸಿ</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">ಎಲ್ಲಾ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಲು, <ph name="BEGIN_LINK" />Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">ಅಪ್‌ಡೇಟ್‌ಗಳಿವೆಯೇ ಎಂಬುದನ್ನು ಪರಿಶೀಲಿಸಲು Chrome ಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2732745070297234559">ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು Chrome ಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಾಳೆ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="2767464022270041271">ಉಳಿಸಿರುವ ಯಾವುದೇ ಪಾಸ್‍‍ವರ್ಡ್‍ಗಳಿಲ್ಲ. ನೀವು ಅವುಗಳನ್ನು ಉಳಿಸಿದಾಗ Google Password Manager ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="2869959624320573933">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲ್ಪಡುವ ಖಾತೆಯಿಂದ ನೀವು ಸೈನ್ ಔಟ್ ಮಾಡುತ್ತಿರುವ ಕಾರಣ, ನಿಮ್ಮ Chrome ಡೇಟಾವನ್ನು ಈ ಸಾಧನದಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ. ನಿಮ್ಮ ಡೇಟಾ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿಯೇ ಇರುತ್ತದೆ.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು Chrome ಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಾಳೆ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">ಆ್ಯಪ್ ಅನ್ನು ಸುಧಾರಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, Chrome ಬಳಕೆ ಮತ್ತು ಕ್ರ್ಯಾಶ್ ಡೇಟಾವನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ. <ph name="BEGIN_LINK" />ನಿರ್ವಹಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome ಬೀಟಾದಲ್ಲಿ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
+<translation id="4840404732697892756">ನೀವು Google ಖಾತೆಯ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, Google Password Manager ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="5030102366287574140">ಡೇಟಾ ಉಲ್ಲಂಘನೆಗಳು, ಸುರಕ್ಷಿತವಲ್ಲದ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು Chrome ಸಹಾಯ ಮಾಡಬಲ್ಲದು.</translation>
 <translation id="5108659628347594808">Chrome ಅನ್ನು ಉತ್ತಮವಾಗಿಸಿ</translation>
 <translation id="5119391094379141756">Chrome ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome, ನಿಯತಕಾಲಿಕವಾಗಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಪ್ರಕಟಿಸಲಾದ ಪಟ್ಟಿಗಳಿಗೆ ಹೋಲಿಸಿ ಪರಿಶೀಲಿಸುತ್ತದೆ. ಪರಿಶೀಲಿಸುವಾಗ, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಬಳಕೆದಾರರ ಹೆಸರುಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ, ಆದ್ದರಿಂದ ಅವುಗಳನ್ನು Google ಸೇರಿದಂತೆ ಯಾರಿಂದಲೂ ಓದಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="5639704535586432836">ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಗೌಪ್ಯತೆ &gt; ಕ್ಯಾಮರಾ &gt; Google Chrome ತೆರೆಯಿರಿ ಮತ್ತು ಕ್ಯಾಮರಾ ಆನ್ ಮಾಡಿ.</translation>
 <translation id="5642200033778930880">ವಿಭಜಿತ ವೀಕ್ಷಣೆ ಮೋಡ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು Google Chrome ಗೆ ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="5661521615548540542">Google Password Manager ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">ಆಫ್‌ಲೈನ್, ಅಪ್‌ಡೇಟ್‌ಗಳಿವೆಯೇ ಎಂಬುದನ್ನು ಪರಿಶೀಲಿಸಲು Chrome ಗೆ ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="5716154293141027663">ಇತರ ಆ್ಯಪ್‌ಗಳ ಲಿಂಕ್‌ಗಳನ್ನು ನೀವು ಟ್ಯಾಪ್ ಮಾಡಿದಾಗಲೆಲ್ಲಾ Chrome ತೆರೆಯಿರಿ</translation>
@@ -118,9 +122,11 @@
   2. ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆ್ಯಪ್ ಟ್ಯಾಪ್ ಮಾಡಿ
   3. Chrome ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Password Manager ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಾಳೆ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Google Chrome ಜೊತೆಗೆ ಸುರಕ್ಷಿತವಾಗಿರಿ</translation>
 <translation id="8772179140489533211">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಾಂಪ್ಟ್ ಅನ್ನು ತೋರಿಸುತ್ತದೆ.</translation>
 <translation id="8788269841521769222">ನೀವು ಈ ಪಾಸ್‌ವರ್ಡ್ ನೆನಪಿಟ್ಟುಕೊಳ್ಳುವ ಅಗತ್ಯವಿಲ್ಲ. ಅದನ್ನು <ph name="EMAIL" /> ನ Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ</translation>
+<translation id="8857676124663337448">Google Password Manager ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಾಳೆ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="8897749957032330183">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿನ Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="8969290730818637510">ಆನ್ ಆಗಿರುವಾಗ:
 <ph name="BEGIN_INDENT" />  • ನೀವು ಬಳಸುವ ರೀತಿಯಲ್ಲೇ Chrome ಅನ್ನು ಬಳಸುವ ಜನರಿಗಾಗಿ ಅದನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಿ.<ph name="END_INDENT" />

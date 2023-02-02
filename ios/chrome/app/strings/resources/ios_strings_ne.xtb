@@ -596,7 +596,6 @@
 <translation id="5520466080178053306">"पासवर्ड म्यानेजर" मा ट्याप गर्नुहोस् अनि "हाल्नुहोस्" मा ट्याप गर्नुहोस्</translation>
 <translation id="5525095647255982834">तपाईं यो ट्याब अर्को डिभाइसमा पठाउन चाहनुहुन्छ भने उक्त डिभाइसमा Chrome मा साइन इन गर्नुहोस्।</translation>
 <translation id="5525269841082836315">पासफ्रेज सिर्जना गर्नुहोस्</translation>
-<translation id="5530084793407600786">Google प्रयोग गरी फोटोमा खोज्नुहोस्</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> वटा खुला ट्याब भेटियो</translation>
 <translation id="5548760955356983418">ह्यानडअफले तपाईंलाई यस यन्त्रमा ब्राउजिङ सुरु गर्न र तपाईंको Mac मा सजिलै जारी गर्न दिन्छ। हाल खोलिएको वेबसाइट तपाईंको Mac को डकमा प्रकट हुनेछ।
 
@@ -709,6 +708,7 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषा अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> अनफलो गरियो</translation>
 <translation id="6293101329759844770">Safe Browsing अन गर्न <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> खोल्नुहोस् र Safe Browsing मा ट्याप गर्नुहोस्।</translation>
+<translation id="6320780930074869063">यो सेटिङ अन हुँदा पासवर्डहरू <ph name="ACCOUNT" /> मा सेभ गरिन्छ। यो सेटिङ अफ हुँदा पासवर्डहरू यो डिभाइसमा मात्र सेभ गरिन्छ।</translation>
 <translation id="6321526113093607004">'बुकमार्कहरू' मा हाल्नुहोस्</translation>
 <translation id="6324669097367352121">सेटिङहरूमा साइन इन गर्नुहोस्</translation>
 <translation id="6337234675334993532">इन्क्रिप्सन</translation>

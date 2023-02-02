@@ -183,6 +183,7 @@
 <translation id="4335235004908507846">Chrome puede protegerte ante violaciones de la seguridad de los datos, extensiones dañadas y mucho más</translation>
 <translation id="4343195214584226067">Se agregó <ph name="EXTENSION_NAME" /> a Chrome</translation>
 <translation id="4384570495110188418">Chrome no puede revisar las contraseñas porque no accediste a tu cuenta</translation>
+<translation id="4393248995085527349">Para recibir las próximas actualizaciones de Google Chrome, necesitarás macOS 10.15 o versiones posteriores. Esta computadora usa macOS 10.13.</translation>
 <translation id="4427306783828095590">La protección mejorada permite bloquear mejor la suplantación de identidad (phishing) y el software malicioso.</translation>
 <translation id="4450664632294415862">Chrome: Acceso a la red - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Hay otra operación en Google Chrome en curso. Vuelve a intentarlo más tarde.</translation>
@@ -249,6 +250,7 @@
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Haga de Google Chrome su navegador predeterminado</translation>
 <translation id="6003112304606738118">Descargando… Horas restantes: <ph name="HOURS" /></translation>
+<translation id="6010556343189461180">Para recibir las próximas actualizaciones de Google Chrome, necesitarás macOS 10.15 o versiones posteriores. Esta computadora usa macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome se cerrará ahora.}=1{Chrome se cerrará en 1 segundo.}other{Chrome se cerrará en # segundos.}}</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6070348360322141662">Para mejorar la seguridad, Google Chrome encriptará los datos</translation>

@@ -596,7 +596,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5520466080178053306">I-tap ang Passwords Manager at Pagkatapos ay I-tap ang Idagdag</translation>
 <translation id="5525095647255982834">Para ipadala ang tab na ito sa ibang device, mag-sign in sa Chrome doon.</translation>
 <translation id="5525269841082836315">Lumikha ng Passphrase</translation>
-<translation id="5530084793407600786">Maghanap sa loob ng larawan gamit ang Google</translation>
 <translation id="5542540507657872337">Nakita ang <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Nagbibigay-daan sa iyo ang handoff na magsimula sa pagba-browse sa isang website sa device na ito at pagkatapos ay magpatuloy kaagad sa iyong Mac. Lalabas ang kasalukuyang nakabukas na website sa Dock ng iyong Mac.
 
@@ -709,6 +708,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6284652193729350524">Mag-alok na isalin ang <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Hindi na sinusubaybayan ang <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Para i-on ang Ligtas na Pag-browse, buksan ang <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" /> at i-tap ang Ligtas na Pag-browse.</translation>
+<translation id="6320780930074869063">Kapag naka-on, mase-save ang mga password sa <ph name="ACCOUNT" />. Kapag naka-off, mase-save lang ang mga password sa device na ito.</translation>
 <translation id="6321526113093607004">Idagdag sa Mga Bookmark</translation>
 <translation id="6324669097367352121">Mga setting sa pag-sign in</translation>
 <translation id="6337234675334993532">Pag-encrypt</translation>

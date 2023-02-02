@@ -183,6 +183,7 @@
 <translation id="4335235004908507846">డేటా ఉల్లంఘనలు, చెడు ఎక్స్‌టెన్షన్‌లు మొదలైన వాటి నుండి మిమ్మల్ని సురక్షితంగా ఉంచడంలో Chrome సహాయపడగలదు</translation>
 <translation id="4343195214584226067">Chromeకు <ph name="EXTENSION_NAME" /> జోడించబడింది</translation>
 <translation id="4384570495110188418">మీరు సైన్ ఇన్ చేయలేదు కాబట్టి Chrome మీ పాస్‌వర్డ్‌లను చెక్ చేయలేదు</translation>
+<translation id="4393248995085527349">భవిష్యత్తులో Google Chrome అప్‌డేట్‌లను పొందడానికి, మీకు macOS 10.15 లేదా ఆ తర్వాతి వెర్షన్ అవసరం అవుతుంది. ఈ కంప్యూటర్ macOS 10.13 వెర్షన్‌ను ఉపయోగిస్తోంది.</translation>
 <translation id="4427306783828095590">ఫిషింగ్, అలాగే మాల్‌వేర్‌ను బ్లాక్ చేయడానికి మెరుగుపరచిన రక్షణ మరింత చేయగలదు</translation>
 <translation id="4450664632294415862">Chrome - నెట్‌వర్క్ సైన్ ఇన్ - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chromeలో మరొక వ్యవస్థాపన జరుగుతోంది. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
@@ -249,6 +250,7 @@
 <translation id="5941711191222866238">కనిష్టీకరించు</translation>
 <translation id="5941830788786076944">Google Chromeను డిఫాల్ట్ బ్రౌజర్‌గా చేసుకోండి</translation>
 <translation id="6003112304606738118">డౌన్‌లోడ్ అవుతోంది... <ph name="HOURS" /> గంట(లు) సమయం మిగిలి ఉంది</translation>
+<translation id="6010556343189461180">భవిష్యత్తులో Google Chrome అప్‌డేట్‌లను పొందడానికి, మీకు macOS 10.15 లేదా ఆ తర్వాతి వెర్షన్ అవసరం అవుతుంది. ఈ కంప్యూటర్ macOS 10.14 వెర్షన్‌ను ఉపయోగిస్తోంది.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome ఇప్పుడు మూసివేయబడుతుంది.}=1{Chrome 1 సెకనులో మూసివేయబడుతుంది.}other{Chrome # సెకన్లలో మూసివేయబడుతుంది.}}</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
 <translation id="6070348360322141662">అదనపు భద్రత దృష్ట్యా, Google Chrome మీ డేటాను ఎన్‌క్రిప్ట్ చేస్తుంది</translation>

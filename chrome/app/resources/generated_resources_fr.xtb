@@ -106,7 +106,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1085697365578766383">Impossible de démarrer la machine virtuelle. Veuillez réessayer.</translation>
 <translation id="1087965115100412394">Ne pas autoriser les sites à se connecter à des appareils MIDI</translation>
 <translation id="1088659085457112967">Accéder au mode Lecteur</translation>
-<translation id="1089407731410758060">Changer de thème</translation>
 <translation id="1090126737595388931">Aucune application active en arrière plan</translation>
 <translation id="1090541560108055381">Avant d'associer les appareils, assurez-vous que ce code est le même sur les deux</translation>
 <translation id="1091767800771861448">Appuyez sur ECHAP pour ignorer (versions non officielles uniquement).</translation>
@@ -548,6 +547,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1495677929897281669">Retour à l'onglet</translation>
 <translation id="1500297251995790841">Appareil inconnu [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">En savoir plus sur les applis Chrome non compatibles</translation>
+<translation id="1501480321619201731">Supprimer le groupe</translation>
 <translation id="1503392482221435031">Envoie automatiquement des statistiques d'utilisation à Google. Vous pouvez activer ou désactiver les rapports d'erreur dans les paramètres de votre appareil.</translation>
 <translation id="150411034776756821">Supprimer <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Les dossiers partagés sont disponibles sous Windows dans <ph name="BASE_DIR" />.</translation>
@@ -2098,7 +2098,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2835547721736623118">Service de reconnaissance vocale</translation>
 <translation id="2836232638504556905">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil. Consultez les <ph name="BEGIN_LINK" />Règles de confidentialité<ph name="END_LINK" /> de ce site.</translation>
 <translation id="2836269494620652131">Blocage</translation>
-<translation id="2836635946302913370">Impossible de se connecter avec ce nom d'utilisateur, car il a été désactivé par votre administrateur.</translation>
 <translation id="283669119850230892">Pour utiliser le réseau <ph name="NETWORK_ID" />, finalisez d'abord la connexion à Internet ci-dessous</translation>
 <translation id="2838379631617906747">Installation en cours…</translation>
 <translation id="2839032553903800133">Notifications bloquées</translation>
@@ -2907,6 +2906,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3602870520245633055">Imprimer et numériser</translation>
 <translation id="3603622770190368340">Obtenir un certificat réseau</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} compte utilise le même mot de passe}one{{COUNT} compte utilise le même mot de passe}other{{COUNT} comptes utilisent le même mot de passe}}</translation>
 <translation id="3605780360466892872">Businessman</translation>
 <translation id="3609277884604412258">Recherche rapide</translation>
 <translation id="3610241585790874201">Non autorisé à enregistrer des données sur votre appareil</translation>
@@ -3615,7 +3615,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4244238649050961491">Trouver plus d'applications de stylet</translation>
 <translation id="4246980464509998944">Autres commentaires :</translation>
 <translation id="424726838611654458">Toujours ouvrir dans Adobe Reader</translation>
-<translation id="4247901771970415646">Impossible de synchroniser avec <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Protégez vos mots de passe contre les violations de données et d'autres problèmes liés à la sécurité</translation>
 <translation id="4249248555939881673">Connexion réseau en attente…</translation>
 <translation id="4249373718504745892">L'accès à votre caméra et à votre micro est bloqué pour cette page</translation>
@@ -3836,6 +3835,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4441147046941420429">Pour continuer, retirez la clé de sécurité de votre appareil, puis réinsérez-la et appuyez dessus</translation>
 <translation id="444134486829715816">Développer...</translation>
 <translation id="4441928470323187829">Épinglée par votre administrateur</translation>
+<translation id="4442863809158514979">Afficher les autorisations Web</translation>
 <translation id="4443536555189480885">&amp;Aide</translation>
 <translation id="4444304522807523469">Accéder aux scanners de documents connectés via USB ou sur le réseau local</translation>
 <translation id="4444512841222467874">Si vous ne libérez pas de l'espace, sachez que des utilisateurs et des données risquent d'être supprimés automatiquement.</translation>
@@ -5698,7 +5698,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="617213288191670920">Aucune langue ajoutée</translation>
 <translation id="6173623053897475761">Saisir à nouveau votre code</translation>
 <translation id="6175314957787328458">GUID de domaine Microsoft</translation>
-<translation id="6176043333338857209">Chrome va activer provisoirement le Bluetooth pour pouvoir communiquer avec votre clé de sécurité</translation>
 <translation id="6178664161104547336">Sélectionner un certificat</translation>
 <translation id="6178682841350631965">Vos données de connexion ont été mises à jour</translation>
 <translation id="6180510783007738939">Outil Ligne</translation>
@@ -7467,6 +7466,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="779308894558717334">Vert clair</translation>
 <translation id="7793098747275782155">Bleu foncé</translation>
 <translation id="7797571222998226653">Désactivé</translation>
+<translation id="7798504574384119986">Afficher les autorisations Web</translation>
 <translation id="7798844538707273832">Autorisation "<ph name="PERMISSION" />" bloquée automatiquement</translation>
 <translation id="7800518121066352902">Rotation &amp;antihoraire</translation>
 <translation id="7801679634091975683">Les modifications que vous apportez ici ne concernent que le navigateur Chrome Lacros. Pour changer les paramètres du navigateur Chrome, ouvrez Chrome et accédez aux paramètres.</translation>

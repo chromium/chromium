@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Annoncer</translation>
 <translation id="1919950603503897840">Vælg kontakter</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Gør tekst og billeder større eller mindre på alle websites, du besøger</translation>
 <translation id="1984937141057606926">Tilladt, undtagen tredjepartscookies</translation>
 <translation id="1989112275319619282">Gennemse</translation>
 <translation id="1994173015038366702">Webadresse</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Lyd</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="216989819110952009">Selv med øjnene beskyttet bag de grønne briller blev Dorothy og hendes venner først forblændet af den</translation>
+<translation id="2176704795966505152">Vis zoomindstilling i hovedmenuen</translation>
 <translation id="2182457891543959921">Spørg, inden websites kan oprette et 3D-kort over dine omgivelser eller registrere kamerapositionen (anbefales)</translation>
 <translation id="2212565012507486665">Tillad cookies</translation>
 <translation id="2228071138934252756">Aktivér også dit kamera i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til kameraet.</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">Tillad cookies for et bestemt website.</translation>
 <translation id="4046123991198612571">Næste nummer</translation>
 <translation id="4149994727733219643">Enkel visning af websider</translation>
+<translation id="4151930093518524179">Standardzoom</translation>
 <translation id="4165986682804962316">Websiteindstillinger</translation>
 <translation id="4169549551965910670">Forbundet til en USB-enhed</translation>
 <translation id="4194328954146351878">Spørg, om websites må få adgang til og ændre oplysninger på NFC-enheder (anbefales)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427">Aktivér også din mikrofon i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til mikrofonen.</translation>
 <translation id="4566417217121906555">Slå mikrofon fra</translation>
 <translation id="4570913071927164677">Info</translation>
+<translation id="4575264539271661854">Gør det nemmere at zoome ind på tekst og billeder på et website, du besøger</translation>
 <translation id="4598549027014564149">Når du er i inkognitotilstand, kan websites ikke bruge dine cookies til at se din browseraktivitet på websites, heller ikke på relaterede websites. Din browseraktivitet bruges f.eks. ikke til at tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>
 <translation id="4645575059429386691">Administreret af en af dine forældre</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
@@ -383,6 +387,7 @@
 <translation id="8284326494547611709">Undertekster</translation>
 <translation id="8300705686683892304">Administreres af en app</translation>
 <translation id="8324158725704657629">Spørg ikke igen</translation>
+<translation id="8362795839483915693">Du kan zoome ind eller ud på websites, du besøger</translation>
 <translation id="8372893542064058268">Tillad synkronisering i baggrunden for et bestemt website.</translation>
 <translation id="8376384591331888629">Medtag tredjepartscookies på dette websites</translation>
 <translation id="83792324527827022">Et website anvender dit kamera og din mikrofon</translation>

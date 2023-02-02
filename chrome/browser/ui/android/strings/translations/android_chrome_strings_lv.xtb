@@ -391,6 +391,7 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="3072980200212375806">Lietotne <ph name="APP_NAME" /> tiks atvērta pārlūkā Chrome. Turpinot jūs piekrītat <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumiem<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />Google Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumiem<ph name="END_LINK2" />. Ir spēkā arī <ph name="BEGIN_LINK3" />konfidencialitātes politika<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">Rādīt starpliktuves saturu</translation>
 <translation id="3098745985164956033">Daži attēli tiek sūtīti uz Google serveriem, lai uzlabotu aprakstus</translation>
+<translation id="3104179992611025423">Pārlūku pārvalda jūsu vecāki.</translation>
 <translation id="3114507951000454849">Lasiet šodienas ziņas <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">saistīta ar šo karti:</translation>
 <translation id="3123734510202723619">Paziņojumi</translation>
@@ -400,6 +401,7 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="3157931365184549694">Atjaunot</translation>
 <translation id="3166827708714933426">Ciļņu un logu īsinājumtaustiņi</translation>
 <translation id="316694332262407393">Šajā ierīcē jau darbojas pārlūks Chrome.</translation>
+<translation id="3167258285411721858">Varat pieprasīt vietnes <ph name="HOST_NAME" /> versiju mobilajām ierīcēm.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Reklāmu izvērtēšana</translation>
 <translation id="3207960819495026254">Atzīmēts kā grāmatzīme</translation>
@@ -433,6 +435,7 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="3297344142967351106">Balss palīgs</translation>
 <translation id="3303414029551471755">Vai turpināt ar satura lejupielādi?</translation>
 <translation id="3305795716056605962">Lai tulkotu lapas, izmantojiet pogu Citas opcijas</translation>
+<translation id="3319664549618064419">Lai atvērtu labāku šīs vietnes skatu, pārejiet uz vietni datoriem.</translation>
 <translation id="3334729583274622784">Vai mainīt faila paplašinājumu?</translation>
 <translation id="3341262203274374114">Nevar pārtraukt sekošanu. Radās kļūda.</translation>
 <translation id="3359667936385849800">Izmantot pašreizējo pakalpojumu sniedzēju</translation>
@@ -624,7 +627,6 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="4452411734226507615">Aizvērt cilni <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Grāmatzīme saglabāta mapē <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Ja saistāt citu ierīci, izmantojot kvadrātkodu, otrā ierīcē var izmantot šo tālruni kā drošības atslēgu. Ja noņemsiet saistīto ierīci, būs jānoskenē kvadrātkods, lai to atkal saistītu.</translation>
-<translation id="4479839115899251637">Dzēst no lasīšanas saraksta</translation>
 <translation id="4479972344484327217">Notiek moduļa <ph name="MODULE" /> instalēšana pārlūkprogrammai Chrome…</translation>
 <translation id="4484496141267039529">Nav savienojuma. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="4487967297491345095">Visi lietotnes Chrome dati tiks neatgriezeniski izdzēsti. Tas attiecas uz visiem failiem, iestatījumiem, kontiem, datu bāzēm un citiem datiem.</translation>
@@ -1466,6 +1468,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8849001918648564819">Paslēpta</translation>
 <translation id="8853345339104747198">Cilne <ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">Skatīt bezsaistes failus</translation>
+<translation id="885480114717186641">Varat pieprasīt vietnes <ph name="HOST_NAME" /> versiju datoriem.</translation>
 <translation id="8856607253650333758">Iegūt aprakstus</translation>
 <translation id="8856931513242997049">Paziņojumu atļaujas plūsma ir aizvērta</translation>
 <translation id="8873817150012960745">Lai sāktu, pieskarieties šeit</translation>
@@ -1486,7 +1489,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8955719471735800169">Augšup</translation>
 <translation id="8964479563882643397">Lai atvērtu jaunu inkognito cilni, atveriet izvēlni.</translation>
 <translation id="8965591936373831584">gaida</translation>
-<translation id="8967427617812342790">Pievienot sarakstam</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_ONE" /> cilne.}zero{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_MANY" /> cilnes.}one{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_MANY" /> cilne.}other{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="8970887620466824814">Radās kļūda.</translation>
 <translation id="8972098258593396643">Vai lejupielādēt noklusējuma mapē?</translation>

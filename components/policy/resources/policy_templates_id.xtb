@@ -703,6 +703,17 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
        Jika kebijakan tidak disetel, semua fitur <ph name="PRODUCT_OS_NAME" /> akan diaktifkan secara default dan pengguna dapat menggunakan semua fitur tersebut.
 
       Catatan: Fitur pemindaian saat ini dinonaktifkan secara default melalui tombol fitur. Jika pengguna mengaktifkannya melalui tombol fitur, fitur tersebut masih dapat dinonaktifkan dengan kebijakan ini.</translation>
+<translation id="1642854499667422595">Jika kebijakan ini disetel ke aktif, ekstensi yang tidak dipublikasikan di Chrome Web
+Store akan dinonaktifkan pada <ph name="PRODUCT_NAME" />.
+Kebijakan ini akan mengabaikan ekstensi yang diinstal di mode developer atau dari command line dan
+ekstensi lain yang tidak diinstal dari Chrome Web Store (misalnya, di-hosting sendiri).
+
+Jika kebijakan disetel ke <ph name="ALLOW_UNPUBLISHED" /> (0) atau tidak disetel, ekstensi yang tidak dipublikasikan akan diizinkan.
+Jika kebijakan disetel ke <ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED" /> (1), ekstensi yang tidak dipublikasikan di Chrome Web Store akan dinonaktifkan, tetapi tidak dinonaktifkan jika ekstensi diinstal otomatis atau ditetapkan ke versi tertentu oleh kebijakan perusahaan (Lihat Catatan).
+Jika kebijakan disetel ke <ph name="DISABLE_UNPUBLISHED" /> (2), ekstensi yang tidak dipublikasikan di Chrome Web Store akan dinonaktifkan, meskipun ekstensi diinstal otomatis atau ditetapkan ke versi tertentu oleh kebijakan perusahaan (Lihat Catatan).
+
+Catatan: Penginstalan otomatis dan penetapan ke versi tertentu dikonfigurasi menggunakan kebijakan <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> dan
+<ph name="EXTENSION_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1645793986494086629">Skema:</translation>
 <translation id="1647558381546345298">Jika kebijakan disetel, ukuran cache yang digunakan <ph name="PRODUCT_NAME" /> untuk menyimpan file media yang di-cache pada disk akan dikonfigurasi, terlepas apakah pengguna menentukan tanda --media-cache-size. Nilai yang ditentukan dalam kebijakan ini bukanlah batas mutlak, melainkan saran untuk sistem penyimpanan dalam cache. Setiap nilai yang kurang dari beberapa megabyte akan dibulatkan ke atas.
 
@@ -931,6 +942,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Jika kebijakan ini disetel ke aktif, WebDriver akan dapat menggantikan kebijakan yang tidak kompatibel.
 
       Jika kebijakan ini disetel ke nonaktif atau tidak dikonfigurasi, WebDriver tidak akan diizinkan menggantikan kebijakan yang tidak kompatibel.</translation>
+<translation id="1883274744253492031">Aktifkan upgrade otomatis konten campuran</translation>
 <translation id="1885782360784839335">Mengaktifkan ditampilkannya konten promosi tab penuh</translation>
 <translation id="1888871729456797026">Token pendaftaran kebijakan cloud di desktop</translation>
 <translation id="1893271062894546361">Jika kebijakan ini disetel ke aktif, UI kontrol pemutaran media akan tersedia untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain di jaringan lokal.
@@ -1081,6 +1093,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 <translation id="1997943707974344423">Izinkan Smart Lock</translation>
 <translation id="1998504583649140526">Setelan permintaan jaringan pribadi</translation>
 <translation id="1999000620918508488">Memaksa layar login untuk menampilkan atau menyembunyikan informasi sistem.</translation>
+<translation id="1999401210569035434">Izinkan ekstensi yang tidak dipublikasikan</translation>
 <translation id="1999942889260716089">Jika kebijakan disetel ke Benar (True), saran penelusuran akan diaktifkan di kolom URL <ph name="PRODUCT_NAME" />. Jika kebijakan disetel ke Salah (False), saran penelusuran akan dinonaktifkan.
 
       Saran yang didasarkan pada bookmark atau histori tidak akan terpengaruh oleh kebijakan ini.
@@ -1643,6 +1656,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
        Jika kebijakan tidak disetel, pengaktifan daya baterai akan tetap nonaktif.</translation>
 <translation id="2502467045153796624">Perilaku downgrade saluran rilis</translation>
+<translation id="2505101658854883014">Nonaktifkan ekstensi yang tidak dipublikasikan, termasuk ekstensi yang diinstal otomatis atau ditetapkan ke versi tertentu</translation>
 <translation id="250670737672448119">Mengaktifkan fitur aksesibilitas sorotan tanda sisipan.
 
           Fitur ini berfungsi untuk menyoroti area yang dikelilingi tanda sisipan selama mengedit.
@@ -3626,6 +3640,10 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="439661169333921592">Nonaktifkan sorotan fokus keyboard di layar login</translation>
 <translation id="4397045637922200204">Nonaktifkan pemulihan akun</translation>
 <translation id="4397464099112037398">Setelan default izin Penempatan Jendela</translation>
+<translation id="4401196752827224189">Mulai M110, WebSQL dalam konteks yang tidak aman akan dihapus. Kebijakan ini akan mengaktifkan kembali API tersebut.
+          Jika kebijakan ini disetel ke benar (true), WebSQL dalam konteks yang tidak aman akan tersedia.
+          Jika kebijakan ini disetel ke salah (false) atau tidak disetel, WebSQL dalam konteks yang tidak aman akan tetap tersedia hingga M109, lalu tidak tersedia mulai M110.
+Hal ini dihapus di M112.</translation>
 <translation id="4401496838830169080">Memungkinkan Anda mengontrol apakah fitur Safe Browsing <ph name="PRODUCT_NAME" /> diaktifkan dan dalam mode apa fitur tersebut beroperasi.
 
       Jika kebijakan ini ditetapkan ke 'NoProtection' (nilai 0), Safe Browsing selalu tidak aktif.
@@ -3691,6 +3709,11 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="445505634382262792">Jika kebijakan disetel ke 3, situs web akan diizinkan meminta akses tulis ke file dan direktori di sistem file sistem operasi host. Jika kebijakan disetel ke 2, akses akan ditolak.
 
       Jika tidak disetel, situs dapat meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>
+<translation id="4457113781439375078">Kebijakan ini tidak digunakan lagi.
+
+      Jika kebijakan disetel ke Aktif, perangkat yang terdaftar akan melaporkan lokasinya secara berkala.
+
+      Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat yang terdaftar tidak akan melaporkan lokasinya.</translation>
 <translation id="4463675333222095358">Aktifkan Konversi Unit Jawaban Instan</translation>
 <translation id="4464365009416584564">Nonaktifkan <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Blokir cookie pihak ketiga</translation>
@@ -3972,6 +3995,7 @@ dan saat ini terjadi, dukungan untuk penggunaan pemverifikasi sertifikat dan roo
 <translation id="4703402283970867140">Aktifkan model redup smart untuk memperpanjang waktu hingga layar diredupkan</translation>
 <translation id="4704958130749494760">Otomatis memberikan izin ke situs untuk terhubung ke perangkat serial USB.</translation>
 <translation id="471360812659157054">window.webkitStorageInfo tidak akan tersedia.</translation>
+<translation id="4715773950737036924">Mengontrol ketersediaan ekstensi yang tidak dipublikasikan di Chrome Web Store.</translation>
 <translation id="4722122254122249791">Aktifkan Isolasi Situs untuk asal yang ditetapkan</translation>
 <translation id="4723829699367336876">Mengaktifkan firewall traversal dari klien akses jarak jauh</translation>
 <translation id="4725528134735324213">Aktifkan Android Backup Service</translation>
@@ -4192,9 +4216,6 @@ juga aman.</translation>
       untuk memproses permintaan keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag).
 
       Nilai default (0) berarti fitur ini dinonaktifkan.</translation>
-<translation id="4934869540807953882">Mulai M110, window.webkitStorageInfo API non-standar akan dihapus. Kebijakan ini akan mengaktifkan kembali API tersebut.
-Jika kebijakan ini disetel ke Aktif, window.webkitStorageInfo API akan tersedia.
-Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, window.webkitStorageInfo API tidak akan tersedia.</translation>
 <translation id="4937423591320233496">Nonaktifkan konten yang disarankan</translation>
 <translation id="4940810901775798837">Izinkan situs yang tidak aman membuat permintaan ke endpoint jaringan mana pun</translation>
 <translation id="4942096314850617489">Nonaktifkan pengesahan jarak jauh untuk pengguna</translation>
@@ -5512,6 +5533,28 @@ Waktu tunggu tidak ada aktivitas untuk memulai screensaver dan interval saat gam
 <translation id="6261643884958898336">Laporkan informasi Identifikasi Mesin</translation>
 <translation id="6265892395051519509">Mengizinkan akses ke sensor di situs ini</translation>
 <translation id="6266043141694454734">Menentukan apakah Chrome Root Store dan pemverifikasi sertifikat bawaan akan digunakan untuk memverifikasi sertifikat server</translation>
+<translation id="6267130578410325007">Kebijakan ini mengizinkan pengelompokan cluster agen dengan kunci origin secara default.
+
+Header HTTP Origin-Agent-Cluster mengontrol apakah dokumen
+diisolasi di cluster agen dengan kunci origin atau di cluster agen
+dengan kunci situs. Hal ini berdampak pada keamanan karena cluster agen dengan kunci origin
+memungkinkan isolasi dokumen menurut origin. Akibatnya,
+developer tidak lagi dapat menyetel pengakses
+document.domain.
+
+Jika tidak ada header Origin-Agent-Cluster yang disetel,
+perilaku default akan berubah dari kunci situs ke kunci origin di M111.
+
+Jika kebijakan ini disetel ke aktif atau tidak disetel, browser akan mengikuti
+perilaku default baru ini mulai versi tersebut.
+
+Jika kebijakan ini disetel ke nonaktif, perubahan tersebut akan diurungkan dan
+dokumen tanpa header Origin-Agent-Cluster akan ditetapkan ke
+cluster agen dengan kunci situs. Dengan begitu, pengakses document.domain
+tetap dapat disetel secara default. Perilaku ini cocok dengan perilaku lama.
+
+Lihat https://developer.chrome.com/blog/immutable-document-domain/ untuk
+mengetahui detail tambahan.</translation>
 <translation id="6270615143812355589">Aktifkan input audio</translation>
 <translation id="6270791075656665237">Larang QUIC</translation>
 <translation id="6273015149273504999">
@@ -6465,6 +6508,23 @@ pemblokiran permintaan semacam itu akan diterapkan.</translation>
       Jika Anda menetapkan kebijakan ini sebagai wajib, pengguna tidak dapat mengubah atau menggantinya.
 
       Jika kebijakan ini tidak ditetapkan, rak akan ditempatkan di bagian bawah layar secara default dan pengguna dapat mengubah posisi rak.</translation>
+<translation id="7037853989942016900">Kebijakan ini mengontrol pemfaktoran ulang terbaru untuk Graphics3D API dalam plugin PPAPI.
+
+Migrasi hanya memengaruhi detail implementasi internal dan seharusnya tidak
+mengubah perilaku apa pun. Namun, kebijakan ini dapat digunakan jika aplikasi
+PPAPI tidak berfungsi seperti yang diharapkan.
+
+Jika kebijakan disetel ke Aktif atau tidak disetel, browser akan menentukan
+implementasi mana yang akan digunakan.
+Jika kebijakan disetel ke Nonaktif, browser akan menggunakan implementasi lama
+hingga kebijakan berakhir.
+
+Jika Anda harus menggunakan kebijakan tersebut, laporkan bug di crbug.com yang menjelaskan
+kasus penggunaan Anda. Kebijakan ini dijadwalkan untuk ditawarkan hingga <ph name="PRODUCT_NAME" /> versi 114, setelah itu
+implementasi lama akan dihapus.
+
+CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada
+kebijakan ini saat browser berjalan.</translation>
 <translation id="7039815268521168329">Tampilkan alur Voice Match Asisten Google selama penyiapan awal</translation>
 <translation id="7040229947030068419">Nilai contoh:</translation>
 <translation id="7044883996351280650">Mengontrol layanan pencadangan dan pemulihan Android</translation>
@@ -6523,6 +6583,7 @@ pemblokiran permintaan semacam itu akan diterapkan.</translation>
 <translation id="7126716959063786004">Aktifkan proses diakhiri di Pengelola Tugas</translation>
 <translation id="7126928806195745404">Setelan JavaScript</translation>
 <translation id="7127980134843952133">Histori download</translation>
+<translation id="7128513247945602297">Mengaktifkan upgrade otomatis konten campuran di situs HTTPS</translation>
 <translation id="712963038874313213">Menyediakan playbook Ansible yang harus dijalankan di penampung Crostini default.
 
       Dengan kebijakan ini, playbook Ansible akan dapat diterapkan ke penampung Crostini default jika tersedia pada perangkat tertentu dan diizinkan oleh kebijakan.
@@ -7282,6 +7343,7 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
       Nilai yang valid untuk kolom <ph name="MINUTE_FIELD_NAME" /> dalam <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> dan <ph name="CHARGE_START_TIME_FIELD_NAME" /> adalah 0, 15, 30, 45.</translation>
 <translation id="7840258755683573560">Aktifkan klik otomatis</translation>
 <translation id="7841880500990419427">Versi TLS minimum untuk kembali</translation>
+<translation id="7841883965249733328">Nonaktifkan upgrade otomatis konten campuran</translation>
 <translation id="7845130996290850593">Aktifkan Kerberos</translation>
 <translation id="7846952520291088817">URL yang akan menampilkan IP lokal dalam kandidat WebRTC ICE</translation>
 <translation id="7848641140449742406">Setelan OS</translation>
@@ -8719,6 +8781,7 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
 
       Kebijakan ini adalah tindakan sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> versi mendatang. Setelah kebijakan dihapus, <ph name="PRODUCT_NAME" /> akan dapat mengkueri jenis DNS tambahan kapan saja.</translation>
 <translation id="9167719789236691545">Nonaktifkan Drive di aplikasi File <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="9169161075831670233">Nonaktifkan ekstensi yang tidak dipublikasikan kecuali ekstensi yang diinstal otomatis atau ditetapkan ke versi tertentu</translation>
 <translation id="9172911925443428317">Jangan izinkan pop-up Rating App Store ditampilkan</translation>
 <translation id="9180108183162961002">Izinkan login browser tamu</translation>
 <translation id="9185963199234034321">Aktifkan kontras tinggi di layar login dan izinkan pengguna menonaktifkannya untuk sementara</translation>

@@ -391,6 +391,7 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="3072980200212375806"><ph name="APP_NAME" /> avaneb Chrome'is. Jätkates nõustute <ph name="BEGIN_LINK1" />Google'i teenusetingimustega<ph name="END_LINK1" /> ning <ph name="BEGIN_LINK2" />Google Chrome'i ja Chrome OS-i lisateenusetingimustega<ph name="END_LINK2" />. Kehtivad ka <ph name="BEGIN_LINK3" />privaatsuseeskirjad<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">Kuva lõikelaua sisu</translation>
 <translation id="3098745985164956033">Mõned pildid saadetakse kirjelduste täiendamiseks Google'ile</translation>
+<translation id="3104179992611025423">Sinu brauserit haldavad sinu vanemad</translation>
 <translation id="3114507951000454849">Lugege tänaseid uudiseid <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">lingitud kaardiga</translation>
 <translation id="3123734510202723619">Teadaanded</translation>
@@ -400,6 +401,7 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="3157931365184549694">Taasta</translation>
 <translation id="3166827708714933426">Vahelehe ja akna otseteed</translation>
 <translation id="316694332262407393">Chrome'i käitatakse siin juba.</translation>
+<translation id="3167258285411721858">Saate taotleda hosti <ph name="HOST_NAME" /> mobiilisaiti</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Reklaamide mõõtmine</translation>
 <translation id="3207960819495026254">Järjehoidjatesse lisatud</translation>
@@ -433,6 +435,7 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="3297344142967351106">Häälabi</translation>
 <translation id="3303414029551471755">Kas soovite jätkata sisu allalaadimist?</translation>
 <translation id="3305795716056605962">Tõlkige lehed nupu Rohkem valikuid kaudu</translation>
+<translation id="3319664549618064419">Saidi parema vaate jaoks kasutage arvutisaiti</translation>
 <translation id="3334729583274622784">Kas muuta faililaiendit?</translation>
 <translation id="3341262203274374114">Ei saanud jälgimist lõpetada. Midagi läks valesti.</translation>
 <translation id="3359667936385849800">Kasutage oma praegust teenusepakkujat</translation>
@@ -624,7 +627,6 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="4452411734226507615">Vahelehe <ph name="TAB_TITLE" /> sulgemine</translation>
 <translation id="4452548195519783679">Lisatud järjehoidjana kausta <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Kui lingite QR-koodi kaudu muu seadme, saab see seade telefoni turvavõtmena kasutada. Kui selle eemaldate, peate linkimiseks QR-koodi uuesti skannima.</translation>
-<translation id="4479839115899251637">Kustuta lugemisloendist</translation>
 <translation id="4479972344484327217">Chrome'i jaoks installitakse moodulit <ph name="MODULE" /> …</translation>
 <translation id="4484496141267039529">Ühendus puudub. Proovige hiljem uuesti.</translation>
 <translation id="4487967297491345095">Kõik Chrome'i rakenduse andmed kustutatakse jäädavalt. See hõlmab kõiki faile, seadeid, kontosid, andmebaase jms.</translation>
@@ -1466,6 +1468,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8849001918648564819">Peidetud</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, vahekaart</translation>
 <translation id="8854223127042600341">Vaadake oma võrguühenduseta faile</translation>
+<translation id="885480114717186641">Saate taotleda hosti <ph name="HOST_NAME" /> arvutisaiti</translation>
 <translation id="8856607253650333758">Esita kirjeldusi</translation>
 <translation id="8856931513242997049">Märguandeloa voog on suletud</translation>
 <translation id="8873817150012960745">Alustamiseks puudutage siin</translation>
@@ -1486,7 +1489,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8955719471735800169">Tagasi üles</translation>
 <translation id="8964479563882643397">Uue inkognito vahelehe avamiseks avage menüü</translation>
 <translation id="8965591936373831584">ootel</translation>
-<translation id="8967427617812342790">Lisa lugemisloendisse</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ja veel <ph name="TAB_COUNT_ONE" /> vaheleht suletakse}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ja veel <ph name="TAB_COUNT_MANY" /> vahelehte suletakse}}</translation>
 <translation id="8970887620466824814">Midagi läks valesti.</translation>
 <translation id="8972098258593396643">Kas soovite alla laadida vaikekausta?</translation>

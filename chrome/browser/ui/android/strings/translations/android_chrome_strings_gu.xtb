@@ -391,6 +391,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeમાં ખુલશે. આગળ વધીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા ChromeOSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો. <ph name="BEGIN_LINK3" />પ્રાઇવસી પૉલિસી<ph name="END_LINK3" /> પણ લાગુ થાય છે.</translation>
 <translation id="3091010850649238832">ક્લિપબોર્ડ પરના કન્ટેન્ટ બતાવો</translation>
 <translation id="3098745985164956033">તમારા માટે વર્ણનોને બહેતર બનાવવા માટે કેટલીક છબીઓ Googleને મોકલવામાં આવે છે</translation>
+<translation id="3104179992611025423">તમારા માતાપિતા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે</translation>
 <translation id="3114507951000454849">આજના સમાચાર વાંચો <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">આની સાથે લિંક કર્યું</translation>
 <translation id="3123734510202723619">ઘોષણાઓ</translation>
@@ -400,6 +401,7 @@
 <translation id="3157931365184549694">રિસ્ટોર કરો</translation>
 <translation id="3166827708714933426">ટૅબ અને વિંડો શૉર્ટકટ્સ</translation>
 <translation id="316694332262407393">અહીં Chrome પહેલાથી જ ચાલુ છે.</translation>
+<translation id="3167258285411721858">તમે <ph name="HOST_NAME" /> માટે મોબાઇલ સાઇટની વિનંતી કરી શકો છો</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Ad measurement</translation>
 <translation id="3207960819495026254">બુકમાર્ક કરેલ</translation>
@@ -433,6 +435,7 @@
 <translation id="3297344142967351106">વૉઇસ સહાયતા</translation>
 <translation id="3303414029551471755">કન્ટેન્ટ ડાઉનલોડ કરવા માટે આગળ વધીએ?</translation>
 <translation id="3305795716056605962">'વધુ વિકલ્પો' બટન વડે પેજનો અનુવાદ કરો</translation>
+<translation id="3319664549618064419">આ સાઇટના કોઈ બહેતર વ્યૂ માટે, ડેસ્કટૉપ સાઇટ પર સ્વિચ કરો</translation>
 <translation id="3334729583274622784">ફાઇલનું એક્સ્ટેંશન બદલવું છે?</translation>
 <translation id="3341262203274374114">અનફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
 <translation id="3359667936385849800">તમારા વર્તમાન સેવા પ્રદાતાનો ઉપયોગ કરો</translation>
@@ -624,7 +627,6 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ટૅબ બંધ કરો</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> પર બુકમાર્ક કર્યું</translation>
 <translation id="4461614516424362539">જ્યારે તમે QR કોડ વડે અન્ય ડિવાઇસ લિંક કરો, ત્યારે તે સિક્યુરિટી કી તરીકે આ ફોનનો ઉપયોગ કરી શકે છે. જો તમે તેને કાઢી નાખો, તો તેને ફરી લિંક કરવા માટે તમારે QR કોડ સ્કૅન કરવો જરૂરી રહેશે.</translation>
-<translation id="4479839115899251637">વાંચન સૂચિમાંથી ડિલીટ કરો</translation>
 <translation id="4479972344484327217">Chrome માટે <ph name="MODULE" /> ઇન્સ્ટૉલ કરી રહ્યાં છે…</translation>
 <translation id="4484496141267039529">કોઈ કનેક્શન નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="4487967297491345095">Chromeનો તમામ ઍપ ડેટા કાયમ માટે ડિલીટ કરવામાં આવશે. આમાં તમામ ફાઇલો, સેટિંગ, એકાઉન્ટ, ડેટાબેઝ, વગેરેનો સમાવેશ થાય છે.</translation>
@@ -1466,6 +1468,7 @@
 <translation id="8849001918648564819">છુપાવેલી</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, ટેબ</translation>
 <translation id="8854223127042600341">તમારી ઑફલાઇન ફાઇલો જુઓ</translation>
+<translation id="885480114717186641">તમે <ph name="HOST_NAME" /> માટે ડેસ્કટૉપ સાઇટની વિનંતી કરી શકો છો</translation>
 <translation id="8856607253650333758">વર્ણનો મેળવો</translation>
 <translation id="8856931513242997049">નોટિફિકેશનની પરવાનગી સંબંધી ફ્લો બંધ કર્યો</translation>
 <translation id="8873817150012960745">શરૂ કરવા માટે અહીં ટૅપ કરો</translation>
@@ -1486,7 +1489,6 @@
 <translation id="8955719471735800169">સૌથી ઉપર પાછા જાઓ</translation>
 <translation id="8964479563882643397">કોઈ નવી છૂપી ટૅબ ખોલવા માટે, મેનૂ ખોલો</translation>
 <translation id="8965591936373831584">બાકી</translation>
-<translation id="8967427617812342790">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> છૂપું અને વધુ <ph name="TAB_COUNT_ONE" /> ટૅબ બંધ કરવામાં આવશે}one{<ph name="INCOGNITO_TAB_COUNT" /> છૂપું અને વધુ <ph name="TAB_COUNT_MANY" /> ટૅબ બંધ કરવામાં આવશે}other{<ph name="INCOGNITO_TAB_COUNT" /> છૂપા અને વધુ <ph name="TAB_COUNT_MANY" /> ટૅબ બંધ કરવામાં આવશે}}</translation>
 <translation id="8970887620466824814">કંઈક ખોટું થયું.</translation>
 <translation id="8972098258593396643">ડિફૉલ્ટ ફોલ્ડરમાં ડાઉનલોડ કરીએ?</translation>

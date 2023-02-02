@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Werbung</translation>
 <translation id="1919950603503897840">Kontakte auswählen</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> von <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Damit können Text und Bilder auf allen Websites, die du besuchst, vergrößert oder verkleinert werden</translation>
 <translation id="1984937141057606926">Zugelassen, außer Cookies Dritter</translation>
 <translation id="1989112275319619282">Durchsuchen</translation>
 <translation id="1994173015038366702">Website-URL</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Ton</translation>
 <translation id="2148716181193084225">Heute</translation>
 <translation id="216989819110952009">Obwohl ihre Augen durch die grünen Gläser der Brillen geschützt waren, wurden Dorothy und ihren Freunden vom Glanz und vom Schimmer der</translation>
+<translation id="2176704795966505152">Zoomoption im Hauptmenü anzeigen</translation>
 <translation id="2182457891543959921">Nachfragen, bevor Websites erlaubt wird, eine 3D-Karte meiner Umgebung zu erstellen oder die Kameraposition zu verfolgen (empfohlen)</translation>
 <translation id="2212565012507486665">Cookies zulassen</translation>
 <translation id="2228071138934252756">Um <ph name="APP_NAME" /> Zugriff auf deine Kamera zu gewähren, muss die Kameraberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">Cookies für eine bestimmte Website werden zugelassen.</translation>
 <translation id="4046123991198612571">Nächster Titel</translation>
 <translation id="4149994727733219643">Vereinfachte Ansicht für Webseiten</translation>
+<translation id="4151930093518524179">Standardeinstellung für den Zoom</translation>
 <translation id="4165986682804962316">Website-Einstellungen</translation>
 <translation id="4169549551965910670">Mit einem USB-Gerät verbunden</translation>
 <translation id="4194328954146351878">Nachfragen, bevor Websites erlaubt wird, Informationen auf NFC-Geräten abzurufen und zu ändern (empfohlen)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427">Um <ph name="APP_NAME" /> Zugriff auf dein Mikrofon zu gewähren, muss die Mikrofonberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
 <translation id="4566417217121906555">Mikrofon stummschalten</translation>
 <translation id="4570913071927164677">Details</translation>
+<translation id="4575264539271661854">Damit wird das Heranzoomen von Text und Bildern auf Websites, die du besuchst, vereinfacht</translation>
 <translation id="4598549027014564149">Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen. Das gilt auch für zusammenhängende Websites. Deine Browseraktivitäten werden unter anderem auch nicht für personalisierte Werbung verwendet. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
@@ -383,6 +387,7 @@
 <translation id="8284326494547611709">Untertitel</translation>
 <translation id="8300705686683892304">Von App verwaltet</translation>
 <translation id="8324158725704657629">Nicht mehr fragen</translation>
+<translation id="8362795839483915693">Du kannst Websites, die du besuchst, heranzoomen und wieder herauszoomen</translation>
 <translation id="8372893542064058268">Lässt die Hintergrundsynchronisierung für eine bestimmte Website zu.</translation>
 <translation id="8376384591331888629">Einschließlich Cookies von Drittanbietern auf dieser Website</translation>
 <translation id="83792324527827022">Eine Website verwendet deine Kamera und dein Mikrofon</translation>

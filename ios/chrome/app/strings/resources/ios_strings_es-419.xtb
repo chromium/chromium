@@ -304,7 +304,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3181954750937456830">Navegación segura (te protege a ti y tu dispositivo de sitios peligrosos)</translation>
 <translation id="3184767182050912705">Desbloquear mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">Agregada a favoritos</translation>
-<translation id="3214379938835224220">Saliste de tu cuenta como parte del restablecimiento de tu iPad. Presiona continuar para acceder.</translation>
+<translation id="3214379938835224220">Saliste de tu cuenta como parte del restablecimiento de tu iPad. Presiona Continuar para acceder.</translation>
 <translation id="3224641773458703735">Para exportar las contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3240426699337459095">Vínculo copiado</translation>
@@ -596,7 +596,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5520466080178053306">Presiona el Administrador de contraseñas y, luego, Agregar</translation>
 <translation id="5525095647255982834">Para enviar esta pestaña a otro dispositivo, accede a Chrome en ese dispositivo.</translation>
 <translation id="5525269841082836315">Crear frase contras.</translation>
-<translation id="5530084793407600786">Buscar en la imagen con Google</translation>
 <translation id="5542540507657872337">Pestañas encontradas: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff te permite comenzar a navegar en un sitio web en este dispositivo y, luego, continuar fácilmente en tu Mac. El sitio web que está abierto ahora aparecerá en el Dock de tu Mac.
 
@@ -612,7 +611,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5652623411397330904">Aquí se muestran los productos que sigues.</translation>
 <translation id="5657859710142657190">Ir a la cuadrícula de pestañas</translation>
 <translation id="5659593005791499971">Correo</translation>
-<translation id="5669335982068190158">Saliste de tu cuenta como parte del restablecimiento de tu iPhone. Presiona continuar para acceder.</translation>
+<translation id="5669335982068190158">Saliste de tu cuenta como parte del restablecimiento de tu iPhone. Presiona Continuar para acceder.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">Crear un código QR</translation>
 <translation id="567881659373499783">Versión <ph name="PRODUCT_VERSION" /></translation>
@@ -825,7 +824,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6973630695168034713">Carpetas</translation>
-<translation id="6975148662438928529">Saliste de tu cuenta <ph name="USER_NAME" /> como parte del restablecimiento de tu iPad. Presiona continuar para acceder.</translation>
+<translation id="6975148662438928529">Saliste de tu cuenta <ph name="USER_NAME" /> como parte del restablecimiento de tu iPad. Presiona Continuar para acceder.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Administrar tu Cuenta de Google</translation>
 <translation id="6989674195860388998">Cambiar en Configuración…</translation>
@@ -1039,7 +1038,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8721297211384281569">Menú "Herramientas"</translation>
 <translation id="8725066075913043281">Intentar nuevamente</translation>
 <translation id="8730621377337864115">Listo</translation>
-<translation id="8731388423028622182">Saliste de tu cuenta <ph name="USER_NAME" /> como parte del restablecimiento de tu iPhone. Presiona continuar para acceder.</translation>
+<translation id="8731388423028622182">Saliste de tu cuenta <ph name="USER_NAME" /> como parte del restablecimiento de tu iPhone. Presiona Continuar para acceder.</translation>
 <translation id="87371078663613140">Explora las opciones en la barra de menú.</translation>
 <translation id="8737620822084008350">{count,plural, =1{Hay {count} perfil guardado disponible sobre el teclado.}other{Hay {count} perfiles guardados disponibles sobre el teclado.}}</translation>
 <translation id="8741995161408053644">Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

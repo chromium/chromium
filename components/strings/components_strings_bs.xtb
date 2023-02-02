@@ -1110,7 +1110,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3713662424819367124">Parfemi i mirisi</translation>
 <translation id="3714633008798122362">web kalendar</translation>
 <translation id="3714780639079136834">Uključivanje prijenosa podataka na mobilnoj mreži ili WiFi-ja</translation>
-<translation id="3715545959749027023">Kad Chrome označi sigurnosne događaje, vašem administratoru šalju se relevantni podaci o tim događajima. To može uključivati URL-ove stranica koje posjetite u Chromeu, nazive ili metapodatke datoteka, rušenja preglednika ili kartica te korisničko ime koje upotrebljavate za prijavu u aplikacije temeljene na webu, uređaj i Chrome.</translation>
+<translation id="3715545959749027023">Kada Chrome označi sigurnosne događaje, relevantni podaci o događajima se šalju vašem administratoru. To može uključivati URL-ove stranica koje posjetite u Chromeu, nazive fajlova ili metapodatke, padove preglednika ili kartice i korisničko ime koje koristite za prijavu u aplikacije zasnovane na webu, vaš uređaj i Chrome.</translation>
 <translation id="3715597595485130451">Povežite se s WiFi-jem</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Provjeravanje konfiguracije proksi servera, zaštitnog zida i DNS-a<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">Aplikacije koje mogu uzrokovati grešku uključuju antivirus, zaštitni zid i softver filtriranje weba ili proksi softver.</translation>

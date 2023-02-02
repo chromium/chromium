@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">Sanal makine başlatılırken hata oluştu. Lütfen tekrar deneyin.</translation>
 <translation id="1087965115100412394">Sitelerin MIDI cihazlara bağlanmasına izin verme</translation>
 <translation id="1088659085457112967">Okuyucu Moduna Geç</translation>
-<translation id="1089407731410758060">Temayı Değiştir</translation>
 <translation id="1090126737595388931">Çalışan Hiç Arka Plan Uygulama Yok</translation>
 <translation id="1090541560108055381">Eşleme işleminden önce bu kodun iki cihazda da aynı olduğundan emin olun</translation>
 <translation id="1091767800771861448">Atlamak için ESCAPE tuşuna basın (Yalnızca resmi olmayan sürümler).</translation>
@@ -547,6 +546,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1495677929897281669">Sekmeye dön</translation>
 <translation id="1500297251995790841">Bilinmeyen cihaz [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Desteklenmeyen Chrome uygulamaları hakkında daha fazla bilgi edinin</translation>
+<translation id="1501480321619201731">Grubu sil</translation>
 <translation id="1503392482221435031">Kullanım istatistiklerini Google'a otomatik olarak gönderir. Kilitlenme raporlarını cihazınızın ayarlarından açabilir veya kapatabilirsiniz.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> sitesini kaldır</translation>
 <translation id="1504551620756424144">Paylaşılan klasörleri Windows'da <ph name="BASE_DIR" /> adresinde bulabilirsiniz.</translation>
@@ -2095,7 +2095,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2835547721736623118">Konuşma tanıma hizmeti</translation>
 <translation id="2836232638504556905"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, devam etmek için adınızı, e-posta adresinizi ve profil resminizi bu siteyle paylaşacaktır. Bu sitenin <ph name="BEGIN_LINK" />gizlilik politikasına<ph name="END_LINK" /> bakın.</translation>
 <translation id="2836269494620652131">Kilitlenme</translation>
-<translation id="2836635946302913370">Yöneticiniz bu kullanıcı adıyla oturum açmayı devre dışı bırakmış durumda.</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> ağını kullanmak için önce aşağıdan İnternet bağlantınızı yapın.</translation>
 <translation id="2838379631617906747">Yükleme</translation>
 <translation id="2839032553903800133">Bildirimler engellendi</translation>
@@ -2904,6 +2903,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3602290021589620013">Önizleme</translation>
 <translation id="3602870520245633055">Yazdırma ve tarama</translation>
 <translation id="3603622770190368340">Ağ sertifikası edinme</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} hesapta aynı şifre kullanılıyor}other{{COUNT} hesapta aynı şifre kullanılıyor}}</translation>
 <translation id="3605780360466892872">İş adamı</translation>
 <translation id="3609277884604412258">Hızlı arama</translation>
 <translation id="3610241585790874201">Cihazınıza veri kaydetmesine izin verilmiyor</translation>
@@ -3612,7 +3612,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4244238649050961491">Daha fazla ekran kalemi uygulaması bul</translation>
 <translation id="4246980464509998944">Ek yorumlar:</translation>
 <translation id="424726838611654458">Her zaman Adobe Reader programında aç</translation>
-<translation id="4247901771970415646"><ph name="USERNAME" /> ile senkronize edilemiyor</translation>
 <translation id="4248098802131000011">Şifrelerinizi veri ihlali ve diğer güvenlik sorunlarına karşı güvende tutun</translation>
 <translation id="4249248555939881673">Ağ bağlantısı bekleniyor...</translation>
 <translation id="4249373718504745892">Bu sayfanın kamera ve mikrofonunuza erişimi engellenmiştir.</translation>
@@ -3833,6 +3832,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4441147046941420429">Devam etmek için güvenlik anahtarınızı cihazınızdan çıkarıp tekrar takın ve anahtara dokunun.</translation>
 <translation id="444134486829715816">Genişlet...</translation>
 <translation id="4441928470323187829">Yöneticiniz tarafından sabitlendi</translation>
+<translation id="4442863809158514979">Web izinlerini göster</translation>
 <translation id="4443536555189480885">&amp;Yardım</translation>
 <translation id="4444304522807523469">USB üzerinden bağlı veya yerel ağda bulunan doküman tarayıcılara erişme</translation>
 <translation id="4444512841222467874">Yer açılmazsa kullanıcılar ve veriler otomatik olarak kaldırılabilir.</translation>
@@ -5695,7 +5695,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="617213288191670920">Dil eklenmedi</translation>
 <translation id="6173623053897475761">PIN'inizi tekrar yazın</translation>
 <translation id="6175314957787328458">Microsoft Etki Alanı GUID'si</translation>
-<translation id="6176043333338857209">Bluetooth, güvenlik anahtarınızla iletişim kurmak için geçici olarak açılacak</translation>
 <translation id="6178664161104547336">Sertifika seç</translation>
 <translation id="6178682841350631965">Oturum açma verileriniz güncellendi</translation>
 <translation id="6180510783007738939">Çizgi Aracı</translation>
@@ -7462,6 +7461,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="779308894558717334">Açık yeşil</translation>
 <translation id="7793098747275782155">Koyu mavi</translation>
 <translation id="7797571222998226653">Kapalı</translation>
+<translation id="7798504574384119986">Web İzinlerini Göster</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> izni otomatik olarak engellendi</translation>
 <translation id="7800518121066352902">Saat Yönünün &amp;Tersine Döndür</translation>
 <translation id="7801679634091975683">Burada yaptığınız değişiklikler yalnızca Lacros Chrome Tarayıcı'ya uygulanır. Chrome Tarayıcı ayarlarınızda değişiklik yapmak için Chrome Tarayıcı'yı açıp ayarlara gidin.</translation>
@@ -7717,7 +7717,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8030169304546394654">Bağlı değil</translation>
 <translation id="8030852056903932865">Onayla</translation>
 <translation id="8032244173881942855">Sekme yayınlanamıyor.</translation>
-<translation id="8032569120109842252">Takip ediliyor</translation>
+<translation id="8032569120109842252">Takip edilenler</translation>
 <translation id="8033023935541439900">Aksan işaretleri menüsü açık. Aralarında gezinmek için sola veya sağa, eklemek için Enter'a basın.</translation>
 <translation id="8033827949643255796">seçildi</translation>
 <translation id="8033958968890501070">Zaman aşımı</translation>

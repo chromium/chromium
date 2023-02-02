@@ -3,6 +3,7 @@
 <translationbundle lang="uk">
 <translation id="1143896152279775643">Ваш пароль буде збережено в Менеджері паролів Google для електронної адреси <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Допомогти покращити ефективність і функції Chrome</translation>
+<translation id="1352919863522755794">Google Менеджеру паролів не вдалося перевірити ваші паролі. Перевірте інтернет-з’єднання.</translation>
 <translation id="1462727070346936664">Увійдіть, щоб користуватися всіма можливостями Chrome.</translation>
 <translation id="1479202195792305274">Chrome зможе перевірити ваші паролі, коли ви ввійдете в обліковий запис Google.</translation>
 <translation id="1493827051843127077">Зробіть Chrome веб-переглядачем за умовчанням, щоб синхронізувати вкладки, паролі й платіжні дані між усіма своїми пристроями</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Щоб вийти з облікового запису Google на всіх веб-сайтах, <ph name="BEGIN_LINK" />вийдіть із Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Веб-переглядачу Chrome не вдалося перевірити наявність оновлень. Повторіть спробу пізніше.</translation>
 <translation id="2732745070297234559">Chrome не вдалося перевірити всі паролі. Повторіть спробу завтра.</translation>
+<translation id="2767464022270041271">Немає збережених паролів. Google Менеджер паролів зможе перевірити ваші паролі, коли ви їх збережете.</translation>
 <translation id="2869959624320573933">Увійдіть у Chrome</translation>
 <translation id="2957447865124070833">Виберіть <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Оскільки ви виходите з облікового запису, зареєстрованого в домені <ph name="SIGNOUT_MANAGED_DOMAIN" />, ваші дані Chrome буде видалено з цього пристрою. Вони залишаться в обліковому записі Chrome.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome не вдалося перевірити всі паролі. Повторіть спробу завтра або <ph name="BEGIN_LINK" />перевірте паролі в обліковому записі Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Щоб покращити додаток, Chrome надсилає в Google дані про використання та збої. <ph name="BEGIN_LINK" />Керувати<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Не підтримується в бета-версії Chrome</translation>
+<translation id="4840404732697892756">Google Менеджер паролів зможе перевірити ваші паролі, коли ви ввійдете в обліковий запис Google.</translation>
 <translation id="5030102366287574140">Chrome може захищати вас від порушень безпеки даних, ненадійних веб-сайтів тощо.</translation>
 <translation id="5108659628347594808">Покращте Chrome</translation>
 <translation id="5119391094379141756">Виберіть Chrome</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome періодично зіставляє ваші паролі зі списками, які були опубліковані онлайн. Під час цього ваші паролі й імена користувачів шифруються, тож їх ніхто не може прочитати, навіть Google.</translation>
 <translation id="5639704535586432836">Відкрийте меню "Параметри" &gt; "Приватність" &gt; "Камера" &gt; "Google Chrome" і ввімкніть камеру.</translation>
 <translation id="5642200033778930880">Google Chrome не може використовувати камеру в режимі розділеного екрана</translation>
+<translation id="5661521615548540542">Google Менеджеру паролів не вдалося перевірити всі паролі. Спробуйте пізніше.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Офлайн, Chrome не може перевірити наявність оновлень</translation>
 <translation id="5716154293141027663">Посилання, які ви натискатимете в інших додатках, будуть відкриватися в Chrome</translation>
@@ -118,9 +122,11 @@
   2. Натисніть "Веб-переглядач за умовчанням"
   3. Виберіть Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Менеджеру паролів не вдалося перевірити всі паролі. Спробуйте завтра або <ph name="BEGIN_LINK" />перевірте паролі в обліковому записі Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Google Chrome дбає про безпеку ваших даних</translation>
 <translation id="8772179140489533211">Показувати сповіщення для входу в Chrome.</translation>
 <translation id="8788269841521769222">Пароль не потрібно запам’ятовувати. Його буде збережено в Менеджері паролів Google облікового запису <ph name="EMAIL" />.</translation>
+<translation id="8857676124663337448">Google Менеджеру паролів не вдалося перевірити всі паролі. Спробуйте завтра.</translation>
 <translation id="8897749957032330183">Паролі збережено в Google Менеджері паролів на цьому пристрої.</translation>
 <translation id="8969290730818637510">Якщо правило ввімкнено
 <ph name="BEGIN_INDENT" />  • Ви допомагаєте покращувати Chrome для інших користувачів.<ph name="END_INDENT" />

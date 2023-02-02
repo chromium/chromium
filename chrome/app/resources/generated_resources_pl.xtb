@@ -106,7 +106,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1085697365578766383">Błąd podczas uruchamiania maszyny wirtualnej. Spróbuj ponownie.</translation>
 <translation id="1087965115100412394">Nie zezwalaj witrynom na łączenie się z urządzeniami MIDI</translation>
 <translation id="1088659085457112967">Włącz tryb czytnika</translation>
-<translation id="1089407731410758060">Zmień motyw</translation>
 <translation id="1090126737595388931">Brak aplikacji uruchomionych w tle</translation>
 <translation id="1090541560108055381">Przed sparowaniem urządzeń sprawdź, czy wyświetla się na nich ten sam kod</translation>
 <translation id="1091767800771861448">Naciśnij ESCAPE, aby pominąć aktualizację (tylko nieoficjalne kompilacje).</translation>
@@ -549,6 +548,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1495677929897281669">Wróć do karty</translation>
 <translation id="1500297251995790841">Nieznane urządzenie [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Więcej informacji o nieobsługiwanych aplikacjach Chrome</translation>
+<translation id="1501480321619201731">Usuń grupę</translation>
 <translation id="1503392482221435031">Automatycznie wysyła statystyki użytkowania do Google. Raporty o awariach możesz włączać i wyłączać w ustawieniach urządzenia.</translation>
 <translation id="150411034776756821">Usuń <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Foldery udostępnione są dostępne w systemie Windows w folderze <ph name="BASE_DIR" />.</translation>
@@ -2084,7 +2084,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2835547721736623118">Usługa rozpoznawania mowy</translation>
 <translation id="2836232638504556905"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni teraz witrynie Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe. Zapoznaj się z <ph name="BEGIN_LINK" />polityką prywatności<ph name="END_LINK" /> tej witryny.</translation>
 <translation id="2836269494620652131">Awaria</translation>
-<translation id="2836635946302913370">Możliwość logowania przy użyciu tej nazwy użytkownika została wyłączona przez administratora.</translation>
 <translation id="283669119850230892">Aby korzystać z sieci <ph name="NETWORK_ID" />, zakończ poniższe połączenie z internetem.</translation>
 <translation id="2838379631617906747">Instaluję</translation>
 <translation id="2839032553903800133">Powiadomienia blokowane</translation>
@@ -2893,6 +2892,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3602290021589620013">Podgląd</translation>
 <translation id="3602870520245633055">Drukowanie i skanowanie</translation>
 <translation id="3603622770190368340">Pobierz certyfikat sieci</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} konto używa tego samego hasła}few{{COUNT} konta używają tego samego hasła}many{{COUNT} kont używa tego samego hasła}other{{COUNT} konta używa tego samego hasła}}</translation>
 <translation id="3605780360466892872">Garnitur</translation>
 <translation id="3609277884604412258">Szybkie wyszukiwanie</translation>
 <translation id="3610241585790874201">Nie zezwolono na zapisywanie danych na urządzeniu</translation>
@@ -3601,7 +3601,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4244238649050961491">Znajdź więcej aplikacji dla rysika</translation>
 <translation id="4246980464509998944">Dodatkowe uwagi:</translation>
 <translation id="424726838611654458">Zawsze otwieraj w Adobe Reader</translation>
-<translation id="4247901771970415646">Nie można zsynchronizować z <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Chroń swoje hasła przed naruszeniem bezpieczeństwa danych i innymi zagrożeniami</translation>
 <translation id="4249248555939881673">Czekam na połączenie z siecią...</translation>
 <translation id="4249373718504745892">Ta strona ma zablokowany dostęp do kamery i mikrofonu.</translation>
@@ -3822,6 +3821,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4441147046941420429">Aby kontynuować, odłącz klucz bezpieczeństwa od urządzenia, a potem podłącz go ponownie i dotknij</translation>
 <translation id="444134486829715816">Rozwiń...</translation>
 <translation id="4441928470323187829">Przypięte przez administratora</translation>
+<translation id="4442863809158514979">Wyświetl uprawnienia dotyczące sieci</translation>
 <translation id="4443536555189480885">&amp;Pomoc</translation>
 <translation id="4444304522807523469">Dostęp do skanerów podłączonych przez USB lub do sieci lokalnej</translation>
 <translation id="4444512841222467874">Jeśli nie zwiększysz ilości wolnego miejsca, może dojść do automatycznego usunięcia danych i kont użytkowników.</translation>
@@ -4819,6 +4819,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5382591305415226340">Zarządzaj obsługiwanymi linkami</translation>
 <translation id="5383377866517186886">Kamera jest wyłączona w Preferencjach systemowych Maca</translation>
 <translation id="5383740867328871413">Grupa bez nazwy – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Zmieniono zasady przedsiębiorstwa. Do paska narzędzi został dodany przycisk Eksperymenty. Kliknij go, aby otworzyć okno, w którym można włączyć eksperymenty.</translation>
 <translation id="5388885445722491159">Sparowane</translation>
 <translation id="5390112241331447203">Uwzględnij plik system_logs.txt przesłany razem z opiniami.</translation>
@@ -5032,6 +5033,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5578059481725149024">Automatyczne logowanie</translation>
 <translation id="5581134892342029705">Tłumaczenie na język <ph name="LANGUAGE" /> jest gotowe</translation>
 <translation id="558170650521898289">Weryfikacja sprzętowych sterowników systemu Microsoft Windows</translation>
+<translation id="5581876958763461074">Wszystkie notatki</translation>
 <translation id="5581972110672966454">Nie udało się dołączyć urządzenia do domeny. Spróbuj jeszcze raz albo skontaktuj się z właścicielem lub administratorem urządzenia. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Menu główne</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5682,7 +5684,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="617213288191670920">Nie dodano języków</translation>
 <translation id="6173623053897475761">Wpisz ponownie kod PIN</translation>
 <translation id="6175314957787328458">Identyfikator GUID domeny firmy Microsoft</translation>
-<translation id="6176043333338857209">Bluetooth włączy się na chwilę, by połączyć się z kluczem bezpieczeństwa</translation>
 <translation id="6178664161104547336">Wybór certyfikatu</translation>
 <translation id="6178682841350631965">Twoje dane logowania zostały zaktualizowane</translation>
 <translation id="6180510783007738939">Narzędzie Linia</translation>
@@ -7451,6 +7452,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="779308894558717334">Jasnozielony</translation>
 <translation id="7793098747275782155">Ciemnoniebieski</translation>
 <translation id="7797571222998226653">Wyłączono</translation>
+<translation id="7798504574384119986">Wyświetl uprawnienia dotyczące sieci</translation>
 <translation id="7798844538707273832">Automatycznie zablokowano uprawnienie: <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">&amp;Obróć w lewo</translation>
 <translation id="7801679634091975683">Wprowadzone tu zmiany są stosowane tylko do przeglądarki Chrome w wersji Lacros. Aby zmienić ustawienia przeglądarki Chrome, otwórz ją i przejdź do ustawień.</translation>

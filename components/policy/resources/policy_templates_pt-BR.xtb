@@ -700,6 +700,17 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se a política não for definida, todos os recursos do <ph name="PRODUCT_OS_NAME" /> ficarão ativados por padrão, e o usuário poderá usar qualquer um deles.
 
       Observação: no momento, o recurso de digitalização está desativado por padrão por uma flag de recurso. Se o usuário ativá-lo pela sinalização, o recurso ainda pode estar desativado por esta política.</translation>
+<translation id="1642854499667422595">Se a política for ativada, as extensões não publicadas na Chrome Web
+Store serão desativadas no <ph name="PRODUCT_NAME" />.
+Esta política vai ignorar o modo de desenvolvedor, a linha de comando instalada e outras
+extensões que não são instaladas pela Chrome Web Store (por exemplo, a hospedagem automática).
+
+Se a política for definida como <ph name="ALLOW_UNPUBLISHED" /> (0) ou for deixada sem definição, as extensões não publicadas serão permitidas.
+Se ela for definida como <ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED" /> (1), as extensões não publicadas na Chrome Web Store serão desativadas. No entanto, isso não vai acontecer se a extensão tiver instalação forçada ou for fixada em versões pela política da empresa. Consulte a observação.
+Se a política for definida como <ph name="DISABLE_UNPUBLISHED" /> (2), as extensões não publicadas na Chrome Web Store serão desativadas, mesmo que a instalação seja forçada ou haja fixação em versões pela política da empresa. Consulte a observação.
+
+Observação: a instalação forçada e a fixação em versões são configuradas usando as políticas <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> e
+<ph name="EXTENSION_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1645793986494086629">Esquema:</translation>
 <translation id="1647558381546345298">Definir a política configura o tamanho do cache usado pelo <ph name="PRODUCT_NAME" /> para armazenar arquivos de mídia em cache no disco, independentemente de o usuário ter especificado ou não a sinalização "--media-cache-size". O valor especificado na política não é um limite rígido, mas sim uma sugestão para o sistema de armazenamento em cache. Valores abaixo de alguns megabytes serão arredondados para cima.
 
@@ -928,6 +939,7 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
       Se a política for ativada, o WebDriver poderá substituir as políticas incompatíveis.
 
       Se ela for desativada ou não configurada, o WebDriver não terá permissão para substituir as políticas incompatíveis.</translation>
+<translation id="1883274744253492031">Ativar o upgrade automático do conteúdo misto</translation>
 <translation id="1885782360784839335">Ativar a exibição de conteúdo promocional em guia cheia</translation>
 <translation id="1888871729456797026">Token de inscrição da política de nuvem na área de trabalho</translation>
 <translation id="1893271062894546361">Quando esta política é ativada, a IU dos controles de mídia fica disponível para sessões do <ph name="PRODUCT_NAME" /> iniciadas por outros dispositivos na rede local.
@@ -1078,6 +1090,7 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 <translation id="1997943707974344423">Permitir o Smart Lock</translation>
 <translation id="1998504583649140526">Configurações de solicitações de rede particulares</translation>
 <translation id="1999000620918508488">Força a tela de login a exibir ou ocultar informações do sistema.</translation>
+<translation id="1999401210569035434">Permitir extensões não publicadas</translation>
 <translation id="1999942889260716089">Se a política for definida como verdadeira, as sugestões de pesquisa na barra de endereço do <ph name="PRODUCT_NAME" /> vão ser ativadas. Se ela for definida como falsa, essas sugestões vão ser desativadas.
 
       Sugestões baseadas em favoritos ou histórico não são afetadas pela política.
@@ -1640,6 +1653,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
        Se a política não for definida, a economia de energia no período de pico ficará desativada.</translation>
 <translation id="2502467045153796624">Comportamento de downgrade de canal</translation>
+<translation id="2505101658854883014">Desativar extensões não publicadas, incluindo as com instalação forçada ou fixadas em versões</translation>
 <translation id="250670737672448119">Ativar o recurso de acessibilidade que destaca o cursor.
 
           Este recurso é responsável por destacar a área ao redor do cursor durante a edição.
@@ -3617,6 +3631,10 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="439661169333921592">Desativar o destaque de foco do teclado na tela de login</translation>
 <translation id="4397045637922200204">Desativar a recuperação de conta</translation>
 <translation id="4397464099112037398">Configuração padrão da permissão para posicionamento de janelas</translation>
+<translation id="4401196752827224189">O WebSQL em contextos não seguros vai ser removido da versão M110 em diante. Esta política reativa a API.
+          Se a política for definida como verdadeira, o WebSQL em contextos não seguros vai ficar disponível.
+          Se ela for definida como falsa ou for deixada sem definição, o WebSQL em contextos não seguros continuará disponível até a versão M109 e indisponível da M110 em diante.
+A remoção foi feita na versão M112.</translation>
 <translation id="4401496838830169080">Permite que você controle se o recurso "Navegação segura" do <ph name="PRODUCT_NAME" /> está ativado e em que modo ele opera.
 
       Se esta política for definida como "NoProtection" (valor 0), o "Navegação segura" nunca estará ativo.
@@ -3969,6 +3987,7 @@ O suporte ao uso das raízes e do verificador de certificados disponibilizados p
 <translation id="4703402283970867140">Ativar modelo de escurecimento inteligente para aumentar o tempo que a tela permanece ativa</translation>
 <translation id="4704958130749494760">Permitir automaticamente que os sites se conectem a dispositivos seriais USB.</translation>
 <translation id="471360812659157054">A window.webkitStorageInfo não vai ficar disponível.</translation>
+<translation id="4715773950737036924">Controlar a disponibilidade das extensões não publicadas na Chrome Web Store</translation>
 <translation id="4722122254122249791">Ativar o isolamento de sites para origens específicas</translation>
 <translation id="4723829699367336876">Habilitar passagem de firewall a partir do cliente de acesso remoto</translation>
 <translation id="4725528134735324213">Ativar o Android Backup Service</translation>
@@ -4188,9 +4207,6 @@ também é seguro.</translation>
       para processar as solicitações de sinal de atividade (https://fetch.spec.whatwg.org/#request-keepalive-flag, link em inglês).
 
       O valor padrão (0) significa que esse recurso está desativado.</translation>
-<translation id="4934869540807953882">Da versão M110 em diante, a API window.webkitStorageInfo não padrão vai ser removida. A política reativa essa API.
-Se a política for ativada, a API window.webkitStorageInfo ficará disponível.
-Se ela for desativada ou deixada sem definição, a API vai ficar indisponível.</translation>
 <translation id="4937423591320233496">Desativar conteúdo sugerido</translation>
 <translation id="4940810901775798837">Permitir que sites não seguros façam solicitações para qualquer endpoint da rede</translation>
 <translation id="4942096314850617489">Desativar atestado remoto para o usuário</translation>
@@ -5500,6 +5516,28 @@ O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de e
 <translation id="6261643884958898336">Reportar informações de identificação da máquina</translation>
 <translation id="6265892395051519509">Permite acesso a sensores nesses sites</translation>
 <translation id="6266043141694454734">Determina se a Chrome Root Store e o verificador de certificados integrado vão ser usados para verificar os certificados do servidor</translation>
+<translation id="6267130578410325007">Esta política permite por padrão o clustering do agente com origin-key.
+
+O cabeçalho HTTP Origin-Agent-Cluster controla se um documento está
+isolado em um cluster de agente com origin-key ou
+com site-key. Como um cluster de agente com origin-key permite o isolamento de
+documentos por origem, esse processo afeta a segurança. A consequência visível
+para o desenvolvedor é a impossibilidade de definir o acessador
+document.domain.
+
+O comportamento padrão quando nenhum cabeçalho Origin-Agent-Cluster foi definido
+muda de site-key para origin-key na versão M111.
+
+Se esta política for ativada ou for deixada sem definição, o navegador vai seguir o
+novo padrão dessa versão em diante.
+
+Se a política for desativada, a mudança será revertida e os
+documentos sem cabeçalhos Origin-Agent-Cluster serão atribuídos a
+clusters de agente com site-key. Consequentemente, o acessador document.domain
+vai permanecer definível por padrão. Esse comportamento é correspondente ao legado.
+
+Confira mais detalhes em https://developer.chrome.com/blog/immutable-document-domain/
+(em inglês).</translation>
 <translation id="6270615143812355589">Ativar a entrada de áudio</translation>
 <translation id="6270791075656665237">Não permitir o protocolo QUIC</translation>
 <translation id="6273015149273504999">
@@ -6450,6 +6488,23 @@ bloqueio dessas solicitações será aplicado.</translation>
       Se esta política for definida como obrigatória, o usuário não poderá alterá-la ou modificá-la.
 
       Se esta política não for definida, a estante será posicionada na parte inferior da tela por padrão, e o usuário poderá mudar a posição da estante.</translation>
+<translation id="7037853989942016900">Esta política controla a refatoração recente das APIs Graphics3D no plug-in PPAPI.
+
+A migração afeta apenas os detalhes de implementação internos e não pode
+mudar nenhum comportamento. No entanto, ela pode ser usada caso algum app PPAPI
+não funcione como esperado.
+
+Quando a política é ativada ou deixada sem definição, o navegador decide qual
+implementação será usada.
+Quando a política é desativada, o navegador usa a implementação antiga
+até que a política expire.
+
+Se você precisar usar a política, registre um bug em crbug.com explicando seu
+caso de uso. A política está programada para ser oferecida até a versão 114 do <ph name="PRODUCT_NAME" />. Após esse período,
+a implementação antiga será removida.
+
+OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta
+política enquanto o navegador estiver em execução.</translation>
 <translation id="7039815268521168329">Mostrar o fluxo do Voice Match do Google Assistente durante a configuração inicial</translation>
 <translation id="7040229947030068419">Exemplo de valor:</translation>
 <translation id="7044883996351280650">Controlar o serviço de backup e restauração do Android</translation>
@@ -6508,6 +6563,7 @@ bloqueio dessas solicitações será aplicado.</translation>
 <translation id="7126716959063786004">Permitir processos de finalização no gerenciador de tarefas</translation>
 <translation id="7126928806195745404">Configurações de JavaScript</translation>
 <translation id="7127980134843952133">Histórico de downloads</translation>
+<translation id="7128513247945602297">Ativar o upgrade automático de conteúdo misto em sites HTTPS</translation>
 <translation id="712963038874313213">Fornece um playbook Ansible que precisa ser executado no contêiner Crostini padrão.
 
       Esta política permite fornecer um playbook Ansible a ser aplicado ao contêiner Crostini padrão se estiver disponível no dispositivo fornecido e for permitido pelas políticas.
@@ -7266,6 +7322,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
       Os valores válidos para o campo <ph name="MINUTE_FIELD_NAME" /> em <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> e <ph name="CHARGE_START_TIME_FIELD_NAME" /> são 0, 15, 30, 45.</translation>
 <translation id="7840258755683573560">Ativar clique automático</translation>
 <translation id="7841880500990419427">Versão TLS mínima para substituição</translation>
+<translation id="7841883965249733328">Desativar o upgrade automático do conteúdo misto</translation>
 <translation id="7845130996290850593">Ativar o Kerberos</translation>
 <translation id="7846952520291088817">URLs para os quais IPs locais são expostos em candidatos ICE do WebRTC</translation>
 <translation id="7848641140449742406">Configurações do SO</translation>
@@ -8702,6 +8759,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 
       Ela é uma medida temporária e será removida em versões futuras do <ph name="PRODUCT_NAME" />. Após a remoção da política, o <ph name="PRODUCT_NAME" /> sempre poderá consultar outros tipos de DNS.</translation>
 <translation id="9167719789236691545">Desativar o Drive no app Arquivos do <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="9169161075831670233">Desativar extensões não publicadas, exceto as com instalação forçada ou fixadas em versões</translation>
 <translation id="9172911925443428317">Não permitir que a promoção de avaliação da App Store seja mostrada</translation>
 <translation id="9180108183162961002">Permitir logins em navegação como visitante</translation>
 <translation id="9185963199234034321">Ativar o alto contraste na tela de login e permitir que o usuário o desative temporariamente</translation>

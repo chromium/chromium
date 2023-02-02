@@ -106,7 +106,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1085697365578766383">Při spouštění virtuálního počítače došlo k chybě. Zkuste to znovu.</translation>
 <translation id="1087965115100412394">Nepovolovat webům připojení k zařízením MIDI</translation>
 <translation id="1088659085457112967">Zapnout režim čtečky</translation>
-<translation id="1089407731410758060">Změnit motiv</translation>
 <translation id="1090126737595388931">Na pozadí nejsou spuštěny žádné aplikace</translation>
 <translation id="1090541560108055381">Před spárováním se ujistěte, zda se tento kód na obou zařízeních shoduje</translation>
 <translation id="1091767800771861448">Akci přeskočíte stisknutím klávesy Esc (pouze neoficiální sestavení).</translation>
@@ -549,6 +548,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1495677929897281669">Zpět na kartu</translation>
 <translation id="1500297251995790841">Neznámé zařízení [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Další informace o nepodporovaných aplikacích pro Chrome</translation>
+<translation id="1501480321619201731">Smazat skupinu</translation>
 <translation id="1503392482221435031">Automaticky odesílá statistiky o využívání do Googlu Zprávy o selhání můžete zapnout nebo vypnout v nastavení zařízení.</translation>
 <translation id="150411034776756821">Odebrat web <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Sdílené složky jsou ve Windows k dispozici v adresáři <ph name="BASE_DIR" />.</translation>
@@ -2099,7 +2099,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2835547721736623118">Služba rozpoznávání řeči</translation>
 <translation id="2836232638504556905">Aby bylo možné pokračovat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s tímto webem sdílet vaše jméno, e-mailovou adresu a profilový obrázek. Zobrazit <ph name="BEGIN_LINK" />zásady ochrany soukromí<ph name="END_LINK" /> tohoto webu.</translation>
 <translation id="2836269494620652131">Selhání</translation>
-<translation id="2836635946302913370">Přihlášení pomocí tohoto uživatelského jména bylo správcem zakázáno.</translation>
 <translation id="283669119850230892">Chcete-li používat sít <ph name="NETWORK_ID" />, dokončete nejdříve připojení k internetu níže.</translation>
 <translation id="2838379631617906747">Instalace</translation>
 <translation id="2839032553903800133">Byla zablokována oznámení</translation>
@@ -2607,6 +2606,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3315442055907669208">Zapnout režim čtečky</translation>
 <translation id="3317459757438853210">Oboustranně</translation>
 <translation id="3317678681329786349">Kamera a mikrofon jsou blokovány</translation>
+<translation id="3319306431415395200">Přeložit text na obrázku pomocí služby <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Bezpečné prohlížení (ochrana před nebezpečnými weby) a další nastavení zabezpečení</translation>
 <translation id="3323521181261657960">Bonus! Získáváš víc času na zařízení</translation>
 <translation id="3323577066981719144">Zde provedené změny se vztahují pouze na prohlížeč Chrome. Pokud chcete provést změny nastavení prohlížeče Chrome Lacros, otevřete prohlížeč Chrome Lacros a přejděte na nastavení.</translation>
@@ -2908,6 +2908,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3602290021589620013">Náhled</translation>
 <translation id="3602870520245633055">Tisk a skenování</translation>
 <translation id="3603622770190368340">Získání certifikátu sítě</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} účet používá stejné heslo}few{{COUNT} účty používají stejné heslo}many{{COUNT} účtu používá stejné heslo}other{{COUNT} účtů používá stejné heslo}}</translation>
 <translation id="3605780360466892872">Manažer</translation>
 <translation id="3609277884604412258">Rychlé vyhledávání</translation>
 <translation id="3610241585790874201">Nemá povoleno ukládat data do zařízení</translation>
@@ -3615,7 +3616,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4244238649050961491">Najít další aplikace pro dotyková pera</translation>
 <translation id="4246980464509998944">Další připomínky:</translation>
 <translation id="424726838611654458">Vždy otevřít v aplikaci Adobe Reader</translation>
-<translation id="4247901771970415646">Synchronizace na účet <ph name="USERNAME" /> se nezdařila</translation>
 <translation id="4248098802131000011">Ochraňte svá hesla před porušeními zabezpečení údajů a jinými bezpečnostními problémy</translation>
 <translation id="4249248555939881673">Čeká se na připojení k síti...</translation>
 <translation id="4249373718504745892">Přístup této stránky k vaší webové kameře a mikrofonu je zablokován.</translation>
@@ -4834,6 +4834,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5382591305415226340">Spravovat podporované odkazy</translation>
 <translation id="5383377866517186886">Fotoaparát je vypnutý v předvolbách systému Macu</translation>
 <translation id="5383740867328871413">Skupina bez názvu – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Podnikové zásady se změnily. Na lištu bylo přidáno tlačítko experimentálních funkcí. Kliknutím na něj otevřete dialogové okno k aktivaci experimentálních funkcí.</translation>
 <translation id="5388885445722491159">Párováno</translation>
 <translation id="5390112241331447203">Zahrnout soubor system_logs.txt odesílaný ve zprávách zpětné vazby.</translation>
@@ -5048,6 +5049,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5578059481725149024">Automatické přihlášení</translation>
 <translation id="5581134892342029705">Překlad do jazyka <ph name="LANGUAGE" /> byl dokončen</translation>
 <translation id="558170650521898289">Ověření ovladače hardwaru systému Microsoft Windows</translation>
+<translation id="5581876958763461074">Všechny poznámky</translation>
 <translation id="5581972110672966454">Zařízení nelze do domény přidat. Zkuste to znovu nebo kontaktujte vlastníka nebo administrátora zařízení. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Hlavní nabídka</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5695,7 +5697,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="617213288191670920">Nejsou přidány žádné jazyky</translation>
 <translation id="6173623053897475761">Znovu zadejte PIN</translation>
 <translation id="6175314957787328458">Identifikátor GUID domény Microsoft</translation>
-<translation id="6176043333338857209">Kvůli komunikaci s bezpečnostním klíčem se dočasně zapne rozhraní Bluetooth</translation>
 <translation id="6178664161104547336">Vyberte certifikát</translation>
 <translation id="6178682841350631965">Vaše přihlašovací údaje byly aktualizovány</translation>
 <translation id="6180510783007738939">Nástroj Čára</translation>
@@ -7682,6 +7683,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7990863024647916394">Hlas <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Nastavení přístupu pomocí přepínačů</translation>
 <translation id="7992203134935383159">Syntéza řeči</translation>
+<translation id="7994515119120860317">Přeložit text na obrázku pomocí služby <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Webové zobrazení</translation>
 <translation id="7997826902155442747">Priorita procesu</translation>
 <translation id="7999229196265990314">Byly vytvořeny následující soubory:

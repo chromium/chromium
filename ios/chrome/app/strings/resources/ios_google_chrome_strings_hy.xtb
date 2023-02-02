@@ -3,6 +3,7 @@
 <translationbundle lang="hy">
 <translation id="1143896152279775643">Գաղտնաբառը կպահվի <ph name="EMAIL" /> հաշվի Google Գաղտնաբառերի կառավարիչում։</translation>
 <translation id="1282031177488366470">Օգնել ավել լավը դարձնել Chrome-ի գործառույթներն ու աշխատանքը</translation>
+<translation id="1352919863522755794">Google գաղտնաբառերի կառավարիչը չկարողացավ ստուգել ձեր գաղտնաբառերը։ Ստուգեք ինտերնետ կապը։</translation>
 <translation id="1462727070346936664">Մտեք հաշիվ՝ Chromе-ի բոլոր գործառույթներից օգտվելու համար։</translation>
 <translation id="1479202195792305274">Chrome-ը կարող է ստուգել ձեր գաղտնաբառերը, երբ մտնեք Google հաշիվ։</translation>
 <translation id="1493827051843127077">Դարձրեք Chrome-ը ձեր կանխադրված դիտարկիչը՝ ներդիրները, գաղտնաբառերը և վճարային տվյալները ձեր բոլոր սարքերում համաժամացնելու համար</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Բոլոր կայքերում ձեր Google հաշվից դուրս գալու համար <ph name="BEGIN_LINK" />դուրս եկեք Chrome-ից<ph name="END_LINK" />։</translation>
 <translation id="2695886661449553974">Chrome-ը չի կարող ստուգել թարմացումների առկայությունը։ Փորձեք ավելի ուշ։</translation>
 <translation id="2732745070297234559">Chrome-ին չհաջողվեց ստուգել բոլոր գաղտնաբառերը։ Վաղը նորից փորձեք։</translation>
+<translation id="2767464022270041271">Պահված գաղտնաբառեր չկան։ Google գաղտնաբառերի կառավարիչը կարող է ստուգել ձեր գաղտնաբառերը, երբ պահում եք դրանք։</translation>
 <translation id="2869959624320573933">Մուտք Chrome</translation>
 <translation id="2957447865124070833">Ընտրեք <ph name="BEGIN_BOLD" />Chrome-ը<ph name="END_BOLD" />։</translation>
 <translation id="3030414234702425231">Դուք դուրս եք գալիս <ph name="SIGNOUT_MANAGED_DOMAIN" /> տիրույթի ադմինիստրատորի կողմից կառավարվող հաշվից: Նկատի առեք, որ Chrome-ի տվյալները սարքից կհեռացվեն, սակայն կմնան ձեր Google հաշվում:</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome-ին չհաջողվեց ստուգել բոլոր գաղտնաբառերը։ Վաղը նորից փորձեք կամ <ph name="BEGIN_LINK" />գաղտնաբառերը ստուգեք ձեր Google հաշվում<ph name="END_LINK" />։</translation>
 <translation id="4819268619367838612">Հավելվածը բարելավելու նպատակով Chrome-ը ուղարկում է օգտագործման և խափանումների մասին տվյալները Google-ին։ <ph name="BEGIN_LINK" />Կառավարել<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Չի աջակցվում Chrome-ի բետա տարբերակում</translation>
+<translation id="4840404732697892756">Google գաղտնաբառերի կառավարիչը կարող է ստուգել ձեր գաղտնաբառերը, երբ մտնեք Google հաշիվ։</translation>
 <translation id="5030102366287574140">Chrome-ը կարող է պաշտպանել տվյալների արտահոսքից, վտանգավոր կայքերից և այլ խնդիրներից։</translation>
 <translation id="5108659628347594808">Օգնեք բարելավել Chrome-ի աշխատանքը</translation>
 <translation id="5119391094379141756">Ընտրեք Chrome-ը։</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome-ը պարբերաբար hամեմատում է ձեր գաղտնաբառերը ցուցակների հետ, որոնք հրապարակվել են առցանց։ Այդ ժամանակ ձեր գաղտնաբառերը և օգտանունները գաղտնագրվում են, այնպես որ ոչ ոք չի կարող կարդալ դրանք, նույնիսկ Google-ը։</translation>
 <translation id="5639704535586432836">Անցեք Կարգավորումներ &gt; Գաղտնիություն &gt; Տեսախցիկ &gt; Google Chrome և միացրեք ֆոտոխցիկը։</translation>
 <translation id="5642200033778930880">Google Chrome-ը չի կարող օգտագործել ֆոտոխցիկը տրոհված տեսքի ռեժիմում</translation>
+<translation id="5661521615548540542">Google գաղտնաբառերի կառավարիչը չկարողացավ ստուգել բոլոր գաղտնաբառերը։ Փորձեք ավելի ուշ։</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Կապ չկա, Chrome-ը չի կարող ստուգել թարմացումների առկայությունը</translation>
 <translation id="5716154293141027663">Բացեք Chrome-ն ամեն անգամ, երբ այլ հավելվածներում հպում եք հղումների</translation>
@@ -118,9 +122,11 @@
   2. Հպեք «Դիտարկիչի կանխադրված հավելված»։
   3. Ընտրեք Chrome-ը։</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google գաղտնաբառերի կառավարիչը չկարողացավ ստուգել բոլոր գաղտնաբառերը։ Վաղը նորից փորձեք կամ <ph name="BEGIN_LINK" />գաղտնաբառերը ստուգեք ձեր Google հաշվում<ph name="END_LINK" />։</translation>
 <translation id="8736550665979974340">Եղեք պաշտպանված Google Chrome-ի հետ</translation>
 <translation id="8772179140489533211">Ցույց է տալիս հաղորդագրություն Chrome-ում մուտք գործելու համար։</translation>
 <translation id="8788269841521769222">Այս գաղտնաբառը հիշելու կարիք չկա։ Այն կպահվի <ph name="EMAIL" /> հաշվի Google Գաղտնաբառերի կառավարիչում։</translation>
+<translation id="8857676124663337448">Google գաղտնաբառերի կառավարիչը չկարողացավ ստուգել բոլոր գաղտնաբառերը։ Վաղը նորից փորձեք։</translation>
 <translation id="8897749957032330183">Գաղտնաբառերը պահվում են այս սարքի Google գաղտնաբառերի կառավարիչում։</translation>
 <translation id="8969290730818637510">Երբ գործառույթը միացված է.
 <ph name="BEGIN_INDENT" />  • Օգնեք ավելի լավը դարձնել Chrome-ը ձեզ նման օգտատերերի համար։<ph name="END_INDENT" />

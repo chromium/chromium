@@ -420,9 +420,11 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3289674678944039601">Po karikohet përmes përshtatësit</translation>
 <translation id="3290356915286466215">I pasiguruar</translation>
 <translation id="3294437725009624529">Vizitor</translation>
+<translation id="3298690094479023523">Kod PIN ose fjalëkalimi yt nuk mund të verifikoheshin ende. Provo përsëri.</translation>
 <translation id="3307642347673023554">Kaloi në modalitetin e laptopit</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> mund të identifikohet përsëri më vonë.</translation>
 <translation id="3321628682574733415">Kod i gabuar prindi</translation>
+<translation id="332827762492701193">Njoftimet janë të fshehura</translation>
 <translation id="3339826665088060472">"Regjistrimi i ekranit", veglat për të nxjerrë pamje ekrani dhe regjistrime ekrani</translation>
 <translation id="3340978935015468852">cilësimet</translation>
 <translation id="3341303451326249809">Pamja e ekranit u regjistrua</translation>
@@ -559,6 +561,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4017989525502048489">Treguesi me lazer</translation>
 <translation id="401993194061514265">Shënuesi nuk ofrohet. Rihap "Transmetimin e ekranit".</translation>
 <translation id="4021716437419160885">Lëviz poshtë</translation>
+<translation id="4024840464866786680">Nëse e ke harruar kodin PIN dhe fjalëkalimin ose e ke ndryshuar së fundi fjalëkalimin e "Llogarisë sate të Google", provo ta rikuperosh këtë përdorues.</translation>
 <translation id="4028481283645788203">Kërkohet fjalëkalimi për më shumë siguri</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Po ndan ekranin</translation>
@@ -699,10 +702,12 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4735944890391795473">Tavolina e punës 12</translation>
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4740516757091333363">Të fshihet tavolina e ruajtur e punës?</translation>
+<translation id="4747410141429390146">Shkyçe për të parë njoftimet</translation>
 <translation id="4752784485658729358">Lejohen vetëm 6 tavolina të ruajtura pune. Hiq një tavolinë pune për të ruajtur një të re.</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
 <translation id="4762573482154983647">Fshi aplikacionet</translation>
 <translation id="4774338217796918551">Kthehu përsëri nesër në <ph name="COME_BACK_TIME" />.</translation>
+<translation id="4776584068981882959">Fjalëkalimi yt nuk mund të verifikohej ende. Provo përsëri.</translation>
 <translation id="4776917500594043016">Fjalëkalimi për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Dyqani i Play</translation>
 <translation id="4778095205580009397">"Asistenti i Google" nuk ofrohet në një sesion demonstrimi.</translation>
@@ -842,6 +847,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5536723544185013515">Aplikacionet e fundit; navigo me tastet e shigjetës majtas ose djathtas për të pasur qasje te të gjitha aplikacionet e fundit</translation>
 <translation id="553675580533261935">Po del nga seanca</translation>
 <translation id="5537725057119320332">Transmeto</translation>
+<translation id="5546397813406633847">Rikupero përdoruesin</translation>
 <translation id="554893713779400387">Ndërro diktimin</translation>
 <translation id="5558091555391176027">Aktivizo/çaktivizo dukshmërinë e lartë për "Ndarjen në afërsi"</translation>
 <translation id="5560420195677022218">Shiko aplikacionet e telefonit në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
@@ -858,6 +864,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5618148318840095371">Të kemi kaluar në një rrjet më të mirë</translation>
 <translation id="5619862035903135339">Politika e administratorit çaktivizon regjistrimin e ekranit</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">Fjalëkalimi yt nuk mund të verifikohej. Provo përsëri.</translation>
 <translation id="5648021990716966815">Fisha e mikrofonit</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> kërkon vëmendjen tënde.</translation>
 <translation id="5662075790140998213">Tavolina e punës 10</translation>
@@ -876,6 +883,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5707775774148071965">Pajisja jote mbështet një shpejtësi më të lartë të të dhënave sesa kablloja. Cilësia e funksionimit të pajisjes mund të jetë e kufizuar.</translation>
 <translation id="5710450975648804523">"Mos shqetëso" është aktiv</translation>
 <translation id="571295407079589142">Të dhënat celulare janë çaktivizuar</translation>
+<translation id="5727460725221669831">Nëse e ke harruar fjalëkalimin tënd ose e ke ndryshuar së fundi fjalëkalimin e "Llogarisë sate të Google", provo ta rikuperosh këtë përdorues.</translation>
 <translation id="573413375004481890">Kjo pajisje nuk mund t'i mbështeste të gjitha ekranet, kështu që një prej tyre është shkëputur</translation>
 <translation id="5740328398383587084">Ndarja në afërsi</translation>
 <translation id="574392208103952083">Mesatar</translation>

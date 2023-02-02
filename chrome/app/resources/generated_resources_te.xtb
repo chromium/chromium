@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">వర్చువల్ మెషిన్‌ను ప్రారంభించడంలో ఎర్రర్ ఏర్పడింది. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="1087965115100412394">MIDI పరికరాలను కనెక్ట్ చేయడానికి సైట్‌లను అనుమతించకండి</translation>
 <translation id="1088659085457112967">రీడర్ మోడ్‌లోకి ఎంటర్ అవ్వండి</translation>
-<translation id="1089407731410758060">రూపాన్ని మార్చండి</translation>
 <translation id="1090126737595388931">నేపథ్య యాప్‌లు ఏవి అమలులో లేవు</translation>
 <translation id="1090541560108055381">పెయిర్ చేసే ముందు, రెండు పరికరాల్లో ఈ కోడ్ ఒకేలా ఉందని నిర్ధారించుకోండి</translation>
 <translation id="1091767800771861448">దాటవేయడానికి ESCAPEను నొక్కండి (అనధికార బిల్డ్‌లకు మాత్రమే)</translation>
@@ -550,6 +549,7 @@
 <translation id="1495677929897281669">తిరిగి ట్యాబ్‌కు వెళ్లు</translation>
 <translation id="1500297251995790841">తెలియని పరికరం [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">సపోర్ట్ చేయని Chrome యాప్‌ల గురించి మరింత తెలుసుకోండి</translation>
+<translation id="1501480321619201731">గ్రూప్‌ను తొలగించండి</translation>
 <translation id="1503392482221435031">వినియోగ గణాంకాలను ఆటోమేటిక్‌గా Googleకు పంపుతుంది. మీరు మీ పరికర సెట్టింగ్‌లలో క్రాష్ రిపోర్ట్‌లను ఆన్ లేదా ఆఫ్ చేయవచ్చు.</translation>
 <translation id="150411034776756821"><ph name="SITE" />ని తీసివేయండి</translation>
 <translation id="1504551620756424144">Windowsలో <ph name="BASE_DIR" />లో షేర్ చేసిన ఫోల్డర్‌లు అందుబాటులో ఉన్నాయి.</translation>
@@ -2111,7 +2111,6 @@
 <translation id="2835547721736623118">ప్రసంగ గుర్తింపు సర్వీస్</translation>
 <translation id="2836232638504556905">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK" />గోప్యతా పాలసీని<ph name="END_LINK" /> చూడండి.</translation>
 <translation id="2836269494620652131">క్రాష్</translation>
-<translation id="2836635946302913370">ఈ వినియోగదారు పేరుతో సైన్ ఇన్ చేయడం, మీ నిర్వాహకుడి ద్వారా నిలిపివేయబడింది.</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> నెట్‌వర్క్‌ను ఉపయోగించడానికి, మొదట దిగువ ఇంటర్నెట్‌కు మీ కనెక్షన్‌ను పూర్తి చేయండి.</translation>
 <translation id="2838379631617906747">ఇన్‌స్టాల్ చేస్తోంది</translation>
 <translation id="2839032553903800133">నోటిఫికేషన్‌లు బ్లాక్ చేయబడ్డాయి</translation>
@@ -2920,6 +2919,7 @@
 <translation id="3602290021589620013">ప్రివ్యూ</translation>
 <translation id="3602870520245633055">ప్రింట్ చేయండి, స్కాన్ చేయండి</translation>
 <translation id="3603622770190368340">నెట్‌వర్క్ ప్రమాణపత్రాన్ని పొందండి</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} ఖాతా ఒకే పాస్‌వర్డ్‌ను ఉపయోగిస్తోంది}other{{COUNT} ఖాతాలు ఒకే పాస్‌వర్డ్‌ను ఉపయోగిస్తున్నాయి}}</translation>
 <translation id="3605780360466892872">బటన్‌డౌన్</translation>
 <translation id="3609277884604412258">త్వరిత సెర్చ్</translation>
 <translation id="3610241585790874201">మీ పరికరంలో డేటాను సేవ్ చేయడానికి సైట్‌కు అనుమతి లేదు</translation>
@@ -3628,7 +3628,6 @@
 <translation id="4244238649050961491">మరిన్ని స్టైలస్ యాప్‌లను కనుగొనండి</translation>
 <translation id="4246980464509998944">అదనపు కామెంట్‌లు:</translation>
 <translation id="424726838611654458">ఎల్లప్పుడూ Adobe Readerలో తెరువు</translation>
-<translation id="4247901771970415646"><ph name="USERNAME" />కి సింక్ చేయడం సాధ్యం కాదు</translation>
 <translation id="4248098802131000011">డేటా ఉల్లంఘనలు, ఇతర సెక్యూరిటీ సమస్యల నుండి మీ పాస్‌వర్డ్‌లను సురక్షితంగా ఉంచుకోండి</translation>
 <translation id="4249248555939881673">నెట్‌వర్క్ కనెక్షన్ కోసం వేచి ఉంది...</translation>
 <translation id="4249373718504745892">మీ కెమెరా మరియు మైక్రోఫోన్‌ను యాక్సెస్‌ చేయకుండా ఈ పేజీ బ్లాక్ చేయబడింది.</translation>
@@ -4848,6 +4847,7 @@
 <translation id="5382591305415226340">మద్దతు గల లింక్‌లను నిర్వహించండి</translation>
 <translation id="5383377866517186886">Mac సిస్టమ్ ప్రాధాన్యతలలో కెమెరా ఆఫ్ చేయబడింది</translation>
 <translation id="5383740867328871413">పేరు లేని గ్రూప్ - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">ఎంటర్‌ప్రైజ్ పాలసీ మార్చబడింది. టూల్‌బార్‌కు ప్రయోగాల బటన్ జోడించబడింది. ప్రయోగాలను ఎనేబుల్ చేసేందుకు డైలాగ్‌ను తెరవడానికి బటన్‌ను క్లిక్ చేయండి.</translation>
 <translation id="5388885445722491159">జత చేయబడింది</translation>
 <translation id="5390112241331447203">ఫీడ్‌బ్యాక్ రిపోర్ట్‌లలో పంపించబడిన system_logs.txt fileను కూడా చేర్చండి.</translation>
@@ -5062,6 +5062,7 @@
 <translation id="5578059481725149024">ఆటోమేటిక్ సైన్-ఇన్</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> భాషకు అనువాదం పూర్తయింది</translation>
 <translation id="558170650521898289">Microsoft Windows హార్డ్‌వేర్ డ్రైవర్ ధృవీకరణ</translation>
+<translation id="5581876958763461074">అన్ని గమనికలు</translation>
 <translation id="5581972110672966454">పరికరాన్ని డొమైన్‌కు చేర్చడం సాధ్యపడదు. దయచేసి మళ్లీ ట్రై చేయండి లేదా మీ పరికర ఓనర్‌ను లేదా అడ్మినిస్ట్రేట‌ర్‌ను సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">ప్రధాన మెనూ</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5712,7 +5713,6 @@
 <translation id="617213288191670920">భాషలు ఏవీ జోడించబడలేదు</translation>
 <translation id="6173623053897475761">మీ పిన్‌ని మళ్లీ టైప్ చేయండి</translation>
 <translation id="6175314957787328458">Microsoft డొమైన్ GUID</translation>
-<translation id="6176043333338857209">మీ భద్రతా కీతో కమ్యూనికేట్ చేయడానికి బ్లూటూత్‌ తాత్కాలికంగా ఆన్ చేయబడుతుంది</translation>
 <translation id="6178664161104547336">ఒక సర్టిఫికెట్‌ను ఎంచుకోండి</translation>
 <translation id="6178682841350631965">మీ సైన్-ఇన్ డేటా అప్‌డేట్ చేయబడింది</translation>
 <translation id="6180510783007738939">లైన్ టూల్</translation>

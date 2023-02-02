@@ -596,7 +596,6 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5520466080178053306">Tik op Wachtwoordmanager en tik dan op Toevoegen</translation>
 <translation id="5525095647255982834">Als je dit tabblad naar een ander apparaat wilt sturen, log je daar in bij Chrome.</translation>
 <translation id="5525269841082836315">Wachtwoordzin maken</translation>
-<translation id="5530084793407600786">Zoeken in afbeelding met Google</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> gevonden</translation>
 <translation id="5548760955356983418">Met Handoff kun je een website op dit apparaat bezoeken en vervolgens makkelijk verder bezoeken op je Mac. De momenteel geopende website zie je in het Dock van je Mac.
 
@@ -709,6 +708,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6284652193729350524">Aanbieden om <ph name="LANGUAGE" /> te vertalen</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> is ontvolgd</translation>
 <translation id="6293101329759844770">Als je Safe Browsing wilt gebruiken, open je <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> en tik je op Safe Browsing.</translation>
+<translation id="6320780930074869063">Als deze instelling aanstaat, worden wachtwoorden opgeslagen in <ph name="ACCOUNT" />. Als dit uitstaat, worden wachtwoorden alleen opgeslagen op dit apparaat.</translation>
 <translation id="6321526113093607004">Toevoegen aan bookmarks</translation>
 <translation id="6324669097367352121">Inloginstellingen</translation>
 <translation id="6337234675334993532">Versleuteling</translation>

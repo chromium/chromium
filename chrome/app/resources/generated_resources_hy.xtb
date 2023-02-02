@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">Չհաջողվեց մեկնարկել վիրտուալ մեքենան: Նորից փորձեք:</translation>
 <translation id="1087965115100412394">Թույլ չտալ կայքերին միանալ MIDI սարքերին</translation>
 <translation id="1088659085457112967">Անցնել ընթերցման ռեժիմի</translation>
-<translation id="1089407731410758060">Փոխել թեման</translation>
 <translation id="1090126737595388931">Հետնաշերտում աշխատող հավելվածներ չկան</translation>
 <translation id="1090541560108055381">Զուգակցելուց առաջ համոզվեք, որ այս կոդը համընկնում է երկու սարքերում</translation>
 <translation id="1091767800771861448">Բաց թողնելու համար սեղմեք ESCAPE (միայն ոչ պաշտոնական կառույցներ):</translation>
@@ -549,6 +548,7 @@
 <translation id="1495677929897281669">Վերադառնալ ներդիր</translation>
 <translation id="1500297251995790841">Անհայտ սարք [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Իմանալ ավելին Chrome-ի չաջակցվող հավելվածների մասին</translation>
+<translation id="1501480321619201731">Ջնջել խումբը</translation>
 <translation id="1503392482221435031">Ավտոմատ կերպով Google-ին է ուղարկում օգտագործման վիճակագրությունը։ Խափանումների մասին հաշվետվությունները կարող եք միացնել/անջատել ձեր սարքի կարգավորումներում։</translation>
 <translation id="150411034776756821">Հեռացնել <ph name="SITE" /> կայքը</translation>
 <translation id="1504551620756424144">Ընդհանուր պանակները Windows-ում հասանելի են այստեղ՝ <ph name="BASE_DIR" />։</translation>
@@ -2099,7 +2099,6 @@
 <translation id="2835547721736623118">Խոսքի ճանաչման ծառայություն</translation>
 <translation id="2836232638504556905">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK" />գաղտնիության քաղաքականությանը<ph name="END_LINK" />։</translation>
 <translation id="2836269494620652131">Խափանում</translation>
-<translation id="2836635946302913370">Այս օգտանունով մուտքը կասեցվել է ձեր ադմինիստրատորի կողմից:</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> ցանցն օգտագործելու համար նախ կապակցվեք համացանցին:</translation>
 <translation id="2838379631617906747">Տեղադրվում է</translation>
 <translation id="2839032553903800133">Ծանուցումներն արգելափակված են</translation>
@@ -2908,6 +2907,7 @@
 <translation id="3602290021589620013">Նախադիտում</translation>
 <translation id="3602870520245633055">Տպում և սկանավորում</translation>
 <translation id="3603622770190368340">Ցանցային վկայագրի ստացում</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} հաշվում նույն գաղտնաբառն է օգտագործվում}one{{COUNT} հաշվում նույն գաղտնաբառն է օգտագործվում}other{{COUNT} հաշվում նույն գաղտնաբառն է օգտագործվում}}</translation>
 <translation id="3605780360466892872">Գործարար</translation>
 <translation id="3609277884604412258">Արագ որոնում</translation>
 <translation id="3610241585790874201">Ձեր սարքում չի թույլատրվում տվյալներ պահել</translation>
@@ -3616,7 +3616,6 @@
 <translation id="4244238649050961491">Որոնել ստիլուսի համար այլ հավելվածներ</translation>
 <translation id="4246980464509998944">Լրացուցիչ մեկնաբանություններ՝</translation>
 <translation id="424726838611654458">Միշտ բացել Adobe Reader-ում</translation>
-<translation id="4247901771970415646">Չհաջողվեց համաժամացնել <ph name="USERNAME" /> հաշվի հետ</translation>
 <translation id="4248098802131000011">Պաշտպանեք ձեր գաղտնաբառերը տվյալների արտահոսքից և անվտանգության հետ կապված այլ խնդիրներից</translation>
 <translation id="4249248555939881673">Սպասում է ցանցի կապակցմանը…</translation>
 <translation id="4249373718504745892">Այս էջին արգելված է օգտագործել ձեր տեսախցիկն ու խոսափողը:</translation>
@@ -3837,6 +3836,7 @@
 <translation id="4441147046941420429">Շարունակելու համար հանեք անվտանգության բանալին սարքից, ապա նորից տեղադրեք ու հպեք դրան:</translation>
 <translation id="444134486829715816">Ընդարձակել…</translation>
 <translation id="4441928470323187829">Ամրացվել է ադմինիստրատորի կողմից</translation>
+<translation id="4442863809158514979">Դիտել վեբ թույլտվությունները</translation>
 <translation id="4443536555189480885">&amp;Օգնություն</translation>
 <translation id="4444304522807523469">Մուտք գործել փաստաթղթի տեսածրիչներ, որոնց կցված են USB-ի կամ տեղային ցանցի միջոցով</translation>
 <translation id="4444512841222467874">Եթե չազատեք տարածք, օգտատերերն ու տվյալները կարող են ավտոմատ ջնջվել:</translation>
@@ -5698,7 +5698,6 @@
 <translation id="617213288191670920">Լեզուներ չեն ավելացվել</translation>
 <translation id="6173623053897475761">Նորից մուտքագրեք PIN-ը</translation>
 <translation id="6175314957787328458">Microsoft տիրույթի GUID</translation>
-<translation id="6176043333338857209">Bluetooth-ը ժամանակավորապես կմիանա՝ անվտանգության բանալին միացնելու համար</translation>
 <translation id="6178664161104547336">Ընտրեք վկայագիր</translation>
 <translation id="6178682841350631965">Ձեր մուտքի տվյալները թարմացվեցին</translation>
 <translation id="6180510783007738939">«Գիծ» գործիք</translation>
@@ -7466,6 +7465,7 @@
 <translation id="779308894558717334">Բաց կանաչ</translation>
 <translation id="7793098747275782155">Մուգ կապույտ</translation>
 <translation id="7797571222998226653">Անջատ</translation>
+<translation id="7798504574384119986">Դիտել վեբ թույլտվությունները</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" />՝ ավտոմատ արգելափակվել է</translation>
 <translation id="7800518121066352902">Պտտել &amp;սլաքի հակառակ ուղղությամբ</translation>
 <translation id="7801679634091975683">Այստեղ արված փոփոխությունները կիրառվում են միայն Lacros Chrome դիտարկիչում։ Chrome դիտարկիչի կարգավորումները փոխելու համար բացեք Chrome-ը և անցեք կարգավորումներ։</translation>

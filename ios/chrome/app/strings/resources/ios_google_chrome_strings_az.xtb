@@ -3,6 +3,7 @@
 <translationbundle lang="az">
 <translation id="1143896152279775643">Parolunuz <ph name="EMAIL" /> üçün Google Parol Menecerində saxlanacaq.</translation>
 <translation id="1282031177488366470">Chrome'un Funksiyalarını və Performansını təkmilləşdirməyə kömək edin</translation>
+<translation id="1352919863522755794">Google Parol Meneceri parollarınızı yoxlaya bilmədi. İnternet bağlantınızı yoxlayın.</translation>
 <translation id="1462727070346936664">Chrome'dan maksimum yararlanmaq üçün daxil olun.</translation>
 <translation id="1479202195792305274">Google Hesabınız ilə daxil olduqda Chrome parollarınızı yoxlaya bilər.</translation>
 <translation id="1493827051843127077">Tablar, parollar və ödəniş məlumatlarınızı bütün cihazlarınızda sinxronlaşdırmaq üçün defolt olaraq Chrome'u ayarlayın</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Bütün vebsaytlarda Google Hesabınızdan çıxmaq üçün <ph name="BEGIN_LINK" />Chrome'dan çıxın<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome güncəlləmələri yoxlaya bilmədi. Sonra cəhd edin.</translation>
 <translation id="2732745070297234559">Chrome bütün parolları yoxlaya bilmədi. Sabah yenidən cəhd edin.</translation>
+<translation id="2767464022270041271">Yadda saxlanmış parol yoxdur. Parollarınızı yadda saxladıqda Google Parol Meneceri onları yoxlaya bilər.</translation>
 <translation id="2869959624320573933">Chrome'a daxil olun</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> seçin</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tərəfindən idarə edilən hesabdan çıxdığınıza görə Chrome datası bu cihazdan silinəcək. Datanız Google Hesabında qalacaq.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome bütün parolları yoxlaya bilmədi. Sabah yenidən cəhd edin və ya <ph name="BEGIN_LINK" />Google Hesabınızda parolları yoxlayın.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">Tətbiqi təkmilləşdirməyə kömək etmək üçün Chrome istifadə və qəza datasını Google'a göndərir. <ph name="BEGIN_LINK" />İdarə edin<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome Beta'da dəstəklənmir</translation>
+<translation id="4840404732697892756">Google Hesabınız ilə daxil olduqda Google Parol Meneceri parollarınızı yoxlaya bilər.</translation>
 <translation id="5030102366287574140">Chrome sizi data pozuntuları, güvənli olmayan vebsaytlar və digər güvənlik məsələlərindən qoruya bilər.</translation>
 <translation id="5108659628347594808">Chrome'u yaxşılaşdırın</translation>
 <translation id="5119391094379141756">Chrome seçin</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome müntəzəm olaraq onlayn yayımlanan siyahılar əsasında parollarınızı yoxlayır. Bunu edərkən, parollar və istifadəçi adları şifrələnir ki, Google daxil olmaqla, heç kim onları oxuya bilməsin.</translation>
 <translation id="5639704535586432836">Kameranı aktiv etmək üçün Ayarlar &gt; Gizlilik &gt; Kamera &gt; Google Chrome bölməsini açın.</translation>
 <translation id="5642200033778930880">Google Chrome kameranızı Bölünmüş Görüntü rejimində istifadə edə bilməz</translation>
+<translation id="5661521615548540542">Google Parol Meneceri bütün parolları yoxlaya bilmədi. Sonra cəhd edin.</translation>
 <translation id="5690427481109656848">Google MMC</translation>
 <translation id="571296537125272375">Oflayndır, Chrome güncəlləmələri yoxlaya bilmir</translation>
 <translation id="5716154293141027663">Digər tətbiqlərdə istənilən vaxt keçidlərə toxunduqda Chrome açılsın</translation>
@@ -118,9 +122,11 @@
   2. Defolt Brauzer Tətbiqinə toxunun
   3. Chrome seçin.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Parol Meneceri bütün parolları yoxlaya bilmədi. Sabah yenidən cəhd edin və ya <ph name="BEGIN_LINK" />Google Hesabınızda parolları yoxlayın.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Google Chrome ilə Təhlükəsiz Qalın</translation>
 <translation id="8772179140489533211">Chrome'a giriş tələblərini göstərir.</translation>
 <translation id="8788269841521769222">Bu parolu yadda saxlamağa ehtiyac yoxdur. O, <ph name="EMAIL" /> üçün Google Parol Menecerində saxlanacaq</translation>
+<translation id="8857676124663337448">Google Parol Meneceri bütün parolları yoxlaya bilmədi. Sabah yenidən cəhd edin.</translation>
 <translation id="8897749957032330183">Parollar bu cihazda Google Parol Menecerində saxlanılır.</translation>
 <translation id="8969290730818637510">Aktiv olduqda:
 <ph name="BEGIN_INDENT" />  • Chrome'u sizin kimi istifadə edən insanlar üçün yaxşılaşdırmağa kömək edin.<ph name="END_INDENT" />

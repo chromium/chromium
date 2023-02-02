@@ -3,6 +3,7 @@
 <translationbundle lang="am">
 <translation id="1143896152279775643">የይለፍ ቃልዎ ለ<ph name="EMAIL" /> በGoogle የይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣል።</translation>
 <translation id="1282031177488366470">የChrome ባህሪያት እና አፈጻጸም እንዲሻሻል ያግዙ</translation>
+<translation id="1352919863522755794">Google የይለፍ ቃል አስተዳዳሪ የእርስዎን የይለፍ ቃላት ሊፈትሽ አልቻለም። የበይነመረብ ግንኙነትዎን ለመፈተሽ ይሞክሩ።</translation>
 <translation id="1462727070346936664">ከChrome የሚችሉትን ሁሉ ለማግኘት በመለያ ይግቡ።</translation>
 <translation id="1479202195792305274">Chrome በእርስዎ የGoogle መለያ በሚገቡበት ጊዜ የእርስዎን የይለፍ ቃላትን ሊፈትሽ ይችላል።</translation>
 <translation id="1493827051843127077">በሁሉም መሣሪያዎችዎ ላይ ትሮችዎን፣ የይለፍ ቃላትዎን እና የክፍያ መረጃዎን ለማስመር Chromeን እንደ ነባሪ ያዘጋጁ</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">በሁሉም ድር ጣቢያዎች ላይ የእርስዎን የGoogle መለያ ዘግተው ለመውጣት <ph name="BEGIN_LINK" />ከChrome ዘግተው ይውጡ<ph name="END_LINK" />።</translation>
 <translation id="2695886661449553974">Chrome ዝማኔዎች ካሉ መፈተሽ አልቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="2732745070297234559">Chrome ሁሉንም የይለፍ ቃላት ማረጋገጥ አልቻለም። ነገ እንደገና ይሞክሩ።</translation>
+<translation id="2767464022270041271">ምንም የተቀመጡ የይለፍ ቃላት የሉም። Google የይለፍ ቃል አስተዳዳሪ የይለፍ ቃላትዎን ሲያስቀምጡ ሊፈትሻቸው ይችላል።</translation>
 <translation id="2869959624320573933">በመለያ ወደ Chrome ይግቡ</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />ን ይምረጡ</translation>
 <translation id="3030414234702425231">እርስዎ በ<ph name="SIGNOUT_MANAGED_DOMAIN" /> ከሚተዳደር መለያ ዘግተው እየወጡ ስለሆነ Chrome ውሂብዎ ከዚህ መሣሪያ ላይ ይሰረዛል። የእርስዎ ውሂብ በእርስዎ Google መለያ ውስጥ ይቆያል።</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome ሁሉንም የይለፍ ቃላት ማረጋገጥ አልቻለም። ነገ እንደገና ይሞክሩ ወይም <ph name="BEGIN_LINK" />የGoogle መለያዎን ይለፍ ቃላት ይፈትሹ።<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">መተግበሪያውን ለማሻሻል ለማገዝ Chrome የአጠቃቀም እና የስንክል ውሂብን ወደ Google ይልካል። <ph name="BEGIN_LINK" />አቀናብር<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">በChrome ቅድመ-ይሁንታ ላይ አይደገፍም</translation>
+<translation id="4840404732697892756">Google የይለፍ ቃል አስተዳዳሪ እርስዎ በGoogle መለያዎ ሲገቡ የይለፍ ቃላትዎን ሊፈትሻቸው ይችላል።</translation>
 <translation id="5030102366287574140">Chrome ከውሂብ ጥሰቶች፣ ደህንነታቸው ካልተጠበቁ ድር ጣቢያዎች እና ከተጨማሪ ነገሮች ደህንነትዎን ለመጠበቅ ሊያግዘዎት ይችላል።</translation>
 <translation id="5108659628347594808">Chromeን የተሻለ ያድርጉት</translation>
 <translation id="5119391094379141756">Chromeን ይምረጡ</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome በተወሰነ ጊዜ ልዩነት በመስመር ላይ ከታተሙ ዝርዝሮች አንጻር የእርስዎን የይለፍ ቃላት ይፈትሻል። ይህን በሚያደርግበት ጊዜ፣ የእርስዎ የይለፍ ቃላት እና የተጠቃሚ ስሞች Googleን ጨምሮ በማንም ሌላ ወገን እንዳይነበቡ ይመሣጠራሉ።</translation>
 <translation id="5639704535586432836">ቅንብሮች &gt; ግላዊነት &gt; ካሜራ &gt; Google Chromeን ይክፈቱና ካሜራውን ያብሩ።</translation>
 <translation id="5642200033778930880">Google Chrome ካሜራዎን በተከፈለ እይታ ሁነታ መጠቀም አይችልም</translation>
+<translation id="5661521615548540542">Google የይለፍ ቃል አስተዳዳሪ ሁሉንም የይለፍ ቃላት መፈተሽ አልቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">ከመስመር ውጭ፣ Chrome ዝማኔዎች ካሉ መፈተሽ አልቻለም</translation>
 <translation id="5716154293141027663">በሌሎች መተግበሪያዎች ውስጥ ያሉ አገናኞችን በማንኛውም ጊዜ መታ ሲያደርጉ Chromeን ይክፈቱ</translation>
@@ -118,9 +122,11 @@
   2. ነባሪ የአሳሽ መተግበሪያን መታ ያድርጉ
   3. Chromeን ይምረጡ።</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google የይለፍ ቃል አስተዳዳሪ ሁሉንም የይለፍ ቃላት መፈተሽ አልቻለም። ነገ እንደገና ይሞክሩ ወይም <ph name="BEGIN_LINK" />በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ይፈትሹ።<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">በGoogle Chrome አማካኝነት ደህንነትዎን ይጠብቁ</translation>
 <translation id="8772179140489533211">ወደ Chrome ለመግባት ጥያቄዎችን ያሳያል።</translation>
 <translation id="8788269841521769222">ይህን የይለፍ ቃል ማስታወስ አያስፈልገዎትም። ለ<ph name="EMAIL" /> በGoogle የይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣል</translation>
+<translation id="8857676124663337448">Google የይለፍ ቃል አስተዳዳሪ ሁሉንም የይለፍ ቃላት መፈተሽ አልቻለም። ነገ እንደገና ይሞክሩ።</translation>
 <translation id="8897749957032330183">የይለፍ ቃላት በዚህ መሣሪያ ላይ ባለው የGoogle የይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣሉ።</translation>
 <translation id="8969290730818637510">ሲበራ፦
 <ph name="BEGIN_INDENT" />  • Chrome እርስዎ በሚጠቀሙበት መንገድ ለሚጠቀሙ ሰዎች የተሻለ እንዲሆን ያግዙ።<ph name="END_INDENT" />

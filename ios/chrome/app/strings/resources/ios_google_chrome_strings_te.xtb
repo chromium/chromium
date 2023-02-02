@@ -3,6 +3,7 @@
 <translationbundle lang="te">
 <translation id="1143896152279775643">మీ పాస్‌వర్డ్ <ph name="EMAIL" /> కోసం Google Password Managerకు సేవ్ చేయబడుతుంది.</translation>
 <translation id="1282031177488366470">Chrome ఫీచర్‌లు మరియు పనితీరును మెరుగుపరచడంలో సహాయపడండి</translation>
+<translation id="1352919863522755794">Google Password Manager మీ పాస్‌వర్డ్‌లను చెక్ చేయలేకపోయింది. మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="1462727070346936664">Chrome నుండి మరిన్ని ప్రయోజనాలను పొందడానికి సైన్ ఇన్ చేయండి.</translation>
 <translation id="1479202195792305274">మీరు మీ Google ఖాతాతో సైన్ ఇన్ చేసినప్పుడు, Chrome మీ పాస్‌వర్డ్‌లను చెక్ చేయగలదు.</translation>
 <translation id="1493827051843127077">మీ అన్ని పరికరాలలో ట్యాబ్‌లు, పాస్‌వర్డ్‌లను, అలాగే పేమెంట్ సమాచారాన్ని సింక్ చేయడానికి Chromeను డిఫాల్ట్‌గా సెట్ చేయండి</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">అన్ని వెబ్‌సైట్‌లలో మీ Google ఖాతా నుండి సైన్ అవుట్ చేయడానికి, <ph name="BEGIN_LINK" />Chrome నుండి సైన్ అవుట్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome అప్‌డేట్‌లు ఏమైనా ఉన్నాయో లేదో చెక్ చేయలేకపోయింది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2732745070297234559">Chromeకు అన్ని పాస్‌వర్డ్‌లను చెక్ చేయడం సాధ్యపడలేదు. రేపు మళ్లీ ట్రై చేయండి.</translation>
+<translation id="2767464022270041271">సేవ్ చేసిన పాస్‌వర్డ్‌లు ఏవీ లేవు. మీరు వాటిని సేవ్ చేసినప్పుడు Google Password Manager మీ పాస్‌వర్డ్‌లను చెక్ చేయవచ్చు.</translation>
 <translation id="2869959624320573933">Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />ను ఎంచుకోండి</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> నిర్వహిస్తున్న ఖాతా నుండి మీరు సైన్ అవుట్ చేస్తున్నారు కనుక మీ Chrome డేటా ఈ పరికరం నుండి తొలగించబడుతుంది. మీ డేటా మీ Google ఖాతాలో అలాగే ఉంటుంది.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chromeకు అన్ని పాస్‌వర్డ్‌లను చెక్ చేయడం సాధ్యపడలేదు. రేపు మళ్లీ ట్రై చేయండి లేదా <ph name="BEGIN_LINK" />మీ Google ఖాతాలో పాస్‌వర్డ్‌లను చెక్ చేయండి.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">యాప్‌ను మెరుగుపరచుకోవడంలో సహాయపడటానికి Chrome, వినియోగ, క్రాష్ డేటాను Googleకు పంపుతుంది. <ph name="BEGIN_LINK" />మేనేజ్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome బీటాలో సపోర్ట్ చేయదు</translation>
+<translation id="4840404732697892756">మీరు Google ఖాతాతో సైన్ ఇన్ చేసినప్పుడు Google Password Manager మీ పాస్‌వర్డ్‌లను చెక్ చేయవచ్చు.</translation>
 <translation id="5030102366287574140">డేటా ఉల్లంఘనలు, సురక్షితం కాని వెబ్‌సైట్‌లు, మరిన్నింటి నుండి మిమ్మల్ని సురక్షితంగా ఉంచడంలో Chrome సహాయపడగలదు.</translation>
 <translation id="5108659628347594808">Chromeను మెరుగుపరచండి</translation>
 <translation id="5119391094379141756">Chromeను ఎంచుకోండి</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">ఆన్‌లైన్‌లో పబ్లిష్ చేయబడిన లిస్ట్‌లలో మీ పాస్‌వర్డ్ ఒకవేళ ఉందా అని Chrome తరచుగా చెక్ చేస్తూ ఉంటుంది. Chrome ఈ ప్రాసెస్‌ను చేస్తున్నప్పుడు, మీ పాస్‌వర్డ్‌లు, యూజర్‌నేమ్‌లు ఎన్‌క్రిప్ట్ చేయబడతాయి. కాబట్టి, Googleతో సహా ఎవరూ వాటిని తెలుసుకోలేరు.</translation>
 <translation id="5639704535586432836">సెట్టింగ్‌లు &gt; గోప్యత &gt; కెమెరా &gt; Google Chromeని తెరిచి, కెమెరాను ఆన్ చేయండి.</translation>
 <translation id="5642200033778930880">Google Chrome, విభజన వీక్షణ మోడ్‌లో మీ కెమెరాను ఉపయోగించలేదు</translation>
+<translation id="5661521615548540542">Google Password Manager అన్ని పాస్‌వర్డ్‌లను చెక్ చేయలేకపోయింది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">ఆఫ్‌లైన్‌లో ఉన్నందున, Chrome అప్‌డేట్‌లను చెక్ చేయలేదు</translation>
 <translation id="5716154293141027663">ఇతర యాప్‌లలో లింక్‌లను ట్యాప్ చేయడం ద్వారా మీరు ఎప్పుడైనా Chromeను తెరవవచ్చు</translation>
@@ -118,9 +122,11 @@
   2. ఆటోమేటిక్ బ్రౌజర్ యాప్‌ను ట్యాప్ చేయండి
   3. Chromeను ఎంచుకోండి.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Password Manager అన్ని పాస్‌వర్డ్‌లను చెక్ చేయలేకపోయింది. రేపు మళ్లీ ట్రై చేయండి లేదా <ph name="BEGIN_LINK" />మీ Google ఖాతాలో పాస్‌వర్డ్‌లను చెక్ చేయండి.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Google Chromeతో సురక్షితంగా ఉండండి</translation>
 <translation id="8772179140489533211">Chromeకు సైన్ ఇన్ చేయడానికి ప్రాంప్ట్‌లను చూపండి.</translation>
 <translation id="8788269841521769222">మీరు ఈ పాస్‌వర్డ్‌ను గుర్తుపెట్టుకోవాల్సిన అవసరం లేదు. ఇది <ph name="EMAIL" /> కోసం Google Password Managerకు సేవ్ చేయబడుతుంది</translation>
+<translation id="8857676124663337448">Google Password Manager అన్ని పాస్‌వర్డ్‌లను చెక్ చేయలేకపోయింది. రేపు మళ్లీ ట్రై చేయండి.</translation>
 <translation id="8897749957032330183">పాస్‌వర్డ్‌లు ఈ పరికరంలోని Google Password Managerలో సేవ్ చేయబడతాయి.</translation>
 <translation id="8969290730818637510">ఆన్‌లో ఉన్నప్పుడు:
 <ph name="BEGIN_INDENT" />  • మీకు లాగానే Chromeను ఉపయోగించే వ్యక్తుల కోసం, దానిని మెరుగుపరచడంలో సహాయపడండి.<ph name="END_INDENT" />

@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Hysbysebion</translation>
 <translation id="1919950603503897840">Dewis cysylltiadau</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Gwnewch destun a lluniau yn fwy neu'n llai ar gyfer pob gwefan rydych yn ymweld â hi</translation>
 <translation id="1984937141057606926">Wedi'i ganiatáu, ac eithrio trydydd parti</translation>
 <translation id="1989112275319619282">Pori</translation>
 <translation id="1994173015038366702">URL gwefan</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Sain</translation>
 <translation id="2148716181193084225">Heddiw</translation>
 <translation id="216989819110952009">Hyd yn oed gyda'u llygaid wedi'u hamddiffyn gan y sbectol werdd roedd Dorothy a'i ffrindiau wedi'u syfrdanu i ddechrau gan y</translation>
+<translation id="2176704795966505152">Dangos yr opsiwn chwyddo yn y brif ddewislen</translation>
 <translation id="2182457891543959921">Gofyn cyn caniatáu i wefannau greu map 3D o'ch amgylchoedd neu olrhain safle eich camera (argymhellir)</translation>
 <translation id="2212565012507486665">Caniatáu cwcis</translation>
 <translation id="2228071138934252756">I adael i <ph name="APP_NAME" /> gael mynediad at eich camera, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">Caniatáu cwcis ar gyfer gwefan benodol.</translation>
 <translation id="4046123991198612571">Trac nesaf</translation>
 <translation id="4149994727733219643">Gwedd syml ar gyfer tudalennau gwe</translation>
+<translation id="4151930093518524179">Chwyddo diofyn</translation>
 <translation id="4165986682804962316">Gosodiadau gwefan</translation>
 <translation id="4169549551965910670">Wedi'i gysylltu â dyfais USB</translation>
 <translation id="4194328954146351878">Gofyn cyn caniatáu i wefannau weld a newid gwybodaeth ar ddyfeisiau NFC (argymhellir)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427">I ganiatáu i <ph name="APP_NAME" /> gael mynediad at eich meicroffon, trowch y meicroffon ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
 <translation id="4566417217121906555">Distewi'r meicroffon</translation>
 <translation id="4570913071927164677">Manylion</translation>
+<translation id="4575264539271661854">Gwnewch hi'n haws i chwyddo ar destun a lluniau ar gyfer gwefan rydych yn ymweld â hi</translation>
 <translation id="4598549027014564149">Tra yn y modd Anhysbys, ni all gwefannau ddefnyddio'ch cwcis i weld eich gweithgarwch pori ar draws gwefannau, hyd yn oed gwefannau cysylltiedig. Nid yw eich gweithgarwch pori yn cael ei ddefnyddio ar gyfer pethau megis personoleiddio hysbysebion. Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio.</translation>
 <translation id="4645575059429386691">Rheolir gan dy riant</translation>
 <translation id="4670064810192446073">Realiti rhithwir</translation>
@@ -383,6 +387,7 @@
 <translation id="8284326494547611709">Capsiynau</translation>
 <translation id="8300705686683892304">Wedi'u rheoli gan ap</translation>
 <translation id="8324158725704657629">Peidio â gofyn eto</translation>
+<translation id="8362795839483915693">Gallwch chwyddo neu bellhau ar wefannau rydych yn ymweld â nhw</translation>
 <translation id="8372893542064058268">Caniatáu Cysoni yn y Cefndir ar gyfer wefan benodol.</translation>
 <translation id="8376384591331888629">Gan gynnwys cwcis trydydd parti ar y wefan hon</translation>
 <translation id="83792324527827022">Mae gwefan yn defnyddio'ch camera a'ch meicroffon</translation>

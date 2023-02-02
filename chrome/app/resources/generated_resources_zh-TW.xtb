@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">啟動虛擬機器時發生錯誤，請再試一次。</translation>
 <translation id="1087965115100412394">禁止網站連線至 MIDI 裝置</translation>
 <translation id="1088659085457112967">進入閱讀器模式</translation>
-<translation id="1089407731410758060">變更主題</translation>
 <translation id="1090126737595388931">沒有執行中的背景應用程式</translation>
 <translation id="1090541560108055381">配對前，請確認兩部裝置上均顯示這組代碼</translation>
 <translation id="1091767800771861448">按下 ESCAPE 鍵可略過 (僅限非官方版本)。</translation>
@@ -374,6 +373,7 @@
 <translation id="1339009753652684748">只要說出「Ok Google」就能存取 Google 助理。如要節省電力，請選擇「啟用 (建議設定)」。這樣一來，你的 Google 助理就只會在裝置插上電源或充電時回應你的指令。</translation>
 <translation id="13392265090583506">無障礙設定</translation>
 <translation id="1340527397989195812">使用「檔案」應用程式備份裝置上的媒體。</translation>
+<translation id="1341871421050612057">無法與 <ph name="USERNAME" /> 同步</translation>
 <translation id="1343865611738742294">請授權 Linux 應用程式存取 USB 裝置。移除後，Linux 將不會記住這部 USB 裝置。</translation>
 <translation id="1343920184519992513">繼續瀏覽上次開啟的網頁並開啟某組特定網頁</translation>
 <translation id="134589511016534552">媒體分頁也會顯示在「開啟的分頁」部分</translation>
@@ -547,6 +547,7 @@
 <translation id="1495677929897281669">返回分頁</translation>
 <translation id="1500297251995790841">不明裝置 [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">進一步瞭解不支援的 Chrome 應用程式</translation>
+<translation id="1501480321619201731">刪除群組</translation>
 <translation id="1503392482221435031">自動將使用統計資料傳送給 Google。你可以在裝置的設定中開啟或關閉建立當機報告的功能。</translation>
 <translation id="150411034776756821">移除 <ph name="SITE" /></translation>
 <translation id="1504551620756424144">在 Windows 中，你可以前往 <ph name="BASE_DIR" /> 存取共用資料夾。</translation>
@@ -2097,7 +2098,6 @@
 <translation id="2835547721736623118">語音辨識服務</translation>
 <translation id="2836232638504556905">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。查看這個網站的《<ph name="BEGIN_LINK" />隱私權政策<ph name="END_LINK" />》。</translation>
 <translation id="2836269494620652131">當機</translation>
-<translation id="2836635946302913370">管理員已禁止使用這個使用者名稱登入。</translation>
 <translation id="283669119850230892">如要使用 <ph name="NETWORK_ID" /> 網路，請先在下方連線至網際網路。</translation>
 <translation id="2838379631617906747">安裝中</translation>
 <translation id="2839032553903800133">已封鎖通知</translation>
@@ -2906,6 +2906,7 @@
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3602870520245633055">列印及掃描</translation>
 <translation id="3603622770190368340">取得網路憑證</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 個帳戶使用相同的密碼}other{{COUNT} 個帳戶使用相同的密碼}}</translation>
 <translation id="3605780360466892872">小員工</translation>
 <translation id="3609277884604412258">快速搜尋</translation>
 <translation id="3610241585790874201">無法將資料儲存到裝置</translation>
@@ -3613,7 +3614,6 @@
 <translation id="4244238649050961491">尋找其他觸控筆應用程式</translation>
 <translation id="4246980464509998944">其他意見：</translation>
 <translation id="424726838611654458">一律在 Adobe Reader 中開啟</translation>
-<translation id="4247901771970415646">無法與 <ph name="USERNAME" /> 同步</translation>
 <translation id="4248098802131000011">確保密碼安全，避免發生資料侵害或其他安全性問題</translation>
 <translation id="4249248555939881673">正在等待網路連線...</translation>
 <translation id="4249373718504745892">系統已封鎖這個網頁存取你的攝影機和麥克風。</translation>
@@ -3834,6 +3834,7 @@
 <translation id="4441147046941420429">如要繼續，請將安全金鑰從裝置上移除，然後重新插入並輕觸安全金鑰</translation>
 <translation id="444134486829715816">展開...</translation>
 <translation id="4441928470323187829">已由系統管理員固定</translation>
+<translation id="4442863809158514979">查看網路權限</translation>
 <translation id="4443536555189480885">說明(&amp;H)</translation>
 <translation id="4444304522807523469">存取透過 USB 附加或是在區域網路上的文件掃描器</translation>
 <translation id="4444512841222467874">如果未釋出可用空間，系統可能會自動移除使用者和資料。</translation>
@@ -4135,6 +4136,7 @@
 <translation id="4713409221649555176">在所有視窗關閉後刪除</translation>
 <translation id="47158868804223727">按一下以展開或收合群組名稱</translation>
 <translation id="4716483597559580346">執行 Powerwash 以提升安全性</translation>
+<translation id="471759229191973607">變更主題</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />的密碼</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> 正在共用你的畫面。</translation>
 <translation id="4722989931633062466">不允許顯示第三方登入提示</translation>
@@ -4831,6 +4833,7 @@
 <translation id="5382591305415226340">管理支援的連結</translation>
 <translation id="5383377866517186886">已關閉 Mac 系統偏好設定中的攝影機</translation>
 <translation id="5383740867328871413">未命名的群組 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID：<ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">企業政策已變更，已將 [實驗性功能] 按鈕新增至工具列。按一下這個按鈕即可開啟對話方塊並啟用實驗性功能。</translation>
 <translation id="5388885445722491159">已配對</translation>
 <translation id="5390112241331447203">納入透過使用狀況報告所傳送的 system_logs.txt 檔案。</translation>
@@ -5045,6 +5048,7 @@
 <translation id="5578059481725149024">自動登入</translation>
 <translation id="5581134892342029705">翻譯為<ph name="LANGUAGE" />的作業已完成</translation>
 <translation id="558170650521898289">Microsoft Windows 硬體驅動程式驗證</translation>
+<translation id="5581876958763461074">所有記事</translation>
 <translation id="5581972110672966454">無法將裝置加入網域。請再試一次，或與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="5582839680698949063">主選單</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5692,7 +5696,6 @@
 <translation id="617213288191670920">尚未新增語言</translation>
 <translation id="6173623053897475761">重新輸入 PIN 碼</translation>
 <translation id="6175314957787328458">Microsoft 網域 GUID</translation>
-<translation id="6176043333338857209">系統會暫時開啟藍牙功能，以便與你的安全金鑰通訊</translation>
 <translation id="6178664161104547336">選取憑證</translation>
 <translation id="6178682841350631965">已更新你的登入資料</translation>
 <translation id="6180510783007738939">線條工具</translation>
@@ -7153,6 +7156,7 @@
 <translation id="7532009420053991888">「<ph name="LINUX_APP_NAME" />」沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
 <translation id="7535730537657706072">如要清除裝置上的無痕模式瀏覽記錄，請關閉所有無痕分頁</translation>
 <translation id="7537451260744431038">網站無法使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品</translation>
+<translation id="7538088324298143359">使用 <ph name="SEARCH_ENGINE" /> 搜尋圖片內容</translation>
 <translation id="7540972813190816353">檢查更新時發生錯誤：<ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> 已將這部裝置復原為先前的版本，請儲存重要檔案後再重新啟動。重新啟動後，裝置上的資料將全數遭到刪除。</translation>
 <translation id="7541773865713908457">使用「<ph name="APP_NAME" />」應用程式<ph name="ACTION_NAME" /></translation>
@@ -7459,6 +7463,7 @@
 <translation id="779308894558717334">淺綠色</translation>
 <translation id="7793098747275782155">深藍色</translation>
 <translation id="7797571222998226653">關閉</translation>
+<translation id="7798504574384119986">查看網路權限</translation>
 <translation id="7798844538707273832">已自動封鎖<ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">逆時針旋轉(&amp;O)</translation>
 <translation id="7801679634091975683">你在這裡所做的變更僅適用於 Lacros Chrome 瀏覽器。如要變更 Chrome 瀏覽器設定，請開啟 Chrome 瀏覽器並前往設定頁面。</translation>
@@ -7581,6 +7586,7 @@
 <translation id="7912080627461681647">伺服器上的密碼已變更。請先登出然後重新登入。</translation>
 <translation id="7912974581251770345">翻譯</translation>
 <translation id="7915457674565721553">如要設定家長監護功能，請連線至網際網路</translation>
+<translation id="7916364730877325865">貴機構不允許你開啟這個帳戶的同步功能</translation>
 <translation id="7918257978052780342">註冊</translation>
 <translation id="7919123827536834358">自動翻譯這些語言</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>

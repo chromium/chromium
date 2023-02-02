@@ -106,7 +106,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1085697365578766383">Hitilafu imetokea wakati wa kuwasha mashine dhahania. Tafadhali jaribu tena.</translation>
 <translation id="1087965115100412394">Usiruhusu tovuti ziunganishe kwenye vifaa vya MIDI</translation>
 <translation id="1088659085457112967">Washa Hali ya Kisomaji</translation>
-<translation id="1089407731410758060">Badilisha Mandhari</translation>
 <translation id="1090126737595388931">Hakuna Programu zinazoendelea katika Mandharinyuma</translation>
 <translation id="1090541560108055381">Kabla ya kuoanisha, hakikisha kwamba msimbo huu unafanana kwenye vifaa vyote viwili</translation>
 <translation id="1091767800771861448">Bonyeza ESCAPE ili kuruka (Vijenzi visivyo rasmi pekee).</translation>
@@ -550,6 +549,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1495677929897281669">Rudi kwenye kichupo</translation>
 <translation id="1500297251995790841">Kifaa ambacho hakijulikani [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Pata maelezo zaidi kuhusu programu za Chrome zisizotumika</translation>
+<translation id="1501480321619201731">Futa kikundi</translation>
 <translation id="1503392482221435031">Hutuma kiotomatiki takwimu za matumizi kwenda Google. Unaweza kuwasha au kuzima ripoti za kuacha kufanya kazi katika mipangilio ya kifaa chako.</translation>
 <translation id="150411034776756821">Ondoa <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Folda zinazoshirikiwa zinapatikana kwenye Windows katika <ph name="BASE_DIR" />.</translation>
@@ -2109,7 +2109,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2835547721736623118">Huduma ya utambuzi wa matamshi</translation>
 <translation id="2836232638504556905">Ili uendelee, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> itashiriki jina, anwani ya barua pepe, pamoja na picha yako ya wasifu na tovuti hii. Angalia <ph name="BEGIN_LINK" />sera ya faragha<ph name="END_LINK" /> ya tovuti hii.</translation>
 <translation id="2836269494620652131">Imeacha kufanya kazi</translation>
-<translation id="2836635946302913370">Kuingia kwa jina hili la mtumiaji kumelemazwa na msimamizi wako.</translation>
 <translation id="283669119850230892">Ili kutumia mtandao <ph name="NETWORK_ID" />, kwanza kamilisha muunganisho wako katika Mtandao hapo chini.</translation>
 <translation id="2838379631617906747">Inasakinisha</translation>
 <translation id="2839032553903800133">Imezuia arifa</translation>
@@ -2918,6 +2917,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3602290021589620013">Hakiki</translation>
 <translation id="3602870520245633055">Chapisha na uchanganue</translation>
 <translation id="3603622770190368340">Pata cheti cha mtandao</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{Akaunti {COUNT} inatumia nenosiri moja}other{Akaunti {COUNT} zinatumia nenosiri moja}}</translation>
 <translation id="3605780360466892872">Kitufechini</translation>
 <translation id="3609277884604412258">Utafutaji wa haraka</translation>
 <translation id="3610241585790874201">Zimezuiwa kuhifadhi data kwenye kifaa chako</translation>
@@ -3624,7 +3624,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4244238649050961491">Pata programu zaidi za stylus</translation>
 <translation id="4246980464509998944">Maoni mengine:</translation>
 <translation id="424726838611654458">Fungua katika Adobe Reader wakati wowote</translation>
-<translation id="4247901771970415646">Imeshindwa kusawazisha kwenye <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Zuia manenosiri yako dhidi ya ufichuzi haramu wa data na matatizo mengine ya usalama</translation>
 <translation id="4249248555939881673">Inasubiri muunganisho kwa mtandao...</translation>
 <translation id="4249373718504745892">Ukurasa huu umezuiwa kufikia kamera na maikrofoni yako.</translation>
@@ -3845,6 +3844,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4441147046941420429">Ili uendelee, ondoa ufunguo wako wa usalama kwenye kifaa chako, kisha uuweke tena na uuguse.</translation>
 <translation id="444134486829715816">Panua...</translation>
 <translation id="4441928470323187829">Imebandikwa na msimamizi wako</translation>
+<translation id="4442863809158514979">Angalia ruhusa za wavuti</translation>
 <translation id="4443536555189480885">&amp;Msaada</translation>
 <translation id="4444304522807523469">Fikia vichunguzi vya hati vilivyoambatishwa kupitia USB au kwenye mtandao wa karibu</translation>
 <translation id="4444512841222467874">Ikiwa hakuna nafasi ya kuhifadhi, huenda watumiaji pamoja na data ikaondolewa kiotomatiki.</translation>
@@ -4843,6 +4843,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5382591305415226340">Dhibiti viungo vinavyotumika</translation>
 <translation id="5383377866517186886">Kamera imezimwa katika Mapendeleo ya Mfumo wa Mac</translation>
 <translation id="5383740867328871413">Kikundi kisicho na jina - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (Kitambulisho: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Sera ya biashara imebadilishwa. Kitufe cha majaribio kimewekwa kwenye upau wa vidhibiti. Bofya kitufe ili ufungue kidirisha cha kuwasha majaribio.</translation>
 <translation id="5388885445722491159">Imeoanishwa</translation>
 <translation id="5390112241331447203">Jumuisha faili ya system_logs.txt iliyotumwa katika ripoti za maoni.</translation>
@@ -5057,6 +5058,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5578059481725149024">Ingia katika akaunti kiotomatiki</translation>
 <translation id="5581134892342029705">Tafsiri katika <ph name="LANGUAGE" /> imekamilika</translation>
 <translation id="558170650521898289">Uthibitishaji wa Viendeshi vya Maunzi vya Microsoft Windows</translation>
+<translation id="5581876958763461074">Madokezo Yote</translation>
 <translation id="5581972110672966454">Imeshindwa kuunganisha kifaa kwenye kikoa. Tafadhali jaribu tena au uwasiliane na mmiliki au msimamizi wa kifaa chako. Msimbo wa hitilafu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Menyu kuu</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5707,7 +5709,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="617213288191670920">Hujaweka lugha zozote</translation>
 <translation id="6173623053897475761">Weka PIN yako tena</translation>
 <translation id="6175314957787328458">GUID ya Vikoa kutoka Microsoft</translation>
-<translation id="6176043333338857209">Bluetooth itawashwa kwa muda ili iwasiliane na ufunguo wako wa usalama</translation>
 <translation id="6178664161104547336">Chagua cheti</translation>
 <translation id="6178682841350631965">Data yako ya kuingia katika akaunti imesasishwa</translation>
 <translation id="6180510783007738939">Zana ya kuhariri Mstari</translation>
@@ -7475,6 +7476,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="779308894558717334">Kijani kisichokolea</translation>
 <translation id="7793098747275782155">Buluu iliyokolea</translation>
 <translation id="7797571222998226653">Imezimwa</translation>
+<translation id="7798504574384119986">Angalia Ruhusa za Wavuti</translation>
 <translation id="7798844538707273832">Kimezuia kiotomatiki <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">Zungusha Kinyume saa</translation>
 <translation id="7801679634091975683">Mabadiliko utakayoyafanya hapa yatatumika tu kwenye Kivinjari cha Lacros cha Chrome. Ili ufanye mabadiliko kwenye mipangilio ya Kivinjari chako cha Chrome, fungua Kivinjari cha Chrome kisha uende kwenye mipangilio.</translation>

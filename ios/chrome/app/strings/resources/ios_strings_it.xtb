@@ -258,7 +258,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="288655811176831528">Chiudi scheda</translation>
 <translation id="2890171748217283516">I siti che segui vengono salvati nel tuo Account Google. Puoi gestirli nelle impostazioni di Discover.</translation>
 <translation id="2898963176829412617">Nuova cartella…</translation>
-<translation id="2902684821701498619">Aggiungi all'Elenco di lettura</translation>
+<translation id="2902684821701498619">Aggiungi all'elenco di lettura</translation>
 <translation id="2916171785467530738">Completamento automatico di ricerche e URL</translation>
 <translation id="291754862089661335">Posiziona il codice a barre o QR all'interno di quest'area</translation>
 <translation id="2920866371965792875">Per vedere aggiornamenti di questo sito, seguilo qui.</translation>
@@ -596,7 +596,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5520466080178053306">Tocca Gestore delle password, quindi Aggiungi</translation>
 <translation id="5525095647255982834">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su quel dispositivo.</translation>
 <translation id="5525269841082836315">Crea passphrase</translation>
-<translation id="5530084793407600786">Cerca nell'immagine con Google</translation>
 <translation id="5542540507657872337">Schede trovate: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff ti consente di iniziare a consultare un sito web su questo dispositivo per poi continuare facilmente sul Mac. Il sito web attualmente aperto verrà visualizzato nel Dock sul Mac.
 
@@ -709,6 +708,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6284652193729350524">Proponi di tradurre dalla lingua <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Non segui più <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Per attivare Navigazione sicura, apri <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" /> e tocca Navigazione sicura.</translation>
+<translation id="6320780930074869063">Quando l'opzione è attiva, le password vengono salvate in <ph name="ACCOUNT" />. Quando l'opzione non è attiva, le password vengono salvate soltanto su questo dispositivo.</translation>
 <translation id="6321526113093607004">Aggiungi ai preferiti</translation>
 <translation id="6324669097367352121">Impostazioni accesso</translation>
 <translation id="6337234675334993532">Crittografia</translation>
@@ -737,7 +737,7 @@ I tuoi dati sono stati criptati con la tua passphrase di sincronizzazione in dat
 <translation id="6418346271604475326">Preparazione del PDF</translation>
 <translation id="6429213933892582367">Apri Opzioni password</translation>
 <translation id="6434591244308415567">Si è verificato un errore. Riprova più tardi.</translation>
-<translation id="6435236283694032571">Aggiungi all'Elenco di lettura</translation>
+<translation id="6435236283694032571">Aggiungi all'elenco di lettura</translation>
 <translation id="6439338047467462846">Consenti tutti</translation>
 <translation id="6442697326824312960">Sblocca scheda</translation>
 <translation id="6445051938772793705">Paese</translation>

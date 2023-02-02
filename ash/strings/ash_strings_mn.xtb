@@ -420,9 +420,11 @@
 <translation id="3289674678944039601">Адаптераар цэнэглэж байна</translation>
 <translation id="3290356915286466215">Хамгаалалтгүй</translation>
 <translation id="3294437725009624529">Зочин</translation>
+<translation id="3298690094479023523">Таны ПИН эсвэл нууц үгийг баталгаажуулж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="3307642347673023554">Зөөврийн компьютерын горим руу сэлгэсэн</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> дараа нэвтрэх боломжтой хэвээр байна.</translation>
 <translation id="3321628682574733415">Эцэг эхийн код буруу байна</translation>
+<translation id="332827762492701193">Мэдэгдлийг нуусан</translation>
 <translation id="3339826665088060472">Дэлгэцийн агшин болон дэлгэцийн бичлэг авах хэрэгсэл болох Дэлгэцийн зураг авах онцлог</translation>
 <translation id="3340978935015468852">тохиргоо</translation>
 <translation id="3341303451326249809">Дэлгэцийн агшныг авсан</translation>
@@ -560,6 +562,7 @@
 <translation id="4017989525502048489">Лазер заагч</translation>
 <translation id="401993194061514265">Тэмдэглэгч боломжгүй байна. Дэлгэцийн видео бичлэгийг дахин нээнэ үү.</translation>
 <translation id="4021716437419160885">Доош гүйлгэх</translation>
+<translation id="4024840464866786680">Хэрэв та ПИН, нууц үгээ мартсан эсвэл Google Бүртгэлийн нууц үгээ саяхан өөрчилсөн бол энэ хэрэглэгчийг сэргээхээр оролдоно уу.</translation>
 <translation id="4028481283645788203">Нэмэлт аюулгүй байдлын үүднээс нууц үг шаардлагатай</translation>
 <translation id="4032485810211612751"><ph name="HOURS" /> : <ph name="MINUTES" /> : <ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Та дэлгэцээ хуваалцаж байна</translation>
@@ -700,10 +703,12 @@
 <translation id="4735944890391795473">12-р дэлгэц</translation>
 <translation id="473775607612524610">Шинэчлэх</translation>
 <translation id="4740516757091333363">Хадгалсан дэлгэцийг устгах уу?</translation>
+<translation id="4747410141429390146">Мэдэгдэл харахын тулд түгжээг тайлна уу</translation>
 <translation id="4752784485658729358">Зөвхөн 6 хадгалсан дэлгэц боломжтой. Шинэ дэлгэц хадгалахын тулд аль нэгийг нь хасна уу.</translation>
 <translation id="4759238208242260848">Таталтууд:</translation>
 <translation id="4762573482154983647">Аппуудыг нуух</translation>
 <translation id="4774338217796918551">Маргааш <ph name="COME_BACK_TIME" />-д буцаж ирнэ үү.</translation>
+<translation id="4776584068981882959">Таны нууц үгийг дахиад л баталгаажуулж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />-ийн нууц үг</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Туслах туршилтын харилцан үйлдэлд боломжгүй байна.</translation>
@@ -843,6 +848,7 @@
 <translation id="5536723544185013515">Саяхны аппууд, саяхны бүх аппад хандахын тулд зүүн эсвэл баруун суман товчоор шилжинэ үү</translation>
 <translation id="553675580533261935">Харилцан үйлдлээс гарч байна</translation>
 <translation id="5537725057119320332">Cast</translation>
+<translation id="5546397813406633847">Хэрэглэгчийг сэргээх</translation>
 <translation id="554893713779400387">Диктафоныг асаах/унтраах</translation>
 <translation id="5558091555391176027">Ойролцоо хуваалцах онцлогийн өндөр харагдцыг асаана уу/унтраана уу</translation>
 <translation id="5560420195677022218"><ph name="DEVICE_TYPE" /> дээрээ утасныхаа аппуудыг хараарай</translation>
@@ -859,6 +865,7 @@
 <translation id="5618148318840095371">Бид таныг илүү сайн сүлжээ рүү сэлгэлээ</translation>
 <translation id="5619862035903135339">Администраторын бодлого нь дэлгэцийн зураг авахыг идэвхгүй болгодог</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">Таны нууц үгийг баталгаажуулж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="5648021990716966815">Микрофоны чихэвчний оролт</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> танаас анхаарал тавихыг хүсэж байна.</translation>
 <translation id="5662075790140998213">10-р дэлгэц</translation>
@@ -877,6 +884,7 @@
 <translation id="5707775774148071965">Таны төхөөрөмж кабелиас тань өндөр дата хурдыг дэмжинэ. Төхөөрөмжийн гүйцэтгэл хязгаарлагдмал байж магадгүй.</translation>
 <translation id="5710450975648804523">Бүү саад бол горим асаалттай байна</translation>
 <translation id="571295407079589142">Мобайл дата унтраалттай байна</translation>
+<translation id="5727460725221669831">Хэрэв та нууц үгээ мартсан эсвэл Google Бүртгэлийн нууц үгээ саяхан өөрчилсөн бол энэ хэрэглэгчийг сэргээхээр оролдоно уу.</translation>
 <translation id="573413375004481890">Энэ төхөөрөмж нь таны бүх дэлгэцийг дэмжих боломжгүй байсан тул тэдний нэгийг нь салгасан</translation>
 <translation id="5740328398383587084">Ойролцоо хуваалцах</translation>
 <translation id="574392208103952083">Дунд зэрэг</translation>

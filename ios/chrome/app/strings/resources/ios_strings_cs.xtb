@@ -596,7 +596,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5520466080178053306">Klepněte na Správce hesel a poté na Přidat.</translation>
 <translation id="5525095647255982834">Pokud tuto kartu chcete odeslat do jiného zařízení, přihlaste se na něm do Chromu.</translation>
 <translation id="5525269841082836315">Vytvořit heslovou frázi</translation>
-<translation id="5530084793407600786">Vyhledat na obrázku pomocí Googlu</translation>
 <translation id="5542540507657872337">Nalezeno: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff umožňuje začít web procházet v tomto zařízení a poté snadno pokračovat na počítači Mac. Akutální otevřený web se zobrazí v doku vašeho počítače Mac.
 
@@ -709,6 +708,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6284652193729350524">Nabízet překlad jazyka <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Přestali jste sledovat kanál <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Pokud chcete zapnout Bezpečné prohlížení, otevřete <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" /> a klepněte na Bezpečné prohlížení.</translation>
+<translation id="6320780930074869063">Když je tato funkce zapnutá, hesla se ukládají do účtu <ph name="ACCOUNT" />. Když je tato funkce vypnutá, hesla se ukládají pouze do tohoto zařízení.</translation>
 <translation id="6321526113093607004">Přidat do záložek</translation>
 <translation id="6324669097367352121">Nastavení přihlášení</translation>
 <translation id="6337234675334993532">Šifrování</translation>

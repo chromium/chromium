@@ -596,7 +596,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5520466080178053306">Toque em Gestor de Palavras-passe e, de seguida, em Adicionar</translation>
 <translation id="5525095647255982834">Para enviar este separador para outro dispositivo, inicie sessão no Chrome nesse dispositivo.</translation>
 <translation id="5525269841082836315">Criar Frase de Acesso</translation>
-<translation id="5530084793407600786">Pesquisar na imagem com o Google</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> encontrado(s)</translation>
 <translation id="5548760955356983418">A Entrega permite-lhe começar a navegar num Website neste dispositivo e, em seguida, continuar facilmente no seu Mac. O Website atualmente aberto aparece na Dock do seu Mac.
 
@@ -709,6 +708,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6284652193729350524">Propor tradução de <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Deixou de seguir o canal <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Para ativar a Navegação segura, abra <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" /> e toque em Navegação segura.</translation>
+<translation id="6320780930074869063">Quando esta opção está ativada, as palavras-passe são guardadas na conta <ph name="ACCOUNT" />. Quando esta opção está desativada, as palavras-passe são guardadas apenas neste dispositivo.</translation>
 <translation id="6321526113093607004">Adicionar aos Marcadores</translation>
 <translation id="6324669097367352121">Definições de início de sessão</translation>
 <translation id="6337234675334993532">Encriptação</translation>

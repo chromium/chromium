@@ -420,9 +420,11 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3289674678944039601">Se está cargando mediante el adaptador</translation>
 <translation id="3290356915286466215">No segura</translation>
 <translation id="3294437725009624529">Invitado</translation>
+<translation id="3298690094479023523">Aún no se pudo verificar tu PIN o contraseña. Vuelve a intentarlo.</translation>
 <translation id="3307642347673023554">Se cambió al modo laptop</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> podrá acceder más tarde.</translation>
 <translation id="3321628682574733415">Código parental incorrecto</translation>
+<translation id="332827762492701193">Las notificaciones están ocultas</translation>
 <translation id="3339826665088060472">Captura de pantalla, herramientas para grabar y capturar la pantalla</translation>
 <translation id="3340978935015468852">configuración</translation>
 <translation id="3341303451326249809">Se guardó la captura de pantalla</translation>
@@ -560,6 +562,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4017989525502048489">Puntero láser</translation>
 <translation id="401993194061514265">Marcador no disponible. Volver a abrir Screencast.</translation>
 <translation id="4021716437419160885">Desplazar hacia abajo</translation>
+<translation id="4024840464866786680">Si olvidaste tu PIN y contraseña, o cambiaste la de tu Cuenta de Google recientemente, intenta recuperar este usuario.</translation>
 <translation id="4028481283645788203">Se requiere la contraseña por razones de seguridad</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Estás compartiendo tu pantalla</translation>
@@ -700,10 +703,12 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4735944890391795473">Escritorio 12</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4740516757091333363">¿Deseas borrar el escritorio guardado?</translation>
+<translation id="4747410141429390146">Desbloquea el dispositivo para ver las notificaciones</translation>
 <translation id="4752784485658729358">Se permiten únicamente 6 escritorios guardados. Para guardar un escritorio nuevo, deberás quitar uno.</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4762573482154983647">Ocultar apps</translation>
 <translation id="4774338217796918551">Regresa mañana a las <ph name="COME_BACK_TIME" />.</translation>
+<translation id="4776584068981882959">Aún no se pudo verificar tu contraseña. Vuelve a intentarlo.</translation>
 <translation id="4776917500594043016">Contraseña para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">El Asistente de Google no está disponible en la sesión de demostración.</translation>
@@ -843,6 +848,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5536723544185013515">Apps recientes, navega con las flechas hacia la izquierda o la derecha para acceder a todas las apps recientes</translation>
 <translation id="553675580533261935">Salir de la sesión</translation>
 <translation id="5537725057119320332">Transmitir</translation>
+<translation id="5546397813406633847">Recuperar usuario</translation>
 <translation id="554893713779400387">Activar o desactivar el dictado</translation>
 <translation id="5558091555391176027">Activar o desactivar la alta visibilidad de Compartir con Nearby</translation>
 <translation id="5560420195677022218">Mira las apps del teléfono en tu <ph name="DEVICE_TYPE" /></translation>
@@ -859,6 +865,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5618148318840095371">Te cambiamos a una red mejor</translation>
 <translation id="5619862035903135339">La política del administrador inhabilita el modo de captura de pantalla.</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">No se pudo verificar tu contraseña. Vuelve a intentarlo.</translation>
 <translation id="5648021990716966815">Conector para micrófono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requiere tu atención.</translation>
 <translation id="5662075790140998213">Escritorio 10</translation>
@@ -877,6 +884,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5707775774148071965">El dispositivo admite una mayor velocidad de datos que el cable. El rendimiento del dispositivo puede verse limitado.</translation>
 <translation id="5710450975648804523">"No interrumpir" activado</translation>
 <translation id="571295407079589142">Los datos móviles están desactivados.</translation>
+<translation id="5727460725221669831">Si olvidaste tu contraseña o cambiaste la de tu Cuenta de Google recientemente, intenta recuperar este usuario.</translation>
 <translation id="573413375004481890">Este dispositivo no admite tantas pantallas, por lo que se desconectó una de ellas</translation>
 <translation id="5740328398383587084">Compartir con Nearby</translation>
 <translation id="574392208103952083">Media</translation>

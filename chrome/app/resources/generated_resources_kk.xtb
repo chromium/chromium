@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">Виртуалдық құрылғыны қосу кезінде қате шықты. Қайта қосып көріңіз.</translation>
 <translation id="1087965115100412394">Сайттардың MIDI құрылғыларына қосылуына рұқсат бермеу</translation>
 <translation id="1088659085457112967">Оқу құралы режиміне кіру</translation>
-<translation id="1089407731410758060">Тақырыпты өзгерту</translation>
 <translation id="1090126737595388931">Фонда орындалып жатқан қолданбалар жоқ</translation>
 <translation id="1090541560108055381">Жұптамас бұрын осы кодтың екі құрылғыда да бірдей екеніне көз жеткізіңіз.</translation>
 <translation id="1091767800771861448">Өткізіп жіберу үшін ESCAPE түймесін басыңыз (тек бейресми нұсқаларда).</translation>
@@ -547,6 +546,7 @@
 <translation id="1495677929897281669">Қойындыға оралу</translation>
 <translation id="1500297251995790841">Белгісіз құрылғы [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Қолдау көрсетілмейтін Chrome қолданбалары туралы толығырақ</translation>
+<translation id="1501480321619201731">Топты жою</translation>
 <translation id="1503392482221435031">Қолданыс статистикасын Google-ға автоматты түрде жібереді. Құрылғы параметрлерінде бұзылу туралы есептерді қосуға немесе өшіруге болады.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> сайтын өшіру</translation>
 <translation id="1504551620756424144">Ортақ қалталарды Windows жүйесінде <ph name="BASE_DIR" /> каталогінен таба аласыз.</translation>
@@ -2094,7 +2094,6 @@
 <translation id="2835547721736623118">Айтылған сөзді тану қызметі</translation>
 <translation id="2836232638504556905">Жалғастыру үшін <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аты-жөніңізді, электрондық мекенжайыңызды және профиль суретіңізді осы сайтпен бөліседі. Осы сайттың <ph name="BEGIN_LINK" />Құпиялық саясатын<ph name="END_LINK" /> көріңіз.</translation>
 <translation id="2836269494620652131">Бұзылу</translation>
-<translation id="2836635946302913370">Бұл пайдаланушы атымен кіру мүмкіндігін әкімші өшірген.</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> желісін пайдалану үшін алдымен төмендегі интернет байланысын орнатып болыңыз.</translation>
 <translation id="2838379631617906747">Орнатылуда</translation>
 <translation id="2839032553903800133">Хабарландырулар бөгелді.</translation>
@@ -2903,6 +2902,7 @@
 <translation id="3602290021589620013">Алдын ала көру</translation>
 <translation id="3602870520245633055">Басып шығару және сканерлеу</translation>
 <translation id="3603622770190368340">Желі сертификатын алу</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} аккаунт бірдей құпия сөз пайдаланып жүр}other{{COUNT} аккаунт бірдей құпия сөз пайдаланып жүр}}</translation>
 <translation id="3605780360466892872">Бизнесмен</translation>
 <translation id="3609277884604412258">Жылдам іздеу</translation>
 <translation id="3610241585790874201">Құрылғыңызда деректерді сақтауға рұқсаты жоқ</translation>
@@ -3611,7 +3611,6 @@
 <translation id="4244238649050961491">Басқа да стилус қолданбаларын табу</translation>
 <translation id="4246980464509998944">Қосымша пікір:</translation>
 <translation id="424726838611654458">Әрқашан Adobe Reader қолданбасында ашу</translation>
-<translation id="4247901771970415646"><ph name="USERNAME" /> атты пайдаланушымен синхрондалмады</translation>
 <translation id="4248098802131000011">Құпия сөздерді деректердің қолды болуынан және тағы басқа қауіпсіздік мәселелерінен қорғаңыз.</translation>
 <translation id="4249248555939881673">Желі байланысы күтілуде…</translation>
 <translation id="4249373718504745892">Бұл бетке камераңыз бен микрофоныңызды пайдалануға тыйым салынған.</translation>
@@ -3832,6 +3831,7 @@
 <translation id="4441147046941420429">Жалғастыру үшін құрылғыдан қауіпсіздік кілтін алып, қайта салыңыз, одан кейін оны түртіңіз.</translation>
 <translation id="444134486829715816">Жаю…</translation>
 <translation id="4441928470323187829">Әкімші бекіткен.</translation>
+<translation id="4442863809158514979">Веб-рұқсаттарды көру</translation>
 <translation id="4443536555189480885">&amp;Анықтама</translation>
 <translation id="4444304522807523469">USB арқылы немесе жергілікті желіде тіркелген құжат сканерлеріне кіру</translation>
 <translation id="4444512841222467874">Орын босатылмаса, пайдаланушылар мен деректер автоматты түрде өшірілуі мүмкін.</translation>
@@ -5690,7 +5690,6 @@
 <translation id="617213288191670920">Ешқандай тіл қосылмаған</translation>
 <translation id="6173623053897475761">PIN кодын қайта теріңіз</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
-<translation id="6176043333338857209">Қауіпсіздік кілтімен байланыс орнату үшін Bluetooth уақытша қосылады</translation>
 <translation id="6178664161104547336">Сертификат таңдау</translation>
 <translation id="6178682841350631965">Кіру деректеріңіз жаңартылды.</translation>
 <translation id="6180510783007738939">Жол құралы</translation>
@@ -7457,6 +7456,7 @@
 <translation id="779308894558717334">Ашық жасыл</translation>
 <translation id="7793098747275782155">Қою көк</translation>
 <translation id="7797571222998226653">Өшірулі</translation>
+<translation id="7798504574384119986">Веб-рұқсаттарды көру</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> автоматты түрде бөгелді.</translation>
 <translation id="7800518121066352902">С&amp;ағат тіліне қарсы айналдыру</translation>
 <translation id="7801679634091975683">Осында енгізген өзгерістеріңіз тек Lacros Chrome браузеріне қолданылады. Chrome браузерінің параметрлеріне өзгерістер енгізу үшін Chrome браузерін ашып, параметрлерге өтіңіз.</translation>

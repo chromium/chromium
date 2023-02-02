@@ -596,7 +596,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="5520466080178053306">Dodirnite Upravitelja lozinki, a zatim dodirnite Dodaj</translation>
 <translation id="5525095647255982834">Da pošaljete ovu karticu na drugi uređaj, na njemu se prijavite u Chrome.</translation>
 <translation id="5525269841082836315">Kreirajte pristupni izraz</translation>
-<translation id="5530084793407600786">Pretraži u slici uz Google</translation>
 <translation id="5542540507657872337">Pronašli smo: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff vam omogućava da počnete pregledati web lokaciju na ovom uređaju i jednostavno nastavite na Macu. Trenutno otvorena web lokacija će se pojaviti na priključnoj stranici na Macu.
 
@@ -709,6 +708,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6284652193729350524">Ponudi prijevod za <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Prestali ste pratiti: <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Da uključite Sigurno pregledanje, otvorite <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" /> i dodirnite Sigurno pregledanje.</translation>
+<translation id="6320780930074869063">Kada je uključeno, lozinke se pohranjuju na <ph name="ACCOUNT" />. Kada je isključeno, lozinke se pohranjuju samo na ovom uređaju.</translation>
 <translation id="6321526113093607004">Dodaj u Oznake</translation>
 <translation id="6324669097367352121">Postavke prijave</translation>
 <translation id="6337234675334993532">Šifriranje</translation>

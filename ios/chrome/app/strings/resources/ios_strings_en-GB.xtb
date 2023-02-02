@@ -596,7 +596,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5520466080178053306">Tap Password Manager and then tap Add</translation>
 <translation id="5525095647255982834">To send this tab to another device, sign in to Chrome there.</translation>
 <translation id="5525269841082836315">Create passphrase</translation>
-<translation id="5530084793407600786">Search inside image with Google</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> found</translation>
 <translation id="5548760955356983418">Handoff lets you start browsing a website on this device and then easily continue on your Mac. The current open website will appear in the Dock of your Mac.
 
@@ -709,6 +708,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6284652193729350524">Offer to translate <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Unfollowed <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">To turn on Safe Browsing, open <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" /> and tap Safe Browsing.</translation>
+<translation id="6320780930074869063">When on, passwords are saved to <ph name="ACCOUNT" />. When off, passwords are saved only on this device.</translation>
 <translation id="6321526113093607004">Add to Bookmarks</translation>
 <translation id="6324669097367352121">Sign in settings</translation>
 <translation id="6337234675334993532">Encryption</translation>

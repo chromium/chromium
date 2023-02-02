@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">Виртуал машиныг эхлүүлэхэд алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="1087965115100412394">Сайтуудад MIDI төхөөрөмжүүдэд холбогдохыг бүү зөвшөөр</translation>
 <translation id="1088659085457112967">Уншигчийн горимд орох</translation>
-<translation id="1089407731410758060">Загвар өөрчлөх</translation>
 <translation id="1090126737595388931">Ямар ч үндсэн апп ажиллаагүй байна.</translation>
 <translation id="1090541560108055381">Хослуулахаасаа өмнө энэ код нь хоёр төхөөрөмж дээр адилхан байгаа эсэхийг шалгана уу</translation>
 <translation id="1091767800771861448">Алгасахын тулд ESCAPE-ийг дарна уу (Зөвхөн албан бус боловсруулалтанд).</translation>
@@ -550,6 +549,7 @@
 <translation id="1495677929897281669">Таб руу буцах</translation>
 <translation id="1500297251995790841">Үл мэдэгдэх төхөөрөмж [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Дэмжигдээгүй Chrome Аппын талаар нэмэлт мэдээлэл авах</translation>
+<translation id="1501480321619201731">Бүлгийг устгах</translation>
 <translation id="1503392482221435031">Google-д статистик хэрэглээг автоматаар илгээдэг. Та төхөөрөмжийнхөө тохиргоонд гэмтлийн тайланг асаах эсвэл унтраах боломжтой.</translation>
 <translation id="150411034776756821"><ph name="SITE" />-г устгах</translation>
 <translation id="1504551620756424144">Хуваалцсан фолдерууд нь Windows-д <ph name="BASE_DIR" /> дээр байна.</translation>
@@ -2108,7 +2108,6 @@
 <translation id="2835547721736623118">Яриа таних үйлчилгээ</translation>
 <translation id="2836232638504556905">Үргэлжүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> таны нэр, имэйл хаяг болон профайл зургийг энэ сайттай хуваалцана. Энэ сайтын <ph name="BEGIN_LINK" />нууцлалын бодлого<ph name="END_LINK" />-г харна уу.</translation>
 <translation id="2836269494620652131">Эвдрэл</translation>
-<translation id="2836635946302913370">Энэ хэрэглэгчийн нэрээр нэвтрэхийг администратор хориглосон байна.</translation>
 <translation id="283669119850230892">Сүлжээг ашиглахын тулд <ph name="NETWORK_ID" /> эхлээд доорх Интернэтийн холболтыг дуусгана уу.</translation>
 <translation id="2838379631617906747">Суулгаж байна</translation>
 <translation id="2839032553903800133">Мэдэгдлийг хориглосон</translation>
@@ -2917,6 +2916,7 @@
 <translation id="3602290021589620013">Мэдээллийг урьдчилж харах</translation>
 <translation id="3602870520245633055">Хэвлэх болон скан хийх</translation>
 <translation id="3603622770190368340">Сүлжээний сертификат авах</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} бүртгэл ижил нууц үг ашиглаж байна}other{{COUNT} бүртгэл ижил нууц үг ашиглаж байна}}</translation>
 <translation id="3605780360466892872">Buttondown</translation>
 <translation id="3609277884604412258">Шуурхай хайлт</translation>
 <translation id="3610241585790874201">Таны төхөөрөмжид өгөгдөл хадгалахыг зөвшөөрөөгүй</translation>
@@ -3624,7 +3624,6 @@
 <translation id="4244238649050961491">Мэдрэгч үзэгний бусад аппыг хайх</translation>
 <translation id="4246980464509998944">Нэмэлт сэтгэгдэл:</translation>
 <translation id="424726838611654458">Adobe Reader-д үргэлж нээж байх</translation>
-<translation id="4247901771970415646"><ph name="USERNAME" />-д синк хийх боломжгүй байна</translation>
 <translation id="4248098802131000011">Нууц үгээ өгөгдлийн зөрчил болон бусад аюулгүй байдлын асуудлаас хамгаалаарай</translation>
 <translation id="4249248555939881673">Сүлжээ холбогдохыг хүлээж байна ...</translation>
 <translation id="4249373718504745892">Энэ хуудсанд таны камер болон микрофон рүү нэвтрэхийг хориглосон байна.</translation>
@@ -5710,7 +5709,6 @@
 <translation id="617213288191670920">Нэмсэн хэл байхгүй</translation>
 <translation id="6173623053897475761">ПИН-ээ дахин бичих</translation>
 <translation id="6175314957787328458">Microsoft Домэйн GUID</translation>
-<translation id="6176043333338857209">Таны аюулгүй байдлын түлхүүртэй холбогдохын тулд Bluetooth-г түр асаана</translation>
 <translation id="6178664161104547336">Гэрчилгээг сонгоно уу</translation>
 <translation id="6178682841350631965">Таны нэвтрэх өгөгдлийг шинэчилсэн</translation>
 <translation id="6180510783007738939">Шугамын хэрэгсэл</translation>

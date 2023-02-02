@@ -6,6 +6,7 @@
 <translation id="1185134272377778587">O prohlížeči Chromium</translation>
 <translation id="1257458525759135959">Pokud chcete ukládat obrázky, klepněte na Nastavení a povolte prohlížeči Chromium přidávat obrázky do vašich fotek</translation>
 <translation id="1289216811211435351">Přepnout na Chromium</translation>
+<translation id="1352919863522755794">Správci hesel Google se vaše hesla nepodařilo zkontrolovat. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="1361748954329991663">Prohlížeč Chromium je zastaralý. Pokud v obchodě <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> není k dispozici žádná aktualizace, je možné, že vaše zařízení již nové verze prohlížeče Chromium nepodporuje.</translation>
 <translation id="1431818719585918472">Nechat prohlížeč Chromium zamykat vaše anonymní karty.</translation>
 <translation id="1472013873724362412">Váš účet v prohlížeči Chromium nefunguje. Kontaktujte administrátora domény nebo se přihlaste pomocí běžného účtu Google.</translation>
@@ -34,6 +35,7 @@
 <translation id="2650312721222849884">Chcete-li mít své karty k dispozici všude, kde používáte Chromium, zapněte synchronizaci</translation>
 <translation id="2684230048001240293">Nastavte si Chromium jako výchozí prohlížeč a karty, hesla a platební údaje se budou synchronizovat na všechna vaše zařízení</translation>
 <translation id="2730884209570016437">Chromium nemůže použít fotoaparát, protože jej právě používá jiná aplikace</translation>
+<translation id="2767464022270041271">Nemáte žádná uložená hesla. Správce hesel Google může hesla zkontrolovat, pouze když si je uložíte.</translation>
 <translation id="2915596697727466327">Chromium pomocí funkce Face ID ověřuje přístup k heslům.</translation>
 <translation id="2918709798697875261">Organizace vyžaduje, abyste zůstali odhlášeni z Chromia.</translation>
 <translation id="2942241131342758843">Používejte Chromium jako výchozí prohlížeč k otevírání odkazů, vyhledávání z widgetů a automatickému vyplňování hesel v jiných aplikacích</translation>
@@ -56,6 +58,7 @@
 <translation id="4681781466797808448">Zapněte čtečku prohlížeče Chromium</translation>
 <translation id="4736424910885271643">Váš účet spravuje doména <ph name="HOSTED_DOMAIN" />, proto budou data prohlížeče Chromium z tohoto zařízení vymazána</translation>
 <translation id="4828317641996116749">Chromiu se nepodařilo zkontrolovat všechna hesla. Zkuste to později.</translation>
+<translation id="4840404732697892756">Pokud chcete, aby Správce hesel Google zkontroloval vaše hesla, přihlaste se pomocí účtu Google.</translation>
 <translation id="4985291216379576555">Chrome nemůže vyhledat dostupné aktualizace, protože jste offline</translation>
 <translation id="4996471330284142407">S prohlížečem Chromium toho stihnete víc – je jednoduchý, bezpečný a rychlejší než kdy dřív.</translation>
 <translation id="4999538639245140991">Protože se odhlašujete z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaše data prohlížeče Chromium z tohoto zařízení budou smazána. V účtu Google vám zůstanou.</translation>
@@ -66,6 +69,7 @@
 <translation id="5521125884468363740">Chcete-li mít své karty k dispozici všude, kde používáte Chromium, přihlaste se a zapněte synchronizaci</translation>
 <translation id="5522297504975449419">Některé funkce prohlížeče Chromium už nebudou dostupné.</translation>
 <translation id="5573014823074921752">Tip pro Chromium. Další možnosti karet zobrazíte přidržením tlačítka Zobrazit karty, které najdete v dolní nebo horní části obrazovky.</translation>
+<translation id="5661521615548540542">Správci hesel Google se nepodařilo zkontrolovat všechna hesla. Zkuste to později.</translation>
 <translation id="5700709190537129682">Chromium nemůže zkontrolovat hesla</translation>
 <translation id="5777187867430702742">Stránka prohlížeče Chromium</translation>
 <translation id="5945387852661427312">Přihlašujete se pomocí účtu spravovaného doménou <ph name="DOMAIN" /> a poskytujete jeho správci kontrolu nad svými daty prohlížeče Chromium. Vaše data budou trvale přidružena k tomuto účtu. Odhlášením z prohlížeče Chromium svá data smažete z tohoto zařízení, ve vašem účtu Google však uložena zůstanou.</translation>
@@ -112,6 +116,7 @@
 <translation id="8409374867500149834">Máte nejsilnější zabezpečení prohlížeče Chromium proti škodlivým webům</translation>
 <translation id="858114650497379505">Hesla, která jste si uložili do Správce hesel, můžete používat v jiných aplikacích na svém iPhonu.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autoři prohlížeče Chromium. Všechna práva vyhrazena.</translation>
+<translation id="8603022514504485810">Správci hesel Google se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Zajišťuje vám bezpečí v prohlížeči Chromium a může zvýšit vaši bezpečnost v jiných aplikacích Google, když jste přihlášeni.</translation>
 <translation id="8663480472502753423">Udržují prohlížeč Chromium aktuální</translation>
 <translation id="8685813584220679697">Přihlaste se na tento web a do prohlížeče Chromium.</translation>
@@ -125,6 +130,7 @@ Co je třeba zvážit:
 
   • Pokud zapnete synchronizaci, mohou metriky zahrnovat také informace o navštívených adresách URL.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Tento účet a všechna neuložená data budou z prohlížeče Chromium odstraněny.</translation>
+<translation id="8857676124663337448">Správci hesel Google se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra.</translation>
 <translation id="894437814105052438">Když se odhlásíte, Chromium do vašeho účtu Google nebude synchronizovat žádná nová data. Dříve synchronizovaná data v účtu zůstanou.</translation>
 <translation id="9022552996538154597">Přihlásit se do prohlížeče Chromium</translation>
 <translation id="9059693977935746710">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel pro účet <ph name="EMAIL" />.</translation>

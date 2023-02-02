@@ -3,6 +3,7 @@
 <translationbundle lang="lv">
 <translation id="1143896152279775643">Jūsu parole tiks saglabāta Google paroļu pārvaldniekā kontā <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Palīdzēt uzlabot Chrome funkcijas un veiktspēju</translation>
+<translation id="1352919863522755794">Google paroļu pārvaldnieks nevarēja pārbaudīt paroles. Pārbaudiet interneta savienojumu.</translation>
 <translation id="1462727070346936664">Pierakstieties, lai pilnvērtīgi izmantotu pārlūku Chrome.</translation>
 <translation id="1479202195792305274">Pārlūkprogrammā Chrome var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
 <translation id="1493827051843127077">Lai visās ierīcēs sinhronizētu savas cilnes, paroles un maksājumu informāciju, iestatiet pārlūku Chrome kā noklusējuma pārlūku</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Lai izrakstītos no sava Google konta visās vietnēs, <ph name="BEGIN_LINK" />izrakstieties no pārlūka Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Pārlūkā Chrome nevarēja pārbaudīt atjauninājumu pieejamību. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="2732745070297234559">Pārlūkprogrammā Chrome nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt.</translation>
+<translation id="2767464022270041271">Nav saglabātu paroļu. Google paroļu pārvaldnieks var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="2869959624320573933">Pierakstīšanās pārlūkprogrammā Chrome</translation>
 <translation id="2957447865124070833">Atlasiet <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Jūs izrakstāties no konta, kas tiek pārvaldīts domēnā <ph name="SIGNOUT_MANAGED_DOMAIN" />, tādēļ jūsu Chrome dati tiks dzēsti no šīs ierīces. Dati joprojām būs pieejami jūsu Google kontā.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Pārlūkprogrammā Chrome nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt vai <ph name="BEGIN_LINK" />pārbaudiet paroles savā Google kontā<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Lai palīdzētu uzlabot lietotni, uzņēmumam Google tiek sūtīti lietojuma un avāriju dati no pārlūka Chrome. <ph name="BEGIN_LINK" />Pārvaldīt<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Netiek atbalstīta pārlūkā Chrome Beta.</translation>
+<translation id="4840404732697892756">Google paroļu pārvaldnieks var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
 <translation id="5030102366287574140">Chrome var palīdzēt aizsargāt jūs pret datu pārkāpumiem, nedrošām vietnēm un citiem apdraudējumiem.</translation>
 <translation id="5108659628347594808">Uzlabojiet pārlūku Chrome</translation>
 <translation id="5119391094379141756">Atlasiet Chrome</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Pārlūkā Chrome tiek periodiski pārbaudītas jūsu paroles, salīdzinot tās ar tiešsaistē publicētiem sarakstiem. Šo pārbaužu laikā paroles un lietotājvārdi ir šifrēti, lai neviens tos nevarētu lasīt, tostarp Google.</translation>
 <translation id="5639704535586432836">Atveriet sadaļu Iestatījumi &gt; Konfidencialitāte &gt; Kamera &gt; Google Chrome un ieslēdziet kameru.</translation>
 <translation id="5642200033778930880">Google Chrome nevar izmantot kameru dalītā skata režīmā.</translation>
+<translation id="5661521615548540542">Google paroļu pārvaldnieks nevarēja pārbaudīt visas paroles. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Pārlūkā Chrome nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="5716154293141027663">Tiks atvērts pārlūks Chrome ikreiz, kad pieskarsieties saitēm citās lietotnēs.</translation>
@@ -118,9 +122,11 @@
   2. Pieskarieties vienumam “Noklusējuma pārlūka lietotne”.
   3. Atlasiet Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google paroļu pārvaldnieks nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt vai <ph name="BEGIN_LINK" />pārbaudiet paroles savā Google kontā<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Droša pārlūkošana, izmantojot pārlūku Google Chrome</translation>
 <translation id="8772179140489533211">Tiek rādīti aicinājumi pierakstīties pārlūkā Chrome.</translation>
 <translation id="8788269841521769222">Jums nebūs jāatceras šī parole. Tā tiks saglabāta konta <ph name="EMAIL" /> Google paroļu pārvaldniekā.</translation>
+<translation id="8857676124663337448">Google paroļu pārvaldnieks nevarēja pārbaudīt visas paroles. Rit mēģiniet vēlreiz.</translation>
 <translation id="8897749957032330183">Paroles tiek saglabātas Google paroļu pārvaldniekā šajā ierīcē.</translation>
 <translation id="8969290730818637510">Kad iestatījums ir ieslēgts
 <ph name="BEGIN_INDENT" />  • Palīdziet uzlabot pārlūku Chrome visiem lietotājiem, kuri to izmanto līdzīgi jums.<ph name="END_INDENT" />

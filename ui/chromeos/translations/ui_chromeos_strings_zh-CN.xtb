@@ -51,6 +51,7 @@
 <translation id="1433628812591023318">若要将某个文件拖放到 Parallels Desktop，必须先将此文件移至“Windows 文件”文件夹。</translation>
 <translation id="1435838927755162558">与 Parallels Desktop 共享文件夹</translation>
 <translation id="1439919885608649279">一个人捧着鲜花</translation>
+<translation id="1458457385801829801">卸载 <ph name="TARGET_NAME" /></translation>
 <translation id="1471718551822868769">斯洛伐克语</translation>
 <translation id="1482884275703521657">芬兰语</translation>
 <translation id="148466539719134488">瑞士语</translation>
@@ -347,6 +348,7 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">粘贴</translation>
 <translation id="3952872973865944257">泰卢固语注音</translation>
+<translation id="3954354850384043518">正在下载</translation>
 <translation id="3958548648197196644">猕猴桃</translation>
 <translation id="3971140002794351170">下载移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”，网络服务提供商为“<ph name="NETWORK_PROVIDER_NAME" />”</translation>
 <translation id="3973925058222872294">英语（英国）</translation>

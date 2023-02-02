@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">ਆਭਾਸੀ ਮਸ਼ੀਨ ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1087965115100412394">ਸਾਈਟਾਂ ਨੂੰ MIDI ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="1088659085457112967">ਰੀਡਰ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ</translation>
-<translation id="1089407731410758060">ਥੀਮ ਬਦਲੋ</translation>
 <translation id="1090126737595388931">ਕੋਈ ਪਿਛੋਕੜ ਐਪ ਨਹੀਂ ਚੱਲ ਰਹੇ ਹਨ</translation>
 <translation id="1090541560108055381">ਜੋੜਾਬੱਧ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ, ਪੱਕਾ ਕਰੋ ਕਿ ਇਹ ਕੋਡ ਦੋਵਾਂ ਡੀਵਾਈਸਾਂ 'ਤੇ ਇੱਕੋ ਜਿਹਾ ਹੈ</translation>
 <translation id="1091767800771861448">ਛੱਡਣ ਲਈ ESCAPE ਦਬਾਓ (ਕੇਵਲ ਗੈਰ-ਅਧਿਕਾਰਤ ਬਿਲਡ)।</translation>
@@ -551,6 +550,7 @@
 <translation id="1495677929897281669">ਟੈਬ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="1500297251995790841">ਅਗਿਆਤ ਡੀਵਾਈਸ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">ਅਸਮਰਥਿਤ Chrome ਐਪਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
+<translation id="1501480321619201731">ਗਰੁੱਪ ਮਿਟਾਓ</translation>
 <translation id="1503392482221435031">Google ਨੂੰ ਵਰਤੋਂ ਅੰਕੜੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਭੇਜਦੀ ਹੈ। ਤੁਸੀਂ ਆਪਣੇ ਡੀਵਾਈਸ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="150411034776756821"><ph name="SITE" /> ਨੂੰ ਹਟਾਓ</translation>
 <translation id="1504551620756424144">ਸਾਂਝੇ ਕੀਤੇ ਫੋਲਡਰ Windows ਵਿੱਚ <ph name="BASE_DIR" /> 'ਤੇ ਉਪਲਬਧ ਹਨ।</translation>
@@ -2113,7 +2113,6 @@
 <translation id="2835547721736623118">ਬੋਲੀ ਪਛਾਣ ਸੇਵਾ</translation>
 <translation id="2836232638504556905">ਜਾਰੀ ਰੱਖਣ ਲਈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਤੁਹਾਡੇ ਨਾਮ, ਈਮੇਲ ਪਤੇ ਅਤੇ ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ ਨੂੰ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝਾ ਕਰੇਗਾ। ਇਸ ਸਾਈਟ ਦੀ <ph name="BEGIN_LINK" />ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_LINK" /> ਦੇਖੋ।</translation>
 <translation id="2836269494620652131">ਕ੍ਰੈਸ਼</translation>
-<translation id="2836635946302913370">ਇਸ ਵਰਤੋਂਕਾਰ ਨਾਮ ਨਾਲ ਸਾਈਨ ਇਨ ਕਰਨ ਨੂੰ ਤੁਹਾਡੇ ਪ੍ਰਬੰਧਕ ਵੱਲੋਂ ਅਯੋਗ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="283669119850230892">ਨੈੱਟਵਰਕ <ph name="NETWORK_ID" /> ਵਰਤਣ ਲਈ, ਪਹਿਲਾਂ ਹੇਠਾਂ ਇੰਟਰਨੈਟ ਨਾਲ ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਪੂਰਾ ਕਰੋ।</translation>
 <translation id="2838379631617906747">ਇੰਸਟੌਲ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="2839032553903800133">ਸੂਚਨਾਵਾਂ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
@@ -2620,6 +2619,7 @@
 <translation id="3315442055907669208">ਰੀਡਰ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ</translation>
 <translation id="3317459757438853210">ਦੋ-ਪੱਖੀ</translation>
 <translation id="3317678681329786349">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਬਲਾਕ ਕੀਤੇ ਗਏ</translation>
+<translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਚਿੱਤਰ ਵਿੱਚ ਦਿੱਤੀ ਲਿਖਤ ਦਾ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="3320630259304269485">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ (ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਤੋਂ ਸੁਰੱਖਿਆ) ਅਤੇ ਹੋਰ ਸੁਰੱਖਿਆ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3323521181261657960">ਬੋਨਸ! ਤੁਹਾਡਾ ਸਕ੍ਰੀਨ ਸਮਾਂ ਵਧਾਇਆ ਗਿਆ</translation>
 <translation id="3323577066981719144">ਤੁਹਾਡੇ ਵੱਲੋਂ ਇੱਥੇ ਕੀਤੀਆਂ ਤਬਦੀਲੀਆਂ ਸਿਰਫ਼ Chrome ਬ੍ਰਾਊਜ਼ਰ 'ਤੇ ਹੀ ਲਾਗੂ ਹੁੰਦੀਆਂ ਹਨ। ਆਪਣੇ Lacros Chrome ਬ੍ਰਾਊਜ਼ਰ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਤਬਦੀਲੀਆਂ ਕਰਨ ਲਈ, Lacros Chrome ਬ੍ਰਾਊਜ਼ਰ ਖੋਲ੍ਹੋ ਅਤੇ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
@@ -3630,7 +3630,6 @@
 <translation id="4244238649050961491">ਹੋਰ ਸਟਾਈਲਸ ਐਪਾਂ ਲੱਭੋ</translation>
 <translation id="4246980464509998944">ਵਧੀਕ ਟਿੱਪਣੀਆਂ:</translation>
 <translation id="424726838611654458">ਹਮੇਸ਼ਾਂ Adobe Reader ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
-<translation id="4247901771970415646"><ph name="USERNAME" /> ਨਾਲ ਸਿੰਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="4248098802131000011">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਡਾਟਾ ਉਲੰਘਣਾਵਾਂ ਅਤੇ ਹੋਰ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਸਮੱਸਿਆਵਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰੱਖੋ</translation>
 <translation id="4249248555939881673">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਦੀ ਉਡੀਕ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4249373718504745892">ਇਹ ਸਫ਼ਾ ਤੁਹਾਡੇ ਕੈਮਰੇ ਅਤੇ ਮਾਈਕ੍ਰੋਫੋਨ ਤੱਕ ਪਹੁੰਚਣ ਤੋਂ ਬਲੌਕ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
@@ -4850,6 +4849,7 @@
 <translation id="5382591305415226340">ਸਮਰਥਿਤ ਲਿੰਕਾਂ ਨੂੰ ਪ੍ਰਬੰਧਿਤ ਕਰੋ</translation>
 <translation id="5383377866517186886">Mac ਸਿਸਟਮ ਤਰਜੀਹਾਂ ਵਿੱਚ ਕੈਮਰਾ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="5383740867328871413">ਬੇਨਾਮ ਗਰੁੱਪ - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ਆਈਡੀ: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਨੀਤੀ ਨੂੰ ਬਦਲਿਆ ਗਿਆ ਹੈ। ਪ੍ਰਯੋਗ ਬਟਨ ਨੂੰ ਟੂਲਬਾਰ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ ਹੈ। ਪ੍ਰਯੋਗਾਂ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਵਿੰਡੋ ਖੋਲ੍ਹਣ ਵਾਸਤੇ ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="5388885445722491159">ਜੋੜਾਬੱਧ ਕੀਤੀ ਗਈ</translation>
 <translation id="5390112241331447203">ਵਿਚਾਰ ਰਿਪੋਰਟਾਂ ਵਿੱਚ ਭੇਜੀ system_logs.txt ਫ਼ਾਈਲ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ।</translation>
@@ -5064,6 +5064,7 @@
 <translation id="5578059481725149024">ਸਵੈਚਲਿਤ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> ਵਿੱਚ ਅਨੁਵਾਦ ਮੁਕੰਮਲ ਹੋਇਆ</translation>
 <translation id="558170650521898289">Microsoft Windows ਹਾਰਡਵੇਅਰ ਡ੍ਰਾਈਵਰ ਜਾਂਚ</translation>
+<translation id="5581876958763461074">ਸਾਰੇ ਨੋਟ</translation>
 <translation id="5581972110672966454">ਡੀਵਾਈਸ ਨੂੰ ਡੋਮੇਨ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਆਪਣੇ ਡੀਵਾਈਸ ਦੇ ਮਾਲਕ ਜਾਂ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ। ਗੜਬੜ ਕੋਡ: <ph name="ERROR_CODE" />।</translation>
 <translation id="5582839680698949063">ਮੁੱਖ ਮੀਨੂ</translation>
 <translation id="5583640892426849032">ਬੈਕਸਪੇਸ</translation>
@@ -5714,7 +5715,6 @@
 <translation id="617213288191670920">ਕੋਈ ਭਾਸ਼ਾ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤੀ ਗਈ</translation>
 <translation id="6173623053897475761">ਆਪਣਾ ਪਿੰਨ ਦੁਬਾਰਾ ਟਾਈਪ ਕਰੋ</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
-<translation id="6176043333338857209">ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨਾਲ ਸੰਚਾਰ ਕਰਨ ਲਈ ਬਲੂਟੁੱਥ ਨੂੰ ਅਸਥਾਈ ਤੌਰ 'ਤੇ ਚਾਲੂ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="6178664161104547336">ਇੱਕ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਚੁਣੋ</translation>
 <translation id="6178682841350631965">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਡਾਟੇ ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6180510783007738939">ਲਾਈਨ ਟੂਲ</translation>
@@ -7699,6 +7699,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> ਅਵਾਜ਼ <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">ਸਵਿੱਚ ਪਹੁੰਚ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="7992203134935383159">ਸਪੀਚ ਸਿੰਥੈਸਿਸ</translation>
+<translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਚਿੱਤਰ ਵਿੱਚ ਦਿੱਤੀ ਲਿਖਤ ਦਾ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">ਪ੍ਰਕਿਰਿਆ ਤਰਜੀਹ</translation>
 <translation id="7999229196265990314">ਅਨੁਸਰਣ ਕੀਤੀਆਂ ਫਾਈਲਾਂ ਬਣਾਈਆਂ:

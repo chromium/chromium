@@ -599,7 +599,6 @@
 <translation id="5520466080178053306">انقر على "مدير كلمات المرور"، ثم على "إضافة".</translation>
 <translation id="5525095647255982834">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على ذلك الجهاز.</translation>
 <translation id="5525269841082836315">إنشاء عبارة مرور</translation>
-<translation id="5530084793407600786">‏البحث داخل الصور باستخدام Google</translation>
 <translation id="5542540507657872337">تم العثور على <ph name="COUNT" /> علامة تبويب مفتوحة.</translation>
 <translation id="5548760955356983418">‏يتيح لك Handoff بدء تصفح موقع على هذا الجهاز ثم متابعة التصفح بسهولة على جهاز Mac. سيظهر الموقع المفتوح حاليًا على Dock بـ Mac.
 
@@ -712,6 +711,7 @@
 <translation id="6284652193729350524">اقتراح ترجمة <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">تم إلغاء متابعة <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6293101329759844770">‏لتفعيل "التصفّح الآمن"، افتح <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" /> وانقر على "التصفّح الآمن".</translation>
+<translation id="6320780930074869063">عند تفعيل هذه الميزة، يتم حفظ كلمات المرور في <ph name="ACCOUNT" />. وعند إيقافها، يتم حفظ كلمات المرور على هذا الجهاز فقط.</translation>
 <translation id="6321526113093607004">إضافة إلى الإشارات المرجعية</translation>
 <translation id="6324669097367352121">إعدادات تسجيل الدخول</translation>
 <translation id="6337234675334993532">ترميز</translation>
@@ -960,7 +960,7 @@
 <translation id="802154636333426148">تعذّر التنزيل</translation>
 <translation id="8023878949384262191">توسيع القسم.</translation>
 <translation id="8027581147000338959">فتح في نافذة جديدة</translation>
-<translation id="8032569120109842252">تتم متابعته حاليًا</translation>
+<translation id="8032569120109842252">المواقع التي تتابعها</translation>
 <translation id="804225253087497565">‏قد يتم حفظ <ph name="BEGIN_LINK" />سجلّ البحث<ph name="END_LINK" /> و<ph name="BEGIN_LINK" />بيانات الأنشطة الأخرى<ph name="END_LINK" /> في حسابك على Google عند تسجيل الدخول إليه. ويمكنك حذفها في أي وقت.</translation>
 <translation id="804427445359061970">ستظهر لك علامات التبويب من الأجهزة الأخرى هنا</translation>
 <translation id="8059533439631660104">طي القسم.</translation>

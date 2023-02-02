@@ -187,6 +187,7 @@
 <translation id="4335235004908507846">Chrome이 정보 유출, 유해한 확장 프로그램 등으로부터 사용자를 보호해 줍니다.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" />이(가) Chrome에 추가됨</translation>
 <translation id="4384570495110188418">로그인되어 있지 않으므로 Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
+<translation id="4393248995085527349">향후 Chrome 업데이트를 받으려면 macOS 10.15 이상이 필요합니다. 이 컴퓨터에서는 macOS 10.13을 사용 중입니다.</translation>
 <translation id="4427306783828095590">향상된 보호 기능이 피싱 및 멀웨어를 더욱 효과적으로 차단합니다.</translation>
 <translation id="4450664632294415862">Chrome - 네트워크 로그인 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Chrome에서 다른 작업이 진행 중입니다. 나중에 다시 시도해 주세요.</translation>
@@ -257,6 +258,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5941711191222866238">최소화</translation>
 <translation id="5941830788786076944">Chrome을 기본 브라우저로</translation>
 <translation id="6003112304606738118">다운로드 중... <ph name="HOURS" />시간 남음</translation>
+<translation id="6010556343189461180">향후 Chrome 업데이트를 받으려면 macOS 10.15 이상이 필요합니다. 이 컴퓨터에서는 macOS 10.14를 사용 중입니다.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome이 지금 닫힙니다.}=1{Chrome이 1초 후에 닫힙니다.}other{Chrome이 #초 후에 닫힙니다.}}</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6070348360322141662">보안 강화를 위해 Chrome에서 사용자 데이터를 암호화합니다.</translation>

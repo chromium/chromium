@@ -391,6 +391,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Декларацията за поверителност<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">Показване на съдържанието в буферната памет</translation>
 <translation id="3098745985164956033">Някои изображения се изпращат до Google с цел подобряване на описанията за вас</translation>
+<translation id="3104179992611025423">Браузърът се управлява от родителите ви</translation>
 <translation id="3114507951000454849">Прочетете днешните новини <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">свързано с(ъс)</translation>
 <translation id="3123734510202723619">Съобщения</translation>
@@ -400,6 +401,7 @@
 <translation id="3157931365184549694">Възстановяване</translation>
 <translation id="3166827708714933426">Комбинации за раздели и прозорци</translation>
 <translation id="316694332262407393">Chrome вече се изпълнява тук.</translation>
+<translation id="3167258285411721858">Можете да заявите мобилната версия на сайта <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Измерване на рекламите</translation>
 <translation id="3207960819495026254">С отметка</translation>
@@ -433,6 +435,7 @@
 <translation id="3297344142967351106">Гласова помощ</translation>
 <translation id="3303414029551471755">Искате ли да продължите с изтеглянето на съдържанието?</translation>
 <translation id="3305795716056605962">Превеждайте страници от бутона „Още опции“</translation>
+<translation id="3319664549618064419">За по-добър изглед на този сайт преминете към настолната му версия</translation>
 <translation id="3334729583274622784">Да се промени ли файловото разширение?</translation>
 <translation id="3341262203274374114">Прекратяването на следенето не е възможно. Нещо се обърка.</translation>
 <translation id="3359667936385849800">Използване на текущия ви доставчик на услуги</translation>
@@ -624,7 +627,6 @@
 <translation id="4452411734226507615">Затваряне на раздела „<ph name="TAB_TITLE" />“</translation>
 <translation id="4452548195519783679">Отметката бе запазена в/ъв „<ph name="FOLDER_NAME" />“</translation>
 <translation id="4461614516424362539">Когато свържете друго устройство чрез QR код, то може да използва този телефон като ключ за сигурност. Ако го премахнете, трябва пак да сканирате QR код, за да го свържете отново.</translation>
-<translation id="4479839115899251637">Изтр. от списъка за четене</translation>
 <translation id="4479972344484327217">Модулът „<ph name="MODULE" />“ за Chrome се инсталира…</translation>
 <translation id="4484496141267039529">Няма връзка. Опитайте отново по-късно.</translation>
 <translation id="4487967297491345095">Всички данни на приложението Chrome ще се изтрият за постоянно. Това включва всички файлове, настройки, профили, бази от данни и др.</translation>
@@ -1466,6 +1468,7 @@
 <translation id="8849001918648564819">Скрито</translation>
 <translation id="8853345339104747198">„<ph name="TAB_TITLE" />“ – раздел</translation>
 <translation id="8854223127042600341">Преглед на офлайн файловете ви</translation>
+<translation id="885480114717186641">Можете да заявите настолната версия на сайта <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Получаване на описания</translation>
 <translation id="8856931513242997049">Потокът за разрешения за известия бе затворен</translation>
 <translation id="8873817150012960745">Докоснете тук, за да започнете</translation>
@@ -1486,7 +1489,6 @@
 <translation id="8955719471735800169">Обратно в началото</translation>
 <translation id="8964479563882643397">За да отворите нов раздел в режим „инкогнито“, използвайте менюто</translation>
 <translation id="8965591936373831584">изчаква</translation>
-<translation id="8967427617812342790">Добавяне към списъка за четене</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Следните раздели ще бъдат затворени: <ph name="INCOGNITO_TAB_COUNT" /> в режим „инкогнито“ и още <ph name="TAB_COUNT_ONE" />}other{Следните раздели ще бъдат затворени: <ph name="INCOGNITO_TAB_COUNT" /> в режим „инкогнито“ и още <ph name="TAB_COUNT_MANY" />}}</translation>
 <translation id="8970887620466824814">Нещо се обърка.</translation>
 <translation id="8972098258593396643">Да се изтегли ли файлът в стандартната папка?</translation>

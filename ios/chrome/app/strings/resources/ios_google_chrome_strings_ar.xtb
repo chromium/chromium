@@ -3,6 +3,7 @@
 <translationbundle lang="ar">
 <translation id="1143896152279775643">‏سيتم حفظ كلمة المرور في "مدير كلمات المرور" من Google لعنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">‏المساعدة على تحسين ميزات Chrome وأدائه</translation>
+<translation id="1352919863522755794">‏تعذَّر على "مدير كلمات المرور في Google" التأكد من كلمات المرور. يُرجى التأكد من الاتصال بالإنترنت.</translation>
 <translation id="1462727070346936664">‏يمكنك تسجيل الدخول للاستفادة إلى أقصى حدّ من Chrome</translation>
 <translation id="1479202195792305274">‏يجب تسجيل الدخول إلى حسابك على Google ليتمكّن Chrome من التحقُّق من كلمات المرور.</translation>
 <translation id="1493827051843127077">‏يمكنك ضبط Chrome كمتصفّح تلقائي لمزامنة كل من علامات التبويب وكلمات المرور ومعلومات الدفع على جميع أجهزتك.</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">‏للخروج من حسابك على Google في جميع المواقع الإلكترونية، عليك <ph name="BEGIN_LINK" />تسجيل الخروج من Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">‏تعذّر على Chrome البحث عن تحديثات. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2732745070297234559">‏تعذّر على متصفِّح Chrome التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا.</translation>
+<translation id="2767464022270041271">‏ما مِن كلمات مرور محفوظة. لا يستطيع "مدير كلمات المرور في Google" التأكد من كلمات المرور إلّا عند حفظها.</translation>
 <translation id="2869959624320573933">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="2957447865124070833">‏اختيار <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">‏نظرًا لتسجيل خروجك من حساب يديره <ph name="SIGNOUT_MANAGED_DOMAIN" />، ستُحذَف بيانات Chrome من هذا الجهاز، ولكن ستظل البيانات محفوظة في حسابك على Google.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">‏تعذّر على متصفِّح Chrome التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا أو <ph name="BEGIN_LINK" />التحقُّق من كلمات المرور في حسابك على Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">‏للمساعدة على تحسين التطبيق، يرسِل متصفِّح Chrome بيانات الاستخدام والتعطُّل إلى Google. <ph name="BEGIN_LINK" />إدارة<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">‏غير متاح على الإصدار التجريبي من Chrome</translation>
+<translation id="4840404732697892756">‏لا يستطيع "مدير كلمات المرور في Google" التأكد من كلمات المرور إلّا عند تسجيل الدخول باستخدام حسابك على Google.</translation>
 <translation id="5030102366287574140">‏يستطيع Chrome مساعدتك في الحفاظ على أمان معلوماتك من عمليات اختراق البيانات والمواقع الإلكترونية غير الآمنة وغيرها من المشاكل.</translation>
 <translation id="5108659628347594808">‏تحسين أداء متصفِّح Chrome</translation>
 <translation id="5119391094379141756">‏اختيار Chrome</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">‏يتحقَّق Chrome من كلمات مرورك بشكلٍ دوري في البيانات التي تم نشرها على الإنترنت. وأثناء هذه العملية، تكون كلمات المرور وأسماء المستخدمين مشفّرة، ولا يمكن لأي مستخدم آخر الاطِّلاع على هذه البيانات بما في ذلك Google.</translation>
 <translation id="5639704535586432836">‏افتح الإعدادات &gt; الخصوصية &gt; الكاميرا &gt; Google Chrome وشغِّل الكاميرا.</translation>
 <translation id="5642200033778930880">‏يتعذر على Google Chrome استخدام الكاميرا في وضع تقسيم العرض</translation>
+<translation id="5661521615548540542">‏تعذَّر على "مدير كلمات المرور في Google" التأكد من جميع كلمات المرور. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">‏بلا اتصال بالإنترنت، يتعذّر على Chrome البحث عن تحديثات.</translation>
 <translation id="5716154293141027663">‏سيتم فتح متصفّح Chrome في أي وقت تنقر فيه على روابط في التطبيقات الأخرى.</translation>
@@ -118,9 +122,11 @@
   2. انقر على Default Browser App (تطبيق المتصفِّح التلقائي).
   3. اختَر Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">‏تعذَّر على "مدير كلمات المرور في Google" التأكد من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا أو <ph name="BEGIN_LINK" />التأكد من كلمات المرور في حسابك على Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">‏الحفاظ على أمانك باستخدام Google Chrome</translation>
 <translation id="8772179140489533211">‏عرض رسائل مطالبة تسجيل الدخول إلى Chrome</translation>
 <translation id="8788269841521769222">‏لن تضطر إلى تذكُّر كلمة المرور هذه. سيتم حفظ كلمة المرور في "مدير كلمات المرور" من Google على عنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
+<translation id="8857676124663337448">‏تعذَّر على "مدير كلمات المرور في Google" التأكد من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا.</translation>
 <translation id="8897749957032330183">‏يتم حفظ كلمات المرور في "مدير كلمات المرور في Google" على هذا الجهاز.</translation>
 <translation id="8969290730818637510">‏عند تفعيل هذا الخيار:
 <ph name="BEGIN_INDENT" />  • ستساعد في تحسين متصفِّح Chrome لتلبية احتياجاتك أنت وغيرك من المسخدمين.<ph name="END_INDENT" />

@@ -391,6 +391,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_LINK3" />സ്വകാര്യതാ നയവും<ph name="END_LINK3" /> ബാധകമാണ്.</translation>
 <translation id="3091010850649238832">ക്ലിപ്പ്ബോർഡിലെ ഉള്ളടക്കങ്ങൾ കാണിക്കുക</translation>
 <translation id="3098745985164956033">മെച്ചപ്പെട്ട വിവരണങ്ങൾ നിങ്ങൾക്ക് നൽകുന്നതിന് ചില ചിത്രങ്ങൾ Google-ന് അയയ്ക്കുന്നു</translation>
+<translation id="3104179992611025423">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ രക്ഷിതാക്കളാണ്</translation>
 <translation id="3114507951000454849">ഇന്നത്തെ വാർത്തകൾ വായിക്കൂ <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">ഇതുമായി ലിങ്ക് ചെയ്‌തു</translation>
 <translation id="3123734510202723619">അറിയിപ്പുകൾ</translation>
@@ -400,6 +401,7 @@
 <translation id="3157931365184549694">പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="3166827708714933426">ടാബ്, വിൻഡോ കുറുക്കുവഴികൾ</translation>
 <translation id="316694332262407393">Chrome മുമ്പേ ഇവിടെ റൺ ചെയ്യുന്നു.</translation>
+<translation id="3167258285411721858">നിങ്ങൾക്ക് <ph name="HOST_NAME" /> എന്നതിനുള്ള മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കാം</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">പരസ്യം കണക്കാക്കൽ</translation>
 <translation id="3207960819495026254">ബുക്ക്‌മാർക്കുചെയ്‌തു</translation>
@@ -433,6 +435,7 @@
 <translation id="3297344142967351106">ശബ്ദ സഹായം</translation>
 <translation id="3303414029551471755">ഉള്ളടക്കം ഡൗൺലോഡ് ചെയ്യുന്നതിലേക്ക് തുടരണോ?</translation>
 <translation id="3305795716056605962">'കൂടുതൽ ഓപ്‌ഷനുകൾ' ബട്ടണിൽ നിന്ന്, പേജുകൾ വിവർത്തനം ചെയ്യുക</translation>
+<translation id="3319664549618064419">ഈ സൈറ്റ് മികച്ച രീതിയിൽ കാണാൻ ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റിലേക്ക് മാറുക</translation>
 <translation id="3334729583274622784">ഫയൽ എക്സ്റ്റൻഷൻ മാറ്റണോ?</translation>
 <translation id="3341262203274374114">പിന്തുടരുന്നത് ഒഴിവാക്കാനാകുന്നില്ല. എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="3359667936385849800">നിങ്ങളുടെ നിലവിലെ സേവന ദാതാവിനെ ഉപയോഗിക്കുക</translation>
@@ -624,7 +627,6 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ടാബ് അടയ്ക്കുക</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ഫോൾഡറിലേക്ക് ബുക്ക്മാർക്ക് ചെയ്‌തു</translation>
 <translation id="4461614516424362539">നിങ്ങൾ QR കോഡ് ഉപയോഗിച്ച് മറ്റൊരു ഉപകരണം ലിങ്ക് ചെയ്യുമ്പോൾ അതിന് ഈ ഫോൺ ഒരു സുരക്ഷാ കീ ആയി ഉപയോഗിക്കാനാകും. നിങ്ങളത് നീക്കം ചെയ്യുകയാണെങ്കിൽ അത് വീണ്ടും ലിങ്ക് ചെയ്യാൻ ഒരു QR കോഡ് സ്‌കാൻ ചെയ്യേണ്ടി വരും.</translation>
-<translation id="4479839115899251637">വായനാ ലിസ്റ്റിൽ നിന്ന് ഇല്ലാതാക്കൂ</translation>
 <translation id="4479972344484327217">Chrome-നുള്ള <ph name="MODULE" /> ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു…</translation>
 <translation id="4484496141267039529">കണക്ഷനില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="4487967297491345095">Chrome-ന്റെ എല്ലാ ആപ്പ് വിവരങ്ങളും ശാശ്വതമായി ഇല്ലാതാക്കും. ഇതിൽ എല്ലാ ഫയലുകളും ക്രമീകരണവും അക്കൗണ്ടുകളും ഡാറ്റാബേസുകളും മറ്റും ഉൾപ്പെടുന്നു.</translation>
@@ -1466,6 +1468,7 @@
 <translation id="8849001918648564819">മറച്ചിരിക്കുന്നു</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, ടാബ്</translation>
 <translation id="8854223127042600341">നിങ്ങളുടെ ഓഫ്‌ലൈൻ ഫയലുകൾ കാണുക</translation>
+<translation id="885480114717186641">നിങ്ങൾക്ക് <ph name="HOST_NAME" /> എന്നതിനുള്ള ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റ് അഭ്യർത്ഥിക്കാം</translation>
 <translation id="8856607253650333758">വിവരണങ്ങൾ നേടുക</translation>
 <translation id="8856931513242997049">അറിയിപ്പ് അനുമതി ഫ്ലോ അടച്ചിരിക്കുന്നു</translation>
 <translation id="8873817150012960745">ആരംഭിക്കാൻ ഇവിടെ ടാപ്പ് ചെയ്യുക</translation>
@@ -1486,7 +1489,6 @@
 <translation id="8955719471735800169">മുകളിലേക്ക് മടങ്ങുക</translation>
 <translation id="8964479563882643397">പുതിയ അദൃശ്യ ടാബ് തുറക്കാൻ മെനു തുറക്കുക</translation>
 <translation id="8965591936373831584">തീർച്ചപ്പെടുത്താത്തവ</translation>
-<translation id="8967427617812342790">വായന ലിസ്റ്റിൽ ചേർക്കുക</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> അദൃശ്യ ടാബും മറ്റ് <ph name="TAB_COUNT_ONE" /> ടാബും കൂടി അടയ്ക്കും}other{<ph name="INCOGNITO_TAB_COUNT" /> അദൃശ്യ ടാബും മറ്റ് <ph name="TAB_COUNT_MANY" /> ടാബുകളും കൂടി അടയ്ക്കും}}</translation>
 <translation id="8970887620466824814">എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="8972098258593396643">ഡിഫോൾട്ട് ഫോൾഡറിലേക്ക് ഡൗൺലോഡ് ചെയ്യണോ?</translation>

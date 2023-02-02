@@ -187,6 +187,7 @@
 <translation id="4335235004908507846">Chrome нь таныг өгөгдлийн зөрчил, муу өргөтгөл болон бусад асуудлаас хамгаалахад туслах боломжтой</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" />-г Chrome-д нэмсэн</translation>
 <translation id="4384570495110188418">Та нэвтрээгүй байгаа тул Chrome таны нууц үгсийг шалгах боломжгүй байна</translation>
+<translation id="4393248995085527349">Google Chrome-н цаашдын шинэчлэлтийг авахын тулд танд macOS 10.15 эсвэл түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер macOS 10.13 хувилбарыг ашиглаж байна.</translation>
 <translation id="4427306783828095590">Сайжруулсан хамгаалалт нь фишинг болон хортой кодыг блоклохын тулд илүү ихийг хийдэг</translation>
 <translation id="4450664632294415862">Chrome - Сүлжээнд нэвтрэх - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome-н өөр үйл ажиллагаа явагдаж байна. Дараа дахин оролдоно уу.</translation>
@@ -257,6 +258,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="5941711191222866238">Багасгах</translation>
 <translation id="5941830788786076944">Google Chrome-ыг анхдагч веб хөтөчөө болгоно уу</translation>
 <translation id="6003112304606738118">Татаж байна... <ph name="HOURS" /> цаг үлдсэн</translation>
+<translation id="6010556343189461180">Google Chrome-н цаашдын шинэчлэлтийг авахын тулд танд macOS 10.15 эсвэл түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер macOS 10.14 хувилбарыг ашиглаж байна.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome-г одоо хаана.}=1{Chrome-г 1 секундийн дараа хаана.}other{Chrome-г # секундийн дараа хаана.}}</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6070348360322141662">Таны аюулгүй байдлыг сайжруулахын тулд Google Chrome таны өгөгдлийг шифрлэнэ</translation>

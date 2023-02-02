@@ -183,6 +183,7 @@
 <translation id="4335235004908507846">Chrome захищає від порушень безпеки даних, шкідливих розширень тощо</translation>
 <translation id="4343195214584226067">Розширення <ph name="EXTENSION_NAME" /> додано в Chrome</translation>
 <translation id="4384570495110188418">Chrome не може перевірити паролі, оскільки ви не ввійшли в обліковий запис</translation>
+<translation id="4393248995085527349">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система macOS 10.15 або новішої версії. На цьому комп’ютері встановлено macOS 10.13.</translation>
 <translation id="4427306783828095590">Покращений захист ще ефективніше блокує фішинг і зловмисне програмне забезпечення</translation>
 <translation id="4450664632294415862">Chrome – Вхід у мережу – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">У Google Chrome виконується інша операція. Спробуйте пізніше.</translation>
@@ -249,6 +250,7 @@
 <translation id="5941711191222866238">Згорнути</translation>
 <translation id="5941830788786076944">Зробити Google Chrome переглядачем за промовчанням</translation>
 <translation id="6003112304606738118">Завантаження… Залишилося: <ph name="HOURS" /> год.</translation>
+<translation id="6010556343189461180">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система macOS 10.15 або новішої версії. На цьому комп’ютері встановлено macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome зараз закриється.}=1{Chrome закриється через 1 секунду.}one{Chrome закриється через # секунду.}few{Chrome закриється через # секунди.}many{Chrome закриється через # секунд.}other{Chrome закриється через # секунди.}}</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6070348360322141662">Щоб підвищити безпеку, Google Chrome шифруватиме ваші дані</translation>

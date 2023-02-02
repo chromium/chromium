@@ -391,6 +391,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="3072980200212375806"><ph name="APP_NAME" /> će se otvoriti u Chrome-u. Ako nastavite, prihvatate <ph name="BEGIN_LINK1" />Google uslove korišćenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne uslove korišćenja usluge za Google Chrome i Chrome OS<ph name="END_LINK2" />. Primenjuje se i <ph name="BEGIN_LINK3" />politika privatnosti<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">Prikaži sadržaj privremene memorije</translation>
 <translation id="3098745985164956033">Neke slike se šalju Google-u radi poboljšanja opisa</translation>
+<translation id="3104179992611025423">Roditelji upravljaju pregledačem</translation>
 <translation id="3114507951000454849">Čitajte današnje vesti <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">povezano sa karticom</translation>
 <translation id="3123734510202723619">Saopštenja</translation>
@@ -400,6 +401,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="3157931365184549694">Ponovo otvori</translation>
 <translation id="3166827708714933426">Prečice za kartice i prozore</translation>
 <translation id="316694332262407393">Chrome je već pokrenut.</translation>
+<translation id="3167258285411721858">Možete da zatražite mobilni sajt za <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Merenje oglasa</translation>
 <translation id="3207960819495026254">Obeleženo</translation>
@@ -433,6 +435,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="3297344142967351106">Glasovna pomoć</translation>
 <translation id="3303414029551471755">Želite li da nastavite sa preuzimanjem sadržaja?</translation>
 <translation id="3305795716056605962">Prevedite stranice pomoću dugmeta Još opcija</translation>
+<translation id="3319664549618064419">Pređite na verziju sajta za računar da biste bolje videli ovaj sajt</translation>
 <translation id="3334729583274622784">Želite da promenite ekstenziju datoteke?</translation>
 <translation id="3341262203274374114">Opozivanje praćenja nije uspelo. Došlo je do greške.</translation>
 <translation id="3359667936385849800">Koristi aktuelnog dobavljača usluge</translation>
@@ -624,7 +627,6 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="4452411734226507615">Zatvori karticu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Obeleživač je dodat u <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Kada povežete drugi uređaj pomoću QR koda, on može da koristi ovaj telefon kao bezbednosni ključ. Ako ga uklonite, morate da skenirate QR kôd da biste ga ponovo povezali.</translation>
-<translation id="4479839115899251637">Izbriši sa liste za čitanje</translation>
 <translation id="4479972344484327217">Instalira se <ph name="MODULE" /> za Chrome…</translation>
 <translation id="4484496141267039529">Nema internet veze. Probajte ponovo kasnije.</translation>
 <translation id="4487967297491345095">Svi podaci Chrome aplikacija će biti trajno izbrisani. To obuhvata sve datoteke, podešavanja, naloge, baze podataka itd.</translation>
@@ -1466,6 +1468,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8849001918648564819">Skriveno</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, kartica</translation>
 <translation id="8854223127042600341">Pogledajte oflajn datoteke</translation>
+<translation id="885480114717186641">Možete da zatražite verziju sajta za računar za <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Preuzimaj opise</translation>
 <translation id="8856931513242997049">Tok dozvole za obaveštenja je zatvoren</translation>
 <translation id="8873817150012960745">Dodirnite ovde da biste započeli</translation>
@@ -1486,7 +1489,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8955719471735800169">Nazad na vrh</translation>
 <translation id="8964479563882643397">Otvorite meni da biste otvorili novu karticu bez arhiviranja</translation>
 <translation id="8965591936373831584">na čekanju</translation>
-<translation id="8967427617812342790">Dodaj na listu za čitanje</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_ONE" /> kartica će biti zatvorene}one{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_MANY" /> kartica će biti zatvorene}few{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_MANY" /> kartice će biti zatvorene}other{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_MANY" /> kartica će biti zatvorene}}</translation>
 <translation id="8970887620466824814">Došlo je do greške.</translation>
 <translation id="8972098258593396643">Preuzimate u podrazumevani folder?</translation>

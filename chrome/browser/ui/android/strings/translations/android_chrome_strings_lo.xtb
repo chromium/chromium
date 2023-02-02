@@ -391,6 +391,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ຈະເປີດໃນ Chrome. ໂດຍການສືບຕໍ່, ແມ່ນຖືວ່າທ່ານຍອມຮັບ <ph name="BEGIN_LINK1" />ຂໍ້ກຳນົດບໍລິການ Google<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ຂໍ້ກຳນົດບໍລິການເພີ່ມເຕີມ Google Chrome ແລະ ChromeOS<ph name="END_LINK2" />. ຈະນຳໃຊ້ <ph name="BEGIN_LINK3" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK3" /> ນຳ.</translation>
 <translation id="3091010850649238832">ສະແດງເນື້ອຫາຄລິບບອດ</translation>
 <translation id="3098745985164956033">ລະບົບຈະສົ່ງບາງຮູບໃຫ້ Google ເພື່ອປັບປຸງຄຳອະທິບາຍສຳລັບທ່ານ.</translation>
+<translation id="3104179992611025423">ຜູ້ປົກຄອງຂອງທ່ານເປັນຜູ້ຈັດການໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="3114507951000454849">ອ່ານຂ່າວຂອງມື້ນີ້ <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">ລິ້ງຫາ</translation>
 <translation id="3123734510202723619">ການປະກາດ</translation>
@@ -400,6 +401,7 @@
 <translation id="3157931365184549694">ເອົາຄືນມາ</translation>
 <translation id="3166827708714933426">ທາງລັດແຖບ ແລະ ໜ້າຈໍ</translation>
 <translation id="316694332262407393">Chrome ກຳລັງເຮັດວຽກຢູ່ບ່ອນນີ້ຢູ່ກ່ອນແລ້ວ.</translation>
+<translation id="3167258285411721858">ທ່ານສາມາດຂໍເວັບໄຊມືຖືສຳລັບ <ph name="HOST_NAME" /> ໄດ້</translation>
 <translation id="3169472444629675720">ຄົ້ນຫາ</translation>
 <translation id="3187472288455401631">ການວັດແທກໂຄສະນາ</translation>
 <translation id="3207960819495026254">ໃສ່ບຸກ​ມາກ​໌​ແລ້ວ</translation>
@@ -433,6 +435,7 @@
 <translation id="3297344142967351106">ການຊ່ວຍເຫຼືອທາງສຽງ</translation>
 <translation id="3303414029551471755">ສືບ​ຕໍ່​ໄປດາວ​ໂຫຼດ​ເນື້ອ​ໃນ​ບໍ?</translation>
 <translation id="3305795716056605962">ແປພາສາໜ້າຈາກປຸ່ມຕົວເລືອກເພີ່ມເຕີມ</translation>
+<translation id="3319664549618064419">ສະຫຼັບໄປຫາເວັບໄຊເດັສທັອບເພື່ອເບິ່ງເວັບໄຊນີ້ໄດ້ດີຂຶ້ນ</translation>
 <translation id="3334729583274622784">ປ່ຽນນາມສະກຸນໄຟລ໌ບໍ?</translation>
 <translation id="3341262203274374114">ບໍ່ສາມາດເຊົາຕິດຕາມໄດ້. ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ.</translation>
 <translation id="3359667936385849800">ໃຊ້ຜູ້ໃຫ້ບໍລິການປັດຈຸບັນຂອງທ່ານ</translation>
@@ -624,7 +627,6 @@
 <translation id="4452411734226507615">ປິດແຖບ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">ເພີ່ມບຸກມາກໃສ່ <ph name="FOLDER_NAME" /> ແລ້ວ</translation>
 <translation id="4461614516424362539">ເມື່ອທ່ານລິ້ງອຸປະກອນອື່ນດ້ວຍລະຫັດ QR, ມັນຈະສາມາດໃຊ້ໂທລະສັບນີ້ເປັນກະແຈຄວາມປອດໄພໄດ້. ຫາກທ່ານລຶບມັນອອກ, ທ່ານຈະຕ້ອງສະແດງລະຫັດ QR ເພື່ອລິ້ງມັນຄືນໃໝ່.</translation>
-<translation id="4479839115899251637">ລຶບອອກຈາກລາຍຊື່ການອ່ານ</translation>
 <translation id="4479972344484327217">ກຳລັງຕິດຕັ້ງ <ph name="MODULE" /> ສໍາລັບ Chrome…</translation>
 <translation id="4484496141267039529">ບໍ່ມີການເຊື່ອມຕໍ່. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="4487967297491345095">ທຸກຂໍ້ມູນແອັບຂອງ Chrome ຈະຖືກລຶບຢ່າງຖາວອນ. ນີ້ຮວມເອົາທຸກໄຟລ໌, ການຕັ້ງຄ່າ, ບັນຊີ, ຖານຂໍ້ມູນ ແລະ ອື່ນໆ.</translation>
@@ -1466,6 +1468,7 @@
 <translation id="8849001918648564819">ເຊື່ອງໄວ້</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, ແຖບ​</translation>
 <translation id="8854223127042600341">ເບິ່ງໄຟລ໌ອອບລາຍຂອງທ່ານ</translation>
+<translation id="885480114717186641">ທ່ານສາມາດຂໍເວັບໄຊເດັສທັອບສຳລັບ <ph name="HOST_NAME" /> ໄດ້</translation>
 <translation id="8856607253650333758">ຮັບຄຳອະທິບາຍ</translation>
 <translation id="8856931513242997049">ຂັ້ນຕອນການອະນຸຍາດການແຈ້ງເຕືອນປິດຢູ່</translation>
 <translation id="8873817150012960745">ແຕະບ່ອນນີ້ເພື່ອເລີ່ມຕົ້ນ</translation>
@@ -1486,7 +1489,6 @@
 <translation id="8955719471735800169">ກັບຄືນໄປດ້ານເທິງ</translation>
 <translation id="8964479563882643397">ເພື່ອເປີດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່, ໃຫ້ເປີດເມນູ</translation>
 <translation id="8965591936373831584">ຄ້າງຢູ່</translation>
-<translation id="8967427617812342790">ເພີ່ມໃສ່ລາຍການທີ່ຈະອ່ານ</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ <ph name="INCOGNITO_TAB_COUNT" /> ແລະ ແຖບອື່ນໆ <ph name="TAB_COUNT_ONE" /> ແຖບຈະຖືກປິດ}other{ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ <ph name="INCOGNITO_TAB_COUNT" /> ແລະ ແຖບອື່ນໆ <ph name="TAB_COUNT_MANY" /> ແຖບຈະຖືກປິດ}}</translation>
 <translation id="8970887620466824814">ມີບາງຢ່າງຜິດພາດ.</translation>
 <translation id="8972098258593396643">ດາວໂຫຼດໃສ່ໂຟນເດີເລີ່ມຕົ້ນບໍ?</translation>

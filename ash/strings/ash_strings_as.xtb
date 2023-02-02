@@ -420,9 +420,11 @@
 <translation id="3289674678944039601">এডাপ্টৰেৰে চাৰ্জ হৈ আছে</translation>
 <translation id="3290356915286466215">অসুৰক্ষিত</translation>
 <translation id="3294437725009624529">অতিথি</translation>
+<translation id="3298690094479023523">আপোনাৰ পিন অথবা পাছৱৰ্ডটো তথাপি সত্যাপন কৰিব পৰা নগ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3307642347673023554">লেপটপ ম’ডলৈ সলনি হ’ল</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />এ তথাপিও পাছত ছাইন ইন কৰিব পাৰে।</translation>
 <translation id="3321628682574733415">পেৰেণ্ট ক'ডটো ভুল</translation>
+<translation id="332827762492701193">জাননীবোৰ লুকুৱাই ৰখা হৈছে</translation>
 <translation id="3339826665088060472">স্ক্ৰীন কেপচাৰ, স্ক্ৰীনশ্বট আৰু স্ক্ৰীন ৰেকৰ্ডিং কৰিবৰ বাবে সঁজুলি</translation>
 <translation id="3340978935015468852">ছেটিংসমূহ</translation>
 <translation id="3341303451326249809">স্ক্ৰীনশ্বট কেপচাৰ কৰা হ'ল</translation>
@@ -559,6 +561,7 @@
 <translation id="4017989525502048489">লেজাৰ প্ৰিণ্টাৰ</translation>
 <translation id="401993194061514265">মাৰ্কাৰ উপলব্ধ নহয়। স্ক্ৰীন কাষ্ট কৰাৰ সুবিধাটো পুনৰ খোলক।</translation>
 <translation id="4021716437419160885">তললৈ স্ক্ৰল কৰক</translation>
+<translation id="4024840464866786680">যদি আপুনি আপোনাৰ পিন আৰু পাছৱৰ্ড পাহৰিছে অথবা শেহতীয়াকৈ আপোনাৰ Google একাউণ্টৰ পাছৱৰ্ড সলনি কৰিছে, তেন্তে এই ব্যৱহাৰকাৰীক পুনৰুদ্ধাৰ কৰিবলৈ চেষ্টা কৰক।</translation>
 <translation id="4028481283645788203">অধিক সুৰক্ষাৰ বাবে পাছৱর্ডৰ আৱশ্যক</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">আপুনি নিজৰ স্ক্রীণখন শ্বেয়াৰ কৰি আছে</translation>
@@ -699,10 +702,12 @@
 <translation id="4735944890391795473">ডেস্ক ১২</translation>
 <translation id="473775607612524610">আপডে'ট কৰক</translation>
 <translation id="4740516757091333363">ছেভ কৰি থোৱা ডেস্ক মচিবনে?</translation>
+<translation id="4747410141429390146">জাননী চাবলৈ অনুগ্ৰহ কৰি আনলক কৰক</translation>
 <translation id="4752784485658729358">কেৱল ৬ খন ছেভ কৰি ৰখা ডেস্কক অনুমতি দিয়া হয়। এখন নতুন ডেস্ক ছেভ কৰিবলৈ অন্য এখন আঁতৰাওক।</translation>
 <translation id="4759238208242260848">ডাউনল'ডসমূহ</translation>
 <translation id="4762573482154983647">এপ্‌ লুকুৱাওক</translation>
 <translation id="4774338217796918551">কাইলৈ <ph name="COME_BACK_TIME" /> বজাত আকৌ চাব৷</translation>
+<translation id="4776584068981882959">আপোনাৰ পাছৱৰ্ডটো তথাপি সত্যাপন কৰিব পৰা নগ‘ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />ৰ পাছৱর্ড</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Assistant ডেম’ ছেশ্বনত উপলব্ধ নহয়।</translation>
@@ -842,6 +847,7 @@
 <translation id="5536723544185013515">শেহতীয়াকৈ খোলা এপ্‌, শেহতীয়াকৈ খোলা আটাইবোৰ এপ্‌ এক্সেছ কৰিবলৈ বাওঁ অথবা সোঁ কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰি নেভিগে’ট কৰক</translation>
 <translation id="553675580533261935">ছেশ্বন বন্ধ কৰি আছে</translation>
 <translation id="5537725057119320332">কাষ্ট কৰক</translation>
+<translation id="5546397813406633847">ব্যৱহাৰকাৰীক পুনৰুদ্ধাৰ কৰক</translation>
 <translation id="554893713779400387">শ্ৰুতলিপি দিয়া বুটামটো টগ'ল কৰক</translation>
 <translation id="5558091555391176027">Nearby Shareৰ উচ্চ দৃশ্যমানতাৰ সুবিধাটো ট’গল কৰক</translation>
 <translation id="5560420195677022218">আপোনাৰ <ph name="DEVICE_TYPE" />ত আপোনাৰ ফ’নৰ এপ্‌সমূহ চাওক</translation>
@@ -858,6 +864,7 @@
 <translation id="5618148318840095371">আমি আপোনাক এটা উন্নত নেটৱৰ্কৰ সৈতে সংযুক্ত কৰিছোঁ</translation>
 <translation id="5619862035903135339">স্ক্ৰীন কেপচাৰ কৰাটো প্ৰশাসকৰ নীতিয়ে অক্ষম কৰে</translation>
 <translation id="5625955975703555628">এলটিই+</translation>
+<translation id="5627392655516693966">আপোনাৰ পাছৱৰ্ডটো সত্যাপন কৰিব পৰা নগ‘ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="5648021990716966815">মাইকৰ জেক</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />এ আপোনাৰ মনোযোগ বিচাৰি অনুৰোধ কৰিছে।</translation>
 <translation id="5662075790140998213">ডেস্ক ১০</translation>
@@ -876,6 +883,7 @@
 <translation id="5707775774148071965">আপোনাৰ ডিভাইচটোৱে আপোনাৰ কে’বলতকৈ উচ্চ ডেটাৰ হাৰ সমৰ্থন কৰে। ডিভাইচৰ কাৰ্যক্ষমতা সীমিত হ’ব পাৰে।</translation>
 <translation id="5710450975648804523">অসুবিধা নিদিব ম’ড অন হৈ আছে</translation>
 <translation id="571295407079589142">ম’বাইল ডেটা অফ কৰা হ'ল</translation>
+<translation id="5727460725221669831">যদি আপুনি আপোনাৰ পাছৱৰ্ড পাহৰিছে অথবা শেহতীয়াকৈ আপোনাৰ Google একাউণ্টৰ পাছৱৰ্ড সলনি কৰিছে, তেন্তে এই ব্যৱহাৰকাৰীক পুনৰুদ্ধাৰ কৰিবলৈ চেষ্টা কৰক।</translation>
 <translation id="573413375004481890">আপোনাৰ সকলো ডিছপ্লে’ এই ডিভাইচটোৱে সমৰ্থন কৰিব নোৱাৰিলে, সেয়েহে এটাৰ সংযোগ বিচ্ছিন্ন কৰা হৈছে</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
 <translation id="574392208103952083">মধ্যমীয়া</translation>

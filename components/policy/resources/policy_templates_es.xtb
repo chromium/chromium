@@ -3666,6 +3666,11 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="445505634382262792">Si se asigna el valor "3" a esta política, los sitios web podrán solicitar acceso de escritura a los archivos y directorios del sistema de archivos del sistema operativo del host. Si se le asigna el valor "2", se denegará el acceso.
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>
+<translation id="4457113781439375078">Esta política está obsoleta.
+
+      Si se habilita esta política, los dispositivos registrados informarán periódicamente sobre su ubicación.
+
+      Si se inhabilita esta política o no se establece, los dispositivos registrados no informarán sobre su ubicación.</translation>
 <translation id="4463675333222095358">Habilitar conversión de unidades de Respuestas rápidas</translation>
 <translation id="4464365009416584564">Inhabilitar <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Bloquear cookies de terceros</translation>
@@ -4140,9 +4145,6 @@ Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTI
       indicado para procesar las solicitudes keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag).
 
       El valor predeterminado (0) significa que esta función está inhabilitada.</translation>
-<translation id="4934869540807953882">A partir de la versión M110, se eliminará la API window.webkitStorageInfo no estándar. Esta política vuelve a habilitar dicha API.
-Si se habilita esta política, la API window.webkitStorageInfo estará disponible.
-Si se inhabilita esta política o no se define, la API window.webkitStorageInfo no estará disponible.</translation>
 <translation id="4937423591320233496">Inhabilitar sugerencias de contenido</translation>
 <translation id="4940810901775798837">Permitir que los sitios web no seguros envíen solicitudes a cualquier punto final de la red</translation>
 <translation id="4942096314850617489">Inhabilitar la atestación remota para el usuario</translation>
@@ -5458,6 +5460,17 @@ El tiempo de espera de inactividad para que se inicie el salvapantallas y el int
 <translation id="6261643884958898336">Proporcionar información de identificación de equipos</translation>
 <translation id="6265892395051519509">Permitir el acceso a los sensores en estos sitios web</translation>
 <translation id="6266043141694454734">Determina si Chrome Root Store y el verificador de certificados integrado se usarán para verificar los certificados de los servidores</translation>
+<translation id="6267130578410325007">Esta política permite los clústeres de agentes con clave de origen de forma predeterminada.
+
+El encabezado HTTP Origin-Agent-Cluster controla si un documento se aísla en un clúster de agentes con clave de origen o en un clúster de agentes con clave de sitio. Esto afecta a la seguridad, ya que un clúster de agentes con clave de origen permite aislar los documentos según el origen. La consecuencia que tiene para el desarrollador es que el descriptor de acceso document.domain ya no se podrá establecer.
+
+El comportamiento predeterminado (cuando no hay ningún encabezado Origin-Agent-Cluster definido) cambia en M111 de clave de sitio a clave de origen.
+
+Si esta política se habilita o no se establece, el navegador adoptará este nuevo comportamiento predeterminado a partir de esa versión.
+
+Si esta política se inhabilita, el cambio se revertirá y los documentos sin encabezados Origin-Agent-Cluster se asignarán a clústeres de agentes con clave de sitio. Como consecuencia, el descriptor de acceso document.domain podrá establecerse de manera predeterminada. Esto coincide con el comportamiento anterior.
+
+Consulta https://developer.chrome.com/blog/immutable-document-domain/ para obtener más información.</translation>
 <translation id="6270615143812355589">Habilitar entrada de audio</translation>
 <translation id="6270791075656665237">No permitir QUIC</translation>
 <translation id="6273015149273504999">
@@ -6402,6 +6415,16 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si defines esta política como obligatoria, los usuarios no podrán cambiarla ni anularla.
 
       Si no le asignas ningún valor, la estantería se colocará en la parte inferior de la pantalla de forma predeterminada y el usuario podrá cambiar su posición.</translation>
+<translation id="7037853989942016900">Esta política controla la reciente refactorización para las APIs Graphics3D en el complemento PPAPI.
+
+La migración solo afecta a detalles de implementación interna y no debería cambiar ningún comportamiento. No obstante, esta política se puede utilizar en caso de que alguna aplicación PPAPI no funcione correctamente.
+
+Si esta política se habilita o no se establece, el navegador decidirá qué implementación se usará.
+Si esta política se inhabilita, el navegador usará la implementación antigua hasta que la política caduque.
+
+Si tienes que usar esta política, avisa de un error en crbug.com y explica cómo la quieres usar. Se prevé que esta política esté disponible en la versión 114 de <ph name="PRODUCT_NAME" />. Después, la antigua implementación se eliminará.
+
+NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente reflejarán los cambios de esta política mientras se esté ejecutando el navegador.</translation>
 <translation id="7039815268521168329">Mostrar el flujo de Voice Match del Asistente de Google durante la configuración inicial</translation>
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
 <translation id="7044883996351280650">Controlar el servicio de copia de seguridad y restauración de Android</translation>

@@ -596,7 +596,6 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="5520466080178053306">Tik op Wagwoordbestuurder en tik dan op Voeg by</translation>
 <translation id="5525095647255982834">Om hierdie oortjie na ’n ander toestel toe te stuur, moet jy daar by Chrome aanmeld.</translation>
 <translation id="5525269841082836315">Skep wagfrase</translation>
-<translation id="5530084793407600786">Soek op prent met Google</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> is gevind</translation>
 <translation id="5548760955356983418">Oorgee laat jou toe om op 'n webwerf op hierdie toestel te begin blaai en dan maklik op jou Mac voort te gaan. Die huidige oop webwerf sal in die dok van jou Mac verskyn.
 
@@ -709,6 +708,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6284652193729350524">Bied aan om <ph name="LANGUAGE" /> te vertaal</translation>
 <translation id="6289501276895392862">Het <ph name="CHANNEL_NAME" /> ontvolg</translation>
 <translation id="6293101329759844770">Maak <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> oop en tik op Veiligblaai om Veiligblaai aan te skakel.</translation>
+<translation id="6320780930074869063">Indien dit aan is, word wagwoorde in <ph name="ACCOUNT" /> gestoor. Indien dit af is, word wagwoorde net op hierdie toestel gestoor.</translation>
 <translation id="6321526113093607004">Voeg by Boekmerke</translation>
 <translation id="6324669097367352121">Aanmeldinstellings</translation>
 <translation id="6337234675334993532">Enkriptering</translation>

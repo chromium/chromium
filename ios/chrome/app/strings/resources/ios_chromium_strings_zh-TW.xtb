@@ -6,6 +6,7 @@
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1257458525759135959">如要儲存圖片，請輕觸 [設定] 並允許 Chromium 新增相片</translation>
 <translation id="1289216811211435351">改為使用 Chromium</translation>
+<translation id="1352919863522755794">Google 密碼管理工具無法檢查你的密碼，請確認網際網路連線狀態。</translation>
 <translation id="1361748954329991663">Chromium 版本過舊。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中沒有任何可用的更新，則表示你的裝置可能已停止支援新版 Chromium。</translation>
 <translation id="1431818719585918472">讓 Chromium 鎖定你的無痕分頁。</translation>
 <translation id="1472013873724362412">無法使用您的帳戶登入 Chromium，請洽詢您的網域管理員或使用一般 Google 帳戶登入。</translation>
@@ -35,6 +36,7 @@
 <translation id="2650312721222849884">開啟同步功能後，不論從何處使用 Chromium 都能查看你的分頁</translation>
 <translation id="2684230048001240293">將 Chromium 設為預設瀏覽器，即可在你的所有裝置上同步處理分頁、密碼和付款資訊</translation>
 <translation id="2730884209570016437">另一個應用程式正在使用你的相機，因此 Chromium 無法使用</translation>
+<translation id="2767464022270041271">尚未儲存任何密碼。你必須先儲存密碼，才能使用 Google 密碼管理工具的檢查功能。</translation>
 <translation id="2915596697727466327">Chromium 會使用 Face ID 來確保只有經過授權的使用者才能存取你的密碼。</translation>
 <translation id="2918709798697875261">貴機構要求你在 Chromium 保持登出狀態。</translation>
 <translation id="2942241131342758843">預設使用 Chromium 來開啟連結、從小工具搜尋，以及自動在其他應用程式中填入密碼</translation>
@@ -57,6 +59,7 @@
 <translation id="4681781466797808448">開啟 Chromium 掃描器</translation>
 <translation id="4736424910885271643">由於你的帳戶受到 <ph name="HOSTED_DOMAIN" /> 管理，因此系統會在你登出後，清除你在這部裝置上的 Chromium 資料</translation>
 <translation id="4828317641996116749">Chromium 無法檢查所有密碼，請稍後再試。</translation>
+<translation id="4840404732697892756">當你登入 Google 帳戶後，Google 密碼管理工具可以檢查你的密碼。</translation>
 <translation id="4985291216379576555">目前處於離線狀態，因此 Chromium 無法檢查更新</translation>
 <translation id="4996471330284142407">Chromium 操作簡便、安全且速度遠勝以往，讓你事半功倍。</translation>
 <translation id="4999538639245140991">由於你即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 所管理的帳戶，系統將刪除你在這個裝置上的 Chromium 資料，但這些資料仍會保留在你的 Google 帳戶中。</translation>
@@ -67,6 +70,7 @@
 <translation id="5521125884468363740">登入帳戶並開啟同步功能後，不論從何處使用 Chromium 都能查看你的分頁</translation>
 <translation id="5522297504975449419">部分 Chromium 功能將無法再使用。</translation>
 <translation id="5573014823074921752">Chromium 提示。如需更多分頁選項，請輕觸並按住工具列 (位於畫面底部或頂端) 中的 [顯示分頁] 按鈕。</translation>
+<translation id="5661521615548540542">Google 密碼管理工具無法檢查所有密碼，請稍後再試。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查你的密碼</translation>
 <translation id="5777187867430702742">Chromium 頁面</translation>
 <translation id="5945387852661427312">你即將使用由 <ph name="DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管你的 Chromium 資料。你的資料會與這個帳戶建立永久連結。登出 Chromium 後，系統會將你的資料從這個裝置上刪除，但繼續保留在你的 Google 帳戶中。</translation>
@@ -113,6 +117,7 @@
 <translation id="8409374867500149834">Chromium 提供了最強大的安全防護機制，可避免你誤入有害網站</translation>
 <translation id="858114650497379505">你可以在 iPhone 上的其他應用程式，使用儲存至密碼管理員的密碼。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
+<translation id="8603022514504485810">Google 密碼管理工具無法檢查所有密碼，請明天再試。你也可以<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="865600487977764604">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chromium 使用體驗，也有助於提升其他 Google 應用程式的安全機制。</translation>
 <translation id="8663480472502753423">取得 Chromium 最新版本</translation>
 <translation id="8685813584220679697">登入這個網站和 Chromium。</translation>
@@ -126,6 +131,7 @@
 
   • 開啟同步功能後，指標可能也會包含先前造訪網址的資訊。<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">系統會將這個帳戶和所有未儲存的資料從 Chromium 中移除。</translation>
+<translation id="8857676124663337448">Google 密碼管理工具無法檢查所有密碼，請明天再試。</translation>
 <translation id="894437814105052438">登出帳戶後，Chromium 就不會將任何新資料同步到你的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
 <translation id="9059693977935746710">你不需要記住這組密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的密碼管理員中</translation>

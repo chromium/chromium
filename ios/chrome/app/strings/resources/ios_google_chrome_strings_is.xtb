@@ -3,6 +3,7 @@
 <translationbundle lang="is">
 <translation id="1143896152279775643">Aðgangsorðið verður vistað í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Hjálpaðu okkur að bæta eiginleika og afköst Chrome</translation>
+<translation id="1352919863522755794">Google-aðgangsorðastjórnun gat ekki athugað aðgangsorðin þín. Athugaðu nettenginguna þína.</translation>
 <translation id="1462727070346936664">Skráðu þig inn til að fá sem mest út úr Chrome.</translation>
 <translation id="1479202195792305274">Chrome getur athugað aðgangsorðin þín þegar þú skráir þig inn með Google reikningnum þínum.</translation>
 <translation id="1493827051843127077">Notaðu Chrome sem sjálfgefinn kost til að samstilla flipa, aðgangsorð og greiðsluupplýsingar í öllum tækjunum þínum</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Til að skrá þig út af Google reikningnum þínum á öllum vefsvæðum skaltu <ph name="BEGIN_LINK" />skrá þig út af Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome gat ekki leitað að uppfærslum. Reyndu aftur síðar.</translation>
 <translation id="2732745070297234559">Chrome gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun.</translation>
+<translation id="2767464022270041271">Engin vistuð aðgangsorð. Google-aðgangsorðastjórnun getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="2869959624320573933">Skráðu þig inn á Chrome</translation>
 <translation id="2957447865124070833">Veldu <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Vegna þess að þú ert að skrá þig út af reikningi sem stýrt er af <ph name="SIGNOUT_MANAGED_DOMAIN" /> verður Chrome gögnum þínum eytt úr þessu tæki. Gögnin verða áfram geymd á Google reikningnum þínum.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun eða <ph name="BEGIN_LINK" />athugaðu aðgangsorð á Google reikningnum þínum.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">Chrome sendir gögn um notkun og hrun til Google til að bæta forritið. <ph name="BEGIN_LINK" />Stjórna<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Ekki stutt í Chrome Beta</translation>
+<translation id="4840404732697892756">Google-aðgangsorðastjórnun getur athugað aðgangsorðin þín þegar þú skráir þig inn með Google-reikningnum þínum.</translation>
 <translation id="5030102366287574140">Chrome getur veitt þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira.</translation>
 <translation id="5108659628347594808">Bættu Chrome</translation>
 <translation id="5119391094379141756">Veldu Chrome</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome athugar aðgangsorðin þín reglulega og ber þau saman við lista sem hafa verið birtir á netinu. Meðan á þessu stendur eru aðgangsorðin þín og notandanöfn dulkóðuð svo enginn geti lesið þau, þ.m.t. ekki Google.</translation>
 <translation id="5639704535586432836">Opnaðu Stillingar &gt; Persónuvernd &gt; Myndavél &gt; Chrome og kveiktu á myndavélinni.</translation>
 <translation id="5642200033778930880">Google Chrome getur ekki notað myndavélina á tvískiptum skjá</translation>
+<translation id="5661521615548540542">Google-aðgangsorðastjórnun gat ekki athugað öll aðgangsorð. Reyndu aftur síðar.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Ótengt, Chrome getur ekki leitað að uppfærslum.</translation>
 <translation id="5716154293141027663">Opna Chrome hvenær sem þú ýtir á tengil í öðrum forritum</translation>
@@ -118,9 +122,11 @@
   2. Ýttu á „Sjálfgefið vafraforrit“
   3. Veldu Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google-aðgangsorðastjórnun gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun eða <ph name="BEGIN_LINK" />athugaðu aðgangsorð á Google-reikningnum þínum.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Öryggi með Google Chrome</translation>
 <translation id="8772179140489533211">Sýna innskráningartilkynningar í Chrome.</translation>
 <translation id="8788269841521769222">Þú þarft ekki að muna þetta aðgangsorð. Það verður vistað í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Google-aðgangsorðastjórnun gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun.</translation>
 <translation id="8897749957032330183">Aðgangsorð eru vistuð í Google aðgangsorðastjórnun í þessu tæki.</translation>
 <translation id="8969290730818637510">Þegar kveikt er á þessu:
 <ph name="BEGIN_INDENT" />  • Hjálpaðu til við að bæta Chrome fyrir fólk sem notar það eins og þú.<ph name="END_INDENT" />

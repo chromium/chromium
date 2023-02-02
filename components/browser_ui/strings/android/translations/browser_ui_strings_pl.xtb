@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Reklamy</translation>
 <translation id="1919950603503897840">Wybierz kontakty</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Powiększaj lub pomniejszaj tekst i obrazy we wszystkich odwiedzanych witrynach</translation>
 <translation id="1984937141057606926">Dozwolone, z wyjątkiem witryn innych firm</translation>
 <translation id="1989112275319619282">Przeglądaj</translation>
 <translation id="1994173015038366702">URL strony</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Dźwięk</translation>
 <translation id="2148716181193084225">Dzisiaj</translation>
 <translation id="216989819110952009">Chociaż oczy ich osłaniały zielone okulary, Dorotę i jej przyjaciół po prostu oślepił przepych</translation>
+<translation id="2176704795966505152">Pokaż opcję powiększenia w menu głównym</translation>
 <translation id="2182457891543959921">Pytaj, zanim zezwolisz stronom na tworzenie mapy 3D Twojego otoczenia lub śledzenie pozycji kamery (zalecane)</translation>
 <translation id="2212565012507486665">Zezwalaj na pliki cookie</translation>
 <translation id="2228071138934252756">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do aparatu, musisz go też włączyć w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">Zezwalaj na pliki cookie z określonej strony internetowej.</translation>
 <translation id="4046123991198612571">Następny utwór</translation>
 <translation id="4149994727733219643">Uproszczony widok stron internetowych</translation>
+<translation id="4151930093518524179">Domyślne powiększenie</translation>
 <translation id="4165986682804962316">Ustawienia witryn</translation>
 <translation id="4169549551965910670">Połączona z urządzeniem USB</translation>
 <translation id="4194328954146351878">Pytaj, zanim zezwolisz stronom na odczytywanie i zmienianie informacji na urządzeniach z funkcją NFC (zalecane)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do mikrofonu, musisz go też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Wycisz mikrofon</translation>
 <translation id="4570913071927164677">Szczegóły</translation>
+<translation id="4575264539271661854">Ułatw powiększanie tekstu i obrazów w odwiedzanej witrynie</translation>
 <translation id="4598549027014564149">W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem innych witryn, nawet powiązanych. Twoja aktywność związana z przeglądaniem nie służy do personalizowania reklam. W niektórych witrynach mogą nie działać funkcje.</translation>
 <translation id="4645575059429386691">Zarządzany przez Twojego rodzica</translation>
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>
@@ -383,6 +387,7 @@
 <translation id="8284326494547611709">Napisy</translation>
 <translation id="8300705686683892304">Zarządzane przez aplikację</translation>
 <translation id="8324158725704657629">Nie pytaj ponownie</translation>
+<translation id="8362795839483915693">Możesz powiększać lub pomniejszać odwiedzane witryny</translation>
 <translation id="8372893542064058268">Zezwalaj na synchronizowanie w tle z określoną stroną.</translation>
 <translation id="8376384591331888629">Również pliki cookie innych firm na tej stronie</translation>
 <translation id="83792324527827022">Strona używa kamery i mikrofonu</translation>

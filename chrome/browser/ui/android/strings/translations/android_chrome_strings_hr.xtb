@@ -627,7 +627,6 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="4452411734226507615">Zatvori karticu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Oznaka dodana u mapu <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Kad povežete drugi uređaj pomoću QR koda, on može koristiti ovaj telefon kao sigurnosni ključ. Ako ga uklonite, morat ćete skenirati QR kôd da biste ga povezali ponovo.</translation>
-<translation id="4479839115899251637">Izbriši s popisa za čitanje</translation>
 <translation id="4479972344484327217">Instalira se <ph name="MODULE" /> za Chrome…</translation>
 <translation id="4484496141267039529">Niste povezani. Pokušajte ponovo kasnije.</translation>
 <translation id="4487967297491345095">Svi Chromeovi podaci aplikacije trajno će se izbrisati. To uključuje sve datoteke, postavke, račune, baze podataka i slično.</translation>
@@ -1490,7 +1489,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8955719471735800169">Natrag na vrh</translation>
 <translation id="8964479563882643397">Da biste otvorili novu anonimnu karticu, otvorite izbornik</translation>
 <translation id="8965591936373831584">na čekanju</translation>
-<translation id="8967427617812342790">Dodaj na popis za čitanje</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Bit će zatvorena <ph name="INCOGNITO_TAB_COUNT" /> anonimna i još <ph name="TAB_COUNT_ONE" /> kartica}one{Bit će zatvorena <ph name="INCOGNITO_TAB_COUNT" /> anonimna i još <ph name="TAB_COUNT_MANY" /> kartica}few{Bit će zatvorena <ph name="INCOGNITO_TAB_COUNT" /> anonimna i još <ph name="TAB_COUNT_MANY" /> kartice}other{Bit će zatvorena <ph name="INCOGNITO_TAB_COUNT" /> anonimna i još <ph name="TAB_COUNT_MANY" /> kartica}}</translation>
 <translation id="8970887620466824814">Nešto nije u redu.</translation>
 <translation id="8972098258593396643">Želite li preuzeti u zadanu mapu?</translation>

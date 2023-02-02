@@ -391,6 +391,7 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="3072980200212375806"><ph name="APP_NAME" /> itafunguka kwenye Chrome. Kwa kuendelea, unakubali <ph name="BEGIN_LINK1" />Sheria na Masharti ya Google<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />Sheria na Masharti ya Ziada ya Google Chrome na Mfumo wa Uendeshaji wa Chrome<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Sera ya Faragha<ph name="END_LINK3" /> pia inatumika.</translation>
 <translation id="3091010850649238832">Onyesha yaliyomo kwenye ubao wa kunakili</translation>
 <translation id="3098745985164956033">Baadhi ya picha hutumwa kwa Google ili kuboresha maelezo unayopata</translation>
+<translation id="3104179992611025423">Kivinjari chako kinadhibitiwa na wazazi wako</translation>
 <translation id="3114507951000454849">Soma habari za leo <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">imeunganishwa na</translation>
 <translation id="3123734510202723619">Matangazo</translation>
@@ -400,6 +401,7 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="3157931365184549694">Rejesha</translation>
 <translation id="3166827708714933426">Njia za mikato ya vichupo na vidirisha</translation>
 <translation id="316694332262407393">Tayari Chrome inatumika hapa.</translation>
+<translation id="3167258285411721858">Unaweza kuomba tovuti ya kifaa cha mkononi ya<ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Gundua</translation>
 <translation id="3187472288455401631">Upimaji wa tangazo</translation>
 <translation id="3207960819495026254">Imealamishwa</translation>
@@ -433,6 +435,7 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="3297344142967351106">Usaidizi wa kutumia sauti</translation>
 <translation id="3303414029551471755">Ungependa kuendelea kupakua maudhui?</translation>
 <translation id="3305795716056605962">Tafsiri kurasa kwenye kitufe cha Chaguo Zaidi</translation>
+<translation id="3319664549618064419">Badilisha utumie tovuti ya kompyuta ya mezani ili upate mwonekano mzuri wa tovuti hii</translation>
 <translation id="3334729583274622784">Ungependa kubadilisha kiendelezi cha faili?</translation>
 <translation id="3341262203274374114">Imeshinda kuacha kufuatilia. Hitilafu fulani imetokea.</translation>
 <translation id="3359667936385849800">Tumia mtoa huduma wako wa sasa</translation>
@@ -624,7 +627,6 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="4452411734226507615">Funga kichupo cha <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Imetia alamishwa kwenye <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Unapounganisha kifaa kingine kwa kutumia msimbo wa QR, kinaweza kutumia simu hii kama ufunguo wa usalama. Ikiwa utakiondoa, utahitajika kuchanganua msimbo wa QR ili ukiunganishe tena.</translation>
-<translation id="4479839115899251637">Futa kwenye orodha ya kusoma</translation>
 <translation id="4479972344484327217">Inasakinisha <ph name="MODULE" /> kwenye Chrome…</translation>
 <translation id="4484496141267039529">Hakuna muunganisho. Jaribu tena baadaye.</translation>
 <translation id="4487967297491345095">Data yote ya programu ya Chrome itafutwa kabisa. Hii ni pamoja na faili, mipangilio, akaunti, hifadhidata zote, n.k.</translation>
@@ -1466,6 +1468,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8849001918648564819">Kimefichwa</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, kichupo</translation>
 <translation id="8854223127042600341">Angalia faili zako za nje ya mtandao</translation>
+<translation id="885480114717186641">Unaweza kuomba tovuti ya kompyuta ya mezani ya <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Pata maelezo</translation>
 <translation id="8856931513242997049">Utaratibu wa ruhusa ya arifa umefungwa</translation>
 <translation id="8873817150012960745">Gusa hapa ili uanze</translation>
@@ -1486,7 +1489,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8955719471735800169">Rudi juu</translation>
 <translation id="8964479563882643397">Ili ufungue kichupo kipya fiche, fungua menyu</translation>
 <translation id="8965591936373831584">inasubiri</translation>
-<translation id="8967427617812342790">Ongeza kwenye orodha ya kusoma</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Kichupo <ph name="INCOGNITO_TAB_COUNT" /> fiche na kichupo kingine <ph name="TAB_COUNT_ONE" /> vitafungwa}other{Kichupo <ph name="INCOGNITO_TAB_COUNT" /> fiche na vichupo vingine <ph name="TAB_COUNT_MANY" /> vitafungwa}}</translation>
 <translation id="8970887620466824814">Hitilafu imetokea.</translation>
 <translation id="8972098258593396643">Ungependa kupakua kwenye folda chaguomsingi?</translation>

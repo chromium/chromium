@@ -106,7 +106,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1085697365578766383">Produciuse un erro ao iniciar a máquina virtual. Téntao de novo.</translation>
 <translation id="1087965115100412394">Non permitir que os sitios se conecten a dispositivos MIDI</translation>
 <translation id="1088659085457112967">Acceder ao modo de lector</translation>
-<translation id="1089407731410758060">Cambiar tema</translation>
 <translation id="1090126737595388931">Non hai ningunha aplicación en segundo plano en execución</translation>
 <translation id="1090541560108055381">Antes de vincular os dispositivos, asegúrate de que nos dous se mostre este mesmo código</translation>
 <translation id="1091767800771861448">Preme Esc para omitir este paso (só para compilacións non oficiais).</translation>
@@ -547,6 +546,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1495677929897281669">Volver á pestana</translation>
 <translation id="1500297251995790841">Dispositivo descoñecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Máis información sobre as aplicacións de Chrome non compatibles</translation>
+<translation id="1501480321619201731">Eliminar grupo</translation>
 <translation id="1503392482221435031">Envía automaticamente estatísticas de uso a Google. Podes activar e desactivar os informes de fallos na configuración di dispositivo.</translation>
 <translation id="150411034776756821">Eliminar <ph name="SITE" /></translation>
 <translation id="1504551620756424144">En Windows, os cartafoles compartidos están en <ph name="BASE_DIR" />.</translation>
@@ -2096,7 +2096,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2835547721736623118">Servizo de recoñecemento de voz</translation>
 <translation id="2836232638504556905">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta a <ph name="BEGIN_LINK" />política de privacidade<ph name="END_LINK" /> deste sitio.</translation>
 <translation id="2836269494620652131">Erro</translation>
-<translation id="2836635946302913370">O administrador desactivou o inicio de sesión con este nome de usuario.</translation>
 <translation id="283669119850230892">Para utilizar a rede <ph name="NETWORK_ID" />, primeiro completa a túa conexión a Internet a continuación.</translation>
 <translation id="2838379631617906747">Instalando</translation>
 <translation id="2839032553903800133">As notificacións están bloqueadas</translation>
@@ -2905,6 +2904,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3602290021589620013">Previsualizar</translation>
 <translation id="3602870520245633055">Imprimir e escanear</translation>
 <translation id="3603622770190368340">Obter certificado de rede</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{Hai {COUNT} conta na que se usa o mesmo contrasinal}other{Hai {COUNT} contas nas que se usa o mesmo contrasinal}}</translation>
 <translation id="3605780360466892872">Home de negocios</translation>
 <translation id="3609277884604412258">Busca rápida</translation>
 <translation id="3610241585790874201">Sen permiso para gardar datos no teu dispositivo</translation>
@@ -3613,7 +3613,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4244238649050961491">Buscar máis aplicacións de lapis óptico</translation>
 <translation id="4246980464509998944">Comentarios adicionais:</translation>
 <translation id="424726838611654458">Abrir sempre en Adobe Reader</translation>
-<translation id="4247901771970415646">Non se puido sincronizar con <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Protexe os teus contrasinais fronte a violacións da seguranza dos datos e outros problemas de seguranza</translation>
 <translation id="4249248555939881673">Esperando conexión de rede...</translation>
 <translation id="4249373718504745892">Bloqueouse o acceso desta páxina ao micrófono e á cámara.</translation>
@@ -3834,6 +3833,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4441147046941420429">Para continuar, quita a chave de seguranza do teu dispositivo, volve inserila e toca o botón de activación</translation>
 <translation id="444134486829715816">Expandir...</translation>
 <translation id="4441928470323187829">Fixada polo teu administrador</translation>
+<translation id="4442863809158514979">Ver permisos da web</translation>
 <translation id="4443536555189480885">A&amp;xuda</translation>
 <translation id="4444304522807523469">Acceso aos escáneres de documentos conectados a través de USB ou que se atopan na rede local</translation>
 <translation id="4444512841222467874">Se non se libera espazo, é posible que se eliminen automaticamente usuarios e datos.</translation>
@@ -5694,7 +5694,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="617213288191670920">Non se engadiu ningún idioma</translation>
 <translation id="6173623053897475761">Escribe o PIN de novo</translation>
 <translation id="6175314957787328458">GUID de dominio de Microsoft</translation>
-<translation id="6176043333338857209">O Bluetooth activarase temporalmente para establecer comunicación coa túa chave de seguranza</translation>
 <translation id="6178664161104547336">Selecciona un certificado</translation>
 <translation id="6178682841350631965">Actualizáronse os teus datos de inicio de sesión</translation>
 <translation id="6180510783007738939">Ferramenta de liñas</translation>
@@ -7461,6 +7460,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="779308894558717334">Verde claro</translation>
 <translation id="7793098747275782155">Azul escuro</translation>
 <translation id="7797571222998226653">Desactivado</translation>
+<translation id="7798504574384119986">Ver permisos da web</translation>
 <translation id="7798844538707273832">Bloqueouse automaticamente o permiso: <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">Xirar á &amp;esquerda</translation>
 <translation id="7801679634091975683">Os cambios que fagas aquí aplícanse só ao navegador Chrome Lacros. Para facer cambios na configuración do navegador Chrome, ábreo e vaia á configuración.</translation>

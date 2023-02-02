@@ -106,7 +106,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1085697365578766383">Greška pri pokretanju virtuelne mašine. Probajte ponovo.</translation>
 <translation id="1087965115100412394">Ne dozvoljavaj sajtovima da se povezuju sa MIDI uređajima</translation>
 <translation id="1088659085457112967">Uključi režim čitača</translation>
-<translation id="1089407731410758060">Promeni temu</translation>
 <translation id="1090126737595388931">Nije pokrenuta nijedna pozadinska aplikacija</translation>
 <translation id="1090541560108055381">Pre uparivanja se uverite da je ovaj kôd isti na oba uređaja</translation>
 <translation id="1091767800771861448">Pritisnite ESCAPE da biste preskočili (samo u nezvaničnim verzijama).</translation>
@@ -549,6 +548,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1495677929897281669">Nazad na karticu</translation>
 <translation id="1500297251995790841">Nepoznat uređaj [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Saznajte više o nepodržanim Chrome aplikacijama</translation>
+<translation id="1501480321619201731">Izbriši grupu</translation>
 <translation id="1503392482221435031">Automatski šalje statistiku korišćenja Google-u. Možete da uključite ili isključite izveštaje o otkazivanju u podešavanjima uređaja.</translation>
 <translation id="150411034776756821">Ukloni <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Deljeni direktorijumi su dostupni u Windows-u na <ph name="BASE_DIR" />.</translation>
@@ -2096,7 +2096,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2835547721736623118">Usluga za prepoznavanje govora</translation>
 <translation id="2836232638504556905">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će deliti vaše ime, imejl adresu i sliku profila sa ovim sajtom. Pogledajte <ph name="BEGIN_LINK" />politiku privatnosti<ph name="END_LINK" /> ovog sajta.</translation>
 <translation id="2836269494620652131">Otkazivanje</translation>
-<translation id="2836635946302913370">Administrator je onemogućio prijavljivanje pomoću ovog korisničkog imena.</translation>
 <translation id="283669119850230892">Da biste koristili mrežu <ph name="NETWORK_ID" />, najpre uspostavite vezu sa internetom u nastavku.</translation>
 <translation id="2838379631617906747">Instalira se</translation>
 <translation id="2839032553903800133">Obaveštenja su blokirana</translation>
@@ -2604,6 +2603,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3315442055907669208">Uključi režim čitača</translation>
 <translation id="3317459757438853210">Obostrano</translation>
 <translation id="3317678681329786349">Kamera i mikrofon su blokirani</translation>
+<translation id="3319306431415395200">Prevedi tekst na slici pomoću pretraživača <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Bezbedno pregledanje (zaštita od opasnih sajtova) i druga bezbednosna podešavanja</translation>
 <translation id="3323521181261657960">Bonus! Dobijaš dodatno vreme ispred ekrana</translation>
 <translation id="3323577066981719144">Promene koje unosite ovde se primenjuju samo na Chrome pregledač. Da biste promenili podešavanja pregledača Lacros Chrome, otvorite Lacros Chrome i idite u podešavanja.</translation>
@@ -2905,6 +2905,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3602870520245633055">Štampanje i skeniranje</translation>
 <translation id="3603622770190368340">Dobijanje sertifikata mreže</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} nalog koristi istu lozinku}one{{COUNT} nalog koristi istu lozinku}few{{COUNT} naloga koriste istu lozinku}other{{COUNT} naloga koristi istu lozinku}}</translation>
 <translation id="3605780360466892872">Japi</translation>
 <translation id="3609277884604412258">Brza pretraga</translation>
 <translation id="3610241585790874201">Čuvanje podataka na uređaju nije dozvoljeno</translation>
@@ -3613,7 +3614,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4244238649050961491">Pronađi još aplikacija za pisaljku</translation>
 <translation id="4246980464509998944">Dodatni komentari:</translation>
 <translation id="424726838611654458">Uvek otvori u Adobe Reader-u</translation>
-<translation id="4247901771970415646">Nije uspela sinhronizacija za <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Zaštitite lozinke od upada u podatke i drugih bezbednosnih problema</translation>
 <translation id="4249248555939881673">Čeka se mrežna veza...</translation>
 <translation id="4249373718504745892">Ovoj stranici je zabranjen pristup kameri i mikrofonu.</translation>
@@ -3834,6 +3834,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4441147046941420429">Da biste nastavili, uklonite bezbednosni ključ sa uređaja, pa ga ponovo umetnite i dodirnite</translation>
 <translation id="444134486829715816">Proširi...</translation>
 <translation id="4441928470323187829">Zakačio je administrator</translation>
+<translation id="4442863809158514979">Prikaži dozvole za veb</translation>
 <translation id="4443536555189480885">&amp;Help (Pomoć)</translation>
 <translation id="4444304522807523469">Pristup skenerima za dokumente priključenim preko USB-a ili na lokalnoj mreži</translation>
 <translation id="4444512841222467874">Ako ne oslobodite prostor, korisnici i podaci će možda automatski biti uklonjeni.</translation>
@@ -4831,6 +4832,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5382591305415226340">Upravljaj podržanim linkovima</translation>
 <translation id="5383377866517186886">Kamera je isključena u podešavanjima Mac sistema</translation>
 <translation id="5383740867328871413">Grupa bez naziva – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Smernice za preduzeća su promenjene. Dugme za eksperimente je dodato u traku s alatkama. Kliknite na dugme da biste otvorili dijalog i omogućili eksperimente.</translation>
 <translation id="5388885445722491159">Upareno</translation>
 <translation id="5390112241331447203">Uvrsti datoteku system_logs.txt koja se šalje u izveštajima sa povratnim informacijama.</translation>
@@ -5044,6 +5046,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5578059481725149024">Automatsko prijavljivanje</translation>
 <translation id="5581134892342029705">Gotov je prevod na <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Verifikacija upravljačkih programa za hardver u Microsoft Windows-u</translation>
+<translation id="5581876958763461074">Sve beleške</translation>
 <translation id="5581972110672966454">Pridruživanje uređaja domenu nije uspelo. Probajte ponovo ili se obratite vlasniku uređaja ili administratoru. Kôd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Glavni meni</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5695,7 +5698,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="617213288191670920">Nije dodat nijedan jezik</translation>
 <translation id="6173623053897475761">Ponovo unesite PIN</translation>
 <translation id="6175314957787328458">GUID Microsoft domena</translation>
-<translation id="6176043333338857209">Privremeno ćemo uključiti Bluetooth da bismo uspostavili komunikaciju sa bezbednosnim ključem</translation>
 <translation id="6178664161104547336">Izbor sertifikata</translation>
 <translation id="6178682841350631965">Podaci za prijavljivanje su ažurirani</translation>
 <translation id="6180510783007738939">Alatka za linije</translation>
@@ -7466,6 +7468,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="779308894558717334">Svetlozelena</translation>
 <translation id="7793098747275782155">Tamnoplava</translation>
 <translation id="7797571222998226653">Isključeno</translation>
+<translation id="7798504574384119986">Prikaži dozvole za veb</translation>
 <translation id="7798844538707273832">Funkcija <ph name="PERMISSION" /> je automatski blokirana</translation>
 <translation id="7800518121066352902">Okreći u s&amp;meru suprotnom od kretanja kazaljke na satu</translation>
 <translation id="7801679634091975683">Promene koje unosite ovde se primenjuju samo na pregledač Lacros Chrome. Da biste promenili podešavanja Chrome pregledača, otvorite Chrome i idite u podešavanja.</translation>
@@ -7681,6 +7684,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> glas <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Podešavanja pristupa pomoću prekidača</translation>
 <translation id="7992203134935383159">Sinteza govora</translation>
+<translation id="7994515119120860317">Prevedi tekst na slici pomoću pretraživača <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Veb-prikaz</translation>
 <translation id="7997826902155442747">Prioritet procesa</translation>
 <translation id="7999229196265990314">Napravljene su sledeće datoteke:

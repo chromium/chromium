@@ -3,6 +3,7 @@
 <translationbundle lang="de">
 <translation id="1143896152279775643">Dein Passwort wird im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="1282031177488366470">Helfen, die Funktionen und die Leistung von Chrome zu verbessern</translation>
+<translation id="1352919863522755794">Der Google Passwortmanager konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
 <translation id="1462727070346936664">Wenn du Chrome optimal nutzen möchtest, melde dich an.</translation>
 <translation id="1479202195792305274">Chrome kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
 <translation id="1493827051843127077">Du kannst Chrome als Standardbrowser festlegen, um Tabs, Passwörter und Zahlungsinformationen auf allen deinen Geräten zu synchronisieren</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Du kannst dich auf allen Websites aus deinem Google-Konto abmelden, indem du dich <ph name="BEGIN_LINK" />von Chrome abmeldest<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome konnte nicht nach Updates suchen. Versuche es später noch einmal.</translation>
 <translation id="2732745070297234559">Chrome konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
+<translation id="2767464022270041271">Keine gespeicherten Passwörter. Der Google Passwortmanager kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="2869959624320573933">In Chrome anmelden</translation>
 <translation id="2957447865124070833">Wähle <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> aus</translation>
 <translation id="3030414234702425231">Du meldest dich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden deine Chrome-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in deinem Google-Konto erhalten.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Chrome sendet Nutzungsstatistiken und Absturzdaten an Google, damit wir die App verbessern können. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Wird von Chrome Beta nicht unterstützt</translation>
+<translation id="4840404732697892756">Der Google Passwortmanager kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
 <translation id="5030102366287574140">Chrome kann helfen, dich vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="5108659628347594808">Chrome verbessern</translation>
 <translation id="5119391094379141756">Wähle Chrome aus</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome prüft in regelmäßigen Abständen, ob deine Passwörter auf Listen erscheinen, die online veröffentlicht wurden. Dabei werden deine Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
 <translation id="5639704535586432836">Öffne „Einstellungen“ &gt; „Datenschutz“ &gt; „Kamera“ &gt; „Google Chrome“ und aktiviere die Kamera.</translation>
 <translation id="5642200033778930880">Google Chrome kann die Kamera nicht im Modus "Geteilte Ansicht" nutzen</translation>
+<translation id="5661521615548540542">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es später noch einmal.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline, Chrome kann nicht nach Aktualisierungen suchen</translation>
 <translation id="5716154293141027663">Chrome immer öffnen, wenn du auf Links in anderen Apps tippst</translation>
@@ -118,9 +122,11 @@
 2. Tippe auf „Standard-Browser-App“
 3. Wähle Chrome aus.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Sicherer surfen mit Google Chrome</translation>
 <translation id="8772179140489533211">Aufforderungen für die Anmeldung in Chrome werden angezeigt.</translation>
 <translation id="8788269841521769222">Du musst dir dieses Passwort nicht merken. Es wird im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
+<translation id="8857676124663337448">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
 <translation id="8897749957032330183">Passwörter werden auf diesem Gerät im Google Passwortmanager gespeichert.</translation>
 <translation id="8969290730818637510">Wenn aktiviert:
 <ph name="BEGIN_INDENT" />  • Du hilfst, Chrome für Nutzer zu optimieren, die es genauso verwenden wie du.<ph name="END_INDENT" />

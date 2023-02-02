@@ -391,6 +391,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> በChrome ውስጥ ይከፈታል። በመቀጠልዎ በ<ph name="BEGIN_LINK1" />Google አገልግሎት ውል<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የGoogle Chrome እና የChromeOS ተጨማሪ አገልግሎት ውል<ph name="END_LINK2" /> ይስማማሉ። እንዲሁም <ph name="BEGIN_LINK3" />የግላዊነት መመሪያው<ph name="END_LINK3" /> ይተገበራል።</translation>
 <translation id="3091010850649238832">የቅንጥብ ሰሌዳ ይዘቶችን አሳይ</translation>
 <translation id="3098745985164956033">ለእርስዎ መግለጫዎችን ለማሻሻል አንዳንድ ምስሎች ወደ Google ይላካሉ</translation>
+<translation id="3104179992611025423">አሳሽዎ የሚተዳደረው በእርስዎ ወላጆች ነው</translation>
 <translation id="3114507951000454849">የዛሬውን ዜና ያንብቡ <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">ተገናኝቷል ከ</translation>
 <translation id="3123734510202723619">ማስታወቂያዎች</translation>
@@ -400,6 +401,7 @@
 <translation id="3157931365184549694">እነበረበት መልስ</translation>
 <translation id="3166827708714933426">የትር እና የመስኮት አቋራጮች</translation>
 <translation id="316694332262407393">Chrome አስቀድሞ እዚህ በማሄድ ላይ ነው።</translation>
+<translation id="3167258285411721858">የ<ph name="HOST_NAME" />ን የተንቀሳቃሽ ስልክ ጣቢያ መጠየቅ ይችላሉ</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">የማስታወቂያ ልኬት</translation>
 <translation id="3207960819495026254">ዕልባት ተደርጎበታል</translation>
@@ -433,6 +435,7 @@
 <translation id="3297344142967351106">የድምጽ እርዳታ</translation>
 <translation id="3303414029551471755">ይዘቱን ማውረድ ይቀጥል?</translation>
 <translation id="3305795716056605962">ከተጨማሪ አማራጮች አዝራር ውስጥ ገጾችን ይተርጉሙ</translation>
+<translation id="3319664549618064419">የዚህ ጣቢያ የተሻለ ዕይታ እንዲኖርዎ ወደ የዴስክቶፕ ጣቢያ ይቀይሩ</translation>
 <translation id="3334729583274622784">የፋይል ቅጥያ ይቀየር?</translation>
 <translation id="3341262203274374114">መከተል አልተቻለም። የሆነ ችግር ተፈጥሯል።</translation>
 <translation id="3359667936385849800">የአሁኑ አገልግሎት አቅራቢዎን ይጠቀሙ</translation>
@@ -624,7 +627,6 @@
 <translation id="4452411734226507615">የ<ph name="TAB_TITLE" /> ትር ዝጋ</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ላይ ዕልባት ተደርጓል</translation>
 <translation id="4461614516424362539">ሌላ መሣሪያ ከQR ኮድ ጋር ሲያገናኙት ይህን ስልክ እንደ የደህንነት ቁልፍ ሊጠቀምበት ይችላል። ካስወገዱት፣ እንደገና ለማገናኘት የQR ኮድ መቃኘት አለብዎት።</translation>
-<translation id="4479839115899251637">ከንባብ ዝርዝር ይሰርዙ</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> ን ለChrome በመጫን ላይ…</translation>
 <translation id="4484496141267039529">ምንም ግንኙነት የለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="4487967297491345095">ሁሉንም የChrome መተግበሪያ ውሂብ እስከመጨረሻው ይሰረዛል። ይሄ ሁሉንም ፋይሎች፣ ቅንብሮች፣ መለያዎች፣ የውሂብ ጎታዎች፣ ወዘተ. ያካትታል።</translation>
@@ -1466,6 +1468,7 @@
 <translation id="8849001918648564819">ተደብቋል</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />፣ ትር</translation>
 <translation id="8854223127042600341">የእርስዎን ከመስመር ውጭ ፋይሎች ይመልከቱ</translation>
+<translation id="885480114717186641">የ<ph name="HOST_NAME" />ን የዴስክቶፕ ጣቢያ መጠየቅ ይችላሉ</translation>
 <translation id="8856607253650333758">መግለጫዎችን ያግኙ</translation>
 <translation id="8856931513242997049">የማሳወቂያ ፈቃድ ፍሰት ተዘግቷል</translation>
 <translation id="8873817150012960745">ለመጀመር እዚህ መታ ያድርጉ</translation>
@@ -1486,7 +1489,6 @@
 <translation id="8955719471735800169">ወደ ላይ ተመለስ</translation>
 <translation id="8964479563882643397">አዲስ ማንነት የማያሳውቅ ትር ለመክፈት ምናሌውን ይክፈቱ</translation>
 <translation id="8965591936373831584">በመጠበቅ ላይ</translation>
-<translation id="8967427617812342790">ወደ የንባብ ዝርዝር አክል</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ማንነትን የማያሳውቅ እና <ph name="TAB_COUNT_ONE" /> ተጨማሪ ትር ይዘጋል}one{<ph name="INCOGNITO_TAB_COUNT" /> ማንነትን የማያሳውቅ እና <ph name="TAB_COUNT_MANY" /> ተጨማሪ ትሮች ይዘጋሉ}other{<ph name="INCOGNITO_TAB_COUNT" /> ማንነትን የማያሳውቅ እና <ph name="TAB_COUNT_MANY" /> ተጨማሪ ትሮች ይዘጋሉ}}</translation>
 <translation id="8970887620466824814">የሆነ ችግር ተፈጥሯል።</translation>
 <translation id="8972098258593396643">ወደ ነባሪው አቃፊ ይውረድ?</translation>

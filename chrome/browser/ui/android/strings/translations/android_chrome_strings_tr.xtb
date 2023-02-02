@@ -391,6 +391,7 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="3072980200212375806"><ph name="APP_NAME" />, Chrome'da açılacak. Devam ederek <ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" /> ile <ph name="BEGIN_LINK2" />Google Chrome ve ChromeOS Ek Hizmet Şartları<ph name="END_LINK2" />'nı kabul etmiş olursunuz. Ayrıca <ph name="BEGIN_LINK3" />Gizlilik Politikası<ph name="END_LINK3" /> da geçerli olur.</translation>
 <translation id="3091010850649238832">Pano içeriklerini göster</translation>
 <translation id="3098745985164956033">Bazı resimler size daha iyi açıklamalar sunmak için Google'a gönderilir</translation>
+<translation id="3104179992611025423">Tarayıcınız, anne veya babanız tarafından yönetilmektedir</translation>
 <translation id="3114507951000454849">Bugünkü haberleri <ph name="NEWS_ICON" /> okuyun</translation>
 <translation id="311958134571892113">bağlı olduğu kart:</translation>
 <translation id="3123734510202723619">Duyurular</translation>
@@ -400,7 +401,8 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="3157931365184549694">Geri yükle</translation>
 <translation id="3166827708714933426">Sekme ve pencere kısayolları</translation>
 <translation id="316694332262407393">Chrome zaten buradan çalışıyor.</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3167258285411721858"><ph name="HOST_NAME" /> mobil sitesini isteyebilirsiniz</translation>
+<translation id="3169472444629675720">Keşfet</translation>
 <translation id="3187472288455401631">Reklam ölçümü</translation>
 <translation id="3207960819495026254">Yer işareti koyuldu</translation>
 <translation id="3208584281581115441">Şimdi denetle</translation>
@@ -433,6 +435,7 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="3297344142967351106">Sesli yardım</translation>
 <translation id="3303414029551471755">İçeriği indirme işlemine başlansın mı?</translation>
 <translation id="3305795716056605962">Diğer Seçenekler düğmesinden sayfaları çevirin</translation>
+<translation id="3319664549618064419">Bu siteyi daha iyi görüntülemek için masaüstü sitesine geçin</translation>
 <translation id="3334729583274622784">Dosya uzantısı değiştirilsin mi?</translation>
 <translation id="3341262203274374114">Takip bırakılamıyor. Bir sorun oldu.</translation>
 <translation id="3359667936385849800">Mevcut servis sağlayıcınızı kullanın</translation>
@@ -624,7 +627,6 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> sekmesini kapat</translation>
 <translation id="4452548195519783679">Yer işareti <ph name="FOLDER_NAME" /> klasörüne eklendi</translation>
 <translation id="4461614516424362539">QR kodu ile bağladığınız başka bir cihaz bu telefonu güvenlik anahtarı olarak kullanabilir. Cihazı kaldırırsanız tekrar bağlamak için QR kodu taramanız gerekir.</translation>
-<translation id="4479839115899251637">Okuma listesinden sil</translation>
 <translation id="4479972344484327217">Chrome için <ph name="MODULE" /> yükleniyor…</translation>
 <translation id="4484496141267039529">Bağlantı yok. Daha sonra tekrar deneyin.</translation>
 <translation id="4487967297491345095">Chrome'un tüm uygulama verileri kalıcı olarak silinecek. Buna tüm dosyalar, ayarlar, hesaplar, veritabanları vb. dahildir.</translation>
@@ -1022,7 +1024,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6560414384669816528">Sogou ile arama</translation>
 <translation id="656065428026159829">Daha fazla göster</translation>
 <translation id="6565959834589222080">Mevcut olduğunda kablosuz bağlantı kullanılır</translation>
-<translation id="6569373978618239158">Artık yeni sekme açtığınızda <ph name="SITE_NAME" /> kaynağından haberler görürsünüz. Takip ettiğiniz siteler Google hesabınıza kaydedilir. Bunları Keşfet ayarlarından yönetebilirsiniz.</translation>
+<translation id="6569373978618239158">Artık yeni sekme açtığınızda <ph name="SITE_NAME" /> kaynağından haberler göreceksiniz. Takip ettiğiniz siteler Google hesabınıza kaydedilir. Bunları Keşfet ayarlarından yönetebilirsiniz.</translation>
 <translation id="6573096386450695060">Her zaman izin ver</translation>
 <translation id="6573431926118603307">Diğer cihazlarınızda Chrome ile açtığınız sekmeler burada görünür.</translation>
 <translation id="6583199322650523874">Mevcut sayfaya yer işareti koyar</translation>
@@ -1308,7 +1310,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="8026334261755873520">Tarama verilerini temizle</translation>
 <translation id="8027863900915310177">Nereye indirileceğini seçin</translation>
 <translation id="8030852056903932865">Onayla</translation>
-<translation id="8032569120109842252">Takip ediliyor</translation>
+<translation id="8032569120109842252">Takip edilenler</translation>
 <translation id="8035133914807600019">Yeni klasör…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> gün kaldı</translation>
 <translation id="8037801708772278989">Az önce kontrol edildi</translation>
@@ -1466,6 +1468,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="8849001918648564819">Gizli</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, sekme</translation>
 <translation id="8854223127042600341">Çevrimdışı dosyalarınızı görün</translation>
+<translation id="885480114717186641"><ph name="HOST_NAME" /> masaüstü sitesini isteyebilirsiniz</translation>
 <translation id="8856607253650333758">Açıklama al</translation>
 <translation id="8856931513242997049">Bildirim izni akışı kapatıldı</translation>
 <translation id="8873817150012960745">Başlamak için buraya dokunun</translation>
@@ -1486,7 +1489,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="8955719471735800169">Başa dön</translation>
 <translation id="8964479563882643397">Yeni gizli sekme açmak için menüyü açın</translation>
 <translation id="8965591936373831584">beklemede</translation>
-<translation id="8967427617812342790">Okuma listesine ekle</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> gizli sekme ve <ph name="TAB_COUNT_ONE" /> sekme daha kapatılacak}other{<ph name="INCOGNITO_TAB_COUNT" /> gizli sekme ve <ph name="TAB_COUNT_MANY" /> sekme daha kapatılacak}}</translation>
 <translation id="8970887620466824814">Bir hata oluştu.</translation>
 <translation id="8972098258593396643">Varsayılan klasöre indirilsin mi?</translation>

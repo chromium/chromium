@@ -420,6 +420,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3289674678944039601">Se încarcă prin adaptor</translation>
 <translation id="3290356915286466215">Nesecurizată</translation>
 <translation id="3294437725009624529">Invitat</translation>
+<translation id="3298690094479023523">Codul PIN sau parola tot nu au putut fi confirmate. Încearcă din nou.</translation>
 <translation id="3307642347673023554">S-a comutat la modul laptop</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se poate conecta în continuare mai târziu.</translation>
 <translation id="3321628682574733415">Codul pentru părinte este incorect</translation>
@@ -560,6 +561,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4017989525502048489">Indicator laser</translation>
 <translation id="401993194061514265">Marcatorul este indisponibil. Redeschide Screencast.</translation>
 <translation id="4021716437419160885">Derulează în jos</translation>
+<translation id="4024840464866786680">Dacă ai uitat codul PIN și parola sau ai schimbat recent parola Contului Google, încearcă să recuperezi acest utilizator.</translation>
 <translation id="4028481283645788203">Este necesară parola pentru mai multă siguranță</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Permiți accesul la ecran</translation>
@@ -705,6 +707,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4759238208242260848">Descărcări</translation>
 <translation id="4762573482154983647">Ascunde aplicațiile</translation>
 <translation id="4774338217796918551">Revino mâine la <ph name="COME_BACK_TIME" />.</translation>
+<translation id="4776584068981882959">Parola tot nu a putut fi confirmată. Încearcă din nou.</translation>
 <translation id="4776917500594043016">Parolă pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Magazin Play</translation>
 <translation id="4778095205580009397">Asistentul Google nu este disponibil într-o sesiune demonstrativă.</translation>
@@ -844,6 +847,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5536723544185013515">Aplicațiile recente, navighează cu săgețile la stânga sau la dreapta pentru a le accesa</translation>
 <translation id="553675580533261935">Se iese din sesiune</translation>
 <translation id="5537725057119320332">Proiectează</translation>
+<translation id="5546397813406633847">Recuperează utilizatorul</translation>
 <translation id="554893713779400387">Activează/dezactivează dictarea</translation>
 <translation id="5558091555391176027">Activează / dezactivează vizibilitatea crescută pentru Trimiterea în apropiere</translation>
 <translation id="5560420195677022218">Afișează aplicațiile telefonului pe <ph name="DEVICE_TYPE" /></translation>
@@ -860,6 +864,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5618148318840095371">Te-am transferat într-o rețea mai bună</translation>
 <translation id="5619862035903135339">Politica implementată de administrator dezactivează capturarea ecranului</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">Parola ta nu a putut fi confirmată. Încearcă din nou.</translation>
 <translation id="5648021990716966815">Mufă pentru microfon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> are nevoie de atenție.</translation>
 <translation id="5662075790140998213">Biroul 10</translation>
@@ -878,6 +883,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5707775774148071965">Dispozitivul acceptă o rată mai mare de transfer de date decât cablul. Este posibil ca performanța dispozitivului să fie limitată.</translation>
 <translation id="5710450975648804523">Funcția Nu deranja este activată</translation>
 <translation id="571295407079589142">Datele mobile sunt dezactivate</translation>
+<translation id="5727460725221669831">Dacă ai uitat parola sau ai schimbat recent parola Contului Google, încearcă să recuperezi acest utilizator.</translation>
 <translation id="573413375004481890">Acest dispozitiv nu acceptă toate afișajele, prin urmare unul a fost deconectat</translation>
 <translation id="5740328398383587084">Trimitere în apropiere</translation>
 <translation id="574392208103952083">Mediu</translation>

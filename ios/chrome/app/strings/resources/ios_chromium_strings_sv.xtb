@@ -6,6 +6,7 @@
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">Om du vill spara bilder trycker du på Inställningar och låter Chromium lägga till dina foton</translation>
 <translation id="1289216811211435351">Byt till Chromium</translation>
+<translation id="1352919863522755794">Google Lösenordshantering kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
 <translation id="1361748954329991663">Den här versionen av Chromium är inaktuell. Om det inte finns någon uppdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kan det hända att enheten inte längre har stöd för nya versioner av Chromium.</translation>
 <translation id="1431818719585918472">Låt Chromium låsa inkognitoflikarna.</translation>
 <translation id="1472013873724362412">Kontot fungerar inte på Chromium. Kontakta domänadministratören eller logga in med ett vanligt Google-konto.</translation>
@@ -35,6 +36,7 @@
 <translation id="2650312721222849884">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
 <translation id="2684230048001240293">Ställ in Chromium som standardwebbläsare och synkronisera flikar, lösenord och betalningsuppgifter på alla enheter</translation>
 <translation id="2730884209570016437">Chromium kan inte använda kameran eftersom den används av en annan app</translation>
+<translation id="2767464022270041271">Inga sparade lösenord. Google Lösenordshantering kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="2915596697727466327">Chromium använder Face ID för att se till att endast behöriga har åtkomst till lösenorden.</translation>
 <translation id="2918709798697875261">Organisationen kräver att du inte loggar in i Chromium.</translation>
 <translation id="2942241131342758843">Använd Chromium som standard när du öppnar länkar och söker med en widget och få lösenord ifyllda i andra appar automatiskt</translation>
@@ -57,6 +59,7 @@
 <translation id="4681781466797808448">Aktivera Chromium som skanner</translation>
 <translation id="4736424910885271643">Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i Chromium från enheten</translation>
 <translation id="4828317641996116749">Chromium kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
+<translation id="4840404732697892756">Google Lösenordshantering kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
 <translation id="4985291216379576555">Chromium kan inte söka efter uppdateringar offline</translation>
 <translation id="4996471330284142407">Få mer gjort med Chromium, som är enklare, säkrare och snabbare än någonsin.</translation>
 <translation id="4999538639245140991">Din data i Chromium raderas från den här enheten eftersom du loggar ut från ett konto som hanteras av <ph name="SIGNOUT_MANAGED_DOMAIN" />. Din data finns kvar i Google-kontot.</translation>
@@ -67,6 +70,7 @@
 <translation id="5521125884468363740">Logga in och aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
 <translation id="5522297504975449419">Vissa funktioner i Chromium kommer inte längre att vara tillgängliga.</translation>
 <translation id="5573014823074921752">Tips för Chromium. Tryck länge på Visa flikar i verktygsfältet så visas fler flikalternativ. Du hittar verktygsfältet längst ned eller högst upp på skärmen.</translation>
+<translation id="5661521615548540542">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
 <translation id="5700709190537129682">Chromium kan inte kontrollera dina lösenord</translation>
 <translation id="5777187867430702742">Chromium-sida</translation>
 <translation id="5945387852661427312">Du håller på att logga in med ett konto som hanteras av <ph name="DOMAIN" /> vilket ger administratören kontroll över data i Chromium. Din data kopplas permanent till det här kontot. Om du loggar ut från Chromium raderas all din data från enheten, men den lagras fortfarande på Google-kontot.</translation>
@@ -113,6 +117,7 @@
 <translation id="8409374867500149834">Du har den starkaste säkerheten i Chromium mot skadliga webbplatser</translation>
 <translation id="858114650497379505">Du kan använda lösenorden som sparats med Lösenordshantering i andra iPhone-appar.</translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>
+<translation id="8603022514504485810">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen i morgon eller <ph name="BEGIN_LINK" />kontrollera lösenorden i ditt Google-konto<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Skyddar dig i Chromium och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad.</translation>
 <translation id="8663480472502753423">Håll Chromium uppdaterad</translation>
 <translation id="8685813584220679697">Logga in på den här webbplatsen och i Chromium.</translation>
@@ -124,6 +129,7 @@ Tänk på detta:
   • Om Chromium kraschar kan personliga uppgifter finnas med i kraschinformationen.
   • Om du aktiverar synkronisering kan mätvärdena även innehålla information om webbadresser du besöker.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Det här kontot och data som inte har sparats tas bort från Chromium.</translation>
+<translation id="8857676124663337448">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
 <translation id="894437814105052438">När du har loggat ut synkroniseras ingen mer data med ditt Google-konto i Chromium. Data som redan har synkroniserats finns kvar i kontot.</translation>
 <translation id="9022552996538154597">Logga in i Chromium</translation>
 <translation id="9059693977935746710">Du behöver inte komma ihåg det här lösenordet. Det sparas med Lösenordshantering för <ph name="EMAIL" /></translation>

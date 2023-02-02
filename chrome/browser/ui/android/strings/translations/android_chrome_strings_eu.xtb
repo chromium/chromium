@@ -345,7 +345,7 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="2909615210195135082">Google-ren jakinarazpenen plataforma</translation>
 <translation id="2912296070571964914">Kudeatu interesatzen zaizkizun gaiak</translation>
 <translation id="2912345083818861431">Erabili pantailaren blokeoa ezkutuko moduan irekita dauzkazun fitxak ikusteko</translation>
-<translation id="2922568440285376746">Bilatu irudiaren barruan Google erabilita <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
+<translation id="2922568440285376746">Bilatu irudia Google bidez <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Izenak ez du balio</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> aplikazioaren datuak</translation>
 <translation id="2932222164150889403">Teklatua ez da aldatuko</translation>
@@ -391,6 +391,7 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="3072980200212375806">Chrome-n irekiko da <ph name="APP_NAME" />. Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Google Chrome-ren eta Chrome OS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Pribatutasun-gidalerroak<ph name="END_LINK3" /> ere aplikatuko dira.</translation>
 <translation id="3091010850649238832">Erakutsi arbeleko edukia</translation>
 <translation id="3098745985164956033">Jasotzen dituzun deskribapenak hobetzeko bidaltzen zaizkio irudi batzuk Google-ri</translation>
+<translation id="3104179992611025423">Zure gurasoek kudeatzen dute arakatzailea</translation>
 <translation id="3114507951000454849">Irakurri gaurko albisteak <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">Honekin lotuta:</translation>
 <translation id="3123734510202723619">Iragarpenak</translation>
@@ -400,6 +401,7 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="3157931365184549694">Leheneratu</translation>
 <translation id="3166827708714933426">Fitxetarako eta leihoetarako lasterbideak</translation>
 <translation id="316694332262407393">Chrome abian da dagoeneko.</translation>
+<translation id="3167258285411721858"><ph name="HOST_NAME" /> webgunearen mugikorretarako bertsioa eska dezakezu</translation>
 <translation id="3169472444629675720">Ezagutu</translation>
 <translation id="3187472288455401631">Iragarkien neurketa</translation>
 <translation id="3207960819495026254">Laster-marka gisa gordea</translation>
@@ -433,6 +435,7 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="3297344142967351106">Ahozko laguntza</translation>
 <translation id="3303414029551471755">Aurrera egin eta edukia deskargatu nahi duzu?</translation>
 <translation id="3305795716056605962">Itzuli orriak Aukera gehiago botoiaren bidez</translation>
+<translation id="3319664549618064419">Webgunea hobeki ikusteko, aldatu ordenagailuetarako webgunera</translation>
 <translation id="3334729583274622784">Fitxategi-luzapena aldatu nahi duzu?</translation>
 <translation id="3341262203274374114">Ezin zaio jarraitzeari utzi. Arazo bat izan da.</translation>
 <translation id="3359667936385849800">Erabili oraingo zerbitzu-hornitzailea</translation>
@@ -624,7 +627,6 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="4452411734226507615">Itxi <ph name="TAB_TITLE" /> fitxa</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> karpetan gehitu da laster-marka</translation>
 <translation id="4461614516424362539">Beste gailu bat QR kode baten bidez lotzen baduzu, telefono hau erabili ahal izango du segurtasun-giltza gisa. Kenduz gero, beste QR kode bat eskaneatu beharko duzu gailua berriro lotzeko.</translation>
-<translation id="4479839115899251637">Ezabatu irakurketa-zerrendatik</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> instalatzen Chrome-rako…</translation>
 <translation id="4484496141267039529">Ez dago konexiorik. Saiatu berriro geroago.</translation>
 <translation id="4487967297491345095">Betiko ezabatuko dira Chrome aplikazioko datu guztiak, besteak beste, fitxategiak, ezarpenak, kontuak eta datu-baseak.</translation>
@@ -1466,6 +1468,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8849001918648564819">Ezkutatuta</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" /> fitxa</translation>
 <translation id="8854223127042600341">Ikusi konexiorik gabeko fitxategiak</translation>
+<translation id="885480114717186641"><ph name="HOST_NAME" /> webgunearen ordenagailuetarako bertsioa eska dezakezu</translation>
 <translation id="8856607253650333758">Lortu deskribapenak</translation>
 <translation id="8856931513242997049">Jakinarazpenak bidaltzeko baimena emateko fluxua itxita dago</translation>
 <translation id="8873817150012960745">Hasteko, sakatu hau</translation>
@@ -1486,7 +1489,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8955719471735800169">Itzuli hasierara</translation>
 <translation id="8964479563882643397">Ezkutuko moduko beste fitxa bat irekitzeko, ireki menua</translation>
 <translation id="8965591936373831584">zain</translation>
-<translation id="8967427617812342790">Gehitu zerrendan</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Ezkutuko moduko <ph name="INCOGNITO_TAB_COUNT" /> fitxa eta beste <ph name="TAB_COUNT_ONE" /> fitxa itxiko dira}other{Ezkutuko moduko <ph name="INCOGNITO_TAB_COUNT" /> fitxa eta beste <ph name="TAB_COUNT_MANY" /> fitxa itxiko dira}}</translation>
 <translation id="8970887620466824814">Arazo bat izan da.</translation>
 <translation id="8972098258593396643">Karpeta lehenetsira deskargatu nahi duzu?</translation>

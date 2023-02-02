@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">管理同步数据</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
 <translation id="1076785341346483463">与受管理的帐号同步</translation>
+<translation id="1080365971383768617">在所有设备上使用您的密码</translation>
 <translation id="1084365883616172403">Facebook 信息发布已完成。</translation>
 <translation id="1085696779717592361">默认使用 Chrome</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
@@ -544,6 +545,7 @@
 <translation id="5056446788882570708"><ph name="TIME" />发现了问题。</translation>
 <translation id="5059136629401106827">知道了</translation>
 <translation id="5062321486222145940">安装Google云端硬盘</translation>
+<translation id="50641035439563602">现在，系统会将密码保存到您的 Google 帐号 (<ph name="ACCOUNT" />)。无论您在哪部设备上登录，都可以使用这些密码。如需关闭此功能，请前往<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />页面。</translation>
 <translation id="5083464117946352670">无法确定文件大小。</translation>
 <translation id="5090832849094901128">删除此密码不会删除您在 <ph name="WEBSITE" /> 上的帐号。</translation>
 <translation id="5094827893301452931">Tweet 信息发布已完成。</translation>
@@ -706,6 +708,7 @@
 <translation id="6284652193729350524">主动询问是否翻译<ph name="LANGUAGE" />内容</translation>
 <translation id="6289501276895392862">已取消关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="6293101329759844770">如需开启“安全浏览”功能，请打开 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />，然后点按“安全浏览”。</translation>
+<translation id="6320780930074869063">当此设置处于开启状态时，密码会保存到 <ph name="ACCOUNT" /> 中。当此设置处于关闭状态时，密码只会保存在该设备上。</translation>
 <translation id="6321526113093607004">添加到书签</translation>
 <translation id="6324669097367352121">登录设置</translation>
 <translation id="6337234675334993532">加密</translation>

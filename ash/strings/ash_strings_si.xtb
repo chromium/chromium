@@ -420,9 +420,11 @@
 <translation id="3289674678944039601">ඇඩැප්ටරය හරහා ආරෝපණය වෙමින්</translation>
 <translation id="3290356915286466215">අනාරක්‍ෂිතයි</translation>
 <translation id="3294437725009624529">ආගන්තුක</translation>
+<translation id="3298690094479023523">ඔබේ PIN හෝ මුරපදය තවමත් සත්‍යාපනය කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="3307642347673023554">ලැප්ටොප් ප්‍රකාරයට මාරු විය</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> හට තවමත් පසුව පිරිය හැක.</translation>
 <translation id="3321628682574733415">වැරදි මාපිය කේතය</translation>
+<translation id="332827762492701193">දැනුම්දීම් සැඟවී ඇත</translation>
 <translation id="3339826665088060472">තිර ග්‍රහණය, තිර රූ සහ තිර පටිගත කිරීම් ලබා ගැනීමට මෙවලම්</translation>
 <translation id="3340978935015468852">සැකසීම්</translation>
 <translation id="3341303451326249809">තිර රුව ග්‍රහණය කරන ලදි</translation>
@@ -559,6 +561,7 @@
 <translation id="4017989525502048489">ලේසර් මුද්‍රණ යන්ත්‍රය</translation>
 <translation id="401993194061514265">ලකුණුකරය නොමැත. Screencast යළි විවෘත කරන්න.</translation>
 <translation id="4021716437419160885">පහළට අනුචලනය කරන්න</translation>
+<translation id="4024840464866786680">ඔබට ඔබේ PIN සහ මුරපදය අමතක වූවා නම් හෝ මෑතක දී ඔබේ Google ගිණුමේ මුරපදය වෙනස් කර ඇත්නම්, මෙම පරිශීලකයා ප්‍රතිසාධනය කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="4028481283645788203">වැඩිපුර ආරක්‍ෂාව සඳහා මුරපදය අවශ්‍යයි</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">ඔබ ඔබේ තිරය බෙදා ගනියි</translation>
@@ -699,10 +702,12 @@
 <translation id="4735944890391795473">12 වෙනි මේසය</translation>
 <translation id="473775607612524610">යාවත්කාලීනය</translation>
 <translation id="4740516757091333363">සුරැකි මේසය මකන්නද?</translation>
+<translation id="4747410141429390146">දැනුම්දීම් බැලීමට අගුළු හරින්න</translation>
 <translation id="4752784485658729358">සුරැකි මේස 6කට පමණක් ඉඩ දේ. අලුත් එකක් සුරැකීමට මේසයක් ඉවත් කරන්න.</translation>
 <translation id="4759238208242260848">බාගැනීම්</translation>
 <translation id="4762573482154983647">යෙදුම් සඟවන්න</translation>
 <translation id="4774338217796918551">හෙට <ph name="COME_BACK_TIME" />ට ආපසු එන්න.</translation>
+<translation id="4776584068981882959">ඔබේ මුරපදය තවමත් සත්‍යාපනය කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> සඳහා රහස්වචනය</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">ආදර්ශන සැසියකදී Google සහකරු නොලැබේ.</translation>
@@ -842,6 +847,7 @@
 <translation id="5536723544185013515">මෑත යෙදුම්, සියලු මෑත යෙදුම් වෙත ප්‍රවේශ වීමට වම් හෝ දකුණු ඊතල සමඟ සංචාලනය කරන්න</translation>
 <translation id="553675580533261935">සැසියෙන් ඉවත් වෙමින්</translation>
 <translation id="5537725057119320332">විකාශය</translation>
+<translation id="5546397813406633847">පරිශීලක ප්‍රතිසාධනය කරන්න</translation>
 <translation id="554893713779400387">අනුලේඛනය ටොගල් කරන්න</translation>
 <translation id="5558091555391176027">ළඟ බෙදා ගැනීමේ ඉහළ දෘශ්‍යතාව ටොගල් කරන්න</translation>
 <translation id="5560420195677022218">ඔබගේ දුරකථනයේ යෙදුම් ඔබගේ <ph name="DEVICE_TYPE" /> හි බලන්න</translation>
@@ -858,6 +864,7 @@
 <translation id="5618148318840095371">අප ඔබව වඩා හොඳ ජාලයකට මාරු කර ඇත</translation>
 <translation id="5619862035903135339">පරිපාලක ප්‍රතිපත්තිය තිර ග්‍රහණය අබල කරයි</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">ඔබේ මුරපදය සත්‍යාපනය කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="5648021990716966815">මයික් ජැක්කුව</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ඔබගේ අවධානය ඉල්ලයි.</translation>
 <translation id="5662075790140998213">10 වෙනි මේසය</translation>
@@ -876,6 +883,7 @@
 <translation id="5707775774148071965">ඔබගේ උපාංගය ඔබගේ කේබලයට වඩා ඉහළ දත්ත අනුපාතයකට සහාය දක්වයි. උපාංග කාර්ය සාධනය සීමා විය හැකිය.</translation>
 <translation id="5710450975648804523">බාධා නොකරන්න ක්‍රියාත්මකයි</translation>
 <translation id="571295407079589142">ජංගම දත්ත ක්‍රියාවිරහිතයි</translation>
+<translation id="5727460725221669831">ඔබට ඔබේ මුරපදය අමතක වූවා නම් හෝ මෑතක දී ඔබේ Google ගිණුමේ මුරපදය වෙනස් කර ඇත්නම්, මෙම පරිශීලකයා ප්‍රතිසාධනය කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="573413375004481890">මෙම උපාංගයට ඔබේ සංදර්ශක සියල්ලට සහය දැක්වීමට නොහැකි විය, එබැවින් එකක් විසන්ධි කර ඇත</translation>
 <translation id="5740328398383587084">ළඟ බෙදා ගැනීම</translation>
 <translation id="574392208103952083">මධ්‍යම</translation>

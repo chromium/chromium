@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">가상 머신을 시작하는 동안 문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="1087965115100412394">사이트에서 MIDI 기기에 연결하도록 허용하지 않음</translation>
 <translation id="1088659085457112967">읽기 모드 시작</translation>
-<translation id="1089407731410758060">테마 변경</translation>
 <translation id="1090126737595388931">실행 중인 백그라운드 앱 없음</translation>
 <translation id="1090541560108055381">페어링하기 전에 두 기기의 코드가 동일한지 확인하세요.</translation>
 <translation id="1091767800771861448">건너뛰려면 Esc 키를 누르세요(비공식 빌드만 해당).</translation>
@@ -550,6 +549,7 @@
 <translation id="1495677929897281669">탭으로 돌아가기</translation>
 <translation id="1500297251995790841">알 수 없는 기기[<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">지원되지 않는 Chrome 앱 자세히 알아보기</translation>
+<translation id="1501480321619201731">그룹 삭제</translation>
 <translation id="1503392482221435031">사용 통계를 Google에 자동으로 전송합니다. 기기 설정에서 비정상 종료 보고서를 사용 설정 또는 중지할 수 있습니다.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> 삭제</translation>
 <translation id="1504551620756424144"><ph name="BASE_DIR" />에서 Windows의 공유 폴더를 사용할 수 있습니다.</translation>
@@ -2113,7 +2113,6 @@
 <translation id="2835547721736623118">음성 인식 서비스</translation>
 <translation id="2836232638504556905">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />을 확인하세요.</translation>
 <translation id="2836269494620652131">비정상 종료</translation>
-<translation id="2836635946302913370">해당 사용자 이름 로그인이 관리자에 의해 사용 중지되었습니다.</translation>
 <translation id="283669119850230892">네트워크 <ph name="NETWORK_ID" />을(를) 사용하려면 먼저 아래에서 인터넷 연결을 완료합니다.</translation>
 <translation id="2838379631617906747">설치 중</translation>
 <translation id="2839032553903800133">알림 차단됨</translation>
@@ -2922,6 +2921,7 @@
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3602870520245633055">인쇄 및 스캔</translation>
 <translation id="3603622770190368340">네트워크 인증서 받기</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{계정 {COUNT}개에서 동일한 비밀번호 사용 중}other{계정 {COUNT}개에서 동일한 비밀번호 사용 중}}</translation>
 <translation id="3605780360466892872">와이셔츠</translation>
 <translation id="3609277884604412258">빠른 검색</translation>
 <translation id="3610241585790874201">기기에 데이터를 저장하도록 허용되지 않음</translation>
@@ -3628,7 +3628,6 @@
 <translation id="4244238649050961491">스타일러스 앱 더보기</translation>
 <translation id="4246980464509998944">추가 의견:</translation>
 <translation id="424726838611654458">항상 Adobe Reader에서 열기</translation>
-<translation id="4247901771970415646"><ph name="USERNAME" />과(와) 동기화할 수 없음</translation>
 <translation id="4248098802131000011">정보 유출 및 다른 보안 문제로부터 비밀번호를 안전하게 보호하세요.</translation>
 <translation id="4249248555939881673">네트워크 연결 대기 중...</translation>
 <translation id="4249373718504745892">카메라와 마이크 액세스가 차단된 페이지입니다.</translation>
@@ -3849,6 +3848,7 @@
 <translation id="4441147046941420429">계속하려면 기기에서 보안 키를 제거한 후 다시 삽입하고 터치하세요.</translation>
 <translation id="444134486829715816">펼치기...</translation>
 <translation id="4441928470323187829">관리자가 고정함</translation>
+<translation id="4442863809158514979">웹 권한 보기</translation>
 <translation id="4443536555189480885">도움말(&amp;H)</translation>
 <translation id="4444304522807523469">USB나 로컬 네트워크에 포함된 문서 스캐너에 액세스</translation>
 <translation id="4444512841222467874">저장 공간이 충분하지 않으면 사용자 및 데이터가 자동으로 삭제될 수 있습니다.</translation>
@@ -4847,6 +4847,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5382591305415226340">지원되는 링크 관리</translation>
 <translation id="5383377866517186886">Mac 시스템 환경설정에서 카메라가 사용 중지되었습니다</translation>
 <translation id="5383740867328871413">이름이 지정되지 않은 그룹 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" />(ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">기업 정책이 변경되었습니다. 툴바에 실험 버튼이 추가되었습니다. 실험 사용 설정 대화상자를 열려면 버튼을 클릭하세요.</translation>
 <translation id="5388885445722491159">페어링됨</translation>
 <translation id="5390112241331447203">전송된 system_logs.txt 파일을 의견 보고서에 포함합니다.</translation>
@@ -5061,6 +5062,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5578059481725149024">자동 로그인</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" />로의 번역이 완료됨</translation>
 <translation id="558170650521898289">Microsoft Windows Hardware Driver Verification</translation>
+<translation id="5581876958763461074">모든 메모</translation>
 <translation id="5581972110672966454">기기가 도메인에 가입하지 못했습니다. 다시 시도하거나 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="5582839680698949063">기본 메뉴</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5711,7 +5713,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="617213288191670920">추가된 언어 없음</translation>
 <translation id="6173623053897475761">PIN을 다시 입력하세요</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
-<translation id="6176043333338857209">보안 키와 통신하기 위해 블루투스가 일시적으로 켜집니다.</translation>
 <translation id="6178664161104547336">인증서 선택</translation>
 <translation id="6178682841350631965">로그인 데이터가 업데이트되었습니다.</translation>
 <translation id="6180510783007738939">선 도구</translation>
@@ -7478,6 +7479,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="779308894558717334">연한 녹색</translation>
 <translation id="7793098747275782155">진한 파란색</translation>
 <translation id="7797571222998226653">꺼짐</translation>
+<translation id="7798504574384119986">웹 권한 보기</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> 권한이 자동으로 차단됨</translation>
 <translation id="7800518121066352902">반시계 방향으로 회전(&amp;O)</translation>
 <translation id="7801679634091975683">여기에서 변경하는 사항은 Lacros Chrome 브라우저에만 적용됩니다. Chrome 브라우저 설정을 변경하려면 Chrome 브라우저를 열고 설정으로 이동하세요.</translation>

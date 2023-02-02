@@ -80,6 +80,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="149095475893949513">Ši svetainė bando atsisiųsti konfigūracijos profilį.</translation>
 <translation id="1491277525950327607">Dukart palieskite, kad perjungtumėte nustatymą</translation>
 <translation id="1492417797159476138">Jau išsaugojote šį naudotojo vardą šioje svetainėje</translation>
+<translation id="1498283581832036924"><ph name="WEBSITE" /> paskyra nebus ištrinta.</translation>
 <translation id="1506063256525392513">Galite fotografuoti ir įkelti nuotraukas bei nuskaityti QR kodus</translation>
 <translation id="1509486075633541495">Prisijungti prie svetainės</translation>
 <translation id="1509960214886564027">Funkcijos gali neveikti daugybėje svetainių.</translation>
@@ -219,6 +220,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2664621323652615289">Sustabdyti</translation>
 <translation id="2671426118752779020">Galite naudoti „Google“ slaptažodžių tvarkytuvėje išsaugotus slaptažodžius kitose „iPhone“ programose.</translation>
 <translation id="2690858294534178585">Fotoaparatas naudojamas</translation>
+<translation id="26915454213703967">„Google“ paieška vaizde</translation>
 <translation id="2691653761409724435">Nepasiekiama neprisijungus</translation>
 <translation id="2695507686909505111">Puslapis išverstas</translation>
 <translation id="2697526135132990015">Atsijungti ir išvalyti duomenis</translation>
@@ -382,6 +384,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3819183753496523827">Esate neprisijungę. Patikrinkite interneto ryšį ir bandykite dar kartą.</translation>
 <translation id="3835964409414434850">Eiti į kitą skirtuką</translation>
 <translation id="385051799172605136">Atgal</translation>
+<translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ir kitų (dar <ph name="NUMBER_OF_ACCOUNTS" />) slaptažodžiai bus ištrinti. Jūsų paskyros nebus ištrintos.</translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
 <translation id="3861486700625780712">Nebestebėti</translation>
 <translation id="3863769054730344136">Išsiųsti į jūsų įrenginius</translation>
@@ -517,6 +520,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="4833786495304741580">Automatiškai siunčia naudojimo statistiką ir strigčių ataskaitas „Google“.</translation>
 <translation id="4840495572919996524">Žymės, istorija, slaptažodžiai ir kiti duomenys nebebus sinchronizuojami su „Google“ paskyra.</translation>
 <translation id="4844899002472726590">Peržiūrėkite ir redaguokite jus dominančias temas</translation>
+<translation id="4848999860252535517">Ištrinti <ph name="WEBSITE" /> slaptažodį?</translation>
 <translation id="4854345657858711387">Slaptažodžio nustatymas</translation>
 <translation id="4858786880085262208">Naujovinti į HTTPS, kai galima. Saugiose svetainėse gali būti nesaugaus turinio.</translation>
 <translation id="4860895144060829044">Skambinti</translation>
@@ -596,7 +600,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5520466080178053306">Palieskite „Slaptažodžių tvarkyklė“, tada palieskite „Pridėti“</translation>
 <translation id="5525095647255982834">Jei norite siųsti šį skirtuką į kitą įrenginį, prisijunkite prie „Chrome“ čia</translation>
 <translation id="5525269841082836315">Kurti slaptafrazę</translation>
-<translation id="5530084793407600786">„Google“ paieška vaizde</translation>
 <translation id="5542540507657872337">Rasta: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Naudodami „Handoff“ galite pradėti naršyti svetainę šiame įrenginyje ir lengvai tęsti darbą „Mac“ įrenginiu. Dabartinė atidaryta svetainė bus rodoma „Mac“ įrenginio doke.
 
@@ -770,6 +773,7 @@ Kiekvienoje svetainėje stenkitės naudoti unikalius slaptažodžius.</translati
 <translation id="6598875554591387303">Rūšiuoti pagal leidėją</translation>
 <translation id="6603393121510733479">Organizacija išjungė privatų naršymą.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ir <ph name="THIRD_WEBSITE" /> slaptažodžiai bus ištrinti. Jūsų paskyros nebus ištrintos.</translation>
 <translation id="6610002944194042868">Vertimo parinktys</translation>
 <translation id="661266467055912436">Sustiprina jūsų ir visų žiniatinklio naudotojų saugą.</translation>
 <translation id="6620279676667515405">Atšaukti</translation>
@@ -1047,6 +1051,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8756969031206844760">Atnaujinti slaptažodį?</translation>
 <translation id="8763613688786959833">Eiti į paskutinį skirtuką</translation>
 <translation id="8764015330924122850">Nebestebėti „<ph name="DOMAIN_NAME" />“</translation>
+<translation id="8766790350274092814"><ph name="WEBSITE" /> ir <ph name="SECOND_WEBSITE" /> slaptažodžiai bus ištrinti. Jūsų paskyros nebus ištrintos.</translation>
 <translation id="8775144690796719618">Netinkamas URL</translation>
 <translation id="8787968206789828143">Paieškos žiniatinklyje</translation>
 <translation id="8792626944327216835">mikrofonas</translation>
@@ -1096,6 +1101,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9093271241977565440">Ekrano viršuje palieskite paieškos piktogramą</translation>
 <translation id="9094033019050270033">Atnaujinti slaptažodį</translation>
 <translation id="9097506547406246598">Negalima nebestebėti. Kažkas nepavyko.</translation>
+<translation id="9098541895599151034">Ištrinti slaptažodžius (iš viso: <ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9100610230175265781">Būtina slaptafrazė</translation>
 <translation id="9107664647686727385">Patikrinkite, ar nėra pažeistų slaptažodžių</translation>
 <translation id="9124387962554796433">Naudodama naršymo istoriją „Google“ gali suasmeninti Paiešką ir kitas „Google“ paslaugas.</translation>

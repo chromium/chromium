@@ -80,6 +80,7 @@
 <translation id="149095475893949513">此網站正嘗試下載設定描述檔。</translation>
 <translation id="1491277525950327607">連扲兩下可以切換設定</translation>
 <translation id="1492417797159476138">您已為此網站儲存此使用者名稱</translation>
+<translation id="1498283581832036924">系統不會刪除你的 <ph name="WEBSITE" /> 帳戶。</translation>
 <translation id="1506063256525392513">此操作允許您拍攝並上載相片，以及掃瞄 QR 碼</translation>
 <translation id="1509486075633541495">登入網站</translation>
 <translation id="1509960214886564027">很多網站的功能可能會無法正常運作</translation>
@@ -219,6 +220,7 @@
 <translation id="2664621323652615289">停止</translation>
 <translation id="2671426118752779020">您可在 iPhone 上的其他應用程式使用您儲存到「Google 密碼管理工具」的密碼。</translation>
 <translation id="2690858294534178585">正在使用相機</translation>
+<translation id="26915454213703967">使用 Google 搜尋圖片內容</translation>
 <translation id="2691653761409724435">無法離線查看</translation>
 <translation id="2695507686909505111">已翻譯網頁</translation>
 <translation id="2697526135132990015">登出並清除資料</translation>
@@ -382,6 +384,7 @@
 <translation id="3819183753496523827">您已離線。請檢查您的互聯網連線，然後再試一次。</translation>
 <translation id="3835964409414434850">前往下一個分頁</translation>
 <translation id="385051799172605136">返回</translation>
+<translation id="3851938967634752633">系統會刪除 <ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" /> 和另外 <ph name="NUMBER_OF_ACCOUNTS" /> 個帳戶的密碼，但不會刪除你的帳戶。</translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3861486700625780712">取消追蹤</translation>
 <translation id="3863769054730344136">傳送至您的裝置</translation>
@@ -517,6 +520,7 @@
 <translation id="4833786495304741580">自動將使用情況統計和當機報告傳送給 Google。</translation>
 <translation id="4840495572919996524">您的書籤、記錄、密碼及其他設定將不會同步至您的 Google 帳戶。</translation>
 <translation id="4844899002472726590">查看和編輯您感興趣的主題</translation>
+<translation id="4848999860252535517">要刪除 <ph name="WEBSITE" /> 的密碼嗎？</translation>
 <translation id="4854345657858711387">設定密碼</translation>
 <translation id="4858786880085262208">盡可能升級為 HTTPS。即使是安全的網站，仍有可能嵌入不安全的內容。</translation>
 <translation id="4860895144060829044">撥號</translation>
@@ -596,7 +600,6 @@
 <translation id="5520466080178053306">輕按 [密碼管理工具]，然後輕按 [新增]</translation>
 <translation id="5525095647255982834">如要將此分頁傳送至其他裝置，請在目的地裝置上登入 Chrome。</translation>
 <translation id="5525269841082836315">建立密碼短語</translation>
-<translation id="5530084793407600786">使用 Google 搜尋圖片內容</translation>
 <translation id="5542540507657872337">找到 <ph name="COUNT" /> 個已開啟的分頁</translation>
 <translation id="5548760955356983418">「Handoff」讓您可在此裝置上開始瀏覽網站，然後輕易在 Mac 上繼續瀏覽。目前開啟的網站將會在 Mac 的 Dock 中顯示。
 
@@ -709,6 +712,7 @@
 <translation id="6284652193729350524">為<ph name="LANGUAGE" />提供翻譯選項</translation>
 <translation id="6289501276895392862">已取消追蹤 <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">如要啟用「安全瀏覽」功能，請開啟「<ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />」，並輕按 [安全瀏覽]。</translation>
+<translation id="6320780930074869063">開啟時，密碼將會儲存至 <ph name="ACCOUNT" />。關閉後，密碼只會儲存在此裝置上。</translation>
 <translation id="6321526113093607004">新增至「書籤」</translation>
 <translation id="6324669097367352121">登入設定</translation>
 <translation id="6337234675334993532">加密</translation>
@@ -768,6 +772,7 @@
 <translation id="6598875554591387303">按發佈者排序</translation>
 <translation id="6603393121510733479">您的機構已關閉私密瀏覽功能。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">系統會刪除 <ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" /> 和 <ph name="THIRD_WEBSITE" /> 的密碼，但不會刪除你的帳戶。</translation>
 <translation id="6610002944194042868">翻譯選項</translation>
 <translation id="661266467055912436">為您和網絡上的所有使用者提高安全性。</translation>
 <translation id="6620279676667515405">取消</translation>
@@ -1045,6 +1050,7 @@
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
 <translation id="8763613688786959833">前往最後一個分頁</translation>
 <translation id="8764015330924122850">取消追蹤 <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">系統會刪除 <ph name="WEBSITE" /> 和 <ph name="SECOND_WEBSITE" /> 的密碼，但不會刪除你的帳戶。</translation>
 <translation id="8775144690796719618">網址無效</translation>
 <translation id="8787968206789828143">在網絡上搜尋</translation>
 <translation id="8792626944327216835">麥克風</translation>
@@ -1094,6 +1100,7 @@
 <translation id="9093271241977565440">輕按畫面頂部的「搜尋」圖示</translation>
 <translation id="9094033019050270033">更新密碼</translation>
 <translation id="9097506547406246598">無法取消追蹤，發生錯誤。</translation>
+<translation id="9098541895599151034">要刪除 <ph name="NUMBER_OF_ACCOUNTS" /> 個密碼嗎？</translation>
 <translation id="9100610230175265781">請輸入複雜密碼</translation>
 <translation id="9107664647686727385">檢查是否有被盜用的密碼</translation>
 <translation id="9124387962554796433">Google 可能會使用您的記錄，為您提供個人化的搜尋服務和其他 Google 服務。</translation>

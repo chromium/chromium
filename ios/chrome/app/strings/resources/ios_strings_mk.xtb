@@ -596,7 +596,6 @@
 <translation id="5520466080178053306">Допрете „Password Manager“, а потоа допрете „Додај“</translation>
 <translation id="5525095647255982834">За да ја испратите картичкава на друг уред, најавете се на Chrome таму.</translation>
 <translation id="5525269841082836315">Создај пристапна фраза</translation>
-<translation id="5530084793407600786">Пребарајте во слика со Google</translation>
 <translation id="5542540507657872337">Најдено: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff ви овозможува да започнете со прелистување на веб-локација на уредот и потоа лесно да продолжите на Mac. Моментално отворената веб-локација ќе се појави во Dock на Mac.
 
@@ -709,6 +708,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6284652193729350524">Понудувај превод од <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Се отследи <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">За да го вклучите „Безбедното прелистување“, отворете <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" /> и допрете „Безбедно прелистување“.</translation>
+<translation id="6320780930074869063">Кога е вклучено, лозинките се зачувуваат на <ph name="ACCOUNT" />. Кога е исклучено, лозинките се зачувуваат само на уредов.</translation>
 <translation id="6321526113093607004">Додај во „Обележувачи“</translation>
 <translation id="6324669097367352121">Поставки за најавување</translation>
 <translation id="6337234675334993532">Шифрирање</translation>

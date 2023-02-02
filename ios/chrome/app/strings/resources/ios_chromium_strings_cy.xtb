@@ -6,6 +6,7 @@
 <translation id="1185134272377778587">Ynghylch Chromium</translation>
 <translation id="1257458525759135959">I gadw lluniau, tapiwch ar Gosodiadau i ganiatáu i Chromium ychwanegu at eich lluniau</translation>
 <translation id="1289216811211435351">Newid i Chromium</translation>
+<translation id="1352919863522755794">Ni allai Rheolwr Cyfrineiriau Google wirio'ch cyfrineiriau. Rhowch gynnig ar wirio'ch cysylltiad rhyngrwyd.</translation>
 <translation id="1361748954329991663">Mae Chromium yn hen. Os nad oes diweddariad ar gael yn <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, mae'n bosib nad yw'ch dyfais yn cefnogi fersiynau newydd o Chromium mwyach.</translation>
 <translation id="1431818719585918472">Caniatáu i Chromium gloi eich tabiau Anhysbys.</translation>
 <translation id="1472013873724362412">Nid yw'ch cyfrif yn gweithio ar Chromium. Cysylltwch â'ch gweinyddwr parth neu defnyddiwch Gyfrif Google rheolaidd i fewngofnodi.</translation>
@@ -35,6 +36,7 @@
 <translation id="2650312721222849884">I weld eich tabiau o ble bynnag rydych yn defnyddio Chromium, trowch gysoni ymlaen</translation>
 <translation id="2684230048001240293">Gosodwch Chromium fel eich porwr diofyn i gysoni'ch tabiau, eich cyfrineiriau, a'ch gwybodaeth talu ar eich holl ddyfeisiau</translation>
 <translation id="2730884209570016437">Ni all Chromium ddefnyddio'ch camera oherwydd ei fod yn cael ei ddefnyddio gan ap arall</translation>
+<translation id="2767464022270041271">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Rheolwr Cyfrineiriau Google wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
 <translation id="2915596697727466327">Mae Chromium yn defnyddio Face ID i sicrhau mynediad awdurdodedig at eich cyfrineiriau.</translation>
 <translation id="2918709798697875261">Mae eich sefydliad yn gofyn i chi barhau i fod wedi'ch allgofnodi o Chromium.</translation>
 <translation id="2942241131342758843">Defnyddiwch Chromium i agor dolenni, chwilio o declynnau, ac awtolenwi cyfrineiriau mewn apiau eraill</translation>
@@ -57,6 +59,7 @@
 <translation id="4681781466797808448">Troi sganydd Chromium ymlaen</translation>
 <translation id="4736424910885271643">Mae'ch cyfrif yn cael ei reoli gan <ph name="HOSTED_DOMAIN" />, felly bydd eich data Chromium yn cael eu clirio o'r ddyfais hon</translation>
 <translation id="4828317641996116749">Nid oedd modd i Chromium wirio'r holl gyfrineiriau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
+<translation id="4840404732697892756">Gall Rheolwr Cyfrineiriau Google wirio'ch cyfrineiriau pan fyddwch yn mewngofnodi gyda'ch Cyfrif Google.</translation>
 <translation id="4985291216379576555">All-lein, ni all Chromuim wirio am ddiweddariadau</translation>
 <translation id="4996471330284142407">Gwneud rhagor â Chromium syml, diogel a chyflymach nag erioed.</translation>
 <translation id="4999538639245140991">Oherwydd eich bod yn allgofnodi o gyfrif a reolir gan <ph name="SIGNOUT_MANAGED_DOMAIN" />, bydd eich data Chromium yn cael eu dileu o'r ddyfais hon. Bydd eich data yn aros yn eich Cyfrif Google.</translation>
@@ -67,6 +70,7 @@
 <translation id="5521125884468363740">Er mwyn gweld eich tabiau o ble bynnag rydych yn defnyddio Chromium, mewngofnodwch a throwch gysoni ymlaen</translation>
 <translation id="5522297504975449419">Ni fydd rhai nodweddion Chromium ar gael mwyach.</translation>
 <translation id="5573014823074921752">Awgrym Chromium. Am ragor o opsiynau tabiau, cyffyrddwch a daliwch y botwm Dangos Tabiau yn y bar offer, sydd ar waelod neu ar frig eich sgrîn.</translation>
+<translation id="5661521615548540542">Ni allai Rheolwr Cyfrineiriau Google wirio pob cyfrinair. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="5700709190537129682">Ni all Chromium wirio'ch cyfrineiriau</translation>
 <translation id="5777187867430702742">Tudalen Chromium</translation>
 <translation id="5945387852661427312">Rydych yn mewngofnodi gyda chyfrif a reolir gan <ph name="DOMAIN" /> ac yn rhoi rheolaeth dros eich data Chromium i'w weinyddwr. Bydd eich data yn cael eu cysylltu'n barhaol i'r cyfrif hwn. Bydd allgofnodi o Chromium yn dileu eich data o'r ddyfais hon, ond bydd yn parhau i gael ei storio yn eich Cyfrif Google.</translation>
@@ -113,6 +117,7 @@
 <translation id="8409374867500149834">Mae gennych ddiogelwch cryfaf Chromium yn erbyn gwefannau niweidiol</translation>
 <translation id="858114650497379505">Gallwch ddefnyddio'r cyfrineiriau a gadwyd gennych i'r Rheolwr Cyfrineiriau mewn apiau eraill ar eich iPhone.</translation>
 <translation id="8586442755830160949">Hawlfraint <ph name="YEAR" /> Awduron Chromium. Cedwir Pob Hawl.</translation>
+<translation id="8603022514504485810">Ni allai Rheolwr Cyfrineiriau Google wirio pob cyfrinair. Rhowch gynnig arall arni yfory neu <ph name="BEGIN_LINK" />gwiriwch gyfrineiriau yn eich Cyfrif Google<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Yn eich cadw'n ddiogel ar Chromium a gellir ei ddefnyddio i wella'ch diogelwch mewn apiau Google eraill pan fyddwch wedi'ch mewngofnodi.</translation>
 <translation id="8663480472502753423">Cadwch Chromium yn gyfredol</translation>
 <translation id="8685813584220679697">Mewngofnodi i'r wefan hon a Chromium.</translation>
@@ -126,6 +131,7 @@ Pethau i'w hystyried:
 
   • Os ydych yn troi cysoni ymlaen, gall metrigau hefyd gynnwys gwybodaeth am gyfeiriadau URL rydych yn ymweld â nhw.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Bydd y cyfrif hwn ac unrhyw ddata sydd heb eu cadw yn cael eu tynnu o Chromium.</translation>
+<translation id="8857676124663337448">Ni allai Rheolwr Cyfrineiriau Google wirio pob cyfrinair. Rhowch gynnig arall arni yfory.</translation>
 <translation id="894437814105052438">Pan fyddwch yn allgofnodi, ni fydd Chromium yn cysoni unrhyw ddata newydd i'ch Cyfrif Google. Mae data sydd wedi'u cysoni yn flaenorol yn aros yn y cyfrif.</translation>
 <translation id="9022552996538154597">Mewngofnodi i Chromium</translation>
 <translation id="9059693977935746710">Ni fydd angen i chi gofio'r cyfrinair hwn. Bydd yn cael ei gadw i'r Rheolwr Cyfrineiriau ar gyfer <ph name="EMAIL" /></translation>

@@ -391,6 +391,7 @@
 <translation id="3072980200212375806">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви приймаєте <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_LINK2" />. Також застосовується <ph name="BEGIN_LINK3" />Політика конфіденційності<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">Показати вміст буфера обміну</translation>
 <translation id="3098745985164956033">Деякі зображення надсилаються на сервери Google, що дає змогу покращувати їх описи</translation>
+<translation id="3104179992611025423">Веб-переглядачем керують батьки</translation>
 <translation id="3114507951000454849">Читайте сьогоднішні новини <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">зв’язано з</translation>
 <translation id="3123734510202723619">Оголошення</translation>
@@ -400,6 +401,7 @@
 <translation id="3157931365184549694">Відновити</translation>
 <translation id="3166827708714933426">Комбінації клавіш для роботи з вкладками та вікнами</translation>
 <translation id="316694332262407393">Chrome уже запущено.</translation>
+<translation id="3167258285411721858">Ви можете переключитися на мобільний сайт <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Рекомендації</translation>
 <translation id="3187472288455401631">Оцінка ефективності реклами</translation>
 <translation id="3207960819495026254">Створено закладку</translation>
@@ -433,6 +435,7 @@
 <translation id="3297344142967351106">Голосова допомога</translation>
 <translation id="3303414029551471755">Завантажити вміст?</translation>
 <translation id="3305795716056605962">Щоб відобразити перемикач "Перекласти сторінки", скористайтеся кнопкою меню "Інші опції"</translation>
+<translation id="3319664549618064419">Перейдіть на комп’ютерну версію сайту – так його буде зручніше переглядати</translation>
 <translation id="3334729583274622784">Змінити розширення файлу?</translation>
 <translation id="3341262203274374114">Не вдалося скасувати підписку. Сталася помилка.</translation>
 <translation id="3359667936385849800">Використовувати поточного постачальника послуг</translation>
@@ -624,7 +627,6 @@
 <translation id="4452411734226507615">Закрити вкладку <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Закладку збережено в папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="4461614516424362539">Коли ви зв’язуєте інший пристрій за допомогою QR-коду, він може використовувати цей телефон як ключ безпеки. Якщо видалити його, вам доведеться відсканувати QR-код, щоб знову зв’язати пристрій.</translation>
-<translation id="4479839115899251637">Видалити зі списку читання</translation>
 <translation id="4479972344484327217">Встановлення модуля <ph name="MODULE" /> для Chrome…</translation>
 <translation id="4484496141267039529">Немає з’єднання. Повторіть спробу пізніше.</translation>
 <translation id="4487967297491345095">Усі дані Chrome буде видалено назавжди. Це стосується всіх файлів, налаштувань, облікових записів, баз даних тощо.</translation>
@@ -1466,6 +1468,7 @@
 <translation id="8849001918648564819">Приховано</translation>
 <translation id="8853345339104747198">Вкладка "<ph name="TAB_TITLE" />"</translation>
 <translation id="8854223127042600341">Переглянути офлайн-файли</translation>
+<translation id="885480114717186641">Ви можете переключитися на комп’ютерну версію сайту <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Показувати описи</translation>
 <translation id="8856931513242997049">Вікно надання дозволу на надсилання сповіщень закрито</translation>
 <translation id="8873817150012960745">Натисніть тут, щоб почати</translation>
@@ -1486,7 +1489,6 @@
 <translation id="8955719471735800169">На початок</translation>
 <translation id="8964479563882643397">Щоб відкрити нову анонімну вкладку, натисніть значок меню</translation>
 <translation id="8965591936373831584">очікується</translation>
-<translation id="8967427617812342790">Додати в список читання</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_ONE" /> вкладку буде закрито}one{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладку буде закрито}few{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладки буде закрито}many{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладок буде закрито}other{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладки буде закрито}}</translation>
 <translation id="8970887620466824814">Сталася помилка.</translation>
 <translation id="8972098258593396643">Завантажити в папку за умовчанням?</translation>

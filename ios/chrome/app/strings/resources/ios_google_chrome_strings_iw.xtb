@@ -3,6 +3,7 @@
 <translationbundle lang="iw">
 <translation id="1143896152279775643">‏הסיסמה תישמר במנהל הסיסמאות של Google עבור <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">‏עזרה בשיפור התכונות והביצועים של Chrome</translation>
+<translation id="1352919863522755794">‏למנהל הסיסמאות של Google לא הייתה אפשרות לבדוק את הסיסמאות. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="1462727070346936664">‏כדי להפיק את המרב מ-Chrome, עליך להיכנס לחשבון.</translation>
 <translation id="1479202195792305274">‏Chrome יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google.</translation>
 <translation id="1493827051843127077">‏כדאי להגדיר את Chrome כדפדפן ברירת המחדל כדי לסנכרן את הכרטיסיות, הסיסמאות ופרטי התשלומים שלך בכל המכשירים שלך</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">‏כדי לצאת מחשבון Google שלך בכל האתרים, עליך <ph name="BEGIN_LINK" />לצאת מ-Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">‏Chrome לא הצליח לחפש עדכונים. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="2732745070297234559">‏Chrome לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר.</translation>
+<translation id="2767464022270041271">‏אין סיסמאות שמורות. למנהל הסיסמאות של Google יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
 <translation id="2869959624320573933">‏כניסה ל-Chrome</translation>
 <translation id="2957447865124070833">‏בוחרים באפשרות <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chrome שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">‏Chrome לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר או <ph name="BEGIN_LINK" />לבדוק את הסיסמאות בחשבון Google.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">‏כדי לעזור בשיפור האפליקציה, Chrome ישלח נתוני שימוש וקריסות אל Google. <ph name="BEGIN_LINK" />ניהול<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">‏אין תמיכה ב-Chrome בטא</translation>
+<translation id="4840404732697892756">‏למנהל הסיסמאות של Google יש אפשרות לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google.</translation>
 <translation id="5030102366287574140">‏Chrome יכול להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות.</translation>
 <translation id="5108659628347594808">‏משפרים את Chrome</translation>
 <translation id="5119391094379141756">‏בוחרים באפשרות Chrome</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">‏מערכת Chrome בודקת מדי פעם את הסיסמאות שלך ומשווה אותן לרשימות שהתפרסמו באינטרנט. כשהפעולה הזו מבוצעת, הסיסמאות ושמות המשתמש מוצפנים, כך שאיש לא יוכל לקרוא אותם, כולל Google.</translation>
 <translation id="5639704535586432836">‏יש לעבור אל 'הגדרות' &gt; 'פרטיות' &gt; 'מצלמה' &gt; Google Chrome ולהפעיל את המצלמה.</translation>
 <translation id="5642200033778930880">‏Google Chrome לא יכול להשתמש במצלמה במצב תצוגה מפוצלת</translation>
+<translation id="5661521615548540542">‏למנהל הסיסמאות של Google לא הייתה אפשרות לבדוק את כל הסיסמאות. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">‏Chrome לא יכול לחפש עדכונים</translation>
 <translation id="5716154293141027663">‏Chrome ייפתח בכל פעם שתתבצע הקשה על קישור באפליקציות אחרות</translation>
@@ -118,9 +122,11 @@
   2. מקישים על אפליקציית הדפדפן שמוגדרת כברירת מחדל
   3. בוחרים את Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">‏למנהל הסיסמאות של Google לא הייתה אפשרות לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר או <ph name="BEGIN_LINK" />לבדוק את הסיסמאות בחשבון Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">‏פשוט לשמור על הבטיחות בעזרת Google Chrome</translation>
 <translation id="8772179140489533211">‏יוצגו הודעות לצורך כניסה אל Chrome.</translation>
 <translation id="8788269841521769222">‏אין צורך לזכור את הסיסמה הזו. היא תישמר במנהל הסיסמאות של Google בחשבון <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">‏למנהל הסיסמאות של Google לא הייתה אפשרות לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר.</translation>
 <translation id="8897749957032330183">‏סיסמאות נשמרות במנהל הסיסמאות של Google במכשיר הזה.</translation>
 <translation id="8969290730818637510">‏כשהאפשרות פועלת:
 <ph name="BEGIN_INDENT" />  • עוזרים לשפר את Chrome אצל אנשים שמשתמשים בדפדפן בצורה דומה.<ph name="END_INDENT" />

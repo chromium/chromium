@@ -106,7 +106,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1085697365578766383">Nem sikerült elindítani a virtuális gépet. Próbálja újra.</translation>
 <translation id="1087965115100412394">A webhelyek nem csatlakozhatnak MIDI-eszközökhöz</translation>
 <translation id="1088659085457112967">Belépés Olvasási módba</translation>
-<translation id="1089407731410758060">Téma módosítása</translation>
 <translation id="1090126737595388931">Nincs háttérben futó alkalmazás</translation>
 <translation id="1090541560108055381">A párosítás előtt ellenőrizze, hogy mindkét eszközön ugyanazt a kódot használja-e</translation>
 <translation id="1091767800771861448">Nyomja le az ESC billentyűt a kihagyáshoz (csak nem hivatalos verzióknál).</translation>
@@ -550,6 +549,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1495677929897281669">Vissza a lapra</translation>
 <translation id="1500297251995790841">Ismeretlen eszköz [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">További információ a nem támogatott Chrome-alkalmazásokról</translation>
+<translation id="1501480321619201731">Csoport törlése</translation>
 <translation id="1503392482221435031">Automatikusan elküldi a használati statisztikákat a Google-nak. A hibajelentéseket az eszköz beállításaiban kapcsolhatja be és ki.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> eltávolítása</translation>
 <translation id="1504551620756424144">A megosztott mappák a következő helyen találhatók a Windows rendszerben: <ph name="BASE_DIR" />.</translation>
@@ -2111,7 +2111,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2835547721736623118">Beszédfelismerési szolgáltatás</translation>
 <translation id="2836232638504556905">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja az Ön nevét, e-mail-címét és profilképét ezzel a webhellyel. Olvassa el a webhely <ph name="BEGIN_LINK" />adatvédelmi irányelveit<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Összeomlás</translation>
-<translation id="2836635946302913370">A rendszergazdája letiltotta a bejelentkezést ezzel a felhasználónévvel.</translation>
 <translation id="283669119850230892">A hálózat (<ph name="NETWORK_ID" />) használatához először fejezze be csatlakozást az internethez alább.</translation>
 <translation id="2838379631617906747">Telepítés</translation>
 <translation id="2839032553903800133">Értesítések letiltva</translation>
@@ -2920,6 +2919,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3602290021589620013">Előnézet</translation>
 <translation id="3602870520245633055">Nyomtatás és szkennelés</translation>
 <translation id="3603622770190368340">Hálózati tanúsítvány beszerzése</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} fiók használja ugyanazt a jelszót}other{{COUNT} fiók használja ugyanazt a jelszót}}</translation>
 <translation id="3605780360466892872">Üzletember</translation>
 <translation id="3609277884604412258">Gyorskeresés</translation>
 <translation id="3610241585790874201">Nem menthet adatokat az eszközre</translation>
@@ -3627,7 +3627,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4244238649050961491">További érintőceruza-alkalmazások keresése</translation>
 <translation id="4246980464509998944">További megjegyzések:</translation>
 <translation id="424726838611654458">Megnyitás mindig az Adobe Readerben</translation>
-<translation id="4247901771970415646">Nem lehet vele szinkronizálni: <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Védje meg jelszavait az adatvédelmi incidensektől és más biztonsági problémáktól</translation>
 <translation id="4249248555939881673">Várakozás a hálózati kapcsolatra...</translation>
 <translation id="4249373718504745892">Az oldal nem férhet hozzá az Ön kamerájához és mikrofonjához.</translation>
@@ -3848,6 +3847,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4441147046941420429">A folytatáshoz távolítsa el a biztonsági kulcsot az eszközből, majd helyezze vissza, és érintse meg.</translation>
 <translation id="444134486829715816">Részletes nézet...</translation>
 <translation id="4441928470323187829">A rendszergazda tűzte ki</translation>
+<translation id="4442863809158514979">Internetes engedélyek megtekintése</translation>
 <translation id="4443536555189480885">&amp;Súgó</translation>
 <translation id="4444304522807523469">USB-kapcsolaton vagy a helyi hálózaton keresztül csatlakoztatott szkennerek elérése</translation>
 <translation id="4444512841222467874">Ha nem szabadít fel tárhelyet, előfordulhat, hogy a rendszer automatikusan eltávolít bizonyos felhasználókat és adatokat.</translation>
@@ -4847,6 +4847,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5382591305415226340">Támogatott linkek kezelése</translation>
 <translation id="5383377866517186886">A kamera ki van kapcsolva a Mac Rendszerbeállításokban</translation>
 <translation id="5383740867328871413">Név nélküli csoport – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (azonosító: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">A vállalati házirend módosult. A Kísérletek gomb bekerült az eszköztárba. A gombra kattintva megnyithatja a párbeszédpanelt a kísérletek engedélyezéséhez.</translation>
 <translation id="5388885445722491159">Párosítva</translation>
 <translation id="5390112241331447203">A system_logs.txt fájl is kerüljön be a visszajelzési jelentésekbe.</translation>
@@ -5061,6 +5062,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5578059481725149024">Automatikus bejelentkezés</translation>
 <translation id="5581134892342029705">Elkészült a következő nyelvre való fordítás: <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Microsoft Windows - hardver-illesztőprogram ellenőrzése</translation>
+<translation id="5581876958763461074">Minden jegyzet</translation>
 <translation id="5581972110672966454">Nem sikerült csatlakoztatni az eszközt a domainhez. Próbálja újra, illetve forduljon az eszköz tulajdonosához vagy rendszergazdájához. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Főmenü</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5712,7 +5714,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="617213288191670920">Nincsenek hozzáadva nyelvek</translation>
 <translation id="6173623053897475761">Írja be újra a PIN-kódját</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
-<translation id="6176043333338857209">A Bluetooth ideiglenesen bekapcsolódik, hogy kommunikálhasson a biztonsági hardverkulccsal</translation>
 <translation id="6178664161104547336">Tanúsítvány kiválasztása</translation>
 <translation id="6178682841350631965">Bejelentkezési adatai frissültek</translation>
 <translation id="6180510783007738939">Vonal eszköz</translation>
@@ -7479,6 +7480,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="779308894558717334">Világoszöld</translation>
 <translation id="7793098747275782155">Sötétkék</translation>
 <translation id="7797571222998226653">Ki</translation>
+<translation id="7798504574384119986">Internetes engedélyek megtekintése</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> automatikusan letiltva</translation>
 <translation id="7800518121066352902">Forgatás &amp;balra</translation>
 <translation id="7801679634091975683">Az itt végrehajtott módosítások csak a Lacros Chrome böngészőt érintik. A Chrome böngésző beállításainak módosításához a Chrome böngészőt nyissa meg, majd lépjen a beállításokra.</translation>

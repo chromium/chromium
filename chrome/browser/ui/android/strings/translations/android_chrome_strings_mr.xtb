@@ -391,6 +391,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> हे Chrome मध्ये उघडेल. पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व ChromeOS च्या अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता. <ph name="BEGIN_LINK3" />गोपनीयता धोरण<ph name="END_LINK3" /> देखील लागू होते.</translation>
 <translation id="3091010850649238832">क्लिपबोर्डवरील आशय दाखवा</translation>
 <translation id="3098745985164956033">तुमच्यासाठी वर्णनांमध्ये सुधारणा करण्याकरिता काही इमेज Google कडे पाठवल्या जातात</translation>
+<translation id="3104179992611025423">तुमचा ब्राउझर तुमचे पालक व्यवस्थापित करतात</translation>
 <translation id="3114507951000454849">आजच्या बातम्या वाचा <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">यासह लिंक केलेले</translation>
 <translation id="3123734510202723619">घोषणा</translation>
@@ -400,6 +401,7 @@
 <translation id="3157931365184549694">पुनर्संचयित करा</translation>
 <translation id="3166827708714933426">टॅब आणि विंडो शॉर्टकट</translation>
 <translation id="316694332262407393">येथे Chrome आधीपासून रन होत आहे.</translation>
+<translation id="3167258285411721858">तुम्ही <ph name="HOST_NAME" /> साठी मोबाइल साइटची विनंती करू शकता</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">जाहिरात मापन</translation>
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
@@ -433,6 +435,7 @@
 <translation id="3297344142967351106">व्हॉइस साहाय्य</translation>
 <translation id="3303414029551471755">आशय डाउनलोड करणे सुरू ठेवायचे?</translation>
 <translation id="3305795716056605962">आणखी पर्याय बटणावरून पेज भाषांतरित करा</translation>
+<translation id="3319664549618064419">या साइटच्या आणखी चांगल्या दृश्यासाठी डेस्कटॉप साइटवर स्विच करा</translation>
 <translation id="3334729583274622784">फाइल एक्स्टेंशन बदलायचे आहे का?</translation>
 <translation id="3341262203274374114">अनफॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="3359667936385849800">तुमचा सध्याचा सेवा पुरवठादार वापरा</translation>
@@ -624,7 +627,6 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> टॅब बंद करा</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ला बुकमार्क केले</translation>
 <translation id="4461614516424362539">तुम्ही दुसरे डिव्हाइस QR कोडसह लिंक केल्यास, ते हा फोन सिक्युरिटी की म्हणून वापरू शकते. तुम्ही ते काढून टाकल्यास, तुम्हाला ते पुन्हा लिंक करण्यासाठी QR कोड स्कॅन करावा लागेल.</translation>
-<translation id="4479839115899251637">वाचन सूचीमधून हटवा</translation>
 <translation id="4479972344484327217">Chrome साठी <ph name="MODULE" /> इंस्टॉल करत आहे…</translation>
 <translation id="4484496141267039529">कनेक्शन नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="4487967297491345095">Chrome चा सर्व ॲप डेटा कायमचा हटवला जाईल. यामध्ये सर्व फाइल, सेटिंग्ज, खाती, डेटाबेस, इ. चा समावेश होतो.</translation>
@@ -1466,6 +1468,7 @@
 <translation id="8849001918648564819">लपवलेली</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, टॅब</translation>
 <translation id="8854223127042600341">तुमच्या ऑफलाइन फाइल पहा</translation>
+<translation id="885480114717186641">तुम्ही <ph name="HOST_NAME" /> साठी डेस्कटॉप साइटची विनंती करू शकता</translation>
 <translation id="8856607253650333758">वर्णने मिळवा</translation>
 <translation id="8856931513242997049">सूचना परवानगी फ्लो बंद केला</translation>
 <translation id="8873817150012960745">सुरू करण्यासाठी येथे टॅप करा</translation>
@@ -1486,7 +1489,6 @@
 <translation id="8955719471735800169">शीर्षस्थानाकडे परत जा</translation>
 <translation id="8964479563882643397">नवीन गुप्त टॅब उघडण्यासाठी, मेनू उघडा</translation>
 <translation id="8965591936373831584">प्रलंबित</translation>
-<translation id="8967427617812342790">वाचन सूचीमध्ये जोडा</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त आणि आणखी <ph name="TAB_COUNT_ONE" /> टॅब बंद केला जाईल}other{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त आणि आणखी <ph name="TAB_COUNT_MANY" /> टॅब बंद केले जातील}}</translation>
 <translation id="8970887620466824814">काहीतरी चूक झाली.</translation>
 <translation id="8972098258593396643">डीफॉल्ट फोल्डरमध्ये डाउनलोड करायचे?</translation>

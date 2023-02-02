@@ -3,6 +3,7 @@
 <translationbundle lang="sr">
 <translation id="1143896152279775643">Лозика се чува у Google менаџеру лозинки за <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Помозите нам да побољшамо Chrome-ове функције и учинак</translation>
+<translation id="1352919863522755794">Google менаџер лозинки није успео да вам провери лозинке. Проверите интернет везу.</translation>
 <translation id="1462727070346936664">Пријавите се да бисте искористили Chrome на најбољи начин.</translation>
 <translation id="1479202195792305274">Chrome може да вам проверава лозинке када се пријавите помоћу Google налога.</translation>
 <translation id="1493827051843127077">Подесите Chrome као подразумевану апликацију за синхронизовање картица, лозинки и информација о плаћању на свим уређајима</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Да бисте се одјавили са Google налога на свим веб-сајтовима, <ph name="BEGIN_LINK" />одјавите се из Chrome-а<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome не може да тражи ажурирања. Пробајте поново касније.</translation>
 <translation id="2732745070297234559">Chrome није успео да провери све лозинке. Пробајте поново сутра.</translation>
+<translation id="2767464022270041271">Нема сачуваних лозинки. Google менаџер лозинки може да вам проверава лозинке када их сачувате.</translation>
 <translation id="2869959624320573933">Пријавите се у Chrome</translation>
 <translation id="2957447865124070833">Изаберите <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Одјављујете се са налога којим управља <ph name="SIGNOUT_MANAGED_DOMAIN" />, што ће избрисати Chrome податке са овог уређаја. Подаци ће остати на Google налогу.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome није успео да провери све лозинке. Пробајте поново сутра или <ph name="BEGIN_LINK" />проверите лозинке на Google налогу.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">Chrome шаље Google-у податке о коришћењу и отказивању ради побољшања апликације. <ph name="BEGIN_LINK" />Управљајте<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Није подржано у верзији Chrome бета</translation>
+<translation id="4840404732697892756">Google менаџер лозинки може да вам проверава лозинке када се пријавите помоћу Google налога.</translation>
 <translation id="5030102366287574140">Chrome може да вас штити од упада у податке, небезбедних веб-сајтова и других ствари.</translation>
 <translation id="5108659628347594808">Побољшајте Chrome</translation>
 <translation id="5119391094379141756">Изаберите Chrome</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome повремено упоређује ваше лозинке са листама које су објављене онлајн. Док то ради, ваше лозинке и корисничка имена су шифровани, па нико не може да их прочита, укључујући Google.</translation>
 <translation id="5639704535586432836">Отворите Подешавања &gt; Приватност &gt; Камера &gt; Google Chrome и укључите камеру.</translation>
 <translation id="5642200033778930880">Google Chrome не може да користи камеру у режиму подељеног приказа</translation>
+<translation id="5661521615548540542">Google менаџер лозинки није успео да провери све лозинке. Пробајте поново касније.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Офлајн сте. Chrome не може да тражи ажурирања.</translation>
 <translation id="5716154293141027663">Отвара Chrome сваки пут када додирнете линкове у другим апликацијама</translation>
@@ -118,9 +122,11 @@
   2. Додирните Подразумевана апликација за прегледање
   3. Изаберите Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google менаџер лозинки није успео да провери све лозинке. Пробајте поново сутра или <ph name="BEGIN_LINK" />проверите лозинке на Google налогу.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Останите безбедни уз Google Chrome</translation>
 <translation id="8772179140489533211">Приказује упите за пријављивање у Chrome.</translation>
 <translation id="8788269841521769222">Не морате да запамтите ову лозинку. Чува се у Google менаџеру лозинки за <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Google менаџер лозинки није успео да провери све лозинке. Пробајте поново сутра.</translation>
 <translation id="8897749957032330183">Лозинке се чувају у Google менаџеру лозинки на овом уређају.</translation>
 <translation id="8969290730818637510">Када је ово укључено:
 <ph name="BEGIN_INDENT" />  • Помозите да побољшамо Chrome за људе који га користе као ви.<ph name="END_INDENT" />

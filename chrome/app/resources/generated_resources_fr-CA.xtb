@@ -106,7 +106,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1085697365578766383">Erreur lors du démarrage de la machine virtuelle. Veuillez réessayer.</translation>
 <translation id="1087965115100412394">Ne pas autoriser les sites à se connecter à des appareils MIDI</translation>
 <translation id="1088659085457112967">Activer le mode Lecture</translation>
-<translation id="1089407731410758060">Changer le thème</translation>
 <translation id="1090126737595388931">Aucune application ne fonctionne en arrière-plan</translation>
 <translation id="1090541560108055381">Avant de procéder à l'association, assurez-vous que ce code est le même sur les deux appareils</translation>
 <translation id="1091767800771861448">Appuyez sur ÉCHAP pour ne pas faire la mise à jour (versions non officielles uniquement).</translation>
@@ -548,6 +547,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1495677929897281669">Retour à l'onglet</translation>
 <translation id="1500297251995790841">Appareil inconnu [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">En savoir plus sur les applications Chrome non prises en charge</translation>
+<translation id="1501480321619201731">Supprimer le groupe</translation>
 <translation id="1503392482221435031">Envoie automatiquement des statistiques d'utilisation à Google. Vous pouvez activer ou désactiver les rapports de plantage dans les paramètres de votre appareil.</translation>
 <translation id="150411034776756821">Supprimer <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Sous Windows, les dossiers partagés sont accessibles ici : <ph name="BASE_DIR" />.</translation>
@@ -2099,7 +2099,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2835547721736623118">Service de reconnaissance vocale</translation>
 <translation id="2836232638504556905">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre nom, votre adresse de courriel et votre photo de profil avec ce site. Consultez la <ph name="BEGIN_LINK" />politique de confidentialité<ph name="END_LINK" /> de ce site.</translation>
 <translation id="2836269494620652131">Plantage</translation>
-<translation id="2836635946302913370">L'administrateur a désactivé la connexion avec ce nom d'utilisateur.</translation>
 <translation id="283669119850230892">Pour utiliser le réseau <ph name="NETWORK_ID" />, terminez d'abord la connexion à Internet ci-dessous.</translation>
 <translation id="2838379631617906747">Installation en cours…</translation>
 <translation id="2839032553903800133">Notifications bloquées</translation>
@@ -2908,6 +2907,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3602870520245633055">Imprimer et numériser</translation>
 <translation id="3603622770190368340">Obtenir un certificat réseau</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} compte utilisant le même mot de passe}one{{COUNT} comptes utilisant le même mot de passe}other{{COUNT} comptes utilisant le même mot de passe}}</translation>
 <translation id="3605780360466892872">Businessman</translation>
 <translation id="3609277884604412258">Recherche rapide</translation>
 <translation id="3610241585790874201">Non autorisé à enregistrer des données sur votre appareil</translation>
@@ -3616,7 +3616,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4244238649050961491">Rechercher d'autres applications de stylet</translation>
 <translation id="4246980464509998944">Autres commentaires :</translation>
 <translation id="424726838611654458">Toujours ouvrir dans Adobe Reader</translation>
-<translation id="4247901771970415646">Impossible de synchroniser avec <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Protégez vos mots de passe contre les violations de données et d'autres problèmes de sécurité</translation>
 <translation id="4249248555939881673">En attente de la connexion réseau...</translation>
 <translation id="4249373718504745892">L'accès à votre caméra et à votre microphone est bloqué pour cette page.</translation>
@@ -3837,6 +3836,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4441147046941420429">Pour continuer, retirez votre clé de sécurité de votre appareil, puis réinsérez-la et touchez-la</translation>
 <translation id="444134486829715816">Développer...</translation>
 <translation id="4441928470323187829">Épinglée par votre administrateur</translation>
+<translation id="4442863809158514979">Afficher les autorisations Web</translation>
 <translation id="4443536555189480885">A&amp;ide</translation>
 <translation id="4444304522807523469">Accéder aux analyseurs de documents joints par USB ou sur le réseau local</translation>
 <translation id="4444512841222467874">Si vous ne libérez pas d'espace, des utilisateurs et des données peuvent être supprimés automatiquement.</translation>
@@ -4834,6 +4834,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5382591305415226340">Gérer des liens pris en charge</translation>
 <translation id="5383377866517186886">L'appareil photo est désactivé dans les Préférences Système du Mac</translation>
 <translation id="5383740867328871413">Groupe sans nom : <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (Identifiant : <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">La politique de l'entreprise a changé. Le bouton des fonctionnalités expérimentales a été ajouté à la barre d'outils. Cliquez sur ce bouton pour ouvrir une boîte de dialogue permettant d'activer des fonctionnalités expérimentales.</translation>
 <translation id="5388885445722491159">Associé</translation>
 <translation id="5390112241331447203">Inclure le fichier system_logs.txt envoyé dans les rapports de commentaires.</translation>
@@ -5048,6 +5049,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5578059481725149024">Connexion automatique</translation>
 <translation id="5581134892342029705">Traduction dans la langue suivante terminée : <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Vérification de pilote matériel Microsoft Windows</translation>
+<translation id="5581876958763461074">Toutes les notes</translation>
 <translation id="5581972110672966454">Impossible d'associer l'appareil au domaine. Veuillez réessayer ou communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Menu principal</translation>
 <translation id="5583640892426849032">Effacement arrière</translation>
@@ -5698,7 +5700,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="617213288191670920">Aucune langue ajoutée</translation>
 <translation id="6173623053897475761">Entrer à nouveau votre NIP</translation>
 <translation id="6175314957787328458">GUID de domaine Microsoft</translation>
-<translation id="6176043333338857209">Le Bluetooth sera activé temporairement pour communiquer avec votre clé de sécurité</translation>
 <translation id="6178664161104547336">Sélectionner un certificat</translation>
 <translation id="6178682841350631965">Vos données de connexion ont été mises à jour</translation>
 <translation id="6180510783007738939">Ligne</translation>
@@ -7467,6 +7468,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="779308894558717334">Vert clair</translation>
 <translation id="7793098747275782155">Bleu foncé</translation>
 <translation id="7797571222998226653">Désactivé</translation>
+<translation id="7798504574384119986">Afficher les autorisations Web</translation>
 <translation id="7798844538707273832">Bloqué automatiquement <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">Rotation dans le sens c&amp;ontraire des aiguilles d'une montre</translation>
 <translation id="7801679634091975683">Les modifications que vous apportez ici s'appliquent uniquement au navigateur Chrome utilisant l'architecture Lacros. Pour modifier les paramètres de votre navigateur Chrome, ouvrez celui-ci et accédez aux paramètres.</translation>

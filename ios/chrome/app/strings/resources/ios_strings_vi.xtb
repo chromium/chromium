@@ -596,7 +596,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5520466080178053306">Nhấn vào Trình quản lý mật khẩu rồi nhấn vào Thêm</translation>
 <translation id="5525095647255982834">Để gửi thẻ này tới một thiết bị khác, hãy đăng nhập vào Chrome trên thiết bị đó.</translation>
 <translation id="5525269841082836315">Tạo cụm mật khẩu</translation>
-<translation id="5530084793407600786">Tìm kiếm trong hình ảnh bằng Google</translation>
 <translation id="5542540507657872337">Đã tìm thấy <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Tính năng tiếp nối cho phép bạn bắt đầu duyệt web trên thiết bị này và sau đó dễ dàng tiếp tục trên máy Mac của mình. Trang web hiện đang mở sẽ xuất hiện trong thanh Dock trên máy Mac của bạn.
 
@@ -709,6 +708,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="6284652193729350524">Đề xuất dịch <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Đã ngừng theo dõi <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Để bật tính năng Duyệt web an toàn, hãy mở <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" /> rồi nhấn vào Duyệt web an toàn.</translation>
+<translation id="6320780930074869063">Khi chế độ này bật, mật khẩu sẽ được lưu vào <ph name="ACCOUNT" />. Khi chế độ này tắt, mật khẩu chỉ được lưu trên thiết bị này.</translation>
 <translation id="6321526113093607004">Thêm vào Dấu trang</translation>
 <translation id="6324669097367352121">Cài đặt đăng nhập</translation>
 <translation id="6337234675334993532">Mã hóa</translation>

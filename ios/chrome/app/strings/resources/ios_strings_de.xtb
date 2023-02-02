@@ -596,7 +596,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5520466080178053306">Auf „Passwortmanager“ und dann auf „Hinzufügen“ tippen</translation>
 <translation id="5525095647255982834">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich dort in Chrome an.</translation>
 <translation id="5525269841082836315">Passphrase erstellen</translation>
-<translation id="5530084793407600786">Mit Google im Bild suchen</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> gefunden</translation>
 <translation id="5548760955356983418">Mit Handoff kannst du auf diesem Gerät auf einer Website stöbern und dann einfach auf deinem Mac an derselben Stelle weitermachen. Die aktuell geöffnete Website wird im Dock deines Macs angezeigt.
 
@@ -1113,7 +1112,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="948048872540558976">Neuen Tab erstellen</translation>
 <translation id="952704832371081537">Abbrechen</translation>
 <translation id="953008885340860025">Von Chrome abgemeldet</translation>
-<translation id="959066944189734975">Du folgst „<ph name="CHANNEL_NAME" />“</translation>
+<translation id="959066944189734975">Du folgst <ph name="CHANNEL_NAME" /></translation>
 <translation id="981498610235328462">Deine Organisation lässt die Anmeldung nur mit bestimmten Konten zu. Unzulässige Konten sind ausgeblendet.</translation>
 <translation id="984509647832111802">Synchronisierung funktioniert nicht.</translation>
 <translation id="988141524645182168">Andere Geräte</translation>

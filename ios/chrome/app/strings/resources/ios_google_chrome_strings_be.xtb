@@ -3,6 +3,7 @@
 <translationbundle lang="be">
 <translation id="1143896152279775643">Пароль будзе захаваны ў Менеджары пароляў Google уліковага запісу <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Дапамагаць палепшыць функцыі і прадукцыйнасць Chrome</translation>
+<translation id="1352919863522755794">Менеджару пароляў Google не ўдалося праверыць вашы паролі. Упэўніцеся, што прылада падключана да інтэрнэту.</translation>
 <translation id="1462727070346936664">Увайдзіце ва ўліковы запіс, каб карыстацца ўсімі магчымасцямі Chrome.</translation>
 <translation id="1479202195792305274">Chrome зможа праверыць паролі толькі пасля таго, як вы ўвойдзеце ва Уліковы запіс Google.</translation>
 <translation id="1493827051843127077">Зрабіце Chrome стандартным браўзерам, каб сінхранізаваць свае ўкладкі, паролі і плацежную інфармацыю на ўсіх вашых прыладах</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Каб выйсці з Уліковага запісу Google на ўсіх вэб-сайтах, <ph name="BEGIN_LINK" />выйдзіце з Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Браўзеру Chrome не ўдалося праверыць наяўнасць абнаўленняў. Паўтарыце спробу пазней.</translation>
 <translation id="2732745070297234559">Браўзеру Chrome не ўдалося праверыць усе паролі. Паўтарыце спробу заўтра.</translation>
+<translation id="2767464022270041271">Няма захаваных пароляў. Менеджар пароляў Google можа правяраць толькі захаваныя паролі.</translation>
 <translation id="2869959624320573933">Увайдзіце ў Chrome</translation>
 <translation id="2957447865124070833">Выберыце <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Даныя Chrome будуць выдалены з гэтай прылады, паколькі вы выходзіце з уліковага запісу, якім кіруе <ph name="SIGNOUT_MANAGED_DOMAIN" />. Вашы даныя застануцца ва Уліковым запісе Google.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Браўзеру Chrome не ўдалося праверыць усе паролі. Паўтарыце спробу заўтра або <ph name="BEGIN_LINK" />праверце паролі ва Уліковым запісе Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Chrome адпраўляе ў Google даныя пра збоі і выкарыстанне, якія дапамогуць палепшыць праграму. <ph name="BEGIN_LINK" />Кіраваць<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Не падтрымліваецца ў Chrome Beta</translation>
+<translation id="4840404732697892756">Каб Менеджар пароляў Google змог правяраць паролі, вам неабходна ўвайсці ва Уліковы запіс Google.</translation>
 <translation id="5030102366287574140">Chrome дапамагае прадухіляць праблемы, звязаныя з уцечкай даных, наведваннем небяспечных вэб-сайтаў і г. д.</translation>
 <translation id="5108659628347594808">Зрабіце браўзер Chrome лепшым</translation>
 <translation id="5119391094379141756">Выберыце Chrome.</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome перыядычна звярае вашы паролі з паролямі са спісаў, апублікаваных у інтэрнэце. Пры гэтым вашы паролі і імёны карыстальніка зашыфраваны – прачытаць іх не можа ніхто, нават Google.</translation>
 <translation id="5639704535586432836">Адкрыйце меню "Налады &gt; Прыватнасць &gt; Камера &gt; Google Chrome" і ўключыце камеру.</translation>
 <translation id="5642200033778930880">Google Chrome не можа выкарыстоўваць камеру ў рэжыме падзеленага экрана</translation>
+<translation id="5661521615548540542">Менеджару пароляў Google не ўдалося праверыць усе паролі. Паўтарыце спробу пазней.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Няма падключэння да сеткі. Chrome не можа праверыць наяўнасць абнаўленняў</translation>
 <translation id="5716154293141027663">Адкрывайце спасылкі ў браўзеры Chrome, націскаючы на іх у іншых праграмах</translation>
@@ -118,9 +122,11 @@
   2. Націсніце Default Browser App.
   3. Выберыце Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Менеджару пароляў Google не ўдалося праверыць усе паролі. Паўтарыце спробу заўтра або <ph name="BEGIN_LINK" />праверце паролі ва Уліковым запісе Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Падбайце аб бяспецы сваіх даных, выкарыстоўваючы Google Chrome</translation>
 <translation id="8772179140489533211">Будуць паказвацца запыты ўваходу ў Chrome.</translation>
 <translation id="8788269841521769222">Вам не трэба запамінаць гэты пароль. Ён будзе захаваны ў Менеджары пароляў Google уліковага запісу <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Менеджару пароляў Google не ўдалося праверыць усе паролі. Паўтарыце спробу заўтра.</translation>
 <translation id="8897749957032330183">Паролі захоўваюцца ў Менеджары пароляў Google на гэтай прыладзе.</translation>
 <translation id="8969290730818637510">Калі параметр уключаны:
 <ph name="BEGIN_INDENT" />  • Вы дапамагаеце палепшыць браўзер Chrome для іншых яго карыстальнікаў.<ph name="END_INDENT" />

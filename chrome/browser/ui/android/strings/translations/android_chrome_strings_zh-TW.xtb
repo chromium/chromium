@@ -436,6 +436,7 @@
 <translation id="3297344142967351106">語音協助</translation>
 <translation id="3303414029551471755">繼續下載這項內容？</translation>
 <translation id="3305795716056605962">透過「更多選項」按鈕翻譯頁面</translation>
+<translation id="3319664549618064419">為享有更好的瀏覽體驗，建議將這個網站切換成電腦版網站模式</translation>
 <translation id="3334729583274622784">是否要變更副檔名？</translation>
 <translation id="3341262203274374114">無法取消追蹤，發生錯誤。</translation>
 <translation id="3359667936385849800">使用目前的服務供應商</translation>
@@ -625,7 +626,6 @@
 <translation id="4452411734226507615">關閉 [<ph name="TAB_TITLE" />] 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入「<ph name="FOLDER_NAME" />」</translation>
 <translation id="4461614516424362539">將另一部裝置連結 QR 圖碼後，該裝置就能將手機做為安全金鑰。如果移除裝置，就必須掃描 QR 圖碼才能再次連結裝置。</translation>
-<translation id="4479839115899251637">從閱讀清單中刪除</translation>
 <translation id="4479972344484327217">正在為 Chrome 安裝 <ph name="MODULE" />…</translation>
 <translation id="4484496141267039529">沒有網路連線，請稍後再試。</translation>
 <translation id="4487967297491345095">Chrome 的應用程式資料會全部遭到永久刪除，包括所有檔案、設定、帳戶、資料庫等等。</translation>
@@ -1488,7 +1488,6 @@
 <translation id="8955719471735800169">返回頁首</translation>
 <translation id="8964479563882643397">如要開啟新的無痕分頁，請按一下「選單」圖示</translation>
 <translation id="8965591936373831584">正在等待下載</translation>
-<translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8972098258593396643">要下載至預設資料夾嗎？</translation>

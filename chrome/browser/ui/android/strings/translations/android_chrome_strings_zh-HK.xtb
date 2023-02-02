@@ -391,7 +391,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3072980200212375806">「<ph name="APP_NAME" />」將在 Chrome 中開啟。繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_LINK2" />。須同時受《<ph name="BEGIN_LINK3" />私隱權政策<ph name="END_LINK3" />》約束。</translation>
 <translation id="3091010850649238832">顯示剪貼簿內容</translation>
 <translation id="3098745985164956033">部分圖片會傳送至 Google，以便為您提供更完善的說明</translation>
-<translation id="3104179992611025423">你的瀏覽器是由家長管理</translation>
+<translation id="3104179992611025423">您的瀏覽器由家長管理</translation>
 <translation id="3114507951000454849">閱讀今天的新聞 <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">已連結以下卡：</translation>
 <translation id="3123734510202723619">公告</translation>
@@ -401,7 +401,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3157931365184549694">還原</translation>
 <translation id="3166827708714933426">分頁和視窗快速鍵</translation>
 <translation id="316694332262407393">Chrome 已在此執行中。</translation>
-<translation id="3167258285411721858">你可以要求 <ph name="HOST_NAME" /> 顯示行動版網站</translation>
+<translation id="3167258285411721858">您可向 <ph name="HOST_NAME" /> 要求取得流動網站</translation>
 <translation id="3169472444629675720">探索</translation>
 <translation id="3187472288455401631">廣告評估</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
@@ -435,6 +435,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3297344142967351106">語音助手</translation>
 <translation id="3303414029551471755">繼續下載內容？</translation>
 <translation id="3305795716056605962">透過「更多選項」掣翻譯頁面</translation>
+<translation id="3319664549618064419">切換至桌面版網站，以取得更佳的預覽效果。</translation>
 <translation id="3334729583274622784">要變更副檔名嗎？</translation>
 <translation id="3341262203274374114">無法取消追蹤，發生錯誤。</translation>
 <translation id="3359667936385849800">使用目前的服務供應商</translation>
@@ -626,7 +627,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4452411734226507615">關閉 <ph name="TAB_TITLE" /> 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入到「<ph name="FOLDER_NAME" />」</translation>
 <translation id="4461614516424362539">將另一部裝置連結 QR 碼後，該裝置就能將手機作為安全密鑰。如果移除裝置，您便需掃瞄 QR 碼才能再次連結裝置。</translation>
-<translation id="4479839115899251637">從閱讀清單中刪除</translation>
 <translation id="4479972344484327217">正在為 Chrome 安裝 <ph name="MODULE" />…</translation>
 <translation id="4484496141267039529">沒有連線，請稍後再試。</translation>
 <translation id="4487967297491345095">所有 Chrome 的應用程式資料將會永久刪除，包括所有檔案、設定、帳戶、資料庫等。</translation>
@@ -1468,7 +1468,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8849001918648564819">隱藏</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" /> (分頁)</translation>
 <translation id="8854223127042600341">查看離線檔案</translation>
-<translation id="885480114717186641">你可以要求 <ph name="HOST_NAME" /> 顯示電腦版網站</translation>
+<translation id="885480114717186641">您可向 <ph name="HOST_NAME" /> 要求取得桌面版網站</translation>
 <translation id="8856607253650333758">取得說明</translation>
 <translation id="8856931513242997049">閂咗通知權限流程</translation>
 <translation id="8873817150012960745">輕按此處即可開始搜尋</translation>
@@ -1489,7 +1489,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8955719471735800169">返回頁首</translation>
 <translation id="8964479563882643397">如要開啟新的無痕式分頁，請按一下「選單」圖示</translation>
 <translation id="8965591936373831584">正在等待下載</translation>
-<translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕式分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕式分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8972098258593396643">要下載至預設資料夾嗎？</translation>

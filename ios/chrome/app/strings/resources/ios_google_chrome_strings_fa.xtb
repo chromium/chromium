@@ -3,6 +3,7 @@
 <translationbundle lang="fa">
 <translation id="1143896152279775643">‏گذرواژه‌تان در «مدیر گذرواژه Google» برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
 <translation id="1282031177488366470">‏کمک به بهبود ویژگی‌ها و عملکرد Chrome</translation>
+<translation id="1352919863522755794">‏«مدیر گذرواژه Google» نتوانست گذرواژه‌هایتان را بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
 <translation id="1462727070346936664">‏برای اینکه بیشترین بهره را از Chrome ببرید، به سیستم وارد شوید.</translation>
 <translation id="1479202195792305274">‏Chrome زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که با «حساب Google» خود به سیستم وارد شوید.</translation>
 <translation id="1493827051843127077">‏برای همگام‌سازی برگه‌ها، گذرواژه‌ها، و اطلاعات پرداخت در همه دستگاه‌ها، Chrome را به‌عنوان پیش‌فرض تنظیم کنید</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">‏برای خارج شدن از سیستم «حساب Google» خود در همه وب‌سایت‌ها، <ph name="BEGIN_LINK" />از سیستم Chrome خارج شوید<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">‏Chrome موفق نشد به‌روزرسانی‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="2732745070297234559">‏Chrome نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید.</translation>
+<translation id="2767464022270041271">‏گذرواژه‌ای ذخیره نشده است. اگر گذرواژه‌هایتان را ذخیره کنید، «مدیر گذرواژه Google» می‌تواند آن‌ها را بررسی کند.</translation>
 <translation id="2869959624320573933">‏ورود به سیستم Chrome</translation>
 <translation id="2957447865124070833">‏<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> را انتخاب کنید</translation>
 <translation id="3030414234702425231">‏ازآنجایی‌که درحال خارج شدن از حسابی هستید که <ph name="SIGNOUT_MANAGED_DOMAIN" /> آن را مدیریت می‌کند، داده‌های Chrome شما از این دستگاه حذف خواهد شد. داده‌هایتان در حساب Google شما باقی می‌ماند.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">‏Chrome نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید یا <ph name="BEGIN_LINK" />گذرواژه‌ها را در «حساب Google» خود بررسی کنید<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">‏برای کمک به بهبود برنامه، Chrome داده‌های استفاده و ازکارافتادگی را به Google ارسال می‌کند. <ph name="BEGIN_LINK" />مدیریت<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">‏در «Chrome بتا» پشتیبانی نمی‌شود</translation>
+<translation id="4840404732697892756">‏وقتی با «حساب Google» خود به سیستم وارد شوید، «مدیر گذرواژه Google» می‌تواند گذرواژه‌هایتان را بررسی کند.</translation>
 <translation id="5030102366287574140">‏Chrome می‌تواند به محافظت از شما دربرابر نقض داده، وب‌سایت‌های ناامن، و موارد دیگر کمک کند.</translation>
 <translation id="5108659628347594808">‏بهتر کردن Chrome</translation>
 <translation id="5119391094379141756">‏Chrome را انتخاب کنید</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">‏Chrome به‌طور دوره‌ای گذرواژه‌هایتان را با فهرست‌هایی که به‌صورت آنلاین منتشر می‌شود مقایسه می‌کند. هنگام انجام این کار، نام‌های کاربری و گذرواژه‌های شما رمزگذاری می‌شود تا توسط اشخاص دیگر، ازجمله Google خوانده نشود.</translation>
 <translation id="5639704535586432836">‏Settings (تنظیمات) &gt; Privacy (حریم خصوصی) &gt; Camera (دوربین) &gt; Google Chrome را باز کنید و دوربین را روشن کنید.</translation>
 <translation id="5642200033778930880">‏Google Chrome نمی‌تواند از دوربین درحالت «نمای تقسیم‌شده» استفاده کند</translation>
+<translation id="5661521615548540542">‏«مدیر گذرواژه Google» نتوانست همه گذرواژه‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">‏آفلاین هستید، Chrome نمی‌تواند به‌روزرسانی‌ها را بررسی کند.</translation>
 <translation id="5716154293141027663">‏هرزمان در برنامه‌های دیگر روی پیوندها ضربه بزنید، Chrome باز می‌شود</translation>
@@ -118,9 +122,11 @@
   ۲. روی «برنامه مرورگر پیش‌فرض» ضربه بزنید
   ۳. Chrome را باز کنید.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">‏«مدیر گذرواژه Google» نتوانست همه گذرواژه‌ها را بررسی کند. فردا دوباره امتحان کنید یا <ph name="BEGIN_LINK" />گذرواژه‌ها را در «حساب Google» خود بررسی کنید.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">‏با Google Chrome ایمن بمانید</translation>
 <translation id="8772179140489533211">‏برای ورود به سیستم Chrome درخواست نشان می‌دهد.</translation>
 <translation id="8788269841521769222">‏لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در «مدیر گذرواژه Google» برای <ph name="EMAIL" /> ذخیره خواهد شد</translation>
+<translation id="8857676124663337448">‏«مدیر گذرواژه Google» نتوانست همه گذرواژه‌ها را بررسی کند. فردا دوباره امتحان کنید.</translation>
 <translation id="8897749957032330183">‏گذرواژه‌ها در «مدیر گذرواژه Google» در این دستگاه ذخیره می‌شوند.</translation>
 <translation id="8969290730818637510">‏وقتی روشن است:
 <ph name="BEGIN_INDENT" />  • به بهتر شدن Chrome برای همه کسانی که به‌شیوه‌ای مشابه شما از آن استفاده می‌کنند کمک می‌کند.<ph name="END_INDENT" />

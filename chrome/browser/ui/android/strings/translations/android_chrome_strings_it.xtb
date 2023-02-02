@@ -627,7 +627,6 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="4452411734226507615">Chiudi la scheda <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Preferito aggiunto in: <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Quando colleghi un altro dispositivo con un codice QR, questo può usare il telefono come token di sicurezza. Se lo rimuovi, dovrai scansionare un codice QR per ricollegarlo.</translation>
-<translation id="4479839115899251637">Elimina da Elenco lettura</translation>
 <translation id="4479972344484327217">Installazione di <ph name="MODULE" /> per Chrome…</translation>
 <translation id="4484496141267039529">Nessuna connessione. Riprova più tardi.</translation>
 <translation id="4487967297491345095">Tutti i dati delle app di Chrome saranno eliminati definitivamente. Sono inclusi tutti i file, le impostazioni, gli account, i database e così via.</translation>
@@ -1490,7 +1489,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8955719471735800169">Torna all'inizio</translation>
 <translation id="8964479563882643397">Apri il menu per aprire una nuova scheda di navigazione in incognito</translation>
 <translation id="8965591936373831584">in attesa</translation>
-<translation id="8967427617812342790">Aggiungi all'elenco di lettura</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> scheda in incognito e <ph name="TAB_COUNT_ONE" /> altra scheda verranno chiuse}other{<ph name="INCOGNITO_TAB_COUNT" /> schede in incognito e altre <ph name="TAB_COUNT_MANY" /> schede verranno chiuse}}</translation>
 <translation id="8970887620466824814">C'è stato un problema.</translation>
 <translation id="8972098258593396643">Scaricare nella cartella predefinita?</translation>

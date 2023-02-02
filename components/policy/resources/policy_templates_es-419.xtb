@@ -1022,7 +1022,7 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 <translation id="1964802606569741174">Esta política no tiene efecto en la app de YouTube de Android. Si se debe aplicar el modo de seguridad en YouTube, se debe inhabilitar la instalación de la app de YouTube de Android.</translation>
 <translation id="1964985353230379667">Especifica la configuración sugerida de <ph name="KRB5_CONFIG" /> para los nuevos tickets creados manualmente.
 
-      Si habilitas la política "KerberosUseCustomPrefilledConfig", su valor se aplicará como la configuración sugerida y se mostrará en la sección "Configuración avanzada" del diálogo de autenticación de Kerberos. Si estableces esta política como una string vacía o no la estableces, se borrará la configuración recomendada de <ph name="PRODUCT_OS_NAME" />.
+      Si habilitas la política "KerberosUseCustomPrefilledConfig", su valor se aplicará como la configuración sugerida y se mostrará en la sección "Configuración avanzada" del diálogo de autenticación de Kerberos. Si estableces esta política como una cadena vacía o no la estableces, se borrará la configuración recomendada de <ph name="PRODUCT_OS_NAME" />.
 
       Si inhabilitas la política "KerberosUseCustomPrefilledConfig", no se usará su valor.</translation>
 <translation id="1969212217917526199">Anula las políticas en compilaciones de depuración del host de acceso remoto.
@@ -3684,6 +3684,11 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="445505634382262792">Si estableces la política en 3, los sitios web podrán solicitar acceso de escritura a archivos y directorios en el sistema de archivos del sistema operativo del host. Si la estableces en 2, se rechazará el acceso.
 
       Si no la estableces, los sitios web podrán solicitar acceso, pero los usuarios también podrán cambiar esta configuración.</translation>
+<translation id="4457113781439375078">Esta política dejó de estar disponible.
+
+      Si habilitas la política, los dispositivos inscritos informarán su ubicación periódicamente.
+
+      Si inhabilitas la política o no la estableces, los dispositivos inscritos no informarán su ubicación.</translation>
 <translation id="4463675333222095358">Habilitar la conversión de unidades de Respuestas rápidas</translation>
 <translation id="4464365009416584564">Inhabilitar <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Bloquear cookies de terceros</translation>
@@ -4179,9 +4184,6 @@ también es seguro.</translation>
       para procesar las solicitudes (https://fetch.spec.whatwg.org/#request-keepalive-flag) de keepalive.
 
       El valor predeterminado (0) significa que esta función está inhabilitada.</translation>
-<translation id="4934869540807953882">A partir de M110, se quitará la API no estándar de window.webkitStorageInfo. Esta política vuelve a habilitar la API.
-Si habilitas esta política, la API de window.webkitStorageInfo estará disponible.
-Si inhabilitas esta política o no la estableces, la API de window.webkitStorageInfo no estará disponible.</translation>
 <translation id="4937423591320233496">Inhabilitar el contenido sugerido</translation>
 <translation id="4940810901775798837">Permitir los sitios web no seguros para hacer solicitudes a cualquier extremo de red</translation>
 <translation id="4942096314850617489">Inhabilitar la certificación remota para el usuario</translation>
@@ -5501,6 +5503,27 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6261643884958898336">Enviar la información de identificación de la máquina</translation>
 <translation id="6265892395051519509">Permite el acceso a los sensores en estos sitios</translation>
 <translation id="6266043141694454734">Determina si se usarán Chrome Root Store y el verificador de certificados integrado para verificar los certificados de servidores</translation>
+<translation id="6267130578410325007">Esta política permite el agrupamiento en clústeres de agentes con clave de origen de forma predeterminada.
+
+El encabezado del HTTP Origin-Agent-Cluster controla si un documento está
+aislado en un clúster de agentes con clave de origen o bien en un
+clúster con clave de sitio. Esto tiene repercusiones en la seguridad ya que un clúster de agentes con clave de origen
+permite el aislamiento de documentos por origen. La consecuencia
+visible de esto para el desarrollador es que el descriptor de acceso de document.domain ya no podrá
+establecerse.
+
+El comportamiento predeterminado cuando no se establece un encabezado Origin-Agent-Cluster
+cambia en M111 de clave de sitio a clave de origen.
+
+Si habilitas o no estableces la política, el navegador seguirá la
+nueva configuración predeterminada de esa versión en adelante.
+
+Si la inhabilitas, se revierte este cambio y
+los documentos que no contengan encabezados Origin-Agent-Cluster se asignarán a
+los clústeres de agentes con clave de sitio. Como consecuencia, el descriptor de acceso de document.domain
+podrá establecerse de forma predeterminada. Esto coincide con el comportamiento heredado.
+
+Para obtener más información, consulta https://developer.chrome.com/blog/immutable-document-domain/.</translation>
 <translation id="6270615143812355589">Habilitar la entrada de audio</translation>
 <translation id="6270791075656665237">Inhabilitar QUIC</translation>
 <translation id="6273015149273504999">
@@ -6450,6 +6473,23 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si se establece como obligatoria, los usuarios no podrán cambiarla ni anularla.
 
       Si no la estableces, se ubicará la biblioteca de forma predeterminada en la parte inferior de la pantalla y el usuario podrá cambiar su posición.</translation>
+<translation id="7037853989942016900">Esta política controla la refactorización reciente de las APIs de Graphics3D en el complemento PPAPI.
+
+La migración solo afecta los detalles de implementación internos y no debe
+cambiar ningún comportamiento. Sin embargo, esta política se puede usar en caso de que las aplicaciones PPAPI
+no funcionen como se espera.
+
+Si no estableces la política o la habilitas, el navegador decidirá
+qué implementación se utiliza.
+Si la inhabilitas, el navegador usará la implementación anterior
+hasta que la política venza.
+
+Si tienes que utilizar la política, informa un error en crbug.com en el que expliques tu
+caso de uso. La política está programada para ofrecerse a través de la versión 114 de <ph name="PRODUCT_NAME" />, después de lo cual
+se quitará la implementación anterior.
+
+NOTA: Solo los procesos del renderizado recién iniciado reflejarán los cambios de esta
+política mientras se esté ejecutando el navegador.</translation>
 <translation id="7039815268521168329">Mostrar el flujo de Voice Match de Asistente de Google durante la configuración inicial</translation>
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
 <translation id="7044883996351280650">Controlar el servicio de restablecimiento y copias de seguridad</translation>

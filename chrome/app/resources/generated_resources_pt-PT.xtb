@@ -106,7 +106,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1085697365578766383">Não foi possível iniciar a máquina virtual. Tente novamente.</translation>
 <translation id="1087965115100412394">Não permitir que os sites estabeleçam ligação a dispositivos MIDI</translation>
 <translation id="1088659085457112967">Entrar no modo de leitor</translation>
-<translation id="1089407731410758060">Alterar tema</translation>
 <translation id="1090126737595388931">Não há aplicações em execução em segundo plano</translation>
 <translation id="1090541560108055381">Antes de sincronizar, certifique-se de que este código é o mesmo em ambos os dispositivos</translation>
 <translation id="1091767800771861448">Prima ESCAPE para ignorar (apenas nas compilações não oficiais).</translation>
@@ -547,6 +546,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1495677929897281669">Voltar ao separador</translation>
 <translation id="1500297251995790841">Dispositivo desconhecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Saber mais acerca das Apps do Chrome não suportadas</translation>
+<translation id="1501480321619201731">Eliminar grupo</translation>
 <translation id="1503392482221435031">Envia automaticamente estatísticas de utilização para a Google. Pode ativar ou desativar os relatórios de falhas nas definições do seu dispositivo.</translation>
 <translation id="150411034776756821">Remover <ph name="SITE" /></translation>
 <translation id="1504551620756424144">As pastas partilhadas estão disponíveis no Windows em <ph name="BASE_DIR" />.</translation>
@@ -2097,7 +2097,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2835547721736623118">Serviço de reconhecimento de voz</translation>
 <translation id="2836232638504556905">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site. Consulte a <ph name="BEGIN_LINK" />política de privacidade<ph name="END_LINK" /> deste site.</translation>
 <translation id="2836269494620652131">Falha</translation>
-<translation id="2836635946302913370">O início de sessão com este nome de utilizador foi desativado pelo seu gestor.</translation>
 <translation id="283669119850230892">Para utilizar a rede <ph name="NETWORK_ID" />, conclua primeiro a sua ligação à internet abaixo.</translation>
 <translation id="2838379631617906747">A instalar</translation>
 <translation id="2839032553903800133">Notificações bloqueadas</translation>
@@ -2606,6 +2605,7 @@ Pretende pará-lo?</translation>
 <translation id="3315442055907669208">Entrar no modo de leitor</translation>
 <translation id="3317459757438853210">Frente e verso</translation>
 <translation id="3317678681329786349">Câmara e microfone bloqueados</translation>
+<translation id="3319306431415395200">Traduzir o texto da imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Navegação segura (proteção contra sites perigosos) e outras definições de segurança.</translation>
 <translation id="3323521181261657960">Bónus! Tens mais tempo de utilização</translation>
 <translation id="3323577066981719144">As alterações que efetuar aqui aplicam-se apenas ao navegador Chrome. Para efetuar alterações às definições do navegador Chrome Lacros, abra o navegador Chrome Lacros e aceda às definições.</translation>
@@ -3042,6 +3042,7 @@ Pretende pará-lo?</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Eu e a Google</translation>
 <translation id="3722108462506185496">Não foi possível iniciar o serviço da máquina virtual. Tente mais tarde.</translation>
+<translation id="3722624153992426516">Instrução <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> recebida</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Redes Wi-Fi disponíveis</translation>
 <translation id="3727187387656390258">Inspeccionar pop-up</translation>
@@ -3398,6 +3399,7 @@ Pretende pará-lo?</translation>
 <translation id="402211067068791756">Esta ação irá limpar <ph name="TOTAL_USAGE" /> de dados armazenados pelos sites apresentados</translation>
 <translation id="4022426551683927403">&amp;Adicionar ao Dicionário</translation>
 <translation id="4025039777635956441">Desativar o som do site selecionado</translation>
+<translation id="402707738228916911">Instrução <ph name="AUTHORIZE_INSTRUCTION_NAME" /> recebida</translation>
 <translation id="4027958407426528157">Abra Websites em apps instaladas no seu dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Adicionar métodos de introdução</translation>
 <translation id="4029556917477724407">Voltar à página <ph name="PAGE_TITLE" /></translation>
@@ -3616,7 +3618,6 @@ Pretende pará-lo?</translation>
 <translation id="4244238649050961491">Encontrar mais aplicações para a caneta stylus</translation>
 <translation id="4246980464509998944">Comentários adicionais:</translation>
 <translation id="424726838611654458">Sempre aberto no Adobe Reader</translation>
-<translation id="4247901771970415646">Não é possível sincronizar com <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Mantenha as suas palavras-passe protegidas contra violações de dados e outros problemas de segurança.</translation>
 <translation id="4249248555939881673">A aguardar ligação à rede...</translation>
 <translation id="4249373718504745892">Esta página foi impedida de aceder à sua câmara e microfone.</translation>
@@ -4835,6 +4836,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5382591305415226340">Gerir links suportados</translation>
 <translation id="5383377866517186886">A câmara está desligada nas Preferências do Sistema no Mac</translation>
 <translation id="5383740867328871413">Grupo sem nome – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">A política empresarial foi alterada. O botão Experiências foi adicionado à barra de ferramentas. Clique no botão para abrir uma caixa de diálogo para ativar experiências.</translation>
 <translation id="5388885445722491159">Emparelhado</translation>
 <translation id="5390112241331447203">Inclua o ficheiro system_logs.txt enviado nos relatórios de feedback.</translation>
@@ -5049,6 +5051,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5578059481725149024">Início de sessão automático</translation>
 <translation id="5581134892342029705">Tradução para <ph name="LANGUAGE" /> concluída</translation>
 <translation id="558170650521898289">Verificação de controladores de hardware Microsoft Windows</translation>
+<translation id="5581876958763461074">Todas as notas</translation>
 <translation id="5581972110672966454">Não é possível associar o dispositivo ao domínio. Tente novamente ou contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Menu principal</translation>
 <translation id="5583640892426849032">Retrocesso</translation>
@@ -5678,6 +5681,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6150961653851236686">Este idioma é utilizado ao traduzir páginas</translation>
 <translation id="6151323131516309312">Prima <ph name="SEARCH_KEY" /> para pesquisar no <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">O ficheiro já existe na sua pasta de transferências.</translation>
+<translation id="6152918902620844577">A aguardar pela próxima operação</translation>
 <translation id="6154240335466762404">Remover todas as portas</translation>
 <translation id="615436196126345398">Protocolo</translation>
 <translation id="6155141482566063812">O separador em segundo plano está a partilhar o seu ecrã.</translation>
@@ -5700,7 +5704,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="617213288191670920">Nenhum idioma adicionado</translation>
 <translation id="6173623053897475761">Introduza o PIN novamente</translation>
 <translation id="6175314957787328458">GUID de Domínio do Windows</translation>
-<translation id="6176043333338857209">O Bluetooth vai ser ativado temporariamente para comunicar com a sua chave de segurança.</translation>
 <translation id="6178664161104547336">Selecionar um certificado</translation>
 <translation id="6178682841350631965">Os seus dados de início de sessão foram atualizados</translation>
 <translation id="6180510783007738939">Ferramenta de linha</translation>
@@ -7389,6 +7392,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7730683939467795481">Esta página foi alterada pela extensão "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7735165285389721951">Está a ser executada outra configuração do Steam. Aguarde que seja concluída antes de tentar novamente</translation>
 <translation id="7737115349420013392">A sincronizar com o dispositivo "<ph name="DEVICE_NAME" />"…</translation>
+<translation id="7737203573077018777">Instrução <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> recebida</translation>
 <translation id="7737846262459425222">Pode alterar esta opção em qualquer altura em Definições &gt; Assistente Google &gt; Contexto do ecrã.</translation>
 <translation id="7737948071472253612">Sem autorização para utilizar a sua câmara</translation>
 <translation id="77381465218432215">Mostrar acentos e carateres especiais</translation>
@@ -7683,6 +7687,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7990863024647916394">Voz de <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Definições do acesso por comutador</translation>
 <translation id="7992203134935383159">Síntese de voz</translation>
+<translation id="7994515119120860317">Traduzir o texto da imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Vista Web</translation>
 <translation id="7997826902155442747">Prioridade do processo</translation>
 <translation id="7999229196265990314">Criou os seguintes ficheiros:

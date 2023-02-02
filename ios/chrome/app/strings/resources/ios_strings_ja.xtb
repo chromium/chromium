@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">同期の管理</translation>
 <translation id="1076421457278169141">コードをスキャンしました</translation>
 <translation id="1076785341346483463">管理対象アカウントとの同期</translation>
+<translation id="1080365971383768617">すべてのデバイスでパスワードを使用</translation>
 <translation id="1084365883616172403">Facebookへの投稿が完了しました。</translation>
 <translation id="1085696779717592361">Chrome をデフォルトに設定する</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
@@ -544,6 +545,7 @@
 <translation id="5056446788882570708"><ph name="TIME" />に問題が見つかりました。</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">ドライブをインストール</translation>
+<translation id="50641035439563602">パスワードは Google アカウント（<ph name="ACCOUNT" />）に保存されました。ログインしているすべてのデバイスでパスワードを使用できます。この機能をオフにするには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] に移動します。</translation>
 <translation id="5083464117946352670">ファイルサイズが不明です。</translation>
 <translation id="5090832849094901128">このパスワードを削除しても、<ph name="WEBSITE" /> のアカウントは削除されません。</translation>
 <translation id="5094827893301452931">ツイートが完了しました。</translation>
@@ -706,6 +708,7 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" />を翻訳するか尋ねる</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> のフォローを解除しました</translation>
 <translation id="6293101329759844770">セーフ ブラウジングをオンにするには、[<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />] を開いて [セーフ ブラウジング] をタップします。</translation>
+<translation id="6320780930074869063">オンにすると、パスワードは <ph name="ACCOUNT" /> に保存されます。オフにすると、パスワードはこのデバイスのみに保存されます。</translation>
 <translation id="6321526113093607004">ブックマークに追加</translation>
 <translation id="6324669097367352121">ログインの設定</translation>
 <translation id="6337234675334993532">暗号化</translation>

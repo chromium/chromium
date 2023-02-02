@@ -3,6 +3,7 @@
 <translationbundle lang="pl">
 <translation id="1143896152279775643">Hasło zostanie zapisane w menedżerze haseł Google na koncie <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Pomóż w ulepszaniu funkcji i działania Chrome</translation>
+<translation id="1352919863522755794">Menedżerowi haseł Google nie udało się sprawdzić haseł. Sprawdź połączenie z internetem.</translation>
 <translation id="1462727070346936664">Zaloguj się, aby w pełni wykorzystać możliwości Chrome.</translation>
 <translation id="1479202195792305274">Chrome może sprawdzić Twoje hasła, gdy zalogujesz się na swoje konto Google.</translation>
 <translation id="1493827051843127077">Ustaw Chrome jako przeglądarkę domyślną, aby synchronizować karty, hasła i dane kart płatniczych na wszystkich urządzeniach</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Aby wylogować się z konta Google na wszystkich stronach, <ph name="BEGIN_LINK" />wyloguj się z Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nie udało się sprawdzić dostępności aktualizacji. Spróbuj ponownie później.</translation>
 <translation id="2732745070297234559">Przeglądarce Chrome nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro.</translation>
+<translation id="2767464022270041271">Brak zapisanych haseł. Menedżer haseł Google może sprawdzać Twoje hasła, gdy je zapiszesz.</translation>
 <translation id="2869959624320573933">Zaloguj się w Chrome</translation>
 <translation id="2957447865124070833">Wybierz <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Wylogowujesz się z konta, którym zarządza <ph name="SIGNOUT_MANAGED_DOMAIN" />. Spowoduje to usunięcie danych Chrome z tego urządzenia, ale pozostaną one na koncie Google.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Przeglądarce Chrome nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro lub <ph name="BEGIN_LINK" />sprawdź hasła na koncie Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Aby pomóc nam ulepszać aplikację, Chrome wysyła do Google dane o użytkowaniu i awariach. <ph name="BEGIN_LINK" />Zarządzaj<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nieobsługiwane w Chrome Beta</translation>
+<translation id="4840404732697892756">Menedżer haseł Google może sprawdzać Twoje hasła, gdy zalogujesz się na konto Google.</translation>
 <translation id="5030102366287574140">Chrome pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami internetowymi i innymi zagrożeniami.</translation>
 <translation id="5108659628347594808">Ulepszaj Chrome</translation>
 <translation id="5119391094379141756">Wybierz Chrome.</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Co jakiś czas Chrome sprawdza, czy Twoje hasła nie pojawiły się na listach opublikowanych w internecie. Aby nikt (nawet Google) nie mógł odczytać haseł ani nazw użytkowników, podczas sprawdzania są one zaszyfrowane.</translation>
 <translation id="5639704535586432836">Wybierz Ustawienia &gt; Prywatność &gt; Aparat &gt; Google Chrome i włącz aparat.</translation>
 <translation id="5642200033778930880">Google Chrome nie może używać aparatu w trybie widoku dzielonego</translation>
+<translation id="5661521615548540542">Menedżerowi haseł Google nie udało się sprawdzić wszystkich haseł. Spróbuj później.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Tryb offline. Chrome nie może sprawdzić dostępności aktualizacji.</translation>
 <translation id="5716154293141027663">Otwieraj Chrome po kliknięciu linków w innych aplikacjach</translation>
@@ -118,9 +122,11 @@
   2. Kliknij Domyślna przeglądarka.
   3. Wybierz Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Menedżerowi haseł Google nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro lub <ph name="BEGIN_LINK" />sprawdź hasła na koncie Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Dbaj o swoje bezpieczeństwo, używając Google Chrome</translation>
 <translation id="8772179140489533211">Pokazuj prośby o zalogowanie się w Chrome.</translation>
 <translation id="8788269841521769222">Nie musisz go zapamiętywać. Menedżer haseł Google zapisze je na koncie <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Menedżerowi haseł Google nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro.</translation>
 <translation id="8897749957032330183">Hasła są zapisywane w Menedżerze haseł Google na tym urządzeniu.</translation>
 <translation id="8969290730818637510">Po włączeniu:
 <ph name="BEGIN_INDENT" />  • Pomagaj w udoskonalaniu Chrome pod kątem potrzeb użytkowników, którzy korzystają z przeglądarki w taki sam sposób jak Ty.<ph name="END_INDENT" />

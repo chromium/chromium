@@ -3,6 +3,7 @@
 <translationbundle lang="as">
 <translation id="1143896152279775643">আপোনাৰ পাছৱৰ্ডটো <ph name="EMAIL" />ৰ Google পাছৱৰ্ড পৰিচালকত ছেভ কৰা হ’ব।</translation>
 <translation id="1282031177488366470">Chromeৰ সুবিধা আৰু কাৰ্যক্ষমতাসমূহ উন্নত কৰাত সহায় কৰক</translation>
+<translation id="1352919863522755794">Google Password Managerএ আপোনাৰ পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি চাওক।</translation>
 <translation id="1462727070346936664">Chromeৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ ছাইন ইন কৰক।</translation>
 <translation id="1479202195792305274">আপুনি নিজৰ Google একাউণ্টটোৰ জৰিয়তে ছাইন ইন কৰিলে Chromeএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব পাৰে।</translation>
 <translation id="1493827051843127077">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ টেব, পাছৱৰ্ড আৰু পৰিশোধ বিষয়ক তথ্য ছিংক কৰিবলৈ Chromeক ডিফ’ল্ট হিচাপে ছেট কৰক</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">আটাইবোৰ ৱেবছাইটত আপোনাৰ Google একাউণ্টৰ পৰা ছাইন আউট কৰিবলৈ <ph name="BEGIN_LINK" />Chromeৰ পৰা ছাইন আউট কৰক<ph name="END_LINK" />।</translation>
 <translation id="2695886661449553974">Chromeএ আপডে’টৰ বাবে পৰীক্ষা কৰিব নোৱাৰিলে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2732745070297234559">Chromeএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক।</translation>
+<translation id="2767464022270041271">কোনো ছেভ কৰা পাছৱৰ্ড নাই। আপুনি নিজৰ পাছৱৰ্ডসমূহ ছেভ কৰিলে Google Password Managerএ সেইসমূহ পৰীক্ষা কৰিব পাৰে।</translation>
 <translation id="2869959624320573933">Chromeত ছাইন-ইন কৰক</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> বাছনি কৰক</translation>
 <translation id="3030414234702425231">আপুনি যিহেতু <ph name="SIGNOUT_MANAGED_DOMAIN" />এ পৰিচালনা কৰা এটা একাউণ্টৰ পৰা ছাইন আউট কৰি আছে আপোনাৰ Chrome ডেটা এই ডিভাইচটোৰ পৰা মচা হ’ব। আপোনাৰ ডেটা নিজৰ Google একাউণ্টত থাকিব।</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chromeএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক অথবা <ph name="BEGIN_LINK" />আপোনাৰ Google একাউণ্টত পাছৱর্ডসমূহ পৰীক্ষা কৰক।<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">এপ্‌টো উন্নত কৰাত সহায় কৰিবলৈ, Chromeএ Googleলৈ ব্যৱহাৰ আৰু ক্ৰেশ্ব সম্পৰ্কীয় ডেটা পঠিয়ায়। <ph name="BEGIN_LINK" />পৰিচালনা কৰক<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome বিটাত সমৰ্থিত নহয়</translation>
+<translation id="4840404732697892756">আপুনি নিজৰ Google একাউণ্টটোৰ জৰিয়তে ছাইন ইন কৰিলে Google Password Managerএ আপোনাৰ পাছৱৰ্ডসমূহ পৰীক্ষা কৰিব পাৰে।</translation>
 <translation id="5030102366287574140">Chromeএ আপোনাক ডেটা উলংঘন, অসুৰক্ষিত ৱেবছাইট তথা আন বহুতৰ পৰা সুৰক্ষিত হৈ থকাত সহায় কৰিব পাৰে।</translation>
 <translation id="5108659628347594808">Chromeক উন্নত কৰক</translation>
 <translation id="5119391094379141756">Chrome বাছনি কৰক</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chromeএ আপোনাৰ পাছৱৰ্ডসমূহ অনলাইনত প্ৰকাশ কৰা তালিকাসমূহৰ লগত সময়ে সময়ে তুলনা কৰে। এনে কৰোঁতে আপোনাৰ পাছৱৰ্ডসমূহ আৰু ব্যৱহাৰকাৰীৰ নামসমূহ এনক্ৰিপ্ট কৰা হয়, গতিকে সেইবোৰ Googleকে ধৰি অন্য কোনেও পঢ়িব নোৱাৰে।</translation>
 <translation id="5639704535586432836">ছেটিংসমূহ &gt; গোপনীয়তা &gt; কেমেৰা &gt; Google Chrome খোলক আৰু কেমেৰা অন কৰক।</translation>
 <translation id="5642200033778930880">Google Chromeএ বিভাজিত ম’ডত আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিব নোৱাৰে</translation>
+<translation id="5661521615548540542">Google Password Managerএ আটাইবোৰ পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">অফলাইন হৈ থাকিলে Chromeএ আপডে’টৰ বাবে পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="5716154293141027663">আপুনি অন্য এপত লিংকসমূহত টিপিলে যিকোনো সময়তে Chrome খোলক</translation>
@@ -118,9 +122,11 @@
   ২) ডিফ’ল্ট ব্ৰাউজাৰ এপত টিপক
   ৩) Chrome বাছনি কৰক।</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Password Managerএ আটাইবোৰ পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক অথবা <ph name="BEGIN_LINK" />আপোনাৰ Google একাউণ্টত পাছৱৰ্ডসমূহ পৰীক্ষা কৰক।<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Google Chromeৰ জৰিয়তে সুৰক্ষিত হৈ থাকক</translation>
 <translation id="8772179140489533211">Chromeত ছাইন ইন কৰিবলৈ প্ৰম্প্‌ট প্ৰদৰ্শন কৰে।</translation>
 <translation id="8788269841521769222">আপুনি এই পাছৱৰ্ডটো মনত ৰখাৰ প্ৰয়োজন নাই। এইটো <ph name="EMAIL" />ৰ Google পাছৱৰ্ড পৰিচালকত ছেভ কৰা হ’ব</translation>
+<translation id="8857676124663337448">Google Password Managerএ আটাইবোৰ পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক।</translation>
 <translation id="8897749957032330183">পাছৱৰ্ডসমূহ এই ডিভাইচটোত থকা Google Password Managerত ছেভ কৰা হয়</translation>
 <translation id="8969290730818637510">অন হৈ থাকিলে:
 <ph name="BEGIN_INDENT" />  • আপোনাৰ দৰে একেধৰণে Chrome ব্যৱহাৰ কৰা লোকসকলৰ বাবে ইয়াক উন্নত কৰাত সহায় কৰক।<ph name="END_INDENT" />

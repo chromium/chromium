@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">Грешка при покретању виртуелне машине. Пробајте поново.</translation>
 <translation id="1087965115100412394">Не дозвољавај сајтовима да се повезују са MIDI уређајима</translation>
 <translation id="1088659085457112967">Укључи режим читача</translation>
-<translation id="1089407731410758060">Промени тему</translation>
 <translation id="1090126737595388931">Није покренута ниједна позадинска апликација</translation>
 <translation id="1090541560108055381">Пре упаривања се уверите да је овај кôд исти на оба уређаја</translation>
 <translation id="1091767800771861448">Притисните ESCAPE да бисте прескочили (само у незваничним верзијама).</translation>
@@ -549,6 +548,7 @@
 <translation id="1495677929897281669">Назад на картицу</translation>
 <translation id="1500297251995790841">Непознат уређај [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Сазнајте више о неподржаним Chrome апликацијама</translation>
+<translation id="1501480321619201731">Избриши групу</translation>
 <translation id="1503392482221435031">Аутоматски шаље статистику коришћења Google-у. Можете да укључите или искључите извештаје о отказивању у подешавањима уређаја.</translation>
 <translation id="150411034776756821">Уклони <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Дељени директоријуми су доступни у Windows-у на <ph name="BASE_DIR" />.</translation>
@@ -2096,7 +2096,6 @@
 <translation id="2835547721736623118">Услуга за препознавање говора</translation>
 <translation id="2836232638504556905">Да бисте наставили, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ће делити ваше име, имејл адресу и слику профила са овим сајтом. Погледајте <ph name="BEGIN_LINK" />политику приватности<ph name="END_LINK" /> овог сајта.</translation>
 <translation id="2836269494620652131">Отказивање</translation>
-<translation id="2836635946302913370">Администратор је онемогућио пријављивање помоћу овог корисничког имена.</translation>
 <translation id="283669119850230892">Да бисте користили мрежу <ph name="NETWORK_ID" />, најпре успоставите везу са интернетом у наставку.</translation>
 <translation id="2838379631617906747">Инсталира се</translation>
 <translation id="2839032553903800133">Обавештења су блокирана</translation>
@@ -2604,6 +2603,7 @@
 <translation id="3315442055907669208">Укључи режим читача</translation>
 <translation id="3317459757438853210">Обострано</translation>
 <translation id="3317678681329786349">Камера и микрофон су блокирани</translation>
+<translation id="3319306431415395200">Преведи текст на слици помоћу претраживача <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Безбедно прегледање (заштита од опасних сајтова) и друга безбедносна подешавања</translation>
 <translation id="3323521181261657960">Бонус! Добијаш додатно време испред екрана</translation>
 <translation id="3323577066981719144">Промене које уносите овде се примењују само на Chrome прегледач. Да бисте променили подешавања прегледача Lacros Chrome, отворите Lacros Chrome и идите у подешавања.</translation>
@@ -2905,6 +2905,7 @@
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3602870520245633055">Штампање и скенирање</translation>
 <translation id="3603622770190368340">Добијање сертификата мреже</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} налог користи исту лозинку}one{{COUNT} налог користи исту лозинку}few{{COUNT} налога користе исту лозинку}other{{COUNT} налога користи исту лозинку}}</translation>
 <translation id="3605780360466892872">Јапи</translation>
 <translation id="3609277884604412258">Брза претрага</translation>
 <translation id="3610241585790874201">Чување података на уређају није дозвољено</translation>
@@ -3613,7 +3614,6 @@
 <translation id="4244238649050961491">Пронађи још апликација за писаљку</translation>
 <translation id="4246980464509998944">Додатни коментари:</translation>
 <translation id="424726838611654458">Увек отвори у Adobe Reader-у</translation>
-<translation id="4247901771970415646">Није успела синхронизација за <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Заштитите лозинке од упада у податке и других безбедносних проблема</translation>
 <translation id="4249248555939881673">Чека се мрежна веза...</translation>
 <translation id="4249373718504745892">Овој страници је забрањен приступ камери и микрофону.</translation>
@@ -3834,6 +3834,7 @@
 <translation id="4441147046941420429">Да бисте наставили, уклоните безбедносни кључ са уређаја, па га поново уметните и додирните</translation>
 <translation id="444134486829715816">Прошири...</translation>
 <translation id="4441928470323187829">Закачио је администратор</translation>
+<translation id="4442863809158514979">Прикажи дозволе за веб</translation>
 <translation id="4443536555189480885">&amp;Help (Помоћ)</translation>
 <translation id="4444304522807523469">Приступ скенерима за документе прикљученим преко USB-а или на локалној мрежи</translation>
 <translation id="4444512841222467874">Ако не ослободите простор, корисници и подаци ће можда аутоматски бити уклоњени.</translation>
@@ -4831,6 +4832,7 @@
 <translation id="5382591305415226340">Управљај подржаним линковима</translation>
 <translation id="5383377866517186886">Камера је искључена у подешавањима Mac система</translation>
 <translation id="5383740867328871413">Група без назива – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ИД: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Смернице за предузећа су промењене. Дугме за експерименте је додато у траку с алаткама. Кликните на дугме да бисте отворили дијалог и омогућили експерименте.</translation>
 <translation id="5388885445722491159">Упарено</translation>
 <translation id="5390112241331447203">Уврсти датотеку system_logs.txt која се шаље у извештајима са повратним информацијама.</translation>
@@ -5044,6 +5046,7 @@
 <translation id="5578059481725149024">Аутоматско пријављивање</translation>
 <translation id="5581134892342029705">Готов је превод на <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Верификација управљачких програма за хардвер у Microsoft Windows-у</translation>
+<translation id="5581876958763461074">Све белешке</translation>
 <translation id="5581972110672966454">Придруживање уређаја домену није успело. Пробајте поново или се обратите власнику уређаја или администратору. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Главни мени</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5695,7 +5698,6 @@
 <translation id="617213288191670920">Није додат ниједан језик</translation>
 <translation id="6173623053897475761">Поново унесите PIN</translation>
 <translation id="6175314957787328458">GUID Microsoft домена</translation>
-<translation id="6176043333338857209">Привремено ћемо укључити Bluetooth да бисмо успоставили комуникацију са безбедносним кључем</translation>
 <translation id="6178664161104547336">Избор сертификата</translation>
 <translation id="6178682841350631965">Подаци за пријављивање су ажурирани</translation>
 <translation id="6180510783007738939">Алатка за линије</translation>
@@ -7466,6 +7468,7 @@
 <translation id="779308894558717334">Светлозелена</translation>
 <translation id="7793098747275782155">Тамноплава</translation>
 <translation id="7797571222998226653">Искључено</translation>
+<translation id="7798504574384119986">Прикажи дозволе за веб</translation>
 <translation id="7798844538707273832">Функција <ph name="PERMISSION" /> је аутоматски блокирана</translation>
 <translation id="7800518121066352902">Окрећи у с&amp;меру супротном од кретања казаљке на сату</translation>
 <translation id="7801679634091975683">Промене које уносите овде се примењују само на прегледач Lacros Chrome. Да бисте променили подешавања Chrome прегледача, отворите Chrome и идите у подешавања.</translation>
@@ -7681,6 +7684,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> глас <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Подешавања приступа помоћу прекидача</translation>
 <translation id="7992203134935383159">Синтеза говора</translation>
+<translation id="7994515119120860317">Преведи текст на слици помоћу претраживача <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Веб-приказ</translation>
 <translation id="7997826902155442747">Приоритет процеса</translation>
 <translation id="7999229196265990314">Направљене су следеће датотеке:

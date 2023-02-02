@@ -6,6 +6,7 @@
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1257458525759135959">Pour enregistrer une image, appuyez sur "Paramètres" afin que Chromium puisse l'ajouter à vos photos</translation>
 <translation id="1289216811211435351">Passer à Chromium</translation>
+<translation id="1352919863522755794">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier vos mots de passe. Vérifiez votre connexion Internet.</translation>
 <translation id="1361748954329991663">Version de Chromium obsolète. Si aucune mise à jour n'est disponible sur l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, votre appareil n'est peut-être plus compatible avec les nouvelles versions de Chromium.</translation>
 <translation id="1431818719585918472">Chromium peut verrouiller vos onglets de navigation privée.</translation>
 <translation id="1472013873724362412">Votre compte n'est pas compatible avec Chromium. Veuillez contacter l'administrateur de votre domaine ou utiliser un compte Google standard pour vous connecter.</translation>
@@ -35,6 +36,7 @@
 <translation id="2650312721222849884">Pour retrouver vos onglets Chromium quel que soit l'appareil utilisé, activez la synchronisation</translation>
 <translation id="2684230048001240293">Définissez Chromium par défaut pour synchroniser vos onglets, mots de passe et infos de paiement sur tous vos appareils</translation>
 <translation id="2730884209570016437">Chromium ne peut pas utiliser l'appareil photo, car celui-ci est utilisé par une autre application</translation>
+<translation id="2767464022270041271">Aucun mot de passe enregistré. Le Gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous les enregistrez.</translation>
 <translation id="2915596697727466327">Chromium utilise Face ID pour autoriser l'accès à vos mots de passe.</translation>
 <translation id="2918709798697875261">Votre organisation vous demande de rester déconnecté de Chromium.</translation>
 <translation id="2942241131342758843">Utilisez Chromium par défaut pour ouvrir les liens, faire des recherches depuis les widgets et saisir automatiquement les mots de passe dans d'autres applis</translation>
@@ -57,6 +59,7 @@
 <translation id="4681781466797808448">Activer le lecteur Chromium</translation>
 <translation id="4736424910885271643">Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chromium seront effacées de cet appareil</translation>
 <translation id="4828317641996116749">Chromium n'est pas parvenu à vérifier tous les mots de passe. Réessayez plus tard.</translation>
+<translation id="4840404732697892756">Le Gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
 <translation id="4985291216379576555">Chromium ne parvient pas à rechercher les mises à jour, car vous êtes hors connexion</translation>
 <translation id="4996471330284142407">Soyez plus efficace grâce à Chromium, un navigateur simple, sécurisé et encore plus rapide.</translation>
 <translation id="4999538639245140991">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
@@ -67,6 +70,7 @@
 <translation id="5521125884468363740">Pour retrouver vos onglets Chromium quel que soit l'appareil utilisé, connectez-vous et activez la synchronisation</translation>
 <translation id="5522297504975449419">Certaines fonctionnalités de Chromium ne seront plus disponibles.</translation>
 <translation id="5573014823074921752">Astuce Chromium : Pour afficher plus d'options d'onglets, appuyez de manière prolongée sur le bouton "Afficher les onglets" situé dans la barre d'outils affichée dans la partie inférieure ou supérieure de l'écran.</translation>
+<translation id="5661521615548540542">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
 <translation id="5700709190537129682">Chromium ne parvient pas à vérifier vos mots de passe</translation>
 <translation id="5777187867430702742">Page Chromium</translation>
 <translation id="5945387852661427312">Vous vous connectez avec un compte géré par <ph name="DOMAIN" />, ce qui permettra à son administrateur de contrôler vos données Chromium. Celles-ci seront définitivement associées à ce compte. Si vous vous déconnectez de Chromium, vos données seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
@@ -112,6 +116,7 @@
 <translation id="8409374867500149834">Vous disposez du plus haut niveau de sécurité de Chromium contre les sites dangereux</translation>
 <translation id="858114650497379505">Vous pouvez utiliser les mots de passe enregistrés dans le Gestionnaire de mots de passe dans d'autres applis sur votre iPhone.</translation>
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
+<translation id="8603022514504485810">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Vous protège dans Chrome et peut servir à renforcer votre sécurité dans d'autres applis Google lorsque vous êtes connecté.</translation>
 <translation id="8663480472502753423">Garder Chromium à jour</translation>
 <translation id="8685813584220679697">Connectez-vous à ce site et à Chromium.</translation>
@@ -125,6 +130,7 @@
 
   • Si vous activez la synchronisation, les métriques peuvent aussi inclure des infos sur les URL que vous consultez.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Ce compte et les données non enregistrées seront supprimés de Chromium.</translation>
+<translation id="8857676124663337448">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="894437814105052438">Lorsque vous vous déconnectez, Chromium cesse de synchroniser vos données avec votre compte Google. Les données déjà synchronisées ne sont pas effacées.</translation>
 <translation id="9022552996538154597">Se connecter à Chromium</translation>
 <translation id="9059693977935746710">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe pour <ph name="EMAIL" /></translation>

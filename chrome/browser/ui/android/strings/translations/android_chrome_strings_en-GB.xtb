@@ -435,6 +435,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3297344142967351106">Voice assistance</translation>
 <translation id="3303414029551471755">Proceed to download the content?</translation>
 <translation id="3305795716056605962">Translate pages from the More Options button</translation>
+<translation id="3319664549618064419">Switch to desktop site for a better view of this site</translation>
 <translation id="3334729583274622784">Change file extension?</translation>
 <translation id="3341262203274374114">Can’t unfollow. Something went wrong.</translation>
 <translation id="3359667936385849800">Use your current service provider</translation>
@@ -626,7 +627,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4452411734226507615">Close <ph name="TAB_TITLE" /> tab</translation>
 <translation id="4452548195519783679">Bookmarked to <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">When you link another device with a QR code, it can use this phone as a security key. If you remove it, you’ll have to scan a QR code to link it again.</translation>
-<translation id="4479839115899251637">Delete from reading list</translation>
 <translation id="4479972344484327217">Installing <ph name="MODULE" /> for Chrome…</translation>
 <translation id="4484496141267039529">No connection. Try again later.</translation>
 <translation id="4487967297491345095">All Chrome’s app data will be deleted permanently. This includes all files, settings, accounts, databases, etc.</translation>
@@ -1489,7 +1489,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8955719471735800169">Back to top</translation>
 <translation id="8964479563882643397">To open a new incognito tab, open the menu</translation>
 <translation id="8965591936373831584">pending</translation>
-<translation id="8967427617812342790">Add to reading list</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognito and <ph name="TAB_COUNT_ONE" /> more tab will be closed}other{<ph name="INCOGNITO_TAB_COUNT" /> incognito and <ph name="TAB_COUNT_MANY" /> more tabs will be closed}}</translation>
 <translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8972098258593396643">Download to default folder?</translation>

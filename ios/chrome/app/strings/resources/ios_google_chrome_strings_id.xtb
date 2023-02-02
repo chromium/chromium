@@ -3,6 +3,7 @@
 <translationbundle lang="id">
 <translation id="1143896152279775643">Sandi Anda akan disimpan ke Pengelola Sandi Google untuk <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Bantu Sempurnakan Fitur dan Performa Chrome</translation>
+<translation id="1352919863522755794">Pengelola Sandi Google tidak dapat memeriksa sandi Anda. Coba periksa koneksi internet Anda.</translation>
 <translation id="1462727070346936664">Login untuk mengoptimalkan penggunaan Chrome.</translation>
 <translation id="1479202195792305274">Chrome dapat memeriksa sandi saat Anda login dengan Akun Google.</translation>
 <translation id="1493827051843127077">Setel Chrome sebagai browser default untuk menyinkronkan tab, sandi, dan info pembayaran di semua perangkat Anda</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Untuk logout dari Akun Google Anda di semua situs, <ph name="BEGIN_LINK" />logout dari Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome tidak dapat memeriksa update. Coba lagi nanti.</translation>
 <translation id="2732745070297234559">Chrome tidak dapat memeriksa semua sandi. Coba lagi besok.</translation>
+<translation id="2767464022270041271">Tidak ada sandi tersimpan. Pengelola Sandi Google dapat memeriksa sandi Anda jika Anda menyimpannya.</translation>
 <translation id="2869959624320573933">Login ke Chrome</translation>
 <translation id="2957447865124070833">Pilih <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Karena Anda logout dari akun yang dikelola oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chrome Anda akan dihapus dari perangkat ini. Data Anda akan tetap tersedia di Akun Google Anda.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome tidak dapat memeriksa semua sandi. Coba lagi besok atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Untuk membantu meningkatkan kualitas aplikasi, Chrome akan mengirimkan data penggunaan dan error ke Google. <ph name="BEGIN_LINK" />Kelola<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Tidak didukung di Chrome Beta</translation>
+<translation id="4840404732697892756">Pengelola Sandi Google dapat memeriksa sandi jika Anda login dengan Akun Google Anda.</translation>
 <translation id="5030102366287574140">Chrome dapat membantu Anda agar tetap aman dari pelanggaran data, situs yang tidak aman, dan lainnya.</translation>
 <translation id="5108659628347594808">Buat Chrome Menjadi Lebih Baik</translation>
 <translation id="5119391094379141756">Pilih Chrome</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome memeriksa sandi Anda secara berkala berdasarkan daftar sandi yang telah diterbitkan secara online. Saat pemeriksaan dilakukan, sandi dan nama pengguna Anda dienkripsi, sehingga tidak dapat dibaca oleh siapa pun, termasuk Google.</translation>
 <translation id="5639704535586432836">Buka Setelan &gt; Privasi &gt; Kamera &gt; Google Chrome, lalu aktifkan kamera.</translation>
 <translation id="5642200033778930880">Google Chrome tidak dapat menggunakan kamera dalam mode Layar Terpisah</translation>
+<translation id="5661521615548540542">Pengelola Sandi Google tidak dapat memeriksa semua sandi. Coba lagi nanti.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline, Chrome tidak dapat memeriksa update</translation>
 <translation id="5716154293141027663">Membuka Chrome setiap kali Anda mengetuk link di aplikasi lainnya</translation>
@@ -118,9 +122,11 @@
   2. Ketuk Aplikasi Browser Default
   3. Pilih Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Pengelola Sandi Google tidak dapat memeriksa semua sandi. Coba lagi besok atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Tetap Aman dengan Google Chrome</translation>
 <translation id="8772179140489533211">Menampilkan perintah untuk login ke Chrome.</translation>
 <translation id="8788269841521769222">Anda tidak perlu mengingat sandi ini. Sandi akan disimpan ke Pengelola Sandi Google untuk <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Pengelola Sandi Google tidak dapat memeriksa semua sandi. Coba lagi besok.</translation>
 <translation id="8897749957032330183">Sandi disimpan ke Pengelola Sandi Google di perangkat ini.</translation>
 <translation id="8969290730818637510">Jika aktif:
 <ph name="BEGIN_INDENT" />  • Membantu Chrome menjadi lebih baik bagi pengguna lain seperti Anda.<ph name="END_INDENT" />

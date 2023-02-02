@@ -295,7 +295,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3157387275655328056">Okuma Listesine Ekle</translation>
 <translation id="3157684681743766797">Tümünü İşaretle…</translation>
 <translation id="315778507796115851">Geçmiş</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Keşfet</translation>
 <translation id="3174662312949010067">Kayıtlı şifreleri diğer cihazlarınızda da kullanabilirsiniz.</translation>
 <translation id="3175081911749765310">Web Hizmetleri</translation>
 <translation id="3178650076442119961">Bugün Etkin</translation>
@@ -596,7 +596,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5520466080178053306">Şifre Yöneticisi'ne ve Ekle'ye Dokunun</translation>
 <translation id="5525095647255982834">Bu sekmeyi başka bir cihaza göndermek için ilgili cihazda Chrome'da oturum açın.</translation>
 <translation id="5525269841082836315">Parola oluşturma</translation>
-<translation id="5530084793407600786">Resmin içinde Google'la ara</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> Bulundu</translation>
 <translation id="5548760955356983418">Handoff, web sitelerine göz atmaya bu cihazda başlamanıza ve sonra kolayca Mac'te devam etmenize olanak sağlar. Geçerli olarak açık olan web sitesi Mac bilgisayarınızın Dock bölümünde görünür.
 
@@ -877,7 +876,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="7425346204213733349">Yer işaretleri, geçmiş, şifreler ve diğer ayarlarınızda yaptığınız değişiklikler artık Google Hesabınız ile senkronize edilmeyecek. Ancak, mevcut verileriniz Google Hesabınızda saklanmaya devam edecek.</translation>
 <translation id="7431991332293347422">Göz atma geçmişinizin Arama ve diğer hizmetleri kişiselleştirmek için nasıl kullanıldığını kontrol edin</translation>
 <translation id="7435356471928173109">Yöneticiniz tarafından kapatıldı</translation>
-<translation id="7438481509621345350">Artık yeni sekme açtığınızda <ph name="CHANNEL_NAME" /> kaynağından haberler görürsünüz.</translation>
+<translation id="7438481509621345350">Artık yeni sekme açtığınızda <ph name="CHANNEL_NAME" /> kaynağından haberler göreceksiniz.</translation>
 <translation id="7454057999980797137">Eyalet / İlçe</translation>
 <translation id="7459628154744868585">Gelişmiş Koruma açık</translation>
 <translation id="746684838091935575">3. Chrome'u seçin</translation>
@@ -957,7 +956,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="802154636333426148">İndirilemedi</translation>
 <translation id="8023878949384262191">Seçimi genişletir.</translation>
 <translation id="8027581147000338959">Yeni Pencerede Aç</translation>
-<translation id="8032569120109842252">Takip ediliyor</translation>
+<translation id="8032569120109842252">Takip edilenler</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Arama geçmişi<ph name="END_LINK" /> ve <ph name="BEGIN_LINK" />diğer etkinlik biçimleri<ph name="END_LINK" />, oturum açtığınızda Google Hesabınıza kaydedilebilir. Bunları istediğiniz zaman silebilirsiniz.</translation>
 <translation id="804427445359061970">Diğer cihazlarınızdaki sekmeleri burada bulabilirsiniz</translation>
 <translation id="8059533439631660104">Bölümü daraltır.</translation>

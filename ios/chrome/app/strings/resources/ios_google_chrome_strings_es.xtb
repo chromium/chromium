@@ -3,6 +3,7 @@
 <translationbundle lang="es">
 <translation id="1143896152279775643">Tu contraseña se guardará en el Gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Ayudar a mejorar las funciones y el rendimiento de Chrome</translation>
+<translation id="1352919863522755794">El Gestor de contraseñas de Google no ha podido comprobar tus contraseñas. Revisa tu conexión a Internet.</translation>
 <translation id="1462727070346936664">Inicia sesión para sacarle el máximo partido a Chrome.</translation>
 <translation id="1479202195792305274">Chrome puede comprobar tus contraseñas cuando inicias sesión con tu cuenta de Google.</translation>
 <translation id="1493827051843127077">Selecciona Chrome como navegador principal para sincronizar tus pestañas, contraseñas e información de pago en todos tus dispositivos</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Para cerrar sesión con tu cuenta de Google en todos los sitios web, <ph name="BEGIN_LINK" />cierra sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome no ha podido comprobar si hay actualizaciones. Prueba de nuevo más tarde.</translation>
 <translation id="2732745070297234559">Chrome no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
+<translation id="2767464022270041271">No hay contraseñas guardadas. El Gestor de contraseñas de Google puede comprobar tus contraseñas cuando las guardas.</translation>
 <translation id="2869959624320573933">Inicia sesión en Chrome</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Al cerrar sesión en una cuenta gestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, se eliminan tus datos de Chrome en este dispositivo, pero permanecen en tu cuenta de Google.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />comprueba las contraseñas en tu cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Para ayudar a mejorar la aplicación, Chrome envía datos de uso y de fallos a Google. <ph name="BEGIN_LINK" />Gestionar<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">No compatible con Chrome Beta</translation>
+<translation id="4840404732697892756">El Gestor de contraseñas de Google puede comprobar tus contraseñas si inicias sesión con tu cuenta de Google.</translation>
 <translation id="5030102366287574140">Chrome puede ayudarte a protegerte frente a quiebras de seguridad de datos, sitios web no seguros y mucho más</translation>
 <translation id="5108659628347594808">Mejorar Chrome</translation>
 <translation id="5119391094379141756">Selecciona Chrome</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome comprueba de forma periódica si tus contraseñas se encuentran en alguna lista publicada en Internet. Cuando lo hace, se cifran tus contraseñas y nombres de usuario para que nadie pueda leerlos, ni siquiera Google.</translation>
 <translation id="5639704535586432836">Abre Ajustes &gt; Privacidad &gt; Cámara &gt; Google Chrome y activa la cámara.</translation>
 <translation id="5642200033778930880">Google Chrome no puede usar la cámara en el modo Vista dividida</translation>
+<translation id="5661521615548540542">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Inténtalo de nuevo más tarde.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Sin conexión, Chrome no puede comprobar si hay actualizaciones</translation>
 <translation id="5716154293141027663">Abre Chrome siempre que toques enlaces en otras aplicaciones</translation>
@@ -118,9 +122,11 @@
   2. Toca Aplicación de navegador predeterminada
   3. Selecciona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />comprueba las contraseñas en tu cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Protégete con Google Chrome</translation>
 <translation id="8772179140489533211">Muestra solicitudes para iniciar sesión en Chrome.</translation>
 <translation id="8788269841521769222">No tendrás que recordar esta contraseña. Se guardará en el Gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
+<translation id="8857676124663337448">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
 <translation id="8897749957032330183">Las contraseñas se guardan en el Gestor de contraseñas de Google en este dispositivo.</translation>
 <translation id="8969290730818637510">Si esta opción está activada:
 <ph name="BEGIN_INDENT" />  • Ayuda a mejorar Chrome para las personas que lo usan de la misma manera que tú.<ph name="END_INDENT" />

@@ -391,6 +391,7 @@
 <translation id="3072980200212375806">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה <ph name="BEGIN_LINK1" />לתנאים ולהגבלות של Google<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_LINK2" />. גם <ph name="BEGIN_LINK3" />מדיניות הפרטיות<ph name="END_LINK3" /> חלה.</translation>
 <translation id="3091010850649238832">הצגת התוכן שבלוח</translation>
 <translation id="3098745985164956033">‏חלק מהתמונות נשלחות אל Google כדי לשפר עבורך את התיאורים</translation>
+<translation id="3104179992611025423">הדפדפן מנוהל על ידי ההורים שלך</translation>
 <translation id="3114507951000454849">קראת חדשות היום? <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">יש קישור אל</translation>
 <translation id="3123734510202723619">הודעות</translation>
@@ -400,6 +401,7 @@
 <translation id="3157931365184549694">שחזור</translation>
 <translation id="3166827708714933426">מקשי קיצור לכרטיסיות ולחלונות</translation>
 <translation id="316694332262407393">‏Chrome כבר פועל כאן.</translation>
+<translation id="3167258285411721858">ניתן לבקש את האתר לנייד של <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">מדידת מודעות</translation>
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
@@ -433,6 +435,7 @@
 <translation id="3297344142967351106">האסיסטנט</translation>
 <translation id="3303414029551471755">האם להוריד את התוכן?</translation>
 <translation id="3305795716056605962">תרגום הדפים באמצעות הלחצן 'אפשרויות נוספות'</translation>
+<translation id="3319664549618064419">כדאי לעבור לאתר שמותאם למחשב כדי לשפר את תצוגת האתר</translation>
 <translation id="3334729583274622784">לשנות את סיומת הקובץ?</translation>
 <translation id="3341262203274374114">לא ניתן לבטל את המעקב. משהו השתבש.</translation>
 <translation id="3359667936385849800">שימוש בספק השירות הנוכחי</translation>
@@ -624,7 +627,6 @@
 <translation id="4452411734226507615">סגירת הכרטיסייה <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">התווסף לסימניות ב-<ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">‏קישור של מכשיר אחר באמצעות קוד QR יאפשר לך להשתמש בטלפון הזה כמפתח אבטחה. אם הקישור יוסר, יהיה עליך לסרוק קוד QR כדי לקשר שוב את המכשיר.</translation>
-<translation id="4479839115899251637">מחיקה מרשימת הקריאה</translation>
 <translation id="4479972344484327217">‏מתבצעת התקנה של <ph name="MODULE" /> ל-Chrome…</translation>
 <translation id="4484496141267039529">אין חיבור. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="4487967297491345095">‏כל נתוני היישומים של Chrome יימחקו לצמיתות, כולל כל הקבצים, ההגדרות, החשבונות, מסדי הנתונים וכו'</translation>
@@ -1466,6 +1468,7 @@
 <translation id="8849001918648564819">מוסתר</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, כרטיסייה</translation>
 <translation id="8854223127042600341">הצגת הקבצים שזמינים ללא חיבור לאינטרנט.</translation>
+<translation id="885480114717186641">ניתן לבקש את האתר שמותאם למחשב של <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">ליצירת תיאורים</translation>
 <translation id="8856931513242997049">תהליך ההרשאה לשליחת התראות נסגר</translation>
 <translation id="8873817150012960745">כדי להתחיל, יש להקיש כאן</translation>
@@ -1486,7 +1489,6 @@
 <translation id="8955719471735800169">חזרה למעלה</translation>
 <translation id="8964479563882643397">כדי לפתוח כרטיסייה פרטית חדשה, פותחים את התפריט</translation>
 <translation id="8965591936373831584">בהמתנה</translation>
-<translation id="8967427617812342790">הוספה לרשימת הקריאה</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) וכרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) נוספת ייסגרו}one{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}two{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}other{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}}</translation>
 <translation id="8970887620466824814">משהו השתבש.</translation>
 <translation id="8972098258593396643">האם להוריד לתיקיית ברירת המחדל?</translation>

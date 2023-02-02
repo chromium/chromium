@@ -701,6 +701,14 @@ Als je dit beleid niet instelt, krijgen gebruikers een waarschuwing (in plaats v
       Als je het beleid niet instelt, staan alle <ph name="PRODUCT_OS_NAME" />-functies standaard aan en kan de gebruiker ze allemaal gebruiken.
 
       Opmerking: De scanfunctie staat momenteel standaard uit via een functievlag. Als de gebruiker deze functie aanzet via de functievlag, kan de functie nog altijd worden uitgezet door dit beleid.</translation>
+<translation id="1642854499667422595">Als dit beleid aanstaat, worden extensies waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store uitgezet voor <ph name="PRODUCT_NAME" />.
+Dit beleid negeert de ontwikkelaarsmodus, de opdrachtregel en andere extensies die niet zijn geïnstalleerd via de Chrome Web Store (zoals zelfhosting).
+
+Als het beleid is ingesteld op <ph name="ALLOW_UNPUBLISHED" /> (0) of niet is ingesteld, zijn extensies toegestaan waarvan de publicatie ongedaan is gemaakt.
+Als het beleid is ingesteld op <ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED" /> (1), worden extensies waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store uitgezet, maar niet als de extensie afgedwongen is geïnstalleerd of is vastgezet met een zakelijk beleid (zie de opmerking).
+Als het beleid is ingesteld op <ph name="DISABLE_UNPUBLISHED" /> (2), worden extensies waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store uitgezet, zelfs als de extensie afgedwongen is geïnstalleerd of versies zijn vastgezet op basis van het bedrijfsbeleid (zie de opmerking).
+
+Opmerking: Afgedwongen installeren en versie vastzetten worden ingesteld met het beleid <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> en <ph name="EXTENSION_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1645793986494086629">Schema:</translation>
 <translation id="1647558381546345298">Als je het beleid instelt, wordt de cachegrootte ingesteld die <ph name="PRODUCT_NAME" /> gebruikt om gecachte mediabestanden op de schijf op te slaan, ongeacht of de gebruiker de markering --media-cache-size heeft opgegeven. De waarde die in dit beleid wordt opgegeven, is geen harde grens maar een suggestie voor het cachesysteem. Een waarde die lager is dan een paar megabytes wordt naar boven afgerond.
 
@@ -928,6 +936,7 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
       Als het beleid wordt toegepast, kan WebDriver niet-geschikte beleidsregels overschrijven.
 
       Als het beleid niet wordt toegepast of niet is ingesteld, mag WebDriver niet-geschikte beleidsregels niet overschrijven.</translation>
+<translation id="1883274744253492031">Automatisch upgraden van gemengde content aanzetten</translation>
 <translation id="1885782360784839335">Promotiecontent op volledig tabblad tonen</translation>
 <translation id="1888871729456797026">De inschrijvingstoken van het cloudbeleid op een desktop</translation>
 <translation id="1893271062894546361">Als je dit beleid toepast, is de gebruikersinterface voor de afspeelbediening voor media beschikbaar voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten in het lokale netwerk.
@@ -1075,6 +1084,7 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="1997943707974344423">Smart Lock toestaan</translation>
 <translation id="1998504583649140526">Instellingen voor privénetwerkverzoeken</translation>
 <translation id="1999000620918508488">Afdwingen dat systeemgegevens op het inlogscherm worden getoond of verborgen.</translation>
+<translation id="1999401210569035434">Extensies toestaan waarvan de publicatie ongedaan is gemaakt</translation>
 <translation id="1999942889260716089">Als je het beleid instelt op True, worden zoeksuggesties in de adresbalk van <ph name="PRODUCT_NAME" /> aangezet. Als je het beleid instelt op False, worden deze zoeksuggesties uitgezet.
 
       Suggesties op basis van bookmarks of geschiedenis worden niet beïnvloed door het beleid.
@@ -1626,6 +1636,7 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 
        Als je het beleid niet instelt, blijft de stroom voor piekuren uit.</translation>
 <translation id="2502467045153796624">Downgradegedrag voor kanalen</translation>
+<translation id="2505101658854883014">Extensies uitzetten waarvan de publicatie ongedaan is gemaakt, waaronder afgedwongen geïnstalleerde versies of vastgezette versies</translation>
 <translation id="250670737672448119">Zet de toegankelijkheidsfunctie voor markering van het caret-teken aan.
 
           Met deze functie wordt het gebied rondom het caret-teken gemarkeerd tijdens het bewerken.
@@ -3583,6 +3594,10 @@ Als dit beleid is ingesteld, staat <ph name="PRODUCT_OS_NAME" /> gebruikers alle
 <translation id="439661169333921592">Toetsenbordfocusmarking op het inlogscherm uitzetten</translation>
 <translation id="4397045637922200204">Accountherstel deactiveren</translation>
 <translation id="4397464099112037398">Standaardinstelling voor het recht voor vensterplaatsing</translation>
+<translation id="4401196752827224189">WebSQL in niet-beveiligde contexten wordt verwijderd vanaf M110. Dit beleid zet de API opnieuw aan.
+          Als je dit beleid instelt op True, is WebSQL in niet-beveiligde contexten beschikbaar.
+          Als je dit beleid instelt op False of niet instelt, blijft WebSQL in niet-beveiligde contexten beschikbaar tot M109 en is dit niet meer beschikbaar vanaf M110.
+Dit is verwijderd in M112.</translation>
 <translation id="4401496838830169080">Hiermee kun je bepalen of je de Safe Browsing-functie van <ph name="PRODUCT_NAME" /> wilt aanzetten en in welke modus de functie actief moet zijn.
 
       Als dit beleid is ingesteld op NoProtection (waarde 0), is Safe Browsing nooit actief.
@@ -3915,6 +3930,7 @@ Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> voor <ph name="MS_WIN_
 <translation id="4703402283970867140">Slim dimmodel aanzetten, zodat het langer duurt tot het scherm wordt gedimd</translation>
 <translation id="4704958130749494760">Automatisch toestemming aan sites geven om verbinding te maken met seriële USB-apparaten.</translation>
 <translation id="471360812659157054">window.webkitStorageInfo is niet beschikbaar.</translation>
+<translation id="4715773950737036924">De beschikbaarheid bepalen van extensies in de Chrome Web Store waarvan de publicatie ongedaan is gemaakt.</translation>
 <translation id="4722122254122249791">Site-isolatie voor opgegeven oorsprongen aanzetten</translation>
 <translation id="4723829699367336876">Firewallpassage vanaf client voor externe toegang aanzetten</translation>
 <translation id="4725528134735324213">Android Backup Service aanzetten</translation>
@@ -4115,9 +4131,6 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
       Als hiervoor een waarde is opgegeven, wordt gedurende het opgegeven aantal seconden voorkomen dat de browser afsluit, zodat keepalive-verzoeken (https://fetch.spec.whatwg.org/#request-keepalive-flag) kunnen worden verwerkt.
 
       De standaardwaarde (0) betekent dat deze functie niet wordt gebruikt.</translation>
-<translation id="4934869540807953882">Vanaf M110 wordt de niet-standaard API window.webkitStorageInfo verwijderd. Dit beleid zet de API opnieuw aan.
-Als je dit beleid toepast, is de API window.webkitStorageInfo beschikbaar.
-Als je dit beleid niet toepast of niet instelt, is de API window.webkitStorageInfo niet beschikbaar.</translation>
 <translation id="4937423591320233496">Voorgestelde content uitzetten</translation>
 <translation id="4940810901775798837">Toestaan dat niet-beveiligde websites verzoeken indienen bij een netwerkeindpunt</translation>
 <translation id="4942096314850617489">Extern attest voor de gebruiker uitzetten</translation>
@@ -6420,6 +6433,7 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7126716959063786004">Beëindiging van processen in Taakbeheer aanzetten</translation>
 <translation id="7126928806195745404">Instellingen voor JavaScript</translation>
 <translation id="7127980134843952133">Downloadgeschiedenis</translation>
+<translation id="7128513247945602297">Automatisch upgraden van gemengde content aanzetten op HTTPS-sites</translation>
 <translation id="712963038874313213">Hiermee wordt een Ansible-playbook geboden dat moet worden uitgevoerd in de standaard Crostini-container.
 
       Dit beleid staat het bieden van een Ansible-playbook toe die mag worden toegepast op de standaard Crostini-container, als deze beschikbaar is op het opgegeven apparaat en is toegestaan door het beleid.
@@ -7157,6 +7171,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
       Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> en <ph name="CHARGE_START_TIME_FIELD_NAME" /> zijn 0, 15, 30, 45.</translation>
 <translation id="7840258755683573560">Automatisch klikken aanzetten</translation>
 <translation id="7841880500990419427">Minimale TLS-versie om op terug te vallen</translation>
+<translation id="7841883965249733328">Automatisch upgraden van gemengde content uitzetten</translation>
 <translation id="7845130996290850593">Kerberos aanzetten</translation>
 <translation id="7846952520291088817">URL's waarvan lokale IP's zichtbaar zijn in WebRTC ICE-kandidaten</translation>
 <translation id="7848641140449742406">OS-instellingen</translation>
@@ -8587,6 +8602,7 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 
       Dit beleid is een tijdelijke maatregel en wordt verwijderd in toekomstige versies van <ph name="PRODUCT_NAME" />. Na verwijdering van het beleid kan <ph name="PRODUCT_NAME" /> altijd zoekopdrachten voor aanvullende DNS-typen uitvoeren.</translation>
 <translation id="9167719789236691545">Drive in de app Bestanden van <ph name="PRODUCT_OS_NAME" /> uitzetten</translation>
+<translation id="9169161075831670233">Extensies uitzetten waarvan de publicatie ongedaan is gemaakt, behalve afgedwongen geïnstalleerde versies of vastgezette versies</translation>
 <translation id="9172911925443428317">Niet toestaan dat de promotie voor appstore-beoordelingen wordt getoond</translation>
 <translation id="9180108183162961002">Toestaan dat gebruikers als gast inloggen bij de browser</translation>
 <translation id="9185963199234034321">Hoog contrast op het inlogscherm aanzetten en de gebruiker toestaan dit tijdelijk uit te zetten</translation>

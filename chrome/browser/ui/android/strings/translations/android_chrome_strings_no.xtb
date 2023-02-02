@@ -182,6 +182,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="1995884366040846621">For at du skal kunne fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele navnet ditt, e-postadressen din og profilbildet ditt med dette nettstedet. Se nettstedets <ph name="BEGIN_LINK1" />personvernregler<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Sender noen informasjonskapsler og søk fra adressefeltet og søkefeltet samt noen informasjonskapsler til standardsøkemotoren din</translation>
 <translation id="200114059308480249">Vil du inkludere omliggende tekst i Google-søk?</translation>
+<translation id="2009341475524975924">For å måle resultatene for en annonse kan begrensede typer data deles mellom nettsteder, for eksempel klokkeslettet da du ble vist en annonse.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}other{# filer}}</translation>
 <translation id="2021896219286479412">Navigering i full skjerm</translation>
 <translation id="2038563949887743358">Slå på Bruk skrivebordsversjon</translation>
@@ -434,6 +435,7 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="3297344142967351106">Talehjelp</translation>
 <translation id="3303414029551471755">Vil du gå videre med å laste ned innholdet?</translation>
 <translation id="3305795716056605962">Oversett sider fra Flere alternativer-knappen</translation>
+<translation id="3319664549618064419">Bytt til nettsted for datamaskiner for å få en bedre visning av dette nettstedet</translation>
 <translation id="3334729583274622784">Vil du endre filetternavnet?</translation>
 <translation id="3341262203274374114">Kan ikke slutte å følge. Noe gikk galt.</translation>
 <translation id="3359667936385849800">Bruk den nåværende tjenesteleverandøren din</translation>
@@ -625,7 +627,6 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="4452411734226507615">Lukk <ph name="TAB_TITLE" />-fanen</translation>
 <translation id="4452548195519783679">Satt som bokmerke i <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Når du tilknytter en annen enhet med QR-kode, kan den bruke denne telefonen som sikkerhetsnøkkel. Hvis du fjerner den, må du skanne QR-koden for å tilknytte den igjen.</translation>
-<translation id="4479839115899251637">Slett fra leselisten</translation>
 <translation id="4479972344484327217">Installerer <ph name="MODULE" /> for Chrome …</translation>
 <translation id="4484496141267039529">Ingen tilkobling. Prøv på nytt senere.</translation>
 <translation id="4487967297491345095">Alle appdataene for Chrome slettes permanent. Dette omfatter alle filer, innstillinger, kontoer, databaser osv.</translation>
@@ -655,6 +656,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4616150815774728855">Åpne <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Bekreft at det er deg</translation>
 <translation id="4634124774493850572">Bruk passord</translation>
+<translation id="4637420359569396807">Med annonsemåling kan begrensede datatyper deles mellom nettsteder og apper for å måle resultatene for annonsene, for eksempel hvilken tid på dagen en annonse ble vist for deg.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 passord er utsatt for sikkerhetsbrudd}other{# passord er utsatt for sikkerhetsbrudd}}</translation>
 <translation id="4650364565596261010">Systemstandard</translation>
 <translation id="465657074423018424">Safe Browsing beskytter deg mot villedende nettsteder. Hvis du slår det av, må du være ekstra forsiktig når du surfer, spesielt før du skriver inn passord.</translation>
@@ -1487,7 +1489,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8955719471735800169">Tilbake til toppen</translation>
 <translation id="8964479563882643397">For å åpne en ny inkognitofane, åpne menyen</translation>
 <translation id="8965591936373831584">venter</translation>
-<translation id="8967427617812342790">Legg til på leselisten</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofaner og <ph name="TAB_COUNT_ONE" /> annen fane blir lukket}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofaner og <ph name="TAB_COUNT_MANY" /> andre faner blir lukket}}</translation>
 <translation id="8970887620466824814">Noe gikk galt.</translation>
 <translation id="8972098258593396643">Vil du laste ned til standardmappen?</translation>

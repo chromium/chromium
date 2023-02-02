@@ -3,6 +3,7 @@
 <translationbundle lang="ro">
 <translation id="1143896152279775643">Parola se va salva în Managerul de parole Google pentru <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Contribuie la îmbunătățirea funcțiilor și performanței Chrome</translation>
+<translation id="1352919863522755794">Managerul de parole Google nu ți-a putut verifica parolele. Verifică-ți conexiunea la internet.</translation>
 <translation id="1462727070346936664">Conectează-te pentru a profita din plin de Chrome.</translation>
 <translation id="1479202195792305274">Chrome poate să îți verifice parolele atunci când te conectezi folosind Contul Google.</translation>
 <translation id="1493827051843127077">Setează Chrome ca browser prestabilit pentru a sincroniza filele, parolele și informațiile de plată pe toate dispozitivele</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Pentru a te deconecta de la Contul Google pe toate site-urile, <ph name="BEGIN_LINK" />deconectează-te de la Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
 <translation id="2732745070297234559">Chrome nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
+<translation id="2767464022270041271">Nu există parole salvate. Managerul de parole Google îți poate verifica parolele atunci când le salvezi.</translation>
 <translation id="2869959624320573933">Conectează-te la Chrome</translation>
 <translation id="2957447865124070833">Selectează <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Deoarece te deconectezi de la un cont gestionat de <ph name="SIGNOUT_MANAGED_DOMAIN" />, datele tale Chrome de pe acest dispozitiv vor fi șterse. Datele tale vor rămâne în Contul Google.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome nu a putut verifica toate parolele. Încearcă din nou mâine sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Pentru a contribui la îmbunătățirea aplicației, Chrome trimite date de utilizare și despre erori la Google. <ph name="BEGIN_LINK" />Gestionează<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nu se acceptă în Chrome Beta</translation>
+<translation id="4840404732697892756">Managerul de parole Google poate verifica parolele atunci când te conectezi cu Contul Google.</translation>
 <translation id="5030102366287574140">Chrome te protejează împotriva încălcării securității datelor, a site-urilor nesigure și nu numai.</translation>
 <translation id="5108659628347594808">Contribuie la îmbunătățirea Chrome</translation>
 <translation id="5119391094379141756">Selectează Chrome.</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome compară periodic parolele tale cu cele din listele publicate online. Când face acest lucru, parolele și numele tale de utilizator sunt criptate, astfel încât să nu fie descifrate de nimeni, nici măcar de Google.</translation>
 <translation id="5639704535586432836">Deschide Setări &gt; Confidențialitate &gt; Cameră foto &gt; Google Chrome și activează camera foto.</translation>
 <translation id="5642200033778930880">Google Chrome nu poate folosi camera foto în modul Vizualizare împărțită</translation>
+<translation id="5661521615548540542">Managerul de parole Google nu a putut verifica toate parolele. Încearcă din nou mai târziu.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline, Chrome nu poate căuta actualizări</translation>
 <translation id="5716154293141027663">Deschide Chrome când atingi linkuri în alte aplicații</translation>
@@ -118,9 +122,11 @@
   2. atinge Aplicația browser prestabilită;
   3. selectează Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Managerul de parole Google nu a putut verifica toate parolele. Încearcă din nou mâine sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Protejează-te cu Google Chrome</translation>
 <translation id="8772179140489533211">Afișează solicitări pentru conectarea la Chrome.</translation>
 <translation id="8788269841521769222">Nu va trebui să reții această parolă. Ea se va salva în Managerul de parole Google pentru <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Managerul de parole Google nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
 <translation id="8897749957032330183">Parolele sunt salvate în Managerul de parole Google pe acest dispozitiv.</translation>
 <translation id="8969290730818637510">Când opțiunea este activă
 <ph name="BEGIN_INDENT" />  • Contribui la îmbunătățirea Chrome pentru cei care-l folosesc în mod similar cu tine<ph name="END_INDENT" />

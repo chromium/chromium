@@ -251,6 +251,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="2426805022920575512">Selecionar outra conta</translation>
 <translation id="2433507940547922241">Aspeto</translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
+<translation id="2439153523196674349">Pré-visualização do site <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Pretende começar a transferir <ph name="FILE_NAME" /> novamente?</translation>
 <translation id="2453860139492968684">Concluir</translation>
 <translation id="2459390580524506445">Pesquisa por voz otimizada</translation>
@@ -389,6 +390,7 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="3066573403916685335">Mover para baixo</translation>
 <translation id="3070005020161560471">Traduzir automaticamente</translation>
 <translation id="3072980200212375806">A app <ph name="APP_NAME" /> vai abrir no Chrome. Ao continuar, aceita os <ph name="BEGIN_LINK1" />Termos de Utilização da Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Utilização Adicionais do Google Chrome e ChromeOS<ph name="END_LINK2" />. A <ph name="BEGIN_LINK3" />Política de Privacidade<ph name="END_LINK3" /> também se aplica.</translation>
+<translation id="3083194063661536258">Sessão terminada. Botão. Abre a caixa de diálogo para iniciar sessão e ativar a sincronização.</translation>
 <translation id="3091010850649238832">Mostrar conteúdos de Copiar e colar</translation>
 <translation id="3098745985164956033">Algumas imagens são enviadas para a Google para melhorar as descrições.</translation>
 <translation id="3104179992611025423">O navegador é gerido pelos teus pais</translation>
@@ -627,7 +629,6 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="4452411734226507615">Fechar o separador <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Adicionado aos marcadores em <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Quando associa outro dispositivo com um código QR, esse dispositivo pode utilizar este telemóvel como chave de segurança. Se o remover, terá de ler um código QR para o associar novamente.</translation>
-<translation id="4479839115899251637">Elimin. da Lista de leitura</translation>
 <translation id="4479972344484327217">A instalar o módulo <ph name="MODULE" /> para o Chrome…</translation>
 <translation id="4484496141267039529">Sem ligação. Tente mais tarde.</translation>
 <translation id="4487967297491345095">Todos os dados de apps do Chrome são eliminados permanentemente, incluindo todos os ficheiros, definições, contas, bases de dados, etc.</translation>
@@ -926,6 +927,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="604124094241169006">Automático</translation>
 <translation id="6042308850641462728">Mais</translation>
+<translation id="6049046116080614938">Com sessão iniciada como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Botão. Abre as definições.</translation>
 <translation id="604996488070107836">A transferência de <ph name="FILE_NAME" /> falhou devido a um erro desconhecido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controle as suas notícias e atividade aqui.</translation>
@@ -1300,6 +1302,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7968014550143838305">Adicionado à lista de leitura</translation>
 <translation id="7971136598759319605">Ativo há 1 dia</translation>
 <translation id="7975379999046275268">Pré-visualizar página <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Com sessão iniciada como <ph name="USER_NAME" />. Botão. Abre as definições.</translation>
 <translation id="7986497153528221272">Para ver as palavras-passe, defina primeiro um bloqueio de ecrã no dispositivo.</translation>
 <translation id="7995059495660416932">É apresentado conteúdo quando este ficar disponível</translation>
 <translation id="799576009106109668">Irá navegar mais depressa porque os conteúdos são carregados proativamente com base na página Web que está a visitar</translation>
@@ -1490,7 +1493,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8955719471735800169">Voltar ao início</translation>
 <translation id="8964479563882643397">Para abrir um novo separador de navegação anónima, abra o respetivo menu</translation>
 <translation id="8965591936373831584">pendente</translation>
-<translation id="8967427617812342790">Adicionar à lista de leitura</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> separador de navegação anónima e mais <ph name="TAB_COUNT_ONE" /> separador serão fechados}other{<ph name="INCOGNITO_TAB_COUNT" /> separador de navegação anónima e mais <ph name="TAB_COUNT_MANY" /> separadores serão fechados}}</translation>
 <translation id="8970887620466824814">Ocorreu um erro.</translation>
 <translation id="8972098258593396643">Pretende transferir para a pasta predefinida?</translation>

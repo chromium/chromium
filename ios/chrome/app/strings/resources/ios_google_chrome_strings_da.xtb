@@ -3,6 +3,7 @@
 <translationbundle lang="da">
 <translation id="1143896152279775643">Din adgangskode gemmes i Google Adgangskodeadministrator for <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Hjælp med at forbedre Chromes funktioner og effektivitet</translation>
+<translation id="1352919863522755794">Google Adgangskodeadministrator kunne ikke tjekke dine adgangskoder. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="1462727070346936664">Log ind for at få mest muligt ud af Chrome.</translation>
 <translation id="1479202195792305274">Chrome kan tjekke dine adgangskoder, når du er logget ind med din Google-konto.</translation>
 <translation id="1493827051843127077">Angiv Chrome som standardbrowser for at synkronisere faner, adgangskoder og betalingsoplysninger på alle dine enheder</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Hvis du vil logge ud af din Google-konto på alle websites, skal du <ph name="BEGIN_LINK" />logge ud af Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome kunne ikke søge efter opdateringer. Prøv igen senere.</translation>
 <translation id="2732745070297234559">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>
+<translation id="2767464022270041271">Der er ingen gemte adgangskoder. Google Adgangskodeadministrator kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="2869959624320573933">Log ind i Chrome</translation>
 <translation id="2957447865124070833">Vælg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Da du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />, slettes dine Chrome-data på denne enhed. Dine data forbliver på din Google-konto.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Chrome sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Understøttes ikke i Chrome Beta</translation>
+<translation id="4840404732697892756">Google Adgangskodeadministrator kan tjekke dine adgangskoder, når du logger ind med din Google-konto.</translation>
 <translation id="5030102366287574140">Chrome kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere.</translation>
 <translation id="5108659628347594808">Gør Chrome bedre</translation>
 <translation id="5119391094379141756">Vælg Chrome</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome tjekker regelmæssigt, om dine adgangskoder er på nogen lister over adgangskoder, der er blevet afsløret online. Dine adgangskoder og brugernavne krypteres under disse tjek, så de kan ikke læses af nogen, heller ikke Google.</translation>
 <translation id="5639704535586432836">Åbn Indstillinger &gt; Privatliv &gt; Kamera &gt; Google Chrome, og slå kameraet til.</translation>
 <translation id="5642200033778930880">Google Chrome kan ikke bruge dit kamera i tilstanden Opdelt visning</translation>
+<translation id="5661521615548540542">Google Adgangskodeadministrator kunne ikke tjekke alle adgangskoder. Prøv igen senere.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline – Chrome kan ikke søge efter opdateringer</translation>
 <translation id="5716154293141027663">Åbn Chrome, hver gang du trykker på links i andre apps</translation>
@@ -118,9 +122,11 @@
   2. Tryk på Standardbrowserapp
   3. Vælg Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Adgangskodeadministrator kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Sikkerhed i Google Chrome</translation>
 <translation id="8772179140489533211">Viser anmodninger om at logge ind i Chrome.</translation>
 <translation id="8788269841521769222">Du behøver ikke at huske denne adgangskode. Den gemmes i Googles Adgangskodeadministrator for <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Google Adgangskodeadministrator kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>
 <translation id="8897749957032330183">Adgangskoder gemmes i Google Adgangskodeadministrator på denne enhed.</translation>
 <translation id="8969290730818637510">Ved aktivering:
 <ph name="BEGIN_INDENT" />  • Hjælp med at gøre Chrome bedre for andre, der bruger Chrome på samme måde som dig.<ph name="END_INDENT" />

@@ -106,7 +106,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1085697365578766383">Ralat semasa memulakan mesin maya. Sila cuba lagi.</translation>
 <translation id="1087965115100412394">Jangan benarkan laman menyambung kepada peranti MIDI</translation>
 <translation id="1088659085457112967">Masuk ke Mod Pembaca</translation>
-<translation id="1089407731410758060">Tukar Tema</translation>
 <translation id="1090126737595388931">Tiada Apl Latar Belakang Dijalankan</translation>
 <translation id="1090541560108055381">Sebelum memasangkan, pastikan kod ini sama pada kedua-dua peranti</translation>
 <translation id="1091767800771861448">Tekan ESCAPE untuk melangkau (Binaan tidak rasmi sahaja).</translation>
@@ -550,6 +549,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1495677929897281669">Kembali ke tab</translation>
 <translation id="1500297251995790841">Peranti tidak diketahui [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Ketahui lebih lanjut tentang Apl Chrome yang tidak disokong</translation>
+<translation id="1501480321619201731">Padamkan kumpulan</translation>
 <translation id="1503392482221435031">Menghantar statistik penggunaan kepada Google secara automatik. Anda boleh menghidupkan atau mematikan laporan ranap sistem dalam tetapan peranti anda.</translation>
 <translation id="150411034776756821">Alih keluar <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Folder kongsi tersedia dalam Windows di <ph name="BASE_DIR" />.</translation>
@@ -2112,7 +2112,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2835547721736623118">Perkhidmatan pengecaman pertuturan</translation>
 <translation id="2836232638504556905">Untuk meneruskan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi nama, alamat e-mel dan gambar profil anda dengan laman ini. Lihat <ph name="BEGIN_LINK" />dasar privasi<ph name="END_LINK" /> laman ini.</translation>
 <translation id="2836269494620652131">Ranap</translation>
-<translation id="2836635946302913370">Log masuk dengan nama pengguna ini telah dilumpuhkan oleh pentadbir anda.</translation>
 <translation id="283669119850230892">Untuk menggunakan rangkaian <ph name="NETWORK_ID" />, mula-mula lengkapkan sambungan anda ke Internet di bawah.</translation>
 <translation id="2838379631617906747">Memasang</translation>
 <translation id="2839032553903800133">Pemberitahuan disekat</translation>
@@ -3630,7 +3629,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4244238649050961491">Dapatkan lagi apl stilus</translation>
 <translation id="4246980464509998944">Ulasan tambahan:</translation>
 <translation id="424726838611654458">Sentiasa buka dalam Adobe Reader</translation>
-<translation id="4247901771970415646">Tidak dapat disegerakkan ke <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Pastikan kata laluan anda selamat daripada pelanggaran data dan isu keselamatan yang lain</translation>
 <translation id="4249248555939881673">Menunggu sambungan rangkaian...</translation>
 <translation id="4249373718504745892">Halaman ini telah disekat daripada mengakses kamera dan mikrofon anda.</translation>
@@ -3851,6 +3849,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4441147046941420429">Untuk meneruskan, alih keluar kunci keselamatan daripada peranti anda, kemudian masukkan semula dan sentuh kunci itu.</translation>
 <translation id="444134486829715816">Kembangkan...</translation>
 <translation id="4441928470323187829">Disemat oleh pentadbir anda</translation>
+<translation id="4442863809158514979">Lihat kebenaran web</translation>
 <translation id="4443536555189480885">&amp;Bantuan</translation>
 <translation id="4444304522807523469">Akses pengimbas dokumen yang disambungkan melalui USB atau pada rangkaian tempatan</translation>
 <translation id="4444512841222467874">Jika ruang tidak dikosongkan, pengguna dan data mungkin dialih keluar secara automatik.</translation>
@@ -5713,7 +5712,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="617213288191670920">Tiada bahasa ditambah</translation>
 <translation id="6173623053897475761">Taipkan PIN anda sekali lagi</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
-<translation id="6176043333338857209">Bluetooth akan dihidupkan buat sementara waktu untuk berkomunikasi dengan kunci keselamatan anda</translation>
 <translation id="6178664161104547336">Pilih sijil</translation>
 <translation id="6178682841350631965">Data log masuk anda telah dikemas kini</translation>
 <translation id="6180510783007738939">Alat Garisan</translation>
@@ -7480,6 +7478,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="779308894558717334">Hijau cerah</translation>
 <translation id="7793098747275782155">Biru gelap</translation>
 <translation id="7797571222998226653">Mati</translation>
+<translation id="7798504574384119986">Lihat Kebenaran Web</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> disekat secara automatik</translation>
 <translation id="7800518121066352902">Putar M&amp;elawan Arah Jam</translation>
 <translation id="7801679634091975683">Perubahan yang anda buat di sini hanya digunakan pada Penyemak Imbas Chrome Lacros. Untuk membuat perubahan pada tetapan Penyemak Imbas Chrome anda, buka Penyemak Imbas Chrome dan pergi ke tetapan.</translation>

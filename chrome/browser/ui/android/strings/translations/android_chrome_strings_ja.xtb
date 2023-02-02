@@ -237,6 +237,7 @@
 <translation id="2321086116217818302">パスワードを準備しています…</translation>
 <translation id="2323763861024343754">サイトのストレージ</translation>
 <translation id="2328985652426384049">ログインできません</translation>
+<translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> をインストールできませんでした。</translation>
 <translation id="234265804618409743">カメラを開けません。エラーが発生しました。</translation>
 <translation id="2349710944427398404">Chrome が使用するデータ全体（アカウント、ブックマーク、保存済みの設定など）</translation>
 <translation id="235789365079050412">Google プライバシー ポリシー</translation>
@@ -344,6 +345,7 @@
 <translation id="2909615210195135082">Google 通知プラットフォーム</translation>
 <translation id="2912296070571964914">興味のあるトピックを管理します</translation>
 <translation id="2912345083818861431">画面ロックを使用して、開いているシークレット タブを表示します</translation>
+<translation id="2922568440285376746">Google で画像内を検索<ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">名前が無効です</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ストレージ</translation>
 <translation id="2932222164150889403">キーボードは変更されません</translation>
@@ -389,6 +391,7 @@
 <translation id="3072980200212375806">Chrome で <ph name="APP_NAME" /> を開きます。続行すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したものと見なされます。また、<ph name="BEGIN_LINK3" />プライバシー ポリシー<ph name="END_LINK3" />も適用されます。</translation>
 <translation id="3091010850649238832">クリップボードの内容を表示</translation>
 <translation id="3098745985164956033">正確な説明を生成するため、画像が Google に送信される場合があります</translation>
+<translation id="3104179992611025423">お使いのブラウザは保護者によって管理されています</translation>
 <translation id="3114507951000454849">今日のニュースをチェック <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">リンクされました:</translation>
 <translation id="3123734510202723619">お知らせ</translation>
@@ -398,6 +401,7 @@
 <translation id="3157931365184549694">復元</translation>
 <translation id="3166827708714933426">タブとウィンドウのショートカット</translation>
 <translation id="316694332262407393">Chrome はここですでに実行中です。</translation>
+<translation id="3167258285411721858"><ph name="HOST_NAME" /> のモバイルサイトをリクエストできます</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">広告の測定</translation>
 <translation id="3207960819495026254">ブックマークしました</translation>
@@ -623,7 +627,6 @@
 <translation id="4452411734226507615">「<ph name="TAB_TITLE" />」タブを閉じます</translation>
 <translation id="4452548195519783679">「<ph name="FOLDER_NAME" />」にブックマークしました</translation>
 <translation id="4461614516424362539">QR コードを使用してリンクした他のデバイスで、このスマートフォンをセキュリティ キーとして使用できます。デバイスを削除した場合は、QR コードをスキャンしてもう一度リンクする必要があります。</translation>
-<translation id="4479839115899251637">リーディング リストから削除</translation>
 <translation id="4479972344484327217">Chrome 用の <ph name="MODULE" /> をインストールしています…</translation>
 <translation id="4484496141267039529">ネットワークに接続されていないため、しばらくしてからもう一度お試しください。</translation>
 <translation id="4487967297491345095">Chrome のすべてのアプリデータを完全に削除します。削除されるデータには、すべてのファイル、設定、アカウント、データベースなどが含まれます。</translation>
@@ -666,6 +669,7 @@
 <translation id="4684427112815847243">すべてを同期する</translation>
 <translation id="4685741273709472646">プルダウン リストから選択します</translation>
 <translation id="4687718960473379118">サイト提案広告</translation>
+<translation id="4689792375321623175">Google で画像を検索<ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}}</translation>
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>
 <translation id="4719927025381752090">翻訳するか尋ねる</translation>
@@ -812,6 +816,7 @@
 <translation id="5438292632479953702">再ダウンロード</translation>
 <translation id="5441466871879044658">この言語に翻訳する</translation>
 <translation id="5441522332038954058">アドレスバーに移動する</translation>
+<translation id="5444999712122199445">サイトに戻ってください</translation>
 <translation id="544776284582297024">タブを開いて複数のページに同時にアクセスするには、タブを開くボタンをタップします</translation>
 <translation id="5454166040603940656">- <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">ページをダウンロード</translation>
@@ -1463,6 +1468,7 @@
 <translation id="8849001918648564819">非表示</translation>
 <translation id="8853345339104747198">「<ph name="TAB_TITLE" />」タブ</translation>
 <translation id="8854223127042600341">オフライン ファイルを表示</translation>
+<translation id="885480114717186641"><ph name="HOST_NAME" /> の PC 版サイトをリクエストできます</translation>
 <translation id="8856607253650333758">説明文を取得</translation>
 <translation id="8856931513242997049">通知権限フローは閉じています</translation>
 <translation id="8873817150012960745">始めるにはここをタップ</translation>
@@ -1483,7 +1489,6 @@
 <translation id="8955719471735800169">トップへ戻る</translation>
 <translation id="8964479563882643397">新しいシークレット タブを開くには、メニューを表示します</translation>
 <translation id="8965591936373831584">保留中</translation>
-<translation id="8967427617812342790">リーディング リストに追加</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと <ph name="TAB_COUNT_ONE" /> 個以上のタブが閉じられます}other{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと <ph name="TAB_COUNT_MANY" /> 個以上のタブが閉じられます}}</translation>
 <translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="8972098258593396643">デフォルトのフォルダにダウンロードしますか？</translation>

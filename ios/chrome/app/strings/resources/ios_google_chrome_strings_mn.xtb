@@ -3,6 +3,7 @@
 <translationbundle lang="mn">
 <translation id="1143896152279775643">Таны нууц үгийг <ph name="EMAIL" />-д зориулж Google-н Нууц үгний менежерт хадгална.</translation>
 <translation id="1282031177488366470">Chrome-н онцлог болон гүйцэтгэлийг сайжруулахад туслах</translation>
+<translation id="1352919863522755794">Google Password Manager таны нууц үгнүүдийг шалгаж чадсангүй. Интернэт холболтоо шалгаж үзнэ үү.</translation>
 <translation id="1462727070346936664">Chrome-г бүрэн ашиглахын тулд нэвтэрнэ үү.</translation>
 <translation id="1479202195792305274">Таныг Google Бүртгэлээрээ нэвтрэх үед Chrome таны нууц үгнүүдийг шалгах боломжтой.</translation>
 <translation id="1493827051843127077">Та өөрийн бүх төхөөрөмж дээрх табууд, нууц үгнүүд болон төлбөрийн мэдээллээ синк хийхийн тулд Chrome-г өгөгдмөлөөр тохируулна уу</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Бүх вебсайт дээр Google Бүртгэлээсээ гарахын тулд <ph name="BEGIN_LINK" />Chrome-с гарна уу<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome-н шинэчлэлтийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="2732745070297234559">Chrome бүх нууц үгийг шалгаж чадсангүй. Маргааш дахин оролдоно уу.</translation>
+<translation id="2767464022270041271">Хадгалсан ямар ч нууц үг алга. Google Password Manager таныг нууц үгнүүдээ хадгалсан үед тэдгээрийг шалгах боломжтой.</translation>
 <translation id="2869959624320573933">Chrome-д нэвтэрнэ үү</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />-г сонгоно уу</translation>
 <translation id="3030414234702425231">Та <ph name="SIGNOUT_MANAGED_DOMAIN" />-н удирддаг бүртгэлээс гарч байгаа тул таны Chrome-н өгөгдлийг энэ төхөөрөмжөөс устгана. Таны өгөгдөл таны Google Бүртгэлд хэвээр үлдэнэ.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome бүх нууц үгийг шалгаж чадсангүй. Маргааш дахин оролдох буюу эсхүл <ph name="BEGIN_LINK" />Google Бүртгэлдээ байгаа нууц үгнүүдийг шалгана уу.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">Аппыг сайжруулахад туслахын тулд Chrome нь ашиглалт болон гэмтлийн өгөгдлийг Google-д илгээдэг. <ph name="BEGIN_LINK" />Удирдах<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome Бета дээр дэмжихгүй</translation>
+<translation id="4840404732697892756">Таныг Google Бүртгэлээрээ нэвтэрсэн үед Google Password Manager нууц үгнүүдийг тань шалгах боломжтой.</translation>
 <translation id="5030102366287574140">Chrome нь таныг өгөгдлийн зөрчил, аюултай вебсайт болон бусад зүйлээс хамгаалахад туслах боломжтой.</translation>
 <translation id="5108659628347594808">Chrome-г сайжруулаарай</translation>
 <translation id="5119391094379141756">Chrome-г сонгоно уу</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome нь таны нууц үгийг онлайнаар нийтэлсэн жагсаалтуудтай үе үе харьцуулж шалгадаг. Үүнийг хийх үед таны нууц үг болон хэрэглэгчийн нэр кодчилогдсон байх бөгөөд ингэснээр Google-г оролцуулаад хэн ч тэдгээрийг унших боломжгүй болно.</translation>
 <translation id="5639704535586432836">Тохиргоо &gt; Нууцлал &gt; Камер &gt; Google Chrome-г нээж, камерыг асаана уу.</translation>
 <translation id="5642200033778930880">Google Chrome таны камерыг Хувааж харах горимд ашиглах боломжгүй</translation>
+<translation id="5661521615548540542">Google Password Manager бүх нууц үгийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="5690427481109656848">Google ХХК</translation>
 <translation id="571296537125272375">Офлайн байна, Chrome-н шинэчлэлтийг шалгах боломжгүй байна</translation>
 <translation id="5716154293141027663">Бусад апп дахь холбоосыг товших бүрдээ Chrome-г нээгээрэй</translation>
@@ -118,9 +122,11 @@
   2. Өгөгдмөл хөтчийн аппыг товшино уу
   3. Chrome-г сонгоно уу.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Password Manager бүх нууц үгийг шалгаж чадсангүй. Маргааш дахин оролдох эсвэл <ph name="BEGIN_LINK" />Google Бүртгэл дэх нууц үгнүүдээ шалгана уу<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Google Chrome-н тусламжтай аюулгүй байгаарай</translation>
 <translation id="8772179140489533211">Chrome-д нэвтрэх сануулгыг харуулна.</translation>
 <translation id="8788269841521769222">Та энэ нууц үгийг санах шаардлагагүй. Үүнийг <ph name="EMAIL" />-д зориулж Google-н Нууц үгний менежерт хадгална</translation>
+<translation id="8857676124663337448">Google Password Manager бүх нууц үгийг шалгаж чадсангүй. Маргааш дахин оролдоно уу.</translation>
 <translation id="8897749957032330183">Нууц үгнүүдийг энэ төхөөрөмж дээр Google Password Manager-т хадгалдаг.</translation>
 <translation id="8969290730818637510">Асаалттай үед:
 <ph name="BEGIN_INDENT" />  • Chrome-г тантай адил аргаар ашигладаг хүмүүст зориулан сайжруулахад нь туслаарай.<ph name="END_INDENT" />

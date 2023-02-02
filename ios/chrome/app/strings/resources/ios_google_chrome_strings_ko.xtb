@@ -3,6 +3,7 @@
 <translationbundle lang="ko">
 <translation id="1143896152279775643">비밀번호가 <ph name="EMAIL" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="1282031177488366470">Chrome의 기능 및 성능 개선에 참여</translation>
+<translation id="1352919863522755794">Google 비밀번호 관리자에서 비밀번호를 확인할 수 없습니다. 인터넷 연결 상태를 확인해 보세요.</translation>
 <translation id="1462727070346936664">로그인하여 Chrome의 모든 기능을 이용하세요</translation>
 <translation id="1479202195792305274">Google 계정으로 로그인하면 Chrome에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="1493827051843127077">Chrome을 모든 기기에서 탭, 비밀번호, 결제 정보를 동기화할 기본값으로 설정합니다.</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">웹사이트에 로그인되어 있는 Google 계정에서 모두 로그아웃하려면 <ph name="BEGIN_LINK" />Chrome에서 로그아웃<ph name="END_LINK" />하세요.</translation>
 <translation id="2695886661449553974">Chrome에서 업데이트를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="2732745070297234559">Chrome에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도해 보세요.</translation>
+<translation id="2767464022270041271">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Google 비밀번호 관리자에서 확인할 수 있습니다.</translation>
 <translation id="2869959624320573933">Chrome에 로그인</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />을 선택합니다.</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" />에서 관리하는 계정에서 로그아웃하면 Chrome 데이터가 기기에서 삭제됩니다. Google 계정에 저장된 데이터는 그대로 유지됩니다.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도하거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="4819268619367838612">앱 개선을 위해 Chrome에서 사용 통계 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_LINK" />관리<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome 베타에서는 지원되지 않습니다.</translation>
+<translation id="4840404732697892756">Google 계정으로 로그인하면 Google 비밀번호 관리자에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="5030102366287574140">Chrome에서는 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호합니다</translation>
 <translation id="5108659628347594808">Chrome 개선에 참여</translation>
 <translation id="5119391094379141756">Chrome을 선택합니다.</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome에서는 온라인에 게시된 비밀번호 목록에 사용자의 비밀번호가 포함되어 있는지를 주기적으로 확인합니다. 이렇게 하면 비밀번호 및 사용자 이름이 암호화되어 Google을 포함해 누구도 읽을 수 없습니다.</translation>
 <translation id="5639704535586432836">설정 &gt; 개인정보 보호 &gt; 카메라 &gt; Chrome을 열고 카메라를 사용 설정하세요.</translation>
 <translation id="5642200033778930880">Chrome에서는 분할 모드에서 카메라를 사용할 수 없습니다.</translation>
+<translation id="5661521615548540542">Google 비밀번호 관리자에서 일부 비밀번호를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">오프라인 상태이므로 Chrome에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="5716154293141027663">다른 앱에서 링크를 탭할 때마다 Chrome을 엽니다.</translation>
@@ -118,9 +122,11 @@
   2. 기본 브라우저 앱을 탭합니다.
   3. Chrome을 선택합니다.</translation>
 <translation id="8540666473246803645">Chrome</translation>
+<translation id="8603022514504485810">Google 비밀번호 관리자에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도하거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="8736550665979974340">Chrome으로 안전하게 보호하기</translation>
 <translation id="8772179140489533211">Chrome에 로그인하기 위한 메시지를 표시합니다.</translation>
 <translation id="8788269841521769222">이 비밀번호를 기억하지 않아도 됩니다. <ph name="EMAIL" />의 Google 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
+<translation id="8857676124663337448">Google 비밀번호 관리자에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도해 보세요.</translation>
 <translation id="8897749957032330183">비밀번호가 이 기기의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="8969290730818637510">사용 설정되어 있을 때:
 <ph name="BEGIN_INDENT" />  • 나와 비슷한 사용자를 위한 Chrome 개선에 도움이 됩니다.<ph name="END_INDENT" />

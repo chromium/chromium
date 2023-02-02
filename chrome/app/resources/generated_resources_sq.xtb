@@ -106,7 +106,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1085697365578766383">Gabim me hapjen e pajisjes virtuale. Provo sërish.</translation>
 <translation id="1087965115100412394">Mos lejo që sajtet të lidhen me pajisjet MIDI</translation>
 <translation id="1088659085457112967">Hyr në modalitetin e lexuesit</translation>
-<translation id="1089407731410758060">Ndrysho temën</translation>
 <translation id="1090126737595388931">Nuk ka aplikacione sfondi në punë</translation>
 <translation id="1090541560108055381">Para çiftimit, sigurohu që ky kod të jetë i njëjtë në të dyja pajisjet</translation>
 <translation id="1091767800771861448">Shtyp ESCAPE për të kapërcyer (vetëm ndërtime jo zyrtare).</translation>
@@ -547,6 +546,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1495677929897281669">Kthehu te skeda</translation>
 <translation id="1500297251995790841">Pajisje e panjohur [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Mëso më shumë rreth aplikacioneve të pambështetura të Chrome</translation>
+<translation id="1501480321619201731">Fshi grupin</translation>
 <translation id="1503392482221435031">Dërgon automatikisht te Google statistikat e përdorimit. Mund t'i aktivizosh ose çaktivizosh raportet e ndërprerjeve aksidentale te cilësimet e pajisjes sate.</translation>
 <translation id="150411034776756821">Hiq <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Dosjet e ndara janë të disponueshme në Windows në <ph name="BASE_DIR" />.</translation>
@@ -2095,7 +2095,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2835547721736623118">Shërbimi i njohjes së ligjërimit</translation>
 <translation id="2836232638504556905">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë emrin, adresën e email-it dhe fotografinë tënde të profilit me këtë sajt. Shiko <ph name="BEGIN_LINK" />politikën e privatësisë<ph name="END_LINK" /> të këtij sajti.</translation>
 <translation id="2836269494620652131">Ndërprerje aksidentale</translation>
-<translation id="2836635946302913370">Identifikimi me këtë emër përdoruesi është çaktivizuar nga administratori yt.</translation>
 <translation id="283669119850230892">Për të përdorur rrjetin <ph name="NETWORK_ID" />, në fillim përfundo lidhjen tënde me internetin më poshtë.</translation>
 <translation id="2838379631617906747">Po instalohet</translation>
 <translation id="2839032553903800133">Njoftimet janë bllokuar</translation>
@@ -2904,6 +2903,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3602290021589620013">Pamje paraprake</translation>
 <translation id="3602870520245633055">Printo dhe skano</translation>
 <translation id="3603622770190368340">Merr certifikatën e rrjetit</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} llogari po përdor të njëjtin fjalëkalim}other{{COUNT} llogari po përdorin të njëjtin fjalëkalim}}</translation>
 <translation id="3605780360466892872">I kollarisur</translation>
 <translation id="3609277884604412258">Kërkimi i shpejtë</translation>
 <translation id="3610241585790874201">Nuk lejohet të ruajnë të dhëna në pajisjen tënde</translation>
@@ -3612,7 +3612,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4244238649050961491">Gjej më shumë aplikacione të stilolapsit</translation>
 <translation id="4246980464509998944">Komentet shtesë:</translation>
 <translation id="424726838611654458">Hape gjithmonë në Adobe Reader</translation>
-<translation id="4247901771970415646">Nuk mund të sinkronizohet me <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Mbaji fjalëkalimet e tua të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe problemeve të tjera të sigurisë</translation>
 <translation id="4249248555939881673">Në pritje të lidhjes së rrjetit...</translation>
 <translation id="4249373718504745892">Për këtë faqe është bllokuar qasja te kamera dhe mikrofoni.</translation>
@@ -3833,6 +3832,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4441147046941420429">Për të vazhduar, hiqe çelësin tënd të sigurisë nga pajisja jote dhe më pas fute përsëri dhe preke atë</translation>
 <translation id="444134486829715816">Zgjero...</translation>
 <translation id="4441928470323187829">Gozhduar nga administratori yt</translation>
+<translation id="4442863809158514979">Shiko lejet për uebin</translation>
 <translation id="4443536555189480885">&amp;Ndihma</translation>
 <translation id="4444304522807523469">Qasu te skanerët e dokumenteve të lidhur me USB ose në rrjetin lokal</translation>
 <translation id="4444512841222467874">Nëse nuk është bërë e disponueshme hapësira, përdoruesit dhe të dhënat mund të hiqen automatikisht.</translation>
@@ -5694,7 +5694,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="617213288191670920">Nuk është shtuar asnjë gjuhë</translation>
 <translation id="6173623053897475761">Shkruaj përsëri kodin tënd PIN</translation>
 <translation id="6175314957787328458">GUID e domenit Microsoft</translation>
-<translation id="6176043333338857209">Bluetooth-i do të aktivizohet përkohësisht për të komunikuar me çelësin tënd të sigurisë</translation>
 <translation id="6178664161104547336">Përzgjidh një certifikatë</translation>
 <translation id="6178682841350631965">Të dhënat e tua të identifikimit u përditësuan</translation>
 <translation id="6180510783007738939">Vegla e vijës</translation>
@@ -7460,6 +7459,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="779308894558717334">E gjelbër e çelur</translation>
 <translation id="7793098747275782155">Blu e errët</translation>
 <translation id="7797571222998226653">Joaktiv</translation>
+<translation id="7798504574384119986">Shiko lejet për uebin</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> është bllokuar automatikisht</translation>
 <translation id="7800518121066352902">Rrotullo në drejtim &amp;të kundërt të akrepave të orës</translation>
 <translation id="7801679634091975683">Ndryshimet që bën këtu zbatohen vetëm në shfletuesin Chrome Lacros. Për të bërë ndryshime në cilësimet e shfletuesit Chrome, hap shfletuesin Chrome dhe shko te cilësimet.</translation>

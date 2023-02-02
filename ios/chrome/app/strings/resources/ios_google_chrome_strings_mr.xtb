@@ -3,6 +3,7 @@
 <translationbundle lang="mr">
 <translation id="1143896152279775643"><ph name="EMAIL" /> साठी तुमचा पासवर्ड हा Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केला जाईल.</translation>
 <translation id="1282031177488366470">Chrome ची वैशिष्ट्ये आणि परफॉर्मन्स सुधारण्यात मदत करा</translation>
+<translation id="1352919863522755794">Google Password Manager ला तुमचे पासवर्ड तपासता आले नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="1462727070346936664">Chrome चा पुरेपूर वापर करण्यासाठी साइन इन करा.</translation>
 <translation id="1479202195792305274">तुम्ही तुमचे Google खाते वापरून साइन इन करता तेव्हा, Chrome तुमचे पासवर्ड तपासू शकते.</translation>
 <translation id="1493827051843127077">तुमच्या सर्व डिव्हाइसवर तुमचे टॅब, पासवर्ड आणि पेमेंटशी संबंधित माहिती सिंक करण्यासाठी Chrome डीफॉल्ट म्हणून सेट करा</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">सर्व वेबसाइटवरील तुमच्या Google खाते मधून साइन आउट करण्यासाठी, <ph name="BEGIN_LINK" />Chrome मधून साइन आउट करणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="2695886661449553974">Chrome ला अपडेट तपासता आली नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="2732745070297234559">Chrome ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा.</translation>
+<translation id="2767464022270041271">सेव्ह केलेले कोणतेही पासवर्ड नाहीत. तुम्ही तुमचे पासवर्ड सेव्ह करता, तेव्हा Google Password Manager तुमचे पासवर्ड तपासू शकते.</translation>
 <translation id="2869959624320573933">Chrome वर साइन इन करा</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> निवडा</translation>
 <translation id="3030414234702425231">तुम्ही <ph name="SIGNOUT_MANAGED_DOMAIN" /> द्वारे व्यवस्थापित केलेल्या खात्यातून साइन आउट केले आहे, तुमचा Chrom डेटा या डिव्हाइसवरून हटवला जाईल. तुमचा डेटा तुमच्या Google खाते मध्ये असेल</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा किंवा <ph name="BEGIN_LINK" />तुमच्या Google खाते मध्ये पासवर्ड तपासा.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">अ‍ॅपमध्ये सुधारणा करण्यात मदत करण्यासाठी, Chrome हे Google ला वापर आणि क्रॅश डेटा पाठवते. <ph name="BEGIN_LINK" />व्यवस्थापित करा<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome बीटा वर सपोर्ट नाही</translation>
+<translation id="4840404732697892756">तुम्ही तुमचे Google खाते वापरून साइन इन करता तेव्हा, Google Password Manager तुमचे पासवर्ड तपासू शकते.</translation>
 <translation id="5030102366287574140">Chrome तुम्हाला डेटा भंग, असुरक्षित वेबसाइट आणि आणखी बर्‍याच गोष्टींपासून सुरक्षित ठेवण्यात मदत करू शकते.</translation>
 <translation id="5108659628347594808">Chrome मध्ये सुधारणा करा</translation>
 <translation id="5119391094379141756">Chrome निवडा</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">ऑनलाइन प्रकाशित केलेल्या सूचींनुसार Chrome ठरावीक काळाने तुमचे पासवर्ड तपासते. हे करत असताना, तुमचे पासवर्ड आणि वापरकर्ता नावे एंक्रिप्ट केली जातात जेणेकरून Google च्या समावेशासह इतर कोणाकडून ती वाचली जाऊ नयेत.</translation>
 <translation id="5639704535586432836">सेटिंग्ज &gt; गोपनीयता &gt; कॅमेरा &gt; Google Chrome उघडा आणि कॅमेरा सुरू करा.</translation>
 <translation id="5642200033778930880">विभाजित दृश्य मोडमध्ये Google Chrome तुमचा कॅमेरा वापरू शकत नाही</translation>
+<translation id="5661521615548540542">Google Password Manager ला सर्व पासवर्ड तपासता आले नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">ऑफलाइन, Chrome अपडेट तपासू शकत नाही</translation>
 <translation id="5716154293141027663">तुम्ही इतर अ‍ॅप्सवरील लिंकवर जेव्हा टॅप करता तेव्हा Chrome उघडा</translation>
@@ -118,9 +122,11 @@
   २. डीफॉल्ट ब्राउझर अ‍ॅप वर टॅप करा
   ३. Chrome निवडा.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Password Manager ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा किंवा <ph name="BEGIN_LINK" />तुमच्या Google खाते मध्ये पासवर्ड तपासा.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Google Chrome सह सुरक्षित राहा</translation>
 <translation id="8772179140489533211">Chrome मध्ये साइन इन करण्यासाठी सूचना दाखवते.</translation>
 <translation id="8788269841521769222">तुम्ही हा पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही. तो <ph name="EMAIL" /> साठी Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केला जाईल</translation>
+<translation id="8857676124663337448">Google Password Manager ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा.</translation>
 <translation id="8897749957032330183">पासवर्ड हे Google Password Manager यामध्ये या डिव्हाइसवर सेव्ह केले जातात.</translation>
 <translation id="8969290730818637510">सुरू असल्यास:
 <ph name="BEGIN_INDENT" />  • तुमच्याप्रमाणे Chrome वापरणाऱ्या लोकांसाठी ते आणखी चांगले करण्यात मदत करा.<ph name="END_INDENT" />

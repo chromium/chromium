@@ -391,6 +391,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ќе се отвори во Chrome. Ако продолжите, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />. Важи и <ph name="BEGIN_LINK3" />Политиката за приватност<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">Прикажи содржини од привремената меморија</translation>
 <translation id="3098745985164956033">Некои слики се испраќаат во Google за да им се подобрат описите</translation>
+<translation id="3104179992611025423">Твоите родители управуваат со прелистувачот</translation>
 <translation id="3114507951000454849">Прочитајте ги денешните вести <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">поврзана со</translation>
 <translation id="3123734510202723619">Соопштенија</translation>
@@ -400,6 +401,7 @@
 <translation id="3157931365184549694">Обнови</translation>
 <translation id="3166827708714933426">Кратенки за картичката и прозорецот</translation>
 <translation id="316694332262407393">Chrome веќе работи тука.</translation>
+<translation id="3167258285411721858">Можете да го побарате сајтот за мобилен за <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Откриј</translation>
 <translation id="3187472288455401631">Мерење реклами</translation>
 <translation id="3207960819495026254">Обележано</translation>
@@ -625,7 +627,6 @@
 <translation id="4452411734226507615">Затвори ја картичката <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Додаден е обележувач во <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Кога ќе поврзете друг уред со QR-код, тој ќе може да го користи телефонов како безбедносен клуч. Ако го отстраните, ќе треба да скенирате QR-код за да го поврзете повторно.</translation>
-<translation id="4479839115899251637">Избриши од список за читање</translation>
 <translation id="4479972344484327217">Се инсталира <ph name="MODULE" /> за Chrome…</translation>
 <translation id="4484496141267039529">Нема интернет-врска. Обидете се повторно подоцна.</translation>
 <translation id="4487967297491345095">Сите податоци од апликациите на Chrome ќе се избришат трајно. Тука спаѓаат сите датотеки, поставки, сметки, бази на податоци итн.</translation>
@@ -1467,6 +1468,7 @@
 <translation id="8849001918648564819">Сокриен</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, картичка</translation>
 <translation id="8854223127042600341">Погледнете ги вашите офлајн датотеки</translation>
+<translation id="885480114717186641">Можете да го побарате сајтот за компјутер за <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Добивај описи</translation>
 <translation id="8856931513242997049">Текот на дозволата за известувања е затворен</translation>
 <translation id="8873817150012960745">Допрете тука за да започнете</translation>
@@ -1487,7 +1489,6 @@
 <translation id="8955719471735800169">Назад на почеток</translation>
 <translation id="8964479563882643397">За да отворите нова картичка „Инкогнито“, отворете го менито</translation>
 <translation id="8965591936373831584">чека на ред</translation>
-<translation id="8967427617812342790">Додај во списокот за читање</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_ONE" /> картичка ќе се затворат}one{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_MANY" /> картичка ќе се затворат}other{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_MANY" /> картички ќе се затворат}}</translation>
 <translation id="8970887620466824814">Нешто тргна наопаку.</translation>
 <translation id="8972098258593396643">Дали да се преземе во стандардната папка?</translation>

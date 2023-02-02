@@ -3,6 +3,7 @@
 <translationbundle lang="sw">
 <translation id="1143896152279775643">Nenosiri lako litahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Tusaidie Tuboreshe Utendaji na Vipengele vya Chrome</translation>
+<translation id="1352919863522755794">Kidhibiti cha Manenosiri cha Google hakikuweza kukagua manenosiri yako. Jaribu kuangalia muunganisho wako wa Intaneti.</translation>
 <translation id="1462727070346936664">Ingia katika akaunti ili unufaike zaidi na Chrome.</translation>
 <translation id="1479202195792305274">Chrome inaweza kukagua manenosiri yako unapoingia ukitumia Akaunti yako ya Google.</translation>
 <translation id="1493827051843127077">Weka Chrome iwe kivinjari chaguomsingi cha kusawazisha vichupo, manenosiri na maelezo yako ya malipo kwenye vifaa vyako vyote</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Ili uondoke kwenye akaunti yako ya Google katika tovuti zote, <ph name="BEGIN_LINK" />ondoka kwenye akaunti yako katika kivinjari cha Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome imeshindwa kukagua kama kuna masasisho. Jaribu tena baadaye.</translation>
 <translation id="2732745070297234559">Chrome imeshindwa kukagua manenosiri yote. Jaribu tena kesho.</translation>
+<translation id="2767464022270041271">Hakuna manenosiri yaliyohifadhiwa. Kidhibiti cha Manenosiri cha Google kinaweza kukagua manenosiri yako unapoyahifadhi.</translation>
 <translation id="2869959624320573933">Ingia Katika Akaunti kwenye Chrome</translation>
 <translation id="2957447865124070833">Chagua <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Kwa sababu unaondoka kwenye akaunti inayodhibitiwa na <ph name="SIGNOUT_MANAGED_DOMAIN" />, data yako ya Chrome itafutwa kwenye kifaa hiki, lakini itasalia katika Akaunti yako ya Google.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome imeshindwa kukagua manenosiri yote. Jaribu tena kesho au <ph name="BEGIN_LINK" />ukague manenosiri katika Akaunti yako ya Google.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">Ili kusaidia kuboresha programu, Chrome hutuma takwimu ya matumizi na ripoti ya kuacha kufanya kazi kwenda Google. <ph name="BEGIN_LINK" />Dhibiti<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Haitumiki kwenye toleo la Beta la Chrome</translation>
+<translation id="4840404732697892756">Kidhibiti cha Manenosiri cha Google kinaweza kukagua manenosiri yako unapoingia kwa kutumia Akaunti yako ya Google.</translation>
 <translation id="5030102366287574140">Chrome inaweza kukusaidia ulinde akaunti yako dhidi ya ufichuzi haramu wa data, tovuti ambazo si salama na zaidi.</translation>
 <translation id="5108659628347594808">Boresha Chrome</translation>
 <translation id="5119391094379141756">Chagua Chrome</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome hukagua mara kwa mara manenosiri yako ikilinganisha na orodha ambazo zimechapishwa mtandaoni. Wakati inafanya hivyo, manenosiri na majina yako ya mtumiaji huwa yamesimbwa kwa njia fiche, kwa hivyo hayawezi kusomwa na mtu mwingine, ikiwemo Google.</translation>
 <translation id="5639704535586432836">Fungua Mipangilio &gt; Faragha &gt; Kamera &gt; Google Chrome na uwashe kamera.</translation>
 <translation id="5642200033778930880">Google Chrome imeshindwa kutumia kamera yako katika hali ya Mwonekano wa Madirisha Mawili</translation>
+<translation id="5661521615548540542">Kidhibiti cha Manenosiri cha Google hakikuweza kukagua manenosiri yote. Jaribu tena baadaye.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Nje ya mtandao, Chrome imeshindwa kukagua kama kuna masasisho</translation>
 <translation id="5716154293141027663">Tumia Chrome kufungua viungo vyovyote unavyogusa katika programu zingine</translation>
@@ -118,9 +122,11 @@
   2. Gusa Programu ya Kivinjari Chaguomsingi
   3. Chagua Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Kidhibiti cha Manenosiri cha Google hakikuweza kukagua manenosiri yote. Jaribu tena kesho au <ph name="BEGIN_LINK" />kagua manenosiri katika Akaunti yako ya Google.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Kaa Salama Kwa Kutumia Google Chrome</translation>
 <translation id="8772179140489533211">Huonyesha vidokezo vya kuingia katika akaunti kwenye Chrome.</translation>
 <translation id="8788269841521769222">Hutahitaji kukumbuka nenosiri hili. Litahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Kidhibiti cha Manenosiri cha Google hakikuweza kukagua manenosiri yote. Jaribu tena kesho.</translation>
 <translation id="8897749957032330183">Manenosiri huhifadhiwa kwenye Kidhibiti cha Manenosiri cha Google katika kifaa hiki.</translation>
 <translation id="8969290730818637510">Inapokuwa imewashwa:
 <ph name="BEGIN_INDENT" />  • Saidia kuboresha Chrome kwa ajili ya watumiaji wengine wanaoitumia kama wewe unavyoitumia.<ph name="END_INDENT" />

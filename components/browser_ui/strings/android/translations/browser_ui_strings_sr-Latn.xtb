@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Oglasi</translation>
 <translation id="1919950603503897840">Izaberite kontakte</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Uvećavajte ili umanjujte tekst i slike za sve sajtove koje posećujete</translation>
 <translation id="1984937141057606926">Dozvoljeni, osim treće strane</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
 <translation id="1994173015038366702">URL sajta</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="216989819110952009">Iako su im oči bile zaštićene zelenim naočarima, Doroti i njene prijatelje u početku su zadivili</translation>
+<translation id="2176704795966505152">Prikazuj opciju zumiranja u glavnom meniju</translation>
 <translation id="2182457891543959921">Pre nego što dozvolite sajtovima da prave 3D mapu okruženja ili prate položaj kamere prikazuje se upit (preporučeno)</translation>
 <translation id="2212565012507486665">Dozvoli kolačiće</translation>
 <translation id="2228071138934252756">Da biste dozvolili da <ph name="APP_NAME" /> pristupa kameri, uključite kameru i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">Omogućava kolačiće za određeni sajt.</translation>
 <translation id="4046123991198612571">Sledeća pesma</translation>
 <translation id="4149994727733219643">Pojednostavljen prikaz veb-stranica</translation>
+<translation id="4151930093518524179">Podrazumevani zum</translation>
 <translation id="4165986682804962316">Podešavanja sajta</translation>
 <translation id="4169549551965910670">Povezano sa USB uređajem</translation>
 <translation id="4194328954146351878">Pre nego što dozvolite sajtovima da vide i menjaju informacije na NFC uređajima prikazuje se upit (preporučeno)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427">Da biste dozvolili da <ph name="APP_NAME" /> pristupa mikrofonu, uključite mikrofon i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Isključi zvuk mikrofona</translation>
 <translation id="4570913071927164677">Detalji</translation>
+<translation id="4575264539271661854">Olakšajte uvećavanje teksta i slika za sajt koji posećujete</translation>
 <translation id="4598549027014564149">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na svim sajtovima, čak i na srodnim sajtovima. Aktivnosti pregledanja se ne koriste za stvari kao što je personalizovanje oglasa. Funkcije na nekim sajtovima mogu da ne rade.</translation>
 <translation id="4645575059429386691">Ovim upravlja tvoj roditelj</translation>
 <translation id="4670064810192446073">Virtuelna realnost</translation>
@@ -383,6 +387,7 @@
 <translation id="8284326494547611709">Titl</translation>
 <translation id="8300705686683892304">Upravlja aplikacija</translation>
 <translation id="8324158725704657629">Ne pitaj ponovo</translation>
+<translation id="8362795839483915693">Možete da uvećavate ili umanjujete prikaz sajtova koje posećujete</translation>
 <translation id="8372893542064058268">Dozvolite Sinhronizaciju u pozadini za određeni sajt.</translation>
 <translation id="8376384591331888629">Uključujući kolačiće trećih strana na ovom sajtu</translation>
 <translation id="83792324527827022">Sajt koristi kameru i mikrofon</translation>

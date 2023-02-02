@@ -391,6 +391,7 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="3072980200212375806"><ph name="APP_NAME" /> opnast í Chrome. Með því að halda áfram samþykkirðu <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />viðbótarþjónustuskilmála Google Chrome og ChromeOS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Persónuverndarstefnan<ph name="END_LINK3" /> gildir einnig.</translation>
 <translation id="3091010850649238832">Sýna innihald klippiborðs</translation>
 <translation id="3098745985164956033">Sumar myndir eru sendar til Google til að bæta lýsingar</translation>
+<translation id="3104179992611025423">Foreldrar þínir stjórna vafranum hjá þér</translation>
 <translation id="3114507951000454849">Lestu fréttir dagsins <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">tengt við</translation>
 <translation id="3123734510202723619">Tilkynningar</translation>
@@ -400,6 +401,7 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="3157931365184549694">Endurheimta</translation>
 <translation id="3166827708714933426">Flýtilyklar flipa og glugga</translation>
 <translation id="316694332262407393">Chrome er þegar í gangi hér.</translation>
+<translation id="3167258285411721858">Þú getur óskað eftir snjallvef fyrir <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Auglýsingamælingar</translation>
 <translation id="3207960819495026254">Í bókamerkjum</translation>
@@ -433,6 +435,7 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="3297344142967351106">Raddaðstoð</translation>
 <translation id="3303414029551471755">Viltu halda áfram og sækja efnið?</translation>
 <translation id="3305795716056605962">Þýddu síður með því að ýta á hnappinn „Fleiri valkostir“</translation>
+<translation id="3319664549618064419">Skiptu yfir í tölvuvef til að sjá þetta vefsvæði betur</translation>
 <translation id="3334729583274622784">Breyta skráarendingu?</translation>
 <translation id="3341262203274374114">Ekki er hægt að hætta að fylgja. Eitthvað fór úrskeiðis.</translation>
 <translation id="3359667936385849800">Nota núverandi þjónustuaðila</translation>
@@ -624,7 +627,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="4452411734226507615">Loka flipanum <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bókamerki var búið til í <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Þegar þú notar QR-kóða til að tengja annað tæki getur það notað þennan síma sem öryggislykil. Ef þú fjarlægir það þarftu að skanna QR-kóða til að tengja það aftur.</translation>
-<translation id="4479839115899251637">Eyða af leslista</translation>
 <translation id="4479972344484327217">Setur upp <ph name="MODULE" /> fyrir Chrome…</translation>
 <translation id="4484496141267039529">Engin tenging. Reyndu aftur síðar.</translation>
 <translation id="4487967297491345095">Öllum forritsgögnum Chrome verður eytt fyrir fullt og allt. Þar með taldar eru allar skrár, stillingar, reikningar, gagnagrunnar o.s.frv.</translation>
@@ -1466,6 +1468,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8849001918648564819">Falið</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, flipi</translation>
 <translation id="8854223127042600341">Sjá skrár án nettengingar</translation>
+<translation id="885480114717186641">Þú getur óskað eftir tölvuvef fyrir <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Fá lýsingar</translation>
 <translation id="8856931513242997049">Flæði tilkynningaheimildar lokað</translation>
 <translation id="8873817150012960745">Ýttu hér til að byrja</translation>
@@ -1486,7 +1489,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8955719471735800169">Efst á síðu</translation>
 <translation id="8964479563882643397">Opnaðu valmyndina til að opna nýjan huliðsflipa</translation>
 <translation id="8965591936373831584">bíður</translation>
-<translation id="8967427617812342790">Bæta við leslista</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> huliðsflipa og <ph name="TAB_COUNT_ONE" /> flipa til viðbótar verður lokað}one{<ph name="INCOGNITO_TAB_COUNT" /> huliðsflipa og <ph name="TAB_COUNT_MANY" /> flipa til viðbótar verður lokað}other{<ph name="INCOGNITO_TAB_COUNT" /> huliðsflipa og <ph name="TAB_COUNT_MANY" /> flipum til viðbótar verður lokað}}</translation>
 <translation id="8970887620466824814">Eitthvað fór úrskeiðis.</translation>
 <translation id="8972098258593396643">Hlaða niður í sjálfgefna möppu?</translation>

@@ -627,7 +627,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="4452411734226507615">Tabblad <ph name="TAB_TITLE" /> sluiten</translation>
 <translation id="4452548195519783679">Bookmark gemaakt in <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Als je een ander apparaat koppelt via een QR-code, kan het apparaat deze telefoon gebruiken als beveiligingssleutel. Als je het verwijdert, moet je een QR-code scannen om het opnieuw te koppelen.</translation>
-<translation id="4479839115899251637">Verwijderen uit leeslijst</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> installeren voor Chrome…</translation>
 <translation id="4484496141267039529">Geen verbinding. Probeer het later opnieuw.</translation>
 <translation id="4487967297491345095">Alle app-gegevens voor Chrome worden definitief verwijderd. Dit omvat alle bestanden, instellingen, accounts, databases, enzovoort.</translation>
@@ -1490,7 +1489,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8955719471735800169">Bovenkant pagina</translation>
 <translation id="8964479563882643397">Open het menu om een nieuw incognitotabblad te openen</translation>
 <translation id="8965591936373831584">in behandeling</translation>
-<translation id="8967427617812342790">Toevoegen aan leeslijst</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognitotabbladen en nog <ph name="TAB_COUNT_ONE" /> tabblad worden gesloten}other{<ph name="INCOGNITO_TAB_COUNT" /> incognitotabbladen en nog <ph name="TAB_COUNT_MANY" /> tabbladen worden gesloten}}</translation>
 <translation id="8970887620466824814">Er is iets misgegaan.</translation>
 <translation id="8972098258593396643">Downloaden naar standaardmap?</translation>

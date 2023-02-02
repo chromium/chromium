@@ -186,6 +186,7 @@
 <translation id="4335235004908507846">Chrome දත්ත කඩ කිරීම්, නරක දිගු, සහ තවත් ඒවාවලින් ඔබව ආරක්‍ෂිතව තබා ගැනීමට උදවු කළ හැක</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> Chrome වෙත එක් කර ඇත</translation>
 <translation id="4384570495110188418">ඔබ පුරනය වී නැති බැවින් Chrome හට ඔබේ මුරපද පරීක්‍ෂා කළ නොහැක</translation>
+<translation id="4393248995085527349">අනාගත Google Chrome යාවත්කාලීන ලබා ගැනීම සඳහා, ඔබට macOS 10.15 හෝ පසු අනුවාදයක් අවශ්‍ය වනු ඇත. මෙම පරිගණකය macOS 10.13 භාවිතා කරයි.</translation>
 <translation id="4427306783828095590">තතුබෑම් සහ අනිෂ්ට මෘදුකාංග අවහිර කිරීමට වැඩි දියුණු කළ ආරක්ෂාව වැඩි දෙයක් කරයි</translation>
 <translation id="4450664632294415862">Chrome - ජාල පුරනය - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome මත තවත් මෙහෙයුමක් ක්‍රියාත්මක වෙමින් පවතී. පසුව නැවත උත්සාහ කරන්න.</translation>
@@ -256,6 +257,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="5941711191222866238">කුඩා කරන්න</translation>
 <translation id="5941830788786076944">Google Chrome පෙරනිමි බ්‍රව්සරය කරන්න</translation>
 <translation id="6003112304606738118">බාගනිමින්... පැය <ph name="HOURS" />ක් ඉතිරිව ඇත</translation>
+<translation id="6010556343189461180">අනාගත Google Chrome යාවත්කාලීන ලබා ගැනීම සඳහා, ඔබට macOS 10.15 හෝ පසු අනුවාදයක් අවශ්‍ය වනු ඇත. මෙම පරිගණකය macOS 10.14 භාවිතා කරයි.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome දැන් වැසෙනු ඇත.}=1{Chrome තත්පර 1කින් වැසෙනු ඇත.}one{Chrome තත්පර #කින් වැසෙනු ඇත.}other{Chrome තත්පර #කින් වැසෙනු ඇත.}}</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="6070348360322141662">අමතර ආරක්ෂාව සඳහා, Google Chrome ඔබේ දත්ත සංකේතනය කරනු ඇත</translation>

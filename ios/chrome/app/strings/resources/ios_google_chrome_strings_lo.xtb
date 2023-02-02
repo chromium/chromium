@@ -3,6 +3,7 @@
 <translationbundle lang="lo">
 <translation id="1143896152279775643">ລະຫັດຜ່ານຂອງທ່ານຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ Chrome</translation>
+<translation id="1352919863522755794">ຕົວຈັດການລະຫັດຜ່ານ Google ບໍ່ສາມາດກວດສອບລະຫັດຜ່ານຂອງທ່ານໄດ້. ກະລຸນາລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
 <translation id="1462727070346936664">ເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome.</translation>
 <translation id="1479202195792305274">Chrome ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານ ເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານໄດ້.</translation>
 <translation id="1493827051843127077">ຕັ້ງ Chrome ເປັນຄ່າເລີ່ມຕົ້ນເພື່ອຊິ້ງຂໍ້ມູນແຖບ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນການຈ່າຍເງິນຂອງທ່ານຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">ເພື່ອອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານຢູ່ເວັບໄຊທັງໝົດ, ກະລຸນາ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome ບໍ່ສາມາດກວດການອັບເດດໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫລັງ.</translation>
 <translation id="2732745070297234559">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ກະລຸນາລອງໃໝ່ໃນມື້ອື່ນ.</translation>
+<translation id="2767464022270041271">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. ຕົວຈັດການລະຫັດຜ່ານ Google ສາມາດກວດສອບລະຫັດຜ່ານຂອງທ່ານໃນເວລາທີ່ທ່ານບັນທຶກພວກມັນໄດ້.</translation>
 <translation id="2869959624320573933">ເຂົ້າສູ່ລະບົບຫາ Chrome</translation>
 <translation id="2957447865124070833">ເລືອກ <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">ເພາະວ່າທ່ານກຳລັງອອກຈາກລະບົບບັນຊີທີ່ຈັດການໂດຍ <ph name="SIGNOUT_MANAGED_DOMAIN" />, ຂໍ້ມູນ Chrome ຂອງທ່ານຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຢູ່ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນມື້ອື່ນ ຫຼື <ph name="BEGIN_LINK" />ກວດລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານ.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">ເພື່ອຊ່ວຍປັບປຸງແອັບ, Chrome ຈະສົ່ງຂໍ້ມູນການນຳໃຊ້ ແລະ ການຫຼົ້ມໄປໃຫ້ Google. <ph name="BEGIN_LINK" />ຈັດການ<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">ບໍ່ຮອງຮັບໃນ Chrome Beta</translation>
+<translation id="4840404732697892756">ຕົວຈັດການລະຫັດຜ່ານ Google ສາມາດກວດສອບລະຫັດຜ່ານຂອງທ່ານໄດ້ໃນເວລາທີ່ທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="5030102366287574140">Chrome ສາມາດຊ່ວຍຮັກສາທ່ານໃຫ້ປອດໄພຈາກການລະເມີດຂໍ້ມູນ, ເວັບໄຊທີ່ບໍ່ປອດໄພ ແລະ ອື່ນໆອີກ.</translation>
 <translation id="5108659628347594808">ເຮັດໃຫ້ Chrome ດີຂຶ້ນ</translation>
 <translation id="5119391094379141756">ເລືອກ Chrome</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome ກວດລະຫັດຜ່ານຂອງທ່ານເປັນໄລຍະໂດຍທຽບກັບລາຍການທີ່ມີການເຜີຍແຜ່ທາງອອນລາຍ. ໃນເວລາເຮັດສິ່ງນີ້, ພວກເຮົາເຂົ້າລະຫັດຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານໄວ້ ເພື່ອບໍ່ໃຫ້ຜູ້ໃດ ຮວມທັງ Google ສາມາດອ່ານພວກມັນໄດ້.</translation>
 <translation id="5639704535586432836">ເປີດການຕັ້ງຄ່າ &gt; ຄວາມເປັນສ່ວນຕົວ &gt; ກ້ອງຖ່າຍຮູບ &gt; Google Chrome ແລະ ເປີດກ້ອງຖ່າຍຮູບ.</translation>
 <translation id="5642200033778930880">Google Chrome ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໃນໂໝດມຸມມອງແຍກກັນໄດ້</translation>
+<translation id="5661521615548540542">ຕົວຈັດການລະຫັດຜ່ານ Google ບໍ່ສາມາດກວດສອບລະຫັດຜ່ານທັງໝົດໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">ອອບລາຍຢູ່, Chrome ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
 <translation id="5716154293141027663">ເປີດ Chrome ຕອນໃດກໍໄດ້ທີ່ທ່ານແຕະໃສ່ລິ້ງໃນແອັບອື່ນ</translation>
@@ -118,9 +122,11 @@
   2. ແຕະແອັບໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ
   3. ເລືອກ Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">ຕົວຈັດການລະຫັດຜ່ານ Google ບໍ່ສາມາດກວດສອບລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນມື້ອື່ນ ຫຼື <ph name="BEGIN_LINK" />ກວດລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານ.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">ທ່ອງເວັບຢ່າງປອດໄພດ້ວຍ Google Chrome</translation>
 <translation id="8772179140489533211">ສະແດງຂໍ້ຄວາມເພື່ອເຂົ້າສູ່ລະບົບຫາ Chrome.</translation>
 <translation id="8788269841521769222">ທ່ານບໍ່ຈຳເປັນຕ້ອງຈື່ລະຫັດຜ່ານນີ້. ມັນຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">ຕົວຈັດການລະຫັດຜ່ານ Google ບໍ່ສາມາດກວດສອບລະຫັດຜ່ານທັງໝົດໄດ້. ກະລຸນາລອງໃໝ່ໃນມື້ອື່ນ.</translation>
 <translation id="8897749957032330183">ລະຫັດຜ່ານແມ່ນຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="8969290730818637510">ເມື່ອເປີດ:
 <ph name="BEGIN_INDENT" />  • ຊ່ວຍເຮັດໃຫ້ Chrome ດີຂຶ້ນສຳລັບຄົນທີ່ໃຊ້ມັນໃນແບບທີ່ທ່ານໃຊ້.<ph name="END_INDENT" />

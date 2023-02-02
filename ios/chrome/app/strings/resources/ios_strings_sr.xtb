@@ -596,7 +596,6 @@
 <translation id="5520466080178053306">Додирните Менаџер лозинки, па Додај</translation>
 <translation id="5525095647255982834">Да бисте послали ову картицу на други уређај, пријавите се у Chrome тамо.</translation>
 <translation id="5525269841082836315">Прављење приступне фразе</translation>
-<translation id="5530084793407600786">Претражите у слици уз Google</translation>
 <translation id="5542540507657872337">Пронађено је <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff вам омогућава да започнете прегледање веб-сајта на овом уређају, па да једноставно наставите на Mac-у. Веб-сајт који је тренутно отворен приказаће се на доку на Mac-у.
 
@@ -709,6 +708,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6284652193729350524">Понуди превод за <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Опозвали сте праћење канала <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Да бисте укључили Безбедно прегледање, отворите <ph name="BEGIN_LINK" />Google услуге<ph name="END_LINK" /> и додирните Безбедно прегледање.</translation>
+<translation id="6320780930074869063">Када је укључено, лозинке се чувају на: <ph name="ACCOUNT" />. Када је искључено, лозинке се чувају само на овом уређају.</translation>
 <translation id="6321526113093607004">Додај у обележиваче</translation>
 <translation id="6324669097367352121">Подешавања пријављивања</translation>
 <translation id="6337234675334993532">Шифровање</translation>

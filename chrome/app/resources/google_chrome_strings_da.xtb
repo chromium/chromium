@@ -183,6 +183,7 @@
 <translation id="4335235004908507846">Chrome kan hjælpe med at beskytte dig mod brud på datasikkerheden, farlige udvidelser og meget mere</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> er føjet til Chrome</translation>
 <translation id="4384570495110188418">Chrome kan ikke tjekke dine adgangskoder, da du ikke er logget ind</translation>
+<translation id="4393248995085527349">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have macOS 10.15 eller nyere. Denne computer anvender macOS 10.13.</translation>
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
 <translation id="4450664632294415862">Chrome – Login på netværk – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">En anden handling i Google Chrome er i gang. Prøv igen senere.</translation>
@@ -249,6 +250,7 @@
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5941830788786076944">Gør Google Chrome til din standardbrowser</translation>
 <translation id="6003112304606738118">Downloader… Der er <ph name="HOURS" /> timer tilbage</translation>
+<translation id="6010556343189461180">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have macOS 10.15 eller nyere. Denne computer anvender macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome lukker nu.}=1{Chrome lukker om 1 sekund.}one{Chrome lukker om # sekund.}other{Chrome lukker om # sekunder.}}</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6070348360322141662">Som et ekstra sikkerhedsniveau krypterer Google Chrome dine data</translation>

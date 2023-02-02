@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">අථත්‍ය යාන්ත්‍රණය ආරම්භ කිරීමේ දෝෂයකි. කරුණාකර නැවත උත්සාහ කරන්න.</translation>
 <translation id="1087965115100412394">MIDI උපාංගවලට සම්බන්ධ වීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
 <translation id="1088659085457112967">කියවන ප්‍රකාරයට ඇතුළු වන්න</translation>
-<translation id="1089407731410758060">තේමාව වෙනස් කරන්න</translation>
 <translation id="1090126737595388931">පසුබිමේ යෙදුම් කිසිවක් ක්‍රියා නොකරයි</translation>
 <translation id="1090541560108055381">යුගල කිරීමට පෙර, උපාංග දෙකෙහිම මෙම කේතය සමාන දැයි සහතික කර ගන්න</translation>
 <translation id="1091767800771861448">මඟහැරීමට ESCAPE ඔබන්න (නිල නොවන ගොඩනැඟීම් පමණි).</translation>
@@ -550,6 +549,7 @@
 <translation id="1495677929897281669">ආපසු පටිත්ත වෙත</translation>
 <translation id="1500297251995790841">නොදන්නා උපාංගය [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">සහාය නොදක්වන Chrome යෙදුම් ගැන තව දැන ගන්න</translation>
+<translation id="1501480321619201731">සමූහය මකන්න</translation>
 <translation id="1503392482221435031">භාවිත සංඛ්‍යාලේඛන ස්වයංක්‍රීයව Google වෙත යවයි. ඔබට ඔබේ උපාංගයේ සැකසීම් තුළ බිඳ වැටීම් වාර්තා ක්‍රියාත්මක හෝ ක්‍රියා විරහිත කළ හැක.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> ඉවත් කරන්න</translation>
 <translation id="1504551620756424144">බෙදා ගත් ෆෝල්ඩර Windows හි <ph name="BASE_DIR" /> ඇත.</translation>
@@ -2101,7 +2101,6 @@
 <translation id="2835547721736623118">කථන හඳුනා ගැනීමේ සේවය</translation>
 <translation id="2836232638504556905">ඉදිරියට යාමට, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ඔබගේ නම, ඉ-තැපැල් ලිපිනය සහ පැතිකඩ පින්තූරය මෙම අඩවිය සමග බෙදා ගනු ඇත. මෙම අඩවියෙහි <ph name="BEGIN_LINK" />පෞද්ගලිකත්ව ප්‍රතිපත්තිය<ph name="END_LINK" /> බලන්න.</translation>
 <translation id="2836269494620652131">බිඳවැටීම</translation>
-<translation id="2836635946302913370">මෙම භාවිතනම සමඟ එවීම ඔබේ පරිපාලක විසින් අක්‍රිය කරන ලදි.</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> ජාලය භාවිතා කිරීම සඳහා, ඔබේ අන්තර්ජාල සම්බන්ධතාවය පහතින් සම්පූර්ණ කරන්න.</translation>
 <translation id="2838379631617906747">ස්ථාපනය කරමින්</translation>
 <translation id="2839032553903800133">දැනුම්දීම් අවහිර කර ඇත</translation>
@@ -2910,6 +2909,7 @@
 <translation id="3602290021589620013">පෙරදසුන</translation>
 <translation id="3602870520245633055">මුද්‍රණය සහ ස්කෑන් කරන්න</translation>
 <translation id="3603622770190368340">නව ජාලකරණ සහතිකයක් ලබා ගන්න</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{එකම මුරපදය භාවිතා කරන {COUNT} ගිණුමක්}one{එකම මුරපදය භාවිතා කරන ගිණුම් {COUNT}ක්}other{එකම මුරපදය භාවිතා කරන ගිණුම් {COUNT}ක්}}</translation>
 <translation id="3605780360466892872">බොත්තමපහළට</translation>
 <translation id="3609277884604412258">ඉක්මන් සෙවීම</translation>
 <translation id="3610241585790874201">ඔබේ උපාංගයෙහි දත්ත සුරැකීමට ඉඩ නොදෙයි</translation>
@@ -3619,7 +3619,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4244238649050961491">තවත් පන්හිඳ යෙදුම් සොයා ගන්න</translation>
 <translation id="4246980464509998944">අතිරේක අදහස්:</translation>
 <translation id="424726838611654458">සැමවිට Adobe Reader තුළ විවෘත කරන්න</translation>
-<translation id="4247901771970415646"><ph name="USERNAME" /> වෙත සමමුහුර්ත කළ නොහැකිය</translation>
 <translation id="4248098802131000011">මුරපද දත්ත කඩ කිරීම්වලින් සහ වෙනත් ආරක්‍ෂක ගැටලුවලින් ආරක්‍ෂිතව තබා ගන්න</translation>
 <translation id="4249248555939881673">ජාල සම්බන්ධතාවය සඳහා රැඳී සිටිමින්...</translation>
 <translation id="4249373718504745892">ඔබේ කැමරාව හා මයික්‍රෙෆෝනය වෙත පිවිසීමෙන් මෙම පිටුව අවහිර කර තිබේ</translation>
@@ -3840,6 +3839,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4441147046941420429">ඉදිරියට යාමට, ඔබේ උපාංගයෙන් ඔබේ ආරක්‍ෂක යතුර ඉවත් කරන්න, පසුව යළි ඇතුළත් කර එය ස්පර්ශ කරන්න</translation>
 <translation id="444134486829715816">පුළුල් කරන්න...</translation>
 <translation id="4441928470323187829">ඔබගේ පරිපාලක විසින් අමුණන ලදි</translation>
+<translation id="4442863809158514979">වෙබ් අවසර බලන්න</translation>
 <translation id="4443536555189480885">&amp;උපකාර</translation>
 <translation id="4444304522807523469">ඔස්සේ සම්බන්ධ කර ඇති හෝ USB පෙදෙසි ජාලයේ ඇති ලේඛන පරිලෝකන යන්ත්‍ර ප්‍රවේශ කරන්න</translation>
 <translation id="4444512841222467874">ඉඩ ලබා ගත හැකි බවට පත් කළ නොහැකි නම්, පරිශීලකයන් සහ දත්ත ස්වයංක්‍රියව ඉවත් කිරීමට හැකිය.</translation>
@@ -5702,7 +5702,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="617213288191670920">භාෂා එක් කර නැත</translation>
 <translation id="6173623053897475761">ඔබගේ PIN නැවත ටයිප් කරන්න</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
-<translation id="6176043333338857209">ඔබගේ ආරක්ෂක යතුර සමඟ සන්නිවේදනය කිරීම සඳහා තාවකාලිකව බ්ලූටූත් ක්‍රියාත්මක කරනු ඇත</translation>
 <translation id="6178664161104547336">සහතිකයක් තෝරන්න</translation>
 <translation id="6178682841350631965">ඔබගේ පුරනය-වීමේ දත්ත යාවත්කාලීන කරන ලදී</translation>
 <translation id="6180510783007738939">රේඛා මෙවලම</translation>
@@ -7468,6 +7467,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="779308894558717334">ලා කොළ</translation>
 <translation id="7793098747275782155">තද නිල්</translation>
 <translation id="7797571222998226653">අක්‍රිය</translation>
+<translation id="7798504574384119986">වෙබ් අවසර බලන්න</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> ස්වයංක්‍රියව අවහිර කර ඇත</translation>
 <translation id="7800518121066352902">වාමාවර්ථව කරකරවන්න (&amp;o)</translation>
 <translation id="7801679634091975683">ඔබ මෙහි සිදු කරන වෙනස් කිරීම් Lacros Chrome බ්‍රව්සරයට පමණක් අදාළ වේ. ඔබගේ Chrome බ්‍රවුසර සැකසීම්වලට වෙනස් කිරීම් සිදු කිරීමට, Chrome බ්‍රවුසරය විවෘත කර සැකසීම් වෙත යන්න.</translation>

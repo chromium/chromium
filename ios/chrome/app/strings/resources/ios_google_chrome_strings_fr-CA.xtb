@@ -3,6 +3,7 @@
 <translationbundle lang="fr-CA">
 <translation id="1143896152279775643">Votre mot de passe sera enregistré dans le gestionnaire de mots de passe Google du compte <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Nous aider à améliorer les fonctionnalités et les performances de Chrome</translation>
+<translation id="1352919863522755794">Le gestionnaire de mots de passe de Google n'a pas pu vérifier vos mots de passe. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="1462727070346936664">Connectez-vous pour profiter pleinement de Chrome.</translation>
 <translation id="1479202195792305274">Chrome peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
 <translation id="1493827051843127077">Définissez Chrome comme navigateur par défaut pour synchroniser vos onglets, vos mots de passe et vos renseignements de paiement sur tous vos appareils</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome n'a pas pu vérifier s'il y a des mises à jour. Réessayez plus tard.</translation>
 <translation id="2732745070297234559">Chrome n'a pas pu vérifier tous les mots de passe. Réessayez demain.</translation>
+<translation id="2767464022270041271">Aucun mot de passe enregistré. Le gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous les enregistrez.</translation>
 <translation id="2869959624320573933">Connectez-vous à Chrome</translation>
 <translation id="2957447865124070833">Sélectionnez <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Puisque vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chrome seront supprimées de cet appareil. Toutefois, vos données resteront dans votre compte Google.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Aux fins d'amélioration de l'application, Chrome envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Fonctionnalité non prise en charge par Chrome Beta</translation>
+<translation id="4840404732697892756">Le gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
 <translation id="5030102366287574140">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires.</translation>
 <translation id="5108659628347594808">Contribuez à améliorer Chrome</translation>
 <translation id="5119391094379141756">Sélectionnez Chrome</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome vérifie régulièrement que vos mots de passe ne figurent pas dans les listes qui ont été publiées en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>
 <translation id="5639704535586432836">Ouvrez Paramètres &gt; Confidentialité &gt; Appareil photo &gt; Google Chrome et activez l'appareil photo.</translation>
 <translation id="5642200033778930880">Google Chrome ne peut pas utiliser votre appareil photo en mode Vue partagée</translation>
+<translation id="5661521615548540542">Le gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Hors ligne, Chrome ne peut pas vérifier s'il y a des mises à jour</translation>
 <translation id="5716154293141027663">Ouvrez Chrome chaque fois que vous touchez des liens dans d'autres applications</translation>
@@ -118,9 +122,11 @@
   2. Touchez Navigateur par défaut.
   3. Sélectionnez Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Le gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe dans votre compte Google.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Demeurez en sécurité grâce à Chrome</translation>
 <translation id="8772179140489533211">Affiche l'invite de connexion dans Chrome.</translation>
 <translation id="8788269841521769222">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe Google de ce compte : <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Le gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="8897749957032330183">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe de Google sur cet appareil</translation>
 <translation id="8969290730818637510">Lorsque activé :
 <ph name="BEGIN_INDENT" />  • Vous contribuez à améliorer Chrome pour les personnes qui l'utilisent de la même façon que vous.<ph name="END_INDENT" />

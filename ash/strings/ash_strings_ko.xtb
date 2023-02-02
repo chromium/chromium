@@ -420,9 +420,11 @@
 <translation id="3289674678944039601">어댑터를 통해 충전 중</translation>
 <translation id="3290356915286466215">비보안</translation>
 <translation id="3294437725009624529">게스트</translation>
+<translation id="3298690094479023523">여전히 PIN 또는 비밀번호를 확인할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="3307642347673023554">노트북 모드로 전환됨</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />님은 나중에도 로그인할 수 있습니다.</translation>
 <translation id="3321628682574733415">잘못된 부모 코드</translation>
+<translation id="332827762492701193">알림이 숨겨져 있음</translation>
 <translation id="3339826665088060472">화면 캡처, 스크린샷을 찍고 화면을 녹화하는 도구</translation>
 <translation id="3340978935015468852">설정</translation>
 <translation id="3341303451326249809">스크린샷 촬영됨</translation>
@@ -559,6 +561,7 @@
 <translation id="4017989525502048489">레이저 포인터</translation>
 <translation id="401993194061514265">마커를 사용할 수 없습니다. 스크린캐스트를 다시 여세요.</translation>
 <translation id="4021716437419160885">아래로 스크롤</translation>
+<translation id="4024840464866786680">PIN과 비밀번호를 잊어버렸거나 최근에 Google 계정 비밀번호를 변경한 경우 이 사용자를 복구해 보세요.</translation>
 <translation id="4028481283645788203">보안 강화를 위해 비밀번호가 필요합니다.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">화면 공유 중</translation>
@@ -699,10 +702,12 @@
 <translation id="4735944890391795473">데스크 12</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4740516757091333363">저장된 데스크를 삭제하시겠습니까?</translation>
+<translation id="4747410141429390146">알림을 보려면 잠금 해제하세요.</translation>
 <translation id="4752784485658729358">데스크는 6개까지만 저장할 수 있습니다. 새 데스크를 저장하려면 이전 데스크를 삭제하세요.</translation>
 <translation id="4759238208242260848">다운로드</translation>
 <translation id="4762573482154983647">앱 숨기기</translation>
 <translation id="4774338217796918551">내일 <ph name="COME_BACK_TIME" />에 다시 사용해 주세요.</translation>
+<translation id="4776584068981882959">여전히 비밀번호를 확인할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />의 비밀번호</translation>
 <translation id="4777825441726637019">Play 스토어</translation>
 <translation id="4778095205580009397">데모 세션에서는 Google 어시스턴트를 사용할 수 없습니다.</translation>
@@ -842,6 +847,7 @@
 <translation id="5536723544185013515">최근 앱, 왼쪽 또는 오른쪽 화살표 키로 이동하여 최근 사용한 모든 앱에 액세스</translation>
 <translation id="553675580533261935">세션 종료</translation>
 <translation id="5537725057119320332">전송</translation>
+<translation id="5546397813406633847">사용자 복구</translation>
 <translation id="554893713779400387">음성기록 전환</translation>
 <translation id="5558091555391176027">Nearby Share 모든 기기에 공개 설정 전환</translation>
 <translation id="5560420195677022218">휴대전화의 앱을 <ph name="DEVICE_TYPE" />에서 봅니다.</translation>
@@ -858,6 +864,7 @@
 <translation id="5618148318840095371">더 원활한 네트워크로 전환되었습니다.</translation>
 <translation id="5619862035903135339">관리자 정책에서 화면 캡처를 사용 중지합니다.</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">비밀번호를 확인할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="5648021990716966815">마이크 잭</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> 알림이 있습니다.</translation>
 <translation id="5662075790140998213">데스크 10</translation>
@@ -876,6 +883,7 @@
 <translation id="5707775774148071965">기기에서 지원하는 데이터 속도가 케이블의 지원 속도보다 빠릅니다. 기기 성능이 제한될 수 있습니다.</translation>
 <translation id="5710450975648804523">방해 금지 모드 사용 중</translation>
 <translation id="571295407079589142">모바일 데이터 사용 중지</translation>
+<translation id="5727460725221669831">비밀번호를 잊어버렸거나 최근에 Google 계정 비밀번호를 변경한 경우 이 사용자를 복구해 보세요.</translation>
 <translation id="573413375004481890">사용 중인 일부 디스플레이가 기기에서 지원되지 않아 1개 디스플레이의 연결이 끊김</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
 <translation id="574392208103952083">보통</translation>

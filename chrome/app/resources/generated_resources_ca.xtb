@@ -106,7 +106,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1085697365578766383">S'ha produït un error en iniciar la màquina virtual. Torna-ho a provar.</translation>
 <translation id="1087965115100412394">No permetis que els llocs web es connectin a dispositius MIDI</translation>
 <translation id="1088659085457112967">Entra al mode de lector</translation>
-<translation id="1089407731410758060">Canvia el tema</translation>
 <translation id="1090126737595388931">No hi cap aplicació en execució en segon pla</translation>
 <translation id="1090541560108055381">Abans de fer la vinculació, comprova que aquest codi sigui el mateix en els dos dispositius</translation>
 <translation id="1091767800771861448">Premeu ESCAPE per ometre (només compilacions no oficials).</translation>
@@ -547,6 +546,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1495677929897281669">Torna a la pestanya</translation>
 <translation id="1500297251995790841">Dispositiu desconegut [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Més informació sobre les aplicacions de Chrome no admeses</translation>
+<translation id="1501480321619201731">Suprimeix el grup</translation>
 <translation id="1503392482221435031">Envia automàticament estadístiques d'ús a Google. Pots activar o desactivar els informes d'error a la configuració del dispositiu.</translation>
 <translation id="150411034776756821">Suprimeix <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Les carpetes compartides estan disponibles a Windows a <ph name="BASE_DIR" />.</translation>
@@ -2097,7 +2097,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2835547721736623118">Servei de reconeixement de parla</translation>
 <translation id="2836232638504556905">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web. Consulta la <ph name="BEGIN_LINK" />política de privadesa<ph name="END_LINK" /> del lloc web.</translation>
 <translation id="2836269494620652131">Bloqueig</translation>
-<translation id="2836635946302913370">L'administrador ha desactivat l'inici de sessió amb aquest nom d'usuari.</translation>
 <translation id="283669119850230892">Per fer servir la xarxa <ph name="NETWORK_ID" />, primer cal establir la connexió a Internet a continuació.</translation>
 <translation id="2838379631617906747">S'està instal·lant</translation>
 <translation id="2839032553903800133">Notificacions bloquejades</translation>
@@ -2906,6 +2905,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3602290021589620013">Previsualitza</translation>
 <translation id="3602870520245633055">Imprimeix i escaneja</translation>
 <translation id="3603622770190368340">Obtenció del certificat de xarxa</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} compte utilitza la mateixa contrasenya}other{{COUNT} comptes utilitzen la mateixa contrasenya}}</translation>
 <translation id="3605780360466892872">Executiu</translation>
 <translation id="3609277884604412258">Cerca ràpida</translation>
 <translation id="3610241585790874201">Sense permís per desar dades al dispositiu</translation>
@@ -3613,7 +3613,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4244238649050961491">Cerca més aplicacions de llapis òptic</translation>
 <translation id="4246980464509998944">Comentaris addicionals:</translation>
 <translation id="424726838611654458">Obre sempre a Adobe Reader</translation>
-<translation id="4247901771970415646">No es pot sincronitzar amb <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Protegeix les contrasenyes contra les violacions de les dades i contra altres problemes de seguretat</translation>
 <translation id="4249248555939881673">S'està esperant la connexió a la xarxa...</translation>
 <translation id="4249373718504745892">S'ha bloquejat l'accés d'aquesta pàgina a la càmera i al micròfon</translation>
@@ -5694,7 +5693,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="617213288191670920">No s'ha afegit cap idioma</translation>
 <translation id="6173623053897475761">Torna a escriure el PIN</translation>
 <translation id="6175314957787328458">GUID de domini de Microsoft</translation>
-<translation id="6176043333338857209">El Bluetooth s'activarà temporalment per comunicar-se amb la teva clau de seguretat</translation>
 <translation id="6178664161104547336">Seleccioneu un certificat</translation>
 <translation id="6178682841350631965">Les teves dades d'inici de sessió s'han actualitzat</translation>
 <translation id="6180510783007738939">Eina de línia</translation>

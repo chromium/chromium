@@ -391,6 +391,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="3072980200212375806"><ph name="APP_NAME" /> se abrirá en Chrome. Al continuar, aceptas los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Google Chrome y ChromeOS<ph name="END_LINK2" />. También se aplica la <ph name="BEGIN_LINK3" />Política de Privacidad<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">Muestra el contenido del portapapeles</translation>
 <translation id="3098745985164956033">Algunas imágenes se envían a Google para mejorar las descripciones que recibes</translation>
+<translation id="3104179992611025423">Tus padres gestionan tu navegador</translation>
 <translation id="3114507951000454849">Lee las noticias de hoy <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">vinculada con</translation>
 <translation id="3123734510202723619">Anuncios</translation>
@@ -400,6 +401,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3166827708714933426">Combinaciones de teclas de pestañas y ventanas</translation>
 <translation id="316694332262407393">Chrome ya se está ejecutando.</translation>
+<translation id="3167258285411721858">Puedes solicitar el sitio web móvil de <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3207960819495026254">Añadido a marcadores</translation>
@@ -433,6 +435,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="3297344142967351106">Asistente de voz</translation>
 <translation id="3303414029551471755">¿Quieres continuar para descargar el contenido?</translation>
 <translation id="3305795716056605962">Traducir páginas desde el botón Más opciones</translation>
+<translation id="3319664549618064419">Cambia a la versión para ordenadores para disfrutar de una mejor vista de este sitio</translation>
 <translation id="3334729583274622784">¿Cambiar la extensión del archivo?</translation>
 <translation id="3341262203274374114">No se puede dejar de seguir. Se ha producido un error.</translation>
 <translation id="3359667936385849800">Usar proveedor de servicios actual</translation>
@@ -624,7 +627,6 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="4452411734226507615">Cerrar la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marcador añadido a <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Cuando vincules otro dispositivo con un código QR, podrá usar este teléfono como llave de seguridad. Si lo quitas, tendrás que escanear un código QR para volver a vincularlo.</translation>
-<translation id="4479839115899251637">Quitar de lista de lectura</translation>
 <translation id="4479972344484327217">Instalando <ph name="MODULE" /> para Chrome…</translation>
 <translation id="4484496141267039529">No hay conexión. Inténtalo de nuevo más tarde.</translation>
 <translation id="4487967297491345095">Todos los datos de la aplicación Chrome se eliminarán de forma permanente. Esto incluye todos los archivos, ajustes, cuentas, bases de datos, etc.</translation>
@@ -1466,6 +1468,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8853345339104747198">Pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">Ver tus archivos sin conexión</translation>
+<translation id="885480114717186641">Puedes solicitar el sitio para ordenadores de <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Obtener descripciones</translation>
 <translation id="8856931513242997049">Flujo del permiso de notificaciones cerrado</translation>
 <translation id="8873817150012960745">Toca aquí para empezar</translation>
@@ -1486,7 +1489,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8964479563882643397">Para abrir una nueva pestaña de Incógnito, abre el menú</translation>
 <translation id="8965591936373831584">pendiente</translation>
-<translation id="8967427617812342790">Añadir a lista de lectura</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Se cerrarán <ph name="INCOGNITO_TAB_COUNT" /> pestaña de Incógnito y <ph name="TAB_COUNT_ONE" /> pestaña más}other{Se cerrarán <ph name="INCOGNITO_TAB_COUNT" /> pestaña de Incógnito y <ph name="TAB_COUNT_MANY" /> pestañas más}}</translation>
 <translation id="8970887620466824814">Ha ocurrido un error.</translation>
 <translation id="8972098258593396643">¿Quieres descargarlo en la carpeta predeterminada?</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="no">
 <translation id="1143896152279775643">Passordet blir lagret i Google Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Bidra til å gjøre Chrome bedre og raskere</translation>
+<translation id="1352919863522755794">Google Passordlagring kunne ikke sjekke passordene dine. Se om du er koblet til internett.</translation>
 <translation id="1462727070346936664">Logg på for å få mest mulig ut av Chrome.</translation>
 <translation id="1479202195792305274">Chrome kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
 <translation id="1493827051843127077">Angi Chrome som standard for å synkronisere fanene, passordene og betalingsopplysningene dine på alle enhetene dine</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">For å logge av Google-kontoen din på alle nettsteder, <ph name="BEGIN_LINK" />logg av Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome kunne ikke se etter oppdateringer. Prøv på nytt senere.</translation>
 <translation id="2732745070297234559">Chrome kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>
+<translation id="2767464022270041271">Ingen lagrede passord. Google Passordlagring kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="2869959624320573933">Logg på Chrome</translation>
 <translation id="2957447865124070833">Velg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chrome-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome kunne ikke sjekke alle passordene. Prøv på nytt i morgen, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">For å bidra til å gjøre appen bedre sender Chrome bruks- og krasjrelaterte data til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Støttes ikke i Chrome Beta</translation>
+<translation id="4840404732697892756">Google Passordlagring kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
 <translation id="5030102366287574140">Chrome kan beskytte deg mot databrudd, utrygge nettsteder med mer.</translation>
 <translation id="5108659628347594808">Gjør Chrome bedre</translation>
 <translation id="5119391094379141756">Velg Chrome</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome sjekker passordene dine regelmessig mot lister som er lagt ut på nett. Når dette gjøres, er passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
 <translation id="5639704535586432836">Åpne Innstillinger &gt; Personvern &gt; Kamera &gt; Google Chrome, og slå på kameraet.</translation>
 <translation id="5642200033778930880">Google Chrome kan ikke bruke kameraet i modus for delt visning</translation>
+<translation id="5661521615548540542">Google Passordlagring kunne ikke sjekke alle passordene. Prøv igjen senere.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Uten nett – Chrome kan ikke se etter oppdateringer</translation>
 <translation id="5716154293141027663">Åpne alltid Chrome når du trykker på linker i andre apper</translation>
@@ -118,9 +122,11 @@
   2. Trykk på Standard nettleserapp.
   3. Velg Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Passordlagring kunne ikke sjekke alle passordene. Prøv på nytt i morgen, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Hold deg trygg med Google Chrome</translation>
 <translation id="8772179140489533211">Viser vinduer som ber deg logge på Chrome.</translation>
 <translation id="8788269841521769222">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring for <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Google Passordlagring kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>
 <translation id="8897749957032330183">Passord lagres i Google Passordlagring på denne enheten.</translation>
 <translation id="8969290730818637510">Når du gir samtykke
 <ph name="BEGIN_INDENT" />  • bidrar du til å gjøre Chrome bedre for folk som bruker nettleseren på samme måte som deg<ph name="END_INDENT" />

@@ -424,6 +424,7 @@
 <translation id="3307642347673023554">ノートパソコン モードに切り替えました</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> が後でログインすることは引き続き可能です。</translation>
 <translation id="3321628682574733415">保護者のコードが間違っています</translation>
+<translation id="332827762492701193">通知は非表示になっています</translation>
 <translation id="3339826665088060472">スクリーンショットの撮影や録画ができるスクリーン キャプチャ</translation>
 <translation id="3340978935015468852">設定</translation>
 <translation id="3341303451326249809">スクリーンショットをキャプチャしました</translation>
@@ -701,6 +702,7 @@
 <translation id="4735944890391795473">デスク 12</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4740516757091333363">保存済みのデスクを削除しますか？</translation>
+<translation id="4747410141429390146">通知を表示するには、ロックを解除してください</translation>
 <translation id="4752784485658729358">保存できるデスクは 6 つまでです。新しいデスクを保存するには、デスクを削除してください。</translation>
 <translation id="4759238208242260848">ダウンロード</translation>
 <translation id="4762573482154983647">アプリを非表示</translation>
@@ -736,6 +738,7 @@
 <translation id="492453977506755176">キャプチャ モード キー</translation>
 <translation id="4925542575807923399">このアカウントの管理者が、マルチ ログイン セッションにおいて最初にこのアカウントにログインすることを要件としています。</translation>
 <translation id="4929163402621253029">発話中ですか？ミュートになっています。詳細</translation>
+<translation id="4936329710968938986">全ユーザー対象（オフ）</translation>
 <translation id="4938176435186993759">すべての候補を非表示</translation>
 <translation id="4945196315133970626">通知をオフにする</translation>
 <translation id="4946376291507881335">キャプチャ</translation>
@@ -1394,6 +1397,7 @@
 <translation id="8477270416194247200">キャンセルするには Alt+ 検索キーまたは Shift キーを押します。</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" /> に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" /> に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="8496402167048257517">ニアバイシェア設定を表示します</translation>
+<translation id="8507563469658346379">全ユーザー対象（<ph name="REMAINING_TIME" />）</translation>
 <translation id="85123341071060231">Chromebook の Bluetooth がオフになっています。ロックを解除するにはパスワードをご入力ください</translation>
 <translation id="8513108775083588393">自動回転</translation>
 <translation id="851458219935658693">現在のデスクのウィンドウを表示する、ラジオボタンが選択されています</translation>

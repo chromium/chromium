@@ -435,6 +435,7 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="3297344142967351106">Asistență vocală</translation>
 <translation id="3303414029551471755">Continui pentru descărcarea conținutului?</translation>
 <translation id="3305795716056605962">Tradu paginile de la butonul Mai multe opțiuni</translation>
+<translation id="3319664549618064419">Treci la versiunea site-ului pentru computer pentru o afișare mai bună a acestui site</translation>
 <translation id="3334729583274622784">Modifici extensia de fișier?</translation>
 <translation id="3341262203274374114">Nu se poate anula urmărirea. A apărut o eroare.</translation>
 <translation id="3359667936385849800">Folosește furnizorul de servicii actual</translation>
@@ -626,7 +627,6 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="4452411734226507615">Închide fila <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marcaj adăugat în <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Când conectezi celălalt dispozitiv cu un cod QR, acesta poate folosi telefonul drept cheie de securitate. Dacă îl elimini, va trebui să scanezi un cod QR pentru a-l conecta din nou.</translation>
-<translation id="4479839115899251637">Șterge din lista de lecturi</translation>
 <translation id="4479972344484327217">Se instalează <ph name="MODULE" /> pentru Chrome…</translation>
 <translation id="4484496141267039529">Nu există conexiune. Încearcă din nou mai târziu.</translation>
 <translation id="4487967297491345095">Toate datele aplicației Chrome vor fi șterse definitiv. Sunt incluse toate fișierele, setările, conturile, bazele de date etc.</translation>
@@ -1489,7 +1489,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8955719471735800169">Înapoi sus</translation>
 <translation id="8964479563882643397">Deschide meniul pentru a deschide o nouă filă incognito</translation>
 <translation id="8965591936373831584">în așteptare</translation>
-<translation id="8967427617812342790">Adaugă în lista de lectură</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> filă incognito și încă <ph name="TAB_COUNT_ONE" /> filă vor fi închise}few{<ph name="INCOGNITO_TAB_COUNT" /> filă incognito și încă <ph name="TAB_COUNT_MANY" /> file vor fi închise}other{<ph name="INCOGNITO_TAB_COUNT" /> filă incognito și încă <ph name="TAB_COUNT_MANY" /> de file vor fi închise}}</translation>
 <translation id="8970887620466824814">A apărut o eroare.</translation>
 <translation id="8972098258593396643">Descarci în dosarul prestabilit?</translation>

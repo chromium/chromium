@@ -186,6 +186,7 @@
 <translation id="4335235004908507846">Chrome pode protexerte contra violacións da seguranza dos datos, extensións prexudiciais e moito máis</translation>
 <translation id="4343195214584226067">Engadiuse a extensión <ph name="EXTENSION_NAME" /> a Chrome</translation>
 <translation id="4384570495110188418">Chrome non puido comprobar os teus contrasinais porque non iniciaches sesión</translation>
+<translation id="4393248995085527349">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar o sistema operativo macOS 10.15 ou unha versión posterior. Este ordenador ten macOS 10.13.</translation>
 <translation id="4427306783828095590">A protección mellorada é máis eficaz á hora de bloquear o phishing e o software malicioso</translation>
 <translation id="4450664632294415862">Chrome (inicio de sesión, <ph name="PAGE_TITLE" />)</translation>
 <translation id="4458462641685292929">Hai outra operación en Google Chrome que está en curso. Téntao de novo máis tarde.</translation>
@@ -256,6 +257,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Converter Google Chrome no navegador predeterminado</translation>
 <translation id="6003112304606738118">Descargando… Tempo restante: <ph name="HOURS" /> h</translation>
+<translation id="6010556343189461180">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar o sistema operativo macOS 10.15 ou unha versión posterior. Este ordenador ten macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome pecharase agora.}=1{Chrome pecharase en 1 segundo.}other{Chrome pecharase en # segundos.}}</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6070348360322141662">Para obter unha maior seguranza, Google Chrome encriptará os teus datos</translation>

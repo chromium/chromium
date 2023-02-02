@@ -106,7 +106,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1085697365578766383">Errore durante l'avvio della macchina virtuale. Riprova.</translation>
 <translation id="1087965115100412394">Non consentire ai siti di connettersi ai dispositivi MIDI</translation>
 <translation id="1088659085457112967">Avvia modalità Reader</translation>
-<translation id="1089407731410758060">Cambia tema</translation>
 <translation id="1090126737595388931">Nessuna applicazione in esecuzione in background</translation>
 <translation id="1090541560108055381">Prima di eseguire l'accoppiamento, assicurati che questo codice sia lo stesso su entrambi i dispositivi</translation>
 <translation id="1091767800771861448">Premi ESC per saltare (solo build non ufficiali).</translation>
@@ -547,6 +546,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1495677929897281669">Torna alla scheda</translation>
 <translation id="1500297251995790841">Dispositivo sconosciuto [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Scopri di più sulle app di Chrome non supportate</translation>
+<translation id="1501480321619201731">Elimina gruppo</translation>
 <translation id="1503392482221435031">Invia automaticamente statistiche sull'utilizzo a Google. Puoi attivare o disattivare i report sugli arresti anomali nelle impostazioni del dispositivo.</translation>
 <translation id="150411034776756821">Rimuovi <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Le cartelle condivise sono disponibili su Windows al percorso <ph name="BASE_DIR" />.</translation>
@@ -2097,7 +2097,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2835547721736623118">Servizio di riconoscimento vocale</translation>
 <translation id="2836232638504556905">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Leggi le <ph name="BEGIN_LINK" />norme sulla privacy<ph name="END_LINK" /> del sito.</translation>
 <translation id="2836269494620652131">Interruzione anomala</translation>
-<translation id="2836635946302913370">L'accesso con questo nome utente è stato disattivato dall'amministratore.</translation>
 <translation id="283669119850230892">Per poter utilizzare la rete <ph name="NETWORK_ID" /> devi completare la connessione a Internet sotto.</translation>
 <translation id="2838379631617906747">Installazione</translation>
 <translation id="2839032553903800133">Notifiche bloccate</translation>
@@ -2605,6 +2604,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3315442055907669208">Avvia modalità Reader</translation>
 <translation id="3317459757438853210">Fronte retro</translation>
 <translation id="3317678681329786349">Videocamera e microfono bloccati</translation>
+<translation id="3319306431415395200">Traduci il testo nell'immagine con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Impostazioni di Navigazione sicura (protezione da siti pericolosi) e altre impostazioni di sicurezza</translation>
 <translation id="3323521181261657960">Premio! Hai più tempo di utilizzo</translation>
 <translation id="3323577066981719144">Le modifiche che apporti qui vengono applicate soltanto al browser Chrome. Per apportare modifiche alle impostazioni del browser Lacros, aprilo e vai alle impostazioni.</translation>
@@ -3615,7 +3615,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4244238649050961491">Trova altre app per stilo</translation>
 <translation id="4246980464509998944">Altri commenti:</translation>
 <translation id="424726838611654458">Apri sempre in Adobe Reader</translation>
-<translation id="4247901771970415646">Impossibile sincronizzare con <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Proteggi le tue password da violazioni dei dati e altri problemi di sicurezza</translation>
 <translation id="4249248555939881673">In attesa della connessione di rete...</translation>
 <translation id="4249373718504745892">A questa pagina è stato impedito l'accesso alla webcam e al microfono.</translation>
@@ -4833,6 +4832,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5382591305415226340">Gestisci i link supportati</translation>
 <translation id="5383377866517186886">La videocamera è disattivata nelle Preferenze di Sistema del Mac</translation>
 <translation id="5383740867328871413">Gruppo senza nome - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Criterio aziendale modificato. Pulsante Esperimenti aggiunto alla barra degli strumenti. Fai clic sul pulsante per aprire una finestra di dialogo in cui puoi attivare esperimenti.</translation>
 <translation id="5388885445722491159">Accoppiato</translation>
 <translation id="5390112241331447203">Includi il file system_logs.txt inviato nei rapporti di feedback.</translation>
@@ -5047,6 +5047,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5578059481725149024">Accesso automatico</translation>
 <translation id="5581134892342029705">Traduzione verso la lingua <ph name="LANGUAGE" /> completata</translation>
 <translation id="558170650521898289">Verifica driver hardware Microsoft Windows</translation>
+<translation id="5581876958763461074">Tutte le note</translation>
 <translation id="5581972110672966454">Impossibile aggiungere il dispositivo al dominio. Riprova oppure contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Menu principale</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5694,7 +5695,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="617213288191670920">Nessuna lingua aggiunta</translation>
 <translation id="6173623053897475761">Digita di nuovo il PIN</translation>
 <translation id="6175314957787328458">GUID di dominio Microsoft</translation>
-<translation id="6176043333338857209">Il Bluetooth verrà temporaneamente abilitato per comunicare con il tuo token di sicurezza</translation>
 <translation id="6178664161104547336">Seleziona un certificato</translation>
 <translation id="6178682841350631965">I dati di accesso sono stati aggiornati</translation>
 <translation id="6180510783007738939">Strumento Linea</translation>
@@ -7676,6 +7676,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Voce <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Impostazioni Switch Access</translation>
 <translation id="7992203134935383159">Sintesi vocale</translation>
+<translation id="7994515119120860317">Traduci il testo nell'immagine con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Priorità processo</translation>
 <translation id="7999229196265990314">Sono stati creati i file seguenti:

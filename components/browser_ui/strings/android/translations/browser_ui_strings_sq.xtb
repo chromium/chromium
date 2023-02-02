@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Reklamat</translation>
 <translation id="1919950603503897840">Zgjidh kontaktet</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Bëje tekstin dhe imazhet më të mëdha ose më të vogla për të gjitha sajtet që viziton ti</translation>
 <translation id="1984937141057606926">Lejohet, përveç palëve të treta</translation>
 <translation id="1989112275319619282">Shfleto</translation>
 <translation id="1994173015038366702">URL-ja e sajtit</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Tingulli</translation>
 <translation id="2148716181193084225">Sot</translation>
 <translation id="216989819110952009">Edhe pse mbanin syzet e gjelbra mbi sy, në fillim Dorotia dhe miqtë e saj u verbuan nga</translation>
+<translation id="2176704795966505152">Shfaq opsionin e zmadhimit në menynë kryesore</translation>
 <translation id="2182457891543959921">Pyet përpara se të lejosh krijimin nga sajtet të një harte 3D të ambientit tënd rrethues ose gjurmimin prej tyre të pozicionit të kamerës (rekomandohet)</translation>
 <translation id="2212565012507486665">Lejo kukit</translation>
 <translation id="2228071138934252756">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te kamera jote, aktivizo gjithashtu kamerën në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">Lejo kukit për një sajt specifik.</translation>
 <translation id="4046123991198612571">Kënga tjetër</translation>
 <translation id="4149994727733219643">Pamje e thjeshtuar për faqet e uebit</translation>
+<translation id="4151930093518524179">Zmadhimi i parazgjedhur</translation>
 <translation id="4165986682804962316">Cilësimet e sajtit</translation>
 <translation id="4169549551965910670">U lidh me një pajisje USB</translation>
 <translation id="4194328954146351878">Pyet përpara se të lejosh sajtet të shikojnë dhe ndryshojnë informacionin në pajisjet NFC (rekomandohet)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te mikrofoni yt, aktivizo gjithashtu mikrofonin në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Çaktivizo mikrofonin</translation>
 <translation id="4570913071927164677">Detajet</translation>
+<translation id="4575264539271661854">Bëje më të lehtë të zmadhosh tekstin dhe imazhet për një sajt që viziton ti</translation>
 <translation id="4598549027014564149">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, as edhe në sajtet e ngjashme. Aktiviteti yt i shfletimit nuk përdoret për gjëra të tilla si p.sh. personalizimi i reklamave. Veçoritë në disa sajte mund të mos funksionojnë.</translation>
 <translation id="4645575059429386691">Menaxhohet nga prindi yt</translation>
 <translation id="4670064810192446073">Realiteti virtual</translation>
@@ -383,6 +387,7 @@
 <translation id="8284326494547611709">Titrat</translation>
 <translation id="8300705686683892304">Menaxhuar nga aplikacioni</translation>
 <translation id="8324158725704657629">Mos pyet më</translation>
+<translation id="8362795839483915693">Mund të zmadhosh ose zvogëlosh në sajtet që viziton ti</translation>
 <translation id="8372893542064058268">Lejo "Sinkronizimin në sfond" për një sajt specifik.</translation>
 <translation id="8376384591331888629">Duke përfshirë kukit e palëve të treta në këtë sajt</translation>
 <translation id="83792324527827022">Një sajt po përdor kamerën dhe mikrofonin tënd</translation>

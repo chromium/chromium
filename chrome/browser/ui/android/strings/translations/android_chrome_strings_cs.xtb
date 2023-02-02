@@ -391,6 +391,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3072980200212375806">Aplikace <ph name="APP_NAME" /> se otevře v Chromu. Pokračováním vyjadřujete souhlas se <ph name="BEGIN_LINK1" />smluvními podmínkami společnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatečnými smluvními podmínkami prohlížeče Chrome a systému ChromeOS<ph name="END_LINK2" />. Platí také <ph name="BEGIN_LINK3" />zásady ochrany soukromí<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">Zobrazit obsah schránky</translation>
 <translation id="3098745985164956033">Za účelem zlepšení popisů se některé obrázky odesílají do Googlu</translation>
+<translation id="3104179992611025423">Tvůj prohlížeč spravují rodiče</translation>
 <translation id="3114507951000454849">Přečtěte si dnešní zprávy <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">propojeno s</translation>
 <translation id="3123734510202723619">Oznámení</translation>
@@ -400,6 +401,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3157931365184549694">Obnovit</translation>
 <translation id="3166827708714933426">Zkratky pro okna a karty</translation>
 <translation id="316694332262407393">Chrome už je spuštěný.</translation>
+<translation id="3167258285411721858">Můžete požádat o web <ph name="HOST_NAME" /> pro mobily</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Měření reklam</translation>
 <translation id="3207960819495026254">Přidáno do záložek</translation>
@@ -433,6 +435,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3297344142967351106">Hlasová asistence</translation>
 <translation id="3303414029551471755">Chcete pokračovat ke stažení obsahu?</translation>
 <translation id="3305795716056605962">Stránky přeložíte pomocí tlačítka Další možnosti</translation>
+<translation id="3319664549618064419">Pokud chcete získat lepší zobrazení tohoto webu, přepněte na web pro počítače</translation>
 <translation id="3334729583274622784">Změnit příponu souboru?</translation>
 <translation id="3341262203274374114">Sledování nelze zrušit. Něco se pokazilo.</translation>
 <translation id="3359667936385849800">Použít aktuálního poskytovatele služeb</translation>
@@ -624,7 +627,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="4452411734226507615">Zavřít kartu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Záložka přidána do složky <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Když jiné zařízení propojíte pomocí QR kódu, můžete tento telefon používat jako bezpečnostní klíč. Pokud ho odstraníte, k opětovnému propojení bude potřeba znovu naskenovat QR kód.</translation>
-<translation id="4479839115899251637">Smazat ze seznamu četby</translation>
 <translation id="4479972344484327217">Instalace modulu <ph name="MODULE" /> pro Chrome…</translation>
 <translation id="4484496141267039529">Nejste připojeni. Zkuste to později.</translation>
 <translation id="4487967297491345095">Všechna data aplikace Chrome budou trvale smazána. Zahrnuje to soubory, nastavení, účty, databáze apod.</translation>
@@ -1466,6 +1468,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8849001918648564819">Skryté</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, karta</translation>
 <translation id="8854223127042600341">Zobrazte si soubory offline</translation>
+<translation id="885480114717186641">Můžete požádat o web <ph name="HOST_NAME" /> pro počítače</translation>
 <translation id="8856607253650333758">Zobrazovat popisy</translation>
 <translation id="8856931513242997049">Postup udělení oznámení k zasílání oprávnění je zavřený</translation>
 <translation id="8873817150012960745">Začnete klepnutím sem</translation>
@@ -1486,7 +1489,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8955719471735800169">Zpět na začátek</translation>
 <translation id="8964479563882643397">Pokud chcete otevřít novou anonymní kartu, otevřete nabídku</translation>
 <translation id="8965591936373831584">nevyřízeno</translation>
-<translation id="8967427617812342790">Přidat do seznamu četby</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Zavře se <ph name="INCOGNITO_TAB_COUNT" /> anonymní a <ph name="TAB_COUNT_ONE" /> další karta}few{Zavřou se <ph name="INCOGNITO_TAB_COUNT" /> anonymní a <ph name="TAB_COUNT_MANY" /> další karty}many{Zavře se <ph name="INCOGNITO_TAB_COUNT" /> anonymní a <ph name="TAB_COUNT_MANY" /> další karty}other{Zavře se <ph name="INCOGNITO_TAB_COUNT" /> anonymních a <ph name="TAB_COUNT_MANY" /> dalších karet}}</translation>
 <translation id="8970887620466824814">Došlo k chybě.</translation>
 <translation id="8972098258593396643">Stáhnout do výchozí složky?</translation>

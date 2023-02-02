@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Anuncios</translation>
 <translation id="1919950603503897840">Seleccionar contactos</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Aumenta o reduce el tamaño del texto y las imágenes en todos los sitios que visites</translation>
 <translation id="1984937141057606926">Permitido (excepto cookies de terceros)</translation>
 <translation id="1989112275319619282">Examinar</translation>
 <translation id="1994173015038366702">URL del sitio</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Sonido</translation>
 <translation id="2148716181193084225">Hoy</translation>
 <translation id="216989819110952009">Aun con los ojos protegidos por los anteojos verdes, la brillantez de la maravillosa ciudad encandiló</translation>
+<translation id="2176704795966505152">Mostrar opción de zoom en el menú principal</translation>
 <translation id="2182457891543959921">Preguntar antes de permitir que los sitios creen un mapa 3D de tu entorno o hagan un seguimiento de la posición de la cámara (recomendado)</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
 <translation id="2228071138934252756">Para que <ph name="APP_NAME" /> pueda acceder a tu cámara, activa la cámara también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">Permitir cookies en un sitio específico.</translation>
 <translation id="4046123991198612571">Pista siguiente</translation>
 <translation id="4149994727733219643">Vista simplificada de páginas web</translation>
+<translation id="4151930093518524179">Zoom predeterminado</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>
 <translation id="4169549551965910670">Conectado a un dispositivo USB</translation>
 <translation id="4194328954146351878">Pregunta antes de permitir que los sitios vean y cambien la información de los dispositivos NFC (recomendado)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427">Para que <ph name="APP_NAME" /> pueda acceder al micrófono, actívalo también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silenciar micrófono</translation>
 <translation id="4570913071927164677">Detalles</translation>
+<translation id="4575264539271661854">Haz que sea más fácil ampliar el texto y las imágenes en los sitios que visites</translation>
 <translation id="4598549027014564149">Mientras estás en modo Incógnito, los sitios no pueden usar las cookies para ver tu actividad de navegación en otros sitios, ni siquiera en sitios relacionados. Tu actividad de navegación no se usa para personalizar anuncios. Es posible que las funciones de algunos sitios no funcionen.</translation>
 <translation id="4645575059429386691">Administrado por uno de tus padres</translation>
 <translation id="4670064810192446073">Realidad virtual</translation>
@@ -383,6 +387,7 @@
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8300705686683892304">Administrados por una aplicación</translation>
 <translation id="8324158725704657629">No volver a preguntar</translation>
+<translation id="8362795839483915693">Puedes ampliar o reducir el tamaño de los sitios que visitas</translation>
 <translation id="8372893542064058268">Permite la sincronización en segundo plano de un sitio específico.</translation>
 <translation id="8376384591331888629">Incluir cookies de terceros en este sitio</translation>
 <translation id="83792324527827022">Un sitio web está usando tu cámara y tu micrófono</translation>

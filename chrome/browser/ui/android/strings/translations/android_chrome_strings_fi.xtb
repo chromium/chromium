@@ -391,6 +391,7 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="3072980200212375806"><ph name="APP_NAME" /> avautuu Chromessa. Jatkamalla hyväksyt <ph name="BEGIN_LINK1" />Googlen käyttöehdot<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />Google Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot<ph name="END_LINK2" />. Myös <ph name="BEGIN_LINK3" />tietosuojakäytäntöä<ph name="END_LINK3" /> sovelletaan.</translation>
 <translation id="3091010850649238832">Näytä leikepöydän sisältö</translation>
 <translation id="3098745985164956033">Jotkin kuvat lähetetään Googlelle, jotta näkemiäsi kuvauksia voidaan parantaa</translation>
+<translation id="3104179992611025423">Vanhempasi ylläpitävät selainta</translation>
 <translation id="3114507951000454849">Lue päivän uutiset <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">linkitetty:</translation>
 <translation id="3123734510202723619">Ilmoitukset</translation>
@@ -400,6 +401,7 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="3157931365184549694">Palauta</translation>
 <translation id="3166827708714933426">Välilehti- ja ikkunapikanäppäimet</translation>
 <translation id="316694332262407393">Chrome on jo käynnissä täällä.</translation>
+<translation id="3167258285411721858">Voit pyytää mobiilisivustoa osoitteesta <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Mainosten mittaus</translation>
 <translation id="3207960819495026254">Kirjanmerkeissä</translation>
@@ -625,7 +627,6 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="4452411734226507615">Sulje välilehti <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Lisätty kirjanmerkiksi kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Tätä puhelinta voi käyttää toisen QR-koodilla linkitetyn laitteen suojausavaimena. Jos poistat laitteen, linkitys QR-koodilla täytyy tehdä uudelleen.</translation>
-<translation id="4479839115899251637">Poista lukulistalta</translation>
 <translation id="4479972344484327217">Asennetaan <ph name="MODULE" /> Chromeen…</translation>
 <translation id="4484496141267039529">Ei yhteyttä. Yritä myöhemmin uudelleen.</translation>
 <translation id="4487967297491345095">Kaikki Chromen sovellustiedot, mukaan lukien tiedostot, asetukset, tilit ja tietokannat, poistetaan pysyvästi.</translation>
@@ -1467,6 +1468,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8849001918648564819">Piilotettu</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, välilehti</translation>
 <translation id="8854223127042600341">Katso offline-tiedostojasi</translation>
+<translation id="885480114717186641">Voit pyytää tietokonesivustoa osoitteesta <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Muodosta kuvaukset</translation>
 <translation id="8856931513242997049">Ilmoitusluvan työnkulku suljettu</translation>
 <translation id="8873817150012960745">Aloita napauttamalla tätä</translation>
@@ -1487,7 +1489,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8955719471735800169">Sivun alkuun</translation>
 <translation id="8964479563882643397">Avaa valikko, niin voit avata uuden incognito-välilehden</translation>
 <translation id="8965591936373831584">odottaa</translation>
-<translation id="8967427617812342790">Lisää lukulistalle</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognito-välilehti ja <ph name="TAB_COUNT_ONE" /> muu välilehti suljetaan}other{<ph name="INCOGNITO_TAB_COUNT" /> incognito-välilehteä ja <ph name="TAB_COUNT_MANY" /> muuta välilehteä suljetaan}}</translation>
 <translation id="8970887620466824814">Tapahtui virhe.</translation>
 <translation id="8972098258593396643">Ladataanko tiedosto oletuskansioon?</translation>

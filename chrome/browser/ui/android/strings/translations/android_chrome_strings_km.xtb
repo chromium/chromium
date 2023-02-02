@@ -251,6 +251,7 @@
 <translation id="2426805022920575512">ជ្រើសរើស​គណនី​ផ្សេងទៀត</translation>
 <translation id="2433507940547922241">ការបង្ហាញខ្លួន</translation>
 <translation id="2435457462613246316">បង្ហាញពាក្យសម្ងាត់</translation>
+<translation id="2439153523196674349">ការមើល <ph name="SITE_NAME" /> សាកល្បង</translation>
 <translation id="2450083983707403292">តើអ្នក​ចង់​ចាប់ផ្តើម​ទាញយក <ph name="FILE_NAME" /> ឡើងវិញដែរ?</translation>
 <translation id="2453860139492968684">បញ្ចប់</translation>
 <translation id="2459390580524506445">ការស្វែងរកតាម​សំឡេងប្រសើរជាងមុន</translation>
@@ -389,6 +390,7 @@
 <translation id="3066573403916685335">ផ្លាស់ទីចុះ</translation>
 <translation id="3070005020161560471">បកប្រែដោយស្វ័យប្រវត្តិ</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> នឹងបើកនៅក្នុង Chrome។ ប្រសិនបើបន្ត មានន័យថា​អ្នកយល់ព្រម​តាម<ph name="BEGIN_LINK1" />លក្ខខណ្ឌ​ប្រើប្រាស់ Google<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />លក្ខខណ្ឌ​ប្រើប្រាស់​បន្ថែមរបស់ Google Chrome និង ChromeOS<ph name="END_LINK2" />។ <ph name="BEGIN_LINK3" />គោលការណ៍​ឯកជនភាព<ph name="END_LINK3" />ក៏អនុវត្តផងដែរ។</translation>
+<translation id="3083194063661536258">បានចេញពីគណនី។ ប៊ូតុង។ បើក​ប្រអប់ ដើម្បី​ចូល​គណនី​ រួច​បើកសមកាលកម្ម។</translation>
 <translation id="3091010850649238832">បង្ហាញខ្លឹមសារឃ្លីបបត</translation>
 <translation id="3098745985164956033">រូបភាពមួយចំនួន​ត្រូវបានផ្ញើទៅ Google ដើម្បីកែលម្អ​ការពណ៌នា​សម្រាប់អ្នក</translation>
 <translation id="3104179992611025423">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ត្រូវបានគ្រប់គ្រង​ដោយ​មាតាបិតារបស់អ្នក</translation>
@@ -627,7 +629,6 @@
 <translation id="4452411734226507615">បិទ​ផ្ទាំង <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">បានបន្ថែមចំណាំទៅ <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">នៅពេលអ្នកភ្ជាប់ឧបករណ៍ផ្សេងទៀតដោយប្រើកូដ QR ឧបករណ៍នោះអាចប្រើទូរសព្ទនេះជាសោសុវត្ថិភាព​បាន។ ប្រសិនបើអ្នកដកវាចេញ អ្នកនឹងត្រូវស្កេនកូដ QR ដើម្បីភ្ជាប់វាម្ដងទៀត។</translation>
-<translation id="4479839115899251637">លុបចេញពីបញ្ជីអាន</translation>
 <translation id="4479972344484327217">កំពុងដំឡើង <ph name="MODULE" /> សម្រាប់ Chrome…</translation>
 <translation id="4484496141267039529">មិនមាន​អ៊ីនធឺណិត​ទេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</translation>
 <translation id="4487967297491345095">ទិន្នន័យ​កម្មវិធី​របស់ Chrome ទាំងអស់​នឹងត្រូវ​បានលុប​ជា​អចិន្ត្រៃយ៍។ វា​រាប់បញ្ចូល​ទាំង​ឯកសារ ការកំណត់ គណនី មូលដ្ឋាន​ទិន្នន័យ​ទាំងអស់ ។ល។</translation>
@@ -926,6 +927,7 @@
 <translation id="6040143037577758943">បិទ</translation>
 <translation id="604124094241169006">ស្វ័យប្រវត្តិ</translation>
 <translation id="6042308850641462728">ច្រើនទៀត</translation>
+<translation id="6049046116080614938">បានចូលគណនី​ជា <ph name="USER_NAME" />។ <ph name="USER_EMAIL" />។ ប៊ូតុង។ បើកការកំណត់។</translation>
 <translation id="604996488070107836">ការដោនឡូត <ph name="FILE_NAME" /> បានបរាជ័យដោយសារមានកំហុសមិនស្គាល់។</translation>
 <translation id="605721222689873409">ឆ្នាំ</translation>
 <translation id="6059830886158432458">គ្រប់គ្រង​អត្ថបទ និង​សកម្មភាព​របស់អ្នក​នៅទីនេះ</translation>
@@ -1300,6 +1302,7 @@
 <translation id="7968014550143838305">បានបញ្ចូល​ទៅក្នុង​បញ្ជីអាន</translation>
 <translation id="7971136598759319605">ដំណើរការ 1 ថ្ងៃមុន</translation>
 <translation id="7975379999046275268">មើល​ទំព័រ​សាកល្បង <ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">បានចូលគណនី​ជា <ph name="USER_NAME" />។ ប៊ូតុង។ បើកការកំណត់។</translation>
 <translation id="7986497153528221272">ដើម្បី​មើល​ពាក្យសម្ងាត់ សូមកំណត់​ការចាក់សោអេក្រង់​នៅលើ​ឧបករណ៍​របស់អ្នក​ជាមុនសិន</translation>
 <translation id="7995059495660416932">អ្នកនឹង​ឃើញ​ខ្លឹមសារ​នៅ​ពេល​​មាន</translation>
 <translation id="799576009106109668">អ្នកនឹងរុករកកាន់តែរហ័ស ដោយសារខ្លឹមសារត្រូវបានផ្ទុកយ៉ាងសកម្មជាមុន ដោយផ្អែកលើការចូលមើលទំព័របណ្ដាញបច្ចុប្បន្នរបស់អ្នក</translation>
@@ -1490,7 +1493,6 @@
 <translation id="8955719471735800169">ត្រលប់ទៅខាងលើ</translation>
 <translation id="8964479563882643397">ដើម្បីបើកផ្ទាំងឯកជនថ្មី​ សូមបើកម៉ឺនុយ</translation>
 <translation id="8965591936373831584">មិនទាន់សម្រេច</translation>
-<translation id="8967427617812342790">បន្ថែមទៅបញ្ជីអាន</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{ផ្ទាំង​ឯកជន <ph name="INCOGNITO_TAB_COUNT" /> និងផ្ទាំង <ph name="TAB_COUNT_ONE" /> ទៀតនឹង​ត្រូវបានបិទ}other{ផ្ទាំង​ឯកជន <ph name="INCOGNITO_TAB_COUNT" /> និងផ្ទាំង <ph name="TAB_COUNT_MANY" /> ទៀតនឹង​ត្រូវបានបិទ}}</translation>
 <translation id="8970887620466824814">មានអ្វីមួយ​ខុសប្រក្រតី។</translation>
 <translation id="8972098258593396643">ទាញយក​ទៅថត​លំនាំដើម​មែនទេ?</translation>

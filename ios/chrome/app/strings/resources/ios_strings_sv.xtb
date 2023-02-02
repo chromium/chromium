@@ -596,7 +596,6 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5520466080178053306">Tryck på Lösenordshantering och sedan på Lägg till</translation>
 <translation id="5525095647255982834">Om du vill skicka den här fliken till en annan enhet loggar du in i Chrome på den enheten.</translation>
 <translation id="5525269841082836315">Skapa lösenfras</translation>
-<translation id="5530084793407600786">Sök i bilden med Google</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> hittades</translation>
 <translation id="5548760955356983418">Med Handoff kan du börja visa en webbplats på den här enheten och sedan enkelt fortsätta på din Mac. Den aktuella öppna webbplatsen visas i Dock på din Mac.
 
@@ -709,6 +708,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6284652193729350524">Erbjud översättning från <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Slutade följa <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Öppna <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" /> och tryck på Säker webbsökning om du vill aktivera det.</translation>
+<translation id="6320780930074869063">När funktionen är aktiverad sparas lösenord i <ph name="ACCOUNT" />. När funktionen är inaktiverad sparas lösenorden endast på den här enheten.</translation>
 <translation id="6321526113093607004">Lägg till i bokmärken</translation>
 <translation id="6324669097367352121">Inloggningsinställn.</translation>
 <translation id="6337234675334993532">Kryptering</translation>

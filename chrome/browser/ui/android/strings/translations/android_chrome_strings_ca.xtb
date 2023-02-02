@@ -391,6 +391,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3072980200212375806"><ph name="APP_NAME" /> s'obrirà a Chrome. En continuar, acceptes les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei addicionals de Google Chrome i Chrome OS<ph name="END_LINK2" />. També s'aplica la <ph name="BEGIN_LINK3" />política de privadesa<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">Mostra els continguts del porta-retalls</translation>
 <translation id="3098745985164956033">Algunes imatges s'envien a Google per millorar-ne les descripcions per a tu</translation>
+<translation id="3104179992611025423">Els teus pares gestionen el navegador</translation>
 <translation id="3114507951000454849">Llegeix les notícies d'avui <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">enllaçada amb</translation>
 <translation id="3123734510202723619">Anuncis</translation>
@@ -400,6 +401,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3157931365184549694">Restaura</translation>
 <translation id="3166827708714933426">Dreceres per a pestanyes i finestres</translation>
 <translation id="316694332262407393">Chrome ja s'està executant aquí.</translation>
+<translation id="3167258285411721858">Pots sol·licitar el lloc web per a mòbils de <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Mesurament d'anuncis</translation>
 <translation id="3207960819495026254">S'ha afegit a les adreces d'interès.</translation>
@@ -433,6 +435,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3297344142967351106">Assistència per veu</translation>
 <translation id="3303414029551471755">Voleu baixar el contingut?</translation>
 <translation id="3305795716056605962">Tradueix pàgines des del botó Més opcions</translation>
+<translation id="3319664549618064419">Canvia al lloc web per a ordinadors per veure millor aquest lloc web</translation>
 <translation id="3334729583274622784">Vols canviar l'extensió del fitxer?</translation>
 <translation id="3341262203274374114">No es pot deixar de seguir. S'ha produït un error.</translation>
 <translation id="3359667936385849800">Utilitza el teu proveïdor de serveis actual</translation>
@@ -624,7 +627,6 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="4452411734226507615">Tanca la pestanya <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Adreça d'interès afegida a <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Quan enllaces un altre dispositiu amb un codi QR, pot utilitzar aquest telèfon com a clau de seguretat. Si el suprimeixes, hauràs d'escanejar el codi QR per tornar-lo a enllaçar.</translation>
-<translation id="4479839115899251637">Treu de llista de lectura</translation>
 <translation id="4479972344484327217">S'està instal·lant <ph name="MODULE" /> per a Chrome…</translation>
 <translation id="4484496141267039529">No hi ha connexió. Torna-ho a provar més tard.</translation>
 <translation id="4487967297491345095">Totes les dades de les aplicacions de Chrome, com ara els fitxers, la configuració, els comptes o les bases de dades, entre d'altres, se suprimiran permanentment.</translation>
@@ -1466,6 +1468,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8849001918648564819">Amagat</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, pestanya</translation>
 <translation id="8854223127042600341">Consulta els fitxers sense connexió</translation>
+<translation id="885480114717186641">Pots sol·licitar el lloc web per a ordinadors de <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Obtén les descripcions</translation>
 <translation id="8856931513242997049">El flux del permís de notificacions s'ha tancat</translation>
 <translation id="8873817150012960745">Toca aquí per començar</translation>
@@ -1486,7 +1489,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8955719471735800169">Torna a dalt</translation>
 <translation id="8964479563882643397">Per obrir una pestanya d'incògnit nova, obre el menú</translation>
 <translation id="8965591936373831584">pendent</translation>
-<translation id="8967427617812342790">Afegeix a la llista de lectura</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Es tancaran <ph name="INCOGNITO_TAB_COUNT" /> pestanya d'incògnit i <ph name="TAB_COUNT_ONE" /> de normal.}other{Es tancaran <ph name="INCOGNITO_TAB_COUNT" /> pestanyes d'incògnit i <ph name="TAB_COUNT_MANY" /> de normals.}}</translation>
 <translation id="8970887620466824814">S'ha produït un error.</translation>
 <translation id="8972098258593396643">Vols baixar el fitxer a la carpeta predeterminada?</translation>

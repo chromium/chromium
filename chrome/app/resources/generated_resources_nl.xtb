@@ -106,7 +106,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1085697365578766383">Fout bij starten van virtuele machine. Probeer het opnieuw.</translation>
 <translation id="1087965115100412394">Niet toestaan dat sites verbinding maken met MIDI-apparaten</translation>
 <translation id="1088659085457112967">Lezermodus aanzetten</translation>
-<translation id="1089407731410758060">Thema wijzigen</translation>
 <translation id="1090126737595388931">Geen actieve achtergrondapps</translation>
 <translation id="1090541560108055381">Voordat je de apparaten koppelt, check je of deze code gelijk is op beide apparaten</translation>
 <translation id="1091767800771861448">Druk op ESCAPE om over te slaan (alleen voor niet-officiële builds).</translation>
@@ -547,6 +546,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1495677929897281669">Terug naar tabblad</translation>
 <translation id="1500297251995790841">Onbekend apparaat [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Meer informatie over niet-ondersteunde Chrome-apps</translation>
+<translation id="1501480321619201731">Groep verwijderen</translation>
 <translation id="1503392482221435031">Hiermee worden automatisch gebruiksstatistieken naar Google gestuurd. Je kunt crashrapporten aan- of uitzetten in de instellingen van je apparaat.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> verwijderen</translation>
 <translation id="1504551620756424144">Gedeelde mappen zijn beschikbaar in Windows in <ph name="BASE_DIR" />.</translation>
@@ -2097,7 +2097,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2835547721736623118">Spraakherkenningsservice</translation>
 <translation id="2836232638504556905"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres, adres en profielfoto met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK" />privacybeleid<ph name="END_LINK" /> van deze site.</translation>
 <translation id="2836269494620652131">Crash</translation>
-<translation id="2836635946302913370">Je beheerder heeft ingesteld dat je niet kunt inloggen met deze gebruikersnaam.</translation>
 <translation id="283669119850230892">Als je het netwerk <ph name="NETWORK_ID" /> wilt gebruiken, moet je eerst hieronder verbinding maken met internet.</translation>
 <translation id="2838379631617906747">Installeren</translation>
 <translation id="2839032553903800133">Meldingen geblokkeerd</translation>
@@ -2605,6 +2604,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3315442055907669208">Lezermodus aanzetten</translation>
 <translation id="3317459757438853210">Dubbelzijdig</translation>
 <translation id="3317678681329786349">Camera en microfoon geblokkeerd</translation>
+<translation id="3319306431415395200">Tekst in afbeelding vertalen met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Safe Browsing (bescherming tegen gevaarlijke sites) en andere beveiligingsinstellingen</translation>
 <translation id="3323521181261657960">Bonus! Je hebt meer schermtijd gekregen</translation>
 <translation id="3323577066981719144">Wijzigingen die je hier aanbrengt, zijn alleen van toepassing op de Chrome-browser. Als je wijzigingen wilt aanbrengen in de Lacros Chrome-browserinstellingen, open je de Lacros Chrome-browser en ga je naar Instellingen.</translation>
@@ -3614,7 +3614,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4244238649050961491">Meer stylus-apps zoeken</translation>
 <translation id="4246980464509998944">Aanvullende opmerkingen:</translation>
 <translation id="424726838611654458">Altijd in Adobe Reader openen</translation>
-<translation id="4247901771970415646">Kan niet synchroniseren met <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Bescherm je wachtwoorden tegen gegevenslekken en andere beveiligingsproblemen</translation>
 <translation id="4249248555939881673">Wachten op netwerkverbinding...</translation>
 <translation id="4249373718504745892">Deze pagina heeft geen toegang tot je camera en microfoon.</translation>
@@ -3835,6 +3834,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4441147046941420429">Als je wilt doorgaan, verwijder je de beveiligingssleutel uit je apparaat, steek je hem er opnieuw en tik je erop</translation>
 <translation id="444134486829715816">Uitvouwen...</translation>
 <translation id="4441928470323187829">Vastgezet door je beheerder</translation>
+<translation id="4442863809158514979">Webrechten bekijken</translation>
 <translation id="4443536555189480885">&amp;Help</translation>
 <translation id="4444304522807523469">Toegang tot documentscanners die zijn aangesloten via USB of die zich op het lokale netwerk bevinden</translation>
 <translation id="4444512841222467874">Als er geen ruimte beschikbaar wordt gemaakt, kunnen gebruikers en gegevens automatisch worden verwijderd.</translation>
@@ -4831,6 +4831,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5382591305415226340">Ondersteunde links beheren</translation>
 <translation id="5383377866517186886">Camera staat uit in Systeemvoorkeuren van je Mac</translation>
 <translation id="5383740867328871413">Naamloze groep - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Bedrijfsbeleid gewijzigd. Knop voor experimenten toegevoegd aan de werkbalk. Klik op de knop om een dialoogvenster te openen waarmee je experimenten kunt aanzetten.</translation>
 <translation id="5388885445722491159">Gekoppeld</translation>
 <translation id="5390112241331447203">Het bestand system_logs.txt opnemen dat in feedbackrapporten wordt gestuurd.</translation>
@@ -5045,6 +5046,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5578059481725149024">Automatisch inloggen</translation>
 <translation id="5581134892342029705">Vertaling naar <ph name="LANGUAGE" /> klaar</translation>
 <translation id="558170650521898289">Controle van Windows-apparaatstuurprogramma's</translation>
+<translation id="5581876958763461074">Alle notities</translation>
 <translation id="5581972110672966454">Kan het apparaat niet aan het domein koppelen. Probeer het opnieuw of neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Hoofdmenu</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5691,7 +5693,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="617213288191670920">Geen talen toegevoegd</translation>
 <translation id="6173623053897475761">Typ je pincode nog een keer</translation>
 <translation id="6175314957787328458">Microsoft-domein-GUID</translation>
-<translation id="6176043333338857209">Bluetooth wordt tijdelijk aangezet om te communiceren met je beveiligingssleutel</translation>
 <translation id="6178664161104547336">Een certificaat selecteren</translation>
 <translation id="6178682841350631965">Je inloggegevens zijn geüpdatet</translation>
 <translation id="6180510783007738939">Tool Lijn</translation>
@@ -7455,6 +7456,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="779308894558717334">Lichtgroen</translation>
 <translation id="7793098747275782155">Donkerblauw</translation>
 <translation id="7797571222998226653">Uit</translation>
+<translation id="7798504574384119986">Webrechten bekijken</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> automatisch geblokkeerd</translation>
 <translation id="7800518121066352902">Links&amp;om draaien</translation>
 <translation id="7801679634091975683">Wijzigingen die je hier aanbrengt, zijn alleen van toepassing op de Lacros Chrome-browser. Als je wijzigingen wilt aanbrengen in je Chrome-browserinstellingen, open je de Chrome-browser en ga je naar Instellingen.</translation>
@@ -7670,6 +7672,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, stem <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Instellingen voor Toegang via schakelaar</translation>
 <translation id="7992203134935383159">Spraaksynthese</translation>
+<translation id="7994515119120860317">Tekst in afbeelding vertalen met het <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Webweergave</translation>
 <translation id="7997826902155442747">Procesprioriteit</translation>
 <translation id="7999229196265990314">De volgende bestanden zijn gemaakt:

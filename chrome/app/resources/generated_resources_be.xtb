@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">Памылка падчас запуску віртуальнай машыны. Паўтарыце спробу.</translation>
 <translation id="1087965115100412394">Не дазваляць сайтам падключацца да прылад MIDI</translation>
 <translation id="1088659085457112967">Перайсці ў рэжым чытання</translation>
-<translation id="1089407731410758060">Змяніць тэму</translation>
 <translation id="1090126737595388931">Няма праграм, якія працуюць у фонавым рэжыме</translation>
 <translation id="1090541560108055381">Перад спалучэннем упэўніцеся, што гэты код – аднолькавы на абедзвюх прыладах</translation>
 <translation id="1091767800771861448">Каб прапусціць, націсніце ESC (толькі для неафіцыйных зборак).</translation>
@@ -550,6 +549,7 @@
 <translation id="1495677929897281669">Вярнуцца на ўкладку</translation>
 <translation id="1500297251995790841">Невядомая прылада [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Даведацца больш пра праграмы Chrome, якія не падтрымліваюцца</translation>
+<translation id="1501480321619201731">Выдаліць групу</translation>
 <translation id="1503392482221435031">Аўтаматычна адпраўляе статыстыку выкарыстання ў Google. Уключыць або выключыць функцыю стварэння справаздач аб збоях можна ў наладах прылады.</translation>
 <translation id="150411034776756821">Выдаліць <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Абагуленыя папкі даступныя ў сістэме Windows у каталозе "<ph name="BASE_DIR" />".</translation>
@@ -2100,7 +2100,6 @@
 <translation id="2835547721736623118">Сэрвіс распазнавання маўлення</translation>
 <translation id="2836232638504556905">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць ваша імя, адрас электроннай пошты і відарыс профілю з гэтым сайтам. Азнаёмцеся з <ph name="BEGIN_LINK" />палітыкай прыватнасці<ph name="END_LINK" /> сайта.</translation>
 <translation id="2836269494620652131">Збой</translation>
-<translation id="2836635946302913370">Уваход пад гэтым іменем карыстальніка выключаны адміністратарам.</translation>
 <translation id="283669119850230892">Каб выкарыстоўваць сетку <ph name="NETWORK_ID" />, спачатку завяршыце падключэнне да інтэрнэту (гл. ніжэй).</translation>
 <translation id="2838379631617906747">Ідзе ўсталяванне</translation>
 <translation id="2839032553903800133">Апавяшчэнні заблакіраваны</translation>
@@ -2909,6 +2908,7 @@
 <translation id="3602290021589620013">Перадпрагляд</translation>
 <translation id="3602870520245633055">Друк і сканіраванне</translation>
 <translation id="3603622770190368340">Атрыманне сертыфіката сеткі</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} уліковы запіс выкарыстоўвае такі самы пароль}one{{COUNT} уліковы запіс выкарыстоўвае такі самы пароль}few{{COUNT} уліковыя запісы выкарыстоўваюць такі самы пароль}many{{COUNT} уліковых запісаў выкарыстоўваюць такі самы пароль}other{{COUNT} уліковага запісу выкарыстоўваюць такі самы пароль}}</translation>
 <translation id="3605780360466892872">Бізнесмен</translation>
 <translation id="3609277884604412258">Хуткі пошук</translation>
 <translation id="3610241585790874201">Сайты, якім не дазволена захоўваць даныя на прыладзе</translation>
@@ -3615,7 +3615,6 @@
 <translation id="4244238649050961491">Знайсці больш праграм для стыла</translation>
 <translation id="4246980464509998944">Дадатковыя каментарыі:</translation>
 <translation id="424726838611654458">Заўсёды адкрываць у Adobe Reader</translation>
-<translation id="4247901771970415646">Не ўдалося сінхранізаваць з <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Захоўвайце паролі ў бяспечным месцы, каб прадухіліць іх раскрыццё ў выпадку ўцечкі даных або іншых праблем з бяспекай</translation>
 <translation id="4249248555939881673">Чакаецца падключэнне да сеткі...</translation>
 <translation id="4249373718504745892">Гэтай старонцы быў заблакіраваны доступ да вашай камеры і мікрафона.</translation>
@@ -3836,6 +3835,7 @@
 <translation id="4441147046941420429">Каб працягнуць, дастаньце ключ бяспекі з прылады, затым зноў устаўце і дакраніцеся да яго</translation>
 <translation id="444134486829715816">Разгарнуць...</translation>
 <translation id="4441928470323187829">Замацавана вашым адміністратарам</translation>
+<translation id="4442863809158514979">Праглядзець дазволы для інтэрнэту</translation>
 <translation id="4443536555189480885">&amp;Даведка</translation>
 <translation id="4444304522807523469">Доступ для сканераў дакументаў, падключаных праз USB або па лакальнай сетцы</translation>
 <translation id="4444512841222467874">Калі месца не будзе хапаць, могуць быць аўтаматычна выдалены карыстальнікі і даныя.</translation>
@@ -4833,6 +4833,7 @@
 <translation id="5382591305415226340">Кіраваць спасылкамі, якія падтрымліваюцца</translation>
 <translation id="5383377866517186886">Камера выключана ў наладах System Preferences сістэмы Mac</translation>
 <translation id="5383740867328871413">Група без назвы – <ph name="GROUP_CONTENTS" /> –<ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ідэнтыфікатар: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Карпаратыўная палітыка змянілася. Кнопка эксперыментаў дададзена на панэль інструментаў. Націсніце на яе, каб адкрыць дыялогавае акно для ўключэння эксперыментаў.</translation>
 <translation id="5388885445722491159">Спалучана</translation>
 <translation id="5390112241331447203">Дадаць файл system_logs.txt, які быў адпраўлены ў водгуках-справаздачах.</translation>
@@ -5047,6 +5048,7 @@
 <translation id="5578059481725149024">Аўтаматычны ўваход</translation>
 <translation id="5581134892342029705">Пераклад завершаны (мова перакладу: <ph name="LANGUAGE" />)</translation>
 <translation id="558170650521898289">Спраўджанне драйвера абсталявання Microsoft Windows</translation>
+<translation id="5581876958763461074">Усе нататкі</translation>
 <translation id="5581972110672966454">Не ўдалося далучыць прыладу да дамена. Паўтарыце спробу або звярніцеся да адміністратара ці ўладальніка прылады. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Галоўнае меню</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5697,7 +5699,6 @@
 <translation id="617213288191670920">Мовы не дададзены</translation>
 <translation id="6173623053897475761">Увядзіце PIN-код яшчэ раз</translation>
 <translation id="6175314957787328458">GUID дамена Microsoft</translation>
-<translation id="6176043333338857209">Bluetooth будзе часова ўключаны, каб звязацца з вашым ключом бяспекі</translation>
 <translation id="6178664161104547336">Выберыце сертыфікат</translation>
 <translation id="6178682841350631965">Даныя для ўваходу абноўлены</translation>
 <translation id="6180510783007738939">Інструмент "Лінія"</translation>
@@ -7470,6 +7471,7 @@
 <translation id="779308894558717334">Светла-зялёны</translation>
 <translation id="7793098747275782155">Цёмна-блакітны</translation>
 <translation id="7797571222998226653">выключана</translation>
+<translation id="7798504574384119986">Праглядзець дазволы для інтэрнэту</translation>
 <translation id="7798844538707273832">Аўтаматычная блакіроўка (<ph name="PERMISSION" />)</translation>
 <translation id="7800518121066352902">Павярнуць су&amp;праць гадзіннікавай стрэлкі</translation>
 <translation id="7801679634091975683">Унесеныя тут змены будуць прыменены толькі ў браўзеры Lacros Chrome. Каб змяніць налады браўзера Chrome, адкрыйце яго і перайдзіце ў налады.</translation>

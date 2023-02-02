@@ -391,6 +391,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="3072980200212375806"><ph name="APP_NAME" /> öppnas i Chrome. Genom att fortsätta godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Integritetspolicyn<ph name="END_LINK3" /> gäller också.</translation>
 <translation id="3091010850649238832">Visa innehållet i Urklipp</translation>
 <translation id="3098745985164956033">Vissa bilder skickas till Google så att du får bättre beskrivningar</translation>
+<translation id="3104179992611025423">Webbläsaren hanteras av dina föräldrar</translation>
 <translation id="3114507951000454849">Läs dagens nyheter <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">länkat till</translation>
 <translation id="3123734510202723619">Meddelanden</translation>
@@ -400,6 +401,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="3157931365184549694">Återställ</translation>
 <translation id="3166827708714933426">Kortkommandon för flikar och fönster</translation>
 <translation id="316694332262407393">Chrome körs redan här.</translation>
+<translation id="3167258285411721858">Du kan begära den mobila webbplatsen för <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Annonsmätning</translation>
 <translation id="3207960819495026254">Bokmärkt</translation>
@@ -433,6 +435,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="3297344142967351106">Rösthjälp</translation>
 <translation id="3303414029551471755">Vill du ladda ned innehållet?</translation>
 <translation id="3305795716056605962">Översätt sidor via knappen Fler alternativ</translation>
+<translation id="3319664549618064419">Byt till webbplatsen för datorn för att få en bättre översikt över webbplatsen</translation>
 <translation id="3334729583274622784">Vill du ändra filnamnstillägget?</translation>
 <translation id="3341262203274374114">Det gick inte att sluta följa flödet på grund av ett fel.</translation>
 <translation id="3359667936385849800">Använd den nuvarande DNS-leverantören</translation>
@@ -625,7 +628,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="4452411734226507615">Stäng fliken <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bokmärkt i <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">När en annan enhet har länkats med QR-kod kan den enheten använda telefonen som säkerhetsnyckel. Om du tar bort länken måste du skanna en QR-kod om du vill länka enheten igen.</translation>
-<translation id="4479839115899251637">Ta bort från läslistan</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> installeras i Chrome …</translation>
 <translation id="4484496141267039529">Ingen anslutning. Försök igen senare.</translation>
 <translation id="4487967297491345095">All appdata i Chrome raderas permanent. Detta omfattar alla filer, inställningar, konton, databaser osv.</translation>
@@ -1467,6 +1469,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8849001918648564819">Dold</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, flik</translation>
 <translation id="8854223127042600341">Se dina offlinefiler</translation>
+<translation id="885480114717186641">Du kan begära webbplatsen för datorn för <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Få beskrivningar</translation>
 <translation id="8856931513242997049">Behörighetsflödet för aviseringar har stängts</translation>
 <translation id="8873817150012960745">Börja genom att trycka här</translation>
@@ -1487,7 +1490,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8955719471735800169">Tillbaka till början</translation>
 <translation id="8964479563882643397">Öppna menyn om du vill öppna en ny inkognitoflik</translation>
 <translation id="8965591936373831584">väntar</translation>
-<translation id="8967427617812342790">Lägg till i läslistan</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitoflik och <ph name="TAB_COUNT_ONE" /> flik till stängs}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitoflik och <ph name="TAB_COUNT_MANY" /> flikar till stängs}}</translation>
 <translation id="8970887620466824814">Något gick fel.</translation>
 <translation id="8972098258593396643">Vill du ladda ned till standardmappen?</translation>

@@ -391,6 +391,7 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="3072980200212375806"><ph name="APP_NAME" /> sal in Chrome oopmaak. Deur voort te gaan, stem jy in tot <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" />. Die <ph name="BEGIN_LINK3" />privaatheidsbeleid<ph name="END_LINK3" /> geld ook.</translation>
 <translation id="3091010850649238832">Wys knipbordinhoud</translation>
 <translation id="3098745985164956033">Sommige prente word na Google toe gestuur om hul beskrywings vir jou te verbeter</translation>
+<translation id="3104179992611025423">Jou ouers bestuur jou blaaier</translation>
 <translation id="3114507951000454849">Lees vandag se nuus <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">gekoppel met</translation>
 <translation id="3123734510202723619">Aankondigings</translation>
@@ -400,6 +401,7 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="3157931365184549694">Stel terug</translation>
 <translation id="3166827708714933426">Oortjie- en vensterkortpaaie</translation>
 <translation id="316694332262407393">Chrome werk reeds hier.</translation>
+<translation id="3167258285411721858">Jy kan die mobiele werf vir <ph name="HOST_NAME" /> versoek</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Advertensiemeting</translation>
 <translation id="3207960819495026254">Geboekmerk</translation>
@@ -625,7 +627,6 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="4452411734226507615">Maak <ph name="TAB_TITLE" />-oortjie toe</translation>
 <translation id="4452548195519783679">Geboekmerk in <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Wanneer jy 'n ander toestel met 'n QR-kode koppel, sal dit hierdie foon as 'n sekuriteitsleutel kan gebruik. As jy dit verwyder, sal jy 'n QR-kode moet skandeer om dit weer te koppel.</translation>
-<translation id="4479839115899251637">Vee van leeslys af uit</translation>
 <translation id="4479972344484327217">Installeer tans <ph name="MODULE" /> vir Chrome …</translation>
 <translation id="4484496141267039529">Geen verbinding nie. Probeer later weer.</translation>
 <translation id="4487967297491345095">Al Chrome se programdata sal permanent uitgevee word. Dit sluit in alle lêers, instellings, rekeninge, databasisse, ens.</translation>
@@ -1467,6 +1468,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8849001918648564819">Versteek</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, oortjie</translation>
 <translation id="8854223127042600341">Sien jou vanlyn lêers</translation>
+<translation id="885480114717186641">Jy kan die rekenaarwerf vir <ph name="HOST_NAME" /> versoek</translation>
 <translation id="8856607253650333758">Kry beskrywings</translation>
 <translation id="8856931513242997049">Kennisgewingtoestemmingvloei is toegemaak</translation>
 <translation id="8873817150012960745">Tik hier om te begin</translation>
@@ -1487,7 +1489,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8955719471735800169">Terug na bo</translation>
 <translation id="8964479563882643397">Maak die kieslys oop om 'n nuwe Incognito-oortjie oop te maak</translation>
 <translation id="8965591936373831584">hangende</translation>
-<translation id="8967427617812342790">Voeg by leeslys</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> Incognito- en nog <ph name="TAB_COUNT_ONE" /> oortjie sal toegemaak word}other{<ph name="INCOGNITO_TAB_COUNT" /> Incognito- en nog <ph name="TAB_COUNT_MANY" /> oortjies sal toegemaak word}}</translation>
 <translation id="8970887620466824814">Iets is fout.</translation>
 <translation id="8972098258593396643">Laai af na verstekvouer?</translation>

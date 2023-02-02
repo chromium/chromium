@@ -3,6 +3,7 @@
 <translationbundle lang="si">
 <translation id="1143896152279775643">ඔබගේ මුරපදය <ph name="EMAIL" /> සඳහා වන මුරපද කළමනාකරු වෙත සුරකිනු ඇත.</translation>
 <translation id="1282031177488366470">Chrome හි විශේෂාංග සහ කාර්යසාධනය වැඩි දියුණු කිරීමට උදවු කරන්න</translation>
+<translation id="1352919863522755794">Google මුරපද කළමනාකරු හට ඔබේ මුරපද පරීක්ෂා කිරීමට නොහැකි විය. ඔබේ අන්තර්ජාල සම්බන්ධතාව පරීක්ෂා කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="1462727070346936664">Chrome වෙතින් උපරිම ප්‍රයෝජන ලබා ගැනීමට පුරන්න.</translation>
 <translation id="1479202195792305274">ඔබ ඔබේ Google ගිණුම සමග පුරන විට Chrome හට ඔබේ මුරපද පරීක්‍ෂා කළ හැකිය.</translation>
 <translation id="1493827051843127077">ඔබගේ සියලු උපාංගවල ටැබ, මුරපද සහ ගෙවීම් තොරතුරු සමමුහුර්ත කිරීමට පෙරනිමි ලෙස Chrome සකසන්න</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">සියලු වෙබ් අඩවිවල ඔබේ Google ගිණුමෙන් වැරීම සඳහා, <ph name="BEGIN_LINK" />Chrome වෙතින් වරන්න<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome හට යාවත්කාලීන සඳහා පරීක්‍ෂා කළ නොහැකි විය. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="2732745070297234559">Chrome හට සියලු මුරපද පරීක්ෂා කළ නොහැකි විය. හෙට නැවත උත්සාහ කරන්න.</translation>
+<translation id="2767464022270041271">සුරැකි මුරපද නැත. ඔබ ඔබේ මුරපද සුරකින විට Google මුරපද කළමනාකරු හට ඒවා පරීක්ෂා කළ හැක.</translation>
 <translation id="2869959624320573933">Chrome වෙත පුරන්න</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> තෝරන්න</translation>
 <translation id="3030414234702425231">ඔබ <ph name="SIGNOUT_MANAGED_DOMAIN" /> විසින් කළමනාකරණය කරන ගිණුමකින් වරන නිසා, ඔබේ Chrome දත්ත මෙම උපාංගයෙන් මකනු ඇත. ඔබේ දත්ත ඔබේ Google ගිණුම තුළ පවතිනු ඇත.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome හට සියලු මුරපද පරීක්ෂා කළ නොහැකි විය. හෙට නැවත උත්සාහ කරන්න, නැති නම් <ph name="BEGIN_LINK" />ඔබේ Google ගිණුම තුළ මුරපද පරීක්ෂා කරන්න<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">යෙදුම වැඩිදියුණු කිරීමට උදවු කිරීමට, Chrome පරිශීලන සහ බිඳ වැටීම් දත්ත Google වෙත යවයි. <ph name="BEGIN_LINK" />කළමනාකරණය කරන්න<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome බීටා තුළ සහාය නොදක්වයි</translation>
+<translation id="4840404732697892756">ඔබ ඔබේ Google ගිණුම සමග පුරන විට Google මුරපද කළමනාකරු හට ඔබේ මුරපද පරීක්ෂා කළ හැක.</translation>
 <translation id="5030102366287574140">Chrome දත්ත කඩ කිරීම්, අනාරක්ෂිත වෙබ් අඩවි, සහ තවත් ඒවාවලින් ඔබව ආරක්ෂිතව තබා ගැනීමට උදවු කළ හැකිය.</translation>
 <translation id="5108659628347594808">Chrome වඩාත් යහපත් කරන්න</translation>
 <translation id="5119391094379141756">Chrome තෝරන්න</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">=සබැඳිව ප්‍රකාශන කර ඇති ලැයිස්තුවලට එරෙහි Chrome කලින් කල ඔබේ මුරපද පරීක්‍ෂා කරයි. මෙය සිදු කරන විට, ඔබේ මුරපද සහ පරිශීලක නාම සංකේතන කෙරේ, එවිට Google ඇතුළුව කිසි කෙනෙකුට ඒවා කියවීමට නොහැකි වෙයි.</translation>
 <translation id="5639704535586432836">සැකසීම් &gt; රහස්‍යතාව &gt; කැමරාව &gt; Google Chrome විවෘත කර කැමරාව ක්‍රියාත්මක කරන්න.</translation>
 <translation id="5642200033778930880">Google Chrome හට බෙදුම් දසුන් ප්‍රකාරය තුළ ඔබගේ කැමරාව භාවිත කළ නොහැකිය</translation>
+<translation id="5661521615548540542">Google මුරපද කළමනාකරු හට සියලු මුරපද පරීක්ෂා කළ නොහැකි විය. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">නොබැඳිය, Chrome හට යාවත්කාලීන සඳහා පරීක්ෂා කළ නොහැකිය</translation>
 <translation id="5716154293141027663">ඔබ වෙනත් යෙදුම්වල සබැඳි තට්ටු කරන ඕනෑම වේලාවක Chrome විවෘත කරන්න</translation>
@@ -117,9 +121,11 @@
   1. සැකසීම් විවෘත කරන්න පෙරනිමි බ්‍රව්සර යෙදුම තට්ටු කරන්න
   3. Chrome තෝරන්න.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google මුරපද කළමනාකරු හට සියලු මුරපද පරීක්ෂා කළ නොහැකි විය. හෙට නැවත උත්සාහ කරන්න, නැතහොත් <ph name="BEGIN_LINK" />ඔබේ Google ගිණුම තුළ මුරපද පරීක්ෂා කරන්න.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Google Chrome සමඟ සුරක්ෂිතව සිටින්න</translation>
 <translation id="8772179140489533211">Chrome වෙත පිරීමට ප්‍රේරණ පෙන්වයි.</translation>
 <translation id="8788269841521769222">ඔබට මෙම මුරපදය මතක තබා ගැනීමට අවශ්‍ය නොවනු ඇත. එය <ph name="EMAIL" /> සඳහා Google මුරපද කළමනාකරු වෙත සුරකිනු ඇත</translation>
+<translation id="8857676124663337448">Google මුරපද කළමනාකරු හට සියලු මුරපද පරීක්ෂා කළ නොහැකි විය. හෙට නැවත උත්සාහ කරන්න.</translation>
 <translation id="8897749957032330183">මුරපද මෙම උපාංගයෙහි Google මුරපද කළමනාකරු තුළ සුරැකේ.</translation>
 <translation id="8969290730818637510">ක්‍රියාත්මක විට:
 <ph name="BEGIN_INDENT" />  • Chrome ඔබ කරන ආකාරයට භාවිත කරන පුද්ගලයින් සඳහා එය වඩා යහපත් කිරීමට උදවු කරන්න.<ph name="END_INDENT" />

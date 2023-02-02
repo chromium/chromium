@@ -182,6 +182,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="1995884366040846621">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này. Xem <ph name="BEGIN_LINK1" />chính sách quyền riêng tư<ph name="END_LINK1" /> của trang web này</translation>
 <translation id="2000419248597011803">Gửi một số cookie và nội dung tìm kiếm từ thanh địa chỉ cũng như hộp tìm kiếm tới công cụ tìm kiếm mặc định</translation>
 <translation id="200114059308480249">Bao gồm văn bản xung quanh trong các lượt tìm kiếm của Google?</translation>
+<translation id="2009341475524975924">Để đo lường hiệu suất quảng cáo, các trang web chỉ có thể chia sẻ với nhau một số loại dữ liệu nhất định, chẳng hạn như thời điểm trong ngày mà bạn thấy quảng cáo.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# tệp}other{# tệp}}</translation>
 <translation id="2021896219286479412">Kiểm soát trang toàn màn hình</translation>
 <translation id="2038563949887743358">Bật Yêu cầu trang web cho máy tính</translation>
@@ -626,7 +627,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="4452411734226507615">Đóng thẻ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Đã đánh dấu trang vào <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Khi bạn liên kết với một thiết bị khác bằng mã QR, thiết bị đó có thể dùng điện thoại này làm khoá bảo mật. Nếu bạn xoá thiết bị đó đi, bạn sẽ phải quét mã QR để liên kết lại.</translation>
-<translation id="4479839115899251637">Xóa khỏi danh sách đọc</translation>
 <translation id="4479972344484327217">Đang cài đặt <ph name="MODULE" /> cho Chrome…</translation>
 <translation id="4484496141267039529">Không có kết nối. Hãy thử lại sau.</translation>
 <translation id="4487967297491345095">Tất cả dữ liệu của ứng dụng Chrome sẽ bị xóa vĩnh viễn, bao gồm tất cả các tệp, các tùy chọn cài đặt, tài khoản, cơ sở dữ liệu, v.v.</translation>
@@ -656,6 +656,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4616150815774728855">Mở <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Xác minh danh tính của bạn</translation>
 <translation id="4634124774493850572">Sử dụng mật khẩu</translation>
+<translation id="4637420359569396807">Chế độ đo lường quảng cáo cho phép các trang web và ứng dụng chia sẻ với nhau một số loại dữ liệu nhất định để đo lường hiệu suất quảng cáo, chẳng hạn như thời điểm trong ngày mà bạn thấy quảng cáo.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mật khẩu bị lộ}other{# mật khẩu bị lộ}}</translation>
 <translation id="4650364565596261010">Tùy chọn mặc định của hệ thống</translation>
 <translation id="465657074423018424">Tính năng Duyệt web an toàn bảo vệ bạn khỏi các trang web lừa đảo. Nếu bạn tắt tính năng này, hãy cẩn thận hơn khi duyệt web, đặc biệt là trước khi nhập mật khẩu.</translation>
@@ -1488,7 +1489,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8955719471735800169">Quay lại đầu trang</translation>
 <translation id="8964479563882643397">Để mở một thẻ Ẩn danh mới, hãy mở trình đơn</translation>
 <translation id="8965591936373831584">đang chờ xử lý</translation>
-<translation id="8967427617812342790">Thêm vào danh sách đọc</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> thẻ ẩn danh và <ph name="TAB_COUNT_ONE" /> thẻ nữa sẽ đóng}other{<ph name="INCOGNITO_TAB_COUNT" /> thẻ ẩn danh và <ph name="TAB_COUNT_MANY" /> thẻ nữa sẽ đóng}}</translation>
 <translation id="8970887620466824814">Đã xảy ra lỗi.</translation>
 <translation id="8972098258593396643">Tải xuống thư mục mặc định?</translation>

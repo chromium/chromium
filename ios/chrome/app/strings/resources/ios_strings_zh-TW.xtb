@@ -80,6 +80,7 @@
 <translation id="149095475893949513">這個網站正在嘗試下載設定描述檔。</translation>
 <translation id="1491277525950327607">輕觸兩下即可切換設定</translation>
 <translation id="1492417797159476138">你已在這個網站上儲存此使用者名稱</translation>
+<translation id="1498283581832036924">系統不會刪除你的 <ph name="WEBSITE" /> 帳戶。</translation>
 <translation id="1506063256525392513">這項操作可以讓你拍照、上傳相片及掃描 QR 圖碼</translation>
 <translation id="1509486075633541495">登入網站</translation>
 <translation id="1509960214886564027">許多網站的功能可能無法正常運作</translation>
@@ -219,6 +220,7 @@
 <translation id="2664621323652615289">停止</translation>
 <translation id="2671426118752779020">你可以在 iPhone 上的其他應用程式，使用儲存至 Google 密碼管理員的密碼。</translation>
 <translation id="2690858294534178585">相機正在使用中</translation>
+<translation id="26915454213703967">使用 Google 搜尋圖片內容</translation>
 <translation id="2691653761409724435">無法離線使用</translation>
 <translation id="2695507686909505111">已翻譯網頁</translation>
 <translation id="2697526135132990015">登出並清除資料</translation>
@@ -382,6 +384,7 @@
 <translation id="3819183753496523827">你已經離線，請檢查網際網路連線，然後再試一次。</translation>
 <translation id="3835964409414434850">前往下一個分頁</translation>
 <translation id="385051799172605136">返回</translation>
+<translation id="3851938967634752633">系統會刪除 <ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" /> 和另外 <ph name="NUMBER_OF_ACCOUNTS" /> 個帳戶的密碼，但不會刪除你的帳戶。</translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3861486700625780712">取消追蹤</translation>
 <translation id="3863769054730344136">傳送到你的裝置</translation>
@@ -517,6 +520,7 @@
 <translation id="4833786495304741580">自動將使用統計資料和當機報告傳送給 Google。</translation>
 <translation id="4840495572919996524">你的書籤、歷史記錄、密碼等資料將停止同步到你的 Google 帳戶。</translation>
 <translation id="4844899002472726590">查看及編輯你感興趣的主題</translation>
+<translation id="4848999860252535517">要刪除 <ph name="WEBSITE" /> 的密碼嗎？</translation>
 <translation id="4854345657858711387">請設定螢幕解鎖密碼</translation>
 <translation id="4858786880085262208">可能的話，升級為 HTTPS。即使是安全的網站，仍有可能嵌入不安全的內容。</translation>
 <translation id="4860895144060829044">撥號</translation>
@@ -596,7 +600,6 @@
 <translation id="5520466080178053306">依序輕觸「密碼管理工具」和「新增」</translation>
 <translation id="5525095647255982834">如要將這個分頁傳送到另一部裝置，請在該裝置上登入 Chrome。</translation>
 <translation id="5525269841082836315">建立通關密語</translation>
-<translation id="5530084793407600786">使用 Google 搜尋圖片內容</translation>
 <translation id="5542540507657872337">找到 <ph name="COUNT" /> 個已開啟的分頁</translation>
 <translation id="5548760955356983418">有了 Handoff，您使用這個裝置開始瀏覽網站後，可輕鬆改用 Mac 繼續瀏覽。目前開啟的網站會自動顯示在 Mac 的 Dock 中。
 
@@ -770,6 +773,7 @@
 <translation id="6598875554591387303">依發布者排序</translation>
 <translation id="6603393121510733479">貴機構已關閉私密瀏覽功能。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">系統會刪除 <ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" /> 和 <ph name="THIRD_WEBSITE" /> 的密碼，但不會刪除你的帳戶。</translation>
 <translation id="6610002944194042868">翻譯選項</translation>
 <translation id="661266467055912436">可為你和所有網路使用者提供更完善的安全防護。</translation>
 <translation id="6620279676667515405">取消</translation>
@@ -1047,6 +1051,7 @@
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
 <translation id="8763613688786959833">前往下一個分頁</translation>
 <translation id="8764015330924122850">取消追蹤 <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">系統會刪除 <ph name="WEBSITE" /> 和 <ph name="SECOND_WEBSITE" /> 的密碼，但不會刪除你的帳戶。</translation>
 <translation id="8775144690796719618">網址無效</translation>
 <translation id="8787968206789828143">在網路上搜尋</translation>
 <translation id="8792626944327216835">麥克風</translation>
@@ -1096,6 +1101,7 @@
 <translation id="9093271241977565440">輕觸畫面頂端的「搜尋」圖示</translation>
 <translation id="9094033019050270033">更新密碼</translation>
 <translation id="9097506547406246598">無法取消追蹤，發生錯誤。</translation>
+<translation id="9098541895599151034">要刪除 <ph name="NUMBER_OF_ACCOUNTS" /> 個密碼嗎？</translation>
 <translation id="9100610230175265781">請提供通關密語</translation>
 <translation id="9107664647686727385">檢查是否有遭外洩的密碼</translation>
 <translation id="9124387962554796433">Google 可能會使用你的歷史記錄，為你提供個人化的搜尋服務和其他各項 Google 服務。</translation>

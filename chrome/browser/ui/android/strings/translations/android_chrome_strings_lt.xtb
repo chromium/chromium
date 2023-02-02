@@ -627,7 +627,6 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="4452411734226507615">Uždaryti skirtuką „<ph name="TAB_TITLE" />“</translation>
 <translation id="4452548195519783679">Sukurta „<ph name="FOLDER_NAME" />“ žymė</translation>
 <translation id="4461614516424362539">Susiejus kitą įrenginį naudojant QR kodą, tas įrenginys gali naudoti šį telefoną kaip saugos raktą. Jei jį pašalinsite ir norėsite susieti iš naujo, reikės vėl nuskaityti QR kodą.</translation>
-<translation id="4479839115899251637">Ištrinti iš skaitymo sąrašo</translation>
 <translation id="4479972344484327217">Įdiegiamas „Chrome“ skirtas modulis „<ph name="MODULE" />“…</translation>
 <translation id="4484496141267039529">Nėra ryšio. Vėliau bandykite dar kartą.</translation>
 <translation id="4487967297491345095">Visi „Chrome“ duomenys bus ištrinti visam laikui. Tai apima visus failus, nustatymus, paskyras, duomenų bazes ir kt.</translation>
@@ -1490,7 +1489,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8955719471735800169">Į pradžią</translation>
 <translation id="8964479563882643397">Jei norite atidaryti naują inkognito skirtuką, atidarykite meniu</translation>
 <translation id="8965591936373831584">laukiama</translation>
-<translation id="8967427617812342790">Prid. prie skait. sąrašo</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_ONE" /> skirtukas bus uždaryti}one{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtukas bus uždaryti}few{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtukai bus uždaryti}many{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtuko bus uždaryti}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtukų bus uždaryti}}</translation>
 <translation id="8970887620466824814">Kažkas ne taip.</translation>
 <translation id="8972098258593396643">Atsisiųsti į numatytąjį aplanką?</translation>

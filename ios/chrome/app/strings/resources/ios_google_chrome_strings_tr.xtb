@@ -3,6 +3,7 @@
 <translationbundle lang="tr">
 <translation id="1143896152279775643">Şifreniz, <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="1282031177488366470">Chrome'un Özelliklerini ve Performansını İyileştirmeye Yardımcı Olun</translation>
+<translation id="1352919863522755794">Google Şifre Yöneticisi, şifrelerinizi kontrol edemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="1462727070346936664">Chrome'dan en iyi şekilde yararlanmak için oturum açın.</translation>
 <translation id="1479202195792305274">Chrome, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir.</translation>
 <translation id="1493827051843127077">Tüm cihazlarınızdaki sekmelerinizi, parolalarınızı ve ödeme bilgilerinizi senkronize etmek için Chrome'u varsayılan olarak ayarlayın</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Tüm web sitelerinde Google Hesabınızın oturumunu kapatmak için <ph name="BEGIN_LINK" />Chrome oturumunu kapatın<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome, güncellemeleri denetleyemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="2732745070297234559">Chrome, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin.</translation>
+<translation id="2767464022270041271">Kaydedilen şifre yok. Google Şifre Yöneticisi, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
 <translation id="2869959624320573933">Chrome'da Oturum Açın</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />'u seçin</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tarafından yönetilen bir hesabın oturumunu kapattığınız için Chrome verileriniz bu cihazdan silinecek. Ancak verileriniz Google Hesabınızda kalmaya devam edecek.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Chrome, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme verilerini Google'a gönderir. <ph name="BEGIN_LINK" />Yönetin<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome Beta'da desteklenmiyor</translation>
+<translation id="4840404732697892756">Google Şifre Yöneticisi, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir.</translation>
 <translation id="5030102366287574140">Chrome; veri ihlallerine, güvenli olmayan web sitelerine ve diğer tehditlere karşı güvende kalmanıza yardımcı olabilir.</translation>
 <translation id="5108659628347594808">Chrome'u Daha İyi Hale Getirin</translation>
 <translation id="5119391094379141756">Chrome'u seçin</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome, internette yayınlanan listelerle karşılaştırarak şifrelerinizi belirli aralıklarla kontrol eder. Bu işlem sırasında şifreleriniz ve kullanıcı adlarınız şifrelendiğinden, Google dahil olmak üzere hiç kimse tarafından okunamaz.</translation>
 <translation id="5639704535586432836">Ayarlar &gt; Gizlilik &gt; Kamera &gt; Google Chrome'a gidin ve kamerayı açın.</translation>
 <translation id="5642200033778930880">Google Chrome, kameranızı Bölünmüş Görünüm modunda kullanamıyor</translation>
+<translation id="5661521615548540542">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Çevrimdışı, Chrome güncellemeleri denetleyemiyor</translation>
 <translation id="5716154293141027663">Diğer uygulamalarda bağlantılara dokunduğunuzda Chrome açılır</translation>
@@ -118,9 +122,11 @@
   2. Varsayılan Tarayıcı Uygulaması'na dokunun
   3. Chrome'u seçin.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Google Chrome ile Güvende Kalın</translation>
 <translation id="8772179140489533211">Chrome'da oturum açmak için istekleri gösterir.</translation>
 <translation id="8788269841521769222">Bu şifreyi hatırlamanız gerekmez. <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir</translation>
+<translation id="8857676124663337448">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin.</translation>
 <translation id="8897749957032330183">Şifreler bu cihazda Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="8969290730818637510">İzni kabul ederek:
 <ph name="BEGIN_INDENT" />  • Sizinkine benzer kullanımı olan kişiler için Chrome'u daha iyi hale getirmemize yardımcı olun.<ph name="END_INDENT" />

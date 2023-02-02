@@ -596,7 +596,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5520466080178053306">Toque em "Gerenciador de senhas" e depois em "Adicionar"</translation>
 <translation id="5525095647255982834">Para enviar esta guia a outro dispositivo, faça login no Chrome no outro aparelho.</translation>
 <translation id="5525269841082836315">Criar senha</translation>
-<translation id="5530084793407600786">Pesquisar na imagem com o Google</translation>
 <translation id="5542540507657872337">Encontradas: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">A "Transição" permite que você comece a navegar por um website neste dispositivo e, em seguida, continue facilmente no seu Mac. O website aberto aparecerá no Dock do Mac.
 
@@ -709,6 +708,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6284652193729350524">Oferecer a opção de traduzir o <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Você parou de seguir <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Acesse <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" /> e toque em "Navegação segura" para ativar esse recurso.</translation>
+<translation id="6320780930074869063">Quando a configuração está ativada, as senhas são salvas em <ph name="ACCOUNT" />. Quando está desativada, elas são salvas apenas neste dispositivo.</translation>
 <translation id="6321526113093607004">Adicionar aos favoritos</translation>
 <translation id="6324669097367352121">Configurações de login</translation>
 <translation id="6337234675334993532">Criptografia</translation>

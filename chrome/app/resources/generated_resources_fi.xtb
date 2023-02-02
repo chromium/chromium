@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">Virtuaalikoneen käynnistys epäonnistui. Yritä uudelleen.</translation>
 <translation id="1087965115100412394">Älä salli sivustojen yhdistää MIDI-laitteisiin</translation>
 <translation id="1088659085457112967">Siirry lukijatilaan</translation>
-<translation id="1089407731410758060">Vaihda teema</translation>
 <translation id="1090126737595388931">Ei käynnissä olevia taustasovelluksia</translation>
 <translation id="1090541560108055381">Varmista ennen laiteparin muodostamista, että tämä koodi on sama molemmissa laitteissa</translation>
 <translation id="1091767800771861448">Ohita painamalla ESCAPE (vain epävirallisissa ohjelmistoversioissa).</translation>
@@ -550,6 +549,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1495677929897281669">Takaisin välilehdelle</translation>
 <translation id="1500297251995790841">Tuntematon laite [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Lue lisää ei-tuetuista Chrome-sovelluksista</translation>
+<translation id="1501480321619201731">Poista ryhmä</translation>
 <translation id="1503392482221435031">Lähettää automaattisesti käyttötilastoja Googlelle. Voit laittaa virheraportit päälle tai pois päältä laitteen asetuksista.</translation>
 <translation id="150411034776756821">Poista <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Jaettujen kansioiden sijainti Windowsissa: <ph name="BASE_DIR" /></translation>
@@ -2111,7 +2111,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2835547721736623118">Puheentunnistuspalvelu</translation>
 <translation id="2836232638504556905">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa nimesi, sähköpostiosoitteesi, osoitteesi ja profiilikuvasi tälle sivustolle. Tutustu sivuston <ph name="BEGIN_LINK" />tietosuojakäytäntöön<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Kaatuminen</translation>
-<translation id="2836635946302913370">Järjestelmänvalvoja on estänyt tällä käyttäjänimellä kirjautumisen.</translation>
 <translation id="283669119850230892">Jos haluat käyttää verkkoa <ph name="NETWORK_ID" />, määritä ensin internetyhteyden muodostus alla.</translation>
 <translation id="2838379631617906747">Asennetaan</translation>
 <translation id="2839032553903800133">Ilmoitukset estetty</translation>
@@ -3626,7 +3625,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4244238649050961491">Hae lisää näyttökynäsovelluksia</translation>
 <translation id="4246980464509998944">Lisähuomautuksia:</translation>
 <translation id="424726838611654458">Avaa aina Adobe Readerissa</translation>
-<translation id="4247901771970415646">Synkronointi tilille <ph name="USERNAME" /> epäonnistui</translation>
 <translation id="4248098802131000011">Suojaa salasanasi tietosuojaloukkauksilta ja muilta tietoturvaongelmilta</translation>
 <translation id="4249248555939881673">Odotetaan verkkoyhteyttä…</translation>
 <translation id="4249373718504745892">Tältä sivulta on estetty kameran ja mikrofonin käyttö.</translation>
@@ -3847,6 +3845,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4441147046941420429">Jos haluat jatkaa, poista suojausavain laitteesta, aseta se takaisin ja kosketa sitä</translation>
 <translation id="444134486829715816">Laajenna...</translation>
 <translation id="4441928470323187829">Järjestelmänvalvojan kiinnittämä</translation>
+<translation id="4442863809158514979">Näytä verkkoluvat</translation>
 <translation id="4443536555189480885">O&amp;hje</translation>
 <translation id="4444304522807523469">Käyttää USB:n tai lähiverkon kautta yhdistettyjä dokumenttiskannereita</translation>
 <translation id="4444512841222467874">Jos tilaa ei vapauteta, käyttäjiä ja tietoja voidaan poistaa automaattisesti.</translation>
@@ -4845,6 +4844,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5382591305415226340">Hallinnoi tuettuja linkkejä</translation>
 <translation id="5383377866517186886">Kamera on poistettu käytöstä Macin järjestelmäasetuksista</translation>
 <translation id="5383740867328871413">Nimetön ryhmä – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (tunnus: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Yritysversion käytäntöä muutettiin. Kokeilut-painike lisättiin yläpalkkiin. Avaa kokeilun käyttöönoton valintaikkuna klikkaamalla painiketta.</translation>
 <translation id="5388885445722491159">Laitepari muodostettu</translation>
 <translation id="5390112241331447203">Sisällytä system_logs.txt-tiedosto palauteraportteihin.</translation>
@@ -5059,6 +5059,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5578059481725149024">Automaattinen kirjautuminen</translation>
 <translation id="5581134892342029705">Käännös kieleen <ph name="LANGUAGE" /> valmistui</translation>
 <translation id="558170650521898289">Microsoft Windowsin laitteistoajurin varmenne</translation>
+<translation id="5581876958763461074">Kaikki kommentit</translation>
 <translation id="5581972110672966454">Laitetta ei voi liittää verkkotunnukseen. Yritä uudelleen tai ota yhteyttä laitteen omistajaan tai ylläpitäjään. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Päävalikko</translation>
 <translation id="5583640892426849032">Askelpalautin</translation>
@@ -5709,7 +5710,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="617213288191670920">Kieliä ei lisätty</translation>
 <translation id="6173623053897475761">Kirjoita PIN-koodi uudelleen</translation>
 <translation id="6175314957787328458">Microsoftin toimialueen GUID-tunnus</translation>
-<translation id="6176043333338857209">Bluetooth otetaan tilapäisesti käyttöön suojausavaimen kanssa viestimistä varten</translation>
 <translation id="6178664161104547336">Valitse varmenne</translation>
 <translation id="6178682841350631965">Kirjautumisdatasi on päivitetty</translation>
 <translation id="6180510783007738939">Viivatyökalu</translation>
@@ -7475,6 +7475,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="779308894558717334">Vaaleanvihreä</translation>
 <translation id="7793098747275782155">Tummansininen</translation>
 <translation id="7797571222998226653">Pois päältä</translation>
+<translation id="7798504574384119986">Näytä verkkoluvat</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> estetty automaattisesti</translation>
 <translation id="7800518121066352902">Käännä &amp;vastapäivään</translation>
 <translation id="7801679634091975683">Tässä tekemäsi muutokset koskevat vain Lacros Chrome ‑selainta. Jos haluat muuttaa Chrome-selaimesi asetuksia, avaa Chrome-selain ja siirry asetuksiin.</translation>

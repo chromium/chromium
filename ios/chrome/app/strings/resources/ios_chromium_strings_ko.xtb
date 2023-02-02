@@ -6,6 +6,7 @@
 <translation id="1185134272377778587">Chromium 정보</translation>
 <translation id="1257458525759135959">이미지를 저장하려면 '설정'을 탭하여 Chromium에 사진 추가 권한을 부여하세요.</translation>
 <translation id="1289216811211435351">Chromium으로 전환</translation>
+<translation id="1352919863522755794">Google 비밀번호 관리자에서 비밀번호를 확인할 수 없습니다. 인터넷 연결 상태를 확인해 보세요.</translation>
 <translation id="1361748954329991663">Chromium이 이전 버전입니다. <ph name="BEGIN_LINK" />앱 스토어<ph name="END_LINK" />에 사용 가능한 업데이트가 없으면 기기에서 더 이상 Chromium의 새 버전을 지원하지 않는 것일 수 있습니다.</translation>
 <translation id="1431818719585918472">Chromium에서 시크릿 탭을 잠그도록 허용합니다.</translation>
 <translation id="1472013873724362412">계정이 Chromium에서 작동하지 않습니다. 도메인 관리자에게 문의하거나 일반 Google 계정을 사용하여 로그인하세요.</translation>
@@ -35,6 +36,7 @@
 <translation id="2650312721222849884">Chromium을 사용하는 어느 곳에서나 탭을 확인하려면 동기화를 사용 설정하세요.</translation>
 <translation id="2684230048001240293">Chromium을 모든 기기에서 탭, 비밀번호, 결제 정보를 동기화할 기본값으로 설정합니다.</translation>
 <translation id="2730884209570016437">다른 애플리케이션에서 카메라를 사용하고 있으므로 Chromium에서 카메라를 사용할 수 없습니다.</translation>
+<translation id="2767464022270041271">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Google 비밀번호 관리자에서 확인할 수 있습니다.</translation>
 <translation id="2915596697727466327">Chromium은 얼굴 ID를 사용하여 승인된 사용자만 비밀번호에 액세스할 수 있도록 합니다.</translation>
 <translation id="2918709798697875261">조직에서 Chromium 로그아웃 상태를 유지할 것을 요청합니다.</translation>
 <translation id="2942241131342758843">Chromium을 다른 앱에서 링크를 열고, 위젯에서 검색하고, 비밀번호를 자동 완성할 기본값으로 사용합니다.</translation>
@@ -57,6 +59,7 @@
 <translation id="4681781466797808448">Chromium 스캐너 사용</translation>
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" />에서 관리하는 계정이므로 이 기기에서 내 Chromium 데이터가 삭제됩니다</translation>
 <translation id="4828317641996116749">Chromium에서 일부 비밀번호를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
+<translation id="4840404732697892756">Google 계정으로 로그인하면 Google 비밀번호 관리자에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="4985291216379576555">오프라인 상태이므로 Chromium에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="4996471330284142407">간소하고 안전하며 그 어느 때보다 빠른 속도의 Chromium을 더욱 다양하게 활용하세요</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" />에서 관리하는 계정에서 로그아웃하면 Chromium 데이터가 기기에서 삭제되나 Google 계정에는 그대로 유지됩니다.</translation>
@@ -67,6 +70,7 @@
 <translation id="5521125884468363740">Chromium을 사용하는 어느 곳에서나 탭을 확인하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
 <translation id="5522297504975449419">일부 Chromium 기능을 더 이상 사용할 수 없게 됩니다</translation>
 <translation id="5573014823074921752">Chromium 도움말. 더 많은 탭 옵션을 보려면 화면 하단이나 상단에 있는 툴바에서 탭 표시 버튼을 길게 터치하세요.</translation>
+<translation id="5661521615548540542">Google 비밀번호 관리자에서 일부 비밀번호를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="5700709190537129682">Chromium에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="5777187867430702742">Chromium 페이지</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chromium 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chromium에서 로그아웃하면 데이터가 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>
@@ -113,6 +117,7 @@
 <translation id="8409374867500149834">유해한 웹사이트에 대한 Chromium의 가장 강력한 보안 기능을 갖추고 있습니다.</translation>
 <translation id="858114650497379505">비밀번호 관리자에 저장된 비밀번호를 iPhone의 다른 앱에서 사용할 수 있습니다</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
+<translation id="8603022514504485810">Google 비밀번호 관리자에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도하거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="865600487977764604">로그인 상태일 때 Chromium에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 강화하는 데 사용될 수 있습니다.</translation>
 <translation id="8663480472502753423">Chromium을 최신 상태로 유지합니다.</translation>
 <translation id="8685813584220679697">이 사이트 및 Chromium에 로그인하세요.</translation>
@@ -126,6 +131,7 @@
 
   • 동기화를 사용 설정하면 측정항목에 내가 방문한 URL에 관한 정보도 포함될 수 있습니다.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">이 계정 및 저장되지 않은 모든 데이터가 Chromium에서 삭제됩니다.</translation>
+<translation id="8857676124663337448">Google 비밀번호 관리자에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도해 보세요.</translation>
 <translation id="894437814105052438">로그아웃하면 Chromium에서 더 이상 새로운 데이터를 내 Google 계정에 동기화하지 않습니다. 이전에 동기화된 데이터는 계정에 그대로 유지됩니다.</translation>
 <translation id="9022552996538154597">Chromium에 로그인</translation>
 <translation id="9059693977935746710">이 비밀번호를 기억하지 않아도 됩니다. <ph name="EMAIL" />의 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>

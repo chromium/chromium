@@ -3,6 +3,7 @@
 <translationbundle lang="sv">
 <translation id="1143896152279775643">Lösenordet sparas med Google Lösenordshantering för <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Bidra till att förbättra Chromes funktioner och prestanda</translation>
+<translation id="1352919863522755794">Google Lösenordshantering kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
 <translation id="1462727070346936664">Logga in så att du får ut mesta möjliga av Chrome.</translation>
 <translation id="1479202195792305274">Chrome kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
 <translation id="1493827051843127077">Ställ in Chrome som standardwebbläsare och synkronisera flikar, lösenord och betalningsuppgifter på alla enheter</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496"><ph name="BEGIN_LINK" />Logga ut från Chrome<ph name="END_LINK" /> om du vill logga ut från Google-kontot på alla webbplatser.</translation>
 <translation id="2695886661449553974">Chrome kunde inte söka efter uppdateringar. Försök igen senare.</translation>
 <translation id="2732745070297234559">Chrome kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
+<translation id="2767464022270041271">Inga sparade lösenord. Google Lösenordshantering kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="2869959624320573933">Logga in i Chrome</translation>
 <translation id="2957447865124070833">Välj <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Din data i Chrome raderas från den här enheten eftersom du loggar ut från ett konto som hanteras av <ph name="SIGNOUT_MANAGED_DOMAIN" />. Din data finns kvar i Google-kontot.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome kunde inte kontrollera alla lösenord. Försök igen i morgon eller <ph name="BEGIN_LINK" />kontrollera lösenorden i ditt Google-konto<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Chrome skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_LINK" />Hantera<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Stöds inte på Chrome Beta</translation>
+<translation id="4840404732697892756">Google Lösenordshantering kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
 <translation id="5030102366287574140">Chrome kan skydda dig från dataintrång, osäkra webbplatser med mera.</translation>
 <translation id="5108659628347594808">Gör Chrome bättre</translation>
 <translation id="5119391094379141756">Välj Chrome</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome kontrollerar regelbundet om dina lösenord finns med på listor som har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="5639704535586432836">Öppna Inställningar &gt; Integritet &gt; Kamera &gt; Google Chrome och aktivera kameran.</translation>
 <translation id="5642200033778930880">Google Chrome kan inte använda kameran i delad vy</translation>
+<translation id="5661521615548540542">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Chrome kan inte söka efter uppdateringar offline</translation>
 <translation id="5716154293141027663">Öppna Chrome varje gång du trycker på länkar i andra appar</translation>
@@ -118,9 +122,11 @@
   2. Tryck på Standardwebbläsarapp
   3. Välj Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen i morgon eller <ph name="BEGIN_LINK" />kontrollera lösenorden i ditt Google-konto<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Surfa säkert med Google Chrome</translation>
 <translation id="8772179140489533211">Visar meddelanden om att logga in i Chrome.</translation>
 <translation id="8788269841521769222">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering för <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
 <translation id="8897749957032330183">Lösenorden sparas med Google Lösenordshantering på den här enheten.</translation>
 <translation id="8969290730818637510">När detta är aktiverat:
 <ph name="BEGIN_INDENT" />  • Du hjälper oss att göra Chrome bättre för den som använder programmet på samma sätt som du.<ph name="END_INDENT" />

@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">ເກີດຄວາມຜິດພາດໃນການເລີ່ມເຄື່ອງຈຳລອງສະເໝືອນຈິງ. ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="1087965115100412394">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊເຊື່ອມຕໍ່ຫາອຸປະກອນ MIDI</translation>
 <translation id="1088659085457112967">ເຂົ້າສູ່ໂໝດຜູ້ອ່ານ</translation>
-<translation id="1089407731410758060">ປ່ຽນຮູບແບບສີສັນ</translation>
 <translation id="1090126737595388931">ບໍ່ມີແອັບພື້ນຫຼັງແລ່ນຢູ່</translation>
 <translation id="1090541560108055381">ກ່ອນການຈັບຄູ່, ໃຫ້ກວດສອບວ່າລະຫັດນີ້ຄືກັນຢູ່ທັງສອງອຸປະກອນກ່ອນ</translation>
 <translation id="1091767800771861448">ກົດ ESCAPE ເພື່ອ​ຂ້າມໄປ (ສ້າງຂຶ້ນບໍ່​ເປັນ​ທາງ​ການ​ເທົ່າ​ນັ້ນ​)​.</translation>
@@ -550,6 +549,7 @@
 <translation id="1495677929897281669">ກັບຄືນຫາແຖບ</translation>
 <translation id="1500297251995790841">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບແອັບ Chrome ທີ່ບໍ່ຮອງຮັບ</translation>
+<translation id="1501480321619201731">ລຶບກຸ່ມ</translation>
 <translation id="1503392482221435031">ສົ່ງສະຖິຕິການນຳໃຊ້ໄປໃຫ້ Google ອັດຕະໂນມັດ. ທ່ານສາມາດເປີດ ຫຼື ປິດລາຍງານການຂັດຂ້ອງໄດ້ໃນການຕັ້ງຄ່າຂອງອຸປະກອນທ່ານ.</translation>
 <translation id="150411034776756821">ລຶບ <ph name="SITE" /> ອອກ</translation>
 <translation id="1504551620756424144">ໂຟນເດີທີ່ໃຊ້ຮ່ວມກັນສາມາດໃຊ້ໄດ້ໃນ Windows ທີ່ <ph name="BASE_DIR" />.</translation>
@@ -2111,7 +2111,6 @@
 <translation id="2835547721736623118">ການບໍລິການຈຳແນກສຽງເວົ້າ</translation>
 <translation id="2836232638504556905">ເພື່ອສືບຕໍ່, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ຈະແບ່ງປັນຊື່, ທີ່ຢູ່ອີເມວ ແລະ ຮູບໂປຣໄຟລ໌ຂອງທ່ານໃຫ້ກັບເວັບໄຊນີ້. ເບິ່ງ <ph name="BEGIN_LINK" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK" /> ຂອງເວັບໄຊນີ້.</translation>
 <translation id="2836269494620652131">ການ​ຂັດຂ້ອງ</translation>
-<translation id="2836635946302913370">ການລົງຊື່ເຂົ້າໃຊ້ດ້ວຍຊື່ຜູ້ໃຊ້ນີ້ຖືກປິດໃຊ້ງານໂດຍຜູ້ຄວບຄຸມຂອງທ່ານ.</translation>
 <translation id="283669119850230892">ເພື່ອ​ໃຊ້​ເຄືອ​ຂ່າຍ <ph name="NETWORK_ID" />, ກ່ອນອື່ນໝົດຕ້ອງເຮັດການເຊື່ອມຕໍ່ກັບອິນເຕີເນັດຢູ່ລຸ່ມນີ້.</translation>
 <translation id="2838379631617906747">ກໍາລັງ​ຕິດ​ຕັ້ງ...</translation>
 <translation id="2839032553903800133">ບລັອກການແຈ້ງເຕືອນ</translation>
@@ -2920,6 +2919,7 @@
 <translation id="3602290021589620013">ເບິ່ງຕົວຢ່າງ</translation>
 <translation id="3602870520245633055">ພິມ ແລະ ສະແກນ</translation>
 <translation id="3603622770190368340">ຮັບເອົາ​ໃບ​ຢັ້ງ​ຢືນ​ເຄືອ​ຂ່າຍ</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{ມີ {COUNT} ບັນຊີທີ່ໃຊ້ລະຫັດຜ່ານດຽວກັນ}other{ມີ {COUNT} ບັນຊີທີ່ໃຊ້ລະຫັດຜ່ານດຽວກັນ}}</translation>
 <translation id="3605780360466892872">ປຸ່ມລົງລຸ່ມ</translation>
 <translation id="3609277884604412258">ຊອກຫາດ່ວນ</translation>
 <translation id="3610241585790874201">ບໍ່ໄດ້ອະນຸຍາດໃຫ້ບັນທຶກຂໍ້ມູນຢູ່ອຸປະກອນຂອງທ່ານ</translation>
@@ -3628,7 +3628,6 @@
 <translation id="4244238649050961491">ຊອກຫາແອັບປາຍປາກກາເພີ່ມເຕີມ</translation>
 <translation id="4246980464509998944">ຄໍາ​ເຫັນ​ເພີ່ມ​ເຕີມ​:</translation>
 <translation id="424726838611654458">ເປີດຢູ່ໃນ Adob​​e Reader</translation>
-<translation id="4247901771970415646">ບໍ່ສາມາດຊິ້ງຂໍ້ມູນ <ph name="USERNAME" /> ໄດ້</translation>
 <translation id="4248098802131000011">ຮັກສາລະຫັດຜ່ານຂອງທ່ານໃຫ້ປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນໆ</translation>
 <translation id="4249248555939881673">ກໍາລັງລໍ​ຖ້າ​ການ​ເຊື່ອມ​ຕໍ່​ເຄືອ​ຂ່າຍ...</translation>
 <translation id="4249373718504745892">ໜ້ານີ້ຖືກບລັອກຈາກການເຂົ້າໃຊ້ກ້ອງຖ່າຍຮູບ ແລະໄມໂຄຣໂຟນຂອງທ່ານ.</translation>
@@ -4848,6 +4847,7 @@
 <translation id="5382591305415226340">ຈັດການລິ້ງທີ່ຮອງຮັບ</translation>
 <translation id="5383377866517186886">ກ້ອງຖ່າຍຮູບປິດຢູ່ໃນການຕັ້ງຄ່າລະບົບ Mac</translation>
 <translation id="5383740867328871413">ກຸ່ມທີ່ບໍ່ມີຊື່ - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">ປ່ຽນນະໂຍບາຍອົງກອນແລ້ວ. ເພີ່ມປຸ່ມການທົດລອງໃສ່ແຖບເຄື່ອງມືແລ້ວ. ຄລິກປຸ່ມເພື່ອເປີດກ່ອງໂຕ້ຕອບເພື່ອເປີດການນຳໃຊ້ການທົດລອງ.</translation>
 <translation id="5388885445722491159">ຈັບຄູ່ແລ້ວ</translation>
 <translation id="5390112241331447203">ຮວມເອົາໄຟລ໌ system_logs.txt ທີ່ສົ່ງຢູ່ໃນລາຍງານຄຳຕິຊົມ.</translation>
@@ -5061,6 +5061,7 @@
 <translation id="5578059481725149024">ເຂົ້າສູ່ລະບົບອັດຕະໂນມັດ</translation>
 <translation id="5581134892342029705">ການແປພາສາເປັນ <ph name="LANGUAGE" /> ສຳເລັດແລ້ວ</translation>
 <translation id="558170650521898289">ການກວດສອບດຣາຍເວີຮາດແວ Microsoft Windows</translation>
+<translation id="5581876958763461074">ບັນທຶກທັງໝົດ</translation>
 <translation id="5581972110672966454">ບໍ່ສາມາດນຳອຸປະກອນເຂົ້າຮ່ວມໂດເມນໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຕິດຕໍ່ເຈົ້າຂອງ ຫຼື ຜູ້ເບິ່ງແຍງລະບົບອຸປະກອນຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">ເມນູຫຼັກ</translation>
 <translation id="5583640892426849032">ລຶບຄືນຫຼັງ</translation>
@@ -5711,7 +5712,6 @@
 <translation id="617213288191670920">ບໍ່ໄດ້ເພີ່ມພາສາເທື່ອ</translation>
 <translation id="6173623053897475761">ພິມ PIN ຂອງທ່ານອີກຄັ້ງ</translation>
 <translation id="6175314957787328458">GUID ໂດເມນຂອງ Microsoft</translation>
-<translation id="6176043333338857209">ຈະເປີດ Bluetooth ຊົ່ວຄາວເພື່ອສື່ສານກັບກະແຈຄວາມປອດໄພຂອງທ່ານ</translation>
 <translation id="6178664161104547336">ເລືອກ​ໃບ​ຢັ້ງ​ຢືນ​</translation>
 <translation id="6178682841350631965">ອັບເດດຂໍ້ມູນການເຂົ້າສູ່ລະບົບຂອງທ່ານແລ້ວ</translation>
 <translation id="6180510783007738939">ເຄື່ອງມືເສັ້ນ</translation>

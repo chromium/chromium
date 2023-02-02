@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">Грешка при стартирането на виртуалната машина. Моля, опитайте отново.</translation>
 <translation id="1087965115100412394">Да не се разрешава на сайтовете да се свързват с MIDI устройства</translation>
 <translation id="1088659085457112967">Вход в режим за четене</translation>
-<translation id="1089407731410758060">Промяна на темата</translation>
 <translation id="1090126737595388931">Не се изпълняват приложения на заден план</translation>
 <translation id="1090541560108055381">Преди сдвояването се уверете, че този код е един и същ и на двете устройства</translation>
 <translation id="1091767800771861448">Натиснете „ESCAPE“ за пропускане (само в неофициалните версии).</translation>
@@ -550,6 +549,7 @@
 <translation id="1495677929897281669">Назад към раздела</translation>
 <translation id="1500297251995790841">Неизвестно устройство [<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Научете повече за неподдържаните приложения за Chrome</translation>
+<translation id="1501480321619201731">Изтриване на групата</translation>
 <translation id="1503392482221435031">Автоматично изпраща до Google статистически данни за употребата. Можете да включите или изключите сигналите за сривове от настройките на устройството си.</translation>
 <translation id="150411034776756821">Премахване на <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Споделените папки са налични в Windows в <ph name="BASE_DIR" />.</translation>
@@ -2108,7 +2108,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2835547721736623118">Услуга за разпознаване на говор</translation>
 <translation id="2836232638504556905">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт името, имейл адреса и снимката на потребителския ви профил. Вижте <ph name="BEGIN_LINK" />декларацията за поверителност<ph name="END_LINK" /> на сайта.</translation>
 <translation id="2836269494620652131">Срив</translation>
-<translation id="2836635946302913370">Влизането с това потребителско име е деактивирано от администратора ви.</translation>
 <translation id="283669119850230892">За да използвате мрежата <ph name="NETWORK_ID" />, първо завършете свързването си с интернет по-долу.</translation>
 <translation id="2838379631617906747">Инсталира се</translation>
 <translation id="2839032553903800133">Известията са блокирани</translation>
@@ -2616,6 +2615,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3315442055907669208">Вход в режим за четене</translation>
 <translation id="3317459757438853210">Двустранно</translation>
 <translation id="3317678681329786349">Достъпът до камерата и микрофона е блокиран</translation>
+<translation id="3319306431415395200">Превод на текст в изображение чрез <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Безопасно сърфиране (защита от опасни сайтове) и други настройки за сигурността</translation>
 <translation id="3323521181261657960">Бонус! Получихте още време на ползване</translation>
 <translation id="3323577066981719144">Промените тук важат само за браузъра Chrome. За да промените настройките на браузъра Lacros Chrome, отворете ги в този браузър.</translation>
@@ -2917,6 +2917,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3602290021589620013">Визуализация</translation>
 <translation id="3602870520245633055">Отпечатване и сканиране</translation>
 <translation id="3603622770190368340">Получаване на мрежов сертификат</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} профил използва същата парола}other{{COUNT} профила използват същата парола}}</translation>
 <translation id="3605780360466892872">Костюмар</translation>
 <translation id="3609277884604412258">Бързо търсене</translation>
 <translation id="3610241585790874201">Без разрешение за запазване на данни на устройството ви</translation>
@@ -3626,7 +3627,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4244238649050961491">Намиране на още приложения за писалка</translation>
 <translation id="4246980464509998944">Допълнителни коментари:</translation>
 <translation id="424726838611654458">Отваряне винаги в Adobe Reader</translation>
-<translation id="4247901771970415646">Не може да се синхронизира с/ъс <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Защитете паролите си от нарушения на сигурността на данните и други подобни проблеми</translation>
 <translation id="4249248555939881673">Изчаква се връзка с мрежата...</translation>
 <translation id="4249373718504745892">Достъпът на тази страница до камерата и микрофона ви е блокиран.</translation>
@@ -3847,6 +3847,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4441147046941420429">За да продължите, премахнете ключа за сигурност от устройството си, след което го поставете отново и го докоснете</translation>
 <translation id="444134486829715816">Разгъване...</translation>
 <translation id="4441928470323187829">Фиксирано от администратора ви</translation>
+<translation id="4442863809158514979">Преглед на разрешенията за мрежата</translation>
 <translation id="4443536555189480885">&amp;Помощ</translation>
 <translation id="4444304522807523469">Достъп до скенери на документи, свързани чрез USB или с локалната мрежа</translation>
 <translation id="4444512841222467874">Ако не освободите място, може да последва автоматично премахване на потребители и данни.</translation>
@@ -4845,6 +4846,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5382591305415226340">Управление на поддържаните връзки</translation>
 <translation id="5383377866517186886">Камерата е изключена в системните предпочитания за Mac</translation>
 <translation id="5383740867328871413">Група без име – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Корпоративните правила бяха променени. Бутонът за експерименти бе добавен към лентата с инструменти. Кликнете върху него, за да се отвори диалогов прозорец за активиране на експериментите.</translation>
 <translation id="5388885445722491159">Сдвоено</translation>
 <translation id="5390112241331447203">Запазване на файла system_logs.txt, който се изпраща в сигналите с отзиви.</translation>
@@ -5059,6 +5061,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5578059481725149024">Автоматичен вход</translation>
 <translation id="5581134892342029705">Преводът на <ph name="LANGUAGE" /> е завършен</translation>
 <translation id="558170650521898289">Проверка на драйвери за хардуер под Microsoft Windows</translation>
+<translation id="5581876958763461074">Всички бележки</translation>
 <translation id="5581972110672966454">Устройството не може да се присъедини към домейна. Моля, опитайте отново или се обърнете към собственика или администратора на устройството си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Главно меню</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5710,7 +5713,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="617213288191670920">Няма добавени езици</translation>
 <translation id="6173623053897475761">Въведете отново ПИН кода си</translation>
 <translation id="6175314957787328458">GUID на домейн от Microsoft</translation>
-<translation id="6176043333338857209">Функцията за Bluetooth временно ще бъде включена, за да се установи връзка с ключа ви за сигурност</translation>
 <translation id="6178664161104547336">Избор на сертификат</translation>
 <translation id="6178682841350631965">Данните ви за вход бяха актуализирани</translation>
 <translation id="6180510783007738939">Инструмент за линия</translation>
@@ -7477,6 +7479,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="779308894558717334">Светлозелено</translation>
 <translation id="7793098747275782155">Тъмносиньо</translation>
 <translation id="7797571222998226653">Изключено</translation>
+<translation id="7798504574384119986">Преглед на разрешенията за мрежата</translation>
 <translation id="7798844538707273832">„<ph name="PERMISSION" />“ е блокирано автоматично</translation>
 <translation id="7800518121066352902">Завъртане о&amp;братно на часовниковата стрелка</translation>
 <translation id="7801679634091975683">Промените тук важат само за браузъра Lacros Chrome. За да промените настройките на браузъра Chrome, отворете ги в този браузър.</translation>
@@ -7692,6 +7695,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> глас <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Настройки на „Достъп с превключване“</translation>
 <translation id="7992203134935383159">Синтезиран говор</translation>
+<translation id="7994515119120860317">Превод на текст в изображение чрез <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Изглед в мрежата</translation>
 <translation id="7997826902155442747">Приоритет на процесите</translation>
 <translation id="7999229196265990314">Създадени бяха следните файлове:

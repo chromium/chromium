@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Annonser</translation>
 <translation id="1919950603503897840">Velg kontakter</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Gjør tekst og bilder større eller mindre for alle nettsteder du besøker</translation>
 <translation id="1984937141057606926">Tillatt – unntatt fra tredjeparter.</translation>
 <translation id="1989112275319619282">Bla gjennom</translation>
 <translation id="1994173015038366702">Nettadressen til nettstedet</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Lyd</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="216989819110952009">Selv om øynene deres var beskyttet av de grønne brillene, ble Dorothy og vennene hennes overveldet ved synet av</translation>
+<translation id="2176704795966505152">Vis zoomalternativet i hovedmenyen</translation>
 <translation id="2182457891543959921">Spør før nettsteder får lage 3D-kart av omgivelsene dine eller spore kameraposisjonen (anbefales)</translation>
 <translation id="2212565012507486665">Tillat informasjonskapsler</translation>
 <translation id="2228071138934252756">For å gi <ph name="APP_NAME" /> tilgang til kameraet må du også slå på kameraet i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">Tillat informasjonskapsler for et spesifikt nettsted.</translation>
 <translation id="4046123991198612571">Neste spor</translation>
 <translation id="4149994727733219643">Forenklet visning av nettsider</translation>
+<translation id="4151930093518524179">Standard zoom</translation>
 <translation id="4165986682804962316">Nettstedsinnstillinger</translation>
 <translation id="4169549551965910670">Koblet til en USB-enhet</translation>
 <translation id="4194328954146351878">Spør før nettsteder får lov til å se og endre informasjon på NFC-enheter (anbefales)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427">For å gi <ph name="APP_NAME" /> tilgang til mikrofonen må du også slå på mikrofonen i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Slå av mikrofonen</translation>
 <translation id="4570913071927164677">Detaljer</translation>
+<translation id="4575264539271661854">Gjør det enklere å zoome inn på tekst og bilder for nettsteder du besøker</translation>
 <translation id="4598549027014564149">Når du er i inkognitomodus, kan ikke nettsteder bruke informasjonskapsler for å se nettleseraktiviteten din på andre nettsteder – heller ikke relaterte nettsteder. Nettleseraktiviteten din brukes ikke til ting som personlig tilpasning av annonser. Det kan hende at funksjoner på noen nettsteder ikke fungerer.</translation>
 <translation id="4645575059429386691">Administreres av foreldrene dine</translation>
 <translation id="4670064810192446073">Virtuell virkelighet</translation>

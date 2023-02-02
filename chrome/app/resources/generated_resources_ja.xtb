@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">仮想マシンの起動中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="1087965115100412394">サイトに MIDI デバイスへの接続を許可しない</translation>
 <translation id="1088659085457112967">リーダーモードを開始</translation>
-<translation id="1089407731410758060">テーマを変更</translation>
 <translation id="1090126737595388931">実行中のバックグラウンド アプリはありません</translation>
 <translation id="1090541560108055381">ペア設定を行う前に、両方のデバイスでコードが一致しているか確認してください</translation>
 <translation id="1091767800771861448">Esc キーを押すとスキップできます（非公式のビルドのみ）。</translation>
@@ -547,6 +546,7 @@
 <translation id="1495677929897281669">タブに戻る</translation>
 <translation id="1500297251995790841">不明なデバイス [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">サポートされていない Chrome アプリの詳細</translation>
+<translation id="1501480321619201731">グループを削除</translation>
 <translation id="1503392482221435031">使用統計情報を Google に自動送信します。障害レポートは、デバイスの設定でオンまたはオフにできます。</translation>
 <translation id="150411034776756821"><ph name="SITE" /> を削除</translation>
 <translation id="1504551620756424144">共有フォルダは Windows では <ph name="BASE_DIR" /> にあります。</translation>
@@ -2091,7 +2091,6 @@
 <translation id="2835547721736623118">音声認識サービス</translation>
 <translation id="2836232638504556905">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに名前、メールアドレス、プロフィール画像が共有されます。このサイトの<ph name="BEGIN_LINK" />プライバシー ポリシー<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="2836269494620652131">クラッシュ</translation>
-<translation id="2836635946302913370">このユーザー名でのログインは、管理者によって無効にされています。</translation>
 <translation id="283669119850230892">ネットワーク <ph name="NETWORK_ID" /> を使用するには、まずインターネット接続を完了してください（下記参照）。</translation>
 <translation id="2838379631617906747">インストール中</translation>
 <translation id="2839032553903800133">通知をブロック中</translation>
@@ -2599,6 +2598,7 @@
 <translation id="3315442055907669208">リーダーモードを開始</translation>
 <translation id="3317459757438853210">両面印刷</translation>
 <translation id="3317678681329786349">カメラとマイクがブロックされています</translation>
+<translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像内のテキストを翻訳する</translation>
 <translation id="3320630259304269485">セーフ ブラウジング（危険なサイトからの保護機能）などのセキュリティ設定</translation>
 <translation id="3323521181261657960">ボーナスタイムが加算されました</translation>
 <translation id="3323577066981719144">ここで加えた変更は、Chrome ブラウザにのみ反映されます。Lacros Chrome ブラウザの設定に変更を加えるには、Lacros Chrome ブラウザを開いて [設定] に移動してください。</translation>
@@ -3165,6 +3165,7 @@
 <translation id="3823310065043511710">Linux 用の推奨される空き容量は <ph name="INSTALL_SIZE" /> 以上です。</translation>
 <translation id="3824621460022590830">デバイス登録トークンが無効です。デバイスの所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{次のファイル形式の設定を保存: <ph name="FILE_TYPES" />}other{次のファイル形式の設定を保存: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">アプリアイコンに通知のドットを表示する</translation>
 <translation id="3826071569074535339">モーション センサーの使用を許可するサイト</translation>
 <translation id="3826440694796503677">Google アカウントをさらに追加するオプションは、管理者によって無効にされています</translation>
 <translation id="3827774300009121996">全画面表示(&amp;F)</translation>
@@ -3607,7 +3608,6 @@
 <translation id="4244238649050961491">他のタッチペン アプリを探す</translation>
 <translation id="4246980464509998944">その他のコメント:</translation>
 <translation id="424726838611654458">常に Adobe Reader で開く</translation>
-<translation id="4247901771970415646"><ph name="USERNAME" /> に同期できません</translation>
 <translation id="4248098802131000011">データ侵害などのセキュリティの問題からパスワードを保護します</translation>
 <translation id="4249248555939881673">ネットワークに接続しています...</translation>
 <translation id="4249373718504745892">このページではカメラとマイクへのアクセスがブロックされています。</translation>
@@ -4483,6 +4483,7 @@
 <translation id="5063480226653192405">使用状況</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Chrome OS の設定でセキュア DNS を管理する</translation>
+<translation id="5066160542186949327">別のフォルダに移動</translation>
 <translation id="5067399438976153555">常にオン</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> がマイクへのアクセスを必要としているときは確認画面を表示する</translation>
 <translation id="5068553687099139861">パスワードを表示</translation>
@@ -5685,7 +5686,6 @@
 <translation id="617213288191670920">言語が追加されていません</translation>
 <translation id="6173623053897475761">もう一度 PIN を入力してください</translation>
 <translation id="6175314957787328458">Microsoft ドメイン GUID</translation>
-<translation id="6176043333338857209">セキュリティ キーとの通信のため、Bluetooth が一時的にオンになります</translation>
 <translation id="6178664161104547336">証明書の選択</translation>
 <translation id="6178682841350631965">ログインデータを更新しました</translation>
 <translation id="6180510783007738939">直線ツール</translation>
@@ -7663,6 +7663,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 音声 <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">スイッチ アクセスの設定</translation>
 <translation id="7992203134935383159">音声合成</translation>
+<translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像内のテキストを翻訳する</translation>
 <translation id="799570308305997052">ウェブ表示</translation>
 <translation id="7997826902155442747">プロセスの優先値</translation>
 <translation id="7999229196265990314">次のファイルを作成しました:

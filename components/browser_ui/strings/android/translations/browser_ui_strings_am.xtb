@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">ማስታወቂያዎች</translation>
 <translation id="1919950603503897840">ዕውቂያዎችን ምረጥ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">የሚጎበኟቸው ሁሉም ጣቢያዎች ላይ ጽሑፍ እና ምስሎችን ይበልጥ ትልቅ ወይም ትንሽ ያድርጉ</translation>
 <translation id="1984937141057606926">የተፈቀደ፣ ከሶስተኛ ወገን በቀር</translation>
 <translation id="1989112275319619282">አስስ</translation>
 <translation id="1994173015038366702">የጣቢያ ዩአርኤል</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">ድምፅ</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
 <translation id="216989819110952009">ዓይኖች በአረንጓዴ መነጽሮች ቢጠበቁም ዶሮቲ እና ጓደኞቿ በመጀመሪያ ላይ ፈዘው ነበር በ</translation>
+<translation id="2176704795966505152">በዋና ምናሌ ውስጥ የማጉላት አማራጭን ያሳዩ</translation>
 <translation id="2182457891543959921">ጣቢያዎች የዙሪያዎ የ3ል ካርታ እንዲፈጥሩ ወይም የካሜራ ቦታን እንዲከታተል ከመፍቀድ በፊት ጠይቅ (የሚመከር)</translation>
 <translation id="2212565012507486665">ኩኪዎችን ፍቀድ</translation>
 <translation id="2228071138934252756">የእርስዎን ካሜራ <ph name="APP_NAME" /> እንዲደርስበት ለማድረግ፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ካሜራን በተጨማሪ ያብሩ።</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">የተወሰነ ጣቢያ ኩኪዎችን ፍቀድ።</translation>
 <translation id="4046123991198612571">ቀጣይ ትራክ</translation>
 <translation id="4149994727733219643">ለድረ-ገጾች የተቃለለ እይታ</translation>
+<translation id="4151930093518524179">ነባሪ ማጉላት</translation>
 <translation id="4165986682804962316">የጣቢያ ቅንብሮች</translation>
 <translation id="4169549551965910670">ከዩኤስቢ መሣሪያ ጋር ተገናኝቷል</translation>
 <translation id="4194328954146351878">ጣቢያዎች በኤንኤፍሲ መሣሪያዎች ላይ መረጃ እንዲያዩ እና እንዲቀይሩ ከመፈቀዱ በፊት ይጠይቅ (የሚመከር)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> የእርስዎን ማይክራፎን እንዲደርስ ለማድረግ፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ማይክራፎንን በተጨማሪ ያብሩ።</translation>
 <translation id="4566417217121906555">የማይክሮፎን ድምፀ-ከል አድርግ</translation>
 <translation id="4570913071927164677">ዝርዝሮች</translation>
+<translation id="4575264539271661854">የሚጎበኙት ጣቢያ ላይ ጽሑፍ እና ምስሎች ላይ ለማጉላት ይበልጥ ቀላል ያድርጉት</translation>
 <translation id="4598549027014564149">ማንነት በማያሳውቅ ሁኔታ ላይ ሳሉ ተዛማጅ ጣቢያዎች ቢሆኑም አንኳን በመላው ጣቢያዎች ላይ የአሰሳ እንቅስቃሴዎን ለመመልከት ጣቢያዎች የእርስዎን ኩኪዎች መጠቀም አይችሉም። የአሰሳ እንቅስቃሴዎ እንደ ማስታወቂያዎችን ግላዊነት ማላበስ ላሉ ነገሮች ጥቅም ላይ አይውልም። በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ላይሰሩ ይችላሉ።</translation>
 <translation id="4645575059429386691">በእርስዎ ወላጅ የሚቀናበር</translation>
 <translation id="4670064810192446073">ምናባዊ እውነታ</translation>
@@ -383,6 +387,7 @@
 <translation id="8284326494547611709">መግለጫ ጽሑፎች</translation>
 <translation id="8300705686683892304">በመተግበሪያ የሚተዳደር</translation>
 <translation id="8324158725704657629">ዳግም አትጠይቅ</translation>
+<translation id="8362795839483915693">እርስዎ በሚገበኟቸው ጣቢያዎች ላይ ማጉላት ወይም ማሳነስ ይችላሉ</translation>
 <translation id="8372893542064058268">ለአንድ የተወሰነ ጣቢያ የጀርባ ስምረትን ይፍቀዱ።</translation>
 <translation id="8376384591331888629">በዚህ ጣቢያ ላይ የሶስተኛ ወገን ኩኪዎችን ጨምሮ</translation>
 <translation id="83792324527827022">አንድ ጣቢያ የእርስዎን ካሜራ እና ማይክሮፎን እየተጠቀመ ነው</translation>

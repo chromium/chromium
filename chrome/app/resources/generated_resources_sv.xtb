@@ -106,7 +106,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1085697365578766383">Det gick inte att starta den virtuella maskinen. Försök igen.</translation>
 <translation id="1087965115100412394">Tillåt inte att webbplatser ansluter till MIDI-enheter</translation>
 <translation id="1088659085457112967">Aktivera läsarläge</translation>
-<translation id="1089407731410758060">Byt tema</translation>
 <translation id="1090126737595388931">Inga bakgrundsprogram körs</translation>
 <translation id="1090541560108055381">Kontrollera att samma kod visas på båda enheterna innan du parkopplar</translation>
 <translation id="1091767800771861448">Tryck på Esc om du vill hoppa över (endast versioner som inte är officiella).</translation>
@@ -550,6 +549,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1495677929897281669">Tillbaka till flik</translation>
 <translation id="1500297251995790841">Okänd enhet [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Läs mer om Chrome-appar som inte stöds</translation>
+<translation id="1501480321619201731">Ta bort grupp</translation>
 <translation id="1503392482221435031">Skickar användningsstatistik till Google automatiskt. Du kan aktivera eller inaktivera felrapporter i enhetens inställningar.</translation>
 <translation id="150411034776756821">Ta bort <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Delade mappar finns i <ph name="BASE_DIR" /> i Windows.</translation>
@@ -2112,7 +2112,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2835547721736623118">Tjänst för taligenkänning</translation>
 <translation id="2836232638504556905"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress, din adress och din profilbild med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK" />integritetspolicy<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Krasch</translation>
-<translation id="2836635946302913370">Inloggningar med detta användarnamn har inaktiverats av administratören.</translation>
 <translation id="283669119850230892">För att kunna använda nätverket <ph name="NETWORK_ID" /> måste du först ansluta till Internet nedan.</translation>
 <translation id="2838379631617906747">Installerar</translation>
 <translation id="2839032553903800133">Aviseringar har blockerats</translation>
@@ -2620,6 +2619,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3315442055907669208">Aktivera läsarläge</translation>
 <translation id="3317459757438853210">Dubbelsidig</translation>
 <translation id="3317678681329786349">Kamera och mikrofon är blockerade</translation>
+<translation id="3319306431415395200">Översätt text i bild med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Säker webbsökning (skydd mot farliga webbplatser) och andra säkerhetsinställningar</translation>
 <translation id="3323521181261657960">Bonus! Du har fått mer skärmtid</translation>
 <translation id="3323577066981719144">Ändringar du gör här gäller endast webbläsaren Chrome. Om du vill göra ändringar i inställningarna för webbläsaren Lacros Chrome öppnar du Lacros Chrome och väljer inställningarna.</translation>
@@ -2921,6 +2921,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3602290021589620013">Förhandsgranskning</translation>
 <translation id="3602870520245633055">Skriva ut och skanna</translation>
 <translation id="3603622770190368340">Skaffa nätverkscertifikat</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{Samma lösenord används för {COUNT} konto}other{Samma lösenord används för {COUNT} konton}}</translation>
 <translation id="3605780360466892872">Proper</translation>
 <translation id="3609277884604412258">Snabbsökning</translation>
 <translation id="3610241585790874201">Får inte spara data på enheten</translation>
@@ -3629,7 +3630,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4244238649050961491">Hitta fler appar för e-penna</translation>
 <translation id="4246980464509998944">Fler kommentarer:</translation>
 <translation id="424726838611654458">Öppna alltid i Adobe Reader</translation>
-<translation id="4247901771970415646">Det gick inte att synkronisera med <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Skydda dina lösenord från dataintrång och andra säkerhetsproblem</translation>
 <translation id="4249248555939881673">Väntar på nätverksanslutning ...</translation>
 <translation id="4249373718504745892">Den här sidan har blockerats och kan inte komma åt kameran och mikrofonen.</translation>
@@ -3850,6 +3850,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4441147046941420429">Fortsätt genom att ta bort säkerhetsnyckeln från enheten, sätta i den igen och trycka på den</translation>
 <translation id="444134486829715816">Expandera..</translation>
 <translation id="4441928470323187829">Fäst av administratören</translation>
+<translation id="4442863809158514979">Visa webbehörigheter</translation>
 <translation id="4443536555189480885">&amp;Hjälp</translation>
 <translation id="4444304522807523469">Åtkomst till dokumentskannrar som är anslutna via USB eller i det lokala nätverket</translation>
 <translation id="4444512841222467874">Om du inte frigör utrymme kan användare och data tas bort automatiskt.</translation>
@@ -5712,7 +5713,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="617213288191670920">Inga språk har lagts till</translation>
 <translation id="6173623053897475761">Skriv pinkoden en gång till</translation>
 <translation id="6175314957787328458">Grafiskt användargränssnitt för Microsoft-domänen</translation>
-<translation id="6176043333338857209">Bluetooth aktiveras tillfälligt för att kommunicera med säkerhetsnyckeln</translation>
 <translation id="6178664161104547336">Välj ett certifikat</translation>
 <translation id="6178682841350631965">Inloggningsuppgifterna har uppdaterats</translation>
 <translation id="6180510783007738939">Linjeverktyg</translation>
@@ -7479,6 +7479,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="779308894558717334">Ljusgrön</translation>
 <translation id="7793098747275782155">Mörkblå</translation>
 <translation id="7797571222998226653">Av</translation>
+<translation id="7798504574384119986">Visa webbehörigheter</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> blockerades automatiskt</translation>
 <translation id="7800518121066352902">Rotera m&amp;oturs</translation>
 <translation id="7801679634091975683">Ändringar du gör här gäller endast webbläsaren Lacros Chrome. Om du vill göra ändringar i inställningarna för webbläsaren Chrome öppnar du Chrome och väljer inställningarna.</translation>
@@ -7694,6 +7695,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Röst <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Inställningar för brytarstyrning</translation>
 <translation id="7992203134935383159">Talsyntes</translation>
+<translation id="7994515119120860317">Översätt text i bild med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Webbvy</translation>
 <translation id="7997826902155442747">Prioriteringsprocess</translation>
 <translation id="7999229196265990314">Följande filer har skapats:

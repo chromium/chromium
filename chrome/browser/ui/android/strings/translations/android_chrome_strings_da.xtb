@@ -391,6 +391,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3072980200212375806"><ph name="APP_NAME" /> åbnes i Chrome. Når du fortsætter, accepterer du <ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" /> og de <ph name="BEGIN_LINK2" />yderligere servicevilkår for Google Chrome og ChromeOS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Privatlivspolitikken<ph name="END_LINK3" /> vil også gælde.</translation>
 <translation id="3091010850649238832">Vis indhold i udklipsholderen</translation>
 <translation id="3098745985164956033">Nogle billeder sendes til Google for at give dig bedre beskrivelser</translation>
+<translation id="3104179992611025423">Din browser administreres af dine forældre</translation>
 <translation id="3114507951000454849">Læs dagens nyheder <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">tilknyttet</translation>
 <translation id="3123734510202723619">Meddelelser</translation>
@@ -400,6 +401,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3157931365184549694">Gendan</translation>
 <translation id="3166827708714933426">Genveje på faner og i vinduer</translation>
 <translation id="316694332262407393">Chrome kører allerede her.</translation>
+<translation id="3167258285411721858">Du kan anmode om mobilwebsitet for <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Ad measurement</translation>
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
@@ -433,6 +435,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3297344142967351106">Stemmesøgning</translation>
 <translation id="3303414029551471755">Vil du fortsætte og downloade indholdet?</translation>
 <translation id="3305795716056605962">Oversæt sider via knappen Flere valgmuligheder</translation>
+<translation id="3319664549618064419">Skift til computerwebsite for at få en bedre visning af dette website</translation>
 <translation id="3334729583274622784">Vil du ændre filtypen?</translation>
 <translation id="3341262203274374114">"Følg ikke" kan ikke udføres. Der opstod en fejl.</translation>
 <translation id="3359667936385849800">Brug din nuværende tjenesteudbyder</translation>
@@ -624,7 +627,6 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="4452411734226507615">Luk fanen <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bogmærket er gemt i <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Når du tilknytter en anden enhed med en QR-kode, kan den bruge denne telefon som en sikkerhedsnøgle. Hvis du fjerner den, skal du scanne en QR-kode for at tilknytte den igen.</translation>
-<translation id="4479839115899251637">Slet fra læseliste</translation>
 <translation id="4479972344484327217">Installerer <ph name="MODULE" /> til Chrome…</translation>
 <translation id="4484496141267039529">Der er ingen forbindelse. Prøv igen senere.</translation>
 <translation id="4487967297491345095">Alle Chromes appdata slettes permanent. Dette omfatter alle filer, indstillinger, konti, databaser osv.</translation>
@@ -1466,6 +1468,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8849001918648564819">Skjult</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, fane</translation>
 <translation id="8854223127042600341">Se dine offlinefiler</translation>
+<translation id="885480114717186641">Du kan anmode om computerwebsitet for <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Få beskrivelser</translation>
 <translation id="8856931513242997049">Flow for notifikationstilladelse er lukket</translation>
 <translation id="8873817150012960745">Tryk her for at komme i gang</translation>
@@ -1486,7 +1489,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8955719471735800169">Tilbage til toppen</translation>
 <translation id="8964479563882643397">Åbn menuen for at åbne en ny inkognitofane</translation>
 <translation id="8965591936373831584">afventer</translation>
-<translation id="8967427617812342790">Føj til læseliste</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_ONE" /> anden fane lukkes}one{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_MANY" /> anden fane lukkes}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_MANY" /> andre faner lukkes}}</translation>
 <translation id="8970887620466824814">Noget gik galt.</translation>
 <translation id="8972098258593396643">Vil du downloade til standardmappen?</translation>

@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">โฆษณา</translation>
 <translation id="1919950603503897840">เลือกรายชื่อติดต่อ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">ทำให้ข้อความและรูปภาพมีขนาดใหญ่ขึ้นหรือเล็กลงสำหรับทุกเว็บไซต์ที่คุณเข้าชม</translation>
 <translation id="1984937141057606926">อนุญาต ยกเว้นบุคคลที่สาม</translation>
 <translation id="1989112275319619282">เปิดดู</translation>
 <translation id="1994173015038366702">URL ของเว็บไซต์</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">เสียง</translation>
 <translation id="2148716181193084225">วันนี้</translation>
 <translation id="216989819110952009">แม้ว่าสีเขียวจะช่วยถนอมสายตาเวลามอง แต่ตอนแรก Dorothy และเพื่อนๆ ก็ยังรู้สึกตาลายโดย</translation>
+<translation id="2176704795966505152">แสดงตัวเลือกการซูมในเมนูหลัก</translation>
 <translation id="2182457891543959921">ถามก่อนที่จะอนุญาตให้เว็บไซต์สร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณหรือติดตามตำแหน่งของกล้อง (แนะนำ)</translation>
 <translation id="2212565012507486665">อนุญาตคุกกี้</translation>
 <translation id="2228071138934252756">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงกล้องถ่ายรูป ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">อนุญาตคุกกี้ของเว็บไซต์ที่เจาะจง</translation>
 <translation id="4046123991198612571">แทร็กถัดไป</translation>
 <translation id="4149994727733219643">มุมมองอย่างง่ายสำหรับหน้าเว็บ</translation>
+<translation id="4151930093518524179">การซูมเริ่มต้น</translation>
 <translation id="4165986682804962316">การตั้งค่าเว็บไซต์</translation>
 <translation id="4169549551965910670">เชื่อมต่ออยู่กับอุปกรณ์ USB</translation>
 <translation id="4194328954146351878">ถามก่อนที่จะอนุญาตให้เว็บไซต์ดูและเปลี่ยนแปลงข้อมูลในอุปกรณ์ NFC (แนะนำ)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงไมโครโฟน ให้เปิดใช้ไมโครโฟนใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="4566417217121906555">ปิดเสียงไมโครโฟน</translation>
 <translation id="4570913071927164677">รายละเอียด</translation>
+<translation id="4575264539271661854">ทำให้การซูมเข้าเพื่อดูข้อความและรูปภาพเป็นเรื่องง่ายขึ้นในเว็บไซต์ที่คุณเข้าชม</translation>
 <translation id="4598549027014564149">ขณะอยู่ในโหมดไม่ระบุตัวตน เว็บไซต์ไม่สามารถใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์ต่างๆ แม้กระทั่งเว็บไซต์ที่เกี่ยวข้อง ระบบจะไม่ใช้กิจกรรมการท่องเว็บเพื่อวัตถุประสงค์ต่างๆ เช่น การปรับโฆษณาตามโปรไฟล์ของผู้ใช้ ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="4645575059429386691">มีการจัดการโดยผู้ปกครอง</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="ca">
 <translation id="1143896152279775643">La contrasenya es desarà al gestor de contrasenyes de Google per a <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Ajuda a millorar les funcions i el rendiment de Chrome</translation>
+<translation id="1352919863522755794">El gestor de contrasenyes de Google no ha pogut comprovar les teves contrasenyes. Comprova la connexió a Internet.</translation>
 <translation id="1462727070346936664">Inicia la sessió per treure el màxim profit de Chrome.</translation>
 <translation id="1479202195792305274">Chrome pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google.</translation>
 <translation id="1493827051843127077">Configura Chrome com a navegador predeterminat per sincronitzar les pestanyes, les contrasenyes i la informació de pagament de tots els dispositius</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Per tancar la sessió del teu Compte de Google en tots els llocs web, <ph name="BEGIN_LINK" />tanca la sessió de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome no ha pogut cercar actualitzacions. Torna-ho a provar més tard.</translation>
 <translation id="2732745070297234559">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
+<translation id="2767464022270041271">No hi ha cap contrasenya desada. El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="2869959624320573933">Inicia la sessió a Chrome</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Com que estàs tancant la sessió d'un compte gestionat per <ph name="SIGNOUT_MANAGED_DOMAIN" />, se suprimiran les teves dades de Chromium d'aquest dispositiu, però continuaran emmagatzemades al teu Compte de Google.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Per ajudar a millorar l'aplicació, Chrome envia les dades d'ús i de bloqueig a Google. <ph name="BEGIN_LINK" />Gestiona<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">No s'admeten a la versió beta de Chrome</translation>
+<translation id="4840404732697892756">El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google.</translation>
 <translation id="5030102366287574140">Chrome pot ajudar a protegir-te de violacions de les dades, de llocs web no segurs i més.</translation>
 <translation id="5108659628347594808">Millora Chrome</translation>
 <translation id="5119391094379141756">Selecciona Chrome.</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome contrasta periòdicament les teves contrasenyes amb les d'una sèrie de llistes publicades en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten i, per tant, ningú no els pot llegir (ni tan sols Google).</translation>
 <translation id="5639704535586432836">Obre Configuració &gt; Privacitat &gt; Càmera &gt; Google Chrome i activa la càmera.</translation>
 <translation id="5642200033778930880">Google Chrome no pot utilitzar la càmera en mode de visualització dividida</translation>
+<translation id="5661521615548540542">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Sense connexió; Chrome no pot cercar actualitzacions</translation>
 <translation id="5716154293141027663">Obre Chrome cada vegada que toquis enllaços en altres aplicacions</translation>
@@ -118,9 +122,11 @@
   2. Toca Aplicació de navegador predeterminada.
   3. Selecciona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Protegeix-te amb Google Chrome</translation>
 <translation id="8772179140489533211">Mostra sol·licituds per iniciar la sessió a Chrome.</translation>
 <translation id="8788269841521769222">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes de Google per a <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
 <translation id="8897749957032330183">Les contrasenyes es desen al gestor de contrasenyes de Google en aquest dispositiu.</translation>
 <translation id="8969290730818637510">Quan aquesta opció està activada:
 <ph name="BEGIN_INDENT" />  • Ajuda a millorar Chrome per a les persones que el fan servir igual que tu.<ph name="END_INDENT" />

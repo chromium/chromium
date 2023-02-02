@@ -3,6 +3,7 @@
 <translationbundle lang="ru">
 <translation id="1143896152279775643">Ваш пароль будет сохранен в Google Менеджере паролей для аккаунта <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Помочь улучшить производительность и функции Chrome</translation>
+<translation id="1352919863522755794">Google Менеджеру паролей не удается проверить пароли. Проверьте подключение к интернету.</translation>
 <translation id="1462727070346936664">Чтобы пользоваться всеми возможностями Chrome, войдите в аккаунт.</translation>
 <translation id="1479202195792305274">Браузер Chrome сможет проверить ваши пароли, когда вы войдете в аккаунт Google.</translation>
 <translation id="1493827051843127077">Сделайте Chrome браузером по умолчанию, чтобы синхронизировать вкладки, пароли и платежные данные на всех своих устройствах.</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">Чтобы выйти из аккаунта Google на всех сайтах, <ph name="BEGIN_LINK" />выйдите из Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Браузеру Chrome не удалось проверить наличие обновлений. Повторите попытку позже.</translation>
 <translation id="2732745070297234559">Браузеру Chrome не удается проверить все пароли. Повторите попытку завтра.</translation>
+<translation id="2767464022270041271">Нет сохраненных паролей. Чтобы Google Менеджер паролей мог проверять пароли, сохраните их.</translation>
 <translation id="2869959624320573933">Вход в Chrome</translation>
 <translation id="2957447865124070833">Выберите <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Вы выходите из аккаунта, которым управляет администратор домена <ph name="SIGNOUT_MANAGED_DOMAIN" />. Обратите внимание, что данные Chrome будут удалены с устройства, но останутся в вашем аккаунте Google.</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Браузеру Chrome не удается проверить все пароли. Повторите попытку завтра или <ph name="BEGIN_LINK" />проверьте пароли в аккаунте Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Chrome отправляет в Google статистику об использовании и сбоях, которая поможет улучшить приложение. <ph name="BEGIN_LINK" />Настроить отправку данных<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Проверка не поддерживается в бета-версии Chrome</translation>
+<translation id="4840404732697892756">Чтобы Google Менеджер паролей мог проверять пароли, войдите в аккаунт Google.</translation>
 <translation id="5030102366287574140">Chrome поможет защитить вас от утечки данных, подозрительных сайтов и других проблем с безопасностью.</translation>
 <translation id="5108659628347594808">Сделайте браузер Chrome лучше</translation>
 <translation id="5119391094379141756">Выберите Chrome.</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Время от времени Chrome проверяет, есть ли ваши пароли в списках, опубликованных в Интернете. При этом имена пользователей и сами пароли зашифрованы и никому не видны, даже сотрудникам Google.</translation>
 <translation id="5639704535586432836">Откройте "Настройки &gt; Конфиденциальность &gt; Камера &gt; Chrome" и включите камеру.</translation>
 <translation id="5642200033778930880">Google Chrome не может использовать камеру в режиме Split View.</translation>
+<translation id="5661521615548540542">Google Менеджеру паролей не удается проверить все пароли. Повторите попытку позже.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Вы не в Сети, Chrome не может проверить наличие обновлений</translation>
 <translation id="5716154293141027663">При переходе по ссылкам в других приложениях будет открываться браузер Chrome.</translation>
@@ -118,9 +122,11 @@
   2. Найдите раздел, где выбирается браузер по умолчанию.
   3. Выберите Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Менеджеру паролей не удается проверить все пароли. Повторите попытку завтра или <ph name="BEGIN_LINK" />проверьте пароли в аккаунте Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Безопасная работа с Google Chrome</translation>
 <translation id="8772179140489533211">Показывать подсказки для входа в Chrome</translation>
 <translation id="8788269841521769222">Вам не нужно запоминать этот пароль. Он будет сохранен в Google Менеджере паролей для аккаунта <ph name="EMAIL" />.</translation>
+<translation id="8857676124663337448">Google Менеджеру паролей не удается проверить все пароли. Повторите попытку завтра.</translation>
 <translation id="8897749957032330183">Пароли сохраняются в Google Менеджере паролей и доступны на этом устройстве.</translation>
 <translation id="8969290730818637510">Если параметр включен:
 <ph name="BEGIN_INDENT" />  • Вы помогаете нам делать Chrome удобнее для всех пользователей браузера.<ph name="END_INDENT" />

@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">व्हर्च्युअल मशीन सुरू करताना एरर आली. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="1087965115100412394">साइटना MIDI डिव्हाइसशी कनेक्ट करण्याची अनुमती देऊ नका</translation>
 <translation id="1088659085457112967">वाचक मोडमध्ये एंटर करा</translation>
-<translation id="1089407731410758060">थीम बदला</translation>
 <translation id="1090126737595388931">कोणतेही पार्श्वभूमी ॲप्लिकेशन चालत नाहीत</translation>
 <translation id="1090541560108055381">पेअर करण्यापूर्वी, हा कोड दोन्ही डिव्हाइसवर समान असल्याची खात्री करा</translation>
 <translation id="1091767800771861448">वगळण्यासाठी ESCAPE दाबा (केवळ अनधिकृत नसलेल्या बिल्डसाठी).</translation>
@@ -550,6 +549,7 @@
 <translation id="1495677929897281669">टॅबवर परत</translation>
 <translation id="1500297251995790841">अज्ञात डिव्हाइस [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">सपोर्ट नसलेल्या Chrome अ‍ॅप्सबद्दल अधिक जाणून घ्या</translation>
+<translation id="1501480321619201731">गट हटवा</translation>
 <translation id="1503392482221435031">Google ला वापरविषयक आकडेवारी आपोआप पाठवते. तुम्ही तुमच्या डिव्हाइसच्या सेटिंग्जमध्ये क्रॅश अहवाल सुरू किंवा बंद करू शकता.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> काढून टाका</translation>
 <translation id="1504551620756424144">शेअर केलेली फोल्डर Windows मध्ये <ph name="BASE_DIR" /> येथे उपलब्ध आहेत.</translation>
@@ -2111,7 +2111,6 @@
 <translation id="2835547721736623118">स्पीच रेकग्निशन सेवा</translation>
 <translation id="2836232638504556905">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे नाव, ईमेल अ‍ॅड्रेस आणि प्रोफाइल फोटो या साइटसह शेअर करेल. या साइटचे <ph name="BEGIN_LINK" />गोपनीयता धोरण<ph name="END_LINK" /> पहा.</translation>
 <translation id="2836269494620652131">क्रॅश</translation>
-<translation id="2836635946302913370">या वापरकर्तानावासह साइन इन करणे तुमच्या ॲडमिनिस्ट्रेटरद्वारे अक्षम केले गेले आहे.</translation>
 <translation id="283669119850230892">नेटवर्क <ph name="NETWORK_ID" /> वापरण्‍यासाठी, प्रथम खालील इंटरनेटचे तुमचे कनेक्शन पूर्ण करा.</translation>
 <translation id="2838379631617906747">इंस्टॉल करीत आहे</translation>
 <translation id="2839032553903800133">सूचना ब्लॉक केल्या आहेत</translation>
@@ -2920,6 +2919,7 @@
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
 <translation id="3602870520245633055">प्रिंट आणि स्कॅन करा</translation>
 <translation id="3603622770190368340">नेटवर्क सर्टिफिकेट मिळवा</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} खाते हाच पासवर्ड वापरत आहे}other{{COUNT} खाती हाच पासवर्ड वापरत आहेत}}</translation>
 <translation id="3605780360466892872">बटनडाउन</translation>
 <translation id="3609277884604412258">झटपट शोध</translation>
 <translation id="3610241585790874201">तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती नाही</translation>
@@ -3626,7 +3626,6 @@
 <translation id="4244238649050961491">अधिक स्टायलस अ‍ॅप्स शोधा</translation>
 <translation id="4246980464509998944">अतिरिक्त टिप्पण्या:</translation>
 <translation id="424726838611654458">Adobe Reader मध्ये नेहमी उघडा</translation>
-<translation id="4247901771970415646"><ph name="USERNAME" /> शी सिंक करू शकत नाही</translation>
 <translation id="4248098802131000011">डेटा भंग आणि इतर सुरक्षितता समस्यांपासून तुमचे पासवर्ड सुरक्षित ठेवा</translation>
 <translation id="4249248555939881673">नेटवर्क कनेक्शनची प्रतीक्षा करत आहे...</translation>
 <translation id="4249373718504745892">तुमचा कॅमेरा आणि मायक्रोफोनचा अ‍ॅक्सेस या पेजसाठी ब्लॉक केला आहे.</translation>
@@ -3847,6 +3846,7 @@
 <translation id="4441147046941420429">पुढे सुरू ठेवण्यासाठी, तुमच्या डिव्हाइसमधून सिक्युरिटी की काढून टाका आणि नंतर ती पुन्हा घालून तिला स्पर्श करा</translation>
 <translation id="444134486829715816">विस्तार करा...</translation>
 <translation id="4441928470323187829">तुमच्या अ‍ॅडमिनिस्ट्रेटरने पिन केले</translation>
+<translation id="4442863809158514979">वेब परवानग्या पहा</translation>
 <translation id="4443536555189480885">&amp;मदत</translation>
 <translation id="4444304522807523469">USB द्वारा संलग्न केलेल्या किंवा स्थानिक नेटवर्कवरील दस्तऐवज स्कॅनर ॲक्सेस करा</translation>
 <translation id="4444512841222467874">स्थान उपलब्ध केले नसल्यास, वापरकर्ते आणि डेटा स्वयंचलितपणे काढला जाऊ शकतो.</translation>
@@ -5710,7 +5710,6 @@
 <translation id="617213288191670920">कोणत्याही भाषा जोडलेल्या नाहीत</translation>
 <translation id="6173623053897475761">तुमचा पिन पुन्हा टाइप करा</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
-<translation id="6176043333338857209">तुमच्या सिक्युरिटी की सह संवाद साधण्यासाठी, ब्लूटूथ तात्पुरते सुरू केले जाईल</translation>
 <translation id="6178664161104547336">एक सर्टिफिकेट निवडा</translation>
 <translation id="6178682841350631965">तुमचा साइन-इन डेटा अपडेट केला होता</translation>
 <translation id="6180510783007738939">लाइन टूल</translation>
@@ -7475,6 +7474,7 @@
 <translation id="779308894558717334">फिकट हिरवा</translation>
 <translation id="7793098747275782155">गडद निळा</translation>
 <translation id="7797571222998226653">बंद करा</translation>
+<translation id="7798504574384119986">वेब परवानग्या पहा</translation>
 <translation id="7798844538707273832">आपोआप ब्लॉक केलेली <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">घड्याळाच्या वि&amp;रुद्ध दिशेने फिरवा</translation>
 <translation id="7801679634091975683">तुम्ही येथे केलेले बदल फक्त Lacros Chrome ब्राउझरवर लागू होतात. तुमच्या Chrome ब्राउझर सेटिंग्जमध्ये बदल करण्यासाठी, Chrome ब्राउझर उघडा आणि सेटिंग्जवर जा.</translation>

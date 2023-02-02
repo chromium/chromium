@@ -391,6 +391,7 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="3072980200212375806">Se abrirá <ph name="APP_NAME" /> en Chrome. Si continúas, aceptas las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_LINK2" />. También se aplica la <ph name="BEGIN_LINK3" />Política de privacidad<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">Muestra el contenido del portapapeles</translation>
 <translation id="3098745985164956033">Se envían algunas imágenes a Google para proporcionarte mejores descripciones.</translation>
+<translation id="3104179992611025423">Tu madre o padre administra el navegador</translation>
 <translation id="3114507951000454849">Lee las noticias de hoy <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">te vinculaste con</translation>
 <translation id="3123734510202723619">Anuncios</translation>
@@ -400,6 +401,7 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3166827708714933426">Accesos directos a ventanas y pestañas</translation>
 <translation id="316694332262407393">Chrome ya se está ejecutando aquí.</translation>
+<translation id="3167258285411721858">Puedes solicitar el sitio móvil de <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3207960819495026254">Agregada a favoritos</translation>
@@ -433,6 +435,7 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="3297344142967351106">Asistencia de voz</translation>
 <translation id="3303414029551471755">¿Deseas descargar el contenido?</translation>
 <translation id="3305795716056605962">Traducir páginas desde el botón Más opciones</translation>
+<translation id="3319664549618064419">Cambia al sitio para computadoras para obtener una mejor vista de este sitio</translation>
 <translation id="3334729583274622784">¿Quieres cambiar la extensión del archivo?</translation>
 <translation id="3341262203274374114">No se puede dejar de seguir. Se produjo un error.</translation>
 <translation id="3359667936385849800">Usa tu proveedor de servicios actual</translation>
@@ -624,7 +627,6 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="4452411734226507615">Cierra la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Se agregó a favoritos en <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Cuando vinculas otro dispositivo con un código QR, puede usar este teléfono como llave de seguridad. Si lo quitas, deberás escanear un código QR para vincularlo de nuevo.</translation>
-<translation id="4479839115899251637">Borrar de lista de lectura</translation>
 <translation id="4479972344484327217">Instalando <ph name="MODULE" /> para Chrome…</translation>
 <translation id="4484496141267039529">No hay conexión. Vuelve a intentarlo más tarde.</translation>
 <translation id="4487967297491345095">Todos los datos de app de Chrome se borrarán de forma permanente. Esta información incluye todos los archivos, opciones de configuración, cuentas, bases de datos, etc.</translation>
@@ -1191,7 +1193,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7443901082822119557">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en diferentes sitios, por ejemplo, para personalizar anuncios. Es posible que las características de algunos sitios no funcionen adecuadamente.</translation>
 <translation id="7453467225369441013">Esta acción te hace salir de la mayoría de los sitios. No saldrás de tu cuenta de Google.</translation>
 <translation id="7454641608352164238">No hay suficiente espacio</translation>
-<translation id="7455988709578031708">Según tu historial de navegación. Esta configuración está activada.</translation>
+<translation id="7455988709578031708">Según tu historial de navegación. Este parámetro de configuración está activado.</translation>
 <translation id="7456774706094330779">Precarga extendida</translation>
 <translation id="7474822150871987353">Obtén información sobre los temas en sitios web sin salir de la página. Selecciona una o más palabras en la página para buscarlas.</translation>
 <translation id="7475192538862203634">Si el mensaje aparece con frecuencia, prueba estas <ph name="BEGIN_LINK" />sugerencias<ph name="END_LINK" />.</translation>
@@ -1466,6 +1468,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8849001918648564819">Oculta</translation>
 <translation id="8853345339104747198">Pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">Ver tus archivos sin conexión</translation>
+<translation id="885480114717186641">Puedes solicitar el sitio para computadoras de <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Obtener descripciones</translation>
 <translation id="8856931513242997049">El flujo de permisos de notificaciones está cerrado</translation>
 <translation id="8873817150012960745">Presiona aquí para comenzar</translation>
@@ -1486,7 +1489,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8964479563882643397">Para abrir una nueva pestaña de incógnito, abre el menú</translation>
 <translation id="8965591936373831584">pendiente</translation>
-<translation id="8967427617812342790">Agregar a la Lista de lectura</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Se cerrarán <ph name="INCOGNITO_TAB_COUNT" /> pestaña de incógnito y <ph name="TAB_COUNT_ONE" /> pestaña más.}other{Se cerrarán <ph name="INCOGNITO_TAB_COUNT" /> pestaña de incógnito y <ph name="TAB_COUNT_MANY" /> pestañas más.}}</translation>
 <translation id="8970887620466824814">Se produjo un error</translation>
 <translation id="8972098258593396643">¿Deseas descargarlo a la carpeta predeterminada?</translation>

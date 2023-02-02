@@ -596,7 +596,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5520466080178053306">Trykk på Passordlagring, og trykk på Legg til</translation>
 <translation id="5525095647255982834">For å sende denne fanen til en annen enhet, logg på Chrome der.</translation>
 <translation id="5525269841082836315">Opprett en passordfrase</translation>
-<translation id="5530084793407600786">Søk i bildet med Google</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> er funnet</translation>
 <translation id="5548760955356983418">Med Handoff kan du begynne å se gjennom en nettside på denne enheten og deretter fortsette på Mac-en din uten problemer. Den åpne nettsiden vises i dokken til Mac-en din.
 
@@ -709,6 +708,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6284652193729350524">Tilby å oversette <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Sluttet å følge <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">For å slå på Safe Browsing, åpne <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" /> og trykk på Safe Browsing.</translation>
+<translation id="6320780930074869063">Når på, lagres passordene i <ph name="ACCOUNT" />. Når av, lagres passord bare på denne enheten.</translation>
 <translation id="6321526113093607004">Legg til i bokmerker</translation>
 <translation id="6324669097367352121">Påloggingsinnstillinger</translation>
 <translation id="6337234675334993532">Kryptering</translation>

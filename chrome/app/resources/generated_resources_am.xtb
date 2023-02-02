@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">ምናባዊ ማሽንን ማስጀመር አልተቻለም። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="1087965115100412394">ጣቢያዎች ከ MIDI መሣሪያዎች ጋር እንዲገናኙ አይፍቀዱ</translation>
 <translation id="1088659085457112967">ወደ የአንባቢ ሁነታ ግባ</translation>
-<translation id="1089407731410758060">ገጽታን ለውጥ</translation>
 <translation id="1090126737595388931">ምንም የሚያሂዱ የጀርባ መተግበሪያዎች የሉም</translation>
 <translation id="1090541560108055381">ከማጣመርዎ በፊት ይህ ኮድ በሁለቱም መሣሪያዎች ላይ ተመሳሳይ መሆኑን ያረጋግጡ</translation>
 <translation id="1091767800771861448">ለመዝለል ESCAPEን ይጫኑ (ይፋዊ ላልሆኑ ግንባታዎች ብቻ)።</translation>
@@ -548,6 +547,7 @@
 <translation id="1495677929897281669">ወደ ትር ተመለስ</translation>
 <translation id="1500297251995790841">የማይታወቅ መሣሪያ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">ስለማይደገፉ የChrome መተግበሪያዎች የበለጠ ይወቁ</translation>
+<translation id="1501480321619201731">ቡድን ሰርዝ</translation>
 <translation id="1503392482221435031">የአጠቃቀም ስታትስቲክስን ወደ Google በራስ-ሰር ይልካል። በእርስዎ መሣሪያ ቅንብሮች ውስጥ የብልሽት ሪፖርትን ማብራት ወይም ማጥፋት ይችላሉ።</translation>
 <translation id="150411034776756821"><ph name="SITE" />ን አስወግድ</translation>
 <translation id="1504551620756424144">የተጋሩ አቃፊዎች <ph name="BASE_DIR" /> ላይ በWindows ላይ ይገኛሉ።</translation>
@@ -2106,7 +2106,6 @@
 <translation id="2835547721736623118">የንግግር ማወቂያ አገልግሎት</translation>
 <translation id="2836232638504556905">ለመቀጠል <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> የእርስዎን ስም፣ ኢሜይል አድራሻ እና የመገለጫ ሥዕል ለዚህ ጣቢያ ያጋራል። የዚህን ጣቢያ <ph name="BEGIN_LINK" />የግላዊነት መመሪያ<ph name="END_LINK" /> ይመልከቱ።</translation>
 <translation id="2836269494620652131">ብልሽት</translation>
-<translation id="2836635946302913370">በዚህ ተጠቃሚ ስም መግባት በአስተዳዳሪዎ ተሰናክሏል።</translation>
 <translation id="283669119850230892">የ<ph name="NETWORK_ID" /> አውታረ መረብን ለመጠቀም መጀመሪያ ከበይነመረቡ ጋር ያለዎትን ግንኙነት ከታች ያጠናቅቁ።</translation>
 <translation id="2838379631617906747">በመጫን ላይ</translation>
 <translation id="2839032553903800133">ማሳወቂያዎች ታግደዋል</translation>
@@ -2915,6 +2914,7 @@
 <translation id="3602290021589620013">ቅድመ-ዕይታ</translation>
 <translation id="3602870520245633055">ማተም እና መቃኘት</translation>
 <translation id="3603622770190368340">የአውታረ መረብ እውቅና ማረጋገጫ ያግኙ</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} መለያ ተመሳሳይ የይለፍ ቃል ይጠቀማል}one{{COUNT} መለያ ተመሳሳይ የይለፍ ቃል ይጠቀማል}other{{COUNT} መለያዎች ተመሳሳይ የይለፍ ቃል ይጠቀማሉ}}</translation>
 <translation id="3605780360466892872">የኮሌታ ቁልፍ</translation>
 <translation id="3609277884604412258">ፈጣን ፍለጋ</translation>
 <translation id="3610241585790874201">በመሣሪያዎ ላይ ውሂብ ማስቀመጥ አልተፈቀደም</translation>
@@ -3621,7 +3621,6 @@
 <translation id="4244238649050961491">ተጨማሪ የስቲለስ መተግበሪያዎችን ያግኙ</translation>
 <translation id="4246980464509998944">ተጨማሪ አስተያየቶች፦</translation>
 <translation id="424726838611654458">ሁልጊዜ በAdobe Reader ክፈት</translation>
-<translation id="4247901771970415646">ከ<ph name="USERNAME" /> ጋር ማሳመር አይቻልም</translation>
 <translation id="4248098802131000011">የይለፍ ቃላትዎን ከውሂብ ጥሰቶች እና ሌሎች የደህንነት ችግሮች ይጠብቁ</translation>
 <translation id="4249248555939881673">የአውታረ መረብ ግንኙነትን በመጠበቅ ላይ...</translation>
 <translation id="4249373718504745892">ይህ ገጽ ካሜራዎን እና ማይክሮፎንዎን እንዳይደርስባቸው ታግዷል።</translation>
@@ -3842,6 +3841,7 @@
 <translation id="4441147046941420429">ለመቀጠል የደህንነት ቁልፍዎን ከመሣሪያዎ ያስወግዱት፣ ከዚያ ዳግም ያስገቡትና ይንኩት</translation>
 <translation id="444134486829715816">ዘርጋ...</translation>
 <translation id="4441928470323187829">በእርስዎ አስተዳዳሪ ተሰክቷል</translation>
+<translation id="4442863809158514979">የድር ፈቃዶችን ተመልከት</translation>
 <translation id="4443536555189480885">&amp;እገዛ</translation>
 <translation id="4444304522807523469">በዩ.ኤስ.ቢ ወይም በአካባቢ አውታረ መረብ በኩል የተያያዙ የሰነድ ቃኚዎችን ይድረስባቸው</translation>
 <translation id="4444512841222467874">ቦታ ካልተገኘ ተጠቃሚዎች እና ውሂብ በራስ-ሰር ሊወገዱ ይችላሉ።</translation>
@@ -4839,6 +4839,7 @@
 <translation id="5382591305415226340">የሚደገፉ አገናኞችን ያስተዳድሩ</translation>
 <translation id="5383377866517186886">ካሜራ በMac System Preferences ውስጥ ጠፍቷል</translation>
 <translation id="5383740867328871413">ያልተሰየመ ቡድን - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (መታወቂያ፦ <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">የድርጅት መመሪያ ተለውጧል የሙከራዎች አዝራር ወደ መሣሪያ አሞሌ ታክሏል። ሙከራዎችን ለማንቃት መገናኛን ለመክፈት ቁልፉን ጠቅ ያድርጉ።</translation>
 <translation id="5388885445722491159">ተጣምሯል</translation>
 <translation id="5390112241331447203">በግብረመልስ ሪፖርቶች ውስጥ የተላከውን የ system_logs.txt ፋይል ያካትቱ።</translation>
@@ -5053,6 +5054,7 @@
 <translation id="5578059481725149024">በራስ-ግባ</translation>
 <translation id="5581134892342029705">ወደ <ph name="LANGUAGE" /> የሚደረገው ትርጉም ተጠናቅቋል</translation>
 <translation id="558170650521898289">Microsoft Windows የሃርድዌር መሣሪያ ማረጋገጫ</translation>
+<translation id="5581876958763461074">ሁሉም ማስታወሻዎች</translation>
 <translation id="5581972110672966454">መሣሪያውን ወደ ጎራው መቀላቀል አይቻልም። እባክዎ እንደገና ይሞክሩ ወይም የእርስዎን መሣሪያ ባለቤት ወይም አስተዳዳሪ ያነጋግሩ። የስህተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
 <translation id="5582839680698949063">ዋና ምናሌ</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5703,7 +5705,6 @@
 <translation id="617213288191670920">ምንም ቋንቋዎች አልታከሉም</translation>
 <translation id="6173623053897475761">የእርስዎን ፒን እንደገና ይተይቡት</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
-<translation id="6176043333338857209">ከደህነንት ቁልፍዎ ጋር ለመገናኘት ብሉቱዝ ለጊዜው ይበራል</translation>
 <translation id="6178664161104547336">የዕውቅና ማረጋገጫ ምረጥ/ሰርቲፊኬት</translation>
 <translation id="6178682841350631965">የመለያ መግቢያ ውሂብዎ ተዘምኗል</translation>
 <translation id="6180510783007738939">የመስመር መሣሪያ</translation>
@@ -7472,6 +7473,7 @@
 <translation id="779308894558717334">ፈካ ያለ አረንጓዴ</translation>
 <translation id="7793098747275782155">ጠቆር ያለ ሰማያዊ</translation>
 <translation id="7797571222998226653">ጠፍቷል</translation>
+<translation id="7798504574384119986">የድር ፈቃዶችን ተመልከት</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> በራስ-ሰር ታግዷል</translation>
 <translation id="7800518121066352902">በሰዓት መዞሪያ አቅጣጫ &amp;ተቃራኒ አሽከርክር</translation>
 <translation id="7801679634091975683">እዚህ የሚያደርጓቸው ለውጦች በLacros Chrome አሳሽ ላይ ብቻ ይተገበራሉ። በእርስዎ የChrome አሳሽ ቅንብሮች ላይ ለውጦችን ለማድረግ የChrome አሳሽ ይክፈቱ እና ወደ ቅንብሮች ይሂዱ።</translation>

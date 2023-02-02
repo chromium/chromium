@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">ورچوئل مشین شروع کرنے میں خرابی پیش آ گئی ہے۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="1087965115100412394">‏سائٹس کو MIDI آلات سے منسلک ہونے کی اجازت نہ دیں</translation>
 <translation id="1088659085457112967">ریڈر وضع داخل کریں</translation>
-<translation id="1089407731410758060">تھیم تبدیل کریں</translation>
 <translation id="1090126737595388931">پس منظر کی کوئی ایپس نہیں چل رہی ہیں</translation>
 <translation id="1090541560108055381">جوڑا بنانے سے پہلے، یقینی بنائیں کہ یہ کوڈ دونوں آلات پر ایک جیسا ہے</translation>
 <translation id="1091767800771861448">‏نظر انداز کرنے کیلئے ESCAPE دبائیں (صرف غیر آفیشیل بلڈز)۔</translation>
@@ -547,6 +546,7 @@
 <translation id="1495677929897281669">ٹیب پر واپس جائیں</translation>
 <translation id="1500297251995790841">نامعلوم آلہ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">‏غیر تعاون یافتہ Chrome ایپس کے بارے میں مزید جانیں</translation>
+<translation id="1501480321619201731">گروپ حذف کریں</translation>
 <translation id="1503392482221435031">‏استعمال کے اعدادوشمار خودکار طور پر Google کو بھیجتا ہے۔ آپ اپنے آلے کی ترتیبات میں کریش رپورٹس کو آن یا آف کر سکتے ہیں۔</translation>
 <translation id="150411034776756821"><ph name="SITE" /> کو ہٹائیں</translation>
 <translation id="1504551620756424144">ونڈوز میں اشتراک کردہ فولڈرز <ph name="BASE_DIR" /> میں دستیاب ہیں۔</translation>
@@ -2099,7 +2099,6 @@
 <translation id="2835547721736623118">اسپیچ شناخت کی سروس</translation>
 <translation id="2836232638504556905">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے نام، ای میل پتہ اور پروفائل کی تصویر کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK" />راز داری کی پالیسی<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="2836269494620652131">کریش</translation>
-<translation id="2836635946302913370">اس صارف نام کے ساتھ سائن ان کو آپ کے منتظم نے غیر فعال کر دیا ہے۔</translation>
 <translation id="283669119850230892">نیٹ ورک <ph name="NETWORK_ID" /> استعمال کرنے کیلئے، پہلے ذیل میں انٹرنیٹ کا اپنا کنکشن مکمل کریں۔</translation>
 <translation id="2838379631617906747">انسٹال کی جا رہی ہے</translation>
 <translation id="2839032553903800133">اطلاعات مسدود ہیں</translation>
@@ -2908,6 +2907,7 @@
 <translation id="3602290021589620013">پیش منظر</translation>
 <translation id="3602870520245633055">پرنٹ اور اسکین کریں</translation>
 <translation id="3603622770190368340">نیٹ ورک سرٹیفیکیٹ حاصل کریں</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} اکاؤنٹ ایک ہی پاس ورڈ کا استعمال کر رہا ہے}other{{COUNT} اکاؤنٹس ایک ہی پاس ورڈ کا استعمال کر رہے ہیں}}</translation>
 <translation id="3605780360466892872">بٹن ڈاؤن</translation>
 <translation id="3609277884604412258">فوری تلاش کریں</translation>
 <translation id="3610241585790874201">آپ کے آلے پر ڈیٹا محفوظ کرنے کی اجازت نہیں ہے</translation>
@@ -3616,7 +3616,6 @@
 <translation id="4244238649050961491">مزید اسٹائلس ایپس تلاش کریں</translation>
 <translation id="4246980464509998944">اضافی تبصرے:</translation>
 <translation id="424726838611654458">‏ہمیشہ Adobe Reader میں کھولیں</translation>
-<translation id="4247901771970415646"><ph name="USERNAME" /> کے ساتھ مطابقت پذیری نہیں ہو سکتی</translation>
 <translation id="4248098802131000011">ڈیٹا کی خلاف ورزیوں اور سیکیورٹی کے دیگر معاملات سے اپنا پاس ورڈ محفوظ رکھیں</translation>
 <translation id="4249248555939881673">نیٹ ورک کنکشن کا انتظار ہے…</translation>
 <translation id="4249373718504745892">اس صفحہ کو آپ کے کیمرا اور مائیکروفون تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
@@ -3837,6 +3836,7 @@
 <translation id="4441147046941420429">جاری رکھنے کے لیے، اپنے آلہ سے اپنی سیکیورٹی کلید ہٹائیں، پھر اس کو دوبارہ داخل اور ٹچ کریں</translation>
 <translation id="444134486829715816">پھیلائیں…</translation>
 <translation id="4441928470323187829">آپ کے منتظم کے ذریعے پن کردہ</translation>
+<translation id="4442863809158514979">ویب کی اجازتیں دیکھیں</translation>
 <translation id="4443536555189480885">&amp;مدد</translation>
 <translation id="4444304522807523469">‏USB کے ذریعے یا مقامی نیٹ ورک پر منسلک دستاویز اسکینرز تک رسائی حاصل کریں</translation>
 <translation id="4444512841222467874">اگر جگہ دستیاب نہیں کرائی جاتی ہے تو صارفین اور ڈیٹا کو خودکار طور پر ہٹایا جا سکتا ہے۔</translation>
@@ -4834,6 +4834,7 @@
 <translation id="5382591305415226340">تعاون یافتہ لنکس کا نظم کریں</translation>
 <translation id="5383377866517186886">‏Mac سسٹم کی ترجیحات میں کیمرا آف ہے</translation>
 <translation id="5383740867328871413">بغیر نام کے گروپ - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">انٹرپرائز کی پالیسی تبدیل ہو گئی۔ تجربات بٹن میں ٹول بار شامل کر دیا گیا۔ تجربات کو فعال کرنے کی خاطر ڈائیلاگ کھولنے کیلئے بٹن پر کلک کریں۔</translation>
 <translation id="5388885445722491159">جوڑا بنا دیا گیا</translation>
 <translation id="5390112241331447203">‏تاثرات کی رپورٹس میں بھیجی گئی system_logs.txt file فائل شامل کریں۔</translation>
@@ -5047,6 +5048,7 @@
 <translation id="5578059481725149024">خودکار سائن ان</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> میں ترجمہ مکمل ہو گیا ہے</translation>
 <translation id="558170650521898289">‏Microsoft Windows ہارڈ ویئر ڈرائیور کی توثیق</translation>
+<translation id="5581876958763461074">سبھی نوٹس</translation>
 <translation id="5581972110672966454">ڈومین میں آلہ کو شامل نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں یا اپنے آلہ کے مالک یا منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="5582839680698949063">اصل مینو</translation>
 <translation id="5583640892426849032">بیک اسپیس</translation>
@@ -5697,7 +5699,6 @@
 <translation id="617213288191670920">کوئی زبان شامل نہیں کی گئی</translation>
 <translation id="6173623053897475761">‏اپنا PIN دوبارہ ٹائپ کریں</translation>
 <translation id="6175314957787328458">‏Microsoft ڈومین GUID</translation>
-<translation id="6176043333338857209">آپ کی سیکیورٹی کلید کے ساتھ مواصلت کرنے کے لئے بلوٹوتھ عارضی طور پر آن کر دیا جائے گا</translation>
 <translation id="6178664161104547336">ایک سرٹیفکیٹ منتخب کریں</translation>
 <translation id="6178682841350631965">آپ کا سائن ان ڈیٹا اپ ڈیٹ نہیں ہوا</translation>
 <translation id="6180510783007738939">لائن ٹول</translation>
@@ -7464,6 +7465,7 @@
 <translation id="779308894558717334">ہلکا سبز</translation>
 <translation id="7793098747275782155">گہرا نیلا</translation>
 <translation id="7797571222998226653">آف</translation>
+<translation id="7798504574384119986">ویب کی اجازتیں دیکھیں</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> خود کار طور پر مسدود کر دی گئی</translation>
 <translation id="7800518121066352902">گ&amp;ھڑی کی مخالف سمت میں گھمائیں</translation>
 <translation id="7801679634091975683">‏آپ یہاں جو تبدیلیاں کرتے ہیں وہ صرف Lacros Chrome براؤزر پر لاگو ہوتی ہیں۔ اپنے Chrome براؤزر کی ترتیبات میں تبدیلیاں کرنے کے لیے، Chrome براؤزر کھولیں اور ترتیبات پر جائیں۔</translation>

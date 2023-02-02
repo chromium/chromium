@@ -6,6 +6,7 @@
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1257458525759135959">Para guardar imágenes, presiona en la Configuración a fin de permitir que Chromium agregue tus fotos</translation>
 <translation id="1289216811211435351">Cambia a Chromium</translation>
+<translation id="1352919863522755794">El Administrador de contraseñas de Google no pudo revisar las contraseñas. Revisa la conexión a Internet.</translation>
 <translation id="1361748954329991663">Chromium no está actualizado. Si no hay actualizaciones disponibles en <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que tu dispositivo no sea compatible con nuevas versiones de Chromium.</translation>
 <translation id="1431818719585918472">Permite que Chromium bloquee tus pestañas de incógnito.</translation>
 <translation id="1472013873724362412">Tu cuenta no funciona en Chromium. Comunícate con tu administrador de dominio o utiliza una cuenta común de Google para acceder.</translation>
@@ -35,6 +36,7 @@
 <translation id="2650312721222849884">Para ver tus pestañas donde sea que uses Chromium, activa la sincronización</translation>
 <translation id="2684230048001240293">Establece Chromium como navegador predeterminado para sincronizar tus pestañas, información de pago y contraseñas en todos tus dispositivos</translation>
 <translation id="2730884209570016437">Chromium no puede utilizar tu cámara porque la está usando otra aplicación</translation>
+<translation id="2767464022270041271">No hay contraseñas guardadas. El Administrador de contraseñas de Google puede revisar tus contraseñas cuando las guardas.</translation>
 <translation id="2915596697727466327">Chromium usa Face ID para garantizar el acceso autorizado a tus contraseñas.</translation>
 <translation id="2918709798697875261">Tu organización requiere que no accedas a tu cuenta en Chromium.</translation>
 <translation id="2942241131342758843">Usa Chromium como tu navegador predeterminado para abrir vínculos, realizar búsquedas desde widgets y autocompletar contraseñas en otras apps</translation>
@@ -57,6 +59,7 @@
 <translation id="4681781466797808448">Activar el escáner de Chromium</translation>
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> administra tu cuenta, por lo que se borrarán los datos de Chromium almacenados en este dispositivo.</translation>
 <translation id="4828317641996116749">Chromium no pudo verificar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
+<translation id="4840404732697892756">El Administrador de contraseñas de Google puede revisar las contraseñas cuando accedes con tu Cuenta de Google.</translation>
 <translation id="4985291216379576555">Sin conexión, Chromium no puede buscar actualizaciones.</translation>
 <translation id="4996471330284142407">Realiza más tareas con una versión de Chromium más simple, segura y rápida que nunca.</translation>
 <translation id="4999538639245140991">Como estás saliendo de una cuenta que administra <ph name="SIGNOUT_MANAGED_DOMAIN" />, tus datos de Chromium se borrarán de este dispositivo, pero permanecerán en tu Cuenta de Google.</translation>
@@ -67,6 +70,7 @@
 <translation id="5521125884468363740">Para ver tus pestañas donde sea que uses Chromium, accede a tu cuenta y activa la sincronización</translation>
 <translation id="5522297504975449419">Algunas funciones de Chromium ya no estarán disponibles.</translation>
 <translation id="5573014823074921752">Sugerencia de Chromium: Para obtener más opciones de pestañas, mantén presionado el botón Mostrar pestañas de la barra de herramientas, que se encuentra en la parte inferior o superior de la pantalla.</translation>
+<translation id="5661521615548540542">El Administrador de contraseñas de Google no pudo revisar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="5700709190537129682">Chromium no puede revisar las contraseñas</translation>
 <translation id="5777187867430702742">Página de Chromium</translation>
 <translation id="5945387852661427312">Estás accediendo con una cuenta que administra <ph name="DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chromium. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chromium, los datos se borrarán de este dispositivo, pero quedarán almacenados en tu cuenta de Google.</translation>
@@ -113,6 +117,7 @@
 <translation id="8409374867500149834">Tienes la seguridad más sólida de Chromium contra sitios web dañinos</translation>
 <translation id="858114650497379505">Puedes usar las contraseñas que guardaste en el Administrador de contraseñas en otras apps de tu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los autores de Chromium. Todos los derechos reservados.</translation>
+<translation id="8603022514504485810">El Administrador de contraseñas de Google no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />revisa las contraseñas guardadas en tu Cuenta de Google.<ph name="END_LINK" /></translation>
 <translation id="865600487977764604">Te protege en Chromium y puede usarse para mejorar tu seguridad en otras apps de Google cuando accedes a tu cuenta.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualizado</translation>
 <translation id="8685813584220679697">Accede a este sitio y a Chromium.</translation>
@@ -126,6 +131,7 @@ Aspectos para tener en cuenta:
 
   • Si desactivas la sincronización, las métricas también pueden incluir información sobre las URLs que visitas.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Esta cuenta y todos los datos sin guardar se quitarán de Chromium.</translation>
+<translation id="8857676124663337448">El Administrador de contraseñas de Google no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
 <translation id="894437814105052438">Si sales de la cuenta, Chromium no sincronizará ningún dato nuevo con tu Cuenta de Google. Los datos sincronizados anteriormente permanecerán en la cuenta.</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
 <translation id="9059693977935746710">No es necesario que recuerdes esta contraseña. Se guardará en el Administrador de contraseñas de <ph name="EMAIL" />.</translation>

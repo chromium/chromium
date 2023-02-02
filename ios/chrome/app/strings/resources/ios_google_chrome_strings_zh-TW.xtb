@@ -3,6 +3,7 @@
 <translationbundle lang="zh-TW">
 <translation id="1143896152279775643">系統會將你的密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中。</translation>
 <translation id="1282031177488366470">協助改善 Chrome 的功能與效能</translation>
+<translation id="1352919863522755794">Google 密碼管理工具無法檢查你的密碼，請確認網際網路連線狀態。</translation>
 <translation id="1462727070346936664">登入以充分運用 Chrome 的各項功能。</translation>
 <translation id="1479202195792305274">如果你使用 Google 帳戶登入，Chrome 可以檢查你的密碼。</translation>
 <translation id="1493827051843127077">將 Chrome 設為預設瀏覽器，即可在你的所有裝置上同步處理分頁、密碼和付款資訊</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">如要從所有網站中登出 Google 帳戶，請<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="2695886661449553974">Chrome 無法檢查更新，請稍後再試。</translation>
 <translation id="2732745070297234559">Chrome 無法檢查所有密碼，請明天再試。</translation>
+<translation id="2767464022270041271">尚未儲存任何密碼。你必須先儲存密碼，才能使用 Google 密碼管理工具的檢查功能。</translation>
 <translation id="2869959624320573933">登入 Chrome</translation>
 <translation id="2957447865124070833">選取 [Chrome]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">由於你即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 所管理的帳戶，系統將刪除你在這個裝置上的 Chrome 資料，但這些資料仍會保留在你的 Google 帳戶中。</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome 無法檢查所有密碼，請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼。<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">為協助改善應用程式，Chrome 會將使用情形和當機資料傳送給 Google。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome Beta 版不支援這項功能</translation>
+<translation id="4840404732697892756">當你登入 Google 帳戶後，Google 密碼管理工具可以檢查你的密碼。</translation>
 <translation id="5030102366287574140">Chrome 可確保安全性，例如防範資料侵害事件或封鎖不安全的網站等等。</translation>
 <translation id="5108659628347594808">讓 Chrome 更臻完美</translation>
 <translation id="5119391094379141756">選取 [Chrome]</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome 會定期將你的密碼與網路上發布的清單進行比對。在比對過程中，你的密碼和使用者名稱會經過加密，任何人 (包括 Google) 都無法讀取。</translation>
 <translation id="5639704535586432836">請前往 [設定] &gt; [隱私權] &gt; [相機] &gt; [Google Chrome]，並開啟相機。</translation>
 <translation id="5642200033778930880">Google Chrome 無法在分割模式中使用你的相機</translation>
+<translation id="5661521615548540542">Google 密碼管理工具無法檢查所有密碼，請稍後再試。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">目前處於離線狀態，因此 Chrome 無法檢查更新</translation>
 <translation id="5716154293141027663">只要輕觸其他應用程式中的連結，即可透過 Chrome 開啟</translation>
@@ -118,9 +122,11 @@
   2. 輕觸 [預設瀏覽器 App]
   3. 選取 [Chrome]</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google 密碼管理工具無法檢查所有密碼，請明天再試。你也可以<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="8736550665979974340">讓 Google Chrome 保障你的安全</translation>
 <translation id="8772179140489533211">顯示登入 Chrome 的提示。</translation>
 <translation id="8788269841521769222">你不需要記住這組密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中</translation>
+<translation id="8857676124663337448">Google 密碼管理工具無法檢查所有密碼，請明天再試。</translation>
 <translation id="8897749957032330183">密碼會儲存至這部裝置的 Google 密碼管理工具。</translation>
 <translation id="8969290730818637510">開啟時：
 <ph name="BEGIN_INDENT" />  • 可協助 Chrome 為使用者提供更優質的服務體驗。<ph name="END_INDENT" />

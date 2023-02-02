@@ -6,6 +6,7 @@
 <translation id="1185134272377778587">Über Chromium</translation>
 <translation id="1257458525759135959">Um Bilder zu speichern, gib Chromium unter „Einstellungen“ die Berechtigung zum Hinzufügen von Fotos</translation>
 <translation id="1289216811211435351">Zu Chromium wechseln</translation>
+<translation id="1352919863522755794">Der Google Passwortmanager konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
 <translation id="1361748954329991663">Chromium ist veraltet. Wenn im <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kein Update verfügbar ist, unterstützt dein Gerät neuere Versionen von Chromium möglicherweise nicht mehr.</translation>
 <translation id="1431818719585918472">Erlaube Chromium, deine Inkognitotabs zu sperren.</translation>
 <translation id="1472013873724362412">Dieses Konto funktioniert in Chromium nicht. Wende dich an deinen Domainadministrator oder melde dich mit einem Google-Standardkonto an.</translation>
@@ -34,6 +35,7 @@
 <translation id="2650312721222849884">Aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chromium verwendest</translation>
 <translation id="2684230048001240293">Du kannst Chromium als Standardbrowser festlegen, um Tabs, Passwörter und Zahlungsinformationen auf allen deinen Geräten zu synchronisieren</translation>
 <translation id="2730884209570016437">Chromium kann nicht auf die Kamera zugreifen, da diese gerade von einer anderen App verwendet wird</translation>
+<translation id="2767464022270041271">Keine gespeicherten Passwörter. Der Google Passwortmanager kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="2915596697727466327">Chromium verwendet Face ID, um den autorisierten Zugriff auf deine Passwörter zu gewährleisten.</translation>
 <translation id="2918709798697875261">Deine Organisation verlangt, dass du aus Chromium abgemeldet bleibst.</translation>
 <translation id="2942241131342758843">Standardmäßig Chromium verwenden, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch ausfüllen zu lassen</translation>
@@ -56,6 +58,7 @@
 <translation id="4681781466797808448">Chromium-Scanner aktivieren</translation>
 <translation id="4736424910885271643">Dein Konto wird von <ph name="HOSTED_DOMAIN" /> verwaltet, deine Chromium-Daten werden von diesem Gerät gelöscht</translation>
 <translation id="4828317641996116749">Chromium konnte nicht alle Passwörter prüfen. Versuchen Sie es später noch einmal.</translation>
+<translation id="4840404732697892756">Der Google Passwortmanager kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
 <translation id="4985291216379576555">Offline, Chromium kann nicht nach Aktualisierungen suchen</translation>
 <translation id="4996471330284142407">Jetzt mit dem neuen ultraschnellen Chromium ganz einfach und sicherer noch mehr erledigen.</translation>
 <translation id="4999538639245140991">Du meldest dich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden deine Chromium-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in deinem Google-Konto erhalten.</translation>
@@ -66,6 +69,7 @@
 <translation id="5521125884468363740">Melde dich an und aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chromium verwendest</translation>
 <translation id="5522297504975449419">Einige Chromium-Funktionen sind dann nicht mehr verfügbar.</translation>
 <translation id="5573014823074921752">Chromium-Tipp: Wenn du weitere Tab-Optionen sehen möchtest, berühre und halte die Schaltfläche "Tabs anzeigen" in der Symbolleiste. Diese befindet sich unten oder oben auf dem Bildschirm.</translation>
+<translation id="5661521615548540542">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es später noch einmal.</translation>
 <translation id="5700709190537129682">Chromium kann deine Passwörter nicht prüfen</translation>
 <translation id="5777187867430702742">Chromium-Seite</translation>
 <translation id="5945387852661427312">Du meldest dich mit einem von <ph name="DOMAIN" /> verwalteten Konto an und gibst dem Administrator der Domain Kontrolle über deine Chromium-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn du dich von Chromium abmeldest, werden deine Daten auf dem Gerät gelöscht, bleiben jedoch in deinem Google-Konto erhalten.</translation>
@@ -112,6 +116,7 @@
 <translation id="8409374867500149834">Du nutzt den umfangreichen Schutz von Chromium vor schädlichen Websites</translation>
 <translation id="858114650497379505">Du kannst die im Passwortmanager gespeicherten Passwörter in anderen Apps auf deinem iPhone verwenden.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Die Chromium-Autoren. Alle Rechte vorbehalten.</translation>
+<translation id="8603022514504485810">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Schützt dich in Chromium und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn du angemeldet bist.</translation>
 <translation id="8663480472502753423">Chromium auf dem neuesten Stand halten</translation>
 <translation id="8685813584220679697">Melde dich bei dieser Website und in Chromium an.</translation>
@@ -123,6 +128,7 @@ Wichtige Hinweise:
   • Falls Chromium abstürzt, können die Details zum Absturz einige personenbezogene Daten enthalten.
   • Falls du die Synchronisierung aktivierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Dieses Konto und alle nicht gespeicherten Daten werden aus Chromium entfernt.</translation>
+<translation id="8857676124663337448">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
 <translation id="894437814105052438">Wenn du dich abmeldest, synchronisiert Chromium keine neuen Daten mehr mit deinem Google-Konto. Daten, die bereits synchronisiert wurden, bleiben im Konto gespeichert.</translation>
 <translation id="9022552996538154597">In Chromium anmelden</translation>
 <translation id="9059693977935746710">Du musst dir dieses Passwort nicht merken. Es wird im Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>

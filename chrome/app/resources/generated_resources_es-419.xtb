@@ -106,7 +106,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1085697365578766383">Se produjo un error al iniciar la máquina virtual. Vuelve a intentarlo.</translation>
 <translation id="1087965115100412394">No permitir que los sitios se conecten a dispositivos MIDI</translation>
 <translation id="1088659085457112967">Ingresar al modo de lectura</translation>
-<translation id="1089407731410758060">Cambiar tema</translation>
 <translation id="1090126737595388931">No se ejecutan aplicaciones de fondo</translation>
 <translation id="1090541560108055381">Verifica que este código sea igual en ambos dispositivos para poder vincularlos</translation>
 <translation id="1091767800771861448">Presiona ESCAPE para omitir (solo compilaciones no oficiales).</translation>
@@ -547,6 +546,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1495677929897281669">Volver a la pestaña</translation>
 <translation id="1500297251995790841">Dispositivo desconocido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Más información sobre las Apps de Chrome no compatibles</translation>
+<translation id="1501480321619201731">Borrar grupo</translation>
 <translation id="1503392482221435031">Envía automáticamente estadísticas de uso a Google. Puedes activar o desactivar los informes de fallas en la configuración del dispositivo.</translation>
 <translation id="150411034776756821">Quitar <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Las carpetas compartidas están disponibles en Windows, en <ph name="BASE_DIR" />.</translation>
@@ -2094,7 +2094,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2835547721736623118">Servicio de reconocimiento de voz</translation>
 <translation id="2836232638504556905">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo electrónico y foto de perfil con este sitio. Consulta la <ph name="BEGIN_LINK" />política de privacidad<ph name="END_LINK" /> de este sitio.</translation>
 <translation id="2836269494620652131">Fallo</translation>
-<translation id="2836635946302913370">El administrador ha inhabilitado el inicio de sesión para este nombre de usuario.</translation>
 <translation id="283669119850230892">Para utilizar la red <ph name="NETWORK_ID" />, primero debes establecer la conexión a Internet que se especifica a continuación.</translation>
 <translation id="2838379631617906747">Instalando</translation>
 <translation id="2839032553903800133">Notificaciones bloqueadas</translation>
@@ -2903,6 +2902,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3602290021589620013">Vista previa</translation>
 <translation id="3602870520245633055">Impresión y escaneo</translation>
 <translation id="3603622770190368340">Obtener certificado de red</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} cuenta usa la misma contraseña}other{{COUNT} cuentas usan la misma contraseña}}</translation>
 <translation id="3605780360466892872">Amancio</translation>
 <translation id="3609277884604412258">Búsqueda rápida</translation>
 <translation id="3610241585790874201">No se pueden guardar datos en tu dispositivo</translation>
@@ -3611,7 +3611,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4244238649050961491">Encontrar más apps para la pluma stylus</translation>
 <translation id="4246980464509998944">Comentarios adicionales:</translation>
 <translation id="424726838611654458">Abrir siempre en Adobe Reader</translation>
-<translation id="4247901771970415646">No se puede sincronizar con <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Mantén protegidas tus contraseñas ante violaciones de la seguridad de los datos y otros problemas de seguridad.</translation>
 <translation id="4249248555939881673">Esperando la conexión de red...</translation>
 <translation id="4249373718504745892">Se bloqueó el acceso de esta página a la cámara y el micrófono.</translation>
@@ -3832,6 +3831,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4441147046941420429">Para continuar, quita la llave de seguridad del dispositivo y, luego, vuelve a colocarla y tócala</translation>
 <translation id="444134486829715816">Mostrar...</translation>
 <translation id="4441928470323187829">Fijado por tu administrador</translation>
+<translation id="4442863809158514979">Ver permisos web</translation>
 <translation id="4443536555189480885">&amp;Ayuda</translation>
 <translation id="4444304522807523469">Acceder a los escáneres de documentos conectados vía USB o en la red local</translation>
 <translation id="4444512841222467874">Si no liberas espacio, es posible que se quiten usuarios y datos de forma automática.</translation>
@@ -5693,7 +5693,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="617213288191670920">No se agregaron idiomas.</translation>
 <translation id="6173623053897475761">Vuelve a escribir tu PIN</translation>
 <translation id="6175314957787328458">GUID de dominio de Microsoft</translation>
-<translation id="6176043333338857209">Se activará la conexión Bluetooth de forma temporal para establecer la comunicación con la llave de seguridad</translation>
 <translation id="6178664161104547336">Seleccionar un certificado</translation>
 <translation id="6178682841350631965">Se actualizaron tus datos de acceso.</translation>
 <translation id="6180510783007738939">Herramienta de línea</translation>
@@ -7066,7 +7065,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7453467225369441013">Esta acción te hace salir de la mayoría de los sitios. No saldrás de tu cuenta de Google.</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Administrar contenedores adicionales</translation>
-<translation id="7455988709578031708">Según tu historial de navegación. Esta configuración está activada.</translation>
+<translation id="7455988709578031708">Según tu historial de navegación. Este parámetro de configuración está activado.</translation>
 <translation id="7456142309650173560">para programadores</translation>
 <translation id="7456774706094330779">Precarga extendida</translation>
 <translation id="7456847797759667638">Abrir ubicación...</translation>
@@ -7460,6 +7459,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="779308894558717334">Verde claro</translation>
 <translation id="7793098747275782155">Azul oscuro</translation>
 <translation id="7797571222998226653">No</translation>
+<translation id="7798504574384119986">Ver permisos web</translation>
 <translation id="7798844538707273832">Se bloqueó automáticamente <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">Girar &amp;a la izquierda</translation>
 <translation id="7801679634091975683">Los cambios que realices aquí solo se aplicarán en el navegador Chrome Lacros. Para realizar cambios en la configuración de tu navegador Chrome, abre el navegador Chrome y ve a la configuración.</translation>

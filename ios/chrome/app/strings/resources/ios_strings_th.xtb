@@ -173,7 +173,7 @@
 <translation id="2268044343513325586">ปรับแต่ง</translation>
 <translation id="2273327106802955778">เมนูเพิ่มเติม</translation>
 <translation id="2286505070150039482">ข้อความที่ไฮไลต์</translation>
-<translation id="2299218006564889602">ระบบจะเข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านของ Google</translation>
+<translation id="2299218006564889602">ระบบจะเข้ารหัสให้แก่รหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="2302742851632557585">เปลี่ยนรหัสผ่านในเว็บไซต์</translation>
 <translation id="2316709634732130529">ใช้รหัสผ่านที่แนะนำ</translation>
 <translation id="2320166752086256636">ซ่อนแป้นพิมพ์</translation>
@@ -217,7 +217,7 @@
 <translation id="2648803196158606475">ลบรายการที่อ่านแล้ว</translation>
 <translation id="2653659639078652383">ส่ง</translation>
 <translation id="2664621323652615289">หยุด</translation>
-<translation id="2671426118752779020">คุณใช้รหัสผ่านที่บันทึกอยู่ในเครื่องมือจัดการรหัสผ่านของ Google ในแอปอื่นๆ บน iPhone ได้</translation>
+<translation id="2671426118752779020">คุณใช้รหัสผ่านที่บันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google ในแอปอื่นๆ บน iPhone ได้</translation>
 <translation id="2690858294534178585">ใช้กล้องถ่ายรูปอยู่</translation>
 <translation id="2691653761409724435">ไม่สามารถใช้ออฟไลน์</translation>
 <translation id="2695507686909505111">แปลหน้าเว็บแล้ว</translation>
@@ -596,7 +596,6 @@
 <translation id="5520466080178053306">แตะ "เครื่องมือจัดการรหัสผ่าน" แล้วแตะ "เพิ่ม"</translation>
 <translation id="5525095647255982834">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์นั้น</translation>
 <translation id="5525269841082836315">สร้างข้อความรหัสผ่าน</translation>
-<translation id="5530084793407600786">ค้นหาในรูปภาพด้วย Google</translation>
 <translation id="5542540507657872337">พบ <ph name="COUNT" /> แท็บ</translation>
 <translation id="5548760955356983418">Handoff ช่วยให้คุณสามารถเริ่มการท่องเว็บไซต์บนอุปกรณ์นี้และใช้งานต่อบน Mac ได้อย่างง่ายดาย เว็บไซต์ที่เปิดอยู่ในปัจจุบันจะปรากฏในแท่นชาร์จของ Mac
 
@@ -612,7 +611,7 @@
 <translation id="5652623411397330904">ผลิตภัณฑ์ที่คุณติดตามจะแสดงที่นี่</translation>
 <translation id="5657859710142657190">ไปที่ตารางกริดของแท็บ</translation>
 <translation id="5659593005791499971">อีเมล</translation>
-<translation id="5669335982068190158">คุณออกจากระบบในขั้นตอนการรีเซ็ต iPhone แตะ "ดําเนินการต่อ" ด้านล่างเพื่อลงชื่อเข้าใช้</translation>
+<translation id="5669335982068190158">คุณออกจากระบบในขั้นตอนการรีเซ็ต iPhone แตะ "ต่อไป" ด้านล่างเพื่อลงชื่อเข้าใช้</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">สร้างคิวอาร์โค้ด</translation>
 <translation id="567881659373499783">รุ่น <ph name="PRODUCT_VERSION" /></translation>
@@ -702,13 +701,14 @@
 <translation id="6229318421047648685">ขอเว็บไซต์เวอร์ชันเดสก์ท็อป</translation>
 <translation id="6231782223312638214">แนะนำ</translation>
 <translation id="6232329973559504466">ค้นหาในโหมดไม่ระบุตัวตน</translation>
-<translation id="6247557882553405851">Google เครื่องมือจัดการรหัสผ่าน</translation>
+<translation id="6247557882553405851">เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="6254066287920239840">เปิดลิงก์ในแอปแทนเบราว์เซอร์</translation>
 <translation id="6255097610484507482">แก้ไขบัตรเครดิต</translation>
 <translation id="6277426346321820595">ไม่มีการปกป้อง</translation>
 <translation id="6284652193729350524">เสนอการแปล <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">เลิกติดตาม <ph name="CHANNEL_NAME" /> แล้ว</translation>
 <translation id="6293101329759844770">หากต้องการเปิด Google Safe Browsing ให้เปิด<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /> จากนั้นแตะ Google Safe Browsing</translation>
+<translation id="6320780930074869063">เมื่อเปิด ระบบจะบันทึกรหัสผ่านไว้ใน <ph name="ACCOUNT" /> เมื่อปิด ระบบจะบันทึกรหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="6321526113093607004">เพิ่มลงในบุ๊กมาร์ก</translation>
 <translation id="6324669097367352121">ตั้งค่าลงชื่อเข้าใช้</translation>
 <translation id="6337234675334993532">การเข้ารหัส</translation>
@@ -726,7 +726,7 @@
 <translation id="6377118281273296434">ความปลอดภัยของเว็บไซต์</translation>
 <translation id="6380866119319257197">หากคุณลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ โปรด<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
 <translation id="6383719166112032471">เปิดตำแหน่ง…</translation>
-<translation id="6387994324662817823">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านของ Google ในอุปกรณ์นี้เท่านั้น</translation>
+<translation id="6387994324662817823">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="6389470377220713856">ชื่อบนบัตร</translation>
 <translation id="6406506848690869874">การซิงค์ข้อมูล</translation>
 <translation id="6410390304316730527">Google Safe Browsing ปกป้องคุณจากผู้โจมตีที่อาจหลอกล่อให้ทำบางสิ่งที่อันตราย เช่น การติดตั้งซอฟต์แวร์ที่ประสงค์ร้ายหรือเปิดเผยข้อมูลส่วนบุคคล เช่น รหัสผ่าน หมายเลขโทรศัพท์ หรือบัตรเครดิต หากคุณปิดใช้ โปรดระวังขณะเรียกดูเว็บไซต์ที่ไม่คุ้นเคยหรือไม่เป็นที่รู้จัก</translation>
@@ -804,7 +804,7 @@
 <translation id="6801927553864092214">หากต้องการท่องเว็บแบบส่วนตัว ให้เปิดแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="6807889908376551050">แสดงทั้งหมด...</translation>
 <translation id="681368974849482173">สร้างรายการแล้ว</translation>
-<translation id="683022620450280906">คุณใช้รหัสผ่านที่บันทึกไว้ในอุปกรณ์ใดก็ได้ โดยจะบันทึกอยู่ใน Google เครื่องมือจัดการรหัสผ่านสำหรับ <ph name="EMAIL" /></translation>
+<translation id="683022620450280906">คุณใช้รหัสผ่านที่บันทึกไว้ในอุปกรณ์ใดก็ได้ โดยจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="6842136130964845393">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงรหัสผ่านที่บันทึกไว้ได้ทุกเมื่อ</translation>
 <translation id="6851516051005285358">ขอเว็บไซต์สำหรับเดสก์ท็อป</translation>
@@ -839,7 +839,7 @@
 <translation id="7053983685419859001">บล็อก</translation>
 <translation id="7062545763355031412">ยอมรับและเปลี่ยนบัญชี</translation>
 <translation id="7080806333218412752">ส่ง URL ให้ Google Safe Browsing ตรวจสอบ รวมถึงส่งตัวอย่างส่วนเล็กๆ ของหน้าเว็บ การดาวน์โหลด กิจกรรมของส่วนขยาย และข้อมูลระบบ เพื่อเราช่วยค้นหาภัยคุกคามใหม่ๆ ลิงก์ข้อมูลนี้กับบัญชี Google เป็นการชั่วคราวเมื่อคุณลงชื่อเข้าใช้ เพื่อปกป้องคุณในแอปต่างๆ ของ Google</translation>
-<translation id="7095110968493193530">ที่ Google เครื่องมือจัดการรหัสผ่านสำหรับ <ph name="EMAIL" /></translation>
+<translation id="7095110968493193530">ที่เครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">แท็บล่าสุด</translation>
 <translation id="7102005569666697658">กำลังดาวน์โหลด… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">ซ่อน</translation>
@@ -860,7 +860,7 @@
 <translation id="7265758999917665941">ไม่จดจำสำหรับเว็บไซต์นี้</translation>
 <translation id="7272437679830969316">ยืนยันตัวตนของคุณไม่ได้ คัดลอกรหัสผ่านไม่สำเร็จ</translation>
 <translation id="7291368939935408496">กำลังเตรียมรหัสผ่าน...</translation>
-<translation id="730958329302570991">เพิ่มรหัสผ่านของเว็บไซต์ใน Google เครื่องมือจัดการรหัสผ่านได้ง่ายๆ ทุกเมื่อ</translation>
+<translation id="730958329302570991">เพิ่มรหัสผ่านของเว็บไซต์ในเครื่องมือจัดการรหัสผ่านบน Google ได้ง่ายๆ ทุกเมื่อ</translation>
 <translation id="7313347584264171202">คุณจะเห็นแท็บที่ไม่ระบุตัวตนที่นี่</translation>
 <translation id="7336264872878993241">ดาวน์โหลดแล้ว <ph name="PERCENT" /> เปอร์เซ็นต์</translation>
 <translation id="7340958967809483333">ตัวเลือกสำหรับ Discover</translation>
@@ -949,10 +949,10 @@
 <translation id="7978018860671536736">3. แตะ "ป้อนรหัสผ่านอัตโนมัติ"</translation>
 <translation id="7981908678811807838">การติดตามราคาใช้ไม่ได้กับเว็บไซต์นี้</translation>
 <translation id="7982789257301363584">เครือข่าย</translation>
-<translation id="7987685713885608670">เข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านของ Google เพื่อเพิ่มความปลอดภัย</translation>
+<translation id="7987685713885608670">เข้ารหัสให้แก่รหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านบน Google เพื่อเพิ่มความปลอดภัย</translation>
 <translation id="7993619969781047893">ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="800361585186029508">เปิด URL ที่ป้อนใน Google Chrome</translation>
-<translation id="8005666035647241369">ที่ Google เครื่องมือจัดการรหัสผ่านในอุปกรณ์นี้</translation>
+<translation id="8005666035647241369">ที่เครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้</translation>
 <translation id="8016714545083187120">ใช้การเชื่อมต่อที่ปลอดภัยทุกครั้ง</translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
 <translation id="8023878949384262191">ขยายส่วนนี้</translation>
@@ -1039,7 +1039,7 @@
 <translation id="8721297211384281569">เมนูเครื่องมือ</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
-<translation id="8731388423028622182">คุณออกจากระบบบัญชี <ph name="USER_NAME" /> ในขั้นตอนการรีเซ็ต iPhone แตะ "ดําเนินการต่อ" ด้านล่างเพื่อลงชื่อเข้าใช้</translation>
+<translation id="8731388423028622182">คุณออกจากระบบบัญชี <ph name="USER_NAME" /> ในขั้นตอนการรีเซ็ต iPhone แตะ "ต่อไป" ด้านล่างเพื่อลงชื่อเข้าใช้</translation>
 <translation id="87371078663613140">สํารวจตัวเลือกในแถบเมนู</translation>
 <translation id="8737620822084008350">{count,plural, =1{โปรไฟล์ที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{โปรไฟล์ที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="8741995161408053644">บัญชี Google ของคุณอาจมีประวัติการท่องเว็บในรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="zh-CN">
 <translation id="1143896152279775643">系统会将您的密码保存到 <ph name="EMAIL" /> 的 Google 密码管理器中。</translation>
 <translation id="1282031177488366470">帮助我们改进 Chrome 的功能和性能</translation>
+<translation id="1352919863522755794">Google 密码管理工具无法检查您的密码。请尝试检查您的互联网连接。</translation>
 <translation id="1462727070346936664">登录即可充分利用 Chrome。</translation>
 <translation id="1479202195792305274">您需要先登录 Google 帐号才能使用 Chrome 的密码检查功能。</translation>
 <translation id="1493827051843127077">将 Chrome 设为默认同步您所有设备上的标签页、密码和付款信息</translation>
@@ -29,6 +30,7 @@
 <translation id="2689064829982324496">若要在所有网站上退出您的 Google 帐号，请<ph name="BEGIN_LINK" />退出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="2695886661449553974">Chrome 无法检查是否有更新。请稍后再试。</translation>
 <translation id="2732745070297234559">Chrome 无法检查所有密码。请明天再试。</translation>
+<translation id="2767464022270041271">尚未保存任何密码。您需要先保存密码，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
 <translation id="2869959624320573933">登录 Chrome</translation>
 <translation id="2957447865124070833">选择 <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">由于您正要退出的帐号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chrome 数据，但这些数据仍会保留在您的 Google 帐号中。</translation>
@@ -57,6 +59,7 @@
 <translation id="4698415050768537821">Chrome 无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 帐号中的密码<ph name="END_LINK" />。</translation>
 <translation id="4819268619367838612">为帮助改进该应用，Chrome 会向 Google 发送使用情况统计信息和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">在 Chrome Beta 版中不受支持</translation>
+<translation id="4840404732697892756">您需要先登录 Google 帐号，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
 <translation id="5030102366287574140">Chrome 有助于保护您免受数据泄露、不安全网站等问题的影响。</translation>
 <translation id="5108659628347594808">帮助改善 Chrome</translation>
 <translation id="5119391094379141756">选择“Chrome”</translation>
@@ -66,6 +69,7 @@
 <translation id="5552137475244467770">Chrome 会定期检查您的密码是否已被列在网上发布的外泄密码列表内。当 Chrome 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
 <translation id="5639704535586432836">打开“设置”&gt;“隐私”&gt;“相机”&gt;“Google Chrome”，然后开启相机。</translation>
 <translation id="5642200033778930880">Google Chrome 无法在分割视图模式下使用您的相机</translation>
+<translation id="5661521615548540542">Google 密码管理工具无法检查所有密码。请稍后重试。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">已离线，Chrome 无法检查是否有更新</translation>
 <translation id="5716154293141027663">每当您点按其他应用中的链接时，系统都会使用 Chrome 打开相应链接</translation>
@@ -118,9 +122,11 @@
   2. 点按“默认浏览器应用”
   3. 选择“Chrome”。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google 密码管理工具无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 帐号中的密码<ph name="END_LINK" />。</translation>
 <translation id="8736550665979974340">Google Chrome 可确保您始终处于保护之下</translation>
 <translation id="8772179140489533211">显示意在引导用户登录 Chrome 的提示。</translation>
 <translation id="8788269841521769222">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的 Google 密码管理器中</translation>
+<translation id="8857676124663337448">Google 密码管理工具无法检查所有密码。请明天再试。</translation>
 <translation id="8897749957032330183">系统会将密码保存到此设备上的 Google 密码管理工具中。</translation>
 <translation id="8969290730818637510">处于开启状态时：
 <ph name="BEGIN_INDENT" />  • 可协助改进 Chrome，让所有像您这样使用 Chrome 的用户都能获享更好的体验。<ph name="END_INDENT" />

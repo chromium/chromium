@@ -391,6 +391,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" />, Chrome में खुलेगा. जारी रखने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> के साथ-साथ <ph name="BEGIN_LINK2" />Google Chrome और ChromeOS की सेवा की अन्य शर्तों<ph name="END_LINK2" /> से सहमत हैं. साथ ही, <ph name="BEGIN_LINK3" />निजता नीति<ph name="END_LINK3" /> भी लागू होगी.</translation>
 <translation id="3091010850649238832">क्लिपबोर्ड का कॉन्टेंट दिखाएं</translation>
 <translation id="3098745985164956033">कुछ इमेज Google को भेजी जाती हैं, ताकि आपको मिलने वाली जानकारी को बेहतर बनाया जा सके</translation>
+<translation id="3104179992611025423">आपके ब्राउज़र को आपके माता-पिता मैनेज करते हैं</translation>
 <translation id="3114507951000454849">आज की खबरें <ph name="NEWS_ICON" /> पढ़ें</translation>
 <translation id="311958134571892113">इससे जोड़ा गया</translation>
 <translation id="3123734510202723619">एलान</translation>
@@ -400,6 +401,7 @@
 <translation id="3157931365184549694">वापस लाएं</translation>
 <translation id="3166827708714933426">टैब और विंडो शॉर्टकट</translation>
 <translation id="316694332262407393">Chrome पहले से चल रहा है.</translation>
+<translation id="3167258285411721858"><ph name="HOST_NAME" /> के लिए, मोबाइल साइट का अनुरोध किया जा सकता है</translation>
 <translation id="3169472444629675720">डिस्कवर</translation>
 <translation id="3187472288455401631">विज्ञापनों की परफ़ॉर्मेंस का पता लगाना</translation>
 <translation id="3207960819495026254">बुकमार्क किया गया</translation>
@@ -433,6 +435,7 @@
 <translation id="3297344142967351106">आवाज़ से डिवाइस का इस्तेमाल करना</translation>
 <translation id="3303414029551471755">सामग्री डाउनलोड करने के लिए आगे बढ़ें?</translation>
 <translation id="3305795716056605962">'ज़्यादा विकल्प' बटन से पेजों का अनुवाद करें</translation>
+<translation id="3319664549618064419">इस साइट को बेहतर तरीके से इस्तेमाल करने के लिए, डेस्कटॉप साइट पर स्विच करें</translation>
 <translation id="3334729583274622784">फ़ाइल एक्सटेंशन बदलना चाहते हैं?</translation>
 <translation id="3341262203274374114">अनफ़ॉलो नहीं कर सकते. कोई गड़बड़ी हुई.</translation>
 <translation id="3359667936385849800">आपको सेवा देने वाली मौजूदा कंपनी का इस्तेमाल करें</translation>
@@ -624,7 +627,6 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> टैब बंद करें</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> में बुकमार्क किया गया</translation>
 <translation id="4461614516424362539">क्यूआर कोड की मदद से किसी दूसरे डिवाइस को लिंक करने पर, इस फ़ोन का इस्तेमाल सुरक्षा कुंजी के तौर पर किया जा सकता है. इसे हटाने पर, डिवाइस को लिंक करने के लिए आपको फिर से कोई क्यूआर कोड स्कैन करना पड़ेगा.</translation>
-<translation id="4479839115899251637">रीडिंग लिस्ट से मिटाएं</translation>
 <translation id="4479972344484327217">Chrome के लिए <ph name="MODULE" /> इंस्टॉल किया जा रहा है…</translation>
 <translation id="4484496141267039529">इंटरनेट कनेक्शन नहीं है. कुछ देर बाद कोशिश करें.</translation>
 <translation id="4487967297491345095">Chrome का सभी ऐप्लिकेशन डेटा हमेशा केे लिए हटा दिया जाएगा. इसमें सभी फ़ाइलें, सेटिंग, खाते, डेटाबेस वगैरह शामिल हैं.</translation>
@@ -1466,6 +1468,7 @@
 <translation id="8849001918648564819">छिपा हुआ</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, टैब</translation>
 <translation id="8854223127042600341">ऑफ़लाइन सेव की गई अपनी फ़ाइलें देखें</translation>
+<translation id="885480114717186641"><ph name="HOST_NAME" /> के लिए, डेस्कटॉप साइट का अनुरोध किया जा सकता है</translation>
 <translation id="8856607253650333758">जानकारी पाएं</translation>
 <translation id="8856931513242997049">बंद स्थिति में, सूचना की अनुमति का फ़्लो</translation>
 <translation id="8873817150012960745">शुरू करने के लिए, यहां टैप करें</translation>
@@ -1486,7 +1489,6 @@
 <translation id="8955719471735800169">शीर्ष पर वापस जाएं</translation>
 <translation id="8964479563882643397">नया गुप्त टैब खोलने के लिए, मेन्यू खोलें</translation>
 <translation id="8965591936373831584">डाउनलोड बाकी है</translation>
-<translation id="8967427617812342790">रीडिंग लिस्ट में जोड़ें</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त और <ph name="TAB_COUNT_ONE" /> अन्य टैब बंद हो जाएगा}one{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त और <ph name="TAB_COUNT_MANY" /> अन्य टैब बंद हो जाएगा}other{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त और <ph name="TAB_COUNT_MANY" /> अन्य टैब बंद हो जाएंगे}}</translation>
 <translation id="8970887620466824814">कुछ गड़बड़ी हुई.</translation>
 <translation id="8972098258593396643">डिफ़ॉल्ट फ़ोल्डर में डाउनलोड करें?</translation>

@@ -6,6 +6,7 @@
 <translation id="1185134272377778587">Par Chromium</translation>
 <translation id="1257458525759135959">Lai saglabātu attēlus, pieskarieties vienumam Iestatījumi un atļaujiet Chromium pievienot fotoattēlus.</translation>
 <translation id="1289216811211435351">Pāriešana uz Chromium</translation>
+<translation id="1352919863522755794">Google paroļu pārvaldnieks nevarēja pārbaudīt paroles. Pārbaudiet interneta savienojumu.</translation>
 <translation id="1361748954329991663">Pārlūka Chromium versija ir novecojusi. Ja veikalā <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nav pieejami atjauninājumi, iespējams, jūsu ierīcē vairs netiek atbalstītas pārlūka Chromium jaunās versijas.</translation>
 <translation id="1431818719585918472">Atļaujiet pārlūkā Chromium bloķēt inkognito cilnes.</translation>
 <translation id="1472013873724362412">Jūsu konts nedarbojas pārlūkā Chromium. Sazinieties ar savu domēna administratoru vai pierakstieties, izmantojot parastu Google kontu.</translation>
@@ -35,6 +36,7 @@
 <translation id="2650312721222849884">Lai skatītu cilnes no ierīcēm, kurās lietojat pārlūku Chromium, ieslēdziet sinhronizāciju.</translation>
 <translation id="2684230048001240293">Lai visās ierīcēs sinhronizētu savas cilnes, paroles un maksājumu informāciju, iestatiet pārlūku Chromium kā noklusējuma pārlūku</translation>
 <translation id="2730884209570016437">Chromium nevar izmantot kameru, jo to izmanto cita lietojumprogramma.</translation>
+<translation id="2767464022270041271">Nav saglabātu paroļu. Google paroļu pārvaldnieks var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="2915596697727466327">Chromium izmanto Face ID, lai jūsu parolēm varētu piekļūt tikai pilnvarotas personas.</translation>
 <translation id="2918709798697875261">Saskaņā ar jūsu organizācijas politiku ir atspējota pierakstīšanās pārlūkā Chromium.</translation>
 <translation id="2942241131342758843">Lai atvērtu saites, veiktu meklēšanu logrīkos un automātiski aizpildītu paroles citās lietotnēs, izmantojiet pārlūku Chromium kā noklusējuma pārlūku</translation>
@@ -57,6 +59,7 @@
 <translation id="4681781466797808448">Ieslēgt Chromium skeneri</translation>
 <translation id="4736424910885271643">Jūsu konts tiek pārvaldīts domēnā <ph name="HOSTED_DOMAIN" />, tāpēc jūsu Chromium dati no šīs ierīces tiks dzēsti.</translation>
 <translation id="4828317641996116749">Pārlūkprogrammā Chromium nevarēja pārbaudīt visas paroles. Vēlāk mēģiniet vēlreiz.</translation>
+<translation id="4840404732697892756">Google paroļu pārvaldnieks var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
 <translation id="4985291216379576555">Bezsaistē, pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="4996471330284142407">Izmantojiet vairāk iespēju vienkāršajā un drošajā pārlūkā Chromium, kas tagad ir vēl ātrāks.</translation>
 <translation id="4999538639245140991">Jūs izrakstāties no konta, kas tiek pārvaldīts domēnā <ph name="SIGNOUT_MANAGED_DOMAIN" />, tādēļ jūsu Chromium dati tiks dzēsti no šīs ierīces. Dati joprojām būs pieejami jūsu Google kontā.</translation>
@@ -67,6 +70,7 @@
 <translation id="5521125884468363740">Lai skatītu cilnes no visām ierīcēm, kurās izmantojat pārlūku Chromium, pierakstieties un ieslēdziet sinhronizāciju.</translation>
 <translation id="5522297504975449419">Dažas Chromium funkcijas vairs nebūs pieejamas.</translation>
 <translation id="5573014823074921752">Chromium padoms. Lai iegūtu vairāk ciļņu iespēju, rīkjoslā, kas atrodas ekrāna apakšdaļā vai augšdaļā, pieskarieties pogai Rādīt cilnes un turiet to.</translation>
+<translation id="5661521615548540542">Google paroļu pārvaldnieks nevarēja pārbaudīt visas paroles. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="5700709190537129682">Pārlūkprogrammā Chromium nevar pārbaudīt jūsu paroles.</translation>
 <translation id="5777187867430702742">Chromium lapa</translation>
 <translation id="5945387852661427312">Jūs pierakstāties kontā, kas tiek pārvaldīts domēnā <ph name="DOMAIN" />, un sniedzat tā administratoram kontroli pār saviem Chromium datiem. Jūsu dati tiks neatgriezeniski saistīti ar šo kontu. Izrakstoties no pārlūka Chromium, jūsu dati tiks dzēsti no šīs ierīces, taču tie tiks saglabāti jūsu Google kontā.</translation>
@@ -113,6 +117,7 @@
 <translation id="8409374867500149834">Jūs izmantojat Chromium visaugstāko drošības līmeni pret kaitīgām vietnēm</translation>
 <translation id="858114650497379505">Paroļu pārvaldniekā saglabātās paroles varat izmantot citās iPhone tālruņa lietotnēs.</translation>
 <translation id="8586442755830160949">Autortiesības <ph name="YEAR" /> Chromium autori. Visas tiesības paturētas.</translation>
+<translation id="8603022514504485810">Google paroļu pārvaldnieks nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt vai <ph name="BEGIN_LINK" />pārbaudiet paroles savā Google kontā<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Šis režīms nodrošina jūsu aizsardzību pārlūkprogrammā Chromium un var tikt izmantots jūsu drošības uzlabošanai citās Google lietotnēs, kad esat pierakstījies.</translation>
 <translation id="8663480472502753423">Jaunākās Chromium iespējas</translation>
 <translation id="8685813584220679697">Pierakstieties šajā vietnē un pārlūkā Chromium.</translation>
@@ -126,6 +131,7 @@ Svarīga informācija
 
   • Ja ieslēgsiet sinhronizāciju, dati var ietvert arī informāciju par jūsu apmeklētajiem vietrāžiem URL.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Šis konts un visi nesaglabātie dati tiks noņemti no pārlūka Chromium.</translation>
+<translation id="8857676124663337448">Google paroļu pārvaldnieks nevarēja pārbaudīt visas paroles. Rit mēģiniet vēlreiz.</translation>
 <translation id="894437814105052438">Ja izrakstīsieties, jaunie dati pārlūkā Chromium netiks sinhronizēti ar jūsu Google kontu. Iepriekš sinhronizētie dati kontā saglabājas.</translation>
 <translation id="9022552996538154597">Pierakstieties pārlūkā Chromium</translation>
 <translation id="9059693977935746710">Jums nebūs jāatceras šī parole. Tā tiks saglabāta konta <ph name="EMAIL" /> paroļu pārvaldniekā.</translation>

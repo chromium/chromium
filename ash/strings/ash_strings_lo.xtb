@@ -420,9 +420,11 @@
 <translation id="3289674678944039601">ກຳລັງສາກຜ່ານອະແດັບເຕີ</translation>
 <translation id="3290356915286466215">ບໍ່ປອດໄພ</translation>
 <translation id="3294437725009624529">ແຂກ</translation>
+<translation id="3298690094479023523">ຍັງບໍ່ສາມາດຢັ້ງຢືນ PIN ຫຼື ລະຫັດຜ່ານຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="3307642347673023554">ປ່ຽນເປັນໂໝດແລັບທັອບແລ້ວ</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ສາມາດເຂົ້າສູ່ລະບົບໃນພາຍຫຼັງໄດ້ຄືເກົ່າ.</translation>
 <translation id="3321628682574733415">ລະຫັດພໍ່ແມ່ບໍ່ຖືກຕ້ອງ</translation>
+<translation id="332827762492701193">ການແຈ້ງເຕືອນຖືກເຊື່ອງໄວ້</translation>
 <translation id="3339826665088060472">ຖ່າຍຮູບໜ້າຈໍ, ເຄື່ອງມືເພື່ອຖ່າຍຮູບໜ້າຈໍ ແລະ ການບັນທຶກໜ້າຈໍ</translation>
 <translation id="3340978935015468852">ການຕັ້ງຄ່າ</translation>
 <translation id="3341303451326249809">ຖ່າຍຮູບໜ້າຈໍແລ້ວ</translation>
@@ -559,6 +561,7 @@
 <translation id="4017989525502048489">ເຄື່ອງພິມເລເຊີ</translation>
 <translation id="401993194061514265">ບໍ່ສາມາດໃຊ້ຕົວໝາຍໄດ້. ກະລຸນາເປີດ Screencast ຄືນໃໝ່.</translation>
 <translation id="4021716437419160885">ເລື່ອນລົງ</translation>
+<translation id="4024840464866786680">ຫາກທ່ານລືມ PIN ຫຼື ລະຫັດຜ່ານຂອງທ່ານ ຫຼື ປ່ຽນລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານໄປເມື່ອບໍ່ດົນມານີ້, ໃຫ້ລອງກູ້ຜູ້ໃຊ້ນີ້ຄືນມາ.</translation>
 <translation id="4028481283645788203">ຈຳເປັນຕ້ອງມີລະຫັດຜ່ານເພື່ອຄວາມປອດໄພຍິ່ງຂຶ້ນ</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">ທ່ານກຳລັງແບ່ງປັນໜ້າຈໍຂອງທ່ານ</translation>
@@ -699,10 +702,12 @@
 <translation id="4735944890391795473">ໂຕະ 12</translation>
 <translation id="473775607612524610">ອັບເດດ</translation>
 <translation id="4740516757091333363">ລຶບໂຕະທີ່ບັນທຶກໄວ້ອອກບໍ?</translation>
+<translation id="4747410141429390146">ກະລຸນາປົດລັອກເພື່ອເບິ່ງການແຈ້ງເຕືອນ</translation>
 <translation id="4752784485658729358">ອະນຸຍາດໂຕະທີ່ບັນທຶກໄວ້ 6 ໂຕະເທົ່ານັ້ນ. ກະລຸນາລຶບໂຕະໃດໜຶ່ງອອກເພື່ອບັນທຶກໂຕະໃໝ່.</translation>
 <translation id="4759238208242260848">ດາວ​ໂຫຼດ</translation>
 <translation id="4762573482154983647">ເຊື່ອງແອັບ</translation>
 <translation id="4774338217796918551">ກັບຄືນມາມື້ອື່ນໃນເວລາ <ph name="COME_BACK_TIME" />.</translation>
+<translation id="4776584068981882959">ຍັງຄົງບໍ່ສາມາດຢັ້ງຢືນລະຫັດຜ່ານຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="4776917500594043016">ລະ​ຫັດ​ຜ່ານ​ສໍາ​ລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">ຜູ້ຊ່ວຍ Google ບໍ່ສາມາດໃຊ້ໄດ້ໃນເຊດຊັນສາທິດ.</translation>
@@ -842,6 +847,7 @@
 <translation id="5536723544185013515">ແອັບຫຼ້າສຸດ, ນຳທາງດ້ວຍປຸ່ມລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອເຂົ້າເຖິງແອັບຫຼ້າສຸດທັງໝົດ</translation>
 <translation id="553675580533261935">ກໍາລັງອອກຈາກເຊດຊັນ</translation>
 <translation id="5537725057119320332">ຄາສທ໌</translation>
+<translation id="5546397813406633847">ກູ້ຜູ້ໃຊ້ຄືນມາ</translation>
 <translation id="554893713779400387">ເປີດປິດການຂຽນຕາມຄຳບອກ</translation>
 <translation id="5558091555391176027">ສະຫຼັບການເບິ່ງເຫັນລະດັບສູງຂອງການແບ່ງປັນໃກ້ຄຽງ</translation>
 <translation id="5560420195677022218">ເບິ່ງແອັບຂອງໂທລະສັບທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
@@ -858,6 +864,7 @@
 <translation id="5618148318840095371">ພວກເຮົາໄດ້ສະຫຼັບທ່ານໄປໃຊ້ເຄືອຂ່າຍທີ່ດີກວ່າແລ້ວ</translation>
 <translation id="5619862035903135339">ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບປິດການນຳໃຊ້ການຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">ບໍ່ສາມາດຢັ້ງຢືນລະຫັດຜ່ານຂອງທ່ານໄດ້ ກະລຸນາລອງໃໝ່.</translation>
 <translation id="5648021990716966815">ແຈັກໄມໂຄຣໂຟນ</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ຂໍໃຫ້ທ່ານດຳເນີນການ.</translation>
 <translation id="5662075790140998213">ໂຕະ 10</translation>
@@ -876,6 +883,7 @@
 <translation id="5707775774148071965">ອຸປະກອນຂອງທ່ານຮອງຮັບອັດຕາຂໍ້ມູນທີ່ສູງກວ່າສາຍຂອງທ່ານ. ປະສິດທິພາບອຸປະກອນອາດຖືກຈຳກັດໄວ້.</translation>
 <translation id="5710450975648804523">ໂໝດຫ້າມລົບກວນເປີດຢູ່</translation>
 <translation id="571295407079589142">ອິນເຕີເນັດມືຖືປິດຢູ່</translation>
+<translation id="5727460725221669831">ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ປ່ຽນລະຫັດຜ່ານລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານໄປເມື່ອບໍ່ດົນມານີ້, ໃຫ້ລອງກູ້ຜູ້ໃຊ້ນີ້ຄືນມາ.</translation>
 <translation id="573413375004481890">ອຸປະກອນນີ້ບໍ່ສາມາດຮອງຮັບຈໍສະແດງທັງໝົດຂອງທ່ານໄດ້, ສະນັ້ນລະບົບໄດ້ຕັດການເຊື່ອມຕໍ່ອັນໜຶ່ງອອກແລ້ວ</translation>
 <translation id="5740328398383587084">ການແບ່ງປັນໃກ້ຄຽງ</translation>
 <translation id="574392208103952083">ສື່ກາງ</translation>

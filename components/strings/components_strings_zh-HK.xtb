@@ -275,7 +275,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋</translation>
 <translation id="1581080074034554886">信用卡驗證碼 (CVC)</translation>
 <translation id="1583429793053364125">顯示此網頁時發生錯誤。</translation>
-<translation id="1584492003828271317">上網時是否會看到個人化廣告，取決於這項設定、網站建議廣告、Cookie 設定，以及網站是否顯示個人化廣告</translation>
+<translation id="1584492003828271317">瀏覽時是否看到個人化廣告，取決於此設定、網站建議的廣告、Cookie 設定，以及網站是否顯示個人化廣告。</translation>
 <translation id="1586541204584340881">您已安裝的擴充程式</translation>
 <translation id="1588438908519853928">正常</translation>
 <translation id="1592005682883173041">本地資料存取</translation>
@@ -477,7 +477,7 @@
 <translation id="2091887806945687916">音效</translation>
 <translation id="2093982008204312032">Google Chrome 正在嘗試關閉 Windows Hello，以便填入密碼。</translation>
 <translation id="2094505752054353250">網域不符</translation>
-<translation id="2094704029599359040">版本資訊</translation>
+<translation id="2094704029599359040">版本資料</translation>
 <translation id="2099652385553570808">三釘 (左側)</translation>
 <translation id="2101225219012730419">版本：</translation>
 <translation id="2102134110707549001">建議安全性強的密碼…</translation>
@@ -586,6 +586,7 @@
 <translation id="2359629602545592467">多種貨幣</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2361263712565360498">275 x 395 毫米</translation>
+<translation id="2362083820973145409">已使用<ph name="USER_NAME" />的身分登入。<ph name="USER_EMAIL" />。開啟設定。</translation>
 <translation id="236340516568226369">調整切換選單大小</translation>
 <translation id="2367567093518048410">級別</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -858,7 +859,7 @@
 <translation id="3121994479408824897">前往 <ph name="DOMAIN" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{無}=1{1 個帳戶的登入資料}other{ # 個帳戶的登入資料}}</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
-<translation id="3141641372357166056">沒有同意聲明決定</translation>
+<translation id="3141641372357166056">沒有同意書決定</translation>
 <translation id="3145945101586104090">無法將回應解碼</translation>
 <translation id="3150653042067488994">伺服器暫時發生錯誤</translation>
 <translation id="3154506275960390542">這個網頁含有可能不經安全途徑提交內容的表格。其他人可能會在傳輸期間查看您的資料，攻擊者也可能會修改這些資料，導致伺服器接收不同內容。</translation>
@@ -1108,6 +1109,7 @@
 <translation id="3713662424819367124">香水和香氛</translation>
 <translation id="3714633008798122362">網絡日曆</translation>
 <translation id="3714780639079136834">開啟流動數據或 Wi-Fi</translation>
+<translation id="3715545959749027023">當 Chrome 標示安全性事件時，系統會向您的管理員發送該事件的相關資料。這些資料可包括您在 Chrome 瀏覽的網址、檔案名稱或元數據、瀏覽器或分頁當機，以及用於登入網絡應用程式、裝置和 Chrome 的使用者名稱。</translation>
 <translation id="3715597595485130451">連線至 Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />檢查 Proxy、防火牆和 DNS 設定<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">可能造成此錯誤的應用程式包括防毒軟件、防火牆及網頁篩選或 Proxy 軟件。</translation>
@@ -1524,7 +1526,7 @@
 <translation id="4749011317274908093">您已啟用無痕模式</translation>
 <translation id="4750671009706599284">此手機</translation>
 <translation id="4750917950439032686">傳送資料至此網站時 (例如密碼或信用卡號碼)，您的資料將會保密。</translation>
-<translation id="4751249061288707459">同意聲明上次更新時間：</translation>
+<translation id="4751249061288707459">同意書上次更新日期：</translation>
 <translation id="4751476147751820511">動態或光線感應器</translation>
 <translation id="4754461935447132332">不允許用於不安全的網站</translation>
 <translation id="4756388243121344051">記錄(&amp;H)</translation>
@@ -1689,7 +1691,7 @@
 <translation id="5126510351761255129">驗證信用卡</translation>
 <translation id="512670116361803001">「<ph name="APP_NAME" />」可能無法正常調整大小。請使用預設視窗大小，以免應用程式發生問題。</translation>
 <translation id="5127934926273826089">花</translation>
-<translation id="5129534298163637277">確認對話方塊</translation>
+<translation id="5129534298163637277">確認對話框</translation>
 <translation id="5135404736266831032">管理地址…</translation>
 <translation id="5136841603454277753">請輸入正確的驗證碼</translation>
 <translation id="5138014172396933048">目前無法使用虛擬卡，請聯絡您的銀行</translation>
@@ -1933,6 +1935,7 @@
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{使用虛擬付款卡號碼}other{請選取付款卡類型}}</translation>
 <translation id="5752552348183096912">止汗劑、香體露和身體噴霧</translation>
 <translation id="5754400531489347219">寵物和動物</translation>
+<translation id="5755162682436943950">已登出。開啟對話框即可登入並開啟同步功能。</translation>
 <translation id="5759751709240058861">使用和移動相機</translation>
 <translation id="5763042198335101085">請輸入有效的電郵地址</translation>
 <translation id="5764725887548570807">來源格式無效。</translation>
@@ -1993,7 +1996,7 @@
 <translation id="5921639886840618607">要將付款卡儲存至 Google 帳戶嗎？</translation>
 <translation id="5922853866070715753">快將完成</translation>
 <translation id="5923492272538889093">要使用裝置解鎖功能取代 CVC 嗎？</translation>
-<translation id="5924782825030413055">同意聲明上次更新來源：</translation>
+<translation id="5924782825030413055">同意書上次更新來源：</translation>
 <translation id="5928444777041341328">家居和園藝</translation>
 <translation id="5932224571077948991">網站顯示滋擾性或誤導廣告</translation>
 <translation id="5937560539988385583">已翻譯網頁</translation>
@@ -2340,6 +2343,7 @@
 <translation id="6826993739343257035">要允許 VR 嗎？</translation>
 <translation id="6828866289116430505">遺傳學</translation>
 <translation id="6831043979455480757">翻譯</translation>
+<translation id="683108308100148227">隱藏項目</translation>
 <translation id="6832753933931306326">已經填寫咗表格</translation>
 <translation id="6842196666980060516">184 x 260 毫米</translation>
 <translation id="6846340164947227603">使用虛擬付款卡號碼…</translation>
@@ -2476,6 +2480,7 @@
 <translation id="7153618581592392745">淡紫色</translation>
 <translation id="7156870133441232244">伺服器應升級至 TLS 1.2 或以上版本。</translation>
 <translation id="7163295244162773898">{0,plural, =1{要複製機密檔案嗎？}other{要複製機密檔案嗎？}}</translation>
+<translation id="7168323970702333693">已使用<ph name="USER_NAME" />的身分登入。開啟設定。</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
 <translation id="7174545416324379297">已合併</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種選項}other{<ph name="SHIPPING_OPTION_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種選項}}</translation>
@@ -2685,7 +2690,7 @@
 <translation id="7619838219691048931">結束工作表</translation>
 <translation id="7625242817712715120">管理員政策不建議列印此內容</translation>
 <translation id="762844065391966283">一次一個物件</translation>
-<translation id="7630470133768862132">同意聲明狀態：</translation>
+<translation id="7630470133768862132">同意書狀態：</translation>
 <translation id="7631444403134069754">田徑</translation>
 <translation id="7633909222644580952">效能資料和當機報告</translation>
 <translation id="7637571805876720304">要從 Chromium 移除信用卡嗎？</translation>

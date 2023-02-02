@@ -420,6 +420,7 @@
 <translation id="3289674678944039601">అడాప్టర్ ద్వారా ఛార్జ్ అవుతోంది</translation>
 <translation id="3290356915286466215">అసురక్షితమైనది</translation>
 <translation id="3294437725009624529">అతిథి</translation>
+<translation id="3298690094479023523">మీ PIN లేదా పాస్‌వర్డ్‌ను వెరిఫై చేయడం ఇంకా సాధ్యం కాలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3307642347673023554">ల్యాప్‌టాప్ మోడ్‌కు స్విచ్ చేయబడింది</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ఇప్పటికీ తర్వాత సైన్ ఇన్ చేయవచ్చు.</translation>
 <translation id="3321628682574733415">తల్లి/తండ్రి కోడ్ తప్పు</translation>
@@ -561,6 +562,7 @@
 <translation id="4017989525502048489">లేజర్ పాయింటర్</translation>
 <translation id="401993194061514265">మార్కర్ అందుబాటులో లేదు. స్క్రీన్‌కాస్ట్‌ను మళ్లీ తెరవండి.</translation>
 <translation id="4021716437419160885">కిందికి స్క్రోల్ చేయి</translation>
+<translation id="4024840464866786680">మీరు మీ PIN, పాస్‌వర్డ్‌ను మరిచిపోతే లేదా ఇటీవల మీ Google ఖాతా పాస్‌వర్డ్‌ను మార్చినట్లయితే, ఈ యూజర్‌ను రికవర్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="4028481283645788203">మరింత సెక్యూరిటీ కోసం పాస్‌వర్డ్‌ కావాలి</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">మీరు మీ స్క్రీన్‌ను షేర్ చేస్తున్నారు</translation>
@@ -706,6 +708,7 @@
 <translation id="4759238208242260848">డౌన్‌లోడ్‌లు</translation>
 <translation id="4762573482154983647">యాప్‌లను దాచండి</translation>
 <translation id="4774338217796918551">రేపు <ph name="COME_BACK_TIME" />కి తిరిగి రండి.</translation>
+<translation id="4776584068981882959">మీ పాస్‌వర్డ్‌ను వెరిఫై చేయడం ఇంకా సాధ్యం కాలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> కోసం పాస్‌వర్డ్</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Assistant డెమో సెషన్‌లో అందుబాటులో లేదు.</translation>
@@ -845,6 +848,7 @@
 <translation id="5536723544185013515">ఇటీవలి యాప్‌లు, అన్ని ఇటీవలి యాప్‌లను యాక్సెస్ చేయడానికి ఎడమ వైపు లేదా కుడి వైపు బాణం కీలతో నావిగేట్ చేయండి</translation>
 <translation id="553675580533261935">సెషన్ నుండి నిష్క్రమిస్తోంది</translation>
 <translation id="5537725057119320332">Cast</translation>
+<translation id="5546397813406633847">యూజర్‌ను రికవర్ చేయండి</translation>
 <translation id="554893713779400387">డిక్టేషన్‌ను టోగుల్ చేయి</translation>
 <translation id="5558091555391176027">సమీప షేరింగ్ అధిక విజిబిలిటీ మోడ్‌ను టోగుల్ చేయండి</translation>
 <translation id="5560420195677022218">మీ ఫోన్‌లోని యాప్‌లను మీ <ph name="DEVICE_TYPE" />లో చూడండి</translation>
@@ -861,6 +865,7 @@
 <translation id="5618148318840095371">మేము మిమ్మల్ని మెరుగైన నెట్‌వర్క్‌కు మార్చాము</translation>
 <translation id="5619862035903135339">అడ్మినిస్ట్రేటర్ పాలసీ స్క్రీన్ క్యాప్చర్‌ను డిజేబుల్ చేస్తోంది</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">మీ పాస్‌వర్డ్ వెరిఫై చేయడం సాధ్యం కాలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5648021990716966815">మైక్ జాక్</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, మీ అటెన్షన్ కోసం రిక్వెస్ట్ చేస్తోంది.</translation>
 <translation id="5662075790140998213">డెస్క్ 10</translation>
@@ -879,6 +884,7 @@
 <translation id="5707775774148071965">మీ పరికరం మీ కేబుల్ కంటే ఎక్కువ డేటా రేట్‌ను సపోర్ట్ చేస్తుంది. పరికర పనితీరు పరిమితంగా ఉండవచ్చు.</translation>
 <translation id="5710450975648804523">'అంతరాయం కలిగించవద్దు' మోడ్ ఆన్‌లో ఉంది</translation>
 <translation id="571295407079589142">మొబైల్ డేటా ఆఫ్ చేయబడింది</translation>
+<translation id="5727460725221669831">మీరు మీ పాస్‌వర్డ్‌ను మరిచిపోతే లేదా ఇటీవల మీ Google ఖాతా పాస్‌వర్డ్‌ను మార్చినట్లయితే, ఈ యూజర్‌ను రికవర్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="573413375004481890">ఈ పరికరం మీ అన్ని ప్రదర్శన స్క్రీన్‌లకు మద్దతు ఇవ్వలేదు, కాబట్టి ఒకటి డిస్‌కనెక్ట్ చేయబడింది</translation>
 <translation id="5740328398383587084">సమీప షేరింగ్</translation>
 <translation id="574392208103952083">మధ్యస్థం</translation>

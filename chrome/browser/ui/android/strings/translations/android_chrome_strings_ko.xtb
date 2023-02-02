@@ -391,6 +391,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_LINK3" />개인정보처리방침<ph name="END_LINK3" />도 적용됩니다.</translation>
 <translation id="3091010850649238832">클립보드 내용 표시</translation>
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
+<translation id="3104179992611025423">부모님이 관리하는 브라우저입니다</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">다음 카드와 연결됨</translation>
 <translation id="3123734510202723619">공지사항</translation>
@@ -400,6 +401,7 @@
 <translation id="3157931365184549694">복구</translation>
 <translation id="3166827708714933426">탭 및 창 단축키</translation>
 <translation id="316694332262407393">Chrome이 이미 실행 중입니다.</translation>
+<translation id="3167258285411721858"><ph name="HOST_NAME" />의 모바일 사이트를 요청할 수 있습니다.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">광고 측정</translation>
 <translation id="3207960819495026254">북마크에 추가됨</translation>
@@ -433,6 +435,7 @@
 <translation id="3297344142967351106">음성 지원</translation>
 <translation id="3303414029551471755">콘텐츠를 다운로드하시겠습니까?</translation>
 <translation id="3305795716056605962">옵션 더보기 버튼을 눌러 페이지 번역하기</translation>
+<translation id="3319664549618064419">사이트를 더 편하게 보려면 데스크톱 사이트로 전환하세요</translation>
 <translation id="3334729583274622784">파일 확장자를 변경하시겠습니까?</translation>
 <translation id="3341262203274374114">팔로우를 해제할 수 없습니다. 문제가 발생했습니다.</translation>
 <translation id="3359667936385849800">현재 서비스 제공업체 사용</translation>
@@ -624,7 +627,6 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> 탭 닫기</translation>
 <translation id="4452548195519783679">북마크를 <ph name="FOLDER_NAME" />에 추가함</translation>
 <translation id="4461614516424362539">다른 기기를 QR 코드로 연결할 때 이 휴대전화를 보안 키로 사용할 수 있습니다. 삭제하면 QR 코드를 스캔해야 다시 연결할 수 있습니다.</translation>
-<translation id="4479839115899251637">읽기 목록에서 삭제</translation>
 <translation id="4479972344484327217">Chrome에 <ph name="MODULE" />을(를) 설치하고 있습니다…</translation>
 <translation id="4484496141267039529">연결되지 않았습니다. 나중에 다시 시도하세요.</translation>
 <translation id="4487967297491345095">모든 파일, 설정, 계정, 데이터베이스 등을 포함한 Chrome의 모든 앱 데이터가 완전히 삭제됩니다.</translation>
@@ -1466,6 +1468,7 @@
 <translation id="8849001918648564819">숨김</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, 탭</translation>
 <translation id="8854223127042600341">오프라인 파일 보기</translation>
+<translation id="885480114717186641"><ph name="HOST_NAME" />의 데스크톱 사이트를 요청할 수 있습니다.</translation>
 <translation id="8856607253650333758">설명 보기</translation>
 <translation id="8856931513242997049">알림 권한 흐름 닫힘</translation>
 <translation id="8873817150012960745">여기를 탭하여 시작</translation>
@@ -1486,7 +1489,6 @@
 <translation id="8955719471735800169">맨위로</translation>
 <translation id="8964479563882643397">새 시크릿 탭을 열려면 메뉴 열기</translation>
 <translation id="8965591936373831584">보류 중</translation>
-<translation id="8967427617812342790">읽기 목록에 추가</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{시크릿 탭 <ph name="INCOGNITO_TAB_COUNT" />개와 일반 탭 <ph name="TAB_COUNT_ONE" />개가 닫힙니다.}other{시크릿 탭 <ph name="INCOGNITO_TAB_COUNT" />개와 일반 탭 <ph name="TAB_COUNT_MANY" />개가 닫힙니다.}}</translation>
 <translation id="8970887620466824814">문제 발생</translation>
 <translation id="8972098258593396643">기본 폴더에 다운로드하시겠습니까?</translation>

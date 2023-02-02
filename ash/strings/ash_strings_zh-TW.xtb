@@ -420,6 +420,7 @@
 <translation id="3289674678944039601">正在透過變壓器充電</translation>
 <translation id="3290356915286466215">不安全</translation>
 <translation id="3294437725009624529">訪客</translation>
+<translation id="3298690094479023523">系統仍無法驗證 PIN 碼或密碼，請再試一次。</translation>
 <translation id="3307642347673023554">已切換為筆記型電腦模式</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 日後仍可登入。</translation>
 <translation id="3321628682574733415">家長存取碼不正確</translation>
@@ -559,6 +560,7 @@
 <translation id="4017989525502048489">雷射筆</translation>
 <translation id="401993194061514265">無法使用標記功能，請重新開啟螢幕側錄應用程式。</translation>
 <translation id="4021716437419160885">向下捲動</translation>
+<translation id="4024840464866786680">如果你忘記 PIN 碼和密碼，或最近曾變更 Google 帳戶密碼，建議你復原這個使用者密碼。</translation>
 <translation id="4028481283645788203">基於安全考量，請輸入密碼</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">你正在分享螢幕畫面</translation>
@@ -704,6 +706,7 @@
 <translation id="4759238208242260848">下載</translation>
 <translation id="4762573482154983647">隱藏應用程式</translation>
 <translation id="4774338217796918551"><ph name="COME_BACK_TIME" /> 裝置就會解除鎖定。</translation>
+<translation id="4776584068981882959">系統仍無法驗證密碼，請再試一次。</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密碼</translation>
 <translation id="4777825441726637019">Play 商店</translation>
 <translation id="4778095205580009397">Google 助理不適用於示範工作階段。</translation>
@@ -843,6 +846,7 @@
 <translation id="5536723544185013515">最近使用的應用程式，以方向鍵瀏覽即可存取所有最近使用的應用程式</translation>
 <translation id="553675580533261935">結束工作階段</translation>
 <translation id="5537725057119320332">投放</translation>
+<translation id="5546397813406633847">復原使用者密碼</translation>
 <translation id="554893713779400387">切換語音輸入</translation>
 <translation id="5558091555391176027">將鄰近分享功能切換為向附近的所有裝置顯示</translation>
 <translation id="5560420195677022218">透過 <ph name="DEVICE_TYPE" /> 查看手機的應用程式</translation>
@@ -859,6 +863,7 @@
 <translation id="5618148318840095371">已切換至連線品質更好的網路</translation>
 <translation id="5619862035903135339">系統管理員政策已停用螢幕畫面擷取功能</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">系統無法驗證密碼，請再試一次。</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
 <translation id="5652575806481723716">「<ph name="FOCUSED_APP_NAME" />」有通知需要查看。</translation>
 <translation id="5662075790140998213">桌面 10</translation>
@@ -877,6 +882,7 @@
 <translation id="5707775774148071965">你使用的連接線無法達到裝置所支援的資料傳輸速率。裝置效能可能會因此受到限制。</translation>
 <translation id="5710450975648804523">「零打擾」模式已開啟</translation>
 <translation id="571295407079589142">行動數據已關閉</translation>
+<translation id="5727460725221669831">如果你忘記密碼，或最近曾變更 Google 帳戶密碼，建議你復原這個使用者密碼。</translation>
 <translation id="573413375004481890">這部裝置無法支援你的所有螢幕，因此其中一個畫面已中斷連線</translation>
 <translation id="5740328398383587084">鄰近分享</translation>
 <translation id="574392208103952083">中</translation>

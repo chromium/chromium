@@ -391,6 +391,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> հավելվածը կբացվի Chrome-ում։ Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։ Կիրառվում է նաև <ph name="BEGIN_LINK3" />Գաղտնիության քաղաքականությունը<ph name="END_LINK3" />։</translation>
 <translation id="3091010850649238832">Ցույց տալ սեղմատախտակի բովանդակությունը</translation>
 <translation id="3098745985164956033">Պատկերներն ուղարկվում են Google-ին՝ նկարագրությունները բարելավելու նպատակով</translation>
+<translation id="3104179992611025423">Ձեր դիտարկիչը կառավարվում է ձեր ծնողների կողմից</translation>
 <translation id="3114507951000454849">Կարդացեք այսօրվա նորությունները <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">կապված է հետևյալ քարտի հետ՝</translation>
 <translation id="3123734510202723619">Հայտարարություններ</translation>
@@ -400,6 +401,7 @@
 <translation id="3157931365184549694">Վերականգնել</translation>
 <translation id="3166827708714933426">Ներդիրների և պատուհանների դյուրանցումներ</translation>
 <translation id="316694332262407393">Chrome-ն արդեն գործարկված է։</translation>
+<translation id="3167258285411721858">Դուք կարող եք <ph name="HOST_NAME" /> կայքի բջջային տարբերակը խնդրել</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Գովազդի արդյունավետության գնահատում</translation>
 <translation id="3207960819495026254">Էջանշված է</translation>
@@ -433,6 +435,7 @@
 <translation id="3297344142967351106">Ձայնային հուշումներ</translation>
 <translation id="3303414029551471755">Ներբեռնե՞լ բովանդակությունը:</translation>
 <translation id="3305795716056605962">Թարգմանեք էջերը «Այլ ընտրանքներ» կոճակի օգնությամբ</translation>
+<translation id="3319664549618064419">Կայքն ավելի հարմար է դիտել համակարգչային տարբերակով</translation>
 <translation id="3334729583274622784">Փոխե՞լ ֆայլի ընդլայնումը</translation>
 <translation id="3341262203274374114">Սխալի պատճառով չհաջողվեց չեղարկել բաժանորդագրությունը։</translation>
 <translation id="3359667936385849800">Օգտագործել իմ ընթացիկ մատակարարը</translation>
@@ -624,7 +627,6 @@
 <translation id="4452411734226507615">Փակել <ph name="TAB_TITLE" /> ներդիրը</translation>
 <translation id="4452548195519783679">Էջանիշը պահվել է <ph name="FOLDER_NAME" />-ում</translation>
 <translation id="4461614516424362539">Դուք կարող եք օգտագործել այս հեռախոսը որպես անվտանգության բանալի սարքերում, որոնք կապված են QR կոդի միջոցով։ Եթե սարքը հեռացնեք կապվածների ցանկից, անհրաժեշտ կլինի այնտեղ նորից սկանավորել QR կոդը։</translation>
-<translation id="4479839115899251637">Ջնջել ընթերցանության ցանկից</translation>
 <translation id="4479972344484327217">«<ph name="MODULE" />» բաղադրիչը տեղադրվում է Chrome-ի համար…</translation>
 <translation id="4484496141267039529">Կապ չկա։ Փորձեք ավելի ուշ։</translation>
 <translation id="4487967297491345095">Chrome հավելվածի բոլոր տվյալներն ընդմիշտ կջնջվեն, ներառյալ` բոլոր ֆայլերը, կարգավորումները, հաշիվները, տվյալների շտեմարանները և այլն:</translation>
@@ -1466,6 +1468,7 @@
 <translation id="8849001918648564819">Ոչ ոք</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, ներդիր</translation>
 <translation id="8854223127042600341">Դիտեք անցանց ֆայլերը</translation>
+<translation id="885480114717186641">Դուք կարող եք <ph name="HOST_NAME" /> կայքի համակարգչային տարբերակը խնդրել</translation>
 <translation id="8856607253650333758">Ստանալ նկարագրություններ</translation>
 <translation id="8856931513242997049">Ծանուցումների թույլտվության պատուհանը փակված է</translation>
 <translation id="8873817150012960745">Սկսելու համար հպեք այստեղ</translation>
@@ -1486,7 +1489,6 @@
 <translation id="8955719471735800169">Հետ դեպի վերև</translation>
 <translation id="8964479563882643397">Նոր ինկոգնիտո ներդիր բացելու համար բացեք ընտրացանկը</translation>
 <translation id="8965591936373831584">սպասում է</translation>
-<translation id="8967427617812342790">Ավելացնել ընթերցանության ցանկում</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_ONE" /> այլ ներդիր կփակվեն}one{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիր կփակվեն}other{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիրներ կփակվեն}}</translation>
 <translation id="8970887620466824814">Սխալ առաջացավ:</translation>
 <translation id="8972098258593396643">Ներբեռնե՞լ կանխադրված պանակ</translation>

@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Reklaamid</translation>
 <translation id="1919950603503897840">Kontaktide valimine</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Muutke tekst ja pildid kõigil külastatavatel saitidel suuremaks või väiksemaks</translation>
 <translation id="1984937141057606926">Lubatud, välja arvatud kolmanda osapoole küpsised</translation>
 <translation id="1989112275319619282">Sirvi</translation>
 <translation id="1994173015038366702">Saidi URL</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Heli</translation>
 <translation id="2148716181193084225">Täna</translation>
 <translation id="216989819110952009">Kuigi rohelised prillid olid silmade kaitseks ninale asetatud, olid Dorothy ja tema sõbrad esialgu</translation>
+<translation id="2176704795966505152">Kuva peamenüüs suumimisvalik</translation>
 <translation id="2182457891543959921">Küsi enne saitidele loa andmist mind ümbritsevast 3D-kaardi loomiseks või kaamera asendi jälgimiseks (soovitatav)</translation>
 <translation id="2212565012507486665">Luba küpsisefailid</translation>
 <translation id="2228071138934252756">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie kaamerale, lülitage kaamera sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">Lubage konkreetse saidi küpsisefailid.</translation>
 <translation id="4046123991198612571">Järgmine lugu</translation>
 <translation id="4149994727733219643">Veebilehtede lihtsustatud vaade</translation>
+<translation id="4151930093518524179">Vaikesuum</translation>
 <translation id="4165986682804962316">Saidi seaded</translation>
 <translation id="4169549551965910670">Ühendatud USB-seadmega</translation>
 <translation id="4194328954146351878">Teilt küsitakse luba, kui saidid üritavad NFC-seadmetes teavet vaadata ja muuta (soovitatav)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie mikrofonile, lülitage mikrofon sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Vaigista mikrofon</translation>
 <translation id="4570913071927164677">Üksikasjad</translation>
+<translation id="4575264539271661854">Muutke teksti ja piltide suumimine külastatavatel saitidel lihtsamaks</translation>
 <translation id="4598549027014564149">Inkognito režiimis ei saa saidid küpsisefailide kaudu teie sirvimistegevusi saitidel (isegi seotud saitidel) jälgida. Teie sirvimistegevusi ei kasutata näiteks reklaamide isikupärastamiseks. Funktsioonid ei pruugi mõnel saidil toimida.</translation>
 <translation id="4645575059429386691">Vanema hallatud</translation>
 <translation id="4670064810192446073">Virtuaalreaalsus</translation>
@@ -383,6 +387,7 @@
 <translation id="8284326494547611709">Subtiitrid</translation>
 <translation id="8300705686683892304">Neid haldab rakendus</translation>
 <translation id="8324158725704657629">Ära enam küsi</translation>
+<translation id="8362795839483915693">Saate külastatavatel saitidel sisse ja välja suumida</translation>
 <translation id="8372893542064058268">Konkreetse saidi jaoks taustal sünkroonimise lubamine.</translation>
 <translation id="8376384591331888629">Sh sellel saidil olevad kolmanda osapoole küpsisefailid</translation>
 <translation id="83792324527827022">Sait kasutab teie kaamerat ja mikrofoni</translation>

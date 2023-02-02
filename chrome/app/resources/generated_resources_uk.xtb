@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">Не вдалося запустити віртуальну машину. Повторіть спробу.</translation>
 <translation id="1087965115100412394">Заборонити сайтам підключатися до пристроїв MIDI</translation>
 <translation id="1088659085457112967">Перейти в режим читання</translation>
-<translation id="1089407731410758060">Змінити тему</translation>
 <translation id="1090126737595388931">Не запущено жодну фонову програму</translation>
 <translation id="1090541560108055381">Перед підключенням переконайтеся, що ввели один код на обох пристроях</translation>
 <translation id="1091767800771861448">Натисніть ESCAPE, щоб пропустити (лише в неофіційних версіях складання).</translation>
@@ -553,6 +552,7 @@
 <translation id="1495677929897281669">Назад на вкладку</translation>
 <translation id="1500297251995790841">Невідомий пристрій [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Докладніше про непідтримувані додатки Chrome</translation>
+<translation id="1501480321619201731">Видалити групу</translation>
 <translation id="1503392482221435031">Автоматично надсилає статистику використання в Google. Звіти про збої можна ввімкнути або вимкнути в налаштуваннях пристрою.</translation>
 <translation id="150411034776756821">Видалити дані сайту <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Спільні папки у Windows доступні за шляхом <ph name="BASE_DIR" />.</translation>
@@ -2115,7 +2115,6 @@
 <translation id="2835547721736623118">Сервіс розпізнавання мовлення</translation>
 <translation id="2836232638504556905">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть ваші ім’я, електронну адресу й зображення профілю цьому сайту. Перегляньте його <ph name="BEGIN_LINK" />політику конфіденційності<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Аварійне завершення роботи</translation>
-<translation id="2836635946302913370">Вхід із використанням цього імені користувача вимкнено адміністратором.</translation>
 <translation id="283669119850230892">Щоб використовувати мережу <ph name="NETWORK_ID" />, спершу завершіть під’єднання до Інтернету нижче.</translation>
 <translation id="2838379631617906747">Встановлення</translation>
 <translation id="2839032553903800133">Сповіщення заблоковано</translation>
@@ -2924,6 +2923,7 @@
 <translation id="3602290021589620013">Попередній перегляд</translation>
 <translation id="3602870520245633055">Друкувати й сканувати</translation>
 <translation id="3603622770190368340">Отримати сертифікат мережі</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} обліковий запис використовує такий самий пароль}one{{COUNT} обліковий запис використовує такий самий пароль}few{{COUNT} облікові записи використовують такий самий пароль}many{{COUNT} облікових записів використовують такий самий пароль}other{{COUNT} облікового запису використовують такий самий пароль}}</translation>
 <translation id="3605780360466892872">Консерватор</translation>
 <translation id="3609277884604412258">Швидкий пошук</translation>
 <translation id="3610241585790874201">Сайту заборонено зберігати дані на вашому пристрої</translation>
@@ -3632,7 +3632,6 @@
 <translation id="4244238649050961491">Більше додатків із використанням стилуса</translation>
 <translation id="4246980464509998944">Додаткові коментарі:</translation>
 <translation id="424726838611654458">Завжди відкривати в Adobe Reader</translation>
-<translation id="4247901771970415646">Не вдалося синхронізуватися з користувачем <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Захистіть свої паролі від порушень безпеки даних та інших проблем із безпекою</translation>
 <translation id="4249248555939881673">Очікування на з’єднання з мережею…</translation>
 <translation id="4249373718504745892">Доступ цієї сторінки до ваших камери та мікрофона заблоковано.</translation>
@@ -3853,6 +3852,7 @@
 <translation id="4441147046941420429">Щоб продовжити, вийміть і знову вставте ключ безпеки, а потім торкніться його</translation>
 <translation id="444134486829715816">Розгорнути...</translation>
 <translation id="4441928470323187829">Закріплено адміністратором</translation>
+<translation id="4442863809158514979">Переглянути веб-дозволи</translation>
 <translation id="4443536555189480885">&amp;Довідка</translation>
 <translation id="4444304522807523469">Отримувати доступ до сканерів документів, під’єднаних через USB або локальну мережу</translation>
 <translation id="4444512841222467874">Якщо не звільнити місце, користувачів і дані може бути автоматично вилучено.</translation>
@@ -5712,7 +5712,6 @@
 <translation id="617213288191670920">Немає мов</translation>
 <translation id="6173623053897475761">Введіть PIN-код знову</translation>
 <translation id="6175314957787328458">GUID домену Microsoft</translation>
-<translation id="6176043333338857209">Bluetooth буде тимчасово ввімкнено для обміну даними з ключем безпеки</translation>
 <translation id="6178664161104547336">Вибір сертифіката</translation>
 <translation id="6178682841350631965">Дані для входу оновлено</translation>
 <translation id="6180510783007738939">Інструмент "Лінія"</translation>
@@ -7485,6 +7484,7 @@
 <translation id="779308894558717334">Світло-зелений</translation>
 <translation id="7793098747275782155">Темно-синій</translation>
 <translation id="7797571222998226653">Вимкнено</translation>
+<translation id="7798504574384119986">Переглянути веб-дозволи</translation>
 <translation id="7798844538707273832">Автоматично заблоковано: <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">Повернути п&amp;роти годинникової стрілки</translation>
 <translation id="7801679634091975683">Внесені сюди зміни застосуються лише до веб-переглядача Chrome Lacros. Щоб змінити параметри веб-переглядача Chrome, відкрийте його та перейдіть у налаштування.</translation>

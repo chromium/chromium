@@ -104,7 +104,6 @@
 <translation id="1085697365578766383">भर्चुअल मेसिन सुरु गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1087965115100412394">साइटहरूलाई MIDI यन्त्रमा कनेक्ट गर्ने अनुमति नदिइयोस्</translation>
 <translation id="1088659085457112967">पाठक मोड प्रयोग गर्नुहोस्</translation>
-<translation id="1089407731410758060">थिम परिवर्तन गर्नुहोस्</translation>
 <translation id="1090126737595388931">कुनै पृष्ठभूमिमा चलिरहेका एपहरू छैनन्</translation>
 <translation id="1090541560108055381">कुनै डिभाइसमा कनेक्ट गर्नुअघि उक्त डिभाइसमा र यो डिभाइसमा उही कोड देखाइएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="1091767800771861448">(गैर-आधिकारिक बिल्डहरू मात्र) छोड्न ESCAPE थिच्नुहोस्।</translation>
@@ -546,6 +545,7 @@
 <translation id="1495677929897281669">ट्याबमा फर्कनुहोस्</translation>
 <translation id="1500297251995790841">अज्ञात यन्त्र [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Chrome का चलाउन नमिल्ने एपहरूका बारेमा थप जान्नुहोस्</translation>
+<translation id="1501480321619201731">समूह मेट्नुहोस्</translation>
 <translation id="1503392482221435031">Google लाई प्रयोगसम्बन्धी तथ्याङ्कहरू स्वतः पठाइन्छ। तपाईं आफ्नो डिभाइसका सेटिङमा गई क्र्यास रिपोर्ट पठाउने सुविधा अन वा अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="150411034776756821"><ph name="SITE" /> हटाउनुहोस्</translation>
 <translation id="1504551620756424144">साझा फोल्डरहरू Windows को <ph name="BASE_DIR" /> मा उपलब्ध हुन्छन्।</translation>
@@ -2094,7 +2094,6 @@
 <translation id="2835547721736623118">वाक् पहिचान सेवा</translation>
 <translation id="2836232638504556905"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK" />गोपनीयता नीति<ph name="END_LINK" /> हेर्नुहोस्।</translation>
 <translation id="2836269494620652131">क्र्यास</translation>
-<translation id="2836635946302913370">यो प्रयोगकर्ता नामद्वारा साइन इन तपाईंको प्रशासकद्वारा असक्षम गरिएको छ।</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> सञ्जाल प्रयोग गर्नको लागि, पहिले तल इन्टरनेटमा तपाइँको जडान पूर्ण गर्नुहोस्।</translation>
 <translation id="2838379631617906747">स्थापना गर्दै...</translation>
 <translation id="2839032553903800133">सूचनाहरूलाई रोक लगाइयो</translation>
@@ -2603,6 +2602,7 @@
 <translation id="3315442055907669208">पाठक मोड प्रयोग गर्नुहोस्</translation>
 <translation id="3317459757438853210">दुई-छेउ भएको</translation>
 <translation id="3317678681329786349">क्यामेरा र माइक्रोफोन प्रयोग गर्नमाथि रोक लगाइयो</translation>
+<translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" /> प्रयोग गरी फोटोमा भएको टेक्स्ट अनुवाद गरियोस्</translation>
 <translation id="3320630259304269485">सुरक्षित ब्राउजिङ (जोखिमपूर्ण साइटहरूबाट सुरक्षा) र सुरक्षासम्बन्धी अन्य सेटिङ</translation>
 <translation id="3323521181261657960">बोनस! तपाईंले यन्त्रमा हेरेर बिताउने थप समय प्राप्त गर्नुभयो</translation>
 <translation id="3323577066981719144">तपाईंले यहाँ गर्ने परिवर्तनहरू Chrome ब्राउजरमा मात्र लागू हुन्छन्। आफ्नो Lacros Chrome ब्राउजरको सेटिङ परिवर्तन गर्न Lacros Chrome ब्राउजर खोल्नुहोस् र सेटिङमा जानुहोस्।</translation>
@@ -2904,6 +2904,7 @@
 <translation id="3602290021589620013">प्रिभ्यु गर्नुहोस्</translation>
 <translation id="3602870520245633055">प्रिन्ट गर्नुहोस् र स्क्यान गर्नुहोस्</translation>
 <translation id="3603622770190368340">नेटवर्क प्रमाणपत्र हासिल गर्नुहोस्</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} वटा खाताको पासवर्ड एउटै छ}other{{COUNT} वटा खाताको पासवर्ड एउटै छ}}</translation>
 <translation id="3605780360466892872">बटनडाउन</translation>
 <translation id="3609277884604412258">द्रुत खोज</translation>
 <translation id="3610241585790874201">यो साइटलाई तपाईंको डिभाइसमा डेटा सेभ गर्ने अनुमति दिइएको छैन</translation>
@@ -3611,7 +3612,6 @@
 <translation id="4244238649050961491">स्टाइलस सम्बन्धी थप एपहरू भेट्टाउनुहोस्</translation>
 <translation id="4246980464509998944">थप टिप्पणीहरू:</translation>
 <translation id="424726838611654458">सँधै Adobe Reader मा खोल्नुहोस्</translation>
-<translation id="4247901771970415646"><ph name="USERNAME" /> मा सिंक गर्न सकिँदैन</translation>
 <translation id="4248098802131000011">डेटा चोरी हुने तथा सुरक्षासम्बन्धी अन्य समस्याबाट आफ्ना पासवर्डहरू सुरक्षित राख्नुहोस्</translation>
 <translation id="4249248555939881673">सञ्जाल जडान लागि पर</translation>
 <translation id="4249373718504745892">यो पाना तपाईंको क्यामेरा र माइक्रोफोन पहुँच गर्नबाट रोकिएको हो ।</translation>
@@ -4830,6 +4830,7 @@
 <translation id="5382591305415226340">समर्थन गरिने लिंकहरूलाई व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5383377866517186886">Mac का सिस्टमसम्बन्धी प्राथमिकताहरूमा क्यामेरा निष्क्रिय पारिएको छ</translation>
 <translation id="5383740867328871413">नामविहीन समूह - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Enterprise सम्बन्धी नीति परिवर्तन भएको छ। टुलबारमा 'परीक्षणहरू' बटन थपिएको छ। परीक्षणको चरणमा रहेका सुविधाहरू अन गर्ने प्रयोजनका लागि डायलग खोल्न सो बटनमा क्लिक गर्नुहोस्।</translation>
 <translation id="5388885445722491159">जोडा बनाइएको छ</translation>
 <translation id="5390112241331447203">फिडब्याक रिपोर्टमा संलग्न गरी पठाइएका system_logs.txt फाइल समावेश गरियोस्।</translation>
@@ -5044,6 +5045,7 @@
 <translation id="5578059481725149024">स्वतः साइन-इन गर्ने</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> भाषामा अनुवाद गरियो</translation>
 <translation id="558170650521898289">Microsoft Windows हार्डवेयर ड्राइभर प्रमाणीकरण</translation>
+<translation id="5581876958763461074">सबै नोटहरू</translation>
 <translation id="5581972110672966454">यो यन्त्रलाई उक्त डोमेनसँग जोड्न सकिएन। कृपया फेरि प्रयास गर्नुहोस् वा आफ्नो डिभाइसका मालिक वा एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="5582839680698949063">मुख्य मेनु</translation>
 <translation id="5583640892426849032">ब्याकस्पेस</translation>
@@ -5693,7 +5695,6 @@
 <translation id="617213288191670920">कुनै पनि भाषा थपिएको छैन</translation>
 <translation id="6173623053897475761">आफ्नो PIN फेरि टाइप गर्नुहोस्</translation>
 <translation id="6175314957787328458">Microsoft डोमेन GUID</translation>
-<translation id="6176043333338857209">तपाईंको सुरक्षा साँचोसँग सञ्चार गर्न अस्थायी रूपमा ब्लुटुथ सक्रिय पारिने छ</translation>
 <translation id="6178664161104547336">एक प्रमाणपत्र चयन गर्नुहोस्</translation>
 <translation id="6178682841350631965">तपाईंको साइन इन डेटा परिवर्तन गरियो</translation>
 <translation id="6180510783007738939">रेखा बनाउने टुल</translation>
@@ -7676,6 +7677,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> भाषाको आवाज <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">स्विचमार्फत पहुँच राख्ने सुविधासम्बन्धी सेटिङहरू</translation>
 <translation id="7992203134935383159">टेक्स्ट-टू-स्पिच</translation>
+<translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" /> प्रयोग गरी फोटोमा भएको टेक्स्ट अनुवाद गरियोस्</translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">प्रक्रिया प्राथमिकता</translation>
 <translation id="7999229196265990314">निम्न फाइलहरू सिर्जना गर्‍यो:

@@ -106,7 +106,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1085697365578766383">Errore bat gertatu da makina birtuala abiaraztean. Saiatu berriro.</translation>
 <translation id="1087965115100412394">Ez eman MIDI gailuetara konektatzeko baimena webguneei</translation>
 <translation id="1088659085457112967">Sartu irakurgailu moduan</translation>
-<translation id="1089407731410758060">Aldatu gaia</translation>
 <translation id="1090126737595388931">Ez da aplikaziorik abian atzeko planoan</translation>
 <translation id="1090541560108055381">Parekatu aurretik, ziurtatu kode bera agertzen dela bi gailuetan</translation>
 <translation id="1091767800771861448">Saltatzeko, sakatu Ihes tekla (ofizialak ez diren konpilazioak soilik).</translation>
@@ -547,6 +546,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1495677929897281669">Itzuli fitxara</translation>
 <translation id="1500297251995790841">Identifikatu ezin den gailua [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Lortu bateragarriak ez diren Chrome-ren aplikazioei buruzko informazio gehiago</translation>
+<translation id="1501480321619201731">Ezabatu taldea</translation>
 <translation id="1503392482221435031">Automatikoki bidaltzen dizkio erabilera-estatistikak Google-ri. Gailuaren ezarpenetan aktibatu edo desaktiba ditzakezu hutsegite-txostenak.</translation>
 <translation id="150411034776756821">Kendu <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Karpeta partekatuak Windows-eko direktorio honetan daude: <ph name="BASE_DIR" />.</translation>
@@ -2097,7 +2097,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2835547721736623118">Ahotsa hautemateko zerbitzua</translation>
 <translation id="2836232638504556905">Aurrera egiteko, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzaileak zure izena, helbide elektronikoa eta profileko argazkia partekatuko ditu webgune honekin. Ikusi webgunearen <ph name="BEGIN_LINK" />pribatutasun-gidalerroak<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Hutsegitea</translation>
-<translation id="2836635946302913370">Administratzaileak desgaitu egin du erabiltzaile-izen horrekin saioa hasteko aukera.</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> sarea erabiltzeko, lehendabizi, osatu Interneterako konexioa hemen behean.</translation>
 <translation id="2838379631617906747">Instalatzen</translation>
 <translation id="2839032553903800133">Jakinarazpenak blokeatuta daude</translation>
@@ -2906,6 +2905,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3602290021589620013">Aurrebista</translation>
 <translation id="3602870520245633055">Inprimatu eta eskaneatu</translation>
 <translation id="3603622770190368340">Eskuratu sareko ziurtagiria</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} kontuk pasahitz bera darabil}other{{COUNT} kontuk pasahitz bera darabilte}}</translation>
 <translation id="3605780360466892872">Enpresaria</translation>
 <translation id="3609277884604412258">Bilaketa bizkorra</translation>
 <translation id="3610241585790874201">Ez dute gailuan datuak gordetzeko baimenik</translation>
@@ -3614,7 +3614,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4244238649050961491">Bilatu arkatzak erabiltzeko aplikazio gehiago</translation>
 <translation id="4246980464509998944">Iruzkin gehigarriak:</translation>
 <translation id="424726838611654458">Ireki beti Adobe Reader erabilita</translation>
-<translation id="4247901771970415646">Ezin da sinkronizatu <ph name="USERNAME" /> erabiltzailearekin</translation>
 <translation id="4248098802131000011">Babestu pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazo batzuen aurka</translation>
 <translation id="4249248555939881673">Sareko konexioaren zain…</translation>
 <translation id="4249373718504745892">Orriari zure kamera eta atzitzeko aukera blokeatu zaio.</translation>
@@ -3835,6 +3834,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4441147046941420429">Aurrera egiteko, atera segurtasun-giltza gailutik, sar ezazu berriro eta, ondoren, sakatu</translation>
 <translation id="444134486829715816">Zabaldu…</translation>
 <translation id="4441928470323187829">Administratzaileak ainguratu du</translation>
+<translation id="4442863809158514979">Ikusi web-baimenak</translation>
 <translation id="4443536555189480885">&amp;Laguntza</translation>
 <translation id="4444304522807523469">Atzitu USB bidez konektatuta edo sare lokalean dauden dokumentu-eskaneatzaileak</translation>
 <translation id="4444512841222467874">Tokirik egiten ez bada, baliteke erabiltzaileak eta datuak automatikoki kentzea.</translation>
@@ -5693,7 +5693,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="617213288191670920">Ez da gehitu hizkuntzarik</translation>
 <translation id="6173623053897475761">Idatzi berriro PINa</translation>
 <translation id="6175314957787328458">Microsoft domeinuen GUID identifikatzailea</translation>
-<translation id="6176043333338857209">Aldi baterako aktibatuko da Bluetootha, segurtasun-giltzarekin konektatzeko</translation>
 <translation id="6178664161104547336">Hautatu ziurtagiri bat</translation>
 <translation id="6178682841350631965">Eguneratu dira saioa hasteko datuak</translation>
 <translation id="6180510783007738939">Lerroen tresna</translation>
@@ -7460,6 +7459,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="779308894558717334">Berde argia</translation>
 <translation id="7793098747275782155">Urdin iluna</translation>
 <translation id="7797571222998226653">Desaktibatuta</translation>
+<translation id="7798504574384119986">Ikusi web-baimenak</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> automatikoki blokeatu da</translation>
 <translation id="7800518121066352902">Biratu &amp;erlojuaren orratzen aurka</translation>
 <translation id="7801679634091975683">Lacros darabilen Chrome arakatzailean soilik aplikatuko dira hemen egiten dituzun aldaketak. Chrome arakatzailearen ezarpenetan aldaketak egiteko, ireki Chrome arakatzailea eta joan ezarpenetara.</translation>

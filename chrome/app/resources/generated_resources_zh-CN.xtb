@@ -106,7 +106,6 @@
 <translation id="1085697365578766383">启动虚拟机时出错。请重试。</translation>
 <translation id="1087965115100412394">不允许网站连接到 MIDI 设备</translation>
 <translation id="1088659085457112967">进入阅读器模式</translation>
-<translation id="1089407731410758060">更改主题</translation>
 <translation id="1090126737595388931">没有任何后台应用在运行</translation>
 <translation id="1090541560108055381">配对之前，请确保在这两部设备上显示的配对码相同</translation>
 <translation id="1091767800771861448">按 ESC 键可跳过更新（仅限非官方版本）。</translation>
@@ -545,6 +544,7 @@
 <translation id="1495677929897281669">返回到标签页</translation>
 <translation id="1500297251995790841">未知设备 [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">详细了解不受支持的 Chrome 应用</translation>
+<translation id="1501480321619201731">删除群组</translation>
 <translation id="1503392482221435031">自动将使用情况统计信息发送给 Google。您可在设备的设置中开启或关闭崩溃报告。</translation>
 <translation id="150411034776756821">移除 <ph name="SITE" /></translation>
 <translation id="1504551620756424144">在 Windows 中，共享文件夹是位于 <ph name="BASE_DIR" /> 下。</translation>
@@ -2089,7 +2089,6 @@
 <translation id="2835547721736623118">语音识别服务</translation>
 <translation id="2836232638504556905">如果您继续注册，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的用户名、电子邮件地址和个人资料照片提供给此网站。不妨看看此网站的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" />。</translation>
 <translation id="2836269494620652131">崩溃</translation>
-<translation id="2836635946302913370">管理员已禁止使用此用户名登录。</translation>
 <translation id="283669119850230892">要使用网络“<ph name="NETWORK_ID" />”，请先在下方连接互联网。</translation>
 <translation id="2838379631617906747">正在安装</translation>
 <translation id="2839032553903800133">已阻止显示通知</translation>
@@ -2597,6 +2596,7 @@
 <translation id="3315442055907669208">进入阅读器模式</translation>
 <translation id="3317459757438853210">双面</translation>
 <translation id="3317678681329786349">已禁止使用摄像头和麦克风</translation>
+<translation id="3319306431415395200">使用 <ph name="VISUAL_SEARCH_PROVIDER" /> 翻译图片中的文字</translation>
 <translation id="3320630259304269485">安全浏览（保护您免受危险网站的侵害）和其他安全设置</translation>
 <translation id="3323521181261657960">恭喜！您获得了更多的设备使用时间</translation>
 <translation id="3323577066981719144">您在此处所做的更改仅会应用到 Chrome 浏览器。若要更改您的 Lacros Chrome 浏览器设置，请打开 Lacros Chrome 浏览器，然后转到“设置”。</translation>
@@ -2898,6 +2898,7 @@
 <translation id="3602290021589620013">预览</translation>
 <translation id="3602870520245633055">打印和扫描</translation>
 <translation id="3603622770190368340">获取网络证书</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 个帐号在使用同一密码}other{{COUNT} 个帐号在使用同一密码}}</translation>
 <translation id="3605780360466892872">男性商务人士</translation>
 <translation id="3609277884604412258">快速搜索</translation>
 <translation id="3610241585790874201">不得将数据保存在设备上</translation>
@@ -3163,6 +3164,7 @@
 <translation id="3823310065043511710">建议为 Linux 留出至少 <ph name="INSTALL_SIZE" /> 的空间。</translation>
 <translation id="3824621460022590830">设备注册令牌无效。请与设备所有者或管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{记住我对这个文件类型的选择：<ph name="FILE_TYPES" />}other{记住我对这些文件类型的选择：<ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">在应用图标上显示代表应用提醒的圆点</translation>
 <translation id="3826071569074535339">允许使用移动传感器</translation>
 <translation id="3826440694796503677">您的管理员已禁止添加更多 Google 帐号</translation>
 <translation id="3827774300009121996">全屏幕(&amp;F)</translation>
@@ -3604,7 +3606,6 @@
 <translation id="4244238649050961491">查找更多触控笔应用</translation>
 <translation id="4246980464509998944">其他评论：</translation>
 <translation id="424726838611654458">始终用Adobe Reader打开</translation>
-<translation id="4247901771970415646">无法同步到“<ph name="USERNAME" />”</translation>
 <translation id="4248098802131000011">确保您的密码免受数据泄露和其他安全问题的侵害</translation>
 <translation id="4249248555939881673">正在等待建立网络连接…</translation>
 <translation id="4249373718504745892">已禁止此网页使用您的摄像头和麦克风。</translation>
@@ -3823,6 +3824,7 @@
 <translation id="4441147046941420429">要继续，请从您的设备上拔出安全密钥，然后重新插入并轻触它</translation>
 <translation id="444134486829715816">展开...</translation>
 <translation id="4441928470323187829">已被您的管理员固定</translation>
+<translation id="4442863809158514979">查看网络权限</translation>
 <translation id="4443536555189480885">帮助(&amp;H)</translation>
 <translation id="4444304522807523469">使用通过 USB 连接的或本地网络中的文档扫描仪</translation>
 <translation id="4444512841222467874">如果没有可用空间，系统可能会自动移除用户和数据。</translation>
@@ -4479,6 +4481,7 @@
 <translation id="5063480226653192405">空间占用量</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">在 Chrome 操作系统设置中管理安全 DNS</translation>
+<translation id="5066160542186949327">移至其他文件夹</translation>
 <translation id="5067399438976153555">始终启用</translation>
 <translation id="5067867186035333991">当 <ph name="HOST" /> 想要使用麦克风时询问我</translation>
 <translation id="5068553687099139861">显示密码</translation>
@@ -4819,6 +4822,7 @@
 <translation id="5382591305415226340">管理支持的链接</translation>
 <translation id="5383377866517186886">已在 Mac 系统偏好设置中关闭摄像头</translation>
 <translation id="5383740867328871413">未命名群组 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" />（ID：<ph name="EXTENSION_ID" />）</translation>
 <translation id="538822246583124912">企业政策已更改。实验按钮已添加到工具栏。点击此按钮即可打开对话框以启用实验。</translation>
 <translation id="5388885445722491159">已配对</translation>
 <translation id="5390112241331447203">将所发送的 system_logs.txt 文件添加到反馈报告中。</translation>
@@ -5033,6 +5037,7 @@
 <translation id="5578059481725149024">自动登录</translation>
 <translation id="5581134892342029705">已将源语言翻译成<ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Microsoft Windows 硬件驱动程序验证</translation>
+<translation id="5581876958763461074">所有记事</translation>
 <translation id="5581972110672966454">无法将设备加入到网域中。请重试，或与设备所有者/管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="5582839680698949063">主菜单</translation>
 <translation id="5583640892426849032">退格</translation>
@@ -5680,7 +5685,6 @@
 <translation id="617213288191670920">未添加任何语言</translation>
 <translation id="6173623053897475761">再次输入您的 PIN 码</translation>
 <translation id="6175314957787328458">Microsoft 域 GUID</translation>
-<translation id="6176043333338857209">蓝牙将暂时开启，以便与您的安全密钥通信</translation>
 <translation id="6178664161104547336">选择证书</translation>
 <translation id="6178682841350631965">您的登录数据已更新</translation>
 <translation id="6180510783007738939">直线工具</translation>
@@ -7447,6 +7451,7 @@
 <translation id="779308894558717334">浅绿色</translation>
 <translation id="7793098747275782155">深蓝色</translation>
 <translation id="7797571222998226653">已关闭</translation>
+<translation id="7798504574384119986">查看网络权限</translation>
 <translation id="7798844538707273832">已自动禁用<ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">逆时针旋转(&amp;O)</translation>
 <translation id="7801679634091975683">您在此处所做的更改仅会应用到 Lacros Chrome 浏览器。若要更改您的 Chrome 浏览器设置，请打开 Chrome 浏览器，然后转到“设置”。</translation>
@@ -7662,6 +7667,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />语音 <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">开关控制设置</translation>
 <translation id="7992203134935383159">语音合成</translation>
+<translation id="7994515119120860317">使用 <ph name="VISUAL_SEARCH_PROVIDER" /> 翻译图片中的文字</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">进程优先级</translation>
 <translation id="7999229196265990314">已创建以下文件：

@@ -420,9 +420,11 @@
 <translation id="3289674678944039601">ಅಡಾಪ್ಟರ್ ಮೂಲಕ ಚಾರ್ಜ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3290356915286466215">ಅಸುರಕ್ಷಿತ</translation>
 <translation id="3294437725009624529">ಅತಿಥಿ</translation>
+<translation id="3298690094479023523">ನಿಮ್ಮ ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಇನ್ನೂ ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3307642347673023554">ಲ್ಯಾಪ್‌ಟಾಪ್ ಮೋಡ್‌ಗೆ ಬದಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />, ಆನಂತರ ಕೂಡಾ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು.</translation>
 <translation id="3321628682574733415">ತಪ್ಪಾದ ಪೋಷಕ ಕೋಡ್</translation>
+<translation id="332827762492701193">ಅಧಿಸೂಚನೆಗಳು ಮರೆಯಾಗಿವೆ</translation>
 <translation id="3339826665088060472">ಸ್ಕ್ರಿನ್ ಕ್ಯಾಪ್ಚರ್, ಸ್ಕ್ರೀನ್‌ಶಾಟ್‌ಗಳು ಮತ್ತು ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಸೆರೆಹಿಡಿಯುವ ಪರಿಕರಗಳು</translation>
 <translation id="3340978935015468852">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="3341303451326249809">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -559,6 +561,7 @@
 <translation id="4017989525502048489">ಲೇಸರ್ ಪಾಯಿಂಟರ್</translation>
 <translation id="401993194061514265">ಮಾರ್ಕರ್ ಲಭ್ಯವಿಲ್ಲ. ಸ್ಕ್ರೀನ್‌ಕ್ಯಾಸ್ಟ್ ಅನ್ನು ಮರುತೆರೆಯಿರಿ.</translation>
 <translation id="4021716437419160885">ಕೆಳಗೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
+<translation id="4024840464866786680">ನಿಮ್ಮ ಪಿನ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನೀವು ಮರೆತಿದ್ದರೆ ಅಥವಾ ಇತ್ತೀಚೆಗೆ ನಿಮ್ಮ Google ಖಾತೆಯ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಿದ್ದರೆ ಈ ಬಳಕೆದಾರರನ್ನು ಮರುಪಡೆಯಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4028481283645788203">ಹೆಚ್ಚಿನ ಭದ್ರತೆಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">ನಿಮ್ಮ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದ್ದೀರಿ</translation>
@@ -699,10 +702,12 @@
 <translation id="4735944890391795473">ಡೆಸ್ಕ್ 12</translation>
 <translation id="473775607612524610">ಅಪ್‌ಡೇಟ್‌‌</translation>
 <translation id="4740516757091333363">ಉಳಿಸಿದ ಡೆಸ್ಕ್ ಅನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
+<translation id="4747410141429390146">ಅಧಿಸೂಚನೆಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="4752784485658729358">6 ಉಳಿಸಿದ ಡೆಸ್ಕ್‌ಗಳನ್ನು ಮಾತ್ರ ಅನುಮತಿಸಲಾಗಿದೆ. ಹೊಸದನ್ನು ಉಳಿಸಲು ಡೆಸ್ಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ.</translation>
 <translation id="4759238208242260848">ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="4762573482154983647">ಆ್ಯಪ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="4774338217796918551">ನಾಳೆ <ph name="COME_BACK_TIME" /> ಸಮಯಕ್ಕೆ ಹಿಂತಿರುಗಿ.</translation>
+<translation id="4776584068981882959">ಇನ್ನೂ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Assistant ಡೆಮೊ ಸೆಶನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ.</translation>
@@ -842,6 +847,7 @@
 <translation id="5536723544185013515">ಇತ್ತೀಚಿನ ಆ್ಯಪ್‌ಗಳು, ಎಲ್ಲಾ ಇತ್ತೀಚಿನ ಆ್ಯಪ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಲೆಫ್ಟ್ ಅಥವಾ ರೈಟ್ ಆ್ಯರೋ ಕೀಗಳನ್ನು ಬಳಸಿ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="553675580533261935">ಸೆಷನ್ ನಿರ್ಗಮಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5537725057119320332">ಪಾತ್ರವರ್ಗ</translation>
+<translation id="5546397813406633847">ಬಳಕೆದಾರರನ್ನು ಮರುಪಡೆಯಿರಿ</translation>
 <translation id="554893713779400387">ಡಿಕ್ಟೇಶನ್ ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="5558091555391176027">Nearby ಶೇರ್‌ನ ಹೆಚ್ಚಿನ ಗೋಚರತೆಯನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="5560420195677022218">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಫೋನ್‌ನ ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
@@ -858,6 +864,7 @@
 <translation id="5618148318840095371">ನಾವು ನಿಮ್ಮನ್ನು ಉತ್ತಮ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಬದಲಿಸಿದ್ದೇವೆ</translation>
 <translation id="5619862035903135339">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಮೋಡ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5648021990716966815">ಮೈಕ್ ಜ್ಯಾಕ್</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, ನಿಮ್ಮ ಗಮನವನ್ನು ವಿನಂತಿಸುತ್ತದೆ.</translation>
 <translation id="5662075790140998213">ಡೆಸ್ಕ್ 10</translation>
@@ -876,6 +883,7 @@
 <translation id="5707775774148071965">ನಿಮ್ಮ ಸಾಧನ ನಿಮ್ಮ ಕೇಬಲ್‌ಗಿಂತ ಹೆಚ್ಚಿನ ಡೇಟಾ ದರವನ್ನು ಬೆಂಬಲಿಸುತ್ತದೆ. ಸಾಧನದ ಕಾರ್ಯಕ್ಷಮತೆ ಸೀಮಿತವಾಗಿರಬಹುದು.</translation>
 <translation id="5710450975648804523">ಅಡಚಣೆ ಮಾಡಬೇಡಿ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="571295407079589142">ಮೊಬೈಲ್ ಡೇಟಾ ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="5727460725221669831">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನೀವು ಮರೆತಿದ್ದರೆ ಅಥವಾ ಇತ್ತೀಚೆಗೆ ನಿಮ್ಮ Google ಖಾತೆಯ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಿದ್ದರೆ ಈ ಬಳಕೆದಾರರನ್ನು ಮರುಪಡೆಯಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="573413375004481890">ಈ ಸಾಧನವು ನಿಮ್ಮ ಎಲ್ಲಾ ಡಿಸ್‌ಪ್ಲೇಗಳನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ, ಆದ್ದರಿಂದ ಒಂದರ ಕನೆಕ್ಷನ್ ಅನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5740328398383587084">Nearby ಶೇರ್</translation>
 <translation id="574392208103952083">ಮಧ್ಯಮ</translation>

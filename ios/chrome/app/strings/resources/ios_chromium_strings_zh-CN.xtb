@@ -6,6 +6,7 @@
 <translation id="1185134272377778587">关于 Chromium</translation>
 <translation id="1257458525759135959">若要保存图片，请点按“设置”并允许 Chromium 添加照片</translation>
 <translation id="1289216811211435351">改用 Chromium</translation>
+<translation id="1352919863522755794">Google 密码管理工具无法检查您的密码。请尝试检查您的互联网连接。</translation>
 <translation id="1361748954329991663">Chromium 版本太旧。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中无任何可用更新，则可能是因为您的设备不再支持新版 Chromium。</translation>
 <translation id="1431818719585918472">让 Chromium 锁定您的无痕式标签页。</translation>
 <translation id="1472013873724362412">无法在 Chromium 上登录您的帐号。请与您的网域管理员联系，或使用普通的 Google 帐号登录。</translation>
@@ -35,6 +36,7 @@
 <translation id="2650312721222849884">要查看您在其他设备上用 Chromium 打开的标签页，请开启同步功能</translation>
 <translation id="2684230048001240293">将 Chromium 设为默认同步您所有设备上的标签页、密码和付款信息</translation>
 <translation id="2730884209570016437">由于另一个应用正在使用您的相机，因此 Chromium 无法使用。</translation>
+<translation id="2767464022270041271">尚未保存任何密码。您需要先保存密码，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
 <translation id="2915596697727466327">Chromium 会使用面容 ID 来确保对您密码的访问均已获授权。</translation>
 <translation id="2918709798697875261">贵组织要求您保持已退出 Chromium 的状态。</translation>
 <translation id="2942241131342758843">默认使用 Chromium 来打开链接、在微件中执行搜索以及在其他应用中自动填充密码</translation>
@@ -57,6 +59,7 @@
 <translation id="4681781466797808448">开启 Chromium 扫描器</translation>
 <translation id="4736424910885271643">您的帐号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chromium 数据将会被清除</translation>
 <translation id="4828317641996116749">Chromium 无法检查所有密码。请稍后再试。</translation>
+<translation id="4840404732697892756">您需要先登录 Google 帐号，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
 <translation id="4985291216379576555">已离线，Chromium 无法检查是否有更新</translation>
 <translation id="4996471330284142407">借助比以前更简单、更安全、更快速的 Chromium 提高工作效率。</translation>
 <translation id="4999538639245140991">由于您要退出的帐号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chromium 数据，但这些数据仍会保留在您的 Google 帐号中。</translation>
@@ -67,6 +70,7 @@
 <translation id="5521125884468363740">要查看您在其他设备上用 Chromium 打开的标签页，请登录帐号并开启同步功能</translation>
 <translation id="5522297504975449419">您将无法再使用某些 Chromium 功能。</translation>
 <translation id="5573014823074921752">Chromium 提示。要查看更多的标签页选项，请轻触并按住工具栏（位于屏幕底部或顶部）中的“显示标签页”按钮。</translation>
+<translation id="5661521615548540542">Google 密码管理工具无法检查所有密码。请稍后重试。</translation>
 <translation id="5700709190537129682">Chromium 无法检查您的密码</translation>
 <translation id="5777187867430702742">Chromium 网页</translation>
 <translation id="5945387852661427312">您正要登录由 <ph name="DOMAIN" /> 管理的帐号，并要授权其管理员控制您的 Chromium 数据。您的数据将与此帐号永久关联。退出 Chromium 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 帐号中。</translation>
@@ -113,6 +117,7 @@
 <translation id="8409374867500149834">Chromium 正在为您提供极强大的安全保护，帮助您防范有害网站</translation>
 <translation id="858114650497379505">您可在 iPhone 上的其他应用内使用已保存至密码管理器的密码。</translation>
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>
+<translation id="8603022514504485810">Google 密码管理工具无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 帐号中的密码<ph name="END_LINK" />。</translation>
 <translation id="865600487977764604">保护您在 Chromium 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用。</translation>
 <translation id="8663480472502753423">让 Chromium 保持最新状态</translation>
 <translation id="8685813584220679697">登录此网站和 Chromium。</translation>
@@ -126,6 +131,7 @@
 
   • 如果您开启了同步功能，相关指标可能会包含与您访问的网址有关的信息。<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">系统会从 Chromium 中移除此帐号以及所有未保存的数据。</translation>
+<translation id="8857676124663337448">Google 密码管理工具无法检查所有密码。请明天再试。</translation>
 <translation id="894437814105052438">当您退出登录后，Chromium 不会将任何新数据同步到您的 Google 帐号。先前已同步的数据将会保留在帐号中。</translation>
 <translation id="9022552996538154597">登录 Chromium</translation>
 <translation id="9059693977935746710">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的密码管理器中</translation>

@@ -104,7 +104,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1085697365578766383">Virtual cihaz işə düşmədi. Sonra yenidən cəhd edin.</translation>
 <translation id="1087965115100412394">Saytlara MIDI cihazlarına qoşulmaq icazəsi verməyin</translation>
 <translation id="1088659085457112967">Oxucu Rejiminə daxil olun</translation>
-<translation id="1089407731410758060">Temanı Dəyişin</translation>
 <translation id="1090126737595388931">Axra fonda tətbiq işləmir</translation>
 <translation id="1090541560108055381">Birləşdirməzdən əvvəl, bu kodun hər iki cihazda eyni olduğuna əmin olun</translation>
 <translation id="1091767800771861448">Atlamaq üçün Esc basın.</translation>
@@ -545,6 +544,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1495677929897281669">Taba geri qayıdın</translation>
 <translation id="1500297251995790841">Naməlum cihaz [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Dəstəklənməyən Chrome tətbiqləri haqqında ətraflı məlumat</translation>
+<translation id="1501480321619201731">Qrupu silin</translation>
 <translation id="1503392482221435031">İstifadə statistikasını avtomatik Google'a göndərir. Cihazınızın ayarlarında xəta hesabatlarını aktiv və ya deaktiv edə bilərsiniz.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> saytını silin</translation>
 <translation id="1504551620756424144">Paylaşılmış qovluqlar <ph name="BASE_DIR" /> ünvanındakı Windows'da əlçatandır.</translation>
@@ -2096,7 +2096,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2835547721736623118">Nitq tanınması xidməti</translation>
 <translation id="2836232638504556905">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ad, e-poçt ünvanı və profil şəklinizi bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK" />məxfilik siyasətinə<ph name="END_LINK" /> baxın.</translation>
 <translation id="2836269494620652131">Qəza</translation>
-<translation id="2836635946302913370">Bu istifadəçi adı ilə giriş aministratorunuz tərəfindən deaktiv edilib.</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> şəbəkəsini istifadə etmək üçün ilk öncə internet bağlantınızı tamamlayın.</translation>
 <translation id="2838379631617906747">Qarşıya yükləmə ...</translation>
 <translation id="2839032553903800133">Bildirişlər blok edilib</translation>
@@ -2905,6 +2904,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3602290021589620013">Önizləmə</translation>
 <translation id="3602870520245633055">Çap edin və skanlayın</translation>
 <translation id="3603622770190368340">Şəbəkə sertifikatını əldə edin</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} hesab eyni paroldan istifadə edir}other{{COUNT} hesab eyni paroldan istifadə edir}}</translation>
 <translation id="3605780360466892872">Buttondown</translation>
 <translation id="3609277884604412258">Cəld axtarış</translation>
 <translation id="3610241585790874201">Cihazınızda məlumat saxlanmasına icazə verilmir</translation>
@@ -3611,7 +3611,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4244238649050961491">Daha çox stiloqraf tətbiqləri axtarın</translation>
 <translation id="4246980464509998944">Əlavə şərhlər:</translation>
 <translation id="424726838611654458">Həmişə Adobe Reader'də açın</translation>
-<translation id="4247901771970415646"><ph name="USERNAME" /> adlı istifadəçiyə sinxronizasiya etmək mümkün deyil</translation>
 <translation id="4248098802131000011">Data pozuntuları və digər güvənlik məsələlərinə qarşı parollarınızı qoruyun</translation>
 <translation id="4249248555939881673">Şəbəkə bağlantısı gözlənilir...</translation>
 <translation id="4249373718504745892">Bu səhifə kameranıza və mikrofonunuza girə bilməz.</translation>
@@ -3832,6 +3831,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4441147046941420429">Davam etmək üçün təhlükəsizlik açarını cihazınızdan çıxarıb yenidən daxil edin və ona toxunun</translation>
 <translation id="444134486829715816">Genişləndirin...</translation>
 <translation id="4441928470323187829">Administratorunuz tərəfindən bərkidilib</translation>
+<translation id="4442863809158514979">Veb icazələrinə baxın</translation>
 <translation id="4443536555189480885">Yardım</translation>
 <translation id="4444304522807523469">USB vasitəsilə qoşulmuş və ya lokal şəbəkədə olan sənəd skanerlərinə girin</translation>
 <translation id="4444512841222467874">Boş yer əlçatan olmadıqda, istifadəçilər və data avtomatik silinə bilər.</translation>
@@ -4829,6 +4829,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5382591305415226340">Dəstəklənən linkləri idarə edin</translation>
 <translation id="5383377866517186886">Kamera Mac Sistem Tərcihlərində deaktivdir</translation>
 <translation id="5383740867328871413">Adsız qrup - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Müəssisə siyasəti dəyişdirilib. Təcrübələr düyməsi alətlər panelinə əlavə edilib. Təcrübələri aktivləşdirmək məqsədi ilə dialoqu açmaq üçün düyməyə toxunun.</translation>
 <translation id="5388885445722491159">Qoşalaşdırıldı</translation>
 <translation id="5390112241331447203">Rəy hesabatlarında göndərilən system_logs.txt faylını daxil edin.</translation>
@@ -5043,6 +5044,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5578059481725149024">Hesaba avtomatik giriş</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> dilinə tərcümə tamamlanıb</translation>
 <translation id="558170650521898289">Microsoft Windows Avadanlıq Drayver Doğrulanması</translation>
+<translation id="5581876958763461074">Bütün qeydlər</translation>
 <translation id="5581972110672966454">Cihazı domenə qoşmaq olmur. Yenidən cəhd edin və ya cihaz sahibi və ya administrator ilə əlaqə saxlayın. Xəta kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Əsas menyu</translation>
 <translation id="5583640892426849032">Geri silmə</translation>
@@ -5691,7 +5693,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="617213288191670920">Dil əlavə edilməyib</translation>
 <translation id="6173623053897475761">PIN kodu yenidən yazın</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
-<translation id="6176043333338857209">Təhlükəsizlik açarınızla əlaqə saxlamaq üçün Bluetooth müvəqqəti olaraq aktiv ediləcək</translation>
 <translation id="6178664161104547336">Sertifikat seçin</translation>
 <translation id="6178682841350631965">Giriş datanız güncəllənib</translation>
 <translation id="6180510783007738939">Sətir Aləti</translation>
@@ -7458,6 +7459,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="779308894558717334">Açıq-yaşıl</translation>
 <translation id="7793098747275782155">Tünd-mavi</translation>
 <translation id="7797571222998226653">Deaktiv</translation>
+<translation id="7798504574384119986">Veb İcazələrinə Baxın</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> avtomatik bloklanıb</translation>
 <translation id="7800518121066352902">Saat əqrəbi istiqamətinin əksinə fırladın</translation>
 <translation id="7801679634091975683">Burada etdiyiniz dəyişikliklər yalnız Lacros Chrome Brauzerinə aiddir. Chrome Brauzer ayarlarınızda dəyişiklik etmək üçün Chrome Brauzerini açın və ayarlara keçin.</translation>

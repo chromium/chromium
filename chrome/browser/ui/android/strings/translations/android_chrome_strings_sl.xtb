@@ -391,6 +391,7 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="3072980200212375806">Aplikacija <ph name="APP_NAME" /> se bo odprla v Chromu. Če nadaljujete, se strinjate z <ph name="BEGIN_LINK1" />Googlovimi pogoji storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatnimi pogoji storitve za Google Chrome in Chrome OS<ph name="END_LINK2" />. Uporablja se tudi <ph name="BEGIN_LINK3" />pravilnik o zasebnosti<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">Prikaz vsebine odložišča</translation>
 <translation id="3098745985164956033">Nekatere slike so poslane Googlu zaradi izboljšanja opisov.</translation>
+<translation id="3104179992611025423">Tvoj brskalnik upravljajo starši.</translation>
 <translation id="3114507951000454849">Preberite današnje novice <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">povezana s kartico</translation>
 <translation id="3123734510202723619">Obvestila</translation>
@@ -400,6 +401,7 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="3157931365184549694">Obnovi</translation>
 <translation id="3166827708714933426">Bližnjice za zavihke in okna</translation>
 <translation id="316694332262407393">Chrome se že izvaja tu.</translation>
+<translation id="3167258285411721858">Za <ph name="HOST_NAME" /> lahko zahtevate spletno mesto za mobilne naprave.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Merjenje oglasov</translation>
 <translation id="3207960819495026254">Dodano med zaznamke</translation>
@@ -433,6 +435,7 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="3297344142967351106">Glasovna pomoč</translation>
 <translation id="3303414029551471755">Ali želite prenesti vsebino?</translation>
 <translation id="3305795716056605962">Prevajanje strani z gumbom za več možnosti</translation>
+<translation id="3319664549618064419">Preklopite na namizno spletno mesto za boljši prikaz tega spletnega mesta.</translation>
 <translation id="3334729583274622784">Želite spremeniti pripono datoteke?</translation>
 <translation id="3341262203274374114">Spremljanja ni mogoče preklicati. Prišlo je do napake.</translation>
 <translation id="3359667936385849800">Uporaba trenutnega ponudnika storitev</translation>
@@ -624,7 +627,6 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="4452411734226507615">Zapiranje zavihka <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Zaznamek ustvarjen v mapi <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Če povežete drugo napravo s kodo QR, lahko uporabi ta telefon kot varnostni ključ. Če ga odstranite, boste morali optično prebrati kodo QR, če ga boste želeli znova povezati.</translation>
-<translation id="4479839115899251637">Izbriši z bralnega seznama</translation>
 <translation id="4479972344484327217">Nameščanje modula <ph name="MODULE" /> za Chrome …</translation>
 <translation id="4484496141267039529">Ni povezave. Poskusite pozneje.</translation>
 <translation id="4487967297491345095">Vsi podatki aplikacije Chrome bodo trajno izbrisani, vključno z vsemi datotekami, nastavitvami, računi, zbirkami podatkov ipd.</translation>
@@ -1466,6 +1468,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8849001918648564819">Skrito</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, zavihek</translation>
 <translation id="8854223127042600341">Ogled datotek, ki so na voljo brez povezave</translation>
+<translation id="885480114717186641">Za <ph name="HOST_NAME" /> lahko zahtevate namizno spletno mesto.</translation>
 <translation id="8856607253650333758">Pridobivanje opisov</translation>
 <translation id="8856931513242997049">Potek dovoljenj za obvestila je zaprt</translation>
 <translation id="8873817150012960745">Dotaknite se tu, če želite začeti.</translation>
@@ -1486,7 +1489,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8955719471735800169">Nazaj na vrh</translation>
 <translation id="8964479563882643397">Če želite odpreti nov anonimni zavihek, odprite meni.</translation>
 <translation id="8965591936373831584">poteka</translation>
-<translation id="8967427617812342790">Add to reading list</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Zaprt bo <ph name="INCOGNITO_TAB_COUNT" /> anonimni zavihek in še <ph name="TAB_COUNT_ONE" />.}one{Zaprt bo <ph name="INCOGNITO_TAB_COUNT" /> anonimni zavihek in še <ph name="TAB_COUNT_MANY" />.}two{Zaprta bosta <ph name="INCOGNITO_TAB_COUNT" /> anonimna zavihka in še <ph name="TAB_COUNT_MANY" />.}few{Zaprti bodo <ph name="INCOGNITO_TAB_COUNT" /> anonimni zavihki in še <ph name="TAB_COUNT_MANY" />.}other{Zaprtih bo <ph name="INCOGNITO_TAB_COUNT" /> anonimnih zavihkov in še <ph name="TAB_COUNT_MANY" />.}}</translation>
 <translation id="8970887620466824814">Prišlo je do napake.</translation>
 <translation id="8972098258593396643">Želite prenesti v privzeto mapo?</translation>
