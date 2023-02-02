@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForOriginBrowserTest,
             "");
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetNestedFrame(), kHostC,
                                             /*cors_enabled=*/true),
-            "cross-site=c.test");
+            "");
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForOriginBrowserTest,
@@ -441,9 +441,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetPrimaryMainFrame(), kHostB,
                                             /*cors_enabled=*/true),
             "cross-site=b.test");
+  // Subresource request from iframe does not have cookie access.
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
-            "cross-site=b.test");
+            "");
   // Repeated calls should also return true.
   EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
       GetPrimaryMainFrame(), GetURL(kHostB).spec()));
@@ -457,9 +458,21 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetPrimaryMainFrame(), kHostB,
                                             /*cors_enabled=*/true),
             "cross-site=b.test");
+  // Subresource request from iframe does not have cookie access.
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
-            "cross-site=b.test");
+            "");
+  // Subresource request with cors disabled does not have cookie access.
+  EXPECT_EQ(CookiesFromFetchWithCredentials(GetPrimaryMainFrame(), kHostB,
+                                            /*cors_enabled=*/false),
+            "");
+
+  // Navigate iframe to a same-site, cookie-reading endpoint, and verify that
+  // the cookie is not sent for a cross-site subresource request from iframe.
+  NavigateFrameTo(kHostA, "/echoheader?cookie");
+  EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
+                                            /*cors_enabled=*/true),
+            "");
 
   // Also validate that an additional site C was not granted access.
   NavigateFrameTo(kHostC, "/echoheader?cookie");
@@ -644,11 +657,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetPrimaryMainFrame(), kHostB,
                                             /*cors_enabled=*/true),
             "cross-site=b.test");
+  // Subresource request from iframe does not have cookie access.
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
-            "cross-site=b.test");
+            "");
   // Subresource request with cors disabled does not have cookie access.
-  EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
+  EXPECT_EQ(CookiesFromFetchWithCredentials(GetPrimaryMainFrame(), kHostB,
                                             /*cors_enabled=*/false),
             "");
 
@@ -664,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(
             "cross-site=b.test");
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
-            "cross-site=b.test");
+            "");
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -699,11 +713,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetPrimaryMainFrame(), kHostB,
                                             /*cors_enabled=*/true),
             "cross-site=b.test");
+  // Subresource request from iframe does not have cookie access.
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
-            "cross-site=b.test");
+            "");
   // Subresource request with cors disabled does not have cookie access.
-  EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
+  EXPECT_EQ(CookiesFromFetchWithCredentials(GetPrimaryMainFrame(), kHostB,
                                             /*cors_enabled=*/false),
             "");
 
@@ -717,9 +732,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetPrimaryMainFrame(), kHostB,
                                             /*cors_enabled=*/true),
             "cross-site=b.test");
+  // Subresource request from iframe does not have cookie access.
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
-            "cross-site=b.test");
+            "");
 }
 
 // Tests to validate `requestStorageAccessForOrigin` behavior with FPS disabled.
@@ -872,17 +888,18 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForOriginWithCHIPSBrowserTest,
   // (by an implicit grant):
   EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
       GetPrimaryMainFrame(), GetURL(kHostB).spec()));
-  // When the frame makes a subresource request to an endpoint on kHostB,
-  // kHostB's unpartitioned and partitioned cookies are sent, and the iframe
-  // retains storage access.
   NavigateFrameTo(kHostB, "/echoheader?cookie");
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  // When the top-level frame makes a subresource request to an endpoint on
+  // kHostB, kHostB's unpartitioned and partitioned cookies are sent.
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetPrimaryMainFrame(), kHostB,
                                             /*cors_enabled=*/true),
             "cross-site=b.test; cross-site=b.test(partitioned)");
+  // When the frame makes a subresource request to an endpoint on kHostB,
+  // only kHostB's partitioned cookies are sent.
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
-            "cross-site=b.test; cross-site=b.test(partitioned)");
+            "cross-site=b.test(partitioned)");
 }
 
 }  // namespace

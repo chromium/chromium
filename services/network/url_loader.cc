@@ -729,7 +729,8 @@ URLLoader::URLLoader(
         request.net_log_reference_info.value());
   }
 
-  if (network::cors::IsCorsEnabledRequestMode(request_mode_)) {
+  if (request.is_outermost_main_frame &&
+      network::cors::IsCorsEnabledRequestMode(request_mode_)) {
     url_request_->cookie_setting_overrides().Put(
         net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
   }
