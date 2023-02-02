@@ -307,6 +307,10 @@
   E_CPONLY(kColorScreenshotCapturedImageBorder) \
   /* Side panel colors. */ \
   E_CPONLY(kColorSidePanelBackground) \
+  E_CPONLY(kColorSidePanelBadgeBackground) \
+  E_CPONLY(kColorSidePanelBadgeBackgroundUpdated) \
+  E_CPONLY(kColorSidePanelBadgeForeground) \
+  E_CPONLY(kColorSidePanelBadgeForegroundUpdated) \
   E_CPONLY(kColorSidePanelContentAreaSeparator) \
   E_CPONLY(kColorSidePanelContentBackground) \
   /* Status bubble colors. */ \

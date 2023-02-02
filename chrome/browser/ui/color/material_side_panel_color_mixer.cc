@@ -13,4 +13,10 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
                                     const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorSidePanelContentBackground] = {ui::kColorSysSurface4};
+  mixer[kColorSidePanelBadgeBackground] = {ui::kColorSysSurfaceVariant};
+  mixer[kColorSidePanelBadgeBackgroundUpdated] = {
+      ui::kColorSysTertiaryContainer};
+  mixer[kColorSidePanelBadgeForeground] = {ui::kColorSysOnSurfaceVariant};
+  mixer[kColorSidePanelBadgeForegroundUpdated] = {
+      ui::kColorSysOnTertiaryContainer};
 }
