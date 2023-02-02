@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_scenario.h"
+#import "ios/chrome/browser/ui/sharing/sharing_scenario.h"
 
 namespace bookmarks {
 class BookmarkModel;
@@ -83,12 +83,12 @@ class WebNavigationBrowserAgent;
     (NSArray<id<ChromeActivityItemSource>>*)items;
 
 // Handles metric reporting when a sharing `scenario` is initiated.
-- (void)shareStartedWithScenario:(ActivityScenario)scenario;
+- (void)shareStartedWithScenario:(SharingScenario)scenario;
 
 // Handles completion of a share `scenario` with a given action's
 // `activityType`. The value of `completed` represents whether the activity
 // was completed successfully or not.
-- (void)shareFinishedWithScenario:(ActivityScenario)scenario
+- (void)shareFinishedWithScenario:(SharingScenario)scenario
                      activityType:(NSString*)activityType
                         completed:(BOOL)completed;
 

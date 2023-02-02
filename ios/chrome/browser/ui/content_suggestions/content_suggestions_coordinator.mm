@@ -53,8 +53,8 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
@@ -382,10 +382,10 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 - (void)shareURL:(const GURL&)URL
            title:(NSString*)title
         fromView:(UIView*)view {
-  ActivityParams* params =
-      [[ActivityParams alloc] initWithURL:URL
-                                    title:title
-                                 scenario:ActivityScenario::MostVisitedEntry];
+  SharingParams* params =
+      [[SharingParams alloc] initWithURL:URL
+                                   title:title
+                                scenario:SharingScenario::MostVisitedEntry];
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.contentSuggestionsViewController
                          browser:self.browser

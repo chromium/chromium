@@ -2,47 +2,47 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SHARING_ACTIVITY_SERVICES_ACTIVITY_PARAMS_H_
-#define IOS_CHROME_BROWSER_UI_SHARING_ACTIVITY_SERVICES_ACTIVITY_PARAMS_H_
+#ifndef IOS_CHROME_BROWSER_UI_SHARING_SHARING_PARAMS_H_
+#define IOS_CHROME_BROWSER_UI_SHARING_SHARING_PARAMS_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_scenario.h"
+#import "ios/chrome/browser/ui/sharing/sharing_scenario.h"
 #import "ios/chrome/browser/ui/util/url_with_title.h"
 
 class GURL;
 
 // Parameter object used to configure the activity service scenario.
-@interface ActivityParams : NSObject
+@interface SharingParams : NSObject
 
 // Initializes an instance configured to share the current tab's URL for the
 // metrics `scenario`.
-- (instancetype)initWithScenario:(ActivityScenario)scenario
+- (instancetype)initWithScenario:(SharingScenario)scenario
     NS_DESIGNATED_INITIALIZER;
 
 // Initializes an instance configured to share an `image`, along
 // with its `title`, for the metrics `scenario`.
 - (instancetype)initWithImage:(UIImage*)image
                         title:(NSString*)title
-                     scenario:(ActivityScenario)scenario;
+                     scenario:(SharingScenario)scenario;
 
 // Initializes an instance configured to share `URL`, along with its `title` for
 // the metrics `scenario`.
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title
-                   scenario:(ActivityScenario)scenario;
+                   scenario:(SharingScenario)scenario;
 
 // Initializes an instance configured to share one or more URLs represented by
 // `URLWithTitle`s, for the metrics `scenario`.
 - (instancetype)initWithURLs:(NSArray<URLWithTitle*>*)URLs
-                    scenario:(ActivityScenario)scenario;
+                    scenario:(SharingScenario)scenario;
 
 // Initializes an instance configured to share an `URL`, along
 // with its `title` and `additionalText`, for the metrics `scenario`.
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title
              additionalText:(NSString*)additionalText
-                   scenario:(ActivityScenario)scenario;
+                   scenario:(SharingScenario)scenario;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -59,11 +59,11 @@ class GURL;
 @property(nonatomic, readonly, copy) NSString* additionalText;
 
 // Current sharing scenario.
-@property(nonatomic, readonly, assign) ActivityScenario scenario;
+@property(nonatomic, readonly, assign) SharingScenario scenario;
 
 // File to be shared.
 @property(nonatomic, strong) NSURL* filePath;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SHARING_ACTIVITY_SERVICES_ACTIVITY_PARAMS_H_
+#endif  // IOS_CHROME_BROWSER_UI_SHARING_SHARING_PARAMS_H_

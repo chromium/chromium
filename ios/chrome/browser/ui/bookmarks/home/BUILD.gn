@@ -46,6 +46,7 @@ source_set("home") {
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/sharing",
+    "//ios/chrome/browser/ui/sharing:public",
     "//ios/chrome/browser/ui/sharing/activity_services",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:constants",

@@ -21,8 +21,8 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
@@ -180,11 +180,11 @@
 
 - (void)shareURL:(const GURL&)URL
            title:(NSString*)title
-        scenario:(ActivityScenario)scenario
+        scenario:(SharingScenario)scenario
         fromView:(UIView*)view {
-  ActivityParams* params = [[ActivityParams alloc] initWithURL:URL
-                                                         title:title
-                                                      scenario:scenario];
+  SharingParams* params = [[SharingParams alloc] initWithURL:URL
+                                                       title:title
+                                                    scenario:scenario];
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.recentTabsTableViewController
                          browser:self.browser

@@ -116,7 +116,7 @@
                     [self.contextMenuDelegate
                         shareURL:item.URL
                            title:item.title
-                        scenario:ActivityScenario::TabGridItem
+                        scenario:SharingScenario::TabGridItem
                         fromView:cell];
                   }]];
 

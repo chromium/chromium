@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 
-@protocol ActivityServicePositioner;
+@protocol SharingPositioner;
 @protocol OmniboxPopupPresenterDelegate;
 @protocol OmniboxFocusDelegate;
 @class ViewRevealingVerticalPanHandler;
@@ -32,7 +32,7 @@
 @property(nonatomic, weak, readonly) id<ViewRevealingAnimatee> animatee;
 
 // Positioner for activity services attached to the toolbar
-- (id<ActivityServicePositioner>)activityServicePositioner;
+- (id<SharingPositioner>)SharingPositioner;
 
 // Shows the animation when transitioning to a prerendered page.
 - (void)showPrerenderingAnimation;

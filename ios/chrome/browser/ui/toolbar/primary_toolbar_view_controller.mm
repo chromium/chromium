@@ -251,7 +251,7 @@
   }
 }
 
-#pragma mark - ActivityServicePositioner
+#pragma mark - SharingPositioner
 
 - (UIView*)sourceView {
   return self.view.shareButton;

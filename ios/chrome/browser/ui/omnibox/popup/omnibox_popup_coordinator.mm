@@ -43,8 +43,8 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_view_controller.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -207,10 +207,10 @@
              shareURL:(GURL)URL
                 title:(NSString*)title
            originView:(UIView*)originView {
-  ActivityParams* params = [[ActivityParams alloc]
+  SharingParams* params = [[SharingParams alloc]
       initWithURL:URL
             title:title
-         scenario:ActivityScenario::OmniboxMostVisitedEntry];
+         scenario:SharingScenario::OmniboxMostVisitedEntry];
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.popupViewController
                          browser:self.browser

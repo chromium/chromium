@@ -42,7 +42,6 @@ source_set("activities") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/sharing/activity_services/data",
-    "//ios/chrome/browser/ui/sharing/activity_services/requirements",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web",
     "//ios/web/common:user_agent",

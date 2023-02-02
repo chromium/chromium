@@ -66,7 +66,10 @@ source_set("tab_context_menu_delegate") {
 
   sources = [ "tab_context_menu_delegate.h" ]
 
-  deps = [ "//ios/chrome/browser/ui/sharing/activity_services" ]
+  deps = [
+    "//ios/chrome/browser/ui/sharing",
+    "//ios/chrome/browser/ui/sharing:public",
+  ]
 }
 
 source_set("unit_tests") {

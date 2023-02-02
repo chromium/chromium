@@ -136,9 +136,9 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_params.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/requirements/activity_service_positioner.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/sharing/sharing_params.h"
+#import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/ui/spotlight_debugger/spotlight_debugger_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
@@ -1232,14 +1232,14 @@ enum class ToolbarKind {
 #pragma mark - ActivityServiceCommands
 
 - (void)sharePage {
-  ActivityParams* params = [[ActivityParams alloc]
-      initWithScenario:ActivityScenario::TabShareButton];
+  SharingParams* params =
+      [[SharingParams alloc] initWithScenario:SharingScenario::TabShareButton];
 
   // Exit fullscreen if needed to make sure that share button is visible.
   _fullscreenController->ExitFullscreen();
 
-  id<ActivityServicePositioner> positioner =
-      _primaryToolbarCoordinator.activityServicePositioner;
+  id<SharingPositioner> positioner =
+      _primaryToolbarCoordinator.SharingPositioner;
   UIBarButtonItem* anchor = nil;
   if ([positioner respondsToSelector:@selector(barButtonItem)]) {
     anchor = positioner.barButtonItem;
@@ -1261,11 +1261,11 @@ enum class ToolbarKind {
       l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_SHARE_CHROME_TITLE);
   NSString* additionalText =
       l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_SHARE_CHROME_DESC);
-  ActivityParams* params =
-      [[ActivityParams alloc] initWithURL:URL
-                                    title:title
-                           additionalText:additionalText
-                                 scenario:ActivityScenario::ShareChrome];
+  SharingParams* params =
+      [[SharingParams alloc] initWithURL:URL
+                                   title:title
+                          additionalText:additionalText
+                                scenario:SharingScenario::ShareChrome];
 
   // Exit fullscreen if needed to make sure that share button is visible.
   FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
@@ -1283,11 +1283,11 @@ enum class ToolbarKind {
 }
 
 - (void)shareHighlight:(ShareHighlightCommand*)command {
-  ActivityParams* params =
-      [[ActivityParams alloc] initWithURL:command.URL
-                                    title:command.title
-                           additionalText:command.selectedText
-                                 scenario:ActivityScenario::SharedHighlight];
+  SharingParams* params =
+      [[SharingParams alloc] initWithURL:command.URL
+                                   title:command.title
+                          additionalText:command.selectedText
+                                scenario:SharingScenario::SharedHighlight];
 
   self.sharingCoordinator =
       [[SharingCoordinator alloc] initWithBaseViewController:self.viewController

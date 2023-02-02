@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_service_mediator.h"
+#import "ios/chrome/browser/ui/sharing/activity_services/activity_service_presentation.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/canonical_url_retriever.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/chrome_activity_file_source.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/chrome_activity_image_source.h"
@@ -24,8 +24,8 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data_builder.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/requirements/activity_service_positioner.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/requirements/activity_service_presentation.h"
+#import "ios/chrome/browser/ui/sharing/sharing_params.h"
+#import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -57,7 +57,7 @@ const char kMimeTypePDF[] = "application/pdf";
 @property(nonatomic, strong) UIActivityViewController* viewController;
 
 // Parameters determining the activity flow and values.
-@property(nonatomic, strong) ActivityParams* params;
+@property(nonatomic, strong) SharingParams* params;
 
 @end
 
@@ -65,7 +65,7 @@ const char kMimeTypePDF[] = "application/pdf";
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
-                                    params:(ActivityParams*)params {
+                                    params:(SharingParams*)params {
   DCHECK(params);
   if (self = [super initWithBaseViewController:baseViewController
                                        browser:browser]) {
@@ -327,7 +327,7 @@ const char kMimeTypePDF[] = "application/pdf";
 // there is any.
 - (void)shareURLs {
   NSMutableArray* dataItems = [[NSMutableArray alloc] init];
-  ActivityParams* params = self.params;
+  SharingParams* params = self.params;
 
   // If only given a single URL, include additionalText in shared payload.
   if (params.URLs.count == 1) {

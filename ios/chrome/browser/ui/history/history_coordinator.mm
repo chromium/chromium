@@ -27,8 +27,8 @@
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -303,10 +303,10 @@ history::WebHistoryService* WebHistoryServiceGetter(
 - (void)shareURL:(const GURL&)URL
            title:(NSString*)title
         fromView:(UIView*)view {
-  ActivityParams* params =
-      [[ActivityParams alloc] initWithURL:URL
-                                    title:title
-                                 scenario:ActivityScenario::HistoryEntry];
+  SharingParams* params =
+      [[SharingParams alloc] initWithURL:URL
+                                   title:title
+                                scenario:SharingScenario::HistoryEntry];
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.historyTableViewController
                          browser:self.browser

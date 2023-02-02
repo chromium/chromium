@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -27,10 +26,10 @@
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_params.h"
+#import "ios/chrome/browser/ui/sharing/activity_services/activity_service_presentation.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/canonical_url_retriever.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/requirements/activity_service_positioner.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/requirements/activity_service_presentation.h"
+#import "ios/chrome/browser/ui/sharing/sharing_params.h"
+#import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -64,7 +63,7 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTestSupport {
   SharingCoordinatorTest()
       : base_view_controller_([[UIViewController alloc] init]),
         fake_origin_view_([[UIView alloc] init]),
-        test_scenario_(ActivityScenario::TabShareButton),
+        test_scenario_(SharingScenario::TabShareButton),
         scene_state_([[SceneState alloc] initWithAppState:nil]) {
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
   }
@@ -94,7 +93,7 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTestSupport {
   UIViewController* base_view_controller_;
   UIView* fake_origin_view_;
   id snackbar_handler_;
-  ActivityScenario test_scenario_;
+  SharingScenario test_scenario_;
   SceneState* scene_state_;
 };
 
@@ -123,8 +122,8 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
 
   AppendNewWebState(std::move(test_web_state));
 
-  ActivityParams* params =
-      [[ActivityParams alloc] initWithScenario:test_scenario_];
+  SharingParams* params =
+      [[SharingParams alloc] initWithScenario:test_scenario_];
 
   SharingCoordinator* coordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:base_view_controller_
@@ -155,7 +154,7 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
 
   // Verify that the positioning is correct.
   auto activityHandler =
-      static_cast<id<ActivityServicePositioner, ActivityServicePresentation>>(
+      static_cast<id<SharingPositioner, ActivityServicePresentation>>(
           coordinator);
   EXPECT_EQ(fake_origin_view_, activityHandler.sourceView);
   EXPECT_TRUE(
@@ -168,8 +167,8 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
 
 // Tests that the coordinator handles the QRGenerationCommands protocol.
 TEST_F(SharingCoordinatorTest, GenerateQRCode) {
-  ActivityParams* params =
-      [[ActivityParams alloc] initWithScenario:test_scenario_];
+  SharingParams* params =
+      [[SharingParams alloc] initWithScenario:test_scenario_];
   SharingCoordinator* coordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
@@ -200,9 +199,9 @@ TEST_F(SharingCoordinatorTest, GenerateQRCode) {
 TEST_F(SharingCoordinatorTest, Start_ShareURL) {
   GURL testURL = GURL("https://example.com");
   NSString* testTitle = @"Some title";
-  ActivityParams* params = [[ActivityParams alloc] initWithURL:testURL
-                                                         title:testTitle
-                                                      scenario:test_scenario_];
+  SharingParams* params = [[SharingParams alloc] initWithURL:testURL
+                                                       title:testTitle
+                                                    scenario:test_scenario_];
   SharingCoordinator* coordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()

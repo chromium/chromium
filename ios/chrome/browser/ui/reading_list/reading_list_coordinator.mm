@@ -36,8 +36,8 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_mediator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_menu_provider.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_controller.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/table_view/table_view_animator.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
@@ -458,10 +458,10 @@
 - (void)shareURL:(const GURL&)URL
            title:(NSString*)title
         fromView:(UIView*)view {
-  ActivityParams* params =
-      [[ActivityParams alloc] initWithURL:URL
-                                    title:title
-                                 scenario:ActivityScenario::ReadingListEntry];
+  SharingParams* params =
+      [[SharingParams alloc] initWithURL:URL
+                                   title:title
+                                scenario:SharingScenario::ReadingListEntry];
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.tableViewController
                          browser:self.browser

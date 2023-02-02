@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/orchestrator/toolbar_animatee.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/requirements/activity_service_positioner.h"
+#import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 
 @protocol PrimaryToolbarViewControllerDelegate;
@@ -18,7 +18,7 @@
 // ViewController for the primary toobar part of the adaptive toolbar. It is the
 // part always displayed and containing the location bar.
 @interface PrimaryToolbarViewController
-    : AdaptiveToolbarViewController <ActivityServicePositioner,
+    : AdaptiveToolbarViewController <SharingPositioner,
                                      FullscreenUIElement,
                                      KeyCommandActions,
                                      ToolbarAnimatee,

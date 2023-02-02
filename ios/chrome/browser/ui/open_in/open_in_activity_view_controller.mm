@@ -42,11 +42,11 @@
         activity_type_util::ActivityType type =
             activity_type_util::TypeFromString(activityType);
         activity_type_util::RecordMetricForActivity(type);
-        RecordActivityForScenario(type, ActivityScenario::TabShareButton);
+        RecordActivityForScenario(type, SharingScenario::TabShareButton);
       } else {
         // Share action was cancelled.
         base::RecordAction(base::UserMetricsAction("MobileShareMenuCancel"));
-        RecordCancelledScenario(ActivityScenario::TabShareButton);
+        RecordCancelledScenario(SharingScenario::TabShareButton);
       }
     };
   }

@@ -36,7 +36,7 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_file_data.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/requirements/activity_service_positioner.h"
+#import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -206,7 +206,7 @@
   return mutableSet;
 }
 
-- (void)shareStartedWithScenario:(ActivityScenario)scenario {
+- (void)shareStartedWithScenario:(SharingScenario)scenario {
   RecordScenarioInitiated(scenario);
 }
 
@@ -218,7 +218,7 @@
   prefs->SetTime(prefs::kIosShareChromeLastShare, base::Time::Now());
 }
 
-- (void)shareFinishedWithScenario:(ActivityScenario)scenario
+- (void)shareFinishedWithScenario:(SharingScenario)scenario
                      activityType:(NSString*)activityType
                         completed:(BOOL)completed {
   if (activityType && completed) {
@@ -227,7 +227,7 @@
     activity_type_util::RecordMetricForActivity(type);
     RecordActivityForScenario(type, scenario);
     [self.promoScheduler logUserFinishedActivityFlow];
-    if (ActivityScenario::ShareChrome == scenario) {
+    if (SharingScenario::ShareChrome == scenario) {
       [self recordShareChromeFinishedInPrefs];
     }
   } else {

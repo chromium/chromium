@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_params.h"
+#import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/util/url_with_title.h"
 
 #import "url/gurl.h"
@@ -11,9 +11,9 @@
 #error "This file requires ARC support."
 #endif
 
-@implementation ActivityParams
+@implementation SharingParams
 
-- (instancetype)initWithScenario:(ActivityScenario)scenario {
+- (instancetype)initWithScenario:(SharingScenario)scenario {
   if (self = [super init]) {
     _scenario = scenario;
   }
@@ -22,7 +22,7 @@
 
 - (instancetype)initWithImage:(UIImage*)image
                         title:(NSString*)title
-                     scenario:(ActivityScenario)scenario {
+                     scenario:(SharingScenario)scenario {
   DCHECK(image);
   DCHECK(title);
   if (self = [self initWithScenario:scenario]) {
@@ -34,7 +34,7 @@
 
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title
-                   scenario:(ActivityScenario)scenario {
+                   scenario:(SharingScenario)scenario {
   self = [self initWithURLs:@[ [[URLWithTitle alloc] initWithURL:URL
                                                            title:title] ]
                    scenario:scenario];
@@ -42,7 +42,7 @@
 }
 
 - (instancetype)initWithURLs:(NSArray<URLWithTitle*>*)URLs
-                    scenario:(ActivityScenario)scenario {
+                    scenario:(SharingScenario)scenario {
   DCHECK(URLs.count);
   if (self = [self initWithScenario:scenario]) {
     _URLs = URLs;
@@ -53,7 +53,7 @@
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title
              additionalText:(NSString*)additionalText
-                   scenario:(ActivityScenario)scenario {
+                   scenario:(SharingScenario)scenario {
   DCHECK(additionalText);
 
   if (self = [self initWithURL:URL title:title scenario:scenario]) {

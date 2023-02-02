@@ -30,8 +30,8 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
@@ -256,7 +256,7 @@ TEST_F(BrowserCoordinatorTest, SharePage) {
 }
 
 // Tests that -shareChromeApp is instantiating the SharingCoordinator
-// with ActivityParams where scenario is ShareChrome, leaving fullscreen
+// with SharingParams where scenario is ShareChrome, leaving fullscreen
 // and starting the share coordinator.
 TEST_F(BrowserCoordinatorTest, ShareChromeApp) {
   FullscreenModel model;
@@ -271,8 +271,8 @@ TEST_F(BrowserCoordinatorTest, ShareChromeApp) {
   ASSERT_EQ(0.0, controller_ptr->GetProgress());
 
   id expectShareChromeScenarioArg =
-      [OCMArg checkWithBlock:^BOOL(ActivityParams* params) {
-        return params.scenario == ActivityScenario::ShareChrome;
+      [OCMArg checkWithBlock:^BOOL(SharingParams* params) {
+        return params.scenario == SharingScenario::ShareChrome;
       }];
 
   id classMock = OCMClassMock([SharingCoordinator class]);

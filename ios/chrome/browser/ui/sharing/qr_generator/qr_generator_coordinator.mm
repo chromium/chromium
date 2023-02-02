@@ -10,12 +10,12 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_params.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_scenario.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_service_coordinator.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/requirements/activity_service_positioner.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/requirements/activity_service_presentation.h"
+#import "ios/chrome/browser/ui/sharing/activity_services/activity_service_presentation.h"
 #import "ios/chrome/browser/ui/sharing/qr_generator/qr_generator_view_controller.h"
+#import "ios/chrome/browser/ui/sharing/sharing_params.h"
+#import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
+#import "ios/chrome/browser/ui/sharing/sharing_scenario.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -26,7 +26,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface QRGeneratorCoordinator () <ActivityServicePositioner,
+@interface QRGeneratorCoordinator () <SharingPositioner,
                                       ActivityServicePresentation,
                                       ConfirmationAlertActionHandler> {
   // URL of a page to generate a QR code for.
@@ -39,6 +39,7 @@
 // View controller used to display the QR code and actions.
 @property(nonatomic, strong) QRGeneratorViewController* viewController;
 
+// TODO(crbug.com/1404974): Use a SharingCoordinator instead.
 // Coordinator for the activity view brought up when the user wants to share
 // the QR code.
 @property(nonatomic, strong)
@@ -108,10 +109,10 @@
   NSString* imageTitle = l10n_util::GetNSStringF(
       IDS_IOS_QR_CODE_ACTIVITY_TITLE, base::SysNSStringToUTF16(self.title));
 
-  ActivityParams* params =
-      [[ActivityParams alloc] initWithImage:self.viewController.content
-                                      title:imageTitle
-                                   scenario:ActivityScenario::QRCodeImage];
+  SharingParams* params =
+      [[SharingParams alloc] initWithImage:self.viewController.content
+                                     title:imageTitle
+                                  scenario:SharingScenario::QRCodeImage];
 
   // Configure the image sharing scenario.
   self.activityServiceCoordinator = [[ActivityServiceCoordinator alloc]
@@ -141,7 +142,7 @@
                                   completion:nil];
 }
 
-#pragma mark - ActivityServicePositioner
+#pragma mark - SharingPositioner
 
 - (UIView*)sourceView {
   return self.viewController.primaryActionButton;

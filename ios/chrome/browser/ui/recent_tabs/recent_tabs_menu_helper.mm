@@ -101,7 +101,7 @@
                     [weakSelf.contextMenuDelegate
                         shareURL:gurl
                            title:item.title
-                        scenario:ActivityScenario::RecentTabsEntry
+                        scenario:SharingScenario::RecentTabsEntry
                         fromView:view];
                   }]];
 

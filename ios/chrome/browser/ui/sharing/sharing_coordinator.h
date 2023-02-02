@@ -8,9 +8,8 @@
 #include <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_scenario.h"
 
-@class ActivityParams;
+@class SharingParams;
 class Browser;
 
 // Coordinator of sharing scenarios. Its default scenario is to share the
@@ -24,7 +23,7 @@ class Browser;
 // the activity view popover on iPad.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                    params:(ActivityParams*)params
+                                    params:(SharingParams*)params
                                 originView:(UIView*)originView;
 
 // Creates a coordinator configured to share the URLs specified in `params`.
@@ -32,7 +31,7 @@ class Browser;
 // on iPad.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                    params:(ActivityParams*)params
+                                    params:(SharingParams*)params
                                     anchor:(UIBarButtonItem*)barButtonItem;
 
 // Creates a coordinator configured to share the current tab's URL using the
@@ -42,7 +41,7 @@ class Browser;
 // `originRect` will be used to position the activity view popover on iPad.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                    params:(ActivityParams*)params
+                                    params:(SharingParams*)params
                                 originView:(UIView*)originView
                                 originRect:(CGRect)originRect
                                     anchor:(UIBarButtonItem*)barButtonItem

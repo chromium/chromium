@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_scenario.h"
+#import "ios/chrome/browser/ui/sharing/sharing_scenario.h"
 
 class GURL;
 
@@ -23,7 +23,7 @@ class DistantSession;
 // TODO(crbug.com/1196956): Investigate removing `view` as a parameter.
 - (void)shareURL:(const GURL&)URL
            title:(NSString*)title
-        scenario:(ActivityScenario)scenario
+        scenario:(SharingScenario)scenario
         fromView:(UIView*)view;
 
 // Tells the delegate to remove Sessions corresponding to the given the table

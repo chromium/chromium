@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SHARING_ACTIVITY_SERVICES_REQUIREMENTS_ACTIVITY_SERVICE_POSITIONER_H_
-#define IOS_CHROME_BROWSER_UI_SHARING_ACTIVITY_SERVICES_REQUIREMENTS_ACTIVITY_SERVICE_POSITIONER_H_
+#ifndef IOS_CHROME_BROWSER_UI_SHARING_SHARING_POSITIONER_H_
+#define IOS_CHROME_BROWSER_UI_SHARING_SHARING_POSITIONER_H_
 
 #import <UIKit/UIKit.h>
 
-// ActivityServicePositioner contains methods that are used to position the
-// activity services menu on the screen.
-@protocol ActivityServicePositioner <NSObject>
+// SharingPositioner contains methods that are used to position the sharing menu
+// on the screen.
+@protocol SharingPositioner <NSObject>
 
 // Returns the view where the UIActivityViewController
 // should be presented. This property is ignored if a barButtonItem is set.
@@ -28,4 +28,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SHARING_ACTIVITY_SERVICES_REQUIREMENTS_ACTIVITY_SERVICE_POSITIONER_H_
+#endif  // IOS_CHROME_BROWSER_UI_SHARING_SHARING_POSITIONER_H_

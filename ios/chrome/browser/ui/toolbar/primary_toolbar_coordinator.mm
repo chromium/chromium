@@ -142,7 +142,7 @@
 
 #pragma mark - Public
 
-- (id<ActivityServicePositioner>)activityServicePositioner {
+- (id<SharingPositioner>)SharingPositioner {
   return self.viewController;
 }
 

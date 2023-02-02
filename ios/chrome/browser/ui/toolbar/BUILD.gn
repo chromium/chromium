@@ -118,7 +118,7 @@ source_set("toolbar_ui") {
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/orchestrator",
     "//ios/chrome/browser/ui/popup_menu/public",
-    "//ios/chrome/browser/ui/sharing/activity_services/requirements",
+    "//ios/chrome/browser/ui/sharing:public",
     "//ios/chrome/browser/ui/thumb_strip:feature_flags",
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/browser/ui/toolbar/public",

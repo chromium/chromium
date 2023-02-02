@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/reading_list_activity.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/request_desktop_or_mobile_site_activity.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/send_tab_to_self_activity.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_scenario.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_type_util.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/chrome_activity_image_source.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/chrome_activity_item_source.h"
@@ -31,6 +30,7 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/data/chrome_activity_url_source.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data.h"
+#import "ios/chrome/browser/ui/sharing/sharing_scenario.h"
 #import "ios/web/common/user_agent.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -371,7 +371,7 @@ TEST_F(ActivityServiceMediatorTest, ShareFinished_Success) {
   // Since mocked_handler_ is a strict mock, any call to its methods would make
   // the test fail.
   NSString* copyActivityString = @"com.google.chrome.copyActivity";
-  [mediator_ shareFinishedWithScenario:ActivityScenario::TabShareButton
+  [mediator_ shareFinishedWithScenario:SharingScenario::TabShareButton
                           activityType:copyActivityString
                              completed:YES];
 
@@ -389,7 +389,7 @@ TEST_F(ActivityServiceMediatorTest, ShareFinished_SuccessShareChrome) {
   // Since mocked_handler_ is a strict mock, any call to its methods would make
   // the test fail.
   NSString* copyActivityString = @"com.google.chrome.copyActivity";
-  [mediator_ shareFinishedWithScenario:ActivityScenario::ShareChrome
+  [mediator_ shareFinishedWithScenario:SharingScenario::ShareChrome
                           activityType:copyActivityString
                              completed:YES];
   int count = pref_service_->GetInteger(prefs::kIosShareChromeCount);
@@ -403,7 +403,7 @@ TEST_F(ActivityServiceMediatorTest, ShareFinished_Cancel) {
   // Since mocked_handler_ is a strict mock, any call to its methods would make
   // the test fail. That is our success condition.
   NSString* copyActivityString = @"com.google.chrome.copyActivity";
-  [mediator_ shareFinishedWithScenario:ActivityScenario::TabShareButton
+  [mediator_ shareFinishedWithScenario:SharingScenario::TabShareButton
                           activityType:copyActivityString
                              completed:NO];
 
@@ -417,7 +417,7 @@ TEST_F(ActivityServiceMediatorTest, ShareFinished_Cancel) {
 TEST_F(ActivityServiceMediatorTest, ShareCancelled) {
   // Since mocked_handler_ is a strict mock, any call to its methods would make
   // the test fail. That is our success condition.
-  [mediator_ shareFinishedWithScenario:ActivityScenario::TabShareButton
+  [mediator_ shareFinishedWithScenario:SharingScenario::TabShareButton
                           activityType:nil
                              completed:NO];
 

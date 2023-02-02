@@ -6,10 +6,10 @@
 #define IOS_CHROME_BROWSER_UI_SHARING_ACTIVITY_SERVICES_ACTIVITY_SERVICE_COORDINATOR_H_
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_scenario.h"
+#import "ios/chrome/browser/ui/sharing/sharing_scenario.h"
 
-@class ActivityParams;
-@protocol ActivityServicePositioner;
+@class SharingParams;
+@protocol SharingPositioner;
 @protocol ActivityServicePresentation;
 @protocol BookmarksCommands;
 class Browser;
@@ -24,15 +24,14 @@ class Browser;
 // necessary values to drive the scenario.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
-                                    params:(ActivityParams*)params
+                                    params:(SharingParams*)params
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Provider of the share action location.
-@property(nonatomic, readwrite, weak) id<ActivityServicePositioner>
-    positionProvider;
+@property(nonatomic, readwrite, weak) id<SharingPositioner> positionProvider;
 
 // Provider of share action presentation.
 @property(nonatomic, readwrite, weak) id<ActivityServicePresentation>

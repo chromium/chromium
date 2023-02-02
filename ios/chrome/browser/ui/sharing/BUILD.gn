@@ -2,6 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("public") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "sharing_params.h",
+    "sharing_params.mm",
+    "sharing_positioner.h",
+    "sharing_scenario.h",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/util:url_with_title",
+    "//url",
+  ]
+}
+
 source_set("sharing") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -13,6 +27,7 @@ source_set("sharing") {
     "sharing_coordinator.mm",
   ]
   deps = [
+    ":public",
     "//base",
     "//components/bookmarks/browser",
     "//ios/chrome/app/strings",
@@ -25,9 +40,9 @@ source_set("sharing") {
     "//ios/chrome/browser/ui/open_in:features",
     "//ios/chrome/browser/ui/open_in:open_in_histograms",
     "//ios/chrome/browser/ui/sharing/activity_services",
-    "//ios/chrome/browser/ui/sharing/activity_services/requirements",
     "//ios/chrome/browser/ui/sharing/qr_generator",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/ui/util:url_with_title",
     "//ios/chrome/browser/web_state_list",
     "//ios/third_party/material_components_ios",
     "//ios/web/public",
@@ -42,6 +57,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "sharing_coordinator_unittest.mm" ]
   deps = [
+    ":public",
     ":sharing",
     "//base",
     "//base/test:test_support",
@@ -54,7 +70,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/sharing/activity_services",
-    "//ios/chrome/browser/ui/sharing/activity_services/requirements",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/test:test_support",

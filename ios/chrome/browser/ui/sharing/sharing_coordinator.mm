@@ -21,12 +21,12 @@
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/open_in/features.h"
 #import "ios/chrome/browser/ui/open_in/open_in_histograms.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_service_coordinator.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/requirements/activity_service_positioner.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/requirements/activity_service_presentation.h"
+#import "ios/chrome/browser/ui/sharing/activity_services/activity_service_presentation.h"
 #import "ios/chrome/browser/ui/sharing/qr_generator/qr_generator_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/share_download_overlay_coordinator.h"
+#import "ios/chrome/browser/ui/sharing/sharing_params.h"
+#import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/download/crw_web_view_download.h"
@@ -94,7 +94,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
 }  // namespace
 
-@interface SharingCoordinator () <ActivityServicePositioner,
+@interface SharingCoordinator () <SharingPositioner,
                                   ActivityServicePresentation,
                                   CRWWebViewDownloadDelegate,
                                   QRGenerationCommands>
@@ -108,7 +108,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
 @property(nonatomic, strong) QRGeneratorCoordinator* qrGeneratorCoordinator;
 
-@property(nonatomic, strong) ActivityParams* params;
+@property(nonatomic, strong) SharingParams* params;
 
 @property(nonatomic, weak) UIView* originView;
 
@@ -147,7 +147,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                    params:(ActivityParams*)params
+                                    params:(SharingParams*)params
                                 originView:(UIView*)originView {
   DCHECK(originView);
   self = [self initWithBaseViewController:viewController
@@ -161,7 +161,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                    params:(ActivityParams*)params
+                                    params:(SharingParams*)params
                                     anchor:(UIBarButtonItem*)anchor {
   DCHECK(anchor);
   self = [self initWithBaseViewController:viewController
@@ -175,7 +175,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                    params:(ActivityParams*)params
+                                    params:(SharingParams*)params
                                 originView:(UIView*)originView
                                 originRect:(CGRect)originRect
                                     anchor:(UIBarButtonItem*)anchor {
@@ -218,7 +218,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   self.originView = nil;
 }
 
-#pragma mark - ActivityServicePositioner
+#pragma mark - SharingPositioner
 
 - (UIView*)sourceView {
   return self.originView;
