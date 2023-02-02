@@ -4736,11 +4736,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "messages-for-android-instant-apps",
-    "owners": [ "aishwaryarj", "lazzzis" ],
-    "expiry_milestone": 101
-  },
-  {
     "name": "messages-for-android-notification-blocked",
     "owners": [ "pavely", "lazzzis" ],
     "expiry_milestone": 105
