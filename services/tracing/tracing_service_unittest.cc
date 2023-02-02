@@ -274,7 +274,7 @@ TEST_F(TracingServiceTest, PerfettoClientConsumerLegacyJson) {
 
   absl::optional<base::Value> result = base::JSONReader::Read(json);
   ASSERT_TRUE(result.has_value());
-  EXPECT_TRUE(result->FindKey("traceEvents"));
+  EXPECT_TRUE(result->GetDict().contains("traceEvents"));
 }
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
