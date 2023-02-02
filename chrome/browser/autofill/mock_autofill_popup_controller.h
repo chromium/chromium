@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/test/scoped_default_font_description.h"
 
@@ -26,25 +27,23 @@ class MockAutofillPopupController
   MockAutofillPopupController();
   ~MockAutofillPopupController() override;
 
-  // AutofillPopupViewDelegate
-  MOCK_METHOD1(Hide, void(PopupHidingReason reason));
-  MOCK_METHOD0(ViewDestroyed, void());
-  MOCK_METHOD1(SetSelectionAtPoint, void(const gfx::Point& point));
-  MOCK_METHOD0(AcceptSelectedLine, bool());
-  MOCK_METHOD0(SelectionCleared, void());
-  MOCK_CONST_METHOD0(HasSelection, bool());
-  MOCK_CONST_METHOD0(popup_bounds, gfx::Rect());
-  MOCK_CONST_METHOD0(container_view, gfx::NativeView());
-  MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
+  // AutofillPopupViewDelegate:
+  MOCK_METHOD(void, Hide, (PopupHidingReason), (override));
+  MOCK_METHOD(void, ViewDestroyed, (), (override));
+  MOCK_METHOD(void, SelectionCleared, (), (override));
+  MOCK_METHOD(bool, HasSelection, (), (const override));
+  MOCK_METHOD(gfx::Rect, popup_bounds, (), (const override));
+  MOCK_METHOD(gfx::NativeView, container_view, (), (const override));
+  MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
   const gfx::RectF& element_bounds() const override {
     static const gfx::RectF bounds(100, 100, 250, 50);
     return bounds;
   }
-  MOCK_CONST_METHOD0(IsRTL, bool());
+  MOCK_METHOD(bool, IsRTL, (), (const override));
 
-  // AutofillPopupController
-  MOCK_METHOD0(OnSuggestionsChanged, void());
-  MOCK_METHOD1(AcceptSuggestion, void(int index));
+  // AutofillPopupController:
+  MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
+  MOCK_METHOD(void, AcceptSuggestion, (int), (override));
   std::vector<Suggestion> GetSuggestions() const override {
     return suggestions_;
   }
@@ -72,12 +71,14 @@ class MockAutofillPopupController
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  MOCK_METHOD3(GetRemovalConfirmationText,
-               bool(int index, std::u16string* title, std::u16string* body));
-  MOCK_METHOD1(RemoveSuggestion, bool(int index));
-  MOCK_METHOD1(SetSelectedLine, void(absl::optional<int> selected_line));
-  MOCK_CONST_METHOD0(selected_line, absl::optional<int>());
-  MOCK_CONST_METHOD0(GetPopupType, PopupType());
+  MOCK_METHOD(bool,
+              GetRemovalConfirmationText,
+              (int, std::u16string*, std::u16string*),
+              (override));
+  MOCK_METHOD(bool, RemoveSuggestion, (int), (override));
+  MOCK_METHOD(void, SetSelectedLine, (absl::optional<int>), (override));
+  MOCK_METHOD(absl::optional<int>, selected_line, (), (const override));
+  MOCK_METHOD(PopupType, GetPopupType, (), (const override));
 
   void set_suggestions(const std::vector<int>& ids) {
     for (const auto& id : ids) {
@@ -88,8 +89,8 @@ class MockAutofillPopupController
     }
   }
 
-  void set_suggestions(const std::vector<Suggestion>& suggestions) {
-    suggestions_ = suggestions;
+  void set_suggestions(std::vector<Suggestion> suggestions) {
+    suggestions_ = std::move(suggestions);
   }
 
  private:

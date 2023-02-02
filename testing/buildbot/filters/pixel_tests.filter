@@ -14,6 +14,7 @@ AccessCodeCastDialogBrowserTest.*
 AppInfoDialogBrowserTest.*
 AskGoogleForSuggestionsDialogTest.*
 AssistantOnboardingViewBrowserTest.InvokeUi_*
+*AutofillPopupViewNativeViewsTest*
 BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*
 BubbleFrameViewBrowserTest.*

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -14,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,19 +38,17 @@ using testing::ReturnRef;
 
 class MockAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
  public:
-  MOCK_METHOD1(Hide, void(PopupHidingReason));
-  MOCK_METHOD0(ViewDestroyed, void());
-  MOCK_METHOD1(SetSelectionAtPoint, void(const gfx::Point&));
-  MOCK_METHOD0(AcceptSelectedLine, bool());
-  MOCK_METHOD0(SelectionCleared, void());
-  MOCK_CONST_METHOD0(HasSelection, bool());
+  MockAutofillPopupViewDelegate() = default;
+  ~MockAutofillPopupViewDelegate() override = default;
 
-  // TODO(jdduke): Mock this method upon resolution of crbug.com/352463.
-  MOCK_CONST_METHOD0(popup_bounds, gfx::Rect());
-  MOCK_CONST_METHOD0(container_view, gfx::NativeView());
-  MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
-  MOCK_CONST_METHOD0(element_bounds, gfx::RectF&());
-  MOCK_CONST_METHOD0(IsRTL, bool());
+  MOCK_METHOD(void, Hide, (PopupHidingReason), (override));
+  MOCK_METHOD(void, ViewDestroyed, (), (override));
+  MOCK_METHOD(void, SelectionCleared, (), (override));
+
+  MOCK_METHOD(gfx::NativeView, container_view, (), (const override));
+  MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
+  MOCK_METHOD(const gfx::RectF&, element_bounds, (), (const override));
+  MOCK_METHOD(bool, IsRTL, (), (const override));
 
   base::WeakPtr<AutofillPopupViewDelegate> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -85,20 +86,13 @@ class AutofillPopupBaseViewTest : public InProcessBrowserTest {
                                       browser()->window()->GetNativeWindow()));
   }
 
+  void TearDownOnMainThread() override { view_ = nullptr; }
+
   void ShowView() { view_->DoShow(); }
-
-  ui::GestureEvent CreateGestureEvent(ui::EventType type, gfx::Point point) {
-    return ui::GestureEvent(point.x(), point.y(), 0, ui::EventTimeForNow(),
-                            ui::GestureEventDetails(type));
-  }
-
-  void SimulateGesture(ui::GestureEvent* event) {
-    view_->OnGestureEvent(event);
-  }
 
  protected:
   testing::NiceMock<MockAutofillPopupViewDelegate> mock_delegate_;
-  raw_ptr<AutofillPopupBaseView, DanglingUntriaged> view_;
+  raw_ptr<AutofillPopupBaseView> view_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(AutofillPopupBaseViewTest, CorrectBoundsTest) {
