@@ -823,6 +823,21 @@ xnn_status DefineXnnNodeForRelu(xnn_subgraph_t subgraph,
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForSoftmax(
+    xnn_subgraph_t subgraph,
+    const MLOperator* softmax,
+    const OperandValueIdMap& operand_value_id_map,
+    String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(softmax, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(softmax, operand_value_id_map);
+  const uint32_t flags = 0;
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+      xnn_define_softmax(subgraph, input_id, output_id, flags));
+  return xnn_status_success;
+}
+
 // Define an XNNPACK Node given an MLOperator object and add it into the
 // Subgraph object. The operand_value_id_map is used to find the corresponding
 // input and output XNNPACK Values of this MLOperator object. This method calls
@@ -865,6 +880,10 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
     }
     case MLOperator::OperatorKind::kRelu:
       XNN_CHECK_STATUS(DefineXnnNodeForRelu(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    case MLOperator::OperatorKind::kSoftmax:
+      XNN_CHECK_STATUS(DefineXnnNodeForSoftmax(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     default: {

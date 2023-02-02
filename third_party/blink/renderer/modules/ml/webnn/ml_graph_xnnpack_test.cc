@@ -1187,6 +1187,101 @@ TEST_P(MLGraphXnnpackTest, Pool2dTest) {
   }
 }
 
+// The outputs of softmax function,
+// https://en.wikipedia.org/wiki/Softmax_function, are floating-point numbers
+// with mantissa. The WPT WebNN conformance test cases of softmax operator,
+// https://github.com/web-platform-tests/wpt/blob/master/webnn/resources/test_data/softmax.json,
+// will test the accuracy loss of the results against the expected values with
+// the WG-agreed tolerance setting.
+//
+// For MLGraphXnnpack unit testing, SoftmaxTester instead checks the compute
+// results of an MLGraph containing a softmax MLOperator against the results of
+// calling XNNPACK softmax operator API for the same input. With that, the
+// expected values are not needed.
+struct SoftmaxTester {
+  MLGraphXnnpackTest* helper;
+  OperandInfo<float> input;
+
+  void Test(V8TestingScope& scope) {
+    // Create and run XNNPACK softmax operator.
+    ASSERT_EQ(xnn_status_success, xnn_initialize(/*allocator=*/nullptr));
+
+    DCHECK_EQ(input.dimensions.size(), 2u);
+    const uint32_t batch_size = input.dimensions[0];
+    const uint32_t channels = input.dimensions[1];
+
+    xnn_operator_t softmax_op = nullptr;
+    const xnn_status status = xnn_create_softmax_nc_f32(
+        channels, channels, channels, /*flags=*/0, &softmax_op);
+    ASSERT_EQ(xnn_status_success, status);
+    ASSERT_NE(nullptr, softmax_op);
+    std::unique_ptr<xnn_operator, decltype(&xnn_delete_operator)> auto_op(
+        softmax_op, xnn_delete_operator);
+
+    // XNNPACK may access beyond array bounds. The caller must allocate at least
+    // XNN_EXTRA_BYTES extra bytes after the tensor data passed to XNNPACK.
+    Vector<float> xnnpack_input(input.values);
+    xnnpack_input.Grow(input.values.size() + XNN_EXTRA_BYTES / sizeof(float));
+    Vector<float> xnnpack_output(batch_size * channels +
+                                 XNN_EXTRA_BYTES / sizeof(float));
+    ASSERT_EQ(
+        xnn_status_success,
+        xnn_setup_softmax_nc_f32(softmax_op, batch_size, xnnpack_input.data(),
+                                 xnnpack_output.data(),
+                                 /*threadpool=*/nullptr));
+
+    ASSERT_EQ(xnn_status_success,
+              xnn_run_operator(softmax_op, /*threadpool=*/nullptr));
+    // Remove the extra bytes of XNNPACK output.
+    xnnpack_output.Shrink(batch_size * channels);
+
+    // Build WebNN graph with softmax operator.
+    auto* builder = CreateMLGraphBuilder(scope);
+    auto* input_operand =
+        BuildInput(scope, builder, "input", input.dimensions, input.type);
+    auto* output_operand =
+        builder->softmax(input_operand, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper->BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute WebNN graph.
+    auto input_buffer =
+        CreateArrayBufferViewForOperand(input_operand, input.values);
+    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
+    auto* compute_exception = helper->ComputeGraph(
+        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<float>(output_buffer);
+
+    // Compare the results of WebNN graph and XNNPACK operator.
+    EXPECT_EQ(results, xnnpack_output);
+  }
+};
+
+TEST_P(MLGraphXnnpackTest, SoftmaxTest) {
+  V8TestingScope scope;
+  {
+    // Test softmax operator for input operand with [2, 2] dimensions.
+    // There is no need to set expected results, because SoftmaxTester will
+    // calculate the expected results by calling XNNPACK softmax operator
+    // APIs.
+    SoftmaxTester{.helper = this,
+                  .input = {.type = V8MLOperandType::Enum::kFloat32,
+                            .dimensions = {2, 2},
+                            .values = {-1.0, -0.5, 0.5, 1.0}}}
+        .Test(scope);
+  }
+  {
+    // Test softmax operator for input operand with [1, 4] dimensions.
+    SoftmaxTester{.helper = this,
+                  .input = {.type = V8MLOperandType::Enum::kFloat32,
+                            .dimensions = {1, 4},
+                            .values = {-1.0, -0.5, 0.5, 1.0}}}
+        .Test(scope);
+  }
+}
+
 // TODO(crbug.com/1273291): Test the async execution mode once the
 // MLGraphXnnpack implements it.
 INSTANTIATE_TEST_SUITE_P(All,
