@@ -584,7 +584,9 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
       is_in_projector_mode_(projector_mode),
       cursor_setter_(std::make_unique<CursorSetter>()),
       focus_cycler_(std::make_unique<CaptureModeSessionFocusCycler>(this)),
-      capture_toast_controller_(this) {}
+      capture_toast_controller_(this) {
+  DCHECK(current_root_);
+}
 
 CaptureModeSession::~CaptureModeSession() = default;
 
@@ -608,15 +610,17 @@ void CaptureModeSession::Initialize() {
   // Note that some windows gets destroyed when they lose the capture (e.g. a
   // window created for capturing events while drag-drop in progress), so we
   // need to account for that.
-  auto* capture_client = aura::client::GetCaptureClient(current_root_);
-  input_capture_window_ = capture_client->GetCaptureWindow();
-  if (input_capture_window_) {
-    aura::WindowTracker tracker({input_capture_window_});
-    capture_client->ReleaseCapture(input_capture_window_);
-    if (tracker.windows().empty())
-      input_capture_window_ = nullptr;
-    else
-      input_capture_window_->AddObserver(this);
+  if (auto* capture_client = aura::client::GetCaptureClient(current_root_)) {
+    input_capture_window_ = capture_client->GetCaptureWindow();
+    if (input_capture_window_) {
+      aura::WindowTracker tracker({input_capture_window_});
+      capture_client->ReleaseCapture(input_capture_window_);
+      if (tracker.windows().empty()) {
+        input_capture_window_ = nullptr;
+      } else {
+        input_capture_window_->AddObserver(this);
+      }
+    }
   }
 
   SetLayer(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED));
@@ -694,8 +698,10 @@ void CaptureModeSession::Shutdown() {
   TabletModeController::Get()->RemoveObserver(this);
   if (input_capture_window_) {
     input_capture_window_->RemoveObserver(this);
-    aura::client::GetCaptureClient(current_root_)
-        ->SetCapture(input_capture_window_);
+    if (auto* client = aura::client::GetCaptureClient(
+            input_capture_window_->GetRootWindow())) {
+      client->SetCapture(input_capture_window_);
+    }
   }
 
   // This may happen if we hit esc while dragging.

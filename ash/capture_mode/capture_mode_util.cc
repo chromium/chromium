@@ -466,7 +466,7 @@ bool SetWidgetVisibility(views::Widget* widget,
 
 aura::Window* GetPreferredRootWindow(
     absl::optional<gfx::Point> location_in_screen) {
-  int64_t display_id =
+  const int64_t display_id =
       (location_in_screen
            ? display::Screen::GetScreen()->GetDisplayNearestPoint(
                  *location_in_screen)
@@ -476,7 +476,8 @@ aura::Window* GetPreferredRootWindow(
   // The Display object returned by `CursorManager::GetDisplay()` may be stale,
   // but will have the correct id.
   DCHECK_NE(display::kInvalidDisplayId, display_id);
-  return Shell::GetRootWindowForDisplayId(display_id);
+  auto* root = Shell::GetRootWindowForDisplayId(display_id);
+  return root ? root : Shell::GetPrimaryRootWindow();
 }
 
 void ConfigLabelView(views::Label* label_view) {
