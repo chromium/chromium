@@ -226,8 +226,6 @@ public final class ProductionSupportedFlagList {
                             + "developer API."),
             Flag.baseFeature(BlinkFeatures.VIEWPORT_HEIGHT_CLIENT_HINT_HEADER,
                     "Enables the use of sec-ch-viewport-height client hint."),
-            Flag.baseFeature(BlinkFeatures.USER_AGENT_OVERRIDE_EXPERIMENT,
-                    "Collects metrics on when the User-Agent string is overridden and how"),
             Flag.baseFeature(GpuFeatures.CANVAS_CONTEXT_LOST_IN_BACKGROUND,
                     "Free Canvas2D resources when the webview is in the background."),
             Flag.baseFeature(GpuFeatures.USE_GPU_SCHEDULER_DFS,

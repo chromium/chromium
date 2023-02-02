@@ -571,10 +571,8 @@ class NavigationBrowserTestUserAgentOverrideSubstring
     : public NavigationBrowserTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kUserAgentOverrideExperiment,
-         blink::features::kUACHOverrideBlank},
-        {});
+    scoped_feature_list_.InitWithFeatures({blink::features::kUACHOverrideBlank},
+                                          {});
     NavigationBrowserTest::SetUp();
   }
 
@@ -597,14 +595,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestUserAgentOverrideSubstring,
       base::BindLambdaForTesting([&](Navigation* navigation) {
         navigation->SetUserAgentString(custom_ua);
       }));
-  base::HistogramTester histogram;
   OneShotNavigationObserver navigation_observer(shell());
   shell()->LoadURL(https_server.GetURL("/simple_page.html"));
   navigation_observer.WaitForNavigation();
-
-  histogram.ExpectBucketCount(
-      blink::UserAgentOverride::kUserAgentOverrideHistogram,
-      blink::UserAgentOverride::UserAgentOverriden, 1);
 
   base::RunLoop run_loop;
   shell()->tab()->ExecuteScript(
@@ -665,7 +658,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestUserAgentOverrideSubstring,
         navigation->SetUserAgentString(custom_ua);
       }));
 
-  base::HistogramTester histogram;
   shell()->LoadURL(https_server->GetURL("/simple_page.html"));
   response_1.WaitForRequest();
 
@@ -681,9 +673,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestUserAgentOverrideSubstring,
       response_1.http_request()->headers.at("Sec-CH-UA");
   EXPECT_EQ("", new_ch_header);
   content::FetchHistogramsFromChildProcesses();
-  histogram.ExpectBucketCount(
-      blink::UserAgentOverride::kUserAgentOverrideHistogram,
-      blink::UserAgentOverride::UserAgentOverriden, 1);
 
   // Header should carry through to redirect.
   response_1.Send(

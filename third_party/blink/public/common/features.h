@@ -562,10 +562,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReportFCPOnlyOnSuccessfulCommit);
 // of additional element tag tyeps, instead of just <div> and <iframe>.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRegionCaptureExperimentalSubtypes);
 
-// Experiment for measuring how often an overridden User-Agent string is made by
-// appending or prepending to the original User-Agent string.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUserAgentOverrideExperiment);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebSQLAccess);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUACHOverrideBlank);

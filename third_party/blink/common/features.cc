@@ -1267,10 +1267,6 @@ BASE_FEATURE(kRegionCaptureExperimentalSubtypes,
              "RegionCaptureExperimentalSubtypes",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUserAgentOverrideExperiment,
-             "UserAgentOverrideExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Allow access to WebSQL APIs.
 BASE_FEATURE(kWebSQLAccess, "kWebSQLAccess", base::FEATURE_ENABLED_BY_DEFAULT);
 
