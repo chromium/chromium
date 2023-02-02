@@ -173,7 +173,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Query) {
 
 // TODO(crbug.com/1410558): Move to tabs_interactive_test.cc
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Highlight) {
+// TODO(https://crbug.com/1412353): Re-enable once flakiness is fixed.
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, DISABLED_Highlight) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/highlight")) << message_;
 }
 #endif
