@@ -4,7 +4,6 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {getUniqueParents} from '../../common/js/api.js';
 import {AsyncQueue, RateLimiter} from '../../common/js/async_util.js';
 import {notifications} from '../../common/js/notifications.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
@@ -16,6 +15,25 @@ import {DriveDialogControllerInterface} from '../../externs/drive_dialog_control
 import {MetadataModelInterface} from '../../externs/metadata_model.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
+
+/**
+ * Keys in the metadata store related to individual sync status.
+ * @const {!Array<!chrome.fileManagerPrivate.EntryPropertyName>}
+ */
+const METADATA_KEYS = [
+  chrome.fileManagerPrivate.EntryPropertyName.SYNC_STATUS,
+  chrome.fileManagerPrivate.EntryPropertyName.PROGRESS,
+];
+
+/**
+ * @const {!chrome.fileManagerPrivate.EntryPropertyName}
+ */
+const SYNC_STATUS = chrome.fileManagerPrivate.EntryPropertyName.SYNC_STATUS;
+
+/**
+ * @const {!chrome.fileManagerPrivate.SyncStatus}
+ */
+const COMPLETED = chrome.fileManagerPrivate.SyncStatus.COMPLETED;
 
 /**
  * Handler of the background page for the Drive sync events.
@@ -173,14 +191,15 @@ export class DriveSyncHandlerImpl extends EventTarget {
     this.dialogs_ = new Map();
 
     // Register events.
-    chrome.fileManagerPrivate.onIndividualFileTransfersUpdated.addListener(
-        this.updateSyncStatusMetadata_.bind(this));
-    chrome.fileManagerPrivate.onIndividualPinTransfersUpdated.addListener(
-        this.updateSyncStatusMetadata_.bind(this));
-    chrome.fileManagerPrivate.onFileTransfersUpdated.addListener(
-        this.onFileTransfersStatusReceived_.bind(this, this.syncItem_));
-    chrome.fileManagerPrivate.onPinTransfersUpdated.addListener(
-        this.onFileTransfersStatusReceived_.bind(this, this.pinItem_));
+    if (util.isInlineSyncStatusEnabled()) {
+      chrome.fileManagerPrivate.onIndividualFileTransfersUpdated.addListener(
+          this.updateSyncStateMetadata_.bind(this));
+    } else {
+      chrome.fileManagerPrivate.onFileTransfersUpdated.addListener(
+          this.onFileTransfersStatusReceived_.bind(this, this.syncItem_));
+      chrome.fileManagerPrivate.onPinTransfersUpdated.addListener(
+          this.onFileTransfersStatusReceived_.bind(this, this.pinItem_));
+    }
     chrome.fileManagerPrivate.onDriveSyncError.addListener(
         this.onDriveSyncError_.bind(this));
     notifications.onButtonClicked.addListener(
@@ -283,36 +302,59 @@ export class DriveSyncHandlerImpl extends EventTarget {
   /**
    * Handles file transfer status updates for individual files, updating their
    * sync status metadata.
-   * @param {!Array<!chrome.fileManagerPrivate.IndividualFileTransferStatus>}
-   *     statuses Updated file transfer statuses.
+   * @param {!Array<!chrome.fileManagerPrivate.SyncState>}
+   *     syncStates Updated file transfer statuses.
    * @private
    */
-  async updateSyncStatusMetadata_(statuses) {
+  updateSyncStateMetadata_(syncStates) {
     if (!this.metadataModel_) {
       // Files app is still loading. This should have no user visible impact
       // since sync status update events are constantly emitted.
       return;
     }
 
-    const metadataKeys = ['syncStatus', 'progress'];
+    const completedUrls = [];
+    const valuesToUpdate = [];
+    const urlsToUpdate = [];
 
-    // Get the cached syncStatus metadata for received statuses.
-    const entries = statuses.map(({entry}) => entry);
-    const cached = this.metadataModel_.getCache(entries, metadataKeys);
+    for (const {fileUrl, syncStatus, progress} of syncStates) {
+      valuesToUpdate.push([syncStatus, progress]);
+      urlsToUpdate.push(fileUrl);
 
-    // Filter out statuses that match what we already have in the cache, but
-    // keep all "in_progress" statuses to retrieve their updated progress.
-    const entriesToInvalidate = entries.filter(
-        (_, i) => statuses[i].transferState === 'in_progress' ||
-            cached[i].syncStatus !== statuses[i].transferState);
+      if (syncStatus === COMPLETED) {
+        completedUrls.push(fileUrl);
+      }
+    }
 
-    // Get unique parents of entries to be invalidated.
-    const directoriesToInvalidate = await getUniqueParents(entriesToInvalidate);
-    entriesToInvalidate.push(...directoriesToInvalidate);
+    this.metadataModel_.update(urlsToUpdate, METADATA_KEYS, valuesToUpdate);
 
-    // Invalidate entries and their parent directories.
-    this.metadataModel_.notifyEntriesChanged(entriesToInvalidate);
-    this.metadataModel_.get(entriesToInvalidate, metadataKeys);
+    // Update filtered states that are completed now and, in 300ms, are still
+    // completed (i.e., haven't started syncing again) to "not_found".
+    if (completedUrls.length > 0) {
+      setTimeout(() => this.dismissCompletedEntries_(completedUrls), 300);
+    }
+  }
+
+  /**
+   * Updates fileUrls that are still "completed" to "not_found".
+   * @param {!Array<!string>} fileUrls
+   * @private
+   */
+  dismissCompletedEntries_(fileUrls) {
+    const stillCompletedUrls = [];
+    const valuesToUpdate = [];
+
+    const metadata = this.metadataModel.getCacheByUrls(fileUrls, [SYNC_STATUS]);
+    for (let i = 0; i < metadata.length; i++) {
+      if (metadata[i].syncStatus === COMPLETED) {
+        stillCompletedUrls.push(fileUrls[i]);
+        valuesToUpdate.push(
+            [chrome.fileManagerPrivate.SyncStatus.NOT_FOUND, 0]);
+      }
+    }
+
+    this.metadataModel_.update(
+        stillCompletedUrls, METADATA_KEYS, valuesToUpdate);
   }
 
   /**
@@ -471,10 +513,16 @@ export class DriveSyncHandlerImpl extends EventTarget {
     }
 
     try {
-      const entry = await util.urlToEntry(event.fileUrl);
       if (util.isInlineSyncStatusEnabled()) {
-        this.updateSyncStatusMetadata_([{entry, transferState: 'failed'}]);
+        this.updateSyncStateMetadata_([
+          {
+            fileUrl: event.fileUrl,
+            syncStatus: chrome.fileManagerPrivate.SyncStatus.ERROR,
+            progress: 0,
+          },
+        ]);
       }
+      const entry = await util.urlToEntry(event.fileUrl);
       postError(entry.name);
     } catch (error) {
       postError('');

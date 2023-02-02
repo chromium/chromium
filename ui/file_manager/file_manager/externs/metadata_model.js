@@ -22,8 +22,25 @@ export class MetadataModelInterface {
   getCache(entries, names) {}
 
   /**
+   * Obtains metadata cache for file URLs.
+   * @param {!Array<!string>} urls File URLs.
+   * @param {!Array<string>} names Metadata property names to be obtained.
+   * @return {!Array<!MetadataItem>}
+   */
+  getCacheByUrls(urls, names) {}
+
+  /**
    * Invalidates metadata for updated entries.
    * @param {!Array<!Entry>} entries
    */
   notifyEntriesChanged(entries) {}
+
+  /**
+   * Updates the metadata of the given entries with the provided values for each
+   * specified metadata name.
+   * @param {!Array<!Entry>} entries FileURLs to have their metadata updated
+   * @param {!Array<string>} names Metadata property names to be updated.
+   * @param {!Array<!Array<string|number|boolean>>} values
+   */
+  update(entries, names, values) {}
 }

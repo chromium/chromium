@@ -72,7 +72,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) SyncStatusTracker {
   SyncStatusTracker& operator=(const SyncStatusTracker&) = delete;
 
   void SetCompleted(const int64_t id, const base::FilePath& path) {
-    SetSyncState(id, path, SyncStatus::kCompleted);
+    // Completed events might fire more than once for the same id.
+    // Only use completed events to update currently tracked nodes.
+    if (id_to_node_.count(id)) {
+      SetSyncState(id, path, SyncStatus::kCompleted);
+    }
   }
   void SetQueued(const int64_t id,
                  const base::FilePath& path,
@@ -83,6 +87,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) SyncStatusTracker {
                      const base::FilePath& path,
                      const int64_t transferred,
                      const int64_t total) {
+    if (transferred == total) {
+      SetCompleted(id, path);
+      return;
+    }
     SetSyncState(id, path, SyncStatus::kInProgress, transferred, total);
   }
   void SetError(const int64_t id, const base::FilePath& path) {

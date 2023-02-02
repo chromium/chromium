@@ -900,16 +900,13 @@ testcase.driveInlineSyncStatusSingleFile = async () => {
     syncStatus: 'in_progress',
   });
 
-  const syncInProgressQuery = '[data-sync-status=in_progress]';
-
-  // Verify the "sync in progress" icon is displayed.
-  await remoteCall.waitForElement(appId, syncInProgressQuery);
-
   // On `DriveFsTestVolume::SetFileSyncStatus`, the fake event setting the
   // path's status hardcodes the progress as 50 bytes / 100 bytes transferred.
   // Verify this data reaches the UI as a progress value of 50%.
-  await remoteCall.waitForElement(
-      appId, '[data-sync-status=in_progress] .progress[progress="0.50"]');
+  const inlineStatus = await remoteCall.waitForElement(
+      appId, '[data-sync-status=in_progress] .progress');
+
+  chrome.test.assertEq(Number(inlineStatus.attributes['progress']), 0.5);
 
   // Fake the file finishing syncing.
   await sendTestMessage({
@@ -919,7 +916,7 @@ testcase.driveInlineSyncStatusSingleFile = async () => {
   });
 
   // Verify the "sync in progress" icon is no longer displayed.
-  await remoteCall.waitForElementLost(appId, syncInProgressQuery);
+  await remoteCall.waitForElementLost(appId, '[data-sync-status=in_progress]');
 };
 
 /**

@@ -60,7 +60,7 @@ class SyncStatusTrackerTest : public testing::Test {
 };
 
 TEST_F(SyncStatusTrackerTest, StatePropagatesToAncestors) {
-  t.SetInProgress(0, abc, 0, 0);
+  t.SetInProgress(0, abc, 0, 100);
   ASSERT_EQ(t.GetSyncState(abc), InProgress(abc));
   ASSERT_EQ(t.GetSyncState(ab), InProgress(ab));
   ASSERT_EQ(t.GetSyncState(a), InProgress(a));
@@ -68,7 +68,7 @@ TEST_F(SyncStatusTrackerTest, StatePropagatesToAncestors) {
 }
 
 TEST_F(SyncStatusTrackerTest, ErrorTakesPrecedenceInAncestors) {
-  t.SetInProgress(0, abc, 0, 0);
+  t.SetInProgress(0, abc, 0, 100);
   t.SetError(1, abd);
   ASSERT_EQ(t.GetSyncState(abc), InProgress(abc));
   ASSERT_EQ(t.GetSyncState(ab), Error(ab));
@@ -77,7 +77,7 @@ TEST_F(SyncStatusTrackerTest, ErrorTakesPrecedenceInAncestors) {
 }
 
 TEST_F(SyncStatusTrackerTest, PathsNotInTrackerReturnNotFound) {
-  t.SetInProgress(0, abc, 0, 0);
+  t.SetInProgress(0, abc, 0, 100);
   ASSERT_EQ(t.GetSyncState(abc), InProgress(abc));
   ASSERT_EQ(t.GetSyncState(abd), NotFound(abd));
 }
@@ -100,7 +100,7 @@ TEST_F(SyncStatusTrackerTest, RemovingAPathRemovesSingleUseAncestors) {
 }
 
 TEST_F(SyncStatusTrackerTest, FoldersCantBeMarkedCompleted) {
-  t.SetInProgress(0, abcd, 0, 0);
+  t.SetInProgress(0, abcd, 0, 100);
 
   t.SetCompleted(1, base::FilePath(abc));
   t.SetCompleted(2, base::FilePath(ab));
@@ -111,12 +111,12 @@ TEST_F(SyncStatusTrackerTest, FoldersCantBeMarkedCompleted) {
 
 TEST_F(SyncStatusTrackerTest, Utf8PathsAreSupported) {
   const base::FilePath utf8_path("/a/b/日本");
-  t.SetInProgress(0, utf8_path, 0, 0);
+  t.SetInProgress(0, utf8_path, 0, 100);
   ASSERT_EQ(t.GetSyncState(utf8_path), InProgress(utf8_path));
 }
 
 TEST_F(SyncStatusTrackerTest, DeletingNonexistingPathIsNoOp) {
-  t.SetInProgress(0, abcd, 0, 0);
+  t.SetInProgress(0, abcd, 0, 100);
 
   t.SetCompleted(1, base::FilePath("/a/b/c/d/e"));
   t.GetFileCount();
@@ -125,7 +125,7 @@ TEST_F(SyncStatusTrackerTest, DeletingNonexistingPathIsNoOp) {
 }
 
 TEST_F(SyncStatusTrackerTest, AddingExistingPathReplacesStatus) {
-  t.SetInProgress(0, abcd, 0, 0);
+  t.SetInProgress(0, abcd, 0, 100);
   t.SetError(1, abcd);
 
   ASSERT_EQ(t.GetSyncState(abcd), Error(abcd));
@@ -133,7 +133,7 @@ TEST_F(SyncStatusTrackerTest, AddingExistingPathReplacesStatus) {
 
 TEST_F(SyncStatusTrackerTest, MalformedPathsAreSupported) {
   base::FilePath malformed_path("////");
-  t.SetInProgress(0, malformed_path, 0, 0);
+  t.SetInProgress(0, malformed_path, 0, 100);
 
   ASSERT_EQ(t.GetSyncState(malformed_path), InProgress(malformed_path));
 }
@@ -142,8 +142,8 @@ TEST_F(SyncStatusTrackerTest, RelativePathsAreNotSupported) {
   base::FilePath relative_path1("./..");
   base::FilePath relative_path2("../");
 
-  t.SetInProgress(0, relative_path1, 0, 0);
-  t.SetInProgress(1, relative_path2, 0, 0);
+  t.SetInProgress(0, relative_path1, 0, 100);
+  t.SetInProgress(1, relative_path2, 0, 100);
 
   ASSERT_EQ(t.GetSyncState(relative_path1), NotFound(relative_path1));
   ASSERT_EQ(t.GetSyncState(relative_path2), NotFound(relative_path2));

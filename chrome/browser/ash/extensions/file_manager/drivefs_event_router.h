@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "url/gurl.h"
 
@@ -35,14 +36,8 @@ struct FileWatchEvent;
 namespace file_manager {
 
 using extensions::api::file_manager_private::FileTransferStatus;
-using extensions::api::file_manager_private::IndividualFileTransferStatus;
-
-using IndividualFileTransferEntry = IndividualFileTransferStatus::Entry;
-
-using IndividualFileTransferEntries = std::vector<IndividualFileTransferEntry>;
-
-using IndividualFileTransferEntriesCallback =
-    base::OnceCallback<void(IndividualFileTransferEntries entries)>;
+using IndividualFileTransferStatus =
+    extensions::api::file_manager_private::SyncState;
 
 // Files app's event router handling DriveFS-related events.
 class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
@@ -87,6 +82,8 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
   void OnUnmounted() override;
   void OnSyncingStatusUpdate(
       const drivefs::mojom::SyncingStatus& status) override;
+  void OnIndividualSyncingStatusesDelta(
+      const std::vector<const drivefs::SyncState>& sync_states) override;
   void OnFilesChanged(
       const std::vector<drivefs::mojom::FileChange>& changes) override;
   void OnError(const drivefs::mojom::DriveError& error) override;
@@ -96,6 +93,10 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
 
   virtual GURL ConvertDrivePathToFileSystemUrl(const base::FilePath& file_path,
                                                const GURL& listener_url) = 0;
+
+  virtual std::vector<GURL> ConvertPathsToFileSystemUrls(
+      const std::vector<base::FilePath>& paths,
+      const GURL& listener_url) = 0;
 
   virtual std::string GetDriveFileSystemName() = 0;
 
@@ -120,11 +121,6 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
       base::Value::List event_args,
       bool dispatch_to_system_notification = true) = 0;
 
-  virtual void PathsToEntries(
-      const std::vector<base::FilePath>& paths,
-      const GURL& source_url,
-      IndividualFileTransferEntriesCallback callback) = 0;
-
   // Send single event with aggregate sync information for all ItemEvents.
   // Note: this assumes all ItemEvents have the same `reason`.
   void BroadcastAggregateTransferEventForItems(
@@ -139,10 +135,6 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
       const std::vector<const drivefs::mojom::ItemEvent*>& items,
       const extensions::events::HistogramValue& event_type,
       const std::string& event_name);
-
-  void OnEntries(const extensions::events::HistogramValue& event_type,
-                 std::vector<IndividualFileTransferStatus> statuses,
-                 IndividualFileTransferEntries entries);
 
   // This is owned by EventRouter and only shared with this class.
   SystemNotificationManager* notification_manager_;

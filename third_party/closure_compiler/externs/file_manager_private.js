@@ -336,7 +336,7 @@ chrome.fileManagerPrivate.VmType = {
 /** @enum {string} */
 chrome.fileManagerPrivate.UserType = {
   UNMANAGED: 'kUnmanaged',
-  ORGANIZATION: 'kOrganization'
+  ORGANIZATION: 'kOrganization',
 };
 
 /** @enum {string} */
@@ -503,13 +503,12 @@ chrome.fileManagerPrivate.FileTransferStatus;
 
 /**
  * @typedef {{
- *   entry: !Entry,
- *   transferState: !chrome.fileManagerPrivate.TransferState,
- *   processed: number,
- *   total: number,
+ *   fileUrl: string,
+ *   syncStatus: !chrome.fileManagerPrivate.SyncStatus,
+ *   progress: number
  * }}
  */
-chrome.fileManagerPrivate.IndividualFileTransferStatus;
+chrome.fileManagerPrivate.SyncState;
 
 /**
  * @typedef {{
@@ -800,7 +799,8 @@ chrome.fileManagerPrivate.SyncStatus = {
   NOT_FOUND: 'not_found',
   QUEUED: 'queued',
   IN_PROGRESS: 'in_progress',
-  ERROR: 'error'
+  COMPLETED: 'completed',
+  ERROR: 'error',
 };
 
 /**
@@ -1610,9 +1610,6 @@ chrome.fileManagerPrivate.onPinTransfersUpdated;
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onIndividualFileTransfersUpdated;
-
-/** @type {!ChromeEvent} */
-chrome.fileManagerPrivate.onIndividualPinTransfersUpdated;
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onDirectoryChanged;

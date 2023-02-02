@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -52,10 +53,6 @@ constexpr auto& kTransferEventName =
     file_manager_private::OnFileTransfersUpdated::kEventName;
 constexpr auto& kPinEventName =
     file_manager_private::OnPinTransfersUpdated::kEventName;
-constexpr auto& kIndividualTransferEventName =
-    file_manager_private::OnIndividualFileTransfersUpdated::kEventName;
-constexpr auto& kIndividualPinEventName =
-    file_manager_private::OnIndividualPinTransfersUpdated::kEventName;
 
 class ValueMatcher : public testing::MatcherInterface<const base::Value&> {
  public:
@@ -165,16 +162,16 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
     return GURL(base::StrCat({listener_url.host(), ":", file_path.value()}));
   }
 
-  void PathsToEntries(const std::vector<base::FilePath>& paths,
-                      const GURL& source_url,
-                      IndividualFileTransferEntriesCallback callback) override {
-    IndividualFileTransferEntries entries;
+  std::vector<GURL> ConvertPathsToFileSystemUrls(
+      const std::vector<base::FilePath>& paths,
+      const GURL& listener_url) override {
+    std::vector<GURL> urls;
     for (const auto& path : paths) {
-      IndividualFileTransferEntry entry;
-      entry.additional_properties.Set("fileFullPath", path.value());
-      entries.push_back(std::move(entry));
+      const GURL url =
+          GURL(base::StrCat({listener_url.host(), ":", path.value()}));
+      urls.push_back(url);
     }
-    std::move(callback).Run(std::move(entries));
+    return urls;
   }
 
   std::string GetDriveFileSystemName() override { return "drivefs"; }
@@ -860,32 +857,7 @@ TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_NoListeners) {
 }
 
 TEST_F(DriveFsEventRouterTestInlineSyncStatus, OnSyncingStatusUpdate_Basic) {
-  EXPECT_CALL(
-      mock(),
-      BroadcastEventForIndividualFilesImpl(
-          kIndividualTransferEventName,
-          MatchesIndividualFileTransferStatuses(
-              std::vector<StatusToMatch>({{.file_path = "a",
-                                           .transfer_state = IN_PROGRESS,
-                                           .processed = 50,
-                                           .total = 100},
-                                          {.file_path = "b",
-                                           .transfer_state = QUEUED,
-                                           .processed = 0,
-                                           .total = 100}}))));
-  EXPECT_CALL(
-      mock(),
-      BroadcastEventForIndividualFilesImpl(
-          kIndividualPinEventName,
-          MatchesIndividualFileTransferStatuses(
-              std::vector<StatusToMatch>({{.file_path = "c",
-                                           .transfer_state = IN_PROGRESS,
-                                           .processed = 25,
-                                           .total = 40},
-                                          {.file_path = "d",
-                                           .transfer_state = QUEUED,
-                                           .processed = 0,
-                                           .total = 40}}))));
+  EXPECT_CALL(mock(), BroadcastEventForIndividualFilesImpl).Times(0);
 
   drivefs::mojom::SyncingStatus syncing_status;
   auto& events = syncing_status.item_events;

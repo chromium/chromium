@@ -124,18 +124,36 @@ export class MetadataCacheSet extends EventTarget {
   }
 
   /**
+   * Obtains cached properties for file URLs and names.
+   * Note that it returns invalidated properties also.
+   * @param {!Array<!string>} urls File URLs.
+   * @param {!Array<string>} names Property names.
+   * @return {!Array<!MetadataItem>} metadata for the given entries.
+   */
+  getByUrls(urls, names) {
+    const results = [];
+    for (let i = 0; i < urls.length; i++) {
+      const item = this.items_.get(urls[i]);
+      results.push(item ? item.get(names) : {});
+    }
+    return results;
+  }
+
+  /**
    * Marks the caches of entries as invalidates and forces to reload at the next
-   * time of startRequests.
+   * time of startRequests. Optionally, takes an array of metadata names and
+   * only invalidates those.
    * @param {number} requestId Request ID of the invalidation request. This must
    *     be larger than other request ID passed to the set before.
    * @param {!Array<!Entry>} entries
+   * @param {!Array<string>} [names]
    */
-  invalidate(requestId, entries) {
+  invalidate(requestId, entries, names) {
     const urls = util.entriesToURLs(entries);
     for (let i = 0; i < entries.length; i++) {
       const item = this.items_.get(urls[i]);
       if (item) {
-        item.invalidate(requestId);
+        item.invalidate(requestId, names);
       }
     }
   }

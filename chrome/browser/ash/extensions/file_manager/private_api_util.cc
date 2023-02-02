@@ -303,7 +303,6 @@ void SingleEntryPropertiesGetterForDriveFs::StartProcess() {
     drivefs::SyncState sync_state =
         integration_service->GetSyncStateForPath(file_system_url_.path());
     properties_->progress = sync_state.progress;
-    properties_->sync_status = file_manager_private::SYNC_STATUS_NOT_FOUND;
     switch (sync_state.status) {
       case drivefs::SyncStatus::kQueued:
         properties_->sync_status = file_manager_private::SYNC_STATUS_QUEUED;

@@ -259,6 +259,8 @@ js_library("metadata_model") {
     ":multi_metadata_provider",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/ts:state",
+    "//ui/file_manager/file_manager/externs/ts:store",
   ]
 }
 

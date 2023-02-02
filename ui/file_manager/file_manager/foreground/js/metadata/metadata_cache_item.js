@@ -94,12 +94,16 @@ export class MetadataCacheItem {
 
   /**
    * Marks the caches of all properties in the item as invalidates and forces to
-   * reload at the next time of startRequests.
+   * reload at the next time of startRequests. Optionally, takes an array of
+   * names and only invalidates those.
    * @param {number} requestId Request ID of the invalidation request. This must
-   *     be larger than other requets ID passed to the item before.
+   *     be larger than other requests ID passed to the item before.
+   * @param {!Array<string>} [names]
    */
-  invalidate(requestId) {
-    for (const name in this.properties_) {
+  invalidate(requestId, names) {
+    const namesToInvalidate = names ? names.filter(n => this.properties_[n]) :
+                                      Object.keys(this.properties_);
+    for (const name of namesToInvalidate) {
       assert(this.properties_[name].requestId < requestId);
       this.properties_[name].requestId = requestId;
       this.properties_[name].state = MetadataCacheItemPropertyState.INVALIDATED;

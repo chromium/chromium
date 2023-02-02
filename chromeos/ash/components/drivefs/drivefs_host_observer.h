@@ -14,10 +14,14 @@ class FileChange;
 class SyncingStatus;
 }  // namespace mojom
 
+struct SyncState;
+
 class DriveFsHostObserver {
  public:
   virtual void OnUnmounted() {}
   virtual void OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {}
+  virtual void OnIndividualSyncingStatusesDelta(
+      const std::vector<const SyncState>& sync_states) {}
   virtual void OnMirrorSyncingStatusUpdate(const mojom::SyncingStatus& status) {
   }
   virtual void OnFilesChanged(const std::vector<mojom::FileChange>& changes) {}

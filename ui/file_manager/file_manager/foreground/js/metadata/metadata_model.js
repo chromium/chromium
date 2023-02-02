@@ -4,6 +4,7 @@
 
 import {util} from '../../../common/js/util.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
+import {getStore} from '../../../state/store.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {DlpMetadataProvider} from './dlp_metadata_provider.js';
@@ -148,6 +149,35 @@ export class MetadataModel {
   }
 
   /**
+   * Updates the metadata of the given fileUrls with the provided values for
+   * each specified metadata name.
+   * @param {!Array<!string>} fileUrls FileURLs to have their metadata updated
+   * @param {!Array<string>} names Metadata property names to be updated.
+   * @param {!Array<!Array<string|number|boolean>>} values
+   */
+  update(fileUrls, names, values) {
+    const {allEntries} = getStore().getState();
+
+    // Only update corresponding entries that are available in the store.
+    const entriesToUpdate =
+        fileUrls.map(url => allEntries[url]?.entry).filter(Boolean);
+
+    if (entriesToUpdate.length === 0) {
+      return;
+    }
+
+    const items = values.map(row => {
+      const item = new MetadataItem();
+      names.forEach((key, i) => item[key] = row[i]);
+      return item;
+    });
+    this.cache_.invalidate(
+        this.cache_.generateRequestId(), entriesToUpdate, names);
+    this.cache_.storeProperties(
+        this.cache_.generateRequestId(), entriesToUpdate, items, names);
+  }
+
+  /**
    * Obtains metadata cache for entries.
    * @param {!Array<!Entry>} entries Entries.
    * @param {!Array<string>} names Metadata property names to be obtained.
@@ -157,6 +187,18 @@ export class MetadataModel {
     // Check if the property name is correct or not.
     this.rawProvider_.checkPropertyNames(names);
     return this.cache_.get(entries, names);
+  }
+
+  /**
+   * Obtains metadata cache for file URLs.
+   * @param {!Array<!string>} urls File URLs.
+   * @param {!Array<string>} names Metadata property names to be obtained.
+   * @return {!Array<!MetadataItem>}
+   */
+  getCacheByUrls(urls, names) {
+    // Check if the property name is correct or not.
+    this.rawProvider_.checkPropertyNames(names);
+    return this.cache_.getByUrls(urls, names);
   }
 
   /**
