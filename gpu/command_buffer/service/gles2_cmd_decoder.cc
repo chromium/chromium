@@ -17860,15 +17860,6 @@ void GLES2DecoderImpl::DoCopyTextureCHROMIUM(
                                        dest_level, true);
   }
 
-  // Try using GLImage::CopyTexImage when possible.
-  bool unpack_premultiply_alpha_change =
-      (unpack_premultiply_alpha ^ unpack_unmultiply_alpha) != 0;
-  // TODO(qiankun.miao@intel.com): Support level > 0 for CopyTexImage.
-  if (image && internal_format == source_internal_format && dest_level == 0 &&
-      !unpack_flip_y && !unpack_premultiply_alpha_change) {
-    api()->glBindTextureFn(dest_binding_target, dest_texture->service_id());
-  }
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   DoBindTexImageIfNeeded(source_texture, source_target, 0);
 #endif
