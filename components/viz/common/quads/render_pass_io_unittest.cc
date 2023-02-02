@@ -33,10 +33,10 @@ namespace {
 
 TEST(RenderPassIOTest, Default) {
   auto render_pass0 = CompositorRenderPass::Create();
-  base::Value dict0 = CompositorRenderPassToDict(*render_pass0);
+  base::Value::Dict dict0 = CompositorRenderPassToDict(*render_pass0);
   auto render_pass1 = CompositorRenderPassFromDict(dict0);
   EXPECT_TRUE(render_pass1);
-  base::Value dict1 = CompositorRenderPassToDict(*render_pass1);
+  base::Value::Dict dict1 = CompositorRenderPassToDict(*render_pass1);
   EXPECT_EQ(dict0, dict1);
 }
 
@@ -68,7 +68,7 @@ TEST(RenderPassIOTest, FilterOperations) {
     ASSERT_EQ(gfx::RRectF::Type::kSingle, rrect.GetType());
     render_pass0->backdrop_filter_bounds = rrect;
   }
-  base::Value dict0 = CompositorRenderPassToDict(*render_pass0);
+  base::Value::Dict dict0 = CompositorRenderPassToDict(*render_pass0);
   auto render_pass1 = CompositorRenderPassFromDict(dict0);
   EXPECT_TRUE(render_pass1);
   {
@@ -111,7 +111,7 @@ TEST(RenderPassIOTest, FilterOperations) {
     EXPECT_EQ(gfx::RectF(2.f, 3.f, 4.f, 5.f),
               render_pass1->backdrop_filter_bounds->rect());
   }
-  base::Value dict1 = CompositorRenderPassToDict(*render_pass1);
+  base::Value::Dict dict1 = CompositorRenderPassToDict(*render_pass1);
   EXPECT_EQ(dict0, dict1);
 }
 
@@ -135,7 +135,7 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
         gfx::Rect(5, 20, 1000, 200), false, 0.5f, SkBlendMode::kDstOver, 101);
     sqs1->is_fast_rounded_corner = true;
   }
-  base::Value dict0 = CompositorRenderPassToDict(*render_pass0);
+  base::Value::Dict dict0 = CompositorRenderPassToDict(*render_pass0);
   auto render_pass1 = CompositorRenderPassFromDict(dict0);
   ASSERT_TRUE(render_pass1);
   {
@@ -181,7 +181,7 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     EXPECT_EQ(101, sqs1->sorting_context_id);
     EXPECT_TRUE(sqs1->is_fast_rounded_corner);
   }
-  base::Value dict1 = CompositorRenderPassToDict(*render_pass1);
+  base::Value::Dict dict1 = CompositorRenderPassToDict(*render_pass1);
   EXPECT_EQ(dict0, dict1);
 }
 
@@ -323,7 +323,7 @@ TEST(RenderPassIOTest, QuadList) {
     }
     DCHECK_EQ(kSharedQuadStateCount, sqs_index + 1);
   }
-  base::Value dict0 = CompositorRenderPassToDict(*render_pass0);
+  base::Value::Dict dict0 = CompositorRenderPassToDict(*render_pass0);
   auto render_pass1 = CompositorRenderPassFromDict(dict0);
   EXPECT_TRUE(render_pass1);
   EXPECT_EQ(kSharedQuadStateCount, render_pass1->shared_quad_state_list.size());
@@ -332,7 +332,7 @@ TEST(RenderPassIOTest, QuadList) {
     EXPECT_EQ(kQuadMaterials[ii],
               render_pass1->quad_list.ElementAt(ii)->material);
   }
-  base::Value dict1 = CompositorRenderPassToDict(*render_pass1);
+  base::Value::Dict dict1 = CompositorRenderPassToDict(*render_pass1);
   EXPECT_EQ(dict0, dict1);
 }
 
@@ -353,20 +353,20 @@ TEST(RenderPassIOTest, CompositorRenderPassList) {
   EXPECT_TRUE(dict0.has_value());
   CompositorRenderPassList render_pass_list;
   EXPECT_TRUE(
-      CompositorRenderPassListFromDict(dict0.value(), &render_pass_list));
-  base::Value dict1 = CompositorRenderPassListToDict(render_pass_list);
+      CompositorRenderPassListFromDict(dict0->GetDict(), &render_pass_list));
+  base::Value::Dict dict1 = CompositorRenderPassListToDict(render_pass_list);
   // Since the test file doesn't contain the field
   // 'intersects_damage_under' in its CompositorRenderPassDrawQuad, I'm
   // removing the field on dict1 for the exact comparison to work.
-  base::Value* list = dict1.FindListKey("render_pass_list");
-  for (auto& entry : list->GetList()) {
-    base::Value* quad_list = entry.FindListKey("quad_list");
+  base::Value::List* list = dict1.FindList("render_pass_list");
+  for (auto& entry : *list) {
+    base::Value::List* quad_list = entry.GetDict().FindList("quad_list");
 
-    for (auto& quad_entry : quad_list->GetList()) {
-      if (const base::Value* extra_value =
-              quad_entry.FindKey("intersects_damage_under")) {
+    for (auto& quad_entry : *quad_list) {
+      if (base::Value* extra_value =
+              quad_entry.GetDict().Find("intersects_damage_under")) {
         EXPECT_FALSE(extra_value->GetBool());
-        ASSERT_TRUE(quad_entry.RemoveKey("intersects_damage_under"));
+        ASSERT_TRUE(quad_entry.GetDict().Remove("intersects_damage_under"));
       }
     }
   }
@@ -391,10 +391,10 @@ TEST(RenderPassIOTest, CompositorFrameData) {
   absl::optional<base::Value> list0 = base::JSONReader::Read(json_text);
   EXPECT_TRUE(list0.has_value());
   std::vector<FrameData> frame_data_list;
-  EXPECT_TRUE(FrameDataFromList(list0.value(), &frame_data_list));
-  base::Value list1 = FrameDataToList(frame_data_list);
+  EXPECT_TRUE(FrameDataFromList(list0->GetList(), &frame_data_list));
+  base::Value::List list1 = FrameDataToList(frame_data_list);
 
-  EXPECT_EQ(list0, list1);
+  EXPECT_EQ(list0->GetList(), list1);
 }
 
 }  // namespace

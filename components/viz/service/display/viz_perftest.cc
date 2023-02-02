@@ -61,10 +61,10 @@ bool CompositorRenderPassListFromJSON(
     return false;
   }
   auto dict = ReadValueFromJson(*json_path);
-  if (!dict) {
+  if (!dict || !dict->is_dict()) {
     return false;
   }
-  return CompositorRenderPassListFromDict(dict.value(), render_pass_list);
+  return CompositorRenderPassListFromDict(dict->GetDict(), render_pass_list);
 }
 
 absl::optional<base::FilePath> UnzipFrameData(const std::string& group,
@@ -100,10 +100,10 @@ absl::optional<base::FilePath> UnzipFrameData(const std::string& group,
 bool FrameDataFromJson(base::FilePath& json_path,
                        std::vector<FrameData>* frame_data_list) {
   auto list = ReadValueFromJson(json_path);
-  if (!list) {
+  if (!list || !list->is_list()) {
     return false;
   }
-  return FrameDataFromList(list.value(), frame_data_list);
+  return FrameDataFromList(list->GetList(), frame_data_list);
 }
 
 namespace {

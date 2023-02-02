@@ -470,8 +470,8 @@ bool TransformFromList(const base::Value::List& list,
 base::Value::List ShapeRectsToList(
     const cc::FilterOperation::ShapeRects& shape) {
   base::Value::List list;
-  for (size_t ii = 0; ii < shape.size(); ++ii) {
-    list.Append(RectToDict(shape[ii]));
+  for (const auto& ii : shape) {
+    list.Append(RectToDict(ii));
   }
   return list;
 }
@@ -1876,8 +1876,9 @@ base::Value::Dict GetRenderPassMetadata(
 base::Value::List GetRenderPassListMetadata(
     const CompositorRenderPassList& render_pass_list) {
   base::Value::List metadata;
-  for (size_t ii = 0; ii < render_pass_list.size(); ++ii)
-    metadata.Append(GetRenderPassMetadata(*(render_pass_list[ii].get())));
+  for (const auto& render_pass : render_pass_list) {
+    metadata.Append(GetRenderPassMetadata(*(render_pass.get())));
+  }
   return metadata;
 }
 
@@ -1947,7 +1948,7 @@ const char* DrawQuadMaterialToString(DrawQuad::Material material) {
 }
 #undef MAP_MATERIAL_TO_STRING
 
-base::Value CompositorRenderPassToDict(
+base::Value::Dict CompositorRenderPassToDict(
     const CompositorRenderPass& render_pass) {
   base::Value::Dict dict;
   if (ProcessRenderPassField(kRenderPassID))
@@ -2005,14 +2006,11 @@ base::Value CompositorRenderPassToDict(
     dict.Set("shared_quad_state_list",
              SharedQuadStateListToList(render_pass.shared_quad_state_list));
   }
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
-    const base::Value& dict_value) {
-  if (!dict_value.is_dict())
-    return nullptr;
-  const base::Value::Dict& dict = dict_value.GetDict();
+    const base::Value::Dict& dict) {
   auto pass = CompositorRenderPass::Create();
 
   if (ProcessRenderPassField(kRenderPassID)) {
@@ -2163,38 +2161,46 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   return pass;
 }
 
-base::Value CompositorRenderPassListToDict(
+base::Value::Dict CompositorRenderPassListToDict(
     const CompositorRenderPassList& render_pass_list) {
   base::Value::Dict dict;
   dict.Set("render_pass_count", static_cast<int>(render_pass_list.size()));
   dict.Set("metadata", GetRenderPassListMetadata(render_pass_list));
 
   base::Value::List list;
-  for (size_t ii = 0; ii < render_pass_list.size(); ++ii)
-    list.Append(CompositorRenderPassToDict(*(render_pass_list[ii])));
+  for (const auto& pass : render_pass_list) {
+    list.Append(CompositorRenderPassToDict(*pass));
+  }
   dict.Set("render_pass_list", std::move(list));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 bool CompositorRenderPassListFromDict(
-    const base::Value& dict,
+    const base::Value::Dict& dict,
     CompositorRenderPassList* render_pass_list) {
   DCHECK(render_pass_list);
   DCHECK(render_pass_list->empty());
 
-  if (!dict.is_dict())
+  const base::Value::List* list = dict.FindList("render_pass_list");
+  if (!list) {
     return false;
-  const base::Value* list = dict.FindListKey("render_pass_list");
-  if (!list || !list->is_list())
-    return false;
-  for (size_t ii = 0; ii < list->GetList().size(); ++ii) {
-    render_pass_list->push_back(
-        CompositorRenderPassFromDict(list->GetList()[ii]));
-    if (!(*render_pass_list)[ii].get()) {
+  }
+
+  for (const auto& item : *list) {
+    const base::Value::Dict* item_dict = item.GetIfDict();
+    if (!item_dict) {
       render_pass_list->clear();
       return false;
     }
+    std::unique_ptr<CompositorRenderPass> render_pass =
+        CompositorRenderPassFromDict(*item_dict);
+    if (!render_pass) {
+      render_pass_list->clear();
+      return false;
+    }
+    render_pass_list->push_back(std::move(render_pass));
   }
+
   return true;
 }
 
@@ -2216,33 +2222,29 @@ base::Value::Dict CompositorFrameToDict(
   return dict;
 }
 
-bool CompositorFrameFromDict(const base::Value& dict,
+bool CompositorFrameFromDict(const base::Value::Dict& dict,
                              CompositorFrame* compositor_frame) {
   DCHECK(compositor_frame);
-  if (!dict.is_dict()) {
-    return false;
-  }
 
-  const base::Value* render_pass_list_dict =
-      dict.FindDictKey("render_pass_list");
-  if (!render_pass_list_dict) {
+  const base::Value::Dict* render_pass_list = dict.FindDict("render_pass_list");
+  if (!render_pass_list) {
     return false;
   }
-  if (!CompositorRenderPassListFromDict(*render_pass_list_dict,
+  if (!CompositorRenderPassListFromDict(*render_pass_list,
                                         &compositor_frame->render_pass_list)) {
     return false;
   }
 
-  const base::Value* metadata = dict.FindDictKey("metadata");
-  if (!metadata || !metadata->is_dict()) {
+  const base::Value::Dict* metadata = dict.FindDict("metadata");
+  if (!metadata) {
     return false;
   }
-  const base::Value* referenced_surfaces =
-      metadata->FindListKey("referenced_surfaces");
-  if (!referenced_surfaces || !referenced_surfaces->is_list()) {
+  const base::Value::List* referenced_surfaces =
+      metadata->FindList("referenced_surfaces");
+  if (!referenced_surfaces) {
     return false;
   }
-  for (auto& referenced_surface_dict : referenced_surfaces->GetList()) {
+  for (auto& referenced_surface_dict : *referenced_surfaces) {
     auto referenced_surface =
         SurfaceRangeFromDict(referenced_surface_dict.GetDict());
     if (!referenced_surface) {
@@ -2255,7 +2257,8 @@ bool CompositorFrameFromDict(const base::Value& dict,
   return true;
 }
 
-base::Value FrameDataToList(const std::vector<FrameData>& frame_data_list) {
+base::Value::List FrameDataToList(
+    const std::vector<FrameData>& frame_data_list) {
   base::Value::List list;
 
   for (auto& frame_data : frame_data_list) {
@@ -2271,20 +2274,23 @@ base::Value FrameDataToList(const std::vector<FrameData>& frame_data_list) {
 
     list.Append(std::move(frame_dict));
   }
-  return base::Value(std::move(list));
+  return list;
 }
 
-bool FrameDataFromList(const base::Value& list,
+bool FrameDataFromList(const base::Value::List& list,
                        std::vector<FrameData>* frame_data_list) {
   DCHECK(frame_data_list);
   DCHECK(frame_data_list->empty());
 
-  if (!list.is_list()) {
-    return false;
-  }
-  for (const auto& frame_data_dict : list.GetList()) {
+  for (const auto& frame_data_value : list) {
+    const base::Value::Dict* frame_data_dict = frame_data_value.GetIfDict();
+    if (!frame_data_dict) {
+      return false;
+    }
+
     FrameData frame_data;
-    auto* surface_id_dict = frame_data_dict.GetDict().FindDict("surface_id");
+    const base::Value::Dict* surface_id_dict =
+        frame_data_dict->FindDict("surface_id");
     if (!surface_id_dict) {
       return false;
     }
@@ -2294,14 +2300,14 @@ bool FrameDataFromList(const base::Value& list,
     }
     frame_data.surface_id = *surface_id;
 
-    absl::optional<int> frame_index = frame_data_dict.FindIntKey("frame_index");
+    absl::optional<int> frame_index = frame_data_dict->FindInt("frame_index");
     if (!frame_index) {
       return false;
     }
     frame_data.frame_index = *frame_index;
 
-    const base::Value* compositor_frame_dict =
-        frame_data_dict.FindDictKey("compositor_frame");
+    const base::Value::Dict* compositor_frame_dict =
+        frame_data_dict->FindDict("compositor_frame");
     if (!compositor_frame_dict) {
       return false;
     }
