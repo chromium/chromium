@@ -21,7 +21,8 @@ assert(is_android)
 
 default_android_sdk_dep = "//third_party/android_sdk:android_sdk_java"
 _jacoco_dep = "//third_party/jacoco:jacocoagent_java"
-_jacoco_host_jar = "$root_build_dir/lib.java/third_party/jacoco/jacocoagent.jar"
+_jacoco_host_jar =
+    "$root_build_dir/lib.java/third_party/jacoco/jacocoagent_java.jar"
 _robolectric_libs_dir =
     rebase_path(
         get_label_info("//:foo($robolectric_toolchain)", "root_out_dir"),
@@ -3393,8 +3394,6 @@ if (enable_java_templates) {
     if (_is_prebuilt || _has_sources) {
       if (defined(invoker.output_name)) {
         _output_name = invoker.output_name
-      } else if (_is_prebuilt) {
-        _output_name = get_path_info(invoker.jar_path, "name")
       } else {
         _output_name = _main_target_name
       }
