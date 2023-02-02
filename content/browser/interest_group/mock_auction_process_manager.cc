@@ -188,7 +188,9 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
 
   base::RunLoop run_loop;
   generate_bid_client_->OnBiddingSignalsReceived(
-      /*priority_vector=*/{}, run_loop.QuitClosure());
+      /*priority_vector=*/{},
+      /*trusted_signals_fetch_duration=*/base::TimeDelta(),
+      run_loop.QuitClosure());
   run_loop.Run();
 
   if (!bid.has_value()) {
@@ -204,6 +206,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
         base::flat_map<std::string,
                        auction_worklet::mojom::PrioritySignalsDoublePtr>(),
         /*pa_requests=*/std::move(pa_requests),
+        /*bidding_duration=*/base::TimeDelta(),
         /*errors=*/std::vector<std::string>());
     return;
   }
@@ -221,6 +224,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
       base::flat_map<std::string,
                      auction_worklet::mojom::PrioritySignalsDoublePtr>(),
       /*pa_requests=*/std::move(pa_requests),
+      /*bidding_duration=*/base::TimeDelta(),
       /*errors=*/std::vector<std::string>());
 }
 

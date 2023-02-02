@@ -125,6 +125,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
  public:
   using OnBiddingSignalsReceivedCallback = base::OnceCallback<void(
       const base::flat_map<std::string, double>& priority_vector,
+      base::TimeDelta trusted_signals_fetch_duration,
       base::OnceClosure callback)>;
 
   using GenerateBidCallback = base::OnceCallback<void(
@@ -140,6 +141,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
+      base::TimeDelta bidding_duration,
       const std::vector<std::string>& errors)>;
 
   explicit GenerateBidClientWithCallbacks(
@@ -188,6 +190,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
                           auction_worklet::mojom::PrioritySignalsDoublePtr>
                update_priority_signals_overrides,
            PrivateAggregationRequests pa_requests,
+           base::TimeDelta bidding_duration,
            const std::vector<std::string>& errors) {
           ADD_FAILURE() << "OnGenerateBidComplete should not be invoked.";
         });
@@ -197,6 +200,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
 
   void OnBiddingSignalsReceived(
       const base::flat_map<std::string, double>& priority_vector,
+      base::TimeDelta trusted_signals_fetch_duration,
       base::OnceClosure callback) override {
     // May only be called once.
     EXPECT_FALSE(on_bidding_signals_received_invoked_);
@@ -204,7 +208,8 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
 
     if (on_bidding_signals_received_callback_) {
       std::move(on_bidding_signals_received_callback_)
-          .Run(priority_vector, std::move(callback));
+          .Run(priority_vector, trusted_signals_fetch_duration,
+               std::move(callback));
       return;
     }
     std::move(callback).Run();
@@ -223,6 +228,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
+      base::TimeDelta bidding_duration,
       const std::vector<std::string>& errors) override {
     // OnBiddingSignalsReceived() must be called first.
     EXPECT_TRUE(on_bidding_signals_received_invoked_);
@@ -232,7 +238,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
              has_data_version, debug_loss_report_url, debug_win_report_url,
              set_priority, has_set_priority,
              std::move(update_priority_signals_overrides),
-             std::move(pa_requests), errors);
+             std::move(pa_requests), bidding_duration, errors);
   }
 
  private:
@@ -668,6 +674,7 @@ class BidderWorkletTest : public testing::Test {
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
+      base::TimeDelta bidding_duration,
       const std::vector<std::string>& errors) {
     absl::optional<uint32_t> maybe_data_version;
     if (has_data_version)
@@ -1915,6 +1922,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
                       auction_worklet::mojom::PrioritySignalsDoublePtr>
                       update_priority_signals_overrides,
                   PrivateAggregationRequests pa_requests,
+                  base::TimeDelta bidding_duration,
                   const std::vector<std::string>& errors) {
                 EXPECT_EQ(bid_value, bid->bid);
                 EXPECT_EQ(base::NumberToString(bid_value), bid->ad);
@@ -2021,6 +2029,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
                 PrivateAggregationRequests pa_requests,
+                base::TimeDelta bidding_duration,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
@@ -2135,6 +2144,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
                 PrivateAggregationRequests pa_requests,
+                base::TimeDelta bidding_duration,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
@@ -2255,6 +2265,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
                 PrivateAggregationRequests pa_requests,
+                base::TimeDelta bidding_duration,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
@@ -2354,6 +2365,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
                 PrivateAggregationRequests pa_requests,
+                base::TimeDelta bidding_duration,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
@@ -3237,8 +3249,10 @@ TEST_F(BidderWorkletTest, GenerateBidOnBiddingSignalsReceivedNoTrustedSignals) {
   base::OnceClosure on_bidding_signals_received_continue_callback;
   auto on_bidding_signals_received_callback = base::BindLambdaForTesting(
       [&](const base::flat_map<std::string, double>& priority_vector,
+          base::TimeDelta trusted_signals_fetch_duration,
           base::OnceClosure callback) {
         EXPECT_TRUE(priority_vector.empty());
+        EXPECT_EQ(base::TimeDelta(), trusted_signals_fetch_duration);
         on_bidding_signals_received_run_loop.Quit();
         on_bidding_signals_received_continue_callback = std::move(callback);
       });
@@ -3275,6 +3289,7 @@ TEST_F(BidderWorkletTest, GenerateBidOnBiddingSignalsReceivedFetchFails) {
   base::OnceClosure on_bidding_signals_received_continue_callback;
   auto on_bidding_signals_received_callback = base::BindLambdaForTesting(
       [&](const base::flat_map<std::string, double>& priority_vector,
+          base::TimeDelta trusted_signals_fetch_duration,
           base::OnceClosure callback) {
         EXPECT_TRUE(priority_vector.empty());
         on_bidding_signals_received_run_loop.Quit();
@@ -3324,6 +3339,7 @@ TEST_F(BidderWorkletTest,
   base::OnceClosure on_bidding_signals_received_continue_callback;
   auto on_bidding_signals_received_callback = base::BindLambdaForTesting(
       [&](const base::flat_map<std::string, double>& priority_vector,
+          base::TimeDelta trusted_signals_fetch_duration,
           base::OnceClosure callback) {
         EXPECT_TRUE(priority_vector.empty());
         on_bidding_signals_received_run_loop.Quit();
@@ -3371,6 +3387,7 @@ TEST_F(BidderWorkletTest,
   base::OnceClosure on_bidding_signals_received_continue_callback;
   auto on_bidding_signals_received_callback = base::BindLambdaForTesting(
       [&](const base::flat_map<std::string, double>& priority_vector,
+          base::TimeDelta trusted_signals_fetch_duration,
           base::OnceClosure callback) {
         EXPECT_TRUE(priority_vector.empty());
         on_bidding_signals_received_run_loop.Quit();
@@ -3451,6 +3468,7 @@ TEST_F(BidderWorkletTest, GenerateBidCancelWhileRunningJavascript) {
   base::OnceClosure on_bidding_signals_received_continue_callback;
   auto on_bidding_signals_received_callback = base::BindLambdaForTesting(
       [&](const base::flat_map<std::string, double>& priority_vector,
+          base::TimeDelta trusted_signals_fetch_duration,
           base::OnceClosure callback) {
         EXPECT_TRUE(priority_vector.empty());
         on_bidding_signals_received_continue_callback = std::move(callback);

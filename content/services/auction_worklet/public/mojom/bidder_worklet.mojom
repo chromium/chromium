@@ -156,7 +156,12 @@ interface GenerateBidClient {
   //   part of the trusted bidding signals, or an empty list, if no signals
   //   were received, or the signals had not priorityVector for the interest
   //   group that is generating a bid.
-  OnBiddingSignalsReceived(map<string, double> priority_vector) => ();
+  //
+  //  `trusted_signals_fetch_duration` The amount of time taken fetching trusted
+  //  bidding signals. If no trusted signals were fetched, returns a 0 duration.
+  OnBiddingSignalsReceived(
+      map<string, double> priority_vector,
+      mojo_base.mojom.TimeDelta trusted_signals_fetch_duration) => ();
 
   // Invoked once GenerateBid completes, either having successfully generated a
   // bid, or having failed to generate one for any reason.
@@ -210,6 +215,9 @@ interface GenerateBidClient {
   //
   // `pa_requests` The various requests made to the Private Aggregation API.
   //
+  // `bidding_duration` The amount of time taken running all bids (note that
+  // there may be 2 bids if the first bid result was not k-anonymous).
+  //
   // `errors` The various error messages to be used for debugging. These are too
   //  sensitive for the renderer to see. There may be errors even when a bid
   //  is offered, and there may be no errors when there's no bid. Includes
@@ -225,6 +233,7 @@ interface GenerateBidClient {
       bool has_set_priority,
       map<string, PrioritySignalsDouble?> update_priority_signals_overrides,
       array<PrivateAggregationRequest> pa_requests,
+      mojo_base.mojom.TimeDelta bidding_duration,
       array<string> errors);
 };
 

@@ -199,9 +199,9 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         trusted_bidding_signals_request;
     // Results of loading trusted bidding signals.
     scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result;
-    // Error message returned by attempt to load `trusted_bidding_signals_`.
-    // Errors loading it are not fatal, so such errors are cached here and only
-    // reported on bid completion.
+    // Error message returned by attempt to load
+    // `trusted_bidding_signals_result`. Errors loading it are not fatal, so
+    // such errors are cached here and only reported on bid completion.
     absl::optional<std::string> trusted_bidding_signals_error_msg;
 
     // Set to true once the callback sent to the OnBiddingSignalsReceived()
@@ -307,6 +307,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
             update_priority_signals_overrides,
         PrivateAggregationRequests pa_requests,
+        base::TimeDelta bidding_duration,
         std::vector<std::string> error_msgs)>;
     using ReportWinCallbackInternal =
         base::OnceCallback<void(absl::optional<GURL> report_url,
@@ -436,6 +437,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
 
     void PostErrorBidCallbackToUserThread(
         GenerateBidCallbackInternal callback,
+        base::TimeDelta bidding_duration,
         std::vector<std::string> error_msgs = std::vector<std::string>());
 
     static void PostResumeToUserThread(
@@ -539,6 +541,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
+      base::TimeDelta bidding_duration,
       std::vector<std::string> error_msgs);
 
   // Removes `task` from `generate_bid_tasks_` only. Used in case where the

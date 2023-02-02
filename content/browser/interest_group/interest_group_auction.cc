@@ -373,6 +373,7 @@ class InterestGroupAuction::BuyerHelper
 
   void OnBiddingSignalsReceived(
       const base::flat_map<std::string, double>& priority_vector,
+      base::TimeDelta trusted_signals_fetch_duration,
       base::OnceClosure resume_generate_bid_callback) override {
     BidState* state = generate_bid_client_receiver_set_.current_context();
     absl::optional<double> new_priority;
@@ -403,6 +404,7 @@ class InterestGroupAuction::BuyerHelper
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
+      base::TimeDelta bidding_duration,
       const std::vector<std::string>& errors) override {
     OnGenerateBidCompleteInternal(
         generate_bid_client_receiver_set_.current_context(),
