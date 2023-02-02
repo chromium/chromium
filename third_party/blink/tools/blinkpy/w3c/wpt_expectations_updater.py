@@ -475,7 +475,7 @@ class WPTExpectationsUpdater(object):
                 # has a pre-existing TIMEOUT expectation on Win7. This code is
                 # not currently capable of updating that existing expectation.
                 SimpleTestResult(expected="",
-                                 actual=result.actual_results(),
+                                 actual=' '.join(result.actual_results()),
                                  bug=self.UMBRELLA_BUG)
             }
         return test_dict

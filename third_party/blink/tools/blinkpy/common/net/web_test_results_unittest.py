@@ -165,11 +165,12 @@ class WebTestResultsTest(unittest.TestCase):
         results = WebTestResults.results_from_string(
             self.example_full_results_json)
         self.assertEqual(
-            results.result_for_test('fast/dom/unexpected-pass.html').
-            actual_results(), 'PASS')
+            results.result_for_test(
+                'fast/dom/unexpected-pass.html').actual_results(), ['PASS'])
         self.assertEqual(
-            results.result_for_test('fast/dom/unexpected-flaky.html').
-            actual_results(), 'PASS FAIL')
+            results.result_for_test(
+                'fast/dom/unexpected-flaky.html').actual_results(),
+            ['PASS', 'FAIL'])
 
     def test_expected_results(self):
         results = WebTestResults.results_from_string(

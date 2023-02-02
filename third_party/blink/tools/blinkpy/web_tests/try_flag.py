@@ -82,8 +82,7 @@ class TryFlag(object):
             self._git_cl.trigger_try_jobs([builder], bucket)
 
     def _create_expectation_line(self, result, test_configuration):
-        expected_results = set(
-            [res for res in result.actual_results().split()])
+        expected_results = set([res for res in result.actual_results()])
         tag = test_configuration.version
         reason = ''
         if self._args.bug:
@@ -126,8 +125,8 @@ class TryFlag(object):
                 '-- %s: %s/results.html' %
                 (BUILDER_CONFIGS[build.builder_name].version, results_url))
             results = results_fetcher.fetch_results(build, True, step_name)
-            results.for_each_test(lambda result, b=build: self._process_result(
-                b, result))
+            for result in results:
+                self._process_result(build, result)
 
         # TODO: Write to flag expectations file. For now, stdout. :)
         unexpected_failures = []
