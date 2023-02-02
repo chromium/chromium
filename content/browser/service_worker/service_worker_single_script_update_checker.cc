@@ -165,8 +165,8 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
 
   cache_writer_ = ServiceWorkerCacheWriter::CreateForComparison(
       std::move(compare_reader), std::move(copy_reader), std::move(writer),
-      writer_resource_id,
-      /*pause_when_not_identical=*/true);
+      writer_resource_id, /*pause_when_not_identical=*/true,
+      ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch);
 
   // Service worker update checking doesn't have a relevant frame and tab, so
   // that `web_contents_getter` returns nullptr and the frame id is set to

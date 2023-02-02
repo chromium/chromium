@@ -737,7 +737,8 @@ ServiceWorkerUpdateCheckTestUtils::CreatePausedCacheWriter(
 
   auto cache_writer = ServiceWorkerCacheWriter::CreateForComparison(
       std::move(compare_reader), std::move(copy_reader), std::move(writer),
-      new_resource_id, true /* pause_when_not_identical */);
+      new_resource_id, /*pause_when_not_identical=*/true,
+      ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch);
   cache_writer->response_head_to_write_ =
       network::mojom::URLResponseHead::New();
   cache_writer->response_head_to_write_->request_time = base::Time::Now();

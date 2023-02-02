@@ -164,7 +164,8 @@ ServiceWorkerCacheWriter::ServiceWorkerCacheWriter(
     mojo::Remote<storage::mojom::ServiceWorkerResourceReader> copy_reader,
     mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer,
     int64_t writer_resource_id,
-    bool pause_when_not_identical)
+    bool pause_when_not_identical,
+    ChecksumUpdateTiming checksum_update_timing)
     : state_(STATE_START),
       io_pending_(false),
       comparing_(false),
@@ -173,6 +174,7 @@ ServiceWorkerCacheWriter::ServiceWorkerCacheWriter(
       copy_reader_(std::move(copy_reader)),
       writer_(std::move(writer)),
       writer_resource_id_(writer_resource_id),
+      checksum_update_timing_(checksum_update_timing),
       checksum_(crypto::SecureHash::Create(crypto::SecureHash::SHA256)) {
   if (compare_reader_) {
     compare_reader_.set_disconnect_handler(
@@ -205,7 +207,8 @@ ServiceWorkerCacheWriter::CreateForCopy(
   return base::WrapUnique(new ServiceWorkerCacheWriter(
       std::move(null_remote) /* compare_reader */, std::move(copy_reader),
       std::move(writer), writer_resource_id,
-      false /* pause_when_not_identical*/));
+      /*pause_when_not_identical=*/false,
+      ChecksumUpdateTiming::kCacheMismatch));
 }
 
 std::unique_ptr<ServiceWorkerCacheWriter>
@@ -217,7 +220,8 @@ ServiceWorkerCacheWriter::CreateForWriteBack(
   return base::WrapUnique(new ServiceWorkerCacheWriter(
       /*compare_reader=*/{}, /*copy_reader=*/{}, std::move(writer),
       writer_resource_id,
-      /* pause_when_not_identical=*/false));
+      /*pause_when_not_identical=*/false,
+      ChecksumUpdateTiming::kCacheMismatch));
 }
 
 std::unique_ptr<ServiceWorkerCacheWriter>
@@ -226,7 +230,8 @@ ServiceWorkerCacheWriter::CreateForComparison(
     mojo::Remote<storage::mojom::ServiceWorkerResourceReader> copy_reader,
     mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer,
     int64_t writer_resource_id,
-    bool pause_when_not_identical) {
+    bool pause_when_not_identical,
+    ChecksumUpdateTiming checksum_update_timing) {
   // |compare_reader| reads data for the comparison. |copy_reader| reads
   // data for copy.
   DCHECK(compare_reader);
@@ -237,7 +242,7 @@ ServiceWorkerCacheWriter::CreateForComparison(
   DCHECK(writer.is_connected());
   return base::WrapUnique(new ServiceWorkerCacheWriter(
       std::move(compare_reader), std::move(copy_reader), std::move(writer),
-      writer_resource_id, pause_when_not_identical));
+      writer_resource_id, pause_when_not_identical, checksum_update_timing));
 }
 
 net::Error ServiceWorkerCacheWriter::MaybeWriteHeaders(
@@ -284,6 +289,11 @@ net::Error ServiceWorkerCacheWriter::MaybeWriteData(
   data_to_write_ = buf;
   len_to_write_ = buf_size;
   pending_callback_ = std::move(callback);
+
+  if (checksum_update_timing_ == ChecksumUpdateTiming::kAlways &&
+      len_to_write_ > 0) {
+    checksum_->Update(data_to_write_->data(), len_to_write_);
+  }
 
   if (comparing_)
     state_ = STATE_READ_DATA_FOR_COMPARE;
@@ -929,7 +939,8 @@ void ServiceWorkerCacheWriter::AsyncDoLoop(int result) {
 }
 
 std::string ServiceWorkerCacheWriter::GetSha256Checksum() {
-  DCHECK_EQ(STATE_DONE, state_);
+  DCHECK(STATE_DONE == state_ ||
+         checksum_update_timing_ == ChecksumUpdateTiming::kAlways);
   DCHECK(checksum_);
   uint8_t result[crypto::kSHA256Length];
   checksum_->Finish(result, crypto::kSHA256Length);

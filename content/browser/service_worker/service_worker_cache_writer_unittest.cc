@@ -115,7 +115,8 @@ class ServiceWorkerCacheWriterTest : public ::testing::Test {
         auto copy_reader = CreateReader();
         cache_writer_ = ServiceWorkerCacheWriter::CreateForComparison(
             std::move(compare_reader), std::move(copy_reader), CreateWriter(),
-            /*writer_resource_id=*/0, pause_when_not_identical);
+            /*writer_resource_id=*/0, pause_when_not_identical,
+            ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch);
         break;
     };
   }
@@ -1012,6 +1013,74 @@ TEST_F(ServiceWorkerCacheWriterTest, ObserverAsyncFail) {
   cache_writer_->set_write_observer(nullptr);
 }
 
+class ServiceWorkerCacheWriterSha256ChecksumTest
+    : public ServiceWorkerCacheWriterTest,
+      public testing::WithParamInterface<
+          ServiceWorkerCacheWriter::ChecksumUpdateTiming> {
+ public:
+  void Initialize() {
+    auto compare_reader = CreateReader();
+    auto copy_reader = CreateReader();
+    cache_writer_ = ServiceWorkerCacheWriter::CreateForComparison(
+        std::move(compare_reader), std::move(copy_reader), CreateWriter(),
+        /*writer_resource_id=*/0, /*pause_when_not_identical=*/false,
+        GetChecksumUpdateTiming());
+  }
+
+ protected:
+  ServiceWorkerCacheWriter::ChecksumUpdateTiming GetChecksumUpdateTiming() {
+    return GetParam();
+  }
+};
+
+TEST_P(ServiceWorkerCacheWriterSha256ChecksumTest, ForceUpdateSha256Checksum) {
+  const std::string data = "abcdef";
+  size_t response_size = data.size();
+
+  MockServiceWorkerResourceReader* reader = ExpectReader();
+
+  // Create a copy reader and writer as they're needed to create cache writer
+  // for comparison though not used in this test.
+  ExpectReader();
+  ExpectWriter();
+
+  reader->ExpectReadResponseHeadOk(response_size);
+  reader->ExpectReadDataOk(data);
+  Initialize();
+
+  net::Error error = WriteHeaders(response_size);
+  EXPECT_EQ(net::ERR_IO_PENDING, error);
+  reader->CompletePendingRead();
+
+  error = WriteData(data);
+  EXPECT_EQ(net::ERR_IO_PENDING, error);
+  reader->CompletePendingRead();
+
+  EXPECT_TRUE(reader->AllExpectedReadsDone());
+
+  std::string expected_checksum;
+  switch (GetChecksumUpdateTiming()) {
+    case ServiceWorkerCacheWriter::ChecksumUpdateTiming::kAlways:
+      // Expected value is calculated from SHA256("abcdef")
+      expected_checksum =
+          "BEF57EC7F53A6D40BEB640A780A639C83BC29AC8A9816F1FC6C5C6DCD93C4721";
+      break;
+    case ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch:
+      // Expected value is calculated from SHA256("")
+      expected_checksum =
+          "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855";
+      break;
+  }
+  EXPECT_EQ(expected_checksum, cache_writer_->GetSha256Checksum());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ServiceWorkerCacheWriterSha256ChecksumTest,
+    testing::Values(
+        ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch,
+        ServiceWorkerCacheWriter::ChecksumUpdateTiming::kAlways));
+
 class ServiceWorkerCacheWriterDisconnectionTest
     : public ServiceWorkerCacheWriterTest {
  public:
@@ -1063,7 +1132,8 @@ class ServiceWorkerCacheWriterDisconnectionTest
     cache_writer_ = ServiceWorkerCacheWriter::CreateForComparison(
         std::move(remote_compare_reader), std::move(remote_copy_reader),
         std::move(remote_writer),
-        /*writer_resource_id=*/0, pause_when_not_identical);
+        /*writer_resource_id=*/0, pause_when_not_identical,
+        ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch);
   }
 
   void SimulateDisconnection() {
