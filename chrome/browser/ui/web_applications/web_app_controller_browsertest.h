@@ -88,6 +88,9 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
+  virtual void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) {}
+
   GURL GetInstallableAppURL();
   static const char* GetInstallableAppName();
 
@@ -102,6 +105,7 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_;
+  base::CallbackListSubscription create_services_subscription_;
 
   // Similar to net::MockCertVerifier, but also updates the CertVerifier
   // used by the NetworkService.

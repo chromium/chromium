@@ -12,6 +12,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_service_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -28,6 +30,19 @@ int BucketedDailySeconds(base::TimeDelta delta) {
   int32_t bucket_size = base::Days(1).InSeconds() / 50;
   int result = ukm::GetLinearBucketMin(sample, bucket_size);
   return std::max(1, result);
+}
+
+bool ShouldRecordAppKeyedMetrics(syncer::SyncService* sync_service) {
+  switch (
+      syncer::GetUploadToGoogleState(sync_service, syncer::ModelType::APPS)) {
+    case syncer::UploadState::NOT_ACTIVE:
+      return false;
+    case syncer::UploadState::INITIALIZING:
+      // Note that INITIALIZING is considered good enough, because syncing apps
+      // is known to be enabled, and transient errors don't really matter here.
+    case syncer::UploadState::ACTIVE:
+      return true;
+  }
 }
 
 }  // namespace
@@ -156,7 +171,11 @@ void EmitRecord(DailyInteraction record, Profile* profile) {
       origin, base::BindOnce(&EmitIfSourceIdExists, std::move(record)));
 }
 
-void EmitRecords(Profile* profile) {
+void EmitRecords(Profile* profile, syncer::SyncService* sync_service) {
+  if (!ShouldRecordAppKeyedMetrics(sync_service)) {
+    return;
+  }
+
   const base::Value::Dict& urls_to_features =
       profile->GetPrefs()->GetDict(prefs::kWebAppsDailyMetrics);
 
@@ -204,19 +223,22 @@ DailyInteraction::DailyInteraction(GURL start_url)
 DailyInteraction::DailyInteraction(const DailyInteraction&) = default;
 DailyInteraction::~DailyInteraction() = default;
 
-void FlushOldRecordsAndUpdate(DailyInteraction& record, Profile* profile) {
+void FlushOldRecordsAndUpdate(DailyInteraction& record,
+                              Profile* profile,
+                              syncer::SyncService* sync_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (metrics::date_changed_helper::HasDateChangedSinceLastCall(
           profile->GetPrefs(), prefs::kWebAppsDailyMetricsDate)) {
-    EmitRecords(profile);
+    EmitRecords(profile, sync_service);
     RemoveRecords(profile->GetPrefs());
   }
   UpdateRecord(record, profile->GetPrefs());
 }
 
-void FlushAllRecordsForTesting(Profile* profile) {
+void FlushAllRecordsForTesting(Profile* profile,  // IN-TEST
+                               syncer::SyncService* sync_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  EmitRecords(profile);
+  EmitRecords(profile, sync_service);
   RemoveRecords(profile->GetPrefs());
 }
 

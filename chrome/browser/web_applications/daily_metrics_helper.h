@@ -12,6 +12,10 @@
 class PrefRegistrySimple;
 class Profile;
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace web_app {
 
 struct DailyInteraction {
@@ -36,11 +40,14 @@ struct DailyInteraction {
 // Emits UKM metrics for existing records if the date has changed, removing them
 // from storage. Then stores the given record, updating any stored values for
 // that start_url (ie. replacing or summing as appropriate).
-void FlushOldRecordsAndUpdate(DailyInteraction& record, Profile* profile);
+void FlushOldRecordsAndUpdate(DailyInteraction& record,
+                              Profile* profile,
+                              syncer::SyncService* sync_service);
 
 // Emits UKM metrics for all existing records. Note that this is asynchronous
 // unless |SkipOriginCheckForTesting| has been called.
-void FlushAllRecordsForTesting(Profile* profile);
+void FlushAllRecordsForTesting(Profile* profile,
+                               syncer::SyncService* sync_service);
 
 // Skip the origin check, which is async and requires a history service.
 void SkipOriginCheckForTesting();

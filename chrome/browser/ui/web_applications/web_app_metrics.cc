@@ -4,34 +4,62 @@
 
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 
+#include <stdint.h>
+#include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/clamped_math.h"
+#include "base/one_shot_event.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
+#include "base/value_iterators.h"
+#include "base/values.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics_factory.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/sync/base/model_type.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 using DisplayMode = blink::mojom::DisplayMode;
 using content::WebContents;
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace web_app {
 
@@ -397,7 +425,9 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
     return;
   }
   last_recorded_web_app_start_url_ = features.start_url;
-  FlushOldRecordsAndUpdate(features, profile_);
+
+  FlushOldRecordsAndUpdate(features, profile_,
+                           SyncServiceFactory::GetForProfile(profile_));
 }
 
 }  // namespace web_app

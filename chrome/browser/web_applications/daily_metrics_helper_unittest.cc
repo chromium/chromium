@@ -7,6 +7,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -47,17 +48,21 @@ class DailyMetricsHelperTest : public WebAppTest {
     SkipOriginCheckForTesting();
   }
 
+  void FlushOldRecordsAndUpdate(DailyInteraction record) {
+    web_app::FlushOldRecordsAndUpdate(record, profile(), &sync_service_);
+  }
+
   void RecordSomethingTheNextDaySoItEmits() {
     task_environment()->FastForwardBy(base::Days(1));
     DailyInteraction record(GURL("http://this.should.not.be.emitted.com/"));
-    FlushOldRecordsAndUpdate(record, profile());
+    FlushOldRecordsAndUpdate(record);
   }
 
   DailyMetricsHelperTest(const DailyMetricsHelperTest&) = delete;
   DailyMetricsHelperTest& operator=(const DailyMetricsHelperTest&) = delete;
 
+  syncer::TestSyncService sync_service_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
-
 };
 
 }  // namespace
@@ -65,16 +70,16 @@ class DailyMetricsHelperTest : public WebAppTest {
 TEST_F(DailyMetricsHelperTest, NothingEmittedForCallsInOneDay) {
   DailyInteraction record(GURL("http://some.url/"));
 
-  FlushOldRecordsAndUpdate(record, profile());
-  FlushOldRecordsAndUpdate(record, profile());
-  FlushOldRecordsAndUpdate(record, profile());
+  FlushOldRecordsAndUpdate(record);
+  FlushOldRecordsAndUpdate(record);
+  FlushOldRecordsAndUpdate(record);
 
   EXPECT_EQ(ukm_recorder_.entries_count(), 0U);
 }
 
 TEST_F(DailyMetricsHelperTest, EmitsOldRecordsOnFirstCallNextDay) {
   DailyInteraction record1(GURL("http://some.url/1"));
-  FlushOldRecordsAndUpdate(record1, profile());
+  FlushOldRecordsAndUpdate(record1);
 
   RecordSomethingTheNextDaySoItEmits();
 
@@ -87,13 +92,13 @@ TEST_F(DailyMetricsHelperTest, EmitsOldRecordsOnFirstCallNextDay) {
 TEST_F(DailyMetricsHelperTest, EmitsOncePerUrl) {
   {
     DailyInteraction record(GURL("http://some.url/1"));
-    FlushOldRecordsAndUpdate(record, profile());
-    FlushOldRecordsAndUpdate(record, profile());
-    FlushOldRecordsAndUpdate(record, profile());
+    FlushOldRecordsAndUpdate(record);
+    FlushOldRecordsAndUpdate(record);
+    FlushOldRecordsAndUpdate(record);
   }
   {
     DailyInteraction record(GURL("http://some.url/2"));
-    FlushOldRecordsAndUpdate(record, profile());
+    FlushOldRecordsAndUpdate(record);
   }
 
   RecordSomethingTheNextDaySoItEmits();
@@ -105,20 +110,20 @@ TEST_F(DailyMetricsHelperTest, EmitsLatestValuePerUrl) {
   {
     DailyInteraction record1(GURL("http://some.url/1"));
     record1.install_source = 1;
-    FlushOldRecordsAndUpdate(record1, profile());
+    FlushOldRecordsAndUpdate(record1);
   }
   DailyInteraction record1(GURL("http://some.url/1"));
   record1.install_source = 2;
-  FlushOldRecordsAndUpdate(record1, profile());
+  FlushOldRecordsAndUpdate(record1);
 
   {
     DailyInteraction record2(GURL("http://some.url/2"));
     record2.install_source = 3;
-    FlushOldRecordsAndUpdate(record2, profile());
+    FlushOldRecordsAndUpdate(record2);
   }
   DailyInteraction record2(GURL("http://some.url/2"));
   record2.install_source = 4;
-  FlushOldRecordsAndUpdate(record2, profile());
+  FlushOldRecordsAndUpdate(record2);
 
   RecordSomethingTheNextDaySoItEmits();
 
@@ -135,7 +140,7 @@ TEST_F(DailyMetricsHelperTest, EmitsLatestValuePerUrl) {
 TEST_F(DailyMetricsHelperTest, EmitsLatestValues) {
   // Record with default values.
   DailyInteraction record1(GURL("http://some.url/1"));
-  FlushOldRecordsAndUpdate(record1, profile());
+  FlushOldRecordsAndUpdate(record1);
 
   // Update with non-default values.
   DailyInteraction record2(GURL("http://some.url/1"));
@@ -143,7 +148,7 @@ TEST_F(DailyMetricsHelperTest, EmitsLatestValues) {
   record2.install_source = 1;
   record2.effective_display_mode = 2;
   record2.promotable = true;
-  FlushOldRecordsAndUpdate(record2, profile());
+  FlushOldRecordsAndUpdate(record2);
 
   RecordSomethingTheNextDaySoItEmits();
 
@@ -162,17 +167,17 @@ TEST_F(DailyMetricsHelperTest, EmitsLatestValues) {
 TEST_F(DailyMetricsHelperTest, EmitsSumsForDurationsAndSessions) {
   // Default values are 0s
   DailyInteraction record(GURL("http://some.url/1"));
-  FlushOldRecordsAndUpdate(record, profile());
+  FlushOldRecordsAndUpdate(record);
 
   record.foreground_duration = base::Hours(1);
   record.background_duration = base::Hours(2);
   record.num_sessions = 3;
-  FlushOldRecordsAndUpdate(record, profile());
+  FlushOldRecordsAndUpdate(record);
 
   record.foreground_duration = base::Hours(4);
   record.background_duration = base::Hours(5);
   record.num_sessions = 6;
-  FlushOldRecordsAndUpdate(record, profile());
+  FlushOldRecordsAndUpdate(record);
 
   RecordSomethingTheNextDaySoItEmits();
 
@@ -194,11 +199,11 @@ TEST_F(DailyMetricsHelperTest, EmitsClampedSumsForExtremeDurations) {
   DailyInteraction record(GURL("http://some.url/1"));
   record.foreground_duration = base::Seconds(1);
   record.background_duration = base::Hours(20);
-  FlushOldRecordsAndUpdate(record, profile());
+  FlushOldRecordsAndUpdate(record);
 
   record.foreground_duration = base::Seconds(3);
   record.background_duration = base::Hours(15);
-  FlushOldRecordsAndUpdate(record, profile());
+  FlushOldRecordsAndUpdate(record);
 
   RecordSomethingTheNextDaySoItEmits();
 
@@ -216,7 +221,7 @@ TEST_F(DailyMetricsHelperTest, EmitsClampedSumsForExtremeDurations) {
 
 TEST_F(DailyMetricsHelperTest, DoesNotEmitZeroDurationsOrSessions) {
   DailyInteraction record1(GURL("http://some.url/1"));
-  FlushOldRecordsAndUpdate(record1, profile());
+  FlushOldRecordsAndUpdate(record1);
 
   RecordSomethingTheNextDaySoItEmits();
 
