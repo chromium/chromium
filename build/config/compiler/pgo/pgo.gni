@@ -19,13 +19,16 @@ declare_args() {
   # bad compile times.
   chrome_pgo_phase = 0
   if (!dcheck_always_on && is_official_build &&
-      # TODO(crbug.com/1052397): Remove chromeos_is_browser_only once
-      # target_os switch for lacros-chrome is completed.
       # TODO(crbug.com/1336055): Update this now-outdated condition with regard
       # to chromecast and determine whether chromeos_is_browser_only is
       # obsolete.
+      # On ChromeOS, ash-chrome uses AFDO, while lacros-chrome uses PGO now,
+      # because AFDO pipeline for lacros is not fully set up yet. Once we have
+      # it, revisit whether lacros-chrome should use AFDO or PGO.
+      # TODO(crbug.com/1412316): Revisit PGO/AFDO comparison once AFDO for
+      # lacros gets fully ready.
       (is_high_end_android || is_win || is_mac || is_fuchsia ||
-       (is_linux && !is_castos && !chromeos_is_browser_only))) {
+       (is_linux && !is_castos) || is_chromeos_lacros)) {
     chrome_pgo_phase = 2
   }
 
