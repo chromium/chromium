@@ -429,7 +429,8 @@ class Generator(generator.Generator):
                           "%s-lite-for-compile.js" % self.module.path)
     self.WriteWithComment(self._GenerateJsModule(),
                           "%s.m.js" % self.module.path)
-    if _GetWebUiModulePath(self.module) is not None:
+    if (_GetWebUiModulePath(self.module) is not None
+        and self.module.metadata.get("legacy_js_only") is None):
       self.WriteWithComment(self._GenerateWebUiModule(),
                             "mojom-webui/%s-webui.js" % self.module.path)
 

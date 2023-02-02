@@ -332,6 +332,12 @@ if (enable_scrambled_message_ids) {
 #   use_typescript_sources (optional)
 #       Uses the Typescript generator to generate JavaScript bindings.
 #
+#   generate_legacy_js_bindings (optional)
+#       Generate js_data_deps target containing legacy JavaScript bindings files
+#       for Blink tests and other non-WebUI users when generating TypeScript
+#       bindings for WebUI. Ignored if use_typescript_sources is not set to
+#       true.
+#
 #   js_interface_binder_config (optional)
 #       A JsInterfaceBinder is a Mojo interface that contains binders for all
 #       interfaces that can be bound from a WebUI's JavaScript. Defining this
@@ -787,6 +793,9 @@ template("mojom") {
           "--add-module-metadata",
           "webui_module_path=${invoker.webui_module_path}",
         ]
+        if (defined(invoker.generate_legacy_js_bindings)) {
+          args += [ "legacy_js_only=${invoker.generate_legacy_js_bindings}" ]
+        }
       }
     }
   }
@@ -1893,8 +1902,17 @@ template("mojom") {
     not_needed(invoker, [ "use_typescript_sources" ])
   }
 
-  if ((generate_fuzzing || !defined(invoker.cpp_only) || !invoker.cpp_only) &&
-      !use_typescript_for_target) {
+  generate_legacy_js = !use_typescript_for_target ||
+                       (defined(invoker.generate_legacy_js_bindings) &&
+                        invoker.generate_legacy_js_bindings)
+
+  # Targets needed by both TS and JS bindings targets. These are needed
+  # unconditionally for JS bindings targets, and are needed for TS bindings
+  # targets when generate_legacy_js_bindings is true. This option is provided
+  # since the legacy bindings are needed by Blink tests and non-Chromium users,
+  # which are not expected to migrate to modules or TypeScript.
+  if (generate_legacy_js &&
+      (generate_fuzzing || !defined(invoker.cpp_only) || !invoker.cpp_only)) {
     if (sources_list != []) {
       generator_js_target_name = "${target_name}_js__generator"
 
@@ -1923,7 +1941,8 @@ template("mojom") {
             "$root_gen_dir/$base_path-lite-for-compile.js",
           ]
 
-          if (defined(invoker.webui_module_path)) {
+          if (defined(invoker.webui_module_path) &&
+              !use_typescript_for_target) {
             outputs += [ "$root_gen_dir/mojom-webui/$base_path-webui.js" ]
           }
         }
@@ -1997,8 +2016,7 @@ template("mojom") {
   # generate these targets if the mojom target is not C++ only and is not using
   # TypeScript.
   if (generate_mojom_closure_libraries &&
-      (!defined(invoker.cpp_only) || !invoker.cpp_only) &&
-      !use_typescript_for_target) {
+      (!defined(invoker.cpp_only) || !invoker.cpp_only) && generate_legacy_js) {
     js_library_target_name = "${target_name}_js_library"
     if (sources_list != []) {
       js_library(js_library_target_name) {
@@ -2049,7 +2067,9 @@ template("mojom") {
       }
     }
 
-    if (defined(invoker.webui_module_path)) {
+    # WebUI specific closure targets, not needed by targets that are generating
+    # TypeScript WebUI bindings or by legacy-only targets.
+    if (defined(invoker.webui_module_path) && !use_typescript_for_target) {
       webui_js_target_name = "${target_name}_webui_js"
       if (sources_list != []) {
         js_library(webui_js_target_name) {
