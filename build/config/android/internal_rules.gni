@@ -2398,16 +2398,6 @@ if (enable_java_templates) {
         if (fail_on_android_expectations) {
           args += [ "--fail-on-expectations" ]
         }
-        if (defined(invoker.extra_verification_manifest)) {
-          inputs += [ invoker.extra_verification_manifest ]
-          args += [
-            "--extra-verification-manifest",
-            rebase_path(invoker.extra_verification_manifest, root_build_dir),
-          ]
-          if (defined(invoker.extra_verification_manifest_dep)) {
-            deps += [ invoker.extra_verification_manifest_dep ]
-          }
-        }
       }
       _deps += [ ":$_expectations_target" ]
     }

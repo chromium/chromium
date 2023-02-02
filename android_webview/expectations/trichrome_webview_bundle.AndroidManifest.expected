@@ -90,18 +90,6 @@
         android:process=":webview_service"
         android:visibleToInstantApps="true">
     </provider>  # DIFF-ANCHOR: ecfff997
-    <receiver  # DIFF-ANCHOR: 0a6f8fa5
-        android:name="com.google.android.gms.cast.framework.media.MediaIntentReceiver"
-        android:exported="false">
-    </receiver>  # DIFF-ANCHOR: 0a6f8fa5
-    <service  # DIFF-ANCHOR: 749391ed
-        android:name="com.google.android.gms.cast.framework.ReconnectionService"
-        android:exported="false">
-    </service>  # DIFF-ANCHOR: 749391ed
-    <service  # DIFF-ANCHOR: 48ce9d28
-        android:name="com.google.android.gms.cast.framework.media.MediaNotificationService"
-        android:exported="false">
-    </service>  # DIFF-ANCHOR: 48ce9d28
     <service  # DIFF-ANCHOR: 1d3bf514
         android:name="org.chromium.android_webview.js_sandbox.service.JsSandboxService0"
         android:exported="true"
