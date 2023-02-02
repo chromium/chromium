@@ -121,10 +121,14 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
     ~GpuResources();
 
    private:
+    void Destroy(bool have_context);
+
     scoped_refptr<CommandBufferHelper> helper_;
 
     std::vector<std::unique_ptr<gpu::SharedImageRepresentationFactoryRef>>
         shared_images_;
+
+    base::WeakPtrFactory<GpuResources> weak_factory_{this};
   };
 
   // Receive an error from |gpu_resources_| and store it in |received_error_|.

@@ -218,9 +218,9 @@ class CommandBufferHelperImpl
   }
 
  public:
-  void SetWillDestroyStubCB(WillDestroyStubCB will_destroy_stub_cb) override {
-    DCHECK(!will_destroy_stub_cb_);
-    will_destroy_stub_cb_ = std::move(will_destroy_stub_cb);
+  void AddWillDestroyStubCB(WillDestroyStubCB callback) override {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    will_destroy_stub_callbacks_.push_back(std::move(callback));
   }
 
   bool IsPassthrough() const override {
@@ -303,8 +303,9 @@ class CommandBufferHelperImpl
     // sure that we're around a bit longer.
     scoped_refptr<CommandBufferHelper> thiz(this);
 
-    if (will_destroy_stub_cb_)
-      std::move(will_destroy_stub_cb_).Run(have_context);
+    for (auto& callback : will_destroy_stub_callbacks_) {
+      std::move(callback).Run(have_context);
+    }
 
     DestroyStub();
   }
@@ -337,7 +338,7 @@ class CommandBufferHelperImpl
 #endif
   std::map<GLuint, std::unique_ptr<gpu::gles2::AbstractTexture>> textures_;
 
-  WillDestroyStubCB will_destroy_stub_cb_;
+  std::vector<WillDestroyStubCB> will_destroy_stub_callbacks_;
 
   MemoryTrackerImpl memory_tracker_;
   gpu::MemoryTypeTracker memory_type_tracker_;
