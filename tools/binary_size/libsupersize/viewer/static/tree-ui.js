@@ -528,20 +528,12 @@ class TreeUi {
 
     displayOrHideDownloadButton(beforeBlobUrl, loadBlobUrl);
 
-    state.set('diff_mode', diffMode ? 'on' : null);
+    state.setDiffMode(diffMode);
     document.body.classList.toggle('diff', Boolean(diffMode));
 
     const groupByEl = /** @type {HTMLInputElement} */ (
         document.getElementById('group-by-container'));
-    groupByEl.toggleAttribute('disabled', !isMultiContainer);
-    if (isMultiContainer) {
-      groupByEl.checked = true;
-      // Fire a change event manually to reload the tree.
-      // TODO(crbug/1186921): Rework such that we don't build the tree twice.
-      document.getElementById('options').dispatchEvent(new Event('change'));
-    } else {
-      processBuildTreeResponse(message);
-    }
+    processBuildTreeResponse(message);
     setMetadataContent(metadata);
     _metadataView.classList.toggle('active', true);
     setReviewInfo(metadata);

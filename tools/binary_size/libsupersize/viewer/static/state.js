@@ -74,6 +74,9 @@ function _initState() {
     _filterParams.append(_TYPE_STATE_KEY, type);
   }
 
+  /** @type {boolean} */
+  let _diffMode = false;
+
   const state = Object.freeze({
     /**
      * Returns a string from the current query string state.
@@ -120,7 +123,25 @@ function _initState() {
       // Passing empty `state` leads to no change, so use `location.pathname`.
       history.replaceState(null, null, state.toString() || location.pathname);
     },
+
+    /** @return {boolean} */
+    getDiffMode() {
+      return _diffMode;
+    },
+
+    /** @param {boolean} diffMode */
+    setDiffMode(diffMode) {
+      _diffMode = diffMode;
+    }
   });
+
+  // Deduce diff mode from initial params.
+  {
+    const loadUrl = _filterParams.get('load_url');
+    const beforeUrl = _filterParams.get('before_url');
+    state.setDiffMode(
+        Boolean(loadUrl && (loadUrl.endsWith('.sizediff') || beforeUrl)));
+  }
 
   // Update form inputs to reflect the state from URL.
   for (const element of
@@ -432,8 +453,7 @@ function _makeSizeTextGetter() {
    */
   function setSizeClasses(sizeElement, value) {
     const cutOff = methodCountInput.checked ? 10 : 50000;
-    const shouldHaveStyle =
-      state.has('diff_mode') && Math.abs(value) > cutOff;
+    const shouldHaveStyle = state.getDiffMode() && Math.abs(value) > cutOff;
 
     if (shouldHaveStyle) {
       if (value < 0) {

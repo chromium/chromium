@@ -389,7 +389,7 @@ const displayInfocard = (() => {
       const sizeString = formatNumber(stats.size, 2, 2);
       const percentString = formatPercent(percentage, 2, 2);
 
-      const diffMode = state.has('diff_mode');
+      const diffMode = state.getDiffMode();
       if (diffMode && stats.added !== undefined) {
         addedColumn.removeAttribute('hidden');
         removedColumn.removeAttribute('hidden');
@@ -422,7 +422,7 @@ const displayInfocard = (() => {
       const statsEntries = Object.entries(artifactNode.childStats).sort(
         (a, b) => b[1].size - a[1].size
       );
-      const diffMode = state.has('diff_mode');
+      const diffMode = state.getDiffMode();
       let totalSize = 0;
       for (const [, stats] of statsEntries) {
         totalSize += Math.abs(stats.size);

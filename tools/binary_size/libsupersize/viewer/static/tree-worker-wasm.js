@@ -178,7 +178,7 @@ function parseOptions(optionsStr) {
   ret.beforeUrl = params.get('before_url');
 
   ret.methodCountMode = params.has('method_count');
-  ret.groupBy = params.get('group_by') || 'source_path';
+  ret.groupBy = params.get('group_by') || 'container';
 
   ret.includeRegex = params.get('include');
   ret.excludeRegex = params.get('exclude');
