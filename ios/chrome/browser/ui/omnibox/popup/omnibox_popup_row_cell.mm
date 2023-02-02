@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/i18n/rtl.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/browser/ui/util/attributed_string_util.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/util/util_swift.h"
@@ -52,6 +54,10 @@ const NSInteger kSearchSuggestNumberOfLines = 2;
 
 NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     @"OmniboxPopupRowSwitchTabAccessibilityIdentifier";
+
+/// Name of the histogram recording the number of lines in search suggestions.
+const char kOmniboxSearchSuggestionNumberOfLines[] =
+    "IOS.Omnibox.SearchSuggestionNumberOfLines";
 
 /// Returns `YES` if `kOmniboxMultilineSearchSuggest` is enabled.
 BOOL IsMultilineSearchSuggestionEnabled() {
@@ -494,15 +500,18 @@ BOOL IsMultilineSearchSuggestionEnabled() {
       self.highlighted
           ? [self highlightedAttributedStringWithString:suggestion.text]
           : suggestion.text;
-  if (base::FeatureList::IsEnabled(kOmniboxMultilineSearchSuggest) &&
-      suggestion.isWrapping) {
-    self.textTruncatingLabel.numberOfLines = kSearchSuggestNumberOfLines;
-    base::i18n::TextDirection textDirection = base::i18n::GetStringDirection(
-        base::SysNSStringToUTF16(self.textTruncatingLabel.text));
-    if (textDirection == base::i18n::RIGHT_TO_LEFT) {
-      self.textTruncatingLabel.semanticContentAttribute =
-          UISemanticContentAttributeForceRightToLeft;
-      self.textTruncatingLabel.truncateMode = FadeTruncatingHead;
+  if (suggestion.isWrapping) {
+    [self logNumberOfLinesSearchSuggestions:self.textTruncatingLabel
+                                                .attributedText];
+    if (base::FeatureList::IsEnabled(kOmniboxMultilineSearchSuggest)) {
+      self.textTruncatingLabel.numberOfLines = kSearchSuggestNumberOfLines;
+      base::i18n::TextDirection textDirection = base::i18n::GetStringDirection(
+          base::SysNSStringToUTF16(self.textTruncatingLabel.text));
+      if (textDirection == base::i18n::RIGHT_TO_LEFT) {
+        self.textTruncatingLabel.semanticContentAttribute =
+            UISemanticContentAttributeForceRightToLeft;
+        self.textTruncatingLabel.truncateMode = FadeTruncatingHead;
+      }
     }
   } else {
     // Default values for FadeTruncatingLabel.
@@ -607,6 +616,17 @@ BOOL IsMultilineSearchSuggestionEnabled() {
 
 - (void)trailingButtonTapped {
   [self.delegate trailingButtonTappedForCell:self];
+}
+
+#pragma mark - Metrics
+
+- (void)logNumberOfLinesSearchSuggestions:
+    (NSAttributedString*)attributedString {
+  CGFloat width = CGRectGetWidth(self.textStackView.frame);
+  NSInteger numberOfLines =
+      NumberOfLinesOfAttributedString(attributedString, width);
+  UMA_HISTOGRAM_EXACT_LINEAR(kOmniboxSearchSuggestionNumberOfLines,
+                             static_cast<int>(numberOfLines), 10);
 }
 
 @end
