@@ -7,6 +7,7 @@
 #include <functional>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -14,6 +15,9 @@
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_utils.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
+#include "components/device_signals/core/browser/signals_aggregator.h"
+#include "components/device_signals/core/browser/signals_types.h"
+#include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -21,16 +25,14 @@
 namespace enterprise_connectors {
 
 namespace {
-using policy::CloudPolicyStore;
-
 constexpr char kLatencyHistogramVariant[] = "Browser";
 }  // namespace
 
 BrowserSignalsDecorator::BrowserSignalsDecorator(
-    CloudPolicyStore* cloud_policy_store)
-    : cloud_policy_store_(cloud_policy_store) {
-  DCHECK(cloud_policy_store_);
-}
+    policy::CloudPolicyStore* cloud_policy_store,
+    device_signals::SignalsAggregator* signals_aggregator)
+    : cloud_policy_store_(cloud_policy_store),
+      signals_aggregator_(signals_aggregator) {}
 
 BrowserSignalsDecorator::~BrowserSignalsDecorator() = default;
 
@@ -38,12 +40,18 @@ void BrowserSignalsDecorator::Decorate(base::Value::Dict& signals,
                                        base::OnceClosure done_closure) {
   auto start_time = base::TimeTicks::Now();
 
-  if (cloud_policy_store_->has_policy()) {
+  if (cloud_policy_store_ && cloud_policy_store_->has_policy()) {
     const auto* policy = cloud_policy_store_->policy();
     signals.Set(device_signals::names::kDeviceEnrollmentDomain,
                 policy->has_managed_by() ? policy->managed_by()
                                          : policy->display_domain());
   }
+
+  auto barrier_closure = base::BarrierClosure(
+      /*num_closures=*/signals_aggregator_ ? 2 : 1,
+      base::BindOnce(&BrowserSignalsDecorator::OnAllSignalsReceived,
+                     weak_ptr_factory_.GetWeakPtr(), start_time,
+                     std::move(done_closure)));
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
@@ -51,12 +59,21 @@ void BrowserSignalsDecorator::Decorate(base::Value::Dict& signals,
                      enterprise_signals::DeviceInfoFetcher::CreateInstance()),
       base::BindOnce(&BrowserSignalsDecorator::OnDeviceInfoFetched,
                      weak_ptr_factory_.GetWeakPtr(), std::ref(signals),
-                     start_time, std::move(done_closure)));
+                     barrier_closure));
+
+  if (signals_aggregator_) {
+    device_signals::SignalsAggregationRequest request;
+    request.signal_names.emplace(device_signals::SignalName::kAgent);
+    signals_aggregator_->GetSignals(
+        request,
+        base::BindOnce(&BrowserSignalsDecorator::OnAggregatedSignalsReceived,
+                       weak_ptr_factory_.GetWeakPtr(), std::ref(signals),
+                       barrier_closure));
+  }
 }
 
 void BrowserSignalsDecorator::OnDeviceInfoFetched(
     base::Value::Dict& signals,
-    base::TimeTicks start_time,
     base::OnceClosure done_closure,
     const enterprise_signals::DeviceInfo& device_info) {
   signals.Set(device_signals::names::kSerialNumber, device_info.serial_number);
@@ -84,8 +101,30 @@ void BrowserSignalsDecorator::OnDeviceInfoFetched(
                 static_cast<int32_t>(device_info.secure_boot_enabled.value()));
   }
 
-  LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);
+  std::move(done_closure).Run();
+}
 
+void BrowserSignalsDecorator::OnAggregatedSignalsReceived(
+    base::Value::Dict& signals,
+    base::OnceClosure done_closure,
+    device_signals::SignalsAggregationResponse response) {
+  if (response.agent_signals_response &&
+      response.agent_signals_response->crowdstrike_signals) {
+    auto serialized_crowdstrike_signals =
+        response.agent_signals_response->crowdstrike_signals->ToValue();
+    if (serialized_crowdstrike_signals) {
+      signals.Set(device_signals::names::kCrowdStrike,
+                  std::move(serialized_crowdstrike_signals.value()));
+    }
+  }
+
+  std::move(done_closure).Run();
+}
+
+void BrowserSignalsDecorator::OnAllSignalsReceived(
+    base::TimeTicks start_time,
+    base::OnceClosure done_closure) {
+  LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);
   std::move(done_closure).Run();
 }
 

@@ -9,6 +9,8 @@ source_set("unit_tests") {
   deps = [
     "//chrome/browser",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
+    "//components/device_signals/core/browser",
+    "//components/device_signals/core/browser:test_support",
     "//components/device_signals/core/common",
     "//components/enterprise:test_support",
     "//components/policy/core/common:test_support",

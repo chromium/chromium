@@ -10,12 +10,20 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
+#include "components/device_signals/core/browser/mock_signals_aggregator.h"
+#include "components/device_signals/core/browser/signals_aggregator.h"
+#include "components/device_signals/core/browser/signals_types.h"
+#include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+using testing::_;
+using testing::Invoke;
+using testing::StrictMock;
 
 namespace enterprise_connectors {
 
@@ -24,6 +32,9 @@ namespace {
 constexpr char kFakeEnrollmentDomain[] = "fake.domain.google.com";
 constexpr char kLatencyHistogram[] =
     "Enterprise.DeviceTrust.SignalsDecorator.Latency.Browser";
+
+constexpr char kFakeAgentId[] = "some-agent-id";
+constexpr char kFakeCustomerId[] = "some-cid";
 
 constexpr int32_t kDisabledSetting = 1;
 constexpr int32_t kEnabledSetting = 2;
@@ -34,6 +45,83 @@ base::Value::List GetExpectedMacAddresses() {
   return mac_addresses;
 }
 
+device_signals::SignalsAggregationRequest CreateExpectedRequest() {
+  device_signals::SignalsAggregationRequest request;
+  request.signal_names.emplace(device_signals::SignalName::kAgent);
+  return request;
+}
+
+device_signals::SignalsAggregationResponse CreateFilledResponse() {
+  device_signals::CrowdStrikeSignals crowdstrike_signals;
+  crowdstrike_signals.agent_id = kFakeAgentId;
+  crowdstrike_signals.customer_id = kFakeCustomerId;
+
+  device_signals::AgentSignalsResponse agent_signals;
+  agent_signals.crowdstrike_signals = crowdstrike_signals;
+
+  device_signals::SignalsAggregationResponse response;
+  response.agent_signals_response = agent_signals;
+  return response;
+}
+
+void ValidateStaticSignals(const base::Value::Dict& signals) {
+  const auto* serial_number =
+      signals.FindString(device_signals::names::kSerialNumber);
+  ASSERT_TRUE(serial_number);
+  EXPECT_EQ(*serial_number, "twirlchange");
+
+  auto screen_lock_secured =
+      signals.FindInt(device_signals::names::kScreenLockSecured);
+  ASSERT_TRUE(screen_lock_secured);
+  EXPECT_EQ(screen_lock_secured.value(), kEnabledSetting);
+
+  auto disk_encrypted = signals.FindInt(device_signals::names::kDiskEncrypted);
+  ASSERT_TRUE(disk_encrypted);
+  EXPECT_EQ(disk_encrypted.value(), kDisabledSetting);
+
+  const auto* device_host_name =
+      signals.FindString(device_signals::names::kDeviceHostName);
+  ASSERT_TRUE(device_host_name);
+  EXPECT_EQ(*device_host_name, "midnightshift");
+
+  const auto* mac_addresses =
+      signals.FindList(device_signals::names::kMacAddresses);
+  ASSERT_TRUE(mac_addresses);
+  EXPECT_EQ(*mac_addresses, GetExpectedMacAddresses());
+
+  const auto* windows_machine_domain =
+      signals.FindString(device_signals::names::kWindowsMachineDomain);
+  ASSERT_TRUE(windows_machine_domain);
+  EXPECT_EQ(*windows_machine_domain, "MACHINE_DOMAIN");
+
+  const auto* windows_user_domain =
+      signals.FindString(device_signals::names::kWindowsUserDomain);
+  ASSERT_TRUE(windows_user_domain);
+  EXPECT_EQ(*windows_user_domain, "USER_DOMAIN");
+
+  auto secure_boot_enabled =
+      signals.FindInt(device_signals::names::kSecureBootEnabled);
+  ASSERT_TRUE(secure_boot_enabled);
+  EXPECT_EQ(secure_boot_enabled.value(), kEnabledSetting);
+}
+
+void ValidateCrowdStrikeSignals(const base::Value::Dict& signals) {
+  auto* cs_value = signals.Find(device_signals::names::kCrowdStrike);
+  ASSERT_TRUE(cs_value);
+  ASSERT_TRUE(cs_value->is_dict());
+
+  const auto& cs_value_dict = cs_value->GetDict();
+
+  auto* customer_id =
+      cs_value_dict.FindString(device_signals::names::kCustomerId);
+  ASSERT_TRUE(customer_id);
+  EXPECT_EQ(*customer_id, kFakeCustomerId);
+
+  auto* agent_id = cs_value_dict.FindString(device_signals::names::kAgentId);
+  ASSERT_TRUE(agent_id);
+  EXPECT_EQ(*agent_id, kFakeAgentId);
+}
+
 }  // namespace
 
 class BrowserSignalsDecoratorTest : public testing::Test {
@@ -41,7 +129,6 @@ class BrowserSignalsDecoratorTest : public testing::Test {
   void SetUp() override {
     enterprise_signals::DeviceInfoFetcher::SetForceStubForTesting(
         /*should_force=*/true);
-    decorator_.emplace(&mock_cloud_policy_store_);
   }
 
   void TearDown() override {
@@ -56,65 +143,40 @@ class BrowserSignalsDecoratorTest : public testing::Test {
         std::move(policy_data));
   }
 
-  void ValidateStaticSignals(const base::Value::Dict& signals) {
-    const auto* serial_number =
-        signals.FindString(device_signals::names::kSerialNumber);
-    ASSERT_TRUE(serial_number);
-    EXPECT_EQ(*serial_number, "twirlchange");
+  BrowserSignalsDecorator CreateDecorator() {
+    return BrowserSignalsDecorator(&mock_cloud_policy_store_,
+                                   &mock_aggregator_);
+  }
 
-    auto screen_lock_secured =
-        signals.FindInt(device_signals::names::kScreenLockSecured);
-    ASSERT_TRUE(screen_lock_secured);
-    EXPECT_EQ(screen_lock_secured.value(), kEnabledSetting);
-
-    auto disk_encrypted =
-        signals.FindInt(device_signals::names::kDiskEncrypted);
-    ASSERT_TRUE(disk_encrypted);
-    EXPECT_EQ(disk_encrypted.value(), kDisabledSetting);
-
-    const auto* device_host_name =
-        signals.FindString(device_signals::names::kDeviceHostName);
-    ASSERT_TRUE(device_host_name);
-    EXPECT_EQ(*device_host_name, "midnightshift");
-
-    const auto* mac_addresses =
-        signals.FindList(device_signals::names::kMacAddresses);
-    ASSERT_TRUE(mac_addresses);
-    EXPECT_EQ(*mac_addresses, GetExpectedMacAddresses());
-
-    const auto* windows_machine_domain =
-        signals.FindString(device_signals::names::kWindowsMachineDomain);
-    ASSERT_TRUE(windows_machine_domain);
-    EXPECT_EQ(*windows_machine_domain, "MACHINE_DOMAIN");
-
-    const auto* windows_user_domain =
-        signals.FindString(device_signals::names::kWindowsUserDomain);
-    ASSERT_TRUE(windows_user_domain);
-    EXPECT_EQ(*windows_user_domain, "USER_DOMAIN");
-
-    auto secure_boot_enabled =
-        signals.FindInt(device_signals::names::kSecureBootEnabled);
-    ASSERT_TRUE(secure_boot_enabled);
-    EXPECT_EQ(secure_boot_enabled.value(), kEnabledSetting);
+  void SetUpAggregatorExpectations() {
+    EXPECT_CALL(mock_aggregator_, GetSignals(CreateExpectedRequest(), _))
+        .WillOnce(Invoke(
+            [](const device_signals::SignalsAggregationRequest& request,
+               base::OnceCallback<void(
+                   device_signals::SignalsAggregationResponse)> callback) {
+              std::move(callback).Run(CreateFilledResponse());
+            }));
   }
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   policy::MockCloudPolicyStore mock_cloud_policy_store_;
-  absl::optional<BrowserSignalsDecorator> decorator_;
+  StrictMock<device_signals::MockSignalsAggregator> mock_aggregator_;
 };
 
-TEST_F(BrowserSignalsDecoratorTest, Decorate_WithPolicyData) {
+TEST_F(BrowserSignalsDecoratorTest, Decorate_AllSignals) {
   SetFakePolicyData();
+  SetUpAggregatorExpectations();
 
+  auto decorator = CreateDecorator();
   base::RunLoop run_loop;
-
   base::Value::Dict signals;
-  decorator_->Decorate(signals, run_loop.QuitClosure());
+  decorator.Decorate(signals, run_loop.QuitClosure());
 
   run_loop.Run();
 
   ValidateStaticSignals(signals);
+  ValidateCrowdStrikeSignals(signals);
 
   EXPECT_EQ(
       kFakeEnrollmentDomain,
@@ -123,17 +185,85 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_WithPolicyData) {
   histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
 }
 
-TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutPolicyData) {
-  base::RunLoop run_loop;
+TEST_F(BrowserSignalsDecoratorTest, Decorate_NullAggregator) {
+  SetFakePolicyData();
 
+  BrowserSignalsDecorator decorator(&mock_cloud_policy_store_, nullptr);
+  base::RunLoop run_loop;
   base::Value::Dict signals;
-  decorator_->Decorate(signals, run_loop.QuitClosure());
+  decorator.Decorate(signals, run_loop.QuitClosure());
 
   run_loop.Run();
 
   ValidateStaticSignals(signals);
+
+  EXPECT_FALSE(signals.contains(device_signals::names::kCrowdStrike));
+  EXPECT_EQ(
+      kFakeEnrollmentDomain,
+      *signals.FindString(device_signals::names::kDeviceEnrollmentDomain));
+
+  histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
+}
+
+TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutPolicyData) {
+  SetUpAggregatorExpectations();
+
+  auto decorator = CreateDecorator();
+  base::RunLoop run_loop;
+  base::Value::Dict signals;
+  decorator.Decorate(signals, run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  ValidateStaticSignals(signals);
+  ValidateCrowdStrikeSignals(signals);
   EXPECT_FALSE(
       signals.contains(device_signals::names::kDeviceEnrollmentDomain));
+}
+
+TEST_F(BrowserSignalsDecoratorTest, Decorate_NullPolicyStore) {
+  SetUpAggregatorExpectations();
+
+  BrowserSignalsDecorator decorator(nullptr, &mock_aggregator_);
+  base::RunLoop run_loop;
+  base::Value::Dict signals;
+  decorator.Decorate(signals, run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  ValidateStaticSignals(signals);
+  ValidateCrowdStrikeSignals(signals);
+  EXPECT_FALSE(
+      signals.contains(device_signals::names::kDeviceEnrollmentDomain));
+}
+
+TEST_F(BrowserSignalsDecoratorTest, Decorate_NoAgentSignals) {
+  SetFakePolicyData();
+
+  EXPECT_CALL(mock_aggregator_, GetSignals(CreateExpectedRequest(), _))
+      .WillOnce(
+          Invoke([](const device_signals::SignalsAggregationRequest& request,
+                    base::OnceCallback<void(
+                        device_signals::SignalsAggregationResponse)> callback) {
+            device_signals::SignalsAggregationResponse empty_response;
+            std::move(callback).Run(std::move(empty_response));
+          }));
+
+  auto decorator = CreateDecorator();
+  base::RunLoop run_loop;
+  base::Value::Dict signals;
+  decorator.Decorate(signals, run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  ValidateStaticSignals(signals);
+  EXPECT_FALSE(signals.contains(device_signals::names::kCrowdStrike));
+
+  EXPECT_EQ(
+      kFakeEnrollmentDomain,
+      *signals.FindString(device_signals::names::kDeviceEnrollmentDomain));
+
+  histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
 }
 
 }  // namespace enterprise_connectors

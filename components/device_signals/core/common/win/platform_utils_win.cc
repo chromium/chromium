@@ -137,7 +137,7 @@ absl::optional<CrowdStrikeSignals> GetCrowdStrikeSignals() {
 
 base::FilePath GetCrowdStrikeZtaFilePath() {
   static constexpr base::FilePath::CharType kZtaFilePathSuffix[] =
-      FILE_PATH_LITERAL("CrowdStrike\\ZeroTrustAsssessment\\data.zta");
+      FILE_PATH_LITERAL("CrowdStrike\\ZeroTrustAssessment\\data.zta");
 
   base::FilePath app_data_dir;
   if (!base::PathService::Get(base::DIR_COMMON_APP_DATA, &app_data_dir)) {

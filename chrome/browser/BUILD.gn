@@ -6126,11 +6126,7 @@ static_library("browser") {
         [ "//chrome/browser/enterprise/connectors/analysis:sdk_manager" ]
 
     if (is_win) {
-      deps += [
-        "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/browser/win",
-        "//components/device_signals/core/browser/win",
-        "//components/device_signals/core/common/win",
-      ]
+      deps += [ "//components/device_signals/core/browser/win" ]
     }
 
     if (is_mac) {
