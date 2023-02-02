@@ -9,7 +9,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_tags.h"
@@ -21,15 +20,12 @@
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/test_browser_closed_waiter.h"
-#include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/kiosk_test_helpers.h"
-#include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
-#include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
-#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -53,7 +49,6 @@ namespace {
 
 using ::testing::_;
 
-const char kAppInstallUrl[] = "https://app.com/install";
 const char kAppLaunchUrl[] = "https://app.com/launch";
 const char16_t kAppTitle[] = u"title.";
 const test::UIPath kNetworkConfigureScreenContinueButton = {"error-message",
@@ -66,50 +61,12 @@ class FakeKioskProfileLoaderDelegate : public KioskProfileLoader::Delegate {
   MOCK_METHOD1(OnOldEncryptionDetected, void(std::unique_ptr<UserContext>));
 };
 
-class WebKioskTest : public OobeBaseTest {
+class WebKioskTest : public WebKioskBaseTest {
  public:
-  WebKioskTest()
-      : account_id_(
-            AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
-                kAppInstallUrl,
-                policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP))) {
-    set_exit_when_last_browser_closes(false);
-    needs_background_networking_ = true;
-    skip_splash_wait_override_ =
-        KioskLaunchController::SkipSplashScreenWaitForTesting();
-    network_wait_override_ =
-        KioskLaunchController::SetNetworkWaitForTesting(base::Seconds(0));
-  }
+  WebKioskTest() = default;
 
   WebKioskTest(const WebKioskTest&) = delete;
   WebKioskTest& operator=(const WebKioskTest&) = delete;
-
-  void TearDownOnMainThread() override {
-    settings_.reset();
-    OobeBaseTest::TearDownOnMainThread();
-  }
-
-  void SetOnline(bool online) {
-    network_portal_detector_.SimulateDefaultNetworkState(
-        online ? NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE
-               : NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
-  }
-
-  const AccountId& account_id() { return account_id_; }
-
-  void PrepareAppLaunch() {
-    std::vector<policy::DeviceLocalAccount> device_local_accounts = {
-        policy::DeviceLocalAccount(
-            policy::WebKioskAppBasicInfo(kAppInstallUrl, "", ""),
-            kAppInstallUrl)};
-
-    settings_ = std::make_unique<ScopedDeviceSettings>();
-    int ui_update_count = LoginScreenTestApi::GetUiUpdateCount();
-    policy::SetDeviceLocalAccounts(settings_->owner_settings_service(),
-                                   device_local_accounts);
-    // Wait for the Kiosk App configuration to reload.
-    LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
-  }
 
   void MakeAppAlreadyInstalled() {
     if (!base::FeatureList::IsEnabled(::features::kKioskEnableAppService)) {
@@ -158,18 +115,6 @@ class WebKioskTest : public OobeBaseTest {
 
     profile_loader.Start();
     loop.Run();
-  }
-
-  bool LaunchApp() {
-    return LoginScreenTestApi::LaunchApp(
-        WebKioskAppManager::Get()->GetAppByAccountId(account_id())->app_id());
-  }
-
-  void InitializeRegularOnlineKiosk() {
-    SetOnline(true);
-    PrepareAppLaunch();
-    LaunchApp();
-    KioskSessionInitializedWaiter().Wait();
   }
 
   void SetBlockAppLaunch(bool block) {
@@ -222,18 +167,7 @@ class WebKioskTest : public OobeBaseTest {
   }
 
  private:
-  NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
-  DeviceStateMixin device_state_mixin_{
-      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-  const AccountId account_id_;
-  std::unique_ptr<ScopedDeviceSettings> settings_;
-
-  std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
-  std::unique_ptr<base::AutoReset<base::TimeDelta>> network_wait_override_;
   std::unique_ptr<base::AutoReset<bool>> block_app_launch_override_;
-  // Web kiosks do not support consumer-based kiosk. Network can always be
-  // configured.
-  ScopedCanConfigureNetwork can_configure_network_override_{true, false};
 };
 
 // Runs the kiosk app when the network is always present.

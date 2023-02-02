@@ -3772,6 +3772,8 @@ if (!is_android) {
         "../browser/ash/login/app_mode/test/test_app_data_load_waiter.h",
         "../browser/ash/login/app_mode/test/test_browser_closed_waiter.cc",
         "../browser/ash/login/app_mode/test/test_browser_closed_waiter.h",
+        "../browser/ash/login/app_mode/test/web_kiosk_base_test.cc",
+        "../browser/ash/login/app_mode/test/web_kiosk_base_test.h",
         "../browser/ash/login/app_mode/test/web_kiosk_browsertest.cc",
         "../browser/ash/login/arc_terms_of_service_browsertest.cc",
         "../browser/ash/login/ash_hud_login_browsertest.cc",
