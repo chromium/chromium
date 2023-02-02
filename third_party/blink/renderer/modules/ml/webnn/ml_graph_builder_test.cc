@@ -1812,10 +1812,11 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
   V8TestingScope scope;
   MLGraphBuilder* builder = CreateMLGraphBuilder(scope);
   {
-    // Test building reshape with new shape = {3, -1}.
+    // Test building reshape with new shape = {3, null}.
     auto* input = BuildInput(scope, builder, "input", {2, 3, 4},
                              V8MLOperandType::Enum::kFloat32);
-    auto* output = builder->reshape(input, {3, -1}, scope.GetExceptionState());
+    auto* output =
+        builder->reshape(input, {3, absl::nullopt}, scope.GetExceptionState());
     EXPECT_NE(output, nullptr);
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
@@ -1826,10 +1827,11 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
     EXPECT_EQ(reshape->IsConnected(), true);
   }
   {
-    // Test building reshape with new shape = {-1}, src shape = {2, 3, 4}.
+    // Test building reshape with new shape = {null}, src shape = {2, 3, 4}.
     auto* input = BuildInput(scope, builder, "input", {2, 3, 4},
                              V8MLOperandType::Enum::kFloat32);
-    auto* output = builder->reshape(input, {-1}, scope.GetExceptionState());
+    auto* output =
+        builder->reshape(input, {absl::nullopt}, scope.GetExceptionState());
     EXPECT_NE(output, nullptr);
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
@@ -1840,10 +1842,11 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
     EXPECT_EQ(reshape->IsConnected(), true);
   }
   {
-    // Test building reshape with new shape = {-1}, src shape = {1}.
+    // Test building reshape with new shape = {null}, src shape = {1}.
     auto* input = BuildInput(scope, builder, "input", {1},
                              V8MLOperandType::Enum::kFloat32);
-    auto* output = builder->reshape(input, {-1}, scope.GetExceptionState());
+    auto* output =
+        builder->reshape(input, {absl::nullopt}, scope.GetExceptionState());
     EXPECT_NE(output, nullptr);
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
@@ -1857,13 +1860,13 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
     // Test throwing error when one value of new shape is 0.
     auto* input = BuildInput(scope, builder, "input", {2, 4},
                              V8MLOperandType::Enum::kFloat32);
-    auto* output =
-        builder->reshape(input, {2, -1, 0}, scope.GetExceptionState());
+    auto* output = builder->reshape(input, {2, absl::nullopt, 0},
+                                    scope.GetExceptionState());
     EXPECT_EQ(output, nullptr);
     EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
               scope.GetExceptionState().Code());
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The value of new shape should be positive or -1.");
+              "The value of new shape should not be 0.");
   }
   {
     // Setting new shape = {}.
@@ -1880,16 +1883,16 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
               "the number of elements (24) in the input tensor.");
   }
   {
-    // Test throwing error when more than one components of new_shape are -1.
+    // Test throwing error when more than one components of new_shape are null.
     auto* input = BuildInput(scope, builder, "input", {2, 3, 1},
                              V8MLOperandType::Enum::kFloat32);
-    auto* output =
-        builder->reshape(input, {6, -1, -1}, scope.GetExceptionState());
+    auto* output = builder->reshape(input, {6, absl::nullopt, absl::nullopt},
+                                    scope.GetExceptionState());
     EXPECT_EQ(output, nullptr);
     EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
               scope.GetExceptionState().Code());
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Only one component of new shape can be -1.");
+              "Only one component of new shape can be null.");
   }
   {
     // Test throwing error since the number of elements (9) of the input tensor
@@ -1897,7 +1900,8 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
     // shape.
     auto* input = BuildInput(scope, builder, "input", {3, 3},
                              V8MLOperandType::Enum::kFloat32);
-    auto* output = builder->reshape(input, {2, -1}, scope.GetExceptionState());
+    auto* output =
+        builder->reshape(input, {2, absl::nullopt}, scope.GetExceptionState());
     EXPECT_EQ(output, nullptr);
     EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
               scope.GetExceptionState().Code());

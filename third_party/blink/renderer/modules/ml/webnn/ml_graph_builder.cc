@@ -919,11 +919,11 @@ MLOperator* MLGraphBuilder::relu(ExceptionState& exception_state) {
                                           MLOperator::OperatorKind::kRelu);
 }
 
-MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
-                                   const Vector<int32_t>& new_shape,
-                                   ExceptionState& exception_state) {
-  bool has_minus1 = false;
-  wtf_size_t minus1_dim_index;
+MLOperand* MLGraphBuilder::reshape(
+    const MLOperand* input,
+    const Vector<absl::optional<uint32_t>>& new_shape,
+    ExceptionState& exception_state) {
+  absl::optional<wtf_size_t> null_dim_index = absl::nullopt;
   base::CheckedNumeric<size_t> checked_newshape_number_of_elements = 1;
   Vector<uint32_t> output_shape;
   if (new_shape.size() == 0) {
@@ -933,26 +933,26 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
     output_shape.resize(new_shape.size());
     // According to WebNN spec:
     // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reshape, only one
-    // component of new shape can be the special value of -1.
+    // component of new shape can be the special value of null.
     for (wtf_size_t i = 0; i < new_shape.size(); ++i) {
-      auto d = new_shape[i];
-      if (d < -1 || d == 0) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kDataError,
-            "The value of new shape should be positive or -1.");
-        return nullptr;
-      } else if (d == -1) {
-        if (has_minus1) {
+      auto dim = new_shape[i];
+      if (!dim) {
+        if (null_dim_index) {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kDataError,
-              "Only one component of new shape can be -1.");
+              "Only one component of new shape can be null.");
           return nullptr;
         }
-        has_minus1 = true;
-        minus1_dim_index = i;
+        null_dim_index = i;
       } else {
-        checked_newshape_number_of_elements *= d;
-        output_shape[i] = d;
+        if (dim.value() == 0) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kDataError,
+              "The value of new shape should not be 0.");
+          return nullptr;
+        }
+        checked_newshape_number_of_elements *= dim.value();
+        output_shape[i] = dim.value();
       }
     }
   }
@@ -965,9 +965,9 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
     return nullptr;
   }
   DCHECK_NE(newshape_number_of_elements, size_t(0));
-  if (has_minus1) {
-    // The size of the dimension with the value -1 is computed so that the total
-    // size remains constant.
+  if (null_dim_index) {
+    // The size of the dimension with the value of null is computed so that the
+    // total size remains constant.
     if (input->NumberOfElements() % newshape_number_of_elements != size_t(0)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataError,
@@ -981,10 +981,10 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
     // Check whether the quotient of type size_t is in the range of dimension of
     // type uint32_t.
     if (!base::CheckDiv(input->NumberOfElements(), newshape_number_of_elements)
-             .AssignIfValid(&output_shape[minus1_dim_index])) {
+             .AssignIfValid(&output_shape[null_dim_index.value()])) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataError,
-          "The size of dimension with the value -1 is too large.");
+          "The size of dimension with the value null is too large.");
       return nullptr;
     }
   } else {
