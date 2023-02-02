@@ -165,12 +165,12 @@ TEST_F(PolicyProtoDecodersTest, IntegerPolicyWithValueUpperThanMaxLimit) {
 }
 
 TEST_F(PolicyProtoDecodersTest, JsonPolicy) {
-  base::Value jsonPolicy(base::Value::Type::DICT);
-  jsonPolicy.SetKey("key", base::Value("value"));
+  base::Value::Dict jsonPolicy;
+  jsonPolicy.Set("key", "value");
 
   expected_policy_map_.Set(key::kManagedBookmarks, POLICY_LEVEL_MANDATORY,
                            POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-                           std::move(jsonPolicy), nullptr);
+                           base::Value(std::move(jsonPolicy)), nullptr);
 
   std::string jsonPolicyStr = R"({
     "key": "value"
