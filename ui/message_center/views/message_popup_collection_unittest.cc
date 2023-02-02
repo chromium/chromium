@@ -756,7 +756,7 @@ TEST_F(MessagePopupCollectionTest, HoverClose) {
   GetPopup(id0)->SetHovered(true);
   EXPECT_FALSE(IsPopupTimerStarted());
 
-  const int first_popup_top = GetPopup(id0)->GetBoundsInScreen().y();
+  const int first_popup_bottom = GetPopup(id0)->GetBoundsInScreen().bottom();
 
   MessageCenter::Get()->RemoveNotification(id0, true);
   EXPECT_TRUE(IsAnimating());
@@ -766,15 +766,12 @@ TEST_F(MessagePopupCollectionTest, HoverClose) {
   GetPopup(id1)->SetHovered(true);
   AnimateToEnd();
   EXPECT_FALSE(IsAnimating());
-  EXPECT_EQ(first_popup_top, GetPopup(id1)->GetBoundsInScreen().y());
+  EXPECT_EQ(first_popup_bottom, GetPopup(id1)->GetBoundsInScreen().bottom());
 
   EXPECT_FALSE(IsPopupTimerStarted());
   GetPopup(id1)->SetHovered(false);
-  EXPECT_TRUE(IsAnimating());
-  AnimateToEnd();
-  EXPECT_FALSE(IsAnimating());
   EXPECT_TRUE(IsPopupTimerStarted());
-  EXPECT_GT(first_popup_top, GetPopup(id1)->GetBoundsInScreen().y());
+  EXPECT_EQ(first_popup_bottom, GetPopup(id1)->GetBoundsInScreen().bottom());
 }
 
 // Popup timers should be paused if a notification has focus.

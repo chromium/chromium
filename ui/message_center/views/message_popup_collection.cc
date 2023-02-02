@@ -37,9 +37,6 @@ constexpr base::TimeDelta kFadeInFadeOutDuration = base::Milliseconds(200);
 // Animation duration for MOVE_DOWN.
 constexpr base::TimeDelta kMoveDownDuration = base::Milliseconds(120);
 
-// Time to wait until we reset |recently_closed_by_user_|.
-constexpr base::TimeDelta kWaitForReset = base::Seconds(10);
-
 }  // namespace
 
 MessagePopupCollection::MessagePopupCollection()
@@ -106,7 +103,6 @@ void MessagePopupCollection::ResetBounds() {
     base::AutoReset<bool> reset(&is_updating_, true);
 
     RemoveClosedPopupItems();
-    ResetHotMode();
     state_ = State::IDLE;
     animation_->End();
 
@@ -213,20 +209,7 @@ void MessagePopupCollection::OnNotificationAdded(
 void MessagePopupCollection::OnNotificationRemoved(
     const std::string& notification_id,
     bool by_user) {
-  if (by_user) {
-    recently_closed_by_user_ = true;
-    recently_closed_by_user_timer_ = std::make_unique<base::OneShotTimer>();
-    recently_closed_by_user_timer_->Start(
-        FROM_HERE, kWaitForReset,
-        base::BindOnce(&MessagePopupCollection::ResetRecentlyClosedByUser,
-                       base::Unretained(this)));
-  }
   Update();
-}
-
-void MessagePopupCollection::ResetRecentlyClosedByUser() {
-  recently_closed_by_user_ = false;
-  recently_closed_by_user_timer_.reset();
 }
 
 void MessagePopupCollection::OnNotificationUpdated(
@@ -370,11 +353,6 @@ void MessagePopupCollection::TransitionToAnimation() {
   if (HasRemovedPopup()) {
     MarkRemovedPopup();
 
-    // Start hot mode to allow a user to continually close many notifications.
-    // Only start hot mode if there's a notification recently closed by user.
-    if (recently_closed_by_user_)
-      StartHotMode();
-
     if (CloseTransparentPopups()) {
       // If the popup is already transparent, skip FADE_OUT.
       state_ = State::MOVE_DOWN;
@@ -422,13 +400,6 @@ void MessagePopupCollection::TransitionToAnimation() {
                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
-
-  if (!IsAnyPopupHovered() && is_hot_) {
-    // Reset hot mode and animate to the normal positions.
-    state_ = State::MOVE_DOWN;
-    ResetHotMode();
-    MoveDownPopups();
-  }
 }
 
 void MessagePopupCollection::UpdatePopupTimers() {
@@ -452,13 +423,6 @@ void MessagePopupCollection::CalculateBounds() {
     gfx::Size preferred_size(
         kNotificationWidth,
         GetPopupItem(i)->popup->GetHeightForWidth(kNotificationWidth));
-
-    // Align the top of i-th popup to |hot_top_|.
-    if (is_hot_ && hot_index_ == i) {
-      base = hot_top_;
-      if (!IsTopDown())
-        base += preferred_size.height();
-    }
 
     int origin_x = GetToastOriginX(gfx::Rect(preferred_size));
 
@@ -638,23 +602,6 @@ bool MessagePopupCollection::IsNextEdgeOutsideWorkArea(
                      : next_edge < work_area.y();
 }
 
-void MessagePopupCollection::StartHotMode() {
-  for (size_t i = 0; i < popup_items_.size(); ++i) {
-    if (GetPopupItem(i)->is_animating && GetPopupItem(i)->popup->is_hovered()) {
-      is_hot_ = true;
-      hot_index_ = i;
-      hot_top_ = GetPopupItem(i)->bounds.y();
-      break;
-    }
-  }
-}
-
-void MessagePopupCollection::ResetHotMode() {
-  is_hot_ = false;
-  hot_index_ = 0;
-  hot_top_ = 0;
-}
-
 bool MessagePopupCollection::AreAllAnimatingPopupsFirst() const {
   bool previous_item_was_animating = true;
   for (const auto& item : popup_items_) {
@@ -705,7 +652,6 @@ void MessagePopupCollection::CloseAllPopupsNow() {
     item.is_animating = true;
   CloseAnimatingPopups();
 
-  ResetHotMode();
   state_ = State::IDLE;
   animation_->End();
 }

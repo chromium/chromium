@@ -19,10 +19,6 @@
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/widget/widget.h"
 
-namespace base {
-class OneShotTimer;
-}  // namespace base
-
 namespace gfx {
 class LinearAnimation;
 }  // namespace gfx
@@ -248,12 +244,6 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // Returns true if the edge is outside work area.
   bool IsNextEdgeOutsideWorkArea(const PopupItem& item) const;
 
-  // Implements hot mode. The purpose of hot mode is to allow a user to
-  // continually close many notifications by mouse without moving it. Similar
-  // functionality is also implemented in browser tab strips.
-  void StartHotMode();
-  void ResetHotMode();
-
   void CloseAnimatingPopups();
   bool CloseTransparentPopups();
   void ClosePopupsOutsideWorkArea();
@@ -310,27 +300,6 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // If true, popup sizes are resized on the next time Update() is called with
   // IDLE state.
   bool resize_requested_ = false;
-
-  // Hot mode related variables. See StartHotMode() and ResetHotMode().
-
-  // True if a notification is just closed by an user and hot mode should start.
-  // After a brief moment, this boolean will be set to false by the timer.
-  bool recently_closed_by_user_ = false;
-
-  // Timer that fires to reset |recently_closed_by_user_| to false, indicating
-  // that we should not start hot mode.
-  std::unique_ptr<base::OneShotTimer> recently_closed_by_user_timer_;
-
-  // True if the close button of the popup at |hot_index_| is hot.
-  bool is_hot_ = false;
-
-  // An index in |popup_items_|. Only valid if |is_hot_| is true.
-  size_t hot_index_ = 0;
-
-  // Fixed Y coordinate of the popup at |hot_index_|. While |is_hot_| is true,
-  // CalculateBounds() always lays out popups in a way the top of the popup at
-  // |hot_index_| is aligned to |hot_top_|. Only valid if |is_hot_| is true.
-  int hot_top_ = 0;
 
   // Invert ordering of notification popups i.e. showing the latest notification
   // at the top. It changes the state transition like this:
