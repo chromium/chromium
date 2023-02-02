@@ -217,7 +217,7 @@ class MetricsWaiter {
   ~MetricsWaiter() = default;
 
   void Wait() {
-    while (histogram_tester_->GetTotalSum(metrics_name_) == 0) {
+    while (histogram_tester_->GetAllSamples(metrics_name_).empty()) {
       GiveItSomeTime(base::Milliseconds(16));
     }
   }
@@ -377,6 +377,9 @@ TEST_P(LoginUnlockThroughputRecorderLoginAnimationTest,
   LoginOwner();
   GiveItSomeTime(base::Milliseconds(100));
 
+  // Do not expect any windows to be restored.
+  throughput_recorder()->RestoreDataLoaded();
+
   // Should not report login histogram until shelf is initialized.
   EXPECT_EQ(histogram_tester_.get()->GetTotalSum(metrics_name), 0);
 
@@ -402,7 +405,7 @@ TEST_P(LoginUnlockThroughputRecorderLoginAnimationTest,
 
   // Add extra buttons.
   model.InitializeIconList({4, 5, 6, 7, 8, 9});
-  model.SetIconsLoadedFor({7, 8, 9});
+  model.SetIconsLoadedFor({6, 7, 8, 9});
   // Only 4 and 5 are not loaded yet.
   throughput_recorder()->UpdateShelfIconList(&model);
   EXPECT_TRUE(IsThroughputRecorderBlocked());
@@ -537,6 +540,143 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
   RestoredWindowsPresented({1});
   EXPECT_TRUE(histogram_tester_.get()->GetTotalSum(
       "Ash.LoginSessionRestore.AllBrowserWindowsPresented"));
+
+  // Should not report login histograms until shelf icons are loaded.
+  EXPECT_TRUE(histogram_tester_.get()
+                  ->GetAllSamples(kAshLoginAnimationDurationClamshellMode)
+                  .empty());
+  EXPECT_TRUE(
+      histogram_tester_.get()
+          ->GetAllSamples("Ash.LoginSessionRestore.ShelfLoginAnimationEnd")
+          .empty());
+}
+
+// Verifies that Login animation duration is reported when all shelf icons were
+// loaded but only after windows were restored.
+TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
+       ReportLoginAnimationDurationOnlyAfterWindowsRestore) {
+  const bool is_lacros = GetParam();
+
+  EXPECT_TRUE(
+      histogram_tester_.get()
+          ->GetAllSamples("Ash.LoginSessionRestore.AllBrowserWindowsCreated")
+          .empty());
+  EXPECT_TRUE(
+      histogram_tester_.get()
+          ->GetAllSamples("Ash.LoginSessionRestore.AllBrowserWindowsShown")
+          .empty());
+  EXPECT_TRUE(
+      histogram_tester_.get()
+          ->GetAllSamples("Ash.LoginSessionRestore.AllBrowserWindowsPresented")
+          .empty());
+
+  LoginOwner();
+  AddScheduledRestoreBrowserWindows({1, 2, 3}, is_lacros);
+  // Should not report login histograms until shelf icons are loaded.
+  EXPECT_TRUE(histogram_tester_.get()
+                  ->GetAllSamples(kAshLoginAnimationDurationClamshellMode)
+                  .empty());
+  EXPECT_TRUE(
+      histogram_tester_.get()
+          ->GetAllSamples("Ash.LoginSessionRestore.ShelfLoginAnimationEnd")
+          .empty());
+  RestoredWindowsCreated({1, 2, 3});
+  RestoredWindowsShown({1, 2, 3});
+  RestoredWindowsPresented({1, 2, 3});
+  MetricsWaiter(histogram_tester_.get(),
+                "Ash.LoginSessionRestore.AllBrowserWindowsCreated")
+      .Wait();
+  MetricsWaiter(histogram_tester_.get(),
+                "Ash.LoginSessionRestore.AllBrowserWindowsShown")
+      .Wait();
+  MetricsWaiter(histogram_tester_.get(),
+                "Ash.LoginSessionRestore.AllBrowserWindowsPresented")
+      .Wait();
+
+  TestShelfModel model;
+  model.InitializeIconList({1, 2, 3});
+  model.SetIconsLoadedFor({1, 2, 3});
+  throughput_recorder()->InitShelfIconList(&model);
+
+  // Start login animation. It should trigger metrics reporting.
+  RunSimpleAnimation();
+  MetricsWaiter(histogram_tester_.get(),
+                "Ash.LoginSessionRestore.ShelfLoginAnimationEnd")
+      .Wait();
+  MetricsWaiter(histogram_tester_.get(),
+                kAshLoginAnimationDurationClamshellMode)
+      .Wait();
+}
+
+// Verifies that Login animation duration is reported when all browser windows
+// were restored but only after shelf icons were loaded.
+TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
+       ReportLoginAnimationDurationOnlyAfterShelfIconsLoaded) {
+  const bool is_lacros = GetParam();
+
+  EXPECT_TRUE(
+      histogram_tester_.get()
+          ->GetAllSamples("Ash.LoginSessionRestore.AllBrowserWindowsCreated")
+          .empty());
+  EXPECT_TRUE(
+      histogram_tester_.get()
+          ->GetAllSamples("Ash.LoginSessionRestore.AllBrowserWindowsShown")
+          .empty());
+  EXPECT_TRUE(
+      histogram_tester_.get()
+          ->GetAllSamples("Ash.LoginSessionRestore.AllBrowserWindowsPresented")
+          .empty());
+  EXPECT_TRUE(
+      histogram_tester_.get()
+          ->GetAllSamples("Ash.LoginSessionRestore.ShelfLoginAnimationEnd")
+          .empty());
+  EXPECT_TRUE(histogram_tester_.get()
+                  ->GetAllSamples(kAshLoginAnimationDurationClamshellMode)
+                  .empty());
+
+  LoginOwner();
+
+  TestShelfModel model;
+  model.InitializeIconList({1, 2, 3});
+  model.SetIconsLoadedFor({1, 2, 3});
+  throughput_recorder()->InitShelfIconList(&model);
+  RunSimpleAnimation();
+
+  // Login is not completed until windows were restored.
+  EXPECT_TRUE(
+      histogram_tester_.get()
+          ->GetAllSamples("Ash.LoginSessionRestore.ShelfLoginAnimationEnd")
+          .empty());
+  EXPECT_TRUE(histogram_tester_.get()
+                  ->GetAllSamples(kAshLoginAnimationDurationClamshellMode)
+                  .empty());
+  GiveItSomeTime(base::Milliseconds(100));
+
+  AddScheduledRestoreBrowserWindows({1, 2, 3}, is_lacros);
+  RestoredWindowsCreated({1, 2, 3});
+  RestoredWindowsShown({1, 2, 3});
+  RestoredWindowsPresented({1, 2, 3});
+  // Start login animation. It should trigger LoginAnimation.Duration reporting.
+  RunSimpleAnimation();
+  MetricsWaiter(histogram_tester_.get(),
+                "Ash.LoginSessionRestore.AllBrowserWindowsCreated")
+      .Wait();
+  MetricsWaiter(histogram_tester_.get(),
+                "Ash.LoginSessionRestore.AllBrowserWindowsShown")
+      .Wait();
+  MetricsWaiter(histogram_tester_.get(),
+                "Ash.LoginSessionRestore.AllBrowserWindowsPresented")
+      .Wait();
+
+  // Login metrics should be reported.
+  // Start login animation. It should trigger LoginAnimation.Duration reporting.
+  RunSimpleAnimation();
+  MetricsWaiter(histogram_tester_.get(),
+                "Ash.LoginSessionRestore.ShelfLoginAnimationEnd")
+      .Wait();
+  MetricsWaiter(histogram_tester_.get(),
+                kAshLoginAnimationDurationClamshellMode)
+      .Wait();
 }
 
 }  // namespace ash

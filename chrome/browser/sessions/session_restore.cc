@@ -134,6 +134,9 @@ void StartRecordingRestoredWindowsMetrics(
           ash::LoginUnlockThroughputRecorder::kBrowser);
     }
   }
+  if (throughput_recorder) {
+    throughput_recorder->RestoreDataLoaded();
+  }
 }
 
 void ReportRestoredWindowCreated(aura::Window* window) {

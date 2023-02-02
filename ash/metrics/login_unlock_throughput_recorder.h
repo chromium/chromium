@@ -11,7 +11,6 @@
 #include "ash/metrics/ui_metrics_recorder.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -92,6 +91,9 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   // tracing after login is done.
   void AddLoginTimeMarker(const std::string& marker_name);
 
+  // This flag signals that all expected browser windows are already scheduled.
+  void RestoreDataLoaded();
+
  private:
   class TimeMarker {
    public:
@@ -118,9 +120,11 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
       base::TimeTicks start,
       const cc::FrameSequenceMetrics::CustomReportData& data);
 
-  void ScheduleWaitForShelfAnimationEnd();
+  void ScheduleWaitForShelfAnimationEndIfNeeded();
 
   void OnAllExpectedShelfIconsLoaded();
+
+  void MaybeReportLoginFinished();
 
   UiMetricsRecorder ui_recorder_;
 
@@ -144,11 +148,36 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
 
   bool shelf_initialized_ = false;
 
+  // |has_pending_icon_| is true when last shelf icons update had an item
+  // pending icon load.
+  bool has_pending_icon_ = false;
+
+  // |shelf_icons_loaded_| is true when shelf icons are considered loaded,
+  // i.e. |has_pending_icon_| is true and first resored browser window was
+  // created.
   bool shelf_icons_loaded_ = false;
 
   bool user_logged_in_ = false;
 
   bool arc_app_list_ready_reported_ = false;
+
+  bool all_restored_windows_presented_ = false;
+
+  bool shelf_animation_end_scheduled_ = false;
+
+  bool shelf_animation_finished_ = false;
+
+  bool login_animation_throughput_received_ = false;
+
+  bool login_finished_reported_ = false;
+
+  // |browser_windows_will_not_be_restored_| is true when session restore
+  // window list is empty.
+  bool browser_windows_will_not_be_restored_ = false;
+
+  // This is a signal that current list of expected windows to be restored is
+  // final.
+  bool first_restored_window_created_ = false;
 
   absl::optional<base::TimeTicks> arc_opt_in_time_;
 
@@ -158,8 +187,6 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   std::unique_ptr<
       ui::TotalAnimationThroughputReporter::ScopedThroughputReporterBlocker>
       scoped_throughput_reporter_blocker_;
-
-  base::flat_set<ShelfID> expected_shelf_icons_;
 
   std::vector<TimeMarker> login_time_markers_;
 
