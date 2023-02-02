@@ -1697,7 +1697,7 @@ void HTMLElement::PopoverHideFinishIfNeeded() {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
   GetDocument().PopoversWaitingToHide().erase(this);
-  GetDocument().RemoveFromTopLayer(this);
+  GetDocument().ScheduleForTopLayerRemoval(this);
   // Re-apply display:none, and start matching `:closed`.
   if (GetPopoverData()) {
     GetPopoverData()->setVisibilityState(PopoverVisibilityState::kHidden);

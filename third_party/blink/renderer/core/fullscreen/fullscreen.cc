@@ -199,10 +199,11 @@ void GoFullscreen(Element& element,
 
   // If |element| is already in top layer remove it so it will
   // be appended to the end.
-  if (element.IsInTopLayer())
-    document.RemoveFromTopLayer(&element);
-  else
+  if (element.IsInTopLayer()) {
+    document.RemoveFromTopLayerImmediately(&element);
+  } else {
     DCHECK(!HasFullscreenFlag(element));
+  }
 
   // If there are any open popovers, close them.
   if (RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
@@ -233,7 +234,7 @@ void Unfullscreen(Element& element) {
   DCHECK(element.IsInTopLayer());
   DCHECK(HasFullscreenFlag(element));
   UnsetFullscreenFlag(element);
-  document.RemoveFromTopLayer(&element);
+  document.ScheduleForTopLayerRemoval(&element);
 
   // WebXR DOM Overlay mode doesn't allow changing the fullscreen element, this
   // is enforced in AllowedToRequestFullscreen. In this mode, unfullscreening

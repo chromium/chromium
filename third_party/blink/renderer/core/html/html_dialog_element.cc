@@ -157,7 +157,7 @@ void HTMLDialogElement::close(const String& return_value) {
   SetBooleanAttribute(html_names::kOpenAttr, false);
   SetIsModal(false);
 
-  document.RemoveFromTopLayer(this);
+  document.ScheduleForTopLayerRemoval(this);
   InertSubtreesChanged(document, old_modal_dialog);
 
   if (!return_value.IsNull())

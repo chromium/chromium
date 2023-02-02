@@ -45,6 +45,7 @@ const char kSettings[] = "Settings";
 const char kShadow[] = "Shadow";
 const char kStyleInvalidator[] = "StyleInvalidator";
 const char kStyleSheetChange[] = "StyleSheetChange";
+const char kTopLayer[] = "TopLayer";
 const char kUseFallback[] = "UseFallback";
 const char kViewportDefiningElement[] = "ViewportDefiningElement";
 const char kViewportUnits[] = "ViewportUnits";

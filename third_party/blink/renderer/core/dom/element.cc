@@ -2791,7 +2791,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 
   if (IsInTopLayer()) {
     Fullscreen::ElementRemoved(*this);
-    GetDocument().RemoveFromTopLayer(this);
+    GetDocument().RemoveFromTopLayerImmediately(this);
   }
 
   ClearElementFlag(ElementFlags::kIsInCanvasSubtree);
@@ -3088,6 +3088,7 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
     // necessary if the animated property flipped back to the old style with no
     // change as the result.
     DCHECK(GetDocument().GetStyleEngine().InContainerQueryStyleRecalc() ||
+           GetDocument().PendingTopLayerUpdate() ||
            element_animations->CssAnimations().PendingUpdate().IsEmpty());
     element_animations->CssAnimations().ClearPendingUpdate();
   }
@@ -7227,6 +7228,9 @@ void Element::SetIsInTopLayer(bool in_top_layer) {
   }
   if (!GetDocument().InStyleRecalc()) {
     SetForceReattachLayoutTree();
+    // Needs a style recalc to update the ForcesStackingContext flag.
+    SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
+                                               style_change_reason::kTopLayer));
   }
 }
 

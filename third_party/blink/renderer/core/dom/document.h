@@ -1534,10 +1534,12 @@ class CORE_EXPORT Document : public ContainerNode,
   void AttachCompositorTimeline(cc::AnimationTimeline*) const;
 
   void AddToTopLayer(Element*, const Element* before = nullptr);
-  void RemoveFromTopLayer(Element*);
+  void RemoveFromTopLayerImmediately(Element*);
   const HeapVector<Member<Element>>& TopLayerElements() const {
     return top_layer_elements_;
   }
+  void ScheduleForTopLayerRemoval(Element*);
+  bool RemoveFinishedTopLayerElements();
 
   HTMLDialogElement* ActiveModalDialog() const;
 
@@ -1930,6 +1932,8 @@ class CORE_EXPORT Document : public ContainerNode,
   }
 
   void ResetAgent(Agent& agent);
+
+  bool PendingTopLayerUpdate() const { return pending_top_layer_update_; }
 
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
@@ -2392,6 +2396,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // stack and is thus the one that will be visually on top.
   HeapVector<Member<Element>> top_layer_elements_;
 
+  // top_layer_elements_ to be removed when top-layer computes to none.
+  HeapHashSet<Member<Element>> top_layer_elements_pending_removal_;
+
   // The stack of currently-displayed `popover=auto` elements. Elements in the
   // stack go from earliest (bottom-most) to latest (top-most).
   HeapVector<Member<HTMLElement>> popover_stack_;
@@ -2564,6 +2571,11 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<RenderBlockingResourceManager> render_blocking_resource_manager_;
 
   bool rendering_has_begun_ = false;
+
+  // Set to true if we are in awaiting an UpdateStyleAndLayoutTree() that is
+  // after removing an element from the top layer. Only used for sanity checking
+  // pending animation updates in StyleForLayoutObject().
+  bool pending_top_layer_update_ = false;
 
   DeclarativeShadowRootAllowState declarative_shadow_root_allow_state_ =
       DeclarativeShadowRootAllowState::kNotSet;

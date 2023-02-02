@@ -43,7 +43,8 @@ PostStyleUpdateScope::~PostStyleUpdateScope() {
 }
 
 bool PostStyleUpdateScope::Apply() {
-  if (ApplyPseudo()) {
+  bool pseudo_needs_update = ApplyPseudo();
+  if (document_.RemoveFinishedTopLayerElements() || pseudo_needs_update) {
     return true;
   }
   ApplyAnimations();

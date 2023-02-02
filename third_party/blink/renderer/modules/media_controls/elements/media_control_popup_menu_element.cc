@@ -126,7 +126,7 @@ void MediaControlPopupMenuElement::SetIsWanted(bool wanted) {
   } else {
     if (event_listener_)
       event_listener_->StopListening();
-    GetDocument().RemoveFromTopLayer(this);
+    GetDocument().RemoveFromTopLayerImmediately(this);
   }
 }
 

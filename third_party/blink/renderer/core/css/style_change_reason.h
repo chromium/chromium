@@ -46,6 +46,7 @@ extern const char kSettings[];
 extern const char kShadow[];
 extern const char kStyleInvalidator[];
 extern const char kStyleSheetChange[];
+extern const char kTopLayer[];
 extern const char kUseFallback[];
 extern const char kViewportDefiningElement[];
 extern const char kViewportUnits[];
