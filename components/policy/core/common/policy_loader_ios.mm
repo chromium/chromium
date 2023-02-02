@@ -30,60 +30,6 @@
 #error "This file requires ARC support."
 #endif
 
-// This policy loader loads a managed app configuration from the NSUserDefaults.
-// For example code from Apple see:
-// https://developer.apple.com/library/ios/samplecode/sc2279/Introduction/Intro.html
-// For an introduction to the API see session 301 from WWDC 2013,
-// "Extending Your Apps for Enterprise and Education Use":
-// https://developer.apple.com/videos/wwdc/2013/?id=301
-
-// Helper that observes notifications for NSUserDefaults and triggers an update
-// at the loader on the right thread.
-@interface PolicyNotificationObserver : NSObject {
-  base::RepeatingClosure _callback;
-  scoped_refptr<base::SequencedTaskRunner> _taskRunner;
-}
-
-// Designated initializer. |callback| will be posted to |taskRunner| whenever
-// the NSUserDefaults change.
-- (id)initWithCallback:(const base::RepeatingClosure&)callback
-            taskRunner:(scoped_refptr<base::SequencedTaskRunner>)taskRunner;
-
-// Invoked when the NSUserDefaults change.
-- (void)userDefaultsChanged:(NSNotification*)notification;
-
-- (void)dealloc;
-
-@end
-
-@implementation PolicyNotificationObserver
-
-- (id)initWithCallback:(const base::RepeatingClosure&)callback
-            taskRunner:(scoped_refptr<base::SequencedTaskRunner>)taskRunner {
-  if ((self = [super init])) {
-    _callback = callback;
-    _taskRunner = taskRunner;
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(userDefaultsChanged:)
-               name:NSUserDefaultsDidChangeNotification
-             object:nil];
-  }
-  return self;
-}
-
-- (void)userDefaultsChanged:(NSNotification*)notification {
-  // This may be invoked on any thread. Post the |callback_| to the loader's
-  // |taskRunner_| to make sure it Reloads() on the right thread.
-  _taskRunner->PostTask(FROM_HERE, _callback);
-}
-
-- (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-@end
-
 namespace policy {
 
 PolicyLoaderIOS::PolicyLoaderIOS(
@@ -99,14 +45,7 @@ PolicyLoaderIOS::~PolicyLoaderIOS() {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
 }
 
-void PolicyLoaderIOS::InitOnBackgroundThread() {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
-  base::RepeatingClosure callback = base::BindRepeating(
-      &PolicyLoaderIOS::UserDefaultsChanged, weak_factory_.GetWeakPtr());
-  notification_observer_ =
-      [[PolicyNotificationObserver alloc] initWithCallback:callback
-                                                taskRunner:task_runner()];
-}
+void PolicyLoaderIOS::InitOnBackgroundThread() {}
 
 PolicyBundle PolicyLoaderIOS::Load() {
   PolicyBundle bundle;
@@ -119,19 +58,6 @@ PolicyBundle PolicyLoaderIOS::Load() {
   UMA_HISTOGRAM_COUNTS_100("Enterprise.IOSPolicies", count);
 
   return bundle;
-}
-
-base::Time PolicyLoaderIOS::LastModificationTime() {
-  return last_notification_time_;
-}
-
-void PolicyLoaderIOS::UserDefaultsChanged() {
-  // The base class coalesces multiple Reload() calls into a single Load() if
-  // the LastModificationTime() has a small delta between Reload() calls.
-  // This coalesces the multiple notifications sent during startup into a single
-  // Load() call.
-  last_notification_time_ = base::Time::Now();
-  Reload(false);
 }
 
 void PolicyLoaderIOS::LoadNSDictionaryToPolicyBundle(NSDictionary* dictionary,
