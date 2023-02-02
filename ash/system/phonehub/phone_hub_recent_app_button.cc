@@ -49,10 +49,6 @@ gfx::Size PhoneHubRecentAppButton::CalculatePreferredSize() const {
 void PhoneHubRecentAppButton::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  canvas->DrawPath(views::GetHighlightPath(this), flags);
   views::ImageButton::PaintButtonContents(canvas);
 }
 

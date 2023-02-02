@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/phone_hub_more_apps_button.h"
+#include <memory>
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -13,6 +14,8 @@
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/table_layout.h"
@@ -22,13 +25,30 @@ namespace ash {
 // Appearance constants in DIPs
 constexpr int kMoreAppsButtonRowPadding = 20;
 constexpr int kMoreAppsButtonColumnPadding = 2;
-constexpr int kMoreAppsButtonBackgroundRadius = 120;
+constexpr int kMoreAppsButtonBackgroundRadius = 18;
 
 // Animation constants for loading card
 constexpr float kAnimationLoadingCardOpacity = 1.0f;
 constexpr int kAnimationLoadingCardDelayInMs = 83;
 constexpr int kAnimationLoadingCardTransitDurationInMs = 200;
 constexpr int kAnimationLoadingCardFreezeDurationInMs = 150;
+
+class MoreAppsButtonBackground : public views::Background {
+ public:
+  MoreAppsButtonBackground() = default;
+  MoreAppsButtonBackground(const MoreAppsButtonBackground&) = delete;
+  MoreAppsButtonBackground& operator=(const MoreAppsButtonBackground&) = delete;
+
+  void Paint(gfx::Canvas* canvas, views::View* view) const override {
+    cc::PaintFlags flags;
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
+    flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+    canvas->DrawCircle(view->GetContentsBounds().CenterPoint(),
+                       kMoreAppsButtonBackgroundRadius, flags);
+  }
+};
 
 PhoneHubMoreAppsButton::PhoneHubMoreAppsButton(
     phonehub::AppStreamLauncherDataModel* app_stream_launcher_data_model,
@@ -48,19 +68,28 @@ PhoneHubMoreAppsButton::~PhoneHubMoreAppsButton() {
 
 void PhoneHubMoreAppsButton::InitLayout() {
   table_layout_ = SetLayoutManager(std::make_unique<views::TableLayout>());
+  table_layout_->AddPaddingColumn(/*horizontal_resize=*/3, /*width=*/0);
   table_layout_->AddColumn(views::LayoutAlignment::kStretch,
-                           views::LayoutAlignment::kStretch, 1.0,
-                           views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+                           views::LayoutAlignment::kStretch,
+                           views::TableLayout::kFixedSize,
+                           views::TableLayout::ColumnSize::kUsePreferred,
+                           /*fixed_width=*/0, /*min_width=*/0);
   table_layout_->AddPaddingColumn(views::TableLayout::kFixedSize,
                                   kMoreAppsButtonColumnPadding);
   table_layout_->AddColumn(views::LayoutAlignment::kStretch,
-                           views::LayoutAlignment::kStretch, 1.0,
-                           views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
-  table_layout_->AddRows(1, kMoreAppsButtonRowPadding);
+                           views::LayoutAlignment::kStretch,
+                           views::TableLayout::kFixedSize,
+                           views::TableLayout::ColumnSize::kUsePreferred,
+                           /*fixed_width=*/0, /*min_width=*/0);
+  table_layout_->AddPaddingColumn(/*horizontal_resize=*/3, /*width=*/0);
+  table_layout_->AddRows(/*n=*/1, views::TableLayout::kFixedSize,
+                         kMoreAppsButtonRowPadding);
   table_layout_->AddPaddingRow(views::TableLayout::kFixedSize,
                                kMoreAppsButtonColumnPadding);
-  table_layout_->AddRows(1, kMoreAppsButtonRowPadding);
+  table_layout_->AddRows(/*n=*/1, views::TableLayout::kFixedSize,
+                         kMoreAppsButtonRowPadding);
 
+  SetEnabled(false);
   if (app_stream_launcher_data_model_->GetAppsListSortedByName()->empty()) {
     InitGlimmer();
     SetEnabled(false);
@@ -73,10 +102,7 @@ void PhoneHubMoreAppsButton::InitLayout() {
         phone_hub_metrics::MoreAppsButtonLoadingState::kMoreAppsButtonLoaded);
   }
 
-  SetBackground(views::CreateRoundedRectBackground(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
-      kMoreAppsButtonBackgroundRadius));
+  SetBackground(std::make_unique<MoreAppsButtonBackground>());
 }
 
 void PhoneHubMoreAppsButton::InitGlimmer() {
@@ -120,6 +146,7 @@ void PhoneHubMoreAppsButton::LoadAppList() {
   }
 
   AddChildView(std::make_unique<AppCountIcon>(app_list->size()));
+  SetEnabled(true);
 }
 
 BEGIN_METADATA(PhoneHubMoreAppsButton, views::Button)

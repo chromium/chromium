@@ -45,6 +45,7 @@ constexpr int kHeaderLabelLineHeight = 48;
 constexpr int kRecentAppButtonDefaultSpacing = 42;
 constexpr int kRecentAppButtonMinSpacing = 20;
 constexpr int kRecentAppButtonSize = 36;
+constexpr int kMoreAppsButtonSize = 40;
 constexpr int kRecentAppButtonsViewTopPadding = 4;
 constexpr int kRecentAppButtonsViewHorizontalPadding = 6;
 constexpr int kContentLabelLineHeightDip = 20;
@@ -137,7 +138,18 @@ const char* PhoneHubRecentAppsView::GetClassName() const {
   return "PhoneHubRecentAppsView";
 }
 
-PhoneHubRecentAppsView::RecentAppButtonsView::RecentAppButtonsView() = default;
+PhoneHubRecentAppsView::RecentAppButtonsView::RecentAppButtonsView() {
+  if (features::IsEcheLauncherIconsInMoreAppsButtonEnabled()) {
+    views::BoxLayout* box_layout =
+        SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal));
+    box_layout->SetDefaultFlex(1);
+    box_layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    box_layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+  }
+}
 
 PhoneHubRecentAppsView::RecentAppButtonsView::~RecentAppButtonsView() = default;
 
@@ -157,11 +169,20 @@ gfx::Size PhoneHubRecentAppsView::RecentAppButtonsView::CalculatePreferredSize()
   int width = kTrayMenuWidth - kBubbleHorizontalSidePaddingDip * 2;
   int height = kRecentAppButtonSize + kRecentAppButtonFocusPadding.height() +
                kRecentAppButtonsViewTopPadding;
+  if (features::IsEcheLauncherEnabled()) {
+    height = kMoreAppsButtonSize + kRecentAppButtonFocusPadding.height() +
+             kRecentAppButtonsViewTopPadding;
+  }
 
   return gfx::Size(width, height);
 }
 
 void PhoneHubRecentAppsView::RecentAppButtonsView::Layout() {
+  if (features::IsEcheLauncherIconsInMoreAppsButtonEnabled()) {
+    views::View::Layout();
+    return;
+  }
+
   const gfx::Rect child_area = GetContentsBounds();
   views::View::Views visible_children;
   base::ranges::copy_if(
