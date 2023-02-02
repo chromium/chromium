@@ -16,6 +16,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
+#include "content/public/browser/browser_context.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -150,6 +151,20 @@ class PermissionsClient {
   CreatePermissionUiSelectors(content::BrowserContext* browser_context);
 
   using QuietUiReason = PermissionUiSelector::QuietUiReason;
+
+#if !BUILDFLAG(IS_ANDROID)
+  virtual void TriggerPromptHatsSurveyIfEnabled(
+      content::BrowserContext* context,
+      permissions::RequestType request_type,
+      absl::optional<permissions::PermissionAction> action,
+      permissions::PermissionPromptDisposition prompt_disposition,
+      permissions::PermissionPromptDispositionReason prompt_disposition_reason,
+      permissions::PermissionRequestGestureType gesture_type,
+      absl::optional<base::TimeDelta> prompt_display_duration,
+      bool is_post_prompt,
+      base::OnceCallback<void()> hats_shown_callback_);
+#endif
+
   // Called for each request type when a permission prompt is resolved.
   virtual void OnPromptResolved(
       RequestType request_type,

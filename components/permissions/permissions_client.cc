@@ -77,6 +77,19 @@ PermissionsClient::CreatePermissionUiSelectors(
   return std::vector<std::unique_ptr<PermissionUiSelector>>();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void PermissionsClient::TriggerPromptHatsSurveyIfEnabled(
+    content::BrowserContext* context,
+    permissions::RequestType request_type,
+    absl::optional<permissions::PermissionAction> action,
+    permissions::PermissionPromptDisposition prompt_disposition,
+    permissions::PermissionPromptDispositionReason prompt_disposition_reason,
+    permissions::PermissionRequestGestureType gesture_type,
+    absl::optional<base::TimeDelta> prompt_display_duration,
+    bool is_post_prompt,
+    base::OnceCallback<void()> hats_shown_callback_) {}
+#endif
+
 void PermissionsClient::OnPromptResolved(
     RequestType request_type,
     PermissionAction action,

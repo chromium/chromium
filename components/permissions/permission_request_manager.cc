@@ -842,13 +842,34 @@ void PermissionRequestManager::ShowPrompt() {
       base::RecordAction(base::UserMetricsAction(
           "Notifications.Quiet.PermissionRequestShown"));
     }
+
+#if !BUILDFLAG(IS_ANDROID)
+    PermissionsClient::Get()->TriggerPromptHatsSurveyIfEnabled(
+        web_contents()->GetBrowserContext(), requests_[0]->request_type(),
+        absl::nullopt, DetermineCurrentRequestUIDisposition(),
+        DetermineCurrentRequestUIDispositionReasonForUMA(),
+        requests_[0]->GetGestureType(), absl::nullopt, false,
+        hats_shown_callback_.has_value()
+            ? std::move(hats_shown_callback_.value())
+            : base::DoNothing());
+
+    hats_shown_callback_.reset();
+#endif
   }
   current_request_already_displayed_ = true;
   current_request_first_display_time_ = base::Time::Now();
+
   NotifyPromptAdded();
+
   // If in testing mode, automatically respond to the bubble that was shown.
-  if (auto_response_for_test_ != NONE)
+  if (auto_response_for_test_ != NONE) {
     DoAutoResponseForTesting();
+  }
+}
+
+void PermissionRequestManager::SetHatsShownCallback(
+    base::OnceCallback<void()> callback) {
+  hats_shown_callback_ = std::move(callback);
 }
 
 void PermissionRequestManager::DeletePrompt() {
@@ -876,7 +897,7 @@ void PermissionRequestManager::ResetViewStateForCurrentRequest() {
   did_show_prompt_ = false;
   did_click_manage_ = false;
   did_click_learn_more_ = false;
-
+  hats_shown_callback_.reset();
   if (view_)
     DeletePrompt();
 }

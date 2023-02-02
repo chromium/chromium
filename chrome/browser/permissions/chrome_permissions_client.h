@@ -57,14 +57,16 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       content::BrowserContext* browser_context) override;
 
 #if !BUILDFLAG(IS_ANDROID)
-  void TriggerPostPromptHatsSurveyIfEnabled(
-      Profile* profile,
+  void TriggerPromptHatsSurveyIfEnabled(
+      content::BrowserContext* context,
       permissions::RequestType request_type,
-      permissions::PermissionAction action,
+      absl::optional<permissions::PermissionAction> action,
       permissions::PermissionPromptDisposition prompt_disposition,
       permissions::PermissionPromptDispositionReason prompt_disposition_reason,
       permissions::PermissionRequestGestureType gesture_type,
-      base::TimeDelta prompt_display_duration);
+      absl::optional<base::TimeDelta> prompt_display_duration,
+      bool is_post_prompt,
+      base::OnceCallback<void()> hats_shown_callback_) override;
 
   permissions::PermissionIgnoredReason DetermineIgnoreReason(
       content::WebContents* web_contents) override;

@@ -14,6 +14,12 @@
 
 namespace permissions {
 
+constexpr char kTrueStr[] = "true";
+constexpr char kFalseStr[] = "false";
+
+constexpr char kOnPromptAppearing[] = "OnPromptAppearing";
+constexpr char kOnPromptResolved[] = "OnPromptResolved";
+
 // A static class that handles permission HaTS survey trigger configuration and
 // evaluation.
 class PermissionHatsTriggerHelper {
@@ -27,22 +33,25 @@ class PermissionHatsTriggerHelper {
   struct PromptParametersForHaTS {
     PromptParametersForHaTS(
         permissions::RequestType request_type,
-        permissions::PermissionAction action,
+        absl::optional<permissions::PermissionAction> action,
         permissions::PermissionPromptDisposition prompt_disposition,
         permissions::PermissionPromptDispositionReason
             prompt_disposition_reason,
         permissions::PermissionRequestGestureType gesture_type,
         std::string channel,
-        base::TimeDelta prompt_display_duration);
+        std::string survey_display_time,
+        absl::optional<base::TimeDelta> prompt_display_duration);
+    PromptParametersForHaTS(const PromptParametersForHaTS& other);
     ~PromptParametersForHaTS();
 
     permissions::RequestType request_type;
-    permissions::PermissionAction action;
+    absl::optional<permissions::PermissionAction> action;
     permissions::PermissionPromptDisposition prompt_disposition;
     permissions::PermissionPromptDispositionReason prompt_disposition_reason;
     permissions::PermissionRequestGestureType gesture_type;
     std::string channel;
-    base::TimeDelta prompt_display_duration;
+    std::string survey_display_time;
+    absl::optional<base::TimeDelta> prompt_display_duration;
   };
 
   struct SurveyProductSpecificData {
@@ -65,7 +74,7 @@ class PermissionHatsTriggerHelper {
   PermissionHatsTriggerHelper& operator=(const PermissionHatsTriggerHelper&) =
       delete;
 
-  static bool ArePostPromptTriggerCriteriaSatisfied(
+  static bool ArePromptTriggerCriteriaSatisfied(
       PromptParametersForHaTS prompt_parameters);
 };
 

@@ -47,7 +47,7 @@ extern const char kHatsSurveyTriggerPerformanceControlsPerformance[];
 extern const char kHatsSurveyTriggerPerformanceControlsBatteryPerformance[];
 extern const char kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut[];
 extern const char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[];
-extern const char kHatsSurveyTriggerPermissionsPostPrompt[];
+extern const char kHatsSurveyTriggerPermissionsPrompt[];
 extern const char kHatsSurveyTriggerPrivacyGuide[];
 extern const char kHatsSurveyTriggerPrivacySandbox[];
 extern const char kHatsSurveyTriggerSettings[];

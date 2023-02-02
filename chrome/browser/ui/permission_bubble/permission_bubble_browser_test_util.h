@@ -52,6 +52,7 @@ class TestPermissionBubbleViewDelegate
   void PreIgnoreQuietPrompt() override {}
   void SetManageClicked() override {}
   void SetLearnMoreClicked() override {}
+  void SetHatsShownCallback(base::OnceCallback<void()> callback) override {}
 
   absl::optional<permissions::PermissionUiSelector::QuietUiReason>
   ReasonForUsingQuietUi() const override;
