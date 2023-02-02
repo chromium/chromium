@@ -9,7 +9,6 @@
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -31,7 +30,6 @@
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/capture_mode/video_recording_watcher.h"
-#include "ash/constants/ash_features.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/output_protection_delegate.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -74,7 +72,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/recording/recording_service_test_api.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
@@ -2459,7 +2456,7 @@ TEST_F(CaptureModeTest, ReturnFocusToSettingsButtonAfterSettingsMenuIsClosed) {
                   test_api.GetCaptureModeBarView()->settings_button())
                   ->has_focus());
 
-  // Tab the space key and the settings menu will be opened.
+  // Press the space key and the settings menu will be opened.
   SendKey(ui::VKEY_SPACE, event_generator, ui::EF_NONE);
   EXPECT_TRUE(test_api.GetCaptureModeSettingsView());
   EXPECT_EQ(FocusGroup::kPendingSettings, test_api.GetCurrentFocusGroup());
@@ -3960,8 +3957,8 @@ TEST_F(CaptureModeTest, KeyboardNavigationClicksRemoveFocus) {
   EXPECT_FALSE(test_api.HasFocus());
 }
 
-// Tests that pressing space on a focused button will click it.
-TEST_F(CaptureModeTest, KeyboardNavigationSpaceToClickButtons) {
+// Tests that pressing space on a focused button will activate it.
+TEST_F(CaptureModeTest, KeyboardNavigationSpaceToActivateButton) {
   auto* controller = StartImageRegionCapture();
   SelectRegion(gfx::Rect(200, 200));
 
@@ -4107,6 +4104,37 @@ TEST_F(CaptureModeTest, KeyboardNavigationDefaultRegion) {
   ASSERT_EQ(3u, test_api.GetCurrentFocusIndex());
   SendKey(ui::VKEY_SPACE, event_generator);
   EXPECT_EQ(gfx::Rect(), controller->user_capture_region());
+}
+
+// Tests that the UAF issue caused by `NotifyAccessibilityEvent` after the
+// button been destroyed has been handled without leading to a crash.
+TEST_F(CaptureModeTest, KeyboardNavigationButtonDestroyedAfterBeenActivated) {
+  auto* controller = StartImageRegionCapture();
+  SelectRegion(gfx::Rect(200, 300));
+
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  auto* event_generator = GetEventGenerator();
+
+  // Tab 15 times to reach the capture button and press space key to activate
+  // the button.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/15);
+  EXPECT_EQ(FocusGroup::kCaptureButton,
+            CaptureModeSessionTestApi(controller->capture_mode_session())
+                .GetCurrentFocusGroup());
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_FALSE(controller->IsActive());
+
+  controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                   CaptureModeType::kImage);
+
+  // Tab 7 times to reach the close button and press space key to activate the
+  // button.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/7);
+  EXPECT_EQ(FocusGroup::kSettingsClose,
+            CaptureModeSessionTestApi(controller->capture_mode_session())
+                .GetCurrentFocusGroup());
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_FALSE(controller->IsActive());
 }
 
 // Tests that accessibility overrides are set as expected on capture mode

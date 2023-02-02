@@ -5,7 +5,6 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_MENU_TOGGLE_BUTTON_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_MENU_TOGGLE_BUTTON_H_
 
-#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/toggle_button.h"
 
@@ -22,9 +21,7 @@ namespace ash {
 
 // A view section in the capture mode settings menu that consists of a menu item
 // with a toggle button.
-class CaptureModeMenuToggleButton
-    : public views::View,
-      public CaptureModeSessionFocusCycler::HighlightableView {
+class CaptureModeMenuToggleButton : public views::View {
  public:
   METADATA_HEADER(CaptureModeMenuToggleButton);
 
@@ -37,13 +34,10 @@ class CaptureModeMenuToggleButton
       delete;
   ~CaptureModeMenuToggleButton() override;
 
+  views::ToggleButton* toggle_button() { return toggle_button_; }
+
   // views::View
   void OnThemeChanged() override;
-
-  // CaptureModeSessionFocusCycler::HighlightableView:
-  views::View* GetView() override;
-
-  views::ToggleButton* toggle_button_for_testing() { return toggle_button_; }
 
  private:
   views::ImageView* icon_view_;
