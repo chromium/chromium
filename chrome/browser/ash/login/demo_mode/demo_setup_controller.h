@@ -184,7 +184,7 @@ class DemoSetupController
   static std::string GetSubOrganizationEmail();
 
   // Returns a dictionary mapping setup steps to step indices.
-  static base::Value GetDemoSetupSteps();
+  static base::Value::Dict GetDemoSetupSteps();
 
   // Converts a step enum to a string e.g. to sent to JavaScript.
   static std::string GetDemoSetupStepString(const DemoSetupStep step_enum);

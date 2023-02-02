@@ -460,11 +460,10 @@ std::string DemoSetupController::GetSubOrganizationEmail() {
 }
 
 // static
-base::Value DemoSetupController::GetDemoSetupSteps() {
-  base::Value setup_steps_dict(base::Value::Type::DICT);
+base::Value::Dict DemoSetupController::GetDemoSetupSteps() {
+  base::Value::Dict setup_steps_dict;
   for (auto entry : GetDemoSetupStepsInfo()) {
-    setup_steps_dict.SetIntPath(GetDemoSetupStepString(entry.step),
-                                entry.step_index);
+    setup_steps_dict.Set(GetDemoSetupStepString(entry.step), entry.step_index);
   }
 
   return setup_steps_dict;
