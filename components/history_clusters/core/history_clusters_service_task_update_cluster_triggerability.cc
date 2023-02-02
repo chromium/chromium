@@ -119,9 +119,9 @@ void HistoryClustersServiceTaskUpdateClusterTriggerability::
     return;
   }
 
-  // Using `kKeywordCacheGeneration` as that determines the task priority.
+  // Using `kAllKeywordCacheRefresh` as that determines the task priority.
   backend_->GetClusters(
-      ClusteringRequestSource::kKeywordCacheGeneration,
+      ClusteringRequestSource::kAllKeywordCacheRefresh,
       base::BindOnce(&HistoryClustersServiceTaskUpdateClusterTriggerability::
                          OnGotModelContextClusters,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),

@@ -411,15 +411,12 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
           requires_ui_and_triggerability,
           base::OwnedRef(std::move(entity_id_to_metadata_map)));
 
-  switch (clustering_request_source) {
-    case ClusteringRequestSource::kJourneysPage:
-      user_visible_priority_background_task_runner_->PostTaskAndReplyWithResult(
-          FROM_HERE, std::move(clustering_callback), std::move(callback));
-      break;
-    case ClusteringRequestSource::kKeywordCacheGeneration:
-      best_effort_priority_background_task_runner_->PostTaskAndReplyWithResult(
-          FROM_HERE, std::move(clustering_callback), std::move(callback));
-      break;
+  if (IsUIRequestSource(clustering_request_source)) {
+    user_visible_priority_background_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, std::move(clustering_callback), std::move(callback));
+  } else {
+    best_effort_priority_background_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, std::move(clustering_callback), std::move(callback));
   }
 }
 

@@ -317,8 +317,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
               loop.Quit();
               clusters = clusters_temp;
               continuation_params = continuation_params_temp;
-            }),
-        HistoryClustersServiceTaskGetMostRecentClusters::Source::kWebUi);
+            }));
 
     // If we expect a clustering call, expect a request and return mirrored
     // clusters.
@@ -515,11 +514,10 @@ TEST_P(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 
   const auto task = history_clusters_service_->QueryClusters(
-      ClusteringRequestSource::kKeywordCacheGeneration,
+      ClusteringRequestSource::kAllKeywordCacheRefresh,
       /*begin_time=*/base::Time(), /*continuation_params=*/{},
       /*recluster=*/false,
-      base::DoNothing(),  // Only need to verify the correct request is sent
-      HistoryClustersServiceTaskGetMostRecentClusters::Source::kWebUi);
+      base::DoNothing());  // Only need to verify the correct request is sent
 
   test_clustering_backend_->WaitForGetClustersCall();
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
@@ -1025,8 +1023,7 @@ TEST_P(HistoryClustersServiceTest, EndToEndWithBackend) {
         EXPECT_TRUE(cluster.keyword_to_data_map.empty());
 
         run_loop.Quit();
-      }),
-      HistoryClustersServiceTaskGetMostRecentClusters::Source::kWebUi);
+      }));
 
   AwaitAndVerifyTestClusteringBackendRequest(ExpectSyncedVisits());
 

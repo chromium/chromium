@@ -553,7 +553,7 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
   visits.push_back(visit3);
 
   std::vector<history::Cluster> result_clusters =
-      ClusterVisits(ClusteringRequestSource::kKeywordCacheGeneration, visits);
+      ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
               ElementsAre(ElementsAre(testing::VisitResult(3, 1.0)),
                           ElementsAre(testing::VisitResult(2, 1.0),

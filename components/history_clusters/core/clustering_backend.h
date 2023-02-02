@@ -10,7 +10,16 @@
 
 namespace history_clusters {
 
-enum class ClusteringRequestSource { kKeywordCacheGeneration, kJourneysPage };
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ClusteringRequestSource {
+  kAllKeywordCacheRefresh = 0,
+  kShortKeywordCacheRefresh = 1,
+  kJourneysPage = 2,
+
+  // New values go above here.
+  kMaxValue = kJourneysPage,
+};
 
 // An abstract interface for a swappable clustering backend.
 class ClusteringBackend {

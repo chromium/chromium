@@ -17,7 +17,7 @@
 
 namespace history {
 class HistoryService;
-}
+}  // namespace history
 
 namespace history_clusters {
 
@@ -33,15 +33,6 @@ class HistoryClustersService;
 class HistoryClustersServiceTaskGetMostRecentClusters
     : public HistoryClustersServiceTask {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class Source {
-    kAllKeywordCacheRefresh = 0,
-    kShortKeywordCacheRefresh = 1,
-    kWebUi = 2,
-    kMaxValue = kWebUi,
-  };
-
   HistoryClustersServiceTaskGetMostRecentClusters(
       base::WeakPtr<HistoryClustersService> weak_history_clusters_service,
       const IncompleteVisitMap incomplete_visit_context_annotations,
@@ -51,8 +42,7 @@ class HistoryClustersServiceTaskGetMostRecentClusters
       base::Time begin_time,
       QueryClustersContinuationParams continuation_params,
       bool recluster,
-      QueryClustersCallback callback,
-      Source source);
+      QueryClustersCallback callback);
   ~HistoryClustersServiceTaskGetMostRecentClusters() override;
 
  private:
@@ -117,8 +107,6 @@ class HistoryClustersServiceTaskGetMostRecentClusters
   // `OnGotMostRecentPersistedClusters()`.
   QueryClustersCallback callback_;
 
-  // Used for logging slices.
-  Source source_ = Source::kWebUi;
   // When `Start()` kicked off the request to fetch visits to cluster.
   base::TimeTicks get_annotated_visits_to_cluster_start_time_;
   // When `OnGotAnnotatedVisitsToCluster()` kicked off the request to cluster

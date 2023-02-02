@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/visitsegment_database.h"
+#include "components/history_clusters/core/clustering_backend.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/query_parser/query_parser.h"
@@ -357,6 +358,33 @@ bool IsTransitionUserVisible(int32_t transition) {
          ui::PageTransitionIsMainFrame(page_transition) &&
          !ui::PageTransitionCoreTypeIs(page_transition,
                                        ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+}
+
+std::string GetHistogramNameSliceForRequestSource(
+    ClusteringRequestSource source) {
+  switch (source) {
+    case ClusteringRequestSource::kAllKeywordCacheRefresh:
+      return ".AllKeywordCacheRefresh";
+    case ClusteringRequestSource::kShortKeywordCacheRefresh:
+      return ".ShortKeywordCacheRefresh";
+    case ClusteringRequestSource::kJourneysPage:
+      // This is named WebUI for legacy purposes.
+      return ".WebUI";
+    default:
+      NOTREACHED();
+  }
+}
+
+bool IsUIRequestSource(ClusteringRequestSource source) {
+  // This is done as a switch statement as a forcing function for new sources to
+  // get added here.
+  switch (source) {
+    case ClusteringRequestSource::kAllKeywordCacheRefresh:
+    case ClusteringRequestSource::kShortKeywordCacheRefresh:
+      return false;
+    case ClusteringRequestSource::kJourneysPage:
+      return true;
+  }
 }
 
 }  // namespace history_clusters

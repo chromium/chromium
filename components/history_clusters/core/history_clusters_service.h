@@ -26,7 +26,6 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/clustering_backend.h"
 #include "components/history_clusters/core/context_clusterer_history_service_observer.h"
-#include "components/history_clusters/core/history_clusters_service_task_get_most_recent_clusters.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -45,6 +44,7 @@ class SiteEngagementScoreProvider;
 
 namespace history_clusters {
 
+class HistoryClustersService;
 class HistoryClustersServiceTask;
 
 // Clears `HistoryClustersService`'s keyword cache when 1 or more history
@@ -145,12 +145,6 @@ class HistoryClustersService : public base::SupportsUserData,
   // have been recorded. References retrieved prior will no longer be valid.
   void CompleteVisitContextAnnotationsIfReady(int64_t nav_id);
 
-  // This is a low-level API that doesn't support querying by search terms or
-  // de-duplication across multiple batches. Any UI should almost certainly use
-  // `QueryClustersState` instead.
-  //
-  // Entrypoint to `HistoryClustersServiceTaskGetMostRecentClusters`.
-  //
   // Returns the freshest clusters created from the user visit history based on
   // `query`, `begin_time`, and `continuation_params`.
   // - `begin_time` is an inclusive lower bound. In the general case where the
@@ -162,19 +156,12 @@ class HistoryClustersService : public base::SupportsUserData,
   //   if the caller wants the newest visits.
   // - `recluster`, if true, forces reclustering as if
   //   `persist_clusters_in_history_db` were false.
-  // The returned clusters are sorted in reverse-chronological order based on
-  // their highest scoring visit. The visits within each cluster are sorted by
-  // score, from highest to lowest.
-  //
-  // TODO(tommycli): Investigate entirely hiding access to this low-level method
-  //  behind QueryClustersState.
   std::unique_ptr<HistoryClustersServiceTask> QueryClusters(
       ClusteringRequestSource clustering_request_source,
       base::Time begin_time,
       QueryClustersContinuationParams continuation_params,
       bool recluster,
-      QueryClustersCallback callback,
-      HistoryClustersServiceTaskGetMostRecentClusters::Source source);
+      QueryClustersCallback callback);
 
   // Invokes `UpdateClusters()` after a short delay, then again periodically.
   // E.g., might invoke `UpdateClusters()` initially 5 minutes after startup,

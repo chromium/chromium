@@ -102,9 +102,9 @@ void HistoryClustersServiceTaskUpdateClusters::OnGotAnnotatedVisitsToCluster(
     return;
   }
   get_model_clusters_start_time_ = base::TimeTicks::Now();
-  // Using `kKeywordCacheGeneration` as that only determines the task priority.
+  // Using `kAllKeywordCacheRefresh` as that only determines the task priority.
   backend_->GetClusters(
-      ClusteringRequestSource::kKeywordCacheGeneration,
+      ClusteringRequestSource::kAllKeywordCacheRefresh,
       base::BindOnce(
           &HistoryClustersServiceTaskUpdateClusters::OnGotModelClusters,
           weak_ptr_factory_.GetWeakPtr(), old_clusters, continuation_params),
