@@ -61,8 +61,8 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
   {
     // No credentials.
     CredentialInfoCallback callback;
-    authenticator_->GetCredentialInformationForRequest(request,
-                                                       callback.callback());
+    authenticator_->GetCredentialInformationForRequest(
+        request, CtapGetAssertionOptions(), callback.callback());
     callback.WaitForCallback();
     EXPECT_EQ(std::get<0>(*callback.result()),
               std::vector<DiscoverableCredentialMetadata>{});
@@ -75,8 +75,8 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
         PublicKeyCredentialRpEntity("eden-academy.com"),
         PublicKeyCredentialUserEntity()));
     CredentialInfoCallback callback;
-    authenticator_->GetCredentialInformationForRequest(request,
-                                                       callback.callback());
+    authenticator_->GetCredentialInformationForRequest(
+        request, CtapGetAssertionOptions(), callback.callback());
     callback.WaitForCallback();
     EXPECT_EQ(std::get<0>(*callback.result()),
               std::vector<DiscoverableCredentialMetadata>{});
@@ -88,8 +88,8 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
     ASSERT_TRUE(authenticator_state_->InjectRegistration(
         std::vector<uint8_t>{1, 2, 3, 4}, kRpId));
     CredentialInfoCallback callback;
-    authenticator_->GetCredentialInformationForRequest(request,
-                                                       callback.callback());
+    authenticator_->GetCredentialInformationForRequest(
+        request, CtapGetAssertionOptions(), callback.callback());
     callback.WaitForCallback();
     EXPECT_EQ(std::vector<DiscoverableCredentialMetadata>{},
               std::get<0>(*callback.result()));
@@ -107,8 +107,8 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
     ASSERT_TRUE(authenticator_state_->InjectResidentKey(
         id2, PublicKeyCredentialRpEntity(kRpId), user2));
     CredentialInfoCallback callback;
-    authenticator_->GetCredentialInformationForRequest(request,
-                                                       callback.callback());
+    authenticator_->GetCredentialInformationForRequest(
+        request, CtapGetAssertionOptions(), callback.callback());
     callback.WaitForCallback();
     DiscoverableCredentialMetadata expected1 =
         DiscoverableCredentialMetadata(kRpId, id1, user1);

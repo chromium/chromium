@@ -17,6 +17,7 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/virtual_fido_device.h"
 #include "device/fido/win/webauthn_api.h"
+#include "third_party/microsoft_webauthn/webauthn.h"
 
 namespace device {
 
@@ -70,6 +71,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
 
   void set_version(int version) { version_ = version; }
 
+  // Returns a pointer to a copy of the last get credentials options passed to
+  // the fake.
+  WEBAUTHN_GET_CREDENTIALS_OPTIONS* last_get_credentials_options() {
+    return last_get_credentials_options_.get();
+  }
+
   // WinWebAuthnApi:
   bool IsAvailable() const override;
   bool SupportsSilentDiscovery() const override;
@@ -117,6 +124,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   bool supports_large_blobs_ = false;
   int version_ = WEBAUTHN_API_VERSION_2;
   HRESULT result_override_ = S_OK;
+
+  // Owns a copy of the last get credentials options to have been passed to the
+  // fake.
+  std::unique_ptr<WEBAUTHN_GET_CREDENTIALS_OPTIONS>
+      last_get_credentials_options_;
 
   // Owns the attestations returned by AuthenticatorMakeCredential().
   std::vector<std::unique_ptr<WebAuthnAttestation>> returned_attestations_;

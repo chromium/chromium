@@ -68,8 +68,8 @@ TEST_F(WinAuthenticatorTest,
 
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   GetCredentialCallbackReceiver callback;
-  authenticator_->GetCredentialInformationForRequest(request,
-                                                     callback.callback());
+  authenticator_->GetCredentialInformationForRequest(
+      std::move(request), CtapGetAssertionOptions(), callback.callback());
   callback.WaitForCallback();
 
   DiscoverableCredentialMetadata expected =
@@ -77,6 +77,25 @@ TEST_F(WinAuthenticatorTest,
   EXPECT_EQ(std::get<0>(*callback.result()),
             std::vector<DiscoverableCredentialMetadata>{expected});
   EXPECT_TRUE(std::get<1>(*callback.result()));
+  EXPECT_FALSE(fake_webauthn_api_->last_get_credentials_options()
+                   ->bBrowserInPrivateMode);
+}
+
+// Tests a request with the off the record flag on passes the
+// bBrowserInPrivateMode option to the Windows API.
+TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Incognito) {
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+
+  CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
+  CtapGetAssertionOptions options;
+  options.is_off_the_record_context = true;
+  GetCredentialCallbackReceiver callback;
+  authenticator_->GetCredentialInformationForRequest(
+      std::move(request), std::move(options), callback.callback());
+  callback.WaitForCallback();
+  EXPECT_TRUE(fake_webauthn_api_->last_get_credentials_options()
+                  ->bBrowserInPrivateMode);
 }
 
 // Tests getting credential information for an empty allow-list request that
@@ -85,8 +104,8 @@ TEST_F(WinAuthenticatorTest,
 TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_NoCredentials) {
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   GetCredentialCallbackReceiver callback;
-  authenticator_->GetCredentialInformationForRequest(request,
-                                                     callback.callback());
+  authenticator_->GetCredentialInformationForRequest(
+      std::move(request), CtapGetAssertionOptions(), callback.callback());
   callback.WaitForCallback();
 
   EXPECT_EQ(std::get<0>(*callback.result()),
@@ -99,8 +118,8 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_UnknownError) {
   fake_webauthn_api_->set_hresult(ERROR_NOT_SUPPORTED);
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   GetCredentialCallbackReceiver callback;
-  authenticator_->GetCredentialInformationForRequest(request,
-                                                     callback.callback());
+  authenticator_->GetCredentialInformationForRequest(
+      std::move(request), CtapGetAssertionOptions(), callback.callback());
   callback.WaitForCallback();
 
   EXPECT_EQ(std::get<0>(*callback.result()),
@@ -118,8 +137,8 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Unsupported) {
 
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   GetCredentialCallbackReceiver callback;
-  authenticator_->GetCredentialInformationForRequest(request,
-                                                     callback.callback());
+  authenticator_->GetCredentialInformationForRequest(
+      std::move(request), CtapGetAssertionOptions(), callback.callback());
   callback.WaitForCallback();
 
   DiscoverableCredentialMetadata expected =
@@ -140,8 +159,8 @@ TEST_F(WinAuthenticatorTest,
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   request.allow_list.emplace_back(CredentialType::kPublicKey, kCredentialId);
   GetCredentialCallbackReceiver callback;
-  authenticator_->GetCredentialInformationForRequest(request,
-                                                     callback.callback());
+  authenticator_->GetCredentialInformationForRequest(
+      std::move(request), CtapGetAssertionOptions(), callback.callback());
   callback.WaitForCallback();
 
   DiscoverableCredentialMetadata expected =

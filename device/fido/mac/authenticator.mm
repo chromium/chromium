@@ -53,6 +53,7 @@ void TouchIdAuthenticator::InitializeAuthenticator(base::OnceClosure callback) {
 
 void TouchIdAuthenticator::GetCredentialInformationForRequest(
     const CtapGetAssertionRequest& request,
+    const CtapGetAssertionOptions& options,
     GetCredentialInformationForRequestCallback callback) {
   if (!request.allow_list.empty()) {
     // Non resident credentials request.

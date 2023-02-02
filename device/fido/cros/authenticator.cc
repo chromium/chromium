@@ -276,6 +276,7 @@ void ChromeOSAuthenticator::GetAssertion(CtapGetAssertionRequest request,
 
 void ChromeOSAuthenticator::GetCredentialInformationForRequest(
     const CtapGetAssertionRequest& request,
+    const CtapGetAssertionOptions& options,
     GetCredentialInformationForRequestCallback callback) {
   u2f::HasCredentialsRequest req;
   req.set_rp_id(request.rp_id);

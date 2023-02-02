@@ -137,6 +137,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // requests.
   virtual void GetCredentialInformationForRequest(
       const CtapGetAssertionRequest& request,
+      const CtapGetAssertionOptions& options,
       GetCredentialInformationForRequestCallback callback);
   // GetTouch causes an (external) authenticator to flash and wait for a touch.
   virtual void GetTouch(base::OnceCallback<void()> callback);

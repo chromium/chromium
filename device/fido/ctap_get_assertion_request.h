@@ -67,6 +67,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionOptions {
 
   // If set, attempt to write a large blob.
   absl::optional<std::vector<uint8_t>> large_blob_write;
+
+  // Indicates whether the request was created in an off-the-record
+  // BrowserContext (e.g. Chrome Incognito mode).
+  bool is_off_the_record_context = false;
 };
 
 // Object that encapsulates request parameters for AuthenticatorGetAssertion as
@@ -133,10 +137,6 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   absl::optional<HMACSecret> hmac_secret;
   bool large_blob_key = false;
   bool get_cred_blob = false;
-
-  // Indicates whether the request was created in an off-the-record
-  // BrowserContext (e.g. Incognito or Guest mode in Chrome).
-  bool is_off_the_record_context = false;
 
   // device_public_key contains parameters for the devicePubKey extension
   // https://github.com/w3c/webauthn/pull/1663

@@ -16,6 +16,7 @@ VirtualFidoDeviceAuthenticator::~VirtualFidoDeviceAuthenticator() = default;
 
 void VirtualFidoDeviceAuthenticator::GetCredentialInformationForRequest(
     const CtapGetAssertionRequest& request,
+    const CtapGetAssertionOptions& options,
     GetCredentialInformationForRequestCallback callback) {
   DCHECK_EQ(device()->DeviceTransport(), FidoTransportProtocol::kInternal);
 

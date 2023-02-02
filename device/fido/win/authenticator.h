@@ -86,6 +86,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
                     GetAssertionCallback callback) override;
   void GetCredentialInformationForRequest(
       const CtapGetAssertionRequest& request,
+      const CtapGetAssertionOptions& options,
       base::OnceCallback<void(std::vector<DiscoverableCredentialMetadata>,
                               bool)> callback) override;
   void GetTouch(base::OnceClosure callback) override;

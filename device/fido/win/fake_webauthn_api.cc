@@ -124,6 +124,7 @@ struct FakeWinWebAuthnApi::WebAuthnAssertionEx {
   WebAuthnAssertionEx& operator=(const WebAuthnAssertionEx&) = delete;
 
   std::vector<uint8_t> credential_id;
+  absl::optional<std::vector<uint8_t>> user_id;
   std::vector<uint8_t> authenticator_data;
   std::vector<uint8_t> signature;
   WEBAUTHN_ASSERTION assertion;
@@ -388,11 +389,14 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
   result->assertion.Credential.pbId = result->credential_id.data();
   result->assertion.Credential.pwszCredentialType =
       WEBAUTHN_CREDENTIAL_TYPE_PUBLIC_KEY;
-  // TODO(martinkr): Return a user entity for requests with empty allow lists.
-  // (Though the CTAP2.0 spec allows that to be omitted if only a single
-  // credential matched.)
-  result->assertion.pbUserId = nullptr;
-  result->assertion.cbUserId = 0;
+  if (allow_credentials->cCredentials == 0) {
+    result->user_id = registration->user->id;
+    result->assertion.pbUserId = result->user_id->data();
+    result->assertion.cbUserId = result->user_id->size();
+  } else {
+    result->assertion.pbUserId = nullptr;
+    result->assertion.cbUserId = 0;
+  }
 
   // The real API hands out results in naked pointers and asks callers
   // to call FreeAssertion() when they're done. We maintain ownership
@@ -413,6 +417,8 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
     PCWEBAUTHN_GET_CREDENTIALS_OPTIONS options,
     PWEBAUTHN_CREDENTIAL_DETAILS_LIST* credentials) {
   DCHECK(is_available_ && supports_silent_discovery_);
+  last_get_credentials_options_ =
+      std::make_unique<WEBAUTHN_GET_CREDENTIALS_OPTIONS>(*options);
   if (result_override_ != S_OK) {
     return result_override_;
   }

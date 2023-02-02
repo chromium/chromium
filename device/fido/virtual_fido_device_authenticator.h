@@ -26,6 +26,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDeviceAuthenticator
   // FidoDeviceAuthenticator:
   void GetCredentialInformationForRequest(
       const CtapGetAssertionRequest& request,
+      const CtapGetAssertionOptions& options,
       GetCredentialInformationForRequestCallback callback) override;
 };
 

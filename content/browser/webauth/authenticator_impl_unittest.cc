@@ -84,6 +84,7 @@
 #include "device/fido/pin.h"
 #include "device/fido/public_key.h"
 #include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
@@ -8062,6 +8063,35 @@ TEST_F(ResidentKeyAuthenticatorImplTest, WinCredProtectApiVersion) {
     EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
               supports_cred_protect ? AuthenticatorStatus::SUCCESS
                                     : AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  }
+}
+
+// Tests that the incognito flag is plumbed through conditional UI requests.
+TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI_Incognito) {
+  fake_win_webauthn_api_.set_available(true);
+  fake_win_webauthn_api_.set_version(WEBAUTHN_API_VERSION_4);
+  fake_win_webauthn_api_.set_supports_silent_discovery(true);
+  device::PublicKeyCredentialRpEntity rp(kTestRelyingPartyId);
+  device::PublicKeyCredentialUserEntity user({1, 2, 3, 4});
+  fake_win_webauthn_api_.InjectDiscoverableCredential(
+      /*credential_id=*/{{4, 3, 2, 1}}, std::move(rp), std::move(user));
+
+  // |SelectAccount| should not be called for conditional UI requests.
+  test_client_.delegate_config.expected_accounts = "<invalid>";
+  test_client_.delegate_config.expect_conditional = true;
+
+  for (bool is_off_the_record : {true, false}) {
+    SCOPED_TRACE(is_off_the_record ? "off the record" : "on the record");
+    static_cast<TestBrowserContext*>(GetBrowserContext())
+        ->set_is_off_the_record(is_off_the_record);
+    PublicKeyCredentialRequestOptionsPtr options(get_credential_options());
+    options->is_conditional = true;
+    GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+    EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+    ASSERT_TRUE(fake_win_webauthn_api_.last_get_credentials_options());
+    EXPECT_EQ(fake_win_webauthn_api_.last_get_credentials_options()
+                  ->bBrowserInPrivateMode,
+              is_off_the_record);
   }
 }
 #endif  // BUILDFLAG(IS_WIN)

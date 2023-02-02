@@ -255,6 +255,7 @@ void WinWebAuthnApiAuthenticator::GetAssertionDone(
 
 void WinWebAuthnApiAuthenticator::GetCredentialInformationForRequest(
     const CtapGetAssertionRequest& request,
+    const CtapGetAssertionOptions& request_options,
     base::OnceCallback<void(std::vector<DiscoverableCredentialMetadata>, bool)>
         callback) {
   // Since the Windows authenticator forwards requests to other devices such as
@@ -278,8 +279,7 @@ void WinWebAuthnApiAuthenticator::GetCredentialInformationForRequest(
   WEBAUTHN_GET_CREDENTIALS_OPTIONS options{
       .dwVersion = WEBAUTHN_GET_CREDENTIALS_OPTIONS_VERSION_1,
       .pwszRpId = base::as_wcstr(rp_id),
-      // TODO(nsatragno): plumb browser private mode status in.
-      .bBrowserInPrivateMode = false};
+      .bBrowserInPrivateMode = request_options.is_off_the_record_context};
   PWEBAUTHN_CREDENTIAL_DETAILS_LIST credentials = nullptr;
   HRESULT hresult = win_api_->GetPlatformCredentialList(&options, &credentials);
   std::unique_ptr<WEBAUTHN_CREDENTIAL_DETAILS_LIST,

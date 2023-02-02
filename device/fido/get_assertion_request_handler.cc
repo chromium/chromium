@@ -340,7 +340,7 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
   transport_availability_info().has_empty_allow_list =
       request_.allow_list.empty();
   transport_availability_info().is_off_the_record_context =
-      request_.is_off_the_record_context;
+      options_.is_off_the_record_context;
   transport_availability_info().transport_list_did_include_internal =
       std::any_of(request_.allow_list.begin(), request_.allow_list.end(),
                   [](const PublicKeyCredentialDescriptor& cred) {
@@ -490,9 +490,10 @@ void GetAssertionRequestHandler::GetPlatformCredentialStatus(
     FidoAuthenticator* platform_authenticator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   platform_authenticator->GetCredentialInformationForRequest(
-      request_, base::BindOnce(
-                    &GetAssertionRequestHandler::OnHavePlatformCredentialStatus,
-                    weak_factory_.GetWeakPtr()));
+      request_, options_,
+      base::BindOnce(
+          &GetAssertionRequestHandler::OnHavePlatformCredentialStatus,
+          weak_factory_.GetWeakPtr()));
 }
 
 bool GetAssertionRequestHandler::AuthenticatorSelectedForPINUVAuthToken(

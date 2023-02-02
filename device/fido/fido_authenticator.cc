@@ -23,6 +23,7 @@ void FidoAuthenticator::ExcludeAppIdCredentialsBeforeMakeCredential(
 
 void FidoAuthenticator::GetCredentialInformationForRequest(
     const CtapGetAssertionRequest& request,
+    const CtapGetAssertionOptions& options,
     GetCredentialInformationForRequestCallback callback) {
   NOTREACHED();
 }

@@ -122,8 +122,7 @@ std::array<uint8_t, crypto::kSHA256Length> CreateApplicationParameter(
 device::CtapGetAssertionRequest CreateCtapGetAssertionRequest(
     const std::string& client_data_json,
     const blink::mojom::PublicKeyCredentialRequestOptionsPtr& options,
-    absl::optional<std::string> app_id,
-    bool is_off_the_record) {
+    absl::optional<std::string> app_id) {
   device::CtapGetAssertionRequest request_parameter(options->relying_party_id,
                                                     client_data_json);
 
@@ -140,7 +139,6 @@ device::CtapGetAssertionRequest CreateCtapGetAssertionRequest(
   if (!options->cable_authentication_data.empty()) {
     request_parameter.cable_extension = options->cable_authentication_data;
   }
-  request_parameter.is_off_the_record_context = is_off_the_record;
   return request_parameter;
 }
 
@@ -1037,9 +1035,10 @@ void AuthenticatorCommonImpl::GetAssertion(
   }
 
   ctap_get_assertion_request_ =
-      CreateCtapGetAssertionRequest(client_data_json_, options, app_id_,
-                                    GetBrowserContext()->IsOffTheRecord());
+      CreateCtapGetAssertionRequest(client_data_json_, options, app_id_);
   ctap_get_assertion_options_.emplace();
+  ctap_get_assertion_options_->is_off_the_record_context =
+      GetBrowserContext()->IsOffTheRecord();
 
   if (options->prf) {
     requested_extensions_.insert(RequestExtension::kPRF);
