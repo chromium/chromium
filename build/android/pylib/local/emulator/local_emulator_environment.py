@@ -48,7 +48,8 @@ class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
     self._avd_config.Install()
 
     emulator_instances = [
-        self._avd_config.CreateInstance() for _ in range(self._emulator_count)
+        self._avd_config.CreateInstance(output_manager=self.output_manager)
+        for _ in range(self._emulator_count)
     ]
 
     def start_emulator_instance(inst):

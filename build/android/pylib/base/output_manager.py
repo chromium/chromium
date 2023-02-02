@@ -51,25 +51,37 @@ class OutputManager:
     if not self._allow_upload:
       raise Exception('Must run |SetUp| before attempting to upload!')
 
-    f = self._CreateArchivedFile(out_filename, out_subdir, datatype)
+    f = self.CreateArchivedFile(out_filename, out_subdir, datatype)
     try:
       yield f
     finally:
-      f.PrepareArchive()
+      self.ArchiveArchivedFile(f, delete=True)
 
-      def archive():
-        try:
-          f.Archive()
-        finally:
-          f.Delete()
-
-      thread = reraiser_thread.ReraiserThread(func=archive)
-      thread.start()
-      self._thread_group.Add(thread)
+  def CreateArchivedFile(self, out_filename, out_subdir,
+                         datatype=Datatype.TEXT):
+    """Returns an instance of ArchivedFile."""
+    return self._CreateArchivedFile(out_filename, out_subdir, datatype)
 
   def _CreateArchivedFile(self, out_filename, out_subdir, datatype):
-    """Returns an instance of ArchivedFile."""
     raise NotImplementedError
+
+  def ArchiveArchivedFile(self, archived_file, delete=False):
+    """Archive an ArchivedFile instance and optionally delete it."""
+    if not isinstance(archived_file, ArchivedFile):
+      raise Exception('Excepting an instance of ArchivedFile, got %s.' %
+                      type(archived_file))
+    archived_file.PrepareArchive()
+
+    def archive():
+      try:
+        archived_file.Archive()
+      finally:
+        if delete:
+          archived_file.Delete()
+
+    thread = reraiser_thread.ReraiserThread(func=archive)
+    thread.start()
+    self._thread_group.Add(thread)
 
   def SetUp(self):
     self._allow_upload = True
@@ -104,6 +116,12 @@ class ArchivedFile:
   @property
   def name(self):
     return self._f.name
+
+  def fileno(self, *args, **kwargs):
+    if self._ready_to_archive:
+      raise Exception('Cannot retrieve the integer file descriptor '
+                      'after archiving has begun!')
+    return self._f.fileno(*args, **kwargs)
 
   def write(self, *args, **kwargs):
     if self._ready_to_archive:
