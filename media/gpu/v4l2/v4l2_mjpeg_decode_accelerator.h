@@ -15,14 +15,17 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/chromeos_camera/mjpeg_decode_accelerator.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 
-namespace media {
+namespace base {
+class SingleThreadTaskRunner;
+class SequencedTaskRunner;
+}  // namespace base
 
+namespace media {
 class VideoFrame;
 
 class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
@@ -107,10 +110,10 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
   void NotifyError(int32_t task_id, Error error);
   void PostNotifyError(int32_t task_id, Error error);
 
-  // Run on |decoder_thread_| to enqueue the coming frame.
+  // Run on |decoder_task_runner_| to enqueue the coming frame.
   void DecodeTask(std::unique_ptr<JobRecord> job_record);
 
-  // Run on |decoder_thread_| to dequeue last frame and enqueue next frame.
+  // Run on |decoder_task_runner_| to dequeue last frame and enqueue next frame.
   // This task is triggered by DevicePollTask. |event_pending| means that device
   // has resolution change event or pixelformat change event.
   void ServiceDeviceTask(bool event_pending);
@@ -125,8 +128,8 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
   // Run on |device_poll_thread_| to wait for device events.
   void DevicePollTask();
 
-  // Run on |decoder_thread_| to destroy input and output buffers.
-  void DestroyTask();
+  // Run on |decoder_task_runner_| to destroy input and output buffers.
+  void DestroyTask(base::WaitableEvent* waiter);
 
   // The number of input buffers and output buffers.
   const size_t kBufferCount = 2;
@@ -154,17 +157,16 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
   // |decoder_task_runner_| and |device_poll_task_runner_|.
   scoped_refptr<V4L2Device> device_;
 
-  // Thread to communicate with the device.
-  base::Thread decoder_thread_;
   // Decode task runner.
-  scoped_refptr<base::SingleThreadTaskRunner> decoder_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> decoder_task_runner_;
+
   // Thread used to poll the V4L2 for events only.
   base::Thread device_poll_thread_ GUARDED_BY_CONTEXT(decoder_sequence_);
   // Device poll task runner.
   scoped_refptr<base::SingleThreadTaskRunner> device_poll_task_runner_;
 
   // All the below members except |weak_factory_| are accessed from
-  // |decoder_thread_| only (if it's running).
+  // |decoder_task_runner_| only (if it's running).
   base::queue<std::unique_ptr<JobRecord>> input_jobs_
       GUARDED_BY_CONTEXT(decoder_sequence_);
   base::queue<std::unique_ptr<JobRecord>> running_jobs_
@@ -190,10 +192,16 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
 
   SEQUENCE_CHECKER(decoder_sequence_);
 
+  // Point to |this| for use in posting tasks to |decoder_task_runner_|.
+  // |weak_ptr_for_decoder_| is required, even though we synchronously destroy
+  // variables on |decoder_task_runner_| in destructor, because a task can
+  // be posted to |decoder_task_runner_| within DestroyTask().
+  base::WeakPtr<V4L2MjpegDecodeAccelerator> weak_ptr_for_decoder_;
+  base::WeakPtrFactory<V4L2MjpegDecodeAccelerator> weak_factory_for_decoder_;
+
   // Point to |this| for use in posting tasks from the decoder thread back to
-  // the ChildThread.
+  // |io_task_runner_|.
   base::WeakPtr<V4L2MjpegDecodeAccelerator> weak_ptr_;
-  // Weak factory for producing weak pointers on the child thread.
   base::WeakPtrFactory<V4L2MjpegDecodeAccelerator> weak_factory_;
 };
 

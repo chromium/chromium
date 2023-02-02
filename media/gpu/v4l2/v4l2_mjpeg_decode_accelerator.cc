@@ -21,7 +21,10 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/video_frame.h"
@@ -266,31 +269,35 @@ V4L2MjpegDecodeAccelerator::V4L2MjpegDecodeAccelerator(
       io_task_runner_(io_task_runner),
       client_(nullptr),
       device_(device),
-      decoder_thread_("V4L2MjpegDecodeThread"),
       device_poll_thread_("V4L2MjpegDecodeDevicePollThread"),
       input_streamon_(false),
       output_streamon_(false),
+      weak_factory_for_decoder_(this),
       weak_factory_(this) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   DETACH_FROM_SEQUENCE(decoder_sequence_);
+  weak_ptr_for_decoder_ = weak_factory_for_decoder_.GetWeakPtr();
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
 
 V4L2MjpegDecodeAccelerator::~V4L2MjpegDecodeAccelerator() {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
-  if (decoder_thread_.IsRunning()) {
+  if (decoder_task_runner_) {
+    base::WaitableEvent waiter;
+    // base::Unretained(this) is safe because we wait DestroyTask() is done.
     decoder_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&V4L2MjpegDecodeAccelerator::DestroyTask,
-                                  base::Unretained(this)));
-    decoder_thread_.Stop();
+                                  base::Unretained(this), &waiter));
+    waiter.Wait();
   }
   weak_factory_.InvalidateWeakPtrs();
   DCHECK(!device_poll_thread_.IsRunning());
 }
 
-void V4L2MjpegDecodeAccelerator::DestroyTask() {
+void V4L2MjpegDecodeAccelerator::DestroyTask(base::WaitableEvent* waiter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
+
   while (!input_jobs_.empty())
     input_jobs_.pop();
   while (!running_jobs_.empty())
@@ -301,6 +308,9 @@ void V4L2MjpegDecodeAccelerator::DestroyTask() {
 
   DestroyInputBuffers();
   DestroyOutputBuffers();
+
+  weak_factory_for_decoder_.InvalidateWeakPtrs();
+  waiter->Signal();
 }
 
 void V4L2MjpegDecodeAccelerator::VideoFrameReady(int32_t task_id) {
@@ -358,7 +368,7 @@ void V4L2MjpegDecodeAccelerator::InitializeOnDecoderTaskRunner(
 
   decoder_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&V4L2MjpegDecodeAccelerator::StartDevicePoll,
-                                base::Unretained(this)));
+                                weak_ptr_for_decoder_));
 
   VLOGF(2) << "V4L2MjpegDecodeAccelerator initialized.";
   std::move(init_cb).Run(true);
@@ -369,21 +379,21 @@ void V4L2MjpegDecodeAccelerator::InitializeAsync(
     chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
-  if (!decoder_thread_.Start()) {
-    VLOGF(1) << "decoder thread failed to start";
-    io_task_runner_->PostTask(FROM_HERE,
-                              base::BindOnce(std::move(init_cb), false));
-    return;
-  }
   client_ = client;
-  decoder_task_runner_ = decoder_thread_.task_runner();
+  // base::WithBaseSyncPrimitives() and base::MayBlock() are necessary to
+  // synchronously destroy decoder variables on |decoder_task_runner_| in
+  // destructor.
+  decoder_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::USER_VISIBLE, base::WithBaseSyncPrimitives(),
+       base::MayBlock()});
+  DCHECK(decoder_task_runner_);
 
   // base::Unretained(this) is safe because |decoder_thread_| stops in
   // deconstructor.
   decoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&V4L2MjpegDecodeAccelerator::InitializeOnDecoderTaskRunner,
-                     base::Unretained(this), client,
+                     weak_ptr_for_decoder_, client,
                      BindToCurrentLoop(std::move(init_cb))));
 }
 
@@ -417,7 +427,7 @@ void V4L2MjpegDecodeAccelerator::Decode(BitstreamBuffer bitstream_buffer,
 
   decoder_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&V4L2MjpegDecodeAccelerator::DecodeTask,
-                                base::Unretained(this), std::move(job_record)));
+                                weak_ptr_for_decoder_, std::move(job_record)));
 }
 
 void V4L2MjpegDecodeAccelerator::Decode(
@@ -474,7 +484,7 @@ void V4L2MjpegDecodeAccelerator::Decode(
 
   decoder_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&V4L2MjpegDecodeAccelerator::DecodeTask,
-                                base::Unretained(this), std::move(job_record)));
+                                weak_ptr_for_decoder_, std::move(job_record)));
 }
 
 // static
@@ -778,7 +788,7 @@ void V4L2MjpegDecodeAccelerator::DevicePollTask() {
   // touch decoder state from this thread.
   decoder_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&V4L2MjpegDecodeAccelerator::ServiceDeviceTask,
-                                base::Unretained(this), event_pending));
+                                weak_ptr_for_decoder_, event_pending));
 }
 
 bool V4L2MjpegDecodeAccelerator::DequeueSourceChangeEvent() {
