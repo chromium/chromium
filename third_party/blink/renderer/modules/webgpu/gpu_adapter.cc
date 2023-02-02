@@ -69,9 +69,6 @@ GPUSupportedFeatures* MakeFeatureNameSet(const DawnProcTable& procs,
       case WGPUFeatureName_DawnShaderFloat16:
         features->AddFeatureName("shader-float16");
         break;
-      case WGPUFeatureName_DawnMultiPlanarFormats:
-        features->AddFeatureName("multi-planar-formats");
-        break;
       case WGPUFeatureName_RG11B10UfloatRenderable:
         features->AddFeatureName("rg11b10ufloat-renderable");
         break;
@@ -145,6 +142,11 @@ GPUSupportedFeatures* GPUAdapter::features() const {
 
 bool GPUAdapter::isFallbackAdapter() const {
   return is_fallback_adapter_;
+}
+
+bool GPUAdapter::SupportsMultiPlanarFormats() const {
+  return GetProcs().adapterHasFeature(handle_,
+                                      WGPUFeatureName_DawnMultiPlanarFormats);
 }
 
 void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,

@@ -41,6 +41,7 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
   GPUSupportedLimits* limits() const { return limits_; }
   bool isFallbackAdapter() const;
   void invalidate() { is_invalid_ = true; }
+  bool SupportsMultiPlanarFormats() const;
 
   ScriptPromise requestDevice(ScriptState* script_state,
                               GPUDeviceDescriptor* descriptor);

@@ -186,8 +186,7 @@ ExternalTexture CreateExternalTexture(
   // TODO(crbug.com/1306753): Use SharedImageProducer and CompositeSharedImage
   // rather than check 'is_webgpu_compatible'.
   bool device_support_zero_copy =
-      device->adapter()->features()->FeatureNameSet().Contains(
-          "multi-planar-formats");
+      device->adapter()->SupportsMultiPlanarFormats();
 
   WGPUExternalTextureDescriptor external_texture_desc = {};
 
