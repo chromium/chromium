@@ -4,14 +4,28 @@
 
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink.h"
 
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
+#else
+#import <UIKit/UIKit.h>
+#include "ui/accelerated_widget_mac/ca_layer_frame_sink_provider.h"
+#endif
 
 namespace ui {
 
 // static
 CALayerFrameSink* CALayerFrameSink::FromAcceleratedWidget(
     gfx::AcceleratedWidget widget) {
+#if BUILDFLAG(IS_MAC)
   return AcceleratedWidgetMac::Get(widget);
+#else
+  if ([widget isKindOfClass:[CALayerFrameSinkProvider class]]) {
+    return [(CALayerFrameSinkProvider*)widget frameSink];
+  }
+  return nullptr;
+#endif
 }
 
 }  // namespace ui

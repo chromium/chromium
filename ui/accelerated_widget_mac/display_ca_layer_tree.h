@@ -5,7 +5,7 @@
 #ifndef UI_ACCELERATED_WIDGET_MAC_DISPLAY_CA_LAYER_TREE_H_
 #define UI_ACCELERATED_WIDGET_MAC_DISPLAY_CA_LAYER_TREE_H_
 
-#include <IOSurface/IOSurface.h>
+#include <IOSurface/IOSurfaceRef.h>
 
 #include "base/mac/scoped_cftyperef.h"
 #import "base/mac/scoped_nsobject.h"

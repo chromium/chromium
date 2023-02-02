@@ -6,7 +6,7 @@
 #define UI_ACCELERATED_WIDGET_MAC_CA_RENDERER_LAYER_TREE_H_
 
 #include <CoreVideo/CoreVideo.h>
-#include <IOSurface/IOSurface.h>
+#include <IOSurface/IOSurfaceRef.h>
 #include <QuartzCore/QuartzCore.h>
 
 #include <list>

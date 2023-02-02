@@ -6,8 +6,6 @@ import("//testing/test.gni")
 
 component("accelerated_widget_mac") {
   sources = [
-    "accelerated_widget_mac.h",
-    "accelerated_widget_mac.mm",
     "accelerated_widget_mac_export.h",
     "ca_layer_frame_sink.h",
     "ca_layer_frame_sink.mm",
@@ -15,20 +13,44 @@ component("accelerated_widget_mac") {
     "ca_layer_tree_coordinator.mm",
     "ca_renderer_layer_tree.h",
     "ca_renderer_layer_tree.mm",
-    "ca_transaction_observer.h",
-    "ca_transaction_observer.mm",
-    "display_ca_layer_tree.h",
-    "display_ca_layer_tree.mm",
-    "io_surface_context.h",
-    "io_surface_context.mm",
-    "window_resize_helper_mac.cc",
-    "window_resize_helper_mac.h",
   ]
 
   defines = [
     "ACCELERATED_WIDGET_MAC_IMPLEMENTATION",
     "GL_SILENCE_DEPRECATION",
   ]
+  frameworks = [
+    "AVFoundation.framework",
+    "CoreGraphics.framework",
+    "Foundation.framework",
+    "CoreFoundation.framework",
+    "CoreMedia.framework",
+    "CoreVideo.framework",
+    "IOSurface.framework",
+    "QuartzCore.framework",
+  ]
+
+  if (is_ios) {
+    sources += [ "ca_layer_frame_sink_provider.h" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "accelerated_widget_mac.h",
+      "accelerated_widget_mac.mm",
+      "accelerated_widget_mac_export.h",
+      "ca_transaction_observer.h",
+      "ca_transaction_observer.mm",
+      "display_ca_layer_tree.h",
+      "display_ca_layer_tree.mm",
+      "io_surface_context.h",
+      "io_surface_context.mm",
+      "window_resize_helper_mac.cc",
+      "window_resize_helper_mac.h",
+    ]
+
+    frameworks += [ "OpenGL.framework" ]
+  }
 
   deps = [
     "//base",
@@ -41,17 +63,6 @@ component("accelerated_widget_mac") {
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl",
-  ]
-
-  frameworks = [
-    "AVFoundation.framework",
-    "CoreGraphics.framework",
-    "Foundation.framework",
-    "CoreFoundation.framework",
-    "CoreMedia.framework",
-    "IOSurface.framework",
-    "OpenGL.framework",
-    "QuartzCore.framework",
   ]
 }
 

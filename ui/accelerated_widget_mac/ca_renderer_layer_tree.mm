@@ -1227,10 +1227,12 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
   DCHECK_EQ([ca_layer_ superlayer], superlayer)
       << " last contnet ca_layer: " << last_committed_ca_layer;
 
+#if BUILDFLAG(IS_MAC)
   bool update_anything = update_contents || update_contents_rect ||
                          update_rect || update_background_color ||
                          update_ca_edge_aa_mask || update_opacity ||
                          update_ca_filter;
+#endif
 
   switch (type_) {
     case CALayerType::kHDRCopier:
@@ -1316,6 +1318,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
     [ca_layer_ setMinificationFilter:ca_filter_];
   }
 
+#if BUILDFLAG(IS_MAC)
   static bool show_borders = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kShowMacOverlayBorders);
   static bool fill_layers = false;
@@ -1394,6 +1397,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
       }
     }
   }
+#endif
 
   // Print CALayer optimizaton info
   if (g_print_ca_layers) {
