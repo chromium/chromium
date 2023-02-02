@@ -20,6 +20,8 @@
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent;
 
 // Notifies the new tab page that the `feedType`'s model has completed updates.
+// This can include, initial loading of cards, pagination, card removal, and
+// refreshes.
 - (void)handleFeedModelDidEndUpdates:(FeedType)feedType;
 
 @end

@@ -77,10 +77,14 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* feedHeaderConstraints;
 
-// `YES` if the initial scroll position is from the saved web state (when
-// navigating away and back), and `NO` if it is the top of the NTP.
-@property(nonatomic, assign, getter=isInitialOffsetFromSavedState)
-    BOOL initialOffsetFromSavedState;
+// `YES` if the NTP starting content offset should be set to a previous scroll
+// state (when navigating away and back), and `NO` if it should be the top of
+// the NTP.
+@property(nonatomic, assign) BOOL hasSavedOffsetFromPreviousScrollState;
+
+// The content offset saved from a previous scroll state in the NTP. If this is
+// set, `hasSavedOffsetFromPreviousScrollState` should be YES.
+@property(nonatomic, assign) CGFloat savedScrollOffset;
 
 // The scroll position when a scrolling event starts.
 @property(nonatomic, assign) int scrollStartPosition;
@@ -455,7 +459,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // Ensure initial fake omnibox layout.
   [self updateFakeOmniboxForScrollPosition];
 
-  if (!self.viewDidAppear && ![self isInitialOffsetFromSavedState]) {
+  if (!self.viewDidAppear && !self.hasSavedOffsetFromPreviousScrollState) {
     [self setContentOffsetToTop];
   }
 }
@@ -506,6 +510,16 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   }
 }
 
+- (void)feedLayoutDidEndUpdates {
+  [self updateFeedInsetsForMinimumHeight];
+  // Update saved scroll state after updating insets
+  if (self.hasSavedOffsetFromPreviousScrollState) {
+    [self setContentOffset:self.savedScrollOffset];
+    self.hasSavedOffsetFromPreviousScrollState = NO;
+  }
+  [self updateStickyElements];
+}
+
 - (void)updateStickyElements {
   [self handleStickyElementsForScrollPosition:[self scrollPosition] force:YES];
 }
@@ -513,7 +527,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 #pragma mark - NewTabPageConsumer
 
 - (void)setSavedContentOffset:(CGFloat)offset {
-  self.initialOffsetFromSavedState = YES;
+  self.hasSavedOffsetFromPreviousScrollState = YES;
+  self.savedScrollOffset = offset;
   [self setContentOffset:offset];
 }
 

@@ -120,6 +120,9 @@
 // Updates the scroll position to account for the feed promo being removed.
 - (void)updateScrollPositionForFeedTopSectionClosed;
 
+// Signals that the feed has completed its updates (i.e. loading cards).
+- (void)feedLayoutDidEndUpdates;
+
 // Forces the elements that stick to the top when scrolling (eg. omnibox, feed
 // header) to update for the current scroll position.
 - (void)updateStickyElements;

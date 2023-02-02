@@ -489,8 +489,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   }
   // When the visible feed has been updated, recalculate the minimum NTP height.
   if (feedType == self.selectedFeed) {
-    [self.NTPViewController updateFeedInsetsForMinimumHeight];
-    [self.NTPViewController updateStickyElements];
+    [self.NTPViewController feedLayoutDidEndUpdates];
   }
 }
 
