@@ -825,9 +825,8 @@ config("compiler") {
   # * Windows is not supported as it doesn't use DWARF.
   # * Apple platforms (e.g. MacOS, iPhone, iPad) aren't supported because xcode
   #   lldb doesn't have the needed changes yet.
-  # * Fuchsia isn't supported as zxdb doesn't support simple template names yet.
   # TODO(crbug.com/1379070): Remove if the upstream default ever changes.
-  if (is_clang && !is_nacl && !is_win && !is_apple && !is_fuchsia) {
+  if (is_clang && !is_nacl && !is_win && !is_apple) {
     cflags_cc += [ "-gsimple-template-names" ]
   }
 
