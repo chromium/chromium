@@ -226,24 +226,22 @@ void ExpectSequence(UpdaterScope scope,
                         test_server->base_url().spec(), to_version, crx_path,
                         kDoNothingCRXRun, {}));
 
-  // TODO(crbug.com/1412192): crx bytes are downloaded even when
-  // `updatedisabled` is `true`. Second request: update download.
-  std::string crx_bytes;
-  base::ReadFileToString(crx_path, &crx_bytes);
-  test_server->ExpectOnce({base::BindRepeating(RequestMatcherRegex, "")},
-                          crx_bytes);
-
-  if (is_update_check_only) {
-    return;
+  if (!is_update_check_only) {
+    // Second request: update download.
+    std::string crx_bytes;
+    base::ReadFileToString(crx_path, &crx_bytes);
+    test_server->ExpectOnce({base::BindRepeating(RequestMatcherRegex, "")},
+                            crx_bytes);
   }
 
   // Third request: event ping.
   test_server->ExpectOnce(
       {base::BindRepeating(
            RequestMatcherRegex,
-           base::StringPrintf(R"(.*"eventresult":1,"eventtype":%d,)"
+           base::StringPrintf(R"(.*"eventresult":%d,"eventtype":%d,)"
                               R"("nextversion":"%s","previousversion":"%s".*)",
-                              event_type, to_version.GetString().c_str(),
+                              !is_update_check_only, event_type,
+                              to_version.GetString().c_str(),
                               from_version.GetString().c_str())),
        GetScopePredicate(scope)},
       ")]}'\n");
@@ -584,9 +582,10 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
                                ScopedServer* test_server,
                                const std::string& app_id,
                                const std::string& install_data_index,
+                               const base::Version& from_version,
                                const base::Version& to_version) {
-  ExpectSequence(scope, test_server, app_id, install_data_index, 0, {},
-                 to_version, /*is_update_check_only*/ true);
+  ExpectSequence(scope, test_server, app_id, install_data_index, 3,
+                 from_version, to_version, /*is_update_check_only*/ true);
 }
 
 void ExpectUpdateSequence(UpdaterScope scope,

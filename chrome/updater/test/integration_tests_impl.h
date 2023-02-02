@@ -221,6 +221,7 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
                                ScopedServer* test_server,
                                const std::string& app_id,
                                const std::string& install_data_index,
+                               const base::Version& from_version,
                                const base::Version& to_version);
 
 void ExpectUpdateSequence(UpdaterScope scope,

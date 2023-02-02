@@ -44,6 +44,7 @@ class IntegrationTestCommands
       ScopedServer* test_server,
       const std::string& app_id,
       const std::string& install_data_index,
+      const base::Version& from_version,
       const base::Version& to_version) const = 0;
   virtual void ExpectUpdateSequence(ScopedServer* test_server,
                                     const std::string& app_id,
