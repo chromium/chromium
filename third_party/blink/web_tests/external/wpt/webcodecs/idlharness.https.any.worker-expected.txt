@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 303 tests; 282 PASS, 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 303 tests; 288 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 FAIL AudioDecoder interface: existence and properties of interface object assert_equals: prototype of self's property "AudioDecoder" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
@@ -297,11 +297,11 @@ PASS ImageTrack interface: attribute animated
 PASS ImageTrack interface: attribute frameCount
 PASS ImageTrack interface: attribute repetitionCount
 PASS ImageTrack interface: attribute selected
-FAIL ImageTrack must be primary interface of new ImageDecoder({data: self.imageBody, type: 'image/png'}).tracks[0] assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL Stringification of new ImageDecoder({data: self.imageBody, type: 'image/png'}).tracks[0] assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ImageTrack interface: new ImageDecoder({data: self.imageBody, type: 'image/png'}).tracks[0] must inherit property "animated" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ImageTrack interface: new ImageDecoder({data: self.imageBody, type: 'image/png'}).tracks[0] must inherit property "frameCount" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ImageTrack interface: new ImageDecoder({data: self.imageBody, type: 'image/png'}).tracks[0] must inherit property "repetitionCount" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ImageTrack interface: new ImageDecoder({data: self.imageBody, type: 'image/png'}).tracks[0] must inherit property "selected" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
+PASS ImageTrack must be primary interface of self.imageTracks
+PASS Stringification of self.imageTracks
+PASS ImageTrack interface: self.imageTracks must inherit property "animated" with the proper type
+PASS ImageTrack interface: self.imageTracks must inherit property "frameCount" with the proper type
+PASS ImageTrack interface: self.imageTracks must inherit property "repetitionCount" with the proper type
+PASS ImageTrack interface: self.imageTracks must inherit property "selected" with the proper type
 Harness: the test ran to completion.
 
