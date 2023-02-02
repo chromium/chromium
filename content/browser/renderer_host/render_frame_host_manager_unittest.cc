@@ -41,6 +41,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/render_widget_host_observer.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -1455,49 +1456,75 @@ TEST_P(RenderFrameHostManagerTest, CleanUpProxiesOnProcessCrash) {
             rfh2->GetRenderViewHost()->opener_frame_token());
 }
 
-// Test that we reuse the same guest SiteInstance if we navigate across sites.
-TEST_P(RenderFrameHostManagerTest, NoSwapOnGuestNavigations) {
+// Test guest navigation behavior when navigating across sites.  With site
+// isolation for guests, we should swap guest SiteInstances, otherwise the
+// guest SiteInstance should be reused.
+TEST_P(RenderFrameHostManagerTest, GuestNavigations) {
   // Create a custom StoragePartitionConfig for the guest SiteInstance. The
   // resulting SiteInstance should become associated with this
   // StoragePartitionConfig rather than a default one.
   const StoragePartitionConfig kGuestPartitionConfig =
       StoragePartitionConfig::Create(browser_context(), "someapp",
                                      "somepartition", /*in_memory=*/false);
-  scoped_refptr<SiteInstance> instance =
+  scoped_refptr<SiteInstance> initial_instance =
       SiteInstance::CreateForGuest(browser_context(), kGuestPartitionConfig);
   std::unique_ptr<TestWebContents> web_contents(
-      TestWebContents::Create(browser_context(), instance));
+      TestWebContents::Create(browser_context(), initial_instance));
 
-  EXPECT_TRUE(instance->IsGuest());
-  EXPECT_EQ(kGuestPartitionConfig, instance->GetStoragePartitionConfig());
+  EXPECT_TRUE(initial_instance->IsGuest());
+  EXPECT_EQ(kGuestPartitionConfig,
+            initial_instance->GetStoragePartitionConfig());
 
   RenderFrameHostManager* manager = web_contents->GetRenderManagerForTesting();
+  RenderFrameHostImpl* initial_host = manager->current_frame_host();
 
-  RenderFrameHostImpl* host = nullptr;
-
-  // 1) The first navigation. --------------------------
+  // 1) First navigation. ------------------------
+  // Start the first navigation, but do not commit.
   const GURL kUrl1("http://www.google.com/");
   NavigationEntryImpl entry1(
       nullptr /* instance */, kUrl1, Referrer(), absl::nullopt,
       std::u16string() /* title */, ui::PAGE_TRANSITION_TYPED,
       false /* is_renderer_init */, nullptr /* blob_url_loader_factory */,
       false /* is_initial_entry */);
-  host = NavigateToEntry(manager, &entry1);
+  RenderFrameHostImpl* host = NavigateToEntry(manager, &entry1);
 
-  // The RenderFrameHost created in Init will be reused.
-  EXPECT_TRUE(host == manager->current_frame_host());
+  // The SiteInstance of the navigating RenderFrameHost should still be a guest
+  // SiteInstance in the same StoragePartition.
+  scoped_refptr<SiteInstanceImpl> first_instance = host->GetSiteInstance();
+  EXPECT_EQ(first_instance->GetStoragePartitionConfig(), kGuestPartitionConfig);
+  EXPECT_TRUE(first_instance->IsGuest());
+
+  // Without site isolation for guests, we should stay in the same initial
+  // RenderFrameHost and SiteInstance.  With site isolation for guests, we have
+  // to swap SiteInstances and RenderFrameHosts, since the initial SiteInstance
+  // (`instance`) has an empty site and process lock, whereas the navigation
+  // needs a SiteInstance with the site URL that corresponds to `kUrl1`.  Note
+  // that even in that case, there will be no speculative RenderFrameHost since
+  // the new RenderFrameHost will be committed right away due to the early
+  // commit optimization. This behavior may change if the early commit
+  // optimization is removed in https://crbug.com/1072817.
+  if (SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
+    EXPECT_NE(first_instance, initial_instance);
+    EXPECT_NE(host, initial_host);
+    EXPECT_EQ("http://google.com/",
+              first_instance->GetSiteInfo().site_url().spec());
+  } else {
+    EXPECT_EQ(first_instance, initial_instance);
+    EXPECT_EQ(host, initial_host);
+  }
   EXPECT_FALSE(manager->speculative_frame_host());
-  EXPECT_EQ(manager->current_frame_host()->GetSiteInstance(), instance);
+  EXPECT_EQ(host, manager->current_frame_host());
 
   // Commit.
   DidNavigateFrame(manager, host);
-  // Commit to SiteInstance should be delayed until RenderFrame commit.
   EXPECT_EQ(host, manager->current_frame_host());
   ASSERT_TRUE(host);
   EXPECT_TRUE(host->GetSiteInstance()->HasSite());
 
-  // 2) Navigate to a different domain. -------------------------
-  // Guests stay in the same process on navigation.
+  // 2) Second navigation. ------------------------
+  // Navigate to a different site. If site isolation for guests is enabled,
+  // this will swap processes. Otherwise, the guest will stay in the same
+  // process.
   const GURL kUrl2("http://www.chromium.org");
   const url::Origin kInitiatorOrigin =
       url::Origin::Create(GURL("https://initiator.example.com"));
@@ -1509,15 +1536,30 @@ TEST_P(RenderFrameHostManagerTest, NoSwapOnGuestNavigations) {
       false /* is_initial_entry */);
   host = NavigateToEntry(manager, &entry2);
 
-  // The RenderFrameHost created in Init will be reused.
-  EXPECT_EQ(host, manager->current_frame_host());
-  EXPECT_FALSE(manager->speculative_frame_host());
+  // The first RenderFrameHost will be reused only when there's no site
+  // isolation for guests.
+  if (SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
+    EXPECT_NE(host, manager->current_frame_host());
+    EXPECT_TRUE(manager->speculative_frame_host());
+  } else {
+    EXPECT_EQ(host, manager->current_frame_host());
+    EXPECT_FALSE(manager->speculative_frame_host());
+  }
 
   // Commit.
   DidNavigateFrame(manager, host);
   EXPECT_EQ(host, manager->current_frame_host());
   ASSERT_TRUE(host);
-  EXPECT_EQ(host->GetSiteInstance(), instance);
+  EXPECT_TRUE(host->GetSiteInstance()->IsGuest());
+
+  // We should swap SiteInstances with site isolation for guests.
+  if (SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
+    EXPECT_NE(host->GetSiteInstance(), first_instance);
+    EXPECT_EQ("http://chromium.org/",
+              host->GetSiteInstance()->GetSiteInfo().site_url().spec());
+  } else {
+    EXPECT_EQ(host->GetSiteInstance(), first_instance);
+  }
 }
 
 namespace {

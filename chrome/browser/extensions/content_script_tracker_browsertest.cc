@@ -1278,7 +1278,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerAppBrowserTest,
   }
 
   // Verify that ContentScriptTracker detected the content script injection
-  // from `app` (but not from `unrelated_extension`).
+  // from `app` in the bar.com guest process (but not from
+  // `unrelated_extension`).
+  guest_process = guest_contents->GetMainFrame()->GetProcess();
   EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *guest_process, app->id()));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
