@@ -29,6 +29,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -70,6 +71,10 @@ BASE_FEATURE(kReportingStorageDegradationFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
+
+// Storage queue generation id reset UMA metric name.
+constexpr char kStorageQueueGenerationIdResetUma[] =
+    "Browser.ERP.StorageQueueGenerationIdReset";
 
 // Metadata file name prefix.
 const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
@@ -273,6 +278,7 @@ Status StorageQueue::Init() {
       // earlier.
       if (generation_id_ <= 0) {
         LOG(ERROR) << "Unable to retrieve generation id, performing full reset";
+        base::UmaHistogramBoolean(kStorageQueueGenerationIdResetUma, true);
         next_sequencing_id_ = 0;
         first_sequencing_id_ = 0;
         first_unconfirmed_sequencing_id_ = absl::nullopt;
@@ -282,7 +288,7 @@ Status StorageQueue::Init() {
       }
     }
   }
-  // In case of inavaliability default to a new generation id being a random
+  // In case of unavailability default to a new generation id being a random
   // number [1, max_int64].
   if (generation_id_ <= 0) {
     generation_id_ =
