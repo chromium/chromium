@@ -77,7 +77,7 @@ namespace {
 
 std::u16string GetSyncErrorButtonText(AvatarSyncErrorType error) {
   switch (error) {
-    case AvatarSyncErrorType::kAuthError:
+    case AvatarSyncErrorType::kSyncPaused:
     case AvatarSyncErrorType::kUnrecoverableError:
       // The user was signed out. Offer them to sign in again.
       return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNIN_BUTTON);
@@ -135,7 +135,7 @@ int CountBrowsersFor(Profile* profile) {
 }
 
 bool IsSyncPaused(Profile* profile) {
-  return GetAvatarSyncErrorType(profile) == AvatarSyncErrorType::kAuthError;
+  return GetAvatarSyncErrorType(profile) == AvatarSyncErrorType::kSyncPaused;
 }
 
 }  // namespace
@@ -196,7 +196,7 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
   if (!error)
     return ColoredImageForMenu(kSyncCircleIcon, ui::kColorAlertLowSeverity);
 
-  ui::ColorId color_id = error == AvatarSyncErrorType::kAuthError
+  ui::ColorId color_id = error == AvatarSyncErrorType::kSyncPaused
                              ? ui::kColorButtonBackgroundProminent
                              : ui::kColorAlertHighSeverity;
   return ColoredImageForMenu(kSyncPausedCircleIcon, color_id);
@@ -308,7 +308,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
           signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
       break;
     }
-    case AvatarSyncErrorType::kAuthError:
+    case AvatarSyncErrorType::kSyncPaused:
       GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
       signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
           browser()->profile(),
@@ -539,7 +539,7 @@ void ProfileMenuView::BuildSyncInfo() {
     BuildSyncInfoWithCallToAction(
         GetAvatarSyncErrorDescription(*error, is_sync_feature_enabled),
         GetSyncErrorButtonText(*error),
-        error == AvatarSyncErrorType::kAuthError
+        error == AvatarSyncErrorType::kSyncPaused
             ? ui::kColorSyncInfoBackgroundPaused
             : ui::kColorSyncInfoBackgroundError,
         base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,

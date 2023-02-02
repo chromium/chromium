@@ -281,10 +281,9 @@ absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
     return AvatarSyncErrorType::kUnrecoverableError;
   }
 
-  // TODO(crbug.com/1156584): This should simply check SyncService::
-  // GetTransportState() is PAUSED. This needs enlarging the PAUSED state first.
-  if (service->GetAuthError().IsPersistentError()) {
-    return AvatarSyncErrorType::kAuthError;
+  if (service->GetTransportState() ==
+      syncer::SyncService::TransportState::PAUSED) {
+    return AvatarSyncErrorType::kSyncPaused;
   }
 
   if (service->RequiresClientUpgrade()) {
@@ -311,7 +310,7 @@ absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
 std::u16string GetAvatarSyncErrorDescription(AvatarSyncErrorType error,
                                              bool is_sync_feature_enabled) {
   switch (error) {
-    case AvatarSyncErrorType::kAuthError:
+    case AvatarSyncErrorType::kSyncPaused:
       return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PAUSED_TITLE);
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError:
       return l10n_util::GetStringUTF16(

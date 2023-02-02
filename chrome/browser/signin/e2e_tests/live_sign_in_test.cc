@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignOut) {
           primary_account.account_id));
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(GetAvatarSyncErrorType(browser()->profile()),
-            AvatarSyncErrorType::kAuthError);
+            AvatarSyncErrorType::kSyncPaused);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

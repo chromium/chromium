@@ -172,7 +172,7 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
   if (!last_avatar_error_)
     return AvatarToolbarButton::State::kNormal;
 
-  if (last_avatar_error_ == AvatarSyncErrorType::kAuthError &&
+  if (last_avatar_error_ == AvatarSyncErrorType::kSyncPaused &&
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_)) {
     return AvatarToolbarButton::State::kSyncPaused;
   }

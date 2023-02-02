@@ -57,10 +57,8 @@ enum AvatarSyncErrorType {
   kManagedUserUnrecoverableError,
   // Unrecoverable error for regular users.
   kUnrecoverableError,
-  // Authentication error.
-  // TODO(crbug.com/1156584): Rename to SYNC_PAUSED. That's how it's treated by
-  // the UI, and it should eventually match SyncService::TransportState::PAUSED.
-  kAuthError,
+  // Sync paused (e.g. persistent authentication error).
+  kSyncPaused,
   // Out-of-date client error.
   kUpgradeClientError,
   // Sync passphrase error.
