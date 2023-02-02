@@ -226,30 +226,25 @@ void SharedWorkerHost::Start(
   if (final_response_url.SchemeIsLocal()) {
     // TODO(https://crbug.com/1146362): Inherit from the file creator instead
     // once creator policies are persisted through the filesystem store.
-    if (base::FeatureList::IsEnabled(
-            features::kPrivateNetworkAccessForWorkers)) {
-      // Create a maximally restricted one if the policy container is missing.
+    if (creator_policy_container_host_) {
       worker_client_security_state_ =
-          creator_policy_container_host_
-              ? DeriveClientSecurityState(
-                    creator_policy_container_host_->policies(),
-                    PrivateNetworkRequestContext::kWorker)
-              : network::mojom::ClientSecurityState::New(
-                    network::CrossOriginEmbedderPolicy(
-                        network::mojom::CrossOriginEmbedderPolicyValue::
-                            kRequireCorp),
-                    /*is_web_secure_context=*/false,
-                    network::mojom::IPAddressSpace::kUnknown,
-                    network::mojom::PrivateNetworkRequestPolicy::kBlock);
+          DeriveClientSecurityState(creator_policy_container_host_->policies(),
+                                    PrivateNetworkRequestContext::kWorker);
     } else {
-      // Create a maximally restricted one if the policy container is missing.
-      worker_client_security_state_->cross_origin_embedder_policy =
-          creator_policy_container_host_
-              ? creator_policy_container_host_->cross_origin_embedder_policy()
-              : network::CrossOriginEmbedderPolicy(
-                    network::mojom::CrossOriginEmbedderPolicyValue::
-                        kRequireCorp);
+      auto policy = base::FeatureList::IsEnabled(
+                        features::kPrivateNetworkAccessForWorkers)
+                        ? network::mojom::PrivateNetworkRequestPolicy::kBlock
+                        : network::mojom::PrivateNetworkRequestPolicy::kAllow;
+
+      // Create a maximally restricted client security state if the policy
+      // container is missing.
+      worker_client_security_state_ = network::mojom::ClientSecurityState::New(
+          network::CrossOriginEmbedderPolicy(
+              network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp),
+          /*is_web_secure_context=*/false,
+          network::mojom::IPAddressSpace::kUnknown, policy);
     }
+
     policy_container_host = std::move(creator_policy_container_host_);
   } else {
     // https://html.spec.whatwg.org/C/#creating-a-policy-container-from-a-fetch-response
@@ -260,25 +255,28 @@ void SharedWorkerHost::Start(
                                 main_script_load_params->response_head.get(),
                                 nullptr));
 
+    // TODO(https://crbug.com/1410095): Set `is_web_secure_context` to false
+    // inside `policy_container_host` if the creator is not a secure context.
+    // Then `worker_client_security_state_` can just copy the bit directly from
+    // `policy_container_host`, or even use `DeriveClientSecurityState()`.
+
+    worker_client_security_state_->ip_address_space =
+        policy_container_host->ip_address_space();
+    worker_client_security_state_->is_web_secure_context =
+        policy_container_host->policies().is_web_secure_context &&
+        creator_policy_container_host_->policies().is_web_secure_context;
+    worker_client_security_state_->private_network_request_policy =
+        DerivePrivateNetworkRequestPolicy(
+            worker_client_security_state_->ip_address_space,
+            worker_client_security_state_->is_web_secure_context,
+            PrivateNetworkRequestContext::kWorker);
+
     if (main_script_load_params->response_head->parsed_headers) {
       worker_client_security_state_->cross_origin_embedder_policy =
           main_script_load_params->response_head->parsed_headers
               ->cross_origin_embedder_policy;
     }
-    if (base::FeatureList::IsEnabled(
-            features::kPrivateNetworkAccessForWorkers)) {
-      worker_client_security_state_->ip_address_space =
-          policy_container_host->ip_address_space();
-      worker_client_security_state_->is_web_secure_context =
-          policy_container_host->policies().is_web_secure_context &&
-          creator_policy_container_host_ &&
-          creator_policy_container_host_->policies().is_web_secure_context;
-      worker_client_security_state_->private_network_request_policy =
-          DerivePrivateNetworkRequestPolicy(
-              worker_client_security_state_->ip_address_space,
-              worker_client_security_state_->is_web_secure_context,
-              PrivateNetworkRequestContext::kWorker);
-    }
+
     switch (worker_client_security_state_->cross_origin_embedder_policy.value) {
       case network::mojom::CrossOriginEmbedderPolicyValue::kNone:
         OnFeatureUsed(blink::mojom::WebFeature::kCoepNoneSharedWorker);

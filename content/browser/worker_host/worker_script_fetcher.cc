@@ -409,18 +409,12 @@ void WorkerScriptFetcher::CreateScriptLoader(
     const url::Origin& request_initiator = *resource_request->request_initiator;
     // TODO(https://crbug.com/1060837): Pass the Mojo remote which is connected
     // to the COEP reporter in DedicatedWorkerHost.
-    // TODO(crbug.com/1231019): make sure client_security_state is no longer
-    // nullptr anywhere.
     network::mojom::URLLoaderFactoryParamsPtr factory_params =
         URLLoaderFactoryParamsHelper::CreateForWorker(
             factory_process, request_initiator, trusted_isolation_info,
             /*coep_reporter=*/mojo::NullRemote(),
             std::move(url_loader_network_observer),
-            std::move(devtools_observer),
-            base::FeatureList::IsEnabled(
-                features::kPrivateNetworkAccessForWorkers)
-                ? mojo::Clone(client_security_state)
-                : nullptr,
+            std::move(devtools_observer), client_security_state.Clone(),
             /*debug_tag=*/"CreateScriptLoader");
 
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>

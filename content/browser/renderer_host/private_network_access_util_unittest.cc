@@ -150,8 +150,9 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyBlockFromInsecureUnknown) {
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
   expected[{kNonSecure, AddressSpace::kUnknown,
             PrivateNetworkRequestContext::kSubresource}] = Policy::kBlock;
+  // Workers are currently in warning-only mode.
   expected[{kNonSecure, AddressSpace::kUnknown,
-            PrivateNetworkRequestContext::kWorker}] = Policy::kBlock;
+            PrivateNetworkRequestContext::kWorker}] = Policy::kWarn;
 
   TestPolicyMap(expected);
 }
