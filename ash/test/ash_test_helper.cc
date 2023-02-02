@@ -47,6 +47,8 @@
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -82,6 +84,15 @@ class AshTestHelper::BluezDBusManagerInitializer {
   ~BluezDBusManagerInitializer() {
     device::BluetoothAdapterFactory::Shutdown();
     bluez::BluezDBusManager::Shutdown();
+  }
+};
+
+class AshTestHelper::FlossDBusManagerInitializer {
+ public:
+  FlossDBusManagerInitializer() { floss::FlossDBusManager::InitializeFake(); }
+  ~FlossDBusManagerInitializer() {
+    device::BluetoothAdapterFactory::Shutdown();
+    floss::FlossDBusManager::Shutdown();
   }
 };
 
@@ -185,6 +196,7 @@ void AshTestHelper::TearDown() {
   test_views_delegate_.reset();
   new_window_delegate_provider_.reset();
   bluez_dbus_manager_initializer_.reset();
+  floss_dbus_manager_initializer_.reset();
   system_tray_client_.reset();
   assistant_service_.reset();
   notifier_settings_controller_.reset();
@@ -264,11 +276,18 @@ void AshTestHelper::SetUp(InitParams init_params) {
     input_method_manager_ = new input_method::MockInputMethodManager();
     input_method::InputMethodManager::Initialize(input_method_manager_);
   }
-
-  if (!bluez::BluezDBusManager::IsInitialized()) {
-    bluez_dbus_manager_initializer_ =
-        std::make_unique<BluezDBusManagerInitializer>();
+  if (floss::features::IsFlossEnabled()) {
+    if (!floss::FlossDBusManager::IsInitialized()) {
+      floss_dbus_manager_initializer_ =
+          std::make_unique<FlossDBusManagerInitializer>();
+    }
+  } else {
+    if (!bluez::BluezDBusManager::IsInitialized()) {
+      bluez_dbus_manager_initializer_ =
+          std::make_unique<BluezDBusManagerInitializer>();
+    }
   }
+
   if (!RgbkbdClient::Get())
     RgbkbdClient::InitializeFake();
   if (!chromeos::PowerManagerClient::Get())

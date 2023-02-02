@@ -15,12 +15,21 @@
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
+#include "device/bluetooth/floss/floss_features.h"
 
 namespace ash::bluetooth_config {
 
 ScopedBluetoothConfigTestHelper::ScopedBluetoothConfigTestHelper() {
-  if (!bluez::BluezDBusManager::IsInitialized())
-    bluez::BluezDBusManager::InitializeFake();
+  if (floss::features::IsFlossEnabled()) {
+    if (!floss::FlossDBusManager::IsInitialized()) {
+      floss::FlossDBusManager::InitializeFake();
+    }
+  } else {
+    if (!bluez::BluezDBusManager::IsInitialized()) {
+      bluez::BluezDBusManager::InitializeFake();
+    }
+  }
 
   OverrideInProcessInstanceForTesting(/*initializer=*/this);
 }

@@ -167,6 +167,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
  private:
   // Scoping objects to manage init/teardown of services.
   class BluezDBusManagerInitializer;
+  class FlossDBusManagerInitializer;
   class PowerPolicyControllerInitializer;
 
   // Must be constructed so that `base::SystemMonitor::Get()` returns a valid
@@ -188,6 +189,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
       std::make_unique<TestSystemTrayClient>();
   std::unique_ptr<AppListTestHelper> app_list_test_helper_;
   std::unique_ptr<BluezDBusManagerInitializer> bluez_dbus_manager_initializer_;
+  std::unique_ptr<FlossDBusManagerInitializer> floss_dbus_manager_initializer_;
   std::unique_ptr<PowerPolicyControllerInitializer>
       power_policy_controller_initializer_;
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_delegate_provider_;

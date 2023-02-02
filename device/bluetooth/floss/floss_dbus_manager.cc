@@ -87,7 +87,7 @@ void FlossDBusManager::Initialize(dbus::Bus* system_bus) {
 }
 
 void FlossDBusManager::InitializeFake() {
-  NOTIMPLEMENTED();
+  CreateGlobalInstance(nullptr, /*use_stubs=*/true);
 }
 
 // static
