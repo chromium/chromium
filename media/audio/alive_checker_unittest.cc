@@ -210,6 +210,7 @@ class AliveCheckerTest : public testing::Test {
 
   void ResetAliveCheckerOnAliveCheckerThread(base::WaitableEvent* done) {
     EXPECT_TRUE(alive_checker_thread_.task_runner()->BelongsToCurrentThread());
+    mock_power_observer_helper_ = nullptr;
     alive_checker_.reset();
     done->Signal();
   }
