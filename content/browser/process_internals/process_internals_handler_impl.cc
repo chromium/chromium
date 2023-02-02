@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
@@ -55,6 +56,22 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
       site_instance->HasSite()
           ? absl::make_optional(site_instance->GetSiteInfo().site_url())
           : absl::nullopt;
+  frame_info->site_instance->is_guest = site_instance->IsGuest();
+
+  // If the SiteInstance has a non-default StoragePartition, include a basic
+  // string representation of it.  Skip cases where the StoragePartition is
+  // already conveyed in the site URL to avoid redundancy.
+  const auto& partition = site_instance->GetStoragePartitionConfig();
+  if (!partition.is_default() &&
+      site_instance->GetSiteInfo().site_url().spec().find(
+          partition.partition_domain()) == std::string::npos) {
+    std::string partition_description =
+        base::StrCat({partition.partition_domain().c_str(), "/",
+                      partition.partition_name().c_str(),
+                      partition.in_memory() ? "" : "?persist"});
+    frame_info->site_instance->storage_partition =
+        absl::make_optional(partition_description);
+  }
 
   // Only send a process lock URL if it's different from the site URL.  In the
   // common case they are the same, so we avoid polluting the UI with two
