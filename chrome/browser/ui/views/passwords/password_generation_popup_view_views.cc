@@ -270,8 +270,8 @@ void PasswordGenerationPopupViewViews::Hide() {
 }
 
 void PasswordGenerationPopupViewViews::UpdateState() {
-  RemoveAllChildViews();
   password_view_ = nullptr;
+  RemoveAllChildViews();
   CreateLayoutAndChildren();
 }
 
