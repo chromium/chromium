@@ -25,7 +25,6 @@ commerce_subscriptions_junit_test_deps = [
   "//chrome/test/android:chrome_java_unit_test_support",
   "//components/browser_ui/notifications/android:test_support_java",
   "//content/public/android:content_full_java",
-  "//third_party/android_deps:robolectric_all_java",
   "//third_party/androidx:androidx_test_runner_java",
   "//third_party/hamcrest:hamcrest_core_java",
   "//third_party/junit",

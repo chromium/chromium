@@ -108,7 +108,6 @@ robolectric_library("junit") {
     "//components/browser_ui/widget/android:java",
     "//components/messages/android:java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",

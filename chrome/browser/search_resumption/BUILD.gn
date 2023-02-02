@@ -92,7 +92,6 @@ robolectric_library("junit") {
     "//components/search_engines/android:java",
     "//components/signin/public/android:java",
     "//content/public/android:content_full_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",

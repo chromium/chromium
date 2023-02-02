@@ -438,7 +438,6 @@ robolectric_binary("weblayer_junit_tests") {
     "//mojo/public/java:bindings_java",
     "//mojo/public/java:system_java",
     "//services/service_manager/public/java:service_manager_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/junit",
