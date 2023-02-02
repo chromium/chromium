@@ -1379,7 +1379,9 @@ void CrostiniManager::MaybeUpdateCrostiniAfterChecks() {
 
 void CrostiniManager::InstallTermina(CrostiniResultCallback callback,
                                      bool is_initial_install) {
-  if (install_termina_never_completes_) {
+  if (install_termina_never_completes_for_testing_) {
+    LOG(ERROR)
+        << "Dropping InstallTermina request. This is only used in tests.";
     return;
   }
   termina_installer_.Install(

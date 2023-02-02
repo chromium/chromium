@@ -631,7 +631,7 @@ class CrostiniManager : public KeyedService,
       CrostiniManager::RestartId id,
       CrostiniResult result);
   void SetInstallTerminaNeverCompletesForTesting(bool never_completes) {
-    install_termina_never_completes_ = never_completes;
+    install_termina_never_completes_for_testing_ = never_completes;
   }
 
   // Mounts the user's Crostini home directory so it's accessible from the host.
@@ -950,7 +950,7 @@ class CrostiniManager : public KeyedService,
 
   TerminaInstaller termina_installer_{};
 
-  bool install_termina_never_completes_ = false;
+  bool install_termina_never_completes_for_testing_ = false;
 
   std::unique_ptr<CrostiniSshfs> crostini_sshfs_;
 
