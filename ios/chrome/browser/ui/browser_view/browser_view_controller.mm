@@ -51,7 +51,6 @@
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/help_commands.h"
@@ -529,14 +528,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - Public Properties
 
-- (id<BrowserCommands,
-      BrowserCoordinatorCommands,
-      FindInPageCommands,
-      PasswordBreachCommands,
-      ToolbarCommands>)dispatcher {
+- (id<BrowserCoordinatorCommands, FindInPageCommands, ToolbarCommands>)
+    dispatcher {
   return static_cast<
-      id<BrowserCommands, BrowserCoordinatorCommands, FindInPageCommands,
-         PasswordBreachCommands, ToolbarCommands>>(self.commandDispatcher);
+      id<BrowserCoordinatorCommands, FindInPageCommands, ToolbarCommands>>(
+      self.commandDispatcher);
 }
 
 - (UIView*)contentArea {
