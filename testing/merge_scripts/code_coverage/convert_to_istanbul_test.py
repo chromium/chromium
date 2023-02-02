@@ -18,6 +18,7 @@ _SOURCE_MAP_PROCESSOR = (_HERE_DIR.parent.parent.parent /
                          'tools' / 'code_coverage' / 'create_js_source_maps' /
                          'create_js_source_maps.js').resolve()
 
+@unittest.skipIf(os.name == 'nt', 'Not intended to work on Windows')
 class ConvertToIstanbulTest(unittest.TestCase):
     _TEST_SOURCE_A = """function add(a, b) {
   return a + b;
