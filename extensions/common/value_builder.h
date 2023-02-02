@@ -8,20 +8,10 @@
 //
 // The pattern is to write:
 //
-//  base::Value::T result(FooBuilder()
-//                   .Set(args)
-//                   .Set(args)
-//                   .BuildT());
-//
-// The BuildT() method invalidates its builder, and returns ownership of the
-// built value.
-//
-// The DEPRECATED pattern previously used was:
-//
-//  std::unique_ptr<BuiltType> result(FooBuilder()
-//                               .Set(args)
-//                               .Set(args)
-//                               .Build());
+//  base::Value::[Dict|List] result([Dictionary|List]Builder()
+//      .Set(args)
+//      .Set(args)
+//      .Build());
 //
 // The Build() method invalidates its builder, and returns ownership of the
 // built value.
@@ -68,17 +58,6 @@ class DictionaryBuilder {
     return *this;
   }
 
-  // NOTE(devlin): This overload is really just for passing
-  // std::unique_ptr<base::[SomeTypeOf]Value>, but the argument resolution
-  // would require us to define a template specialization for each of the value
-  // types. Just define this; it will fail to compile if <T> is anything but
-  // a base::Value (or one of its subclasses).
-  template <typename T>
-  DictionaryBuilder& Set(base::StringPiece key, std::unique_ptr<T> in_value) {
-    dict_.Set(key, std::move(*in_value));
-    return *this;
-  }
-
  private:
   base::Value::Dict dict_;
 };
@@ -110,13 +89,6 @@ class ListBuilder {
   ListBuilder& Append(InputIt first, InputIt last) {
     for (; first != last; ++first)
       list_.Append(*first);
-    return *this;
-  }
-
-  // See note on DictionaryBuilder::Set().
-  template <typename T>
-  ListBuilder& Append(std::unique_ptr<T> in_value) {
-    list_.Append(std::move(*in_value));
     return *this;
   }
 
