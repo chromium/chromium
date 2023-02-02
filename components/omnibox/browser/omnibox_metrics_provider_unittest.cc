@@ -13,6 +13,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/match_compare.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -145,8 +146,8 @@ TEST_F(OmniboxMetricsProviderTest, ClientSummarizedResultTypeMultipleSearch) {
 #if !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
 TEST_F(OmniboxMetricsProviderTest, LogScoringSignals) {
   // Enable feature flag to log scoring signals.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kLogUrlScoringSignals);
+  OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
+  scoped_ml_config.GetMLConfig().log_url_scoring_signals = true;
 
   // Populate a set of scoring signals with some test values. This will be used
   // to ensure the scoring signals are being propagated correctly.

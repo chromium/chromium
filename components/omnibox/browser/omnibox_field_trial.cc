@@ -159,6 +159,11 @@ std::string GetValueForRuleInContextFromVariationParams(
   return (it != params.end()) ? it->second : std::string();
 }
 
+OmniboxFieldTrial::MLConfig& GetMLConfigInternal() {
+  static OmniboxFieldTrial::MLConfig s_config;
+  return s_config;
+}
+
 }  // namespace
 
 HUPScoringParams::ScoreBuckets::ScoreBuckets()
@@ -1039,26 +1044,53 @@ const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring(
     "DomainSuggestionsAlternativeScoring",
     false);
 
-bool IsLogUrlScoringSignalsEnabled() {
-  static bool enabled =
+// ---------------------------------------------------------
+// ML Relevance Scoring ->
+
+MLConfig::MLConfig() {
+  log_url_scoring_signals =
       base::FeatureList::IsEnabled(omnibox::kLogUrlScoringSignals);
-  return enabled;
+  enable_scoring_signals_annotators = base::GetFieldTrialParamByFeatureAsBool(
+      omnibox::kLogUrlScoringSignals, "enable_scoring_signals_annotators",
+      /*default_value=*/false);
+  ml_relevance_scoring =
+      base::FeatureList::IsEnabled(omnibox::kMlRelevanceScoring);
+  url_scoring_model = base::FeatureList::IsEnabled(omnibox::kUrlScoringModel);
+}
+
+ScopedMLConfigForTesting::ScopedMLConfigForTesting()
+    : original_config_(std::make_unique<MLConfig>(GetMLConfig())) {}
+
+ScopedMLConfigForTesting::~ScopedMLConfigForTesting() {
+  GetMLConfigInternal() = *original_config_;
+}
+
+MLConfig& ScopedMLConfigForTesting::GetMLConfig() {
+  return GetMLConfigInternal();
+}
+
+const MLConfig& GetMLConfig() {
+  return GetMLConfigInternal();
+}
+
+bool IsLogUrlScoringSignalsEnabled() {
+  return GetMLConfig().log_url_scoring_signals;
+}
+
+bool AreScoringSignalsAnnotatorsEnabled() {
+  return GetMLConfig().enable_scoring_signals_annotators;
 }
 
 bool IsMlRelevanceScoringEnabled() {
-  // Check both `omnibox::kMlRelevanceScoring` and
-  // `omnibox::kUrlScoringModel` feature flags.
-  static bool enabled =
-      base::FeatureList::IsEnabled(omnibox::kMlRelevanceScoring) &&
-      IsUrlScoringModelEnabled();
-
-  return enabled;
+  return GetMLConfig().ml_relevance_scoring && IsUrlScoringModelEnabled();
 }
 
 bool IsUrlScoringModelEnabled() {
-  static bool enabled = base::FeatureList::IsEnabled(omnibox::kUrlScoringModel);
-  return enabled;
+  return GetMLConfig().url_scoring_model;
 }
+
+// <- ML Relevance Scoring
+// ---------------------------------------------------------
 
 }  // namespace OmniboxFieldTrial
 

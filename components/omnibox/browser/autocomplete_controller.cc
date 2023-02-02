@@ -513,9 +513,7 @@ AutocompleteController::AutocompleteController(
 
   // Create URL scoring signal annotators.
   if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled() &&
-      base::GetFieldTrialParamByFeatureAsBool(
-          omnibox::kLogUrlScoringSignals, "enable_scoring_signals_annotators",
-          /*default_value=*/false)) {
+      OmniboxFieldTrial::AreScoringSignalsAnnotatorsEnabled()) {
     url_scoring_signals_annotators_.push_back(
         std::make_unique<HistoryScoringSignalsAnnotator>(
             provider_client_.get()));
