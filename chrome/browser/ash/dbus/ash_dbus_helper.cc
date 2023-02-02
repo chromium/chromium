@@ -41,6 +41,7 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/easy_unlock/easy_unlock_client.h"
+#include "chromeos/ash/components/dbus/featured/featured_client.h"
 #include "chromeos/ash/components/dbus/federated/federated_client.h"
 #include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
@@ -165,6 +166,7 @@ void InitializeDBus() {
   InitializeDBusClient<DlcserviceClient>(bus);
   InitializeDBusClient<chromeos::DlpClient>(bus);
   InitializeDBusClient<EasyUnlockClient>(bus);
+  InitializeDBusClient<featured::FeaturedClient>(bus);
   InitializeDBusClient<FederatedClient>(bus);
   InitializeDBusClient<GnubbyClient>(bus);
   hermes_clients::Initialize(bus);
@@ -314,6 +316,7 @@ void ShutdownDBus() {
 #endif
   hermes_clients::Shutdown();
   GnubbyClient::Shutdown();
+  featured::FeaturedClient::Shutdown();
   FederatedClient::Shutdown();
   EasyUnlockClient::Shutdown();
   DlcserviceClient::Shutdown();

@@ -3793,6 +3793,7 @@ source_set("ash") {
     "//chromeos/ash/components/dbus/cups_proxy",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
     "//chromeos/ash/components/dbus/easy_unlock",
+    "//chromeos/ash/components/dbus/featured",
     "//chromeos/ash/components/dbus/federated",
     "//chromeos/ash/components/dbus/fwupd",
     "//chromeos/ash/components/dbus/human_presence",
