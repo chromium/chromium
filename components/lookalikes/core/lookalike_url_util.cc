@@ -1127,7 +1127,7 @@ TargetEmbeddingType SearchForEmbeddings(
   // the front, checking for a valid eTLD. If we find one, then we consider the
   // possible embedded domains that end in that eTLD (i.e. all possible start
   // points from the beginning of the string onward).
-  for (int end = hostname_tokens.size(); end > 0; --end) {
+  for (size_t end = hostname_tokens.size(); end > 0; --end) {
     base::span<const base::StringPiece> etld_check_span(hostname_tokens.data(),
                                                         end);
     std::string etld_check_host = base::JoinString(etld_check_span, ".");
@@ -1176,7 +1176,7 @@ TargetEmbeddingType SearchForEmbeddings(
 
     // Check for exact matches against engaged sites, among all possible
     // subdomains ending at |end|.
-    for (int start = 0; start < end - 1; ++start) {
+    for (size_t start = 0; start < end - 1; ++start) {
       const base::span<const base::StringPiece> span(
           hostname_tokens.data() + start, end - start);
       auto embedded_hostname = base::JoinString(span, ".");
@@ -1191,7 +1191,7 @@ TargetEmbeddingType SearchForEmbeddings(
           // at the very end of the hostname) is a safety tip, but only when
           // safety tips are allowed. If it's tail embedding but we can't create
           // a safety tip, keep looking.  Non-tail-embeddings are interstitials.
-          if (end != static_cast<int>(hostname_tokens.size())) {
+          if (end != hostname_tokens.size()) {
             return TargetEmbeddingType::kInterstitial;
           } else if (safety_tips_allowed) {
             return TargetEmbeddingType::kSafetyTip;
@@ -1211,7 +1211,7 @@ TargetEmbeddingType SearchForEmbeddings(
       // the very end of the hostname) is a safety tip, but only when safety
       // tips are allowed. If it's tail embedding but we can't create a safety
       // tip, keep looking.  Non-tail-embeddings are interstitials.
-      if (end != static_cast<int>(hostname_tokens.size())) {
+      if (end != hostname_tokens.size()) {
         return TargetEmbeddingType::kInterstitial;
       } else if (safety_tips_allowed) {
         return TargetEmbeddingType::kSafetyTip;
