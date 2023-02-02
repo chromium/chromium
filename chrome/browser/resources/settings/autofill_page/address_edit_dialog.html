@@ -38,13 +38,19 @@
       }
 
       #dialog::part(body-container) {
-        max-height: 450px;
+        max-height: 550px;
       }
 
       @media all and (max-height: 714px) {
         #dialog::part(body-container) {
           max-height: 270px;
         }
+      }
+
+      #accountSourceNotice {
+        margin-bottom: 4px;
+        margin-top: 20px;
+        white-space: initial;
       }
     </style>
     <cr-dialog id="dialog" close-text="$i18n{close}">
@@ -96,6 +102,9 @@
               class="address-column long last-row" spellcheck="false"
               maxlength="1000">
           </cr-input>
+        </div>
+        <div id="accountSourceNotice" hidden="[[!isAccountAddress_]]">
+          [[i18n('editAccountAddressSourceNotice', accountInfo.email)]]
         </div>
       </div>
       <div slot="button-container">

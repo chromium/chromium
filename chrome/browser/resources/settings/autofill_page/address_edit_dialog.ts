@@ -29,11 +29,12 @@ import {getTemplate} from './address_edit_dialog.html.js';
 
 export interface SettingsAddressEditDialogElement {
   $: {
+    accountSourceNotice: HTMLElement,
+    cancelButton: CrButtonElement,
     dialog: CrDialogElement,
     emailInput: CrInputElement,
     phoneInput: CrInputElement,
     saveButton: CrButtonElement,
-    cancelButton: CrButtonElement,
   };
 }
 
@@ -52,10 +53,11 @@ export class SettingsAddressEditDialogElement extends
   static get properties() {
     return {
       address: Object,
+      accountInfo: Object,
 
       title_: String,
 
-      countries_: Array,
+      countries_: Array<chrome.autofillPrivate.CountryEntry>,
 
       /**
        * Updates the address wrapper.
@@ -70,6 +72,11 @@ export class SettingsAddressEditDialogElement extends
       email_: String,
       canSave_: Boolean,
 
+      isAccountAddress_: {
+        type: Boolean,
+        computed: 'isAddressStoredInAccount_(address)',
+      },
+
       /**
        * True if honorifics are enabled.
        */
@@ -83,6 +90,7 @@ export class SettingsAddressEditDialogElement extends
   }
 
   address: chrome.autofillPrivate.AddressEntry;
+  accountInfo?: chrome.autofillPrivate.AccountInfo;
   private title_: string;
   private countries_: chrome.autofillPrivate.CountryEntry[];
   private countryCode_: string|undefined;
@@ -90,6 +98,7 @@ export class SettingsAddressEditDialogElement extends
   private phoneNumber_: string;
   private email_: string;
   private canSave_: boolean;
+  private isAccountAddress_: boolean;
   private showHonorific_: boolean;
   private countryInfo_: CountryDetailManager =
       CountryDetailManagerImpl.getInstance();
@@ -201,6 +210,13 @@ export class SettingsAddressEditDialogElement extends
 
   private isDivision_(country: chrome.autofillPrivate.CountryEntry): boolean {
     return !country.countryCode;
+  }
+
+  private isAddressStoredInAccount_(
+      address: chrome.autofillPrivate.AddressEntry): boolean {
+    return address.metadata !== undefined &&
+        address.metadata.source ===
+        chrome.autofillPrivate.AddressSource.ACCOUNT;
   }
 
   private onCancelTap_() {

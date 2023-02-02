@@ -8,8 +8,8 @@ import 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AutofillManagerImpl, CountryDetailManager, CountryDetailManagerImpl, CrInputElement, CrTextareaElement, SettingsAddressEditDialogElement, SettingsAddressRemoveConfirmationDialogElement, SettingsAutofillSectionElement} from 'chrome://settings/lazy_load.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, whenAttributeIs, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {AutofillManagerExpectations, createAddressEntry, createEmptyAddressEntry, TestAutofillManager} from './passwords_and_autofill_fake_data.js';
@@ -83,6 +83,83 @@ function createAddressDialog(address: chrome.autofillPrivate.AddressEntry):
 }
 
 /**
+ * Opens and returns the address edit dialog element for specified
+ * by |index| address in the |section| list.
+ */
+async function initiateEditing(
+    section: SettingsAutofillSectionElement,
+    index: number): Promise<SettingsAddressEditDialogElement> {
+  let dialog =
+      section.shadowRoot!.querySelector<SettingsAddressEditDialogElement>(
+          'settings-address-edit-dialog');
+  assertFalse(!!dialog, 'stale dialog found');
+
+  const addressElements = section.$.addressList.children;
+
+  assertGT(
+      addressElements.length, index,
+      'index is too high, not enough addresses in the list');
+
+  const menu =
+      addressElements[index]!.querySelector<HTMLElement>('#addressMenu');
+
+  assertTrue(!!menu, 'the row element should contain the menu element');
+
+  // Open menu and click the Edit button.
+  menu.click();
+  section.$.menuEditAddress.click();
+
+  flush();
+
+  dialog = section.shadowRoot!.querySelector<SettingsAddressEditDialogElement>(
+      'settings-address-edit-dialog');
+
+  assertTrue(!!dialog, 'the dialog element should be in the section subtree');
+
+  await eventToPromise('on-update-address-wrapper', dialog);
+  return dialog;
+}
+
+/**
+ * Opens and returns the remove confirmation dialog element for specified
+ * by |index| address in the |section| list.
+ */
+function initiateRemoving(
+    section: SettingsAutofillSectionElement,
+    index: number): SettingsAddressRemoveConfirmationDialogElement {
+  let dialog =
+      section.shadowRoot!
+          .querySelector<SettingsAddressRemoveConfirmationDialogElement>(
+              'settings-address-remove-confirmation-dialog');
+  assertFalse(!!dialog, 'stale dialog found');
+
+  const addressElements = section.$.addressList.children;
+
+  assertGT(
+      addressElements.length, index,
+      'index is too high, not enough addresses in the list');
+
+  const menu =
+      addressElements[index]!.querySelector<HTMLElement>('#addressMenu');
+
+  assertTrue(!!menu, 'the row element should contain the menu element');
+
+  // Open menu and click the Delete button.
+  menu.click();
+  section.$.menuRemoveAddress.click();
+
+  flush();
+
+  dialog = section.shadowRoot!
+               .querySelector<SettingsAddressRemoveConfirmationDialogElement>(
+                   'settings-address-remove-confirmation-dialog');
+
+  assertTrue(!!dialog, 'the dialog element should be in the section subtree');
+
+  return dialog;
+}
+
+/**
  * Creates the remove address dialog. Simulate clicking "Remove" button in
  * autofill section.
  */
@@ -99,23 +176,7 @@ async function createRemoveAddressDialog(autofillManager: TestAutofillManager):
   document.body.appendChild(section);
   await flushTasks();
 
-  const addressList = section.$.addressList;
-  const row = addressList.children[0];
-  assertTrue(!!row);
-
-  // Simulate clicking the 'Remove' button in the menu.
-  row!.querySelector<HTMLElement>('#addressMenu')!.click();
-  flush();
-
-  assertFalse(!!section.shadowRoot!.querySelector(
-      'settings-address-remove-confirmation-dialog'));
-  section.$.menuRemoveAddress.click();
-  flush();
-
-  const removeAddressDialog = section.shadowRoot!.querySelector(
-      'settings-address-remove-confirmation-dialog');
-  assertTrue(!!removeAddressDialog);
-  return removeAddressDialog!;
+  return initiateRemoving(section, 0);
 }
 
 suite('AutofillSectionUiTest', function() {
@@ -132,6 +193,72 @@ suite('AutofillSectionUiTest', function() {
 
     assertTrue(
         !!section.shadowRoot!.querySelector('#autofillExtensionIndicator'));
+
+    document.body.removeChild(section);
+  });
+
+  test('verifyAddressDeleteSourceNotice', async () => {
+    const address = createAddressEntry();
+    const accountAddress = createAddressEntry();
+    accountAddress.metadata!.source =
+        chrome.autofillPrivate.AddressSource.ACCOUNT;
+    const section = await createAutofillSection([address, accountAddress], {});
+
+    {
+      const dialog = await initiateRemoving(section, 0);
+      assertFalse(
+          isVisible(dialog.$.accountAddressDescription),
+          'account notice should be invisible for non-account address');
+      dialog.$.dialog.close();
+      // Make sure closing clean-ups are finished.
+      await eventToPromise('close', dialog.$.dialog);
+    }
+
+    await flushTasks();
+
+    {
+      const dialog = await initiateRemoving(section, 1);
+      assertTrue(
+          isVisible(dialog.$.accountAddressDescription),
+          'account notice should be visible for account address');
+      dialog.$.dialog.close();
+      // Make sure closing clean-ups are finished.
+      await eventToPromise('close', dialog.$.dialog);
+    }
+
+    document.body.removeChild(section);
+  });
+
+  test('verifyAddressEditSourceNotice', async () => {
+    const address = createAddressEntry();
+    const accouontAddress = createAddressEntry();
+    accouontAddress.metadata!.source =
+        chrome.autofillPrivate.AddressSource.ACCOUNT;
+    const section = await createAutofillSection([address, accouontAddress], {});
+
+    {
+      const dialog = await initiateEditing(section, 0);
+      assertFalse(
+          isVisible(dialog.$.accountSourceNotice),
+          'account notice should be invisible for non-account address');
+      dialog.$.dialog.close();
+      // Make sure closing clean-ups are finished.
+      await eventToPromise('close', dialog.$.dialog);
+    }
+
+    await flushTasks();
+
+    {
+      const dialog = await initiateEditing(section, 1);
+      assertTrue(
+          isVisible(dialog.$.accountSourceNotice),
+          'account notice should be visible for account address');
+      dialog.$.dialog.close();
+      // Make sure closing clean-ups are finished.
+      await eventToPromise('close', dialog.$.dialog);
+    }
+
+    document.body.removeChild(section);
   });
 });
 

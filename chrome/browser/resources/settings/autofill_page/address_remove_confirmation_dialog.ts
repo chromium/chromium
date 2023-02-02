@@ -10,20 +10,26 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {getTemplate} from './address_remove_confirmation_dialog.html.js';
 
 
 export interface SettingsAddressRemoveConfirmationDialogElement {
   $: {
+    accountAddressDescription: HTMLElement,
+    body: HTMLElement,
+    cancel: HTMLElement,
     dialog: CrDialogElement,
     remove: HTMLElement,
-    cancel: HTMLElement,
   };
 }
 
+const SettingsAddressRemoveConfirmationDialogBase = I18nMixin(PolymerElement);
+
 export class SettingsAddressRemoveConfirmationDialogElement extends
-    PolymerElement {
+    SettingsAddressRemoveConfirmationDialogBase {
   static get is() {
     return 'settings-address-remove-confirmation-dialog';
   }
@@ -32,8 +38,31 @@ export class SettingsAddressRemoveConfirmationDialogElement extends
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      address: Object,
+      accountInfo: Object,
+
+      isAccountAddress_: {
+        type: Boolean,
+        computed: 'isAddressStoredInAccount_(address)',
+      },
+    };
+  }
+
+  address: chrome.autofillPrivate.AddressEntry;
+  accountInfo?: chrome.autofillPrivate.AccountInfo;
+  private isAccountAddress_: boolean;
+
   wasConfirmed(): boolean {
     return this.$.dialog.getNative().returnValue === 'success';
+  }
+
+  private isAddressStoredInAccount_(
+      address: chrome.autofillPrivate.AddressEntry): boolean {
+    return address.metadata !== undefined &&
+        address.metadata.source ===
+        chrome.autofillPrivate.AddressSource.ACCOUNT;
   }
 
   private onRemoveClick() {

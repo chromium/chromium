@@ -69,11 +69,12 @@
     </cr-action-menu>
     <template is="dom-if" if="[[showAddressDialog_]]" restamp>
       <settings-address-edit-dialog address="[[activeAddress]]"
-          on-close="onAddressDialogClose_">
+          account-info="[[accountInfo_]]" on-close="onAddressDialogClose_">
       </settings-address-edit-dialog>
     </template>
     <template is="dom-if" if="[[showAddressRemoveConfirmationDialog_]]" restamp>
       <settings-address-remove-confirmation-dialog
+          address="[[activeAddress]]" account-info="[[accountInfo_]]"
           on-close="onAddressRemoveConfirmationDialogClose_">
       </settings-address-remove-confirmation-dialog>
     </template>
