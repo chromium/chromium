@@ -4101,6 +4101,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"isolation-by-default", flag_descriptions::kIsolationByDefaultName,
      flag_descriptions::kIsolationByDefaultDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kIsolationByDefault)},
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-webview-tag-site-isolation",
+     flag_descriptions::kWebViewTagSiteIsolationName,
+     flag_descriptions::kWebViewTagSiteIsolationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSiteIsolationForGuests)},
+#endif
     {"enable-google-srp-isolated-prerender-probing",
      flag_descriptions::kEnableSRPIsolatedPrerenderProbingName,
      flag_descriptions::kEnableSRPIsolatedPrerenderProbingDescription, kOsAll,
