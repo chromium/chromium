@@ -317,7 +317,8 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       kInstallAndWaitForActivatedPageWithModuleScript);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, SubresourceCountUKM) {
+// TODO(crbug.com/1404256): Resolve flakiness and re-enable.
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, DISABLED_SubresourceCountUKM) {
   ukm::TestAutoSetUkmRecorder test_recorder;
 
   WriteFile(FILE_PATH_LITERAL("fallback.css"), "");
