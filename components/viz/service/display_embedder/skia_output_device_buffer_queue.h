@@ -17,6 +17,7 @@
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 
 namespace viz {
 
@@ -96,6 +97,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
                                       bool* is_existing = nullptr);
 
   std::unique_ptr<OutputPresenter> presenter_;
+  const gpu::GpuDriverBugWorkarounds workarounds_;
 
   scoped_refptr<gpu::SharedContextState> context_state_;
   const raw_ptr<gpu::SharedImageRepresentationFactory> representation_factory_;

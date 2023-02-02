@@ -140,6 +140,7 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
                        memory_tracker,
                        did_swap_buffer_complete_callback),
       presenter_(std::move(presenter)),
+      workarounds_(deps->GetGpuDriverBugWorkarounds()),
       context_state_(deps->GetSharedContextState()),
       representation_factory_(representation_factory) {
 #if BUILDFLAG(IS_OZONE)
@@ -559,17 +560,29 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
     it->Unref();
   }
 
-  // Code below can destroy last representation of the overlay shared image. On
-  // MacOS it needs context to be current.
+  bool need_gl_context = false;
 #if BUILDFLAG(IS_APPLE)
   // TODO(vasilyt): We shouldn't need this after we stop using
   // GLImageBacking as backing.
-  if (!context_state_->MakeCurrent(nullptr)) {
-    for (auto& overlay : overlays_) {
-      overlay.OnContextLost();
-    }
+  need_gl_context = true;
+#elif BUILDFLAG(IS_OZONE)
+  // GL textures are cached in OzoneImageBacking with this workaround and when
+  // overlay representations are destroyed, backing may get destroyed leading to
+  // GL texture destruction. This destruction needs GL context current.
+  if (workarounds_.cache_texture_in_ozone_backing) {
+    need_gl_context = true;
   }
 #endif
+
+  // Code below can destroy last representation of the overlay shared image. On
+  // MacOS and Ozone platforms it needs context to be current.
+  if (need_gl_context) {
+    if (!context_state_->MakeCurrent(nullptr)) {
+      for (auto& overlay : overlays_) {
+        overlay.OnContextLost();
+      }
+    }
+  }
 
   [[maybe_unused]] std::vector<gpu::Mailbox> released_overlays;
   // Go through backings of all overlays, and release overlay backings which are
