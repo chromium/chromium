@@ -151,8 +151,9 @@ class PpdProviderTest : public ::testing::Test {
     auto manager_config_cache = std::make_unique<FakePrinterConfigCache>();
     provider_backdoor_.manager_config_cache = manager_config_cache.get();
 
-    auto manager = PpdMetadataManager::Create(options.browser_locale, &clock_,
-                                              std::move(manager_config_cache));
+    auto manager = PpdMetadataManager::Create(
+        options.browser_locale, PpdIndexChannel::kProduction, &clock_,
+        std::move(manager_config_cache));
     provider_backdoor_.metadata_manager = manager.get();
 
     switch (options.propagate_locale) {

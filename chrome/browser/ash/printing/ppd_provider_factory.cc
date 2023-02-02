@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/ppd_provider_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
@@ -26,6 +27,18 @@ network::mojom::URLLoaderFactory* GetURLLoaderFactory() {
       ->GetURLLoaderFactory();
 }
 
+chromeos::PpdIndexChannel ToPpdIndexChannel(
+    ash::features::PrintingPpdChannel channel) {
+  switch (channel) {
+    case ash::features::PrintingPpdChannel::kProduction:
+      return chromeos::PpdIndexChannel::kProduction;
+    case ash::features::PrintingPpdChannel::kStaging:
+      return chromeos::PpdIndexChannel::kStaging;
+    case ash::features::PrintingPpdChannel::kDev:
+      return chromeos::PpdIndexChannel::kDev;
+  }
+}
+
 }  // namespace
 
 scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(Profile* profile) {
@@ -41,6 +54,7 @@ scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(Profile* profile) {
       base::BindRepeating(&GetURLLoaderFactory));
   auto metadata_manager = chromeos::PpdMetadataManager::Create(
       g_browser_process->GetApplicationLocale(),
+      ToPpdIndexChannel(ash::features::kPrintingPpdChannelParam.Get()),
       base::DefaultClock::GetInstance(), std::move(manager_config_cache));
 
   return chromeos::PpdProvider::Create(

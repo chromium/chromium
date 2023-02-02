@@ -35,9 +35,6 @@ namespace chromeos {
 
 namespace {
 
-// Defines the containing directory of all metadata in the serving root.
-const char kMetadataParentDirectory[] = "metadata_v3";
-
 // Defines the number of shards of sharded metadata.
 constexpr int kNumShards = 20;
 
@@ -346,8 +343,9 @@ class PpdMetadataPathSpecifier {
     kUsbVendorIds,
   };
 
-  explicit PpdMetadataPathSpecifier(Type type)
+  PpdMetadataPathSpecifier(Type type, PpdIndexChannel channel)
       : type_(type),
+        channel_(channel),
         printers_basename_(nullptr),
         metadata_locale_(nullptr),
         shard_(0),
@@ -381,41 +379,41 @@ class PpdMetadataPathSpecifier {
   std::string AsString() const {
     switch (type_) {
       case Type::kLocales:
-        return base::StringPrintf("%s/locales.json", kMetadataParentDirectory);
+        return base::StringPrintf("%s/locales.json", MetadataParentDirectory());
 
       case Type::kManufacturers:
         DCHECK(metadata_locale_);
         DCHECK(!base::StringPiece(metadata_locale_).empty());
         return base::StringPrintf("%s/manufacturers-%s.json",
-                                  kMetadataParentDirectory, metadata_locale_);
+                                  MetadataParentDirectory(), metadata_locale_);
 
       case Type::kPrinters:
         DCHECK(printers_basename_);
         DCHECK(!base::StringPiece(printers_basename_).empty());
-        return base::StringPrintf("%s/%s", kMetadataParentDirectory,
+        return base::StringPrintf("%s/%s", MetadataParentDirectory(),
                                   printers_basename_);
 
       case Type::kForwardIndex:
         DCHECK(shard_ >= 0 && shard_ < kNumShards);
         return base::StringPrintf("%s/index-%02d.json",
-                                  kMetadataParentDirectory, shard_);
+                                  MetadataParentDirectory(), shard_);
 
       case Type::kReverseIndex:
         DCHECK(metadata_locale_);
         DCHECK(!base::StringPiece(metadata_locale_).empty());
         DCHECK(shard_ >= 0 && shard_ < kNumShards);
         return base::StringPrintf("%s/reverse_index-%s-%02d.json",
-                                  kMetadataParentDirectory, metadata_locale_,
+                                  MetadataParentDirectory(), metadata_locale_,
                                   shard_);
 
       case Type::kUsbIndex:
         DCHECK(usb_vendor_id_ >= 0 && usb_vendor_id_ <= kSixteenBitsMaximum);
-        return base::StringPrintf("%s/usb-%04x.json", kMetadataParentDirectory,
+        return base::StringPrintf("%s/usb-%04x.json", MetadataParentDirectory(),
                                   usb_vendor_id_);
 
       case Type::kUsbVendorIds:
         return base::StringPrintf("%s/usb_vendor_ids.json",
-                                  kMetadataParentDirectory);
+                                  MetadataParentDirectory());
     }
 
     // This function cannot fail except by maintainer error.
@@ -424,10 +422,24 @@ class PpdMetadataPathSpecifier {
     return std::string();
   }
 
+ private:
+  // Defines the containing directory of all metadata in the serving root.
+  const char* MetadataParentDirectory() const {
+    switch (channel_) {
+      case PpdIndexChannel::kProduction:
+        return "metadata_v3";
+      case PpdIndexChannel::kStaging:
+        return "metadata_v3_staging";
+      case PpdIndexChannel::kDev:
+        return "metadata_v3_dev";
+    }
+  }
+
+  Type type_;
+  const PpdIndexChannel channel_;
+
   // Private const char* members are const char* for compatibility with
   // base::StringPrintf().
- private:
-  Type type_;
 
   // Populated only when |type_| == kPrinters.
   // Contains the basename of the target printers metadata file.
@@ -452,9 +464,11 @@ class PpdMetadataPathSpecifier {
 class PpdMetadataManagerImpl : public PpdMetadataManager {
  public:
   PpdMetadataManagerImpl(base::StringPiece browser_locale,
+                         PpdIndexChannel channel,
                          base::Clock* clock,
                          std::unique_ptr<PrinterConfigCache> config_cache)
       : browser_locale_(browser_locale),
+        channel_(channel),
         clock_(clock),
         config_cache_(std::move(config_cache)),
         weak_factory_(this) {}
@@ -478,7 +492,8 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
       return;
     }
 
-    PpdMetadataPathSpecifier path(PpdMetadataPathSpecifier::Type::kLocales);
+    PpdMetadataPathSpecifier path(PpdMetadataPathSpecifier::Type::kLocales,
+                                  channel_);
     const std::string metadata_name = path.AsString();
 
     PrinterConfigCache::FetchCallback fetch_cb =
@@ -496,7 +511,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     DCHECK(!metadata_locale_.empty());
 
     PpdMetadataPathSpecifier path(
-        PpdMetadataPathSpecifier::Type::kManufacturers);
+        PpdMetadataPathSpecifier::Type::kManufacturers, channel_);
     path.SetMetadataLocale(metadata_locale_.c_str());
     const std::string metadata_name = path.AsString();
 
@@ -572,7 +587,8 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
       return;
     }
 
-    PpdMetadataPathSpecifier path(PpdMetadataPathSpecifier::Type::kUsbIndex);
+    PpdMetadataPathSpecifier path(PpdMetadataPathSpecifier::Type::kUsbIndex,
+                                  channel_);
     path.SetUsbVendorId(vendor_id);
     const std::string metadata_name = path.AsString();
 
@@ -591,8 +607,8 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   void GetUsbManufacturerName(int vendor_id,
                               base::TimeDelta age,
                               GetUsbManufacturerNameCallback cb) override {
-    PpdMetadataPathSpecifier path(
-        PpdMetadataPathSpecifier::Type::kUsbVendorIds);
+    PpdMetadataPathSpecifier path(PpdMetadataPathSpecifier::Type::kUsbVendorIds,
+                                  channel_);
     const std::string metadata_name = path.AsString();
 
     if (MapHasValueFresherThan(cached_usb_vendor_id_map_, metadata_name,
@@ -613,8 +629,8 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(!metadata_locale_.empty());
 
-    PpdMetadataPathSpecifier path(
-        PpdMetadataPathSpecifier::Type::kReverseIndex);
+    PpdMetadataPathSpecifier path(PpdMetadataPathSpecifier::Type::kReverseIndex,
+                                  channel_);
     path.SetMetadataLocale(metadata_locale_.c_str());
     path.SetShard(IndexShard(effective_make_and_model));
     const std::string metadata_name = path.AsString();
@@ -653,7 +669,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
 
     // We need to name the manufacturers metadata manually to store it.
     PpdMetadataPathSpecifier path(
-        PpdMetadataPathSpecifier::Type::kManufacturers);
+        PpdMetadataPathSpecifier::Type::kManufacturers, channel_);
     path.SetMetadataLocale(metadata_locale_.c_str());
     const std::string manufacturers_name = path.AsString();
 
@@ -785,7 +801,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   absl::optional<std::string> GetPrintersMetadataName(
       base::StringPiece manufacturer) {
     PpdMetadataPathSpecifier manufacturers_path(
-        PpdMetadataPathSpecifier::Type::kManufacturers);
+        PpdMetadataPathSpecifier::Type::kManufacturers, channel_);
     manufacturers_path.SetMetadataLocale(metadata_locale_.c_str());
     const std::string manufacturers_metadata_name =
         manufacturers_path.AsString();
@@ -803,7 +819,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     }
 
     PpdMetadataPathSpecifier printers_path(
-        PpdMetadataPathSpecifier::Type::kPrinters);
+        PpdMetadataPathSpecifier::Type::kPrinters, channel_);
     printers_path.SetPrintersBasename(
         manufacturers.value.at(manufacturer).c_str());
     return printers_path.AsString();
@@ -909,8 +925,8 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   ForwardIndexSearchStatus SearchForwardIndicesForOneEmm() {
     const ForwardIndexSearchContext& context =
         forward_index_search_queue_.CurrentContext();
-    PpdMetadataPathSpecifier path(
-        PpdMetadataPathSpecifier::Type::kForwardIndex);
+    PpdMetadataPathSpecifier path(PpdMetadataPathSpecifier::Type::kForwardIndex,
+                                  channel_);
     path.SetShard(IndexShard(context.CurrentEmm()));
     const std::string forward_index_name = path.AsString();
 
@@ -1135,6 +1151,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   }
 
   const std::string browser_locale_;
+  const PpdIndexChannel channel_;
   raw_ptr<const base::Clock> clock_;
 
   // The closest match to |browser_locale_| for which the serving root
@@ -1166,10 +1183,11 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
 // static
 std::unique_ptr<PpdMetadataManager> PpdMetadataManager::Create(
     base::StringPiece browser_locale,
+    PpdIndexChannel channel,
     base::Clock* clock,
     std::unique_ptr<PrinterConfigCache> config_cache) {
-  return std::make_unique<PpdMetadataManagerImpl>(browser_locale, clock,
-                                                  std::move(config_cache));
+  return std::make_unique<PpdMetadataManagerImpl>(
+      browser_locale, channel, clock, std::move(config_cache));
 }
 
 }  // namespace chromeos

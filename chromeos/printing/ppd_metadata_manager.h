@@ -18,6 +18,8 @@
 
 namespace chromeos {
 
+enum class PpdIndexChannel { kProduction, kStaging, kDev };
+
 // A PpdMetadataManager is the class responsible for fetching and
 // parsing PPD metadata to answer high-level queries about metadata.
 //
@@ -62,6 +64,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PpdMetadataManager {
   // Assumes ownership of |config_cache|.
   static std::unique_ptr<PpdMetadataManager> Create(
       base::StringPiece browser_locale,
+      PpdIndexChannel channel,
       base::Clock* clock,
       std::unique_ptr<PrinterConfigCache> config_cache);
 
