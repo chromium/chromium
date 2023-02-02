@@ -11,6 +11,8 @@ component("standalone_browser") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_IMPL" ]
   deps = [ "//base" ]
   sources = [
+    "browser_support.cc",
+    "browser_support.h",
     "lacros_availability.cc",
     "lacros_availability.h",
   ]
