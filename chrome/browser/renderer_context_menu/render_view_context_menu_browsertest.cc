@@ -1904,8 +1904,7 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
     feature_list.InitWithFeaturesAndParameters(
         {
             {lens::features::kLensStandalone,
-             {{lens::features::kEnableSidePanelForLens.name, "true"},
-              {lens::features::kHomepageURLForLens.name,
+             {{lens::features::kHomepageURLForLens.name,
                GetLensRegionSearchURL().spec()}}},
         },
         {});

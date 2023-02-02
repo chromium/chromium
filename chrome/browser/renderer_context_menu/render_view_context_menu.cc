@@ -1266,11 +1266,9 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
   }
 
   // Log UKM for Lens context menu items.
-  if ((id == IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH &&
-       lens::features::GetEnableUKMLoggingForRegionSearch()) ||
-      ((id == IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE ||
-        id == IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS) &&
-       lens::features::GetEnableUKMLoggingForImageSearch())) {
+  if (id == IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH ||
+      id == IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE ||
+      id == IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS) {
     // Enum id should correspond to the RenderViewContextMenuItem enum.
     ukm::SourceId source_id =
         source_web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId();

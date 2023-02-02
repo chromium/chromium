@@ -24,13 +24,6 @@ class LensCoreTabSidePanelHelperBrowserTest : public InProcessBrowserTest {
     // The test server must start first, so that we know the port that the test
     // server is using.
     ASSERT_TRUE(embedded_test_server()->Start());
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {
-            {lens::features::kLensStandalone,
-             {{lens::features::kEnableSidePanelForLens.name, "true"}}},
-        },
-        {});
 
     InProcessBrowserTest::SetUp();
   }
@@ -212,8 +205,7 @@ class LensCoreTabSidePanelHelperRegionSearchBrowserTest
     feature_list.InitWithFeaturesAndParameters(
         {
             {lens::features::kLensStandalone,
-             {{lens::features::kEnableSidePanelForLens.name, "true"},
-              {lens::features::kHomepageURLForLens.name,
+             {{lens::features::kHomepageURLForLens.name,
                GetLensRegionSearchURL().spec()}}},
 
         },

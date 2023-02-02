@@ -42,8 +42,7 @@ class LensSidePanelCoordinatorTest : public TestWithBrowserView {
   void SetUp() override {
     features.InitWithFeaturesAndParameters(
         {{lens::features::kLensStandalone,
-          {{lens::features::kEnableSidePanelForLens.name, "true"},
-           {lens::features::kHomepageURLForLens.name, kLensHomepageURL}}}},
+          {{lens::features::kHomepageURLForLens.name, kLensHomepageURL}}}},
         {});
     TestWithBrowserView::SetUp();
 

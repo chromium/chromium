@@ -74,8 +74,7 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
     base::test::ScopedFeatureList features;
     features.InitWithFeaturesAndParameters(
         {{lens::features::kLensStandalone,
-          {{lens::features::kEnableSidePanelForLens.name, "true"},
-           {lens::features::kHomepageURLForLens.name,
+          {{lens::features::kHomepageURLForLens.name,
             GetLensImageSearchURL().spec()}}},
          {lens::features::kEnableImageSearchSidePanelFor3PDse, {{}}}},
         {});
@@ -420,8 +419,7 @@ class SearchImageWithSidePanel3PDseDisabled
     features.InitWithFeaturesAndParameters(
         {
             {lens::features::kLensStandalone,
-             {{lens::features::kEnableSidePanelForLens.name, "true"},
-              {lens::features::kHomepageURLForLens.name,
+             {{lens::features::kHomepageURLForLens.name,
                GetLensImageSearchURL().spec()}}},
         },
         {lens::features::kEnableImageSearchSidePanelFor3PDse});
