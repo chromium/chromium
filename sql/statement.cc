@@ -551,7 +551,7 @@ base::span<const uint8_t> Statement::ColumnBlob(int column_index) {
       << "sqlite3_column_blob() returned a null buffer for a non-empty BLOB";
 
   return base::make_span(static_cast<const uint8_t*>(result_buffer),
-                         result_size);
+                         base::checked_cast<size_t>(result_size));
 }
 
 bool Statement::ColumnBlobAsString(int column_index, std::string* result) {
