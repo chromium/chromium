@@ -57,6 +57,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
     "//chromeos/ash/components/dbus/dlcservice:unit_tests",
     "//chromeos/ash/components/dbus/easy_unlock:unit_tests",
+    "//chromeos/ash/components/dbus/featured:unit_tests",
     "//chromeos/ash/components/dbus/fwupd:test_support",
     "//chromeos/ash/components/dbus/gnubby:unit_tests",
     "//chromeos/ash/components/dbus/hermes:test_support",
