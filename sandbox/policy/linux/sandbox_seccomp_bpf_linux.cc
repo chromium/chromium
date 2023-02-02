@@ -42,6 +42,7 @@
 #include "sandbox/policy/linux/bpf_cdm_policy_linux.h"
 #include "sandbox/policy/linux/bpf_cros_amd_gpu_policy_linux.h"
 #include "sandbox/policy/linux/bpf_cros_arm_gpu_policy_linux.h"
+#include "sandbox/policy/linux/bpf_cros_intel_gpu_policy_linux.h"
 #include "sandbox/policy/linux/bpf_gpu_policy_linux.h"
 #include "sandbox/policy/linux/bpf_network_policy_linux.h"
 #include "sandbox/policy/linux/bpf_ppapi_policy_linux.h"
@@ -118,15 +119,19 @@ inline bool IsArchitectureArm() {
 }
 
 std::unique_ptr<BPFBasePolicy> GetGpuProcessSandbox(
-    bool use_amd_specific_policies) {
+    const SandboxSeccompBPF::Options& options) {
   if (IsChromeOS() || UseChromecastSandboxAllowlist()) {
     if (IsArchitectureArm()) {
       return std::make_unique<CrosArmGpuProcessPolicy>(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kGpuSandboxAllowSysVShm));
     }
-    if (use_amd_specific_policies)
+    if (options.use_amd_specific_policies) {
       return std::make_unique<CrosAmdGpuProcessPolicy>();
+    }
+    if (options.use_intel_specific_policies) {
+      return std::make_unique<CrosIntelGpuProcessPolicy>();
+    }
   }
   return std::make_unique<GpuProcessPolicy>();
 }
@@ -171,7 +176,7 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
     const SandboxSeccompBPF::Options& options) {
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kGpu:
-      return GetGpuProcessSandbox(options.use_amd_specific_policies);
+      return GetGpuProcessSandbox(options);
     case sandbox::mojom::Sandbox::kRenderer:
       return std::make_unique<RendererProcessPolicy>();
 #if BUILDFLAG(ENABLE_PPAPI)
@@ -212,7 +217,7 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       // TODO(b/255554267): we're using the GPU process sandbox policy for now
       // as a transition step. However, we should create a policy that's tighter
       // just for hardware video encoding.
-      return GetGpuProcessSandbox(options.use_amd_specific_policies);
+      return GetGpuProcessSandbox(options);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kIme:
       return std::make_unique<ImeProcessPolicy>();
