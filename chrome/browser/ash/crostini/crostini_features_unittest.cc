@@ -6,8 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -233,13 +233,10 @@ class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
   }
 
   void AssertCanChangeAdbSideloading(bool expected_can_change) {
-    base::RunLoop run_loop;
-    crostini_features_.CanChangeAdbSideloading(
-        &profile_, base::BindLambdaForTesting([&](bool callback_can_change) {
-          EXPECT_EQ(callback_can_change, expected_can_change);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    base::test::TestFuture<bool> result_future;
+    crostini_features_.CanChangeAdbSideloading(&profile_,
+                                               result_future.GetCallback());
+    EXPECT_EQ(result_future.Get(), expected_can_change);
   }
 
   content::BrowserTaskEnvironment task_environment_;

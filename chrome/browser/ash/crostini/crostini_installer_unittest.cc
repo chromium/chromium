@@ -6,10 +6,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -74,21 +74,17 @@ class CrostiniInstallerTest : public testing::Test {
         chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
             callback) override {
       ash::FakeConciergeClient::StartVm(request, std::move(callback));
-      if (quit_closure_) {
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(quit_closure_));
-      }
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, result_future_.GetCallback());
     }
 
     void WaitForStartTerminaVmCalled() {
-      base::RunLoop loop;
-      quit_closure_ = loop.QuitClosure();
-      loop.Run();
+      EXPECT_TRUE(result_future_.Wait());
       EXPECT_GE(start_vm_call_count(), 1);
     }
 
    private:
-    base::OnceClosure quit_closure_;
+    base::test::TestFuture<void> result_future_;
   };
 
   CrostiniInstallerTest()

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
@@ -81,17 +82,10 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
   bool OnResizeWithResult(Profile* profile,
                           const char* vm_name,
                           int64_t size_bytes) {
-    bool result;
-    base::RunLoop run_loop;
-    auto store =
-        base::BindLambdaForTesting([&result, &run_loop = run_loop](bool info) {
-          result = std::move(info);
-          run_loop.Quit();
-        });
-
-    ResizeCrostiniDisk(profile, vm_name, size_bytes, std::move(store));
-    run_loop.Run();
-    return result;
+    base::test::TestFuture<bool> result_future;
+    ResizeCrostiniDisk(profile, vm_name, size_bytes,
+                       result_future.GetCallback());
+    return result_future.Get();
   }
 
   Profile* profile() { return profile_.get(); }

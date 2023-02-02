@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 
-#include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
@@ -149,47 +149,35 @@ class CrostiniPortForwarderTest : public testing::Test {
   }
 
   bool AddPortFromKey(CrostiniPortForwarder::PortRuleKey port) {
-    bool success = false;
-    base::RunLoop run_loop;
-    crostini_port_forwarder_->AddPort(
-        port.container_id, port.port_number, port.protocol_type, "",
-        base::BindOnce(&TestingCallback, base::Unretained(&success),
-                       run_loop.QuitClosure()));
-    run_loop.Run();
-    return success;
+    base::test::TestFuture<bool> result_future;
+    crostini_port_forwarder_->AddPort(port.container_id, port.port_number,
+                                      port.protocol_type, "",
+                                      result_future.GetCallback());
+    return result_future.Get();
   }
 
   bool ActivatePortFromKey(CrostiniPortForwarder::PortRuleKey port) {
-    bool success = false;
-    base::RunLoop run_loop;
-    crostini_port_forwarder_->ActivatePort(
-        port.container_id, port.port_number, port.protocol_type,
-        base::BindOnce(&TestingCallback, base::Unretained(&success),
-                       run_loop.QuitClosure()));
-    run_loop.Run();
-    return success;
+    base::test::TestFuture<bool> result_future;
+    crostini_port_forwarder_->ActivatePort(port.container_id, port.port_number,
+                                           port.protocol_type,
+                                           result_future.GetCallback());
+    return result_future.Get();
   }
 
   bool RemovePortFromKey(CrostiniPortForwarder::PortRuleKey port) {
-    bool success = false;
-    base::RunLoop run_loop;
-    crostini_port_forwarder_->RemovePort(
-        port.container_id, port.port_number, port.protocol_type,
-        base::BindOnce(&TestingCallback, base::Unretained(&success),
-                       run_loop.QuitClosure()));
-    run_loop.Run();
-    return success;
+    base::test::TestFuture<bool> result_future;
+    crostini_port_forwarder_->RemovePort(port.container_id, port.port_number,
+                                         port.protocol_type,
+                                         result_future.GetCallback());
+    return result_future.Get();
   }
 
   bool DeactivatePortFromKey(CrostiniPortForwarder::PortRuleKey port) {
-    bool success = false;
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool> result_future;
     crostini_port_forwarder_->DeactivatePort(
         port.container_id, port.port_number, port.protocol_type,
-        base::BindOnce(&TestingCallback, base::Unretained(&success),
-                       run_loop.QuitClosure()));
-    run_loop.Run();
-    return success;
+        result_future.GetCallback());
+    return result_future.Get();
   }
 
   guest_os::GuestId default_container_id_;
