@@ -3,16 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/policy/test_support/request_handler_for_psm_auto_enrollment.h"
-#include "base/strings/strcat.h"
+
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server_test_base.h"
-#include "components/policy/test_support/policy_storage.h"
-#include "components/policy/test_support/request_handler_for_register_browser.h"
 #include "device_management_backend.pb.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
 
 namespace em = enterprise_management;
 
@@ -21,8 +19,6 @@ namespace policy {
 namespace {
 
 constexpr char kDeviceId[] = "fake_device_id";
-constexpr char kEncryptedId1[] = "fake/ecrypted-id";
-constexpr char kEncryptedId2[] = "54455354/111111";
 
 }  // namespace
 
@@ -42,108 +38,87 @@ class RequestHandlerForPsmAutoEnrollmentTest
   }
 };
 
-TEST_F(RequestHandlerForPsmAutoEnrollmentTest, HandleRequest_OprfRequest) {
+class RequestHandlerForPsmAutoEnrollmentTestWithCase
+    : public RequestHandlerForPsmAutoEnrollmentTest,
+      public testing::WithParamInterface</*test_index=*/int> {};
+
+TEST_P(RequestHandlerForPsmAutoEnrollmentTestWithCase, GoodOprfRequest) {
+  const auto test_data = RequestHandlerForPsmAutoEnrollment::LoadTestData();
+  ASSERT_TRUE(test_data);
+  const auto& test_case = test_data->test_cases(GetParam());
   em::DeviceManagementRequest device_management_request;
-  em::PrivateSetMembershipRequest* request =
-      device_management_request.mutable_private_set_membership_request();
-  request->mutable_rlwe_request()->mutable_oprf_request()->add_encrypted_ids(
-      kEncryptedId1);
+  *device_management_request.mutable_private_set_membership_request()
+       ->mutable_rlwe_request()
+       ->mutable_oprf_request() = test_case.expected_oprf_request();
   SetPayload(device_management_request);
 
   StartRequestAndWait();
 
   EXPECT_EQ(GetResponseCode(), net::HTTP_OK);
   ASSERT_TRUE(HasResponseBody());
-  auto response = GetDeviceManagementResponse();
-  ASSERT_EQ(response.private_set_membership_response()
+  const auto response = GetDeviceManagementResponse();
+  EXPECT_EQ(response.private_set_membership_response()
                 .rlwe_response()
                 .oprf_response()
-                .doubly_encrypted_ids_size(),
-            1);
-  EXPECT_EQ(response.private_set_membership_response()
-                .rlwe_response()
-                .oprf_response()
-                .doubly_encrypted_ids(0)
-                .queried_encrypted_id(),
-            kEncryptedId1);
+                .SerializeAsString(),
+            test_case.oprf_response().SerializeAsString());
 }
 
-TEST_F(RequestHandlerForPsmAutoEnrollmentTest,
-       HandleRequest_QueryRequestNoMembership) {
+TEST_P(RequestHandlerForPsmAutoEnrollmentTestWithCase, GoodQueryRequest) {
+  const auto test_data = RequestHandlerForPsmAutoEnrollment::LoadTestData();
+  ASSERT_TRUE(test_data);
+  const auto& test_case = test_data->test_cases(GetParam());
   em::DeviceManagementRequest device_management_request;
-  em::PrivateSetMembershipRequest* request =
-      device_management_request.mutable_private_set_membership_request();
-  request->mutable_rlwe_request()
-      ->mutable_query_request()
-      ->add_queries()
-      ->set_queried_encrypted_id(kEncryptedId1);
+  *device_management_request.mutable_private_set_membership_request()
+       ->mutable_rlwe_request()
+       ->mutable_query_request() = test_case.expected_query_request();
   SetPayload(device_management_request);
 
   StartRequestAndWait();
 
   EXPECT_EQ(GetResponseCode(), net::HTTP_OK);
   ASSERT_TRUE(HasResponseBody());
-  auto response = GetDeviceManagementResponse();
-  ASSERT_EQ(response.private_set_membership_response()
-                .rlwe_response()
-                .query_response()
-                .pir_responses_size(),
-            1);
+  const auto response = GetDeviceManagementResponse();
   EXPECT_EQ(response.private_set_membership_response()
                 .rlwe_response()
                 .query_response()
-                .pir_responses(0)
-                .queried_encrypted_id(),
-            kEncryptedId1);
-  EXPECT_EQ(response.private_set_membership_response()
-                .rlwe_response()
-                .query_response()
-                .pir_responses(0)
-                .pir_response()
-                .plaintext_entry_size(),
-            RequestHandlerForPsmAutoEnrollment::kPirResponseHasNoMembership);
+                .SerializeAsString(),
+            test_case.query_response().SerializeAsString());
 }
 
-TEST_F(RequestHandlerForPsmAutoEnrollmentTest,
-       HandleRequest_QueryRequestHasMembership) {
+INSTANTIATE_TEST_SUITE_P(
+    Each,
+    RequestHandlerForPsmAutoEnrollmentTestWithCase,
+    testing::Range(
+        0,
+        RequestHandlerForPsmAutoEnrollment::LoadTestData()->test_cases_size()));
+
+TEST_F(RequestHandlerForPsmAutoEnrollmentTest, BadOprfRequest) {
   em::DeviceManagementRequest device_management_request;
-  em::PrivateSetMembershipRequest* request =
-      device_management_request.mutable_private_set_membership_request();
-  request->mutable_rlwe_request()
-      ->mutable_query_request()
-      ->add_queries()
-      ->set_queried_encrypted_id(kEncryptedId2);
+  *device_management_request.mutable_private_set_membership_request()
+       ->mutable_rlwe_request()
+       ->mutable_oprf_request() = {};
   SetPayload(device_management_request);
 
   StartRequestAndWait();
 
-  EXPECT_EQ(GetResponseCode(), net::HTTP_OK);
-  ASSERT_TRUE(HasResponseBody());
-  auto response = GetDeviceManagementResponse();
-  ASSERT_EQ(response.private_set_membership_response()
-                .rlwe_response()
-                .query_response()
-                .pir_responses_size(),
-            1);
-  EXPECT_EQ(response.private_set_membership_response()
-                .rlwe_response()
-                .query_response()
-                .pir_responses(0)
-                .queried_encrypted_id(),
-            kEncryptedId2);
-  EXPECT_EQ(response.private_set_membership_response()
-                .rlwe_response()
-                .query_response()
-                .pir_responses(0)
-                .pir_response()
-                .plaintext_entry_size(),
-            RequestHandlerForPsmAutoEnrollment::kPirResponseHasMembership);
+  EXPECT_EQ(GetResponseCode(), net::HTTP_BAD_REQUEST);
 }
 
-TEST_F(RequestHandlerForPsmAutoEnrollmentTest,
-       HandleRequest_MissingRequestFields) {
+TEST_F(RequestHandlerForPsmAutoEnrollmentTest, BadQueryRequest) {
   em::DeviceManagementRequest device_management_request;
-  device_management_request.mutable_private_set_membership_request();
+  *device_management_request.mutable_private_set_membership_request()
+       ->mutable_rlwe_request()
+       ->mutable_oprf_request() = {};
+  SetPayload(device_management_request);
+
+  StartRequestAndWait();
+
+  EXPECT_EQ(GetResponseCode(), net::HTTP_BAD_REQUEST);
+}
+
+TEST_F(RequestHandlerForPsmAutoEnrollmentTest, BadRequest) {
+  em::DeviceManagementRequest device_management_request;
   SetPayload(device_management_request);
 
   StartRequestAndWait();

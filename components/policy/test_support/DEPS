@@ -10,6 +10,7 @@ include_rules = [
   "+net",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
+  "+third_party/private_membership",
   "+services/network/test",
   "+third_party/re2",
 ]
