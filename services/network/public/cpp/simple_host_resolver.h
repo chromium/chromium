@@ -7,8 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "net/dns/public/dns_config_overrides.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -47,16 +45,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleHostResolver {
       const absl::optional<net::HostResolverEndpointResults>&
           endpoint_results_with_metadata)>;
 
-  // Creates a SimpleHostResolver from the given |network_context| and
-  // |config_overrides|. |network_context| must outlive SimpleHostResolver.
+  // Creates a SimpleHostResolver from the given |network_context|.
+  // |network_context| must outlive SimpleHostResolver.
   static std::unique_ptr<SimpleHostResolver> Create(
-      mojom::NetworkContext* network_context,
-      const absl::optional<net::DnsConfigOverrides>& config_overrides = {});
-
-  // Creates a SimpleHostResolver that uses the provided |resolver| for host
-  // resolving.
-  static std::unique_ptr<SimpleHostResolver> CreateForTesting(
-      mojo::PendingRemote<mojom::HostResolver> resolver);
+      mojom::NetworkContext* network_context);
 
   virtual ~SimpleHostResolver() = default;
 
