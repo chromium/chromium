@@ -680,6 +680,31 @@ TEST_P(AddressProfileSaveManagerTest, ImportDuplicateProfile) {
 }
 
 // Test that the observation of quasi identical profile that has a different
+// structure in the name will not result in a silent update when silent updates
+// are disabled by a feature flag.
+TEST_P(AddressProfileSaveManagerTest,
+       SilentlyUpdateProfile_DisabledByFeatureFlag) {
+  base::test::ScopedFeatureList disabled_update_feature;
+  disabled_update_feature.InitAndEnableFeature(
+      features::kAutofillDisableSilentProfileUpdates);
+
+  AutofillProfile observed_profile = test::StandardProfile();
+  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {updateable_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = false,
+      .user_decision = UserDecision::kUserNotAsked,
+      .expected_import_type = AutofillProfileImportType::kDuplicateImport,
+      .is_profile_change_expected = false,
+      .merge_candidate = absl::nullopt,
+      .import_candidate = absl::nullopt,
+      .expected_final_profiles = {updateable_profile}};
+  TestImportScenario(test_scenario);
+}
+
+// Test that the observation of quasi identical profile that has a different
 // structure in the name will result in a silent update.
 TEST_P(AddressProfileSaveManagerTest, SilentlyUpdateProfile) {
   AutofillProfile observed_profile = test::StandardProfile();
@@ -769,6 +794,31 @@ TEST_P(AddressProfileSaveManagerTest,
       .merge_candidate = mergeable_profile,
       .import_candidate = final_profile,
       .expected_final_profiles = {final_profile}};
+
+  TestImportScenario(test_scenario);
+}
+
+// Test the observation of a profile that can only be merged with a
+// settings-visible change will not cause an update when the latter is disabled
+// by a feature flag.
+TEST_P(AddressProfileSaveManagerTest,
+       UserConfirmableMerge_DisabledByFeatureFlag) {
+  base::test::ScopedFeatureList disabled_update_feature;
+  disabled_update_feature.InitAndEnableFeature(
+      features::kAutofillDisableProfileUpdates);
+
+  AutofillProfile observed_profile = test::StandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {mergeable_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = false,
+      .user_decision = UserDecision::kUserNotAsked,
+      .expected_import_type =
+          AutofillProfileImportType::kSuppressedConfirmableMerge,
+      .is_profile_change_expected = false,
+      .expected_final_profiles = {mergeable_profile}};
 
   TestImportScenario(test_scenario);
 }

@@ -153,12 +153,13 @@ void ProfileImportProcess::DetermineProfileImportType() {
 
       // Determine if the existing profile is blocked for updates.
       // If the personal data manager is not available the profile is considered
-      // as not blocked.
+      // as not blocked. Also, updates can be disabled by a feature flag.
       bool is_blocked_for_update =
-          personal_data_manager_
-              ? personal_data_manager_->IsProfileUpdateBlocked(
-                    existing_profile->guid())
-              : false;
+          personal_data_manager_->IsProfileUpdateBlocked(
+              existing_profile->guid()) ||
+          base::FeatureList::IsEnabled(
+              features::kAutofillDisableProfileUpdates);
+
       if (is_blocked_for_update) {
         ++number_of_blocked_profile_updates_;
       }
@@ -177,10 +178,13 @@ void ProfileImportProcess::DetermineProfileImportType() {
       continue;
     }
     // If the profile changed but all settings-visible values are maintained,
-    // the profile can be updated silently.
-    if (existing_profile->source() ==
-            AutofillProfile::Source::kLocalOrSyncable ||
-        features::kAutofillEnableSilentUpdatesForAccountProfiles.Get()) {
+    // the profile can be updated silently. Silent updates can also be disabled
+    // using a feature flag.
+    if ((existing_profile->source() ==
+             AutofillProfile::Source::kLocalOrSyncable ||
+         features::kAutofillEnableSilentUpdatesForAccountProfiles.Get()) &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillDisableSilentProfileUpdates)) {
       merged_profile.set_modification_date(AutofillClock::Now());
       updated_profiles_.emplace_back(merged_profile);
     } else {

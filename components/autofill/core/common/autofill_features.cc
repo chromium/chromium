@@ -74,6 +74,20 @@ BASE_FEATURE(kAutofillAssociateForms,
 const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL{
     &kAutofillAssociateForms, "associate_forms_ttl", base::Minutes(5)};
 
+// If enabled, Autofill will not apply updates to address profiles based on data
+// extracted from submitted forms. This feature is mostly for debugging and
+// testing purposes and is not supposed to be launched.
+BASE_FEATURE(kAutofillDisableProfileUpdates,
+             "AutofillDisableProfileUpdates",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, Autofill will not apply silent updates to the structure of
+// addresses and names. This feature is mostly for debugging and testing
+// purposes and is not supposed to be launched.
+BASE_FEATURE(kAutofillDisableSilentProfileUpdates,
+             "AutofillDisableSilentProfileUpdates",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Autofill ignores invalid country information on import, which
 // would otherwise prevent an import. Instead, ignoring it will trigger the
 // country complemention logic.
