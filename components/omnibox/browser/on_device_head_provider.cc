@@ -25,7 +25,6 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
-#include "net/base/url_util.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 
@@ -66,15 +65,6 @@ enum class SuggestionType {
   TAIL,
 };
 
-std::string ExtractSearchQuery(const GURL& url) {
-  std::string result, query_str;
-  if (url.path() == "/search" &&
-      net::GetValueForKeyInQuery(url, "q", &query_str)) {
-    result = query_str;
-  }
-  return result;
-}
-
 }  // namespace
 
 struct OnDeviceHeadProvider::OnDeviceHeadProviderParams {
@@ -106,18 +96,14 @@ struct OnDeviceHeadProvider::OnDeviceHeadProviderParams {
       delete;
 };
 
-struct OnDeviceHeadProvider::OnDeviceModelFileParams {
+struct OnDeviceHeadProvider::OnDeviceModelFiles {
   // TODO(crbug.com/1372112): update head model class to take file path instead
   // of the std::string file name.
   std::string head_model_filename;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   base::FilePath tail_model_filepath;
 
   base::FilePath vocab_filepath;
-
-  OnDeviceTailModelExecutor::ModelMetadata tail_model_metadata;
-#endif
 };
 
 // static
@@ -137,14 +123,7 @@ OnDeviceHeadProvider::OnDeviceHeadProvider(
       worker_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()})),
-      on_device_search_request_id_(0)
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-      ,
-      on_device_tail_model_executor_(
-          new OnDeviceTailModelExecutor(),
-          base::OnTaskRunnerDeleter(worker_task_runner_))
-#endif
-{
+      on_device_search_request_id_(0) {
   AddListener(listener);
 }
 
@@ -197,7 +176,7 @@ void OnDeviceHeadProvider::Start(const AutocompleteInput& input,
 
   matches_.clear();
   if (input.text().empty() ||
-      GetOnDeviceModelFileParams().head_model_filename.empty()) {
+      GetOnDeviceModelFiles().head_model_filename.empty()) {
     return;
   }
 
@@ -227,13 +206,10 @@ void OnDeviceHeadProvider::Stop(bool clear_cached_results,
 // static
 std::unique_ptr<OnDeviceHeadProvider::OnDeviceHeadProviderParams>
 OnDeviceHeadProvider::GetSuggestionsFromModel(
-    OnDeviceModelFileParams model_file_params,
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    OnDeviceTailModelExecutor* tail_model_executor,
-#endif
+    OnDeviceModelFiles model_files,
     const size_t provider_max_matches,
     std::unique_ptr<OnDeviceHeadProviderParams> params) {
-  if (model_file_params.head_model_filename.empty() || !params) {
+  if (model_files.head_model_filename.empty() || !params) {
     if (params) {
       params->failed = true;
     }
@@ -244,39 +220,11 @@ OnDeviceHeadProvider::GetSuggestionsFromModel(
   std::string sanitized_input = SanitizeInput(params->input.text());
 
   auto results = OnDeviceHeadModel::GetSuggestionsForPrefix(
-      model_file_params.head_model_filename, provider_max_matches,
-      sanitized_input);
+      model_files.head_model_filename, provider_max_matches, sanitized_input);
   params->suggestions.clear();
-
-  // Fallback to the tail model when the head model has no coverage.
   if (results.empty()) {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    if (!tail_model_executor ||
-        !OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled()) {
-      return params;
-    }
-
-    if (tail_model_executor->IsReady() ||
-        tail_model_executor->Init(model_file_params.tail_model_filepath,
-                                  model_file_params.vocab_filepath,
-                                  model_file_params.tail_model_metadata)) {
-      std::string previous_query =
-          ExtractSearchQuery(params->input.current_url());
-
-      // TODO(crbug.com/1372112): make probability threshold tunable by using a
-      // field trial param.
-      std::vector<OnDeviceTailModelExecutor::Prediction> predictions =
-          tail_model_executor->GenerateSuggestionsForPrefix(
-              sanitized_input, previous_query, provider_max_matches,
-              /*max_rnn_steps =*/20,
-              /*probability_threshold =*/0.01);
-
-      params->suggestion_type = SuggestionType::TAIL;
-      for (const auto& prediction : predictions) {
-        params->suggestions.push_back(prediction.suggestion);
-      }
-    }
-#endif
+    // TODO(crbug.com/1372112): call tail model executor if `results` is empty.
+    params->suggestion_type = SuggestionType::TAIL;
   } else {
     params->suggestion_type = SuggestionType::HEAD;
     for (const auto& item : results) {
@@ -305,11 +253,8 @@ void OnDeviceHeadProvider::DoSearch(
   worker_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&OnDeviceHeadProvider::GetSuggestionsFromModel,
-                     GetOnDeviceModelFileParams(),
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-                     on_device_tail_model_executor_.get(),
-#endif
-                     provider_max_matches_, std::move(params)),
+                     GetOnDeviceModelFiles(), provider_max_matches_,
+                     std::move(params)),
       base::BindOnce(&OnDeviceHeadProvider::SearchDone,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -362,21 +307,17 @@ void OnDeviceHeadProvider::SearchDone(
 }
 
 // static
-OnDeviceHeadProvider::OnDeviceModelFileParams
-OnDeviceHeadProvider::GetOnDeviceModelFileParams() {
+OnDeviceHeadProvider::OnDeviceModelFiles
+OnDeviceHeadProvider::GetOnDeviceModelFiles() {
   auto* model_update_listener = OnDeviceModelUpdateListener::GetInstance();
-  OnDeviceModelFileParams model_file_params;
+  OnDeviceModelFiles model_files;
   if (model_update_listener != nullptr) {
-    model_file_params.head_model_filename =
+    model_files.head_model_filename =
         model_update_listener->head_model_filename();
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    model_file_params.tail_model_filepath =
+    model_files.tail_model_filepath =
         model_update_listener->tail_model_filepath();
-    model_file_params.vocab_filepath = model_update_listener->vocab_filepath();
-    model_file_params.tail_model_metadata =
-        model_update_listener->tail_model_metadata();
-#endif
+    model_files.vocab_filepath = model_update_listener->vocab_filepath();
   }
 
-  return model_file_params;
+  return model_files;
 }
