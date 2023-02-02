@@ -53,6 +53,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/guest_view/guest_view_feature_util.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_content_script_manager.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
@@ -404,8 +405,7 @@ void WebViewGuest::DidInitialize(const base::Value::Dict& create_params) {
 
 void WebViewGuest::MaybeRecreateGuestContents(
     content::WebContents* embedder_web_contents) {
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kWebviewTagMPArchBehavior)) {
+  if (!AreWebviewMPArchBehaviorsEnabled(browser_context())) {
     return;
   }
 
@@ -1107,8 +1107,7 @@ void WebViewGuest::WillAttachToEmbedder() {
 }
 
 bool WebViewGuest::RequiresSslInterstitials() const {
-  return !base::FeatureList::IsEnabled(
-      extensions_features::kWebviewTagMPArchBehavior);
+  return !AreWebviewMPArchBehaviorsEnabled(browser_context());
 }
 
 content::JavaScriptDialogManager* WebViewGuest::GetJavaScriptDialogManager(

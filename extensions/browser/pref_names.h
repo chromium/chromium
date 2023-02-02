@@ -115,6 +115,10 @@ extern const char kDeletedComponentExtensions[];
 extern const char kChromeAppsEnabled[];
 #endif
 
+// A preference for an enterprise policy which is a temporary workaround for
+// behaviour changes to <webview>.
+extern const char kChromeAppsWebViewPermissiveBehaviorAllowed[];
+
 // Properties in kExtensions dictionaries --------------------------------------
 
 // Extension-controlled preferences.

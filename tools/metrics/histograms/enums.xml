@@ -32540,6 +32540,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1070" label="OutOfProcessSystemDnsResolutionEnabled"/>
   <int value="1071" label="ExtensionUnpublishedAvailability"/>
   <int value="1072" label="MixedContentAutoupgradeEnabled"/>
+  <int value="1073" label="ChromeAppsWebViewPermissiveBehaviorAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

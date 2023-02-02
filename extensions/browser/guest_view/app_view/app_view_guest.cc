@@ -19,12 +19,12 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/app_view/app_view_constants.h"
+#include "extensions/browser/guest_view/guest_view_feature_util.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/app_runtime.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ipc/ipc_message_macros.h"
@@ -236,8 +236,7 @@ void AppViewGuest::DidInitialize(const base::Value::Dict& create_params) {
 
 void AppViewGuest::MaybeRecreateGuestContents(
     content::WebContents* embedder_web_contents) {
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kWebviewTagMPArchBehavior)) {
+  if (AreWebviewMPArchBehaviorsEnabled(browser_context())) {
     // This situation is not possible for AppView.
     NOTREACHED();
   }

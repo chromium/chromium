@@ -127,6 +127,8 @@ BASE_FEATURE(kExtensionSourceUrlEnforcement,
 // view MPArch migration. See
 // https://docs.google.com/document/d/1RVbtvklXUg9QCNvMT0r-1qDwJNeQFGoTCOD1Ur9mDa4/edit?usp=sharing
 // for details.
+// TODO(crbug.com/1261928): When enabling this by default, also launch the
+// ChromeAppsWebViewPermissiveBehaviorAllowed enterprise policy.
 BASE_FEATURE(kWebviewTagMPArchBehavior,
              "WebviewTagMPArchBehavior",
              base::FEATURE_DISABLED_BY_DEFAULT);

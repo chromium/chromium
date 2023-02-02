@@ -21,6 +21,7 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/guest_view/guest_view_feature_util.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_constants.h"
@@ -29,7 +30,6 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/mime_handler_private.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -251,8 +251,7 @@ void MimeHandlerViewGuest::DidInitialize(
 
 void MimeHandlerViewGuest::MaybeRecreateGuestContents(
     content::WebContents* embedder_web_contents) {
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kWebviewTagMPArchBehavior)) {
+  if (AreWebviewMPArchBehaviorsEnabled(browser_context())) {
     // This situation is not possible for MimeHandlerView.
     NOTREACHED();
   }

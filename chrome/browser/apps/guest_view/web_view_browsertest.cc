@@ -35,6 +35,7 @@
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
@@ -55,6 +56,7 @@
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -101,6 +103,7 @@
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "extensions/browser/guest_view/guest_view_feature_util.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map.h"
@@ -910,6 +913,44 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
                          WebViewAccessibilityTest,
                          testing::Bool(),
                          WebViewTest::DescribeParams);
+
+// Used to test that enterprise policy can revert MPArch related changes. For
+// ease of testing, instead of further parameterizing the tests which actually
+// exercise the behaviour differences, we only check the method which computes
+// whether the changes take effect.
+class WebViewPolicyTest : public policy::PolicyTest {
+ public:
+  WebViewPolicyTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kWebviewTagMPArchBehavior);
+  }
+
+  void SetPermissiveBehaviorPolicy(bool allowed) {
+    policy::PolicyMap policies;
+    SetPolicy(&policies,
+              policy::key::kChromeAppsWebViewPermissiveBehaviorAllowed,
+              base::Value(allowed));
+    UpdateProviderPolicy(policies);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebViewPolicyTest, MPArchBehaviorRevertedByPolicy) {
+  SetPermissiveBehaviorPolicy(true);
+
+  EXPECT_FALSE(
+      extensions::AreWebviewMPArchBehaviorsEnabled(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewPolicyTest,
+                       ExplicitlyDisabledBehaviorPolicyHasNoEffect) {
+  SetPermissiveBehaviorPolicy(false);
+
+  EXPECT_TRUE(
+      extensions::AreWebviewMPArchBehaviorsEnabled(browser()->profile()));
+}
 
 class WebViewNewWindowTest
     : public WebViewTestBase,

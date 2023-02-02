@@ -1730,6 +1730,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  { key::kChromeAppsWebViewPermissiveBehaviorAllowed,
+    extensions::pref_names::kChromeAppsWebViewPermissiveBehaviorAllowed,
+    base::Value::Type::BOOLEAN },
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
   { key::kCORSNonWildcardRequestHeadersSupport,
     prefs::kCorsNonWildcardRequestHeadersSupport,
     base::Value::Type::BOOLEAN },

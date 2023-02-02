@@ -54,6 +54,8 @@ const char kDeletedComponentExtensions[] =
     BUILDFLAG(IS_FUCHSIA)
 extern const char kChromeAppsEnabled[] = "extensions.chrome_apps_enabled";
 #endif
+const char kChromeAppsWebViewPermissiveBehaviorAllowed[] =
+    "extensions.webview_permissive_behavior";
 
 const char kPrefPreferences[] = "preferences";
 const char kPrefIncognitoPreferences[] = "incognito_preferences";
