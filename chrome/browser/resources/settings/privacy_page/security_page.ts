@@ -240,7 +240,7 @@ export class SettingsSecurityPageElement extends
       const section = queryParams.get('q');
       if (section === 'enhanced') {
         this.$.safeBrowsingEnhanced.expanded =
-            !loadTimeData.getBoolean('esbSettingsImprovementsEnabled');
+            !loadTimeData.getBoolean('enableEsbCollapse');
         this.$.safeBrowsingStandard.expanded = false;
       }
     }

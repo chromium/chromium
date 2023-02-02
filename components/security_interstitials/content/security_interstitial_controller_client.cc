@@ -91,9 +91,7 @@ void SecurityInterstitialControllerClient::OpenEnhancedProtectionSettings() {
 #if BUILDFLAG(IS_ANDROID)
   settings_page_helper_->OpenEnhancedProtectionSettings(web_contents_);
 #else
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kEsbIphBubbleAndCollapseSettings)) {
-    safe_browsing::LogShowEnhancedProtectionAction();
+  if (safe_browsing::kEsbIphBubbleAndCollapseSettingsEnableIph.Get()) {
     settings_page_helper_->OpenEnhancedProtectionSettingsWithIph(web_contents_);
   } else {
     settings_page_helper_->OpenEnhancedProtectionSettings(web_contents_);

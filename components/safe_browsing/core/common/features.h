@@ -81,6 +81,15 @@ BASE_DECLARE_FEATURE(kDownloadTailoredWarnings);
 // no IPH bubble will appear and the ESB option will be expanded on page load.
 BASE_DECLARE_FEATURE(kEsbIphBubbleAndCollapseSettings);
 
+// Specifies whether the ESB IPH bubble on the security settings page is
+// enabled or not.
+extern const base::FeatureParam<bool> kEsbIphBubbleAndCollapseSettingsEnableIph;
+
+// Specifies whether the ESB option on the security settings page is collapsed
+// or not.
+extern const base::FeatureParam<bool>
+    kEsbIphBubbleAndCollapseSettingsEnableCollapse;
+
 // Enables collection of signals related to extension activity and uploads
 // of telemetry reports to SB servers.
 BASE_DECLARE_FEATURE(kExtensionTelemetry);

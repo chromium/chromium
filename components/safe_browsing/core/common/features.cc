@@ -84,6 +84,12 @@ BASE_FEATURE(kEsbIphBubbleAndCollapseSettings,
              "EsbIphBubbleAndCollapseSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kEsbIphBubbleAndCollapseSettingsEnableIph{
+    &kEsbIphBubbleAndCollapseSettings, "EnableEsbIphBubble", false};
+
+const base::FeatureParam<bool> kEsbIphBubbleAndCollapseSettingsEnableCollapse{
+    &kEsbIphBubbleAndCollapseSettings, "EnableEsbSettingCollapse", false};
+
 BASE_FEATURE(kExtensionTelemetry,
              "SafeBrowsingExtensionTelemetry",
              base::FEATURE_ENABLED_BY_DEFAULT);

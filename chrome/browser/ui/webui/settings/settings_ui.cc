@@ -353,6 +353,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               safe_browsing::kEsbIphBubbleAndCollapseSettings));
 
+  html_source->AddBoolean(
+      "enableEsbCollapse",
+      safe_browsing::kEsbIphBubbleAndCollapseSettingsEnableCollapse.Get());
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   html_source->AddBoolean(
       "biometricAuthenticationForFilling",
