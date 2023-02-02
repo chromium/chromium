@@ -3,7 +3,15 @@
 // found in the LICENSE file.
 
 var firstWindowId;
-var relativePageLoaded;
+var testTabId;
+
+function resolveOnMessage(resolve) {
+  chrome.runtime.onMessage.addListener(function local(message) {
+    chrome.runtime.onMessage.removeListener(local);
+    assertEq('relative.js', message);
+    resolve();
+  });
+}
 
 chrome.test.runTests([
   function setupRelativeUrlTests() {
@@ -13,34 +21,44 @@ chrome.test.runTests([
   },
 
   function relativeUrlTestsTabsCreate() {
-    // Will be called from relative.html
-    relativePageLoaded = chrome.test.callbackAdded();
-    var createCompleted = chrome.test.callbackAdded();
+    let onMessagePromise = new Promise(resolveOnMessage);
 
-    chrome.tabs.create({windowId: firstWindowId, url: 'relative.html'},
-      function(tab){
-        testTabId = tab.id;
-        createCompleted();
-      }
-    );
+    let createPromise = new Promise((resolve) => {
+      chrome.tabs.create({windowId: firstWindowId, url: 'relative.html'},
+        function(tab) {
+          testTabId = tab.id;
+          resolve();
+        });
+      });
+
+    Promise.all([onMessagePromise, createPromise]).then(chrome.test.succeed);
   },
 
   function relativeUrlTestsTabsUpdate() {
-    // Will be called from relative.html
-    relativePageLoaded = chrome.test.callbackAdded();
+    let onMessagePromise = new Promise(resolveOnMessage);
 
-    chrome.tabs.update(testTabId, {url: pageUrl("a")}, function(tab) {
-      chrome.test.assertEq(pageUrl("a"), tab.pendingUrl);
-      chrome.tabs.update(tab.id, {url: "relative.html"}, function(tab) {
+    let updatePromise = new Promise((resolve) => {
+      chrome.tabs.update(testTabId, {url: pageUrl("a")}, function(tab) {
+        chrome.test.assertEq(pageUrl("a"), tab.pendingUrl);
+        chrome.tabs.update(tab.id, {url: "relative.html"}, function(tab) {
+          resolve();
+        });
       });
     });
+
+    Promise.all([onMessagePromise, updatePromise]).then(chrome.test.succeed);
   },
 
   function relativeUrlTestsWindowCreate() {
-    // Will be called from relative.html
-    relativePageLoaded = chrome.test.callbackAdded();
+    let onMessagePromise = new Promise(resolveOnMessage);
 
-    chrome.windows.create({url: "relative.html"});
+    let createPromise = new Promise((resolve) => {
+      chrome.windows.create({url: "relative.html"}, (window) => {
+        resolve();
+      });
+    });
+
+    Promise.all([onMessagePromise, createPromise]).then(chrome.test.succeed);
   }
 
 ]);

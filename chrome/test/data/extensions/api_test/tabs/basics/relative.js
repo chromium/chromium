@@ -3,9 +3,5 @@
 // found in the LICENSE file.
 
 window.onload = function() {
-  chrome.extension.getViews({type:"tab"}).forEach(function(view) {
-    if (view.relativePageLoaded) {
-      view.relativePageLoaded();
-    }
-  });
+  chrome.runtime.sendMessage('relative.js');
 }
