@@ -5,9 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_CREDENTIAL_PROVIDER_PROMO_CREDENTIAL_PROVIDER_PROMO_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_CREDENTIAL_PROVIDER_PROMO_CREDENTIAL_PROVIDER_PROMO_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_consumer.h"
+
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_consumer.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
 // Container view controller for the Credential Provider Extension promo. Can be

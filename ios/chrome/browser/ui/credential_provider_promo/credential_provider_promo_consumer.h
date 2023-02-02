@@ -22,8 +22,8 @@
      tertiaryActionString:(NSString*)tertiaryActionString
                     image:(UIImage*)image;
 
-// Passes the animation path to the consumer.
-- (void)setAnimation:(NSString*)animationResourcePath;
+// Passes the animation to the consumer.
+- (void)setAnimation:(std::unique_ptr<base::Value>)animationAsset;
 
 @end
 
