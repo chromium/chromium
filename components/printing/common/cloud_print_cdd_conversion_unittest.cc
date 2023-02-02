@@ -9,6 +9,7 @@
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_test_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cloud_print {
@@ -75,22 +76,38 @@ constexpr char kExpectedMediaSize[] = R"json({
     {
       "custom_display_name": "A4",
       "height_microns": 7016,
+      "imageable_area_bottom_microns": 200,
+      "imageable_area_left_microns": 100,
+      "imageable_area_right_microns": 600,
+      "imageable_area_top_microns": 1000,
       "vendor_id": "12",
       "width_microns": 4961
     }, {
       "custom_display_name": "Letter",
       "height_microns": 6600,
+      "imageable_area_bottom_microns": 0,
+      "imageable_area_left_microns": 0,
+      "imageable_area_right_microns": 5100,
+      "imageable_area_top_microns": 6600,
       "is_default": true,
       "vendor_id": "45",
       "width_microns": 5100
     }, {
       "custom_display_name": "A3",
       "height_microns": 9921,
+      "imageable_area_bottom_microns": 0,
+      "imageable_area_left_microns": 0,
+      "imageable_area_right_microns": 7016,
+      "imageable_area_top_microns": 9921,
       "vendor_id": "67",
       "width_microns": 7016
     }, {
       "custom_display_name": "Ledger",
       "height_microns": 10200,
+      "imageable_area_bottom_microns": 0,
+      "imageable_area_left_microns": 0,
+      "imageable_area_right_microns": 6600,
+      "imageable_area_top_microns": 10200,
       "vendor_id": "89",
       "width_microns": 6600
     }
@@ -119,28 +136,48 @@ constexpr char kExpectedMediaSizeWithWiderPaper[] = R"json({
     {
       "custom_display_name": "A4",
       "height_microns": 7016,
+      "imageable_area_bottom_microns": 200,
+      "imageable_area_left_microns": 100,
+      "imageable_area_right_microns": 600,
+      "imageable_area_top_microns": 1000,
       "vendor_id": "12",
       "width_microns": 4961
     }, {
       "custom_display_name": "Letter",
       "height_microns": 6600,
+      "imageable_area_bottom_microns": 0,
+      "imageable_area_left_microns": 0,
+      "imageable_area_right_microns": 5100,
+      "imageable_area_top_microns": 6600,
       "is_default": true,
       "vendor_id": "45",
       "width_microns": 5100
     }, {
       "custom_display_name": "NA_INDEX_3X5",
       "height_microns": 127000,
+      "imageable_area_bottom_microns": 1000,
+      "imageable_area_left_microns": 500,
+      "imageable_area_right_microns": 75700,
+      "imageable_area_top_microns": 126000,
       "name": "NA_INDEX_3X5",
       "vendor_id": "15",
       "width_microns": 76200
     }, {
       "custom_display_name": "A3",
       "height_microns": 9921,
+      "imageable_area_bottom_microns": 0,
+      "imageable_area_left_microns": 0,
+      "imageable_area_right_microns": 7016,
+      "imageable_area_top_microns": 9921,
       "vendor_id": "67",
       "width_microns": 7016
     }, {
       "custom_display_name": "Ledger",
       "height_microns": 10200,
+      "imageable_area_bottom_microns": 0,
+      "imageable_area_left_microns": 0,
+      "imageable_area_right_microns": 6600,
+      "imageable_area_top_microns": 10200,
       "vendor_id": "89",
       "width_microns": 6600
     }
@@ -312,7 +349,8 @@ TEST(CloudPrintCddConversionTest, WiderPaper) {
   printing::PrinterSemanticCapsAndDefaults input =
       printing::GenerateSamplePrinterSemanticCapsAndDefaults({});
   input.papers.push_back(printing::PrinterSemanticCapsAndDefaults::Paper(
-      "NA_INDEX_3X5", "15", gfx::Size(127000, 76200)));
+      "NA_INDEX_3X5", "15", gfx::Size(127000, 76200),
+      gfx::Rect(1000, 500, 125000, 75200)));
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
   const base::Value::Dict* printer_dict = GetPrinterDict(output);
 

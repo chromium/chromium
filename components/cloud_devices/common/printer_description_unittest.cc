@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace cloud_devices {
 
@@ -125,15 +126,27 @@ const char kCdd[] = R"(
         },
         "media_size": {
           "option": [ {
+            "imageable_area_left_microns": 0,
+            "imageable_area_right_microns": 2222,
+            "imageable_area_bottom_microns": 0,
+            "imageable_area_top_microns": 3333,
             "is_default": true,
             "name": "NA_LETTER",
             "width_microns": 2222,
             "height_microns": 3333
           }, {
+            "imageable_area_bottom_microns": 0,
+            "imageable_area_left_microns": 0,
+            "imageable_area_right_microns": 4444,
+            "imageable_area_top_microns": 5555,
             "name": "ISO_A6",
             "width_microns": 4444,
             "height_microns": 5555
           }, {
+            "imageable_area_bottom_microns": 0,
+            "imageable_area_left_microns": 0,
+            "imageable_area_right_microns": 6666,
+            "imageable_area_top_microns": 7777,
             "name": "JPN_YOU4",
             "width_microns": 6666,
             "height_microns": 7777
@@ -563,6 +576,10 @@ const char kCjt[] = R"(
            } ]
         },
         "media_size": {
+          "imageable_area_bottom_microns": 100,
+          "imageable_area_left_microns": 300,
+          "imageable_area_right_microns": 3961,
+          "imageable_area_top_microns": 234,
           "name": "ISO_C7C6",
           "width_microns": 4261,
           "height_microns": 334
@@ -1288,7 +1305,8 @@ TEST(PrinterDescriptionTest, CjtSetAll) {
   page_ranges.push_back(Interval(1, 99));
   page_ranges.push_back(Interval(150));
   page_range.set_value(page_ranges);
-  media.set_value(Media(MediaType::ISO_C7C6, gfx::Size(4261, 334)));
+  media.set_value(Media(MediaType::ISO_C7C6, gfx::Size(4261, 334),
+                        gfx::Rect(300, 100, 3661, 134)));
   collate.set_value(false);
   reverse.set_value(true);
 
@@ -1355,7 +1373,8 @@ TEST(PrinterDescriptionTest, CjtGetAll) {
   page_ranges.push_back(Interval(1, 99));
   page_ranges.push_back(Interval(150));
   EXPECT_EQ(page_range.value(), page_ranges);
-  EXPECT_EQ(media.value(), Media(MediaType::ISO_C7C6, gfx::Size(4261, 334)));
+  EXPECT_EQ(media.value(), Media(MediaType::ISO_C7C6, gfx::Size(4261, 334),
+                                 gfx::Rect(300, 100, 3661, 134)));
   EXPECT_FALSE(collate.value());
   EXPECT_TRUE(reverse.value());
 

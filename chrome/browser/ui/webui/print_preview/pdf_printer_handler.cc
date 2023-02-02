@@ -144,7 +144,8 @@ base::Value::Dict GetPdfCapabilities(
   }
   for (const PrinterSemanticCapsAndDefaults::Paper& paper : custom_papers) {
     cloud_devices::printer::Media media_option(paper.display_name,
-                                               paper.vendor_id, paper.size_um);
+                                               paper.vendor_id, paper.size_um,
+                                               paper.printable_area_um);
     media.AddOption(media_option);
   }
   media.SaveTo(&description);

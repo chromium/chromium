@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/cloud_devices/common/description_items.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 // Defines printer options, CDD and CJT items.
@@ -462,13 +463,26 @@ enum class MediaType {
 struct Media {
   Media();
 
+  // Page size will be set to the default size um for `type`. Printable area
+  // will be set to match the page size.
   explicit Media(MediaType type);
 
+  // Printable area will be set to `size_um`.
   Media(MediaType type, const gfx::Size& size_um);
 
+  Media(MediaType type,
+        const gfx::Size& size_um,
+        const gfx::Rect& printable_area_um);
+
+  // Printable area will be set to `size_um`.
   Media(const std::string& custom_display_name,
         const std::string& vendor_id,
         const gfx::Size& size_um);
+
+  Media(const std::string& custom_display_name,
+        const std::string& vendor_id,
+        const gfx::Size& size_um,
+        const gfx::Rect& printable_area_um);
 
   Media(const Media& other);
   Media& operator=(const Media& other);
@@ -484,6 +498,7 @@ struct Media {
   bool is_continuous_feed;
   std::string custom_display_name;
   std::string vendor_id;
+  gfx::Rect printable_area_um;
 };
 
 struct Interval {

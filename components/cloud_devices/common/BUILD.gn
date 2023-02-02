@@ -32,5 +32,6 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx/geometry",
   ]
 }

@@ -24,6 +24,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/cloud_devices/common/cloud_device_description_consts.h"
 #include "components/cloud_devices/common/description_items_inl.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cloud_devices {
@@ -79,7 +80,11 @@ constexpr char kDpiVertical[] = "vertical_dpi";
 
 constexpr char kMediaWidth[] = "width_microns";
 constexpr char kMediaHeight[] = "height_microns";
-const char kMediaIsContinuous[] = "is_continuous_feed";
+constexpr char kMediaIsContinuous[] = "is_continuous_feed";
+constexpr char kMediaImageableAreaLeft[] = "imageable_area_left_microns";
+constexpr char kMediaImageableAreaBottom[] = "imageable_area_bottom_microns";
+constexpr char kMediaImageableAreaRight[] = "imageable_area_right_microns";
+constexpr char kMediaImageableAreaTop[] = "imageable_area_top_microns";
 
 constexpr char kPageRangeInterval[] = "interval";
 constexpr char kPageRangeEnd[] = "end";
@@ -929,18 +934,31 @@ Media::Media() : type(MediaType::CUSTOM_MEDIA), is_continuous_feed(false) {}
 Media::Media(MediaType type) : Media(type, FindMediaSizeByType(type)) {}
 
 Media::Media(MediaType type, const gfx::Size& size_um)
+    : Media(type, size_um, gfx::Rect(size_um)) {}
+
+Media::Media(MediaType type,
+             const gfx::Size& size_um,
+             const gfx::Rect& printable_area_um)
     : type(type),
       size_um(size_um),
-      is_continuous_feed(size_um.width() <= 0 || size_um.height() <= 0) {}
+      is_continuous_feed(size_um.width() <= 0 || size_um.height() <= 0),
+      printable_area_um(printable_area_um) {}
 
 Media::Media(const std::string& custom_display_name,
              const std::string& vendor_id,
              const gfx::Size& size_um)
+    : Media(custom_display_name, vendor_id, size_um, gfx::Rect(size_um)) {}
+
+Media::Media(const std::string& custom_display_name,
+             const std::string& vendor_id,
+             const gfx::Size& size_um,
+             const gfx::Rect& printable_area_um)
     : type(MediaType::CUSTOM_MEDIA),
       size_um(size_um),
       is_continuous_feed(size_um.width() <= 0 || size_um.height() <= 0),
       custom_display_name(custom_display_name),
-      vendor_id(vendor_id) {}
+      vendor_id(vendor_id),
+      printable_area_um(printable_area_um) {}
 
 Media::Media(const Media& other) = default;
 
@@ -961,13 +979,17 @@ bool Media::IsValid() const {
   } else {
     if (size_um.width() <= 0 || size_um.height() <= 0)
       return false;
+    if (!gfx::Rect(size_um).Contains(printable_area_um)) {
+      return false;
+    }
   }
   return true;
 }
 
 bool Media::operator==(const Media& other) const {
   return type == other.type && size_um == other.size_um &&
-         is_continuous_feed == other.is_continuous_feed;
+         is_continuous_feed == other.is_continuous_feed &&
+         printable_area_um == other.printable_area_um;
 }
 
 Interval::Interval() : start(0), end(0) {
@@ -1354,6 +1376,30 @@ class MediaTraits : public ItemsTraits<kOptionMediaSize> {
     const std::string* vendor_id = dict.FindString(kKeyVendorId);
     if (vendor_id)
       option->vendor_id = *vendor_id;
+
+    if (is_continuous_feed && *is_continuous_feed) {
+      // When `option` is a continuous feed, the printable area is not
+      // applicable. For consistency with the constructors, set the printable
+      // area to the default page size value.
+      option->printable_area_um = gfx::Rect(option->size_um);
+      return true;
+    }
+    absl::optional<int> imageable_area_left =
+        dict.FindInt(kMediaImageableAreaLeft);
+    absl::optional<int> imageable_area_bottom =
+        dict.FindInt(kMediaImageableAreaBottom);
+    absl::optional<int> imageable_area_right =
+        dict.FindInt(kMediaImageableAreaRight);
+    absl::optional<int> imageable_area_top =
+        dict.FindInt(kMediaImageableAreaTop);
+    if (imageable_area_left && imageable_area_bottom && imageable_area_right &&
+        imageable_area_top) {
+      int width = imageable_area_right.value() - imageable_area_left.value();
+      int height = imageable_area_top.value() - imageable_area_bottom.value();
+      option->printable_area_um =
+          gfx::Rect(imageable_area_left.value(), imageable_area_bottom.value(),
+                    width, height);
+    }
     return true;
   }
 
@@ -1372,6 +1418,15 @@ class MediaTraits : public ItemsTraits<kOptionMediaSize> {
       dict->Set(kMediaHeight, option.size_um.height());
     if (option.is_continuous_feed)
       dict->Set(kMediaIsContinuous, true);
+    if (!option.printable_area_um.IsEmpty() &&
+        gfx::Rect(option.size_um).Contains(option.printable_area_um)) {
+      dict->Set(kMediaImageableAreaLeft, option.printable_area_um.x());
+      dict->Set(kMediaImageableAreaBottom, option.printable_area_um.y());
+      dict->Set(kMediaImageableAreaRight, option.printable_area_um.x() +
+                                              option.printable_area_um.width());
+      dict->Set(kMediaImageableAreaTop, option.printable_area_um.y() +
+                                            option.printable_area_um.height());
+    }
   }
 };
 

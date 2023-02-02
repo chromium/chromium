@@ -19,6 +19,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/common/printing/printer_capabilities_mac.h"
 #include "printing/backend/print_backend.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #endif
 
@@ -54,49 +55,85 @@ const char kPdfPrinterCapability[] =
               "option":[
                 {
                   "height_microns":1189000,
+                  "imageable_area_bottom_microns": 0,
+                  "imageable_area_left_microns": 0,
+                  "imageable_area_right_microns": 841000,
+                  "imageable_area_top_microns": 1189000,
                   "name":"ISO_A0",
-                  "width_microns":841000
+                  "width_microns":841000,
                 },
                 {
                   "height_microns":841000,
+                  "imageable_area_bottom_microns": 0,
+                  "imageable_area_left_microns": 0,
+                  "imageable_area_right_microns": 594000,
+                  "imageable_area_top_microns": 841000,
                   "name":"ISO_A1",
-                  "width_microns":594000
+                  "width_microns":594000,
                 },
                 {
                   "height_microns":594000,
+                  "imageable_area_bottom_microns": 0,
+                  "imageable_area_left_microns": 0,
+                  "imageable_area_right_microns": 420000,
+                  "imageable_area_top_microns": 594000,
                   "name":"ISO_A2",
-                  "width_microns":420000
+                  "width_microns":420000,
                 },
                 {
                   "height_microns":420000,
+                  "imageable_area_bottom_microns": 0,
+                  "imageable_area_left_microns": 0,
+                  "imageable_area_right_microns": 297000,
+                  "imageable_area_top_microns": 420000,
                   "name":"ISO_A3",
-                  "width_microns":297000
+                  "width_microns":297000,
                 },
                 {
                   "height_microns":297000,
+                  "imageable_area_bottom_microns": 0,
+                  "imageable_area_left_microns": 0,
+                  "imageable_area_right_microns": 210000,
+                  "imageable_area_top_microns": 297000,
                   "name":"ISO_A4",
-                  "width_microns":210000
+                  "width_microns":210000,
                 },
                 {
                   "height_microns":210000,
+                  "imageable_area_bottom_microns": 0,
+                  "imageable_area_left_microns": 0,
+                  "imageable_area_right_microns": 148000,
+                  "imageable_area_top_microns": 210000,
                   "name":"ISO_A5",
-                  "width_microns":148000
+                  "width_microns":148000,
                 },
                 {
                   "height_microns":355600,
+                  "imageable_area_bottom_microns": 0,
+                  "imageable_area_left_microns": 0,
+                  "imageable_area_right_microns": 215900,
+                  "imageable_area_top_microns": 355600,
                   "name":"NA_LEGAL",
-                  "width_microns":215900
+                  "width_microns":215900,
                 },
                 {
                   "height_microns":279400,
+                  "imageable_area_bottom_microns": 0,
+                  "imageable_area_left_microns": 0,
+                  "imageable_area_right_microns": 215900,
+                  "imageable_area_top_microns": 279400,
                   "is_default":true,
                   "name":"NA_LETTER",
-                  "width_microns":215900
+                  "width_microns":215900,
                 },
                 {
                   "height_microns":431800,
+                  "imageable_area_bottom_microns": 0,
+                  "imageable_area_left_microns": 0,
+                  "imageable_area_right_microns": 279400,
+                  "imageable_area_top_microns": 431800,
                   "name":"NA_LEDGER",
-                  "width_microns":279400
+                  "width_microns":279400,
                 }
               ]
             },
@@ -136,6 +173,17 @@ base::Value::Dict GetValueFromCustomPaper(
   paper_value.Set("custom_display_name", paper.display_name);
   paper_value.Set("height_microns", paper.size_um.height());
   paper_value.Set("width_microns", paper.size_um.width());
+  int imageable_area_left_microns = paper.printable_area_um.x();
+  int imageable_area_bottom_microns = paper.printable_area_um.y();
+  int imageable_area_right_microns =
+      paper.printable_area_um.x() + paper.printable_area_um.width();
+  int imageable_area_top_microns =
+      paper.printable_area_um.y() + paper.printable_area_um.height();
+  paper_value.Set("imageable_area_left_microns", imageable_area_left_microns);
+  paper_value.Set("imageable_area_bottom_microns",
+                  imageable_area_bottom_microns);
+  paper_value.Set("imageable_area_right_microns", imageable_area_right_microns);
+  paper_value.Set("imageable_area_top_microns", imageable_area_top_microns);
   return paper_value;
 }
 #endif
@@ -280,11 +328,17 @@ TEST_F(PdfPrinterHandlerGetCapabilityTest, GetCapability) {
 TEST_F(PdfPrinterHandlerGetCapabilityTest,
        GetMacCustomPaperSizesInCapabilities) {
   constexpr char kPaperOptionPath[] = "capabilities.printer.media_size.option";
+  // The first Paper has an arbitrary valid printable area. The rest have
+  // printable area that match the size.
   static const PrinterSemanticCapsAndDefaults::Papers kTestPapers = {
-      {"printer1", "", gfx::Size(101600, 127000)},
-      {"printer2", "", gfx::Size(76200, 152400)},
-      {"printer3", "", gfx::Size(330200, 863600)},
-      {"printer4", "", gfx::Size(101600, 50800)},
+      {"printer1", "", gfx::Size(101600, 127000),
+       gfx::Rect(120, 120, 101480, 126880)},
+      {"printer2", "", gfx::Size(76200, 152400),
+       gfx::Rect(0, 0, 76200, 152400)},
+      {"printer3", "", gfx::Size(330200, 863600),
+       gfx::Rect(0, 0, 330200, 863600)},
+      {"printer4", "", gfx::Size(101600, 50800),
+       gfx::Rect(0, 0, 101600, 50800)},
   };
 
   base::Value expected_capability =
