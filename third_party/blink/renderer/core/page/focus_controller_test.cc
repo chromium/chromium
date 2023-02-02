@@ -235,4 +235,48 @@ TEST_F(FocusControllerTest, NextFocusableElementForIME_Select) {
                           password, mojom::blink::FocusType::kBackward));
 }
 
+// A submit button is used to detect the end of a user form within a combined
+// form. Combined form is a <form> element that encloses several user form (e.g.
+// signin and signup). See the HTML in the test for clarity.
+TEST_F(FocusControllerTest, NextFocusableElementForIME_SubmitButton) {
+  GetDocument().body()->setInnerHTML(
+      "<form>"
+      "  <div>Login</div>"
+      "    <input type='email' id='login_username'>"
+      "    <input type='password' id='login_password'>"
+      "    <input type='submit' id='login_submit'>"
+      "  <div>Create an account</div>"
+      "    <input type='email' id='signup_username'>"
+      "    <input type='text' id='signup_full_name'>"
+      "    <input type='password' id='signup_password'>"
+      "    <button type='submit' id='signup_submit'>"
+      "  <div>Forgot password?</div>"
+      "    <input type='email' id='recover_username'>"
+      "    <span>Request a recovery link</span>"
+      "</form>");
+  // "login_submit" closes the signin form.
+  Element* login_password = GetElementById("login_password");
+  ASSERT_TRUE(login_password);
+  EXPECT_EQ(nullptr, GetFocusController().NextFocusableElementForIME(
+                         login_password, mojom::blink::FocusType::kForward));
+  Element* signup_username = GetElementById("signup_username");
+  ASSERT_TRUE(signup_username);
+  EXPECT_EQ(nullptr, GetFocusController().NextFocusableElementForIME(
+                         signup_username, mojom::blink::FocusType::kBackward));
+
+  // "signup_password" closes the signup form.
+  Element* signup_password = GetElementById("signup_password");
+  ASSERT_TRUE(signup_password);
+  EXPECT_EQ(nullptr, GetFocusController().NextFocusableElementForIME(
+                         signup_password, mojom::blink::FocusType::kForward));
+  Element* recover_username = GetElementById("recover_username");
+  ASSERT_TRUE(recover_username);
+  EXPECT_EQ(nullptr, GetFocusController().NextFocusableElementForIME(
+                         recover_username, mojom::blink::FocusType::kBackward));
+
+  // The end of the recovery form is detected just because it the end of <form>.
+  EXPECT_EQ(nullptr, GetFocusController().NextFocusableElementForIME(
+                         recover_username, mojom::blink::FocusType::kForward));
+}
+
 }  // namespace blink

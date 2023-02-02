@@ -1260,6 +1260,13 @@ Element* FocusController::NextFocusableElementForIME(
         DynamicTo<HTMLFormControlElement>(next_element);
     if (!next_form_control_element)
       continue;
+    // If it is a submit button, then it is likely the end of the current form
+    // (i.e. no next input field to be focused). This return is especially
+    // important in a combined form where a single <form> element encloses
+    // several user forms (e.g. signin + signup).
+    if (next_form_control_element->CanBeSuccessfulSubmitButton()) {
+      return nullptr;
+    }
     if (next_form_control_element->formOwner() != form_owner ||
         next_form_control_element->IsDisabledOrReadOnly())
       continue;
