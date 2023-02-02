@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {OpenWindowProxyImpl, Page, PasswordManagerAppElement, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {OpenWindowProxyImpl, Page, PasswordManagerAppElement, PasswordManagerImpl, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -12,15 +12,21 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {createCredentialGroup, createPasswordEntry} from './test_util.js';
+
 suite('PasswordManagerAppTest', function() {
   let app: PasswordManagerAppElement;
 
   let openWindowProxy: TestOpenWindowProxy;
+  let passwordManager: TestPasswordManagerProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
+    passwordManager = new TestPasswordManagerProxy();
+    PasswordManagerImpl.setInstance(passwordManager);
     app = document.createElement('password-manager-app');
     document.body.appendChild(app);
     app.setNarrowForTesting(false);
@@ -139,5 +145,38 @@ suite('PasswordManagerAppTest', function() {
     button.click();
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('passwordManagerLearnMoreURL'));
+  });
+
+  test('Test removal toast', async () => {
+    const group = createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, username: 'test1'}),
+      ],
+    });
+    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+
+    await flushTasks();
+
+    assertFalse(app.$.removalToast.open);
+    const detailsSection =
+        app.shadowRoot!.querySelector('password-details-section');
+    assertTrue(!!detailsSection);
+
+    detailsSection.dispatchEvent(new CustomEvent('password-removed', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        removedFromStores: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
+      },
+    }));
+
+    assertTrue(app.$.removalToast.open);
+    const undoButton =
+        app.shadowRoot!.querySelector<HTMLElement>('#undo-removal');
+    assertTrue(!!undoButton);
+    undoButton.click();
+
+    await passwordManager.whenCalled('undoRemoveSavedPasswordOrException');
   });
 });

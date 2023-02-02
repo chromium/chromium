@@ -21,6 +21,15 @@ import {getTemplate} from './password_details_card.html.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {ShowPasswordMixin} from './show_password_mixin.js';
 
+export type PasswordRemovedEvent =
+    CustomEvent<{removedFromStores: chrome.passwordsPrivate.PasswordStoreSet}>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'password-removed': PasswordRemovedEvent;
+  }
+}
+
 export interface PasswordDetailsCardElement {
   $: {
     copyPasswordButton: CrIconButtonElement,
@@ -87,6 +96,20 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   private onCopyUsernameClick_() {
     navigator.clipboard.writeText(this.password.username);
     this.showToast_(this.i18n('usernameCopiedToClipboard'));
+  }
+
+  private onDeleteClick_() {
+    // TODO(crbug.com/1350947): Show delete dialog if credential is present in
+    // both stores.
+    PasswordManagerImpl.getInstance().removeSavedPassword(
+        this.password.id, this.password.storedIn);
+    this.dispatchEvent(new CustomEvent('password-removed', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        removedFromStores: this.password.storedIn,
+      },
+    }));
   }
 
   private showToast_(message: string) {

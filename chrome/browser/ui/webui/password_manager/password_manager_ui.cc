@@ -25,6 +25,7 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -125,6 +126,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"notesLabel", IDS_PASSWORD_MANAGER_UI_NOTES_LABEL},
     {"passwordCopiedToClipboard",
      IDS_PASSWORD_MANAGER_UI_PASSWORD_COPIED_TO_CLIPBOARD},
+    {"passwordDeleted", IDS_PASSWORD_MANAGER_UI_PASSWORD_DELETED},
     {"passwordLabel", IDS_PASSWORD_MANAGER_UI_PASSWORD_LABEL},
     {"passwordManager",
      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT},
@@ -148,6 +150,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"trustedVaultBannerSubLabelOfferOptIn",
      IDS_PASSWORD_MANAGER_UI_RUSTED_VAULT_OPT_IN_DESCRIPTION},
     {"tryAgain", IDS_PASSWORD_MANAGER_UI_CHECK_PASSWORDS_AFTER_ERROR},
+    {"undoRemovePassword", IDS_PASSWORD_MANAGER_UI_UNDO},
     {"unmuteCompromisedPassword", IDS_PASSWORD_MANAGER_UI_UNMUTE_ISSUE},
     {"usernameCopiedToClipboard",
      IDS_PASSWORD_MANAGER_UI_USERNAME_COPIED_TO_CLIPBOARD},
@@ -195,6 +198,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 
   source->AddString("passwordManagerLearnMoreURL",
                     chrome::kPasswordManagerLearnMoreURL);
+
+  ui::Accelerator undo_accelerator(ui::VKEY_Z, ui::EF_PLATFORM_ACCELERATOR);
+  source->AddString("undoDescription", l10n_util::GetStringFUTF16(
+                                           IDS_UNDO_DESCRIPTION,
+                                           undo_accelerator.GetShortcutText()));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Overwrite ubranded logo for Chrome-branded builds.

@@ -188,4 +188,26 @@ suite('PasswordDetailsCardTest', function() {
     assertTrue(!!editDialog);
     assertTrue(editDialog.$.dialog.open);
   });
+
+
+  test('delete password', async function() {
+    const password = createPasswordEntry({
+      url: 'test.com',
+      username: 'vik',
+      id: 0,
+    });
+
+    const card = document.createElement('password-details-card');
+    card.password = password;
+    document.body.appendChild(card);
+    await flushTasks();
+
+    assertTrue(isVisible(card.$.deleteButton));
+
+    card.$.deleteButton.click();
+
+    const params = await passwordManager.whenCalled('removeSavedPassword');
+    assertEquals(params.id, password.id);
+    assertEquals(params.fromStores, password.storedIn);
+  });
 });

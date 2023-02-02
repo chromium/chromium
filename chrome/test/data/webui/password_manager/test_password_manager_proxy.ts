@@ -48,12 +48,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'muteInsecureCredential',
       'recordPasswordCheckInteraction',
       'removeBlockedSite',
+      'removeSavedPassword',
       'requestCredentialsDetails',
       'requestExportProgressStatus',
       'requestPlaintextPassword',
       'showAddShortcutDialog',
       'startBulkPasswordCheck',
       'switchBiometricAuthBeforeFillingState',
+      'undoRemoveSavedPasswordOrException',
       'unmuteInsecureCredential',
     ]);
 
@@ -189,6 +191,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     return Promise.resolve('plainTextPassword');
   }
 
+  removeSavedPassword(
+      id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet) {
+    this.methodCalled('removeSavedPassword', {id, fromStores});
+  }
+
   removeBlockedSite(id: number) {
     this.methodCalled('removeBlockedSite', id);
   }
@@ -220,5 +227,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   switchBiometricAuthBeforeFillingState() {
     this.methodCalled('switchBiometricAuthBeforeFillingState');
+  }
+
+  undoRemoveSavedPasswordOrException() {
+    this.methodCalled('undoRemoveSavedPasswordOrException');
   }
 }
