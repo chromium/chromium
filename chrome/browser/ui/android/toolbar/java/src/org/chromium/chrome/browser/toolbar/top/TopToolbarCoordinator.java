@@ -482,7 +482,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param enabled Whether or not accessibility is enabled.
      */
     public void onAccessibilityStatusChanged(boolean enabled) {
-        mToolbarLayout.onAccessibilityStatusChanged(enabled);
         if (mTabSwitcherModeCoordinator != null) {
             mTabSwitcherModeCoordinator.onAccessibilityStatusChanged(enabled);
         } else if (mStartSurfaceToolbarCoordinator != null) {
