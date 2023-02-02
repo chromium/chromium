@@ -66,4 +66,14 @@ BASE_FEATURE(kPPAPISharedImagesSwapChain,
              "PPAPISharedImagesSwapChain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kVariableGoogleSansFont,
+             "VariableGoogleSansFont",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+GFX_SWITCHES_EXPORT bool UseVariableGoogleSansFont() {
+  return base::FeatureList::IsEnabled(kVariableGoogleSansFont);
+}
+#endif
+
 }  // namespace features
