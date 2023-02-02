@@ -763,13 +763,14 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
 
   if (IsA<HTMLDocument>(document)) {
 #if defined(USE_INNER_HTML_PARSER_FAST_PATH)
+    bool log_tag_stats = false;
     const bool fast_path_enabled =
         RuntimeEnabledFeatures::InnerHTMLParserFastpathEnabled();
     base::ElapsedTimer parse_timer;
     if (fast_path_enabled) {
-      const bool parsed_fast_path =
-          TryParsingHTMLFragment(markup, document, *fragment, *context_element,
-                                 parser_content_policy, include_shadow_roots);
+      const bool parsed_fast_path = TryParsingHTMLFragment(
+          markup, document, *fragment, *context_element, parser_content_policy,
+          include_shadow_roots, &log_tag_stats);
       if (parsed_fast_path) {
         LogFastPathParserTotalTime(parse_timer.Elapsed());
 #if DCHECK_IS_ON()
@@ -791,6 +792,9 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     fragment->ParseHTML(markup, context_element, parser_content_policy);
 #if defined(USE_INNER_HTML_PARSER_FAST_PATH)
     LogFastPathParserTotalTime(parse_timer.Elapsed());
+    if (log_tag_stats) {
+      LogTagsForUnsupportedTagTypeFailure(*fragment);
+    }
 #endif
     return fragment;
   }

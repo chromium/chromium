@@ -1461,6 +1461,57 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.HTMLFastPathParser.{Type}.CompositeMask"
+    enum="InnerHTMLFastPathParserUnsupportedTagType" expires_after="2023-12-07">
+  <owner>sky@chromium.org</owner>
+  <owner>tebbi@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    This is logged if the innerHTML fast-path parser fails because an {Type} tag
+    is encountered. This value is an aggregate (bitmask) that identifies which
+    {Type} groupings were encountered. Ideally a single bitmask would be logged,
+    but the dashboard doesn't deal well with large bitmasks. The individual
+    groupings are recorded via one of Blink.HTMLFastPathParser.*.Mask0-3 (* is
+    one of UnsupportedContextTag or UnsupportedTag).
+  </summary>
+  <token key="Type">
+    <variant name="UnsupportedContextTag" summary="unsupported context"/>
+    <variant name="UnsupportedTag" summary="unsupported"/>
+  </token>
+</histogram>
+
+<histogram name="Blink.HTMLFastPathParser.{Type}.Mask{MaskBit}" units="tags"
+    expires_after="2023-12-07">
+  <owner>sky@chromium.org</owner>
+  <owner>tebbi@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    See description of Blink.HTMLFastPathParser.*.CompositeMask for an overview
+    of this including when it is logged. The value is a bitmask that identifies
+    which tags were encountered:
+
+    {MaskBit}
+  </summary>
+  <token key="Type">
+    <variant name="UnsupportedContextTag" summary="unsupported context"/>
+    <variant name="UnsupportedTag" summary="unsupported"/>
+  </token>
+  <token key="MaskBit">
+    <variant name="0"
+        summary="bit 0: img. bit 1: aside. bit 2: u. bit 3: hr. bit 4: h. bit
+                 5: em. bit 6: The tag is not a known html tag. bit 7: The
+                 tag is a known html tag, but is not categorized."/>
+    <variant name="1"
+        summary="bit 0: form. bit 1: Any one of article, header, footer, or
+                 section. bit 2: nav. bit 3: iframe. bit 4: Any one of table,
+                 tr, td, tbody, or th. bit 5: Any of of dl, dt, or dd. bit 6:
+                 ins bit 7: blockquote."/>
+    <variant name="2"
+        summary="bit 0: center. bit 1: small. bit 2: font. bit 3: fieldset.
+                 bit 4: textarea. bit 5: time. bit 6: figure."/>
+  </token>
+</histogram>
+
 <histogram name="Blink.HTMLParsing.ChunkCount4" units="chunks"
     expires_after="2023-06-30">
   <owner>masonf@chromium.org</owner>

@@ -146,6 +146,10 @@ class CORE_EXPORT QualifiedName {
 
   const AtomicString& LocalNameUpperSlow() const;
 
+  // Returns true if this is a built-in name. That is, one of the names defined
+  // at build time (such as <img>).
+  bool IsDefinedName() const { return impl_ && impl_->is_static_; }
+
   String ToString() const;
 
   QualifiedNameImpl* Impl() const { return impl_.get(); }

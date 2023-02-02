@@ -15,12 +15,20 @@ class Document;
 class DocumentFragment;
 class Element;
 
-CORE_EXPORT bool TryParsingHTMLFragment(const String& source,
-                                        Document& document,
-                                        DocumentFragment& fragment,
-                                        Element& context_element,
-                                        ParserContentPolicy policy,
-                                        bool include_shadow_roots);
+// If this fails because of an unsupported tag and
+// `failed_because_unsupported_tag` is non-null, then it is set to true.
+CORE_EXPORT bool TryParsingHTMLFragment(
+    const String& source,
+    Document& document,
+    DocumentFragment& fragment,
+    Element& context_element,
+    ParserContentPolicy policy,
+    bool include_shadow_roots,
+    bool* failed_because_unsupported_tag = nullptr);
+
+// Logs histograms to help track why parsing failed because of an unsupported
+// tag when `fragment` was generated.
+void LogTagsForUnsupportedTagTypeFailure(DocumentFragment& fragment);
 
 // Captures the potential outcomes for fast path html parser.
 // These values are persisted to logs. Entries should not be renumbered and

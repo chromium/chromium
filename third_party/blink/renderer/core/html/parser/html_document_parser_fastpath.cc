@@ -1119,11 +1119,174 @@ bool CanUseFastPath(Document& document,
   return true;
 }
 
+// A hand picked enumeration of the most frequently used tags on web pages with
+// some amount of grouping. Ranking comes from
+// (https://discuss.httparchive.org/t/use-of-html-elements/1438).
+enum class UnsupportedTagType : uint32_t {
+  // The tag is supported.
+  kSupported = 0,
+  kImg = 1 << 0,
+  kAside = 1 << 1,
+  kU = 1 << 2,
+  kHr = 1 << 3,
+  // This is h1-h6.
+  kH = 1 << 4,
+  kEm = 1 << 5,
+  // The tag is not html.
+  kNotHtml = 1 << 6,
+  // The tag is a known html tag, but not one covered by this enum.
+  kOtherHtml = 1 << 7,
+  kForm = 1 << 8,
+  // This includes header, footer, and section.
+  kArticleLike = 1 << 9,
+  kNav = 1 << 10,
+  kIFrame = 1 << 11,
+  // This includes tr, td, tbody, th.
+  kTableLike = 1 << 12,
+  // This includes dl, dt, dd.
+  kDescriptionList = 1 << 13,
+  kIns = 1 << 14,
+  kBlockquote = 1 << 15,
+  kCenter = 1 << 16,
+  kSmall = 1 << 17,
+  kFont = 1 << 18,
+  kFieldset = 1 << 19,
+  kTextarea = 1 << 20,
+  kTime = 1 << 21,
+  kFigure = 1 << 22,
+  kMaxValue = kFigure,
+};
+
+constexpr uint32_t kAllUnsupportedTags =
+    (static_cast<uint32_t>(UnsupportedTagType::kMaxValue) << 1) - 1;
+// If UnsupportedTagType is > 24, then need to add a fourth chunk to the
+// overall histogram.
+static_assert(kAllUnsupportedTags < (1 << 24));
+
+#define CHECK_TAG_TYPE(t)                       \
+  if (node.HasTagName(html_names::k##t##Tag)) { \
+    return UnsupportedTagType::k##t;            \
+  }
+
+#define NODE_HAS_TAG_NAME(t) node.HasTagName(html_names::k##t##Tag) ||
+
+// Returns the UnsupportedTagType for node. Returns 0 if `node` is one of the
+// supported tags.
+UnsupportedTagType UnsupportedTagTypeValueForNode(const Node& node) {
+  // "false" is needed as NODE_HAS_TAG_NAME has a trailing '||'. Without it,
+  // would get compile errors.
+  const bool hack_for_macro_to_work_in_conditional = false;
+  if (SUPPORTED_TAGS(NODE_HAS_TAG_NAME) hack_for_macro_to_work_in_conditional) {
+    // Known tag.
+    return UnsupportedTagType::kSupported;
+  }
+  if (node.HasTagName(html_names::kH1Tag) ||
+      node.HasTagName(html_names::kH2Tag) ||
+      node.HasTagName(html_names::kH3Tag) ||
+      node.HasTagName(html_names::kH4Tag) ||
+      node.HasTagName(html_names::kH5Tag) ||
+      node.HasTagName(html_names::kH6Tag)) {
+    return UnsupportedTagType::kH;
+  }
+  if (node.HasTagName(html_names::kArticleTag) ||
+      node.HasTagName(html_names::kHeaderTag) ||
+      node.HasTagName(html_names::kFooterTag) ||
+      node.HasTagName(html_names::kSectionTag)) {
+    return UnsupportedTagType::kArticleLike;
+  }
+  if (node.HasTagName(html_names::kTableTag) ||
+      node.HasTagName(html_names::kTrTag) ||
+      node.HasTagName(html_names::kTdTag) ||
+      node.HasTagName(html_names::kTbodyTag) ||
+      node.HasTagName(html_names::kThTag)) {
+    return UnsupportedTagType::kTableLike;
+  }
+  if (node.HasTagName(html_names::kDlTag) ||
+      node.HasTagName(html_names::kDtTag) ||
+      node.HasTagName(html_names::kDdTag)) {
+    return UnsupportedTagType::kDescriptionList;
+  }
+  CHECK_TAG_TYPE(Aside)
+  CHECK_TAG_TYPE(U)
+  CHECK_TAG_TYPE(Hr)
+  CHECK_TAG_TYPE(Em)
+  CHECK_TAG_TYPE(Form)
+  CHECK_TAG_TYPE(Nav)
+  CHECK_TAG_TYPE(IFrame)
+  CHECK_TAG_TYPE(Ins)
+  CHECK_TAG_TYPE(Blockquote)
+  CHECK_TAG_TYPE(Center)
+  CHECK_TAG_TYPE(Small)
+  CHECK_TAG_TYPE(Font)
+  CHECK_TAG_TYPE(Fieldset)
+  CHECK_TAG_TYPE(Textarea)
+  CHECK_TAG_TYPE(Time)
+  CHECK_TAG_TYPE(Figure)
+  if (node.IsHTMLElement() && To<Element>(node).TagQName().IsDefinedName()) {
+    return UnsupportedTagType::kOtherHtml;
+  }
+  return UnsupportedTagType::kNotHtml;
+}
+
+// Histogram names used when logging unsupported tag type.
+const char* kUnsupportedTagTypeCompositeName =
+    "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMask";
+const char* kUnsupportedTagTypeMaskNames[] = {
+    "Blink.HTMLFastPathParser.UnsupportedTag.Mask0",
+    "Blink.HTMLFastPathParser.UnsupportedTag.Mask1",
+    "Blink.HTMLFastPathParser.UnsupportedTag.Mask2",
+};
+
+// Histogram names used when logging unsupported context tag type.
+const char* kUnsupportedContextTagTypeCompositeName =
+    "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMask";
+const char* kUnsupportedContextTagTypeMaskNames[] = {
+    "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask0",
+    "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask1",
+    "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask2",
+};
+
+// Logs histograms for either an unsupported tag or unsupported context tag.
+// `type_mask` is a bitmask of the unsupported tags that were encountered. As
+// the uma frontend doesn't handle large bitmasks well, there are 4 separate
+// histograms logged:
+// . histogram for bits 1-8, 9-16, 17-24. The names used for these histograms
+//   is specified in `mask_histogram_names`.
+// . A histogram identifying which bit ranges of `type_mask` have at least one
+//   bit set. More specifically:
+//   . bit 1 set if `type_mask` has at least one bit set in bits 1-8.
+//   . bit 2 set if `type_mask` has at least one bit set in bits 9-16.
+//   . bit 3 set if `type_mask` has at least one bit set in bits 17-24.
+void LogFastPathUnsupportedTagTypeDetails(uint32_t type_mask,
+                                          const char* composite_histogram_name,
+                                          const char* mask_histogram_names[]) {
+  // This should only be called once an unsupported tag is encountered.
+  DCHECK_NE(static_cast<uint32_t>(0), type_mask);
+  uint32_t chunk_mask = 0;
+  if ((type_mask & 0xFF) != 0) {
+    chunk_mask |= 1;
+    base::UmaHistogramExactLinear(mask_histogram_names[0], type_mask & 0xFF,
+                                  256);
+  }
+  if (((type_mask >> 8) & 0xFF) != 0) {
+    chunk_mask |= 2;
+    base::UmaHistogramExactLinear(mask_histogram_names[1],
+                                  (type_mask >> 8) & 0xFF, 256);
+  }
+  if (((type_mask >> 16) & 0xFF) != 0) {
+    chunk_mask |= 4;
+    base::UmaHistogramExactLinear(mask_histogram_names[2],
+                                  (type_mask >> 16) & 0xFF, 256);
+  }
+  base::UmaHistogramExactLinear(composite_histogram_name, chunk_mask, 8);
+}
+
 template <class Char>
 bool TryParsingHTMLFragmentImpl(const base::span<const Char>& source,
                                 Document& document,
                                 DocumentFragment& fragment,
-                                Element& context_element) {
+                                Element& context_element,
+                                bool* failed_because_unsupported_tag) {
   base::ElapsedTimer parse_timer;
   bool success;
   int number_of_bytes_parsed;
@@ -1152,6 +1315,24 @@ bool TryParsingHTMLFragmentImpl(const base::span<const Char>& source,
           base::Microseconds(1), base::Milliseconds(10), 100);
     }
   }
+  if (failed_because_unsupported_tag) {
+    *failed_because_unsupported_tag =
+        parser.parse_result() == HtmlFastPathResult::kFailedUnsupportedTag;
+  }
+  if (parser.parse_result() ==
+      HtmlFastPathResult::kFailedUnsupportedContextTag) {
+    const UnsupportedTagType context_tag_type =
+        UnsupportedTagTypeValueForNode(context_element);
+    // If the context element isn't a valid container but is supported
+    // UnsupportedTagTypeValueForNode() will return kSupported. For now this is
+    // really only <br>. I suspect this is extremely rare, so don't log for now.
+    if (context_tag_type != UnsupportedTagType::kSupported) {
+      LogFastPathUnsupportedTagTypeDetails(
+          static_cast<uint32_t>(context_tag_type),
+          kUnsupportedContextTagTypeCompositeName,
+          kUnsupportedContextTagTypeMaskNames);
+    }
+  }
   base::UmaHistogramCounts10M(
       success ? "Blink.HTMLFastPathParser.SuccessfulParseSize"
               : "Blink.HTMLFastPathParser.AbortedParseSize",
@@ -1166,16 +1347,34 @@ bool TryParsingHTMLFragment(const String& source,
                             DocumentFragment& fragment,
                             Element& context_element,
                             ParserContentPolicy policy,
-                            bool include_shadow_roots) {
+                            bool include_shadow_roots,
+                            bool* failed_because_unsupported_tag) {
   if (!CanUseFastPath(document, context_element, policy,
                       include_shadow_roots)) {
     return false;
   }
-  return source.Is8Bit()
-             ? TryParsingHTMLFragmentImpl<LChar>(source.Span8(), document,
-                                                 fragment, context_element)
-             : TryParsingHTMLFragmentImpl<UChar>(source.Span16(), document,
-                                                 fragment, context_element);
+  return source.Is8Bit() ? TryParsingHTMLFragmentImpl<LChar>(
+                               source.Span8(), document, fragment,
+                               context_element, failed_because_unsupported_tag)
+                         : TryParsingHTMLFragmentImpl<UChar>(
+                               source.Span16(), document, fragment,
+                               context_element, failed_because_unsupported_tag);
+}
+
+void LogTagsForUnsupportedTagTypeFailure(DocumentFragment& fragment) {
+  uint32_t type_mask = 0u;
+  Node* node = NodeTraversal::Next(fragment);
+  while (node && type_mask != kAllUnsupportedTags) {
+    type_mask |= static_cast<uint32_t>(UnsupportedTagTypeValueForNode(*node));
+    node = NodeTraversal::Next(*node);
+  }
+  // The mask may still be 0 in some cases, such as empty text, or tags that
+  // don't create nodes (frameset).
+  if (type_mask != 0) {
+    LogFastPathUnsupportedTagTypeDetails(type_mask,
+                                         kUnsupportedTagTypeCompositeName,
+                                         kUnsupportedTagTypeMaskNames);
+  }
 }
 
 #undef SUPPORTED_TAGS
