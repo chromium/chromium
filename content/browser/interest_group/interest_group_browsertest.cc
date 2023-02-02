@@ -3469,6 +3469,26 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForAccessObserved({});
 }
 
+// It's invalid for an auction to have both component auctions and buyers.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidComponentAuctionsAndBuyers) {
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Auctions "
+      "may only have one of 'interestGroupBuyers' or 'componentAuctions'.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicUrl: 'https://test.com',
+      interestGroupBuyers: ['https://test.com'],
+      componentAuctions: [{
+          seller: 'https://test.com',
+          decisionLogicUrl: 'https://test.com',
+          interestGroupBuyers: ['https://test.com']
+      }]
+  })"));
+}
+
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidComponentAuctionsArray) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
@@ -9040,124 +9060,107 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   EXPECT_EQ(b_groups[0].interest_group.bidding_url, initial_bidding_url_b);
 }
 
-// Do the following, both where the created interest groups are updated from
-// public addresses, and where they are updated from private addresses. (The
-// private should come second so we can block on its updates completing).
+// Join interest groups with local (private) update URLs, and run auctions from
+// both a a main frame loaded with public address space, and with a private
+// address space. The auctions trigger updates the interest groups, but only the
+// frame using a private address space successfully updates the IG, since frames
+// from public address spaces are blocked from making requests to servers with
+// private addresses.
 //
-// Create 2 interest groups of different owners, and then run a component
-// auction where the first group's owner is a buyer on the outer auction, and
-// the second group's owner is a buyer on the inner auction. (The auction is
-// expected to fail when run from a public address, but an attempt should still
-// be made to update interest groups).
-//
-// After this, check the results of all 4 interest groups. Those updated from
-// private IPs should have updated, whereas those updated from public IPs
-// should not have updated.
+// Different interest groups (with different origins) are used for the public
+// and private auction, to avoid running into update rate limits.
 IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
                        PrivateNetProtectionsApplyToPostAuctionUpdates) {
-  const char kPubliclyUpdateGroupName[] = "Publicly updated group";
-  const char kLocallyUpdateGroupName[] = "Locally updated group";
+  // Fetches for the interest group-related scripts and updates are always
+  // local, it's where they're updated from that matters. Interest group A will
+  // be updated from an auction on a public origin, and B from a private one.
+  // Only the second update will succeed.
+  //
+  // It's important to do the successful update last, so that the first update
+  // would have most likely succeeded by that point in time, if it were going
+  // to, since there's no exposed API to wait for an interest group update to
+  // fail, though the test does wait for the update network request itself to
+  // succeed / fail. As of this writing, the current updating queuing should
+  // guarantee updates for one origin start only after previously requested
+  // updates for another origin have completed (successfully or unsuccessfully),
+  // but this test should be robust against changes in that logic.
+  const url::Origin interest_group_a_origin =
+      https_server_->GetOrigin("a.test");
+  const url::Origin interest_group_b_origin =
+      https_server_->GetOrigin("b.test");
 
-  // The update URLs are always local, regardless of whether we're on a local or
-  // private page.
-  const GURL update_url_a = https_server_->GetURL(
-      "a.test", "/interest_group/daily_update_partial_a.json");
-  const GURL update_url_b = https_server_->GetURL(
-      "b.test", "/interest_group/daily_update_partial_b.json");
-
+  constexpr char kUpdatePath[] = "/interest_group/daily_update_partial_a.json";
   constexpr char kUpdateResponse[] = R"(
 {
 "ads": [{"renderUrl": "https://example.com/render2"
         }]
 })";
+  // The server JSON updates the ads only. Both update URLs use the same path,
+  // so only need to add a response once
+  network_responder_->RegisterNetworkResponse(kUpdatePath, kUpdateResponse);
 
-  // The server JSON updates the ads only.
-  network_responder_->RegisterNetworkResponse(update_url_a.path(),
-                                              kUpdateResponse);
-  network_responder_->RegisterNetworkResponse(update_url_b.path(),
-                                              kUpdateResponse);
+  // The origin of the seller script URL doesn't matter for these tests. Use
+  // an origin other than the interest groups just to make clear there are no
+  // dependencies on a shared origin anywhere.
+  const GURL decision_logic_url =
+      https_server_->GetURL("c.test", "/interest_group/decision_logic.js");
 
-  const url::Origin test_origin_a =
-      url::Origin::Create(https_server_->GetURL("a.test", "/echo"));
-  const url::Origin test_origin_b =
-      url::Origin::Create(https_server_->GetURL("b.test", "/echo"));
+  const struct {
+    // All interest group URLs are derived from this.
+    url::Origin interest_group_origin;
+    bool run_auction_from_public_address_space;
+    GURL auction_url;
+  } kTestCases[] = {
+      {interest_group_a_origin,
+       /*run_auction_from_public_address_space=*/true,
+       // This header treats a response from a server on a private IP as if the
+       // server were on public address space.
+       https_server_->GetURL(
+           "c.test",
+           "/set-header?Content-Security-Policy: treat-as-public-address")},
+      {interest_group_b_origin,
+       /*run_auction_from_public_address_space=*/false,
+       https_server_->GetURL("c.test", "/echo")},
+  };
 
-  URLLoaderMonitor url_loader_monitor;
-  for (bool public_address_space : {true, false}) {
-    SCOPED_TRACE(public_address_space);
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.run_auction_from_public_address_space);
 
-    GURL test_url_a;
-    GURL test_url_b;
-    std::string group_name;
-    if (public_address_space) {
-      // This header treats a response from a server on a private IP as if the
-      // server were on public address space.
-      test_url_a = https_server_->GetURL(
-          "a.test",
-          "/set-header?Content-Security-Policy: treat-as-public-address");
-      test_url_b = https_server_->GetURL(
-          "b.test",
-          "/set-header?Content-Security-Policy: treat-as-public-address");
-      group_name = kPubliclyUpdateGroupName;
-    } else {
-      test_url_a = https_server_->GetURL("a.test", "/echo");
-      test_url_b = https_server_->GetURL("b.test", "/echo");
-      group_name = kLocallyUpdateGroupName;
-    }
+    URLLoaderMonitor url_loader_monitor;
 
-    ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+    std::string interest_group_host = test_case.interest_group_origin.host();
+    GURL join_url = https_server_->GetURL(interest_group_host, "/echo");
+    GURL update_url = https_server_->GetURL(interest_group_host, kUpdatePath);
+    GURL bidding_url = https_server_->GetURL(
+        interest_group_host, "/interest_group/bidding_logic.js");
+
+    ASSERT_TRUE(NavigateToURL(shell(), join_url));
     EXPECT_EQ(kSuccess,
               JoinInterestGroupAndVerify(
                   blink::TestInterestGroupBuilder(
-                      /*owner=*/test_origin_a,
-                      /*name=*/group_name)
-                      .SetBiddingUrl(https_server_->GetURL(
-                          "a.test", "/interest_group/bidding_logic.js"))
-                      .SetDailyUpdateUrl(update_url_a)
+                      /*owner=*/test_case.interest_group_origin, "name")
+                      .SetBiddingUrl(bidding_url)
+                      .SetDailyUpdateUrl(update_url)
                       .SetAds({{{GURL("https://example.com/render"),
                                  /*metadata=*/absl::nullopt}}})
                       .Build()));
 
-    ASSERT_TRUE(NavigateToURL(shell(), test_url_b));
-    EXPECT_EQ(kSuccess,
-              JoinInterestGroupAndVerify(
-                  blink::TestInterestGroupBuilder(
-                      /*owner=*/test_origin_b,
-                      /*name=*/group_name)
-                      .SetBiddingUrl(https_server_->GetURL(
-                          "b.test", "/interest_group/bidding_logic.js"))
-                      .SetDailyUpdateUrl(update_url_b)
-                      .SetAds({{{GURL("https://example.com/render"),
-                                 /*metadata=*/absl::nullopt}}})
-                      .Build()));
-
-    ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+    ASSERT_TRUE(NavigateToURL(shell(), test_case.auction_url));
     EvalJsResult auction_result = EvalJs(
         shell(), JsReplace(
                      R"(
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
-    decisionLogicUrl: $3,
-    interestGroupBuyers: [$1],
-    auctionSignals: "bidderAllowsComponentAuction,"+
-                    "sellerAllowsComponentAuction",
-    componentAuctions: [{
-      seller: $1,
-      decisionLogicUrl: $3,
-      interestGroupBuyers: [$2],
-      auctionSignals: "bidderAllowsComponentAuction,"+
-                      "sellerAllowsComponentAuction"
-
-    }],
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$3],
   });
 })())",
-                     test_origin_a, test_origin_b,
-                     https_server_->GetURL(
-                         "a.test", "/interest_group/decision_logic.js")));
-    if (public_address_space) {
+                     url::Origin::Create(decision_logic_url),
+                     decision_logic_url, test_case.interest_group_origin));
+    if (test_case.run_auction_from_public_address_space) {
       // The auction fails because the scripts get blocked; the update request
-      // should still happen though.
+      // should still happen, though it will also ultimately be blocked.
       EXPECT_EQ(nullptr, auction_result);
     } else {
       TestFencedFrameURLMappingResultObserver observer;
@@ -9168,66 +9171,60 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
 
     // Wait for the update request to be made, and check its IPAddressSpace.
     url_loader_monitor.WaitForUrls();
-    for (GURL update_url : {update_url_a, update_url_b}) {
-      const network::ResourceRequest& request =
-          url_loader_monitor.WaitForUrl(update_url);
-      ASSERT_TRUE(request.trusted_params->client_security_state);
-      if (public_address_space) {
-        EXPECT_EQ(
-            network::mojom::IPAddressSpace::kPublic,
-            request.trusted_params->client_security_state->ip_address_space);
-      } else {
-        EXPECT_EQ(
-            network::mojom::IPAddressSpace::kLocal,
-            request.trusted_params->client_security_state->ip_address_space);
-      }
-      // Not the main purpose of this test, but it should be using a transient
-      // NetworkIsolationKey as well.
-      ASSERT_TRUE(request.trusted_params->isolation_info.network_isolation_key()
-                      .IsTransient());
-
+    const network::ResourceRequest& request =
+        url_loader_monitor.WaitForUrl(update_url);
+    ASSERT_TRUE(request.trusted_params->client_security_state);
+    if (test_case.run_auction_from_public_address_space) {
+      EXPECT_EQ(
+          network::mojom::IPAddressSpace::kPublic,
+          request.trusted_params->client_security_state->ip_address_space);
       // The request should be blocked in the public address space case.
-      if (public_address_space) {
-        EXPECT_EQ(
-            net::ERR_FAILED,
-            url_loader_monitor.WaitForRequestCompletion(update_url).error_code);
-      } else {
-        EXPECT_EQ(
-            net::OK,
-            url_loader_monitor.WaitForRequestCompletion(update_url).error_code);
-      }
+      EXPECT_EQ(
+          net::ERR_FAILED,
+          url_loader_monitor.WaitForRequestCompletion(update_url).error_code);
+    } else {
+      EXPECT_EQ(
+          network::mojom::IPAddressSpace::kLocal,
+          request.trusted_params->client_security_state->ip_address_space);
+      EXPECT_EQ(
+          net::OK,
+          url_loader_monitor.WaitForRequestCompletion(update_url).error_code);
     }
-    url_loader_monitor.ClearRequests();
+
+    // Not the main purpose of this test, but it should be using a transient
+    // NetworkIsolationKey as well.
+    ASSERT_TRUE(request.trusted_params->isolation_info.network_isolation_key()
+                    .IsTransient());
   }
 
-  // Wait for the local origin A and origin B interest groups to update. Then
-  // check that the public origin A and origin B interest groups didn't update.
+  // Wait for interest group B's ad URL to be successfully updated.
+
   const GURL initial_ad_url = GURL("https://example.com/render");
   const GURL new_ad_url = GURL("https://example.com/render2");
 
-  auto update_condition = base::BindLambdaForTesting(
+  auto check_for_new_ad_url = base::BindLambdaForTesting(
       [&](const std::vector<StorageInterestGroup>& storage_groups) {
-        EXPECT_EQ(storage_groups.size(), 2u);
-        bool found_updated_group = false;
-        bool found_non_updated_group = false;
-        for (const auto& storage_group : storage_groups) {
-          const blink::InterestGroup& group = storage_group.interest_group;
-          EXPECT_TRUE(group.ads.has_value());
-          EXPECT_EQ(group.ads->size(), 1u);
-          if (group.name == kPubliclyUpdateGroupName) {
-            EXPECT_EQ(initial_ad_url, group.ads.value()[0].render_url);
-            found_non_updated_group = true;
-          } else {
-            EXPECT_EQ(group.name, kLocallyUpdateGroupName);
-            found_updated_group =
-                (new_ad_url == group.ads.value()[0].render_url);
-          }
+        EXPECT_EQ(storage_groups.size(), 1u);
+        const blink::InterestGroup& group = storage_groups[0].interest_group;
+        EXPECT_TRUE(group.ads.has_value());
+        EXPECT_EQ(group.ads->size(), 1u);
+        if (group.ads.value()[0].render_url == new_ad_url) {
+          return true;
         }
-        return found_updated_group && found_non_updated_group;
+        EXPECT_EQ(initial_ad_url, group.ads.value()[0].render_url);
+        return false;
       });
 
-  WaitForInterestGroupsSatisfying(test_origin_a, update_condition);
-  WaitForInterestGroupsSatisfying(test_origin_b, update_condition);
+  WaitForInterestGroupsSatisfying(interest_group_b_origin,
+                                  check_for_new_ad_url);
+
+  // Check that interest group A's ad URL was not updated.
+  auto storage_groups = GetInterestGroupsForOwner(interest_group_a_origin);
+  ASSERT_EQ(storage_groups.size(), 1u);
+  const blink::InterestGroup& group = storage_groups[0].interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(initial_ad_url, group.ads.value()[0].render_url);
 }
 
 // Interest group APIs succeeded (i.e., feature join-ad-interest-group is

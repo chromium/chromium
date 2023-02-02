@@ -1742,8 +1742,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // Creates an auction with 1-2 component sellers and 2 bidders, and sets up
   // `url_loader_factory_` to provide the standard responses needed to run the
   // auction. `bidder1_seller` and `bidder2_seller` identify the seller whose
-  // auction each bidder is in, and must be one of kSeller, kComponentSeller1,
-  // and kComponentSeller2. kComponentSeller1 is always added to the auction,
+  // auction each bidder is in, and must be either kComponentSeller1 or
+  // kComponentSeller2. kComponentSeller1 is always added to the auction,
   // kComponentSeller2 is only added to the auction if one of the bidders uses
   // it as a seller.
   void SetUpComponentAuctionAndResponses(
@@ -1755,9 +1755,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     std::vector<url::Origin> component1_buyers;
     std::vector<url::Origin> component2_buyers;
 
-    if (bidder1_seller == kSeller) {
-      interest_group_buyers_->push_back(kBidder1);
-    } else if (bidder1_seller == kComponentSeller1) {
+    if (bidder1_seller == kComponentSeller1) {
       component1_buyers.push_back(kBidder1);
     } else if (bidder1_seller == kComponentSeller2) {
       component2_buyers.push_back(kBidder1);
@@ -1765,9 +1763,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       NOTREACHED();
     }
 
-    if (bidder2_seller == kSeller) {
-      interest_group_buyers_->push_back(kBidder2);
-    } else if (bidder2_seller == kComponentSeller1) {
+    if (bidder2_seller == kComponentSeller1) {
       component1_buyers.push_back(kBidder2);
     } else if (bidder2_seller == kComponentSeller2) {
       component2_buyers.push_back(kBidder2);
@@ -2746,62 +2742,8 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
                   /*expected_sellers=*/3);
 }
 
-// A component auction with two buyers in the top-level auction. The component
-// seller has no buyers.
-TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersHaveNoBuyers) {
-  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kSeller,
-                                    /*bidder2_seller=*/kSeller,
-                                    /*bid_from_component_auction_wins=*/false,
-                                    /*report_post_auction_signals*/ true);
-
-  RunStandardAuction();
-  EXPECT_THAT(result_.errors, testing::ElementsAre());
-  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
-  EXPECT_EQ(std::vector<GURL>{GURL("https://ad2.com-component1.com")},
-            result_.ad_component_urls);
-  EXPECT_THAT(
-      result_.report_urls,
-      testing::UnorderedElementsAre(
-          GURL("https://reporting.example.com/?highestScoringOtherBid=1&bid=2"),
-          ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
-                       /*made_highest_scoring_other_bid=*/false)));
-  EXPECT_THAT(
-      result_.ad_beacon_map.metadata,
-      testing::UnorderedElementsAre(
-          testing::Pair(ReportingDestination::kSeller,
-                        testing::ElementsAre(testing::Pair(
-                            "click", GURL("https://reporting.example.com/4")))),
-          testing::Pair(
-              ReportingDestination::kBuyer,
-              testing::ElementsAre(testing::Pair(
-                  "click", GURL("https://buyer-reporting.example.com/4"))))));
-  EXPECT_THAT(
-      result_.private_aggregation_requests,
-      testing::UnorderedElementsAre(
-          testing::Pair(kBidder1,
-                        ElementsAreRequests(
-                            kExpectedGenerateBidPrivateAggregationRequest)),
-          testing::Pair(
-              kBidder2,
-              ElementsAreRequests(kExpectedGenerateBidPrivateAggregationRequest,
-                                  kExpectedReportWinPrivateAggregationRequest)),
-          testing::Pair(kSeller,
-                        ElementsAreRequests(
-                            kExpectedScoreAdPrivateAggregationRequest,
-                            kExpectedScoreAdPrivateAggregationRequest,
-                            kExpectedReportResultPrivateAggregationRequest))));
-  EXPECT_THAT(result_.interest_groups_that_bid,
-              testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
-            result_.winning_group_ad_metadata);
-  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
-                  /*expected_sellers=*/1);
-}
-
-// Test a component auction where the top level seller rejects all bids. The
-// only bids come from a component auction. This should fail with
-// kAllBidsRejected instead of kNoBids.
+// Test a component auction where the top level seller rejects all bids. This
+// should fail with kAllBidsRejected instead of kNoBids.
 TEST_F(AuctionRunnerTest, ComponentAuctionTopSellerRejectsBids) {
   // Run a standard component auction, but replace the default seller script
   // with one that rejects bids.
@@ -2830,155 +2772,32 @@ TEST_F(AuctionRunnerTest, ComponentAuctionTopSellerRejectsBids) {
                   /*expected_sellers=*/2);
 }
 
-// A component auction with one component. Both the top-level and component
-// auction have one buyer. The top-level seller worklet has the winning buyer.
-TEST_F(AuctionRunnerTest, ComponentAuctionTopLevelSellerBidWins) {
-  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
-                                    /*bidder2_seller=*/kSeller,
-                                    /*bid_from_component_auction_wins=*/false,
-                                    /*report_post_auction_signals*/ true);
-
-  RunStandardAuction();
-  EXPECT_THAT(result_.errors, testing::ElementsAre());
-  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
-  EXPECT_EQ(std::vector<GURL>{GURL("https://ad2.com-component1.com")},
-            result_.ad_component_urls);
-  EXPECT_THAT(
-      result_.report_urls,
-      testing::UnorderedElementsAre(
-          GURL("https://reporting.example.com/?highestScoringOtherBid=1&bid=2"),
-          ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
-                       /*made_highest_scoring_other_bid=*/false)));
-  EXPECT_THAT(
-      result_.ad_beacon_map.metadata,
-      testing::UnorderedElementsAre(
-          testing::Pair(ReportingDestination::kSeller,
-                        testing::ElementsAre(testing::Pair(
-                            "click", GURL("https://reporting.example.com/4")))),
-          testing::Pair(
-              ReportingDestination::kBuyer,
-              testing::ElementsAre(testing::Pair(
-                  "click", GURL("https://buyer-reporting.example.com/4"))))));
-  EXPECT_THAT(
-      result_.private_aggregation_requests,
-      testing::UnorderedElementsAre(
-          testing::Pair(kBidder1,
-                        ElementsAreRequests(
-                            kExpectedGenerateBidPrivateAggregationRequest)),
-          testing::Pair(
-              kBidder2,
-              ElementsAreRequests(kExpectedGenerateBidPrivateAggregationRequest,
-                                  kExpectedReportWinPrivateAggregationRequest)),
-          testing::Pair(kSeller,
-                        ElementsAreRequests(
-                            kExpectedScoreAdPrivateAggregationRequest,
-                            kExpectedScoreAdPrivateAggregationRequest,
-                            kExpectedReportResultPrivateAggregationRequest)),
-          testing::Pair(
-              kComponentSeller1,
-              ElementsAreRequests(kExpectedScoreAdPrivateAggregationRequest))));
-  EXPECT_THAT(result_.interest_groups_that_bid,
-              testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
-            result_.winning_group_ad_metadata);
-  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
-                  /*expected_sellers=*/2);
-}
-
-// A component auction with one component. Both the top-level and component
-// auction have one buyer. The component seller worklet has the winning buyer.
-TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBidWins) {
-  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kSeller,
-                                    /*bidder2_seller=*/kComponentSeller1,
-                                    /*bid_from_component_auction_wins=*/true,
-                                    /*report_post_auction_signals*/ true);
-
-  RunStandardAuction();
-  EXPECT_THAT(result_.errors, testing::ElementsAre());
-  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
-  EXPECT_EQ(std::vector<GURL>{GURL("https://ad2.com-component1.com")},
-            result_.ad_component_urls);
-  EXPECT_THAT(
-      result_.report_urls,
-      testing::UnorderedElementsAre(
-          GURL("https://reporting.example.com/?highestScoringOtherBid=1&bid=2"),
-          GURL(
-              "https://component1-report.test/?highestScoringOtherBid=0&bid=2"),
-          ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/0,
-                       /*made_highest_scoring_other_bid=*/false)));
-  EXPECT_THAT(
-      result_.ad_beacon_map.metadata,
-      testing::UnorderedElementsAre(
-          testing::Pair(ReportingDestination::kSeller,
-                        testing::ElementsAre(testing::Pair(
-                            "click", GURL("https://reporting.example.com/4")))),
-          testing::Pair(
-              ReportingDestination::kComponentSeller,
-              testing::ElementsAre(testing::Pair(
-                  "click", GURL("https://component1-report.test/4")))),
-          testing::Pair(
-              ReportingDestination::kBuyer,
-              testing::ElementsAre(testing::Pair(
-                  "click", GURL("https://buyer-reporting.example.com/4"))))));
-  EXPECT_THAT(
-      result_.private_aggregation_requests,
-      testing::UnorderedElementsAre(
-          testing::Pair(kBidder1,
-                        ElementsAreRequests(
-                            kExpectedGenerateBidPrivateAggregationRequest)),
-          testing::Pair(
-              kBidder2,
-              ElementsAreRequests(kExpectedGenerateBidPrivateAggregationRequest,
-                                  kExpectedReportWinPrivateAggregationRequest)),
-          testing::Pair(kSeller,
-                        ElementsAreRequests(
-                            kExpectedScoreAdPrivateAggregationRequest,
-                            kExpectedScoreAdPrivateAggregationRequest,
-                            kExpectedReportResultPrivateAggregationRequest)),
-          testing::Pair(kComponentSeller1,
-                        ElementsAreRequests(
-                            kExpectedScoreAdPrivateAggregationRequest,
-                            kExpectedReportResultPrivateAggregationRequest))));
-  EXPECT_THAT(result_.interest_groups_that_bid,
-              testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
-            result_.winning_group_ad_metadata);
-  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
-                  /*expected_sellers=*/2);
-}
-
-// Test case where the top-level and a component auction share the same buyer,
-// which makes different bids for both auctions. Tests both the case the bid
-// made in the main auction wins, and the case the bid made in the component
-// auction wins.
+// Test case where the two components have the same buyer, which makes different
+// bids for both auctions.
 //
 // This tests that parameters are separated, that bid counts are updated
 // correctly, and how histograms are updated in these cases.
 TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
-  const GURL kTopLevelBidUrl = GURL("https://top-level-bid.test/");
-  const GURL kComponentBidUrl = GURL("https://component-bid.test/");
+  const GURL kComponent1BidUrl = GURL("https://component1-bid.test/");
+  const GURL kComponent2BidUrl = GURL("https://component2-bid.test/");
 
   // Bid script used in both auctions. The bid amount is based on the seller:
   // It bids the most in auctions run by kComponentSeller2Url, and the least in
-  // auctions run by kComponentSeller1Url, so one script can handle both test
-  // cases.
+  // auctions run by kComponentSeller1Url.
   const char kBidScript[] = R"(
-      function generateBid(interestGroup, auctionSignals, perBuyerSignals,
-                           trustedBiddingSignals, browserSignals) {
-        privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
-        if (browserSignals.seller == "https://component.seller1.test") {
-          return {ad: [], bid: 1, render: "https://component-bid.test/",
-                  allowComponentAuction: true};
-        }
-        if (browserSignals.seller == "https://component.seller2.test") {
-          return {ad: [], bid: 3, render: "https://component-bid.test/",
-                  allowComponentAuction: true};
-        }
-        return {ad: [], bid: 2, render: "https://top-level-bid.test/",
-                allowComponentAuction: false};
+    function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                          trustedBiddingSignals, browserSignals) {
+      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+      if (browserSignals.seller == "https://component.seller1.test") {
+        return {ad: [], bid: 1, render: "https://component1-bid.test/",
+                allowComponentAuction: true};
       }
+      if (browserSignals.seller == "https://component.seller2.test") {
+        return {ad: [], bid: 3, render: "https://component2-bid.test/",
+                allowComponentAuction: true};
+      }
+      return 0;
+    }
 
     function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
                        browserSignals) {
@@ -2997,6 +2816,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
       privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
       if (auctionConfig.seller == "https://adstuff.publisher1.com")
         return {desirability: 20 + bid, allowComponentAuction: true};
+      if (auctionConfig.seller == "https://component.seller2.test")
+        return {desirability: 30 + bid, allowComponentAuction: true};
       return {desirability: 10 + bid, allowComponentAuction: true};
     }
 
@@ -3019,100 +2840,30 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   auction_worklet::AddJavascriptResponse(&url_loader_factory_,
                                          kComponentSeller2Url, kSellerScript);
 
-  //--------------------------------------
-  // Case the top-level auction's bid wins
-  //--------------------------------------
-
-  interest_group_buyers_ = {{kBidder1}};
+  interest_group_buyers_.reset();
   component_auctions_.emplace_back(
       CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
-
-  // Custom interest group with two ads, so both bid URLs are valid.
-  std::vector<StorageInterestGroup> bidders;
-  bidders.emplace_back(
-      MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
-                        /*trusted_bidding_signals_url=*/absl::nullopt,
-                        /*trusted_bidding_signals_keys=*/{}, kTopLevelBidUrl));
-  bidders[0].interest_group.ads->push_back(
-      blink::InterestGroup::Ad(kComponentBidUrl, absl::nullopt));
-
-  StartAuction(kSellerUrl, std::move(bidders));
-  auction_run_loop_->Run();
-  EXPECT_THAT(result_.errors, testing::ElementsAre());
-
-  EXPECT_EQ(kTopLevelBidUrl, result_.ad_url);
-  EXPECT_THAT(result_.report_urls,
-              testing::UnorderedElementsAre(
-                  GURL("https://adstuff.publisher1.com/22"),
-                  GURL("https://buyer-reporting.example.com/2")));
-  EXPECT_THAT(
-      result_.ad_beacon_map.metadata,
-      testing::UnorderedElementsAre(
-          testing::Pair(
-              ReportingDestination::kSeller,
-              testing::ElementsAre(testing::Pair(
-                  "click", GURL("https://adstuff.publisher1.com/44")))),
-          testing::Pair(
-              ReportingDestination::kBuyer,
-              testing::ElementsAre(testing::Pair(
-                  "click", GURL("https://buyer-reporting.example.com/4"))))));
-  EXPECT_THAT(
-      result_.private_aggregation_requests,
-      testing::UnorderedElementsAre(
-          testing::Pair(
-              kBidder1,
-              ElementsAreRequests(kExpectedGenerateBidPrivateAggregationRequest,
-                                  kExpectedGenerateBidPrivateAggregationRequest,
-                                  kExpectedReportWinPrivateAggregationRequest)),
-          testing::Pair(kSeller,
-                        ElementsAreRequests(
-                            kExpectedScoreAdPrivateAggregationRequest,
-                            kExpectedScoreAdPrivateAggregationRequest,
-                            kExpectedReportResultPrivateAggregationRequest)),
-          testing::Pair(
-              kComponentSeller1,
-              ElementsAreRequests(kExpectedScoreAdPrivateAggregationRequest))));
-  // Bid count should only be incremented by 1.
-  EXPECT_THAT(result_.interest_groups_that_bid,
-              testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://top-level-bid.test/",)"
-            R"("metadata":{"ads": true}})",
-            result_.winning_group_ad_metadata);
-  // Currently an interest groups participating twice in an auction is counted
-  // twice.
-  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
-                  /*expected_sellers=*/2);
-
-  //--------------------------------------
-  // Case the component auction's bid wins
-  //--------------------------------------
-
-  histogram_tester_ = std::make_unique<base::HistogramTester>();
-
-  // Add another kComponentSeller2Url as another seller, for a total of 2
-  // component sellers.
   component_auctions_.emplace_back(
       CreateAuctionConfig(kComponentSeller2Url, {{kBidder1}}));
 
   // Custom interest group with two ads, so both bid URLs are valid.
-  bidders = std::vector<StorageInterestGroup>();
-  bidders.emplace_back(
-      MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
-                        /*trusted_bidding_signals_url=*/absl::nullopt,
-                        /*trusted_bidding_signals_keys=*/{}, kTopLevelBidUrl));
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, kComponent1BidUrl));
   bidders[0].interest_group.ads->push_back(
-      blink::InterestGroup::Ad(kComponentBidUrl, absl::nullopt));
+      blink::InterestGroup::Ad(kComponent2BidUrl, absl::nullopt));
 
   StartAuction(kSellerUrl, std::move(bidders));
   auction_run_loop_->Run();
   EXPECT_THAT(result_.errors, testing::ElementsAre());
 
-  EXPECT_EQ(kComponentBidUrl, result_.ad_url);
+  EXPECT_EQ(kComponent2BidUrl, result_.ad_url);
   EXPECT_THAT(result_.report_urls,
               testing::UnorderedElementsAre(
                   GURL("https://adstuff.publisher1.com/23"),
-                  GURL("https://component.seller2.test/13"),
+                  GURL("https://component.seller2.test/33"),
                   GURL("https://buyer-reporting.example.com/3")));
   EXPECT_THAT(
       result_.ad_beacon_map.metadata,
@@ -3124,7 +2875,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
           testing::Pair(
               ReportingDestination::kComponentSeller,
               testing::ElementsAre(testing::Pair(
-                  "click", GURL("https://component.seller2.test/26")))),
+                  "click", GURL("https://component.seller2.test/66")))),
           testing::Pair(
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
@@ -3136,11 +2887,9 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
               kBidder1,
               ElementsAreRequests(kExpectedGenerateBidPrivateAggregationRequest,
                                   kExpectedGenerateBidPrivateAggregationRequest,
-                                  kExpectedGenerateBidPrivateAggregationRequest,
                                   kExpectedReportWinPrivateAggregationRequest)),
           testing::Pair(kSeller,
                         ElementsAreRequests(
-                            kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest)),
@@ -3151,14 +2900,15 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
                         ElementsAreRequests(
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
+  // Bid count should only be incremented by 1.
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://component-bid.test/"})",
+  EXPECT_EQ(R"({"render_url":"https://component2-bid.test/"})",
             result_.winning_group_ad_metadata);
-  // Currently a bidder participating twice in an auction is counted as two
-  // participating interest groups.
+  // Currently an interest group participating twice in an auction is counted
+  // twice.
   CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/3, /*expected_owners=*/3,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/3);
 }
 
@@ -11189,7 +10939,8 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     GURL seller_url;
     int num_bidders;
   } kSellerInfo[] = {
-      {kSellerUrl, 2},
+      // Top-level seller can't have any bidders.
+      {kSellerUrl, 0},
       {kComponentSeller1Url, 3},
       {kComponentSeller2Url, 5},
       {kComponentSeller3Url, 7},
@@ -11263,44 +11014,43 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 
   EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
 
-  // Bidder 11 won - the first bidder for the third component auction. Higher
+  // Bidder 9 won - the first bidder for the third component auction. Higher
   // bidders bid more, but component sellers use a script that favors lower
   // bidders, while the top-level seller favors higher bidders.
-  EXPECT_EQ(GURL("https://bidder11.ad.test/"), result_.ad_url);
+  EXPECT_EQ(GURL("https://bidder9.ad.test/"), result_.ad_url);
 
   // Top seller doesn't report a loss, since it never saw the bid from the
   // second bidder.
   EXPECT_THAT(result_.debug_loss_report_urls,
               testing::UnorderedElementsAre(
-                  // kSeller's bidders.
-                  GURL("https://bidder1.test/loss/"),
-                  GURL("https://seller0.test/loss/1"),
-                  GURL("https://bidder2.test/loss/"),
-                  GURL("https://seller0.test/loss/2"),
                   // kComponentSeller1's bidders. The first makes it to the
                   // top-level auction, the others do not.
+                  GURL("https://bidder1.test/loss/"),
+                  GURL("https://seller1.test/loss/1"),
+                  GURL("https://seller0.test/loss/1"),
+                  GURL("https://bidder2.test/loss/"),
+                  GURL("https://seller1.test/loss/2"),
                   GURL("https://bidder3.test/loss/"),
                   GURL("https://seller1.test/loss/3"),
-                  GURL("https://seller0.test/loss/3"),
-                  GURL("https://bidder4.test/loss/"),
-                  GURL("https://seller1.test/loss/4"),
-                  GURL("https://bidder5.test/loss/"),
-                  GURL("https://seller1.test/loss/5"),
                   // kComponentSeller2's bidders. The first makes it to the
                   // top-level auction, the others do not.
+                  GURL("https://bidder4.test/loss/"),
+                  GURL("https://seller2.test/loss/4"),
+                  GURL("https://seller0.test/loss/4"),
+                  GURL("https://bidder5.test/loss/"),
+                  GURL("https://seller2.test/loss/5"),
                   GURL("https://bidder6.test/loss/"),
                   GURL("https://seller2.test/loss/6"),
-                  GURL("https://seller0.test/loss/6"),
                   GURL("https://bidder7.test/loss/"),
                   GURL("https://seller2.test/loss/7"),
                   GURL("https://bidder8.test/loss/"),
                   GURL("https://seller2.test/loss/8"),
-                  GURL("https://bidder9.test/loss/"),
-                  GURL("https://seller2.test/loss/9"),
-                  GURL("https://bidder10.test/loss/"),
-                  GURL("https://seller2.test/loss/10"),
-                  // kComponentSeller3's bidders. Bidder 11 won the entire
+                  // kComponentSeller3's bidders. Bidder 9 won the entire
                   // auction, all the others lose component seller 3's auction.
+                  GURL("https://bidder10.test/loss/"),
+                  GURL("https://seller3.test/loss/10"),
+                  GURL("https://bidder11.test/loss/"),
+                  GURL("https://seller3.test/loss/11"),
                   GURL("https://bidder12.test/loss/"),
                   GURL("https://seller3.test/loss/12"),
                   GURL("https://bidder13.test/loss/"),
@@ -11308,17 +11058,13 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                   GURL("https://bidder14.test/loss/"),
                   GURL("https://seller3.test/loss/14"),
                   GURL("https://bidder15.test/loss/"),
-                  GURL("https://seller3.test/loss/15"),
-                  GURL("https://bidder16.test/loss/"),
-                  GURL("https://seller3.test/loss/16"),
-                  GURL("https://bidder17.test/loss/"),
-                  GURL("https://seller3.test/loss/17")));
+                  GURL("https://seller3.test/loss/15")));
 
   EXPECT_THAT(
       result_.debug_win_report_urls,
-      testing::UnorderedElementsAre(GURL("https://bidder11.test/win/"),
-                                    GURL("https://seller3.test/win/11"),
-                                    GURL("https://seller0.test/win/11")));
+      testing::UnorderedElementsAre(GURL("https://bidder9.test/win/"),
+                                    GURL("https://seller3.test/win/9"),
+                                    GURL("https://seller0.test/win/9")));
 }
 
 // Reject reason returned by scoreAd() for a rejected bid can be reported to the

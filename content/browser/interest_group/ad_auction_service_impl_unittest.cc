@@ -4318,13 +4318,13 @@ function scoreAd(
 //
 // Create 2 interest groups, each in different origins, A and C (we can't use B
 // because AllowInterestGroupContentBrowserClient doesn't allow B interest
-// groups to participate in A auctions). Run a component
-// auction where A is a buyer on the top-level auction, and C is a buyer in the
-// component auction. Force the inner auction to win by making it bid higher.
+// groups to participate in A auctions). Run a component auction where A is a
+// buyer in one component auction, and C is a buyer in another component
+// auction. A wins.
 //
 // Both interest groups should be updated after the auction completes.
 TEST_F(AdAuctionServiceImplTest,
-       UpdatesInterestGroupsAfterComponentAuctionInnerWins) {
+       UpdatesInterestGroupsAfterComponentAuctionWithWinner) {
   constexpr char kBiddingScript1[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
@@ -4389,16 +4389,25 @@ function scoreAd(
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
 
   NavigateAndCommit(kUrlA);
+
   blink::AuctionConfig auction_config;
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  blink::AuctionConfig component_auction;
-  component_auction.seller = kOriginA;
-  component_auction.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-  component_auction.non_shared_params.interest_group_buyers = {kOriginC};
+
+  blink::AuctionConfig component_auction1;
+  component_auction1.seller = kOriginA;
+  component_auction1.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  component_auction1.non_shared_params.interest_group_buyers = {kOriginA};
   auction_config.non_shared_params.component_auctions.emplace_back(
-      std::move(component_auction));
+      std::move(component_auction1));
+
+  blink::AuctionConfig component_auction2;
+  component_auction2.seller = kOriginA;
+  component_auction2.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  component_auction2.non_shared_params.interest_group_buyers = {kOriginC};
+  auction_config.non_shared_params.component_auctions.emplace_back(
+      std::move(component_auction2));
+
   absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   ASSERT_NE(auction_result, absl::nullopt);
   EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
@@ -4424,115 +4433,12 @@ function scoreAd(
             "https://example.com/new_render");
 }
 
-// Like UpdatesInterestGroupsAfterComponentAuctionInnerWins, but the outer
-// auction wins.
-TEST_F(AdAuctionServiceImplTest,
-       UpdatesInterestGroupsAfterComponentAuctionOuterWins) {
-  constexpr char kBiddingScript1[] = R"(
-function generateBid(
-    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-    browserSignals) {
-  return {'ad': 'example', 'bid': 2, 'render': 'https://example.com/render1',
-          'allowComponentAuction': true};
-}
-)";
-  constexpr char kBiddingScript2[] = R"(
-function generateBid(
-    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-    browserSignals) {
-  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render2',
-          'allowComponentAuction': true};
-}
-)";
-
-  constexpr char kDecisionScript[] = R"(
-function scoreAd(
-    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
-  return {desirability: bid, allowComponentAuction: true};
-}
-)";
-
-  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
-        }]
-})");
-
-  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPathC, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
-        }]
-})");
-
-  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript1);
-  network_responder_->RegisterScriptResponse(kNewBiddingUrlPath,
-                                             kBiddingScript2);
-  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
-
-  blink::InterestGroup interest_group_a = CreateInterestGroup();
-  interest_group_a.daily_update_url = kUpdateUrlA;
-  interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
-  interest_group_a.ads.emplace();
-  blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render1"),
-      /*metadata=*/absl::nullopt);
-  interest_group_a.ads->emplace_back(std::move(ad));
-  JoinInterestGroupAndFlush(interest_group_a);
-  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
-
-  NavigateAndCommit(kUrlC);
-  blink::InterestGroup interest_group_b = CreateInterestGroup();
-  interest_group_b.owner = kOriginC;
-  interest_group_b.daily_update_url = kUpdateUrlC;
-  interest_group_b.bidding_url = kUrlC.Resolve(kNewBiddingUrlPath);
-  interest_group_b.ads.emplace();
-  ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render2"),
-      /*metadata=*/absl::nullopt);
-  interest_group_b.ads->emplace_back(std::move(ad));
-  JoinInterestGroupAndFlush(interest_group_b);
-  EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
-
-  NavigateAndCommit(kUrlA);
-  blink::AuctionConfig auction_config;
-  auction_config.seller = kOriginA;
-  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  blink::AuctionConfig component_auction;
-  component_auction.seller = kOriginA;
-  component_auction.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-  component_auction.non_shared_params.interest_group_buyers = {kOriginC};
-  auction_config.non_shared_params.component_auctions.emplace_back(
-      std::move(component_auction));
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
-  EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
-            GURL("https://example.com/render1"));
-
-  // Now that the auction has completed, check that the interest groups updated.
-  task_environment()->RunUntilIdle();
-
-  auto a_groups = GetInterestGroupsForOwner(kOriginA);
-  ASSERT_EQ(a_groups.size(), 1u);
-  auto a_group = a_groups[0].interest_group;
-  ASSERT_TRUE(a_group.ads.has_value());
-  ASSERT_EQ(a_group.ads->size(), 1u);
-  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
-            "https://example.com/new_render");
-
-  auto c_groups = GetInterestGroupsForOwner(kOriginC);
-  ASSERT_EQ(c_groups.size(), 1u);
-  auto c_group = c_groups[0].interest_group;
-  ASSERT_TRUE(c_group.ads.has_value());
-  ASSERT_EQ(c_group.ads->size(), 1u);
-  EXPECT_EQ(c_group.ads.value()[0].render_url.spec(),
-            "https://example.com/new_render");
-}
-
-// Like UpdatesInterestGroupsAfterComponentAuctionInnerWins, but there's no
+// Like UpdatesInterestGroupsAfterComponentAuctionWithWinner, but there's no
 // winner, since the decision script scores every bid as 0.
 //
-// All participating interest groups should still update.
+// All participating interest groups should still be updated.
 TEST_F(AdAuctionServiceImplTest,
-       UpdatesInterestGroupsAfterComponentAuctionNoWinner) {
+       UpdatesInterestGroupsAfterComponentAuctionWithNoWinner) {
   constexpr char kBiddingScript1[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
@@ -4597,16 +4503,25 @@ function scoreAd(
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
 
   NavigateAndCommit(kUrlA);
+
   blink::AuctionConfig auction_config;
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  blink::AuctionConfig component_auction;
-  component_auction.seller = kOriginA;
-  component_auction.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-  component_auction.non_shared_params.interest_group_buyers = {kOriginC};
+
+  blink::AuctionConfig component_auction1;
+  component_auction1.seller = kOriginA;
+  component_auction1.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  component_auction1.non_shared_params.interest_group_buyers = {kOriginA};
   auction_config.non_shared_params.component_auctions.emplace_back(
-      std::move(component_auction));
+      std::move(component_auction1));
+
+  blink::AuctionConfig component_auction2;
+  component_auction2.seller = kOriginA;
+  component_auction2.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  component_auction2.non_shared_params.interest_group_buyers = {kOriginC};
+  auction_config.non_shared_params.component_auctions.emplace_back(
+      std::move(component_auction2));
+
   absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   EXPECT_EQ(auction_result, absl::nullopt);
 

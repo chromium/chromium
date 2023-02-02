@@ -146,6 +146,13 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
 
   out->all_buyers_group_limit = data.all_buyers_group_limit();
 
+  // Only one of `interest_group_buyers` or `component_auctions` may be
+  // non-empty.
+  if (out->interest_group_buyers && out->interest_group_buyers->size() > 0 &&
+      out->component_auctions.size() > 0) {
+    return false;
+  }
+
   if (out->interest_group_buyers) {
     for (const auto& buyer : *out->interest_group_buyers) {
       // Buyers must be HTTPS.

@@ -2486,7 +2486,9 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       R"("decisionLogicUrl":"https://example.com/auction.js"})",
       /*expected_report_url=*/absl::nullopt);
 
-  // Everything filled in.
+  // Everything filled in but component auctions (can't include component
+  // auctions and non-empty interestGroupBuyers, so test those cases
+  // separately).
   decision_logic_url_ = GURL("https://example.com/auction.js");
   trusted_scoring_signals_url_ =
       GURL("https://example.com/scoring_signals.json");
@@ -2524,11 +2526,31 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   auction_ad_config_non_shared_params_.all_buyers_priority_signals = {
       {"signals_d", 0}};
 
-  // Add and populate two component auctions, each with one the mandatory
-  // `seller` and `decision_logic_url` fields filled in, one one extra field:
-  // One that's directly a member of the AuctionAdConfig, and one that's in the
-  // non-shared params.
+  const char kExpectedJson1[] =
+      R"({"seller":"https://example.com",
+          "decisionLogicUrl":"https://example.com/auction.js",
+          "trustedScoringSignalsUrl":"https://example.com/scoring_signals.json",
+          "interestGroupBuyers":["https://buyer1.com",
+                                 "https://another-buyer.com"],
+          "auctionSignals":{"is_auction_signals":true},
+          "sellerSignals":{"is_seller_signals":true},
+          "sellerTimeout":200,
+          "perBuyerSignals":{"https://a.com":{"signals_a":"A"},
+                             "https://b.com":{"signals_b":"B"}},
+          "perBuyerTimeouts":{"https://a.com":100,"*":150},
+          "perBuyerPrioritySignals":{"https://a.com":{"signals_c":0.5},
+                                     "*":            {"signals_d":0}}
+        })";
+  RunReportResultCreatedScriptExpectingResult(
+      "auctionConfig", /*extra_code=*/std::string(), kExpectedJson1,
+      /*expected_report_url=*/absl::nullopt);
 
+  // Clear NonSharedParams(), and add and populate two component auctions, each
+  // with one the mandatory `seller` and `decision_logic_url` fields filled in,
+  // and one extra field: One that's directly a member of the AuctionAdConfig,
+  // and one that's in the non-shared params.
+  auction_ad_config_non_shared_params_ =
+      blink::AuctionConfig::NonSharedParams();
   auto& component_auctions =
       auction_ad_config_non_shared_params_.component_auctions;
 
@@ -2548,20 +2570,10 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   component_auctions[1].trusted_scoring_signals_url =
       GURL("https://component2.com/signals.json");
 
-  const char kExpectedJson[] =
+  const char kExpectedJson2[] =
       R"({"seller":"https://example.com",
           "decisionLogicUrl":"https://example.com/auction.js",
           "trustedScoringSignalsUrl":"https://example.com/scoring_signals.json",
-          "interestGroupBuyers":["https://buyer1.com",
-                                 "https://another-buyer.com"],
-          "auctionSignals":{"is_auction_signals":true},
-          "sellerSignals":{"is_seller_signals":true},
-          "sellerTimeout":200,
-          "perBuyerSignals":{"https://a.com":{"signals_a":"A"},
-                             "https://b.com":{"signals_b":"B"}},
-          "perBuyerTimeouts":{"https://a.com":100,"*":150},
-          "perBuyerPrioritySignals":{"https://a.com":{"signals_c":0.5},
-                                     "*":            {"signals_d":0}},
           "componentAuctions":[
               {"seller":"https://component1.com",
                "decisionLogicUrl":"https://component1.com/script.js",
@@ -2571,7 +2583,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
                "trustedScoringSignalsUrl":"https://component2.com/signals.json"}
           ]})";
   RunReportResultCreatedScriptExpectingResult(
-      "auctionConfig", /*extra_code=*/std::string(), kExpectedJson,
+      "auctionConfig", /*extra_code=*/std::string(), kExpectedJson2,
       /*expected_report_url=*/absl::nullopt);
 }
 

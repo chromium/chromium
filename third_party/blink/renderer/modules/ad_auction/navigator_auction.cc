@@ -1471,6 +1471,17 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
 
   // Recursively handle component auctions, if there are any.
   if (config.hasComponentAuctions()) {
+    if (config.componentAuctions().size() > 0 &&
+        mojo_config->auction_ad_config_non_shared_params
+            ->interest_group_buyers &&
+        mojo_config->auction_ad_config_non_shared_params->interest_group_buyers
+                ->size() > 0) {
+      exception_state.ThrowTypeError(
+          "Auctions may only have one of 'interestGroupBuyers' or "
+          "'componentAuctions'.");
+      return mojom::blink::AuctionAdConfigPtr();
+    }
+
     for (uint32_t pos = 0; pos < config.componentAuctions().size(); ++pos) {
       const auto& idl_component_auction = config.componentAuctions()[pos];
       // Component auctions may not have their own nested component auctions.
