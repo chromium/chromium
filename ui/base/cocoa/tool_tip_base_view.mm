@@ -49,11 +49,20 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+@implementation ToolTipBaseView
+
+#ifndef MAC_OS_VERSION_13_0
+#define MAC_OS_VERSION_13_0 130000
+#endif
+
+// Remove these methods once macOS 13 becomes the minimum deployment version
+// (see comment in -setToolTipAtMousePoint: below). Consider moving the
+// remainder into BaseView.
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_13_0
+
 // Any non-zero value will do, but using something recognizable might help us
 // debug some day.
 const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
-
-@implementation ToolTipBaseView
 
 // Override of a public NSView method, replacing the inherited functionality.
 // See above for rationale.
@@ -171,6 +180,8 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
   [_trackingRectOwner mouseEntered:fakeEvent];
 }
 
+#endif  // MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_13_0
+
 // Sets the view's current tooltip, to be displayed at the current mouse
 // location. (This does not make the tooltip appear -- as usual, it only
 // appears after a delay.) Pass null to remove the tooltip.
@@ -187,10 +198,33 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
 
   _toolTip.reset([toolTip copy]);
 
+  // It appears that as of macOS 13, tooltips are no longer set up with
+  // calls to addTrackingRect:... or removeTrackingRect:. As a result,
+  // _trackingRectOwner remains nil, which means the calls to
+  // [_trackingRectOwner mouseEntered:] in _sendToolTipMouseEntered and
+  // [_trackingRectOwner mouseExited:] in _sendToolTipMouseExited do nothing.
+  // It looks like this doesn't affect tooltip display, but the call to
+  // _sendToolTipMouseExited no longer orders it out. Therefore, when the user
+  // moves the mouse away from a tooltip on Ventura, the call to
+  // setToolTipAtMousePoint:nil initiated by the target view leaves the
+  // toopltip onscreen.
+  //
+  // The logic below was
+  //
+  //   if (tooltip) {
+  //     [self removeAllTooltips];
+  //     ...
+  //   }
+  //
+  // By moving the call to -removeAllTooltips outside of the conditional,
+  // we can ensure any visible tooltip will be removed from the screen.
+  // See crbug.com/1409942.
+  //
+  // The strategy of removing all tooltips rather than the single one that
+  // was added comes from WebKit, like the rest of the code here. It
+  // apparently works around some AppKit bug.
+  [self removeAllToolTips];
   if (toolTip) {
-    // See radar 3500217 for why we remove all tooltips
-    // rather than just the single one we created.
-    [self removeAllToolTips];
     NSRect wideOpenRect = NSMakeRect(-100000, -100000, 200000, 200000);
     _lastToolTipTag = [self addToolTipRect:wideOpenRect
                                      owner:self
