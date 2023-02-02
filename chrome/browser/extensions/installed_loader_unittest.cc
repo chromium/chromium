@@ -127,21 +127,33 @@ class InstalledLoaderUnitTest : public ExtensionServiceTestBase {
 
   void RunHostPermissionsMetricsTest(HostPermissionsMetricsTestParams params);
 
+ protected:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Set an expectation on the profile helper and expect a return from the
-  // `ProfileCanUseNonComponentExtensions` method.
+  // Set an expectation on the profile helper to return `fake_user` and expect a
+  // return from the `ProfileCanUseNonComponentExtensions` method.
   void MockAndRunProfileCanUseNonComponentExtensionsTest(
       const user_manager::User* fake_user,
       bool expected_return);
 
   ash::FakeChromeUserManager* user_manager() { return fake_user_manager_; }
   NiceMock<MockProfileHelper>* profile_helper() { return &mock_profile_helper; }
-
- protected:
   const AccountId account_id_ =
       AccountId::FromUserEmailGaiaId("test-user@testdomain.com", "1234567890");
-  NiceMock<MockProfileHelper> mock_profile_helper;
 
+  // Set an expectation on the profile helper to return `fake_user` and check if
+  // incremented histograms are, or are not, emitted.
+  void MockAndRunIncrementedHistogramsTest(
+      const user_manager::User* fake_user,
+      int incremented_histograms_expected_total_count);
+#else
+  // Set an expectation on the profile helper to return `fake_user` and check if
+  // incremented histograms are, or are not, emitted.
+  void MockAndRunIncrementedHistogramsTest(
+      Profile* profile,
+      int incremented_histograms_expected_total_count);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
  private:
   // Setting up a fake user manager seems excessive for a unit test
   // as opposed to mocking, but it seems you cannot create a
@@ -152,6 +164,7 @@ class InstalledLoaderUnitTest : public ExtensionServiceTestBase {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_ =
       std::make_unique<user_manager::ScopedUserManager>(
           base::WrapUnique(fake_user_manager_));
+  NiceMock<MockProfileHelper> mock_profile_helper;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
@@ -227,6 +240,49 @@ void InstalledLoaderUnitTest::MockAndRunProfileCanUseNonComponentExtensionsTest(
   EXPECT_EQ(expected_return, loader.ProfileCanUseNonComponentExtensions(
                                  (testing_profile()), profile_helper()));
   testing::Mock::VerifyAndClear(profile_helper());
+}
+
+void InstalledLoaderUnitTest::MockAndRunIncrementedHistogramsTest(
+    const user_manager::User* fake_user,
+    int incremented_histograms_expected_total_count) {
+  ON_CALL(testing::Const(*profile_helper()),
+          GetUserByProfile(testing::An<const Profile*>()))
+      .WillByDefault(testing::Return(fake_user));
+
+  base::HistogramTester histograms;
+  InstalledLoader loader(service());
+  loader.RecordExtensionsProfileSpecificMetricsForTesting(testing_profile(),
+                                                          profile_helper());
+
+  histograms.ExpectTotalCount("Extensions.LoadAll", 1);
+  histograms.ExpectTotalCount("Extensions.Disabled", 1);
+  histograms.ExpectTotalCount("Extensions.ManifestVersion", 1);
+
+  histograms.ExpectTotalCount("Extensions.LoadAll2",
+                              incremented_histograms_expected_total_count);
+  histograms.ExpectTotalCount("Extensions.Disabled2",
+                              incremented_histograms_expected_total_count);
+  histograms.ExpectTotalCount("Extensions.ManifestVersion2",
+                              incremented_histograms_expected_total_count);
+}
+#else
+void InstalledLoaderUnitTest::MockAndRunIncrementedHistogramsTest(
+    Profile* profile,
+    int incremented_histograms_expected_total_count) {
+  base::HistogramTester histograms;
+  InstalledLoader loader(service());
+  loader.RecordExtensionsProfileSpecificMetricsForTesting(profile);
+
+  histograms.ExpectTotalCount("Extensions.LoadAll", 1);
+  histograms.ExpectTotalCount("Extensions.Disabled", 1);
+  histograms.ExpectTotalCount("Extensions.ManifestVersion", 1);
+
+  histograms.ExpectTotalCount("Extensions.LoadAll2",
+                              incremented_histograms_expected_total_count);
+  histograms.ExpectTotalCount("Extensions.Disabled2",
+                              incremented_histograms_expected_total_count);
+  histograms.ExpectTotalCount("Extensions.ManifestVersion2",
+                              incremented_histograms_expected_total_count);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -481,6 +537,58 @@ TEST_F(InstalledLoaderUnitTest,
   RunHostPermissionsMetricsTest(params);
 }
 
+// TODO(crbug.com/1383740): After deleting the deprecated unincremented
+// histograms, expand theses test cases to cover more of the histograms.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that some histograms that only emit for profiles that can use
+// non-component extensions emit as expected.
+TEST_F(InstalledLoaderUnitTest,
+       Browser_ProfileSpecificMetrics_IncrementedEmitForRegularProfile) {
+  ASSERT_TRUE(AddExtension({"<all_urls>"}, kManifestInternal));
+  MockAndRunIncrementedHistogramsTest(
+      testing_profile(),
+      /*incremented_histograms_expected_total_count=*/true);
+}
+
+// Tests that some histograms that only emit for profiles that can use
+// non-component extensions do not emit as expected.
+TEST_F(InstalledLoaderUnitTest,
+       Browser_ProfileSpecificMetrics_IncrementedDoNotEmitForGuestProfile) {
+  ASSERT_TRUE(AddExtension({"<all_urls>"}, kManifestInternal));
+  testing_profile()->SetGuestSession(true);
+  MockAndRunIncrementedHistogramsTest(
+      testing_profile(),
+      /*incremented_histograms_expected_total_count=*/false);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(InstalledLoaderUnitTest,
+       ChromeOS_ProfileSpecificMetrics_IncrementedEmitForRegularProfile) {
+  ASSERT_TRUE(AddExtension({"<all_urls>"}, kManifestInternal));
+
+  // fake_user is a regular profile by default.
+  const user_manager::User* fake_user = user_manager()->AddUser(account_id_);
+  ASSERT_TRUE(fake_user);
+  MockAndRunIncrementedHistogramsTest(
+      fake_user,
+      /*incremented_histograms_expected_total_count=*/true);
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       ChromeOS_ProfileSpecificMetrics_IncrementedDoNotEmitForGuestProfile) {
+  ASSERT_TRUE(AddExtension({"<all_urls>"}, kManifestInternal));
+
+  base::HistogramTester histograms;
+
+  const user_manager::User* fake_guest_user = user_manager()->AddGuestUser();
+  ASSERT_TRUE(fake_guest_user);
+  MockAndRunIncrementedHistogramsTest(
+      fake_guest_user,
+      /*incremented_histograms_expected_total_count=*/false);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(InstalledLoaderUnitTest,
        Browser_ProfileCanUseNonComponentExtensions_RegularProfile) {
@@ -492,7 +600,7 @@ TEST_F(InstalledLoaderUnitTest,
 TEST_F(InstalledLoaderUnitTest,
        Browser_ProfileCannotUseNonComponentExtensions_NoProfile) {
   InstalledLoader loader(service());
-  EXPECT_FALSE(loader.ProfileCanUseNonComponentExtensions(nullptr));
+  EXPECT_FALSE(loader.ProfileCanUseNonComponentExtensions(/*profile=*/nullptr));
 }
 
 TEST_F(InstalledLoaderUnitTest,
@@ -529,7 +637,8 @@ TEST_F(InstalledLoaderUnitTest,
   const user_manager::User* user = user_manager()->AddUser(account_id_);
   ASSERT_TRUE(user);
 
-  MockAndRunProfileCanUseNonComponentExtensionsTest(user, true);
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user,
+                                                    /*expected_return=*/true);
 }
 
 TEST_F(InstalledLoaderUnitTest,
@@ -537,7 +646,8 @@ TEST_F(InstalledLoaderUnitTest,
   const user_manager::User* user = user_manager()->AddChildUser(account_id_);
   ASSERT_TRUE(user);
 
-  MockAndRunProfileCanUseNonComponentExtensionsTest(user, true);
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user,
+                                                    /*expected_return=*/true);
 }
 
 TEST_F(InstalledLoaderUnitTest,
@@ -548,7 +658,8 @@ TEST_F(InstalledLoaderUnitTest,
       user_manager()->AddActiveDirectoryUser(account_id);
   ASSERT_TRUE(user);
 
-  MockAndRunProfileCanUseNonComponentExtensionsTest(user, true);
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user,
+                                                    /*expected_return=*/true);
 }
 
 TEST_F(InstalledLoaderUnitTest,
@@ -556,7 +667,8 @@ TEST_F(InstalledLoaderUnitTest,
   const user_manager::User* user = user_manager()->AddGuestUser();
   ASSERT_TRUE(user);
 
-  MockAndRunProfileCanUseNonComponentExtensionsTest(user, false);
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user,
+                                                    /*expected_return=*/false);
 }
 
 // TODO(crbug.com/1383740): Test a signin, lockscreen, or lockscreen app
@@ -570,7 +682,8 @@ TEST_F(InstalledLoaderUnitTest,
   const user_manager::User* user = user_manager()->AddKioskAppUser(account_id_);
   ASSERT_TRUE(user);
 
-  MockAndRunProfileCanUseNonComponentExtensionsTest(user, false);
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user,
+                                                    /*expected_return=*/false);
 }
 
 TEST_F(InstalledLoaderUnitTest,
@@ -579,7 +692,8 @@ TEST_F(InstalledLoaderUnitTest,
       user_manager()->AddWebKioskAppUser(account_id_);
   ASSERT_TRUE(user);
 
-  MockAndRunProfileCanUseNonComponentExtensionsTest(user, false);
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user,
+                                                    /*expected_return=*/false);
 }
 
 TEST_F(InstalledLoaderUnitTest,
@@ -588,7 +702,8 @@ TEST_F(InstalledLoaderUnitTest,
       user_manager()->AddArcKioskAppUser(account_id_);
   ASSERT_TRUE(user);
 
-  MockAndRunProfileCanUseNonComponentExtensionsTest(user, false);
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user,
+                                                    /*expected_return=*/false);
 }
 
 TEST_F(InstalledLoaderUnitTest,
@@ -597,20 +712,22 @@ TEST_F(InstalledLoaderUnitTest,
       user_manager()->AddPublicAccountUser(account_id_);
   ASSERT_TRUE(user);
 
-  MockAndRunProfileCanUseNonComponentExtensionsTest(user, false);
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user,
+                                                    /*expected_return=*/false);
 }
 
 TEST_F(InstalledLoaderUnitTest,
        ChromeOS_ProfileCannotUseNonComponentExtensions_NoUserInProfile) {
-  MockAndRunProfileCanUseNonComponentExtensionsTest(nullptr, false);
+  MockAndRunProfileCanUseNonComponentExtensionsTest(nullptr,
+                                                    /*expected_return=*/false);
 }
 
 TEST_F(
     InstalledLoaderUnitTest,
     ChromeOS_ProfileCannotUseNonComponentExtensions_NoProfileHelperProvided) {
   InstalledLoader loader(service());
-  EXPECT_FALSE(
-      loader.ProfileCanUseNonComponentExtensions(testing_profile(), nullptr));
+  EXPECT_FALSE(loader.ProfileCanUseNonComponentExtensions(
+      testing_profile(), /*ash::ProfileHelper*=*/nullptr));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

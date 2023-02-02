@@ -71,12 +71,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.ExtensionsWithPageActions" units="units"
-    expires_after="2023-06-18">
+    expires_after="2023-04-30">
+  <obsolete>
+    Histogram is in the process of being removed in in favor of
+    Extensions.ExtensionsWithPageActions that emits only on profile open for
+    &quot;user&quot; profiles (profiles where people can install extensions,
+    specifically profiles that can have non-component extensions installed).
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
-    The number of Extensions that have Page Actions. Measured once per startup
-    per profile.
+    The number of Extensions that have Page Actions. Measured once per profile
+    open.
   </summary>
 </histogram>
 

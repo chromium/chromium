@@ -1077,7 +1077,8 @@ void ExtensionService::GrantPermissions(const Extension* extension) {
 // static
 void ExtensionService::RecordPermissionMessagesHistogram(
     const Extension* extension,
-    const char* histogram_basename) {
+    const char* histogram_basename,
+    bool log_user_profile_histograms) {
   PermissionIDSet permissions =
       PermissionMessageProvider::Get()->GetAllPermissionIDs(
           extension->permissions_data()->active_permissions(),
@@ -1090,6 +1091,19 @@ void ExtensionService::RecordPermissionMessagesHistogram(
       base::StringPrintf("Extensions.Permissions_%s3", histogram_basename);
   for (const PermissionID& id : permissions)
     base::UmaHistogramEnumeration(permissions_histogram_name, id.id());
+
+  if (log_user_profile_histograms) {
+    base::UmaHistogramBoolean(
+        base::StringPrintf("Extensions.HasPermissions_%s4", histogram_basename),
+        !permissions.empty());
+
+    std::string permissions_histogram_name_incremented =
+        base::StringPrintf("Extensions.Permissions_%s4", histogram_basename);
+    for (const PermissionID& id : permissions) {
+      base::UmaHistogramEnumeration(permissions_histogram_name_incremented,
+                                    id.id());
+    }
+  }
 }
 
 // TODO(michaelpg): Group with other ExtensionRegistrar::Delegate overrides
@@ -1687,7 +1701,8 @@ void ExtensionService::OnExtensionInstalled(
                               100);
     UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource",
                               extension->location());
-    RecordPermissionMessagesHistogram(extension, "Install");
+    // TODO(crbug.com/1383740): Address Install metrics below in a follow-up CL.
+    RecordPermissionMessagesHistogram(extension, "Install", false);
   }
 
   const Extension::State initial_state =
