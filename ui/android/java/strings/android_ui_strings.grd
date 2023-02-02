@@ -185,6 +185,14 @@
         Unable to select media due to denied permissions
       </message>
 
+      <!-- ElidedUrlTextView Url -->
+      <message name="IDS_ELIDED_URL_TEXT_VIEW_URL_TRUNCATED" desc="Accessibility announcement when a url switches from expanded to truncated display.">
+        Url truncated
+      </message>
+      <message name="IDS_ELIDED_URL_TEXT_VIEW_URL_EXPANDED" desc="Accessibility announcement when a url switches from truncated to expanded display.">
+        Url expanded
+      </message>
+
       <!-- Clipboard -->
       <message name="IDS_COPY_TO_CLIPBOARD_FAILURE_MESSAGE" desc="Notification for when copying to the clipboard fails. [CHAR_LIMIT=64]">
         Failed to copy to the clipboard

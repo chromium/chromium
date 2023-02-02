@@ -110,8 +110,16 @@ public class ElidedUrlTextView extends AppCompatTextView {
     public void toggleTruncation() {
         mIsShowingTruncatedText = !mIsShowingTruncatedText;
         if (mFullLinesToDisplay != null) {
-            updateMaxLines();
+            if (updateMaxLines()) {
+                announceForAccessibilityOnToggleTruncation(mIsShowingTruncatedText);
+            }
         }
+    }
+
+    private void announceForAccessibilityOnToggleTruncation(boolean isUrlTruncated) {
+        announceForAccessibility(getResources().getString(isUrlTruncated
+                        ? R.string.elided_url_text_view_url_truncated
+                        : R.string.elided_url_text_view_url_expanded));
     }
 
     private boolean updateMaxLines() {
