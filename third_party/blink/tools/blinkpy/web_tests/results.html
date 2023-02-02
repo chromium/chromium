@@ -2355,7 +2355,14 @@ class ImageResultsViewer {
       let imgTile = document.createElement("div");
       imgTile.classList.add("image-viewer-tile");
       imgTile.classList.add("hidden");
-      imgTile.innerHTML = `<img src="${info.src}" crossorigin="anonymous" title="${info.title}">`;
+      let img = document.createElement("img");
+      img.src = info.src;
+      img.title = info.title;
+      if (info.src.startsWith("https://")) {
+        // Allow canvas access to CORS images.
+        img.setAttribute("crossorigin", "anonymous");
+      }
+      imgTile.appendChild(img);
       imgTile.addEventListener("scroll", this.boundTileScrollHandler, {passive: true});
       imgTile.addEventListener("wheel", this.boundWheelHandler);
       this.viewer.appendChild(imgTile);
