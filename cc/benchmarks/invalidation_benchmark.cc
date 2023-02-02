@@ -13,6 +13,7 @@
 
 #include "base/rand_util.h"
 #include "base/values.h"
+#include "cc/base/math_util.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/draw_property_utils.h"

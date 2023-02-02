@@ -12,18 +12,12 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
-#include "base/debug/alias.h"
 #include "base/functional/callback.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
-#include "cc/base/math_util.h"
 #include "cc/paint/paint_export.h"
-#include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -32,6 +26,10 @@ class SkColorSpace;
 class SkImage;
 class SkStrikeClient;
 class SkStrikeServer;
+
+namespace gpu {
+struct Mailbox;
+}
 
 namespace cc {
 

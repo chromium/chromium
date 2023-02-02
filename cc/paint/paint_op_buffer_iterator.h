@@ -9,8 +9,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/debug/alias.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cc {
 
