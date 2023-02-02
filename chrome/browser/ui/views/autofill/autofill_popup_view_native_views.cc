@@ -314,29 +314,6 @@ namespace autofill {
 
 namespace {
 
-class PopupSeparator : public views::Separator {
- public:
-  METADATA_HEADER(PopupSeparator);
-  explicit PopupSeparator(AutofillPopupBaseView* popup);
-
- private:
-  raw_ptr<AutofillPopupBaseView> popup_;
-};
-
-PopupSeparator::PopupSeparator(AutofillPopupBaseView* popup) : popup_(popup) {
-  SetPreferredLength(views::MenuConfig::instance().separator_thickness);
-  // Add some spacing between the previous item and the separator.
-  // If the feature AutofillVisualImprovementsForSuggestionUi is enabled, also
-  // add a padding after the separator.
-  // TODO(crbug.com/1274134): Clean up once improvements are launched.
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-      GetContentsVerticalPadding(), 0, GetContentsVerticalPadding(), 0)));
-  SetColorId(popup_->GetSeparatorColorId());
-}
-
-BEGIN_METADATA(PopupSeparator, views::Separator)
-END_METADATA
-
 class SuggestionLabel : public views::Label {
  public:
   METADATA_HEADER(SuggestionLabel);
@@ -1241,7 +1218,13 @@ void AutofillPopupSeparatorView::GetAccessibleNodeData(
 
 void AutofillPopupSeparatorView::CreateContent() {
   SetUseDefaultFillLayout(true);
-  AddChildView(std::make_unique<PopupSeparator>(popup_view()));
+
+  AddChildView(views::Builder<views::Separator>()
+                   .SetBorder(views::CreateEmptyBorder(
+                       gfx::Insets::VH(GetContentsVerticalPadding(), 0)))
+                   .SetColorId(ui::kColorSeparator)
+                   .Build());
+
   SetBackground(views::CreateThemedSolidBackground(GetBackgroundColorId()));
 }
 
