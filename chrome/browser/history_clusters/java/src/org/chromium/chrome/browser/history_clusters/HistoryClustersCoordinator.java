@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
@@ -167,6 +168,10 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
     /** Handles a back button press event, returning true if the event is handled. */
     public boolean onBackPressed() {
         return mSelectableListLayout.onBackPressed();
+    }
+
+    public BackPressHandler getBackPressHandler() {
+        return mSelectableListLayout;
     }
 
     /** Called to notify the Journeys UI that history has been deleted by some other party. */

@@ -12,6 +12,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 
@@ -35,7 +36,12 @@ public class HistoryActivity extends SnackbarActivity {
                 /* Supplier<Tab>= */ null, showHistoryClustersImmediately, historyClustersQuery,
                 new BrowsingHistoryBridge(Profile.getLastUsedRegularProfile()));
         setContentView(mHistoryManager.getView());
-        BackPressHelper.create(this, getOnBackPressedDispatcher(), mHistoryManager::onBackPressed);
+        if (BackPressManager.isSecondaryActivityEnabled()) {
+            BackPressHelper.create(this, getOnBackPressedDispatcher(), mHistoryManager);
+        } else {
+            BackPressHelper.create(
+                    this, getOnBackPressedDispatcher(), mHistoryManager::onBackPressed);
+        }
     }
 
     @Override

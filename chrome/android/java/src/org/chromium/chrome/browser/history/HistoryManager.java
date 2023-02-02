@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter.DateViewHolder;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
@@ -82,7 +83,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class HistoryManager implements OnMenuItemClickListener, SelectionObserver<HistoryItem>,
                                        SearchDelegate, SnackbarController,
-                                       HistoryContentManager.Observer {
+                                       HistoryContentManager.Observer, BackPressHandler {
     private static final String METRICS_PREFIX = "Android.HistoryPage.";
     static final String HISTORY_CLUSTERS_VISIBLE_PREF = "history_clusters.visible";
 
@@ -106,7 +107,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             new ObservableSupplierImpl<>();
     private ViewGroup mRootView;
     private ViewGroup mContentView;
-    private SelectableListLayout<HistoryItem> mSelectableListLayout;
+    @Nullable
+    private final SelectableListLayout<HistoryItem> mSelectableListLayout;
     private HistoryContentManager mContentManager;
     private SelectionDelegate<HistoryItem> mSelectionDelegate;
     private HistoryManagerToolbar mToolbar;
@@ -117,6 +119,10 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mShouldShowClearBrowsingDataSupplier =
             new ObservableSupplierImpl<>();
+
+    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
+            new ObservableSupplierImpl<>();
+
     private final PrefService mPrefService;
     private @Nullable TabLayout mHistoryTabToggle;
     private @Nullable TabLayout mJourneysTabToggle;
@@ -148,10 +154,12 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         mIsIncognito = isIncognito;
         mHistoryProvider = historyProvider;
         mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        mBackPressStateSupplier.set(false);
 
         recordUserAction("Show");
         // If incognito placeholder is shown, we don't need to create History UI elements.
         if (mIsIncognito) {
+            mSelectableListLayout = null;
             mRootView = getIncognitoHistoryPlaceholderView();
             return;
         }
@@ -343,15 +351,24 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         mContentManager.startLoadingItems();
 
         if (showHistoryClustersImmediately) {
-            mContentView = mHistoryClustersCoordinator.getActivityContentView();
+            setContentView(mHistoryClustersCoordinator.getActivityContentView());
             QueryState queryState = TextUtils.isEmpty(historyClustersQuery)
                     ? QueryState.forQueryless()
                     : QueryState.forQuery(historyClustersQuery, getSearchEmptyString());
             mHistoryClustersCoordinator.setInitialQuery(queryState);
         } else {
-            mContentView = mSelectableListLayout;
+            setContentView(mSelectableListLayout);
         }
         mRootView.addView(mContentView);
+        mSelectableListLayout.getHandleBackPressChangedSupplier().addObserver(
+                (x) -> onBackPressStateChanged());
+        if (mHistoryClustersCoordinator != null) {
+            mHistoryClustersCoordinator.getBackPressHandler()
+                    .getHandleBackPressChangedSupplier()
+                    .addObserver((x) -> onBackPressStateChanged());
+        }
+
+        onBackPressStateChanged(); // Initialize back press State.
     }
 
     private void onHistoryClustersOptOutChanged(boolean isVisible) {
@@ -576,7 +593,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         } else if (isHistoryClustersUIShowing()) {
             toHistoryClusters = false;
             mHistoryClustersCoordinator.onToggled(false);
-            mContentView = mSelectableListLayout;
+            setContentView(mSelectableListLayout);
             mContentManager.startLoadingItems();
             // Each page of content has a distinct TabLayout with independent selection state, but
             // should only ever display the selected tab corresponding to the owning page. i.e. Page
@@ -592,7 +609,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             assert mHistoryClustersCoordinator
                     != null : "swapContentView() shouldn't be called if HistoryClusters is off";
             toHistoryClusters = true;
-            mContentView = mHistoryClustersCoordinator.getActivityContentView();
+            setContentView(mHistoryClustersCoordinator.getActivityContentView());
             mHistoryClustersCoordinator.onToggled(true);
             if (mJourneysTabToggle != null) {
                 mJourneysTabToggle.selectTab(mJourneysTabToggle.getTabAt(JOURNEYS_TAB_INDEX));
@@ -603,6 +620,11 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         Scene scene = new Scene(mRootView, mContentView);
         TransitionManager.go(scene, transition);
         mContentView.requestFocus();
+    }
+
+    private void setContentView(ViewGroup contentView) {
+        mContentView = contentView;
+        onBackPressStateChanged();
     }
 
     private Transition makeContentSwapTransition(boolean toHistoryClusters) {
@@ -661,6 +683,27 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         }
 
         return mSelectableListLayout.onBackPressed();
+    }
+
+    // BackPressHandler implementation.
+    @Override
+    public void handleBackPress() {
+        var ret = onBackPressed();
+        assert ret;
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressStateSupplier;
+    }
+
+    private void onBackPressStateChanged() {
+        boolean shouldInterceptBackPress = isHistoryClustersUIShowing()
+                ? mHistoryClustersCoordinator.getBackPressHandler()
+                          .getHandleBackPressChangedSupplier()
+                          .get()
+                : mSelectableListLayout.getHandleBackPressChangedSupplier().get();
+        mBackPressStateSupplier.set(shouldInterceptBackPress);
     }
 
     @Override

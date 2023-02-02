@@ -100,6 +100,7 @@ public class SelectableListLayout<E> extends FrameLayout
 
     public SelectableListLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        onBackPressStateChanged(); // Initialize back press state.
     }
 
     @Override
@@ -411,6 +412,10 @@ public class SelectableListLayout<E> extends FrameLayout
     }
 
     private void onBackPressStateChanged() {
+        if (mToolbar == null) {
+            mBackPressStateSupplier.set(false);
+            return;
+        }
         mBackPressStateSupplier.set(
                 mToolbar.getSelectionDelegate().isSelectionEnabled() || mToolbar.isSearching());
     }

@@ -26,6 +26,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedDispatcher;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
@@ -51,6 +53,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersBridge;
@@ -79,6 +82,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
@@ -90,7 +94,8 @@ import java.util.Date;
  * Tests the History UI.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(ChromeFeatureList.HISTORY_JOURNEYS)
+@DisableFeatures(
+        {ChromeFeatureList.HISTORY_JOURNEYS, ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
 public class HistoryUITest {
     private static final int PAGE_INCREMENT = 2;
     private static final String HISTORY_SEARCH_QUERY = "some page";
@@ -117,6 +122,8 @@ public class HistoryUITest {
     private HistoryItem mItem1;
     private HistoryItem mItem2;
     private int mHeight;
+    private OnBackPressedDispatcher mOnBackPressedDispatcher;
+    private LifecycleOwner mLifecycleOwner;
 
     @Mock
     private SnackbarManager mSnackbarManager;
@@ -165,7 +172,11 @@ public class HistoryUITest {
         IncognitoUtils.setEnabledForTesting(true);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         HistoryClustersBridge.setInstanceForTesting(mHistoryClustersBridge);
-        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
+        mActivityScenarioRule.getScenario().onActivity(activity -> {
+            mActivity = activity;
+            mOnBackPressedDispatcher = activity.getOnBackPressedDispatcher();
+            mLifecycleOwner = activity;
+        });
         mHistoryManager = new HistoryManager(mActivity, true, mSnackbarManager, false,
                 /* Supplier<Tab>= */ null, false, null, mHistoryProvider);
         mHistoryClustersCoordinator = mHistoryManager.getHistoryClustersCoordinatorForTests();
@@ -187,6 +198,15 @@ public class HistoryUITest {
         }
 
         Assert.assertEquals(expectedItemCount, mAdapter.getItemCount());
+
+        // Some individual tests may override to enable this feature which is disabled by
+        // the class by default.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY)) {
+            BackPressHelper.create(mLifecycleOwner, mOnBackPressedDispatcher, mHistoryManager);
+        } else {
+            BackPressHelper.create(
+                    mLifecycleOwner, mOnBackPressedDispatcher, mHistoryManager::onBackPressed);
+        }
     }
 
     @Test
@@ -413,9 +433,48 @@ public class HistoryUITest {
         Assert.assertEquals(View.VISIBLE, toolbarSearchView.getVisibility());
 
         // Close the search view.
+        Assert.assertTrue(mHistoryManager.getHandleBackPressChangedSupplier().get());
         toolbar.onNavigationBack();
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testSearchViewDismissedByBackPress() {
+        final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
+        View toolbarShadow = mHistoryManager.getSelectableListLayout().getToolbarShadowForTests();
+        View toolbarSearchView = toolbar.getSearchViewForTests();
+        Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
+        Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
+
+        performMenuAction(R.id.search_menu_id);
+
+        // Select an item and assert that the search view is still not showing.
+        toggleItemSelection(2);
+        Assert.assertTrue(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
+        Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
+        Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
+
+        // Press back press to unselect item and the search view is showing again.
+        Assert.assertTrue(mHistoryManager.getHandleBackPressChangedSupplier().get());
+        TestThreadUtils.runOnUiThreadBlocking(mOnBackPressedDispatcher::onBackPressed);
+        Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
+        Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
+        Assert.assertEquals(View.VISIBLE, toolbarSearchView.getVisibility());
+
+        // Press back to close the search view.
+        Assert.assertTrue(mHistoryManager.getHandleBackPressChangedSupplier().get());
+        TestThreadUtils.runOnUiThreadBlocking(mOnBackPressedDispatcher::onBackPressed);
+        Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
+        Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
+    public void testSearchViewDismissedByBackPress_Refactored() {
+        testSearchViewDismissedByBackPress();
     }
 
     @Test
