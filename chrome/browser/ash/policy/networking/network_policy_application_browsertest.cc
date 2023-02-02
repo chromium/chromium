@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <sys/types.h>
+#include <algorithm>
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -32,6 +33,7 @@
 #include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/network_config/cros_network_config.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -247,6 +249,80 @@ class ScopedNetworkCertLoaderRefreshWaiter
   base::RunLoop run_loop_;
 };
 
+// Allows waiting until a set of GUIDs is available as NetworkStateProperties in
+// CrosNetworkConfig.
+class CrosNetworkConfigGuidsAvailableWaiter
+    : chromeos::network_config::CrosNetworkConfigObserver {
+ public:
+  CrosNetworkConfigGuidsAvailableWaiter(
+      ash::network_config::CrosNetworkConfig* cros_network_config,
+      const std::set<std::string>& expected_guids)
+      : cros_network_config_(cros_network_config),
+        expected_guids_(expected_guids) {
+    // This is a "mojo remote" so it will be automatically removed when
+    // destroyed.
+    cros_network_config_->AddObserver(
+        cros_network_config_observer_receiver_.BindNewPipeAndPassRemote());
+  }
+
+  ~CrosNetworkConfigGuidsAvailableWaiter() override = default;
+
+  void Wait() {
+    if (DoAllNetworkStatesExist()) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+ private:
+  // Fired when the list of networks changes.
+  void OnNetworkStateListChanged() override {
+    if (DoAllNetworkStatesExist()) {
+      run_loop_.Quit();
+    }
+  }
+
+  bool DoAllNetworkStatesExist() {
+    // Use GetNetworkState to check if a NetworkState with `guid_` exists.
+    base::test::TestFuture<
+        std::vector<network_mojom::NetworkStatePropertiesPtr>>
+        network_states_future;
+    cros_network_config_->GetNetworkStateList(
+        AcceptEverything(), network_states_future.GetCallback());
+    std::set<std::string> guids =
+        NetworkStatesToGuids(network_states_future.Get());
+    return std::includes(guids.begin(), guids.end(), expected_guids_.begin(),
+                         expected_guids_.end());
+  }
+
+  static network_mojom::NetworkFilterPtr AcceptEverything() {
+    return network_mojom::NetworkFilter::New(network_mojom::FilterType::kAll,
+                                             network_mojom::NetworkType::kAll,
+                                             network_mojom::kNoLimit);
+  }
+
+  static std::set<std::string> NetworkStatesToGuids(
+      const std::vector<network_mojom::NetworkStatePropertiesPtr>&
+          network_states) {
+    std::set<std::string> guids;
+    std::transform(
+        network_states.begin(), network_states.end(),
+        std::inserter(guids, guids.begin()),
+        [](const network_mojom::NetworkStatePropertiesPtr& network_state) {
+          return network_state->guid;
+        });
+    return guids;
+  }
+
+  base::RunLoop run_loop_;
+  ash::network_config::CrosNetworkConfig* const cros_network_config_;
+  const std::set<std::string> expected_guids_;
+
+  // Receiver for the CrosNetworkConfigObserver events.
+  mojo::Receiver<network_mojom::CrosNetworkConfigObserver>
+      cros_network_config_observer_receiver_{this};
+};
+
 }  // namespace
 
 // This class is used for implementing integration tests for network policy
@@ -306,6 +382,15 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
                                          "stub_wifi_device1");
     shill_profile_client_test_->AddProfile(kSharedProfilePath, "");
     shill_service_client_test_->ClearServices();
+
+    cros_network_config_ =
+        std::make_unique<ash::network_config::CrosNetworkConfig>();
+  }
+
+  void TearDownOnMainThread() override {
+    cros_network_config_.reset();
+
+    LoginManagerTest::TearDownOnMainThread();
   }
 
   // Sets `device_onc_policy_blob` as DeviceOpenNetworkConfiguration device
@@ -391,14 +476,12 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   }
 
   // Applies `properties` to the network identified by `guid` using
-  // cros_network_config.
+  // CrosNetworkConfig.
   void CrosNetworkConfigSetProperties(
       const std::string& guid,
       network_mojom::ConfigPropertiesPtr properties) {
-    ash::network_config::CrosNetworkConfig cros_network_config;
-
     base::test::TestFuture<bool, std::string> set_properties_future;
-    cros_network_config.SetProperties(
+    cros_network_config_->SetProperties(
         guid, std::move(properties),
         set_properties_future.GetCallback<bool, const std::string&>());
     ASSERT_TRUE(set_properties_future.Wait());
@@ -407,32 +490,28 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   }
 
   // Retrieves the "managed properties" of the network identified by `guid`
-  // using cros_network_config.
+  // using CrosNetworkConfig.
   network_mojom::ManagedPropertiesPtr CrosNetworkConfigGetManagedProperties(
       const std::string& guid) {
-    ash::network_config::CrosNetworkConfig cros_network_config;
-
     base::test::TestFuture<network_mojom::ManagedPropertiesPtr>
         get_managed_properties_future;
-    cros_network_config.GetManagedProperties(
+    cros_network_config_->GetManagedProperties(
         guid, get_managed_properties_future.GetCallback());
     return get_managed_properties_future.Take();
   }
 
   network_mojom::GlobalPolicyPtr CrosNetworkConfigGetGlobalPolicy() {
-    ash::network_config::CrosNetworkConfig cros_network_config;
     base::test::TestFuture<network_mojom::GlobalPolicyPtr> global_policy_ptr;
-    cros_network_config.GetGlobalPolicy(global_policy_ptr.GetCallback());
+    cros_network_config_->GetGlobalPolicy(global_policy_ptr.GetCallback());
     return global_policy_ptr.Take();
   }
 
   network_mojom::NetworkStatePropertiesPtr
   CrosNetworkConfigGetNetworkStateProps(const std::string& guid) {
-    ash::network_config::CrosNetworkConfig cros_network_config;
     base::test::TestFuture<network_mojom::NetworkStatePropertiesPtr>
         network_state_props_ptr;
-    cros_network_config.GetNetworkState(guid,
-                                        network_state_props_ptr.GetCallback());
+    cros_network_config_->GetNetworkState(
+        guid, network_state_props_ptr.GetCallback());
     return network_state_props_ptr.Take();
   }
 
@@ -479,17 +558,6 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     return *guid;
   }
 
-  ash::ScopedTestSystemNSSKeySlotMixin system_nss_key_slot_mixin_{&mixin_host_};
-
-  // Unowned pointers -- just pointers to the singleton instances.
-  ash::ShillManagerClient::TestInterface* shill_manager_client_test_ = nullptr;
-  ash::ShillServiceClient::TestInterface* shill_service_client_test_ = nullptr;
-  ash::ShillProfileClient::TestInterface* shill_profile_client_test_ = nullptr;
-  ash::ShillDeviceClient::TestInterface* shill_device_client_test_ = nullptr;
-
-  ash::LoginManagerMixin login_mixin_{&mixin_host_};
-  AccountId test_account_id_;
-
   const base::Value* GetWifiProps(const std::string& guid) {
     absl::optional<std::string> wifi_service;
     wifi_service = shill_service_client_test_->FindServiceMatchingGUID(guid);
@@ -521,20 +589,48 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     return *wifi_state;
   }
 
-  void AddPskWiFiNetwork(const std::string& servicePath,
-                         const std::string& guid,
-                         const std::string& ssid) {
-    shill_service_client_test_->AddService(
-        servicePath, guid, ssid, shill::kTypeWifi, shill::kStateOnline,
-        /*visible=*/true);
+  void AddPskWifiService(const std::string& service_path,
+                         const std::string& initial_guid,
+                         const std::string& ssid,
+                         const std::string& initial_state) {
+    shill_service_client_test_->AddService(service_path, initial_guid, ssid,
+                                           shill::kTypeWifi, initial_state,
+                                           /*visible=*/true);
     shill_service_client_test_->SetServiceProperty(
-        servicePath, shill::kSSIDProperty, base::Value(ssid));
+        service_path, shill::kSSIDProperty, base::Value(ssid));
     shill_service_client_test_->SetServiceProperty(
-        servicePath, shill::kSecurityClassProperty,
+        service_path, shill::kSecurityClassProperty,
         base::Value(shill::kSecurityClassPsk));
   }
 
+  void Add8021xWifiService(const std::string& service_path,
+                           const std::string& initial_guid,
+                           const std::string& ssid,
+                           const std::string& initial_state) {
+    shill_service_client_test_->AddService(service_path, initial_guid, ssid,
+                                           shill::kTypeWifi, initial_state,
+                                           /*visible=*/true);
+    shill_service_client_test_->SetServiceProperty(
+        kServiceWifi1, shill::kSSIDProperty, base::Value(ssid));
+    shill_service_client_test_->SetServiceProperty(
+        kServiceWifi1, shill::kSecurityClassProperty,
+        base::Value(shill::kSecurityClass8021x));
+  }
+
+  // Unowned pointers -- just pointers to the singleton instances.
+  ash::ShillManagerClient::TestInterface* shill_manager_client_test_ = nullptr;
+  ash::ShillServiceClient::TestInterface* shill_service_client_test_ = nullptr;
+  ash::ShillProfileClient::TestInterface* shill_profile_client_test_ = nullptr;
+  ash::ShillDeviceClient::TestInterface* shill_device_client_test_ = nullptr;
+
+  AccountId test_account_id_;
+
+  std::unique_ptr<ash::network_config::CrosNetworkConfig> cros_network_config_;
+
  private:
+  ash::ScopedTestSystemNSSKeySlotMixin system_nss_key_slot_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
+
   testing::NiceMock<MockConfigurationPolicyProvider> policy_provider_;
   PolicyMap current_policy_;
 };
@@ -570,23 +666,10 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
 
   // Set up two services.
-  shill_service_client_test_->AddService(
-      kServiceWifi1, "wifi_orig_guid_1", "WifiOne", shill::kTypeWifi,
-      shill::kStateOnline, /*add_to_visible=*/true);
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi1, shill::kSSIDProperty, base::Value("WifiOne"));
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi1, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurityClassPsk));
-
-  shill_service_client_test_->AddService(
-      kServiceWifi2, "wifi_orig_guid_2", "WifiTwo", shill::kTypeWifi,
-      shill::kStateOnline, /*add_to_visible=*/true);
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi2, shill::kSSIDProperty, base::Value("WifiTwo"));
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi2, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurityClassPsk));
+  AddPskWifiService(kServiceWifi1, "wifi_orig_guid_1", "WifiOne",
+                    shill::kStateIdle);
+  AddPskWifiService(kServiceWifi2, "wifi_orig_guid_2", "WifiTwo",
+                    shill::kStateIdle);
 
   // Apply device ONC policy and wait until it takes effect (one of the networks
   // auto connects).
@@ -688,7 +771,6 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       ]
     })";
   SetUserOpenNetworkConfiguration(user_hash, kUserONC, /*wait_applied=*/false);
-  base::RunLoop().RunUntilIdle();
 
   // Expect that the policies have not been signalled as applied yet because
   // property updates are being held back by FakeShillServiceClient.
@@ -701,12 +783,10 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   // Now let fake shill reflect the property updates, so policy application is
   // marked as done.
   shill_service_client_test_->SetHoldBackServicePropertyUpdates(false);
-  base::RunLoop().RunUntilIdle();
+  network_policy_application_observer.WaitPoliciesApplied(user_hash);
   EXPECT_THAT(
       network_policy_application_observer.policy_applied_to_network_events(),
       ElementsAre(kServiceWifi1, kServiceWifi2));
-  EXPECT_THAT(network_policy_application_observer.policies_applied_events(),
-              ElementsAre(user_hash));
 
   // Expect that the same service path now has the user policy GUID.
   {
@@ -771,11 +851,14 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   // Network 2 will be managed by user policy.
   // Network 3 and 4 will be not managed. Network 4 is added just to make sure
   // that we have more than one un-managed network.
-  AddPskWiFiNetwork(kServiceWifi1, kGuidWifi1, "WifiOne");
-  AddPskWiFiNetwork(kServiceWifi2, kGuidWifi2, "WifiTwo");
-  AddPskWiFiNetwork(kServiceWifi3, kGuidWifi3, "WifiThree");
-  AddPskWiFiNetwork(kServiceWifi4, kGuidWifi4, "WifiFour");
-  base::RunLoop().RunUntilIdle();
+  CrosNetworkConfigGuidsAvailableWaiter available_waiter(
+      cros_network_config_.get(),
+      {kGuidWifi1, kGuidWifi2, kGuidWifi3, kGuidWifi4});
+  AddPskWifiService(kServiceWifi1, kGuidWifi1, "WifiOne", shill::kStateIdle);
+  AddPskWifiService(kServiceWifi2, kGuidWifi2, "WifiTwo", shill::kStateIdle);
+  AddPskWifiService(kServiceWifi3, kGuidWifi3, "WifiThree", shill::kStateIdle);
+  AddPskWifiService(kServiceWifi4, kGuidWifi4, "WifiFour", shill::kStateIdle);
+  available_waiter.Wait();
 
   // Check that initially no policies applied and CrosNetworkStateProperties
   // has no prohibited networks.
@@ -915,23 +998,10 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                        PolicyWithSameGUIDAppliesToOtherSSID) {
   // Set up two services.
-  shill_service_client_test_->AddService(
-      kServiceWifi1, "wifi_orig_guid_1", "WifiOne", shill::kTypeWifi,
-      shill::kStateOnline, /*add_to_visible=*/true);
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi1, shill::kSSIDProperty, base::Value("WifiOne"));
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi1, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurityClassPsk));
-
-  shill_service_client_test_->AddService(
-      kServiceWifi2, "wifi_orig_guid_2", "WifiTwo", shill::kTypeWifi,
-      shill::kStateOnline, /*add_to_visible=*/true);
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi2, shill::kSSIDProperty, base::Value("WifiTwo"));
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi2, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurityClassPsk));
+  AddPskWifiService(kServiceWifi1, "wifi_orig_guid_1", "WifiOne",
+                    shill::kStateIdle);
+  AddPskWifiService(kServiceWifi2, "wifi_orig_guid_2", "WifiTwo",
+                    shill::kStateIdle);
 
   const char kDeviceONC1[] = R"(
     {
@@ -1006,14 +1076,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, DoesNotWipeCertSettings) {
                                      kCertFilename, kCertKeyFilename));
 
   // Set up a policy-managed EAP wifi with a certificate already selected.
-  shill_service_client_test_->AddService(
-      kServiceWifi1, "DeviceLevelWifiGuidOrig", "DeviceLevelWifiSsid",
-      shill::kTypeWifi, shill::kStateOnline, /*add_to_visible=*/true);
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi1, shill::kSSIDProperty, base::Value("DeviceLevelWifiSsid"));
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi1, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurityClass8021x));
+  Add8021xWifiService(kServiceWifi1, "DeviceLevelWifiGuidOrig",
+                      "DeviceLevelWifiSsid", shill::kStateOnline);
 
   ServicePropertyValueWatcher eap_cert_id_watcher(
       shill_service_client_test_, kServiceWifi1, shill::kEapCertIdProperty);
@@ -1057,12 +1121,10 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, DoesNotWipeCertSettings) {
 
   // Verify that the EAP.CertId and EAP.KeyId properties are present and not
   // empty, i.e. that a client certificate has been selected.
-  ASSERT_THAT(eap_cert_id_watcher.GetValues(), SizeIs(1));
-  ASSERT_THAT(eap_key_id_watcher.GetValues(), SizeIs(1));
+  ASSERT_THAT(eap_cert_id_watcher.GetValues(), ElementsAre(Not(IsEmpty())));
+  ASSERT_THAT(eap_key_id_watcher.GetValues(), ElementsAre(Not(IsEmpty())));
   std::string orig_eap_cert_id = eap_cert_id_watcher.GetValues().back();
   std::string orig_eap_key_id = eap_key_id_watcher.GetValues().back();
-  EXPECT_THAT(orig_eap_cert_id, Not(IsEmpty()));
-  EXPECT_THAT(orig_eap_key_id, Not(IsEmpty()));
 
   EXPECT_THAT(eap_identity_watcher.GetValues(), ElementsAre("identity_1"));
 
@@ -1088,14 +1150,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kSerialNumberKeyForTest, kSerialNumber);
 
-  shill_service_client_test_->AddService(
-      kServiceWifi1, "DeviceLevelWifiGuidOrig", "DeviceLevelWifiSsid",
-      shill::kTypeWifi, shill::kStateOnline, /*add_to_visible=*/true);
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi1, shill::kSSIDProperty, base::Value("DeviceLevelWifiSsid"));
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi1, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurityClass8021x));
+  Add8021xWifiService(kServiceWifi1, "DeviceLevelWifiGuidOrig",
+                      "DeviceLevelWifiSsid", shill::kStateIdle);
 
   const char kDeviceONC1[] = R"(
     {
@@ -1156,14 +1212,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   ASSERT_NO_FATAL_FAILURE(ImportCert(net::GetTestCertsDirectory(),
                                      kCertFilename, kCertKeyFilename));
 
-  shill_service_client_test_->AddService(
-      kServiceWifi1, "DeviceLevelWifiGuidOrig", "DeviceLevelWifiSsid",
-      shill::kTypeWifi, shill::kStateOnline, /*add_to_visible=*/true);
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi1, shill::kSSIDProperty, base::Value("DeviceLevelWifiSsid"));
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi1, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurityClass8021x));
+  Add8021xWifiService(kServiceWifi1, "DeviceLevelWifiGuidOrig",
+                      "DeviceLevelWifiSsid", shill::kStateIdle);
 
   std::string kDeviceONC1 =
       base::StringPrintf(R"(
@@ -1214,14 +1264,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 // config pushed to shill.
 IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                        UserPolicyProfileWideVariableExpansions) {
-  shill_service_client_test_->AddService(
-      kServiceWifi1, "UserLevelWifiGuidOrig", "UserLevelWifiSsid",
-      shill::kTypeWifi, shill::kStateOnline, /*add_to_visible=*/true);
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi1, shill::kSSIDProperty, base::Value("UserLevelWifiSsid"));
-  shill_service_client_test_->SetServiceProperty(
-      kServiceWifi1, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurityClass8021x));
+  Add8021xWifiService(kServiceWifi1, "UserLevelWifiGuidOrig",
+                      "UserLevelWifiSsid", shill::kStateIdle);
 
   LoginUser(test_account_id_);
   const std::string user_hash = user_manager::UserManager::Get()
