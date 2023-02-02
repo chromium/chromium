@@ -56,9 +56,6 @@ function preloadMetadataSuspendTest(t, video, src, expectSuspend) {
       return;
     }
 
-    if (expectSuspend == UPON_VISIBILITY)
-      return;
-
     completeTestUponPlayback(t, video);
   });
 
@@ -69,9 +66,10 @@ function preloadMetadataSuspendTest(t, video, src, expectSuspend) {
           'Element should not have been suspended by the first frame.');
       t.done();
     }));
+  } else {
+    video.addEventListener('loadedmetadata', eventListener, false);
   }
 
-  video.addEventListener('loadedmetadata', eventListener, false);
   video.src = src;
 }
 
