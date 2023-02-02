@@ -50,8 +50,7 @@ class AccessCodeCastDialogBrowserTest : public DialogBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastDialogBrowserTest, InvokeUi_default) {
-  // ShowAndVerifyUi();
-  GTEST_SKIP() << "Disabling test while investigating failures, b/242863470";
+  ShowAndVerifyUi();
 }
 
 }  // namespace media_router
