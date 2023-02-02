@@ -88,13 +88,13 @@ CacheTransparencyPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 }
 
 void CacheTransparencyPageLoadMetricsObserver::RecordTimingHistograms() {
+  DCHECK(IsCacheTransparencyEnabled() || IsPervasivePayloadsEnabled());
   const page_load_metrics::ContentfulPaintTimingInfo&
       all_frames_largest_contentful_paint =
           GetDelegate()
               .GetLargestContentfulPaintHandler()
               .MergeMainFrameAndSubframes();
   if (all_frames_largest_contentful_paint.ContainsValidTime() &&
-      (IsCacheTransparencyEnabled() || IsPervasivePayloadsEnabled()) &&
       WasStartedInForegroundOptionalEventInForeground(
           all_frames_largest_contentful_paint.Time(), GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(
