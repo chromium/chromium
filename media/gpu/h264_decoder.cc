@@ -1313,7 +1313,8 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessEncryptedSliceHeader(
   DCHECK(curr_slice_hdr_);
   std::vector<base::span<const uint8_t>> spans(prior_cencv1_nalus_.begin(),
                                                prior_cencv1_nalus_.end());
-  spans.emplace_back(curr_nalu_->data, curr_nalu_->size);
+  spans.emplace_back(curr_nalu_->data,
+                     base::checked_cast<size_t>(curr_nalu_->size));
   std::vector<SubsampleEntry> all_subsamples(prior_cencv1_subsamples_.begin(),
                                              prior_cencv1_subsamples_.end());
   all_subsamples.insert(all_subsamples.end(), subsamples.begin(),
@@ -1328,7 +1329,8 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessEncryptedSliceHeader(
 
   // Insert this encrypted slice data as well in case this is a multi-slice
   // picture.
-  prior_cencv1_nalus_.emplace_back(curr_nalu_->data, curr_nalu_->size);
+  prior_cencv1_nalus_.emplace_back(
+      curr_nalu_->data, base::checked_cast<size_t>(curr_nalu_->size));
   prior_cencv1_subsamples_.insert(prior_cencv1_subsamples_.end(),
                                   subsamples.begin(), subsamples.end());
   return rv;
@@ -1593,7 +1595,9 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           SET_ERROR_AND_RETURN();
         accelerator_->ProcessSPS(
             parser_.GetSPS(sps_id),
-            base::span<const uint8_t>(curr_nalu_->data, curr_nalu_->size));
+            base::span<const uint8_t>(
+                curr_nalu_->data,
+                base::checked_cast<size_t>(curr_nalu_->size)));
 
         if (state_ == State::kNeedStreamMetadata)
           state_ = State::kAfterReset;
@@ -1617,7 +1621,9 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           SET_ERROR_AND_RETURN();
         accelerator_->ProcessPPS(
             parser_.GetPPS(last_parsed_pps_id_),
-            base::span<const uint8_t>(curr_nalu_->data, curr_nalu_->size));
+            base::span<const uint8_t>(
+                curr_nalu_->data,
+                base::checked_cast<size_t>(curr_nalu_->size)));
         break;
       }
 
@@ -1639,8 +1645,8 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           const std::vector<SubsampleEntry>& subsamples =
               parser_.GetCurrentSubsamples();
           if (!subsamples.empty()) {
-            prior_cencv1_nalus_.emplace_back(curr_nalu_->data,
-                                             curr_nalu_->size);
+            prior_cencv1_nalus_.emplace_back(
+                curr_nalu_->data, base::checked_cast<size_t>(curr_nalu_->size));
             DCHECK_EQ(1u, subsamples.size());
             prior_cencv1_subsamples_.push_back(subsamples[0]);
             // Since the SEI is encrypted, do not try to parse it below as it
