@@ -2,6 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("test_utils") {
+  testonly = true
+  sources = [
+    "dips_test_utils.cc",
+    "dips_test_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -15,6 +31,7 @@ source_set("unit_tests") {
 
   deps = [
     ":golden_dbs_bundle_data",
+    ":test_utils",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
@@ -48,6 +65,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    ":test_utils",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",

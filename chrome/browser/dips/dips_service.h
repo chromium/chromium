@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_DIPS_DIPS_SERVICE_H_
 #define CHROME_BROWSER_DIPS_DIPS_SERVICE_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
@@ -36,6 +38,11 @@ class DIPSService : public KeyedService {
       void(const GURL& url, base::Time time, bool stateful)>;
 
   ~DIPSService() override;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnChainHandled(const DIPSRedirectChainInfoPtr& chain) {}
+  };
 
   static DIPSService* Get(content::BrowserContext* context);
 
@@ -66,6 +73,9 @@ class DIPSService : public KeyedService {
 
   void OnTimerFiredForTesting() { OnTimerFired(); }
   void WaitForInitCompleteForTesting() { wait_for_prepopulating_.Run(); }
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(const Observer* observer);
 
  private:
   // So DIPSServiceFactory::BuildServiceInstanceFor can call the constructor.
@@ -116,6 +126,8 @@ class DIPSService : public KeyedService {
   // See base/time/time_delta_from_string.h for how that param should be given.
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
   base::SequenceBound<DIPSStorage> storage_;
+  base::ObserverList<Observer> observers_;
+
   base::WeakPtrFactory<DIPSService> weak_factory_{this};
 };
 

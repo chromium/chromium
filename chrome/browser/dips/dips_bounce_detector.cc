@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
@@ -114,58 +115,83 @@ DIPSRedirectContext::DIPSRedirectContext(DIPSRedirectChainHandler handler,
 
 DIPSRedirectContext::~DIPSRedirectContext() = default;
 
-void DIPSRedirectContext::Append(
-    bool committed,
-    DIPSNavigationStart navigation_start,
-    std::vector<DIPSRedirectInfoPtr>&& server_redirects,
-    GURL final_url) {
-  if (committed) {
-    Append(std::move(navigation_start), std::move(server_redirects));
-  } else {
-    DIPSRedirectContext temp_context(handler_, initial_url_);
-    temp_context.Append(std::move(navigation_start),
-                        std::move(server_redirects));
-    temp_context.EndChain(std::move(final_url));
-  }
+void DIPSRedirectContext::AppendClientRedirect(
+    DIPSRedirectInfoPtr client_redirect) {
+  DCHECK_EQ(client_redirect->redirect_type, DIPSRedirectType::kClient);
+  redirects_.push_back(std::move(client_redirect));
 }
 
-void DIPSRedirectContext::Append(
-    DIPSNavigationStart navigation_start,
-    std::vector<DIPSRedirectInfoPtr>&& server_redirects) {
-  // If there was a client-side redirect, grow the chain. Otherwise, end it.
-  if (absl::holds_alternative<DIPSRedirectInfoPtr>(navigation_start)) {
-    auto& client_redirect = absl::get<DIPSRedirectInfoPtr>(navigation_start);
-    DCHECK_EQ(client_redirect->redirect_type, DIPSRedirectType::kClient);
-    redirects_.push_back(std::move(client_redirect));
-  } else {
-    auto& client_url = absl::get<GURL>(navigation_start);
-    // This is the most common reason for redirect chains
-    // to terminate. Other reasons include: (1) navigations
-    // that don't commit and (2) the user closing the tab
-    // (i.e., WCO::WebContentsDestroyed())
-    EndChain(std::move(client_url));
-  }
-
-  // Server-side redirects always grow the chain.
+void DIPSRedirectContext::AppendServerRedirects(
+    std::vector<DIPSRedirectInfoPtr> server_redirects) {
   for (auto& redirect : server_redirects) {
     DCHECK_EQ(redirect->redirect_type, DIPSRedirectType::kServer);
     redirects_.push_back(std::move(redirect));
   }
 }
 
+void DIPSRedirectContext::HandleUncommitted(
+    DIPSNavigationStart navigation_start,
+    std::vector<DIPSRedirectInfoPtr> server_redirects,
+    GURL final_url) {
+  absl::visit(  //
+      base::Overloaded{
+          [&](DIPSRedirectInfoPtr client_redirect) {
+            // The uncommitted navigation began with a client redirect, so its
+            // chain is considered an extension of the in-progress chain
+            // (without modifying it).
+            DIPSRedirectContext temp_context(handler_, initial_url_);
+            temp_context.AppendClientRedirect(std::move(client_redirect));
+            temp_context.AppendServerRedirects(std::move(server_redirects));
+            temp_context.EndChain(std::move(final_url));
+          },
+          [&](GURL client_url) {
+            // The uncommitted navigation began *without* a client redirect, so
+            // it started a new chain (the in-progress chain is irrelevant.)
+            DIPSRedirectContext temp_context(handler_, client_url);
+            temp_context.AppendServerRedirects(std::move(server_redirects));
+            temp_context.EndChain(std::move(final_url));
+          },
+      },
+      std::move(navigation_start));
+}
+
+void DIPSRedirectContext::AppendCommitted(
+    DIPSNavigationStart navigation_start,
+    std::vector<DIPSRedirectInfoPtr> server_redirects) {
+  // If there was a client-side redirect, grow the chain. Otherwise, end it.
+  absl::visit(  //
+      base::Overloaded{
+          [this](DIPSRedirectInfoPtr client_redirect) {
+            // The committed navigation began with a client redirect, so extend
+            // the in-progress chain.
+            AppendClientRedirect(std::move(client_redirect));
+          },
+          [this](GURL client_url) {
+            // The committed navigation began *without* a client redirect, so
+            // end the old chain and start a new one.
+            EndChain(std::move(client_url));
+          },
+      },
+      std::move(navigation_start));
+
+  // Server-side redirects always grow the chain.
+  AppendServerRedirects(std::move(server_redirects));
+}
+
 void DIPSRedirectContext::EndChain(GURL url) {
-  if (!redirects_.empty()) {
+  if (!initial_url_.is_empty()) {
     // Uncommitted chains may omit earlier (committed) redirects in the chain,
     // so |redirects_.size()| may not tell us the correct chain length. Instead,
     // use the index of the last item in the chain (since it was generated based
     // on the committed chain length).
-    auto chain = std::make_unique<DIPSRedirectChainInfo>(
-        initial_url_, url, redirects_.back()->index + 1);
+    int length = redirects_.empty() ? 0 : redirects_.back()->index + 1;
+    auto chain =
+        std::make_unique<DIPSRedirectChainInfo>(initial_url_, url, length);
     handler_.Run(std::move(redirects_), std::move(chain));
-    // note: redirects_ is now guaranteed to be empty
   }
 
   initial_url_ = std::move(url);
+  redirects_.clear();
 }
 
 void DIPSWebContentsObserver::RecordEvent(DIPSRecordedEvent event,
@@ -387,12 +413,14 @@ void DIPSBounceDetector::DidFinishNavigation(
         /*time=*/clock_->Now()));
   }
 
-  // This call handles all the logic for terminating the redirect chain when
-  // applicable, and using a temporary redirect context if the navigation didn't
-  // commit.
-  redirect_context_.Append(navigation_handle->HasCommitted(),
-                           std::move(server_state->navigation_start),
-                           std::move(redirects), navigation_handle->GetURL());
+  if (navigation_handle->HasCommitted()) {
+    redirect_context_.AppendCommitted(std::move(server_state->navigation_start),
+                                      std::move(redirects));
+  } else {
+    redirect_context_.HandleUncommitted(
+        std::move(server_state->navigation_start), std::move(redirects),
+        navigation_handle->GetURL());
+  }
 
   if (navigation_handle->HasCommitted()) {
     // The last entry in navigation_handle->GetRedirectChain() is actually the

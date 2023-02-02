@@ -59,16 +59,17 @@ class DIPSRedirectContext {
                       const GURL& initial_url);
   ~DIPSRedirectContext();
 
-  // If committed=true, appends the client and server redirects to the current
-  // chain. Otherwise, creates a temporary DIPSRedirectContext, appends the
-  // redirects, and immediately calls EndChain() on it.
-  void Append(bool committed,
-              DIPSNavigationStart navigation_start,
-              std::vector<DIPSRedirectInfoPtr>&& server_redirects,
-              GURL final_url);
-  // Terminates the current redirect chain and calls the
-  // DIPSRedirectChainHandler with it. Starts a new chain for later calls to
-  // Append() to add to.
+  // Immediately calls the DIPSRedirectChainHandler for the uncommitted
+  // navigation. It will take into account the length and initial URL of the
+  // current chain (without modifying it).
+  void HandleUncommitted(DIPSNavigationStart navigation_start,
+                         std::vector<DIPSRedirectInfoPtr> server_redirects,
+                         GURL final_url);
+  // Either terminates the current redirect chain (and starts a new one) or
+  // extends it, according to the value of `navigation_start`.
+  void AppendCommitted(DIPSNavigationStart navigation_start,
+                       std::vector<DIPSRedirectInfoPtr> server_redirects);
+  // Terminates the current redirect chain, ending it with the given URL.
   void EndChain(GURL url);
 
   size_t size() const { return redirects_.size(); }
@@ -78,9 +79,8 @@ class DIPSRedirectContext {
   }
 
  private:
-  // Appends the client and server redirects to the current chain.
-  void Append(DIPSNavigationStart navigation_start,
-              std::vector<DIPSRedirectInfoPtr>&& server_redirects);
+  void AppendClientRedirect(DIPSRedirectInfoPtr client_redirect);
+  void AppendServerRedirects(std::vector<DIPSRedirectInfoPtr> server_redirects);
 
   DIPSRedirectChainHandler handler_;
   GURL initial_url_;
