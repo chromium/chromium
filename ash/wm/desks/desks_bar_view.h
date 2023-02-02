@@ -9,7 +9,8 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/wm/desks/cros_next_desk_button.h"
+#include "ash/wm/desks/cros_next_default_desk_button.h"
+#include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "base/callback_list.h"
@@ -83,13 +84,32 @@ class ASH_EXPORT DesksBarView : public views::View,
     return expanded_state_library_button_;
   }
 
-  CrOSNextDefaultDeskButton* default_desk_button() const {
+  CrOSNextDefaultDeskButton* default_desk_button() {
+    return default_desk_button_;
+  }
+  const CrOSNextDefaultDeskButton* default_desk_button() const {
     return default_desk_button_;
   }
 
-  CrOSNextDeskIconButton* new_desk_button() const { return new_desk_button_; }
+  CrOSNextDeskIconButton* new_desk_button() { return new_desk_button_; }
+  const CrOSNextDeskIconButton* new_desk_button() const {
+    return new_desk_button_;
+  }
 
-  CrOSNextDeskIconButton* library_button() const { return library_button_; }
+  CrOSNextDeskIconButton* library_button() { return library_button_; }
+  const CrOSNextDeskIconButton* library_button() const {
+    return library_button_;
+  }
+
+  views::Label* new_desk_button_label() { return new_desk_button_label_; }
+  const views::Label* new_desk_button_label() const {
+    return new_desk_button_label_;
+  }
+
+  views::Label* library_button_label() { return library_button_label_; }
+  const views::Label* library_button_label() const {
+    return library_button_label_;
+  }
 
   const std::vector<DeskMiniView*>& mini_views() const { return mini_views_; }
 
@@ -348,6 +368,11 @@ class ASH_EXPORT DesksBarView : public views::View,
   CrOSNextDefaultDeskButton* default_desk_button_ = nullptr;
   CrOSNextDeskIconButton* new_desk_button_ = nullptr;
   CrOSNextDeskIconButton* library_button_ = nullptr;
+
+  // Labels to be shown under the desk icon buttons when they're at the active
+  // state.
+  views::Label* new_desk_button_label_ = nullptr;
+  views::Label* library_button_label_ = nullptr;
 
   ScrollArrowButton* left_scroll_button_ = nullptr;
   ScrollArrowButton* right_scroll_button_ = nullptr;

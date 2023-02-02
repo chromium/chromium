@@ -40,8 +40,9 @@
 #include "ash/style/color_util.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
-#include "ash/wm/desks/cros_next_desk_button.h"
+#include "ash/wm/desks/cros_next_default_desk_button.h"
 #include "ash/wm/desks/cros_next_desk_button_base.h"
+#include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -417,7 +418,7 @@ class DesksTest : public AshTestBase,
     scoped_feature_list_.Reset();
   }
 
-  views::LabelButton* GetDefaultDeskButton(const DesksBarView* bar_view) {
+  const views::LabelButton* GetDefaultDeskButton(const DesksBarView* bar_view) {
     if (GetParam().enable_jellyroll) {
       return bar_view->default_desk_button();
     }
@@ -425,7 +426,8 @@ class DesksTest : public AshTestBase,
     return bar_view->zero_state_default_desk_button();
   }
 
-  views::LabelButton* GetZeroStateNewDeskButton(const DesksBarView* bar_view) {
+  const views::LabelButton* GetZeroStateNewDeskButton(
+      const DesksBarView* bar_view) {
     if (GetParam().enable_jellyroll) {
       return bar_view->new_desk_button();
     }
@@ -433,7 +435,8 @@ class DesksTest : public AshTestBase,
     return bar_view->zero_state_new_desk_button();
   }
 
-  views::View* GetExpandedStateNewDeskButton(const DesksBarView* bar_view) {
+  const views::View* GetExpandedStateNewDeskButton(
+      const DesksBarView* bar_view) {
     if (GetParam().enable_jellyroll) {
       return bar_view->new_desk_button();
     }
@@ -441,7 +444,7 @@ class DesksTest : public AshTestBase,
     return bar_view->expanded_state_new_desk_button();
   }
 
-  views::LabelButton* GetExpandedStateInnerNewDeskButton(
+  const views::LabelButton* GetExpandedStateInnerNewDeskButton(
       const DesksBarView* bar_view) {
     if (GetParam().enable_jellyroll) {
       return bar_view->new_desk_button();
@@ -450,7 +453,7 @@ class DesksTest : public AshTestBase,
     return bar_view->expanded_state_new_desk_button()->GetInnerButton();
   }
 
-  views::LabelButton* GetExpandedStateLibraryButton(
+  const views::LabelButton* GetExpandedStateLibraryButton(
       const DesksBarView* bar_view) {
     if (GetParam().enable_jellyroll) {
       return bar_view->library_button();
@@ -7736,8 +7739,10 @@ TEST_P(DragWindowToNewDeskTest, DragWindowAtZeroState) {
     // `overview_item1` when `overview_item1` it's being hovered on top it over
     // 500 milliseconds.
     // Drag `overview_item1` to hover on the new desk button, and wait for 200
-    // milliseconds, verify that new desk button is still at the expanded state.
-    CrOSNextDeskIconButton* new_desk_button = desks_bar_view->new_desk_button();
+    // milliseconds, verify that new desk button is still at the expanded state
+    // and the new desk label is not shown.
+    const CrOSNextDeskIconButton* new_desk_button =
+        desks_bar_view->new_desk_button();
     const gfx::Point new_desk_button_bottom_left =
         zero_state_new_desk_button->GetBoundsInScreen().bottom_left();
     DragItemToPoint(overview_item1,
@@ -7747,13 +7752,16 @@ TEST_P(DragWindowToNewDeskTest, DragWindowAtZeroState) {
     WaitForMilliseconds(200);
     EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded,
               new_desk_button->state());
+    EXPECT_FALSE(desks_bar_view->new_desk_button_label()->GetVisible());
     // Now fire the timer directly to skip the wait time. Verify that the new
-    // desk button is scaled up and at the active state now.
+    // desk button is scaled up and at the active state and the new desk label
+    // is shown now.
     overview_controller->overview_session()
         ->window_drag_controller()
         ->new_desk_button_scale_up_timer_for_test()
         ->FireNow();
     EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, new_desk_button->state());
+    EXPECT_TRUE(desks_bar_view->new_desk_button_label()->GetVisible());
 
     // Keep dragging `overview_item1` to the center of the new desk button to
     // make it a drop target.
@@ -7821,7 +7829,8 @@ TEST_P(DragWindowToNewDeskTest,
   auto* event_generator = GetEventGenerator();
 
   if (GetParam().enable_jellyroll) {
-    CrOSNextDeskIconButton* new_desk_button = desks_bar_view->new_desk_button();
+    const CrOSNextDeskIconButton* new_desk_button =
+        desks_bar_view->new_desk_button();
     // Start dragging `overview_item1`, verify desks bar expands immediately and
     // the new desk button is transformed to the expanded state;
     DragItemToPoint(
@@ -7833,10 +7842,12 @@ TEST_P(DragWindowToNewDeskTest,
     EXPECT_FALSE(desks_bar_view->IsZeroState());
     EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded,
               new_desk_button->state());
+    EXPECT_FALSE(desks_bar_view->new_desk_button_label()->GetVisible());
 
     // Keep dragging `overview_item1` to hover on the new desk button,
     // immediately fire the time to skip to wait time. Verify that new desk
-    // button is transformed to the expanded state.
+    // button is transformed to the active state and the new desk label is shown
+    // now.
     const gfx::Point new_desk_button_center_point =
         zero_state_new_desk_button->GetBoundsInScreen().CenterPoint();
     DragItemToPoint(overview_item1,
@@ -7849,6 +7860,7 @@ TEST_P(DragWindowToNewDeskTest,
         ->new_desk_button_scale_up_timer_for_test()
         ->FireNow();
     EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, new_desk_button->state());
+    EXPECT_TRUE(desks_bar_view->new_desk_button_label()->GetVisible());
   } else {
     // Drag `overview_item1` and make it close enough to the center point of
     // `zero_state_new_desk_button`. Verify that desks bar is transformed to the
@@ -7877,8 +7889,10 @@ TEST_P(DragWindowToNewDeskTest,
                   event_generator, /*by_touch_gestures=*/false, /*drop=*/true);
   if (GetParam().enable_jellyroll) {
     // If the Jellyroll is enabled, the desks bar never goes back to the zero
-    // state from the expanded state even these's only one desk.
+    // state from the expanded state even these's only one desk. Veriry that the
+    // new desk label is invisible now.
     EXPECT_FALSE(desks_bar_view->IsZeroState());
+    EXPECT_FALSE(desks_bar_view->new_desk_button_label()->GetVisible());
   } else {
     EXPECT_TRUE(desks_bar_view->IsZeroState());
   }

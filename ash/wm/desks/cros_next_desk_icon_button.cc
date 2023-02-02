@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/cros_next_desk_button.h"
+#include "ash/wm/desks/cros_next_desk_icon_button.h"
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -21,7 +21,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -29,12 +28,6 @@
 namespace ash {
 
 namespace {
-
-constexpr int kDefaultButtonCornerRadius = 14;
-
-constexpr int kDefaultButtonHorizontalPadding = 16;
-
-constexpr int kDefaultDeskButtonMinWidth = 56;
 
 // The desk icon button's corner radius.
 constexpr int kIconButtonCornerRadius = 18;
@@ -63,62 +56,6 @@ int GetFocusRingRadiusForState(CrOSNextDeskIconButton::State state) {
 }
 
 }  // namespace
-
-// -----------------------------------------------------------------------------
-// CrOSNextDefaultDeskButton:
-
-CrOSNextDefaultDeskButton::CrOSNextDefaultDeskButton(DesksBarView* bar_view)
-    : CrOSNextDeskButtonBase(
-          DesksController::Get()->desks()[0]->name(),
-          /*set_text=*/true,
-          base::BindRepeating(&CrOSNextDefaultDeskButton::OnButtonPressed,
-                              base::Unretained(this))),
-      bar_view_(bar_view) {
-  GetViewAccessibility().OverrideName(
-      l10n_util::GetStringFUTF16(IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME,
-                                 DesksController::Get()->desks()[0]->name()));
-
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, kDefaultButtonCornerRadius));
-}
-
-gfx::Size CrOSNextDefaultDeskButton::CalculatePreferredSize() const {
-  auto* root_window =
-      bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
-  const int preview_width = DeskMiniView::GetPreviewWidth(
-      root_window->bounds().size(), DeskPreviewView::GetHeight(root_window));
-  int label_width = 0, label_height = 0;
-  gfx::Canvas::SizeStringInt(DesksController::Get()->desks()[0]->name(),
-                             gfx::FontList(), &label_width, &label_height, 0,
-                             gfx::Canvas::NO_ELLIPSIS);
-
-  // `preview_width` is supposed to be larger than
-  // `kZeroStateDefaultDeskButtonMinWidth`, but it might be not the truth for
-  // tests with extreme abnormal size of display.
-  const int min_width = std::min(preview_width, kDefaultDeskButtonMinWidth);
-  const int max_width = std::max(preview_width, kDefaultDeskButtonMinWidth);
-  const int width = base::clamp(
-      label_width + 2 * kDefaultButtonHorizontalPadding, min_width, max_width);
-  return gfx::Size(width, kZeroStateButtonHeight);
-}
-
-void CrOSNextDefaultDeskButton::UpdateLabelText() {
-  SetText(gfx::ElideText(
-      DesksController::Get()->desks()[0]->name(), gfx::FontList(),
-      bounds().width() - 2 * kDefaultButtonHorizontalPadding, gfx::ELIDE_TAIL));
-}
-
-void CrOSNextDefaultDeskButton::OnButtonPressed() {
-  bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
-                                /*expanding_bar_view=*/true);
-  bar_view_->NudgeDeskName(/*desk_index=*/0);
-}
-
-BEGIN_METADATA(CrOSNextDefaultDeskButton, CrOSNextDeskButtonBase)
-END_METADATA
-
-// -----------------------------------------------------------------------------
-// CrOSNextDeskIconButton:
 
 CrOSNextDeskIconButton::CrOSNextDeskIconButton(
     DesksBarView* bar_view,

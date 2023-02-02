@@ -8,7 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
-#include "ash/wm/desks/cros_next_desk_button.h"
+#include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
@@ -52,6 +52,10 @@ constexpr base::TimeDelta kScaleDownDeskIconButton = base::Milliseconds(50);
 // Scale for entering/exiting zero state.
 constexpr float kEnterOrExitZeroStateScale = 0.6f;
 
+// Animation durations for fade in the label below the desk icon button.
+constexpr base::TimeDelta kLabelFadeInDelay = base::Milliseconds(100);
+constexpr base::TimeDelta kLabelFadeInDuration = base::Milliseconds(50);
+
 // |settings| will be initialized with a fast-out-slow-in animation with the
 // given |duration|.
 void InitScopedAnimationSettings(ui::ScopedLayerAnimationSettings* settings,
@@ -77,6 +81,28 @@ void AnimateView(views::View* view, const gfx::Transform& begin_transform) {
                                   ? kExistingMiniViewsAnimationDurationCrOSNext
                                   : kExistingMiniViewsAnimationDuration);
   layer->SetTransform(kEndTransform);
+}
+
+// Note this function assumes that the given `view` is already set with its
+// final visibility. If it's not visible, no need to fade it in. Return
+// immediately instead.
+void FadeInView(views::View* view,
+                base::TimeDelta duration,
+                base::TimeDelta delay) {
+  if (!view->GetVisible()) {
+    return;
+  }
+
+  auto* layer = view->layer();
+  layer->SetOpacity(0.f);
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .At(delay)
+      .SetDuration(duration)
+      .SetOpacity(layer, 1.f, gfx::Tween::ACCEL_20_DECEL_100);
 }
 
 // See details at AnimateView.
@@ -400,8 +426,14 @@ void PerformNewDeskMiniViewAnimation(
                                      : mini_views_right_begin_transform;
   if (features::IsJellyrollEnabled()) {
     AnimateView(bar_view->new_desk_button(), button_transform);
+    if (bar_view->new_desk_button_label()->GetVisible()) {
+      AnimateView(bar_view->new_desk_button_label(), button_transform);
+    }
     if (auto* library_button = bar_view->library_button()) {
       AnimateView(library_button, button_transform);
+      if (bar_view->library_button_label()->GetVisible()) {
+        AnimateView(bar_view->library_button_label(), button_transform);
+      }
     }
   } else {
     AnimateView(bar_view->expanded_state_new_desk_button(), button_transform);
@@ -434,8 +466,14 @@ void PerformRemoveDeskMiniViewAnimation(
                                      : mini_views_right_begin_transform;
   if (features::IsJellyrollEnabled()) {
     AnimateView(bar_view->new_desk_button(), button_transform);
+    if (bar_view->new_desk_button_label()->GetVisible()) {
+      AnimateView(bar_view->new_desk_button_label(), button_transform);
+    }
     if (auto* library_button = bar_view->library_button()) {
       AnimateView(library_button, button_transform);
+      if (bar_view->library_button_label()->GetVisible()) {
+        AnimateView(bar_view->library_button_label(), button_transform);
+      }
     }
   } else {
     AnimateView(bar_view->expanded_state_new_desk_button(), button_transform);
@@ -488,7 +526,15 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
   ScaleUpAndFadeInView(bar_view->new_desk_button(), bar_x_center);
   if (library_button) {
     ScaleUpAndFadeInView(library_button, bar_x_center);
+    // Library button could be at active state when the desks bar is switched
+    // from the zero state to the expanded state, for example when clicking on
+    // the library button at zero state. Thus we should also try to fade in the
+    // library button label here.
+    FadeInView(bar_view->library_button_label(),
+               /*duration=*/kLabelFadeInDuration,
+               /*delay=*/kLabelFadeInDelay);
   }
+
   PositionWindowsInOverview();
 }
 
@@ -594,9 +640,15 @@ void PerformDeskIconButtonScaleAnimationCrOSNext(
   if (button == bar_view->new_desk_button()) {
     if (auto* library_button = bar_view->library_button()) {
       AnimateView(library_button, right_begin_transform);
+      FadeInView(bar_view->new_desk_button_label(),
+                 /*duration=*/kLabelFadeInDuration,
+                 /*delay=*/kLabelFadeInDelay);
     }
   } else {
     AnimateView(bar_view->new_desk_button(), left_begin_transform);
+    FadeInView(bar_view->library_button_label(),
+               /*duration=*/kLabelFadeInDuration,
+               /*delay=*/kLabelFadeInDelay);
   }
 }
 
