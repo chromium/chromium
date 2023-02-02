@@ -54,7 +54,7 @@ FullRestoreReadHandler::~FullRestoreReadHandler() = default;
 void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
   int32_t window_id = window->GetProperty(app_restore::kRestoreWindowIdKey);
 
-  // Patch fix for (b/261765975).
+  // Ignore desk template and saved desk windows.
   if (window_id < app_restore::kParentToHiddenContainer)
     return;
 
@@ -74,8 +74,6 @@ void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
   }
 
   if (app_restore::IsLacrosWindow(window)) {
-    DCHECK(window_id > app_restore::kParentToHiddenContainer);
-
     return;
   }
 
