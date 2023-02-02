@@ -30126,6 +30126,36 @@
         "args": [
           "--use-persistent-shell"
         ],
+        "isolate_name": "keyboard_accessory_junit_tests",
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "keyboard_accessory_junit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cores": "8",
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04",
+              "pool": "chromium.tests"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/android/features/keyboard_accessory:keyboard_accessory_junit_tests/",
+        "use_isolated_scripts_api": true
+      },
+      {
+        "args": [
+          "--use-persistent-shell"
+        ],
         "isolate_name": "media_base_junit_tests",
         "isolate_profile_data": true,
         "merge": {

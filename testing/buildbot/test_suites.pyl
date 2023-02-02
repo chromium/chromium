@@ -1200,6 +1200,18 @@
         ],
         'use_isolated_scripts_api': True,
       },
+      'keyboard_accessory_junit_tests': {
+        'mixins': [
+          'x86-64',
+          'linux-bionic',
+          'junit-swarming',
+        ],
+        'remove_mixins': [
+          'emulator-4-cores',
+          'nougat-x86-emulator',
+        ],
+        'use_isolated_scripts_api': True,
+      },
       'media_base_junit_tests': {
         'mixins': [
           'x86-64',
