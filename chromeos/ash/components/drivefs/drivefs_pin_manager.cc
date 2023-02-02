@@ -197,38 +197,6 @@ int64_t GetSize(const mojom::FileMetadata& metadata) {
              : metadata.size;
 }
 
-bool CanPinItem(const mojom::FileMetadata& md, const base::FilePath& path) {
-  using Type = mojom::FileMetadata::Type;
-  const auto id = PinManager::Id(md.stable_id);
-
-  if (md.type == Type::kDirectory) {
-    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Directory";
-    return false;
-  }
-
-  // TODO (b/264596214) Drive shortcuts masquerade as empty files. Is there a
-  // better way to recognize Drive shortcuts?
-  if (md.type == Type::kFile && md.size == 0) {
-    VLOG(2) << "Skipped " << id << " " << Quote(path)
-            << ": Empty file or shortcut";
-    return false;
-  }
-
-  if (md.can_pin != mojom::FileMetadata::CanPinStatus::kOk) {
-    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Cannot be pinned";
-    return false;
-  }
-
-  // TODO(b/266037569): Setting root in the query made to DriveFS is currently
-  // unsupported.
-  if (!base::FilePath("/root").IsParent(path)) {
-    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Not in my drive";
-    return false;
-  }
-
-  return true;
-}
-
 }  // namespace
 
 std::ostream& operator<<(std::ostream& out, const PinManager::Id id) {
@@ -306,6 +274,43 @@ Progress& Progress::operator=(const Progress&) = default;
 // queue.
 constexpr base::TimeDelta kPeriodicRemovalInterval = base::Seconds(10);
 
+bool PinManager::CanPin(const mojom::FileMetadata& md, const Path& path) {
+  using Type = mojom::FileMetadata::Type;
+  const auto id = PinManager::Id(md.stable_id);
+
+  if (md.type == Type::kDirectory) {
+    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Directory";
+    return false;
+  }
+
+  // TODO (b/264596214) Drive shortcuts masquerade as empty files. Is there a
+  // better way to recognize Drive shortcuts?
+  if (md.type == Type::kFile && md.size == 0) {
+    VLOG(2) << "Skipped " << id << " " << Quote(path)
+            << ": Empty file or shortcut";
+    return false;
+  }
+
+  if (md.can_pin != mojom::FileMetadata::CanPinStatus::kOk) {
+    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Cannot be pinned";
+    return false;
+  }
+
+  if (md.pinned && md.available_offline) {
+    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Already pinned";
+    return false;
+  }
+
+  // TODO(b/266037569): Setting root in the query made to DriveFS is currently
+  // unsupported.
+  if (!Path("/root").IsParent(path)) {
+    VLOG(1) << "Skipped " << id << " " << Quote(path) << ": Not in my drive";
+    return false;
+  }
+
+  return true;
+}
+
 bool PinManager::Add(const Id id,
                      const std::string& path,
                      const int64_t size,
@@ -342,6 +347,24 @@ bool PinManager::Add(const Id id,
   }
 
   return true;
+}
+
+bool PinManager::Add(const mojom::FileMetadata& md, const Path& path) {
+  const Id id = Id(md.stable_id);
+  VLOG(3) << "Considering " << id << " " << Quote(path) << " " << Quote(md);
+
+  if (!CanPin(md, path)) {
+    return false;
+  }
+
+  VLOG_IF(1, md.pinned && !md.available_offline)
+      << "Already pinned but not available offline yet: " << id << " "
+      << Quote(path);
+  VLOG_IF(1, !md.pinned && md.available_offline)
+      << "Not pinned yet but already available offline: " << id << " "
+      << Quote(path) << ": " << Quote(md);
+
+  return Add(id, path.value(), GetSize(md), md.pinned);
 }
 
 bool PinManager::Remove(const Id id,
@@ -437,8 +460,7 @@ bool PinManager::Update(Files::value_type& entry,
   return modified;
 }
 
-PinManager::PinManager(base::FilePath profile_path,
-                       mojom::DriveFs* const drivefs)
+PinManager::PinManager(Path profile_path, mojom::DriveFs* const drivefs)
     : profile_path_(std::move(profile_path)),
       drivefs_(drivefs),
       space_getter_(base::BindRepeating(&GetFreeSpace)) {
@@ -541,33 +563,8 @@ void PinManager::OnSearchResultForSizeCalculation(
           << " items for space calculation";
   for (const mojom::QueryItemPtr& item : *items) {
     DCHECK(item);
-    const base::FilePath& path = item->path;
     DCHECK(item->metadata);
-    const mojom::FileMetadata& md = *item->metadata;
-    const Id id = Id(md.stable_id);
-    VLOG(3) << "Considering " << id << " " << Quote(path) << " " << Quote(md);
-
-    if (!CanPinItem(md, item->path)) {
-      continue;
-    }
-
-    int64_t size = GetSize(md);
-
-    if (md.pinned) {
-      if (md.available_offline) {
-        VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Already pinned";
-        continue;
-      }
-
-      VLOG(1) << "Already pinned but not available offline yet: " << id << " "
-              << Quote(path);
-    } else {
-      VLOG_IF(1, md.available_offline)
-          << "Not pinned yet but already available offline: " << id << " "
-          << Quote(path) << ": " << Quote(md);
-    }
-
-    Add(id, path.value(), size, md.pinned);
+    Add(*item->metadata, item->path);
   }
 
   NotifyProgress();

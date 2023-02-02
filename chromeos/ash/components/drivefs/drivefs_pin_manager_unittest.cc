@@ -103,7 +103,7 @@ ACTION_P(PopulateSearchItems, items) {
     QueryItemPtr p = QueryItem::New();
     // Paths must be parented at "/root" to be considered for space
     // calculations.
-    p->path = item.path.empty() ? base::FilePath("/root/file.txt") : item.path;
+    p->path = item.path.empty() ? FilePath("/root/file.txt") : item.path;
     p->metadata = MakeMetadata(item);
     result.push_back(std::move(p));
   }
@@ -188,11 +188,6 @@ class MockObserver : public PinManager::Observer {
 }  // namespace
 
 class DriveFsPinManagerTest : public testing::Test {
- public:
-  DriveFsPinManagerTest() = default;
-  DriveFsPinManagerTest(const DriveFsPinManagerTest&) = delete;
-  DriveFsPinManagerTest& operator=(const DriveFsPinManagerTest&) = delete;
-
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -243,7 +238,73 @@ class DriveFsPinManagerTest : public testing::Test {
   MockDriveFs drivefs_;
 };
 
-// Tests DriveFsPinManagerTest::Add().
+// Tests PinManager::CanPin().
+TEST_F(DriveFsPinManagerTest, CanPin) {
+  using Type = FileMetadata::Type;
+  using CanPinStatus = FileMetadata::CanPinStatus;
+
+  FilePath path("/root/poi");
+  FileMetadata md;
+  md.stable_id = 57;
+  md.size = 1456754;
+  md.can_pin = CanPinStatus::kOk;
+  md.pinned = false;
+  md.available_offline = false;
+
+  // Non-empty file can be pinned.
+  md.type = Type::kFile;
+  EXPECT_TRUE(PinManager::CanPin(md, path));
+
+  // Hosted doc can be pinned.
+  md.size = 0;
+  md.type = Type::kHosted;
+  EXPECT_TRUE(PinManager::CanPin(md, path));
+
+  // Directory cannot be pinned.
+  md.type = Type::kDirectory;
+  EXPECT_FALSE(PinManager::CanPin(md, path));
+
+  // Back to pinnable case.
+  md.type = Type::kFile;
+  md.size = 1;
+  EXPECT_TRUE(PinManager::CanPin(md, path));
+
+  // Zero-sized file cannot be pinned.
+  md.size = 0;
+  EXPECT_FALSE(PinManager::CanPin(md, path));
+  md.size = 1456754;
+  EXPECT_TRUE(PinManager::CanPin(md, path));
+
+  // Unpinnable file cannot be pinned.
+  md.can_pin = CanPinStatus::kDisabled;
+  EXPECT_FALSE(PinManager::CanPin(md, path));
+  md.can_pin = CanPinStatus::kOk;
+  EXPECT_TRUE(PinManager::CanPin(md, path));
+
+  // Already pinned and cached file does not need to be pinned.
+  md.pinned = true;
+  md.available_offline = true;
+  EXPECT_FALSE(PinManager::CanPin(md, path));
+
+  // Already pinned file that is not cached yet should be followed as if it was
+  // just pinned.
+  md.pinned = true;
+  md.available_offline = false;
+  EXPECT_TRUE(PinManager::CanPin(md, path));
+
+  // Unpinned file should be pinned even if it is already cached.
+  md.pinned = false;
+  md.available_offline = true;
+  EXPECT_TRUE(PinManager::CanPin(md, path));
+  md.available_offline = false;
+  EXPECT_TRUE(PinManager::CanPin(md, path));
+
+  // File that is not under /root/... cannot be pinned.
+  path = FilePath("/shared/poi");
+  EXPECT_FALSE(PinManager::CanPin(md, path));
+}
+
+// Tests PinManager::Add().
 TEST_F(DriveFsPinManagerTest, Add) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
 
@@ -328,7 +389,7 @@ TEST_F(DriveFsPinManagerTest, Add) {
   }
 }
 
-// Tests DriveFsPinManagerTest::Update().
+// Tests PinManager::Update().
 TEST_F(DriveFsPinManagerTest, Update) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
 
@@ -528,7 +589,7 @@ TEST_F(DriveFsPinManagerTest, Update) {
   }
 }
 
-// Tests DriveFsPinManagerTest::Remove().
+// Tests PinManager::Remove().
 TEST_F(DriveFsPinManagerTest, Remove) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
 
@@ -658,7 +719,7 @@ TEST_F(DriveFsPinManagerTest, Remove) {
   }
 }
 
-// Tests DriveFsPinManagerTest::OnSyncingEvent().
+// Tests PinManager::OnSyncingEvent().
 TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
 

@@ -120,7 +120,9 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
     : public DriveFsHostObserver {
  public:
-  PinManager(base::FilePath profile_path, mojom::DriveFs* drivefs);
+  using Path = base::FilePath;
+
+  PinManager(Path profile_path, mojom::DriveFs* drivefs);
 
   PinManager(const PinManager&) = delete;
   PinManager& operator=(const PinManager&) = delete;
@@ -189,8 +191,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   // Sets the function that retrieves the free space. For tests only.
   using SpaceResult = base::OnceCallback<void(int64_t)>;
-  using SpaceGetter =
-      base::RepeatingCallback<void(const base::FilePath&, SpaceResult)>;
+  using SpaceGetter = base::RepeatingCallback<void(const Path&, SpaceResult)>;
 
   void SetSpaceGetter(SpaceGetter f) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -249,10 +250,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   using Files = std::unordered_map<Id, File>;
 
+  // Check if the given item can be pinned.
+  static bool CanPin(const mojom::FileMetadata& md, const Path& path);
+
   // Adds an item to the files to track.  Does nothing if an item with the same
   // ID already exists in the map. Updates the total number of bytes to transfer
   // and the required space. Returns whether an item was actually added.
   bool Add(Id id, const std::string& path, int64_t size, bool pinned);
+
+  // Adds an item to the files to track if it is of interest.
+  bool Add(const mojom::FileMetadata& md, const Path& path);
 
   // Removes an item from the files to track. Does nothing if the item is not in
   // the map. Updates the total number of bytes transferred so far. If
@@ -330,7 +337,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const base::FilePath profile_path_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const Path profile_path_ GUARDED_BY_CONTEXT(sequence_checker_);
   const raw_ptr<mojom::DriveFs> drivefs_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Should the feature actually pin files, or should it stop after checking the
@@ -367,6 +374,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Update);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Remove);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnSyncingEvent);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CanPin);
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
