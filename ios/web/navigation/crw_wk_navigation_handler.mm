@@ -391,7 +391,9 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
   }
 
   // Ref: crbug.com/1408799
-  if (isMainFrameNavigationAction && isCrossOriginTargetFrame &&
+  if (base::FeatureList::IsEnabled(
+          web::features::kPreventNavigationWithoutUserInteraction) &&
+      isMainFrameNavigationAction && isCrossOriginTargetFrame &&
       !hasTappedRecently) {
     decisionHandler(WKNavigationActionPolicyCancel);
     return;
