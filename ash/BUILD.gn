@@ -2254,6 +2254,8 @@ component("ash") {
     "wm/overview/overview_wallpaper_controller.h",
     "wm/overview/overview_window_drag_controller.cc",
     "wm/overview/overview_window_drag_controller.h",
+    "wm/overview/scoped_float_container_stacker.cc",
+    "wm/overview/scoped_float_container_stacker.h",
     "wm/overview/scoped_overview_animation_settings.cc",
     "wm/overview/scoped_overview_animation_settings.h",
     "wm/overview/scoped_overview_hide_windows.cc",
