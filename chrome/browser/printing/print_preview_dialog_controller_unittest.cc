@@ -147,6 +147,8 @@ TEST_F(PrintPreviewDialogControllerUnitTest, MAYBE_MultiplePreviewDialogs) {
 
   int tab_1_index = tab_strip_model->GetIndexOfWebContents(web_contents_1);
   int tab_2_index = tab_strip_model->GetIndexOfWebContents(web_contents_2);
+  EXPECT_NE(tab_1_index, tab_2_index);
+
   int preview_dialog_1_index =
       tab_strip_model->GetIndexOfWebContents(preview_dialog_1);
   int preview_dialog_2_index =
@@ -160,10 +162,11 @@ TEST_F(PrintPreviewDialogControllerUnitTest, MAYBE_MultiplePreviewDialogs) {
   // initiator should have focus.
   EXPECT_EQ(tab_2_index, tab_strip_model->active_index());
 
-  // When we get the preview dialog for `web_contents_1`,
-  // `preview_dialog_1` is activated and focused.
+  // When we get the preview dialog for `web_contents_1`, `preview_dialog_2`
+  // remains activated and focused. The previous behavior was to activate
+  // `preview_dialog_1`, but that allowed tabs to steal focus.
   dialog_controller->GetOrCreatePreviewDialog(web_contents_1);
-  EXPECT_EQ(tab_1_index, tab_strip_model->active_index());
+  EXPECT_EQ(tab_2_index, tab_strip_model->active_index());
 }
 
 // Check clearing the initiator details associated with a print preview dialog

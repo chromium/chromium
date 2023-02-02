@@ -32,7 +32,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -230,12 +229,10 @@ WebContents* PrintPreviewDialogController::GetOrCreatePreviewDialog(
 
   // Get the print preview dialog for `initiator`.
   WebContents* preview_dialog = GetPrintPreviewForContents(initiator);
-  if (!preview_dialog)
-    return CreatePrintPreviewDialog(initiator);
-
-  // Show the initiator holding the existing preview dialog.
-  initiator->GetDelegate()->ActivateContents(initiator);
-  return preview_dialog;
+  if (preview_dialog) {
+    return preview_dialog;
+  }
+  return CreatePrintPreviewDialog(initiator);
 }
 
 WebContents* PrintPreviewDialogController::GetPrintPreviewForContents(
