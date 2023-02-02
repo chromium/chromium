@@ -1030,6 +1030,90 @@ TEST_P(MLGraphXnnpackTest, Conv2dTest) {
 }
 
 template <typename T>
+struct GemmTester {
+  MLGraphXnnpackTest* helper;
+  OperandInfo<T> a;
+  OperandInfo<T> b;
+  absl::optional<OperandInfo<T>> c = absl::nullopt;
+  Vector<T> expected;
+
+  void Test(V8TestingScope& scope,
+            MLGraphBuilder* builder,
+            MLGemmOptions* options = MLGemmOptions::Create()) {
+    // Build the graph.
+    auto* a_operand = BuildInput(scope, builder, "input", a.dimensions, a.type);
+    auto* b_operand =
+        BuildConstant(scope, builder, b.dimensions, b.type, b.values);
+    if (c) {
+      options->setC(BuildConstant(scope, builder, c.value().dimensions,
+                                  c.value().type, c.value().values));
+    }
+    auto* output_operand =
+        BuildGemm(scope, builder, a_operand, b_operand, options);
+    auto [graph, build_exception] =
+        helper->BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute the graph.
+    auto input_buffer = CreateArrayBufferViewForOperand(a_operand, a.values);
+    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
+    auto* compute_exception = helper->ComputeGraph(
+        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    EXPECT_EQ(compute_exception, nullptr);
+    Vector<float> results = GetArrayBufferViewValues<T>(output_buffer);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphXnnpackTest, GemmTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope);
+  {
+    // Test gemm operator without operand c.
+    GemmTester<float>{.a = {.type = V8MLOperandType::Enum::kFloat32,
+                            .dimensions = {2, 2},
+                            .values = {1.0, 2.0, 2.0, 1.0}},
+                      .b = {.type = V8MLOperandType::Enum::kFloat32,
+                            .dimensions = {2, 1},
+                            .values = {2.0, 4.0}},
+                      .expected = {10.0, 8.0}}
+        .Test(scope, builder);
+  }
+  {
+    // Test gemm operator with operand c.
+    GemmTester<float>{
+        .a = {.type = V8MLOperandType::Enum::kFloat32,
+              .dimensions = {2, 2},
+              .values = {1.0, 2.0, 2.0, 1.0}},
+        .b = {.type = V8MLOperandType::Enum::kFloat32,
+              .dimensions = {2, 1},
+              .values = {2.0, 4.0}},
+        .c = OperandInfo<float>{.type = V8MLOperandType::Enum::kFloat32,
+                                .dimensions = {1},
+                                .values = {1.0}},
+        .expected = {11.0, 9.0}}
+        .Test(scope, builder);
+  }
+  {
+    // Test gemm operator with bTranspose = true.
+    auto* options = MLGemmOptions::Create();
+    options->setBTranspose(true);
+    GemmTester<float>{
+        .a = {.type = V8MLOperandType::Enum::kFloat32,
+              .dimensions = {2, 2},
+              .values = {1.0, 2.0, 2.0, 1.0}},
+        .b = {.type = V8MLOperandType::Enum::kFloat32,
+              .dimensions = {1, 2},
+              .values = {2.0, 4.0}},
+        .c = OperandInfo<float>{.type = V8MLOperandType::Enum::kFloat32,
+                                .dimensions = {1},
+                                .values = {1.0}},
+        .expected = {11.0, 9.0}}
+        .Test(scope, builder, options);
+  }
+}
+
+template <typename T>
 struct Pool2dTester {
   MLGraphXnnpackTest* helper;
   Pool2dKind kind;

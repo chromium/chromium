@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
@@ -642,6 +643,74 @@ xnn_status DefineXnnNodeForElementWiseBinary(
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForGemm(xnn_subgraph_t subgraph,
+                                const MLOperator* gemm,
+                                const OperandValueIdMap& operand_value_id_map,
+                                String& error_message) {
+  // Set up the Value ID of input, filter, bias and output tensors for XNNPACK
+  // fully connected Node.
+  const uint32_t input_id =
+      GetOperatorInputValueId(gemm, operand_value_id_map, 0);
+  const uint32_t filter_id =
+      GetOperatorInputValueId(gemm, operand_value_id_map, 1);
+  // Set the Value ID of bias tensor to XNN_INVALID_VALUE_ID if it is not
+  // present.
+  const uint32_t bias_id =
+      gemm->Inputs().size() == 3
+          ? GetOperatorInputValueId(gemm, operand_value_id_map, 2)
+          : XNN_INVALID_VALUE_ID;
+  const uint32_t output_id =
+      GetOperatorOutputValueId(gemm, operand_value_id_map);
+
+  const MLGemmOptions* options =
+      static_cast<const MLGemmOptions*>(gemm->Options());
+  if (options->hasC()) {
+    // XNNPACK fully connected Node only supports 1-D bias tensor (operand c of
+    // WebNN gemm operator) with [output_channels] dimensions.
+    const auto* bias = options->c();
+    const auto output_channels = gemm->Outputs()[0]->Dimensions()[1];
+    if (bias->Dimensions().size() != 1u ||
+        bias->Dimensions()[0] != output_channels) {
+      // TODO(crbug.com/1273291): Support the bias with other dimensions by
+      // element-wise addition operator.
+      error_message = String::Format("The dimensions of bias must be [%u].",
+                                     output_channels);
+      return xnn_status_unsupported_parameter;
+    }
+  }
+  if (fabs(options->alpha() - 1.0f) > std::numeric_limits<float>::epsilon()) {
+    // TODO(crbug.com/1273291): Support alpha by using element-wise
+    // multiplication operator.
+    error_message = "gemm doesn't support alpha option.";
+    return xnn_status_unsupported_parameter;
+  }
+  if (fabs(options->beta() - 1.0f) > std::numeric_limits<float>::epsilon()) {
+    // TODO(crbug.com/1273291): Support beta by using element-wise
+    // multiplication operator.
+    error_message = "gemm doesn't support beta option.";
+    return xnn_status_unsupported_parameter;
+  }
+  if (options->aTranspose()) {
+    // TODO(crbug.com/1273291): Support aTranspose by using transpose operator.
+    error_message = "gemm doesn't support aTranspose option.";
+    return xnn_status_unsupported_parameter;
+  }
+  uint32_t flags = 0;
+  if (!options->bTranspose()) {
+    // When bTranspose option is false, the filter tensor (operand b of WebNN
+    // gemm operator) has [input_channels, output_channels] dimensions that
+    // requires the XNN_FLAG_TRANSPOSE_WEIGHTS flag to be set for XNNPACK fully
+    // connected Node.
+    flags = XNN_FLAG_TRANSPOSE_WEIGHTS;
+  }
+  const float output_min = -std::numeric_limits<float>::infinity();
+  const float output_max = +std::numeric_limits<float>::infinity();
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+      xnn_define_fully_connected(subgraph, output_min, output_max, input_id,
+                                 filter_id, bias_id, output_id, flags));
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
                                   const MLOperator* pool2d,
                                   const OperandValueIdMap& operand_value_id_map,
@@ -783,6 +852,10 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     }
+    case MLOperator::OperatorKind::kGemm:
+      XNN_CHECK_STATUS(DefineXnnNodeForGemm(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
     // Define XNNPACK Node for pool2d operators.
     case MLOperator::OperatorKind::kAveragePool2d:
     case MLOperator::OperatorKind::kMaxPool2d: {
