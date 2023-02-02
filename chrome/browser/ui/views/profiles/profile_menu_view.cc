@@ -349,8 +349,11 @@ void ProfileMenuView::OnSigninAccountButtonClicked(CoreAccountInfo account) {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void ProfileMenuView::OnSignoutButtonClicked() {
-  DCHECK(signin_util::UserSignoutSetting::GetForProfile(browser()->profile())
-             ->IsClearPrimaryAccountAllowed())
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  DCHECK(ChromeSigninClientFactory::GetForProfile(browser()->profile())
+             ->IsClearPrimaryAccountAllowed(identity_manager->HasPrimaryAccount(
+                 signin::ConsentLevel::kSync)))
       << "Clear primary account is not allowed. Signout should not be offered "
          "in the UI.";
 
@@ -365,11 +368,9 @@ void ProfileMenuView::OnSignoutButtonClicked() {
           kUserMenu_SignOutAllAccounts);
 #else
   CHECK(!browser()->profile()->IsMainProfile());
-  IdentityManagerFactory::GetForProfile(browser()->profile())
-      ->GetPrimaryAccountMutator()
-      ->ClearPrimaryAccount(
-          signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
-          signin_metrics::SignoutDelete::kIgnoreMetric);
+  identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
+      signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
+      signin_metrics::SignoutDelete::kIgnoreMetric);
 #endif
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -260,7 +260,7 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN,
                       .sync_opt_in = AccessPoint::ACCESS_POINT_UNKNOWN});
 
-  signin_client()->set_is_clear_primary_account_allowed(
+  signin_client()->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
@@ -269,7 +269,7 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN,
                       .sync_opt_in = AccessPoint::ACCESS_POINT_UNKNOWN});
 
-  signin_client()->set_is_clear_primary_account_allowed(
+  signin_client()->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED);
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
@@ -278,7 +278,7 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN,
                       .sync_opt_in = AccessPoint::ACCESS_POINT_UNKNOWN});
 
-  signin_client()->set_is_clear_primary_account_allowed(
+  signin_client()->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::ALLOW);
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
@@ -305,14 +305,14 @@ TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN});
 
-  signin_client()->set_is_clear_primary_account_allowed(
+  signin_client()->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN});
 
-  signin_client()->set_is_clear_primary_account_allowed(
+  signin_client()->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::ALLOW);
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
@@ -338,7 +338,7 @@ TEST_F(PrimaryAccountManagerTest, RevokeSyncConsentAllowedSignoutProhibited) {
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN,
                       .sync_opt_in = AccessPoint::ACCESS_POINT_UNKNOWN});
 
-  signin_client()->set_is_clear_primary_account_allowed(
+  signin_client()->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
   manager_->RevokeSyncConsent(signin_metrics::ProfileSignout::kTest,
                               signin_metrics::SignoutDelete::kIgnoreMetric);

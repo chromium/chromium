@@ -47,8 +47,6 @@
 #include "components/user_manager/user_type.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
-#else
-#include "chrome/browser/signin/signin_util.h"
 #endif
 
 // Normally, re-check the family info once per day.
@@ -204,14 +202,6 @@ void ChildAccountServiceImpl::SetActive(bool active) {
   active_ = active;
 
   if (active_) {
-#if BUILDFLAG(IS_ANDROID)
-    signin_util::UserSignoutSetting::GetForProfile(profile_)
-        ->SetClearPrimaryAccountAllowed(false);
-#elif !BUILDFLAG(IS_CHROMEOS)
-    signin_util::UserSignoutSetting::GetForProfile(profile_)
-        ->SetRevokeSyncConsentAllowed(false);
-#endif
-
     StartFetchingFamilyInfo();
 
     SupervisedUserService* service =
@@ -219,10 +209,6 @@ void ChildAccountServiceImpl::SetActive(bool active) {
     service->web_approvals_manager().AddRemoteApprovalRequestCreator(
         PermissionRequestCreatorApiary::CreateWithProfile(profile_));
   } else {
-#if !BUILDFLAG(IS_CHROMEOS)
-    signin_util::UserSignoutSetting::GetForProfile(profile_)
-        ->ResetSignoutSetting();
-#endif
     CancelFetchingFamilyInfo();
   }
 }

@@ -71,7 +71,12 @@ class SigninClient : public KeyedService {
 
   // Returns true if clearing the primary account is allowed regardless of the
   // consent level.
-  virtual bool IsClearPrimaryAccountAllowed() const;
+  virtual bool IsClearPrimaryAccountAllowed(bool has_sync_account) const;
+  virtual bool IsRevokeSyncConsentAllowed() const;
+
+  void set_is_clear_primary_account_allowed_for_testing(SignoutDecision value) {
+    is_clear_primary_account_allowed_for_testing_ = value;
+  }
 
   // Called before Google sign-out started. Implementers must run the
   // |on_signout_decision_reached|, passing a SignoutDecision to allow/disallow
@@ -79,7 +84,8 @@ class SigninClient : public KeyedService {
   // Sign-out is always allowed by default.
   virtual void PreSignOut(
       base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
-      signin_metrics::ProfileSignout signout_source_metric);
+      signin_metrics::ProfileSignout signout_source_metric,
+      bool has_sync_account);
 
   // Returns true if GAIA cookies are allowed in the content area.
   virtual bool AreSigninCookiesAllowed() = 0;
@@ -118,6 +124,9 @@ class SigninClient : public KeyedService {
   // Removes all accounts.
   virtual void RemoveAllAccounts() = 0;
 #endif
+
+ protected:
+  absl::optional<SignoutDecision> is_clear_primary_account_allowed_for_testing_;
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_CLIENT_H_

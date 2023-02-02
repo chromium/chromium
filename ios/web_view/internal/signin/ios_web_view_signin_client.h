@@ -42,7 +42,8 @@ class IOSWebViewSigninClient : public SigninClient {
       content_settings::Observer* observer) override;
   void PreSignOut(
       base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
-      signin_metrics::ProfileSignout signout_source_metric) override;
+      signin_metrics::ProfileSignout signout_source_metric,
+      bool has_sync_account) override;
   void DelayNetworkCall(base::OnceClosure callback) override;
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
       GaiaAuthConsumer* consumer,

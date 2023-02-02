@@ -51,16 +51,6 @@ class TestSigninClient : public SigninClient {
   // once there is a unit test that requires it.
   PrefService* GetPrefs() override;
 
-  // Returns true if clear primary account is allowed regardless of the consent
-  // level.
-  bool IsClearPrimaryAccountAllowed() const override;
-
-  // Allow or disallow continuation of sign-out depending on value of
-  // |is_clear_primary_account_allowed_|;
-  void PreSignOut(
-      base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
-      signin_metrics::ProfileSignout signout_source_metric) override;
-
   // Wraps the test_url_loader_factory().
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
@@ -79,10 +69,6 @@ class TestSigninClient : public SigninClient {
 
   void set_are_signin_cookies_allowed(bool value) {
     are_signin_cookies_allowed_ = value;
-  }
-
-  void set_is_clear_primary_account_allowed(SignoutDecision value) {
-    is_clear_primary_account_allowed_ = value;
   }
 
   // When |value| is true, network calls posted through DelayNetworkCall() are
@@ -123,7 +109,6 @@ class TestSigninClient : public SigninClient {
   std::unique_ptr<network::mojom::CookieManager> cookie_manager_;
   bool are_signin_cookies_allowed_;
   bool network_calls_delayed_;
-  SignoutDecision is_clear_primary_account_allowed_ = SignoutDecision::ALLOW;
 
   std::vector<base::OnceClosure> delayed_network_calls_;
 

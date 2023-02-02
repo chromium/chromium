@@ -6,11 +6,20 @@
 
 void SigninClient::PreSignOut(
     base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
-    signin_metrics::ProfileSignout signout_source_metric) {
+    signin_metrics::ProfileSignout signout_source_metric,
+    bool has_sync_account) {
   // Allow sign out to continue.
-  std::move(on_signout_decision_reached).Run(SignoutDecision::ALLOW);
+  std::move(on_signout_decision_reached)
+      .Run(is_clear_primary_account_allowed_for_testing_.value_or(
+          SignoutDecision::ALLOW));
 }
 
-bool SigninClient::IsClearPrimaryAccountAllowed() const {
-  return true;
+bool SigninClient::IsClearPrimaryAccountAllowed(bool has_sync_account) const {
+  return is_clear_primary_account_allowed_for_testing_.value_or(
+             SignoutDecision::ALLOW) == SignoutDecision::ALLOW;
+}
+
+bool SigninClient::IsRevokeSyncConsentAllowed() const {
+  return is_clear_primary_account_allowed_for_testing_.value_or(
+             SignoutDecision::ALLOW) != SignoutDecision::REVOKE_SYNC_DISALLOWED;
 }

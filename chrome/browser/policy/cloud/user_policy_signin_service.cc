@@ -20,6 +20,8 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
+#include "chrome/browser/signin/chrome_signin_client.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pref_names.h"
@@ -167,13 +169,6 @@ void UserPolicySigninService::Shutdown() {
 }
 
 void UserPolicySigninService::ShutdownUserCloudPolicyManager() {
-  UserCloudPolicyManager* manager = policy_manager();
-  // Allow the user to signout again.
-  if (manager) {
-    signin_util::UserSignoutSetting::GetForProfile(profile_)
-        ->ResetSignoutSetting();
-  }
-
   UserPolicySigninServiceBase::ShutdownUserCloudPolicyManager();
 }
 
@@ -197,10 +192,19 @@ void UserPolicySigninService::ProhibitSignoutIfNeeded() {
     chrome::enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
   }
 
-  if (identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    signin_util::UserSignoutSetting::GetForProfile(profile_)
-        ->SetRevokeSyncConsentAllowed(false);
+#if DCHECK_IS_ON()
+  // Setting the user accepted management bit should be enough to prohibit
+  // signout.
+  // The user accepted management bit is set in the profile storage. If there
+  // is no profile storage, the bit will not be set.
+  if (identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
+    auto* signin_client = ChromeSigninClientFactory::GetForProfile(profile_);
+    DCHECK(!signin_client->IsRevokeSyncConsentAllowed());
+    DCHECK(!signin_client->IsClearPrimaryAccountAllowed(
+        /*has_sync_account=*/true));
   }
+#endif
 }
 
 void UserPolicySigninService::OnProfileReady(Profile* profile) {

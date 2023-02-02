@@ -328,9 +328,11 @@ void DiceResponseHandler::ProcessDiceSignoutHeader(
   // If there is a restriction on removing the primary account. Do not remove
   // the account regardless of the consent level. Else, the sync account can
   // only be invalidated.
-  signin::ConsentLevel level = signin_client_->IsClearPrimaryAccountAllowed()
-                                   ? signin::ConsentLevel::kSync
-                                   : signin::ConsentLevel::kSignin;
+  signin::ConsentLevel level =
+      signin_client_->IsClearPrimaryAccountAllowed(
+          identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync))
+          ? signin::ConsentLevel::kSync
+          : signin::ConsentLevel::kSignin;
 
   CoreAccountId primary_account = identity_manager_->GetPrimaryAccountId(level);
   bool primary_account_signed_out = false;

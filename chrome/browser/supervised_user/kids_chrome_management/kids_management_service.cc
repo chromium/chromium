@@ -17,7 +17,6 @@
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_external_fetcher.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_profile_manager.h"
@@ -165,13 +164,6 @@ void KidsManagementService::AddChildStatusReceivedCallback(
   status_received_listeners_.push_back(std::move(callback));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-void KidsManagementService::UpdateUserSignOutSetting() {
-  signin_util::UserSignoutSetting::GetForProfile(profile_)
-      ->SetClearPrimaryAccountAllowed(false);
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 void KidsManagementService::SetActive(bool newValue) {
   if (!profile_manager_.IsChildAccount()) {
     return;
@@ -181,10 +173,6 @@ void KidsManagementService::SetActive(bool newValue) {
   }
 
   if (newValue) {
-#if !BUILDFLAG(IS_CHROMEOS)
-    UpdateUserSignOutSetting();
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
     StartFetchFamilyMembers();
     DCHECK(IsFetchFamilyMembersStarted())
         << "StartFetchFamilyMembers should make the status started";
@@ -194,10 +182,6 @@ void KidsManagementService::SetActive(bool newValue) {
         .AddRemoteApprovalRequestCreator(
             PermissionRequestCreatorApiary::CreateWithProfile(profile_));
   } else {
-#if !BUILDFLAG(IS_CHROMEOS)
-    signin_util::UserSignoutSetting::GetForProfile(profile_)
-        ->ResetSignoutSetting();
-#endif  // !BUILDFLAG(IS_CHROMEOS)
     StopFetchFamilyMembers();
     DCHECK(!IsFetchFamilyMembersStarted())
         << "StopFetchFamilyMembers should make the status stopped";

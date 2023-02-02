@@ -12,6 +12,8 @@
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/signin/chrome_signin_client.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -240,8 +242,9 @@ void PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile(
       << "Disabling signin in chrome and 'RestrictSigninToPattern' policy "
          "are not supported on Lacros.";
 #else
-  if (signin_util::UserSignoutSetting::GetForProfile(profile)
-          ->IsClearPrimaryAccountAllowed()) {
+  if (ChromeSigninClientFactory::GetForProfile(profile)
+          ->IsClearPrimaryAccountAllowed(identity_manager->HasPrimaryAccount(
+              signin::ConsentLevel::kSync))) {
     // Force clear the primary account if it is no longer allowed and if sign
     // out is allowed.
     auto* primary_account_mutator =

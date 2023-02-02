@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -244,11 +245,13 @@ SyncStatusLabels GetSyncStatusLabels(
 
 SyncStatusLabels GetSyncStatusLabels(Profile* profile) {
   DCHECK(profile);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
   return GetSyncStatusLabels(
-      SyncServiceFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile),
-      signin_util::UserSignoutSetting::GetForProfile(profile)
-          ->IsClearPrimaryAccountAllowed());
+      SyncServiceFactory::GetForProfile(profile), identity_manager,
+      ChromeSigninClientFactory::GetForProfile(profile)
+          ->IsClearPrimaryAccountAllowed(identity_manager->HasPrimaryAccount(
+              signin::ConsentLevel::kSync)));
 }
 
 SyncStatusMessageType GetSyncStatusMessageType(Profile* profile) {
@@ -274,8 +277,10 @@ absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
   // RequiresClientUpgrade() is unrecoverable, but is treated separately below.
   if (service->HasUnrecoverableError() && !service->RequiresClientUpgrade()) {
     // Display different messages and buttons for managed accounts.
-    if (!signin_util::UserSignoutSetting::GetForProfile(profile)
-             ->IsClearPrimaryAccountAllowed()) {
+    if (!ChromeSigninClientFactory::GetForProfile(profile)
+             ->IsClearPrimaryAccountAllowed(
+                 IdentityManagerFactory::GetForProfile(profile)
+                     ->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
       return AvatarSyncErrorType::kManagedUserUnrecoverableError;
     }
     return AvatarSyncErrorType::kUnrecoverableError;

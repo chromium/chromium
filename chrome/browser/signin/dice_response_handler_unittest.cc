@@ -831,7 +831,7 @@ TEST_F(DiceResponseHandlerTest, SigninSignoutDifferentAccount) {
 
 TEST_F(DiceResponseHandlerTest,
        SignoutMainNonSyncAccountWithSignoutRestrictions) {
-  signin_client_.set_is_clear_primary_account_allowed(
+  signin_client_.set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
   const char kSecondaryEmail[] = "other@gmail.com";
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNOUT);

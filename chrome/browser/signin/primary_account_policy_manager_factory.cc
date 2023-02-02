@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/primary_account_policy_manager_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 
 // static
@@ -25,6 +26,7 @@ PrimaryAccountPolicyManager* PrimaryAccountPolicyManagerFactory::GetForProfile(
 PrimaryAccountPolicyManagerFactory::PrimaryAccountPolicyManagerFactory()
     : ProfileKeyedServiceFactory("PrimaryAccountPolicyManager") {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(ChromeSigninClientFactory::GetInstance());
 }
 
 PrimaryAccountPolicyManagerFactory::~PrimaryAccountPolicyManagerFactory() =

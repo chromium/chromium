@@ -27,7 +27,6 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/force_signin_verifier.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -104,38 +103,6 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
         kUserClickedSignoutFromUserPolicyNotificationDialog,
 };
 
-SigninClient::SignoutDecision UserSignoutSettingToSignoutDecision(
-    Profile* profile) {
-  signin_util::UserSignoutSetting* setting =
-      signin_util::UserSignoutSetting::GetForProfile(profile);
-
-  if (!setting->IsRevokeSyncConsentAllowed())
-    return SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED;
-
-  return setting->IsClearPrimaryAccountAllowed()
-             ? SigninClient::SignoutDecision::ALLOW
-             : SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED;
-}
-
-SigninClient::SignoutDecision IsSignoutAllowed(
-    Profile* profile,
-    const signin_metrics::ProfileSignout signout_source) {
-  SigninClient::SignoutDecision signout_decision =
-      UserSignoutSettingToSignoutDecision(profile);
-
-  if (signout_decision == SigninClient::SignoutDecision::ALLOW)
-    return signout_decision;
-
-  // TODO(crbug.com/1366360): Revisit |kAlwaysAllowedSignoutSources| in general
-  // and for Lacros main profile.
-  for (const auto& always_allowed_source : kAlwaysAllowedSignoutSources) {
-    if (signout_source == always_allowed_source)
-      return SigninClient::SignoutDecision::ALLOW;
-  }
-
-  return signout_decision;
-}
-
 }  // namespace
 
 ChromeSigninClient::ChromeSigninClient(Profile* profile) : profile_(profile) {
@@ -199,14 +166,23 @@ void ChromeSigninClient::RemoveContentSettingsObserver(
       ->RemoveObserver(observer);
 }
 
-bool ChromeSigninClient::IsClearPrimaryAccountAllowed() const {
-  return UserSignoutSettingToSignoutDecision(profile_) ==
+bool ChromeSigninClient::IsClearPrimaryAccountAllowed(
+    bool has_sync_account) const {
+  return GetSignoutDecision(has_sync_account,
+                            /*signout_source=*/absl::nullopt) ==
          SigninClient::SignoutDecision::ALLOW;
+}
+
+bool ChromeSigninClient::IsRevokeSyncConsentAllowed() const {
+  return GetSignoutDecision(/*has_sync_account=*/true,
+                            /*signout_source=*/absl::nullopt) !=
+         SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED;
 }
 
 void ChromeSigninClient::PreSignOut(
     base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
-    signin_metrics::ProfileSignout signout_source_metric) {
+    signin_metrics::ProfileSignout signout_source_metric,
+    bool has_sync_account) {
   DCHECK(on_signout_decision_reached);
   DCHECK(!on_signout_decision_reached_) << "SignOut already in-progress!";
   on_signout_decision_reached_ = std::move(on_signout_decision_reached);
@@ -232,7 +208,8 @@ void ChromeSigninClient::PreSignOut(
     BrowserList::CloseAllBrowsersWithProfile(
         profile_,
         base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersSuccess,
-                            base::Unretained(this), signout_source_metric),
+                            base::Unretained(this), signout_source_metric,
+                            has_sync_account),
         base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersAborted,
                             base::Unretained(this)),
         signout_source_metric == signin_metrics::ProfileSignout::kAbortSignin ||
@@ -243,7 +220,7 @@ void ChromeSigninClient::PreSignOut(
   {
 #endif
     std::move(on_signout_decision_reached_)
-        .Run(IsSignoutAllowed(profile_, signout_source_metric));
+        .Run(GetSignoutDecision(has_sync_account, signout_source_metric));
   }
 }
 
@@ -292,6 +269,46 @@ std::unique_ptr<GaiaAuthFetcher> ChromeSigninClient::CreateGaiaAuthFetcher(
     gaia::GaiaSource source) {
   return std::make_unique<GaiaAuthFetcher>(consumer, source,
                                            GetURLLoaderFactory());
+}
+
+SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
+    bool has_sync_account,
+    const absl::optional<signin_metrics::ProfileSignout> signout_source) const {
+  // TODO(crbug.com/1366360): Revisit |kAlwaysAllowedSignoutSources| in general
+  // and for Lacros main profile.
+  for (const auto& always_allowed_source : kAlwaysAllowedSignoutSources) {
+    if (!signout_source.has_value()) {
+      break;
+    }
+    if (signout_source.value() == always_allowed_source) {
+      return SigninClient::SignoutDecision::ALLOW;
+    }
+  }
+
+  if (is_clear_primary_account_allowed_for_testing_.has_value()) {
+    return is_clear_primary_account_allowed_for_testing_.value();
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The primary account in Lacros main profile must be the device account and
+  // can't be changed/cleared.
+  if (profile_->IsMainProfile()) {
+    return SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED;
+  }
+#endif
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !BUILDFLAG(IS_CHROMEOS)
+  // Check if supervised user.
+  if (profile_->IsChild()) {
+    return SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED;
+  }
+#endif
+
+  // Check if managed user.
+  if (chrome::enterprise_util::UserAcceptedAccountManagement(profile_) &&
+      has_sync_account) {
+    return SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED;
+  }
+  return SigninClient::SignoutDecision::ALLOW;
 }
 
 void ChromeSigninClient::VerifySyncToken() {
@@ -380,6 +397,7 @@ void ChromeSigninClient::SetURLLoaderFactoryForTest(
 
 void ChromeSigninClient::OnCloseBrowsersSuccess(
     const signin_metrics::ProfileSignout signout_source_metric,
+    bool has_sync_account,
     const base::FilePath& profile_path) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   if (signin_util::IsForceSigninEnabled() && force_signin_verifier_.get()) {
@@ -388,7 +406,7 @@ void ChromeSigninClient::OnCloseBrowsersSuccess(
 #endif
 
   std::move(on_signout_decision_reached_)
-      .Run(IsSignoutAllowed(profile_, signout_source_metric));
+      .Run(GetSignoutDecision(has_sync_account, signout_source_metric));
 
   LockForceSigninProfile(profile_path);
   // After sign out, lock the profile and show UserManager if necessary.

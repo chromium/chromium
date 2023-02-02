@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/primary_account_policy_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -63,6 +64,10 @@ class PrimaryAccountPolicyManagerTest : public testing::Test {
   signin::IdentityTestEnvironment* GetIdentityTestEnv() {
     DCHECK(identity_test_env_adaptor_);
     return identity_test_env_adaptor_->identity_test_env();
+  }
+
+  SigninClient* GetSigninSlient(Profile* profile) {
+    return ChromeSigninClientFactory::GetForProfile(profile);
   }
 
  private:
@@ -127,8 +132,9 @@ TEST_F(PrimaryAccountPolicyManagerTest,
 
   // Disable sign out and sign in. This should result in the initial profile
   // being deleted.
-  signin_util::UserSignoutSetting::GetForProfile(GetProfile())
-      ->SetClearPrimaryAccountAllowed(false);
+  GetSigninSlient(GetProfile())
+      ->set_is_clear_primary_account_allowed_for_testing(
+          SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
   GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   base::RunLoop().RunUntilIdle();
 
@@ -151,8 +157,9 @@ TEST_F(PrimaryAccountPolicyManagerTest,
 
   // Disable sign out and sign in. This should result in the initial profile
   // being deleted.
-  signin_util::UserSignoutSetting::GetForProfile(GetProfile())
-      ->SetRevokeSyncConsentAllowed(false);
+  GetSigninSlient(GetProfile())
+      ->set_is_clear_primary_account_allowed_for_testing(
+          SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED);
   GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   base::RunLoop().RunUntilIdle();
 

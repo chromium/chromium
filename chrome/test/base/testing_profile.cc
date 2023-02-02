@@ -47,7 +47,6 @@
 #include "chrome/browser/search_engines/template_url_fetcher_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
@@ -473,15 +472,6 @@ void TestingProfile::FinishInit() {
   if (delegate_) {
     delegate_->OnProfileCreationFinished(this, CREATE_MODE_ASYNCHRONOUS, true,
                                          false);
-  } else {
-    // It is the role of the delegate to ensure that the signout allowed is
-    // properly updated after the profile is create is initialized.
-    // For testing profiles that do not have a delegate, the signout allowed
-    // must be initialized when the testing profile finishes its
-    // initialization.
-
-    signin_util::UserSignoutSetting::GetForProfile(this)
-        ->InitializeUserSignoutSettingIfNeeded();
   }
 }
 

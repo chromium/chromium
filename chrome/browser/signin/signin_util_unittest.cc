@@ -20,7 +20,6 @@
 
 using signin_util::ProfileSeparationPolicyState;
 using signin_util::ProfileSeparationPolicyStateSet;
-using signin_util::UserSignoutSetting;
 
 class SigninUtilTest : public BrowserWithTestWindowTest {
  public:
@@ -397,64 +396,3 @@ TEST_F(SigninUtilTest, ProfileSeparationEnforcedByPolicy) {
       profile.get(), "primary_account_strict"));
 }
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST(UserSignoutSetting, MainProfile) {
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile::Builder builder;
-  builder.SetIsMainProfile(true);
-  std::unique_ptr<TestingProfile> testing_profile = builder.Build();
-  UserSignoutSetting* signout_setting =
-      UserSignoutSetting::GetForProfile(testing_profile.get());
-  EXPECT_FALSE(signout_setting->IsClearPrimaryAccountAllowed());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-TEST(UserSignoutSetting, AllAllowed) {
-  content::BrowserTaskEnvironment task_environment;
-  std::unique_ptr<TestingProfile> testing_profile =
-      TestingProfile::Builder().Build();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_FALSE(testing_profile->IsMainProfile());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  UserSignoutSetting* signout_setting =
-      UserSignoutSetting::GetForProfile(testing_profile.get());
-
-  EXPECT_TRUE(signout_setting->IsClearPrimaryAccountAllowed());
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(signout_setting->IsRevokeSyncConsentAllowed());
-#endif
-}
-
-TEST(UserSignoutSetting, ClearPrimaryAccountDisallowed) {
-  content::BrowserTaskEnvironment task_environment;
-  std::unique_ptr<TestingProfile> testing_profile =
-      TestingProfile::Builder().Build();
-
-  UserSignoutSetting* signout_setting =
-      UserSignoutSetting::GetForProfile(testing_profile.get());
-
-  signout_setting->SetClearPrimaryAccountAllowed(false);
-  EXPECT_FALSE(signout_setting->IsClearPrimaryAccountAllowed());
-
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(signout_setting->IsRevokeSyncConsentAllowed());
-#endif
-}
-
-#if BUILDFLAG(IS_ANDROID)
-TEST(UserSignoutSetting, RevokeSyncConsentDisallowed) {
-  content::BrowserTaskEnvironment task_environment;
-  std::unique_ptr<TestingProfile> testing_profile =
-      TestingProfile::Builder().Build();
-
-  UserSignoutSetting* signout_setting =
-      UserSignoutSetting::GetForProfile(testing_profile.get());
-
-  // Disallowing revoke sync disallows also removing the primary account.
-  signout_setting->SetRevokeSyncConsentAllowed(false);
-
-  EXPECT_FALSE(signout_setting->IsRevokeSyncConsentAllowed());
-  EXPECT_FALSE(signout_setting->IsClearPrimaryAccountAllowed());
-}
-#endif  // BUILDFLAG(IS_ANDROID)

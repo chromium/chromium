@@ -40,8 +40,6 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #endif
 
-using signin_util::UserSignoutSetting;
-
 // ChromeOS has its own network delay logic.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -72,15 +70,6 @@ bool CallbackTester::WasCalledExactlyOnce() {
   return called_ == 1;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-UserSignoutSetting* GetUserSignoutSetting(Profile* profile) {
-  return UserSignoutSetting::GetForProfile(profile);
-}
-
-bool IsClearPrimaryAccountAllowed(Profile* profile) {
-  return GetUserSignoutSetting(profile)->IsClearPrimaryAccountAllowed();
-}
-#endif
 }  // namespace
 
 class ChromeSigninClientTest : public testing::Test {
@@ -189,7 +178,8 @@ class ChromeSigninClientSignoutTest : public BrowserWithTestWindowTest {
     client_->PreSignOut(base::BindOnce(&MockChromeSigninClient::SignOutCallback,
                                        base::Unretained(client_.get()),
                                        source_metric, delete_metric),
-                        source_metric);
+                        source_metric,
+                        /*has_sync_account=*/false);
   }
 
   signin_util::ScopedForceSigninSetterForTesting forced_signin_setter_;
@@ -231,6 +221,56 @@ TEST_F(ChromeSigninClientSignoutTest, SignOutWithoutForceSignin) {
       .Times(1);
   PreSignOut(source_metric, delete_metric);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(ChromeSigninClientSignoutTest, MainProfile) {
+  TestingProfile::Builder builder;
+  builder.SetIsMainProfile(true);
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+
+  CreateClient(profile.get());
+  EXPECT_FALSE(
+      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+  EXPECT_TRUE(client_->IsRevokeSyncConsentAllowed());
+}
+#endif
+
+TEST_F(ChromeSigninClientSignoutTest, AllAllowed) {
+  std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_FALSE(profile->IsMainProfile());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  EXPECT_FALSE(profile->IsChild());
+#endif
+
+  CreateClient(profile.get());
+
+  EXPECT_TRUE(
+      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(client_->IsRevokeSyncConsentAllowed());
+#endif
+}
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+TEST_F(ChromeSigninClientSignoutTest, ChildProfile) {
+  TestingProfile::Builder builder;
+  builder.SetIsSupervisedProfile();
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  EXPECT_TRUE(profile->IsChild());
+
+  CreateClient(profile.get());
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(
+      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+#else
+  EXPECT_TRUE(
+      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+#endif
+  EXPECT_TRUE(client_->IsRevokeSyncConsentAllowed());
+}
+#endif
 
 class ChromeSigninClientSignoutSourceTest
     : public ::testing::WithParamInterface<signin_metrics::ProfileSignout>,
@@ -288,7 +328,8 @@ TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutMainProfile) {
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
   CreateClient(profile.get());
-  ASSERT_FALSE(IsClearPrimaryAccountAllowed(profile.get()));
+  ASSERT_FALSE(
+      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
 
   SigninClient::SignoutDecision signout_decision =
       IsAlwaysAllowedSignoutSources(signout_source)
@@ -311,10 +352,9 @@ TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutAllowed) {
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
   CreateClient(profile.get());
-  ASSERT_TRUE(IsClearPrimaryAccountAllowed(profile.get()));
-
   ASSERT_TRUE(
-      GetUserSignoutSetting(profile.get())->IsRevokeSyncConsentAllowed());
+      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+  ASSERT_TRUE(client_->IsRevokeSyncConsentAllowed());
 
   // Verify IdentityManager gets callback indicating sign-out is always allowed.
   signin_metrics::SignoutDelete delete_metric =
@@ -339,10 +379,10 @@ TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutDisallowed) {
 
   CreateClient(profile.get());
 
-  UserSignoutSetting* setting = GetUserSignoutSetting(profile.get());
-
-  setting->SetClearPrimaryAccountAllowed(false);
-  ASSERT_FALSE(setting->IsClearPrimaryAccountAllowed());
+  client_->set_is_clear_primary_account_allowed_for_testing(
+      SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
+  ASSERT_FALSE(
+      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
 
   // Verify IdentityManager gets callback indicating sign-out is disallowed iff
   // the source of the sign-out is a user-action.
@@ -368,11 +408,11 @@ TEST_P(ChromeSigninClientSignoutSourceTest, RevokeSyncDisallowed) {
 
   CreateClient(profile.get());
 
-  UserSignoutSetting* setting = GetUserSignoutSetting(profile.get());
-
-  setting->SetRevokeSyncConsentAllowed(false);
-  ASSERT_FALSE(setting->IsClearPrimaryAccountAllowed());
-  ASSERT_FALSE(setting->IsRevokeSyncConsentAllowed());
+  client_->set_is_clear_primary_account_allowed_for_testing(
+      SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED);
+  ASSERT_FALSE(
+      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+  ASSERT_FALSE(client_->IsRevokeSyncConsentAllowed());
 
   // Verify IdentityManager gets callback indicating sign-out is disallowed iff
   // the source of the sign-out is a user-action.

@@ -1372,12 +1372,6 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
   for (auto& observer : observers_)
     observer.OnProfileAdded(profile);
 
-  // At this point, the user policy service and the child account service
-  // had enough time to initialize and should have updated the user signout
-  // flag attached to the profile.
-  signin_util::UserSignoutSetting::GetForProfile(profile)
-      ->InitializeUserSignoutSettingIfNeeded();
-
   if (PrimaryAccountPolicyManager* primary_account_policy_manager =
           PrimaryAccountPolicyManagerFactory::GetForProfile(profile)) {
     primary_account_policy_manager->Initialize();

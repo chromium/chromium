@@ -101,10 +101,6 @@ class KidsManagementService : public KeyedService,
 
   CoreAccountId GetAuthAccountId() const;
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  void UpdateUserSignOutSetting();
-#endif
-
   raw_ptr<Profile>
       profile_;  // TODO(b/252793687): remove direct uses of the profile.
   const raw_ref<signin::IdentityManager> identity_manager_;
