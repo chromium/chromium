@@ -227,7 +227,7 @@ suite('SettingsSectionTest', function() {
     await flushTasks();
 
     const PasswordsExporterElement =
-        settings!.shadowRoot!.querySelector('password-exporter');
+        settings!.shadowRoot!.querySelector('passwords-exporter');
     assertTrue(!!PasswordsExporterElement);
   });
 });

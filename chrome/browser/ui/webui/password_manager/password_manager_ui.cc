@@ -107,7 +107,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"exportPasswordsFailTitle",
      IDS_PASSWORD_MANAGER_UI_EXPORTING_FAILURE_TITLE},
     {"exportPasswordsTryAgain", IDS_PASSWORD_MANAGER_UI_EXPORT_TRY_AGAIN},
-    {"exportingPasswordsTitle", IDS_PASSWORD_MANAGER_UI_EXPORTING_TITLE},
     {"federationLabel", IDS_PASSWORD_MANAGER_UI_FEDERATION_LABEL},
     {"help", IDS_PASSWORD_MANAGER_UI_HELP},
     {"hidePassword", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD},
