@@ -258,7 +258,15 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReportParentalControlSitesChild,
     &kRequestDesktopSiteDefaults,
     &kRequestDesktopSiteDefaultsControl,
+    &kRequestDesktopSiteDefaultsControlCohort1,
+    &kRequestDesktopSiteDefaultsControlCohort2,
+    &kRequestDesktopSiteDefaultsControlCohort3,
+    &kRequestDesktopSiteDefaultsControlCohort4,
     &kRequestDesktopSiteDefaultsControlSynthetic,
+    &kRequestDesktopSiteDefaultsEnabledCohort1,
+    &kRequestDesktopSiteDefaultsEnabledCohort2,
+    &kRequestDesktopSiteDefaultsEnabledCohort3,
+    &kRequestDesktopSiteDefaultsEnabledCohort4,
     &kRequestDesktopSiteDefaultsSynthetic,
     &kRequestDesktopSiteOptInControlSynthetic,
     &kRequestDesktopSiteOptInSynthetic,
@@ -829,8 +837,40 @@ BASE_FEATURE(kRequestDesktopSiteDefaultsControl,
              "RequestDesktopSiteDefaultsControl",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRequestDesktopSiteDefaultsControlCohort1,
+             "RequestDesktopSiteDefaultsControlCohort1",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRequestDesktopSiteDefaultsControlCohort2,
+             "RequestDesktopSiteDefaultsControlCohort2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRequestDesktopSiteDefaultsControlCohort3,
+             "RequestDesktopSiteDefaultsControlCohort3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRequestDesktopSiteDefaultsControlCohort4,
+             "RequestDesktopSiteDefaultsControlCohort4",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRequestDesktopSiteDefaultsControlSynthetic,
              "RequestDesktopSiteDefaultsControlSynthetic",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRequestDesktopSiteDefaultsEnabledCohort1,
+             "RequestDesktopSiteDefaultsEnabledCohort1",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRequestDesktopSiteDefaultsEnabledCohort2,
+             "RequestDesktopSiteDefaultsEnabledCohort2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRequestDesktopSiteDefaultsEnabledCohort3,
+             "RequestDesktopSiteDefaultsEnabledCohort3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRequestDesktopSiteDefaultsEnabledCohort4,
+             "RequestDesktopSiteDefaultsEnabledCohort4",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRequestDesktopSiteDefaultsSynthetic,

@@ -66,6 +66,20 @@ import java.util.Locale;
  */
 public class RequestDesktopUtils {
     private static final String SITE_WILDCARD = "*";
+    // Global defaults experiment constants.
+    private static final String ENABLED_GROUP_SUFFIX = "_Enabled";
+    private static final String CONTROL_GROUP_SUFFIX = "_Control";
+    private static final String DEFAULT_ON_GROUP_NAME_PREFIX = "DefaultOn_";
+    private static final String OPT_IN_GROUP_NAME_PREFIX = "OptIn_";
+    // This is used to lookup the name of a feature used to track a cohort of users who triggered
+    // the global default experiment, or would have triggered for control groups.
+    private static final String PARAM_GLOBAL_DEFAULTS_COHORT_ID = "global_setting_cohort_id";
+    private static final int DEFAULT_GLOBAL_DEFAULTS_COHORT_ID = 0;
+    private static final String GLOBAL_DEFAULTS_COHORT_NAME = "RequestDesktopSiteDefaultsCohort";
+    private static final String GLOBAL_DEFAULTS_ENABLED_COHORT_NAME =
+            "RequestDesktopSiteDefaultsEnabledCohort";
+    private static final String GLOBAL_DEFAULTS_CONTROL_COHORT_NAME =
+            "RequestDesktopSiteDefaultsControlCohort";
 
     static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES =
             "default_on_display_size_threshold_inches";
@@ -96,12 +110,6 @@ public class RequestDesktopUtils {
     static final int DEFAULT_GLOBAL_SETTING_OPT_IN_SMALLEST_SCREEN_WIDTH_THRESHOLD_DP = 600;
     static final String PARAM_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT = "opt_in_memory_limit";
     static final int DEFAULT_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT_THRESHOLD_MB = 0;
-
-    // Global defaults experiment constants.
-    static final String ENABLED_GROUP_SUFFIX = "_Enabled";
-    static final String CONTROL_GROUP_SUFFIX = "_Control";
-    static final String DEFAULT_ON_GROUP_NAME_PREFIX = "DefaultOn_";
-    static final String OPT_IN_GROUP_NAME_PREFIX = "OptIn_";
 
     // Note: these values must match the UserAgentRequestType enum in enums.xml.
     @IntDef({UserAgentRequestType.REQUEST_DESKTOP, UserAgentRequestType.REQUEST_MOBILE})
@@ -406,8 +414,10 @@ public class RequestDesktopUtils {
         if (inCohort
                 || sharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT)) {
+            int cohortId = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    feature, PARAM_GLOBAL_DEFAULTS_COHORT_ID, DEFAULT_GLOBAL_DEFAULTS_COHORT_ID);
             maybeRegisterSyntheticFieldTrials(
-                    isControlGroup, screenSizeThreshold, /*isOptInArm*/ false);
+                    isControlGroup, screenSizeThreshold, cohortId, /*isOptInArm*/ false);
         }
 
         // Should enable the setting only in the enabled (not control) experiment group.
@@ -656,8 +666,10 @@ public class RequestDesktopUtils {
 
         if (sharedPreferencesManager.contains(
                     ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT)) {
+            int cohortId = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    feature, PARAM_GLOBAL_DEFAULTS_COHORT_ID, DEFAULT_GLOBAL_DEFAULTS_COHORT_ID);
             maybeRegisterSyntheticFieldTrials(
-                    isControlGroup, minScreenSizeThreshold, /*isOptInArm*/ true);
+                    isControlGroup, minScreenSizeThreshold, cohortId, /*isOptInArm*/ true);
         }
 
         // Should show the opt-in message only in the enabled (not control) experiment group.
@@ -796,11 +808,39 @@ public class RequestDesktopUtils {
 
     @VisibleForTesting
     static void maybeRegisterSyntheticFieldTrials(
-            boolean isControlGroup, double screenSizeThreshold, boolean isOptInArm) {
+            boolean isControlGroup, double screenSizeThreshold, int cohortId, boolean isOptInArm) {
         if (!UmaSessionStats.isMetricsServiceAvailable()) {
             return;
         }
 
+        // For backward compatibility.
+        if (cohortId == 0) {
+            maybeRegisterSyntheticFieldTrials(isControlGroup, screenSizeThreshold, isOptInArm);
+            return;
+        }
+        assert !isOptInArm : "Opt-in arm is not supported for the new cohort tracking.";
+
+        String thresholdAsString = String.valueOf(screenSizeThreshold).replace('.', '_');
+        String baseGroupName = DEFAULT_ON_GROUP_NAME_PREFIX + thresholdAsString + "_" + cohortId;
+
+        String syntheticFeatureName = isControlGroup
+                ? GLOBAL_DEFAULTS_CONTROL_COHORT_NAME + cohortId
+                : GLOBAL_DEFAULTS_ENABLED_COHORT_NAME + cohortId;
+
+        if (!isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
+            UmaSessionStats.registerSyntheticFieldTrial(
+                    syntheticFeatureName, baseGroupName + ENABLED_GROUP_SUFFIX);
+        } else if (isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
+            UmaSessionStats.registerSyntheticFieldTrial(
+                    syntheticFeatureName, baseGroupName + CONTROL_GROUP_SUFFIX);
+        }
+
+        String syntheticFeatureNameForUma = GLOBAL_DEFAULTS_COHORT_NAME + cohortId;
+        UmaSessionStats.registerSyntheticFieldTrial(syntheticFeatureNameForUma, baseGroupName);
+    }
+
+    private static void maybeRegisterSyntheticFieldTrials(
+            boolean isControlGroup, double screenSizeThreshold, boolean isOptInArm) {
         String thresholdAsString = String.valueOf(screenSizeThreshold).replace('.', '_');
         String baseGroupName =
                 (isOptInArm ? OPT_IN_GROUP_NAME_PREFIX : DEFAULT_ON_GROUP_NAME_PREFIX)
