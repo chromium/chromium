@@ -91,7 +91,7 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver,
   std::unique_ptr<ContentAutofillDriver> CreateDriver(
       content::RenderFrameHost* rfh);
 
-  const raw_ptr<AutofillClient, DanglingUntriaged> client_;
+  raw_ptr<AutofillClient, DanglingUntriaged> client_;
   DriverInitCallback driver_init_hook_;
 
   // Routes events between different drivers.

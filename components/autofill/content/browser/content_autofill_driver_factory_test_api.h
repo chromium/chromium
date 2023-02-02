@@ -30,6 +30,8 @@ class ContentAutofillDriverFactoryTestApi {
                  std::unique_ptr<ContentAutofillDriver> driver);
   ContentAutofillDriver* GetDriver(content::RenderFrameHost* rfh);
 
+  void set_client(AutofillClient* client) { factory_->client_ = client; }
+
   ContentAutofillRouter& router() { return factory_->router_; }
 
  private:

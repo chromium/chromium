@@ -260,10 +260,11 @@ class ChromeAutofillClient
       const zoom::ZoomController::ZoomChangedEventData& data) override;
 #endif
 
+ protected:
+  explicit ChromeAutofillClient(content::WebContents* web_contents);
+
  private:
   friend class content::WebContentsUserData<ChromeAutofillClient>;
-
-  explicit ChromeAutofillClient(content::WebContents* web_contents);
 
   Profile* GetProfile() const;
   bool IsMultipleAccountUser();

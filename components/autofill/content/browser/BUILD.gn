@@ -80,6 +80,8 @@ source_set("test_support") {
     "content_autofill_router_test_api.h",
     "form_forest_test_api.cc",
     "form_forest_test_api.h",
+    "test_autofill_client_injector.cc",
+    "test_autofill_client_injector.h",
     "test_autofill_manager_injector.cc",
     "test_autofill_manager_injector.h",
   ]
