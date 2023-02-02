@@ -99,7 +99,8 @@ class AutofillPopupViewNativeViewsTest : public ChromeViewsTestBase {
     // created in AutofillPopupViewNativeViews::CreateChildViews() owns a Layer.
     // As a consequence, views::View::Paint() does not propagate to the rows
     // because the recursion stops in views::View::RecursivePaintHelper().
-    for (views::View* row : view()->GetRowsForTesting()) {
+    for (raw_ptr<autofill::AutofillPopupRowView> row :
+         view()->GetRowsForTesting()) {
       views::View* root = row;
       while (!root->layer() && root->parent())
         root = root->parent();

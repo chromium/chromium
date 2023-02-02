@@ -21,10 +21,6 @@
 #include "ui/gfx/font_list.h"
 #include "ui/views/bubble/bubble_border.h"
 
-namespace views {
-class BoxLayout;
-}
-
 namespace autofill {
 
 class AutofillPopupController;
@@ -93,7 +89,7 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
       delete;
   ~AutofillPopupViewNativeViews() override;
 
-  const std::vector<AutofillPopupRowView*>& GetRowsForTesting() {
+  const std::vector<raw_ptr<AutofillPopupRowView>>& GetRowsForTesting() {
     return rows_;
   }
 
@@ -133,10 +129,9 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
 
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
-  std::vector<AutofillPopupRowView*> rows_;
-  raw_ptr<views::BoxLayout, DanglingUntriaged> layout_ = nullptr;
-  raw_ptr<views::ScrollView, DanglingUntriaged> scroll_view_ = nullptr;
-  raw_ptr<views::View, DanglingUntriaged> body_container_ = nullptr;
+  std::vector<raw_ptr<AutofillPopupRowView>> rows_;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
+  raw_ptr<views::View> body_container_ = nullptr;
 };
 
 }  // namespace autofill

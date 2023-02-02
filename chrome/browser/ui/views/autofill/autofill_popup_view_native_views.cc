@@ -150,8 +150,9 @@ void BuildColumnSet(views::TableLayoutView* layout_view) {
 
 std::unique_ptr<views::ImageView> ImageViewFromImageSkia(
     const gfx::ImageSkia& image_skia) {
-  if (image_skia.isNull())
+  if (image_skia.isNull()) {
     return nullptr;
+  }
   auto image_view = std::make_unique<views::ImageView>();
   image_view->SetImage(image_skia);
   return image_view;
@@ -171,13 +172,15 @@ std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
 
 std::unique_ptr<views::ImageView> GetIconImageViewByName(
     const std::string& icon_str) {
-  if (icon_str.empty())
+  if (icon_str.empty()) {
     return nullptr;
+  }
 
   // For http warning message, get icon images from VectorIcon, which is the
   // same as security indicator icons in location bar.
-  if (icon_str == "httpWarning")
+  if (icon_str == "httpWarning") {
     return ImageViewFromVectorIcon(omnibox::kHttpIcon);
+  }
 
   if (icon_str == "httpsInvalid") {
     return std::make_unique<views::ImageView>(
@@ -185,27 +188,33 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
                                        ui::kColorAlertHighSeverity, kIconSize));
   }
 
-  if (icon_str == "keyIcon")
+  if (icon_str == "keyIcon") {
     return ImageViewFromVectorIcon(kKeyIcon);
+  }
 
-  if (icon_str == "clearIcon")
+  if (icon_str == "clearIcon") {
     return ImageViewFromVectorIcon(kBackspaceIcon);
+  }
 
-  if (icon_str == "globeIcon")
+  if (icon_str == "globeIcon") {
     return ImageViewFromVectorIcon(kGlobeIcon);
+  }
 
-  if (icon_str == "accountIcon")
+  if (icon_str == "accountIcon") {
     return ImageViewFromVectorIcon(kAccountCircleIcon);
+  }
 
   if (icon_str == "settingsIcon") {
     return ImageViewFromVectorIcon(kMonoColorProductIcon);
   }
 
-  if (icon_str == "empty")
+  if (icon_str == "empty") {
     return ImageViewFromVectorIcon(omnibox::kHttpIcon);
+  }
 
-  if (icon_str == "device")
+  if (icon_str == "device") {
     return ImageViewFromVectorIcon(kLaptopAndSmartphoneIcon);
+  }
 
   if (icon_str == "google") {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -262,29 +271,40 @@ std::unique_ptr<views::Label> CreateLabelWithStyleAndContext(
 // otherwise.
 std::u16string GetIconAccessibleName(const std::string& icon_text) {
   // Networks for which icons are currently shown.
-  if (icon_text == autofill::kAmericanExpressCard)
+  if (icon_text == autofill::kAmericanExpressCard) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_AMEX);
-  if (icon_text == autofill::kDinersCard)
+  }
+  if (icon_text == autofill::kDinersCard) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_DINERS);
-  if (icon_text == autofill::kDiscoverCard)
+  }
+  if (icon_text == autofill::kDiscoverCard) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_DISCOVER);
-  if (icon_text == autofill::kEloCard)
+  }
+  if (icon_text == autofill::kEloCard) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_ELO);
-  if (icon_text == autofill::kJCBCard)
+  }
+  if (icon_text == autofill::kJCBCard) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_JCB);
-  if (icon_text == autofill::kMasterCard)
+  }
+  if (icon_text == autofill::kMasterCard) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MASTERCARD);
-  if (icon_text == autofill::kMirCard)
+  }
+  if (icon_text == autofill::kMirCard) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MIR);
-  if (icon_text == autofill::kTroyCard)
+  }
+  if (icon_text == autofill::kTroyCard) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_TROY);
-  if (icon_text == autofill::kUnionPay)
+  }
+  if (icon_text == autofill::kUnionPay) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_UNION_PAY);
-  if (icon_text == autofill::kVisaCard)
+  }
+  if (icon_text == autofill::kVisaCard) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_VISA);
+  }
   // Other networks.
-  if (icon_text == autofill::kGenericCard)
+  if (icon_text == autofill::kGenericCard) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GENERIC);
+  }
   return std::u16string();
 }
 
@@ -394,8 +414,9 @@ class AutofillPopupItemView : public AutofillPopupRowView {
                          views::BoxLayout* layout);
 
   void KeepLabel(views::Label* label) {
-    if (label)
+    if (label) {
       inner_labels_.push_back(label);
+    }
   }
 
   // Returns the string to be set as the name of the ui::AXNodeData.
@@ -608,8 +629,9 @@ void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // steps that require a controller.
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
-  if (!controller)
+  if (!controller) {
     return;
+  }
 
   node_data->SetNameChecked(GetVoiceOverString());
 
@@ -621,8 +643,9 @@ void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   for (int i = 0; i < controller->GetLineCount(); ++i) {
     if (controller->GetSuggestionAt(i).frontend_id ==
         autofill::POPUP_ITEM_ID_SEPARATOR) {
-      if (i < GetLineNumber())
+      if (i < GetLineNumber()) {
         --pos_in_set;
+      }
     } else {
       ++set_size;
     }
@@ -640,13 +663,15 @@ void AutofillPopupItemView::OnMouseEntered(const ui::MouseEvent& event) {
   // OnMouseEntered() does not imply that the mouse had been outside of the
   // item's bounds before: OnMouseEntered() also fires if the mouse moves just a
   // little bit on the item. We don't want to show a preview in such a case.
-  if (!mouse_observed_outside_item_bounds_)
+  if (!mouse_observed_outside_item_bounds_) {
     return;
+  }
 
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
-  if (controller)
+  if (controller) {
     controller->SetSelectedLine(GetLineNumber());
+  }
 }
 
 void AutofillPopupItemView::OnMouseExited(const ui::MouseEvent& event) {
@@ -657,15 +682,17 @@ void AutofillPopupItemView::OnMouseExited(const ui::MouseEvent& event) {
 
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
-  if (controller)
+  if (controller) {
     controller->SelectionCleared();
+  }
 }
 
 void AutofillPopupItemView::OnMouseReleased(const ui::MouseEvent& event) {
   // Ignore mouse clicks unless the user made the explicit choice to selected
   // the current item.
-  if (!mouse_observed_outside_item_bounds_)
+  if (!mouse_observed_outside_item_bounds_) {
     return;
+  }
 
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/1279268).
@@ -685,8 +712,9 @@ void AutofillPopupItemView::OnMouseReleased(const ui::MouseEvent& event) {
 void AutofillPopupItemView::OnGestureEvent(ui::GestureEvent* event) {
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
-  if (!controller)
+  if (!controller) {
     return;
+  }
   switch (event->type()) {
     case ui::ET_GESTURE_TAP_DOWN:
       controller->SetSelectedLine(GetLineNumber());
@@ -832,8 +860,9 @@ std::unique_ptr<views::Label> AutofillPopupItemView::CreateMainTextView() {
 std::unique_ptr<views::Label> AutofillPopupItemView::CreateMinorTextView() {
   std::u16string text =
       popup_view()->controller()->GetSuggestionMinorTextAt(GetLineNumber());
-  if (text.empty())
+  if (text.empty()) {
     return nullptr;
+  }
 
   std::unique_ptr<views::Label> label = CreateLabelWithStyleAndContext(
       text, views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -889,28 +918,32 @@ std::u16string AutofillPopupItemView::GetVoiceOverString() {
 
   auto suggestion = controller->GetSuggestionAt(GetLineNumber());
 
-  if (suggestion.voice_over)
+  if (suggestion.voice_over) {
     return *suggestion.voice_over;
+  }
 
   std::vector<std::u16string> text;
   std::u16string icon_name = GetIconAccessibleName(suggestion.icon);
-  if (!icon_name.empty())
+  if (!icon_name.empty()) {
     text.push_back(icon_name);
+  }
 
   auto main_text = controller->GetSuggestionMainTextAt(GetLineNumber());
   text.push_back(main_text);
 
   auto minor_text = controller->GetSuggestionMinorTextAt(GetLineNumber());
-  if (!minor_text.empty())
+  if (!minor_text.empty()) {
     text.push_back(minor_text);
+  }
 
   std::vector<std::vector<Suggestion::Text>> labels =
       controller->GetSuggestionLabelsAt(GetLineNumber());
   for (std::vector<Suggestion::Text>& row : labels) {
     for (Suggestion::Text label : row) {
       // |label_text| is not populated for footers or autocomplete entries.
-      if (!label.value.empty())
+      if (!label.value.empty()) {
         text.push_back(std::move(label.value));
+      }
     }
   }
 
@@ -997,8 +1030,9 @@ AutofillPopupSuggestionView::CreateSubtextViews() {
             DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
     for (const auto& label : label_row) {
       // If a column is empty, do not include any further columns.
-      if (label.value.empty())
+      if (label.value.empty()) {
         break;
+      }
 
       auto* label_view =
           label_row_container_view->AddChildView(CreateLabelWithStyleAndContext(
@@ -1061,8 +1095,9 @@ PasswordPopupSuggestionView::CreateSubtextViews() {
 
 std::unique_ptr<views::View>
 PasswordPopupSuggestionView::CreateDescriptionView() {
-  if (origin_.empty())
+  if (origin_.empty()) {
     return nullptr;
+  }
 
   std::unique_ptr<views::Label> label = CreateLabelWithStyleAndContext(
       origin_, views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -1233,8 +1268,9 @@ void AutofillPopupWarningView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
-  if (!controller)
+  if (!controller) {
     return;
+  }
 
   node_data->role = ax::mojom::Role::kStaticText;
   node_data->SetNameChecked(
@@ -1260,12 +1296,14 @@ void AutofillPopupWarningView::CreateContent() {
 
 /************** AutofillPopupRowView **************/
 void AutofillPopupRowView::SetSelected(bool selected) {
-  if (selected == selected_)
+  if (selected == selected_) {
     return;
+  }
 
   selected_ = selected;
-  if (selected)
+  if (selected) {
     popup_view_->NotifyAXSelection(this);
+  }
   RefreshStyle();
   OnPropertyChanged(&selected_, views::kPropertyEffectsNone);
 }
@@ -1275,8 +1313,9 @@ void AutofillPopupRowView::MaybeShowIphPromo() {
                                  ->controller()
                                  ->GetSuggestionAt(GetLineNumber())
                                  .feature_for_iph;
-  if (feature_name.empty())
+  if (feature_name.empty()) {
     return;
+  }
 
   if (feature_name == "IPH_AutofillVirtualCardSuggestion") {
     SetProperty(views::kElementIdentifierKey,
@@ -1329,8 +1368,9 @@ bool AutofillPopupRowView::HandleAccessibleAction(
     const ui::AXActionData& action_data) {
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
-  if (controller && action_data.action == ax::mojom::Action::kFocus)
+  if (controller && action_data.action == ax::mojom::Action::kFocus) {
     controller->SetSelectedLine(line_number_);
+  }
   return View::HandleAccessibleAction(action_data);
 }
 
@@ -1346,9 +1386,10 @@ AutofillPopupViewNativeViews::AutofillPopupViewNativeViews(
     views::Widget* parent_widget)
     : AutofillPopupBaseView(controller, parent_widget),
       controller_(controller) {
-  layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  layout_->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
+  views::BoxLayout* layout =
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
 
   CreateChildViews();
 }
@@ -1409,11 +1450,13 @@ absl::optional<int32_t> AutofillPopupViewNativeViews::GetAxUniqueId() {
 
 void AutofillPopupViewNativeViews::AxAnnounce(const std::u16string& text) {
   Browser* browser = chrome::FindLastActive();
-  if (!browser)
+  if (!browser) {
     return;
+  }
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view)
+  if (!browser_view) {
     return;
+  }
   browser_view->GetViewAccessibility().AnnounceText(text);
 }
 
@@ -1421,16 +1464,19 @@ void AutofillPopupViewNativeViews::OnWidgetVisibilityChanged(
     views::Widget* widget,
     bool visible) {
   if (visible) {
-    for (auto* row_view : rows_)
+    for (raw_ptr<AutofillPopupRowView> row_view : rows_) {
       row_view->MaybeShowIphPromo();
+    }
   }
 }
 
 void AutofillPopupViewNativeViews::CreateChildViews() {
-  RemoveAllChildViews();
-  rows_.clear();
+  // Null all pointers prior to deleting the children views to avoid temporarily
+  // dangling pointers that might be picked up by dangle detection builds.
   scroll_view_ = nullptr;
   body_container_ = nullptr;
+  rows_.clear();
+  RemoveAllChildViews();
 
   int line_count = controller_->GetLineCount();
 
@@ -1445,8 +1491,9 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
   // Returns true if the item at |line_number| is a footer item.
   // Returns false if the |line_number| exceeds the line count.
   auto is_footer_item = [&](int line_number) {
-    if (line_number >= line_count)
+    if (line_number >= line_count) {
       return false;
+    }
 
     switch (line_number_to_frontend_id(line_number)) {
       case PopupItemId::POPUP_ITEM_ID_SCAN_CREDIT_CARD:
@@ -1559,8 +1606,8 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
             views::BoxLayout::Orientation::kVertical));
     body_layout->set_main_axis_alignment(
         views::BoxLayout::MainAxisAlignment::kStart);
-    for (auto* row : rows_) {
-      body_container->AddChildView(row);
+    for (raw_ptr<AutofillPopupRowView> row : rows_) {
+      body_container->AddChildView(row.get());
     }
 
     auto scroll_view = std::make_unique<views::ScrollView>();
@@ -1598,7 +1645,7 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
       rows_.push_back(AutofillPopupFooterView::Create(
           this, line_number, line_number_to_frontend_id(line_number)));
     }
-    footer_container->AddChildView(rows_.back());
+    footer_container->AddChildView(rows_.back().get());
   }
 
   content_layout->SetFlexForView(
@@ -1606,11 +1653,13 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
 }
 
 int AutofillPopupViewNativeViews::AdjustWidth(int width) const {
-  if (width >= kAutofillPopupMaxWidth)
+  if (width >= kAutofillPopupMaxWidth) {
     return kAutofillPopupMaxWidth;
+  }
 
-  if (width <= kAutofillPopupMinWidth)
+  if (width <= kAutofillPopupMinWidth) {
     return kAutofillPopupMinWidth;
+  }
 
   // The popup size is being determined by the contents, rather than the min/max
   // or the element bounds. Round up to a multiple of
@@ -1728,8 +1777,9 @@ AutofillPopupView* AutofillPopupView::Create(
 #if BUILDFLAG(IS_MAC)
   // It's possible for the container_view to not be in a window. In that case,
   // cancel the popup since we can't fully set it up.
-  if (!platform_util::GetTopLevel(controller->container_view()))
+  if (!platform_util::GetTopLevel(controller->container_view())) {
     return nullptr;
+  }
 #endif
 
   views::Widget* observing_widget =
@@ -1740,8 +1790,9 @@ AutofillPopupView* AutofillPopupView::Create(
   // If the top level widget can't be found, cancel the popup since we can't
   // fully set it up. On Mac Cocoa browser, |observing_widget| is null
   // because the parent is not a views::Widget.
-  if (!observing_widget)
+  if (!observing_widget) {
     return nullptr;
+  }
 #endif
 
   return new AutofillPopupViewNativeViews(controller, observing_widget);
