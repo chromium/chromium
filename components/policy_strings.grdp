@@ -563,12 +563,12 @@ Additional details:
   <message name="IDS_POLICY_SCOPE_USER" desc="Text displayed in the Applies to column when a policy applies to the current user only.">
     Current user
   </message>
-  <if expr="not is_android and not chromeos_ash">
+  <if expr="not is_android and not is_chromeos">
     <message name="IDS_POLICY_SCOPE_DEVICE" desc="Text displayed in the Applies to column when a policy applies to everyone on the machine.">
       Machine
     </message>
   </if>
-  <if expr="chromeos_ash or is_android">
+  <if expr="is_chromeos or is_android">
     <message name="IDS_POLICY_SCOPE_DEVICE" desc="Mobile: Text displayed in the Applies To column when a policy applies to everyone on the device.">
       Device
     </message>
