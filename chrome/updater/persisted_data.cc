@@ -41,6 +41,7 @@ constexpr char kBP[] = "bp";    // Key for storing brand path.
 constexpr char kAP[] = "ap";    // Key for storing ap.
 
 constexpr char kHadApps[] = "had_apps";
+constexpr char kUsageStatsEnabledKey[] = "usage_stats_enabled";
 
 constexpr char kLastChecked[] = "last_checked";
 constexpr char kLastStarted[] = "last_started";
@@ -240,6 +241,18 @@ void PersistedData::SetHadApps() {
     pref_service_->SetBoolean(kHadApps, true);
 }
 
+bool PersistedData::GetUsageStatsEnabled() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_ && pref_service_->GetBoolean(kUsageStatsEnabledKey);
+}
+
+void PersistedData::SetUsageStatsEnabled(bool usage_stats_enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pref_service_) {
+    pref_service_->SetBoolean(kUsageStatsEnabledKey, usage_stats_enabled);
+  }
+}
+
 base::Time PersistedData::GetLastChecked() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pref_service_->GetTime(kLastChecked);
@@ -308,6 +321,7 @@ void PersistedData::SetLastOSVersion() {
 // kPersistedDataPreference is registered by update_client::RegisterPrefs.
 void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry) {
   registry->RegisterBooleanPref(kHadApps, false);
+  registry->RegisterBooleanPref(kUsageStatsEnabledKey, false);
   registry->RegisterTimePref(kLastChecked, {});
   registry->RegisterTimePref(kLastStarted, {});
   registry->RegisterStringPref(kLastOSVersion, {});

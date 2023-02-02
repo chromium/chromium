@@ -81,6 +81,11 @@ const char kCmdLineExpectDeElevated[] = "expect-de-elevated";
 
 const char kCmdLinePrefersUser[] = "prefers-user";
 
+// Environment variables.
+const char kUsageStatsEnabled[] =
+    COMPANY_SHORTNAME_UPPERCASE_STRING "_USAGE_STATS_ENABLED";
+const char kUsageStatsEnabledValueEnabled[] = "1";
+
 // Path names.
 const char kAppsDir[] = "apps";
 const char kUninstallScript[] = "uninstall.cmd";

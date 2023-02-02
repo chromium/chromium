@@ -127,6 +127,7 @@ int RunExecutable(const base::FilePath& existence_checker_path,
                   const absl::optional<base::FilePath>& installer_data_file,
                   const UpdaterScope& scope,
                   const base::Version& pv,
+                  bool usage_stats_enabled,
                   const base::TimeDelta& timeout,
                   const base::FilePath& unpacked_path) {
   if (!base::PathExists(unpacked_path)) {
@@ -175,6 +176,8 @@ int RunExecutable(const base::FilePath& existence_checker_path,
         {"SERVER_ARGS", arguments},
         {"UPDATE_IS_MACHINE", IsSystemInstall(scope) ? "1" : "0"},
         {"UNPACK_DIR", unpacked_path.value()},
+        {kUsageStatsEnabled,
+         usage_stats_enabled ? kUsageStatsEnabledValueEnabled : "0"},
     };
     if (installer_data_file) {
       options.environment.emplace(base::ToUpperASCII(kInstallerDataSwitch),
@@ -318,6 +321,7 @@ int InstallFromArchive(
     const base::Version& pv,
     const std::string& arguments,
     const absl::optional<base::FilePath>& installer_data_file,
+    const bool usage_stats_enabled,
     const base::TimeDelta& timeout) {
   const std::map<std::string,
                  int (*)(const base::FilePath&,
@@ -333,8 +337,8 @@ int InstallFromArchive(
     return static_cast<int>(InstallErrors::kNotSupportedInstallerType);
   }
   return handler->second(
-      file_path,
-      base::BindOnce(&RunExecutable, existence_checker_path, ap, arguments,
-                     installer_data_file, scope, pv, timeout));
+      file_path, base::BindOnce(&RunExecutable, existence_checker_path, ap,
+                                arguments, installer_data_file, scope, pv,
+                                usage_stats_enabled, timeout));
 }
 }  // namespace updater

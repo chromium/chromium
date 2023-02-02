@@ -22,7 +22,9 @@
 namespace updater {
 namespace {
 
-void SetCrashUploadEnabled(bool enabled) {
+void SetUsageStatsEnabled(scoped_refptr<PersistedData> persisted_data,
+                          bool enabled) {
+  persisted_data->SetUsageStatsEnabled(enabled);
   CrashClient::GetInstance()->database()->GetSettings()->SetUploadsEnabled(
       enabled);
 }
@@ -43,7 +45,8 @@ void UpdateUsageStatsTask::Run(base::OnceClosure callback) {
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&UpdateUsageStatsTask::UsageStatsAllowed, this,
                      persisted_data_->GetAppIds()),
-      base::BindOnce(&SetCrashUploadEnabled).Then(std::move(callback)));
+      base::BindOnce(&SetUsageStatsEnabled, persisted_data_)
+          .Then(std::move(callback)));
 }
 
 }  // namespace updater

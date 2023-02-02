@@ -7,11 +7,13 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
@@ -117,8 +119,12 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
   }
 
   absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
-  if (tag_args && tag_args->usage_stats_enable &&
-      *tag_args->usage_stats_enable) {
+  std::string env_usage_stats;
+  if ((tag_args && tag_args->usage_stats_enable &&
+       *tag_args->usage_stats_enable) ||
+      (base::Environment::Create()->GetVar(kUsageStatsEnabled,
+                                           &env_usage_stats) &&
+       env_usage_stats == kUsageStatsEnabledValueEnabled)) {
     crashpad::Settings* crashpad_settings = database_->GetSettings();
     DCHECK(crashpad_settings);
     crashpad_settings->SetUploadsEnabled(true);

@@ -18,6 +18,7 @@ if (is_chrome_branded) {
   privileged_helper_name = "com.google.Chrome.UpdaterPrivilegedHelper"
   updater_company_full_name = "Google LLC"
   updater_company_short_name = "Google"
+  updater_company_short_name_uppercase = "GOOGLE"
   updater_copyright =
       "Copyright 2020 The Chromium Authors. All rights reserved."
   updater_product_full_name = "GoogleUpdater"
@@ -36,6 +37,7 @@ if (is_chrome_branded) {
   privileged_helper_name = "org.chromium.Chromium.UpdaterPrivilegedHelper"
   updater_company_full_name = "Chromium Authors"
   updater_company_short_name = "Chromium"
+  updater_company_short_name_uppercase = "CHROMIUM"
   updater_copyright =
       "Copyright 2020 The Chromium Authors. All rights reserved."
   updater_product_full_name = "ChromiumUpdater"

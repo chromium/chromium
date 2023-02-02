@@ -198,6 +198,10 @@ extern const char kCmdLineExpectDeElevated[];
 // is now trying to install the app per-user.
 extern const char kCmdLinePrefersUser[];
 
+// Environment variables.
+extern const char kUsageStatsEnabled[];
+extern const char kUsageStatsEnabledValueEnabled[];
+
 // File system paths.
 //
 // The directory name where CRX apps get installed. This is provided for demo

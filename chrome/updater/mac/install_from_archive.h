@@ -60,6 +60,7 @@ int InstallFromArchive(
     const base::Version& pv,
     const std::string& arguments,
     const absl::optional<base::FilePath>& installer_data_file,
+    bool usage_stats_enabled,
     const base::TimeDelta& timeout);
 
 }  // namespace updater

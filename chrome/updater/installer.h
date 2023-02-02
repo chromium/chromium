@@ -56,6 +56,7 @@ AppInstallerResult RunApplicationInstaller(
     const base::FilePath& installer_path,
     const std::string& install_args,
     const absl::optional<base::FilePath>& server_install_data,
+    bool usage_stats_enabled,
     const base::TimeDelta& timeout,
     InstallProgressCallback progress_callback);
 
@@ -145,6 +146,7 @@ class Installer final : public update_client::CrxInstaller {
   const UpdateService::PolicySameVersionUpdate policy_same_version_update_;
   scoped_refptr<PersistedData> persisted_data_;
   const crx_file::VerifierFormat crx_verifier_format_;
+  const bool usage_stats_enabled_;
 
   // These members are not updated when the installer succeeds.
   base::Version pv_;

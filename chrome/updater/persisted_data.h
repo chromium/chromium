@@ -90,6 +90,12 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   bool GetHadApps() const;
   void SetHadApps();
 
+  // UsageStatsEnabled reflects whether the updater as a whole is allowed to
+  // send usage stats, and is set or reset periodically based on the usage
+  // stats opt-in state of each product.
+  bool GetUsageStatsEnabled() const;
+  void SetUsageStatsEnabled(bool usage_stats_enabled);
+
   // LastChecked is set when the updater completed successfully a call to
   // `UpdateService::UpdateAll` as indicated by the `UpdateService::Result`
   // argument of the completion callback. This means that the execution path

@@ -452,6 +452,8 @@ if (is_win || is_mac || is_linux) {
       "-e",
       "COMPANY_SHORTNAME=\"$updater_company_short_name\"",
       "-e",
+      "COMPANY_SHORTNAME_UPPERCASE=\"$updater_company_short_name_uppercase\"",
+      "-e",
       "COPYRIGHT=\"updater_copyright\"",
       "-e",
       "CRASH_PRODUCT_NAME=\"$crash_product_name\"",

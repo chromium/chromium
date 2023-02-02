@@ -547,7 +547,7 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
       base::BindOnce(
           [](const AppInfo& app_info, const base::FilePath& installer_path,
              const std::string& install_args, const std::string& install_data,
-             StateChangeCallback state_update) {
+             StateChangeCallback state_update, bool usage_stats_enabled) {
             base::ScopedTempDir temp_dir;
             if (!temp_dir.CreateUniqueTempDir()) {
               return InstallerResult(kErrorApplicationInstallerFailed,
@@ -557,7 +557,7 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
             return RunApplicationInstaller(
                 app_info, installer_path, install_args,
                 WriteInstallerDataToTempFile(temp_dir.GetPath(), install_data),
-                kWaitForAppInstaller,
+                usage_stats_enabled, kWaitForAppInstaller,
                 base::BindRepeating(
                     [](StateChangeCallback state_update,
                        const std::string& app_id, int progress) {
@@ -570,7 +570,8 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
                     },
                     state_update, app_info.app_id));
           },
-          app_info, installer_path, install_args, install_data, state_update),
+          app_info, installer_path, install_args, install_data, state_update,
+          persisted_data_->GetUsageStatsEnabled()),
       base::BindOnce(
           [](StateChangeCallback state_update, const std::string& app_id,
              Callback callback, const InstallerResult& result) {

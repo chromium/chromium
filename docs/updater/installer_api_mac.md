@@ -42,6 +42,10 @@ environment variables:
     -   1 if the updater is cross-user.
 -   `UNPACK_DIR`: The absolute path to the unpacked update archive (i.e. the
  parent directory of the install executable.)
+-   `%COMPANY%_USAGE_STATS_ENABLED`: where %COMPANY% is the uppercase company
+    short name from branding.gni.
+    -   0 if the updater does not send usage stats.
+    -   1 if the updater sends usage stats.
 
 ### Command-Line Arguments
 Installer executables are passed the following arguments, in this order:

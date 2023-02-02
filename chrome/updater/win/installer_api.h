@@ -57,6 +57,14 @@ enum class UpdaterScope;
 //
 // `InstallerSuccessLaunchCmdLine` (String) - command line to run in the
 // success case.
+//
+// The following environment variables are passed to the installer:
+//
+// `UpdateIsMachine`: "1" (for a machine install) or "0" (for a user install).
+//
+// `%COMPANY%_USAGE_STATS_ENABLED`: "1" (if the updater sends usage stats), or
+// "0" (if the updater does not send usage stats); %COMPANY% is the uppercase
+// short company name specified in branding.gni (e.g. "GOOGLE").
 
 // These values are defined by the Installer API.
 enum class InstallerResult {

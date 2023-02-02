@@ -318,6 +318,7 @@ AppInstallerResult RunApplicationInstaller(
     const base::FilePath& app_installer,
     const std::string& arguments,
     const absl::optional<base::FilePath>& installer_data_file,
+    bool usage_stats_enabled,
     const base::TimeDelta& timeout,
     InstallProgressCallback progress_callback) {
   if (!base::PathExists(app_installer)) {
@@ -342,8 +343,13 @@ AppInstallerResult RunApplicationInstaller(
 
   base::LaunchOptions options;
   options.start_hidden = true;
-  options.environment = {{ENV_GOOGLE_UPDATE_IS_MACHINE,
-                          IsSystemInstall(app_info.scope) ? L"1" : L"0"}};
+  options.environment = {
+      {ENV_GOOGLE_UPDATE_IS_MACHINE,
+       IsSystemInstall(app_info.scope) ? L"1" : L"0"},
+      {base::UTF8ToWide(kUsageStatsEnabled),
+       usage_stats_enabled ? base::UTF8ToWide(kUsageStatsEnabledValueEnabled)
+                           : L"0"},
+  };
 
   auto process = base::LaunchProcess(cmdline, options);
   if (!process.IsValid()) {

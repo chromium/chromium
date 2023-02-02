@@ -86,7 +86,8 @@ Installer::Installer(
       update_disabled_(update_disabled),
       policy_same_version_update_(policy_same_version_update),
       persisted_data_(persisted_data),
-      crx_verifier_format_(crx_verifier_format) {}
+      crx_verifier_format_(crx_verifier_format),
+      usage_stats_enabled_(persisted_data->GetUsageStatsEnabled()) {}
 
 Installer::~Installer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -194,7 +195,7 @@ Installer::Result Installer::InstallHelper(
                                    client_install_data_.empty()
                                        ? install_params->server_install_data
                                        : client_install_data_),
-      kWaitForAppInstaller, std::move(progress_callback));
+      usage_stats_enabled_, kWaitForAppInstaller, std::move(progress_callback));
 }
 
 void Installer::InstallWithSyncPrimitives(
