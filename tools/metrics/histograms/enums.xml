@@ -59599,6 +59599,7 @@ from previous Chrome versions.
   <int value="-1004904621"
       label="ExperimentalAccessibilityColorEnhancementSettings:disabled"/>
   <int value="-1002537430" label="HudDisplayForPerformanceMetrics:disabled"/>
+  <int value="-1002494650" label="WebviewTagMPArchBehavior:disabled"/>
   <int value="-1001837588" label="EnableAppReinstallZeroState:enabled"/>
   <int value="-1000695123"
       label="AccessibilitySelectToSpeakPageMigration:disabled"/>
@@ -59685,6 +59686,7 @@ from previous Chrome versions.
   <int value="-964620377" label="CSSOMViewScrollCoordinates:enabled"/>
   <int value="-963683462" label="EnablePalmSuppression:enabled"/>
   <int value="-962030536" label="ChromeDuetLabeled:enabled"/>
+  <int value="-961427615" label="WebviewTagMPArchBehavior:enabled"/>
   <int value="-960851702" label="EcheSWADisableStunServer:disabled"/>
   <int value="-960077963" label="EnableAuraTooltipsOnWindows:enabled"/>
   <int value="-959746153" label="SystemExtensions:disabled"/>

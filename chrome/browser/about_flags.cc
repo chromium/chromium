@@ -9326,6 +9326,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(arc::kEnableArcIdleManager)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    {"enable-webview-tag-mparch-behavior",
+     flag_descriptions::kWebViewTagMPArchBehaviorName,
+     flag_descriptions::kWebViewTagMPArchBehaviorDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(extensions_features::kWebviewTagMPArchBehavior)},
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

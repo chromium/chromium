@@ -796,6 +796,8 @@ extern const char kExtensionContentVerificationEnforceStrict[];
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kExtensionsMenuAccessControlName[];
 extern const char kExtensionsMenuAccessControlDescription[];
+extern const char kWebViewTagMPArchBehaviorName[];
+extern const char kWebViewTagMPArchBehaviorDescription[];
 #endif
 
 extern const char kExtensionsOnChromeUrlsName[];

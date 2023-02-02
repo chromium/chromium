@@ -416,13 +416,15 @@ void WebViewGuest::MaybeRecreateGuestContents(
   new_web_contents_create_params.renderer_initiated_creation = false;
 
   if (!new_web_contents_create_params.opener_suppressed) {
-    // TODO(crbug.com/1261928): Add further information to this message,
-    // including temporary opt-outs.
     owner_web_contents()->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         "A <webview> is being attached to a window other than the window of "
         "its opener <webview>. The window reference the opener <webview> "
-        "obtained from window.open will be invalidated.");
+        "obtained from window.open will be invalidated. To debug whether this "
+        "is causing breakage, see "
+        "chrome://flags/#enable-webview-tag-mparch-behavior. The "
+        "ChromeAppsWebViewPermissiveBehaviorAllowed enterprise policy may be "
+        "used to temporarily revert this behavior.");
   }
 
   ClearOwnedGuestContents();
