@@ -68,6 +68,7 @@ blink_core_sources_dom = [
   "css_toggle_event.h",
   "css_toggle_map.cc",
   "css_toggle_map.h",
+  "css_toggle_traversal.h",
   "create_element_flags.h",
   "dataset_dom_string_map.cc",
   "dataset_dom_string_map.h",

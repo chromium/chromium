@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/css_toggle_event.h"
 #include "third_party/blink/renderer/core/dom/css_toggle_map.h"
+#include "third_party/blink/renderer/core/dom/css_toggle_traversal.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -576,6 +577,8 @@ std::pair<Element*, ToggleScope> FindToggleGroupElement(
 
     if (const ComputedStyle* style = element->GetComputedStyle()) {
       if (const ToggleGroupList* toggle_groups = style->ToggleGroup()) {
+        // TODO(https://github.com/tabatkins/css-toggle/issues/25):
+        // Consider multiple occurrences of the same name.
         for (const auto& group : toggle_groups->Groups()) {
           if (group.Name() == name &&
               (allow_narrow_scope || group.Scope() == ToggleScope::kWide)) {
@@ -613,56 +616,13 @@ void CSSToggle::MakeRestOfToggleGroupZero() {
   const AtomicString& name = Name();
   auto [toggle_group_element, toggle_scope] =
       FindToggleGroupElement(toggle_element, name);
-  Element* stay_within;
-  switch (toggle_scope) {
-    case ToggleScope::kNarrow:
-      stay_within = toggle_group_element;
-      break;
-    case ToggleScope::kWide:
-      stay_within = toggle_group_element->parentElement();
-      break;
-  }
 
-  Element* e = toggle_group_element;
-  do {
+  for (Element* e :
+       CSSToggleGroupScopeRange(toggle_group_element, name, toggle_scope)) {
     if (e == toggle_element) {
-      e = ElementTraversal::Next(*e, stay_within);
       continue;
     }
-    if (e != toggle_group_element) {
-      // Skip descendants in a different group.
-      //
-      // TODO(dbaron): What if style is null?  See
-      // https://github.com/tabatkins/css-toggle/issues/24 .
-      if (const ComputedStyle* style = e->GetComputedStyle()) {
-        if (const ToggleGroupList* toggle_groups = style->ToggleGroup()) {
-          bool found_group = false;  // to continue the outer loop
-          for (const ToggleGroup& group : toggle_groups->Groups()) {
-            if (group.Name() == name) {
-              // TODO(https://github.com/tabatkins/css-toggle/issues/25):
-              // Consider multiple occurrences of the same name.
-              switch (group.Scope()) {
-                case ToggleScope::kWide:
-                  if (e != stay_within && e->parentElement()) {
-                    e = ElementTraversal::NextSkippingChildren(
-                        *e->parentElement(), stay_within);
-                  } else {
-                    e = nullptr;
-                  }
-                  break;
-                case ToggleScope::kNarrow:
-                  e = ElementTraversal::NextSkippingChildren(*e, stay_within);
-                  break;
-              }
-              found_group = true;
-              break;
-            }
-          }
-          if (found_group)
-            continue;
-        }
-      }
-    }
+
     if (CSSToggleMap* toggle_map = e->GetToggleMap()) {
       ToggleMap& toggles = toggle_map->Toggles();
       auto iter = toggles.find(name);
@@ -673,8 +633,7 @@ void CSSToggle::MakeRestOfToggleGroupZero() {
         }
       }
     }
-    e = ElementTraversal::Next(*e, stay_within);
-  } while (e);
+  }
 }
 
 void CSSToggle::FireToggleChangeEvent() {
