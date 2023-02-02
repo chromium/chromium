@@ -6306,7 +6306,6 @@ crbug.com/1394559 [ Win ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/
 crbug.com/1395120 [ Mac11-arm64 ] fast/frames/sandboxed-iframe-plugins.html [ Failure ]
 crbug.com/1395450 [ Debug Linux ] virtual/plz-dedicated-worker/http/tests/devtools/layers/layer-tree-model.js [ Failure ]
 crbug.com/1395412 [ Mac10.15 ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
-crbug.com/1396422 [ Mac11-arm64 ] inspector-protocol/css/css-get-media-queries.js [ Failure ]
 crbug.com/1403736 [ Mac11-arm64 ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.tentative.html [ Timeout ]
 crbug.com/1396079 [ Mac ] inspector-protocol/memory/forcibly-purge-javascript-memory.js [ Crash Failure ]
 crbug.com/1395840 [ Mac ] http/tests/accessibility/slow-document-load.html [ Failure ]
@@ -6833,7 +6832,6 @@ crbug.com/1385633 [ Linux ] virtual/oopr-canvas2d/fast/canvas/check-stale-putIma
 
 # Sheriff 2022-11-28
 crbug.com/1393567 external/wpt/screen-orientation/hidden_document.html [ Failure Pass Timeout ]
-crbug.com/1290077 [ Mac11-arm64 ] virtual/gpu/fast/canvas/canvas-drawImage-live-video.html [ Failure Pass Timeout ]
 crbug.com/1290077 [ Mac11-arm64 ] virtual/oopr-canvas2d/fast/canvas/canvas-drawImage-live-video.html [ Failure Pass Timeout ]
 crbug.com/1290077 [ Mac11-arm64 ] fast/canvas/canvas-drawImage-live-video.html [ Pass Timeout ]
 crbug.com/1393995 fast/dom/shadow/import-rule-in-shadow-tree-needs-document-style-recalc.html [ Failure Pass ]
