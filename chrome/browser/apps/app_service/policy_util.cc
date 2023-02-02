@@ -29,6 +29,8 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // This mapping excludes SWAs not included in official builds (like SAMPLE).
+// These app Id constants need to be kept in sync with java/com/
+// google/chrome/cros/policyconverter/ChromePolicySettingsProcessor.java
 constexpr auto kSystemWebAppsMapping =
     base::MakeFixedFlatMap<base::StringPiece, ash::SystemWebAppType>(
         {{"file_manager", ash::SystemWebAppType::FILE_MANAGER},
@@ -71,6 +73,8 @@ static_assert(GetMaxSystemWebAppType() == ash::SystemWebAppType::kMaxValue,
 
 // Note that this mapping lists only selected Preinstalled Web Apps
 // actively used in policies and is not meant to be exhaustive.
+// These app Id constants need to be kept in sync with java/com/
+// google/chrome/cros/policyconverter/ChromePolicySettingsProcessor.java
 constexpr auto kPreinstalledWebAppsMapping =
     base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
         {{"cursive", web_app::kCursiveAppId},
