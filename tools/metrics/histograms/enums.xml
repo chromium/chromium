@@ -108292,6 +108292,27 @@ Called by update_scheduler_enums.py.-->
   <int value="16" label="HTTP2_CONNECTED">
     Connected over an HTTP/2 connection.
   </int>
+  <int value="17" label="HTTP3_INCOMPLETE">
+    Handshake not completed over an HTTP/3 connection.
+  </int>
+  <int value="18" label="HTTP3_FAILED_STATUS">
+    Server responded to WebSocket request over an HTTP/3 connection with invalid
+    status code.
+  </int>
+  <int value="19" label="HTTP3_FAILED_SUBPROTO">
+    Server responded to WebSocket request over an HTTP/3 connection with invalid
+    sec-websocket-protocol header.
+  </int>
+  <int value="20" label="HTTP3_FAILED_EXTENSIONS">
+    Server responded to WebSocket request over an HTTP/3 connection with invalid
+    sec-websocket-extensions header.
+  </int>
+  <int value="21" label="HTTP3_FAILED">
+    WebSocket request over an HTTP/3 connection failed with some other error.
+  </int>
+  <int value="22" label="HTTP3_CONNECTED">
+    Connected over an HTTP/3 connection.
+  </int>
 </enum>
 
 <enum name="WebSocketNewHandshakeResult">

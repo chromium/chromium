@@ -80,7 +80,22 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
     HTTP2_FAILED = 15,
     // Connected over an HTTP/2 connection.
     HTTP2_CONNECTED = 16,
-    NUM_HANDSHAKE_RESULT_TYPES = 17
+    // Handshake not completed over an HTTP/3 connection.
+    HTTP3_INCOMPLETE = 17,
+    // Server responded to WebSocket request over an HTTP/3 connection with
+    // invalid status code.
+    HTTP3_INVALID_STATUS = 18,
+    // Server responded to WebSocket request over an HTTP/3 connection with
+    // invalid sec-websocket-protocol header.
+    HTTP3_FAILED_SUBPROTO = 19,
+    // Server responded to WebSocket request over an HTTP/3 connection with
+    // invalid sec-websocket-extensions header.
+    HTTP3_FAILED_EXTENSIONS = 20,
+    // WebSocket request over an HTTP/3 connection failed with some other error.
+    HTTP3_FAILED = 21,
+    // Connected over an HTTP/3 connection.
+    HTTP3_CONNECTED = 22,
+    NUM_HANDSHAKE_RESULT_TYPES = 23
   };
 
   WebSocketHandshakeStreamBase() = default;

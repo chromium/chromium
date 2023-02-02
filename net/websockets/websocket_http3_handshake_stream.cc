@@ -304,7 +304,7 @@ void WebSocketHttp3HandshakeStream::OnClose(int status) {
   // If response headers have already been received,
   // then ValidateResponse() sets `result_`.
   if (!response_headers_complete_) {
-    result_ = HandshakeResult::HTTP2_FAILED;
+    result_ = HandshakeResult::HTTP3_FAILED;
   }
 
   OnFailure(std::string("Stream closed with error: ") + ErrorToString(status),
@@ -343,7 +343,7 @@ int WebSocketHttp3HandshakeStream::ValidateResponse() {
               "Error during WebSocket handshake: Unexpected response code: %d",
               headers->response_code()),
           ERR_FAILED, headers->response_code());
-      result_ = HandshakeResult::HTTP2_INVALID_STATUS;
+      result_ = HandshakeResult::HTTP3_INVALID_STATUS;
       return ERR_INVALID_RESPONSE;
   }
 }
@@ -353,15 +353,15 @@ int WebSocketHttp3HandshakeStream::ValidateUpgradeResponse(
   extension_params_ = std::make_unique<WebSocketExtensionParams>();
   std::string failure_message;
   if (!ValidateStatus(headers)) {
-    result_ = HandshakeResult::HTTP2_INVALID_STATUS;
+    result_ = HandshakeResult::HTTP3_INVALID_STATUS;
   } else if (!ValidateSubProtocol(headers, requested_sub_protocols_,
                                   &sub_protocol_, &failure_message)) {
-    result_ = HandshakeResult::HTTP2_FAILED_SUBPROTO;
+    result_ = HandshakeResult::HTTP3_FAILED_SUBPROTO;
   } else if (!ValidateExtensions(headers, &extensions_, &failure_message,
                                  extension_params_.get())) {
-    result_ = HandshakeResult::HTTP2_FAILED_EXTENSIONS;
+    result_ = HandshakeResult::HTTP3_FAILED_EXTENSIONS;
   } else {
-    result_ = HandshakeResult::HTTP2_CONNECTED;
+    result_ = HandshakeResult::HTTP3_CONNECTED;
     return OK;
   }
 

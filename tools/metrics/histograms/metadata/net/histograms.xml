@@ -5331,8 +5331,8 @@ chromium-metrics-reviews@google.com.
   <owner>src/net/OWNERS</owner>
   <summary>
     Results of WebSocket handshakes, including information whether the handshake
-    happened over HTTP/2. Use this histogram as a baseline for investigating
-    feature usage counters.
+    happened over HTTP/1, HTTP/2 or HTTP/3. Use this histogram as a baseline for
+    investigating feature usage counters.
   </summary>
 </histogram>
 
