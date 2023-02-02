@@ -218,6 +218,7 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/1412391")
     public void testRenderIph_Portrait() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
