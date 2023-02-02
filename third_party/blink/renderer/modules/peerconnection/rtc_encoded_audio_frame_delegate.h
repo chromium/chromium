@@ -27,13 +27,15 @@ class RTCEncodedAudioFrameDelegate
  public:
   explicit RTCEncodedAudioFrameDelegate(
       std::unique_ptr<webrtc::TransformableFrameInterface> webrtc_frame,
-      Vector<uint32_t> contributing_sources);
+      Vector<uint32_t> contributing_sources,
+      absl::optional<uint16_t> sequence_number);
 
   uint32_t Timestamp() const;
   DOMArrayBuffer* CreateDataBuffer() const;
   void SetData(const DOMArrayBuffer* data);
   absl::optional<uint32_t> Ssrc() const;
   absl::optional<uint8_t> PayloadType() const;
+  absl::optional<uint16_t> SequenceNumber() const;
   Vector<uint32_t> ContributingSources() const;
   std::unique_ptr<webrtc::TransformableFrameInterface> PassWebRtcFrame();
 
@@ -41,7 +43,8 @@ class RTCEncodedAudioFrameDelegate
   mutable base::Lock lock_;
   std::unique_ptr<webrtc::TransformableFrameInterface> webrtc_frame_
       GUARDED_BY(lock_);
-  Vector<uint32_t> contributing_sources_;
+  Vector<uint32_t> contributing_sources_ GUARDED_BY(lock_);
+  absl::optional<uint16_t> sequence_number_ GUARDED_BY(lock_);
 };
 
 class MODULES_EXPORT RTCEncodedAudioFramesAttachment

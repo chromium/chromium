@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -38,6 +39,7 @@ class MODULES_EXPORT RTCEncodedAudioFrame final : public ScriptWrappable {
   // rtc_encoded_audio_frame.idl implementation.
   // Returns the RTP Packet Timestamp for this frame.
   uint32_t timestamp() const;
+  absl::optional<uint16_t> sequenceNumber() const;
   DOMArrayBuffer* data() const;
   RTCEncodedAudioFrameMetadata* getMetadata() const;
   void setData(DOMArrayBuffer*);
