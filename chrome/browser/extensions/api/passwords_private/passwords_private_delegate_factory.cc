@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_impl.h"
+#include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,6 +38,7 @@ PasswordsPrivateDelegateFactory::PasswordsPrivateDelegateFactory()
   DependsOn(BulkLeakCheckServiceFactory::GetInstance());
   DependsOn(PasswordStoreFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
+  DependsOn(PasswordsPrivateEventRouterFactory::GetInstance());
 }
 
 PasswordsPrivateDelegateFactory::~PasswordsPrivateDelegateFactory() = default;

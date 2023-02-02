@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 
-#include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_system_provider.h"
@@ -31,7 +30,6 @@ PasswordsPrivateEventRouterFactory::PasswordsPrivateEventRouterFactory()
           "PasswordsPrivateEventRouter",
           ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
-  DependsOn(PasswordsPrivateDelegateFactory::GetInstance());
 }
 
 PasswordsPrivateEventRouterFactory::
