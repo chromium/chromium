@@ -10,24 +10,6 @@
 #include "base/values.h"
 
 namespace policy::dlp_test_util {
-// For testing purposes, the following functions are used for creating the value
-// object of DataLeakPreventionRulesList policy.
-
-base::Value::Dict CreateSources(base::Value::List urls);
-
-base::Value::Dict CreateDestinations(
-    absl::optional<base::Value::List> urls,
-    absl::optional<base::Value::List> components);
-
-base::Value::Dict CreateRestrictionWithLevel(const std::string& restriction,
-                                             const std::string& level);
-
-base::Value::Dict CreateRule(const std::string& name,
-                             const std::string& desc,
-                             base::Value::List src_urls,
-                             absl::optional<base::Value::List> dst_urls,
-                             absl::optional<base::Value::List> dst_components,
-                             base::Value::List restrictions);
 
 // Data structure representing a DLP rule.
 class DlpRule {

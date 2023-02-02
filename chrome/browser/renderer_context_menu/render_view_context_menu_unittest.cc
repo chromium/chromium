@@ -95,14 +95,17 @@ static content::ContextMenuParams CreateParams(int contexts) {
   rv.page_url = GURL("http://test.page/");
 
   static constexpr char16_t selected_text[] = u"sel";
-  if (contexts & MenuItem::SELECTION)
+  if (contexts & MenuItem::SELECTION) {
     rv.selection_text = selected_text;
+  }
 
-  if (contexts & MenuItem::LINK)
+  if (contexts & MenuItem::LINK) {
     rv.link_url = GURL("http://test.link/");
+  }
 
-  if (contexts & MenuItem::EDITABLE)
+  if (contexts & MenuItem::EDITABLE) {
     rv.is_editable = true;
+  }
 
   if (contexts & MenuItem::IMAGE) {
     rv.src_url = GURL("http://test.image/");
@@ -119,8 +122,9 @@ static content::ContextMenuParams CreateParams(int contexts) {
     rv.media_type = blink::mojom::ContextMenuDataMediaType::kAudio;
   }
 
-  if (contexts & MenuItem::FRAME)
+  if (contexts & MenuItem::FRAME) {
     rv.frame_url = GURL("http://test.frame/");
+  }
 
   return rv;
 }
@@ -287,8 +291,8 @@ TEST_F(RenderViewContextMenuTest, TargetCheckedForAudio) {
 }
 
 TEST_F(RenderViewContextMenuTest, MatchWhenLinkedImageMatchesTarget) {
-  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE |
-                                                   MenuItem::LINK);
+  content::ContextMenuParams params =
+      CreateParams(MenuItem::IMAGE | MenuItem::LINK);
 
   MenuItem::ContextList contexts;
   contexts.Add(MenuItem::LINK);
@@ -300,8 +304,8 @@ TEST_F(RenderViewContextMenuTest, MatchWhenLinkedImageMatchesTarget) {
 }
 
 TEST_F(RenderViewContextMenuTest, MatchWhenLinkedImageMatchesSource) {
-  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE |
-                                                   MenuItem::LINK);
+  content::ContextMenuParams params =
+      CreateParams(MenuItem::IMAGE | MenuItem::LINK);
 
   MenuItem::ContextList contexts;
   contexts.Add(MenuItem::LINK);
@@ -313,8 +317,8 @@ TEST_F(RenderViewContextMenuTest, MatchWhenLinkedImageMatchesSource) {
 }
 
 TEST_F(RenderViewContextMenuTest, NoMatchWhenLinkedImageMatchesNeither) {
-  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE |
-                                                   MenuItem::LINK);
+  content::ContextMenuParams params =
+      CreateParams(MenuItem::IMAGE | MenuItem::LINK);
 
   MenuItem::ContextList contexts;
   contexts.Add(MenuItem::LINK);
@@ -348,8 +352,7 @@ TEST_F(RenderViewContextMenuTest, TargetIgnoredForEditable) {
 }
 
 TEST_F(RenderViewContextMenuTest, TargetIgnoredForSelection) {
-  content::ContextMenuParams params =
-      CreateParams(MenuItem::SELECTION);
+  content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
 
   MenuItem::ContextList contexts;
   contexts.Add(MenuItem::SELECTION);
@@ -360,8 +363,8 @@ TEST_F(RenderViewContextMenuTest, TargetIgnoredForSelection) {
 }
 
 TEST_F(RenderViewContextMenuTest, TargetIgnoredForSelectionOnLink) {
-  content::ContextMenuParams params = CreateParams(
-      MenuItem::SELECTION | MenuItem::LINK);
+  content::ContextMenuParams params =
+      CreateParams(MenuItem::SELECTION | MenuItem::LINK);
 
   MenuItem::ContextList contexts;
   contexts.Add(MenuItem::SELECTION);
@@ -373,8 +376,8 @@ TEST_F(RenderViewContextMenuTest, TargetIgnoredForSelectionOnLink) {
 }
 
 TEST_F(RenderViewContextMenuTest, TargetIgnoredForSelectionOnImage) {
-  content::ContextMenuParams params = CreateParams(
-      MenuItem::SELECTION | MenuItem::IMAGE);
+  content::ContextMenuParams params =
+      CreateParams(MenuItem::SELECTION | MenuItem::IMAGE);
 
   MenuItem::ContextList contexts;
   contexts.Add(MenuItem::SELECTION);
@@ -444,8 +447,9 @@ TEST_F(RenderViewContextMenuExtensionsTest,
   std::u16string expected_title = u"Added by an extension";
   int num_items_found = 0;
   for (size_t i = 0; i < model.GetItemCount(); ++i) {
-    if (expected_title == model.GetLabelAt(i))
+    if (expected_title == model.GetLabelAt(i)) {
       ++num_items_found;
+    }
   }
 
   // Expect both items to be found.
@@ -590,20 +594,14 @@ class RenderViewContextMenuDlpPrefsTest
       const RenderViewContextMenuDlpPrefsTest&) = delete;
 
   void SetDlpClipboardRestriction() {
+    policy::dlp_test_util::DlpRule rule("Rule #1", "Block");
+    rule.AddSrcUrl(PAGE_URL)
+        .AddDstUrl(RESTRICTED_URL)
+        .AddRestriction(policy::dlp::kClipboardRestriction,
+                        policy::dlp::kBlockLevel);
+
     base::Value::List rules;
-    base::Value::List src_urls;
-    src_urls.Append(PAGE_URL);
-
-    base::Value::List dst_urls;
-    dst_urls.Append(RESTRICTED_URL);
-
-    base::Value::List restrictions;
-    restrictions.Append(policy::dlp_test_util::CreateRestrictionWithLevel(
-        policy::dlp::kClipboardRestriction, policy::dlp::kBlockLevel));
-
-    rules.Append(policy::dlp_test_util::CreateRule(
-        "Rule #1", "Block", std::move(src_urls), std::move(dst_urls),
-        /*dst_components=*/base::Value::List(), std::move(restrictions)));
+    rules.Append(rule.Create());
     local_state()->SetList(policy::policy_prefs::kDlpRulesList,
                            std::move(rules));
   }
@@ -783,8 +781,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
 
 // Make sure the checking custom command id that is not enabled will not
 // cause DCHECK failure.
-TEST_F(RenderViewContextMenuPrefsTest,
-       IsCustomCommandIdEnabled) {
+TEST_F(RenderViewContextMenuPrefsTest, IsCustomCommandIdEnabled) {
   std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
 
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_CUSTOM_FIRST));

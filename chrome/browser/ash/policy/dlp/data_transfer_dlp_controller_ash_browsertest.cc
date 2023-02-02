@@ -114,8 +114,9 @@ class FakeDlpController : public DataTransferDlpController,
 
   bool ShouldPasteOnWarn(
       const ui::DataTransferEndpoint* const data_dst) override {
-    if (force_paste_on_warn_)
+    if (force_paste_on_warn_) {
       return true;
+    }
     return helper_->DidUserApproveDst(data_dst);
   }
 
@@ -230,22 +231,17 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_BlockComponent) {
   SetupCrostini();
-  {
+  {  // Do not remove the brackets, policy update is triggered on
+     // ScopedListPrefUpdate destructor.
     ScopedListPrefUpdate update(g_browser_process->local_state(),
                                 policy_prefs::kDlpRulesList);
 
-    base::Value::List src_urls;
-    src_urls.Append(kMailUrl);
-    base::Value::List dst_components;
-    dst_components.Append(dlp::kArc);
-    dst_components.Append(dlp::kCrostini);
-    base::Value::List restrictions;
-    restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
-        dlp::kClipboardRestriction, dlp::kBlockLevel));
-    update->Append(dlp_test_util::CreateRule(
-        "rule #1", "Block Gmail", std::move(src_urls),
-        /*dst_urls=*/base::Value::List(), std::move(dst_components),
-        std::move(restrictions)));
+    dlp_test_util::DlpRule rule("rule #1", "Block Gmail");
+    rule.AddSrcUrl(kMailUrl)
+        .AddDstComponent(dlp::kArc)
+        .AddDstComponent(dlp::kCrostini)
+        .AddRestriction(dlp::kClipboardRestriction, dlp::kBlockLevel);
+    update->Append(rule.Create());
   }
 
   {
@@ -292,33 +288,18 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_BlockComponent) {
 IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_WarnComponent) {
   SetupCrostini();
 
-  {
+  {  // Do not remove the brackets, policy update is triggered on
+     // ScopedListPrefUpdate destructor.
     ScopedListPrefUpdate update(g_browser_process->local_state(),
                                 policy_prefs::kDlpRulesList);
-    base::Value::Dict rule;
-    base::Value::Dict src_urls;
-    base::Value::List src_urls_list;
-    src_urls_list.Append(kMailUrl);
-    src_urls.Set("urls", std::move(src_urls_list));
-    rule.Set("sources", std::move(src_urls));
 
-    base::Value::Dict dst_components;
-    base::Value::List dst_components_list;
-    dst_components_list.Append("ARC");
-    dst_components_list.Append("CROSTINI");
-    dst_components_list.Append("PLUGIN_VM");
-    dst_components.Set("components", std::move(dst_components_list));
-    rule.Set("destinations", std::move(dst_components));
-
-    base::Value::Dict restrictions;
-    base::Value::List restrictions_list;
-    base::Value::Dict class_level_dict;
-    class_level_dict.Set("class", "CLIPBOARD");
-    class_level_dict.Set("level", "WARN");
-    restrictions_list.Append(std::move(class_level_dict));
-    rule.Set("restrictions", std::move(restrictions_list));
-
-    update->Append(std::move(rule));
+    dlp_test_util::DlpRule rule;
+    rule.AddSrcUrl(kMailUrl)
+        .AddDstComponent(dlp::kArc)
+        .AddDstComponent(dlp::kCrostini)
+        .AddDstComponent(dlp::kPluginVm)
+        .AddRestriction(dlp::kClipboardRestriction, dlp::kWarnLevel);
+    update->Append(rule.Create());
   }
 
   {
