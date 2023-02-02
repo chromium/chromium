@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
     ~PendingPacket();
     net::IPEndPoint to;
     scoped_refptr<net::IOBuffer> data;
-    int size;
+    size_t size;
     rtc::PacketOptions packet_options;
     uint64_t id;
   };

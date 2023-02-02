@@ -330,7 +330,7 @@ bool P2PSocketTcpBase::HandleReadResult(int result) {
     size_t bytes_consumed = 0;
     if (!ProcessInput(
             base::make_span(reinterpret_cast<const uint8_t*>(head + pos),
-                            read_buffer_->offset() - pos),
+                            static_cast<size_t>(read_buffer_->offset() - pos)),
             &bytes_consumed)) {
       return false;
     }
