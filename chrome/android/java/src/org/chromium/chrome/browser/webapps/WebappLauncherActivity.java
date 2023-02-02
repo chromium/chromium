@@ -134,10 +134,12 @@ public class WebappLauncherActivity extends Activity {
     }
 
     @Override
+    @SuppressWarnings("UnsafeIntentLaunch")
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         long createTimestamp = SystemClock.elapsedRealtime();
+        // Triggers UnsafeIntentLaunch lint warning. https://crbug.com/1412281
         Intent intent = getIntent();
 
         if (WebappActionsNotificationManager.handleNotificationAction(intent)) {
