@@ -5,6 +5,7 @@
 #include "content/public/test/attribution_simulator.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <limits>
 #include <memory>
@@ -18,10 +19,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -40,10 +39,10 @@
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
+#include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
-#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
@@ -53,7 +52,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/attribution_simulator_input_parser.h"
-#include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
@@ -247,22 +245,22 @@ class FakeCookieChecker : public AttributionCookieChecker {
 };
 
 // Registers sources and triggers in the `AttributionManagerImpl` and records
-// rejected sources in a JSON list.
+// sent reports.
 class AttributionEventHandler : public AttributionObserver {
  public:
-  AttributionEventHandler(AttributionManagerImpl* manager,
+  AttributionEventHandler(std::unique_ptr<AttributionManagerImpl> manager,
                           FakeCookieChecker* fake_cookie_checker,
                           AttributionReportJsonConverter json_converter)
-      : manager_(manager),
+      : manager_(std::move(manager)),
         fake_cookie_checker_(fake_cookie_checker),
         json_converter_(json_converter) {
     DCHECK(manager_);
     DCHECK(fake_cookie_checker_);
 
-    observation_.Observe(manager);
+    manager_->AddObserver(this);
   }
 
-  ~AttributionEventHandler() override = default;
+  ~AttributionEventHandler() override { manager_->RemoveObserver(this); }
 
   void Handle(AttributionSimulationEvent event) {
     absl::visit(*this, std::move(event));
@@ -311,6 +309,8 @@ class AttributionEventHandler : public AttributionObserver {
     return output;
   }
 
+  base::Time max_report_time() const { return max_report_time_; }
+
  private:
   // AttributionObserver:
 
@@ -341,13 +341,24 @@ class AttributionEventHandler : public AttributionObserver {
     verbose_debug_reports_.Append(json_converter_.ToJson(report, time));
   }
 
-  base::ScopedObservation<AttributionManagerImpl, AttributionObserver>
-      observation_{this};
+  void OnTriggerHandled(const AttributionTrigger&,
+                        absl::optional<uint64_t> cleared_debug_key,
+                        const CreateReportResult& result) override {
+    if (const auto& report = result.new_event_level_report()) {
+      max_report_time_ = std::max(max_report_time_, report->report_time());
+    }
 
-  const base::raw_ptr<AttributionManagerImpl> manager_;
+    if (const auto& report = result.new_aggregatable_report()) {
+      max_report_time_ = std::max(max_report_time_, report->report_time());
+    }
+  }
+
+  const std::unique_ptr<AttributionManagerImpl> manager_;
   const base::raw_ptr<FakeCookieChecker> fake_cookie_checker_;
 
   const AttributionReportJsonConverter json_converter_;
+
+  base::Time max_report_time_;
 
   base::Value::List event_level_reports_;
   base::Value::List debug_event_level_reports_;
@@ -368,16 +379,18 @@ base::Value RunAttributionSimulation(base::Value input,
   const base::Time time_origin = base::Time::Now();
 
   absl::optional<AttributionSimulationEvents> events =
-      ParseAttributionSimulationInput(std::move(input), base::Time::Now(),
+      ParseAttributionSimulationInput(std::move(input), time_origin,
                                       error_stream);
-  if (!events)
+  if (!events) {
     return base::Value();
+  }
 
-  if (events->empty())
+  if (events->empty()) {
     return base::Value(base::Value::Dict());
+  }
 
   base::ranges::stable_sort(*events, /*comp=*/{}, &GetEventTime);
-  task_environment.FastForwardBy(GetEventTime(events->at(0)) - time_origin);
+  task_environment.FastForwardBy(GetEventTime(events->front()) - time_origin);
 
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       browser_context.GetDefaultStoragePartition());
@@ -399,7 +412,7 @@ base::Value RunAttributionSimulation(base::Value input,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
            base::ThreadPolicy::MUST_USE_FOREGROUND}));
 
-  AttributionEventHandler handler(manager.get(), raw_fake_cookie_checker,
+  AttributionEventHandler handler(std::move(manager), raw_fake_cookie_checker,
                                   AttributionReportJsonConverter(time_origin));
 
   static_cast<AggregationServiceImpl*>(
@@ -423,15 +436,9 @@ base::Value RunAttributionSimulation(base::Value input,
 
   task_environment.FastForwardBy(last_event_time - base::Time::Now());
 
-  std::vector<AttributionReport> pending_reports =
-      GetAttributionReportsForTesting(manager.get());
-
-  if (!pending_reports.empty()) {
-    base::Time last_report_time =
-        base::ranges::max(pending_reports, /*comp=*/{},
-                          &AttributionReport::report_time)
-            .report_time();
-    task_environment.FastForwardBy(last_report_time - base::Time::Now());
+  if (base::Time max_report_time = handler.max_report_time();
+      !max_report_time.is_null()) {
+    task_environment.FastForwardBy(max_report_time - base::Time::Now());
   }
 
   return base::Value(handler.TakeOutput());
