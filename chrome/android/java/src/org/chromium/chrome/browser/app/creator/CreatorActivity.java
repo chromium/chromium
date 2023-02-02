@@ -89,6 +89,9 @@ public class CreatorActivity extends SnackbarActivity {
         setSupportActionBar(actionBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
+
+        // For this Activity, the home button in the action bar acts as the back button.
+        getSupportActionBar().setHomeActionContentDescription(R.string.back);
     }
 
     @Override
