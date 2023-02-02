@@ -38,7 +38,6 @@
   "Linux ChromiumOS MSan Builder": {
     "gn_args": {
       "dcheck_always_on": false,
-      "instrumented_libraries_release": "focal",
       "is_component_build": false,
       "is_debug": false,
       "is_msan": true,
@@ -50,7 +49,6 @@
   "Linux MSan Builder": {
     "gn_args": {
       "dcheck_always_on": false,
-      "instrumented_libraries_release": "focal",
       "is_component_build": false,
       "is_debug": false,
       "is_msan": true,
@@ -105,7 +103,6 @@
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
-      "instrumented_libraries_release": "focal",
       "is_component_build": false,
       "is_debug": false,
       "is_msan": true,

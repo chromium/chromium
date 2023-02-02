@@ -533,7 +533,6 @@
   "linux-webkit-msan-rel": {
     "gn_args": {
       "dcheck_always_on": false,
-      "instrumented_libraries_release": "focal",
       "is_component_build": false,
       "is_debug": false,
       "is_msan": true,
@@ -666,7 +665,6 @@
   "linux_chromium_chromeos_msan_rel_ng": {
     "gn_args": {
       "dcheck_always_on": false,
-      "instrumented_libraries_release": "focal",
       "is_component_build": false,
       "is_debug": false,
       "is_msan": true,
@@ -723,7 +721,6 @@
   "linux_chromium_msan_rel_ng": {
     "gn_args": {
       "dcheck_always_on": false,
-      "instrumented_libraries_release": "focal",
       "is_component_build": false,
       "is_debug": false,
       "is_msan": true,

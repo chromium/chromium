@@ -332,7 +332,6 @@
       "dcheck_always_on": false,
       "enable_nacl": false,
       "ffmpeg_branding": "ChromeOS",
-      "instrumented_libraries_release": "focal",
       "is_component_build": true,
       "is_debug": false,
       "is_msan": true,
