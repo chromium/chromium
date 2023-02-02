@@ -307,12 +307,23 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
     scoped_refptr<ServiceWorkerRegistration> registration) {
   if (is_for_navigation) {
     DCHECK(!start_time.is_null());
-    ServiceWorkerMetrics::RecordFindRegistrationForClientUrlTime(
-        base::TimeTicks::Now() - start_time);
+    auto now = base::TimeTicks::Now();
+
+    ServiceWorkerMetrics::RecordFindRegistrationForClientUrlTime(now -
+                                                                 start_time);
 
     base::UmaHistogramBoolean(
         "ServiceWorker.FoundServiceWorkerRegistrationOnNavigation",
         status == blink::ServiceWorkerStatusCode::kOk);
+
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+        "ServiceWorker",
+        "ServiceWorker.MaybeCreateLoaderToContinueWithRegistration",
+        TRACE_ID_LOCAL(this), start_time);
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        "ServiceWorker",
+        "ServiceWorker.MaybeCreateLoaderToContinueWithRegistration",
+        TRACE_ID_LOCAL(this), now);
   }
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {

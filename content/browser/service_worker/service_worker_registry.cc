@@ -1089,6 +1089,10 @@ void ServiceWorkerRegistry::RunFindRegistrationCallbacks(
     const blink::StorageKey& key,
     scoped_refptr<ServiceWorkerRegistration> registration,
     blink::ServiceWorkerStatusCode status) {
+  TRACE_EVENT2("ServiceWorker",
+               "ServiceWorkerRegistry::RunFindRegistrationCallbacks",
+               "client_url", client_url, "status",
+               blink::ServiceWorkerStatusToString(status));
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto iter =
       find_registration_callbacks_.find(std::make_pair(client_url, key));
