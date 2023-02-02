@@ -350,9 +350,9 @@ class BASE_EXPORT FilePath {
   // Returns a FilePath by appending a separator and the supplied path
   // component to this object's path.  Append takes care to avoid adding
   // excessive separators if this object's path already ends with a separator.
-  // If this object's path is kCurrentDirectory, a new FilePath corresponding
-  // only to |component| is returned.  |component| must be a relative path;
-  // it is an error to pass an absolute path.
+  // If this object's path is kCurrentDirectory ('.'), a new FilePath
+  // corresponding only to |component| is returned.  |component| must be a
+  // relative path; it is an error to pass an absolute path.
   [[nodiscard]] FilePath Append(StringPieceType component) const;
   [[nodiscard]] FilePath Append(const FilePath& component) const;
   [[nodiscard]] FilePath Append(const SafeBaseName& component) const;
