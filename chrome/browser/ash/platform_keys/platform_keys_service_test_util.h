@@ -41,6 +41,19 @@ class GetTokensExecutionWaiter
   chromeos::platform_keys::Status status();
 };
 
+// Supports waiting for the result of the PlatformKeysService::Sign* function
+// family.
+class SignExecutionWaiter
+    : public base::test::TestFuture<std::string,
+                                    chromeos::platform_keys::Status> {
+ public:
+  const std::string& signature();
+  chromeos::platform_keys::Status status();
+
+  base::OnceCallback<void(const std::string&, chromeos::platform_keys::Status)>
+  GetCallback();
+};
+
 // Supports waiting for the result of the PlatformKeysService::GetCertificates.
 class GetCertificatesExecutionWaiter
     : public base::test::TestFuture<std::unique_ptr<net::CertificateList>,

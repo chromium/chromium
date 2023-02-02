@@ -251,11 +251,11 @@ class SignState : public NSSOperationState {
   ~SignState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
-    CallBack(from, /*signature=*/std::vector<uint8_t>(), status);
+    CallBack(from, /*signature=*/std::string(), status);
   }
 
-  void OnSuccess(const base::Location& from, std::vector<uint8_t> signature) {
-    CallBack(from, std::move(signature), Status::kSuccess);
+  void OnSuccess(const base::Location& from, const std::string& signature) {
+    CallBack(from, signature, Status::kSuccess);
   }
 
   // The data that will be signed.
@@ -275,10 +275,10 @@ class SignState : public NSSOperationState {
 
  private:
   void CallBack(const base::Location& from,
-                std::vector<uint8_t> signature,
+                const std::string& signature,
                 Status status) {
     auto bound_callback =
-        base::BindOnce(std::move(callback_), std::move(signature), status);
+        base::BindOnce(std::move(callback_), signature, status);
     content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
@@ -771,7 +771,9 @@ void GenerateECKeyOnWorkerThread(std::unique_ptr<GenerateECKeyState> state) {
     state->OnError(FROM_HERE, Status::kErrorInternal);
     return;
   }
-  state->OnSuccess(FROM_HERE, ScopedSECItemToBytes(public_key_der));
+  state->OnSuccess(FROM_HERE, std::vector<uint8_t>(
+                                  public_key_der->data,
+                                  public_key_der->data + public_key_der->len));
 }
 
 // Continues generating a RSA key with the obtained NSSCertDatabase. Used by
@@ -863,7 +865,8 @@ void SignRSAPKCS1RawOnWorkerThread(std::unique_ptr<SignState> state,
     state->OnError(FROM_HERE, Status::kErrorInternal);
     return;
   }
-  state->OnSuccess(FROM_HERE, std::move(signature));
+  std::string signature_str(signature.begin(), signature.end());
+  state->OnSuccess(FROM_HERE, signature_str);
 }
 
 // Does the actual RSA signing on a worker thread.
@@ -911,7 +914,9 @@ void SignRSAOnWorkerThread(std::unique_ptr<SignState> state) {
     return;
   }
 
-  state->OnSuccess(FROM_HERE, ScopedSECItemToBytes(sign_result));
+  std::string signature_str(sign_result->data,
+                            sign_result->data + sign_result->len);
+  state->OnSuccess(FROM_HERE, signature_str);
 }
 
 // Does the actual EC Signing on a worker thread.
@@ -955,7 +960,10 @@ void SignECOnWorkerThread(std::unique_ptr<SignState> state) {
     return;
   }
 
-  state->OnSuccess(FROM_HERE, ScopedSECItemToBytes(web_crypto_signature));
+  signature_str.assign(web_crypto_signature->data,
+                       web_crypto_signature->data + web_crypto_signature->len);
+
+  state->OnSuccess(FROM_HERE, signature_str);
 }
 
 // Decides which signing algorithm will be used. Used by SignWithDB().

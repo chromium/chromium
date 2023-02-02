@@ -94,7 +94,7 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
 
   void SignCsr();
   void OnSignCsrDone(base::TimeTicks start_time,
-                     std::vector<uint8_t> signature,
+                     const std::string& signature,
                      chromeos::platform_keys::Status status);
 
   void FinishCsr();

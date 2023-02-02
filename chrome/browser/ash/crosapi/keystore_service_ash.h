@@ -185,7 +185,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   static void DidRemoveKey(RemoveKeyCallback callback,
                            chromeos::platform_keys::Status status);
   static void DidSign(SignCallback callback,
-                      std::vector<uint8_t> signature,
+                      const std::string& signature,
                       chromeos::platform_keys::Status status);
   static void DidGetKeyTags(GetKeyTagsCallback callback,
                             absl::optional<bool> corporate,

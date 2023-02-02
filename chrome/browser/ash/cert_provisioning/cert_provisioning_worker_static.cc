@@ -615,7 +615,7 @@ void CertProvisioningWorkerStatic::SignCsr() {
 
 void CertProvisioningWorkerStatic::OnSignCsrDone(
     base::TimeTicks start_time,
-    std::vector<uint8_t> signature,
+    const std::string& signature,
     chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -630,7 +630,7 @@ void CertProvisioningWorkerStatic::OnSignCsrDone(
     return;
   }
 
-  signature_ = BytesToStr(signature);
+  signature_ = signature;
   UpdateState(FROM_HERE, CertProvisioningWorkerState::kSignCsrFinished);
   DoStep();
 }

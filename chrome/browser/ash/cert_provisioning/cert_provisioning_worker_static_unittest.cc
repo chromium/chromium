@@ -106,7 +106,7 @@ constexpr char kInvalidationTopic[] = "fake_invalidation_topic_1";
 constexpr char kDataToSign[] = "fake_data_to_sign_1";
 constexpr char kChallenge[] = "fake_va_challenge_1";
 constexpr char kChallengeResponse[] = "fake_va_challenge_response_1";
-constexpr char kSignature[] = {1, 2, 3, 4, 5};
+constexpr char kSignature[] = "fake_signature_1";
 constexpr unsigned int kNonVaKeyModulusLengthBits = 2048;
 
 const std::string& GetPublicKey() {
@@ -124,10 +124,6 @@ const std::vector<uint8_t>& GetPublicKeyBin() {
     CHECK(public_key.has_value());
   }
   return public_key.value();
-}
-
-std::vector<uint8_t> GetSignatureBin() {
-  return std::vector<uint8_t>({1, 2, 3, 4, 5});
 }
 
 void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
@@ -358,26 +354,26 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .WillOnce(RunOnceCallback<4>(Status::kErrorInternal)); \
   }
 
-#define EXPECT_SIGN_RSAPKC1_DIGEST_OK(SIGN_FUNC)                            \
-  {                                                                         \
-    EXPECT_CALL(*platform_keys_service_, SIGN_FUNC)                         \
-        .Times(1)                                                           \
-        .WillOnce(RunOnceCallback<4>(GetSignatureBin(), Status::kSuccess)); \
+#define EXPECT_SIGN_RSAPKC1_DIGEST_OK(SIGN_FUNC)                     \
+  {                                                                  \
+    EXPECT_CALL(*platform_keys_service_, SIGN_FUNC)                  \
+        .Times(1)                                                    \
+        .WillOnce(RunOnceCallback<4>(kSignature, Status::kSuccess)); \
   }
 
-#define EXPECT_SIGN_RSAPKC1_RAW_OK(SIGN_FUNC)                               \
-  {                                                                         \
-    EXPECT_CALL(*platform_keys_service_, SIGN_FUNC)                         \
-        .Times(1)                                                           \
-        .WillOnce(RunOnceCallback<3>(GetSignatureBin(), Status::kSuccess)); \
+#define EXPECT_SIGN_RSAPKC1_RAW_OK(SIGN_FUNC)                        \
+  {                                                                  \
+    EXPECT_CALL(*platform_keys_service_, SIGN_FUNC)                  \
+        .Times(1)                                                    \
+        .WillOnce(RunOnceCallback<3>(kSignature, Status::kSuccess)); \
   }
 
 #define EXPECT_SIGN_RSAPKC1_DIGEST_FAIL(SIGN_FUNC)                         \
   {                                                                        \
     EXPECT_CALL(*platform_keys_service_, SIGN_FUNC)                        \
         .Times(1)                                                          \
-        .WillOnce(RunOnceCallback<4>(/*signature=*/std::vector<uint8_t>(), \
-                                     Status::kErrorInternal));             \
+        .WillOnce(                                                         \
+            RunOnceCallback<4>(/*signature=*/"", Status::kErrorInternal)); \
   }
 
 #define EXPECT_IMPORT_CERTIFICATE_OK(IMPORT_FUNC)        \

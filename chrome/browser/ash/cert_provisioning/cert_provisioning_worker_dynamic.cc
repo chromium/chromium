@@ -698,7 +698,7 @@ void CertProvisioningWorkerDynamic::BuildProofOfPossession() {
 
 void CertProvisioningWorkerDynamic::OnBuildProofOfPossessionDone(
     base::TimeTicks start_time,
-    std::vector<uint8_t> signature,
+    const std::string& signature,
     chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -714,7 +714,7 @@ void CertProvisioningWorkerDynamic::OnBuildProofOfPossessionDone(
     return;
   }
 
-  signature_ = std::move(signature);
+  signature_ = StrToBytes(signature);
   RETURN_ON_FINAL_STATE(
       UpdateState(FROM_HERE, CertProvisioningWorkerState::kSignCsrFinished));
   DoStep();

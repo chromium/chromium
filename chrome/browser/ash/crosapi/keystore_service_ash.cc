@@ -780,13 +780,13 @@ void KeystoreServiceAsh::Sign(bool is_keystore_provided,
 
 // static
 void KeystoreServiceAsh::DidSign(SignCallback callback,
-                                 std::vector<uint8_t> signature,
+                                 const std::string& signature,
                                  chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (status == chromeos::platform_keys::Status::kSuccess) {
-    std::move(callback).Run(
-        mojom::KeystoreBinaryResult::NewBlob(std::move(signature)));
+    std::move(callback).Run(mojom::KeystoreBinaryResult::NewBlob(
+        std::vector<uint8_t>(signature.begin(), signature.end())));
   } else {
     std::move(callback).Run(mojom::KeystoreBinaryResult::NewError(
         chromeos::platform_keys::StatusToKeystoreError(status)));
