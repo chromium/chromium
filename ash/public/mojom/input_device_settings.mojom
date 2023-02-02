@@ -98,6 +98,40 @@ struct MouseSettings {
 
 // Contains all information needed to display, apply, and update touchpad
 // settings.
-// TODO(michaelcheco): add `settings` to `mojom::Touchpad` struct.
 struct Touchpad {
+  string name;
+  // Unique identifier for the touchpad which is assigned by ozone when it is
+  // connected and is reassigned when disconnected and reconnected to the
+  // system. These ids can be rarely reused for multiple devices if the original
+  // device holding the id had been disconnected.
+  uint32 id;
+  // Key used to lookup device settings in prefs in the format
+  // "vendor_id:product_id" where the ids are 16-bit hex in lowercase.
+  // Example: 5022:18d1.
+  string device_key;
+  TouchpadSettings settings;
+};
+
+// Contains all existing touchpad settings available for use.
+struct TouchpadSettings {
+  // Control sensitivity of the device.
+  uint8 sensitivity;
+  // Toggles the direction of the scroll behavior.
+  bool reverse_scrolling;
+  // Controls whether acceleration is enabled.
+  bool acceleration_enabled;
+  // Toggles whether tap to click is enabled.
+  bool tap_to_click_enabled;
+  // Toggles whether three finger click is enabled.
+  bool three_finger_click_enabled;
+  // Toggles whether tap dragging is enabled.
+  bool tap_dragging_enabled;
+  // Controls the speed of touchpad scrolling.
+  uint8 scroll_sensitivity;
+  // Toggles whether scroll acceleration is enabled.
+  bool scroll_acceleration;
+  // Controls the sensitivity of the haptic feedback from the touchpad.
+  uint8 haptic_sensitivity;
+  // Toggles whether haptic feedback is enabled for the touchpad at all.
+  bool haptic_enabled;
 };

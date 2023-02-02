@@ -39,6 +39,19 @@ constexpr char kMouseSettingReverseScrolling[] = "reverse_scrolling";
 constexpr char kMouseSettingAccelerationEnabled[] = "acceleration_enabled";
 constexpr char kMouseSettingScrollSensitivity[] = "scroll_sensitivity";
 constexpr char kMouseSettingScrollAcceleration[] = "scroll_acceleration";
+
+// Touchpad settings dictionary keys.
+constexpr char kTouchpadSettingSensitivity[] = "sensitivity";
+constexpr char kTouchpadSettingReverseScrolling[] = "reverse_scrolling";
+constexpr char kTouchpadSettingAccelerationEnabled[] = "acceleration_enabled";
+constexpr char kTouchpadSettingScrollSensitivity[] = "scroll_sensitivity";
+constexpr char kTouchpadSettingScrollAcceleration[] = "scroll_acceleration";
+constexpr char kTouchpadSettingTapToClickEnabled[] = "tap_to_click_enabled";
+constexpr char kTouchpadSettingThreeFingerClickEnabled[] =
+    "three_finger_click_enabled";
+constexpr char kTouchpadSettingTapDraggingEnabled[] = "tap_dragging_enabled";
+constexpr char kTouchpadSettingHapticSensitivity[] = "haptic_sensitivity";
+constexpr char kTouchpadSettingHapticEnabled[] = "haptic_enabled";
 }  // namespace ash::prefs
 
 #endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_PREF_NAMES_H_
