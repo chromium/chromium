@@ -78,6 +78,8 @@
             var(--cr-fallback-color-primary-container));
         --text-color: var(--color-button-foreground,
             var(--cr-fallback-color-primary));
+        --hover-bg-color: transparent;
+        --hover-border-color: var(--border-color);
 
         /* Disabled default button colors. */
         --disabled-border-color: var(--color-button-border-disabled,
@@ -91,6 +93,7 @@
             var(--cr-fallback-color-primary));
         --text-color-action: var(--color-button-foreground-prominent,
             var(--cr-fallback-color-on-primary));
+        --hover-bg-action: var(--bg-action);
 
         /* Disabled action button colors. */
         --disabled-bg-action: var(--color-button-background-prominent-disabled,
@@ -155,6 +158,20 @@
         :host(:hover) {
           border-color: var(--hover-border-color);
         }
+      }
+
+      #background {
+        display: none;
+      }
+
+      :host-context([chrome-refresh-2023]):host(:hover) #background {
+        background: currentColor;
+        content: '';
+        display: block;
+        height: 100%;
+        opacity: .08;
+        position: absolute;
+        width: 100%;
       }
 
       :host(.action-button) {
@@ -238,3 +255,4 @@
     <slot id="suffixIcon" name="suffix-icon"
         on-slotchange="onSuffixIconSlotChanged_">
     </slot>
+    <div id="background"></div>
