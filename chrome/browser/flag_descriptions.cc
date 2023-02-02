@@ -1677,13 +1677,6 @@ const char kHiddenNetworkMigrationDescription[] =
     "Enables a privacy improvement that removes wrongly configured hidden"
     "networks and mitigates the creation of these networks.";
 
-const char kHideShelfControlsInTabletModeName[] =
-    "Hide shelf control buttons in tablet mode.";
-
-const char kHideShelfControlsInTabletModeDescription[] =
-    "Hides home, back, and overview button from the shelf while the device is "
-    "in tablet mode. Predicated on shelf-hotseat feature being enabled.";
-
 const char kHideNonDisplayableAccountEmailName[] =
     "Hide non-displayable account email";
 
@@ -2733,24 +2726,11 @@ const char kShelfDragToPinDescription[] =
     "Enables pinning unpinned items in shelf by dragging them to the part of "
     "the shelf that contains pinned apps.";
 
-const char kShelfGesturesWithVirtualKeyboardName[] =
-    "Enable shelf gestures from virtual keyboard";
-const char kShelfGesturesWithVirtualKeyboardDescription[] =
-    "Enables shelf tablet mode gestures to show hotseat, got to home screen, "
-    "or to go to overview while virtual keyboard is visible";
-
 const char kShelfHoverPreviewsName[] =
     "Show previews of running apps when hovering over the shelf.";
 const char kShelfHoverPreviewsDescription[] =
     "Shows previews of the open windows for a given running app when hovering "
     "over the shelf.";
-
-const char kShelfPalmRejectionSwipeOffsetName[] =
-    "Shelf Palm Rejection: Swipe Offset";
-const char kShelfPalmRejectionSwipeOffsetDescription[] =
-    "Enables palm rejection in the shelf by setting an offset for the swipe "
-    "gesture that drags the hotseat to a extended state for certain stylus "
-    "apps.";
 
 const char kShelfStackedHotseatName[] = "Shelf Stacked Hotseat";
 const char kShelfStackedHotseatDescription[] =

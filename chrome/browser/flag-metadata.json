@@ -6313,24 +6313,9 @@
     "expiry_milestone": 112
   },
   {
-    "name": "shelf-gestures-with-vk",
-    "owners": ["tbarzic", "//ash/shelf/OWNERS"],
-    "expiry_milestone": 105
-  },
-  {
-    "name": "shelf-hide-buttons-in-tablet",
-    "owners": [ "tbarzic", "//ash/shelf/OWNERS" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "shelf-hover-previews",
     "owners": [ "manucornet" ],
     "expiry_milestone": 84
-  },
-  {
-    "name": "shelf-palm-rejection-swipe-offset",
-    "owners": ["anasalazar", "//ash/shelf/OWNERS"],
-    "expiry_milestone": 107
   },
   {
     "name": "shelf-stacked-hotseat",
