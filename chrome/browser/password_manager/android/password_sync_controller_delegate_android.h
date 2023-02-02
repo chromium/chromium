@@ -53,6 +53,7 @@ class PasswordSyncControllerDelegateAndroid
       base::OnceCallback<void(const syncer::TypeEntitiesCount&)> callback)
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
+  void ClearMetadataWhileStopped() override;
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;

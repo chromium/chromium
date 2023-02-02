@@ -42,6 +42,7 @@ class ProxyModelTypeControllerDelegate : public ModelTypeControllerDelegate {
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
+  void ClearMetadataWhileStopped() override;
 
  private:
   // Post the given task (that requires the destination delegate to run) to

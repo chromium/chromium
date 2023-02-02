@@ -56,8 +56,7 @@ class ModelTypeControllerDelegate {
   virtual void RecordMemoryUsageAndCountsHistograms() = 0;
 
   // Clear metadata given the model is stopped.
-  // TODO(crbug.com/897628): Mark the method as pure virtual.
-  virtual void ClearMetadataWhileStopped() {}
+  virtual void ClearMetadataWhileStopped() = 0;
 };
 
 }  // namespace syncer

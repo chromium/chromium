@@ -84,6 +84,13 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
     GetBridgeDelegate()->RecordMemoryUsageAndCountsHistograms();
   }
 
+  void ClearMetadataWhileStopped() override {
+    if (!bridge_) {
+      return;
+    }
+    GetBridgeDelegate()->ClearMetadataWhileStopped();
+  }
+
  private:
   ModelTypeControllerDelegate* GetBridgeDelegate() const {
     DCHECK(bridge_);

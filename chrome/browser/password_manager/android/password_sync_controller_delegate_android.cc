@@ -178,4 +178,14 @@ PasswordSyncControllerDelegateAndroid::GetWeakPtrToBaseClass() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void PasswordSyncControllerDelegateAndroid::ClearMetadataWhileStopped() {
+  // If this method is being called, this means sync was permanently disabled,
+  // either fully or specifically for passwords. This also includes more
+  // advanced cases like the user having cleared all sync data in the dashboard
+  // (birthday reset) or, at least in theory, the sync server reporting that all
+  // sync metadata is obsolete (i.e. CLIENT_DATA_OBSOLETE in the sync protocol).
+  is_sync_enabled_ = IsSyncEnabled(false);
+  // No metadata is managed by PasswordSyncControllerDelegateAndroid.
+}
+
 }  // namespace password_manager
