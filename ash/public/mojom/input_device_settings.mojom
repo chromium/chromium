@@ -95,3 +95,9 @@ struct MouseSettings {
   // Toggles whether scroll acceleration is enabled.
   bool scroll_acceleration;
 };
+
+// Contains all information needed to display, apply, and update touchpad
+// settings.
+// TODO(michaelcheco): add `settings` to `mojom::Touchpad` struct.
+struct Touchpad {
+};
