@@ -31,7 +31,7 @@ class ExtensionAction;
 class ExtensionRegistry;
 class ExtensionViewHost;
 class SitePermissionsHelper;
-}
+}  // namespace extensions
 
 namespace ui {
 class ImageModel;

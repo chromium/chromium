@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 
 #include <memory>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
@@ -208,13 +208,14 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
 
 void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
     std::unique_ptr<ExtensionActionViewController> action_controller,
+    extensions::ExtensionId extension_id,
     bool allow_pinning,
     int index) {
   auto item = std::make_unique<InstalledExtensionMenuItemView>(
       browser_, std::move(action_controller), allow_pinning,
       base::BindRepeating(
           &ExtensionsMenuNavigationHandler::OpenSitePermissionsPage,
-          base::Unretained(navigation_handler_)));
+          base::Unretained(navigation_handler_), extension_id));
   menu_items_->AddChildViewAt(std::move(item), index);
 }
 

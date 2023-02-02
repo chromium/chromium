@@ -5,9 +5,12 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 
 #include "base/feature_list.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
@@ -70,11 +73,13 @@ class ExtensionsMenuMainPageViewUnitTest : public ExtensionsToolbarUnitTest {
   // Asserts there is exactly one menu item and then returns it.
   InstalledExtensionMenuItemView* GetOnlyMenuItem();
 
-  void ClickPinButton(InstalledExtensionMenuItemView* installed_item);
+  void ClickPinButton(InstalledExtensionMenuItemView* menu_item);
+  void ClickSitePermissionsButton(InstalledExtensionMenuItemView* menu_item);
 
   ExtensionsToolbarButton* extensions_button();
   ExtensionsMenuCoordinator* menu_coordinator();
   ExtensionsMenuMainPageView* main_page();
+  ExtensionsMenuSitePermissionsPage* site_permissions_page();
   std::vector<InstalledExtensionMenuItemView*> menu_items();
 
   // ExtensionsToolbarUnitTest:
@@ -110,6 +115,12 @@ void ExtensionsMenuMainPageViewUnitTest::ClickPinButton(
   WaitForAnimation();
 }
 
+void ExtensionsMenuMainPageViewUnitTest::ClickSitePermissionsButton(
+    InstalledExtensionMenuItemView* menu_item) {
+  ClickButton(menu_item->site_permissions_button_for_testing());
+  WaitForAnimation();
+}
+
 ExtensionsToolbarButton*
 ExtensionsMenuMainPageViewUnitTest::extensions_button() {
   return extensions_container()->GetExtensionsButton();
@@ -124,6 +135,14 @@ ExtensionsMenuMainPageView* ExtensionsMenuMainPageViewUnitTest::main_page() {
   ExtensionsMenuViewController* menu_controller =
       menu_coordinator()->GetControllerForTesting();
   return menu_controller ? menu_controller->GetMainPageViewForTesting()
+                         : nullptr;
+}
+
+ExtensionsMenuSitePermissionsPage*
+ExtensionsMenuMainPageViewUnitTest::site_permissions_page() {
+  ExtensionsMenuViewController* menu_controller =
+      menu_coordinator()->GetControllerForTesting();
+  return menu_controller ? menu_controller->GetSitePermissionsPageForTesting()
                          : nullptr;
 }
 
@@ -277,4 +296,26 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // Brand-new window also gets the pinned extension.
   EXPECT_TRUE(browser3.extensions_container()->IsActionVisibleOnToolbar(
       action_controller));
+}
+
+// Verifies the extension site permissions button opens the site permissions
+// page corresponding to the extension.
+TEST_F(ExtensionsMenuMainPageViewUnitTest,
+       SitePermissionsButtonOpensSubpageForCorrectExtension) {
+  std::u16string kExtensionA = u"Extension A";
+  InstallExtensionWithHostPermissions(base::UTF16ToUTF8(kExtensionA),
+                                      {"<all_urls>"});
+  InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
+
+  ShowMenu();
+
+  std::vector<InstalledExtensionMenuItemView*> items = menu_items();
+  ASSERT_EQ(items.size(), 2u);
+  EXPECT_EQ(items[0]->view_controller()->GetActionName(), kExtensionA);
+
+  ClickSitePermissionsButton(items[0]);
+
+  ExtensionsMenuSitePermissionsPage* page = site_permissions_page();
+  ASSERT_TRUE(page);
+  EXPECT_EQ(page->GetExtensionNameForTesting(), kExtensionA);
 }

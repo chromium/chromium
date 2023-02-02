@@ -187,6 +187,7 @@ InstalledExtensionMenuItemView::InstalledExtensionMenuItemView(
                             ui::ImageModel::FromVectorIcon(
                                 vector_icons::kSubmenuArrowIcon,
                                 ui::kColorIcon))))
+                    .CopyAddressTo(&site_permissions_button_)
                     // Margin to align the main and secondary row text. Icon
                     // size and horizontal insets should be the values used by
                     // the extensions menu button.

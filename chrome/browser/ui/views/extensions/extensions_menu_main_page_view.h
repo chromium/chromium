@@ -39,6 +39,7 @@ class ExtensionsMenuMainPageView : public ExtensionsMenuPageView {
   // newly-added extension.
   void CreateAndInsertMenuItem(
       std::unique_ptr<ExtensionActionViewController> action_controller,
+      extensions::ExtensionId extension_id,
       bool allow_pinning,
       int index);
 

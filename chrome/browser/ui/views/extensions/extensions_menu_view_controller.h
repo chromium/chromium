@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
+#include "content/public/browser/web_contents.h"
 
 namespace views {
 class BubbleDialogDelegate;
@@ -18,6 +19,7 @@ class Browser;
 class ExtensionsContainer;
 class ExtensionsMenuPageView;
 class ExtensionsMenuMainPageView;
+class ExtensionsMenuSitePermissionsPage;
 class ToolbarActionsModel;
 
 class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
@@ -34,7 +36,7 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
 
   // ExtensionsMenuNavigationHandler:
   void OpenMainPage() override;
-  void OpenSitePermissionsPage() override;
+  void OpenSitePermissionsPage(extensions::ExtensionId extension_id) override;
   void CloseBubble() override;
 
   // TabStripModelObserver:
@@ -50,11 +52,17 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
       const TabStripSelectionChange& selection) override;
 
   // Accessors used by tests:
+  // Returns the main page iff it's the `current_page_` one.
   ExtensionsMenuMainPageView* GetMainPageViewForTesting();
+  // Returns the site permissions page iff it's the `current_page_` one.
+  ExtensionsMenuSitePermissionsPage* GetSitePermissionsPageForTesting();
 
  private:
   // Switches the current page to `page`.
   void SwitchToPage(std::unique_ptr<ExtensionsMenuPageView> page);
+
+  // Returns the currently active web contents.
+  content::WebContents* GetActiveWebContents() const;
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<ExtensionsContainer> extensions_container_;

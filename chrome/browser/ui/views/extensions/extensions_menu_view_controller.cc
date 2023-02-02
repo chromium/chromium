@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
@@ -53,24 +54,37 @@ void ExtensionsMenuViewController::OpenMainPage() {
 
   // Populate.
   bool allow_pinning = extensions_container_->CanShowActionsInToolbar();
+
   std::vector<std::string> sorted_ids = SortExtensionsByName(toolbar_model_);
   for (size_t i = 0; i < sorted_ids.size(); ++i) {
-    // TODO(emiliapaz): Under MVC architecte, view should not own the view
+    // TODO(emiliapaz): Under MVC architecture, view should not own the view
     // controller. However, the current extensions structure depends on this
     // thus a major restructure is needed.
     std::unique_ptr<ExtensionActionViewController> action_controller =
         ExtensionActionViewController::Create(sorted_ids[i], browser_,
                                               extensions_container_);
     main_page->CreateAndInsertMenuItem(std::move(action_controller),
-                                       allow_pinning, i);
+                                       sorted_ids[i], allow_pinning, i);
   }
 
   SwitchToPage(std::move(main_page));
 }
 
-void ExtensionsMenuViewController::OpenSitePermissionsPage() {
+void ExtensionsMenuViewController::OpenSitePermissionsPage(
+    extensions::ExtensionId extension_id) {
+  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
+  std::unique_ptr<ExtensionActionViewController> action_controller =
+      ExtensionActionViewController::Create(extension_id, browser_,
+                                            extensions_container_);
+
+  std::u16string extension_name = action_controller->GetActionName();
+  ui::ImageModel extension_icon = action_controller->GetIcon(
+      GetActiveWebContents(), gfx::Size(icon_size, icon_size));
+
   auto site_permissions_page =
-      std::make_unique<ExtensionsMenuSitePermissionsPage>(this);
+      std::make_unique<ExtensionsMenuSitePermissionsPage>(extension_name,
+                                                          extension_icon, this);
   SwitchToPage(std::move(site_permissions_page));
 }
 
@@ -95,7 +109,7 @@ void ExtensionsMenuViewController::OnTabStripModelChanged(
     return;
   }
 
-  current_page_->Update(browser_->tab_strip_model()->GetActiveWebContents());
+  current_page_->Update(GetActiveWebContents());
 }
 
 // TODO(crbug.com/1390952): Listen for "toolbar pinned actions changed" to
@@ -106,6 +120,12 @@ ExtensionsMenuMainPageView*
 ExtensionsMenuViewController::GetMainPageViewForTesting() {
   DCHECK(current_page_);
   return views::AsViewClass<ExtensionsMenuMainPageView>(current_page_);
+}
+
+ExtensionsMenuSitePermissionsPage*
+ExtensionsMenuViewController::GetSitePermissionsPageForTesting() {
+  DCHECK(current_page_);
+  return views::AsViewClass<ExtensionsMenuSitePermissionsPage>(current_page_);
 }
 
 void ExtensionsMenuViewController::SwitchToPage(
@@ -120,4 +140,9 @@ void ExtensionsMenuViewController::SwitchToPage(
   if (bubble_delegate_->GetBubbleFrameView()) {
     bubble_delegate_->SizeToContents();
   }
+}
+
+content::WebContents* ExtensionsMenuViewController::GetActiveWebContents()
+    const {
+  return browser_->tab_strip_model()->GetActiveWebContents();
 }

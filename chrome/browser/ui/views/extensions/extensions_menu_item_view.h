@@ -121,6 +121,9 @@ class InstalledExtensionMenuItemView : public views::FlexLayoutView {
     return context_menu_button_;
   }
   HoverButton* pin_button_for_testing() { return pin_button_; }
+  HoverButton* site_permissions_button_for_testing() {
+    return site_permissions_button_;
+  }
 
  private:
   // Returns whether the action corresponding to this view is pinned to the
@@ -145,6 +148,8 @@ class InstalledExtensionMenuItemView : public views::FlexLayoutView {
   const raw_ptr<ToolbarActionsModel> model_;
 
   raw_ptr<ExtensionsMenuButton> primary_action_button_;
+
+  raw_ptr<HoverButton> site_permissions_button_ = nullptr;
 
   raw_ptr<HoverButton> pin_button_ = nullptr;
 
