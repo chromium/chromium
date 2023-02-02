@@ -816,8 +816,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)stopChromeMain {
-  OmahaService::Stop();
-
   [_spotlightManager shutdown];
   _spotlightManager = nil;
 

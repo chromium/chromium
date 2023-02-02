@@ -47,12 +47,9 @@ class OmahaService {
   OmahaService(const OmahaService&) = delete;
   OmahaService& operator=(const OmahaService&) = delete;
 
-  // Performs an immediate check to see if the device is up to date. Start must
-  // have been previously called.
+  // Posts to CheckNowOnIOThread on IO thread to perform an immediate check
+  // if the device is up to date.
   static void CheckNow(OneOffCallback callback);
-
-  // Stops the service in preparation for browser shutdown.
-  static void Stop();
 
   // Returns debug information about the omaha service.
   static void GetDebugInformation(
@@ -149,6 +146,10 @@ class OmahaService {
   // Returns the xml representation of the ping message to send to the Omaha
   // server. Use the current state of the service to compute the right message.
   std::string GetCurrentPingContent();
+
+  // Performs an immediate check to see if the device is up to date. Start must
+  // have been previously called.
+  void CheckNowOnIOThread(OneOffCallback callback);
 
   // Computes debugging information and fill `result`.
   void GetDebugInformationOnIOThread(
