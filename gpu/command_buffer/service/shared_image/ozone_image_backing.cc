@@ -358,8 +358,7 @@ bool OzoneImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
     }
   }
 
-  FlushAndSubmitIfNecessary(std::move(end_semaphores), context_state_.get(),
-                            dest_scoped_access.get());
+  FlushAndSubmitIfNecessary(std::move(end_semaphores), context_state_.get());
   if (written && !IsCleared()) {
     SetCleared();
   }
@@ -368,8 +367,7 @@ bool OzoneImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
 
 void OzoneImageBacking::FlushAndSubmitIfNecessary(
     std::vector<GrBackendSemaphore> signal_semaphores,
-    SharedContextState* const shared_context_state,
-    SkiaImageRepresentation::ScopedWriteAccess* access) {
+    SharedContextState* const shared_context_state) {
   bool sync_cpu = gpu::ShouldVulkanSyncCpuForSkiaSubmit(
       shared_context_state->vk_context_provider());
   GrFlushInfo flush_info = {};
@@ -380,13 +378,6 @@ void OzoneImageBacking::FlushAndSubmitIfNecessary(
     };
     gpu::AddVulkanCleanupTaskForSkiaFlush(
         shared_context_state->vk_context_provider(), &flush_info);
-  }
-
-  auto end_state = access->TakeEndState();
-  for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
-    auto* surface = access->surface(plane);
-    DCHECK(surface);
-    surface->flush({}, end_state.get());
   }
 
   shared_context_state->gr_context()->flush(flush_info);
