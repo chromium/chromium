@@ -212,6 +212,7 @@ void WebrtcVideoStream::Core::Pause(bool pause) {
 void WebrtcVideoStream::Core::SelectSource(webrtc::ScreenId id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   screen_id_ = id;
+  VLOG(0) << "SelectSource: id=" << id;
   capturer_->SelectSource(id);
 }
 

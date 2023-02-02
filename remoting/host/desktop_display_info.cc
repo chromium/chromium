@@ -194,7 +194,8 @@ std::unique_ptr<protocol::VideoLayout> DesktopDisplayInfo::GetVideoLayoutProto()
     track->set_screen_id(display.id);
     HOST_LOG << "   Display: " << display.x << "," << display.y << " "
              << display.width << "x" << display.height << " @ " << display.dpi
-             << ", id=" << display.id << ", primary=" << display.is_default;
+             << ", id=" << display.id << ", bpp=" << display.bpp
+             << ", primary=" << display.is_default;
     if (display.is_default) {
       if (layout->has_primary_screen_id()) {
         LOG(WARNING) << "Multiple primary displays found";
