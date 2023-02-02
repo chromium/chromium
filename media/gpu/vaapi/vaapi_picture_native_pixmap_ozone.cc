@@ -96,10 +96,7 @@ VaapiStatus VaapiPictureNativePixmapOzone::Initialize(
 
   gl_image_ = std::move(image);
 
-  if (!gl_image_->BindTexImage(texture_target_)) {
-    LOG(ERROR) << "Failed to bind texture to GLImage";
-    return VaapiStatus::Codes::kFailedToBindTexture;
-  }
+  gl_image_->BindTexImage(texture_target_);
 
   if (bind_image_cb_ &&
       !bind_image_cb_.Run(client_texture_id_, texture_target_, gl_image_)) {

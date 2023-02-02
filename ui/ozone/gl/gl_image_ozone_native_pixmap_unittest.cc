@@ -79,7 +79,8 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
   }
 
   bool BindImageToTarget(GLImage* image, unsigned target) {
-    return static_cast<gl::GLImageNativePixmap*>(image)->BindTexImage(target);
+    static_cast<gl::GLImageNativePixmap*>(image)->BindTexImage(target);
+    return true;
   }
 
   unsigned GetTextureTarget() const { return GL_TEXTURE_EXTERNAL_OES; }

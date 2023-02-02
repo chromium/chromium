@@ -421,11 +421,10 @@ gfx::Size GLImageNativePixmap::GetSize() {
   return size_;
 }
 
-bool GLImageNativePixmap::BindTexImage(unsigned target) {
+void GLImageNativePixmap::BindTexImage(unsigned target) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   glEGLImageTargetTexture2DOES(target, egl_image_);
-  return true;
 }
 
 unsigned GLImageNativePixmap::GetInternalFormat() {

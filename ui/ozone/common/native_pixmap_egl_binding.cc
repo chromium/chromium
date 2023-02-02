@@ -74,14 +74,12 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
 
   auto binding = std::make_unique<NativePixmapEGLBinding>(std::move(gl_image),
                                                           plane_format);
-  if (!binding->BindTexture(target, texture_id)) {
-    return nullptr;
-  }
+  binding->BindTexture(target, texture_id);
 
   return binding;
 }
 
-bool NativePixmapEGLBinding::BindTexture(GLenum target, GLuint texture_id) {
+void NativePixmapEGLBinding::BindTexture(GLenum target, GLuint texture_id) {
   gl::ScopedTextureBinder binder(target, texture_id);
 
   gl::GLApi* api = gl::g_current_gl_context;
@@ -91,12 +89,7 @@ bool NativePixmapEGLBinding::BindTexture(GLenum target, GLuint texture_id) {
   api->glTexParameteriFn(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   api->glTexParameteriFn(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  if (!gl_image_->BindTexImage(target)) {
-    LOG(ERROR) << "Unable to bind GL image to target = " << target;
-    return false;
-  }
-
-  return true;
+  gl_image_->BindTexImage(target);
 }
 
 GLuint NativePixmapEGLBinding::GetInternalFormat() {

@@ -118,10 +118,7 @@ VaapiStatus VaapiPictureNativePixmapEgl::Allocate(gfx::BufferFormat format) {
     return VaapiStatus::Codes::kNoBufferHandle;
   }
 
-  if (!image->BindTexImage(texture_target_)) {
-    DLOG(ERROR) << "Failed to bind texture to GLImage";
-    return VaapiStatus::Codes::kFailedToBindImage;
-  }
+  image->BindTexImage(texture_target_);
 
   // The |va_surface_| created from |native_pixmap_dmabuf| shares the ownership
   // of the buffer. So the only reason to keep a reference on the image is

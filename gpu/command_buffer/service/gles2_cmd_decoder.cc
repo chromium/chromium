@@ -3232,8 +3232,7 @@ bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
       decoder_->CreateAnonymousImage(size, buffer_format, &is_cleared);
   if (!image)
     return false;
-  if (!image->BindTexImage(Target()))
-    return false;
+  image->BindTexImage(Target());
 
   image_ = image;
   decoder_->texture_manager()->SetLevelInfo(

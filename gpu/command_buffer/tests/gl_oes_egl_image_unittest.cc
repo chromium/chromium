@@ -130,7 +130,7 @@ TEST_F(GpuOESEGLImageTest, EGLImageToTexture) {
   glFinish();
 
   // Bind the image.
-  EXPECT_TRUE(image->BindTexImage(GL_TEXTURE_2D));
+  image->BindTexImage(GL_TEXTURE_2D);
   gl_.decoder()->SetLevelInfo(texture_id, 0 /* level */, GL_RGB, size.width(),
                               size.height(), 1 /* depth */, GL_RGB,
                               GL_UNSIGNED_BYTE, gfx::Rect(size));

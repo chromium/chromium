@@ -92,10 +92,7 @@ scoped_refptr<gl::GLImageNativePixmap> CreateAndBindImage(
     LOG(ERROR) << "Could not initialize the GL image";
     return nullptr;
   }
-  if (!image->BindTexImage(target)) {
-    LOG(ERROR) << "Could not bind the GL image to the texture";
-    return nullptr;
-  }
+  image->BindTexImage(target);
   return image;
 }
 
