@@ -7,9 +7,16 @@
 #define {{header_guard}}
 
 #include "base/containers/flat_map.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
+#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-shared.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -19,14 +26,21 @@ namespace blink {
 class PLATFORM_EXPORT RuntimeFeatureStateOverrideContext
     : public GarbageCollected<RuntimeFeatureStateOverrideContext> {
  public:
-  RuntimeFeatureStateOverrideContext() {
+  RuntimeFeatureStateOverrideContext(ExecutionContext* context)
+    : execution_context_(context),
+      runtime_feature_state_controller_remote_(context) {
+    DCHECK(execution_context_);
     override_values_.reserve({{overridable_features|length()}});
-    ApplyEnterprisePolicyOverrides();
+    origin_trial_overrides_.reserve({{overridable_features|length()}});
   }
 
   void ApplyOverrideValuesFromParams(
       const base::flat_map<mojom::RuntimeFeatureState, bool>&
           values_from_params);
+
+  void ApplyOriginTrialOverride(
+    const blink::OriginTrialFeature& origin_trial_feature,
+    const WTF::Vector<WTF::String>& tokens);
 
   {% for feature in overridable_features %}
   bool Is{{feature.name}}ForceDisabled() const;
@@ -37,18 +51,23 @@ class PLATFORM_EXPORT RuntimeFeatureStateOverrideContext
 
   void Set{{feature.name}}ForceEnabled();
 
+  bool Set{{feature.name}}Enabled(const WTF::Vector<WTF::String>& tokens);
+
   {% endfor %}
 
-  const base::flat_map<blink::mojom::RuntimeFeatureState, bool>& GetOverrideValuesForTesting() const {
+  const base::flat_map<mojom::RuntimeFeatureState, bool>& GetOverrideValuesForTesting() const {
     return override_values_;
   }
 
-  void Trace(Visitor*) const {}
+  void Trace(Visitor*) const;
 
  private:
-  void ApplyEnterprisePolicyOverrides();
+  mojom::blink::RuntimeFeatureStateController* GetOrBindRuntimeFeatureStateController();
 
-  base::flat_map<blink::mojom::RuntimeFeatureState, bool> override_values_;
+  base::flat_map<mojom::RuntimeFeatureState, bool> override_values_;
+  base::flat_map<mojom::RuntimeFeatureState, mojom::blink::FeatureValuePtr> origin_trial_overrides_;
+  Member<ExecutionContext> execution_context_;
+  blink::HeapMojoRemote<mojom::blink::RuntimeFeatureStateController> runtime_feature_state_controller_remote_;
 };
 
 }  // namespace blink

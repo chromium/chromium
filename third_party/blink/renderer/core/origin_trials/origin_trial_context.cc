@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
+#include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -421,6 +422,14 @@ bool OriginTrialContext::InstallFeatures(
 
     InstallPropertiesPerFeature(script_state, enabled_feature);
     added_binding_features = true;
+
+    // TODO(https://crbug.com/1410817): add support for workers/non-frames that
+    // are enabling origin trials to send their information to the browser too.
+    if (context_->IsWindow() && feature_to_tokens_.Contains(enabled_feature)) {
+      context_->GetRuntimeFeatureStateOverrideContext()
+          ->ApplyOriginTrialOverride(
+              enabled_feature, feature_to_tokens_.find(enabled_feature)->value);
+    }
   }
 
   return added_binding_features;
@@ -472,8 +481,8 @@ void OriginTrialContext::AddForceEnabledTrials(
   for (const auto& trial_name : trial_names) {
     DCHECK(origin_trials::IsTrialValid(trial_name.Utf8()));
     is_valid |=
-        EnableTrialFromName(trial_name, /*expiry_time=*/base::Time::Max()) ==
-        OriginTrialStatus::kEnabled;
+        EnableTrialFromName(trial_name, /*expiry_time=*/base::Time::Max())
+            .status == OriginTrialStatus::kEnabled;
   }
 
   if (is_valid) {
@@ -545,12 +554,16 @@ Vector<OriginTrialFeature> OriginTrialContext::RestrictedFeaturesForTrial(
   return {};
 }
 
-OriginTrialStatus OriginTrialContext::EnableTrialFromName(
+OriginTrialFeaturesEnabled OriginTrialContext::EnableTrialFromName(
     const String& trial_name,
     base::Time expiry_time) {
+  Vector<OriginTrialFeature> origin_trial_features =
+      Vector<OriginTrialFeature>();
   if (!CanEnableTrialFromName(trial_name)) {
     DVLOG(1) << "EnableTrialFromName: cannot enable trial " << trial_name;
-    return OriginTrialStatus::kTrialNotAllowed;
+    OriginTrialFeaturesEnabled result = {OriginTrialStatus::kTrialNotAllowed,
+                                         origin_trial_features};
+    return result;
   }
 
   Vector<OriginTrialFeature> restricted =
@@ -574,6 +587,7 @@ OriginTrialStatus OriginTrialContext::EnableTrialFromName(
 
     did_enable_feature = true;
     enabled_features_.insert(feature);
+    origin_trial_features.push_back(feature);
 
     // Use the latest expiry time for the feature.
     if (GetFeatureExpiry(feature) < expiry_time)
@@ -583,14 +597,18 @@ OriginTrialStatus OriginTrialContext::EnableTrialFromName(
     for (OriginTrialFeature implied_feature :
          origin_trials::GetImpliedFeatures(feature)) {
       enabled_features_.insert(implied_feature);
+      origin_trial_features.push_back(implied_feature);
 
       // Use the latest expiry time for the implied feature.
       if (GetFeatureExpiry(implied_feature) < expiry_time)
         feature_expiry_times_.Set(implied_feature, expiry_time);
     }
   }
-  return did_enable_feature ? OriginTrialStatus::kEnabled
-                            : OriginTrialStatus::kOSNotSupported;
+  OriginTrialFeaturesEnabled result = {
+      (did_enable_feature ? OriginTrialStatus::kEnabled
+                          : OriginTrialStatus::kOSNotSupported),
+      origin_trial_features};
+  return result;
 }
 
 bool OriginTrialContext::EnableTrialFromToken(const String& token,
@@ -630,8 +648,23 @@ bool OriginTrialContext::EnableTrialFromToken(
     String trial_name =
         String::FromUTF8(token_result.ParsedToken()->feature_name().data(),
                          token_result.ParsedToken()->feature_name().size());
-    trial_status = EnableTrialFromName(
+    OriginTrialFeaturesEnabled result = EnableTrialFromName(
         trial_name, token_result.ParsedToken()->expiry_time());
+    trial_status = result.status;
+    // Go through the features and map them to the token that enabled them.
+    for (OriginTrialFeature const& feature : result.features) {
+      auto feature_iter = feature_to_tokens_.find(feature);
+      // A feature may have 0 to many tokens associated with it.
+      if (feature_iter == feature_to_tokens_.end()) {
+        auto token_vector = Vector<String>();
+        token_vector.push_back(token);
+        feature_to_tokens_.insert(feature, token_vector);
+      } else {
+        auto mapped_tokens = feature_to_tokens_.at(feature);
+        mapped_tokens.push_back(token);
+        feature_to_tokens_.Set(feature, mapped_tokens);
+      }
+    }
   }
 
   RecordTokenValidationResultHistogram(token_result.Status());

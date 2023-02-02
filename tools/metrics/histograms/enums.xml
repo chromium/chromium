@@ -10716,6 +10716,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="296" label="BIBI_BIND_PRESSURE_MANAGER_FOR_FENCED_FRAME"/>
   <int value="297"
       label="BIBI_BIND_PRESSURE_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY"/>
+  <int value="298" label="RFSCI_BROWSER_VALIDATION_BAD_ORIGIN_TRIAL_TOKEN"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

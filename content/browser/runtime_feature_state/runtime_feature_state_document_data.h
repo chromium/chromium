@@ -20,6 +20,16 @@ class CONTENT_EXPORT RuntimeFeatureStateDocumentData
     return runtime_feature_read_context_;
   }
 
+  // We only want the read context to be mutable when an IPC is sent from the
+  // renderer to the browser process requesting a feature diff be applied. Thus,
+  // only the base::PassKey class RuntimeFeatureStateControllerImpl can access
+  // this private function.
+  blink::RuntimeFeatureStateReadContext&
+  GetMutableRuntimeFeatureStateReadContext(
+      base::PassKey<RuntimeFeatureStateControllerImpl>) {
+    return runtime_feature_read_context_;
+  }
+
  private:
   // No public constructors to force going through static methods of
   // DocumentUserData (e.g. CreateForCurrentDocument).

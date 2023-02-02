@@ -167,6 +167,7 @@ mojom("mojom_platform") {
     "renderer_preference_watcher.mojom",
     "renderer_preferences.mojom",
     "reporting/reporting.mojom",
+    "runtime_feature_state/runtime_feature_state_controller.mojom",
     "scroll/scroll_enums.mojom",
     "scroll/scroll_into_view_params.mojom",
     "scroll/scrollbar_mode.mojom",

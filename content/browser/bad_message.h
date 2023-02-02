@@ -322,6 +322,7 @@ enum BadMessageReason {
   BIBI_BIND_PRESSURE_MANAGER_FOR_INSECURE_ORIGIN = 295,
   BIBI_BIND_PRESSURE_MANAGER_FOR_FENCED_FRAME = 296,
   BIBI_BIND_PRESSURE_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY = 297,
+  RFSCI_BROWSER_VALIDATION_BAD_ORIGIN_TRIAL_TOKEN = 298,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

@@ -11,6 +11,10 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-shared.h"
 
+namespace content {
+class RuntimeFeatureStateControllerImpl;
+}
+
 namespace blink {
 
 class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
@@ -50,16 +54,16 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
   base::flat_map<blink::mojom::RuntimeFeatureState, bool> initial_values_;
 
  private:
-  // Only RuntimeFeatureChangeImpl should be able to make changes
+  // Only RuntimeFeatureStateControllerImpl should be able to make changes
   // to the read-only context, when a feature diff is sent from
   // the renderer to the browser via IPC. Thus, ApplyFeatureChange()
-  // is private but will be called in RuntimeFeatureChangeImpl instances.
-  // This function allows RuntimeFeatureChangeImpl to update the
+  // is private but will be called in RuntimeFeatureStateControllerImpl instances.
+  friend class ::content::RuntimeFeatureStateControllerImpl;
+
+  // This function allows RuntimeFeatureStateControllerImpl to update the
   // browser process's copy of the feature state
   // (RuntimeFeatureStateReadContext) to match the state found in
   // the renderer process.
-  // TODO(https://crbug.com/1377000): friend the
-  // RuntimeFeatureChangeImpl class once implemented.
   void ApplyFeatureChange(
     const base::flat_map<blink::mojom::RuntimeFeatureState,
                                        bool>& modified_features) {

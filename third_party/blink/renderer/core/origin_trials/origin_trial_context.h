@@ -49,6 +49,13 @@ struct OriginTrialResult {
   Vector<OriginTrialTokenResult> token_results;
 };
 
+// `status` is kEnabled if one or more OriginTrialFeatures are enabled.
+// `features` is a Vector containing all of the enabled features.
+struct OriginTrialFeaturesEnabled {
+  OriginTrialStatus status;
+  Vector<OriginTrialFeature> features;
+};
+
 // The Origin Trials Framework provides limited access to experimental features,
 // on a per-origin basis (origin trials). This class provides the implementation
 // to check if the experimental feature should be enabled for the current
@@ -177,6 +184,11 @@ class CORE_EXPORT OriginTrialContext final
     return trial_results_;
   }
 
+  const HashMap<OriginTrialFeature, Vector<String>>
+  GetFeatureToTokensForTesting() const {
+    return feature_to_tokens_;
+  }
+
  private:
   struct OriginInfo {
     const scoped_refptr<const SecurityOrigin> origin;
@@ -200,10 +212,11 @@ class CORE_EXPORT OriginTrialContext final
   Vector<OriginTrialFeature> RestrictedFeaturesForTrial(
       const String& trial_name);
 
-  // Enable features by trial name. Returns true or false to indicate whether
-  // some features are enabled as the result.
-  OriginTrialStatus EnableTrialFromName(const String& trial_name,
-                                        base::Time expiry_time);
+  // Enable features by trial name. Returns a OriginTrialFeaturesEnabled struct
+  // containing whether one or more trials were enabled, and a Vector of the
+  // OriginTrialFeatures representing those trials.
+  OriginTrialFeaturesEnabled EnableTrialFromName(const String& trial_name,
+                                                 base::Time expiry_time);
 
   // Validate the trial token. If valid, the trial named in the token is
   // added to the list of enabled trials. Returns true or false to indicate if
@@ -248,6 +261,10 @@ class CORE_EXPORT OriginTrialContext final
   // This field is mainly used for devtools support, but
   // `OriginTrialContext::GetTokens` also depends on the structure.
   HashMap</* Trial Name */ String, OriginTrialResult> trial_results_;
+  // Stores the OriginTrialFeature enum value along with its corresponding
+  // validated and parsed trial tokens. Used for security checks in the
+  // browser's RuntimeFeatureChangeImpl.
+  HashMap<OriginTrialFeature, Vector</*Raw Token*/ String>> feature_to_tokens_;
 };
 
 }  // namespace blink

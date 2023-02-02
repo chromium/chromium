@@ -2003,6 +2003,13 @@
     },
     // As above. Do not change this flag to stable, as it exists solely to
     // generate code used by the origin trials sample API implementation.
+    {
+      name: "OriginTrialsSampleAPIBrowserReadWrite",
+      origin_trial_feature_name: "FrobulateBrowserReadWrite",
+      browser_process_read_write_access: true,
+    },
+    // As above. Do not change this flag to stable, as it exists solely to
+    // generate code used by the origin trials sample API implementation.
     // TODO(yashard): Add tests for this feature.
     {
       name: "OriginTrialsSampleAPIDependent",
