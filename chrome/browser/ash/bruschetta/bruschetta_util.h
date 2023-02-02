@@ -10,8 +10,6 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class Profile;
-
 namespace bruschetta {
 
 extern const char kToolsDlc[];
@@ -57,9 +55,6 @@ bool HasInstallableConfig(const Profile* profile, const std::string& config_id);
 
 // Returns true if Bruschetta is installed.
 bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id);
-
-// Runs the GUI installer.
-void RunInstaller(Profile* profile, const guest_os::GuestId& guest_id);
 
 }  // namespace bruschetta
 
