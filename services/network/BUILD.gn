@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//services/network/public/cpp/features.gni")
@@ -501,7 +502,7 @@ source_set("tests") {
     deps += [ "//components/certificate_transparency" ]
   }
 
-  if (!is_ios) {
+  if (use_blink) {
     deps += [ "//services/proxy_resolver:lib" ]
   }
 }

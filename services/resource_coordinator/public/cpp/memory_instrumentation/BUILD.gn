@@ -25,6 +25,10 @@ component("memory_instrumentation") {
     sources += [ "os_metrics_mac.cc" ]
   }
 
+  if (is_ios) {
+    sources += [ "os_metrics_ios.cc" ]
+  }
+
   if (is_win) {
     sources += [ "os_metrics_win.cc" ]
   }

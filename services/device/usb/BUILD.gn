@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-assert(!is_ios)
+assert(use_blink)
 
 if (is_android) {
   import("//build/config/android/rules.gni")  # For generate_jni().

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 # This should be merged into the ":cpp" target below once that target is
@@ -52,7 +53,7 @@ source_set("cpp") {
     sources += [ "json_sanitizer_non_android.cc" ]
   }
 
-  if (is_ios) {
+  if (!use_blink) {
     # NOTE: We depend on this target here for iOS only, to support in-process
     # use of the service. Non-test targets in this directory should otherwise
     # NEVER depend on this target.

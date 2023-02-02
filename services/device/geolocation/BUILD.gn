@@ -82,7 +82,7 @@ source_set("geolocation") {
     ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     frameworks = [ "Security.framework" ]
     sources += [
       "core_location_provider.cc",

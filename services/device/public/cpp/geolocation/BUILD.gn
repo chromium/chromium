@@ -13,13 +13,13 @@ component("geolocation") {
   defines = [ "IS_GEOLOCATION_IMPL=1" ]
   output_name = "geolocation_service"
 
-  if (is_chromeos || is_mac) {
+  if (is_chromeos || is_apple) {
     sources += [
       "geolocation_manager.cc",
       "system_geolocation_source.h",
     ]
   }
-  if (is_mac) {
+  if (is_apple) {
     frameworks = [
       "CoreLocation.framework",
       "Foundation.framework",

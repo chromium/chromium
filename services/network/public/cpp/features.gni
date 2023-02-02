@@ -13,5 +13,5 @@ declare_args() {
   # Optional to reduce avoid having Chrome on iOS depends on
   # WebRTC and related third-party libraries (libvpx, libaom,
   # ...).
-  is_p2p_enabled = !is_ios
+  is_p2p_enabled = use_blink
 }

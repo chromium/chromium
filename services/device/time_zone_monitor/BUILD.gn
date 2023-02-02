@@ -61,7 +61,7 @@ source_set("time_zone_monitor") {
     ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [ "time_zone_monitor_mac.mm" ]
     frameworks = [ "Foundation.framework" ]
   }

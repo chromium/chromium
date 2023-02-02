@@ -15,8 +15,8 @@
 
 namespace device {
 
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
-#error This file should be compiled only on macOS and ChromeOS\
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_CHROMEOS)
+#error This file should be compiled only on Apple and ChromeOS\
   (i.e. platforms where we support system-based geolocation permissions)
 #endif
 
@@ -27,7 +27,7 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSource {
   using PermissionUpdateCallback =
       base::RepeatingCallback<void(LocationSystemPermissionStatus)>;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   using PositionUpdateCallback =
       base::RepeatingCallback<void(const mojom::Geoposition&)>;
 #endif
@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSource {
   virtual void RegisterPermissionUpdateCallback(
       PermissionUpdateCallback callback) = 0;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // This method accepts a callback. The callback is to be called always when
   // the permission changes in the OS.
   virtual void RegisterPositionUpdateCallback(
