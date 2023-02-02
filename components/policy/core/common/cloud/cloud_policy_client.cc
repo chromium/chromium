@@ -770,9 +770,13 @@ void CloudPolicyClient::CancelExtensionInstallReportUpload() {
 void CloudPolicyClient::FetchRemoteCommands(
     std::unique_ptr<RemoteCommandJob::UniqueIDType> last_command_id,
     const std::vector<em::RemoteCommandResult>& command_results,
+    em::PolicyFetchRequest::SignatureType signature_type,
     RemoteCommandCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
+
+  // Unsigned commands and NONE signature are not supported.
+  DCHECK_NE(signature_type, em::PolicyFetchRequest::NONE);
 
   auto config = std::make_unique<DMServerJobConfiguration>(
       DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS, this,
@@ -793,6 +797,7 @@ void CloudPolicyClient::FetchRemoteCommands(
   }
 
   request->set_send_secure_commands(true);
+  request->set_signature_type(signature_type);
 
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }

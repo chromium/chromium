@@ -73,6 +73,12 @@ class POLICY_EXPORT RemoteCommandsService
     kMaxValue = kFetchCrdAvailabilityInfo
   };
 
+  // Signature type that will be used for the requests.
+  static constexpr enterprise_management::PolicyFetchRequest::SignatureType
+  GetSignatureType() {
+    return enterprise_management::PolicyFetchRequest::SHA256_RSA;
+  }
+
   // Returns the metric name to report received commands.
   static const char* GetMetricNameReceivedRemoteCommand(
       PolicyInvalidationScope scope);

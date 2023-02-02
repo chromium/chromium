@@ -27,11 +27,14 @@ class SingleThreadTaskRunner;
 
 namespace policy {
 
+using SignatureType = enterprise_management::PolicyFetchRequest::SignatureType;
+
 // Callback called when a command's result is reported back to the server.
 using ResultReportedCallback =
     base::OnceCallback<void(const enterprise_management::RemoteCommandResult&)>;
 
-std::string SignDataWithTestKey(const std::string& data);
+std::string SignDataWithTestKey(const std::string& data,
+                                SignatureType algorithm);
 
 // This class implements server-side logic for remote commands service tests. It
 // acts just like a queue, and there are mainly two exposed methods for this
