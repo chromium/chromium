@@ -59,8 +59,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 
-namespace ash {
-namespace platform_keys {
+namespace ash::platform_keys {
 namespace {
 
 using ::chromeos::platform_keys::HashAlgorithm;
@@ -118,6 +117,10 @@ std::string PrependSHA256DigestInfo(base::StringPiece hash) {
       std::size(kDigestInfoSha256DerData));
 
   return base::StrCat({kDigestInfoSha256Der, hash});
+}
+
+std::string BytesToStr(const std::vector<uint8_t>& val) {
+  return std::string(val.begin(), val.end());
 }
 
 }  // namespace
@@ -196,20 +199,22 @@ class PlatformKeysServiceBrowserTestBase
 
   // Generates a key pair in the given |token_id| using platform keys service
   // and returns the SubjectPublicKeyInfo string encoded in DER format.
-  std::string GenerateKeyPair(TokenId token_id, unsigned int key_size) {
-    test_util::GenerateKeyExecutionWaiter generate_key_waiter;
+  std::vector<uint8_t> GenerateKeyPair(TokenId token_id,
+                                       unsigned int key_size) {
+    base::test::TestFuture<std::vector<uint8_t>,
+                           chromeos::platform_keys::Status>
+        generate_key_waiter;
     platform_keys_service()->GenerateRSAKey(token_id, key_size,
                                             /*sw_backed=*/false,
                                             generate_key_waiter.GetCallback());
     EXPECT_TRUE(generate_key_waiter.Wait());
-
-    return generate_key_waiter.public_key_spki_der();
+    return std::get<std::vector<uint8_t>>(generate_key_waiter.Take());
   }
 
   // Generates a key pair with a default size in the given |token_id| using
   // platform keys service and returns the SubjectPublicKeyInfo string encoded
   // in DER format.
-  std::string GenerateKeyPair(TokenId token_id) {
+  std::vector<uint8_t> GenerateKeyPair(TokenId token_id) {
     const unsigned int kDefaultKeySize = 2048;
     return GenerateKeyPair(token_id, kDefaultKeySize);
   }
@@ -298,9 +303,9 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest, GetTokens) {
 // retrieves them.
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest, GetAllKeys) {
   // Generate key pair in every token.
-  std::map<TokenId, std::string> token_key_map;
+  std::map<TokenId, std::vector<uint8_t>> token_key_map;
   for (TokenId token_id : GetParam().token_ids) {
-    const std::string public_key_spki_der = GenerateKeyPair(token_id);
+    const std::vector<uint8_t> public_key_spki_der = GenerateKeyPair(token_id);
     ASSERT_FALSE(public_key_spki_der.empty());
     token_key_map[token_id] = public_key_spki_der;
   }
@@ -315,7 +320,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest, GetAllKeys) {
     EXPECT_EQ(get_all_keys_waiter.status(), Status::kSuccess);
     std::vector<std::string> public_keys = get_all_keys_waiter.public_keys();
     ASSERT_EQ(public_keys.size(), 1U);
-    EXPECT_EQ(public_keys[0], token_key_map[token_id]);
+    EXPECT_EQ(public_keys[0], BytesToStr(token_key_map[token_id]));
   }
 }
 
@@ -382,10 +387,10 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest,
   const TokenId token_id_1 = GetParam().token_ids[0];
   const TokenId token_id_2 = GetParam().token_ids[1];
 
-  const std::string public_key = GenerateKeyPair(token_id_1);
+  const std::vector<uint8_t> public_key = GenerateKeyPair(token_id_1);
 
   test_util::IsKeyOnTokenExecutionWaiter is_key_on_token_waiter;
-  platform_keys_service()->IsKeyOnToken(token_id_2, public_key,
+  platform_keys_service()->IsKeyOnToken(token_id_2, BytesToStr(public_key),
                                         is_key_on_token_waiter.GetCallback());
   ASSERT_TRUE(is_key_on_token_waiter.Wait());
 
@@ -431,20 +436,20 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
       crypto::SignatureVerifier::RSA_PKCS1_SHA256;
 
   const TokenId token_id = GetParam().token_id;
-  test_util::GenerateKeyExecutionWaiter generate_key_waiter;
+  base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter;
   platform_keys_service()->GenerateRSAKey(token_id, kKeySize,
                                           /*sw_backed=*/false,
                                           generate_key_waiter.GetCallback());
   ASSERT_TRUE(generate_key_waiter.Wait());
-  EXPECT_EQ(generate_key_waiter.status(), Status::kSuccess);
+  EXPECT_EQ(generate_key_waiter.Get<Status>(), Status::kSuccess);
 
-  const std::string public_key_spki_der =
-      generate_key_waiter.public_key_spki_der();
+  const std::vector<uint8_t> public_key_spki_der =
+      generate_key_waiter.Get<std::vector<uint8_t>>();
   EXPECT_FALSE(public_key_spki_der.empty());
 
   test_util::SignExecutionWaiter sign_waiter;
   platform_keys_service()->SignRSAPKCS1Digest(
-      token_id, kDataToSign, public_key_spki_der, kHashAlgorithm,
+      token_id, kDataToSign, BytesToStr(public_key_spki_der), kHashAlgorithm,
       sign_waiter.GetCallback());
   ASSERT_TRUE(sign_waiter.Wait());
   EXPECT_EQ(sign_waiter.status(), Status::kSuccess);
@@ -477,11 +482,12 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const crypto::SignatureVerifier::SignatureAlgorithm kSignatureAlgorithm =
       crypto::SignatureVerifier::RSA_PKCS1_SHA256;
 
-  const std::string public_key_spki_der = GenerateKeyPair(token_id, kKeySize);
+  const std::vector<uint8_t> public_key_spki_der =
+      GenerateKeyPair(token_id, kKeySize);
 
   test_util::SignExecutionWaiter sign_waiter;
   platform_keys_service()->SignRSAPKCS1Raw(
-      token_id, kDigestInfoAndDataToSignHash, public_key_spki_der,
+      token_id, kDigestInfoAndDataToSignHash, BytesToStr(public_key_spki_der),
       sign_waiter.GetCallback());
   ASSERT_TRUE(sign_waiter.Wait());
   EXPECT_EQ(sign_waiter.status(), Status::kSuccess);
@@ -506,21 +512,21 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
 
   // Act: Generate the key pair.
   const TokenId token_id = GetParam().token_id;
-  test_util::GenerateKeyExecutionWaiter generate_key_waiter;
+  base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter;
   platform_keys_service()->GenerateRSAKey(token_id, kKeySize,
                                           /*sw_backed=*/true,
                                           generate_key_waiter.GetCallback());
   ASSERT_TRUE(generate_key_waiter.Wait());
-  EXPECT_EQ(generate_key_waiter.status(), Status::kSuccess);
+  EXPECT_EQ(generate_key_waiter.Get<Status>(), Status::kSuccess);
 
   // Assert: Verify that the the returned public key SPKI has been generated
   // through the fake ChapsUtil.
-  const std::string public_key_spki_der =
-      generate_key_waiter.public_key_spki_der();
+  const std::vector<uint8_t> public_key_spki_der =
+      generate_key_waiter.Get<std::vector<uint8_t>>();
   EXPECT_FALSE(public_key_spki_der.empty());
 
   EXPECT_THAT(scoped_chaps_util_override.generated_key_spkis(),
-              ::testing::ElementsAre(public_key_spki_der));
+              ::testing::ElementsAre(BytesToStr(public_key_spki_der)));
 }
 
 // Generates a Rsa key pair and tests expected limits of the input length of the
@@ -530,7 +536,8 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const unsigned int kKeySize = 2048;
   const TokenId token_id = GetParam().token_id;
 
-  const std::string public_key_spki_der = GenerateKeyPair(token_id, kKeySize);
+  const std::vector<uint8_t> public_key_spki_der =
+      GenerateKeyPair(token_id, kKeySize);
 
   // SignRSAPKCS1Raw performs PKCS#11 padding which adds at least 11 bytes.
   {
@@ -539,8 +546,9 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
     data_to_sign.resize(kKeySize / 8 - 11);
 
     test_util::SignExecutionWaiter sign_waiter;
-    platform_keys_service()->SignRSAPKCS1Raw(
-        token_id, data_to_sign, public_key_spki_der, sign_waiter.GetCallback());
+    platform_keys_service()->SignRSAPKCS1Raw(token_id, data_to_sign,
+                                             BytesToStr(public_key_spki_der),
+                                             sign_waiter.GetCallback());
     ASSERT_TRUE(sign_waiter.Wait());
     EXPECT_EQ(sign_waiter.status(), Status::kSuccess);
   }
@@ -552,7 +560,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
 
     test_util::SignExecutionWaiter sign_waiter;
     platform_keys_service()->SignRSAPKCS1Raw(token_id, data_to_sign_too_long,
-                                             public_key_spki_der,
+                                             BytesToStr(public_key_spki_der),
                                              sign_waiter.GetCallback());
     ASSERT_TRUE(sign_waiter.Wait());
     EXPECT_EQ(sign_waiter.status(), Status::kErrorInputTooLong);
@@ -568,22 +576,22 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const std::string kAttributeValue = "test_attr_value";
 
   // Generate key pair.
-  const std::string public_key_spki_der = GenerateKeyPair(token_id);
+  const std::vector<uint8_t> public_key_spki_der = GenerateKeyPair(token_id);
   ASSERT_FALSE(public_key_spki_der.empty());
 
   // Set key attribute.
   test_util::SetAttributeForKeyExecutionWaiter
       set_attribute_for_key_execution_waiter;
   platform_keys_service()->SetAttributeForKey(
-      token_id, public_key_spki_der, kAttributeType, kAttributeValue,
-      set_attribute_for_key_execution_waiter.GetCallback());
+      token_id, BytesToStr(public_key_spki_der), kAttributeType,
+      kAttributeValue, set_attribute_for_key_execution_waiter.GetCallback());
   ASSERT_TRUE(set_attribute_for_key_execution_waiter.Wait());
 
   // Get key attribute.
   test_util::GetAttributeForKeyExecutionWaiter
       get_attribute_for_key_execution_waiter;
   platform_keys_service()->GetAttributeForKey(
-      token_id, public_key_spki_der, kAttributeType,
+      token_id, BytesToStr(public_key_spki_der), kAttributeType,
       get_attribute_for_key_execution_waiter.GetCallback());
   ASSERT_TRUE(get_attribute_for_key_execution_waiter.Wait());
 
@@ -639,11 +647,11 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const TokenId token_id = GetParam().token_id;
 
   // Generate first key pair.
-  const std::string public_key_1 = GenerateKeyPair(token_id);
+  const std::vector<uint8_t> public_key_1 = GenerateKeyPair(token_id);
   ASSERT_FALSE(public_key_1.empty());
 
   // Generate second key pair.
-  const std::string public_key_2 = GenerateKeyPair(token_id);
+  const std::vector<uint8_t> public_key_2 = GenerateKeyPair(token_id);
   ASSERT_FALSE(public_key_2.empty());
 
   auto public_key_bytes_1 = base::as_bytes(base::make_span(public_key_1));
@@ -652,7 +660,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   EXPECT_TRUE(crypto::FindNSSKeyFromPublicKeyInfo(public_key_bytes_2));
 
   test_util::RemoveKeyExecutionWaiter remove_key_waiter;
-  platform_keys_service()->RemoveKey(token_id, public_key_1,
+  platform_keys_service()->RemoveKey(token_id, BytesToStr(public_key_1),
                                      remove_key_waiter.GetCallback());
   ASSERT_TRUE(remove_key_waiter.Wait());
 
@@ -726,10 +734,10 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest, IsKeyOnToken) {
   const TokenId token_id = GetParam().token_id;
-  const std::string public_key = GenerateKeyPair(token_id);
+  const std::vector<uint8_t> public_key = GenerateKeyPair(token_id);
 
   test_util::IsKeyOnTokenExecutionWaiter is_key_on_token_waiter;
-  platform_keys_service()->IsKeyOnToken(token_id, public_key,
+  platform_keys_service()->IsKeyOnToken(token_id, BytesToStr(public_key),
                                         is_key_on_token_waiter.GetCallback());
   ASSERT_TRUE(is_key_on_token_waiter.Wait());
 
@@ -756,11 +764,11 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
                        GetKeyLocations) {
   const TokenId token_id = GetParam().token_id;
 
-  const std::string public_key = GenerateKeyPair(token_id);
+  const std::vector<uint8_t> public_key = GenerateKeyPair(token_id);
 
   test_util::GetKeyLocationsExecutionWaiter get_key_locations_waiter;
   platform_keys_service()->GetKeyLocations(
-      public_key, get_key_locations_waiter.GetCallback());
+      BytesToStr(public_key), get_key_locations_waiter.GetCallback());
   ASSERT_TRUE(get_key_locations_waiter.Wait());
 
   EXPECT_EQ(get_key_locations_waiter.status(), Status::kSuccess);
@@ -794,12 +802,12 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerUnavailableTokenBrowserTest,
   const unsigned int kKeySize = 2048;
 
   const TokenId token_id = GetParam().token_id;
-  test_util::GenerateKeyExecutionWaiter generate_key_waiter;
+  base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter;
   platform_keys_service()->GenerateRSAKey(token_id, kKeySize,
                                           /*sw_backed=*/false,
                                           generate_key_waiter.GetCallback());
   ASSERT_TRUE(generate_key_waiter.Wait());
-  EXPECT_NE(generate_key_waiter.status(), Status::kSuccess);
+  EXPECT_NE(generate_key_waiter.Get<Status>(), Status::kSuccess);
 }
 
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerUnavailableTokenBrowserTest,
@@ -822,5 +830,4 @@ INSTANTIATE_TEST_SUITE_P(
                                          TokenId::kUser},
                       TestConfigPerToken{ProfileToUse::kUnaffiliatedUserProfile,
                                          TokenId::kSystem}));
-}  // namespace platform_keys
-}  // namespace ash
+}  // namespace ash::platform_keys

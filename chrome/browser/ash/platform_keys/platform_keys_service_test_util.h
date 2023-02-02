@@ -16,8 +16,7 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace platform_keys {
+namespace ash::platform_keys {
 
 class PlatformKeysService;
 
@@ -40,19 +39,6 @@ class GetTokensExecutionWaiter
   const std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>&
   token_ids();
   chromeos::platform_keys::Status status();
-};
-
-// Supports waiting for the result of the PlatformKeysService::GenerateKey*
-// function family.
-class GenerateKeyExecutionWaiter
-    : public base::test::TestFuture<std::string,
-                                    chromeos::platform_keys::Status> {
- public:
-  const std::string& public_key_spki_der();
-  chromeos::platform_keys::Status status();
-
-  base::OnceCallback<void(const std::string&, chromeos::platform_keys::Status)>
-  GetCallback();
 };
 
 // Supports waiting for the result of the PlatformKeysService::Sign* function
@@ -179,7 +165,6 @@ class ScopedChapsUtilOverride {
 };
 
 }  // namespace test_util
-}  // namespace platform_keys
-}  // namespace ash
+}  // namespace ash::platform_keys
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_PLATFORM_KEYS_SERVICE_TEST_UTIL_H_

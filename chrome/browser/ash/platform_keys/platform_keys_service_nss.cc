@@ -52,8 +52,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 
-namespace ash {
-namespace platform_keys {
+namespace ash::platform_keys {
 
 namespace {
 
@@ -69,6 +68,11 @@ using ::content::BrowserThread;
 // The current maximal RSA modulus length that ChromeOS's TPM supports for key
 // generation.
 const unsigned int kMaxRSAModulusLengthBits = 2048;
+
+std::vector<uint8_t> ScopedSECItemToBytes(
+    const crypto::ScopedSECItem& sec_item) {
+  return std::vector<uint8_t>(sec_item->data, sec_item->data + sec_item->len);
+}
 
 // Base class to store state that is common to all NSS database operations and
 // to provide convenience methods to call back.
@@ -166,12 +170,12 @@ class GenerateRSAKeyState : public NSSOperationState {
   ~GenerateRSAKeyState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
-    CallBack(from, /*public_key_spki_der=*/std::string(), status);
+    CallBack(from, /*public_key_spki_der=*/std::vector<uint8_t>(), status);
   }
 
   void OnSuccess(const base::Location& from,
-                 const std::string& public_key_spki_der) {
-    CallBack(from, public_key_spki_der, Status::kSuccess);
+                 std::vector<uint8_t> public_key_spki_der) {
+    CallBack(from, std::move(public_key_spki_der), Status::kSuccess);
   }
 
   const unsigned int modulus_length_bits_;
@@ -179,10 +183,10 @@ class GenerateRSAKeyState : public NSSOperationState {
 
  private:
   void CallBack(const base::Location& from,
-                const std::string& public_key_spki_der,
+                std::vector<uint8_t> public_key_spki_der,
                 Status status) {
-    auto bound_callback =
-        base::BindOnce(std::move(callback_), public_key_spki_der, status);
+    auto bound_callback = base::BindOnce(
+        std::move(callback_), std::move(public_key_spki_der), status);
     content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
@@ -204,22 +208,22 @@ class GenerateECKeyState : public NSSOperationState {
   ~GenerateECKeyState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
-    CallBack(from, /*public_key_spki_der=*/std::string(), status);
+    CallBack(from, /*public_key_spki_der=*/std::vector<uint8_t>(), status);
   }
 
   void OnSuccess(const base::Location& from,
-                 const std::string& public_key_spki_der) {
-    CallBack(from, public_key_spki_der, Status::kSuccess);
+                 std::vector<uint8_t> public_key_spki_der) {
+    CallBack(from, std::move(public_key_spki_der), Status::kSuccess);
   }
 
   const std::string named_curve_;
 
  private:
   void CallBack(const base::Location& from,
-                const std::string& public_key_spki_der,
+                std::vector<uint8_t> public_key_spki_der,
                 Status status) {
-    auto bound_callback =
-        base::BindOnce(std::move(callback_), public_key_spki_der, status);
+    auto bound_callback = base::BindOnce(
+        std::move(callback_), std::move(public_key_spki_der), status);
     content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
@@ -731,10 +735,7 @@ void GenerateRSAKeyOnWorkerThread(std::unique_ptr<GenerateRSAKeyState> state) {
     state->OnError(FROM_HERE, Status::kErrorInternal);
     return;
   }
-  state->OnSuccess(
-      FROM_HERE,
-      std::string(reinterpret_cast<const char*>(public_key_der->data),
-                  public_key_der->len));
+  state->OnSuccess(FROM_HERE, ScopedSECItemToBytes(public_key_der));
 }
 
 // Does the actual EC key generation on a worker thread. Used by
@@ -770,10 +771,9 @@ void GenerateECKeyOnWorkerThread(std::unique_ptr<GenerateECKeyState> state) {
     state->OnError(FROM_HERE, Status::kErrorInternal);
     return;
   }
-  state->OnSuccess(
-      FROM_HERE,
-      std::string(reinterpret_cast<const char*>(public_key_der->data),
-                  public_key_der->len));
+  state->OnSuccess(FROM_HERE, std::vector<uint8_t>(
+                                  public_key_der->data,
+                                  public_key_der->data + public_key_der->len));
 }
 
 // Continues generating a RSA key with the obtained NSSCertDatabase. Used by
@@ -1009,8 +1009,9 @@ void DidSelectCertificates(std::unique_ptr<SelectCertificatesState> state,
   // api. This assumes that the necessary keys can be found later with
   // crypto::FindNSSKeyFromPublicKeyInfo.
   auto certs = std::make_unique<net::CertificateList>();
-  for (const std::unique_ptr<net::ClientCertIdentity>& identity : identities)
+  for (const std::unique_ptr<net::ClientCertIdentity>& identity : identities) {
     certs->push_back(identity->certificate());
+  }
   // DidSelectCertificates() may be called synchronously, so run the callback on
   // a separate event loop iteration to avoid potential reentrancy bugs.
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -1033,8 +1034,9 @@ void FilterCertificatesOnWorkerThread(
 
     // Keep only user certificates, i.e. certs for which the private key is
     // present and stored in the queried slot.
-    if (cert_slot != state->slot_)
+    if (cert_slot != state->slot_) {
       continue;
+    }
 
     // Allow UTF-8 inside PrintableStrings in client certificates. See
     // crbug.com/770323 and crbug.com/788655.
@@ -1043,8 +1045,9 @@ void FilterCertificatesOnWorkerThread(
     scoped_refptr<net::X509Certificate> cert =
         net::x509_util::CreateX509CertificateFromCERTCertificate(cert_handle,
                                                                  {}, options);
-    if (!cert)
+    if (!cert) {
       continue;
+    }
 
     client_certs->push_back(std::move(cert));
   }
@@ -1303,11 +1306,13 @@ void GetTokensWithDB(std::unique_ptr<GetTokensState> state,
 
   // The user token will be unavailable in case of no logged in user in this
   // profile.
-  if (cert_db->GetPrivateSlot())
+  if (cert_db->GetPrivateSlot()) {
     token_ids->push_back(TokenId::kUser);
+  }
 
-  if (cert_db->GetSystemSlot())
+  if (cert_db->GetSystemSlot()) {
     token_ids->push_back(TokenId::kSystem);
+  }
 
   DCHECK(!token_ids->empty());
 
@@ -1330,8 +1335,9 @@ void GetKeyLocationsWithDB(std::unique_ptr<GetKeyLocationsState> state,
     crypto::ScopedSECKEYPrivateKey rsa_key =
         crypto::FindNSSKeyFromPublicKeyInfoInSlot(
             public_key_vector, cert_db->GetPrivateSlot().get());
-    if (rsa_key)
+    if (rsa_key) {
       token_ids.push_back(TokenId::kUser);
+    }
   }
 
   // The "system" NSSCertDatabaseChromeOS instance reuses its "system slot" as
@@ -1341,16 +1347,18 @@ void GetKeyLocationsWithDB(std::unique_ptr<GetKeyLocationsState> state,
     crypto::ScopedSECKEYPrivateKey rsa_key =
         crypto::FindNSSKeyFromPublicKeyInfoInSlot(
             public_key_vector, cert_db->GetPublicSlot().get());
-    if (rsa_key)
+    if (rsa_key) {
       token_ids.push_back(TokenId::kUser);
+    }
   }
 
   if (cert_db->GetSystemSlot().get()) {
     crypto::ScopedSECKEYPrivateKey rsa_key =
         crypto::FindNSSKeyFromPublicKeyInfoInSlot(
             public_key_vector, cert_db->GetSystemSlot().get());
-    if (rsa_key)
+    if (rsa_key) {
       token_ids.push_back(TokenId::kSystem);
+    }
   }
 
   state->OnSuccess(FROM_HERE, std::move(token_ids));
@@ -1886,5 +1894,4 @@ bool PlatformKeysServiceImpl::IsSetMapToSoftokenAttrsForTesting() {
   return map_to_softoken_attrs_for_testing_;
 }
 
-}  // namespace platform_keys
-}  // namespace ash
+}  // namespace ash::platform_keys

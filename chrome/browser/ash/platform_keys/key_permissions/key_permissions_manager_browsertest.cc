@@ -97,14 +97,15 @@ class KeyPermissionsManagerBrowserTestBase
   virtual KeyPermissionsManager* GetKeyPermissionsManager() = 0;
 
   std::vector<uint8_t> GenerateKey() {
-    test_util::GenerateKeyExecutionWaiter generate_key_waiter;
+    base::test::TestFuture<std::vector<uint8_t>,
+                           chromeos::platform_keys::Status>
+        generate_key_waiter;
     GetPlatformKeysService()->GenerateRSAKey(GetToken(),
                                              /*modulus_length_bits=*/2048,
                                              /*sw_backed=*/false,
                                              generate_key_waiter.GetCallback());
     EXPECT_TRUE(generate_key_waiter.Wait());
-    const std::string& pub_key = generate_key_waiter.public_key_spki_der();
-    return std::vector<uint8_t>(pub_key.begin(), pub_key.end());
+    return std::get<std::vector<uint8_t>>(generate_key_waiter.Take());
   }
 
   // Returns all keys on the token.

@@ -7,9 +7,7 @@
 #include "chrome/browser/ash/platform_keys/chaps_util.h"
 #include "crypto/nss_key_util.h"
 
-namespace ash {
-namespace platform_keys {
-namespace test_util {
+namespace ash::platform_keys::test_util {
 
 using ::chromeos::platform_keys::Status;
 using ::chromeos::platform_keys::TokenId;
@@ -25,19 +23,6 @@ GetTokensExecutionWaiter::token_ids() {
 
 Status GetTokensExecutionWaiter::status() {
   return Get<1>();
-}
-
-const std::string& GenerateKeyExecutionWaiter::public_key_spki_der() {
-  return Get<0>();
-}
-
-Status GenerateKeyExecutionWaiter::status() {
-  return Get<1>();
-}
-
-base::OnceCallback<void(const std::string&, Status)>
-GenerateKeyExecutionWaiter::GetCallback() {
-  return TestFuture::GetCallback<const std::string&, Status>();
 }
 
 const std::string& SignExecutionWaiter::signature() {
@@ -143,6 +128,4 @@ void ScopedChapsUtilOverride::OnKeyGenerated(const std::string& spki) {
   generated_key_spkis_.push_back(spki);
 }
 
-}  // namespace test_util
-}  // namespace platform_keys
-}  // namespace ash
+}  // namespace ash::platform_keys::test_util

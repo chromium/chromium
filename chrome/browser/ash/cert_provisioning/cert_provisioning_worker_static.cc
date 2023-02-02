@@ -383,7 +383,7 @@ void CertProvisioningWorkerStatic::GenerateRegularKey() {
 }
 
 void CertProvisioningWorkerStatic::OnGenerateRegularKeyDone(
-    const std::string& public_key_spki_der,
+    std::vector<uint8_t> public_key_spki_der,
     chromeos::platform_keys::Status status) {
   if (status != chromeos::platform_keys::Status::kSuccess ||
       public_key_spki_der.empty()) {
@@ -394,7 +394,7 @@ void CertProvisioningWorkerStatic::OnGenerateRegularKeyDone(
     return;
   }
 
-  public_key_ = StrToBytes(public_key_spki_der);
+  public_key_ = std::move(public_key_spki_der);
   UpdateState(FROM_HERE, CertProvisioningWorkerState::kKeypairGenerated);
   DoStep();
 }

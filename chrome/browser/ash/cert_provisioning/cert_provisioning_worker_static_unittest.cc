@@ -649,7 +649,7 @@ TEST_F(CertProvisioningWorkerStaticTest, NoVaSuccess) {
                                /*sw_backed=*/false,
                                /*callback=*/_))
         .Times(1)
-        .WillOnce(RunOnceCallback<3>(GetPublicKey(), Status::kSuccess));
+        .WillOnce(RunOnceCallback<3>(GetPublicKeyBin(), Status::kSuccess));
 
     EXPECT_START_CSR_OK_WITHOUT_VA(
         StartCsr(Eq(std::ref(provisioning_process)), /*callback=*/_),

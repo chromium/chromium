@@ -899,7 +899,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaSuccess) {
                                /*sw_backed=*/false,
                                /*callback=*/_))
         .Times(1)
-        .WillOnce(RunOnceCallback<3>(GetPublicKey(), Status::kSuccess));
+        .WillOnce(RunOnceCallback<3>(GetPublicKeyBin(), Status::kSuccess));
 
     EXPECT_CALL(*key_permissions_manager_,
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
@@ -1033,7 +1033,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaTooManyTwoProofsOfPossession) {
                                /*sw_backed=*/false,
                                /*callback=*/_))
         .Times(1)
-        .WillOnce(RunOnceCallback<3>(GetPublicKey(), Status::kSuccess));
+        .WillOnce(RunOnceCallback<3>(GetPublicKeyBin(), Status::kSuccess));
 
     EXPECT_CALL(*key_permissions_manager_,
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
@@ -1634,7 +1634,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryUploadProofOfPossession) {
                                /*sw_backed=*/false,
                                /*callback=*/_))
         .Times(1)
-        .WillOnce(RunOnceCallback<3>(GetPublicKey(), Status::kSuccess));
+        .WillOnce(RunOnceCallback<3>(GetPublicKeyBin(), Status::kSuccess));
 
     EXPECT_CALL(*key_permissions_manager_,
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,

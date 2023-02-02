@@ -244,7 +244,7 @@ TEST_F(KeystoreServiceAshTest, UserKeystoreRsaAlgoGenerateKeySuccess) {
       platform_keys_service_,
       GenerateRSAKey(TokenId::kUser, modulus_length, /*sw_backed=*/false,
                      /*callback=*/_))
-      .WillOnce(RunOnceCallback<3>(GetPublicKeyStr(), Status::kSuccess));
+      .WillOnce(RunOnceCallback<3>(GetPublicKeyBin(), Status::kSuccess));
   CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
   keystore_service_.GenerateKey(
       mojom::KeystoreType::kUser,
@@ -260,7 +260,7 @@ TEST_F(KeystoreServiceAshTest, DeviceKeystoreEcAlgoGenerateKeySuccess) {
 
   EXPECT_CALL(platform_keys_service_,
               GenerateECKey(TokenId::kSystem, named_curve, /*callback=*/_))
-      .WillOnce(RunOnceCallback<2>(GetPublicKeyStr(), Status::kSuccess));
+      .WillOnce(RunOnceCallback<2>(GetPublicKeyBin(), Status::kSuccess));
 
   CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
   keystore_service_.GenerateKey(mojom::KeystoreType::kDevice,
@@ -273,7 +273,8 @@ TEST_F(KeystoreServiceAshTest, DeviceKeystoreEcAlgoGenerateKeySuccess) {
 
 TEST_F(KeystoreServiceAshTest, UserKeystoreUnsupportedEcCurveGenerateKeyFail) {
   EXPECT_CALL(platform_keys_service_, GenerateECKey)
-      .WillOnce(RunOnceCallback<2>("", Status::kErrorInternal));
+      .WillOnce(
+          RunOnceCallback<2>(std::vector<uint8_t>(), Status::kErrorInternal));
 
   CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
   keystore_service_.GenerateKey(mojom::KeystoreType::kUser,
