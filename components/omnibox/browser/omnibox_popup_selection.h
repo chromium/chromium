@@ -77,8 +77,15 @@ struct OmniboxPopupSelection {
   // match (if FOCUSED_BUTTON_*) is selected.
   LineState state;
 
-  explicit OmniboxPopupSelection(size_t line, LineState state = NORMAL)
-      : line(line), state(state) {}
+  // When `state` is `FOCUSED_BUTTON_ACTION`, this indicates which action
+  // is selected by index into `AutocompleteMatch::actions`. Other states
+  // keep an unused zero index.
+  size_t action_index;
+
+  explicit OmniboxPopupSelection(size_t line,
+                                 LineState state = NORMAL,
+                                 size_t action_index = 0)
+      : line(line), state(state), action_index(action_index) {}
 
   bool operator==(const OmniboxPopupSelection&) const;
   bool operator!=(const OmniboxPopupSelection&) const;

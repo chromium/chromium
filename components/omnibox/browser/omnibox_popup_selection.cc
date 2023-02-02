@@ -12,7 +12,7 @@
 const size_t OmniboxPopupSelection::kNoMatch = static_cast<size_t>(-1);
 
 bool OmniboxPopupSelection::operator==(const OmniboxPopupSelection& b) const {
-  return line == b.line && state == b.state;
+  return line == b.line && state == b.state && action_index == b.action_index;
 }
 
 bool OmniboxPopupSelection::operator!=(const OmniboxPopupSelection& b) const {
@@ -20,9 +20,12 @@ bool OmniboxPopupSelection::operator!=(const OmniboxPopupSelection& b) const {
 }
 
 bool OmniboxPopupSelection::operator<(const OmniboxPopupSelection& b) const {
-  if (line == b.line)
+  if (line == b.line) {
+    if (state == b.state) {
+      return action_index < b.action_index;
+    }
     return state < b.state;
-
+  }
   return line < b.line;
 }
 
@@ -93,10 +96,12 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
           match.from_keyword) {
         return false;
       }
+      if (action_index >= match.actions.size()) {
+        return false;
+      }
       // If the action takes over the whole match, don't have a separate Action
       // control in the tab order (or rendered).
-      const OmniboxAction* action = match.GetPrimaryAction();
-      return action && !action->TakesOverMatch();
+      return !match.actions[action_index]->TakesOverMatch();
     }
     case FOCUSED_BUTTON_REMOVE_SUGGESTION:
       return match.SupportsDeletion();
@@ -181,7 +186,7 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
     PrefService* pref_service,
     Direction direction,
     Step step) {
-  // First enumerate all the accessible states based on |direction| and |step|,
+  // First enumerate all the accessible states based on `direction` and `step`,
   // as well as enabled feature flags. This doesn't mean each match will have
   // all of these states - just that it's possible to get there, if available.
   std::vector<LineState> all_states;
@@ -190,8 +195,9 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
     all_states.push_back(NORMAL);
   } else {
     // Arrow keys should never reach the header controls.
-    if (step == kStateOrLine)
+    if (step == kStateOrLine) {
       all_states.push_back(FOCUSED_BUTTON_HEADER);
+    }
 
     all_states.push_back(NORMAL);
     all_states.push_back(KEYWORD_MODE);
@@ -209,9 +215,24 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
   {
     auto add_available_line_states_for_line = [&](size_t line_number) {
       for (LineState line_state : all_states) {
-        OmniboxPopupSelection selection(line_number, line_state);
-        if (selection.IsControlPresentOnMatch(result, pref_service)) {
-          available_selections.push_back(selection);
+        if (line_state == FOCUSED_BUTTON_ACTION) {
+          constexpr size_t kMaxActionCount = 8;
+          for (size_t i = 0; i < kMaxActionCount; i++) {
+            OmniboxPopupSelection selection(line_number, line_state, i);
+            if (selection.IsControlPresentOnMatch(result, pref_service)) {
+              available_selections.push_back(selection);
+            } else {
+              // Break early when there are no more actions. Note, this
+              // implies that a match takeover action should be last
+              // to allow other actions on the match to be included.
+              break;
+            }
+          }
+        } else {
+          OmniboxPopupSelection selection(line_number, line_state);
+          if (selection.IsControlPresentOnMatch(result, pref_service)) {
+            available_selections.push_back(selection);
+          }
         }
       }
     };

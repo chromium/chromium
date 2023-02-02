@@ -172,14 +172,13 @@ void RecordActionShownForAllActions(
     OmniboxPopupSelection executed_selection =
         OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch)) {
   // Record the presence of any actions in the result set.
-  for (size_t i = 0; i < result.size(); ++i) {
-    const AutocompleteMatch& match_in_result = result.match_at(i);
-    // TODO(crbug/1408506): Remove this DCHECK and make full use of selection
-    //  to determine executed action, once it is capable of distinguishing
-    //  between multiple actions on a single match.
-    DCHECK(match_in_result.actions.size() <= 1);
-    for (auto& action : match_in_result.actions) {
-      action->RecordActionShown(i, i == executed_selection.line);
+  for (size_t line_index = 0; line_index < result.size(); ++line_index) {
+    const AutocompleteMatch& match = result.match_at(line_index);
+    for (size_t action_index = 0; action_index < match.actions.size();
+         ++action_index) {
+      match.actions[action_index]->RecordActionShown(
+          line_index, line_index == executed_selection.line &&
+                          action_index == executed_selection.action_index);
     }
   }
 }
@@ -884,12 +883,16 @@ bool OmniboxEditModel::ExecuteTakeoverAction(
     base::TimeTicks match_selection_timestamp) {
   DCHECK(match_selection_timestamp != base::TimeTicks());
   const AutocompleteMatch& match = result().match_at(match_index);
-  const OmniboxAction* action = match.GetPrimaryAction();
-  if (action && action->TakesOverMatch()) {
-    OmniboxPopupSelection selection(
-        match_index, OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION);
-    ExecuteAction(selection, disposition, match_selection_timestamp);
-    return true;
+  for (size_t action_index = 0; action_index < match.actions.size();
+       ++action_index) {
+    if (match.actions[action_index]->TakesOverMatch()) {
+      OmniboxPopupSelection selection(
+          match_index, OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION,
+          action_index);
+      ExecuteAction(selection, disposition, match_selection_timestamp);
+      // A match can have at most one takeover match.
+      return true;
+    }
   }
   return false;
 }
@@ -2149,29 +2152,28 @@ bool OmniboxEditModel::TriggerPopupSelectionAction(
                                         !current_visibility);
       break;
     }
-
-    case OmniboxPopupSelection::NORMAL:
+    case OmniboxPopupSelection::NORMAL: {
       return ExecuteTakeoverAction(selection.line, disposition, timestamp);
-
-    case OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH:
+    }
+    case OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH: {
       DCHECK(timestamp != base::TimeTicks());
       OpenMatch(match, WindowOpenDisposition::SWITCH_TO_TAB, GURL(),
                 std::u16string(), GetPopupSelection().line, timestamp);
       break;
-
-    case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION:
+    }
+    case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION: {
       DCHECK(timestamp != base::TimeTicks());
-      DCHECK(match.GetPrimaryAction());
       ExecuteAction(selection, disposition, timestamp);
       break;
-
-    case OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION:
+    }
+    case OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION: {
       TryDeletingPopupLine(selection.line);
       break;
-
-    default:
-      // Behavior is not yet supported, return false.
+    }
+    default: {
+      // Behavior is not yet supported.
       return false;
+    }
   }
 
   return true;
@@ -2383,11 +2385,8 @@ void OmniboxEditModel::ExecuteAction(
                      edit_model_delegate_->AsWeakPtr()),
       match_selection_timestamp, disposition);
   const AutocompleteMatch& match = result().match_at(selection.line);
-  // TODO(crbug/1408506): Remove this DCHECK and make full use of selection
-  //  to determine executed action, once it is capable of distinguishing
-  //  between multiple actions on a single match.
-  DCHECK_EQ(match.actions.size(), 1u);
-  match.GetPrimaryAction()->Execute(context);
+  DCHECK_LT(selection.action_index, match.actions.size());
+  match.actions[selection.action_index]->Execute(context);
 
   {
     // This block resets omnibox to unedited state and closes popup, which
