@@ -51,7 +51,8 @@ class SafeBrowsingLookupMechanism {
       const GURL& url,
       const SBThreatTypeSet& threat_types,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-      bool can_check_db);
+      bool can_check_db,
+      MechanismExperimentHashDatabaseCache experiment_cache_selection);
   virtual ~SafeBrowsingLookupMechanism();
   SafeBrowsingLookupMechanism(const SafeBrowsingLookupMechanism&) = delete;
   SafeBrowsingLookupMechanism& operator=(const SafeBrowsingLookupMechanism&) =
@@ -83,6 +84,11 @@ class SafeBrowsingLookupMechanism {
   // enterprise real time URL lookup is enabled and safe browsing is disabled
   // for this profile.
   bool can_check_db_;
+
+  // Specifies which hash database cache to use if a hash-database lookup ends
+  // up occurring. For more details, see the comments above the definition of
+  // MechanismExperimentHashDatabaseCache.
+  MechanismExperimentHashDatabaseCache experiment_cache_selection_;
 
  private:
   // |StartCheck| has some logic used across mechanisms. |StartCheckInternal| is

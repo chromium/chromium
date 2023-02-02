@@ -32,10 +32,12 @@ class MockSafeBrowsingLookupMechanism : public SafeBrowsingLookupMechanism {
                                            SBThreatType threat_type,
                                            base::TimeDelta time_to_completion,
                                            bool is_url_real_time)
-      : SafeBrowsingLookupMechanism(GURL(),
-                                    SBThreatTypeSet({}),
-                                    /*database_manager=*/nullptr,
-                                    /*can_check_db=*/true),
+      : SafeBrowsingLookupMechanism(
+            GURL(),
+            SBThreatTypeSet({}),
+            /*database_manager=*/nullptr,
+            /*can_check_db=*/true,
+            MechanismExperimentHashDatabaseCache::kNoExperiment),
         is_safe_synchronously_(is_safe_synchronously),
         time_to_completion_(time_to_completion),
         threat_type_(threat_type),

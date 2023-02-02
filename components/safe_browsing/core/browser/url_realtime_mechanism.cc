@@ -50,11 +50,13 @@ UrlRealTimeMechanism::UrlRealTimeMechanism(
     const GURL& last_committed_url,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-    WebUIDelegate* webui_delegate)
+    WebUIDelegate* webui_delegate,
+    MechanismExperimentHashDatabaseCache experiment_cache_selection)
     : SafeBrowsingLookupMechanism(url,
                                   threat_types,
                                   database_manager,
-                                  can_check_db),
+                                  can_check_db,
+                                  experiment_cache_selection),
       request_destination_(request_destination),
       can_check_high_confidence_allowlist_(can_check_high_confidence_allowlist),
       url_lookup_service_metric_suffix_(url_lookup_service_metric_suffix),
@@ -271,7 +273,8 @@ void UrlRealTimeMechanism::PerformHashBasedCheck(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   hash_database_mechanism_ = std::make_unique<HashDatabaseMechanism>(
-      url, threat_types_, database_manager_, can_check_db_);
+      url, threat_types_, database_manager_, can_check_db_,
+      experiment_cache_selection_);
   auto result = hash_database_mechanism_->StartCheck(
       base::BindOnce(&UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResult,
                      weak_factory_.GetWeakPtr()));
