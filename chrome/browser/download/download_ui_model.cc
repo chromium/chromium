@@ -1164,7 +1164,7 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
         bubble_ui_info.AddQuickAction(
             DownloadCommands::Command::CANCEL,
             l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION),
-            &vector_icons::kCloseIcon);
+            &vector_icons::kCancelIcon);
       } else {
         bubble_ui_info.AddPrimaryButton(DownloadCommands::Command::RESUME);
       }
@@ -1177,7 +1177,7 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
         bubble_ui_info.AddQuickAction(
             DownloadCommands::Command::CANCEL,
             l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION),
-            &vector_icons::kCloseIcon);
+            &vector_icons::kCancelIcon);
       } else {
         bubble_ui_info.AddPrimaryButton(DownloadCommands::Command::CANCEL);
       }
