@@ -3736,8 +3736,9 @@ struct PerDeskZOrderTestCase {
 
   // Once windows have been created and (some) promoted to all-desk, we start
   // the test by switching to desk 2. This is the list of windows that we expect
-  // to find on desk 2.
-  std::vector<int> expected_desk_2_windows;
+  // to find on desk 1/2.
+  std::vector<int> expected_desk_1_windows_before;
+  std::vector<int> expected_desk_2_windows_before;
 
   // We can then move some set of windows from desk 2 to desk 1. This must be a
   // subset of `desk_2_windows` and cannot contain entries from `adw_windows`
@@ -3750,7 +3751,8 @@ struct PerDeskZOrderTestCase {
   std::vector<int> close_windows;
 
   // We then switch back to desk 1 and expect to find windows in this order.
-  std::vector<int> expected_desk_1_windows;
+  std::vector<int> expected_desk_1_windows_after;
+  std::vector<int> expected_desk_2_windows_after;
 };
 
 TEST_P(DesksTest, PerDeskZOrder) {
@@ -3759,75 +3761,104 @@ TEST_P(DesksTest, PerDeskZOrder) {
        .desk_1_windows = {1},
        .desk_2_windows = {},
        .adw_windows = {1},
-       .expected_desk_2_windows = {1},
+       .expected_desk_1_windows_before = {1},
+       .expected_desk_2_windows_before = {1},
        .move_windows = {},
        .close_windows = {},
-       .expected_desk_1_windows = {1}},
+       .expected_desk_1_windows_after = {1},
+       .expected_desk_2_windows_after = {1}},
       {.test_name = "Single adw window 2",
        .desk_1_windows = {1, 2, 3},
        .desk_2_windows = {5, 4},
        .adw_windows = {1},
-       .expected_desk_2_windows = {5, 4, 1},
+       .expected_desk_1_windows_before = {1, 2, 3},
+       .expected_desk_2_windows_before = {5, 4, 1},
        .move_windows = {},
        .close_windows = {},
-       .expected_desk_1_windows = {1, 2, 3}},
+       .expected_desk_1_windows_after = {1, 2, 3},
+       .expected_desk_2_windows_after = {5, 4, 1}},
       {.test_name = "Single adw window 3",
        .desk_1_windows = {1, 2, 3},
        .desk_2_windows = {5, 4},
        .adw_windows = {1},
-       .expected_desk_2_windows = {5, 4, 1},
+       .expected_desk_1_windows_before = {1, 2, 3},
+       .expected_desk_2_windows_before = {5, 4, 1},
        .move_windows = {5},
        .close_windows = {},
-       .expected_desk_1_windows = {1, 2, 3, 5}},
+       .expected_desk_1_windows_after = {1, 2, 3, 5},
+       .expected_desk_2_windows_after = {4, 1}},
       {.test_name = "Single adw window 4",
        .desk_1_windows = {1, 2, 3},
        .desk_2_windows = {5, 4},
        .adw_windows = {2},
-       .expected_desk_2_windows = {5, 4, 2},
+       .expected_desk_1_windows_before = {1, 2, 3},
+       .expected_desk_2_windows_before = {5, 4, 2},
        .move_windows = {5},
        .close_windows = {1},
-       .expected_desk_1_windows = {2, 3, 5}},
+       .expected_desk_1_windows_after = {2, 3, 5},
+       .expected_desk_2_windows_after = {4, 2}},
       {.test_name = "Single adw window 5",
        .desk_1_windows = {1, 2, 3, 4, 5},
        .desk_2_windows = {6},
        .adw_windows = {3},
-       .expected_desk_2_windows = {6, 3},
+       .expected_desk_1_windows_before = {1, 2, 3, 4, 5},
+       .expected_desk_2_windows_before = {6, 3},
        .move_windows = {6},
        .close_windows = {1, 2},
-       .expected_desk_1_windows = {3, 4, 5, 6}},
+       .expected_desk_1_windows_after = {3, 4, 5, 6},
+       .expected_desk_2_windows_after = {3}},
       {.test_name = "Multiple adw windows 1",
        .desk_1_windows = {1, 2, 3, 4, 5},
        .desk_2_windows = {6, 7},
        .adw_windows = {2, 4},
-       .expected_desk_2_windows = {6, 7, 2, 4},
+       .expected_desk_1_windows_before = {1, 2, 3, 4, 5},
+       .expected_desk_2_windows_before = {6, 7, 2, 4},
        .move_windows = {},
        .close_windows = {},
-       .expected_desk_1_windows = {1, 2, 3, 4, 5}},
+       .expected_desk_1_windows_after = {1, 2, 3, 4, 5},
+       .expected_desk_2_windows_after = {6, 7, 2, 4}},
       {.test_name = "Multiple adw windows 2",
        .desk_1_windows = {1, 2, 3, 4, 5},
        .desk_2_windows = {6, 7},
        .adw_windows = {1, 3, 5},
-       .expected_desk_2_windows = {6, 7, 1, 3, 5},
+       .expected_desk_1_windows_before = {1, 2, 3, 4, 5},
+       .expected_desk_2_windows_before = {6, 7, 1, 3, 5},
        .move_windows = {},
        .close_windows = {},
-       .expected_desk_1_windows = {1, 2, 3, 4, 5}},
+       .expected_desk_1_windows_after = {1, 2, 3, 4, 5},
+       .expected_desk_2_windows_after = {6, 7, 1, 3, 5}},
       {.test_name = "Multiple adw windows 3",
        .desk_1_windows = {1, 2},
        .desk_2_windows = {},
        .adw_windows = {1, 2},
-       .expected_desk_2_windows = {1, 2},
+       .expected_desk_1_windows_before = {1, 2},
+       .expected_desk_2_windows_before = {1, 2},
        .move_windows = {},
        .close_windows = {},
-       .expected_desk_1_windows = {1, 2}},
+       .expected_desk_1_windows_after = {1, 2},
+       .expected_desk_2_windows_after = {1, 2}},
       {.test_name = "Multiple adw windows 4",
        .desk_1_windows = {1, 2, 3, 4},
        .desk_2_windows = {},
        .adw_windows = {1, 4},
        .activate_windows = {4, 3, 2, 1},
-       .expected_desk_2_windows = {1, 4},
+       .expected_desk_1_windows_before = {4, 3, 2, 1},
+       .expected_desk_2_windows_before = {1, 4},
        .move_windows = {},
        .close_windows = {},
-       .expected_desk_1_windows = {4, 3, 2, 1}},
+       .expected_desk_1_windows_after = {4, 3, 2, 1},
+       .expected_desk_2_windows_after = {1, 4}},
+      {.test_name = "Multiple adw windows 5",
+       .desk_1_windows = {1, 2, 3, 4},
+       .desk_2_windows = {5},
+       .adw_windows = {1, 3},
+       .activate_windows = {1, 2, 3, 4},
+       .expected_desk_1_windows_before = {1, 2, 3, 4},
+       .expected_desk_2_windows_before = {5, 1, 3},
+       .move_windows = {},
+       .close_windows = {},
+       .expected_desk_1_windows_after = {1, 2, 3, 4},
+       .expected_desk_2_windows_after = {5, 1, 3}},
   };
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -3873,7 +3904,10 @@ TEST_P(DesksTest, PerDeskZOrder) {
     // Z-order. Since the layers are mirrored instead of the same instances, we
     // verify by layer bounds here.
     auto verify_desk_preview_mirrored_layer_tree =
-        [&](Desk* desk, const std::vector<int>& expected_windows) {
+        [&](Desk* desk, const std::vector<int>& expected_windows,
+            const std::string& debug_info) {
+          SCOPED_TRACE("Verify " + base::UTF16ToUTF8(desk->name()) + " " +
+                       debug_info);
           ToggleOverview();
 
           // Retrieves the mirrored layers `mirrored_layers` of application
@@ -3889,7 +3923,7 @@ TEST_P(DesksTest, PerDeskZOrder) {
           // Tests that `mirrored_layers` and `expected_windows` are sync'ed.
           ASSERT_EQ(expected_windows.size(), mirrored_layers.size());
           for (size_t i = 0; i < expected_windows.size(); i++) {
-            ASSERT_EQ(id_to_window[expected_windows[i]]->layer()->bounds(),
+            EXPECT_EQ(id_to_window[expected_windows[i]]->layer()->bounds(),
                       mirrored_layers[i]->bounds());
           }
 
@@ -3900,8 +3934,10 @@ TEST_P(DesksTest, PerDeskZOrder) {
     // order. Any windows that have not been created by the test will be
     // ignored.
     auto verify_windows = [&](Desk* desk,
-                              const std::vector<int>& expected_windows) {
-      SCOPED_TRACE("Verify " + base::UTF16ToUTF8(desk->name()));
+                              const std::vector<int>& expected_windows,
+                              const std::string& debug_info) {
+      SCOPED_TRACE("Verify " + base::UTF16ToUTF8(desk->name()) + " " +
+                   debug_info);
       aura::Window* container = desk->GetDeskContainerForRoot(root);
 
       // Collect any test windows present on the desk.
@@ -3912,14 +3948,17 @@ TEST_P(DesksTest, PerDeskZOrder) {
           actual_windows.push_back(it->second);
       }
 
-      ASSERT_EQ(expected_windows, actual_windows);
+      ASSERT_EQ(expected_windows.size(), actual_windows.size());
+      EXPECT_EQ(expected_windows, actual_windows);
     };
 
     // Now we are ready to actually execute the test.
     ActivateDesk(desk_2);
-    verify_windows(desk_2, test.expected_desk_2_windows);
-    verify_desk_preview_mirrored_layer_tree(desk_2,
-                                            test.expected_desk_2_windows);
+    verify_windows(desk_2, test.expected_desk_2_windows_before, "before");
+    verify_desk_preview_mirrored_layer_tree(
+        desk_1, test.expected_desk_1_windows_before, "before");
+    verify_desk_preview_mirrored_layer_tree(
+        desk_2, test.expected_desk_2_windows_before, "before");
 
     // Move specified windows to desk 1.
     for (int id : test.move_windows) {
@@ -3939,9 +3978,11 @@ TEST_P(DesksTest, PerDeskZOrder) {
     }
 
     ActivateDesk(desk_1);
-    verify_windows(desk_1, test.expected_desk_1_windows);
-    verify_desk_preview_mirrored_layer_tree(desk_1,
-                                            test.expected_desk_1_windows);
+    verify_windows(desk_1, test.expected_desk_1_windows_after, "after");
+    verify_desk_preview_mirrored_layer_tree(
+        desk_1, test.expected_desk_1_windows_after, "after");
+    verify_desk_preview_mirrored_layer_tree(
+        desk_2, test.expected_desk_2_windows_after, "after");
   }
 }
 

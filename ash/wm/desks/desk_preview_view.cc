@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/desk_preview_view.h"
 
+#include <functional>
 #include <memory>
 #include <utility>
 
@@ -13,6 +14,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
 #include "ash/wallpaper/wallpaper_base_view.h"
+#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
@@ -27,6 +29,7 @@
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -138,67 +141,6 @@ absl::optional<size_t> GetWindowZOrderForDeskAndRoot(const aura::Window* window,
   return absl::nullopt;
 }
 
-// Appends clones of all the visible on all desks windows' layers to
-// `out_desk_container_children`. Should only be called if
-// `visible_on_all_desks_windows` is not empty.
-void AppendVisibleOnAllDesksWindowsToDeskLayer(
-    const base::flat_set<aura::Window*>& visible_on_all_desks_windows,
-    const base::flat_map<ui::Layer*, LayerData>& layers_data,
-    std::vector<ui::Layer*>* out_desk_container_children,
-    aura::Window* desk_container) {
-  DCHECK(!visible_on_all_desks_windows.empty());
-  auto mru_windows =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
-  const Desk* desk = desks_util::GetDeskForContext(desk_container);
-  aura::Window* root = desk_container->GetRootWindow();
-
-  for (auto* window : visible_on_all_desks_windows) {
-    const LayerData layer_data =
-        GetLayerDataEntry(layers_data, window->layer());
-    if (layer_data.should_skip_layer)
-      continue;
-
-    auto window_iter = base::ranges::find(mru_windows, window);
-    if (window_iter == mru_windows.end())
-      continue;
-
-    auto insertion_point_iter = out_desk_container_children->end();
-    auto desk_windows = desk_container->children();
-
-    // Find z order of `window`. If `features::IsPerDeskZOrderEnabled()` is not
-    // on, default value of zero will be used so `window` would be put on top.
-    size_t window_order =
-        GetWindowZOrderForDeskAndRoot(window, desk, root).value_or(0);
-
-    // If `desk` has no child window, or `window` has lowest z order, use
-    // default `insertion_point_iter` to put it on top.
-    if (!desk_windows.empty() && window_order) {
-      // Find the nearest window that should be on top of `window`.
-      size_t order = 0, target_idx = desk_windows.size();
-      for (int i = desk_windows.size() - 1; i >= 0 && order < window_order;
-           i--) {
-        if (desks_util::IsZOrderTracked(window)) {
-          target_idx = static_cast<size_t>(i);
-          ++order;
-        }
-      }
-
-      // Move to the next nearest window until its layer is in the
-      // `out_desk_container_children`.
-      for (size_t i = target_idx; i < desk_windows.size(); i++) {
-        if (base::Contains(*out_desk_container_children,
-                           desk_windows[i]->layer())) {
-          insertion_point_iter = base::ranges::find(
-              *out_desk_container_children, desk_windows[i]->layer());
-          break;
-        }
-      }
-    }
-
-    out_desk_container_children->insert(insertion_point_iter, window->layer());
-  }
-}
-
 // Recursively mirrors `source_layer` and its children and adds them as children
 // of `parent`, taking into account the given |layers_data|. If the layer data
 // of `source_layer` has `should_clear_transform` set to true, the transforms of
@@ -216,15 +158,96 @@ void MirrorLayerTree(
   auto* mirror = source_layer->Mirror().release();
   parent->Add(mirror);
 
-  std::vector<ui::Layer*> children = source_layer->children();
-  if (!visible_on_all_desks_windows_to_mirror.empty()) {
-    // Windows that are visible on all desks should show up in each desk
-    // preview so for inactive desks, we need to append the layers of visible on
-    // all desks windows.
-    AppendVisibleOnAllDesksWindowsToDeskLayer(
-        visible_on_all_desks_windows_to_mirror, layers_data, &children,
-        desk_container);
+  // Calculate child layers.
+  std::vector<ui::Layer*> children;
+  if (visible_on_all_desks_windows_to_mirror.empty()) {
+    // Without all desk windows, there is no need to reorder layers, just use
+    // them as is.
+    children = source_layer->children();
+  } else {
+    //
+    // With all desk windows, they need to be inserted to the expected place.
+    //
+    // There are 3 cases.
+    //    1. non-adw windows
+    //      - These come ordered in `source_layer->children()`.
+    //    2. adw windows with existing z-order in target desk
+    //      - Target desk z-order should be used to compare between these adw
+    //      - windows and other windows in target desk. As z-order values are
+    //      - always different, there is no need to think about tie.
+    //    3. adw windows without z-order in target desk
+    //      - It should be put on top, but to break the tie among these adw
+    //      - windows, z-order values from active desk should be considered.
+    //
+    // In order to do that, we use target desk z-order as the primary key,
+    // active desk z-order as secondary key, and sort all windows/layers in a
+    // descending order.
+    //
+
+    auto mru_windows =
+        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
+    const Desk* desk = desks_util::GetDeskForContext(desk_container);
+    aura::Window* root = desk_container->GetRootWindow();
+
+    // Define what to use for layer ordering.
+    struct LayerOrderData {
+      ui::Layer* layer;
+      // z-order in target desk.
+      size_t primary_key;
+      // z-order in active desk.
+      size_t secondary_key;
+    };
+    std::vector<LayerOrderData> layer_orders;
+    base::flat_set<size_t> primary_key_taken;
+
+    // Step 1: Populate child layers from
+    // `visible_on_all_desks_windows_to_mirror` with their orders.
+    for (auto* window : visible_on_all_desks_windows_to_mirror) {
+      if (GetLayerDataEntry(layers_data, window->layer()).should_skip_layer) {
+        continue;
+      }
+
+      if (base::ranges::find(mru_windows, window) == mru_windows.end()) {
+        continue;
+      }
+
+      // Find z order of `window`. If `features::IsPerDeskZOrderEnabled()` is
+      // not on, default value of zero will be used so `window` would be put
+      // on top.
+      absl::optional<size_t> target_desk_order =
+          GetWindowZOrderForDeskAndRoot(window, desk, root);
+      absl::optional<size_t> active_desk_order = GetWindowZOrderForDeskAndRoot(
+          window, DesksController::Get()->active_desk(), root);
+      layer_orders.push_back({.layer = window->layer(),
+                              .primary_key = target_desk_order.value_or(0),
+                              .secondary_key = active_desk_order.value_or(0)});
+      primary_key_taken.insert(target_desk_order.value_or(0));
+    }
+
+    // Step 2: Populate child layers from `source_layer` with their orders.
+    size_t order = 0;
+    for (auto* it : base::Reversed(source_layer->children())) {
+      while (primary_key_taken.contains(order)) {
+        order++;
+      }
+      layer_orders.push_back(
+          {.layer = it, .primary_key = order++, .secondary_key = SIZE_MAX});
+    }
+
+    // Step 3: Sort all child layers based on `LayerOrderData` and write to
+    // `children` for further recursion.
+    base::ranges::sort(
+        layer_orders, [](const LayerOrderData& lhs, const LayerOrderData& rhs) {
+          return (lhs.primary_key > rhs.primary_key) ||
+                 (lhs.primary_key == rhs.primary_key &&
+                  lhs.secondary_key > rhs.secondary_key);
+        });
+    children.reserve(layer_orders.size());
+    for (const auto& lo : layer_orders) {
+      children.emplace_back(lo.layer);
+    }
   }
+
   for (auto* child : children) {
     // Visible on all desks windows only needed to be added to the subtree once
     // so use an empty set for subsequent calls.
