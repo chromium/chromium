@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -16,7 +17,6 @@ namespace blink {
 
 class Frame;
 class FrameSwapScope;
-class ResourceTimingInfo;
 
 // Oilpan: all FrameOwner instances are GCed objects. FrameOwner additionally
 // derives from GarbageCollectedMixin so that Member<FrameOwner> references can
@@ -40,7 +40,7 @@ class CORE_EXPORT FrameOwner : public GarbageCollectedMixin {
   // Note: there is a subtle ordering dependency here: if a page load needs to
   // report resource timing information, it *must* do so before calling
   // DispatchLoad().
-  virtual void AddResourceTiming(const ResourceTimingInfo&) = 0;
+  virtual void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr) = 0;
   virtual void DispatchLoad() = 0;
 
   // The intrinsic dimensions of the embedded object changed. This is only
@@ -127,7 +127,7 @@ class CORE_EXPORT DummyFrameOwner final
     DEFINE_STATIC_LOCAL(FramePolicy, frame_policy, ());
     return frame_policy;
   }
-  void AddResourceTiming(const ResourceTimingInfo&) override {}
+  void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr) override {}
   void DispatchLoad() override {}
   void IntrinsicSizingInfoChanged() override {}
   void SetNeedsOcclusionTracking(bool) override {}

@@ -32,6 +32,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -65,7 +66,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -478,7 +479,8 @@ void HTMLFrameOwnerElement::FrameOwnerPropertiesChanged() {
                                      std::move(properties));
 }
 
-void HTMLFrameOwnerElement::AddResourceTiming(const ResourceTimingInfo& info) {
+void HTMLFrameOwnerElement::AddResourceTiming(
+    mojom::blink::ResourceTimingInfoPtr info) {
   // Resource timing info should only be reported if the subframe is attached.
   DCHECK(ContentFrame() && ContentFrame()->IsLocalFrame());
 
@@ -493,12 +495,12 @@ void HTMLFrameOwnerElement::AddResourceTiming(const ResourceTimingInfo& info) {
   // would make this type of race harmless.
   // TODO(crbug.com/1410705): fix this properly by moving IFrame reporting to
   // the browser side.
-  if (fallback_timing_info_->InitialURL() != info.InitialURL()) {
+  if (fallback_timing_info_->name != info->name) {
     return;
   }
 
   DOMWindowPerformance::performance(*GetDocument().domWindow())
-      ->GenerateAndAddResourceTiming(info, localName());
+      ->AddResourceTiming(std::move(info), localName());
   DidReportResourceTiming();
 }
 
@@ -517,12 +519,8 @@ void HTMLFrameOwnerElement::WillPerformContainerInitiatedNavigation(
     return;
   }
 
-  fallback_timing_info_ = ResourceTimingInfo::Create(
-      fetch_initiator_type_names::kDocument, base::TimeTicks::Now(),
-      mojom::blink::RequestContextType::IFRAME,
-      network::mojom::RequestDestination::kIframe,
-      network::mojom::RequestMode::kNavigate);
-  fallback_timing_info_->SetInitialURL(url);
+  fallback_timing_info_ = CreateResourceTimingInfo(base::TimeTicks::Now(), url,
+                                                   /*response=*/nullptr);
 }
 
 // This will report fallback timing only if the "real" resource timing had not
@@ -531,12 +529,13 @@ void HTMLFrameOwnerElement::ReportFallbackResourceTimingIfNeeded() {
   if (!fallback_timing_info_) {
     return;
   }
-  scoped_refptr<ResourceTimingInfo> resource_timing_info;
-  resource_timing_info.swap(fallback_timing_info_);
-  resource_timing_info->SetLoadResponseEnd(base::TimeTicks::Now());
+
+  mojom::blink::ResourceTimingInfoPtr resource_timing_info;
+  resource_timing_info.Swap(&fallback_timing_info_);
+  resource_timing_info->response_end = base::TimeTicks::Now();
 
   DOMWindowPerformance::performance(*GetDocument().domWindow())
-      ->GenerateAndAddResourceTiming(*resource_timing_info, localName());
+      ->AddResourceTiming(std::move(resource_timing_info), localName());
 }
 
 void HTMLFrameOwnerElement::DispatchLoad() {

@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_url_request_util.h"
@@ -61,7 +62,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/base/window_open_disposition.h"
@@ -426,8 +426,7 @@ void RemoteFrame::AddResourceTimingFromChild(
   }
 
   DOMWindowPerformance::performance(*owner_element->GetDocument().domWindow())
-      ->AddResourceTiming(std::move(timing), owner_element->localName(),
-                          owner_element->GetDocument().GetExecutionContext());
+      ->AddResourceTiming(std::move(timing), owner_element->localName());
   owner_element->DidReportResourceTiming();
 }
 

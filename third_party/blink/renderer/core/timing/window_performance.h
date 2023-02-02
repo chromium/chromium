@@ -34,6 +34,7 @@
 
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -141,6 +142,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
                         const AtomicString& id,
                         Element*);
 
+  void OnBodyLoadFinished(int64_t encoded_body_size, int64_t decoded_body_size);
+
   void AddLayoutShiftEntry(LayoutShift*);
   void AddVisibilityStateEntry(bool is_visible, base::TimeTicks start_time);
   void AddSoftNavigationEntry(const AtomicString& name,
@@ -172,9 +175,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   }
   const Event* GetCurrentEventTimingEvent() { return current_event_; }
 
- private:
-  PerformanceNavigationTiming* CreateNavigationTimingInstance() override;
+  void CreateNavigationTimingInstance(
+      mojom::blink::ResourceTimingInfoPtr navigation_resource_timing);
 
+ private:
   static std::pair<AtomicString, DOMWindow*> SanitizedAttribution(
       ExecutionContext*,
       bool has_multiple_contexts,

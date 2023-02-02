@@ -105,6 +105,7 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   ResourceLoaderOptions resource_loader_options_{nullptr /* world */};
   KURL initial_request_url_;
   KURL last_request_url_;
+  base::TimeTicks start_time_;
   ResourceResponse resource_response_;
   scoped_refptr<SharedBuffer> data_;
   WTF::TextEncoding script_encoding_;

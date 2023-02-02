@@ -29,11 +29,10 @@ CrossThreadCopier<blink::mojom::blink::ResourceTimingInfoPtr>::Copy(
   return blink::mojom::blink::ResourceTimingInfo::New(
       info->name, info->start_time, info->alpn_negotiated_protocol,
       info->connection_info, info->timing ? info->timing->Clone() : nullptr,
-      info->last_redirect_end_time, info->response_end, info->context_type,
-      info->request_destination, info->cache_state, info->encoded_body_size,
-      info->decoded_body_size, info->did_reuse_connection,
-      info->is_secure_transport, info->allow_timing_details,
-      info->allow_redirect_details, info->allow_negative_values,
+      info->last_redirect_end_time, info->response_end, info->cache_state,
+      info->encoded_body_size, info->decoded_body_size,
+      info->did_reuse_connection, info->is_secure_transport,
+      info->allow_timing_details, info->allow_negative_values,
       CloneServerTimingInfoArray(info->server_timing),
       info->render_blocking_status, info->response_status, info->content_type);
 }

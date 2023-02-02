@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "third_party/blink/renderer/modules/service_worker/fetch_event.h"
 
 #include "base/memory/scoped_refptr.h"
@@ -24,7 +25,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 
@@ -200,15 +201,14 @@ void FetchEvent::OnNavigationPreloadComplete(
   }
   std::unique_ptr<WebURLResponse> response = std::move(preload_response_);
   ResourceResponse resource_response = response->ToResourceResponse();
-  resource_response.SetEncodedDataLength(encoded_data_length);
-  resource_response.SetEncodedBodyLength(encoded_body_length);
-  resource_response.SetDecodedBodyLength(decoded_body_length);
 
   // Navigation preload is always same-origin, so its timing information should
   // be visible to the service worker. Note that if the preloaded response is
   // used, the main document doesn't see the preloaded timing, but rather the
   // timing of the fetch that initiated this FetchEvent.
   resource_response.SetTimingAllowPassed(true);
+  resource_response.SetEncodedBodyLength(encoded_body_length);
+  resource_response.SetDecodedBodyLength(decoded_body_length);
 
   ResourceLoadTiming* timing = resource_response.GetResourceLoadTiming();
   // |timing| can be null, see https://crbug.com/817691.
@@ -216,15 +216,11 @@ void FetchEvent::OnNavigationPreloadComplete(
       timing ? timing->RequestTime() : base::TimeTicks();
   // According to the Resource Timing spec, the initiator type of
   // navigation preload request is "navigation".
-  scoped_refptr<ResourceTimingInfo> info = ResourceTimingInfo::Create(
-      "navigation", request_time, request_->GetRequestContextType(),
-      request_->GetRequestDestination(), request_->GetRequestMode());
-  info->SetNegativeAllowed(true);
-  info->SetLoadResponseEnd(completion_time);
-  info->SetInitialURL(request_->url());
-  info->SetFinalResponse(resource_response);
+  mojom::blink::ResourceTimingInfoPtr info = CreateResourceTimingInfo(
+      request_time, request_->url(), &resource_response);
+  info->response_end = completion_time;
   WorkerGlobalScopePerformance::performance(*worker_global_scope)
-      ->GenerateAndAddResourceTiming(*info);
+      ->AddResourceTiming(std::move(info), "navigation");
 }
 
 void FetchEvent::Trace(Visitor* visitor) const {

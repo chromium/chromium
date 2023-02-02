@@ -756,8 +756,7 @@ void LocalFrame::AddResourceTimingEntryFromNonNavigatedFrame(
   auto* local_dom_window = DomWindow();
   DOMWindowPerformance::performance(*local_dom_window)
       ->AddResourceTiming(std::move(timing),
-                          ConvertElementTypeToInitiatorType(initiator_type),
-                          local_dom_window);
+                          ConvertElementTypeToInitiatorType(initiator_type));
 }
 
 const SecurityContext* LocalFrame::GetSecurityContext() const {

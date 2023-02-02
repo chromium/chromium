@@ -8,6 +8,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/weak_wrapper_resource_load_info_notifier.h"
@@ -15,7 +16,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 
 #include <memory>
@@ -82,8 +82,8 @@ class MockFetchContext : public FetchContext {
     return absl::nullopt;
   }
   void AddResourceTiming(
-      const ResourceTimingInfo& resource_timing_info) override {
-  }
+      mojom::blink::ResourceTimingInfoPtr resource_timing_info,
+      const AtomicString& initiator_type) override {}
   std::unique_ptr<ResourceLoadInfoNotifierWrapper>
   CreateResourceLoadInfoNotifierWrapper() override {
     if (!resource_load_info_notifier_)

@@ -6,13 +6,13 @@
 
 #include <memory>
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/cross_thread_resource_timing_info_copier.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -69,8 +69,7 @@ void WorkerResourceTimingNotifierImpl::AddResourceTiming(
       return;
     DCHECK(inside_execution_context_->IsContextThread());
     GetPerformance(*inside_execution_context_)
-        ->AddResourceTiming(std::move(info), initiator_type,
-                            inside_execution_context_);
+        ->AddResourceTiming(std::move(info), initiator_type);
   } else {
     PostCrossThreadTask(
         *task_runner_, FROM_HERE,
@@ -91,8 +90,7 @@ void WorkerResourceTimingNotifierImpl::AddCrossThreadResourceTiming(
     return;
   DCHECK(outside_execution_context->IsContextThread());
   GetPerformance(*outside_execution_context)
-      ->AddResourceTiming(std::move(info), AtomicString(initiator_type),
-                          outside_execution_context);
+      ->AddResourceTiming(std::move(info), AtomicString(initiator_type));
 }
 
 void WorkerResourceTimingNotifierImpl::Trace(Visitor* visitor) const {

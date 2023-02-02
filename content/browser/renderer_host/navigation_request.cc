@@ -4727,9 +4727,9 @@ void NavigationRequest::MaybeAddResourceTimingEntryForCancelledNavigation() {
   }
 
   blink::mojom::ResourceTimingInfoPtr timing_info =
-      GenerateResourceTimingForNavigation(
-          parent_rfh->GetLastCommittedOrigin(), *common_params_,
-          *commit_params_, *response_head_, request_context_type());
+      GenerateResourceTimingForNavigation(parent_rfh->GetLastCommittedOrigin(),
+                                          *common_params_, *commit_params_,
+                                          *response_head_);
   timing_info->response_end = base::TimeTicks::Now();
   parent_rfh->GetAssociatedLocalFrame()
       ->AddResourceTimingEntryFromNonNavigatedFrame(

@@ -86,7 +86,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -103,12 +103,6 @@ constexpr size_t kLongTaskUkmSampleInterval = 100;
 
 const char kSwapsPerInsertionHistogram[] =
     "Renderer.Core.Timing.Performance.SwapsPerPerformanceEntryInsertion";
-
-const SecurityOrigin* GetSecurityOrigin(ExecutionContext* context) {
-  if (context)
-    return context->GetSecurityOrigin();
-  return nullptr;
-}
 
 bool IsMeasureOptionsEmpty(const PerformanceMeasureOptions& options) {
   return !options.hasDetail() && !options.hasEnd() && !options.hasStart() &&
@@ -369,9 +363,6 @@ PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
     InsertEntryIntoSortedBuffer(entries, *first_input_timing_,
                                 kDoNotRecordSwaps);
   }
-  if (!navigation_timing_) {
-    navigation_timing_ = CreateNavigationTimingInstance();
-  }
   // This extra checking is needed when WorkerPerformance
   // calls this method.
   if (navigation_timing_ && CheckName(navigation_timing_, maybe_name)) {
@@ -484,8 +475,6 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
 
     case PerformanceEntry::kNavigation:
       UseCounter::Count(GetExecutionContext(), WebFeature::kNavigationTimingL2);
-      if (!navigation_timing_)
-        navigation_timing_ = CreateNavigationTimingInstance();
       if (navigation_timing_)
         entries_storage = {navigation_timing_};
       break;
@@ -667,106 +656,12 @@ void Performance::setBackForwardCacheRestorationBufferSizeForTest(
   back_forward_cache_restoration_buffer_size_limit_ = size;
 }
 
-void Performance::GenerateAndAddResourceTiming(
-    const ResourceTimingInfo& info,
-    const AtomicString& initiator_type) {
-  ExecutionContext* context = GetExecutionContext();
-  const SecurityOrigin* security_origin = GetSecurityOrigin(context);
-  if (!security_origin)
-    return;
-  AddResourceTiming(
-      GenerateResourceTiming(*security_origin, info, *context),
-      !initiator_type.IsNull() ? initiator_type : info.InitiatorType(),
-      context);
-}
-
-// Please keep this function in sync with ObjectNavigationFallbackBodyLoader's
-// GenerateResourceTiming() helper.
-mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
-    const SecurityOrigin& destination_origin,
-    const ResourceTimingInfo& info,
-    ExecutionContext& context_for_use_counter) {
-  // TODO(dcheng): It would be nicer if the performance entries simply held this
-  // data internally, rather than requiring it be marshalled back and forth.
-  const ResourceResponse& final_response = info.FinalResponse();
-  mojom::blink::ResourceTimingInfoPtr result =
-      mojom::blink::ResourceTimingInfo::New();
-  result->name = info.InitialURL().GetString();
-  result->start_time = info.InitialTime();
-  result->alpn_negotiated_protocol =
-      final_response.AlpnNegotiatedProtocol().IsNull()
-          ? g_empty_string
-          : final_response.AlpnNegotiatedProtocol();
-  result->connection_info = final_response.ConnectionInfoString().IsNull()
-                                ? g_empty_string
-                                : final_response.ConnectionInfoString();
-  result->timing = final_response.GetResourceLoadTiming()
-                       ? final_response.GetResourceLoadTiming()->ToMojo()
-                       : nullptr;
-  result->response_end = info.LoadResponseEnd();
-  result->context_type = info.ContextType();
-  result->request_destination = info.RequestDestination();
-
-  result->allow_timing_details = final_response.TimingAllowPassed();
-
-  result->last_redirect_end_time = info.LastRedirectEndTime();
-  result->allow_redirect_details = result->allow_timing_details;
-
-  result->cache_state = info.CacheState();
-  result->did_reuse_connection = final_response.ConnectionReused();
-  // Use SecurityOrigin::Create to handle cases like blob:https://.
-  result->is_secure_transport = base::Contains(
-      url::GetSecureSchemes(),
-      SecurityOrigin::Create(final_response.ResponseUrl())->Protocol().Ascii());
-  result->allow_negative_values = info.NegativeAllowed();
-
-  if (result->allow_timing_details) {
-    result->server_timing =
-        PerformanceServerTiming::ParseServerTimingToMojo(info);
-  }
-  if (!result->server_timing.empty()) {
-    UseCounter::Count(&context_for_use_counter,
-                      WebFeature::kPerformanceServerTiming);
-  }
-
-  result->render_blocking_status =
-      info.RenderBlockingStatus() == RenderBlockingStatusType::kBlocking;
-
-  result->content_type = g_empty_string;
-
-  bool passes_cors =
-      info.RequestMode() == network::mojom::RequestMode::kNavigate
-          ? (!info.HasCrossOriginRedirects() &&
-             destination_origin.CanAccess(
-                 SecurityOrigin::Create(final_response.ResponseUrl())))
-          : final_response.IsCorsSameOrigin();
-
-  if (passes_cors) {
-    result->response_status = final_response.HttpStatusCode();
-    if (!final_response.HttpContentType().IsNull()) {
-      result->content_type = final_response.HttpContentType();
-    }
-  }
-
-  bool expose_body_sizes =
-      RuntimeEnabledFeatures::ResourceTimingUseCORSForBodySizesEnabled()
-          ? passes_cors
-          : result->allow_timing_details;
-
-  result->encoded_body_size =
-      expose_body_sizes ? final_response.EncodedBodyLength() : 0;
-  result->decoded_body_size =
-      expose_body_sizes ? final_response.DecodedBodyLength() : 0;
-
-  return result;
-}
-
 void Performance::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr info,
-                                    const AtomicString& initiator_type,
-                                    ExecutionContext* context) {
+                                    const AtomicString& initiator_type) {
+  ExecutionContext* context = GetExecutionContext();
   auto* entry = MakeGarbageCollected<PerformanceResourceTiming>(
-      *info, time_origin_, cross_origin_isolated_capability_, initiator_type,
-      DynamicTo<LocalDOMWindow>(context));
+      std::move(info), initiator_type, time_origin_,
+      cross_origin_isolated_capability_, context);
   NotifyObserversOfEntry(*entry);
   // https://w3c.github.io/resource-timing/#dfn-add-a-performanceresourcetiming-entry
   if (CanAddResourceTimingEntry() &&
@@ -774,6 +669,7 @@ void Performance::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr info,
     InsertEntryIntoSortedBuffer(resource_timing_buffer_, *entry, kRecordSwaps);
     return;
   }
+
   // The Resource Timing entries have a special processing model in which there
   // is a secondary buffer but getting those entries requires handling the
   // buffer full event, and the PerformanceObserver with buffered flag only
@@ -791,20 +687,16 @@ void Performance::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr info,
 void Performance::AddResourceTimingWithUnparsedServerTiming(
     mojom::blink::ResourceTimingInfoPtr info,
     const String& server_timing_value,
-    const AtomicString& initiator_type,
-    ExecutionContext* context) {
+    const AtomicString& initiator_type) {
   if (info->allow_timing_details) {
     info->server_timing =
-        PerformanceServerTiming::ParseServerTimingFromHeaderValueToMojo(
-            server_timing_value);
+        ParseServerTimingFromHeaderValueToMojo(server_timing_value);
   }
-  AddResourceTiming(std::move(info), initiator_type, context);
+  AddResourceTiming(std::move(info), initiator_type);
 }
 
 // Called after loadEventEnd happens.
 void Performance::NotifyNavigationTimingToObservers() {
-  if (!navigation_timing_)
-    navigation_timing_ = CreateNavigationTimingInstance();
   if (navigation_timing_)
     NotifyObserversOfEntry(*navigation_timing_);
 }

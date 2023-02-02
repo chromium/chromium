@@ -38,14 +38,13 @@ bool IsCrossOriginResponseOrHasCrossOriginRedirects(
 
 namespace content {
 
-// This logic is duplicated from Performance::GenerateResourceTiming(). Ensure
+// This logic is duplicated from blink::CreateResourceTimingInfo(). Ensure
 // that any changes are synced between both copies.
 blink::mojom::ResourceTimingInfoPtr GenerateResourceTimingForNavigation(
     const url::Origin& parent_origin,
     const blink::mojom::CommonNavigationParams& common_params,
     const blink::mojom::CommitNavigationParams& commit_params,
-    const network::mojom::URLResponseHead& response_head,
-    blink::mojom::RequestContextType context_type) {
+    const network::mojom::URLResponseHead& response_head) {
   // TODO(dcheng): There should be a Blink helper for populating the timing info
   // that's exposed in //third_party/blink/common. This would allow a lot of the
   // boilerplate to be shared.
@@ -56,6 +55,21 @@ blink::mojom::ResourceTimingInfoPtr GenerateResourceTimingForNavigation(
                                 : common_params.url;
   timing_info->name = initial_url.spec();
   timing_info->start_time = common_params.navigation_start;
+  timing_info->allow_timing_details = response_head.timing_allow_passed;
+
+  // Only expose the response code when we are same origin and without
+  // cross-origin redirects
+  // https://fetch.spec.whatwg.org/#ref-for-concept-response-status%E2%91%A6
+  if (!IsCrossOriginResponseOrHasCrossOriginRedirects(
+          parent_origin, common_params, commit_params)) {
+    timing_info->response_status = commit_params.http_response_code;
+  }
+
+  // https://fetch.spec.whatwg.org/#create-an-opaque-timing-info
+  if (!timing_info->allow_timing_details) {
+    return timing_info;
+  }
+
   timing_info->alpn_negotiated_protocol =
       response_head.alpn_negotiated_protocol;
   timing_info->connection_info = net::HttpResponseInfo::ConnectionInfoToString(
@@ -70,25 +84,14 @@ blink::mojom::ResourceTimingInfoPtr GenerateResourceTimingForNavigation(
     timing_info->timing = response_head.load_timing;
   }
   // `response_end` will be populated after loading the body.
-  timing_info->context_type = context_type;
-  timing_info->allow_timing_details = response_head.timing_allow_passed;
-
-  // Only expose the response code when the response tainting is "basic" -
-  // same-origin requests throughout the redirect chain
-  if (!IsCrossOriginResponseOrHasCrossOriginRedirects(
-          parent_origin, common_params, commit_params)) {
-    timing_info->response_status = commit_params.http_response_code;
-  }
 
   DCHECK_EQ(commit_params.redirect_infos.size(),
             commit_params.redirect_response.size());
 
   if (!commit_params.redirect_infos.empty()) {
-    timing_info->allow_redirect_details = timing_info->allow_timing_details;
     timing_info->last_redirect_end_time =
         commit_params.redirect_response.back()->load_timing.receive_headers_end;
   } else {
-    timing_info->allow_redirect_details = false;
     timing_info->last_redirect_end_time = base::TimeTicks();
   }
   // The final value for `encoded_body_size` and `decoded_body_size` will be

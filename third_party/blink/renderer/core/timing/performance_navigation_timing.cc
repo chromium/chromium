@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/timing/performance_navigation_timing.h"
 
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -16,28 +17,26 @@
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_navigation_timing_activation_start.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
+#include "third_party/blink/renderer/platform/loader/fetch/delivery_type_names.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
+using network::mojom::blink::NavigationDeliveryType;
+
 PerformanceNavigationTiming::PerformanceNavigationTiming(
     LocalDOMWindow& window,
-    ResourceTimingInfo& info,
-    base::TimeTicks time_origin,
-    bool cross_origin_isolated_capability,
-    HeapVector<Member<PerformanceServerTiming>> server_timing)
-    : PerformanceResourceTiming(info,
-                                performance_entry_names::kNavigation,
+    mojom::blink::ResourceTimingInfoPtr resource_timing,
+    base::TimeTicks time_origin)
+    : PerformanceResourceTiming(std::move(resource_timing),
+                                "navigation",
                                 time_origin,
-                                cross_origin_isolated_capability,
-                                std::move(server_timing),
-                                window),
-      ExecutionContextClient(&window) {
-  Info()->SetAllowRedirectDetails(
-      !GetDocumentLoadTiming()->HasCrossOriginRedirect());
-}
+                                window.CrossOriginIsolatedCapability(),
+                                &window),
+      ExecutionContextClient(&window) {}
 
 PerformanceNavigationTiming::~PerformanceNavigationTiming() = default;
 
@@ -61,6 +60,17 @@ DocumentLoadTiming* PerformanceNavigationTiming::GetDocumentLoadTiming() const {
   }
 
   return &loader->GetTiming();
+}
+
+void PerformanceNavigationTiming::OnBodyLoadFinished(
+    int64_t encoded_body_size,
+    int64_t decoded_body_size) {
+  UpdateBodySizes(encoded_body_size, decoded_body_size);
+}
+
+bool PerformanceNavigationTiming::AllowRedirectDetails() const {
+  DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  return timing && !timing->HasCrossOriginRedirect();
 }
 
 DocumentLoader* PerformanceNavigationTiming::GetDocumentLoader() const {
@@ -91,24 +101,24 @@ AtomicString PerformanceNavigationTiming::GetNavigationType(
 
 DOMHighResTimeStamp PerformanceNavigationTiming::unloadEventStart() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!Info()->AllowRedirectDetails() || !timing ||
+  if (!AllowRedirectDetails() || !timing ||
       !timing->CanRequestFromPreviousDocument()) {
     return 0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->UnloadEventStart(), Info()->AllowNegativeValue(),
+      TimeOrigin(), timing->UnloadEventStart(), AllowNegativeValues(),
       CrossOriginIsolatedCapability());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::unloadEventEnd() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
 
-  if (!Info()->AllowRedirectDetails() || !timing ||
+  if (!AllowRedirectDetails() || !timing ||
       !timing->CanRequestFromPreviousDocument()) {
     return 0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->UnloadEventEnd(), Info()->AllowNegativeValue(),
+      TimeOrigin(), timing->UnloadEventEnd(), AllowNegativeValues(),
       CrossOriginIsolatedCapability());
 }
 
@@ -118,7 +128,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::domInteractive() const {
     return 0.0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->DomInteractive(), Info()->AllowNegativeValue(),
+      TimeOrigin(), timing->DomInteractive(), AllowNegativeValues(),
       CrossOriginIsolatedCapability());
 }
 
@@ -129,8 +139,8 @@ DOMHighResTimeStamp PerformanceNavigationTiming::domContentLoadedEventStart()
     return 0.0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->DomContentLoadedEventStart(),
-      Info()->AllowNegativeValue(), CrossOriginIsolatedCapability());
+      TimeOrigin(), timing->DomContentLoadedEventStart(), AllowNegativeValues(),
+      CrossOriginIsolatedCapability());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::domContentLoadedEventEnd()
@@ -140,8 +150,8 @@ DOMHighResTimeStamp PerformanceNavigationTiming::domContentLoadedEventEnd()
     return 0.0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->DomContentLoadedEventEnd(),
-      Info()->AllowNegativeValue(), CrossOriginIsolatedCapability());
+      TimeOrigin(), timing->DomContentLoadedEventEnd(), AllowNegativeValues(),
+      CrossOriginIsolatedCapability());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::domComplete() const {
@@ -150,7 +160,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::domComplete() const {
     return 0.0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->DomComplete(), Info()->AllowNegativeValue(),
+      TimeOrigin(), timing->DomComplete(), AllowNegativeValues(),
       CrossOriginIsolatedCapability());
 }
 
@@ -160,7 +170,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::loadEventStart() const {
     return 0.0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->LoadEventStart(), Info()->AllowNegativeValue(),
+      TimeOrigin(), timing->LoadEventStart(), AllowNegativeValues(),
       CrossOriginIsolatedCapability());
 }
 
@@ -170,7 +180,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::loadEventEnd() const {
     return 0.0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->LoadEventEnd(), Info()->AllowNegativeValue(),
+      TimeOrigin(), timing->LoadEventEnd(), AllowNegativeValues(),
       CrossOriginIsolatedCapability());
 }
 
@@ -181,9 +191,26 @@ AtomicString PerformanceNavigationTiming::type() const {
   return "navigate";
 }
 
+AtomicString PerformanceNavigationTiming::deliveryType() const {
+  DocumentLoader* loader = GetDocumentLoader();
+  if (!loader) {
+    return GetDeliveryType();
+  }
+
+  switch (loader->GetNavigationDeliveryType()) {
+    case NavigationDeliveryType::kDefault:
+      return GetDeliveryType();
+    case NavigationDeliveryType::kNavigationalPrefetch:
+      return delivery_type_names::kNavigationalPrefetch;
+    default:
+      NOTREACHED();
+      return g_empty_atom;
+  }
+}
+
 uint16_t PerformanceNavigationTiming::redirectCount() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!Info()->AllowRedirectDetails() || !timing) {
+  if (!AllowRedirectDetails() || !timing) {
     return 0;
   }
   return timing->RedirectCount();
@@ -191,21 +218,21 @@ uint16_t PerformanceNavigationTiming::redirectCount() const {
 
 DOMHighResTimeStamp PerformanceNavigationTiming::redirectStart() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!Info()->AllowRedirectDetails() || !timing) {
+  if (!AllowRedirectDetails() || !timing) {
     return 0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->RedirectStart(), Info()->AllowNegativeValue(),
+      TimeOrigin(), timing->RedirectStart(), AllowNegativeValues(),
       CrossOriginIsolatedCapability());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::redirectEnd() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!Info()->AllowRedirectDetails() || !timing) {
+  if (!AllowRedirectDetails() || !timing) {
     return 0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->RedirectEnd(), Info()->AllowNegativeValue(),
+      TimeOrigin(), timing->RedirectEnd(), AllowNegativeValues(),
       CrossOriginIsolatedCapability());
 }
 
@@ -215,7 +242,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::fetchStart() const {
     return 0.0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->FetchStart(), Info()->AllowNegativeValue(),
+      TimeOrigin(), timing->FetchStart(), AllowNegativeValues(),
       CrossOriginIsolatedCapability());
 }
 
@@ -225,7 +252,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::responseEnd() const {
     return 0.0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->ResponseEnd(), Info()->AllowNegativeValue(),
+      TimeOrigin(), timing->ResponseEnd(), AllowNegativeValues(),
       CrossOriginIsolatedCapability());
 }
 

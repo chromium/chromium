@@ -17,8 +17,7 @@ blink::mojom::ResourceTimingInfoPtr GenerateResourceTimingForNavigation(
     const url::Origin& parent_origin,
     const blink::mojom::CommonNavigationParams& common_params,
     const blink::mojom::CommitNavigationParams& commit_params,
-    const network::mojom::URLResponseHead& response_head,
-    blink::mojom::RequestContextType context_type);
+    const network::mojom::URLResponseHead& response_head);
 
 }  // namespace content
 

@@ -101,7 +101,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
                       WebScopedVirtualTimePauser&,
                       ResourceType) override;
 
-  void AddResourceTiming(const ResourceTimingInfo&) override;
+  void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
+                         const AtomicString& initiator_type) override;
   bool AllowImage(bool images_enabled, const KURL&) const override;
 
   void PopulateResourceRequest(ResourceType,

@@ -35,6 +35,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -42,32 +43,31 @@
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_server_timing.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
-
-class ResourceLoadTiming;
 
 class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
   friend class PerformanceResourceTimingTest;
 
  public:
-  PerformanceResourceTiming(const mojom::blink::ResourceTimingInfo&,
+  // This constructor transfers ownership of the ResourceTimingInfo data to the
+  // PerformanceResourceTiming entry.
+  PerformanceResourceTiming(mojom::blink::ResourceTimingInfoPtr,
+                            const AtomicString& initiator_type,
                             base::TimeTicks time_origin,
                             bool cross_origin_isolated_capability,
-                            const AtomicString& initiator_type,
-                            LocalDOMWindow* source);
+                            ExecutionContext* context);
   ~PerformanceResourceTiming() override;
 
   const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 
   // Related doc: https://goo.gl/uNecAj.
-  virtual AtomicString initiatorType() const;
-  AtomicString deliveryType() const;
+  AtomicString initiatorType() const { return initiator_type_; }
+  virtual AtomicString deliveryType() const;
   AtomicString nextHopProtocol() const;
   virtual AtomicString renderBlockingStatus() const;
   virtual AtomicString contentType() const;
@@ -85,34 +85,32 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   DOMHighResTimeStamp firstInterimResponseStart() const;
   virtual DOMHighResTimeStamp responseEnd() const;
   uint64_t transferSize() const;
-  uint64_t encodedBodySize() const;
-  uint64_t decodedBodySize() const;
+  virtual uint64_t encodedBodySize() const;
+  virtual uint64_t decodedBodySize() const;
   uint16_t responseStatus() const;
   const HeapVector<Member<PerformanceServerTiming>>& serverTiming() const;
 
   void Trace(Visitor*) const override;
 
  protected:
-  // This constructor is for PerformanceNavigationTiming.
-  // Related doc: https://goo.gl/uNecAj.
-  PerformanceResourceTiming(
-      ResourceTimingInfo& info,
-      const AtomicString& initiator_type,
-      base::TimeTicks time_origin,
-      bool cross_origin_isolated_capability,
-      HeapVector<Member<PerformanceServerTiming>> server_timing,
-      LocalDOMWindow& source_window);
   void BuildJSONValue(V8ObjectBuilder&) const override;
 
   base::TimeTicks TimeOrigin() const { return time_origin_; }
   bool CrossOriginIsolatedCapability() const {
     return cross_origin_isolated_capability_;
   }
-  const scoped_refptr<ResourceTimingInfo> Info() const {
-    return resource_timing_info_;
-  }
+
+  bool AllowNegativeValues() const { return info_->allow_negative_values; }
+
   static uint64_t GetTransferSize(uint64_t encoded_body_size,
                                   mojom::blink::CacheState cache_state);
+
+ protected:
+  AtomicString GetDeliveryType() const;
+  void UpdateBodySizes(int64_t encoded_body_size, int64_t decoded_body_size) {
+    info_->encoded_body_size = encoded_body_size;
+    info_->decoded_body_size = decoded_body_size;
+  }
 
  private:
   // https://w3c.github.io/resource-timing/#dom-performanceresourcetiming-transfersize
@@ -124,14 +122,14 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   DOMHighResTimeStamp GetAnyFirstResponseStart() const;
   double WorkerReady() const;
 
-  // Do not access private fields directly. Use getter methods.
   AtomicString initiator_type_;
+
+  // Do not access private fields directly. Use getter methods.
   base::TimeTicks time_origin_;
   bool cross_origin_isolated_capability_;
 
-  scoped_refptr<ResourceTimingInfo> resource_timing_info_;
-  scoped_refptr<ResourceLoadTiming> resource_load_timing_;
   HeapVector<Member<PerformanceServerTiming>> server_timing_;
+  mojom::blink::ResourceTimingInfoPtr info_;
 };
 
 }  // namespace blink

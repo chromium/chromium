@@ -48,6 +48,8 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
@@ -71,12 +73,13 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
+#include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/stale_revalidation_resource_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/subresource_web_bundle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/subresource_web_bundle_list.h"
@@ -660,27 +663,23 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
       resource->GetResponse().DecodedBodyLength(), false);
 
   if (!is_static_data) {
-    // Resources loaded from memory cache should be reported the first time
-    // they're used.
-    scoped_refptr<ResourceTimingInfo> info = ResourceTimingInfo::Create(
-        resource->Options().initiator_info.name, base::TimeTicks::Now(),
-        request.GetRequestContext(), request.GetRequestDestination(),
-        request.GetMode());
-    // TODO(yoav): Getting the original URL before redirects here is only needed
-    // until Out-of-Blink CORS lands: https://crbug.com/736308
-    info->SetInitialURL(
-        resource->GetResourceRequest().GetRedirectInfo().has_value()
-            ? resource->GetResourceRequest().GetRedirectInfo()->original_url
-            : resource->GetResourceRequest().Url());
+    base::TimeTicks now = base::TimeTicks::Now();
     ResourceResponse final_response = resource->GetResponse();
     final_response.SetResourceLoadTiming(nullptr);
     final_response.SetEncodedDataLength(0);
-    info->SetFinalResponse(final_response);
-    info->SetLoadResponseEnd(info->InitialTime());
-    if (render_blocking_behavior == RenderBlockingBehavior::kBlocking) {
-      info->SetRenderBlockingStatus(RenderBlockingStatusType::kBlocking);
-    }
-    scheduled_resource_timing_reports_.push_back(std::move(info));
+    // Resources loaded from memory cache should be reported the first time
+    // they're used.
+    mojom::blink::ResourceTimingInfoPtr info = CreateResourceTimingInfo(
+        now,
+        resource->GetResourceRequest().GetRedirectInfo().has_value()
+            ? resource->GetResourceRequest().GetRedirectInfo()->original_url
+            : resource->GetResourceRequest().Url(),
+        &final_response);
+    info->response_end = now;
+    info->render_blocking_status =
+        render_blocking_behavior == RenderBlockingBehavior::kBlocking;
+    scheduled_resource_timing_reports_.push_back(ScheduledResourceTimingInfo{
+        std::move(info), resource->Options().initiator_info.name});
     if (!resource_timing_report_timer_.IsActive())
       resource_timing_report_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
   }
@@ -1134,7 +1133,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
                                                blocked_reason.value(), client);
     StorePerformanceTimingInitiatorInformation(
         resource, params.GetRenderBlockingBehavior());
-    if (auto info = resource_timing_info_map_.Take(resource)) {
+    auto info = resource_timing_info_map_.Take(resource);
+    if (!info.is_null()) {
       PopulateAndAddResourceTimingInfo(resource, info,
                                        /*response_end=*/base::TimeTicks::Now());
     }
@@ -1316,10 +1316,12 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
 void ResourceFetcher::ResourceTimingReportTimerFired(TimerBase* timer) {
   DCHECK_EQ(timer, &resource_timing_report_timer_);
-  Vector<scoped_refptr<ResourceTimingInfo>> timing_reports;
+  Vector<ScheduledResourceTimingInfo> timing_reports;
   timing_reports.swap(scheduled_resource_timing_reports_);
-  for (const auto& timing_info : timing_reports)
-    Context().AddResourceTiming(*timing_info);
+  for (auto& scheduled_report : timing_reports) {
+    Context().AddResourceTiming(std::move(scheduled_report.info),
+                                scheduled_report.initiator_type);
+  }
 }
 
 void ResourceFetcher::InitializeRevalidation(
@@ -1435,26 +1437,24 @@ void ResourceFetcher::StorePerformanceTimingInitiatorInformation(
   if (fetch_initiator == fetch_initiator_type_names::kInternal)
     return;
 
-  scoped_refptr<ResourceTimingInfo> info = ResourceTimingInfo::Create(
-      fetch_initiator, base::TimeTicks::Now(),
-      resource->GetResourceRequest().GetRequestContext(),
-      resource->GetResourceRequest().GetRequestDestination(),
-      resource->GetResourceRequest().GetMode());
-
-  if (render_blocking_behavior == RenderBlockingBehavior::kBlocking) {
-    info->SetRenderBlockingStatus(RenderBlockingStatusType::kBlocking);
-  }
-
-  resource_timing_info_map_.insert(resource, std::move(info));
+  resource_timing_info_map_.insert(
+      resource,
+      PendingResourceTimingInfo{base::TimeTicks::Now(), fetch_initiator,
+                                render_blocking_behavior});
 }
 
 void ResourceFetcher::RecordResourceTimingOnRedirect(
     Resource* resource,
     const ResourceResponse& redirect_response,
     const KURL& new_url) {
-  ResourceTimingInfoMap::iterator it = resource_timing_info_map_.find(resource);
-  if (it != resource_timing_info_map_.end())
-    it->value->AddRedirect(redirect_response, new_url);
+  PendingResourceTimingInfoMap::iterator it =
+      resource_timing_info_map_.find(resource);
+  if (it != resource_timing_info_map_.end()) {
+    if (ResourceLoadTiming* load_timing =
+            redirect_response.GetResourceLoadTiming()) {
+      it->value.redirect_end_time = load_timing->ReceiveHeadersEnd();
+    }
+  }
 }
 
 static bool IsDownloadOrStreamRequest(const ResourceRequest& request) {
@@ -2082,10 +2082,10 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
   const int64_t encoded_data_length =
       resource->GetResponse().EncodedDataLength();
 
-  if (scoped_refptr<ResourceTimingInfo> info =
-          resource_timing_info_map_.Take(resource)) {
+  PendingResourceTimingInfo info = resource_timing_info_map_.Take(resource);
+  if (!info.is_null()) {
     if (resource->GetResponse().ShouldPopulateResourceTiming())
-      PopulateAndAddResourceTimingInfo(resource, info, response_end);
+      PopulateAndAddResourceTimingInfo(resource, std::move(info), response_end);
   }
 
   resource->VirtualTimePauser().UnpauseVirtualTime();
@@ -2136,10 +2136,11 @@ void ResourceFetcher::HandleLoaderError(Resource* resource,
   inflight_keepalive_bytes_ -= inflight_keepalive_bytes;
 
   RemoveResourceLoader(resource->Loader());
+  PendingResourceTimingInfo info = resource_timing_info_map_.Take(resource);
 
-  if (scoped_refptr<ResourceTimingInfo> info =
-          resource_timing_info_map_.Take(resource))
-    PopulateAndAddResourceTimingInfo(resource, info, finish_time);
+  if (!info.is_null()) {
+    PopulateAndAddResourceTimingInfo(resource, std::move(info), finish_time);
+  }
 
   resource->VirtualTimePauser().UnpauseVirtualTime();
   // If the preload was cancelled due to an HTTP error, we don't want to request
@@ -2549,7 +2550,7 @@ FrameOrWorkerScheduler* ResourceFetcher::GetFrameOrWorkerScheduler() {
 
 void ResourceFetcher::PopulateAndAddResourceTimingInfo(
     Resource* resource,
-    scoped_refptr<ResourceTimingInfo> info,
+    const PendingResourceTimingInfo& pending_info,
     base::TimeTicks response_end) {
   if (resource->GetResourceRequest().IsFromOriginDirtyStyleSheet())
     return;
@@ -2560,6 +2561,8 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
       resource->Options().world_for_csp->IsIsolatedWorld()) {
     return;
   }
+
+  AtomicString initiator_type = pending_info.initiator_type;
 
   const KURL& initial_url =
       resource->GetResourceRequest().GetRedirectInfo().has_value()
@@ -2573,14 +2576,19 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
     if (!response.NetworkAccessed() &&
         (!response.WasFetchedViaServiceWorker() ||
          response.IsServiceWorkerPassThrough())) {
-      info->SetInitiatorType("early-hints");
+      initiator_type = "early-hints";
     }
   }
 
-  info->SetInitialURL(initial_url);
-  info->SetFinalResponse(resource->GetResponse());
-  info->SetLoadResponseEnd(response_end);
-  Context().AddResourceTiming(*info);
+  mojom::blink::ResourceTimingInfoPtr info = CreateResourceTimingInfo(
+      pending_info.start_time, initial_url, &resource->GetResponse());
+  if (info->allow_timing_details) {
+    info->last_redirect_end_time = pending_info.redirect_end_time;
+  }
+  info->render_blocking_status = pending_info.render_blocking_behavior ==
+                                 RenderBlockingBehavior::kBlocking;
+  info->response_end = response_end;
+  Context().AddResourceTiming(std::move(info), initiator_type);
 }
 
 SubresourceWebBundle* ResourceFetcher::GetMatchingBundle(

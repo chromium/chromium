@@ -75,11 +75,9 @@ class PerformanceMeasure;
 class PerformanceNavigation;
 class PerformanceObserver;
 class PerformanceTiming;
-class ResourceTimingInfo;
 class ScriptPromise;
 class ScriptState;
 class ScriptValue;
-class SecurityOrigin;
 class SoftNavigationEntry;
 class UserTiming;
 class V8ObjectBuilder;
@@ -198,26 +196,13 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
                          const AtomicString& container_name);
 
   // Generates and add a performance entry for the given ResourceTimingInfo.
-  // |overridden_initiator_type| allows the initiator type to be overridden to
-  // the frame element name for the main resource.
-  void GenerateAndAddResourceTiming(
-      const ResourceTimingInfo&,
-      const AtomicString& overridden_initiator_type = g_null_atom);
-  // Generates timing info suitable for appending to the performance entries of
-  // a context with |origin|. This should be rarely used; most callsites should
-  // prefer the convenience method |GenerateAndAddResourceTiming()|.
-  static mojom::blink::ResourceTimingInfoPtr GenerateResourceTiming(
-      const SecurityOrigin& destination_origin,
-      const ResourceTimingInfo&,
-      ExecutionContext& context_for_use_counter);
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
-                         const AtomicString& initiator_type,
-                         ExecutionContext* context);
+                         const AtomicString& initiator_type);
+
   void AddResourceTimingWithUnparsedServerTiming(
       mojom::blink::ResourceTimingInfoPtr,
       const String& server_timing_value,
-      const AtomicString& initiator_type,
-      ExecutionContext* context);
+      const AtomicString& initiator_type);
 
   void NotifyNavigationTimingToObservers();
 
@@ -384,12 +369,6 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
               scoped_refptr<base::SingleThreadTaskRunner>,
               ExecutionContext* context = nullptr);
 
-  // Expect WindowPerformance to override this method,
-  // WorkerPerformance doesn't have to override this.
-  virtual PerformanceNavigationTiming* CreateNavigationTimingInstance() {
-    return nullptr;
-  }
-
   bool CanAddResourceTimingEntry();
   void FireResourceTimingBufferFull(TimerBase*);
 
@@ -422,7 +401,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   PerformanceEntryVector visibility_state_buffer_;
   PerformanceEntryVector back_forward_cache_restoration_buffer_;
   PerformanceEntryVector soft_navigation_buffer_;
-  Member<PerformanceEntry> navigation_timing_;
+  Member<PerformanceNavigationTiming> navigation_timing_;
   Member<UserTiming> user_timing_;
   PerformanceEntryVector paint_entries_timing_;
   Member<PerformanceEventTiming> first_input_timing_;

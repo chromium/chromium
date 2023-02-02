@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -18,7 +19,8 @@ class PerformanceResourceTimingTest : public testing::Test {
                                   const AtomicString& connection_info) {
     mojom::blink::ResourceTimingInfo info;
     info.allow_timing_details = true;
-    PerformanceResourceTiming* timing = MakePerformanceResourceTiming(info);
+    PerformanceResourceTiming* timing =
+        MakePerformanceResourceTiming(info.Clone());
     return timing->GetNextHopProtocol(alpn_negotiated_protocol,
                                       connection_info);
   }
@@ -28,7 +30,8 @@ class PerformanceResourceTimingTest : public testing::Test {
       const AtomicString& connection_info) {
     mojom::blink::ResourceTimingInfo info;
     info.allow_timing_details = false;
-    PerformanceResourceTiming* timing = MakePerformanceResourceTiming(info);
+    PerformanceResourceTiming* timing =
+        MakePerformanceResourceTiming(info.Clone());
     return timing->GetNextHopProtocol(alpn_negotiated_protocol,
                                       connection_info);
   }
@@ -39,15 +42,15 @@ class PerformanceResourceTimingTest : public testing::Test {
 
  private:
   PerformanceResourceTiming* MakePerformanceResourceTiming(
-      const mojom::blink::ResourceTimingInfo& info) {
+      mojom::blink::ResourceTimingInfoPtr info) {
     std::unique_ptr<DummyPageHolder> dummy_page_holder =
         std::make_unique<DummyPageHolder>();
     return MakeGarbageCollected<PerformanceResourceTiming>(
-        info, base::TimeTicks(),
+        std::move(info), g_empty_atom, base::TimeTicks(),
         dummy_page_holder->GetDocument()
             .GetExecutionContext()
             ->CrossOriginIsolatedCapability(),
-        /*initiator_type=*/"", LocalDOMWindow::From(GetScriptState()));
+        dummy_page_holder->GetDocument().GetExecutionContext());
   }
 
   Persistent<ScriptState> script_state_;

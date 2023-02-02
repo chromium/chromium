@@ -59,6 +59,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -113,6 +114,7 @@
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_header.h"
@@ -132,8 +134,9 @@
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
@@ -222,6 +225,7 @@ struct SameSizeAsDocumentLoader
   absl::optional<ParsedPermissionsPolicy> isolated_app_permissions_policy;
   DocumentToken token;
   KURL url;
+  KURL original_url;
   AtomicString http_method;
   AtomicString referrer;
   scoped_refptr<EncodedFormData> http_body;
@@ -284,7 +288,8 @@ struct SameSizeAsDocumentLoader
   bool is_static_data;
   CommitReason commit_reason;
   uint64_t main_resource_identifier;
-  scoped_refptr<ResourceTimingInfo> navigation_timing_info;
+  mojom::blink::ResourceTimingInfoPtr resource_timing_info_for_parent;
+  base::TimeTicks last_redirect_end_time;
   WebScopedVirtualTimePauser virtual_time_pauser;
   Member<PrefetchedSignedExchangeManager> prefetched_signed_exchange_manager;
   const KURL web_bundle_physical_url;
@@ -435,6 +440,7 @@ DocumentLoader::DocumentLoader(
       initial_permissions_policy_(params_->permissions_policy_override),
       token_(params_->document_token),
       url_(params_->url),
+      original_url_(params_->url),
       http_method_(static_cast<String>(params_->http_method)),
       referrer_(static_cast<String>(params_->referrer)),
       http_body_(params_->http_body),
@@ -685,10 +691,6 @@ void DocumentLoader::Trace(Visitor* visitor) const {
 
 uint64_t DocumentLoader::MainResourceIdentifier() const {
   return main_resource_identifier_;
-}
-
-ResourceTimingInfo* DocumentLoader::GetNavigationTimingInfo() const {
-  return navigation_timing_info_.get();
 }
 
 WebString DocumentLoader::OriginalReferrer() const {
@@ -1091,9 +1093,6 @@ void DocumentLoader::BodyLoadingFinished(
     bool should_report_corb_blocking,
     const absl::optional<WebURLError>& error) {
   TRACE_EVENT0("loading", "DocumentLoader::BodyLoadingFinished");
-  response_.SetEncodedDataLength(total_encoded_data_length);
-  response_.SetEncodedBodyLength(total_encoded_body_length);
-  response_.SetDecodedBodyLength(total_decoded_body_length);
 
   if (!error) {
     GetFrameLoader().Progress().CompleteProgress(main_resource_identifier_);
@@ -1102,33 +1101,30 @@ void DocumentLoader::BodyLoadingFinished(
         completion_time, total_encoded_data_length, total_decoded_body_length,
         should_report_corb_blocking);
 
-    if (response_.ShouldPopulateResourceTiming() ||
-        is_error_page_for_failed_navigation_) {
-      navigation_timing_info_->SetFinalResponse(response_);
+    DOMWindowPerformance::performance(*frame_->DomWindow())
+        ->OnBodyLoadFinished(total_encoded_body_length,
+                             total_decoded_body_length);
 
-      // We only automatically report resource timing when Timing-Allow-Origin
-      // passes, to avoid exposing cross-origin navigation behavior.
-      // Also, as per spec, we avoid adding resource-timing information for
-      // link/back-forward navigations.
-      // TODO (crbug.com/1410705): Using navigation_type_ for this covers
-      // most cases but might still have very rare racy edge cases, such as
-      // extension or window.open with target cancelling an ongoing navigation
-      // and start a new navigation to the same URL.
-      if (frame_->Owner() && (response_.TimingAllowPassed()) &&
-          navigation_type_ == WebNavigationType::kWebNavigationTypeOther) {
-        // The response is being copied here to pass the Encoded and Decoded
-        // sizes.
-        // TODO(yoav): copy the sizes info directly.
-        navigation_timing_info_->SetLoadResponseEnd(completion_time);
-        if (state_ >= kCommitted) {
-          // Note that we currently lose timing info for empty documents,
-          // which will be fixed with synchronous commit.
-          // Main resource timing information is reported through the owner
-          // to be passed to the parent frame, if appropriate.
-
-          frame_->Owner()->AddResourceTiming(*navigation_timing_info_);
-        }
+    if (resource_timing_info_for_parent_) {
+      // Note that we already checked for Timing-Allow-Origin, otherwise we
+      // wouldn't have a resource_timing_info_for_parent_ in the first place
+      // and we would resort to fallback timing.
+      if (!RuntimeEnabledFeatures::ResourceTimingUseCORSForBodySizesEnabled() ||
+          (IsSameOriginInitiator() &&
+           !document_load_timing_.HasCrossOriginRedirect())) {
+        resource_timing_info_for_parent_->encoded_body_size =
+            total_encoded_body_length;
+        resource_timing_info_for_parent_->decoded_body_size =
+            total_decoded_body_length;
       }
+
+      // Note that we currently lose timing info for empty documents,
+      // which will be fixed with synchronous commit.
+      // Main resource timing information is reported through the owner
+      // to be passed to the parent frame, if appropriate.
+      resource_timing_info_for_parent_->response_end = completion_time;
+      frame_->Owner()->AddResourceTiming(
+          std::move(resource_timing_info_for_parent_));
     }
     FinishedLoading(completion_time);
     return;
@@ -1257,7 +1253,9 @@ void DocumentLoader::HandleRedirect(
       probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
       url_after_redirect, http_method_, http_body_.get());
 
-  navigation_timing_info_->AddRedirect(redirect_response, url_after_redirect);
+  if (ResourceLoadTiming* timing = redirect_response.GetResourceLoadTiming()) {
+    redirect_end_time_ = timing->ReceiveHeadersEnd();
+  }
 
   DCHECK(!GetTiming().FetchStart().is_null());
   GetTiming().AddRedirect(url_before_redirect, url_after_redirect);
@@ -1705,12 +1703,6 @@ void DocumentLoader::StartLoadingInternal() {
   // so we don't MarkFetchStart here.
   main_resource_identifier_ = CreateUniqueIdentifier();
 
-  navigation_timing_info_ = ResourceTimingInfo::Create(
-      fetch_initiator_type_names::kDocument, GetTiming().NavigationStart(),
-      mojom::blink::RequestContextType::IFRAME,
-      network::mojom::RequestDestination::kIframe,
-      network::mojom::RequestMode::kNavigate);
-  navigation_timing_info_->SetInitialURL(url_);
   virtual_time_pauser_ =
       frame_->GetFrameScheduler()->CreateWebScopedVirtualTimePauser(
           url_.GetString(),
@@ -2191,6 +2183,13 @@ bool ShouldInheritExplicitOriginKeying(const KURL& url, CommitReason reason) {
          reason == CommitReason::kJavascriptUrl;
 }
 
+bool DocumentLoader::IsSameOriginInitiator() const {
+  return requestor_origin_ &&
+         requestor_origin_->IsSameOriginWith(
+             SecurityOrigin::Create(Url()).get()) &&
+         Url().ProtocolIsInHTTPFamily();
+}
+
 void DocumentLoader::InitializeWindow(Document* owner_document) {
   // Javascript URLs and XSLT committed document must not pass a new
   // policy_container_, since they must keep the previous document one.
@@ -2617,15 +2616,7 @@ void DocumentLoader::CommitNavigation() {
     RecordParentAndChildContentLanguageMetric();
   }
 
-  bool is_same_origin_initiator = false;
-  if (requestor_origin_) {
-    const scoped_refptr<const SecurityOrigin> url_origin =
-        SecurityOrigin::Create(Url());
-
-    is_same_origin_initiator =
-        requestor_origin_->IsSameOriginWith(url_origin.get()) &&
-        Url().ProtocolIsInHTTPFamily();
-  }
+  bool is_same_origin_initiator = IsSameOriginInitiator();
 
   // No requestor origin means it's browser-initiated (which includes *all*
   // history navigations, including those initiated from `window.history`
@@ -2648,16 +2639,41 @@ void DocumentLoader::CommitNavigation() {
     document->SetDeferredCompositorCommitIsAllowed(false);
   }
 
-  if ((response_.IsHTTP() || is_error_page_for_failed_navigation_) &&
-      navigation_timing_info_) {
-    // The response is being copied here to pass the ServerTiming info.
-    // TODO(yoav): copy the ServerTiming info directly.
-    navigation_timing_info_->SetFinalResponse(response_);
-    // Make sure we're properly reporting error documents.
-    if (is_error_page_for_failed_navigation_) {
-      navigation_timing_info_->SetInitialURL(
-          pre_redirect_url_for_failed_navigations_);
+  if (response_.ShouldPopulateResourceTiming() ||
+      is_error_page_for_failed_navigation_) {
+    // We only report resource timing to the parent if:
+    // 1. We have a parent (owner)
+    // 2. Timing Allow Passed - otherwise we report fallback timing.
+    // 3. It's an external navigation (kWebNavigationTypeOther)
+    // TODO (crbug.com/1410705): Using navigation_type_ for this covers
+    // most cases but might still have very rare racy edge cases, such as
+    // extension or window.open with target cancelling an ongoing navigation
+    // and start a new navigation to the same URL.
+    if (frame_->Owner() && response_.TimingAllowPassed() &&
+        navigation_type_ == WebNavigationType::kWebNavigationTypeOther) {
+      resource_timing_info_for_parent_ = CreateResourceTimingInfo(
+          GetTiming().NavigationStart(), original_url_, &response_);
+      if (!is_same_origin_initiator ||
+          document_load_timing_.HasCrossOriginRedirect()) {
+        resource_timing_info_for_parent_->content_type = g_empty_string;
+        resource_timing_info_for_parent_->response_status = 0;
+      }
+      resource_timing_info_for_parent_->last_redirect_end_time =
+          redirect_end_time_;
     }
+
+    response_.SetTimingAllowPassed(true);
+    mojom::blink::ResourceTimingInfoPtr navigation_timing_info =
+        CreateResourceTimingInfo(base::TimeTicks(),
+                                 is_error_page_for_failed_navigation_
+                                     ? pre_redirect_url_for_failed_navigations_
+                                     : url_,
+                                 &response_);
+    navigation_timing_info->last_redirect_end_time = redirect_end_time_;
+    DCHECK(frame_);
+    DCHECK(frame_->DomWindow());
+    DOMWindowPerformance::performance(*frame_->DomWindow())
+        ->CreateNavigationTimingInstance(std::move(navigation_timing_info));
   }
 
   {

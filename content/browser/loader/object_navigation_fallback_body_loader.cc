@@ -71,8 +71,7 @@ void ObjectNavigationFallbackBodyLoader::CreateAndStart(
   blink::mojom::ResourceTimingInfoPtr timing_info =
       GenerateResourceTimingForNavigation(
           render_frame_host->GetParent()->GetLastCommittedOrigin(),
-          common_params, commit_params, response_head,
-          blink::mojom::RequestContextType::OBJECT);
+          common_params, commit_params, response_head);
   std::string server_timing_value =
       ExtractServerTimingValueIfNeeded(response_head);
 

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_NAVIGATION_TIMING_H_
 
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -19,7 +20,6 @@ class DocumentLoader;
 class DocumentLoadTiming;
 class LocalDOMWindow;
 class ExecutionContext;
-class ResourceTimingInfo;
 
 class CORE_EXPORT PerformanceNavigationTiming final
     : public PerformanceResourceTiming,
@@ -29,10 +29,8 @@ class CORE_EXPORT PerformanceNavigationTiming final
 
  public:
   PerformanceNavigationTiming(LocalDOMWindow&,
-                              ResourceTimingInfo&,
-                              base::TimeTicks time_origin,
-                              bool cross_origin_isolated_capability,
-                              HeapVector<Member<PerformanceServerTiming>>);
+                              mojom::blink::ResourceTimingInfoPtr,
+                              base::TimeTicks time_origin);
   ~PerformanceNavigationTiming() override;
 
   // Attributes inherited from PerformanceEntry.
@@ -58,8 +56,11 @@ class CORE_EXPORT PerformanceNavigationTiming final
   DOMHighResTimeStamp redirectStart() const override;
   DOMHighResTimeStamp redirectEnd() const override;
   DOMHighResTimeStamp responseEnd() const override;
+  AtomicString deliveryType() const override;
 
   void Trace(Visitor*) const override;
+
+  void OnBodyLoadFinished(int64_t encoded_body_size, int64_t decoded_body_size);
 
  protected:
   void BuildJSONValue(V8ObjectBuilder&) const override;
@@ -74,6 +75,8 @@ class CORE_EXPORT PerformanceNavigationTiming final
   DocumentLoader* GetDocumentLoader() const;
 
   DocumentLoadTiming* GetDocumentLoadTiming() const;
+
+  bool AllowRedirectDetails() const;
 
   ScriptValue NotRestoredReasonsBuilder(
       ScriptState* script_state,

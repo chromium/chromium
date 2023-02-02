@@ -44,6 +44,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/platform/web_document_subresource_filter.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -68,7 +69,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
@@ -1361,15 +1362,12 @@ TEST_F(FrameFetchContextTest, PrepareRequestHistogramCount) {
 }
 
 TEST_F(FrameFetchContextTest, AddResourceTimingWhenDetached) {
-  scoped_refptr<ResourceTimingInfo> info =
-      ResourceTimingInfo::Create("type", base::TimeTicks() + base::Seconds(0.3),
-                                 mojom::blink::RequestContextType::UNSPECIFIED,
-                                 network::mojom::RequestDestination::kEmpty,
-                                 network::mojom::RequestMode::kSameOrigin);
+  mojom::blink::ResourceTimingInfoPtr info = CreateResourceTimingInfo(
+      base::TimeTicks() + base::Seconds(0.3), KURL(), nullptr);
 
   dummy_page_holder = nullptr;
 
-  GetFetchContext()->AddResourceTiming(*info);
+  GetFetchContext()->AddResourceTiming(std::move(info), "type");
   // Should not crash.
 }
 

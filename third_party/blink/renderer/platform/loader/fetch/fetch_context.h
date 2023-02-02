@@ -37,6 +37,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -55,7 +56,6 @@ enum class ResourceType : uint8_t;
 class PermissionsPolicy;
 class KURL;
 struct ResourceLoaderOptions;
-class ResourceTimingInfo;
 class WebScopedVirtualTimePauser;
 
 // The FetchContext is an interface for performing context specific processing
@@ -101,7 +101,8 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
                               WebScopedVirtualTimePauser& virtual_time_pauser,
                               ResourceType);
 
-  virtual void AddResourceTiming(const ResourceTimingInfo&);
+  virtual void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
+                                 const AtomicString& initiator_type);
   virtual bool AllowImage(bool, const KURL&) const { return false; }
   virtual absl::optional<ResourceRequestBlockedReason> CanRequest(
       ResourceType,

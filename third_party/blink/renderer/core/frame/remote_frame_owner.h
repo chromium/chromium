@@ -34,7 +34,7 @@ class CORE_EXPORT RemoteFrameOwner final
   void SetContentFrame(Frame&) override;
   void ClearContentFrame() override;
   const FramePolicy& GetFramePolicy() const override { return frame_policy_; }
-  void AddResourceTiming(const ResourceTimingInfo&) override;
+  void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr) override;
   void DispatchLoad() override;
   void IntrinsicSizingInfoChanged() override;
   void SetNeedsOcclusionTracking(bool) override;

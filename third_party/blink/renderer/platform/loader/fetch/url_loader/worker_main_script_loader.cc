@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/worker_main_script_loader_client.h"
@@ -43,6 +43,7 @@ void WorkerMainScriptLoader::Start(
   DCHECK(resource_load_observer);
   DCHECK(client);
   request_id_ = worker_main_script_load_params->request_id;
+  start_time_ = base::TimeTicks::Now();
   initial_request_ = fetch_params.GetResourceRequest();
   resource_loader_options_ = fetch_params.Options();
   initial_request_url_ = fetch_params.GetResourceRequest().Url();
@@ -163,14 +164,14 @@ void WorkerMainScriptLoader::OnComplete(
     has_seen_end_of_data_ = true;
 
   // Reports resource timing info for the worker main script.
-  scoped_refptr<ResourceTimingInfo> timing_info = ResourceTimingInfo::Create(
-      g_empty_atom, base::TimeTicks::Now(),
-      initial_request_.GetRequestContext(),
-      initial_request_.GetRequestDestination(), initial_request_.GetMode());
-  timing_info->SetInitialURL(initial_request_url_);
-  timing_info->SetFinalResponse(resource_response_);
-  timing_info->SetLoadResponseEnd(status.completion_time);
-  fetch_context_->AddResourceTiming(*timing_info);
+  resource_response_.SetEncodedBodyLength(status.encoded_body_length);
+  resource_response_.SetDecodedBodyLength(status.decoded_body_length);
+  resource_response_.SetCurrentRequestUrl(last_request_url_);
+  mojom::blink::ResourceTimingInfoPtr timing_info = CreateResourceTimingInfo(
+      start_time_, initial_request_url_, &resource_response_);
+  timing_info->response_end = status.completion_time;
+  fetch_context_->AddResourceTiming(std::move(timing_info),
+                                    fetch_initiator_type_names::kOther);
 
   has_received_completion_ = true;
   status_ = status;

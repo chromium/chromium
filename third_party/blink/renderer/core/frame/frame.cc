@@ -345,7 +345,7 @@ void Frame::RenderFallbackContentWithResourceTiming(
   DOMWindowPerformance::performance(*local_dom_window)
       ->AddResourceTimingWithUnparsedServerTiming(
           std::move(timing), server_timing_value,
-          html_names::kObjectTag.LocalName(), local_dom_window);
+          html_names::kObjectTag.LocalName());
   RenderFallbackContent();
 }
 
