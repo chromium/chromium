@@ -14,6 +14,12 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/on_device_head_model.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+
+// TODO(crbug.com/1372112): clean up this build flag guard later if possible.
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/omnibox/browser/on_device_tail_model_executor.h"
+#endif
 
 class AutocompleteProviderListener;
 
@@ -44,8 +50,8 @@ class OnDeviceHeadProvider : public AutocompleteProvider {
   // from the on device head model for a search request to the model.
   struct OnDeviceHeadProviderParams;
 
-  // The structure holds file names or paths for on device models.
-  struct OnDeviceModelFiles;
+  // The structure holds params for on device model files.
+  struct OnDeviceModelFileParams;
 
   OnDeviceHeadProvider(AutocompleteProviderClient* client,
                        AutocompleteProviderListener* listener);
@@ -65,13 +71,16 @@ class OnDeviceHeadProvider : public AutocompleteProvider {
   // fetches by DoSearch and then calls NotifyListeners.
   void SearchDone(std::unique_ptr<OnDeviceHeadProviderParams> params);
 
-  // Helper functions to read model files from the static
+  // Helper functions to read model file params from the static
   // OnDeviceModelUpdateListener instance.
-  static OnDeviceModelFiles GetOnDeviceModelFiles();
+  static OnDeviceModelFileParams GetOnDeviceModelFileParams();
 
   // Fetches suggestions matching the params from the given on device model.
   static std::unique_ptr<OnDeviceHeadProviderParams> GetSuggestionsFromModel(
-      OnDeviceModelFiles model_files,
+      OnDeviceModelFileParams model_file_params,
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+      OnDeviceTailModelExecutor* tail_model_executor,
+#endif
       const size_t provider_max_matches,
       std::unique_ptr<OnDeviceHeadProviderParams> params);
 
@@ -89,6 +98,14 @@ class OnDeviceHeadProvider : public AutocompleteProvider {
   // The id will be increased whenever a new request is received from the
   // AutocompleteController.
   size_t on_device_search_request_id_;
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  using ExecutorUniquePtr =
+      std::unique_ptr<OnDeviceTailModelExecutor, base::OnTaskRunnerDeleter>;
+
+  // The executor to run the tail suggest model.
+  ExecutorUniquePtr on_device_tail_model_executor_;
+#endif
 
   base::WeakPtrFactory<OnDeviceHeadProvider> weak_ptr_factory_{this};
 };

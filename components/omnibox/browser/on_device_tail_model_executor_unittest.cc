@@ -56,9 +56,13 @@ class OnDeviceTailModelExecutorTest : public ::testing::Test {
  public:
   OnDeviceTailModelExecutorTest() {
     executor_ = std::make_unique<OnDeviceTailModelExecutorPublic>();
+    OnDeviceTailModelExecutor::ModelMetadata metadata;
+    metadata.mutable_lstm_model_params()->set_num_layer(kNumLayer);
+    metadata.mutable_lstm_model_params()->set_state_size(kStateSize);
+    metadata.mutable_lstm_model_params()->set_embedding_dimension(
+        kEmbeddingDim);
     EXPECT_TRUE(executor_->Init(GetTestFilePath("test_tail_model.tflite"),
-                                GetTestFilePath("vocab_test.txt"), kStateSize,
-                                kNumLayer, kEmbeddingDim));
+                                GetTestFilePath("vocab_test.txt"), metadata));
   }
 
  protected:
