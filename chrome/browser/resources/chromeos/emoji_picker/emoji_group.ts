@@ -327,7 +327,9 @@ export class EmojiGroupComponent extends PolymerElement {
   // TODO(b/264493836) This function works with displaying one set of GIFs.
   // It may need to be changed when loading and displaying several sets of
   // GIFs (i.e. when infinite scrolling is implemented).
-  filterColumn(data: EmojiVariants[], columnSide: SideEnum): EmojiVariants[] {
+  filterColumn(
+      data: EmojiVariants[], columnSide: SideEnum,
+      _dataLength: number): EmojiVariants[] {
     let leftColHeight = 0;
     let rightColHeight = 0;
 

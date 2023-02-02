@@ -40,6 +40,8 @@ export class EmojiSearch extends PolymerElement {
       searchResults: {type: Array},
       needIndexing: {type: Boolean, value: false},
       gifSupport: {type: Boolean, value: false},
+      searchQuery: {type: String, value: ''},
+      nextGifPos: {type: String, value: ''},
     };
   }
   categoriesData: EmojiGroupData;
@@ -59,6 +61,9 @@ export class EmojiSearch extends PolymerElement {
         ],
   };
   private fuseInstances = new Map<CategoryEnum, Fuse<EmojiVariants>>();
+  private nextGifPos: string;  // This variable ensures that we get the correct
+                               // set of GIFs when fetching more.
+  private scrollTimeout: number|null;
 
   static get observers() {
     return [
@@ -79,7 +84,7 @@ export class EmojiSearch extends PolymerElement {
   private onSearch(newSearch: string): void {
     this.set('searchResults', this.computeLocalSearchResults(newSearch));
     if (this.gifSupport) {
-      this.computeGifSearchResults(newSearch).then((searchResults) => {
+      this.computeInitialGifSearchResults(newSearch).then((searchResults) => {
         this.push('searchResults', ...searchResults);
       });
     }
@@ -243,7 +248,54 @@ export class EmojiSearch extends PolymerElement {
     return searchResults;
   }
 
-  private async computeGifSearchResults(search: string):
+  private onSearchScroll(): void {
+    if (this.gifSupport) {
+      if (this.scrollTimeout) {
+        clearTimeout(this.scrollTimeout);
+      }
+      this.scrollTimeout = setTimeout(() => {
+        this.checkScrollPosition();
+      }, 100);
+    }
+  }
+
+  /**
+   * Checks the current scroll position and decides if new GIF elements need to
+   * be fetched and displayed.
+   */
+  private checkScrollPosition(): void {
+    const thisRect = this.shadowRoot?.getElementById('results');
+    const searchResultRect = this.shadowRoot?.getElementById('search-results');
+
+    if (!thisRect || !searchResultRect) {
+      return;
+    }
+
+    // No need to append more GIFs if the first set of GIFs is still rendering.
+    if (searchResultRect.getBoundingClientRect().height <=
+        thisRect.getBoundingClientRect().height) {
+      return;
+    }
+
+    // Append more GIFs to show if user is near the bottom of the currently
+    // rendered GIFs (300px is around the average height of 2 GIFs).
+    if (searchResultRect!.getBoundingClientRect().bottom -
+            thisRect!.getBoundingClientRect().bottom <=
+        300) {
+      const gifIndex = this.searchResults.findIndex(
+          group => group.category === CategoryEnum.GIF);
+      if (gifIndex === -1) {
+        return;
+      }
+
+      this.computeFollowingGifSearchResults(this.$.search.getValue())
+          .then((searchResults) => {
+            this.push(['searchResults', gifIndex, 'emoji'], ...searchResults);
+          });
+    }
+  }
+
+  private async computeInitialGifSearchResults(search: string):
       Promise<EmojiGroupData> {
     if (!search) {
       return [];
@@ -252,6 +304,7 @@ export class EmojiSearch extends PolymerElement {
     const searchResults: EmojiGroupData = [];
     const apiProxy = EmojiPickerApiProxyImpl.getInstance();
     const {searchGifs} = await apiProxy.searchGifs(search);
+    this.nextGifPos = searchGifs.next;
     searchResults.push({
       'category': CategoryEnum.GIF,
       'group': '',
@@ -259,6 +312,18 @@ export class EmojiSearch extends PolymerElement {
       'searchOnly': false,
     });
     return searchResults;
+  }
+
+  private async computeFollowingGifSearchResults(search: string):
+      Promise<EmojiVariants[]> {
+    if (!search) {
+      return [];
+    }
+
+    const apiProxy = EmojiPickerApiProxyImpl.getInstance();
+    const {searchGifs} = await apiProxy.searchGifs(search, this.nextGifPos);
+    this.nextGifPos = searchGifs.next;
+    return apiProxy.convertTenorGifsToEmoji(searchGifs);
   }
 
   private onResultClick(ev: MouseEvent): void {

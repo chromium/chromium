@@ -252,7 +252,7 @@
   <div id="fake-focus-target" tabindex="-1"></div>
   <template is="dom-if" if="[[isVisual(category)]]">
     <div class="left-column">
-      <template is="dom-repeat" items="[[filterColumn(data, 'left')]]">
+      <template is="dom-repeat" items="[[filterColumn(data, 'left', data.length)]]">
         <img data-index$="[[getIndex(item)]]"
           class="emoji-button"
           is="cr-auto-img"
@@ -262,7 +262,7 @@
       </template>
     </div>
     <div class="right-column">
-      <template is="dom-repeat" items="[[filterColumn(data, 'right')]]">
+      <template is="dom-repeat" items="[[filterColumn(data, 'right', data.length)]]">
         <img data-index$="[[getIndex(item)]]"
           class="emoji-button"
           is="cr-auto-img"
