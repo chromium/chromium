@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 
 // kMaxVersionWithSmallLengths is the maximum QR version that uses the smaller
 // length fields, i.e. that is |VersionClass::SMALL|. See table 3.
@@ -91,7 +92,9 @@ struct QRVersionInfo {
   const std::array<int, 3> alignment_locations;
 
   // Total number of tiles for the QR code, size*size.
-  constexpr int total_size() const { return size * size; }
+  constexpr size_t total_size() const {
+    return base::checked_cast<size_t>(size * size);
+  }
 
   constexpr size_t total_bytes() const { return group1_bytes + group2_bytes; }
 
@@ -316,9 +319,9 @@ base::span<const uint16_t, 8> FormatInformationForECC(QRVersionInfo::ECC ecc) {
 
   switch (ecc) {
     case QRVersionInfo::ECC::kLow:
-      return base::span<const uint16_t, 8>(kFormatInformation, 8);
+      return base::span<const uint16_t, 8>(kFormatInformation, 8u);
     case QRVersionInfo::ECC::kMedium:
-      return base::span<const uint16_t, 8>(&kFormatInformation[8], 8);
+      return base::span<const uint16_t, 8>(&kFormatInformation[8], 8u);
   }
 }
 
