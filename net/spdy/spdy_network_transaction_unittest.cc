@@ -4866,9 +4866,9 @@ TEST_F(SpdyNetworkTransactionTest, PartialWrite) {
   // Chop the HEADERS frame into 5 chunks.
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyGet(nullptr, 0, 1, LOWEST));
-  const int kChunks = 5;
+  const size_t kChunks = 5u;
   std::unique_ptr<MockWrite[]> writes = ChopWriteFrame(req, kChunks);
-  for (int i = 0; i < kChunks; ++i) {
+  for (size_t i = 0; i < kChunks; ++i) {
     writes[i].sequence_number = i;
   }
 
