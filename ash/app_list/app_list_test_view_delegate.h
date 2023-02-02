@@ -79,8 +79,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   void GetContextMenuModel(const std::string& id,
                            AppListItemContext item_context,
                            GetContextMenuModelCallback callback) override;
-  ui::ImplicitAnimationObserver* GetAnimationObserver(
-      ash::AppListViewState target_state) override;
   void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,
                                 ui::MenuSourceType source_type) override;
   bool CanProcessEventsOnApplistViews() override;

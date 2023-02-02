@@ -109,11 +109,6 @@ void AppListTestViewDelegate::GetContextMenuModel(
   std::move(callback).Run(std::move(menu_model));
 }
 
-ui::ImplicitAnimationObserver* AppListTestViewDelegate::GetAnimationObserver(
-    ash::AppListViewState target_state) {
-  return nullptr;
-}
-
 void AppListTestViewDelegate::ShowWallpaperContextMenu(
     const gfx::Point& onscreen_location,
     ui::MenuSourceType source_type) {

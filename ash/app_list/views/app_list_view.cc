@@ -7,9 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
-#include <string>
 #include <utility>
-#include <vector>
 
 #include "ash/app_list/app_list_event_targeter.h"
 #include "ash/app_list/app_list_metrics.h"
@@ -29,15 +27,9 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "base/trace_event/trace_event.h"
-#include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -56,7 +48,7 @@ namespace {
 // to the first page.
 constexpr int kAppListPageResetTimeLimitMinutes = 20;
 
-// When true, immdeidately fires the page reset timer upon starting.
+// When true, immediately fires the page reset timer upon starting.
 bool skip_page_reset_timer_for_testing = false;
 
 // This view forwards the focus to the search box widget by providing it as a
@@ -193,102 +185,6 @@ void AppListView::StateAnimationMetricsReporter::RecordMetrics(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// An animation observer to notify AppListView when animations for an app list
-// view state transition complete. The observer goes through the following
-// states:
-// 1. kIdle
-// 2. kReady, once `Reset()` has been called, and target app list state has been
-//    set.
-// 3. kActive, once `Activate()` has been called.
-// 4. kTransitionDone, once `SetTransitionDone()` has been called.
-//    *   `SetTransitionDone()` gets called when observed implicit animation
-//        complete, but can be called directly if the app list view state is
-//        updated without animation.
-// 5. kIdle, once the app list view has been notified that the transition has
-//    complete.
-//
-// Note that 3. and 4. may happen out of order - app list view will only be
-// notified of transition completion when both steps are complete. The goal is
-// to ensure that state transition notification is not sent out prematurely,
-// before the internal app list view state is updated.
-class StateTransitionNotifier : public ui::ImplicitAnimationObserver {
- public:
-  explicit StateTransitionNotifier(AppListView* view) : view_(view) {}
-
-  StateTransitionNotifier(const StateTransitionNotifier&) = delete;
-  StateTransitionNotifier& operator=(const StateTransitionNotifier&) = delete;
-
-  ~StateTransitionNotifier() override = default;
-
-  // Resets the notifier, and set a new target app list state.
-  void Reset(AppListViewState target_app_list_state) {
-    StopObservingImplicitAnimations();
-
-    state_ = State::kReady;
-    target_app_list_view_state_ = target_app_list_state;
-  }
-
-  // Activates the notifier - moves the notifier in the state where it can
-  // notify the app list view of state transition completion.
-  // NOTE: If the app list state transition has already completed, the app list
-  // view will get notified immediately.
-  void Activate() {
-    DCHECK(target_app_list_view_state_.has_value());
-
-    if (state_ == State::kTransitionDone) {
-      NotifyTransitionCompleted();
-      return;
-    }
-
-    DCHECK_EQ(state_, State::kReady);
-    state_ = State::kActive;
-  }
-
-  // Marks the app list view state transition as completed. If the notifier is
-  // active, it will notify the app list view of the transition completion.
-  // NOTE: This should be called directly only if the notifier is not added as a
-  // transition animation observer. If the notifier is observing the animation,
-  // this method gets called on the animation completion.
-  void SetTransitionDone() {
-    DCHECK_NE(state_, State::kTransitionDone);
-    DCHECK_NE(state_, State::kIdle);
-
-    const bool can_notify = state_ == State::kActive;
-    state_ = State::kTransitionDone;
-
-    if (can_notify)
-      NotifyTransitionCompleted();
-  }
-
- private:
-  enum class State { kIdle, kReady, kActive, kTransitionDone };
-
-  // Overridden from ui::ImplicitAnimationObserver:
-  void OnImplicitAnimationsCompleted() override {
-    StopObservingImplicitAnimations();
-
-    TRACE_EVENT_NESTABLE_ASYNC_END1("ui", "AppList::StateTransitionAnimations",
-                                    this, "state",
-                                    target_app_list_view_state_.value());
-    SetTransitionDone();
-  }
-
-  void NotifyTransitionCompleted() {
-    DCHECK_EQ(state_, State::kTransitionDone);
-
-    state_ = State::kIdle;
-
-    AppListViewState app_list_state = *target_app_list_view_state_;
-    target_app_list_view_state_ = absl::nullopt;
-    view_->OnBoundsAnimationCompleted(app_list_state);
-  }
-
-  State state_ = State::kIdle;
-  AppListView* const view_;
-  absl::optional<AppListViewState> target_app_list_view_state_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
 // AppListView::TestApi
 
 AppListView::TestApi::TestApi(AppListView* view) : view_(view) {
@@ -306,8 +202,6 @@ PagedAppsGridView* AppListView::TestApi::GetRootAppsGridView() {
 
 AppListView::AppListView(AppListViewDelegate* delegate)
     : delegate_(delegate),
-      state_transition_notifier_(
-          std::make_unique<StateTransitionNotifier>(this)),
       state_animation_metrics_reporter_(
           std::make_unique<StateAnimationMetricsReporter>()) {
   CHECK(delegate);
@@ -619,10 +513,6 @@ void AppListView::EnsureWidgetBoundsMatchCurrentState() {
   SetState(target_app_list_state_);
 }
 
-int AppListView::GetRemainingBoundsAnimationDistance() const {
-  return GetWidget()->GetLayer()->transform().To2dTranslation().y();
-}
-
 display::Display AppListView::GetDisplayNearestView() const {
   return display::Screen::GetScreen()->GetDisplayNearestView(
       GetWidget()->GetNativeWindow()->parent());
@@ -634,10 +524,6 @@ AppsContainerView* AppListView::GetAppsContainerView() {
 
 PagedAppsGridView* AppListView::GetRootAppsGridView() {
   return GetAppsContainerView()->apps_grid_view();
-}
-
-AppsGridView* AppListView::GetFolderAppsGridView() {
-  return GetAppsContainerView()->app_list_folder_view()->items_grid_view();
 }
 
 AppListStateTransitionSource AppListView::GetAppListStateTransitionSource(
@@ -809,9 +695,6 @@ void AppListView::SetState(AppListViewState new_state) {
 
   MaybeCreateAccessibilityEvent(new_state);
 
-  // Prepare state transition notifier for the new state transition.
-  state_transition_notifier_->Reset(new_state);
-
   app_list_main_view_->contents_view()->OnAppListViewTargetStateChanged(
       new_state);
   RecordStateTransitionForUma(new_state);
@@ -828,13 +711,6 @@ void AppListView::SetState(AppListViewState new_state) {
   }
 
   UpdateWindowTitle();
-
-  // Activate state transition notifier after the app list state has been
-  // updated, to ensure any observers that handle app list view state
-  // transitions don't end up updating app list state while another state
-  // transition is in progress (in case the transition animations complete
-  // synchronously).
-  state_transition_notifier_->Activate();
 
   // Updates the visibility of app list items according to the change of
   // |app_list_state_|.
@@ -871,81 +747,6 @@ void AppListView::OnAppListVisibilityWillChange(bool visible) {
 
 void AppListView::OnAppListVisibilityChanged(bool shown) {
   GetAppsContainerView()->OnAppListVisibilityChanged(shown);
-}
-
-void AppListView::ApplyBoundsAnimation(AppListViewState target_state,
-                                       base::TimeDelta duration_ms) {
-  gfx::Rect target_bounds = GetPreferredWidgetBounds();
-
-  // When closing the view should animate to the shelf bounds. The workspace
-  // area will not reflect an autohidden shelf so ask for the proper bounds.
-  const int y_for_closed_state = 0;
-  if (target_state == AppListViewState::kClosed) {
-    target_bounds.set_y(y_for_closed_state);
-  }
-
-  // Record the current transform before removing it because this bounds
-  // animation could be pre-empting another bounds animation.
-  ui::Layer* layer = GetWidget()->GetLayer();
-
-  // Adjust the closed state y to account for auto-hidden shelf.
-  const int current_bounds_y = app_list_state_ == AppListViewState::kClosed
-                                   ? y_for_closed_state
-                                   : layer->bounds().y();
-  const int current_y_with_transform =
-      current_bounds_y + GetRemainingBoundsAnimationDistance();
-
-  // Only report animation throughput for full state transitions - i.e. when the
-  // starting app list view position matches the expected position for the
-  // current app list state. The goal is to reduce noise introduced by partial
-  // state transitions - for example
-  // *   When interrupting another state transition half-way, in which case the
-  //     layer has non-identity ransform.
-  bool report_animation_throughput =
-      layer->transform() == gfx::Transform() &&
-      layer->bounds() == GetPreferredWidgetBounds();
-
-  // Schedule the animation; set to the target bounds, and make the transform
-  // to make this appear in the original location. Then set an empty transform
-  // with the animation.
-  layer->SetBounds(target_bounds);
-  ResetSubpixelPositionOffset(layer);
-
-  gfx::Transform transform;
-  const int y_offset = current_y_with_transform - target_bounds.y();
-  transform.Translate(0, y_offset);
-  layer->SetTransform(transform);
-  animation_end_timestamp_ = base::TimeTicks::Now() + duration_ms;
-
-  // Reset animation metrics reporter when animation is started.
-  ResetTransitionMetricsReporter();
-
-  if (target_state != AppListViewState::kClosed) {
-    DCHECK(target_state == AppListViewState::kFullscreenAllApps ||
-           target_state == AppListViewState::kFullscreenSearch);
-    TabletModeAnimationTransition transition_type =
-        target_state == AppListViewState::kFullscreenAllApps
-            ? TabletModeAnimationTransition::kEnterFullscreenAllApps
-            : TabletModeAnimationTransition::kEnterFullscreenSearch;
-    state_animation_metrics_reporter_->SetTabletModeAnimationTransition(
-        transition_type);
-  }
-
-  ui::ScopedLayerAnimationSettings animation(layer->GetAnimator());
-  animation.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
-  absl::optional<ui::AnimationThroughputReporter> reporter;
-  if (report_animation_throughput) {
-    reporter.emplace(
-        animation.GetAnimator(),
-        metrics_util::ForSmoothness(GetStateTransitionMetricsReportCallback()));
-  }
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "AppList::StateTransitionAnimations",
-                                    state_transition_notifier_.get());
-  animation.AddObserver(state_transition_notifier_.get());
-  animation.SetTransitionDuration(duration_ms);
-  animation.SetTweenType(gfx::Tween::EASE_OUT);
-  layer->SetTransform(gfx::Transform());
 }
 
 void AppListView::SetStateFromSearchBoxView(bool search_box_is_empty,
@@ -1008,34 +809,6 @@ void AppListView::ResetTransitionMetricsReporter() {
 void AppListView::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(GetWidget()->GetNativeView(), window);
   window->RemoveObserver(this);
-}
-
-void AppListView::OnBoundsAnimationCompleted(AppListViewState target_state) {
-  const bool was_animation_interrupted =
-      GetRemainingBoundsAnimationDistance() != 0;
-
-  if (target_state == AppListViewState::kClosed) {
-    // Close embedded Assistant UI if it is open, to reset the
-    // |assistant_page_view| bounds and AppListState.
-    auto* contents_view = app_list_main_view()->contents_view();
-    if (contents_view->IsShowingEmbeddedAssistantUI())
-      contents_view->ShowEmbeddedAssistantUI(false);
-  }
-
-  ui::ImplicitAnimationObserver* animation_observer =
-      delegate_->GetAnimationObserver(target_state);
-  if (animation_observer)
-    animation_observer->OnImplicitAnimationsCompleted();
-
-  // Layout if the animation was completed.
-  if (!was_animation_interrupted)
-    Layout();
-
-  // NOTE: `target_state` may not match `app_list_state_` if
-  // `OnBoundsAnimationCompleted()` gets called synchronously - for example,
-  // for state changes with side shelf.
-  delegate_->OnStateTransitionAnimationCompleted(target_state,
-                                                 was_animation_interrupted);
 }
 
 void AppListView::RedirectKeyEventToSearchBox(ui::KeyEvent* event) {

@@ -19,7 +19,6 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
-class ImplicitAnimationObserver;
 class SimpleMenuModel;
 }  // namespace ui
 
@@ -99,11 +98,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   virtual void GetContextMenuModel(const std::string& id,
                                    AppListItemContext item_context,
                                    GetContextMenuModelCallback callback) = 0;
-
-  // Returns an animation observer if the |target_state| is interesting to the
-  // delegate.
-  virtual ui::ImplicitAnimationObserver* GetAnimationObserver(
-      AppListViewState target_state) = 0;
 
   // Show wallpaper context menu from the specified onscreen location.
   virtual void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,

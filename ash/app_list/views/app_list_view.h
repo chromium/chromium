@@ -6,8 +6,6 @@
 #define ASH_APP_LIST_VIEWS_APP_LIST_VIEW_H_
 
 #include <memory>
-#include <string>
-#include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
@@ -20,7 +18,6 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
-#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -46,14 +43,9 @@ class AppsGridView;
 class PagedAppsGridView;
 class PaginationModel;
 class SearchBoxView;
-class StateTransitionNotifier;
 
 FORWARD_DECLARE_TEST(AppListControllerImplTest,
                      CheckAppListViewBoundsWhenDismissVKeyboard);
-
-// The fraction of app list height that the app list must be released at in
-// order to transition to the next state.
-constexpr int kAppListThresholdDenominator = 3;
 
 // AppListView is the top-level view and controller of app list UI. It creates
 // and hosts a AppsGridView and passes AppListModel to it for display.
@@ -107,19 +99,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
    private:
     AppListView* const view_;
   };
-
-  // The opacity of the app list background.
-  static constexpr float kAppListOpacity = 0.95;
-
-  // The opacity of the app list background with blur.
-  static constexpr float kAppListOpacityWithBlur = 0.8;
-
-  // The preferred blend alpha with wallpaper color for background.
-  static constexpr int kAppListColorDarkenAlpha = 178;
-
-  // The duration the AppListView ignores scroll events which could transition
-  // its state.
-  static constexpr int kScrollIgnoreTimeMs = 500;
 
   // Does not take ownership of |delegate|.
   explicit AppListView(AppListViewDelegate* delegate);
@@ -238,11 +217,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   void OnTabletModeAnimationTransitionNotified(
       TabletModeAnimationTransition animation_transition);
 
-  // Moves the AppListView off screen and calls a layout if needed.
-  void OnBoundsAnimationCompleted(AppListViewState target_state);
-
-  gfx::NativeView parent_window() const { return parent_window_; }
-
   AppListViewState app_list_state() const { return app_list_state_; }
 
   SearchBoxView* search_box_view() const { return search_box_view_; }
@@ -297,10 +271,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Set child views for |target_state|.
   void SetChildViewsForStateTransition(AppListViewState target_state);
 
-  // Applies a bounds animation on this views layer.
-  void ApplyBoundsAnimation(AppListViewState target_state,
-                            base::TimeDelta duration_ms);
-
   // Records the state transition for UMA.
   void RecordStateTransitionForUma(AppListViewState new_state);
 
@@ -312,10 +282,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // display bounds available to the app list view change.
   void EnsureWidgetBoundsMatchCurrentState();
 
-  // Returns the remaining vertical distance for the bounds movement
-  // animation.
-  int GetRemainingBoundsAnimationDistance() const;
-
   // Gets the display nearest to the parent window.
   display::Display GetDisplayNearestView() const;
 
@@ -324,9 +290,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   // Gets the root apps grid view owned by this view.
   PagedAppsGridView* GetRootAppsGridView();
-
-  // Gets the apps grid view within the folder view owned by this view.
-  AppsGridView* GetFolderAppsGridView();
 
   // Gets the AppListStateTransitionSource for |app_list_state_| to
   // |target_state|. If we are not interested in recording a state transition
@@ -356,7 +319,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // prevent A11Y announcements when showing the assistant UI.
   int accessibility_event_disablers_ = 0;
   AppListMainView* app_list_main_view_ = nullptr;
-  gfx::NativeView parent_window_ = nullptr;
 
   SearchBoxView* search_box_view_ = nullptr;  // Owned by views hierarchy.
 
@@ -366,19 +328,10 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Whether the view is being built.
   bool is_building_ = false;
 
-  // The velocity of the gesture event.
-  float last_fling_velocity_ = 0;
-
   // The state of the app list, controlled via SetState().
   AppListViewState app_list_state_ = AppListViewState::kClosed;
   // Set to target app list state while `SetState()` is being handled.
   AppListViewState target_app_list_state_ = AppListViewState::kClosed;
-
-  // The timestamp when the ongoing animation ends.
-  base::TimeTicks animation_end_timestamp_;
-
-  // An observer to notify AppListView of bounds animation completion.
-  std::unique_ptr<StateTransitionNotifier> state_transition_notifier_;
 
   // Metric reporter for state change animations.
   const std::unique_ptr<StateAnimationMetricsReporter>

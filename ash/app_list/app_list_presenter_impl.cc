@@ -19,7 +19,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/metrics_util.h"
-#include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -61,10 +60,6 @@ constexpr float kFullscreenLauncherFadeAnimationScale = 0.92f;
 // The fade in/out animation duration for tablet <-> clamshell mode transition.
 constexpr base::TimeDelta kFullscreenLauncherTransitionDuration =
     base::Milliseconds(350);
-
-inline ui::Layer* GetLayer(views::Widget* widget) {
-  return widget->GetNativeView()->layer();
-}
 
 // Callback from the compositor when it presented a valid frame. Used to
 // record UMA of input latency.
@@ -177,12 +172,8 @@ AppListPresenterImpl::AppListPresenterImpl(AppListControllerImpl* controller)
 }
 
 AppListPresenterImpl::~AppListPresenterImpl() {
-  // Ensures app list view goes before the controller since pagination model
-  // lives in the controller and app list view would access it on destruction.
-  if (view_) {
-    view_->GetAppsPaginationModel()->RemoveObserver(this);
-    if (view_->GetWidget())
-      view_->GetWidget()->CloseNow();
+  if (view_ && view_->GetWidget()) {
+    view_->GetWidget()->CloseNow();
   }
   CHECK(!views::WidgetObserver::IsInObserverList());
 }
@@ -518,7 +509,6 @@ void AppListPresenterImpl::SetView(AppListView* view) {
   views::Widget* widget = view_->GetWidget();
   widget->AddObserver(this);
   aura::client::GetFocusClient(widget->GetNativeView())->AddObserver(this);
-  view_->GetAppsPaginationModel()->AddObserver(this);
 
   // Sync the |onscreen_keyboard_shown_| in case |view_| is not initiated when
   // the on-screen is shown.
@@ -531,10 +521,7 @@ void AppListPresenterImpl::ResetView() {
 
   views::Widget* widget = view_->GetWidget();
   widget->RemoveObserver(this);
-  GetLayer(widget)->GetAnimator()->RemoveObserver(this);
   aura::client::GetFocusClient(widget->GetNativeView())->RemoveObserver(this);
-
-  view_->GetAppsPaginationModel()->RemoveObserver(this);
 
   view_ = nullptr;
 }
@@ -622,24 +609,6 @@ void AppListPresenterImpl::OnWindowFocused(aura::Window* gained_focus,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AppListPresenterImpl, ui::ImplicitAnimationObserver implementation:
-
-void AppListPresenterImpl::OnImplicitAnimationsCompleted() {
-  StopObservingImplicitAnimations();
-
-  // This class observes the closing animation only.
-  OnVisibilityChanged(GetTargetVisibility(), GetDisplayId());
-
-  if (is_target_visibility_show_) {
-    view_->GetWidget()->Activate();
-  } else {
-    // Hide the widget so it can be re-shown without re-creating it.
-    view_->GetWidget()->Hide();
-    OnClosed();
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // AppListPresenterImpl, views::WidgetObserver implementation:
 
 void AppListPresenterImpl::OnWidgetDestroying(views::Widget* widget) {
@@ -657,17 +626,6 @@ void AppListPresenterImpl::OnWidgetVisibilityChanged(views::Widget* widget,
                                                      bool visible) {
   DCHECK_EQ(view_->GetWidget(), widget);
   OnVisibilityChanged(visible, GetDisplayId());
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// AppListPresenterImpl, PaginationModelObserver implementation:
-
-void AppListPresenterImpl::TotalPagesChanged(int previous_page_count,
-                                             int new_page_count) {}
-
-void AppListPresenterImpl::SelectedPageChanged(int old_selected,
-                                               int new_selected) {
-  current_apps_page_ = new_selected;
 }
 
 void AppListPresenterImpl::RequestPresentationTime(
@@ -731,10 +689,12 @@ void AppListPresenterImpl::OnTabletToClamshellTransitionAnimationDone(
   auto* window = view_->GetWidget()->GetNativeWindow();
 
   if (!aborted) {
-    if (target_visibility)
+    if (target_visibility) {
       view_->Layout();
-    else if (!target_visibility && !window->is_destroying())
+    } else if (!target_visibility && !window->is_destroying()) {
       window->Hide();
+      OnClosed();
+    }
   }
 
   controller_->OnStateTransitionAnimationCompleted(view_->app_list_state(),

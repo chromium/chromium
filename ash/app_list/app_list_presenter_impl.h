@@ -12,7 +12,6 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/ash_export.h"
-#include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
@@ -22,12 +21,13 @@
 #include "base/time/time.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/window_observer.h"
-#include "ui/compositor/layer_animation_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
-#include "ui/display/screen.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget_observer.h"
+
+namespace ui {
+class ScopedLayerAnimationSettings;
+}  // namespace ui
 
 namespace ash {
 class AppListControllerImpl;
@@ -40,9 +40,7 @@ enum class AppListViewState;
 // activation state and mouse/touch events to dismiss the UI. Updates the shelf
 // launcher icon state.
 class ASH_EXPORT AppListPresenterImpl
-    : public PaginationModelObserver,
-      public aura::client::FocusChangeObserver,
-      public ui::ImplicitAnimationObserver,
+    : public aura::client::FocusChangeObserver,
       public views::WidgetObserver,
       public display::DisplayObserver,
       public ShelfObserver {
@@ -161,17 +159,10 @@ class ASH_EXPORT AppListPresenterImpl
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;
 
-  // ui::ImplicitAnimationObserver overrides:
-  void OnImplicitAnimationsCompleted() override;
-
   // views::WidgetObserver overrides:
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetDestroyed(views::Widget* widget) override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
-
-  // PaginationModelObserver overrides:
-  void TotalPagesChanged(int previous_page_count, int new_page_count) override;
-  void SelectedPageChanged(int old_selected, int new_selected) override;
 
   // DisplayObserver overrides:
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -215,13 +206,6 @@ class ASH_EXPORT AppListPresenterImpl
 
   // The AppListView this class manages, owned by its widget.
   AppListView* view_ = nullptr;
-
-  // The current page of the AppsGridView of |view_|. This is stored outside of
-  // the view's PaginationModel, so that it persists when the view is destroyed.
-  int current_apps_page_ = -1;
-
-  // Cached bounds of |view_| for snapping back animation after over-scroll.
-  gfx::Rect view_bounds_;
 
   // Whether the presenter is currently changing app list view state to shown.
   // TODO(https://crbug.com/1307871): Remove this when the linked crash gets
