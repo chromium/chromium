@@ -42,6 +42,16 @@ BackgroundBridge.BrailleBackground = {
         BridgeConstants.BrailleBackground.Action.REFRESH_BRAILLE_TABLE,
         brailleTable);
   },
+
+  /**
+   * @param {!string} text The text to write in Braille.
+   * @returns {!Promise<boolean>}
+   */
+  async write(text) {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.BrailleBackground.TARGET,
+        BridgeConstants.BrailleBackground.Action.WRITE, text);
+  },
 };
 
 BackgroundBridge.BrailleCommandHandler = {
