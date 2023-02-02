@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
@@ -365,6 +366,10 @@ const char kSmilAnimatedDocument[] = R"SVG(
 )SVG";
 
 TEST_F(SVGImageSimTest, AnimationsPausedWhenImageScrolledOutOfView) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kThrottleOffscreenAnimatingSvgImages);
+
   SimRequest main_resource("https://example.com/", "text/html");
   SimSubresourceRequest image_resource("https://example.com/image.svg",
                                        "image/svg+xml");
