@@ -709,11 +709,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             setAccessibilityDescription(stripTab, getTabById(id));
             setAccessibilityDescription(findTabById(prevId), getTabById(prevId));
         }
-
-        StripLayoutTab selectedTab = findTabById(id);
-        StripLayoutTab prevTab = findTabById(prevId);
-        selectedTab.setContainerOpacity(TAB_OPACITY_VISIBLE_FOREGROUND);
-        if (prevTab != null) prevTab.setContainerOpacity(TAB_OPACITY_HIDDEN);
     }
 
     /**
@@ -866,25 +861,40 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
     }
 
+    private void setForegroundTabContainerVisible(StripLayoutTab tab, int selectedTabId) {
+        // Don't interrupt tab group background tab visibility.
+        if (tab.getContainerOpacity() != TAB_OPACITY_VISIBLE_BACKGROUND) {
+            float containerOpacity = tab.getId() == selectedTabId ? TAB_OPACITY_VISIBLE_FOREGROUND
+                                                                  : TAB_OPACITY_HIDDEN;
+            tab.setContainerOpacity(containerOpacity);
+        }
+    }
+
     /**
-     * Called to hide dividers when adjacent to the selected tab. Also bolds the first divider for
-     * a tab group when in edit mode.
+     * Called to show/hide dividers and the foreground tab container. Dividers are only necessary
+     * between tabs that both do not have a visible tab container (foreground or background).
      */
-    private void updateDividers() {
+    private void updateForegroundTabContainersAndDividers() {
         if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) return;
 
         // Validate the index. For example, the index can be {@link TabList.INVALID_TAB_INDEX} when
         // all tabs are closed.
         int index = mModel.index();
         if (index < 0 || index >= mStripTabs.length) return;
+        int selectedTabId = mStripTabs[index].getId();
 
         // Divider is never shown for the first tab.
         mStripTabs[0].setDividerOpacity(DIVIDER_HIDDEN_OPACITY);
+        setForegroundTabContainerVisible(mStripTabs[0], selectedTabId);
 
-        int selectedTabId = mStripTabs[index].getId();
         for (int i = 1; i < mStripTabs.length; i++) {
             final StripLayoutTab prevTab = mStripTabs[i - 1];
             final StripLayoutTab currTab = mStripTabs[i];
+
+            // Set container opacity.
+            setForegroundTabContainerVisible(currTab, selectedTabId);
+
+            // Set divider opacity.
             if (prevTab.getId() == selectedTabId || currTab.getId() == selectedTabId
                     || currTab.getContainerOpacity() > TAB_OPACITY_HIDDEN) {
                 // Dividers adjacent to selected tab are hidden. Additionally, when tab containers
@@ -1637,7 +1647,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         updateCloseButtons();
 
         // 9. Show dividers between inactive tabs.
-        updateDividers();
+        updateForegroundTabContainersAndDividers();
     }
 
     private void computeTabInitialPositions() {
@@ -1951,7 +1961,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             Tab tab = getTabById(mInteractingTab.getId());
             computeAndUpdateTabGroupMargins(true, animationList);
             if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-                setTabGroupContainersVisible(mTabGroupModelFilter.getRootId(tab), true);
+                setTabGroupBackgroundContainersVisible(mTabGroupModelFilter.getRootId(tab), true);
             } else {
                 setTabGroupDimmed(mTabGroupModelFilter.getRootId(tab), false);
             }
@@ -2201,7 +2211,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
     }
 
-    private void setTabContainerVisible(StripLayoutTab tab, boolean visible) {
+    private void setBackgroundTabContainerVisible(StripLayoutTab tab, boolean visible) {
         if (tab != mInteractingTab) {
             float opacity = visible ? TAB_OPACITY_VISIBLE_BACKGROUND : TAB_OPACITY_HIDDEN;
             tab.setContainerOpacity(opacity);
@@ -2215,16 +2225,16 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private void setBackgroundTabContainersVisible(boolean visible) {
         for (int i = 0; i < mStripTabs.length; i++) {
             final StripLayoutTab tab = mStripTabs[i];
-            setTabContainerVisible(tab, visible);
+            setBackgroundTabContainerVisible(tab, visible);
         }
     }
 
-    private void setTabGroupContainersVisible(int groupId, boolean visible) {
+    private void setTabGroupBackgroundContainersVisible(int groupId, boolean visible) {
         for (int i = 0; i < mStripTabs.length; i++) {
             final StripLayoutTab tab = mStripTabs[i];
 
             if (mTabGroupModelFilter.getRootId(getTabById(tab.getId())) == groupId) {
-                setTabContainerVisible(tab, visible);
+                setBackgroundTabContainerVisible(tab, visible);
             }
         }
     }
@@ -2246,7 +2256,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             final int tabId = mInteractingTab.getId();
 
             if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-                setTabGroupContainersVisible(
+                setTabGroupBackgroundContainersVisible(
                         mTabGroupModelFilter.getRootId(getTabById(tabId)), false);
             } else {
                 setTabGroupDimmed(mTabGroupModelFilter.getRootId(getTabById(tabId)), true);
@@ -2321,7 +2331,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             int groupId = mTabGroupModelFilter.getRootId(
                     getTabById(mStripTabs[curIndex + (towardEnd ? 1 : -1)].getId()));
             if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-                setTabGroupContainersVisible(groupId, mHoveringOverGroup);
+                setTabGroupBackgroundContainersVisible(groupId, mHoveringOverGroup);
             } else {
                 setTabGroupDimmed(groupId, !mHoveringOverGroup);
             }
@@ -2357,7 +2367,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // If past threshold, un-dim hovered group and trigger reorder.
         if (Math.abs(offset) > threshold) {
             if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-                setTabGroupContainersVisible(groupId, false);
+                setTabGroupBackgroundContainersVisible(groupId, false);
             } else {
                 setTabGroupDimmed(groupId, true);
             }
