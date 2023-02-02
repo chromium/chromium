@@ -7,8 +7,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -21,7 +24,8 @@ class BruschettaLauncher;
 // A service to hold the separate modules that provide Bruschetta
 // (third-party/generic VM) support within Chrome (files app integration, app
 // service integration, etc).
-class BruschettaService : public KeyedService {
+class BruschettaService : public KeyedService,
+                          public ash::ConciergeClient::VmObserver {
  public:
   explicit BruschettaService(Profile* profile);
   ~BruschettaService() override;
@@ -37,12 +41,24 @@ class BruschettaService : public KeyedService {
   void RegisterInPrefs(const guest_os::GuestId& guest_id,
                        const std::string& config_id);
 
+  // Register `vm_name` as running with the specified enterprise policy. This is
+  // a no-op if called for a VM we already believe to be running. In particular,
+  // in that case the VM is considered to keep its old policy, not the new one
+  // passed in.
+  void RegisterVmLaunch(std::string vm_name, RunningVmPolicy policy);
+
   // Returns a handle to the launcher for the vm specified by `vm_name`. Will
   // return a null pointer if the name isn't recognised.
   base::WeakPtr<BruschettaLauncher> GetLauncher(std::string vm_name);
 
+  // ConciergeClient::VmObserver:
+  void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
+  void OnVmStopped(const vm_tools::concierge::VmStoppedSignal& signal) override;
+
   void SetLauncherForTesting(std::string vm_name,
                              std::unique_ptr<BruschettaLauncher> launcher);
+
+  const base::flat_map<std::string, RunningVmPolicy>& GetRunningVmsForTesting();
 
  private:
   struct VmRegistration {
@@ -63,10 +79,20 @@ class BruschettaService : public KeyedService {
   void OnPolicyChanged();
   void AllowLaunch(guest_os::GuestId guest_id);
   void BlockLaunch(guest_os::GuestId guest_id);
+  void StopVm(std::string vm_name);
+
+  void StopVmIfRequiredByPolicy(std::string vm_name,
+                                std::string config_id,
+                                const base::Value::Dict* config);
 
   base::flat_map<std::string, VmRegistration> runnable_vms_;
 
+  base::flat_map<std::string, RunningVmPolicy> running_vms_;
+
   PrefChangeRegistrar pref_observer_;
+  base::ScopedObservation<ash::ConciergeClient,
+                          ash::ConciergeClient::VmObserver>
+      vm_observer_{this};
 
   Profile* const profile_;
 };

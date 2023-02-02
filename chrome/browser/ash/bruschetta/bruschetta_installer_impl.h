@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "components/download/public/background_service/download_metadata.h"
@@ -67,7 +68,8 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   void OnCreateVmDisk(
       absl::optional<vm_tools::concierge::CreateDiskImageResponse> result);
   void StartVm();
-  void OnStartVm(absl::optional<vm_tools::concierge::StartVmResponse> result);
+  void OnStartVm(RunningVmPolicy launch_policy,
+                 absl::optional<vm_tools::concierge::StartVmResponse> result);
   void LaunchTerminal();
 
   void NotifyObserver(State state);

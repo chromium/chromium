@@ -3,12 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+
 #include "ash/constants/ash_features.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,7 +25,8 @@ const char kTestVmName[] = "vm_name";
 const char kTestVmConfig[] = "vm_config";
 }  // namespace
 
-class BruschettaServiceTest : public testing::Test {
+class BruschettaServiceTest : public testing::Test,
+                              public guest_os::FakeVmServicesHelper {
  public:
   BruschettaServiceTest() = default;
   BruschettaServiceTest(const BruschettaServiceTest&) = delete;
@@ -32,24 +38,61 @@ class BruschettaServiceTest : public testing::Test {
     feature_list_.InitWithFeatures(
         {ash::features::kBruschetta, ash::features::kBruschettaAlphaMigrate},
         {});
+
+    SetupPrefs();
+
     service_ = std::make_unique<BruschettaService>(&profile_);
   }
 
   void TearDown() override {}
 
-  void EnableByPolicy() {
+  void SetupPrefs() {
     base::Value::Dict pref;
     base::Value::Dict config;
     config.Set(prefs::kPolicyEnabledKey,
                static_cast<int>(prefs::PolicyEnabledState::RUN_ALLOWED));
+
+    base::Value::Dict vtpm;
+    vtpm.Set(prefs::kPolicyVTPMEnabledKey, false);
+    vtpm.Set(prefs::kPolicyVTPMUpdateActionKey,
+             static_cast<int>(
+                 prefs::PolicyUpdateAction::FORCE_SHUTDOWN_IF_MORE_RESTRICTED));
+
+    config.Set(prefs::kPolicyVTPMKey, std::move(vtpm));
 
     pref.Set(kTestVmConfig, std::move(config));
     profile_.GetPrefs()->SetDict(prefs::kBruschettaVMConfiguration,
                                  std::move(pref));
   }
 
+  void EnableByPolicy() {
+    auto updater = ScopedDictPrefUpdate(profile_.GetPrefs(),
+                                        prefs::kBruschettaVMConfiguration);
+
+    updater.Get()
+        .FindDict(kTestVmConfig)
+        ->Set(prefs::kPolicyEnabledKey,
+              static_cast<int>(prefs::PolicyEnabledState::RUN_ALLOWED));
+  }
+
   void DisableByPolicy() {
-    profile_.GetPrefs()->ClearPref(prefs::kBruschettaVMConfiguration);
+    auto updater = ScopedDictPrefUpdate(profile_.GetPrefs(),
+                                        prefs::kBruschettaVMConfiguration);
+
+    updater.Get()
+        .FindDict(kTestVmConfig)
+        ->Set(prefs::kPolicyEnabledKey,
+              static_cast<int>(prefs::PolicyEnabledState::BLOCKED));
+  }
+
+  void SetVtpmConfig(bool enabled, prefs::PolicyUpdateAction action) {
+    auto updater = ScopedDictPrefUpdate(profile_.GetPrefs(),
+                                        prefs::kBruschettaVMConfiguration);
+
+    auto* vtpm =
+        updater.Get().FindDict(kTestVmConfig)->FindDict(prefs::kPolicyVTPMKey);
+    vtpm->Set(prefs::kPolicyVTPMEnabledKey, enabled);
+    vtpm->Set(prefs::kPolicyVTPMUpdateActionKey, static_cast<int>(action));
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -81,6 +124,74 @@ TEST_F(BruschettaServiceTest, GetLauncherPolicyUpdate) {
   ASSERT_EQ(service_->GetLauncher(kTestVmName), nullptr);
   EnableByPolicy();
   ASSERT_NE(service_->GetLauncher(kTestVmName), nullptr);
+}
+
+TEST_F(BruschettaServiceTest, DynamicPolicyDisableForcesShutdown) {
+  vm_tools::concierge::VmStoppedSignal stop_signal;
+  stop_signal.set_name(kTestVmName);
+
+  service_->RegisterInPrefs(MakeBruschettaId(kTestVmName), kTestVmConfig);
+
+  EnableByPolicy();
+  service_->RegisterVmLaunch(kTestVmName, {});
+  ASSERT_TRUE(service_->GetRunningVmsForTesting().contains(kTestVmName));
+
+  DisableByPolicy();
+  ASSERT_EQ(FakeConciergeClient()->stop_vm_call_count(), 1);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(service_->GetRunningVmsForTesting().contains(kTestVmName));
+}
+
+TEST_F(BruschettaServiceTest, DynamicPolicyUpdateVtpmFromEnabled) {
+  vm_tools::concierge::VmStoppedSignal stop_signal;
+  stop_signal.set_name(kTestVmName);
+
+  service_->RegisterInPrefs(MakeBruschettaId(kTestVmName), kTestVmConfig);
+
+  EnableByPolicy();
+  service_->RegisterVmLaunch(kTestVmName, {.vtpm_enabled = true});
+  ASSERT_TRUE(service_->GetRunningVmsForTesting().contains(kTestVmName));
+
+  SetVtpmConfig(false, prefs::PolicyUpdateAction::NONE);
+  ASSERT_EQ(FakeConciergeClient()->stop_vm_call_count(), 0);
+  SetVtpmConfig(false,
+                prefs::PolicyUpdateAction::FORCE_SHUTDOWN_IF_MORE_RESTRICTED);
+  ASSERT_EQ(FakeConciergeClient()->stop_vm_call_count(), 1);
+  SetVtpmConfig(false, prefs::PolicyUpdateAction::FORCE_SHUTDOWN_ALWAYS);
+  ASSERT_EQ(FakeConciergeClient()->stop_vm_call_count(), 2);
+  SetVtpmConfig(true, prefs::PolicyUpdateAction::NONE);
+  ASSERT_EQ(FakeConciergeClient()->stop_vm_call_count(), 2);
+  SetVtpmConfig(true,
+                prefs::PolicyUpdateAction::FORCE_SHUTDOWN_IF_MORE_RESTRICTED);
+  ASSERT_EQ(FakeConciergeClient()->stop_vm_call_count(), 2);
+  SetVtpmConfig(true, prefs::PolicyUpdateAction::FORCE_SHUTDOWN_ALWAYS);
+  ASSERT_EQ(FakeConciergeClient()->stop_vm_call_count(), 2);
+}
+
+TEST_F(BruschettaServiceTest, DynamicPolicyUpdateVtpmFromDisabled) {
+  vm_tools::concierge::VmStoppedSignal stop_signal;
+  stop_signal.set_name(kTestVmName);
+
+  service_->RegisterInPrefs(MakeBruschettaId(kTestVmName), kTestVmConfig);
+
+  EnableByPolicy();
+  service_->RegisterVmLaunch(kTestVmName, {.vtpm_enabled = false});
+  ASSERT_TRUE(service_->GetRunningVmsForTesting().contains(kTestVmName));
+
+  SetVtpmConfig(false, prefs::PolicyUpdateAction::NONE);
+  ASSERT_EQ(FakeConciergeClient()->stop_vm_call_count(), 0);
+  SetVtpmConfig(false,
+                prefs::PolicyUpdateAction::FORCE_SHUTDOWN_IF_MORE_RESTRICTED);
+  ASSERT_EQ(FakeConciergeClient()->stop_vm_call_count(), 0);
+  SetVtpmConfig(false, prefs::PolicyUpdateAction::FORCE_SHUTDOWN_ALWAYS);
+  ASSERT_EQ(FakeConciergeClient()->stop_vm_call_count(), 0);
+  SetVtpmConfig(true, prefs::PolicyUpdateAction::NONE);
+  ASSERT_EQ(FakeConciergeClient()->stop_vm_call_count(), 0);
+  SetVtpmConfig(true,
+                prefs::PolicyUpdateAction::FORCE_SHUTDOWN_IF_MORE_RESTRICTED);
+  ASSERT_EQ(FakeConciergeClient()->stop_vm_call_count(), 0);
+  SetVtpmConfig(true, prefs::PolicyUpdateAction::FORCE_SHUTDOWN_ALWAYS);
+  ASSERT_EQ(FakeConciergeClient()->stop_vm_call_count(), 1);
 }
 
 }  // namespace bruschetta

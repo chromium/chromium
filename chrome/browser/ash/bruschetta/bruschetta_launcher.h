@@ -41,7 +41,8 @@ class BruschettaLauncher {
 
  private:
   void StartVm(std::unique_ptr<Files> files);
-  void OnStartVm(absl::optional<vm_tools::concierge::StartVmResponse> response);
+  void OnStartVm(RunningVmPolicy launch_policy,
+                 absl::optional<vm_tools::concierge::StartVmResponse> response);
 
   base::File MaybeOpenBios();
 

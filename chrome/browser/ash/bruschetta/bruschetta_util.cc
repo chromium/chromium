@@ -47,6 +47,7 @@ const char* BruschettaResultString(const BruschettaResult res) {
     ENTRY(kBiosNotAccessible);
     ENTRY(kStartVmFailed);
     ENTRY(kTimeout);
+    ENTRY(kForbiddenByPolicy);
   }
 #undef ENTRY
   return "unknown code";
@@ -88,6 +89,29 @@ bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id) {
   const base::Value* value = guest_os::GetContainerPrefValue(
       profile, guest_id, guest_os::prefs::kVmNameKey);
   return value != nullptr;
+}
+
+absl::optional<RunningVmPolicy> GetLaunchPolicyForConfig(
+    Profile* profile,
+    std::string config_id) {
+  if (config_id.empty()) {
+    // Alpha VM, always allow access to the vTPM.
+    RunningVmPolicy ret = {.vtpm_enabled = true};
+    return ret;
+  }
+
+  auto config_option = GetRunnableConfig(profile, config_id);
+  if (!config_option.has_value()) {
+    return absl::nullopt;
+  }
+  const auto* config = *config_option;
+
+  RunningVmPolicy ret = {.vtpm_enabled =
+                             config->FindDict(prefs::kPolicyVTPMKey)
+                                 ->FindBool(prefs::kPolicyVTPMEnabledKey)
+                                 .value()};
+
+  return ret;
 }
 
 }  // namespace bruschetta

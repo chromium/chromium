@@ -14,8 +14,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -144,6 +147,24 @@ void BruschettaLauncher::StartVm(
     return;
   }
 
+  const base::Value* config_id_value =
+      GetContainerPrefValue(profile_, MakeBruschettaId(vm_name_),
+                            guest_os::prefs::kBruschettaConfigId);
+  RunningVmPolicy launch_policy;
+  if (!config_id_value) {
+    launch_policy = GetLaunchPolicyForConfig(profile_, "").value();
+  } else {
+    auto opt = GetLaunchPolicyForConfig(profile_, config_id_value->GetString());
+    if (!opt.has_value()) {
+      // Policy prohibits starting the VM, so don't.
+      LOG(ERROR) << "Starting VM prohibited by policy";
+      Finish(BruschettaResult::kForbiddenByPolicy);
+      return;
+    } else {
+      launch_policy = *opt;
+    }
+  }
+
   std::string user_hash =
       ash::ProfileHelper::GetUserIdHashFromProfile(profile_);
   vm_tools::concierge::StartVmRequest request;
@@ -153,6 +174,7 @@ void BruschettaLauncher::StartVm(
   *request.mutable_owner_id() = user_hash;
   request.set_start_termina(false);
   request.set_timeout(240);
+  request.set_vtpm_proxy(launch_policy.vtpm_enabled);
 
   // fds and request.fds must have the same order.
   std::vector<base::ScopedFD> fds;
@@ -173,26 +195,28 @@ void BruschettaLauncher::StartVm(
   disk->set_writable(true);
   disk->set_do_mount(false);
 
-  client->StartVmWithFds(std::move(fds), request,
-                         base::BindOnce(&BruschettaLauncher::OnStartVm,
-                                        weak_factory_.GetWeakPtr()));
+  client->StartVmWithFds(
+      std::move(fds), request,
+      base::BindOnce(&BruschettaLauncher::OnStartVm, weak_factory_.GetWeakPtr(),
+                     launch_policy));
 }
 
 void BruschettaLauncher::OnStartVm(
+    RunningVmPolicy launch_policy,
     absl::optional<vm_tools::concierge::StartVmResponse> response) {
-  if (!response) {
-    LOG(ERROR) << "Error starting VM: no response from Concierge";
+  if (!response || !response->success()) {
+    if (response) {
+      LOG(ERROR) << "Error starting VM, got status: " << response->status()
+                 << " and reason " << response->failure_reason();
+    } else {
+      LOG(ERROR) << "Error starting VM: no response from Concierge";
+    }
     Finish(BruschettaResult::kStartVmFailed);
     return;
   }
 
-  if (response->status() != vm_tools::concierge::VM_STATUS_RUNNING &&
-      response->status() != vm_tools::concierge::VM_STATUS_STARTING) {
-    LOG(ERROR) << "Error starting VM, got status: " << response->status()
-               << " and reason " << response->failure_reason();
-    Finish(BruschettaResult::kStartVmFailed);
-    return;
-  }
+  BruschettaService::GetForProfile(profile_)->RegisterVmLaunch(vm_name_,
+                                                               launch_policy);
 
   auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile_);
   subscription_ = tracker->RunOnceContainerStarted(

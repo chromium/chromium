@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/prefs/pref_service.h"
 
 namespace bruschetta {
@@ -40,6 +42,8 @@ BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
   // Don't set up anything if the bruschetta flag isn't enabled.
   if (!BruschettaFeatures::Get()->IsEnabled())
     return;
+
+  vm_observer_.Observe(ash::ConciergeClient::Get());
 
   pref_observer_.Init(profile_->GetPrefs());
   pref_observer_.Add(
@@ -91,15 +95,43 @@ void BruschettaService::OnPolicyChanged() {
     }
 
     const std::string& config_id = config_id_value->GetString();
-    absl::optional<const base::Value::Dict*> config =
+    absl::optional<const base::Value::Dict*> config_opt =
         GetRunnableConfig(profile_, config_id);
-    if (!config.has_value()) {
+    if (!config_opt.has_value()) {
       // config is either unset or explicitly blocked from running.
       BlockLaunch(std::move(guest_id));
       continue;
     }
+    const auto* config = *config_opt;
 
-    AllowLaunch(std::move(guest_id));
+    AllowLaunch(guest_id);
+
+    StopVmIfRequiredByPolicy(guest_id.vm_name, std::move(config_id), config);
+  }
+}
+
+void BruschettaService::StopVmIfRequiredByPolicy(
+    std::string vm_name,
+    std::string config_id,
+    const base::Value::Dict* config) {
+  auto it = running_vms_.find(vm_name);
+  if (it != running_vms_.end()) {
+    auto old_policy = it->second;
+    auto new_policy = GetLaunchPolicyForConfig(profile_, config_id).value();
+
+    if (old_policy.vtpm_enabled != new_policy.vtpm_enabled) {
+      auto update_action = static_cast<prefs::PolicyUpdateAction>(
+          config->FindDict(prefs::kPolicyVTPMKey)
+              ->FindInt(prefs::kPolicyVTPMUpdateActionKey)
+              .value());
+
+      if (update_action == prefs::PolicyUpdateAction::FORCE_SHUTDOWN_ALWAYS ||
+          (update_action ==
+               prefs::PolicyUpdateAction::FORCE_SHUTDOWN_IF_MORE_RESTRICTED &&
+           new_policy.vtpm_enabled == false)) {
+        StopVm(std::move(vm_name));
+      }
+    }
   }
 }
 
@@ -123,6 +155,10 @@ void BruschettaService::AllowLaunch(guest_os::GuestId guest_id) {
 }
 
 void BruschettaService::BlockLaunch(guest_os::GuestId guest_id) {
+  if (running_vms_.contains(guest_id.vm_name)) {
+    StopVm(guest_id.vm_name);
+  }
+
   auto it = runnable_vms_.find(guest_id.vm_name);
   if (it == runnable_vms_.end()) {
     // Already blocked, do nothing.
@@ -134,6 +170,33 @@ void BruschettaService::BlockLaunch(guest_os::GuestId guest_id) {
       ->Unregister(it->second.mount_id);
 
   runnable_vms_.erase(it);
+}
+
+void BruschettaService::StopVm(std::string vm_name) {
+  auto* client = ash::ConciergeClient::Get();
+  DCHECK(client);
+
+  vm_tools::concierge::StopVmRequest request;
+  request.set_name(vm_name);
+  request.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
+
+  client->StopVm(
+      request,
+      base::BindOnce(
+          [](std::string vm_name,
+             absl::optional<vm_tools::concierge::StopVmResponse> response) {
+            // If stopping the VM fails there's not really much we can do about
+            // it, but we can log an error.
+            if (!response) {
+              LOG(ERROR) << "Failed to shutdown " << vm_name << ": no response";
+            } else if (!response->success()) {
+              LOG(ERROR) << "Failed to shutdown " << vm_name << ": "
+                         << response->failure_reason();
+            }
+            // No need to call RegisterVmStop, the VM stop signal should do it
+            // for us.
+          },
+          std::move(vm_name)));
 }
 
 void BruschettaService::RegisterInPrefs(const guest_os::GuestId& guest_id,
@@ -158,6 +221,11 @@ void BruschettaService::RegisterWithTerminal(
   guest_os::GuestOsSharePath::GetForProfile(profile_)->RegisterGuest(guest_id);
 }
 
+void BruschettaService::RegisterVmLaunch(std::string vm_name,
+                                         RunningVmPolicy policy) {
+  running_vms_.insert(std::make_pair(std::move(vm_name), std::move(policy)));
+}
+
 base::WeakPtr<BruschettaLauncher> BruschettaService::GetLauncher(
     std::string vm_name) {
   auto it = runnable_vms_.find(vm_name);
@@ -172,6 +240,18 @@ void BruschettaService::SetLauncherForTesting(
     std::unique_ptr<BruschettaLauncher> launcher) {
   runnable_vms_.insert(
       {std::move(vm_name), VmRegistration{std::move(launcher), -1}});
+}
+
+const base::flat_map<std::string, RunningVmPolicy>&
+BruschettaService::GetRunningVmsForTesting() {
+  return running_vms_;
+}
+
+void BruschettaService::OnVmStarted(
+    const vm_tools::concierge::VmStartedSignal& signal) {}
+void BruschettaService::OnVmStopped(
+    const vm_tools::concierge::VmStoppedSignal& signal) {
+  running_vms_.erase(signal.name());
 }
 
 }  // namespace bruschetta

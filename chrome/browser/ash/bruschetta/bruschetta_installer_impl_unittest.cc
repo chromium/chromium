@@ -8,12 +8,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_download_client.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/download/background_download_service_factory.h"
@@ -127,7 +127,22 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
     installer_->AddObserver(&observer_);
   }
 
-  void TearDown() override { ash::disks::DiskMountManager::Shutdown(); }
+  void TearDown() override {
+    CheckVmRegistration();
+    ash::disks::DiskMountManager::Shutdown();
+  }
+
+  void CheckVmRegistration() {
+    const auto& running_vms =
+        BruschettaService::GetForProfile(&profile_)->GetRunningVmsForTesting();
+    if (expect_vm_registered_) {
+      auto it = running_vms.find(kVmName);
+      EXPECT_NE(it, running_vms.end());
+      EXPECT_TRUE(it->second.vtpm_enabled);
+    } else {
+      EXPECT_FALSE(running_vms.contains(kVmName));
+    }
+  }
 
   // All these methods return anonymous lambdas because gmock doesn't accept
   // base::OnceCallbacks as callable objects in expectations.
@@ -195,6 +210,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         vm_tools::concierge::StartVmResponse response;
         response.set_success(*success);
         FakeConciergeClient()->set_start_vm_response(std::move(response));
+        this->expect_vm_registered_ = *success;
       } else {
         FakeConciergeClient()->set_start_vm_response(absl::nullopt);
       }
@@ -497,6 +513,8 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
   BruschettaDownloadClient download_client_{&profile_};
   bool destroy_installer_on_completion_ = true;
   base::HistogramTester histogram_tester_;
+
+  bool expect_vm_registered_ = false;
 
  private:
   // Called when the installer exists, suitable for base::BindOnce.
