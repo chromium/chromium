@@ -49,7 +49,7 @@ _log = logging.getLogger(os.path.basename(__file__))
 PRODUCTS = PRODUCTS + [
     'chrome_linux', 'content_shell', 'wpt_content_shell_linux',
     'wpt_content_shell_win10', 'wpt_content_shell_win11',
-    'wpt_content_shell_mac12'
+    'wpt_content_shell_mac12', 'wpt_content_shell_mac12_arm64'
 ]
 PRODUCTS_TO_STEPNAMES.update({
     'chrome_linux': 'wpt_tests_suite',
@@ -57,6 +57,7 @@ PRODUCTS_TO_STEPNAMES.update({
     'wpt_content_shell_win10': 'wpt_tests_suite_win10',
     'wpt_content_shell_win11': 'wpt_tests_suite_win11',
     'wpt_content_shell_mac12': 'wpt_tests_suite_mac12',
+    'wpt_content_shell_mac12_arm64': 'wpt_tests_suite_mac12_arm64',
     'content_shell': 'blink_wpt_tests'
 })
 PRODUCTS_TO_BUILDER_NAME = {
@@ -67,6 +68,7 @@ PRODUCTS_TO_BUILDER_NAME = {
     'wpt_content_shell_win10': 'win10-wpt-content-shell-fyi-rel',
     'wpt_content_shell_win11': 'win11-wpt-content-shell-fyi-rel',
     'wpt_content_shell_mac12': 'mac12-wpt-content-shell-fyi-rel',
+    'wpt_content_shell_mac12_arm64': 'mac12-arm64-wpt-content-shell-fyi-rel',
     'content_shell': "Linux Tests"
 }
 STEP_NAME_VARIANTS = {
@@ -80,6 +82,8 @@ STEP_NAME_VARIANTS = {
     'wpt_tests_suite_win11':
     ['wpt_tests_suite (experimental) on Windows-11-22000'],
     'wpt_tests_suite_mac12': ['wpt_tests_suite (experimental) on Mac-12'],
+    'wpt_tests_suite_mac12_arm64':
+    ['wpt_tests_suite (experimental) on Mac-12'],
     'blink_wpt_tests': ['blink_wpt_tests on Ubuntu-18.04']
 }
 
