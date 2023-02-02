@@ -320,6 +320,10 @@ public final class ProductionSupportedFlagList {
                             + "using the property tree builder."),
             Flag.baseFeature(BlinkFeatures.THREADED_BODY_LOADER,
                     "If enabled, reads and decodes navigation body data off the main thread."),
+            Flag.baseFeature(BlinkFeatures.THROTTLE_OFFSCREEN_ANIMATING_SVG_IMAGES,
+                    "If enabled, SVG images will suspend animations when all "
+                            + "instances of the image are outside of the "
+                            + "viewport."),
             Flag.baseFeature("PreconnectOnRedirect"),
             Flag.baseFeature("PreconnectInNetworkService"), Flag.baseFeature("PrefetchDNSWithURL"),
             Flag.baseFeature(BlinkFeatures.SEND_MOUSE_EVENTS_DISABLED_FORM_CONTROLS,
