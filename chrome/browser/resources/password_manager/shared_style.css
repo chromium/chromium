@@ -66,3 +66,12 @@
 cr-link-row[hide-icon]::part(icon) {
   display: none;
 }
+
+.site-link {
+  color: var(--cr-primary-text-color);
+  display: block;
+  height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

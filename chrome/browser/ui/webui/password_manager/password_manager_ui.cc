@@ -92,6 +92,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"deletePassword", IDS_DELETE},
     {"downloadFile", IDS_PASSWORD_MANAGER_UI_DOWNLOAD_FILE},
     {"editPassword", IDS_EDIT},
+    {"editPasswordFootnote", IDS_PASSWORD_MANAGER_UI_PASSWORD_EDIT_FOOTNOTE},
+    {"editPasswordTitle", IDS_PASSWORD_MANAGER_UI_EDIT_PASSWORD},
     {"emptyNote", IDS_PASSWORD_MANAGER_UI_NO_NOTE_SAVED},
     {"exportPasswords", IDS_PASSWORD_MANAGER_UI_EXPORT_TITLE},
     {"exportPasswordsDescription",
