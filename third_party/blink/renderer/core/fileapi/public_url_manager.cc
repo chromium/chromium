@@ -27,7 +27,9 @@
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
@@ -64,9 +66,18 @@ static void RemoveFromNullOriginMapIfNecessary(const KURL& blob_url) {
 
 }  // namespace
 
+// Execution context names corresponding to the entries from
+// `ExecutionContextIdForHistogram` in public_url_manager.h.
+const char* const kExecutionContextNamesForHistograms[]{
+    "Frame",
+    "Worker",
+};
+static_assert(std::size(kExecutionContextNamesForHistograms) ==
+              static_cast<size_t>(ExecutionContextIdForHistogram::kMaxValue) +
+                  1);
+
 PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
     : ExecutionContextLifecycleObserver(execution_context),
-      is_stopped_(false),
       frame_url_store_(execution_context),
       worker_url_store_(execution_context) {
   if (base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl)) {
@@ -77,6 +88,7 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
         return;
       }
 
+      execution_context_type_ = ExecutionContextIdForHistogram::kFrame;
       frame->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
           frame_url_store_.BindNewEndpointAndPassReceiver(
               execution_context->GetTaskRunner(TaskType::kFileReading)));
@@ -88,6 +100,7 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
         return;
       }
 
+      execution_context_type_ = ExecutionContextIdForHistogram::kWorker;
       worker_global_scope->GetBrowserInterfaceBroker().GetInterface(
           worker_url_store_.BindNewPipeAndPassReceiver(
               execution_context->GetTaskRunner(TaskType::kFileReading)));
@@ -170,9 +183,32 @@ String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
       }
     }
 
+    base::ElapsedTimer register_timer;
     GetBlobURLStore().Register(std::move(blob_remote), url,
                                GetExecutionContext()->GetAgentClusterID(),
                                top_level_site);
+    const base::TimeDelta register_url_time = register_timer.Elapsed();
+
+    if (base::FeatureList::IsEnabled(
+            net::features::kSupportPartitionedBlobUrl)) {
+      // This holds because `execution_context_type_` will always be set for
+      // Window, SharedWorker, and DedicatedWorker contexts, which are the only
+      // ones where URL.CreateObjectURL is exposed (per the IDL).
+      CHECK(execution_context_type_.has_value());
+
+      const char* context_type_ =
+          kExecutionContextNamesForHistograms[static_cast<int>(
+              *execution_context_type_)];
+      base::UmaHistogramCustomTimes(
+          base::StrCat({"Storage.Blob.RegisterURLTimeWithPartitioningSupport.",
+                        context_type_}),
+          register_url_time, base::Milliseconds(1), base::Seconds(60), 50);
+    } else {
+      base::UmaHistogramCustomTimes(
+          "Storage.Blob.RegisterURLTimeWithoutPartitioningSupport",
+          register_url_time, base::Milliseconds(1), base::Seconds(60), 50);
+    }
+
     mojo_urls_.insert(url_string);
     registrable->CloneMojoBlob(std::move(blob_receiver));
   } else {
