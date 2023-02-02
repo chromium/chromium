@@ -667,9 +667,6 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # https://crbug.com/1000382\n')
                 sb.append('  proguard_configs = ["androidx_mediarouter.flags"]\n')
                 break
-            case 'androidx_privacysandbox_ads_ads_adservices':
-                sb.append('  alternative_android_sdk_dep = "//third_party/android_sdk:android_privacy_sandbox_sdk_java"\n')
-                break
             case 'androidx_room_room_runtime':
                 sb.append('  enable_bytecode_checks = false\n')
                 break
