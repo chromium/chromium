@@ -570,8 +570,8 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
     // Remove candidate GPUs made by different vendors.
     auto behind_last =
         std::remove_if(candidates.begin(), candidates.end(),
-                       [vendor_id = vendor_id](const GPUInfo::GPUDevice& gpu) {
-                         return (vendor_id && vendor_id != gpu.vendor_id);
+                       [vid = vendor_id](const GPUInfo::GPUDevice& gpu) {
+                         return (vid && vid != gpu.vendor_id);
                        });
     candidates.erase(behind_last, candidates.end());
 

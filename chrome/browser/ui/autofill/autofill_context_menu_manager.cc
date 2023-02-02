@@ -411,13 +411,14 @@ void AutofillContextMenuManager::AddProfileDataToMenu(
 
     std::u16string value = absl::visit(
         base::Overloaded{
-            [&field_type = field_type](const CreditCard* card) {
-              if (field_type == CREDIT_CARD_NUMBER)
+            [&type = field_type](const CreditCard* card) {
+              if (type == CREDIT_CARD_NUMBER) {
                 return card->ObfuscatedNumberWithVisibleLastFourDigits();
-              return card->GetRawInfo(field_type);
+              }
+              return card->GetRawInfo(type);
             },
-            [&field_type = field_type](const AutofillProfile* profile) {
-              return profile->GetRawInfo(field_type);
+            [&type = field_type](const AutofillProfile* profile) {
+              return profile->GetRawInfo(type);
             }},
         profile_or_credit_card);
 
