@@ -141,19 +141,18 @@ CacheEntry::~CacheEntry() = default;
 SearchSuggestionParser::SuggestResults CacheEntry::GetSuggestResults(
     const AutocompleteInput& input,
     const AutocompleteProviderClient& client) const {
-  SearchSuggestionParser::Results results;
-
   auto response_data =
       SearchSuggestionParser::DeserializeJsonData(response_json);
   if (!response_data) {
-    return results.suggest_results;
+    return SearchSuggestionParser::SuggestResults();
   }
 
+  SearchSuggestionParser::Results results;
   if (!SearchSuggestionParser::ParseSuggestResults(
           *response_data, input, client.GetSchemeClassifier(),
           /*default_result_relevance=*/100, /*is_keyword_result=*/false,
           &results)) {
-    return results.suggest_results;
+    return SearchSuggestionParser::SuggestResults();
   }
 
   return results.suggest_results;

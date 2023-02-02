@@ -6,15 +6,20 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 
 using CacheEntry = ZeroSuggestCacheService::CacheEntry;
 
@@ -354,12 +359,10 @@ TEST_F(ZeroSuggestCacheServiceTest, ClearCacheResultsInEmptyPersistencePrefs) {
 
   {
     ZeroSuggestCacheService cache_svc(GetPrefs(), 3);
-
-    cache_svc.StoreZeroSuggestResponse(ntp_entry.url, ntp_entry.response);
-    cache_svc.StoreZeroSuggestResponse(srp_entry.url, srp_entry.response);
-    cache_svc.StoreZeroSuggestResponse(web_entry.url, web_entry.response);
+    EXPECT_FALSE(cache_svc.IsCacheEmpty());
 
     cache_svc.ClearCache();
+    EXPECT_TRUE(cache_svc.IsCacheEmpty());
   }
 
   EXPECT_TRUE(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
@@ -371,4 +374,37 @@ TEST_F(ZeroSuggestCacheServiceTest, ClearCacheResultsInEmptyPersistencePrefs) {
   EXPECT_TRUE(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
                   prefs, web_entry.url)
                   .empty());
+}
+
+TEST_F(ZeroSuggestCacheServiceTest,
+       GetSuggestResultsReturnsEmptyListForInvalidResponseJson) {
+  ZeroSuggestCacheService cache_svc(nullptr, 1);
+
+  AutocompleteInput ac_input(u"", metrics::OmniboxEventProto::OTHER,
+                             TestSchemeClassifier());
+  FakeAutocompleteProviderClient client;
+
+  const std::vector<TestCacheEntry> invalid_json_responses = {
+      // Malformed JSON
+      {"https://www.example.com", ""},
+      // Malformed JSON
+      {"https://www.example.com", "({ malformed })"},
+      // Malformed JSON
+      {"https://www.example.com", "][]["},
+      // Invalid JSON (according to parsing logic in
+      // `SearchSuggestionParser::ParseSuggestResults()`)
+      {"https://www.example.com", "[]"},
+      // Invalid JSON
+      {"https://www.example.com", "[123]"},
+      // Invalid JSON
+      {"https://www.example.com", "[[]]"},
+      // Invalid JSON
+      {"https://www.example.com", "['a': 1]"},
+  };
+
+  for (TestCacheEntry entry : invalid_json_responses) {
+    cache_svc.StoreZeroSuggestResponse(entry.url, entry.response);
+    CacheEntry cached_entry = cache_svc.ReadZeroSuggestResponse(entry.url);
+    EXPECT_TRUE(cached_entry.GetSuggestResults(ac_input, client).empty());
+  }
 }
