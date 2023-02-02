@@ -332,10 +332,19 @@ if (enable_scrambled_message_ids) {
 #   use_typescript_sources (optional)
 #       Uses the Typescript generator to generate JavaScript bindings.
 #
-#   js_interface_binder (optional)
+#   js_interface_binder_config (optional)
 #       A JsInterfaceBinder is a Mojo interface that contains binders for all
-#       interfaces that can be bound from WebUI's JavaScript. Setting this flag
-#       to true will generate a C++ implementationa of the JSInterfaceBinder(s).
+#       interfaces that can be bound from a WebUI's JavaScript. Defining this
+#       variable will generate a C++ implementation of the JSInterfaceBinder
+#       and a {target_name}_js_interface_binder_impl target that can be depended
+#       on. A mojom target can only contain a single JsInterfaceBinder.
+#
+#       This variable should be a scope with two parameters:
+#        - `webui_controller`: The name of the WebUIController associated with
+#          JsInterfaceBinder.
+#        - `webui_controller_header`: The header where the WebUIController
+#          is declared.
+#        - `webui_controller_deps`: The target containing the WebUIController.
 #
 #   js_generate_struct_deserializers (optional)
 #       Generates JS deerialize methods for structs.
@@ -1793,8 +1802,19 @@ template("mojom") {
     }
   }
 
-  if (defined(invoker.js_interface_binder) && invoker.js_interface_binder) {
+  if (defined(invoker.js_interface_binder_config)) {
     if (sources_list != []) {
+      binder_config = invoker.js_interface_binder_config
+      assert(defined(binder_config.webui_controller),
+             "js_interface_binder_config should have a " +
+                 "`webui_controller` parameter e.g. `foo::FooUI`.")
+      assert(defined(binder_config.webui_controller_header),
+             "js_interface_binder_config should have a " +
+                 "`webui_controller_header` parameter.")
+      assert(defined(binder_config.webui_controller_deps),
+             "js_interface_binder_config should have a " +
+                 "`webui_controller_dep` parameter.")
+
       generator_js_interface_binder_impl_target_name =
           "${target_name}_js_interface_binder_impl__generator"
       action(generator_js_interface_binder_impl_target_name) {
@@ -1829,6 +1849,17 @@ template("mojom") {
           "-g",
           "js_interface_binder",
         ]
+
+        rebased_webui_controller_header =
+            rebase_path(binder_config.webui_controller_header, "//")
+
+        # Use a single string for the argument to avoid it being parsed as a
+        # filename by the mojom_bindings_generator.py argument parser.
+        config_arg =
+            "--js_interface_binder_config=" + binder_config.webui_controller +
+            "=" + rebased_webui_controller_header
+
+        args += [ config_arg ]
       }
 
       cpp_target_name = target_name
@@ -1848,6 +1879,8 @@ template("mojom") {
           ":$cpp_target_name",
           ":$generator_js_interface_binder_impl_target_name",
         ]
+
+        deps += binder_config.webui_controller_deps
       }
     }
   }

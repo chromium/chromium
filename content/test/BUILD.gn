@@ -117,6 +117,8 @@ static_library("test_support") {
     "../browser/web_package/mock_web_bundle_reader_factory.cc",
     "../browser/web_package/mock_web_bundle_reader_factory.h",
     "../browser/web_package/signed_exchange_test_utils.h",
+    "../browser/webui/test_js_interface_binder_ui.cc",
+    "../browser/webui/test_js_interface_binder_ui.h",
     "../browser/worker_host/test_shared_worker_service_impl.cc",
     "../browser/worker_host/test_shared_worker_service_impl.h",
     "../public/test/accessibility_notification_waiter.cc",

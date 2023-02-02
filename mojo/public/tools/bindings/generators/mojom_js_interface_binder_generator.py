@@ -23,14 +23,16 @@ def _setup_sys_path():
     # https://docs.python.org/3/library/sys.html?highlight=path[0]#sys.path
     sys.path.insert(1, module_dir)
 
-
 _setup_sys_path()
 
+import argparse
 from mojom.generate import generator
 from mojom.generate.template_expander import UseJinja
 from mojom.generate import template_expander
 # Import it as "mojom" because "module" is a common variable name.
 import mojom.generate.module as mojom
+
+GENERATOR_PREFIX = 'js_interface_binder'
 
 
 class JsInterfaceBinderImplStylizer(generator.Stylizer):
@@ -103,6 +105,7 @@ class Generator(generator.Generator):
     Raises an Exception if any JsInterfaceBinder don't satisfy JsInterfaceBinder
     constraints.
     """
+    # TODO(ortuno): Remove support for multiple JsInterfaceBinders.
     interface_binders = [
         interface for interface in self.module.interfaces if
         (interface.attributes and interface.attributes.get('JsInterfaceBinder'))
@@ -128,9 +131,24 @@ class Generator(generator.Generator):
     return interface_binders
 
   def _GetParameters(self):
+    webui_controller_namespace = None
+    webui_controller_name = None
+
+    namespace_end = self.webui_controller_with_namespace.rfind("::")
+    if namespace_end == -1:
+      webui_controller_name = self.webui_controller_with_namespace
+    else:
+      webui_controller_namespace = \
+        self.webui_controller_with_namespace[:namespace_end]
+      webui_controller_name = \
+        self.webui_controller_with_namespace[namespace_end + 2:]
+
     return {
         'module': self.module,
-        'interface_binders': self._GetInterfaceBinders()
+        'interface_binders': self._GetInterfaceBinders(),
+        'webui_controller_name': webui_controller_name,
+        'webui_controller_namespace': webui_controller_namespace,
+        'webui_controller_header': self.webui_controller_header,
     }
 
   @UseJinja('js_interface_binder_impl.h.tmpl')
@@ -141,7 +159,13 @@ class Generator(generator.Generator):
   def _GenerateJsInterfaceBinderImplDefinition(self):
     return self._GetParameters()
 
-  def GenerateFiles(self, args):
+  def GenerateFiles(self, unparsed_args):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--js_interface_binder_config', dest='config')
+    args = parser.parse_args(unparsed_args)
+    (self.webui_controller_with_namespace, self.webui_controller_header) = \
+        args.config.split('=')
+
     self.module.Stylize(JsInterfaceBinderImplStylizer())
     self.WriteWithComment(self._GenerateJsInterfaceBinderImplDeclaration(),
                           f'{self.module.path}-js-interface-binder-impl.h')

@@ -11,7 +11,12 @@ mojom("test_js_interface_binder") {
     ":test_js_interface_binder_secondary",
     "//mojo/public/mojom/base",
   ]
-  js_interface_binder = true
+  js_interface_binder_config = {
+    webui_controller = "content::TestJsInterfaceBinderUI"
+    webui_controller_header =
+        "//content/browser/webui/test_js_interface_binder_ui.h"
+    webui_controller_deps = [ "//content/test:test_support" ]
+  }
 }
 
 mojom("test_js_interface_binder_secondary") {

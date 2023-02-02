@@ -4,6 +4,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "content/browser/webui/test_js_interface_binder_ui.h"
 #include "content/test/web_ui/js_interface_binder_unittest.test-mojom-js-interface-binder-impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -98,8 +99,9 @@ TEST_F(JsInterfaceBinderTest, Bind) {
       });
   Bar bar;
 
+  TestJsInterfaceBinderUI controller;
   mojom::FooJsInterfaceBinderImpl binder(
-      page_handler_binder,
+      &controller, page_handler_binder,
       base::BindRepeating(&Bar::BindBar, base::Unretained(&bar)),
       base::BindRepeating(&Bar::BindObserver, base::Unretained(&bar)));
 
@@ -126,10 +128,18 @@ TEST_F(JsInterfaceBinderTest, Bind) {
 // Tests we correctly generate a JsInterfaceBinderImpl for a interface that
 // binds interfaces in a separate mojom.
 TEST_F(JsInterfaceBinderTest, CrossModule) {
-  mojom::Interface1InterfaceBinderImpl binder(base::BindRepeating(
-      [](mojo::PendingReceiver<secondary::mojom::SecondaryInterface> receiver) {
-      }));
+  TestJsInterfaceBinderUI controller;
+  mojom::Interface1InterfaceBinderImpl binder(&controller, base::DoNothing());
   binder.BindSecondaryInterface(mojo::NullReceiver());
+}
+
+// Tests that we crash if the wrong WebUIController is passed to the
+// JsInterfaceBinder.
+TEST_F(JsInterfaceBinderTest, IncorrectWebUIControllerCrash) {
+  TestJsInterfaceBinderIncorrectUI controller;
+  EXPECT_DEATH_IF_SUPPORTED(mojom::Interface1InterfaceBinderImpl binder(
+                                &controller, base::DoNothing()),
+                            "");
 }
 
 }  // namespace content

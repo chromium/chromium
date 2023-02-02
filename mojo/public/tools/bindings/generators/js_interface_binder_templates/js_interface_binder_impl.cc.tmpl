@@ -5,6 +5,8 @@
 
 #include "{{module.path}}-js-interface-binder-impl.h"
 
+#include "{{webui_controller_header}}"
+
 namespace {{module.namespace}} {
 
 {%  for interface_binder in interface_binders -%}
@@ -12,24 +14,27 @@ namespace {{module.namespace}} {
 {%- set class_name = "%sImpl" % interface_binder.name -%}
 
 {{class_name}}::{{class_name}}(
+    content::WebUIController* controller,
   {{- macros.constructor_params(interface_binder) -}}
 ) :
 {%- for method in interface_binder.methods %}
    {{method|binder_variable_name}}_({{method|binder_variable_name}})
    {{-"," if not loop.last else ""}}
- {%- endfor %} {}
+ {%- endfor %} {
+  CHECK(controller->GetAs<{{class_name}}::WebUIControllerSubclass>());
+}
 
 {{class_name}}::~{{class_name}}() = default;
 
 {% for method in interface_binder.methods %}
   void {{class_name}}::{{method.name}}(
 {%-  for param in method.parameters %}
-    {{param.kind|cpp_type}} {{param.name}}{{", " if not loop.last else ""}}
+    {{param.kind|cpp_type}} {{param.name}}{{"," if not loop.last else ""}}
 {%-   endfor -%}
   ) {
   {{method|binder_variable_name}}_.Run(
 {%-  for param in method.parameters %}
-    std::move({{param.name}}){{", " if not loop.last else ""}}
+    std::move({{param.name}}){{"," if not loop.last else ""}}
 {%-   endfor -%}
   );
 }

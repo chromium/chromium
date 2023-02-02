@@ -15,6 +15,18 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
+namespace content {
+class WebUIController;
+}  // namespace content
+
+{% if webui_controller_namespace != None %}
+namespace {{webui_controller_namespace}} {
+class {{webui_controller_name}};
+}
+{% else %}
+class {{webui_controller_name}};
+{% endif %}
+
 namespace {{module.namespace}} {
 
 {%  for interface_binder in interface_binders -%}
@@ -31,7 +43,15 @@ class {{class_name}} : public {{interface_binder.name}} {
   )>;
 {% endfor %}
 
+{% if webui_controller_namespace != None -%}
+  using WebUIControllerSubclass =
+    {{webui_controller_namespace}}::{{webui_controller_name}};
+{%- else %}
+  using WebUIControllerSubclass = {{webui_controller_name}};
+{%- endif %}
+
   {{class_name}}(
+    content::WebUIController* controller,
     {{- macros.constructor_params(interface_binder) -}}
   );
 
