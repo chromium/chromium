@@ -8,6 +8,18 @@
 #include "base/notreached.h"
 
 namespace floss {
+namespace {
+constexpr char kCharacteristics[] = "characteristics";
+constexpr char kDescriptors[] = "descriptors";
+constexpr char kIncludedServices[] = "included_services";
+constexpr char kInstanceId[] = "instance_id";
+constexpr char kKeySize[] = "key_size";
+constexpr char kPermissions[] = "permissions";
+constexpr char kProperties[] = "properties";
+constexpr char kServiceType[] = "service_type";
+constexpr char kUuid[] = "uuid";
+constexpr char kWriteType[] = "write_type";
+}  // namespace
 
 namespace {
 // Randomly generated UUID for use in this client.
@@ -91,6 +103,12 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 }
 
 template <>
+const DBusTypeInfo& GetDBusTypeInfo(const WriteType*) {
+  static DBusTypeInfo info{"u", "WriteType"};
+  return info;
+}
+
+template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const WriteType& write_type) {
   uint32_t value = static_cast<uint32_t>(write_type);
@@ -98,12 +116,53 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
 }
 
 template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const GattService& service) {
+  dbus::MessageWriter array(nullptr);
+
+  writer->OpenArray("{sv}", &array);
+  WriteDictEntry(&array, kUuid, service.uuid);
+  WriteDictEntry(&array, kInstanceId, service.instance_id);
+  WriteDictEntry(&array, kServiceType, service.service_type);
+  WriteDictEntry(&array, kCharacteristics, service.characteristics);
+  WriteDictEntry(&array, kIncludedServices, service.included_services);
+  writer->CloseContainer(&array);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const GattCharacteristic& characteristic) {
+  dbus::MessageWriter array(nullptr);
+
+  writer->OpenArray("{sv}", &array);
+  WriteDictEntry(&array, kInstanceId, characteristic.instance_id);
+  WriteDictEntry(&array, kProperties, characteristic.properties);
+  WriteDictEntry(&array, kPermissions, characteristic.permissions);
+  WriteDictEntry(&array, kKeySize, characteristic.key_size);
+  WriteDictEntry(&array, kWriteType, characteristic.write_type);
+  WriteDictEntry(&array, kDescriptors, characteristic.descriptors);
+  writer->CloseContainer(&array);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const GattDescriptor& descriptor) {
+  dbus::MessageWriter array(nullptr);
+
+  writer->OpenArray("{sv}", &array);
+  WriteDictEntry(&array, kUuid, descriptor.uuid);
+  WriteDictEntry(&array, kInstanceId, descriptor.instance_id);
+  WriteDictEntry(&array, kPermissions, descriptor.permissions);
+  writer->CloseContainer(&array);
+}
+
+template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     GattDescriptor* descriptor) {
   static FlossDBusClient::StructReader<GattDescriptor> struct_reader({
-      {"uuid", CreateFieldReader(&GattDescriptor::uuid)},
-      {"instance_id", CreateFieldReader(&GattDescriptor::instance_id)},
-      {"permissions", CreateFieldReader(&GattDescriptor::permissions)},
+      {kUuid, CreateFieldReader(&GattDescriptor::uuid)},
+      {kInstanceId, CreateFieldReader(&GattDescriptor::instance_id)},
+      {kPermissions, CreateFieldReader(&GattDescriptor::permissions)},
   });
 
   return struct_reader.ReadDBusParam(reader, descriptor);
@@ -119,12 +178,12 @@ template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     GattCharacteristic* characteristic) {
   static FlossDBusClient::StructReader<GattCharacteristic> struct_reader({
-      {"uuid", CreateFieldReader(&GattCharacteristic::uuid)},
-      {"instance_id", CreateFieldReader(&GattCharacteristic::instance_id)},
-      {"properties", CreateFieldReader(&GattCharacteristic::properties)},
-      {"key_size", CreateFieldReader(&GattCharacteristic::key_size)},
-      {"write_type", CreateFieldReader(&GattCharacteristic::write_type)},
-      {"descriptors", CreateFieldReader(&GattCharacteristic::descriptors)},
+      {kUuid, CreateFieldReader(&GattCharacteristic::uuid)},
+      {kInstanceId, CreateFieldReader(&GattCharacteristic::instance_id)},
+      {kProperties, CreateFieldReader(&GattCharacteristic::properties)},
+      {kKeySize, CreateFieldReader(&GattCharacteristic::key_size)},
+      {kWriteType, CreateFieldReader(&GattCharacteristic::write_type)},
+      {kDescriptors, CreateFieldReader(&GattCharacteristic::descriptors)},
   });
 
   return struct_reader.ReadDBusParam(reader, characteristic);
@@ -140,11 +199,11 @@ template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     GattService* service) {
   static FlossDBusClient::StructReader<GattService> struct_reader({
-      {"uuid", CreateFieldReader(&GattService::uuid)},
-      {"instance_id", CreateFieldReader(&GattService::instance_id)},
-      {"service_type", CreateFieldReader(&GattService::service_type)},
-      {"characteristics", CreateFieldReader(&GattService::characteristics)},
-      {"included_services", CreateFieldReader(&GattService::included_services)},
+      {kUuid, CreateFieldReader(&GattService::uuid)},
+      {kInstanceId, CreateFieldReader(&GattService::instance_id)},
+      {kServiceType, CreateFieldReader(&GattService::service_type)},
+      {kCharacteristics, CreateFieldReader(&GattService::characteristics)},
+      {kIncludedServices, CreateFieldReader(&GattService::included_services)},
   });
 
   return struct_reader.ReadDBusParam(reader, service);
@@ -366,6 +425,22 @@ void FlossGattManagerClient::ServerDisconnect(
                        remote_device);
 }
 
+void FlossGattManagerClient::AddService(ResponseCallback<Void> callback,
+                                        GattService service) {
+  CallGattMethod<Void>(std::move(callback), gatt::kAddService, server_id_,
+                       service);
+}
+
+void FlossGattManagerClient::RemoveService(ResponseCallback<Void> callback,
+                                           int32_t handle) {
+  CallGattMethod<Void>(std::move(callback), gatt::kRemoveService, server_id_,
+                       handle);
+}
+
+void FlossGattManagerClient::ClearServices(ResponseCallback<Void> callback) {
+  CallGattMethod<Void>(std::move(callback), gatt::kClearServices, server_id_);
+}
+
 void FlossGattManagerClient::Init(dbus::Bus* bus,
                                   const std::string& service_name,
                                   const int adapter_index) {
@@ -429,6 +504,9 @@ void FlossGattManagerClient::Init(dbus::Bus* bus,
   gatt_server_exported_callback_manager_.AddMethod(
       gatt::kOnServerConnectionState,
       &FlossGattServerObserver::GattServerConnectionState);
+  gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnServerServiceAdded,
+      &FlossGattServerObserver::GattServerServiceAdded);
 
   // Export callbacks.
   if (!gatt_client_exported_callback_manager_.ExportCallback(
@@ -648,6 +726,13 @@ void FlossGattManagerClient::GattServerConnectionState(GattStatus status,
 
   for (auto& observer : gatt_server_observers_) {
     observer.GattServerConnectionState(status, server_id, connected, address);
+  }
+}
+
+void FlossGattManagerClient::GattServerServiceAdded(GattStatus status,
+                                                    GattService service) {
+  for (auto& observer : gatt_server_observers_) {
+    observer.GattServerServiceAdded(status, service);
   }
 }
 

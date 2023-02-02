@@ -239,6 +239,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattServerObserver
                                          int32_t server_id,
                                          bool connected,
                                          std::string address) {}
+
+  // A Gatt service has been added to the server.
+  virtual void GattServerServiceAdded(GattStatus status, GattService service) {}
 };
 
 class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
@@ -360,6 +363,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
   virtual void ServerDisconnect(ResponseCallback<Void> callback,
                                 const std::string& remote_device);
 
+  // Add a Gatt service.
+  virtual void AddService(ResponseCallback<Void> callback, GattService service);
+
+  // Remove Gatt service.
+  virtual void RemoveService(ResponseCallback<Void> callback, int32_t handle);
+
+  // Clear all Gatt services.
+  virtual void ClearServices(ResponseCallback<Void> callback);
+
   // Initialize the gatt client for the given adapter.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
@@ -425,6 +437,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
                                  int32_t server_id,
                                  bool connected,
                                  std::string address) override;
+  void GattServerServiceAdded(GattStatus status, GattService service) override;
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
   base::raw_ptr<dbus::Bus> bus_ = nullptr;

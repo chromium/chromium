@@ -179,9 +179,13 @@ extern DEVICE_BLUETOOTH_EXPORT const char kRegisterServer[];
 extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterServer[];
 extern DEVICE_BLUETOOTH_EXPORT const char kServerConnect[];
 extern DEVICE_BLUETOOTH_EXPORT const char kServerDisconnect[];
+extern DEVICE_BLUETOOTH_EXPORT const char kAddService[];
+extern DEVICE_BLUETOOTH_EXPORT const char kRemoveService[];
+extern DEVICE_BLUETOOTH_EXPORT const char kClearServices[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnServerRegistered[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnServerConnectionState[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnServerServiceAdded[];
 }  // namespace gatt
    //
 namespace advertiser {

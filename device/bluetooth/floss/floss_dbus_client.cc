@@ -180,9 +180,13 @@ const char kRegisterServer[] = "RegisterServer";
 const char kUnregisterServer[] = "UnregisterServer";
 const char kServerConnect[] = "ServerConnect";
 const char kServerDisconnect[] = "ServerDisconnect";
+const char kAddService[] = "AddService";
+const char kRemoveService[] = "RemoveService";
+const char kClearServices[] = "ClearServices";
 
 const char kOnServerRegistered[] = "OnServerRegistered";
 const char kOnServerConnectionState[] = "OnServerConnectionState";
+const char kOnServerServiceAdded[] = "OnServerServiceAdded";
 }  // namespace gatt
 
 namespace advertiser {
