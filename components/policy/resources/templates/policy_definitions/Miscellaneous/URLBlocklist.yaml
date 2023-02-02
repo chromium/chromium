@@ -1,14 +1,19 @@
-arc_support: Android apps may voluntarily choose to honor this list. You cannot force
-  them to honor it.
+arc_support: Android apps may voluntarily choose to honor this list and can't be forced to do this.
 caption: Block access to a list of URLs
 desc: |-
-  Setting the policy prevents webpages with prohibited URLs from loading. It provides a list of URL patterns that specify forbidden URLs. Leaving the policy unset means no URLs are prohibited in the browser. Format the URL pattern according to this format ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Up to 1,000 exceptions can be defined in <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph>.
+  Setting the <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph> policy stops web pages with prohibited URLs from loading. Administrators can specify the list of URL patterns to be blocked. If left unset, no URLs are blocked in the browser. Up to 1,000 exceptions can be defined in <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph>. See how to format a URL pattern ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
 
-        From <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 73, you can block javascript://* URLs. However, it affects only JavaScript entered in the address bar (or, for example, bookmarklets). In-page JavaScript URLs with dynamically loaded data aren't subject to this policy. For example, if you block example.com/abc, then example.com can still load example.com/abc using XMLHTTPRequest.
+  Note: This policy does not apply to in-page JavaScript URLs with dynamically loaded data. If you blocked example.com/abc, then example.com could still load it using XMLHTTPRequest. Additionally, this policy does not prevent web pages from updating the URL shown in the omnibox to a blocked one using the JavaScript History API.
 
-        From <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 92, this policy is also supported in the headless mode.
+  From <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 73, you can block javascript://* URLs. But, this only affects JavaScript entered in the address bar or, for example, bookmarklets.
 
-        Note: Blocking internal chrome://* and chrome-untrusted://* URLs can lead to unexpected errors or may be circumvented in special cases. Instead of blocking certain internal URLs, see if there are more specific policies available. Common cases: Instead of blocking chrome://settings/certificates, use <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME">CACertificateManagementAllowed</ph>. Instead of blocking chrome-untrusted://crosh, use <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME">SystemFeaturesDisableList</ph>.
+  From <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 92, this policy is also supported in the headless mode.
+
+  Note: Blocking internal chrome://* and chrome-untrusted://* URLs can lead to unexpected errors or can be circumvented in some cases. Instead of blocking certain internal URLs, see if there are more specific policies available. For example:
+
+  - Instead of blocking chrome://settings/certificates, use <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME">CACertificateManagementAllowed</ph>.
+
+  - Instead of blocking chrome-untrusted://crosh, use <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME">SystemFeaturesDisableList</ph>.
 example_value:
 - example.com
 - https://ssl.server.com
