@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
 
@@ -35,7 +36,6 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
   query_form_ = form;
   query_field_ = field;
   // Trigger only for a credit card field/form.
-  // TODO(crbug.com/1247698): Clarify field/form requirements.
   if (manager_->GetPopupType(form, field) != PopupType::kCreditCards)
     return false;
   // Trigger only on supported platforms.
@@ -44,6 +44,13 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
 
   TouchToFillCreditCardTriggerOutcome outcome =
       TouchToFillCreditCardTriggerOutcome::kShown;
+  // Trigger only for complete forms (contining the fields for the card number
+  // and the card expiration date).
+  FormStructure* form_structure =
+      manager_->FindCachedFormById(form.global_id());
+  if (form_structure && !FormHasAllCreditCardFields(*form_structure)) {
+    outcome = TouchToFillCreditCardTriggerOutcome::kIncompleteForm;
+  }
   // Trigger only if not shown before.
   if (ttf_credit_card_state_ != TouchToFillState::kShouldShow) {
     outcome = TouchToFillCreditCardTriggerOutcome::kShownBefore;

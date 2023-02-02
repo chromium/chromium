@@ -100236,6 +100236,7 @@ would be helpful to identify which type is being sent.
   <int value="6"
       label="Not shown: tried to display the sheet, but failed due to unknown
              reason"/>
+  <int value="7" label="Not shown: incomplete form"/>
 </enum>
 
 <enum name="TouchToFill.Outcome">

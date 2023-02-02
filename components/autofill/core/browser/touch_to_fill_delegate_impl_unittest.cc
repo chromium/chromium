@@ -115,9 +115,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
 class TouchToFillDelegateImplUnitTest : public testing::Test {
  protected:
   void SetUp() override {
-    test::CreateTestCreditCardFormData(&form_, /*is_https=*/true,
-                                       /*use_month_type=*/false);
-
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     autofill_client_.GetPersonalDataManager()->SetPrefService(
         autofill_client_.GetPrefs());
@@ -156,6 +153,10 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
             delegate->OnDismissed(/*dismissed_by_user=*/false);
           }
         });
+
+    test::CreateTestCreditCardFormData(&form_, /*is_https=*/true,
+                                       /*use_month_type=*/false);
+    browser_autofill_manager_->OnFormsSeen({form_}, {});
   }
 
   void TryToShowTouchToFill(bool expected_success) {
@@ -163,6 +164,7 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
                 HideAutofillPopup(
                     PopupHidingReason::kOverlappingWithTouchToFillSurface))
         .Times(expected_success ? 1 : 0);
+
     EXPECT_EQ(expected_success,
               touch_to_fill_delegate_->TryToShowTouchToFill(form_, field_));
     EXPECT_EQ(expected_success,
@@ -201,6 +203,24 @@ TEST_F(TouchToFillDelegateImplUnitTest,
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest,
+       TryToShowTouchToFillFailsForIncompleteForm) {
+  form_.fields.clear();
+  FormFieldData field;
+  test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
+  form_.fields.push_back(field);
+
+  browser_autofill_manager_->OnFormsSeen({form_}, {});
+
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
+
+  TryToShowTouchToFill(/*expected_success=*/false);
+
+  histogram_tester_.ExpectUniqueSample(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kIncompleteForm, 1);
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest,
        TryToShowTouchToFillFailsIfNotSupported) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
   EXPECT_CALL(autofill_client_, IsTouchToFillCreditCardSupported)
@@ -215,9 +235,12 @@ TEST_F(TouchToFillDelegateImplUnitTest,
   test::CreateTestCreditCardFormData(&form_, /*is_https=*/false,
                                      /*use_month_type=*/false);
 
+  browser_autofill_manager_->OnFormsSeen({form_}, {});
+
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/false);
+
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
       TouchToFillCreditCardTriggerOutcome::kFormOrClientNotSecure, 1);

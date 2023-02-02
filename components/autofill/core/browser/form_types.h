@@ -9,6 +9,8 @@
 
 namespace autofill {
 
+class FormStructure;
+
 enum class FormType : int {
   kUnknownFormType,
   kAddressForm,
@@ -16,6 +18,10 @@ enum class FormType : int {
   kPasswordForm,
   kMaxValue = kPasswordForm
 };
+
+// Returns true if the form contains fields that represent the card number and
+// the card expiration date.
+bool FormHasAllCreditCardFields(const FormStructure& form_structure);
 
 FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group);
 

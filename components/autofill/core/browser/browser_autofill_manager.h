@@ -564,8 +564,9 @@ class BrowserAutofillManager : public AutofillManager,
   [[nodiscard]] AutofillField* GetAutofillField(const FormData& form,
                                                 const FormFieldData& field);
 
-  // Returns true if any form in the field corresponds to an address
+  // Returns true if any field in the form corresponds to an address
   // |FieldTypeGroup|.
+  // TODO(crbug.com/1411352): Consider moving to form_types.h.
   [[nodiscard]] bool FormHasAddressField(const FormData& form);
 
   // Returns Suggestions corresponding to both the |autofill_field| type and
