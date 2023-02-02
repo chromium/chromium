@@ -107,6 +107,7 @@ class UpdaterImpl : public DynamicIIDsImpl<IUpdater,
   IFACEMETHODIMP RunPeriodicTasks(IUpdaterCallback* callback) override;
   IFACEMETHODIMP Update(const wchar_t* app_id,
                         const wchar_t* install_data_index,
+                        BOOL do_update_check_only,
                         LONG priority,
                         BOOL same_version_update_allowed,
                         IUpdaterObserver* observer) override;

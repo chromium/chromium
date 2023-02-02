@@ -951,6 +951,8 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
 
     EXPECT_HRESULT_SUCCEEDED(state->get_stateValue(&state_value));
 
+    done = state_value == expected_final_state;
+
     switch (state_value) {
       case STATE_INIT:
         stateDescription = L"Initializating...";
@@ -964,7 +966,9 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
 
       case STATE_UPDATE_AVAILABLE: {
         stateDescription = L"Update available!";
-        EXPECT_HRESULT_SUCCEEDED(bundle->download());
+        if (!done) {
+          EXPECT_HRESULT_SUCCEEDED(bundle->install());
+        }
         break;
       }
 
@@ -1029,7 +1033,6 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
 
       case STATE_INSTALL_COMPLETE:
         stateDescription = L"Done!";
-        done = true;
         break;
 
       case STATE_PAUSED:
@@ -1038,7 +1041,6 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
 
       case STATE_NO_UPDATE:
         stateDescription = L"No update available!";
-        done = true;
         break;
 
       case STATE_ERROR: {
@@ -1057,7 +1059,6 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
         extraData = base::StringPrintf(
             L"[errorCode: %d][completionMessage: %ls][installerResultCode: %d]",
             error_code, completion_message.Get(), installer_result_code);
-        done = true;
         break;
       }
 

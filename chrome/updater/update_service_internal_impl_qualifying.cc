@@ -107,6 +107,11 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
         base::BindOnce(&UpdateServiceImpl::Update,
                        base::MakeRefCounted<UpdateServiceImpl>(config_),
                        kQualificationAppId, "",
+    // TODO(crbug.com/1396103): mojo interface changes will be done in separate
+    // CL.
+#if BUILDFLAG(IS_WIN)
+                       false,
+#endif  // BUILDFLAG(IS_WIN)
                        UpdateService::Priority::kBackground,
                        UpdateService::PolicySameVersionUpdate::kNotAllowed,
                        base::DoNothing()))

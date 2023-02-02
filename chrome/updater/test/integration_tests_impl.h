@@ -217,6 +217,12 @@ int CountDirectoryFiles(const base::FilePath& dir);
 
 void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server);
 
+void ExpectUpdateCheckSequence(UpdaterScope scope,
+                               ScopedServer* test_server,
+                               const std::string& app_id,
+                               const std::string& install_data_index,
+                               const base::Version& to_version);
+
 void ExpectUpdateSequence(UpdaterScope scope,
                           ScopedServer* test_server,
                           const std::string& app_id,

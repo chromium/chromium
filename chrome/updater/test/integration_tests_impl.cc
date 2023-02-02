@@ -198,7 +198,8 @@ void ExpectSequence(UpdaterScope scope,
                     const std::string& install_data_index,
                     int event_type,
                     const base::Version& from_version,
-                    const base::Version& to_version) {
+                    const base::Version& to_version,
+                    bool is_update_check_only) {
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
   base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
@@ -225,11 +226,16 @@ void ExpectSequence(UpdaterScope scope,
                         test_server->base_url().spec(), to_version, crx_path,
                         kDoNothingCRXRun, {}));
 
-  // Second request: update download.
+  // TODO(crbug.com/1412192): crx bytes are downloaded even when
+  // `updatedisabled` is `true`. Second request: update download.
   std::string crx_bytes;
   base::ReadFileToString(crx_path, &crx_bytes);
   test_server->ExpectOnce({base::BindRepeating(RequestMatcherRegex, "")},
                           crx_bytes);
+
+  if (is_update_check_only) {
+    return;
+  }
 
   // Third request: event ping.
   test_server->ExpectOnce(
@@ -373,7 +379,13 @@ void Update(UpdaterScope scope,
   scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
   base::RunLoop loop;
   update_service->Update(
-      app_id, install_data_index, UpdateService::Priority::kForeground,
+      app_id, install_data_index,
+  // TODO(crbug.com/1396103): mojo interface changes will be done in separate
+  // CL.
+#if BUILDFLAG(IS_WIN)
+      /*do_update_check_only=*/false,
+#endif  // BUILDFLAG(IS_WIN)
+      UpdateService::Priority::kForeground,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, base::DoNothing(),
       base::BindLambdaForTesting(
           [&loop](UpdateService::Result result_unused) { loop.Quit(); }));
@@ -568,6 +580,15 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
       ")]}'\n");
 }
 
+void ExpectUpdateCheckSequence(UpdaterScope scope,
+                               ScopedServer* test_server,
+                               const std::string& app_id,
+                               const std::string& install_data_index,
+                               const base::Version& to_version) {
+  ExpectSequence(scope, test_server, app_id, install_data_index, 0, {},
+                 to_version, /*is_update_check_only*/ true);
+}
+
 void ExpectUpdateSequence(UpdaterScope scope,
                           ScopedServer* test_server,
                           const std::string& app_id,
@@ -575,7 +596,7 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           const base::Version& from_version,
                           const base::Version& to_version) {
   ExpectSequence(scope, test_server, app_id, install_data_index, 3,
-                 from_version, to_version);
+                 from_version, to_version, /*is_update_check_only*/ false);
 }
 
 void ExpectInstallSequence(UpdaterScope scope,
@@ -585,7 +606,7 @@ void ExpectInstallSequence(UpdaterScope scope,
                            const base::Version& from_version,
                            const base::Version& to_version) {
   ExpectSequence(scope, test_server, app_id, install_data_index, 2,
-                 from_version, to_version);
+                 from_version, to_version, /*is_update_check_only*/ false);
 }
 
 // Runs multiple cycles of instantiating the update service, calling
@@ -669,8 +690,13 @@ void CallServiceUpdate(UpdaterScope updater_scope,
 
   base::RunLoop loop;
   service_proxy->Update(
-      app_id, install_data_index, UpdateService::Priority::kForeground,
-      policy_same_version_update,
+      app_id, install_data_index,
+  // TODO(crbug.com/1396103): mojo interface changes will be done in separate
+  // CL.
+#if BUILDFLAG(IS_WIN)
+      /*do_update_check_only=*/false,
+#endif  // BUILDFLAG(IS_WIN)
+      UpdateService::Priority::kForeground, policy_same_version_update,
       base::BindLambdaForTesting([](const UpdateService::UpdateState&) {}),
       base::BindLambdaForTesting([&](UpdateService::Result result) {
         EXPECT_EQ(result, UpdateService::Result::kSuccess);

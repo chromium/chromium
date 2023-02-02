@@ -150,6 +150,15 @@ void MaybeIncreaseTestTimeouts(int argc, char** argv) {
   if (!command_line->HasSwitch(switches::kUiTestActionTimeout)) {
     command_line->AppendSwitchASCII(switches::kUiTestActionTimeout, "40000");
   }
+
+  // TODO(crbug.com/1412192): remove this once we fix crx bytes downloaded even
+  // when `updatedisabled` is `true`.
+  // The default value when unspecified is `kOutputSnippetBytesLimit = 300 *
+  // 1024`.
+  if (!command_line->HasSwitch(switches::kTestLauncherOutputBytesLimit)) {
+    command_line->AppendSwitchASCII(switches::kTestLauncherOutputBytesLimit,
+                                    "500000");
+  }
 }
 
 }  // namespace

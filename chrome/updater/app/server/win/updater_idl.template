@@ -160,6 +160,7 @@ interface IUpdater : IUnknown {
   HRESULT RunPeriodicTasks([in] IUpdaterCallback* callback);
   HRESULT Update([in, string] const WCHAR* app_id,
                  [in, string] const WCHAR* install_data_index,
+                 [in] BOOL do_update_check_only,
                  [in] LONG priority,
                  [in] BOOL same_version_update_allowed,
                  [in] IUpdaterObserver* observer);
@@ -205,6 +206,7 @@ interface IUpdaterUser : IUnknown {
   HRESULT RunPeriodicTasks([in] IUpdaterCallbackUser* callback);
   HRESULT Update([in, string] const WCHAR* app_id,
                  [in, string] const WCHAR* install_data_index,
+                 [in] BOOL do_update_check_only,
                  [in] LONG priority,
                  [in] BOOL same_version_update_allowed,
                  [in] IUpdaterObserverUser* observer);
@@ -250,6 +252,7 @@ interface IUpdaterSystem : IUnknown {
   HRESULT RunPeriodicTasks([in] IUpdaterCallbackSystem* callback);
   HRESULT Update([in, string] const WCHAR* app_id,
                  [in, string] const WCHAR* install_data_index,
+                 [in] BOOL do_update_check_only,
                  [in] LONG priority,
                  [in] BOOL same_version_update_allowed,
                  [in] IUpdaterObserverSystem* observer);

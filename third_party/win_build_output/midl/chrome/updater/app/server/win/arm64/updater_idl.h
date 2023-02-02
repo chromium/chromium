@@ -1647,6 +1647,7 @@ EXTERN_C const IID IID_IUpdater;
         virtual HRESULT STDMETHODCALLTYPE Update( 
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *install_data_index,
+            /* [in] */ BOOL do_update_check_only,
             /* [in] */ LONG priority,
             /* [in] */ BOOL same_version_update_allowed,
             /* [in] */ IUpdaterObserver *observer) = 0;
@@ -1737,6 +1738,7 @@ EXTERN_C const IID IID_IUpdater;
             IUpdater * This,
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *install_data_index,
+            /* [in] */ BOOL do_update_check_only,
             /* [in] */ LONG priority,
             /* [in] */ BOOL same_version_update_allowed,
             /* [in] */ IUpdaterObserver *observer);
@@ -1813,8 +1815,8 @@ EXTERN_C const IID IID_IUpdater;
 #define IUpdater_RunPeriodicTasks(This,callback)	\
     ( (This)->lpVtbl -> RunPeriodicTasks(This,callback) ) 
 
-#define IUpdater_Update(This,app_id,install_data_index,priority,same_version_update_allowed,observer)	\
-    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,priority,same_version_update_allowed,observer) ) 
+#define IUpdater_Update(This,app_id,install_data_index,do_update_check_only,priority,same_version_update_allowed,observer)	\
+    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,do_update_check_only,priority,same_version_update_allowed,observer) ) 
 
 #define IUpdater_UpdateAll(This,observer)	\
     ( (This)->lpVtbl -> UpdateAll(This,observer) ) 
@@ -1878,6 +1880,7 @@ EXTERN_C const IID IID_IUpdaterUser;
         virtual HRESULT STDMETHODCALLTYPE Update( 
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *install_data_index,
+            /* [in] */ BOOL do_update_check_only,
             /* [in] */ LONG priority,
             /* [in] */ BOOL same_version_update_allowed,
             /* [in] */ IUpdaterObserverUser *observer) = 0;
@@ -1968,6 +1971,7 @@ EXTERN_C const IID IID_IUpdaterUser;
             IUpdaterUser * This,
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *install_data_index,
+            /* [in] */ BOOL do_update_check_only,
             /* [in] */ LONG priority,
             /* [in] */ BOOL same_version_update_allowed,
             /* [in] */ IUpdaterObserverUser *observer);
@@ -2044,8 +2048,8 @@ EXTERN_C const IID IID_IUpdaterUser;
 #define IUpdaterUser_RunPeriodicTasks(This,callback)	\
     ( (This)->lpVtbl -> RunPeriodicTasks(This,callback) ) 
 
-#define IUpdaterUser_Update(This,app_id,install_data_index,priority,same_version_update_allowed,observer)	\
-    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,priority,same_version_update_allowed,observer) ) 
+#define IUpdaterUser_Update(This,app_id,install_data_index,do_update_check_only,priority,same_version_update_allowed,observer)	\
+    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,do_update_check_only,priority,same_version_update_allowed,observer) ) 
 
 #define IUpdaterUser_UpdateAll(This,observer)	\
     ( (This)->lpVtbl -> UpdateAll(This,observer) ) 
@@ -2109,6 +2113,7 @@ EXTERN_C const IID IID_IUpdaterSystem;
         virtual HRESULT STDMETHODCALLTYPE Update( 
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *install_data_index,
+            /* [in] */ BOOL do_update_check_only,
             /* [in] */ LONG priority,
             /* [in] */ BOOL same_version_update_allowed,
             /* [in] */ IUpdaterObserverSystem *observer) = 0;
@@ -2199,6 +2204,7 @@ EXTERN_C const IID IID_IUpdaterSystem;
             IUpdaterSystem * This,
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *install_data_index,
+            /* [in] */ BOOL do_update_check_only,
             /* [in] */ LONG priority,
             /* [in] */ BOOL same_version_update_allowed,
             /* [in] */ IUpdaterObserverSystem *observer);
@@ -2275,8 +2281,8 @@ EXTERN_C const IID IID_IUpdaterSystem;
 #define IUpdaterSystem_RunPeriodicTasks(This,callback)	\
     ( (This)->lpVtbl -> RunPeriodicTasks(This,callback) ) 
 
-#define IUpdaterSystem_Update(This,app_id,install_data_index,priority,same_version_update_allowed,observer)	\
-    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,priority,same_version_update_allowed,observer) ) 
+#define IUpdaterSystem_Update(This,app_id,install_data_index,do_update_check_only,priority,same_version_update_allowed,observer)	\
+    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,do_update_check_only,priority,same_version_update_allowed,observer) ) 
 
 #define IUpdaterSystem_UpdateAll(This,observer)	\
     ( (This)->lpVtbl -> UpdateAll(This,observer) ) 

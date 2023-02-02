@@ -26,6 +26,7 @@
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
+#include "chrome/updater/util/unittest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -301,6 +302,14 @@ class IntegrationTest : public ::testing::Test {
 #if BUILDFLAG(IS_WIN)
     test_commands_->TearDownTestService();
 #endif  // BUILDFLAG(IS_WIN)
+  }
+
+  void ExpectUpdateCheckSequence(ScopedServer* test_server,
+                                 const std::string& app_id,
+                                 const std::string& install_data_index,
+                                 const base::Version& to_version) {
+    test_commands_->ExpectUpdateCheckSequence(test_server, app_id,
+                                              install_data_index, to_version);
   }
 
   void ExpectUpdateSequence(ScopedServer* test_server,
@@ -643,38 +652,6 @@ TEST_F(IntegrationTest, MarshalInterface) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, LegacyUpdate3Web) {
-  ScopedServer test_server(test_commands_);
-  ASSERT_NO_FATAL_FAILURE(Install());
-
-  const char kAppId[] = "test1";
-  ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
-
-  ASSERT_NO_FATAL_FAILURE(ExpectNoUpdateSequence(&test_server, kAppId));
-  ASSERT_NO_FATAL_FAILURE(
-      ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_NO_UPDATE, S_OK));
-
-  base::Value::Dict group_policies;
-  group_policies.Set("Updatetest1", kPolicyAutomaticUpdatesOnly);
-  ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
-  ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
-      kAppId, STATE_ERROR, GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL));
-
-  group_policies.Set("Updatetest1", kPolicyDisabled);
-  ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
-  ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_ERROR,
-                                 GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY);
-
-  group_policies.clear();
-  ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
-  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
-      &test_server, kAppId, "", base::Version("0.1"), base::Version("0.2")));
-  ASSERT_NO_FATAL_FAILURE(
-      ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_INSTALL_COMPLETE, S_OK));
-
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
-}
-
 TEST_F(IntegrationTest, LegacyProcessLauncher) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyProcessLauncherSucceeds());
@@ -993,6 +970,71 @@ TEST_F(IntegrationTest, LegacySilentOfflineInstall) {
                                             /*is_silent_install=*/true));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+
+#if BUILDFLAG(IS_WIN)
+class IntegrationTestLegacyUpdate3Web : public IntegrationTest {
+ public:
+  IntegrationTestLegacyUpdate3Web() = default;
+  ~IntegrationTestLegacyUpdate3Web() override = default;
+
+ protected:
+  void SetUp() override {
+    IntegrationTest::SetUp();
+
+    test_server_ = std::make_unique<ScopedServer>(test_commands_);
+    ASSERT_NO_FATAL_FAILURE(Install());
+    ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
+  }
+
+  void TearDown() override {
+    ASSERT_NO_FATAL_FAILURE(Uninstall());
+
+    IntegrationTest::TearDown();
+  }
+
+  std::unique_ptr<ScopedServer> test_server_;
+  static constexpr char kAppId[] = "test1";
+};
+
+TEST_F(IntegrationTestLegacyUpdate3Web, LegacyUpdate3Web_NoUpdate) {
+  ASSERT_NO_FATAL_FAILURE(ExpectNoUpdateSequence(test_server_.get(), kAppId));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_NO_UPDATE, S_OK));
+}
+
+TEST_F(IntegrationTestLegacyUpdate3Web, LegacyUpdate3Web_DisabledPolicyManual) {
+  base::Value::Dict group_policies;
+  group_policies.Set("Updatetest1", kPolicyAutomaticUpdatesOnly);
+  ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
+  ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
+      kAppId, STATE_ERROR, GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL));
+}
+
+TEST_F(IntegrationTestLegacyUpdate3Web, LegacyUpdate3Web_DisabledPolicy) {
+  base::Value::Dict group_policies;
+  group_policies.Set("Updatetest1", kPolicyDisabled);
+  ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
+  ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_ERROR,
+                                 GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY);
+}
+
+TEST_F(IntegrationTestLegacyUpdate3Web, LegacyUpdate3Web_CheckForUpdate) {
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(test_server_.get(), kAppId,
+                                                    "", base::Version("0.2")));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_UPDATE_AVAILABLE, S_OK));
+}
+
+TEST_F(IntegrationTestLegacyUpdate3Web, LegacyUpdate3Web_Update) {
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(test_server_.get(), kAppId,
+                                                    "", base::Version("0.2")));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(test_server_.get(), kAppId, "",
+                                               base::Version("0.1"),
+                                               base::Version("0.2")));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_INSTALL_COMPLETE, S_OK));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 

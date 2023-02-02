@@ -80,7 +80,11 @@ void BrowserUpdaterClient::CheckForUpdate(
       updater::UpdateService::UpdateState::State::kCheckingForUpdates;
   version_updater_callback.Run(update_state);
   update_service_->Update(
-      GetAppId(), {}, updater::UpdateService::Priority::kForeground,
+      GetAppId(), {},
+#if BUILDFLAG(IS_WIN)
+      /*do_update_check_only=*/false,
+#endif  // BUILDFLAG(IS_WIN)
+      updater::UpdateService::Priority::kForeground,
       updater::UpdateService::PolicySameVersionUpdate::kNotAllowed,
       base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          version_updater_callback),
