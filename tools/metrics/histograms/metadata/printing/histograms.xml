@@ -263,6 +263,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Printing.CUPS.PrinterSetupResult.SettingsDiscoveredPrinters"
+    enum="PrinterSetupResult" expires_after="2024-02-01">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>bmgordon@chromium.org</owner>
+  <owner>src/chromeos/printing/OWNERS</owner>
+  <summary>
+    The success or error code for the setup of printers classified as
+    &quot;Discovered&quot;. Recorded when the user clicks the Setup button in OS
+    Printer Settings when attempting to save a printer. Only recorded on Chrome
+    OS.
+  </summary>
+</histogram>
+
 <histogram name="Printing.CUPS.PrinterStatusQueryResult"
     enum="PrinterStatusQueryResult" expires_after="2023-07-09">
   <owner>gavinwill@chromium.org</owner>

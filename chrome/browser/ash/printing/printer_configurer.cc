@@ -299,6 +299,9 @@ std::string ResultCodeToMessage(const PrinterSetupResult result) {
     // Unknown problem.
     case PrinterSetupResult::kFatalError:
       return "Unknown error occurred.";
+    // Printer requires manual setup.
+    case PrinterSetupResult::kManualSetupRequired:
+      return "Printer requires manual setup.";
     // This is not supposed to happen.
     case PrinterSetupResult::kMaxValue:
       return "The error code is invalid.";

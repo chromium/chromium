@@ -860,6 +860,7 @@ void CupsPrintersHandler::OnAddedOrEditedPrinterCommon(
     case PrinterSetupResult::kIoError:
     case PrinterSetupResult::kMemoryAllocationError:
     case PrinterSetupResult::kFatalError:
+    case PrinterSetupResult::kManualSetupRequired:
       PRINTER_LOG(ERROR) << ResultCodeToMessage(result_code);
       break;
     case PrinterSetupResult::kComponentUnavailable:

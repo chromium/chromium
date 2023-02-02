@@ -259,6 +259,9 @@ export class SettingsCupsNearbyPrintersElement extends
       printerName: string, result: PrinterSetupResult): void {
     this.savingPrinter_ = false;
     this.showCupsPrinterToast_(result, printerName);
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Printing.CUPS.PrinterSetupResult.SettingsDiscoveredPrinters', result,
+        Object.keys(PrinterSetupResult).length);
   }
 
   /**
@@ -273,6 +276,10 @@ export class SettingsCupsNearbyPrintersElement extends
           detail: {item: printer},
         });
     this.dispatchEvent(openManufacturerDialogEvent);
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Printing.CUPS.PrinterSetupResult.SettingsDiscoveredPrinters',
+        PrinterSetupResult.MANUAL_SETUP_REQUIRED,
+        Object.keys(PrinterSetupResult).length);
   }
 
   /**
