@@ -25,9 +25,7 @@ chromium-metrics-reviews@google.com.
 <variants name="CrostiniState">
   <variant name="CreateContainer" summary="creating container"/>
   <variant name="CreateDiskImage" summary="creating disk image"/>
-  <variant name="FetchSshKeys" summary="fetching SSH keys"/>
   <variant name="InstallImageLoader" summary="installing component or DLC"/>
-  <variant name="MountContainer" summary="creating SSHFS mounts"/>
   <variant name="SetupContainer" summary="setting up container for use"/>
   <variant name="Start" summary="initial"/>
   <variant name="StartContainer" summary="starting container"/>
