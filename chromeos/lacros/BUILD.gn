@@ -79,7 +79,7 @@ if (is_chromeos_device) {
     # The following expression filters out all non-critical tests. See the link
     # below for more details:
     # https://chromium.googlesource.com/chromiumos/platform/tast/+/main/docs/test_attributes.md
-    tast_attr_expr = "\"group:mainline\" && \"dep:lacros\" && !informational"
+    tast_attr_expr = "\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational"
 
     # To disable a specific test, add it to the
     # tast_disabled_tests_from_lacros_all list in "tast_control.gni" and cite
