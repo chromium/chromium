@@ -56,6 +56,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   void Resume() override;
   double SampleRate() override;
   int FramesPerBuffer() override;
+  int MaxChannelCount() override;
 
   // Sets the detect silence flag for SilentSinkSuspender. Invoked by Blink Web
   // Audio.
@@ -73,7 +74,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   const media::AudioParameters& get_sink_params_for_testing() {
-    return sink_params_;
+    return current_sink_params_;
   }
 
  protected:
@@ -100,7 +101,12 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
 
   void SendLogMessage(const std::string& message);
 
-  media::AudioParameters sink_params_;
+  // This is queried from the underlying sink device and then modified according
+  // to the WebAudio renderer's needs.
+  media::AudioParameters current_sink_params_;
+  // This is the unmodified parameters obtained from the underlying sink device.
+  // Used to provide the original hardware capacity.
+  media::AudioParameters original_sink_params_;
 
   // To cache the device identifier for sink creation.
   const blink::WebAudioSinkDescriptor sink_descriptor_;

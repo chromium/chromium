@@ -54,6 +54,9 @@ class WebAudioDevice {
   virtual double SampleRate() = 0;
   virtual int FramesPerBuffer() = 0;
 
+  // The maximum channel count of the current audio sink device.
+  virtual int MaxChannelCount() = 0;
+
   // Sets the detect silence flag for |RendererWebAudioDeviceImpl|.
   virtual void SetDetectSilence(bool detect_silence) {}
 };

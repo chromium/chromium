@@ -73,9 +73,10 @@
         audioContext.setSinkId(deviceId);
       }
 
-      appView.inspector.textContent = typeof audioContext.sinkId === 'object'
-          ? `AudioContext.sinkId = ${JSON.stringify(audioContext.sinkId)}`
-          : `AudioContext.sinkId = '${audioContext.sinkId}'`
+      const sinkId = `AudioContext.sinkId = ` + typeof audioContext.sinkId === 'object'
+          ? JSON.stringify(audioContext.sinkId) : audioContext.sinkId;
+      const maxChan = audioContext.destination.maxChannelCount;
+      appView.inspector.textContent = `${sinkId} (${maxChan} channels max)`;
     };
 
     // The manual test body
@@ -101,7 +102,8 @@
       }
 
       appView.inspector.textContent =
-          `AudioContext.sinkId = '${audioContext.sinkId}'`;
+          `AudioContext.sinkId = ${audioContext.sinkId}`+
+          `(${audioContext.destination.maxChannelCount} channels max)`;
 
       // Get a permission, enumerate devices, and set up the UI.
       try {

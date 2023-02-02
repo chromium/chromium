@@ -40,6 +40,7 @@ class MockWebAudioDeviceForAudioContext : public WebAudioDevice {
   void Resume() override { web_audio_device_paused_ = false; }
   double SampleRate() override { return sample_rate_; }
   int FramesPerBuffer() override { return frames_per_buffer_; }
+  int MaxChannelCount() override { return 2; }
 
  private:
   double sample_rate_;

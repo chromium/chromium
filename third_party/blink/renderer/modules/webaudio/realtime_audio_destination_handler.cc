@@ -158,7 +158,7 @@ void RealtimeAudioDestinationHandler::RestartRendering() {
 }
 
 uint32_t RealtimeAudioDestinationHandler::MaxChannelCount() const {
-  return AudioDestination::MaxChannelCount();
+  return platform_destination_->MaxChannelCount();
 }
 
 double RealtimeAudioDestinationHandler::SampleRate() const {

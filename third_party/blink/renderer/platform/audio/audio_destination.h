@@ -122,8 +122,8 @@ class PLATFORM_EXPORT AudioDestination final
   // hardware.
   int FramesPerBuffer() const;
 
-  // The information from the actual audio hardware. (via Platform::Current)
-  static uint32_t MaxChannelCount();
+  // The maximum channel count of the current audio sink device.
+  uint32_t MaxChannelCount();
 
   // Sets the detect silence flag for `web_audio_device_`.
   void SetDetectSilence(bool detect_silence);

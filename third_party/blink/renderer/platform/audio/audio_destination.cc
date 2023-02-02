@@ -268,7 +268,7 @@ int AudioDestination::FramesPerBuffer() const {
 }
 
 uint32_t AudioDestination::MaxChannelCount() {
-  return Platform::Current()->AudioHardwareOutputChannels();
+  return web_audio_device_->MaxChannelCount();
 }
 
 void AudioDestination::SetDetectSilence(bool detect_silence) {
