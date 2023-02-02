@@ -23,40 +23,21 @@
 namespace gpu {
 class D3DImageBacking;
 class D3DImageBackingFactoryTest;
-class GLTextureImageBacking;
 class GLTexturePassthroughD3DImageRepresentation;
-FORWARD_DECLARE_TEST(CALayerTreeTest, HDRTrigger);
 FORWARD_DECLARE_TEST(D3DImageBackingFactoryTestSwapChain,
                      CreateAndPresentSwapChain);
-FORWARD_DECLARE_TEST(GpuOESEGLImageTest, EGLImageToTexture);
 }  // namespace gpu
 
 namespace gpu::gles2 {
 class GLES2DecoderImpl;
 class GLES2DecoderPassthroughImpl;
-class PassthroughAbstractTextureImpl;
-class Texture;
-class ValidatingAbstractTextureImpl;
 }  // namespace gpu::gles2
 
 namespace media {
 class GLImageEGLStream;
 class GLImagePbuffer;
 class DXVAVideoDecodeAccelerator;
-class VaapiPictureNativePixmapAngle;
-class VaapiPictureNativePixmapEgl;
-class VaapiPictureNativePixmapOzone;
-class V4L2SliceVideoDecodeAccelerator;
-class VTVideoDecodeAccelerator;
 }
-
-namespace ui {
-class NativePixmapGLBinding;
-}  // namespace ui
-
-namespace viz {
-class ImageContextImpl;
-}  // namespace viz
 
 namespace gl {
 
@@ -101,23 +82,10 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
 
   friend class gpu::D3DImageBacking;
   friend class gpu::D3DImageBackingFactoryTest;
-  friend class gpu::GLTextureImageBacking;
   friend class gpu::GLTexturePassthroughD3DImageRepresentation;
   friend class gpu::gles2::GLES2DecoderImpl;
   friend class gpu::gles2::GLES2DecoderPassthroughImpl;
-  friend class gpu::gles2::PassthroughAbstractTextureImpl;
-  friend class gpu::gles2::Texture;
-  friend class gpu::gles2::ValidatingAbstractTextureImpl;
   friend class media::DXVAVideoDecodeAccelerator;
-  friend class media::VaapiPictureNativePixmapAngle;
-  friend class media::VaapiPictureNativePixmapEgl;
-  friend class media::VaapiPictureNativePixmapOzone;
-  friend class media::V4L2SliceVideoDecodeAccelerator;
-  friend class media::VTVideoDecodeAccelerator;
-  friend class ui::NativePixmapGLBinding;
-  friend class viz::ImageContextImpl;
-  FRIEND_TEST_ALL_PREFIXES(gpu::GpuOESEGLImageTest, EGLImageToTexture);
-  FRIEND_TEST_ALL_PREFIXES(gpu::CALayerTreeTest, HDRTrigger);
   FRIEND_TEST_ALL_PREFIXES(gpu::D3DImageBackingFactoryTestSwapChain,
                            CreateAndPresentSwapChain);
 
