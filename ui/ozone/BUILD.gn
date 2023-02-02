@@ -419,6 +419,11 @@ test("ozone_unittests") {
   assert_no_deps = [ "//ui/ozone" ]
 
   data_deps = [ "//testing/buildbot/filters:ozone_unittests_filters" ]
+
+  if (is_fuchsia) {
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/test_ui_stack.shard.test-cml" ]
+  }
 }
 
 # X11 backend has its own test suite only built when we are using the x11

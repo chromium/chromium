@@ -24,6 +24,8 @@ source_set("flatland") {
     "flatland_screen.h",
     "flatland_surface.cc",
     "flatland_surface.h",
+    "flatland_surface_canvas.cc",
+    "flatland_surface_canvas.h",
     "flatland_surface_factory.cc",
     "flatland_surface_factory.h",
     "flatland_sysmem_buffer_collection.cc",
@@ -90,6 +92,7 @@ source_set("flatland_unittests") {
   testonly = true
   sources = [
     "flatland_connection_unittest.cc",
+    "flatland_surface_canvas_unittest.cc",
     "flatland_surface_unittest.cc",
     "flatland_window_unittest.cc",
   ]

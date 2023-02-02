@@ -69,6 +69,14 @@ class FlatlandSysmemBufferManager {
   scoped_refptr<FlatlandSysmemBufferCollection> GetCollectionByHandle(
       const zx::eventpair& handle);
 
+  fuchsia::sysmem::Allocator_Sync* sysmem_allocator() {
+    return sysmem_allocator_.get();
+  }
+
+  fuchsia::ui::composition::Allocator* flatland_allocator() {
+    return flatland_allocator_.get();
+  }
+
  private:
   void RegisterCollection(
       scoped_refptr<FlatlandSysmemBufferCollection> collection);

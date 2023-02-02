@@ -24,6 +24,7 @@
 #include "ui/ozone/common/gl_ozone_egl.h"
 #include "ui/ozone/platform/flatland/flatland_gpu_service.h"
 #include "ui/ozone/platform/flatland/flatland_surface.h"
+#include "ui/ozone/platform/flatland/flatland_surface_canvas.h"
 #include "ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.h"
 #include "ui/ozone/platform/flatland/flatland_window.h"
 #include "ui/ozone/platform/flatland/flatland_window_manager.h"
@@ -152,10 +153,16 @@ FlatlandSurfaceFactory::CreatePlatformWindowSurface(
 }
 
 std::unique_ptr<SurfaceOzoneCanvas>
-FlatlandSurfaceFactory::CreateCanvasForWidget(gfx::AcceleratedWidget widget) {
-  // TODO(fxbug.dev/93998): Add FlatlandWindowCanvas implementation.
-  NOTREACHED();
-  return nullptr;
+FlatlandSurfaceFactory::CreateCanvasForWidget(gfx::AcceleratedWidget window) {
+  DCHECK_NE(window, gfx::kNullAcceleratedWidget);
+  auto result = std::make_unique<FlatlandSurfaceCanvas>(
+      flatland_sysmem_buffer_manager_.sysmem_allocator(),
+      flatland_sysmem_buffer_manager_.flatland_allocator());
+  main_thread_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&FlatlandSurfaceFactory::AttachSurfaceToWindow,
+                                weak_ptr_factory_.GetWeakPtr(), window,
+                                result->CreateView()));
+  return result;
 }
 
 scoped_refptr<gfx::NativePixmap> FlatlandSurfaceFactory::CreateNativePixmap(

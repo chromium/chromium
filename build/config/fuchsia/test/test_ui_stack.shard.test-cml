@@ -33,6 +33,11 @@
       ],
       from: "#test_ui_stack",
     },
+    {
+      protocol: [
+        "fuchsia.sysmem.Allocator",
+      ],
+    },
   ],
   facets: {
     "fuchsia.test": {
