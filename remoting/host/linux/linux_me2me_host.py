@@ -1253,20 +1253,25 @@ class XDesktop(Desktop):
       except (ValueError, OSError, subprocess.CalledProcessError) as e:
         logging.error("Failed to retrieve processor count: " + str(e))
 
-      for refresh_rate in refresh_rates:
-        for width, height in self.sizes:
-          # This sets dot-clock, vtotal and htotal such that the computed
-          # refresh-rate will have a realistic value:
-          # refresh rate = dot-clock / (vtotal * htotal).
-          label = "%dx%d_%s" % (width, height, refresh_rate)
-          args = ["xrandr", "--newmode", label, refresh_rate, str(width), "0",
-                  "0", "1000", str(height), "0", "0", "1000"]
-          subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
-                          stderr=subprocess.DEVNULL)
-          output_name = "screen" if self.use_xvfb else "DUMMY0"
-          args = ["xrandr", "--addmode", output_name, label]
-          subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
-                          stderr=subprocess.DEVNULL)
+      output_names = (
+          ["screen"]
+          if self.use_xvfb
+          else ["DUMMY0","DUMMY1","DUMMY2","DUMMY3"])
+
+      for output_name in output_names:
+        for refresh_rate in refresh_rates:
+          for width, height in self.sizes:
+            # This sets dot-clock, vtotal and htotal such that the computed
+            # refresh-rate will have a realistic value:
+            # refresh rate = dot-clock / (vtotal * htotal).
+            label = "%dx%d_%s" % (width, height, refresh_rate)
+            args = ["xrandr", "--newmode", label, refresh_rate, str(width), "0",
+                    "0", "1000", str(height), "0", "0", "1000"]
+            subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL)
+            args = ["xrandr", "--addmode", output_name, label]
+            subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL)
 
     # Set the initial mode to the first size specified, otherwise the X server
     # would default to (max_width, max_height), which might not even be in the
