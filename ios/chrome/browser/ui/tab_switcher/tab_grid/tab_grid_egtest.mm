@@ -708,8 +708,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that dragging a tab grid incognito item to the edge opens a new window
 // and that the tab is properly transferred, incuding navigation stack.
-// TODO(crbug.com/1409065): This test is flaky.
-- (void)FLAKY_testIncognitoDragAndDropAtEdgeToCreateNewWindow {
+- (void)testIncognitoDragAndDropAtEdgeToCreateNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
