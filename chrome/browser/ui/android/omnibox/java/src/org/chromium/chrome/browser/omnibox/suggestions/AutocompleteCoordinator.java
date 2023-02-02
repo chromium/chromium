@@ -80,6 +80,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             new ObserverList<>();
 
     public AutocompleteCoordinator(@NonNull ViewGroup parent,
+            @NonNull AutocompleteControllerProvider controllerProvider,
             @NonNull AutocompleteDelegate delegate,
             @NonNull OmniboxSuggestionsDropdownEmbedder dropdownEmbedder,
             @NonNull UrlBarEditingTextStateProvider urlBarEditingTextProvider,
@@ -104,10 +105,11 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         listModel.set(SuggestionListProperties.VISIBLE, false);
         listModel.set(SuggestionListProperties.SUGGESTION_MODELS, listItems);
 
-        mMediator = new AutocompleteMediator(context, delegate, urlBarEditingTextProvider,
-                listModel, new Handler(), modalDialogManagerSupplier, activityTabSupplier,
-                shareDelegateSupplier, locationBarDataProvider, bringToForegroundCallback,
-                tabWindowManagerSupplier, bookmarkState, jankTracker, omniboxPedalDelegate);
+        mMediator = new AutocompleteMediator(context, controllerProvider, delegate,
+                urlBarEditingTextProvider, listModel, new Handler(), modalDialogManagerSupplier,
+                activityTabSupplier, shareDelegateSupplier, locationBarDataProvider,
+                bringToForegroundCallback, tabWindowManagerSupplier, bookmarkState, jankTracker,
+                omniboxPedalDelegate);
         mMediator.initDefaultProcessors();
 
         mScrollListenerList.addObserver(scrollListener);
@@ -383,33 +385,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
      */
     public void startAutocompleteForQuery(String query) {
         mMediator.startAutocompleteForQuery(query);
-    }
-
-    /**
-     * Given a search query, this will attempt to see if the query appears to be portion of a
-     * properly formed URL.  If it appears to be a URL, this will return the fully qualified
-     * version (i.e. including the scheme, etc...).  If the query does not appear to be a URL,
-     * this will return null.
-     *
-     * Note:
-     * 1) This call is expensive. Use only when it is absolutely necessary to get the exact
-     *    information about how a given query string will be interpreted. For less restrictive
-     *    URL vs text matching, please defer to GURL.
-     * 2) this updates the internal state of the autocomplete controller just as start() does.
-     *    Future calls that reference autocomplete results by index, e.g. onSuggestionSelected(),
-     *    should reference the returned suggestion by index 0.
-     *
-     * TODO(crbug.com/966424): Fix the dependency issue and remove this method.
-     *                       Please don't use this in any new code.
-     *
-     * @param profile The profile to expand the query for.
-     * @param query The query to be expanded into a fully qualified URL if appropriate.
-     * @return The AutocompleteMatch for a default / top match. This may be either SEARCH
-     *         match built with the user's default search engine, or a NAVIGATION match.
-     */
-    @Deprecated
-    public static AutocompleteMatch classify(@NonNull Profile profile, @NonNull String query) {
-        return AutocompleteController.getForProfile(profile).classify(query, false);
     }
 
     /**

@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.renderer_host.ChromeNavigationUIData;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -742,8 +742,13 @@ public class IntentHandler {
             return null;
         }
         String query = results.get(0);
-        AutocompleteMatch match =
-                AutocompleteCoordinator.classify(Profile.getLastUsedRegularProfile(), query);
+
+        AutocompleteMatch match;
+        try (var controller = AutocompleteControllerProvider.createCloseableController(
+                     Profile.getLastUsedRegularProfile())) {
+            match = controller.get().classify(query, false);
+        }
+
         if (!match.isSearchSuggestion()) return match.getUrl().getSpec();
 
         List<String> urls = IntentUtils.safeGetStringArrayListExtra(

@@ -35,11 +35,11 @@ import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AssistantActionPerformed;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.TranslateBridgeWrapper;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceIntentTarget;
@@ -68,30 +68,27 @@ public class AssistantActionsHandlerTest {
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
     @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
     public HistogramTestRule mHistograms = new HistogramTestRule();
 
     @Mock
-    Intent mIntent;
+    private Intent mIntent;
     @Mock
-    AssistantVoiceSearchService mAssistantVoiceSearchService;
+    private AssistantVoiceSearchService mAssistantVoiceSearchService;
     @Mock
-    TranslateBridgeWrapper mTranslateBridgeWrapper;
+    private TranslateBridgeWrapper mTranslateBridgeWrapper;
     @Mock
-    Tab mTab;
+    private Tab mTab;
     @Mock
-    VoiceRecognitionHandler.Observer mObserver;
+    private VoiceRecognitionHandler.Observer mObserver;
     @Mock
-    AutocompleteController mController;
+    private AutocompleteController mController;
     @Mock
-    AutocompleteController.Natives mControllerJniMock;
+    private AutocompleteMatch mMatch;
     @Mock
-    AutocompleteMatch mMatch;
+    private AutocompleteCoordinator mAutocompleteCoordinator;
 
     private RecognitionTestHelper.TestDataProvider mDataProvider;
     private RecognitionTestHelper.TestDelegate mDelegate;
-    private RecognitionTestHelper.TestAutocompleteCoordinator mAutocompleteCoordinator;
     private RecognitionTestHelper.TestVoiceRecognitionHandler mHandler;
     private RecognitionTestHelper.TestAndroidPermissionDelegate mPermissionDelegate;
     private RecognitionTestHelper.TestWindowAndroid mWindowAndroid;
@@ -107,17 +104,16 @@ public class AssistantActionsHandlerTest {
     @Before
     public void setUp() throws InterruptedException, ExecutionException {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJniMock);
-        doReturn(mController).when(mControllerJniMock).getForProfile(any());
+        AutocompleteControllerProvider.setControllerForTesting(mController);
         doReturn(mMatch).when(mController).classify(any(), anyBoolean());
         doReturn(new GURL("https://www.google.com/search?q=abc")).when(mMatch).getUrl();
         doReturn(true).when(mMatch).isSearchSuggestion();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mProfileSupplier = new ObservableSupplierImpl<>();
-            RecognitionTestHelper testHelper =
-                    new RecognitionTestHelper(mAssistantVoiceSearchService, mProfileSupplier,
-                            sActivityTestRule.getActivity());
+            RecognitionTestHelper testHelper = new RecognitionTestHelper(mAutocompleteCoordinator,
+                    mAssistantVoiceSearchService, mProfileSupplier,
+                    sActivityTestRule.getActivity());
             mDataProvider = testHelper.getDataProvider();
             mDataProvider.setTab(mTab);
             mPermissionDelegate = testHelper.getAndroidPermissionDelegate();
@@ -127,7 +123,6 @@ public class AssistantActionsHandlerTest {
             mDelegate = testHelper.getDelegate();
             mHandler = testHelper.getVoiceRecognitionHandler();
             mHandler.addObserver(mObserver);
-            mAutocompleteCoordinator = testHelper.getAutocompleteCoordinator();
         });
 
         doReturn(new GURL(RecognitionTestHelper.DEFAULT_URL)).when(mTab).getUrl();
@@ -156,6 +151,7 @@ public class AssistantActionsHandlerTest {
             VoiceRecognitionHandler.setIsRecognitionIntentPresentForTesting(null);
             mWindowAndroid.destroy();
         });
+        AutocompleteControllerProvider.setControllerForTesting(null);
     }
 
     @Test

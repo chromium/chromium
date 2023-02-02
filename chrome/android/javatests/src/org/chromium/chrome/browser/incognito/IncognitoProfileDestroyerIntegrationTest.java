@@ -8,12 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,10 +23,9 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,9 +44,6 @@ import java.util.concurrent.ExecutionException;
 public class IncognitoProfileDestroyerIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-
     private TabModel mIncognitoTabModel;
 
     @Mock
@@ -56,21 +52,21 @@ public class IncognitoProfileDestroyerIntegrationTest {
     @Mock
     AutocompleteController mAutocompleteController;
 
-    @Mock
-    AutocompleteController.Natives mAutocompleteControllerJniMock;
-
     @Before
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
-        doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
-
+        AutocompleteControllerProvider.setControllerForTesting(mAutocompleteController);
         mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ProfileManager.addObserver(mMockProfileManagerObserver);
             mIncognitoTabModel =
                     mActivityTestRule.getActivity().getTabModelSelector().getModel(true);
         });
+    }
+
+    @After
+    public void tearDown() {
+        AutocompleteControllerProvider.setControllerForTesting(null);
     }
 
     @Test

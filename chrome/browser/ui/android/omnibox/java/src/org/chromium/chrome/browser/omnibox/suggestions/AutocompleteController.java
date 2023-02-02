@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.LifetimeAssert;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
@@ -44,6 +45,7 @@ public class AutocompleteController {
     // Maximum number of voice suggestions to show.
     private static final int MAX_VOICE_SUGGESTION_COUNT = 3;
 
+    private final @NonNull LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private final @NonNull Profile mProfile;
     private final @NonNull Set<OnSuggestionsReceivedListener> mListeners = new HashSet<>();
     private long mNativeController;
@@ -66,10 +68,18 @@ public class AutocompleteController {
                 String inlineAutocompleteText, boolean isFinal);
     }
 
-    @CalledByNative
-    private AutocompleteController(@NonNull Profile profile, long nativeController) {
+    /**
+     * Acquire an instance of AutocompleteController associated with the supplied Profile.
+     *
+     * @param profile The profile to get the AutocompleteController for.
+     * @return An existing (if one is available) or new (otherwise) instance of the
+     *         AutocompleteController associated with the supplied profile.
+     */
+    /* package */ AutocompleteController(@NonNull Profile profile) {
+        assert profile != null : "AutocompleteController cannot be created for null profile";
         mProfile = profile;
-        mNativeController = nativeController;
+        mNativeController = AutocompleteControllerJni.get().create(this, profile);
+        assert mNativeController != 0 : "Failed to instantiate native AutocompleteController";
     }
 
     /** @param listener The listener to be notified when new suggestions are available. */
@@ -130,7 +140,6 @@ public class AutocompleteController {
      * @return The AutocompleteMatch specifying where to navigate, the transition type, etc. May
      *         be null if the input is invalid.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public AutocompleteMatch classify(@NonNull String text, boolean focusedFromFakebox) {
         if (mNativeController == 0) return null;
         return AutocompleteControllerJni.get().classify(
@@ -217,9 +226,12 @@ public class AutocompleteController {
         }
     }
 
-    @CalledByNative
-    private void notifyNativeDestroyed() {
+    /* package */ void destroy() {
+        mListeners.clear();
+        if (mNativeController == 0) return;
+        AutocompleteControllerJni.get().destroy(mNativeController);
         mNativeController = 0;
+        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
     /**
@@ -335,22 +347,9 @@ public class AutocompleteController {
                 mNativeController, matchIndex);
     }
 
-    /**
-     * Acquire an instance of AutocompleteController associated with the supplied Profile.
-     *
-     * @param profile The profile to get the AutocompleteController for.
-     * @return An existing (if one is available) or new (otherwise) instance of the
-     *         AutocompleteController associated with the supplied profile.
-     */
-    public static AutocompleteController getForProfile(Profile profile) {
-        assert profile != null : "AutocompleteController cannot be created for null profile";
-        if (profile == null) return null;
-        return AutocompleteControllerJni.get().getForProfile(profile);
-    }
-
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    public interface Natives {
+    interface Natives {
         void start(long nativeAutocompleteControllerAndroid, String text, int cursorPosition,
                 String desiredTld, String currentUrl, int pageClassification,
                 boolean preventInlineAutocomplete, boolean preferKeyword,
@@ -374,15 +373,15 @@ public class AutocompleteController {
         void setVoiceMatches(long nativeAutocompleteControllerAndroid, String[] matches,
                 float[] confidenceScores);
 
-        /**
-         * Sends a zero suggest request to the server in order to pre-populate the result cache.
-         */
+        // Destroy supplied instance of the AutocompleteControllerAndroid.
+        // The instance cannot be used after this call completes.
+        void destroy(long nativeAutocompleteControllerAndroid);
+
+        // Sends a zero suggest request to the server in order to pre-populate the result cache.
         void startPrefetch(long nativeAutocompleteControllerAndroid, String currentUrl,
                 int pageClassification);
 
-        /**
-         * Acquire an instance of AutocompleteController associated with the supplied profile.
-         */
-        AutocompleteController getForProfile(Profile profile);
+        // Create an instance of AutocompleteController associated with the supplied profile.
+        long create(AutocompleteController controller, Profile profile);
     }
 }

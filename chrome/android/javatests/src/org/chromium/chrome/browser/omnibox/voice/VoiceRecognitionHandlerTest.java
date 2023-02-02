@@ -18,6 +18,7 @@ import android.os.Bundle;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -25,6 +26,8 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -34,11 +37,11 @@ import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AssistantActionPerformed;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AudioPermissionState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceIntentTarget;
@@ -70,28 +73,27 @@ public class VoiceRecognitionHandlerTest {
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
     @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
     public HistogramTestRule mHistograms = new HistogramTestRule();
 
     @Mock
-    Intent mIntent;
+    private Intent mIntent;
     @Mock
-    AssistantVoiceSearchService mAssistantVoiceSearchService;
+    private AssistantVoiceSearchService mAssistantVoiceSearchService;
     @Mock
-    Tab mTab;
+    private Tab mTab;
     @Mock
-    VoiceRecognitionHandler.Observer mObserver;
+    private VoiceRecognitionHandler.Observer mObserver;
     @Mock
-    AutocompleteController mController;
+    private AutocompleteController mAutocompleteController;
     @Mock
-    AutocompleteController.Natives mControllerJniMock;
+    private AutocompleteMatch mMatch;
     @Mock
-    AutocompleteMatch mMatch;
+    private AutocompleteCoordinator mAutocompleteCoordinator;
+    @Captor
+    private ArgumentCaptor<List<VoiceResult>> mVoiceResults;
 
     private RecognitionTestHelper.TestDataProvider mDataProvider;
     private RecognitionTestHelper.TestDelegate mDelegate;
-    private RecognitionTestHelper.TestAutocompleteCoordinator mAutocompleteCoordinator;
     private RecognitionTestHelper.TestVoiceRecognitionHandler mHandler;
     private RecognitionTestHelper.TestAndroidPermissionDelegate mPermissionDelegate;
     private RecognitionTestHelper.TestWindowAndroid mWindowAndroid;
@@ -104,20 +106,24 @@ public class VoiceRecognitionHandlerTest {
         sActivityTestRule.waitForDeferredStartup();
     }
 
+    @AfterClass
+    public static void tearDownClass() {
+        AutocompleteControllerProvider.setControllerForTesting(null);
+    }
+
     @Before
     public void setUp() throws InterruptedException, ExecutionException {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJniMock);
-        doReturn(mController).when(mControllerJniMock).getForProfile(any());
-        doReturn(mMatch).when(mController).classify(any(), anyBoolean());
+        AutocompleteControllerProvider.setControllerForTesting(mAutocompleteController);
+        doReturn(mMatch).when(mAutocompleteController).classify(any(), anyBoolean());
         doReturn(new GURL("https://www.google.com/search?q=abc")).when(mMatch).getUrl();
         doReturn(true).when(mMatch).isSearchSuggestion();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mProfileSupplier = new ObservableSupplierImpl<>();
-            RecognitionTestHelper testHelper =
-                    new RecognitionTestHelper(mAssistantVoiceSearchService, mProfileSupplier,
-                            sActivityTestRule.getActivity());
+            RecognitionTestHelper testHelper = new RecognitionTestHelper(mAutocompleteCoordinator,
+                    mAssistantVoiceSearchService, mProfileSupplier,
+                    sActivityTestRule.getActivity());
             mDataProvider = testHelper.getDataProvider();
             mDataProvider.setTab(mTab);
             mPermissionDelegate = testHelper.getAndroidPermissionDelegate();
@@ -127,7 +133,6 @@ public class VoiceRecognitionHandlerTest {
             mDelegate = testHelper.getDelegate();
             mHandler = testHelper.getVoiceRecognitionHandler();
             mHandler.addObserver(mObserver);
-            mAutocompleteCoordinator = testHelper.getAutocompleteCoordinator();
         });
 
         doReturn(new GURL(RecognitionTestHelper.DEFAULT_URL)).when(mTab).getUrl();
@@ -421,9 +426,10 @@ public class VoiceRecognitionHandlerTest {
             Assert.assertEquals(VoiceIntentTarget.SYSTEM, mHandler.getVoiceSearchResultTarget());
             Assert.assertTrue(confidence == mHandler.getVoiceConfidenceValue());
             Assert.assertEquals(VoiceIntentTarget.SYSTEM, mHandler.getVoiceConfidenceValueTarget());
+
+            verify(mAutocompleteCoordinator).onVoiceResults(mVoiceResults.capture());
             RecognitionTestHelper.assertVoiceResultsAreEqual(
-                    mAutocompleteCoordinator.getAutocompleteVoiceResults(),
-                    new String[] {"testing"}, new float[] {confidence});
+                    mVoiceResults.getValue(), new String[] {"testing"}, new float[] {confidence});
             Assert.assertEquals(1,
                     mHistograms.getHistogramTotalCount("VoiceInteraction.QueryDuration.Android"));
         });
@@ -447,8 +453,8 @@ public class VoiceRecognitionHandlerTest {
             Assert.assertTrue(VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD
                     == mHandler.getVoiceConfidenceValue());
             Assert.assertEquals(VoiceIntentTarget.SYSTEM, mHandler.getVoiceConfidenceValueTarget());
-            RecognitionTestHelper.assertVoiceResultsAreEqual(
-                    mAutocompleteCoordinator.getAutocompleteVoiceResults(),
+            verify(mAutocompleteCoordinator).onVoiceResults(mVoiceResults.capture());
+            RecognitionTestHelper.assertVoiceResultsAreEqual(mVoiceResults.getValue(),
                     new String[] {"testing"},
                     new float[] {
                             VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD});
@@ -475,8 +481,8 @@ public class VoiceRecognitionHandlerTest {
             Assert.assertTrue(VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD
                     == mHandler.getVoiceConfidenceValue());
             Assert.assertEquals(VoiceIntentTarget.SYSTEM, mHandler.getVoiceConfidenceValueTarget());
-            RecognitionTestHelper.assertVoiceResultsAreEqual(
-                    mAutocompleteCoordinator.getAutocompleteVoiceResults(),
+            verify(mAutocompleteCoordinator).onVoiceResults(mVoiceResults.capture());
+            RecognitionTestHelper.assertVoiceResultsAreEqual(mVoiceResults.getValue(),
                     new String[] {"testing"},
                     new float[] {
                             VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD},
@@ -524,8 +530,7 @@ public class VoiceRecognitionHandlerTest {
     public void testParseResults_VoiceResponseURLConversion() {
         doReturn(false).when(mMatch).isSearchSuggestion();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Needed to interact with classifier.
-            // AutocompleteCoordinator#classify() requires a valid profile.
+            // Needed to interact with classifier, which requires a valid profile.
             mProfileSupplier.set(Profile.getLastUsedRegularProfile());
 
             String[] texts =

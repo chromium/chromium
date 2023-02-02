@@ -76,6 +76,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private static final int OMNIBOX_HISTOGRAMS_MAX_SUGGESTIONS = 10;
 
     private final @NonNull Context mContext;
+    private final @NonNull AutocompleteControllerProvider mControllerProvider;
     private final @NonNull AutocompleteDelegate mDelegate;
     private final @NonNull UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
     private final @NonNull PropertyModel mListPropertyModel;
@@ -154,7 +155,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private long mLastActionUpTimestamp;
     private boolean mIgnoreOmniboxItemSelection = true;
 
-    public AutocompleteMediator(@NonNull Context context, @NonNull AutocompleteDelegate delegate,
+    public AutocompleteMediator(@NonNull Context context,
+            @NonNull AutocompleteControllerProvider controllerProvider,
+            @NonNull AutocompleteDelegate delegate,
             @NonNull UrlBarEditingTextStateProvider textProvider,
             @NonNull PropertyModel listPropertyModel, @NonNull Handler handler,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
@@ -166,6 +169,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             @NonNull BookmarkState bookmarkState, @NonNull JankTracker jankTracker,
             @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
         mContext = context;
+        mControllerProvider = controllerProvider;
         mDelegate = delegate;
         mUrlBarEditingTextProvider = textProvider;
         mListPropertyModel = listPropertyModel;
@@ -386,8 +390,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             stopAutocomplete(true);
             mAutocomplete.removeOnSuggestionsReceivedListener(this);
         }
-        mAutocomplete = AutocompleteController.getForProfile(profile);
-
+        mAutocomplete = mControllerProvider.get(profile);
         mAutocomplete.addOnSuggestionsReceivedListener(this);
         mDropdownViewInfoListBuilder.setProfile(profile);
 

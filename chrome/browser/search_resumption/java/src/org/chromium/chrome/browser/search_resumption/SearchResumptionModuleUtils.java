@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -89,14 +90,16 @@ public class SearchResumptionModuleUtils {
      * 6) The Tab to track was visited within an expiration time.
      *
      * @param parent The parent layout which the search resumption module lives.
+     * @param autocompleteProvider The mechanism supplying AutocompleteControllers for a given
+     *         profile.
      * @param tabModel The TabModel to find the Tab to track.
      * @param currentTab The Tab that the search resumption module is associated to.
      * @param profile The profile of the user.
      * @param moduleContainerStubId The id of the search resumption module on its parent view.
      */
     public static SearchResumptionModuleCoordinator mayCreateSearchResumptionModule(
-            ViewGroup parent, TabModel tabModel, Tab currentTab, Profile profile,
-            int moduleContainerStubId) {
+            ViewGroup parent, AutocompleteControllerProvider autocompleteProvider,
+            TabModel tabModel, Tab currentTab, Profile profile, int moduleContainerStubId) {
         if (!shouldShowSearchResumptionModule(profile)) return null;
 
         Tab tabToTrack = TabModelUtils.getMostRecentTab(tabModel, currentTab.getId());
@@ -107,8 +110,9 @@ public class SearchResumptionModuleUtils {
 
         if (!isTabToTrackValid(tabToTrack)) return null;
 
-        return new SearchResumptionModuleCoordinator(parent, tabToTrack, currentTab, profile,
-                moduleContainerStubId, mayGetCachedResults(currentTab, tabToTrack));
+        return new SearchResumptionModuleCoordinator(parent, autocompleteProvider, tabToTrack,
+                currentTab, profile, moduleContainerStubId,
+                mayGetCachedResults(currentTab, tabToTrack));
     }
 
     /**

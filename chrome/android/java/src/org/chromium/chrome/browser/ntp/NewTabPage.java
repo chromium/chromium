@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -428,12 +429,14 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         // For example, the user changes theme when a NTP is showing, which leads to the recreation
         // of the ChromeTabbedActivity and showing the NTP as the last visited Tab.
         if (mTabModelSelector.isTabStateInitialized()) {
-            mayCreateSearchResumptionModule(profile);
+            mayCreateSearchResumptionModule(
+                    profile, AutocompleteControllerProvider.from(windowAndroid));
         } else {
             mTabModelSelector.addObserver(new TabModelSelectorObserver() {
                 @Override
                 public void onTabStateInitialized() {
-                    mayCreateSearchResumptionModule(profile);
+                    mayCreateSearchResumptionModule(
+                            profile, AutocompleteControllerProvider.from(windowAndroid));
                     mTabModelSelector.removeObserver(this);
                 }
             });
@@ -1019,13 +1022,14 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                                    R.dimen.ntp_logo_margin_bottom);
     }
 
-    private void mayCreateSearchResumptionModule(Profile profile) {
+    private void mayCreateSearchResumptionModule(
+            Profile profile, AutocompleteControllerProvider provider) {
         // The module is disabled on tablets.
         if (mIsTablet) return;
 
         mSearchResumptionModuleCoordinator =
                 SearchResumptionModuleUtils.mayCreateSearchResumptionModule(mNewTabPageLayout,
-                        mTabModelSelector.getCurrentModel(), mTab, profile,
+                        provider, mTabModelSelector.getCurrentModel(), mTab, profile,
                         R.id.search_resumption_module_container_stub);
     }
 }

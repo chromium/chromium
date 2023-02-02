@@ -35,11 +35,10 @@ import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceIntentTarget;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -65,8 +64,6 @@ public class AssistantVoiceRecognitionHandlerTest {
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
     @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
     public HistogramTestRule mHistograms = new HistogramTestRule();
 
     @Mock
@@ -79,8 +76,6 @@ public class AssistantVoiceRecognitionHandlerTest {
     VoiceRecognitionHandler.Observer mObserver;
     @Mock
     AutocompleteController mController;
-    @Mock
-    AutocompleteController.Natives mControllerJniMock;
     @Mock
     AutocompleteMatch mMatch;
 
@@ -101,8 +96,8 @@ public class AssistantVoiceRecognitionHandlerTest {
     @Before
     public void setUp() throws InterruptedException, ExecutionException {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJniMock);
-        doReturn(mController).when(mControllerJniMock).getForProfile(any());
+
+        AutocompleteControllerProvider.setControllerForTesting(mController);
         doReturn(mMatch).when(mController).classify(any(), anyBoolean());
         doReturn(new GURL("https://www.google.com/search?q=abc")).when(mMatch).getUrl();
         doReturn(true).when(mMatch).isSearchSuggestion();
@@ -110,7 +105,7 @@ public class AssistantVoiceRecognitionHandlerTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mProfileSupplier = new ObservableSupplierImpl<>();
             RecognitionTestHelper testHelper =
-                    new RecognitionTestHelper(mAssistantVoiceSearchService, mProfileSupplier,
+                    new RecognitionTestHelper(null, mAssistantVoiceSearchService, mProfileSupplier,
                             sActivityTestRule.getActivity());
             mDataProvider = testHelper.getDataProvider();
             mDataProvider.setTab(mTab);
@@ -143,6 +138,7 @@ public class AssistantVoiceRecognitionHandlerTest {
             VoiceRecognitionHandler.setIsRecognitionIntentPresentForTesting(null);
             mWindowAndroid.destroy();
         });
+        AutocompleteControllerProvider.setControllerForTesting(null);
     }
 
     @Test

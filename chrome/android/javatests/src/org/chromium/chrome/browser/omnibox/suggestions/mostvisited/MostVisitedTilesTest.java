@@ -8,7 +8,6 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.endsWith;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -23,11 +22,11 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -38,14 +37,13 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
@@ -90,17 +88,11 @@ public class MostVisitedTilesTest {
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-
     @Mock
     private Profile mProfile;
 
     @Mock
     private AutocompleteController mController;
-
-    @Mock
-    private AutocompleteController.Natives mControllerJniMock;
 
     @Captor
     private ArgumentCaptor<AutocompleteController.OnSuggestionsReceivedListener> mListener;
@@ -128,8 +120,7 @@ public class MostVisitedTilesTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJniMock);
-        doReturn(mController).when(mControllerJniMock).getForProfile(any());
+        AutocompleteControllerProvider.setControllerForTesting(mController);
         mActivity = sActivityTestRule.getActivity();
         mOmnibox = new OmniboxTestUtils(mActivity);
         mLocationBarLayout = mActivity.findViewById(R.id.location_bar);
@@ -153,6 +144,11 @@ public class MostVisitedTilesTest {
         focusOmniboxAndWaitForSuggestions();
 
         mCarousel = mOmnibox.getSuggestionByType(OmniboxSuggestionUiType.TILE_NAVSUGGEST);
+    }
+
+    @After
+    public void tearDown() {
+        AutocompleteControllerProvider.setControllerForTesting(null);
     }
 
     /**

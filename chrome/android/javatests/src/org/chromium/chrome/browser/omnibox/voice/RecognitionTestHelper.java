@@ -9,26 +9,18 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import android.view.ViewGroup;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
 
 import org.junit.Assert;
-import org.mockito.Mock;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
-import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -40,7 +32,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.url.GURL;
@@ -58,30 +49,21 @@ public class RecognitionTestHelper {
     public static final String DEFAULT_URL = "https://example.com/";
     public static final String DEFAULT_USER_EMAIL = "test@test.com";
 
-    @Mock
-    OmniboxPedalDelegate mPedalDelegate;
-    @Mock
-    ModalDialogManager mModalDialogManager;
-
     private final TestWindowAndroid mTestWindowAndroid;
     private final TestDataProvider mTestDataProvider;
     private final TestAndroidPermissionDelegate mAndroidPermissionDelegate;
     private final TestDelegate mDelegate;
-    private final TestAutocompleteCoordinator mAutocompleteCoordinator;
     private final TestVoiceRecognitionHandler mHandler;
 
-    public RecognitionTestHelper(AssistantVoiceSearchService assistantVoiceSearchService,
+    public RecognitionTestHelper(AutocompleteCoordinator autocompleteCoordinator,
+            AssistantVoiceSearchService assistantVoiceSearchService,
             ObservableSupplierImpl<Profile> profileSupplier, Activity activity) {
         mTestDataProvider = new TestDataProvider();
         mTestWindowAndroid = new TestWindowAndroid(activity);
         mAndroidPermissionDelegate = new TestAndroidPermissionDelegate();
 
-        ViewGroup parent = (ViewGroup) activity.findViewById(android.R.id.content);
-        Assert.assertNotNull(parent);
-        mAutocompleteCoordinator = new TestAutocompleteCoordinator(parent, null, null, null,
-                mModalDialogManager, mTestDataProvider, profileSupplier, mPedalDelegate);
         mDelegate =
-                new TestDelegate(mTestWindowAndroid, mTestDataProvider, mAutocompleteCoordinator);
+                new TestDelegate(mTestWindowAndroid, mTestDataProvider, autocompleteCoordinator);
         mHandler = new TestVoiceRecognitionHandler(
                 mDelegate, assistantVoiceSearchService, profileSupplier);
     }
@@ -100,10 +82,6 @@ public class RecognitionTestHelper {
 
     public TestDataProvider getDataProvider() {
         return mTestDataProvider;
-    }
-
-    public TestAutocompleteCoordinator getAutocompleteCoordinator() {
-        return mAutocompleteCoordinator;
     }
 
     public TestAndroidPermissionDelegate getAndroidPermissionDelegate() {
@@ -249,37 +227,6 @@ public class RecognitionTestHelper {
             }
         }
     }
-    /**
-     * TODO(crbug.com/962527): Remove this dependency on
-     * {@link AutocompleteCoordinator}.
-     */
-    public static class TestAutocompleteCoordinator extends AutocompleteCoordinator {
-        private List<VoiceResult> mAutocompleteVoiceResults;
-
-        public TestAutocompleteCoordinator(ViewGroup parent, AutocompleteDelegate delegate,
-                OmniboxSuggestionsDropdownEmbedder dropdownEmbedder,
-                UrlBarEditingTextStateProvider urlBarEditingTextProvider,
-                ModalDialogManager modalDialogManager, TestDataProvider dataProvider,
-                ObservableSupplierImpl<Profile> profileSupplier,
-                OmniboxPedalDelegate pedalDelegate) {
-            // clang-format off
-      super(parent, delegate, dropdownEmbedder, urlBarEditingTextProvider,
-          () -> modalDialogManager, null, null, dataProvider,
-          profileSupplier, (tab) -> {
-          }, null, (url) -> false, new DummyJankTracker(),
-          pedalDelegate, new OmniboxSuggestionsDropdownScrollListener() {});
-            // clang-format on
-        }
-
-        @Override
-        public void onVoiceResults(List<VoiceResult> results) {
-            mAutocompleteVoiceResults = results;
-        }
-
-        public List<VoiceResult> getAutocompleteVoiceResults() {
-            return mAutocompleteVoiceResults;
-        }
-    }
 
     /**
      * Test implementation of {@link VoiceRecognitionHandler.Delegate}.
@@ -291,7 +238,7 @@ public class RecognitionTestHelper {
         private final WindowAndroid mWindowAndroid;
 
         TestDelegate(WindowAndroid windowAndroid, LocationBarDataProvider dataProvider,
-                TestAutocompleteCoordinator coordinator) {
+                AutocompleteCoordinator coordinator) {
             mWindowAndroid = windowAndroid;
             mDataProvider = dataProvider;
             mAutocompleteCoordinator = coordinator;

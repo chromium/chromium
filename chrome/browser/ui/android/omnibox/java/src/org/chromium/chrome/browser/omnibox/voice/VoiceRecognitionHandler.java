@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -535,7 +536,9 @@ public class VoiceRecognitionHandler {
 
             AutocompleteMatch match = null;
             if (mProfileSupplier.hasValue()) {
-                match = AutocompleteCoordinator.classify(mProfileSupplier.get(), topResultQuery);
+                match = AutocompleteControllerProvider.from(mDelegate.getWindowAndroid())
+                                .get(mProfileSupplier.get())
+                                .classify(topResultQuery, false);
             }
 
             String url;
@@ -603,7 +606,9 @@ public class VoiceRecognitionHandler {
 
             AutocompleteMatch match = null;
             if (mProfileSupplier.hasValue()) {
-                match = AutocompleteCoordinator.classify(mProfileSupplier.get(), culledString);
+                match = AutocompleteControllerProvider.from(mDelegate.getWindowAndroid())
+                                .get(mProfileSupplier.get())
+                                .classify(culledString, false);
             }
 
             String urlOrSearchQuery;

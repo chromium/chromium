@@ -13,6 +13,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -45,6 +46,7 @@ public class SearchResumptionModuleMediator implements OnSuggestionsReceivedList
     private final SearchResumptionTileBuilder mTileBuilder;
     private final SigninManager mSignInManager;
     private final SyncService mSyncService;
+    private final AutocompleteControllerProvider mAutocompleteProvider;
     private AutocompleteController mAutoComplete;
     private PropertyModel mModel;
     // Set the default values of these variable true since all of them have been checked before
@@ -57,7 +59,8 @@ public class SearchResumptionModuleMediator implements OnSuggestionsReceivedList
     private @Nullable SearchResumptionModuleView mModuleLayoutView;
     private @Nullable SearchResumptionModuleBridge mSearchResumptionModuleBridge;
 
-    SearchResumptionModuleMediator(ViewStub moduleStub, Tab tabToTrack, Tab currentTab,
+    SearchResumptionModuleMediator(ViewStub moduleStub,
+            AutocompleteControllerProvider autocompleteProvider, Tab tabToTrack, Tab currentTab,
             Profile profile, SearchResumptionTileBuilder tileBuilder,
             SuggestionResult cachedSuggestions) {
         mStub = moduleStub;
@@ -67,6 +70,7 @@ public class SearchResumptionModuleMediator implements OnSuggestionsReceivedList
         mUseNewServiceEnabled = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
                 SearchResumptionModuleUtils.USE_NEW_SERVICE_PARAM, false);
+        mAutocompleteProvider = autocompleteProvider;
 
         if (cachedSuggestions != null) {
             showCachedSuggestions(cachedSuggestions);
@@ -185,7 +189,7 @@ public class SearchResumptionModuleMediator implements OnSuggestionsReceivedList
      */
     private void start(Profile profile) {
         if (!mUseNewServiceEnabled) {
-            mAutoComplete = AutocompleteController.getForProfile(profile);
+            mAutoComplete = mAutocompleteProvider.get(profile);
             mAutoComplete.addOnSuggestionsReceivedListener(this);
             int pageClassification = getPageClassification();
             mAutoComplete.startZeroSuggest("", mTabToTrackSuggestion.getUrl().getSpec(),

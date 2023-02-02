@@ -36,13 +36,12 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -93,8 +92,6 @@ public class SearchResumptionModuleMediatorUnitTest {
     }
 
     @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
@@ -108,9 +105,9 @@ public class SearchResumptionModuleMediatorUnitTest {
     @Mock
     private SearchResumptionTileContainerView mSuggestionTilesContainerView;
     @Mock
-    private AutocompleteController mAutocompleteController;
+    private AutocompleteControllerProvider mAutocompleteProvider;
     @Mock
-    private AutocompleteController.Natives mControllerJniMock;
+    private AutocompleteController mAutocompleteController;
     @Mock
     SearchResumptionTileBuilder mTileBuilder;
     @Mock
@@ -146,9 +143,7 @@ public class SearchResumptionModuleMediatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mUserDataHost = new UserDataHost();
-        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJniMock);
-        doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
-
+        doReturn(mAutocompleteController).when(mAutocompleteProvider).get(any());
         mUrlToTrack = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
         doReturn(mUrlToTrack).when(mTabToTrack).getUrl();
         GURL currentUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
@@ -332,8 +327,8 @@ public class SearchResumptionModuleMediatorUnitTest {
     }
 
     private void createMediator(SuggestionResult cachedSuggestions, boolean useNewServiceEnabled) {
-        mMediator = new SearchResumptionModuleMediator(
-                mParent, mTabToTrack, mTab, mProfile, mTileBuilder, cachedSuggestions);
+        mMediator = new SearchResumptionModuleMediator(mParent, mAutocompleteProvider, mTabToTrack,
+                mTab, mProfile, mTileBuilder, cachedSuggestions);
         if (!useNewServiceEnabled && cachedSuggestions == null) {
             verify(mAutocompleteController).addOnSuggestionsReceivedListener(mListener.capture());
             verify(mAutocompleteController, times(1))

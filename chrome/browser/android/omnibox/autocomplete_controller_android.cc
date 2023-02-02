@@ -5,7 +5,6 @@
 #include "chrome/browser/android/omnibox/autocomplete_controller_android.h"
 
 #include <stddef.h>
-#include <stdint.h>
 #include <memory>
 #include <string>
 #include <vector>
@@ -16,19 +15,13 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/location.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
-#include "chrome/browser/android/autocomplete/tab_matcher_android.h"
-#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
-#include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -63,7 +56,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/url_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -117,13 +109,12 @@ void RecordClipboardMetrics(AutocompleteMatchType::Type match_type) {
 }  // namespace
 
 AutocompleteControllerAndroid::AutocompleteControllerAndroid(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcontroller,
     Profile* profile,
     std::unique_ptr<ChromeAutocompleteProviderClient> client)
     : profile_{profile},
-      java_controller_{Java_AutocompleteController_Constructor(
-          AttachCurrentThread(),
-          ProfileAndroid::FromProfile(profile)->GetJavaObject(),
-          reinterpret_cast<intptr_t>(this))},
+      java_controller_{env, jcontroller.obj()},
       provider_client_{client.get()},
       autocomplete_controller_{std::make_unique<AutocompleteController>(
           std::move(client),
@@ -153,7 +144,7 @@ void AutocompleteControllerAndroid::Start(JNIEnv* env,
   if (!j_current_url.is_null())
     current_url = GURL(ConvertJavaStringToUTF16(env, j_current_url));
   if (!j_desired_tld.is_null())
-    desired_tld = base::android::ConvertJavaStringToUTF8(env, j_desired_tld);
+    desired_tld = ConvertJavaStringToUTF8(env, j_desired_tld);
   std::u16string text = ConvertJavaStringToUTF16(env, j_text);
   size_t cursor_pos = j_cursor_pos == -1 ? std::u16string::npos : j_cursor_pos;
   input_ = AutocompleteInput(
@@ -408,8 +399,7 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
       autocomplete_controller_->result().match_at(match_index));
 
   if (!jnew_query_text.is_null()) {
-    std::u16string query =
-        base::android::ConvertJavaStringToUTF16(env, jnew_query_text);
+    std::u16string query = ConvertJavaStringToUTF16(env, jnew_query_text);
     if (!match.search_terms_args) {
       match.search_terms_args =
           std::make_unique<TemplateURLRef::SearchTermsArgs>(query);
@@ -441,13 +431,6 @@ AutocompleteControllerAndroid::GetMatchingTabForSuggestion(JNIEnv* env,
   return match.GetMatchingJavaTab().get(env);
 }
 
-void AutocompleteControllerAndroid::Shutdown() {
-  // Cancel all pending actions and clear any remaining matches.
-  autocomplete_controller_.reset();
-  Java_AutocompleteController_notifyNativeDestroyed(AttachCurrentThread(),
-                                                    java_controller_);
-}
-
 void AutocompleteControllerAndroid::SetVoiceMatches(
     JNIEnv* env,
     const JavaParamRef<jobjectArray>& j_voice_matches,
@@ -474,6 +457,10 @@ void AutocompleteControllerAndroid::SetVoiceMatches(
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::GetJavaObject()
     const {
   return ScopedJavaLocalRef<jobject>(java_controller_);
+}
+
+void AutocompleteControllerAndroid::Destroy(JNIEnv*) {
+  delete this;
 }
 
 AutocompleteControllerAndroid::~AutocompleteControllerAndroid() = default;
@@ -507,42 +494,17 @@ void AutocompleteControllerAndroid::WarmUpRenderProcess() const {
   content::RenderProcessHost::WarmupSpareRenderProcessHost(profile_);
 }
 
-// static
-AutocompleteControllerAndroid*
-AutocompleteControllerAndroid::Factory::GetForProfile(Profile* profile) {
-  return static_cast<AutocompleteControllerAndroid*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
-}
-
-AutocompleteControllerAndroid::Factory*
-AutocompleteControllerAndroid::Factory::GetInstance() {
-  return base::Singleton<AutocompleteControllerAndroid::Factory>::get();
-}
-
-AutocompleteControllerAndroid::Factory::Factory()
-    : ProfileKeyedServiceFactory(
-          "AutocompleteControllerAndroid",
-          ProfileSelections::BuildForRegularAndIncognito()) {
-  DependsOn(TemplateURLServiceFactory::GetInstance());
-  DependsOn(ShortcutsBackendFactory::GetInstance());
-}
-
-AutocompleteControllerAndroid::Factory::~Factory() = default;
-
-KeyedService* AutocompleteControllerAndroid::Factory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  auto* profile = static_cast<Profile*>(context);
-  return new AutocompleteControllerAndroid(
-      profile, std::make_unique<ChromeAutocompleteProviderClient>(profile));
-}
-
-static ScopedJavaLocalRef<jobject> JNI_AutocompleteController_GetForProfile(
+static jlong JNI_AutocompleteController_Create(
     JNIEnv* env,
+    const JavaParamRef<jobject>& jcontroller,
     const JavaParamRef<jobject>& jprofile) {
-  AutocompleteControllerAndroid* native_bridge =
-      AutocompleteControllerAndroid::Factory::GetForProfile(
-          ProfileAndroid::FromProfileAndroid(jprofile));
-  if (!native_bridge)
-    return {};
-  return native_bridge->GetJavaObject();
+  DCHECK(!jcontroller.is_null());
+  DCHECK(!jprofile.is_null());
+
+  auto* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  DCHECK(profile != nullptr);
+
+  return reinterpret_cast<jlong>(new AutocompleteControllerAndroid(
+      env, std::move(jcontroller), profile,
+      std::make_unique<ChromeAutocompleteProviderClient>(profile)));
 }

@@ -89,8 +89,8 @@ public class AutocompleteMediatorUnitTest {
     private @Mock UrlBarEditingTextStateProvider mTextStateProvider;
     private @Mock SuggestionProcessor mMockProcessor;
     private @Mock HeaderProcessor mMockHeaderProcessor;
+    private @Mock AutocompleteControllerProvider mAutocompleteProvider;
     private @Mock AutocompleteController mAutocompleteController;
-    private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
     private @Mock LocationBarDataProvider mLocationBarDataProvider;
     private @Mock ModalDialogManager mModalDialogManager;
     private @Mock Profile mProfile;
@@ -109,9 +109,9 @@ public class AutocompleteMediatorUnitTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJniMock);
-        doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
+
+        doReturn(mAutocompleteController).when(mAutocompleteProvider).get(any());
 
         // clang-format off
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -122,6 +122,7 @@ public class AutocompleteMediatorUnitTest {
             mTabWindowManagerSupplier = new ObservableSupplierImpl<>();
 
             mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
+                    mAutocompleteProvider,
                     mAutocompleteDelegate, mTextStateProvider, mListModel,
                     new Handler(), () -> mModalDialogManager, null, null,
                     mLocationBarDataProvider, tab -> {}, mTabWindowManagerSupplier, url -> false,

@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarMediator.SaveOfflineButton
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
@@ -200,11 +201,12 @@ public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
                         mLocationBarMediator, windowAndroid.getKeyboardDelegate(), isIncognito,
                         reportExceptionCallback);
-        mAutocompleteCoordinator = new AutocompleteCoordinator(mLocationBarLayout, this, this,
-                mUrlCoordinator, modalDialogManagerSupplier, activityTabSupplier,
-                shareDelegateSupplier, locationBarDataProvider, profileObservableSupplier,
-                bringTabToFrontCallback, tabWindowManagerSupplier, bookmarkState, jankTracker,
-                omniboxPedalDelegate, omniboxSuggestionsDropdownScrollListener);
+        mAutocompleteCoordinator = new AutocompleteCoordinator(mLocationBarLayout,
+                AutocompleteControllerProvider.from(windowAndroid), this, this, mUrlCoordinator,
+                modalDialogManagerSupplier, activityTabSupplier, shareDelegateSupplier,
+                locationBarDataProvider, profileObservableSupplier, bringTabToFrontCallback,
+                tabWindowManagerSupplier, bookmarkState, jankTracker, omniboxPedalDelegate,
+                omniboxSuggestionsDropdownScrollListener);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 locationBarDataProvider, mTemplateUrlServiceSupplier, searchEngineLogoUtils,

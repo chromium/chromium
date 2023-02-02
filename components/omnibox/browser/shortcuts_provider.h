@@ -110,8 +110,9 @@ class ShortcutsProvider : public AutocompleteProvider,
   // The default max relevance unless overridden by a field trial.
   static const int kShortcutsProviderDefaultMaxRelevance;
 
-  raw_ptr<AutocompleteProviderClient> client_;
-  bool initialized_;
+  raw_ptr<AutocompleteProviderClient> client_{};
+  scoped_refptr<ShortcutsBackend> backend_{};
+  bool initialized_{};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_SHORTCUTS_PROVIDER_H_

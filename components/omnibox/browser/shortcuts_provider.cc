@@ -177,12 +177,12 @@ ShortcutMatch& ShortcutsProvider::ShortcutMatch::operator=(
 ShortcutsProvider::ShortcutsProvider(AutocompleteProviderClient* client)
     : AutocompleteProvider(AutocompleteProvider::TYPE_SHORTCUTS),
       client_(client),
-      initialized_(false) {
-  scoped_refptr<ShortcutsBackend> backend = client_->GetShortcutsBackend();
-  if (backend) {
-    backend->AddObserver(this);
-    if (backend->initialized())
+      backend_(client_->GetShortcutsBackend()) {
+  if (backend_) {
+    backend_->AddObserver(this);
+    if (backend_->initialized()) {
       initialized_ = true;
+    }
   }
 }
 
@@ -205,10 +205,9 @@ void ShortcutsProvider::DeleteMatch(const AutocompleteMatch& match) {
 
   // When a user deletes a match, they probably mean for the URL to disappear
   // out of history entirely. So nuke all shortcuts that map to this URL.
-  scoped_refptr<ShortcutsBackend> backend =
-      client_->GetShortcutsBackendIfExists();
-  if (backend)  // Can be NULL in Incognito.
-    backend->DeleteShortcutsWithURL(url);
+  if (backend_) {  // Can be NULL in Incognito.
+    backend_->DeleteShortcutsWithURL(url);
+  }
 
   base::EraseIf(matches_, DestinationURLEqualsURL(url));
   // NOTE: |match| is now dead!
@@ -221,10 +220,9 @@ void ShortcutsProvider::DeleteMatch(const AutocompleteMatch& match) {
 }
 
 ShortcutsProvider::~ShortcutsProvider() {
-  scoped_refptr<ShortcutsBackend> backend =
-      client_->GetShortcutsBackendIfExists();
-  if (backend)
-    backend->RemoveObserver(this);
+  if (backend_) {
+    backend_->RemoveObserver(this);
+  }
 }
 
 void ShortcutsProvider::OnShortcutsLoaded() {
@@ -233,10 +231,9 @@ void ShortcutsProvider::OnShortcutsLoaded() {
 
 void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
                                    bool populate_scoring_signals) {
-  scoped_refptr<ShortcutsBackend> backend =
-      client_->GetShortcutsBackendIfExists();
-  if (!backend)
+  if (!backend_) {
     return;
+  }
   // Get the URLs from the shortcuts database with keys that partially or
   // completely match the search term.
   std::u16string term_string(base::i18n::ToLower(input.text()));
@@ -257,8 +254,8 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
   // together, and create a single `ShortcutMatch`.
   std::map<GURL, std::vector<const ShortcutsDatabase::Shortcut*>>
       shortcuts_by_url;
-  for (auto it = FindFirstMatch(term_string, backend.get());
-       it != backend->shortcuts_map().end() &&
+  for (auto it = FindFirstMatch(term_string, backend_.get());
+       it != backend_->shortcuts_map().end() &&
        base::StartsWith(it->first, term_string, base::CompareCase::SENSITIVE);
        ++it) {
     const ShortcutsDatabase::Shortcut& shortcut = it->second;
