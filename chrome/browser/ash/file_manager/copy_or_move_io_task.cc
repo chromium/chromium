@@ -95,6 +95,12 @@ void CopyOrMoveIOTask::Execute(IOTask::ProgressCallback progress_callback,
   impl_->Execute(std::move(progress_callback), std::move(complete_callback));
 }
 
+void CopyOrMoveIOTask::Resume(ResumeParams params) {
+  if (impl_) {
+    impl_->Resume(std::move(params));
+  }
+}
+
 void CopyOrMoveIOTask::Cancel() {
   progress_.state = State::kCancelled;
   if (impl_) {

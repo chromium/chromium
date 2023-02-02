@@ -465,6 +465,10 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void CopyOrMoveIOTaskImpl::Resume(ResumeParams params) {
+  // TODO(b/255264604): implement resume.
+}
+
 storage::FileSystemOperation::ErrorBehavior
 CopyOrMoveIOTaskImpl::GetErrorBehavior() {
   return storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT;
@@ -516,7 +520,7 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
         log_progress();
         return;
       default:
-        NOTREACHED() << "Unknown ProgressType:" << int(type);
+        NOTREACHED() << "Unknown ProgressType: " << int(type);
         return;
     }
   }

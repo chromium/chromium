@@ -209,10 +209,17 @@ base::FilePath RestoreToDestinationIOTask::MakeRelativeFromBasePath(
   return base::FilePath(relative_path);
 }
 
+void RestoreToDestinationIOTask::Resume(ResumeParams params) {
+  if (move_io_task_) {
+    // Delegate Resume to the underlying `move_io_task_`.
+    move_io_task_->Resume(std::move(params));
+  }
+}
+
 void RestoreToDestinationIOTask::Cancel() {
   progress_.state = State::kCancelled;
   if (move_io_task_) {
-    // Delegate Cancel to the underlying `move_io_task_` if it has been started.
+    // Delegate Cancel to the underlying `move_io_task_`.
     move_io_task_->Cancel();
   }
 }

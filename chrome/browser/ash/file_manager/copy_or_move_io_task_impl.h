@@ -67,6 +67,9 @@ class CopyOrMoveIOTaskImpl {
   virtual void Execute(ProgressCallback progress_callback,
                        CompleteCallback complete_callback);
 
+  // Resumes the copy or move.
+  void Resume(ResumeParams);
+
   // Cancels the copy or move.
   void Cancel();
 
