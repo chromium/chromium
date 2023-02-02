@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_event_storage.h"
 
 #include "base/containers/flat_map.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
@@ -55,8 +56,14 @@ bool DlpFilesEventStorage::StoreEventAndCheckIfItShouldBeReported(
   // Found existing (inode, dst) pair, update it
   UpdateInodeAndDestinationPair(dst_it, now);
 
+  const auto time_diff = now - dst_it->second.timestamp;
+
+  // Record the time difference between two identical file events.
+  base::UmaHistogramTimes(
+      GetDlpHistogramPrefix() + dlp::kSameFileEventTimeDiffUMA, time_diff);
+
   // Report only if enough time has passed.
-  return now - dst_it->second.timestamp > cooldown_delta_;
+  return time_diff > cooldown_delta_;
 }
 
 base::TimeDelta DlpFilesEventStorage::GetDeduplicationCooldownForTesting()

@@ -28,6 +28,7 @@ constexpr char kFilesDaemonStartedUMA[] = "FilesDaemonStarted";
 constexpr char kFileActionBlockedUMA[] = "FileActionBlocked";
 constexpr char kFileActionWarnedUMA[] = "FileActionWarned";
 constexpr char kFileActionWarnProceededUMA[] = "FileActionWarnProceeded";
+constexpr char kSameFileEventTimeDiffUMA[] = "SameFileEventTimeDiff";
 constexpr char kPrintingBlockedUMA[] = "PrintingBlocked";
 constexpr char kPrintingWarnedUMA[] = "PrintingWarned";
 constexpr char kPrintingWarnProceededUMA[] = "PrintingWarnProceeded";
