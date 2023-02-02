@@ -12,6 +12,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
@@ -2690,8 +2691,34 @@ bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
 #else
   TabStripModel* model = other_browser->tab_strip_model();
   DCHECK(model);
-  if (model->IsTabBlocked(model->active_index()))
+
+  const int active_index = model->active_index();
+
+  // TODO(crbug.com/1411448): Investigate whether active index being kNoTab is
+  // expected or not. Remove DumpWithoutCrashing() when it is resolved.
+  if (!model->ContainsIndex(active_index)) {
+    if (active_index == TabStripModel::kNoTab) {
+      LOG(ERROR) << "TabStripModel of the browser tyring to attach to has no "
+                    "active tab.";
+    } else {
+      LOG(ERROR)
+          << "TabStripModel of the browser trying to attach to has invalid "
+          << "active index: " << active_index;
+    }
+
+    // Avoid dumping too many times not to impact the performance as this may be
+    // called multiple times for each mouse drag.
+    static bool has_crash_reported = false;
+    if (!has_crash_reported) {
+      base::debug::DumpWithoutCrashing();
+      has_crash_reported = true;
+    }
     return false;
+  }
+
+  if (model->IsTabBlocked(active_index)) {
+    return false;
+  }
 #endif
 
   // We don't allow drops on windows that don't have tabstrips.
