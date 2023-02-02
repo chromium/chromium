@@ -132268,6 +132268,19 @@
         {}
        ]
       ],
+      "line-names-012.html": [
+       "e8101043cfc570295fc1612c9f67d733f2aac838",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/subgrid/line-names-012-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "orthogonal-writing-mode-001.html": [
        "1cf99a73e2ef7b0e3fe42bbf8c188fa4d2733979",
        [
@@ -301796,6 +301809,10 @@
        "40f35439808470a82760ddf12a720fa73b87a7c1",
        []
       ],
+      "line-names-012-ref.html": [
+       "6ddf3ab87cb96b55d5eae6865773c52bd9c6ceac",
+       []
+      ],
       "orthogonal-writing-mode-001-ref.html": [
        "4f0f6f962e633d8e3c7ddd78acf0247bd96e7715",
        []
@@ -312927,6 +312944,10 @@
        ],
        "shape-image-024.html.ini": [
         "8f529e412cff1dcf89660eb975392e4890f45a4a",
+        []
+       ],
+       "shape-image-025.html.ini": [
+        "1cea8dab999bc8089b886b3cc91566647ce0287e",
         []
        ],
        "shape-image-026.html.ini": [
@@ -325556,6 +325577,10 @@
        "781e3a390720e3062919d91b8b872054bbd0548f",
        []
       ],
+      "kind-of-widget-fallback-color-input-border-bottom-width-001.html.ini": [
+       "596838b916471d49a048ffa0ad54ab100a1413c2",
+       []
+      ],
       "kind-of-widget-fallback-color-input-border-end-end-radius-001.html.ini": [
        "54dfeae07bbd1d4c86eb784cfe0a5ccc8cc78f23",
        []
@@ -325598,6 +325623,10 @@
       ],
       "kind-of-widget-fallback-input-reset-border-top-color-001.html.ini": [
        "14b26723f548de962341d22594eefaf841cec560",
+       []
+      ],
+      "kind-of-widget-fallback-input-search-background-attachment-001.html.ini": [
+       "f4caa377e7ff0e4e06304034d508c758f56e2e1e",
        []
       ],
       "kind-of-widget-fallback-input-search-border-block-end-color-001.html.ini": [
@@ -325660,6 +325689,10 @@
        "6583c45e05f102d5160f222fe5be6681d93d24da",
        []
       ],
+      "kind-of-widget-fallback-input-submit-background-image-001.html.ini": [
+       "232a7afe975a43d9d3ffbfa74f907ba3a9a2d3ae",
+       []
+      ],
       "kind-of-widget-fallback-input-submit-background-origin-001.html.ini": [
        "3fbf38de9dd1221896f227c6c9414495e0914590",
        []
@@ -325674,6 +325707,10 @@
       ],
       "kind-of-widget-fallback-input-submit-border-bottom-color-001.html.ini": [
        "c19fcdef8384d71e97e002888b6bf5923035cd49",
+       []
+      ],
+      "kind-of-widget-fallback-input-submit-border-bottom-left-radius-001.html.ini": [
+       "70d177279542233cac589563906278e3e7d86973",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-bottom-style-001.html.ini": [
@@ -354271,6 +354308,10 @@
         "93713704d43d990592dd2189e8762e8f822a1c32",
         []
        ],
+       "property-opener-set.https.html.ini": [
+        "0e1bb44f93b2c2021362dc2e31a288e8e24644c8",
+        []
+       ],
        "property-postmessage-1.https.html.ini": [
         "8103815e52fadac0ebf1a0dc8532e71d044adf94",
         []
@@ -363640,10 +363681,6 @@
       ],
       "popover-dialog-appearance-ref.tentative.html": [
        "12efbb6b1e4934de6b32df60304cd40a44548301",
-       []
-      ],
-      "popover-events.tentative-expected.txt": [
-       "b023ec30cd755251ab9d6b4af74878cd5ef21997",
        []
       ],
       "popover-events.tentative.html.ini": [
@@ -392547,7 +392584,7 @@
      []
     ],
     "idlharness.https.any-expected.txt": [
-     "2601de6f4c44b1badb3ab80859aacb4ef0f459ab",
+     "193fe6c7f93339e85cac55f6688c9d9bab66fd68",
      []
     ],
     "idlharness.https.any.js.ini": [
@@ -392555,7 +392592,7 @@
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "2601de6f4c44b1badb3ab80859aacb4ef0f459ab",
+     "193fe6c7f93339e85cac55f6688c9d9bab66fd68",
      []
     ],
     "image-decoder-image-orientation-none.https.html.ini": [
@@ -547458,7 +547495,7 @@
         ]
        ],
        "pattern_attribute.html": [
-        "546c4b18d7f44875093013a5b36136715a140446",
+        "ad9a4a4312c0ba487bbef52fe5a0dd252d9a4cff",
         [
          null,
          {}
@@ -625913,7 +625950,7 @@
      ]
     ],
     "idlharness.https.any.js": [
-     "3e343374536fbab1c0b02e7c45f7faeae8ea0694",
+     "7f5f428afa9098cebb81b499ac1294f3ea5765b0",
      [
       "webcodecs/idlharness.https.any.html",
       {
