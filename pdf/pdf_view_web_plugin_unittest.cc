@@ -1529,6 +1529,14 @@ TEST_F(PdfViewWebPluginTest, ChangeTextSelection) {
   EXPECT_TRUE(plugin_->SelectionAsMarkup().IsEmpty());
 }
 
+TEST_F(PdfViewWebPluginTest, SelectAll) {
+  EXPECT_CALL(*engine_ptr_, SelectAll);
+
+  EXPECT_TRUE(plugin_->ExecuteEditCommand(
+      /*name=*/blink::WebString::FromASCII("SelectAll"),
+      /*value=*/blink::WebString()));
+}
+
 TEST_F(PdfViewWebPluginTest, FormTextFieldFocusChangeUpdatesTextInputType) {
   ASSERT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
             plugin_->GetPluginTextInputType());

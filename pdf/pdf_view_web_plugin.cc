@@ -1941,9 +1941,6 @@ void PdfViewWebPlugin::OnViewportChanged(
 }
 
 bool PdfViewWebPlugin::SelectAll() {
-  if (!CanEditText())
-    return false;
-
   engine_->SelectAll();
   return true;
 }
