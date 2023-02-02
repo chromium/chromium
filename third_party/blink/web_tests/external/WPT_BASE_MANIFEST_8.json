@@ -4380,6 +4380,13 @@
        {}
       ]
      ],
+     "inserttext-with-clearing-subscript.html": [
+      "9c27a7ed53876bd6745fb794b8693c4570af2cd9",
+      [
+       null,
+       {}
+      ]
+     ],
      "insertunorderedlist-in-empty-inline-editing-host.html": [
       "74b0993322eda076a13023c96261840eadd53339",
       [
@@ -152319,7 +152326,7 @@
       ]
      ],
      "nesting-basic.html": [
-      "6bc727a73195122f6f2abca1a07a289c99376f5c",
+      "dde3ebbcfdb8d268d22fa8ce6940655808c0a202",
       [
        null,
        [
@@ -308224,7 +308231,7 @@
       []
      ],
      "nesting-basic-ref.html": [
-      "c2f7c669497d363e868cb96d2c2bb1ee315fff49",
+      "8825ad47d277feb6e64fde381107833e84ccbc56",
       []
      ],
      "parsing.html.ini": [
@@ -449307,6 +449314,13 @@
      ],
      "serialize-group-rules-with-decls.tentative.html": [
       "c3b6bb7be749e27d3ead37d2f2d32ab37d350828",
+      [
+       null,
+       {}
+      ]
+     ],
+     "top-level-is-scope.html": [
+      "fefc77d5d045381f0def0ce9b6a335a5e38d1165",
       [
        null,
        {}
