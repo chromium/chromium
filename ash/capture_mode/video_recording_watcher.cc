@@ -548,8 +548,9 @@ void VideoRecordingWatcher::OnMouseEvent(ui::MouseEvent* event) {
       if (camera_preview_view)
         camera_preview_view->MaybeBlurFocus(*event);
 
-      if (demo_tools_controller_)
+      if (demo_tools_controller_ && PointerHighlightingEnabled()) {
         demo_tools_controller_->PerformMousePressAnimation(location_in_window);
+      }
     }
       [[fallthrough]];
     case ui::ET_MOUSE_RELEASED:
@@ -563,10 +564,11 @@ void VideoRecordingWatcher::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void VideoRecordingWatcher::OnTouchEvent(ui::TouchEvent* event) {
-  if (demo_tools_controller_ && (event->type() == ui::ET_TOUCH_PRESSED ||
-                                 event->type() == ui::ET_TOUCH_RELEASED ||
-                                 event->type() == ui::ET_TOUCH_MOVED ||
-                                 event->type() == ui::ET_TOUCH_CANCELLED)) {
+  if (demo_tools_controller_ && PointerHighlightingEnabled() &&
+      (event->type() == ui::ET_TOUCH_PRESSED ||
+       event->type() == ui::ET_TOUCH_RELEASED ||
+       event->type() == ui::ET_TOUCH_MOVED ||
+       event->type() == ui::ET_TOUCH_CANCELLED)) {
     demo_tools_controller_->OnTouchEvent(
         event->type(), event->pointer_details().id,
         GetEventLocationInWindow(window_being_recorded_, *event));
@@ -869,6 +871,11 @@ gfx::Rect VideoRecordingWatcher::GetOverlayWidgetBounds() const {
                       ->GetTotalMagnifierBoundsForRoot(
                           window_being_recorded_->GetRootWindow()));
   return bounds;
+}
+
+bool VideoRecordingWatcher::PointerHighlightingEnabled() const {
+  return !(recording_overlay_controller_ &&
+           recording_overlay_controller_->is_enabled());
 }
 
 }  // namespace ash

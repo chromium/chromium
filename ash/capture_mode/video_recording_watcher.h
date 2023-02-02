@@ -216,6 +216,10 @@ class ASH_EXPORT VideoRecordingWatcher
   // relative to its parent |window_being_recorded_|.
   gfx::Rect GetOverlayWidgetBounds() const;
 
+  // Returns true if the mouse and touch highlights should be enabled during
+  // video recording.
+  bool PointerHighlightingEnabled() const;
+
   CaptureModeController* const controller_;
   wm::CursorManager* const cursor_manager_;
   aura::Window* const window_being_recorded_;

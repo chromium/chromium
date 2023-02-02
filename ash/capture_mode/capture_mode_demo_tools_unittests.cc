@@ -23,9 +23,12 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/key_combo_view.h"
 #include "ash/capture_mode/pointer_highlight_layer.h"
+#include "ash/capture_mode/recording_overlay_controller.h"
 #include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/projector/projector_controller_impl.h"
+#include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
@@ -1096,6 +1099,73 @@ class ProjectorCaptureModeDemoToolsTest : public CaptureModeDemoToolsTest {
  private:
   ProjectorCaptureModeIntegrationHelper projector_helper_;
 };
+
+// Tests that the pointer (mouse and touch) highlight will be disabled when
+// annotating and re-enabled after stopping annotating in
+// projector-initiated capture mode.
+TEST_F(ProjectorCaptureModeDemoToolsTest,
+       DisablePointerHighlightWithAnnotatorEnabled) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->SetSource(CaptureModeSource::kFullscreen);
+  StartProjectorModeSession();
+  capture_mode_controller->EnableDemoTools(/*enable=*/true);
+  EXPECT_TRUE(
+      capture_mode_controller->capture_mode_session()->is_in_projector_mode());
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(capture_mode_controller->is_recording_in_progress());
+  auto* demo_tools_controller = GetCaptureModeDemoToolsController();
+  EXPECT_TRUE(demo_tools_controller);
+  CaptureModeDemoToolsTestApi demo_tools_test_api(demo_tools_controller);
+
+  const gfx::Rect confined_bounds_in_screen =
+      GetConfinedBoundsInScreenCoordinates();
+  const gfx::Point center_point = confined_bounds_in_screen.CenterPoint();
+  auto* event_generator = GetEventGenerator();
+
+  auto mouse_highlight_test = [&](bool annotating) {
+    event_generator->MoveMouseTo(center_point);
+    event_generator->PressLeftButton();
+    event_generator->ReleaseLeftButton();
+    auto& mouse_highlight_layers =
+        demo_tools_test_api.GetMouseHighlightLayers();
+    if (annotating) {
+      EXPECT_TRUE(mouse_highlight_layers.empty());
+    } else {
+      EXPECT_FALSE(mouse_highlight_layers.empty());
+    }
+  };
+
+  auto touch_highlight_test = [&](bool annotating) {
+    event_generator->PressTouchId(0, center_point);
+    auto& touch_highlight_map =
+        demo_tools_test_api.GetTouchIdToHighlightLayerMap();
+    if (annotating) {
+      EXPECT_TRUE(touch_highlight_map.empty());
+    } else {
+      EXPECT_FALSE(touch_highlight_map.empty());
+    }
+    event_generator->ReleaseTouchId(0);
+    EXPECT_TRUE(touch_highlight_map.empty());
+  };
+
+  CaptureModeTestApi test_api;
+  RecordingOverlayController* recording_overlay_controller =
+      test_api.GetRecordingOverlayController();
+
+  auto* projector_controller = ProjectorControllerImpl::Get();
+  projector_controller->EnableAnnotatorTool();
+  EXPECT_TRUE(recording_overlay_controller->is_enabled());
+  mouse_highlight_test(/*annotating=*/true);
+  touch_highlight_test(/*annotating=*/true);
+
+  projector_controller->ResetTools();
+  EXPECT_TRUE(capture_mode_controller->is_recording_in_progress());
+  EXPECT_FALSE(recording_overlay_controller->is_enabled());
+  mouse_highlight_test(/*annotating=*/false);
+  touch_highlight_test(/*annotating=*/false);
+}
 
 // Tests that the metrics that record if a recording starts with demo tools
 // feature enabled are recorded correctly in a projector-initiated capture
