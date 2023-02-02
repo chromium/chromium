@@ -323,11 +323,59 @@ def main(argv):
   for test_case in test_cases:
     driver = test_util.create_chrome_webdriver(chrome_options=chrome_options)
     result = {}
+    logging.info('Starting test case %s ...' % test_case)
 
     try:
       WebDriverWait(driver=driver, timeout=10)
 
-      # Step 1: chrome://connectors-internals
+      # Step 1: navigate to chrome://policy app
+      count = 0
+      idp_urls = ''
+      idp_url = ''
+      device_id = ''
+      found_idp_urls = False
+      # Wait up to 120s till the idp_urls fields are filled.
+      while count < 20:
+        driver.get(PolicyURL)
+        WebDriverWait(driver=driver, timeout=10)
+        count += 1
+        # Avoid to click `Reload-policies` button because it force a entire
+        # redownload of all policies. it is going to be very slow.
+        # driver.find_element_by_xpath('//*[@id="reload-policies"]').click()
+        # WebDriverWait(driver=driver, timeout=10)
+        policy_table = driver.find_element_by_css_selector('policy-table')
+        row_groups = getElementsFromShadowRoot(driver, policy_table,
+                                               '.policy-data')
+        try:
+          for group in row_groups:
+            name = getElementFromShadowRoot(driver, group, '#name').text
+            if not name:
+              break
+            if name == PolicyContextAwareAccessSignalsAllowlist:
+              idp_urls = getElementFromShadowRoot(
+                  driver, group, 'div.policy.row > div.value').text
+              if idp_urls:
+                logging.info(f'idp_urls = {idp_urls}')
+                found_idp_urls = True
+                break
+          if found_idp_urls:
+            break
+          time.sleep(6)
+        except StaleElementReferenceException:
+          logging.info('StaleElementReferenceException happened, skip rest')
+      status_box = driver.find_element_by_css_selector('status-box')
+      el = getElementFromShadowRoot(driver, status_box, 'fieldset')
+      device_id = el.find_element_by_class_name(
+          'machine-enrollment-device-id').text
+      # idp_urls could be of '["http://abc", "http://def"]'
+      # remove the excess {[, ], ", '}
+      idp_urls = idp_urls.translate({ord(i): None for i in '[]\"\''})
+      for url in idp_urls.split(','):
+        if re.search(FLAGS.idp_matcher, url):
+          idp_url = url
+          break
+
+      # Step 2: navigate to chrome://connectors-internals app
       count = 0
       dtc_policy_enabled = ''
       key_manager_initialized = ''
@@ -397,54 +445,8 @@ def main(argv):
       logging.info('signals: %s' % ci_signals)
       result['ConnectorsInternalsSignals'] = ci_signals
 
-      # Step 2: visit policy app
-      count = 0
-      idp_urls = ''
-      idp_url = ''
-      device_id = ''
-      found_idp_urls = False
-      # Wait up to 30s till the idp_urls fields are filled.
-      while count < 5:
-        driver.get(PolicyURL)
-        WebDriverWait(driver=driver, timeout=10)
-        count += 1
-        # Avoid to click `Reload-policies` button because it force a entire
-        # redownload of all policies. it is going to be very slow.
-        # driver.find_element_by_xpath('//*[@id="reload-policies"]').click()
-        # WebDriverWait(driver=driver, timeout=10)
-        policy_table = driver.find_element_by_css_selector('policy-table')
-        row_groups = getElementsFromShadowRoot(driver, policy_table,
-                                               '.policy-data')
-        try:
-          for group in row_groups:
-            name = getElementFromShadowRoot(driver, group, '#name').text
-            if not name:
-              break
-            if name == PolicyContextAwareAccessSignalsAllowlist:
-              idp_urls = getElementFromShadowRoot(
-                  driver, group, 'div.policy.row > div.value').text
-              if idp_urls:
-                logging.info(f'idp_urls = {idp_urls}')
-                found_idp_urls = True
-                break
-          if found_idp_urls:
-            break
-          time.sleep(6)
-        except StaleElementReferenceException:
-          logging.info('StaleElementReferenceException happened, skip rest')
-      status_box = driver.find_element_by_css_selector('status-box')
-      el = getElementFromShadowRoot(driver, status_box, 'fieldset')
-      device_id = el.find_element_by_class_name(
-          'machine-enrollment-device-id').text
-      # idp_urls could be of '["http://abc", "http://def"]'
-      # remove the excess {[, ], ", '}
-      idp_urls = idp_urls.translate({ord(i): None for i in '[]\"\''})
-      for url in idp_urls.split(','):
-        if re.search(FLAGS.idp_matcher, url):
-          idp_url = url
-          break
 
-      # Step 3: visit IdP homepage
+      # Step 3: navigate to fake IdP homepage
       logging.info(f'fake_idp:{idp_url}')
       result['FakeIdP'] = idp_url
       result['DeviceId'] = device_id
@@ -454,7 +456,7 @@ def main(argv):
       time.sleep(3)
       driver.find_element_by_xpath('//*[@id="content"]/div[2]/a').click()
 
-      # Step 4: Check for signals
+      # Check client/server signals
       WebDriverWait(driver=driver, timeout=10)
       try:
         server_signals = json.loads(
@@ -471,7 +473,7 @@ def main(argv):
         logging.info('error: %s' % err_msg)
         result['SignalError'] = err_msg
 
-      # Step 5: check histogram
+      # Check histograms
       hg = poll_histogram(driver, [
           'Enterprise.DeviceTrust.Persistence.StoreKeyPair.Error',
           'Enterprise.DeviceTrust.Persistence.LoadKeyPair.Error',
