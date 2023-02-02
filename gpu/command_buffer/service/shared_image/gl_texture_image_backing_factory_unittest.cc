@@ -46,6 +46,33 @@ using testing::AtLeast;
 namespace gpu {
 namespace {
 
+// Allocate a bitmap for each plane filled with red pixels. RED_8 format will be
+// filled with FF repeating and RG_88 format will be filled with FF00 repeating.
+// `added_stride` is a multiplier that allocates bytePerPixel * added_stride
+// extra bytes per row.
+std::vector<SkBitmap> AllocateRedBitmaps(viz::SharedImageFormat format,
+                                         const gfx::Size& size,
+                                         SkAlphaType alpha_type,
+                                         size_t added_stride) {
+  int num_planes = format.NumberOfPlanes();
+  std::vector<SkBitmap> bitmaps(num_planes);
+
+  for (int plane = 0; plane < num_planes; ++plane) {
+    SkColorType color_type = ToClosestSkColorType(true, format, plane);
+    gfx::Size plane_size = format.GetPlaneSize(plane, size);
+
+    SkImageInfo info = SkImageInfo::Make(
+        plane_size.width(), plane_size.height(), color_type, alpha_type);
+    const size_t stride =
+        info.minRowBytes() + added_stride * info.bytesPerPixel();
+
+    auto& bitmap = bitmaps[plane];
+    bitmap.allocPixels(info, stride);
+    bitmap.eraseColor(SK_ColorRED);
+  }
+  return bitmaps;
+}
+
 std::vector<SkPixmap> GetSkPixmaps(const std::vector<SkBitmap>& bitmaps) {
   std::vector<SkPixmap> pixmaps;
   for (auto& bitmap : bitmaps) {
@@ -559,38 +586,22 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
-  int num_planes = format.NumberOfPlanes();
-  std::vector<SkBitmap> bitmaps(num_planes);
-  std::vector<SkBitmap> larger_bitmaps(num_planes);
-  for (int plane = 0; plane < num_planes; ++plane) {
-    SkColorType color_type = ToClosestSkColorType(true, format, plane);
-
-    // Allocate a bitmap with red pixels and upload from it. RED_8 will be
-    // filled with 0xFF repeating and RG_88 will be filled with OxFF00
-    // repeating.
-    SkImageInfo info =
-        SkImageInfo::Make(size.width(), size.height(), color_type, alpha_type);
-    const size_t min_stride = info.minRowBytes64();
-
-    auto& bitmap = bitmaps[plane];
-    bitmap.allocPixels(info, min_stride);
-    bitmap.eraseColor(SK_ColorRED);
-
-    // Allocate a bitmap with much larger stride than necessary.
-    auto& larger_bitmap = larger_bitmaps[plane];
-    const size_t larger_stride = min_stride + 25 * info.bytesPerPixel();
-    larger_bitmap.allocPixels(info, larger_stride);
-    larger_bitmap.eraseColor(SK_ColorRED);
+  // Upload from bitmap with expected stride.
+  {
+    std::vector<SkBitmap> bitmaps =
+        AllocateRedBitmaps(format, size, alpha_type, /*added_stride=*/0);
+    EXPECT_TRUE(backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
   }
 
-  // Upload from bitmap with expected stride.
-  EXPECT_TRUE(backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
-
   // Upload from bitmap with larger than expected stride.
-  EXPECT_TRUE(backing->UploadFromMemory(GetSkPixmaps(larger_bitmaps)));
+  {
+    std::vector<SkBitmap> bitmaps =
+        AllocateRedBitmaps(format, size, alpha_type, /*added_stride=*/25);
+    EXPECT_TRUE(backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
+  }
 }
 
 TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
@@ -615,43 +626,55 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
-  SkColorType color_type = viz::ToClosestSkColorType(true, format);
+  std::vector<SkBitmap> src_bitmaps =
+      AllocateRedBitmaps(format, size, alpha_type, /*added_stride=*/0);
 
-  // Allocate a bitmap with red pixels and upload from it. RED_8 will be filled
-  // with 0xFF repeating and RG_88 will be filled with OxFF00 repeating.
-  SkBitmap bitmap;
-  SkImageInfo info =
-      SkImageInfo::Make(size.width(), size.height(), color_type, alpha_type);
-  const size_t min_stride = info.minRowBytes64();
-  bitmap.allocPixels(info, min_stride);
-  bitmap.eraseColor(SK_ColorRED);
+  // Upload from bitmap with expected stride.
+  ASSERT_TRUE(backing->UploadFromMemory(GetSkPixmaps(src_bitmaps)));
 
-  EXPECT_TRUE(backing->UploadFromMemory({bitmap.pixmap()}));
+  const int num_planes = format.NumberOfPlanes();
 
   {
-    // Do readback with same stride and validate pixels match what was uploaded.
-    SkBitmap result_bitmap;
-    result_bitmap.allocPixels(info, min_stride);
-    SkPixmap result_pixmap;
-    ASSERT_TRUE(result_bitmap.peekPixels(&result_pixmap));
-    ASSERT_TRUE(backing->ReadbackToMemory(result_pixmap));
-    EXPECT_TRUE(
-        cc::MatchesBitmap(result_bitmap, bitmap, cc::ExactPixelComparator()));
+    // Do readback into bitmap with same stride and validate pixels match what
+    // was uploaded.
+    std::vector<SkBitmap> readback_bitmaps(num_planes);
+    for (int plane = 0; plane < num_planes; ++plane) {
+      auto& info = src_bitmaps[plane].info();
+      size_t stride = info.minRowBytes();
+      readback_bitmaps[plane].allocPixels(info, stride);
+    }
+
+    std::vector<SkPixmap> pixmaps = GetSkPixmaps(readback_bitmaps);
+    ASSERT_TRUE(backing->ReadbackToMemory(pixmaps));
+
+    for (int plane = 0; plane < num_planes; ++plane) {
+      EXPECT_TRUE(cc::MatchesBitmap(readback_bitmaps[plane], src_bitmaps[plane],
+                                    cc::ExactPixelComparator()))
+          << "plane_index=" << plane;
+    }
   }
 
   {
     // Do readback into a bitmap with larger than required stride and validate
     // pixels match what was uploaded.
-    SkBitmap result_bitmap;
-    result_bitmap.allocPixels(info, min_stride + 25 * info.bytesPerPixel());
-    SkPixmap result_pixmap;
-    ASSERT_TRUE(result_bitmap.peekPixels(&result_pixmap));
-    ASSERT_TRUE(backing->ReadbackToMemory(result_pixmap));
-    EXPECT_TRUE(
-        cc::MatchesBitmap(result_bitmap, bitmap, cc::ExactPixelComparator()));
+    std::vector<SkBitmap> readback_bitmaps(num_planes);
+    for (int plane = 0; plane < num_planes; ++plane) {
+      auto& info = src_bitmaps[plane].info();
+      size_t stride = info.minRowBytes() + 25 * info.bytesPerPixel();
+      readback_bitmaps[plane].allocPixels(info, stride);
+    }
+
+    std::vector<SkPixmap> pixmaps = GetSkPixmaps(readback_bitmaps);
+    ASSERT_TRUE(backing->ReadbackToMemory(pixmaps));
+
+    for (int plane = 0; plane < num_planes; ++plane) {
+      EXPECT_TRUE(cc::MatchesBitmap(readback_bitmaps[plane], src_bitmaps[plane],
+                                    cc::ExactPixelComparator()))
+          << "plane_index=" << plane;
+    }
   }
 }
 
@@ -704,7 +727,9 @@ const auto kReadbackFormats =
                       viz::SinglePlaneFormat::kRED_8,
                       viz::SinglePlaneFormat::kRG_88,
                       viz::SinglePlaneFormat::kRGBX_8888,
-                      viz::SinglePlaneFormat::kBGRX_8888);
+                      viz::SinglePlaneFormat::kBGRX_8888,
+                      viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
+                      viz::MultiPlaneFormat::kYVU_420);
 
 INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryWithReadbackTest,

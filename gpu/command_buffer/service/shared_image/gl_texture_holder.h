@@ -42,7 +42,7 @@ class GLTextureHolder {
   bool UploadFromMemory(const SkPixmap& pixmap);
 
   // Readback pixels from GL texture to `pixmap`.
-  bool ReadbackToMemory(SkPixmap& pixmap);
+  bool ReadbackToMemory(const SkPixmap& pixmap);
 
   // Returns a promise image for the GL texture.
   sk_sp<SkPromiseImageTexture> GetPromiseImage(

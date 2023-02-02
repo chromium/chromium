@@ -35,11 +35,11 @@ GPU_GLES2_EXPORT void UnpackPixelDataWithStride(
     const gfx::Size& size,
     const std::vector<uint8_t>& src_data,
     size_t src_stride,
-    SkPixmap& dst_pixmap);
+    const SkPixmap& dst_pixmap);
 
 // Swizzles RGBA <-> BGRA / RGBX <-> BGRX or more exactly between byte 0 and 2
 // of each pixel. `pixmap` must be 4 bytes per pixel.
-GPU_GLES2_EXPORT void SwizzleRedAndBlue(SkPixmap& pixmap);
+GPU_GLES2_EXPORT void SwizzleRedAndBlue(const SkPixmap& pixmap);
 
 }  // namespace gpu
 

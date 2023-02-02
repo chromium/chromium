@@ -270,7 +270,8 @@ bool TestImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmap) {
   return true;
 }
 
-bool TestImageBacking::ReadbackToMemory(SkPixmap& pixmap) {
+bool TestImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
+  DCHECK_EQ(format().NumberOfPlanes(), static_cast<int>(pixmaps.size()));
   readback_to_memory_called_ = true;
   return true;
 }

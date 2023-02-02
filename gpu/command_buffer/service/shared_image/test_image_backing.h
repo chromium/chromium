@@ -52,7 +52,7 @@ class TestImageBacking : public SharedImageBacking {
   void SetPurgeable(bool purgeable) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override {}
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmap) override;
-  bool ReadbackToMemory(SkPixmap& pixmap) override;
+  bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
 
   // Helper functions
   GLuint service_id() const { return service_id_; }

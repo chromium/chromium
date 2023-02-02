@@ -111,7 +111,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
   SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
-  bool ReadbackToMemory(SkPixmap& pixmap) override;
+  bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
   bool PresentSwapChain() override;
   std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,

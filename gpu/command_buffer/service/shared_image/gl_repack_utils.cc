@@ -65,7 +65,7 @@ std::vector<uint8_t> RepackPixelDataWithStride(const gfx::Size& size,
 void UnpackPixelDataWithStride(const gfx::Size& size,
                                const std::vector<uint8_t>& src_data,
                                size_t src_stride,
-                               SkPixmap& dst_pixmap) {
+                               const SkPixmap& dst_pixmap) {
   uint8_t* dst_data = static_cast<uint8_t*>(dst_pixmap.writable_addr());
   size_t dst_stride = dst_pixmap.rowBytes();
 
@@ -76,7 +76,7 @@ void UnpackPixelDataWithStride(const gfx::Size& size,
   }
 }
 
-void SwizzleRedAndBlue(SkPixmap& pixmap) {
+void SwizzleRedAndBlue(const SkPixmap& pixmap) {
   DCHECK_EQ(pixmap.info().bytesPerPixel(), 4);
 
   uint8_t* data = static_cast<uint8_t*>(pixmap.writable_addr());

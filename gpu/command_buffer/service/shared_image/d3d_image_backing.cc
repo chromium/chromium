@@ -527,7 +527,10 @@ bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
   return true;
 }
 
-bool D3DImageBacking::ReadbackToMemory(SkPixmap& pixmap) {
+bool D3DImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
+  DCHECK_EQ(pixmaps.size(), 1u);
+  auto& pixmap = pixmaps[0];
+
   uint8_t* dest_memory = static_cast<uint8_t*>(pixmap.writable_addr());
   const size_t dest_stride = pixmap.info().minRowBytes();
 

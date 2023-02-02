@@ -217,7 +217,7 @@ bool GLTextureHolder::UploadFromMemory(const SkPixmap& pixmap) {
   return true;
 }
 
-bool GLTextureHolder::ReadbackToMemory(SkPixmap& pixmap) {
+bool GLTextureHolder::ReadbackToMemory(const SkPixmap& pixmap) {
   const GLuint texture_id = GetServiceId();
   GLenum gl_format = format_desc_.data_format;
   GLenum gl_type = format_desc_.data_type;

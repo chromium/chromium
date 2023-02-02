@@ -58,7 +58,7 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
       scoped_refptr<SharedContextState> context_state) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
-  bool ReadbackToMemory(SkPixmap& pixmap) override;
+  bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
 
   bool IsPassthrough() const { return is_passthrough_; }
 

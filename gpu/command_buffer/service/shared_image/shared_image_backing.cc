@@ -114,7 +114,8 @@ bool SharedImageBacking::UploadFromMemory(
   return false;
 }
 
-bool SharedImageBacking::ReadbackToMemory(SkPixmap& pixmap) {
+bool SharedImageBacking::ReadbackToMemory(
+    const std::vector<SkPixmap>& pixmaps) {
   NOTREACHED();
   return false;
 }

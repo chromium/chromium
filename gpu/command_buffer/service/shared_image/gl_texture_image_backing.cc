@@ -55,7 +55,11 @@ viz::ResourceFormat GetPlaneFormat(viz::SharedImageFormat format,
 
 bool GLTextureImageBacking::SupportsPixelReadbackWithFormat(
     viz::SharedImageFormat format) {
-  if (!format.is_single_plane()) {
+  if (format.is_multi_plane()) {
+    if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR ||
+        format == viz::MultiPlaneFormat::kYVU_420) {
+      return true;
+    }
     return false;
   }
 
@@ -174,7 +178,7 @@ bool GLTextureImageBacking::UploadFromMemory(
   DCHECK(SupportsPixelUploadWithFormat(format()));
   DCHECK(gl::GLContext::GetCurrent());
 
-  for (int i = 0; i < format().NumberOfPlanes(); ++i) {
+  for (size_t i = 0; i < textures_.size(); ++i) {
     if (!textures_[i].UploadFromMemory(pixmaps[i])) {
       return false;
     }
@@ -182,7 +186,9 @@ bool GLTextureImageBacking::UploadFromMemory(
   return true;
 }
 
-bool GLTextureImageBacking::ReadbackToMemory(SkPixmap& pixmap) {
+bool GLTextureImageBacking::ReadbackToMemory(
+    const std::vector<SkPixmap>& pixmaps) {
+  DCHECK_EQ(pixmaps.size(), textures_.size());
   DCHECK(gl::GLContext::GetCurrent());
 
   // TODO(kylechar): Ideally there would be a usage that stated readback was
@@ -192,7 +198,12 @@ bool GLTextureImageBacking::ReadbackToMemory(SkPixmap& pixmap) {
     return false;
   }
 
-  return textures_[0].ReadbackToMemory(pixmap);
+  for (size_t i = 0; i < textures_.size(); ++i) {
+    if (!textures_[i].ReadbackToMemory(pixmaps[i])) {
+      return false;
+    }
+  }
+  return true;
 }
 
 std::unique_ptr<GLTextureImageRepresentation>

@@ -4,7 +4,6 @@
 
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -476,8 +475,6 @@ void CompoundImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 }
 
 bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
-  DCHECK(format().is_single_plane());
-
   auto& shm_element = GetElement(SharedImageAccessStream::kMemory);
 
   if (HasLatestContent(shm_element)) {
@@ -485,8 +482,8 @@ bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
   }
 
   auto* gpu_backing = elements_[1].GetBacking();
-  SkPixmap pixmap = GetSharedMemoryPixmaps()[0];
-  if (!gpu_backing || !gpu_backing->ReadbackToMemory(pixmap)) {
+  const std::vector<SkPixmap>& pixmaps = GetSharedMemoryPixmaps();
+  if (!gpu_backing || !gpu_backing->ReadbackToMemory(pixmaps)) {
     DLOG(ERROR) << "Failed to copy from GPU backing to shared memory";
     return false;
   }
@@ -621,7 +618,7 @@ void CompoundImageBacking::OnMemoryDump(
   }
 }
 
-std::vector<SkPixmap> CompoundImageBacking::GetSharedMemoryPixmaps() {
+const std::vector<SkPixmap>& CompoundImageBacking::GetSharedMemoryPixmaps() {
   auto* shm_backing = GetElement(SharedImageAccessStream::kMemory).GetBacking();
   DCHECK(shm_backing);
 

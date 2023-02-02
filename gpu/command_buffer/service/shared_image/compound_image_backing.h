@@ -160,7 +160,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
                     uint64_t client_tracing_id) override;
 
   // Returns a SkPixmap for shared memory backing.
-  std::vector<SkPixmap> GetSharedMemoryPixmaps();
+  const std::vector<SkPixmap>& GetSharedMemoryPixmaps();
 
   // Returns the element used for access stream.
   ElementHolder& GetElement(SharedImageAccessStream stream);
