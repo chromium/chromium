@@ -11,6 +11,8 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "ash/shell.h"
+#include "ash/system/federated/federated_service_controller_impl.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
