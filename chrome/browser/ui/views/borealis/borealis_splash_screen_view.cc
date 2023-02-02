@@ -38,7 +38,6 @@ const int icon_height = 77;
 
 namespace borealis {
 
-// Declared in chrome/browser/ash/borealis/borealis_util.h.
 void ShowBorealisSplashScreenView(Profile* profile) {
   return BorealisSplashScreenView::Show(profile);
 }

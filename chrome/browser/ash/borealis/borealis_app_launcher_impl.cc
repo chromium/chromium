@@ -9,9 +9,10 @@
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
-#include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/borealis/borealis_installer_view.h"
+#include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
 
 namespace borealis {
 BorealisAppLauncherImpl::~BorealisAppLauncherImpl() = default;
@@ -44,8 +45,9 @@ void BorealisAppLauncherImpl::Launch(std::string app_id,
   }
   if (!borealis::BorealisService::GetForProfile(profile_)
            ->ContextManager()
-           .IsRunning())
+           .IsRunning()) {
     borealis::ShowBorealisSplashScreenView(profile_);
+  }
   BorealisService::GetForProfile(profile_)->ContextManager().StartBorealis(
       base::BindOnce(
           [](std::string app_id, const std::vector<std::string>& args,

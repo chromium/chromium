@@ -1,0 +1,9 @@
+# While chrome/browser/ is not meant to depend on chrome/browser/ui/views/, in
+# ash it's expected because Views is the only UI used in ash, so we allow
+# dependencies from chrome/browser/ash/borealis/ to
+# chrome/browser/ui/views/borealis/.
+
+include_rules = [
+  # For access to the Borealis installer and splash screen.
+  "+chrome/browser/ui/views/borealis",
+]

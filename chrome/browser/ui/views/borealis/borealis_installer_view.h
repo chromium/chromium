@@ -24,6 +24,12 @@ class ProgressBar;
 
 class Profile;
 
+namespace borealis {
+
+void ShowBorealisInstallerView(Profile* profile);
+
+}  // namespace borealis
+
 // The front end for the Borealis installation process, works closely with
 // "chrome/browser/ash/borealis/borealis_installer.h".
 class BorealisInstallerView : public views::DialogDelegateView,

@@ -9,9 +9,15 @@
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+class Profile;
+
 // A splash screen for borealis, displays when borealis is clicked and closed
 // when the first borealis window shows.
 namespace borealis {
+
+void ShowBorealisSplashScreenView(Profile* profile);
+void CloseBorealisSplashScreenView();
+
 class BorealisSplashScreenView
     : public views::DialogDelegateView,
       public borealis::BorealisWindowManager::AppWindowLifetimeObserver {

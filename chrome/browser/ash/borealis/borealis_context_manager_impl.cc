@@ -14,10 +14,10 @@
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_task.h"
-#include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/infra/described.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/sessions/exit_type_service.h"
+#include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 

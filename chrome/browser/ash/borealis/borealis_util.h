@@ -59,9 +59,6 @@ struct CompatToolInfo {
   std::string slr = "None";
 };
 
-// Shows the Borealis installer (borealis_installer_view).
-void ShowBorealisInstallerView(Profile* profile);
-
 // Returns a Borealis app ID parsed from |exec|, or nullopt on failure.
 // TODO(b/173547790): This should probably be moved when we've decided
 // the details of how/where it will be used.
@@ -69,11 +66,6 @@ absl::optional<int> GetBorealisAppId(std::string exec);
 
 // Returns the Borealis app ID of the |window|, or nullopt on failure.
 absl::optional<int> GetBorealisAppId(const aura::Window* window);
-
-// Shows the splash screen (borealis_splash_screen_view).
-void ShowBorealisSplashScreenView(Profile* profile);
-// Closes the splash screen (borealis_splash_screen_view).
-void CloseBorealisSplashScreenView();
 
 // Creates a URL for a feedback form with prefilled app/device info, or an
 // invalid URL if we don't want to collect feedback for the given |app_id|. Will
