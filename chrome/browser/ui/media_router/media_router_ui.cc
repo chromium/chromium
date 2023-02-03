@@ -181,6 +181,7 @@ void MediaRouterUI::ClearIssue(const Issue::Id& issue_id) {
 
 std::unique_ptr<MediaRouteStarter> MediaRouterUI::TakeMediaRouteStarter() {
   DCHECK(media_route_starter_) << "MediaRouteStarter already taken!";
+  DetachFromMediaRouteStarter();
   auto starter = std::move(media_route_starter_);
   if (destructor_) {
     std::move(destructor_).Run();  // May destroy `this`.
