@@ -385,10 +385,8 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
 
   encode_pending_ = true;
 
-  auto encode_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&WebrtcVideoEncoderWrapper::OnFrameEncoded,
-                     weak_factory_.GetWeakPtr()));
+  auto encode_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &WebrtcVideoEncoderWrapper::OnFrameEncoded, weak_factory_.GetWeakPtr()));
   encode_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&WebrtcVideoEncoder::Encode,

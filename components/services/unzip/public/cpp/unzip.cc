@@ -308,11 +308,9 @@ void Unzip(mojo::PendingRemote<mojom::Unzipper> unzipper,
       base::BindOnce(
           &DoUnzip, std::move(unzipper), zip_file, output_dir,
           UnzipFilterCallback(),
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(listener_callback)),
+          base::BindPostTaskToCurrentDefault(std::move(listener_callback)),
           std::move(options),
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(result_callback))));
+          base::BindPostTaskToCurrentDefault(std::move(result_callback))));
 }
 
 void UnzipWithFilter(mojo::PendingRemote<mojom::Unzipper> unzipper,
@@ -331,8 +329,7 @@ void UnzipWithFilter(mojo::PendingRemote<mojom::Unzipper> unzipper,
       base::BindOnce(
           &DoUnzip, std::move(unzipper), zip_path, output_dir, filter_callback,
           UnzipListenerCallback(), unzip::mojom::UnzipOptions::New(),
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(result_callback))));
+          base::BindPostTaskToCurrentDefault(std::move(result_callback))));
 }
 
 void DetectEncoding(mojo::PendingRemote<mojom::Unzipper> unzipper,
@@ -342,12 +339,10 @@ void DetectEncoding(mojo::PendingRemote<mojom::Unzipper> unzipper,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-  runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &DoDetectEncoding, std::move(unzipper), zip_path,
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(result_callback))));
+  runner->PostTask(FROM_HERE, base::BindOnce(&DoDetectEncoding,
+                                             std::move(unzipper), zip_path,
+                                             base::BindPostTaskToCurrentDefault(
+                                                 std::move(result_callback))));
 }
 
 void GetExtractedInfo(mojo::PendingRemote<mojom::Unzipper> unzipper,
@@ -357,12 +352,10 @@ void GetExtractedInfo(mojo::PendingRemote<mojom::Unzipper> unzipper,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-  runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &DoGetExtractedInfo, std::move(unzipper), zip_path,
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(result_callback))));
+  runner->PostTask(FROM_HERE, base::BindOnce(&DoGetExtractedInfo,
+                                             std::move(unzipper), zip_path,
+                                             base::BindPostTaskToCurrentDefault(
+                                                 std::move(result_callback))));
 }
 
 ZipFileUnpacker::ZipFileUnpacker() = default;
@@ -415,11 +408,9 @@ void ZipFileUnpacker::Unpack(mojo::PendingRemote<mojom::Unzipper> unzipper,
       base::BindOnce(
           &::unzip::DoUnzipWithParams, std::move(unzipper), std::ref(params_),
           zip_file, output_dir, UnzipFilterCallback(),
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(listener_callback)),
+          base::BindPostTaskToCurrentDefault(std::move(listener_callback)),
           std::move(options),
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(result_callback))));
+          base::BindPostTaskToCurrentDefault(std::move(result_callback))));
 }
 
 void ReleaseParams(scoped_refptr<UnzipParams>& unzip_params) {

@@ -221,12 +221,10 @@ class ManagedValueStoreCacheTest : public testing::Test {
       scoped_refptr<const Extension> extension) {
     GetBackendTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &ManagedValueStoreCache::RunWithValueStoreForExtension,
-            base::Unretained(&cache()),
-            base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                               std::move(callback)),
-            extension));
+        base::BindOnce(&ManagedValueStoreCache::RunWithValueStoreForExtension,
+                       base::Unretained(&cache()),
+                       base::BindPostTaskToCurrentDefault(std::move(callback)),
+                       extension));
   }
 
   TestingProfile& profile() { return *profile_; }

@@ -343,8 +343,8 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       ArgsMinusCallback&&... args) {
     // Wrap the passed in callback in one that posts a task back to the
     // current sequence.
-    auto wrapped_callback = base::BindPostTask(
-        base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
+    auto wrapped_callback =
+        base::BindPostTaskToCurrentDefault(std::move(callback));
 
     // And then post a task to the sequence bound operation runner to run the
     // provided method with the provided arguments (and the wrapped callback).

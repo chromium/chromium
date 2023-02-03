@@ -40,8 +40,7 @@ void NssService::UnsafelyGetNSSCertDatabaseForTesting(
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &GetCertDBOnIOThread, CreateNSSCertDatabaseGetterForIOThread(),
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(callback))));
+      base::BindOnce(&GetCertDBOnIOThread,
+                     CreateNSSCertDatabaseGetterForIOThread(),
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }

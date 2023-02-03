@@ -205,15 +205,13 @@ void CertManagerImpl::ImportPrivateKeyAndCert(
     ImportPrivateKeyAndCertCallback callback) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &GetCertDBOnIOThread,
-          NssServiceFactory::GetForContext(profile_)
-              ->CreateNSSCertDatabaseGetterForIOThread(),
-          base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindOnce(&CertManagerImpl::ImportPrivateKeyAndCertWithDB,
-                             weak_factory_.GetWeakPtr(), key_pem, cert_pem,
-                             std::move(callback)))));
+      base::BindOnce(&GetCertDBOnIOThread,
+                     NssServiceFactory::GetForContext(profile_)
+                         ->CreateNSSCertDatabaseGetterForIOThread(),
+                     base::BindPostTaskToCurrentDefault(base::BindOnce(
+                         &CertManagerImpl::ImportPrivateKeyAndCertWithDB,
+                         weak_factory_.GetWeakPtr(), key_pem, cert_pem,
+                         std::move(callback)))));
 }
 
 }  // namespace arc

@@ -1031,11 +1031,10 @@ TEST(ExtensionAPITest, GetSchemaFromDifferentThreads) {
         another_thread_schema = res;
         run_loop.Quit();
       });
-  auto task = base::BindOnce(&ExtensionAPI::GetSchema,
-                             base::Unretained(shared_instance), "storage")
-                  .Then(base::BindPostTask(
-                      base::SequencedTaskRunner::GetCurrentDefault(),
-                      std::move(result_cb)));
+  auto task =
+      base::BindOnce(&ExtensionAPI::GetSchema,
+                     base::Unretained(shared_instance), "storage")
+          .Then(base::BindPostTaskToCurrentDefault(std::move(result_cb)));
   t.task_runner()->PostTask(FROM_HERE, std::move(task));
 
   const auto* current_thread_schema = shared_instance->GetSchema("storage");

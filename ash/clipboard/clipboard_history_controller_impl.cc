@@ -454,12 +454,10 @@ void ClipboardHistoryControllerImpl::GetHistoryValues(
   // Post back to this sequence once all images have been encoded.
   base::RepeatingClosure barrier = base::BarrierClosure(
       bitmaps_to_be_encoded.size(),
-      base::BindPostTask(
-          base::SequencedTaskRunner::GetCurrentDefault(),
-          base::BindOnce(
-              &ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs,
-              weak_ptr_factory_.GetMutableWeakPtr(), item_id_filter,
-              std::move(callback), std::move(encoded_pngs))));
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs,
+          weak_ptr_factory_.GetMutableWeakPtr(), item_id_filter,
+          std::move(callback), std::move(encoded_pngs))));
 
   // Encode images on background threads.
   for (auto id_and_bitmap : bitmaps_to_be_encoded) {

@@ -817,9 +817,8 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Success) {
       base::BindLambdaForTesting([&captured_result](KeyRotationResult result) {
         captured_result = result;
       });
-  base::RepeatingClosure start_rotate = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindLambdaForTesting([&]() {
+  base::RepeatingClosure start_rotate =
+      base::BindPostTaskToCurrentDefault(base::BindLambdaForTesting([&]() {
         key_manager()->RotateKey(kFakeNonce, std::move(completion_callback));
       }));
 
@@ -877,9 +876,8 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Fails) {
       base::BindLambdaForTesting([&captured_result](KeyRotationResult result) {
         captured_result = result;
       });
-  base::RepeatingClosure start_rotate = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindLambdaForTesting([&]() {
+  base::RepeatingClosure start_rotate =
+      base::BindPostTaskToCurrentDefault(base::BindLambdaForTesting([&]() {
         key_manager()->RotateKey(kFakeNonce, std::move(completion_callback));
       }));
 

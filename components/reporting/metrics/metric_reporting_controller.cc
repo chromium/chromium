@@ -56,8 +56,7 @@ void MetricReportingController::UpdateSetting() {
   base::OnceClosure update_setting_cb = base::BindOnce(
       &MetricReportingController::UpdateSetting, weak_factory_.GetWeakPtr());
   bool trusted = reporting_settings_->PrepareTrustedValues(
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         std::move(update_setting_cb)));
+      base::BindPostTaskToCurrentDefault(std::move(update_setting_cb)));
   if (!trusted) {
     return;
   }

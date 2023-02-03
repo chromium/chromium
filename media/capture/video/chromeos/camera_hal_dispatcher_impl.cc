@@ -1027,8 +1027,7 @@ void CameraHalDispatcherImpl::GetAutoFramingSupported(
           &CameraHalDispatcherImpl::GetAutoFramingSupportedOnProxyThread,
           base::Unretained(this),
           // Make sure to hop back to the current thread for the reply.
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(callback), FROM_HERE)));
+          base::BindPostTaskToCurrentDefault(std::move(callback), FROM_HERE)));
 }
 
 void CameraHalDispatcherImpl::GetAutoFramingSupportedOnProxyThread(

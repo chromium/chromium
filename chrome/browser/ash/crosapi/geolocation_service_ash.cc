@@ -73,8 +73,7 @@ void GeolocationServiceAsh::GetWifiAccessPoints(
 
   // We should return the response on current thread (mojo thread).
   auto callback_on_current_thread =
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         std::move(callback), FROM_HERE);
+      base::BindPostTaskToCurrentDefault(std::move(callback), FROM_HERE);
 
   ash::NetworkHandler::Get()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&DoWifiScanTaskOnNetworkHandlerThread,

@@ -75,11 +75,9 @@ void OncImportMessageHandler::OnImportONC(const base::Value::List& list) {
           &GetCertDBOnIOThread,
           NssServiceFactory::GetForContext(Profile::FromWebUI(web_ui()))
               ->CreateNSSCertDatabaseGetterForIOThread(),
-          base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindOnce(&OncImportMessageHandler::ImportONCToNSSDB,
-                             weak_factory_.GetWeakPtr(), callback_id,
-                             onc_blob))));
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &OncImportMessageHandler::ImportONCToNSSDB,
+              weak_factory_.GetWeakPtr(), callback_id, onc_blob))));
 }
 
 void OncImportMessageHandler::ImportONCToNSSDB(const std::string& callback_id,

@@ -113,9 +113,8 @@ void MacKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
                      weak_factory_.GetWeakPtr()));
 
   auto rotation_result_callback =
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         base::BindOnce(&MacKeyRotationCommand::OnKeyRotated,
-                                        weak_factory_.GetWeakPtr()));
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &MacKeyRotationCommand::OnKeyRotated, weak_factory_.GetWeakPtr()));
 
   // Kicks off the key rotation process in a worker thread.
   background_task_runner_->PostTask(

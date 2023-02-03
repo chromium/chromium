@@ -53,10 +53,10 @@ BrowserUpdaterHelperClientMac::~BrowserUpdaterHelperClientMac() {
 void BrowserUpdaterHelperClientMac::SetupSystemUpdater(
     base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  __block base::OnceCallback<void(int)> block_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&BrowserUpdaterHelperClientMac::SetupSystemUpdaterDone,
-                     base::WrapRefCounted(this), std::move(callback)));
+  __block base::OnceCallback<void(int)> block_callback =
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&BrowserUpdaterHelperClientMac::SetupSystemUpdaterDone,
+                         base::WrapRefCounted(this), std::move(callback)));
 
   auto reply = ^(int error) {
     std::move(block_callback).Run(error);

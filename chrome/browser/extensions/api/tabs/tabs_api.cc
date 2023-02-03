@@ -2127,10 +2127,8 @@ ExtensionFunction::ResponseAction TabsCaptureVisibleTabFunction::Run() {
   // hence the BindPostTask().
   const CaptureResult capture_result = CaptureAsync(
       contents, image_details.get(),
-      base::BindPostTask(
-          base::SequencedTaskRunner::GetCurrentDefault(),
-          base::BindOnce(
-              &TabsCaptureVisibleTabFunction::CopyFromSurfaceComplete, this)));
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &TabsCaptureVisibleTabFunction::CopyFromSurfaceComplete, this)));
   if (capture_result == OK) {
     // CopyFromSurfaceComplete might have already responded.
     return did_respond() ? AlreadyResponded() : RespondLater();

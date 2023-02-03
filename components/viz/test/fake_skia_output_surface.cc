@@ -282,8 +282,7 @@ void FakeSkiaOutputSurface::CopyOutput(
         gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
 
     CopyOutputResult::ReleaseCallbacks release_callbacks;
-    release_callbacks.push_back(base::BindPostTask(
-        base::SequencedTaskRunner::GetCurrentDefault(),
+    release_callbacks.push_back(base::BindPostTaskToCurrentDefault(
         base::BindOnce(&FakeSkiaOutputSurface::DestroyCopyOutputTexture,
                        weak_ptr_factory_.GetWeakPtr(), local_mailbox)));
 

@@ -83,10 +83,8 @@ ReportQueueFactory::CreateTrySetCallback(
     Destination destination,
     SuccessCallback success_cb,
     std::unique_ptr<::net::BackoffEntry> backoff_entry) {
-  return base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&ReportQueueFactory::TrySetReportQueue,
-                     std::move(success_cb)));
+  return base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &ReportQueueFactory::TrySetReportQueue, std::move(success_cb)));
 }
 
 // static

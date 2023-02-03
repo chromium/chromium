@@ -200,11 +200,9 @@ void WebrtcVideoEncoderGpu::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
 
   hw_encode_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &WebrtcVideoEncoderGpu::Core::Encode, base::Unretained(core_.get()),
-          std::move(frame), params,
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(done))));
+      base::BindOnce(&WebrtcVideoEncoderGpu::Core::Encode,
+                     base::Unretained(core_.get()), std::move(frame), params,
+                     base::BindPostTaskToCurrentDefault(std::move(done))));
 }
 
 WebrtcVideoEncoderGpu::Core::Core(media::VideoCodecProfile codec_profile)

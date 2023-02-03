@@ -133,8 +133,8 @@ void NetworkTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
       ->ProbeTelemetryInfo(
           std::vector<ash::cros_healthd::mojom::ProbeCategoryEnum>{
               ash::cros_healthd::mojom::ProbeCategoryEnum::kNetworkInterface},
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(handle_probe_result_cb)));
+          base::BindPostTaskToCurrentDefault(
+              std::move(handle_probe_result_cb)));
 }
 
 void NetworkTelemetrySampler::CollectWifiSignalStrengthRssi(
@@ -166,8 +166,7 @@ void NetworkTelemetrySampler::CollectWifiSignalStrengthRssi(
                      std::move(cros_healthd_telemetry));
   FetchWifiSignalStrengthRssi(
       std::move(service_paths),
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         std::move(wifi_signal_rssi_cb)));
+      base::BindPostTaskToCurrentDefault(std::move(wifi_signal_rssi_cb)));
 }
 
 void NetworkTelemetrySampler::CollectNetworksStates(

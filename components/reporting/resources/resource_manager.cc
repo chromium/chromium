@@ -62,22 +62,21 @@ void ResourceManager::Test_SetTotal(uint64_t test_total) {
 
 void ResourceManager::RegisterCallback(uint64_t size, base::OnceClosure cb) {
   sequenced_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](scoped_refptr<ResourceManager> self, uint64_t size,
-             base::OnceClosure cb) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
-            self->resource_callbacks_.emplace(size, std::move(cb));
+      FROM_HERE, base::BindOnce(
+                     [](scoped_refptr<ResourceManager> self, uint64_t size,
+                        base::OnceClosure cb) {
+                       DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+                       self->resource_callbacks_.emplace(size, std::move(cb));
 
-            // Attempt to apply remaining callbacks
-            // (this is especially important if the new callback is registered
-            // with no allocations to be released - we don't want the callback
-            // to wait indefinitely in this case).
-            self->FlushCallbacks();
-          },
-          base::WrapRefCounted(this), size,
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(cb))));
+                       // Attempt to apply remaining callbacks
+                       // (this is especially important if the new callback is
+                       // registered with no allocations to be released - we
+                       // don't want the callback to wait indefinitely in this
+                       // case).
+                       self->FlushCallbacks();
+                     },
+                     base::WrapRefCounted(this), size,
+                     base::BindPostTaskToCurrentDefault(std::move(cb))));
 }
 
 void ResourceManager::FlushCallbacks() {

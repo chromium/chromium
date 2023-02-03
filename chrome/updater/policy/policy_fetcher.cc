@@ -87,10 +87,9 @@ void PolicyFetcher::OnRegisterDeviceRequestComplete(
       result == DMClient::RequestResult::kAlreadyRegistered) {
     sequenced_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &PolicyFetcher::FetchPolicy, this,
-            base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                               base::BindOnce(std::move(callback), kErrorOk))));
+        base::BindOnce(&PolicyFetcher::FetchPolicy, this,
+                       base::BindPostTaskToCurrentDefault(
+                           base::BindOnce(std::move(callback), kErrorOk))));
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

@@ -1366,10 +1366,10 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   // won't happen if it gets cancelled. To deal with that, a ScopedClosureRunner
   // is passed to ask for `task` to get cleaned up in case the
   // V8State::GenerateBid closure gets destroyed without running.
-  base::OnceClosure cleanup_generate_bid_task = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&BidderWorklet::CleanUpBidTaskOnUserThread,
-                     weak_ptr_factory_.GetWeakPtr(), task));
+  base::OnceClosure cleanup_generate_bid_task =
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&BidderWorklet::CleanUpBidTaskOnUserThread,
+                         weak_ptr_factory_.GetWeakPtr(), task));
 
   // Other than the `generate_bid_client` and `task_id` fields, no fields of
   // `task` are needed after this point, so can consume them instead of copying

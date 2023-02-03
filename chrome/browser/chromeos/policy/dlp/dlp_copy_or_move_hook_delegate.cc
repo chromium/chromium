@@ -104,8 +104,8 @@ void DlpCopyOrMoveHookDelegate::OnBeginProcessFile(
     const storage::FileSystemURL& destination_url,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  StatusCallback continuation = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
+  StatusCallback continuation =
+      base::BindPostTaskToCurrentDefault(std::move(callback));
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(

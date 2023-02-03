@@ -123,11 +123,9 @@ void SerializeFileRecording(sk_sp<const SkPicture> skp,
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
        base::WithBaseSyncPrimitives()},
-      BindOnce(
-          &RecordToFileOnThreadPool, skp, std::move(skp_file),
-          std::move(tracker), max_capture_size, std::move(out),
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(callback))));
+      BindOnce(&RecordToFileOnThreadPool, skp, std::move(skp_file),
+               std::move(tracker), max_capture_size, std::move(out),
+               base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 // Handles memory buffer persistence storage.

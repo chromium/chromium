@@ -421,8 +421,7 @@ void FlushCacheThreadAsynchronouslyForTesting(base::OnceClosure callback) {
 
   // For simple backend.
   base::ThreadPoolInstance::Get()->FlushAsyncForTesting(  // IN-TEST
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         repeating_callback));
+      base::BindPostTaskToCurrentDefault(repeating_callback));
 
   // Block backend.
   BackendImpl::FlushAsynchronouslyForTesting(repeating_callback);

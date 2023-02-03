@@ -97,11 +97,11 @@ void LacrosDataMigrationScreen::ShowImpl() {
     const base::FilePath profile_data_dir =
         user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
 
-    base::RepeatingCallback<void(int)> progress_callback = base::BindPostTask(
-        base::SequencedTaskRunner::GetCurrentDefault(),
-        base::BindRepeating(&LacrosDataMigrationScreen::OnProgressUpdate,
-                            weak_factory_.GetWeakPtr()),
-        FROM_HERE);
+    base::RepeatingCallback<void(int)> progress_callback =
+        base::BindPostTaskToCurrentDefault(
+            base::BindRepeating(&LacrosDataMigrationScreen::OnProgressUpdate,
+                                weak_factory_.GetWeakPtr()),
+            FROM_HERE);
 
     migrator_ = std::make_unique<BrowserDataMigratorImpl>(
         profile_data_dir, user_id_hash, progress_callback,

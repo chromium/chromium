@@ -63,8 +63,7 @@ IOTaskId IOTaskController::Add(std::unique_ptr<IOTask> task) {
   PutIOTask(task_id, std::move(task))
       ->Execute(base::BindRepeating(&IOTaskController::OnIOTaskProgress,
                                     weak_ptr_factory_.GetWeakPtr()),
-                base::BindPostTask(
-                    base::SequencedTaskRunner::GetCurrentDefault(),
+                base::BindPostTaskToCurrentDefault(
                     base::BindOnce(&IOTaskController::OnIOTaskComplete,
                                    weak_ptr_factory_.GetWeakPtr(), task_id)));
   return task_id;

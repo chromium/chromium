@@ -1738,9 +1738,8 @@ void QuotaManagerImpl::EnsureDatabaseOpened() {
 
   // Start the storage eviction routine on a full disk error.
   database_->SetOnFullDiskErrorCallback(
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         base::BindRepeating(&QuotaManagerImpl::StartEviction,
-                                             weak_factory_.GetWeakPtr())));
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &QuotaManagerImpl::StartEviction, weak_factory_.GetWeakPtr())));
 
   temporary_usage_tracker_ = std::make_unique<UsageTracker>(
       this, client_types_[StorageType::kTemporary], StorageType::kTemporary,

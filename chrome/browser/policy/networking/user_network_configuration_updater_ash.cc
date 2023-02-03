@@ -180,15 +180,13 @@ void UserNetworkConfigurationUpdaterAsh::OnProfileInitializationComplete(
   // pass the `NssCertDatabaseGetter` to the `CertificateImporterImpl`.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &GetNssCertDatabaseOnIOThread,
-          NssServiceFactory::GetForContext(profile)
-              ->CreateNSSCertDatabaseGetterForIOThread(),
-          base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindOnce(&UserNetworkConfigurationUpdaterAsh::
-                                 CreateAndSetClientCertificateImporter,
-                             weak_factory_.GetWeakPtr()))));
+      base::BindOnce(&GetNssCertDatabaseOnIOThread,
+                     NssServiceFactory::GetForContext(profile)
+                         ->CreateNSSCertDatabaseGetterForIOThread(),
+                     base::BindPostTaskToCurrentDefault(base::BindOnce(
+                         &UserNetworkConfigurationUpdaterAsh::
+                             CreateAndSetClientCertificateImporter,
+                         weak_factory_.GetWeakPtr()))));
 }
 
 void UserNetworkConfigurationUpdaterAsh::CreateAndSetClientCertificateImporter(

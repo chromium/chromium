@@ -115,8 +115,7 @@ void HttpsLatencySampler::MaybeCollect(OptionalMetricCallback callback) {
       base::BindOnce(&HttpsLatencySampler::OnHttpsLatencyRoutineCompleted,
                      weak_ptr_factory_.GetWeakPtr());
   network_diagnostics_service_->RunHttpsLatency(
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         std::move(routine_callback)));
+      base::BindPostTaskToCurrentDefault(std::move(routine_callback)));
 
   is_routine_running_ = true;
 }

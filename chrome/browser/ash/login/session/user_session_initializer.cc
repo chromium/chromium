@@ -200,12 +200,11 @@ void UserSessionInitializer::InitializeCerts(Profile* profile) {
     // pass the `NssCertDatabaseGetter` to the `NetworkCertLoader`.
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &GetCertDBOnIOThread,
-            NssServiceFactory::GetForContext(profile)
-                ->CreateNSSCertDatabaseGetterForIOThread(),
-            base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                               base::BindOnce(&OnGotNSSCertDatabaseForUser))));
+        base::BindOnce(&GetCertDBOnIOThread,
+                       NssServiceFactory::GetForContext(profile)
+                           ->CreateNSSCertDatabaseGetterForIOThread(),
+                       base::BindPostTaskToCurrentDefault(
+                           base::BindOnce(&OnGotNSSCertDatabaseForUser))));
   }
 }
 

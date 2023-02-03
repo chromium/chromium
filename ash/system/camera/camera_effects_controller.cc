@@ -121,11 +121,9 @@ CameraEffectsController::CameraEffectsController() {
           // The callback passed to CameraHalDispatcherImpl will be called on a
           // different thread inside CameraHalDispatcherImpl, so we need always
           // post the callback onto current task runner.
-          base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindRepeating(
-                  &CameraEffectsController::OnNewCameraEffectsSet,
-                  weak_factory_.GetWeakPtr())));
+          base::BindPostTaskToCurrentDefault(base::BindRepeating(
+              &CameraEffectsController::OnNewCameraEffectsSet,
+              weak_factory_.GetWeakPtr())));
 }
 
 CameraEffectsController::~CameraEffectsController() {

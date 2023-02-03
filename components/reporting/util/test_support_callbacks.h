@@ -66,9 +66,8 @@ class TestMultiEvent {
 
   // Completion callback to hand over to the processing method.
   [[nodiscard]] base::OnceCallback<void(ResType... res)> cb() {
-    return base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                              base::BindOnce(&TestMultiEvent::SetResult,
-                                             weak_ptr_factory_.GetWeakPtr()));
+    return base::BindPostTaskToCurrentDefault(base::BindOnce(
+        &TestMultiEvent::SetResult, weak_ptr_factory_.GetWeakPtr()));
   }
 
   // Repeating completion callback to hand over to the processing method.
@@ -76,10 +75,8 @@ class TestMultiEvent {
   // `result` only waits for one value; repeating declaration is only needed
   // for cases when the caller requires it.
   [[nodiscard]] base::RepeatingCallback<void(ResType... res)> repeating_cb() {
-    return base::BindPostTask(
-        base::SequencedTaskRunner::GetCurrentDefault(),
-        base::BindRepeating(&TestMultiEvent::SetResult,
-                            weak_ptr_factory_.GetWeakPtr()));
+    return base::BindPostTaskToCurrentDefault(base::BindRepeating(
+        &TestMultiEvent::SetResult, weak_ptr_factory_.GetWeakPtr()));
   }
 
  protected:

@@ -300,8 +300,7 @@ scoped_refptr<VideoFrame> InternalRefCountedPool::MaybeCreateVideoFrame(
   auto callback = base::BindOnce(&InternalRefCountedPool::OnVideoFrameDestroyed,
                                  this, std::move(frame_resources));
   video_frame->SetReleaseMailboxAndGpuMemoryBufferCB(
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         std::move(callback), FROM_HERE));
+      base::BindPostTaskToCurrentDefault(std::move(callback), FROM_HERE));
   return video_frame;
 }
 

@@ -229,8 +229,7 @@ void InitializeThreadPool(const char* name);
 // Adapts `callback` so that the callback is posted on the current sequence.
 template <typename CallbackT>
 CallbackT OnCurrentSequence(CallbackT callback) {
-  return base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                            std::move(callback));
+  return base::BindPostTaskToCurrentDefault(std::move(callback));
 }
 
 }  // namespace updater

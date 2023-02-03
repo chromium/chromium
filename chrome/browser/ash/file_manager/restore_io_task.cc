@@ -195,10 +195,8 @@ void RestoreIOTask::RestoreItem(
   storage::FileSystemOperation::CopyOrMoveOptionSet options(
       storage::FileSystemOperation::CopyOrMoveOption::kPreserveLastModified);
 
-  auto complete_callback =
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         base::BindOnce(&RestoreIOTask::OnRestoreItem,
-                                        weak_ptr_factory_.GetWeakPtr(), idx));
+  auto complete_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &RestoreIOTask::OnRestoreItem, weak_ptr_factory_.GetWeakPtr(), idx));
 
   // For move operations that occur on the same file system, the progress
   // callback is never invoked.
@@ -217,10 +215,8 @@ void RestoreIOTask::OnRestoreItem(size_t idx, base::File::Error error) {
     return;
   }
 
-  auto complete_callback =
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         base::BindOnce(&RestoreIOTask::RestoreComplete,
-                                        weak_ptr_factory_.GetWeakPtr(), idx));
+  auto complete_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &RestoreIOTask::RestoreComplete, weak_ptr_factory_.GetWeakPtr(), idx));
 
   // On successful file restore, there is a dangling trashinfo file, remove this
   // before restoration is considered complete.

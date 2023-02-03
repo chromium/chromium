@@ -234,11 +234,9 @@ void RunCreateCallback(
       storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
       storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
 
-  auto outer_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&RunCreateAndThenStatCallback, std::move(callback),
-                     fs_context, read_only, fuse_handle,
-                     std::move(on_failure)));
+  auto outer_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &RunCreateAndThenStatCallback, std::move(callback), fs_context, read_only,
+      fuse_handle, std::move(on_failure)));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -291,8 +289,7 @@ void RunMkDirCallback(
       storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
       storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
 
-  auto outer_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
+  auto outer_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&RunMkDirAndThenStatCallback, std::move(callback),
                      fs_context, read_only));
 
@@ -365,8 +362,7 @@ void RunTruncateCallback(
       storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
       storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
 
-  auto outer_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
+  auto outer_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&RunTruncateAndThenStatCallback, std::move(callback),
                      fs_context, read_only));
 
@@ -720,11 +716,9 @@ void Server::Create(const CreateRequestProto& request_proto,
   auto on_failure = base::BindOnce(&Server::EraseFuseFileMapEntry,
                                    weak_ptr_factory_.GetWeakPtr(), fuse_handle);
 
-  auto outer_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&RunCreateCallback, std::move(callback),
-                     parsed->fs_context, parsed->fs_url, parsed->read_only,
-                     fuse_handle, std::move(on_failure)));
+  auto outer_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &RunCreateCallback, std::move(callback), parsed->fs_context,
+      parsed->fs_url, parsed->read_only, fuse_handle, std::move(on_failure)));
 
   constexpr bool exclusive = true;
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -757,8 +751,7 @@ void Server::MkDir(const MkDirRequestProto& request_proto,
     return;
   }
 
-  auto outer_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
+  auto outer_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&RunMkDirCallback, std::move(callback), parsed->fs_context,
                      parsed->fs_url, parsed->read_only));
 
@@ -891,11 +884,9 @@ void Server::ReadDir2(const ReadDir2RequestProto& request_proto,
   cookie = ++next_cookie;
   read_dir_2_map_.insert({cookie, ReadDir2MapEntry(std::move(callback))});
 
-  auto outer_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindRepeating(&Server::OnReadDirectory,
-                          weak_ptr_factory_.GetWeakPtr(), parsed->fs_context,
-                          parsed->read_only, cookie));
+  auto outer_callback = base::BindPostTaskToCurrentDefault(base::BindRepeating(
+      &Server::OnReadDirectory, weak_ptr_factory_.GetWeakPtr(),
+      parsed->fs_context, parsed->read_only, cookie));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -928,10 +919,8 @@ void Server::RmDir(const RmDirRequestProto& request_proto,
     return;
   }
 
-  auto outer_callback =
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         base::BindOnce(&RunRmDirCallback, std::move(callback),
-                                        parsed->fs_context));
+  auto outer_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &RunRmDirCallback, std::move(callback), parsed->fs_context));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -971,10 +960,9 @@ void Server::Stat2(const Stat2RequestProto& request_proto,
       storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
       storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
 
-  auto outer_callback =
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         base::BindOnce(&RunStat2Callback, std::move(callback),
-                                        parsed->fs_context, parsed->read_only));
+  auto outer_callback = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&RunStat2Callback, std::move(callback), parsed->fs_context,
+                     parsed->read_only));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -1006,8 +994,7 @@ void Server::Truncate(const TruncateRequestProto& request_proto,
     return;
   }
 
-  auto outer_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
+  auto outer_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&RunTruncateCallback, std::move(callback),
                      parsed->fs_context, parsed->fs_url, parsed->read_only));
 
@@ -1043,10 +1030,8 @@ void Server::Unlink(const UnlinkRequestProto& request_proto,
     return;
   }
 
-  auto outer_callback =
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         base::BindOnce(&RunUnlinkCallback, std::move(callback),
-                                        parsed->fs_context));
+  auto outer_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &RunUnlinkCallback, std::move(callback), parsed->fs_context));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,

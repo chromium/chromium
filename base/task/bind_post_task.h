@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/bind_post_task_internal.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 
 // BindPostTask() is a helper function for binding a OnceCallback or
@@ -100,6 +101,32 @@ RepeatingCallback<void(Args...)> BindPostTask(
       &Helper::template Run<Args...>,
       std::make_unique<Helper>(std::move(task_runner), location,
                                std::move(callback)));
+}
+
+// Creates a OnceCallback or RepeatingCallback that will run the `callback` on
+// the default SequencedTaskRunner for the current sequence, i.e.
+// `SequencedTaskRunner::GetCurrentDefault()`.
+// Notes:
+// - Please prefer using `base::SequenceBound<T>` if applicable.
+// - Please consider using `base::PostTaskAndReplyWithResult()` instead where
+// appropriate.
+// - Please consider using an explicit task runner.
+// - Only use this helper as a last resort if none of the above apply.
+
+template <typename ReturnType, typename... Args>
+OnceCallback<void(Args...)> BindPostTaskToCurrentDefault(
+    OnceCallback<ReturnType(Args...)> callback,
+    const Location& location = FROM_HERE) {
+  return BindPostTask(SequencedTaskRunner::GetCurrentDefault(),
+                      std::move(callback), location);
+}
+
+template <typename ReturnType, typename... Args>
+RepeatingCallback<void(Args...)> BindPostTaskToCurrentDefault(
+    RepeatingCallback<ReturnType(Args...)> callback,
+    const Location& location = FROM_HERE) {
+  return BindPostTask(SequencedTaskRunner::GetCurrentDefault(),
+                      std::move(callback), location);
 }
 
 }  // namespace base

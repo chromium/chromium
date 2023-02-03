@@ -2650,8 +2650,7 @@ void StoragePartitionImpl::ClearDataForBuckets(
   const auto remove_buckets_done =
       base::BarrierCallback<blink::mojom::QuotaStatusCode>(
           storage_buckets.size(),
-          BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
+          BindPostTaskToCurrentDefault(
               base::BindOnce(&StoragePartitionImpl::ClearDataForBucketsDone,
                              base::Unretained(this), storage_key,
                              storage_buckets, std::move(callback))));

@@ -366,8 +366,7 @@ void TrashIOTask::SetupSubDirectory(
       FROM_HERE,
       base::BindOnce(&StartCreateDirectoryOnIOThread, file_system_context_,
                      trash_subdirectory,
-                     base::BindPostTask(
-                         base::SequencedTaskRunner::GetCurrentDefault(),
+                     base::BindPostTaskToCurrentDefault(
                          base::BindOnce(&TrashIOTask::SetDirectoryTracking,
                                         weak_ptr_factory_.GetWeakPtr(),
                                         std::move(on_setup_complete_callback),
@@ -536,11 +535,9 @@ void TrashIOTask::TrashFile(size_t source_idx,
   storage::FileSystemOperation::CopyOrMoveOptionSet options(
       storage::FileSystemOperation::CopyOrMoveOption::kPreserveLastModified);
 
-  auto complete_callback =
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         base::BindOnce(&TrashIOTask::OnMoveComplete,
-                                        weak_ptr_factory_.GetWeakPtr(),
-                                        source_idx, output_idx + 1));
+  auto complete_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &TrashIOTask::OnMoveComplete, weak_ptr_factory_.GetWeakPtr(), source_idx,
+      output_idx + 1));
 
   // For move operations that occur on the same file system, the progress
   // callback is never invoked.
@@ -562,8 +559,7 @@ void TrashIOTask::OnMoveComplete(size_t source_idx,
     LOG(ERROR) << "Failed to move the file to trash folder: " << error;
     RecordFailedTrashingMetric(
         trash::FailedTrashingUmaType::FAILED_MOVING_FILE);
-    auto complete_callback = base::BindPostTask(
-        base::SequencedTaskRunner::GetCurrentDefault(),
+    auto complete_callback = base::BindPostTaskToCurrentDefault(
         base::BindOnce(&TrashIOTask::TrashComplete,
                        weak_ptr_factory_.GetWeakPtr(), source_idx, output_idx));
 

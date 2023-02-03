@@ -97,8 +97,7 @@ base::CallbackListSubscription CertDbInitializerImpl::WaitUntilReady(
 void CertDbInitializerImpl::InitializeReadOnlyCertDb() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto init_database_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
+  auto init_database_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&CertDbInitializerImpl::OnCertDbInitializationFinished,
                      weak_factory_.GetWeakPtr()));
 
@@ -111,8 +110,7 @@ void CertDbInitializerImpl::InitializeReadOnlyCertDb() {
 }
 
 void CertDbInitializerImpl::InitializeForMainProfile() {
-  auto software_db_loaded_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
+  auto software_db_loaded_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&CertDbInitializerImpl::DidLoadSoftwareNssDb,
                      weak_factory_.GetWeakPtr()));
 
@@ -142,8 +140,7 @@ void CertDbInitializerImpl::OnCertDbInfoReceived(
     crosapi::mojom::GetCertDatabaseInfoResultPtr cert_db_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto init_database_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
+  auto init_database_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&CertDbInitializerImpl::OnCertDbInitializationFinished,
                      weak_factory_.GetWeakPtr()));
 

@@ -80,9 +80,8 @@ WebAuthenticationProxyRemoteSessionStateChangeNotifier::
         ExtensionId extension_id)
     : event_router_(event_router), extension_id_(std::move(extension_id)) {
   DCHECK(event_router_);
-  auto broadcast_event_on_change = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindRepeating(
+  auto broadcast_event_on_change =
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &WebAuthenticationProxyRemoteSessionStateChangeNotifier::
               BroadcastRemoteSessionStateChangeEvent,
           weak_ptr_factory_.GetWeakPtr()));

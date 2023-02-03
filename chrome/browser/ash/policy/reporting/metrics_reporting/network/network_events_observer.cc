@@ -154,8 +154,7 @@ void NetworkEventsObserver::CheckForSignalStrengthEvent(
       network_state->path());
   FetchWifiSignalStrengthRssi(
       base::queue<std::string>({network_state->path()}),
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         std::move(wifi_signal_rssi_cb)));
+      base::BindPostTaskToCurrentDefault(std::move(wifi_signal_rssi_cb)));
 }
 
 void NetworkEventsObserver::OnSignalStrengthChangedRssiValueReceived(

@@ -267,14 +267,11 @@ jint PlayerCompositorDelegateAndroid::RequestBitmap(
       task_runner_,
       base::BindOnce(
           &ConvertToJavaBitmap,
-          base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindOnce(
-                  &PlayerCompositorDelegateAndroid::OnJavaBitmapCallback,
-                  weak_factory_.GetWeakPtr(),
-                  ScopedJavaGlobalRef<jobject>(j_bitmap_callback),
-                  ScopedJavaGlobalRef<jobject>(j_error_callback),
-                  request_id_))));
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &PlayerCompositorDelegateAndroid::OnJavaBitmapCallback,
+              weak_factory_.GetWeakPtr(),
+              ScopedJavaGlobalRef<jobject>(j_bitmap_callback),
+              ScopedJavaGlobalRef<jobject>(j_error_callback), request_id_))));
   ++request_id_;
 
   absl::optional<base::UnguessableToken> frame_guid;

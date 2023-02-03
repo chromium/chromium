@@ -162,13 +162,10 @@ void CrowdStrikeClientImpl::GetIdentifiers(SignalsCallback callback) {
   }
 
   base::OnceCallback<void(const std::string&, SignalsCallback)>
-      json_decode_callback =
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             base::BindOnce(&CrowdStrikeClientImpl::DecodeJson,
-                                            weak_ptr_factory_.GetWeakPtr()));
+      json_decode_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &CrowdStrikeClientImpl::DecodeJson, weak_ptr_factory_.GetWeakPtr()));
 
-  SignalsCallback result_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
+  SignalsCallback result_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&CrowdStrikeClientImpl::OnSignalsRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 

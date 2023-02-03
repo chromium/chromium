@@ -19,16 +19,14 @@ template <typename... Args>
 inline base::RepeatingCallback<void(Args...)> BindToCurrentLoop(
     base::RepeatingCallback<void(Args...)> cb,
     const base::Location& location = FROM_HERE) {
-  return base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                            std::move(cb), location);
+  return base::BindPostTaskToCurrentDefault(std::move(cb), location);
 }
 
 template <typename... Args>
 inline base::OnceCallback<void(Args...)> BindToCurrentLoop(
     base::OnceCallback<void(Args...)> cb,
     const base::Location& location = FROM_HERE) {
-  return base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                            std::move(cb), location);
+  return base::BindPostTaskToCurrentDefault(std::move(cb), location);
 }
 
 }  // namespace media

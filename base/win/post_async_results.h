@@ -124,9 +124,8 @@ HRESULT PostAsyncOperationCompletedHandler(
         // capture it in an appropriate ref-counted pointer.
         return std::make_pair(async_operation, async_status);
       })
-          .Then(base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindOnce(
+          .Then(
+              base::BindPostTaskToCurrentDefault(base::BindOnce(
                   [](IAsyncOperationCompletedHandlerT<T> completed_handler,
                      AsyncResult async_result) {
                     std::move(completed_handler)

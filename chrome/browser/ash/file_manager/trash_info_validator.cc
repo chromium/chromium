@@ -142,12 +142,10 @@ void TrashInfoValidator::OnTrashedFileExists(
     return;
   }
 
-  auto complete_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&TrashInfoValidator::OnTrashInfoParsed,
-                     weak_ptr_factory_.GetWeakPtr(), trash_info_path,
-                     mount_point_path, trashed_file_location,
-                     std::move(callback)));
+  auto complete_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &TrashInfoValidator::OnTrashInfoParsed, weak_ptr_factory_.GetWeakPtr(),
+      trash_info_path, mount_point_path, trashed_file_location,
+      std::move(callback)));
 
   parser_->ParseTrashInfoFile(trash_info_path, std::move(complete_callback));
 }

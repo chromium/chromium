@@ -127,8 +127,7 @@ DownloadTaskImpl::DownloadTaskImpl(
   DCHECK(web_state_);
   DCHECK(task_runner_);
 
-  base::RepeatingClosure closure = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
+  base::RepeatingClosure closure = base::BindPostTaskToCurrentDefault(
       base::BindRepeating(&DownloadTaskImpl::OnAppWillResignActive,
                           weak_factory_.GetWeakPtr()));
 

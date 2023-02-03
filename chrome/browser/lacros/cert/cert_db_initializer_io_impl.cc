@@ -177,8 +177,7 @@ void CertDbInitializerIOImpl::InitializeNssCertDatabase(
   DCHECK(pending_public_slot_) << "LoadSoftwareNssDb() must be called first.";
   DCHECK(!nss_cert_database_);
 
-  auto load_slots_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
+  auto load_slots_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&CertDbInitializerIOImpl::DidLoadSlots,
                      weak_factory_.GetWeakPtr(), std::move(init_callback)));
 

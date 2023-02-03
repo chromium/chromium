@@ -210,9 +210,8 @@ void ZipIOTask::ZipItems(
   zip_file_creator_->SetProgressCallback(base::BindOnce(
       &ZipIOTask::OnZipProgress, weak_ptr_factory_.GetWeakPtr()));
   zip_file_creator_->SetCompletionCallback(
-      BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                   base::BindOnce(&ZipIOTask::OnZipComplete,
-                                  weak_ptr_factory_.GetWeakPtr())));
+      BindPostTaskToCurrentDefault(base::BindOnce(
+          &ZipIOTask::OnZipComplete, weak_ptr_factory_.GetWeakPtr())));
   zip_file_creator_->Start(LaunchFileUtilService());
 }
 

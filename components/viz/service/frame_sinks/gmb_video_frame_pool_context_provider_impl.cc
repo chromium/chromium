@@ -30,8 +30,7 @@ class GmbVideoFramePoolContext
       : gpu_service_(gpu_service),
         gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
         on_context_lost_(
-            base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                               std::move(on_context_lost))) {
+            base::BindPostTaskToCurrentDefault(std::move(on_context_lost))) {
     DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
 
     // TODO(vikassoni): Verify this is the right GPU thread/sequence for DrDC.

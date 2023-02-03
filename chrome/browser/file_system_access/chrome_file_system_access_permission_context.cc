@@ -1317,8 +1317,8 @@ void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
   }
 
   if (should_block) {
-    auto result_callback = base::BindPostTask(
-        base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
+    auto result_callback =
+        base::BindPostTaskToCurrentDefault(std::move(callback));
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread,
@@ -1332,8 +1332,8 @@ void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
   if (handle_type == HandleType::kFile && user_action == UserAction::kSave &&
       FileHasDangerousExtension(origin, path,
                                 Profile::FromBrowserContext(profile_))) {
-    auto result_callback = base::BindPostTask(
-        base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
+    auto result_callback =
+        base::BindPostTaskToCurrentDefault(std::move(callback));
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&ShowFileSystemAccessDangerousFileDialogOnUIThread,

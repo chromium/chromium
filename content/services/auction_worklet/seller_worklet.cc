@@ -1335,8 +1335,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
   // won't happen if it gets cancelled. To deal with that, a ScopedClosureRunner
   // is passed to ask for `task` to get cleaned up in case the V8State::ScoreAd
   // closure gets destroyed without running.
-  base::OnceClosure cleanup_score_ad_task = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
+  base::OnceClosure cleanup_score_ad_task = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&SellerWorklet::CleanUpScoreAdTaskOnUserThread,
                      weak_ptr_factory_.GetWeakPtr(), task));
 

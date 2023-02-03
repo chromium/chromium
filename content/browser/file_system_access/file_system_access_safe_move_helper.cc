@@ -189,8 +189,8 @@ void FileSystemAccessSafeMoveHelper::ComputeHashForSourceFile(
     return;
   }
 
-  auto wrapped_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
+  auto wrapped_callback =
+      base::BindPostTaskToCurrentDefault(std::move(callback));
   manager_->operation_runner().PostTaskWithThisObject(
       base::BindOnce(&HashCalculator::CreateAndStart,
                      base::WrapRefCounted(manager_->context()),

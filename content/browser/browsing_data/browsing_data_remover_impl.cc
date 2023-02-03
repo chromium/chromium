@@ -220,8 +220,7 @@ void BrowsingDataRemoverImpl::RemoveStorageBucketsAndReply(
   DCHECK(callback);
   GetStoragePartition()->ClearDataForBuckets(
       storage_key, storage_buckets,
-      base::BindPostTask(
-          base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindPostTaskToCurrentDefault(
           base::BindOnce(&BrowsingDataRemoverImpl::DidRemoveStorageBuckets,
                          GetWeakPtr(), std::move(callback))));
 }

@@ -727,6 +727,7 @@ _CONFIG = [
         'disallowed': [
             ('base::Bind(|Once|Repeating)',
              'Use WTF::Bind or WTF::BindRepeating.'),
+            'base::BindPostTaskToCurrentDefault',
             _DISALLOW_NON_BLINK_MOJOM,
         ],
         # These task runners are generally banned in blink to ensure
@@ -734,7 +735,7 @@ _CONFIG = [
         # //third_party/blink/renderer/platform/scheduler/TaskSchedulingInBlink.md
         # for more.
         'inclass_disallowed': [
-            'base::(SingleThread|Sequenced)TaskRunner::(GetCurrentDefault|CurrentDefaultHandle)',
+            'base::(SingleThread|Sequenced)TaskRunner::(GetCurrentDefault|CurrentDefaultHandle)'
         ],
     },
     {

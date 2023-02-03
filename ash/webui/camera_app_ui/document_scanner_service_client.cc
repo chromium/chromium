@@ -163,11 +163,9 @@ void DocumentScannerServiceClient::LoadDocumentScanner() {
     LoadDocumentScannerInternal(kLibDocumentScannerDefaultDir);
   } else if (IsEnabledOnDlc()) {
     DocumentScannerInstaller::GetInstance()->RegisterLibraryPathCallback(
-        base::BindPostTask(
-            base::SequencedTaskRunner::GetCurrentDefault(),
-            base::BindOnce(
-                &DocumentScannerServiceClient::LoadDocumentScannerInternal,
-                weak_ptr_factory_.GetWeakPtr())));
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &DocumentScannerServiceClient::LoadDocumentScannerInternal,
+            weak_ptr_factory_.GetWeakPtr())));
   }
 }
 

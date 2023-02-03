@@ -674,8 +674,7 @@ void FileSystemOperationRunner::DidOpenFile(
   if (on_close_callback) {
     // Wrap `on_close_callback` to ensure it always runs, and on the IO thread.
     scoped_on_close_callback = base::ScopedClosureRunner(
-        base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                           std::move(on_close_callback)));
+        base::BindPostTaskToCurrentDefault(std::move(on_close_callback)));
   }
 
   std::move(callback).Run(std::move(file), std::move(scoped_on_close_callback));

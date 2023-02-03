@@ -33,8 +33,7 @@ void CollectorBase::Collect(bool is_event_driven) {
       base::BindOnce(&CollectorBase::OnMetricDataCollected,
                      weak_ptr_factory_.GetWeakPtr(), is_event_driven);
   sampler_->MaybeCollect(
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         std::move(on_collected_cb)));
+      base::BindPostTaskToCurrentDefault(std::move(on_collected_cb)));
 }
 
 void CollectorBase::CheckOnSequence() const {
