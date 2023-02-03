@@ -128,12 +128,14 @@ void RasterSource::PlaybackDisplayListToCanvas(
 }
 
 bool RasterSource::PerformSolidColorAnalysis(gfx::Rect layer_rect,
-                                             SkColor4f* color) const {
+                                             SkColor4f* color,
+                                             int max_ops_to_analyze) const {
   TRACE_EVENT0("cc", "RasterSource::PerformSolidColorAnalysis");
 
   layer_rect.Intersect(gfx::Rect(size_));
   layer_rect = gfx::ScaleToRoundedRect(layer_rect, recording_scale_factor_);
-  return display_list_->GetColorIfSolidInRect(layer_rect, color);
+  return display_list_->GetColorIfSolidInRect(layer_rect, color,
+                                              max_ops_to_analyze);
 }
 
 void RasterSource::GetDiscardableImagesInRect(
