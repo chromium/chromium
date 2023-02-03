@@ -1,4 +1,16 @@
 <style>
+  :host {
+    --personalization-app-avatar-image-size: 64px;
+    --personalization-app-avatar-image-padding: 8px;
+    --personalization-app-avatar-ripple-color: rgba(var(--cros-ripple-color-prominent-rgb), 1);
+    --personalization-app-avatar-ripple-opacity: var(--cros-button-primary-ripple-opacity);
+  }
+  :host-context(body.jelly-enabled) {
+    --personalization-app-avatar-image-size: 72px;
+    --personalization-app-avatar-image-padding: 10px;
+    --personalization-app-avatar-ripple-color: var(--cros-sys-ripple_primary);
+    --personalization-app-avatar-ripple-opacity: 100%;
+  }
   iron-list {
     height: 100%;
     width: 100%;
@@ -7,32 +19,28 @@
     display: none;
   }
   .option-container {
-    height: 80px;
-    padding: 8px;
-    width: 80px;
+    padding: var(--personalization-app-avatar-image-padding);
   }
   .image-container {
     background-color: var(--personalization-app-grid-item-background-color);
     border-radius: 50%;
     cursor: pointer;
-    height: 64px;
     position: relative;
-    width: 64px;
   }
   .image-container:hover {
     filter: brightness(0.94);
   }
   .image-border-container {
-    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 50%;
-    height: 62px;
-    width: 62px;
+    height: var(--personalization-app-avatar-image-size);
+    outline: 1px solid rgba(0, 0, 0, 0.08);
+    width: var(--personalization-app-avatar-image-size);
   }
   .image-container img {
-    background-size: 62px 62px;
+    background-size: var(--personalization-app-avatar-image-size) var(--personalization-app-avatar-image-size);
     border-radius: 50%;
-    height: 62px;
-    width: 62px;
+    height: var(--personalization-app-avatar-image-size);
+    width: var(--personalization-app-avatar-image-size);
   }
   paper-ripple {
     color: rgba(var(--cros-ripple-color-rgb), 1);
@@ -46,26 +54,24 @@
     top: 0;
   }
   .avatar-button-container {
-    background-color: var(--cros-highlight-color);
+    background-color: var(--cros-sys-primary_container, var(--cros-highlight-color));
     border-radius: 100%;
     cursor: pointer;
     display: inline-block;
-    height: 64px;
-    line-height: 64px;
+    line-height: var(--personalization-app-avatar-image-size);
     position: relative;
     text-align: center;
     vertical-align: middle;
-    width: 64px;
   }
   .avatar-button-container:hover {
-    background-color: var(--cros-text-highlight-color);
+    background-color: var(--cros-sys-highlight_text, var(--cros-text-highlight-color));
   }
   .avatar-button-container:focus-visible {
     outline: 2px solid var(--cros-focus-ring-color);
   }
   .avatar-button-container paper-ripple {
-    color: rgba(var(--cros-ripple-color-prominent-rgb), 1);
-    --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
+    color: var(--personalization-app-avatar-ripple-color);
+    --paper-ripple-opacity: var(--personalization-app-avatar-ripple-opacity);
   }
   .avatar-button-container iron-icon {
     line-height: inherit;
