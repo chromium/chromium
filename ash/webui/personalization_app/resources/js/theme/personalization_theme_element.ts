@@ -18,7 +18,7 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {isJellyEnabled} from '../load_time_booleans.js';
+import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isSelectionEvent} from '../utils.js';
 
@@ -54,10 +54,10 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
         type: Boolean,
         value: null,
       },
-      isJellyEnabled_: {
+      isPersonalizationJellyEnabled_: {
         type: Boolean,
         value() {
-          return isJellyEnabled();
+          return isPersonalizationJellyEnabled();
         },
       },
 

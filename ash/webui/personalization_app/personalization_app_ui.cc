@@ -375,8 +375,6 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
       features::IsRgbKeyboardEnabled() &&
           Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported());
 
-  source->AddBoolean("isJellyEnabled", features::IsJellyEnabled());
-
   source->AddBoolean("isScreenSaverPreviewEnabled",
                      features::IsScreenSaverPreviewEnabled());
 

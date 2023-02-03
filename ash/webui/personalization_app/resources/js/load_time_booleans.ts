@@ -31,10 +31,6 @@ export function isRgbKeyboardSupported() {
   return loadTimeData.getBoolean('isRgbKeyboardSupported');
 }
 
-export function isJellyEnabled() {
-  return loadTimeData.getBoolean('isJellyEnabled');
-}
-
 export function isScreenSaverPreviewEnabled() {
   return loadTimeData.getBoolean('isScreenSaverPreviewEnabled');
 }
