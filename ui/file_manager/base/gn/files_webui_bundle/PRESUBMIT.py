@@ -19,6 +19,11 @@ def RunFilesWebUiBundleTests(input_api, output_api):
   presubmit_path = input_api.PresubmitLocalPath()
   sources = ['files_webui_bundle_test.py']
   tests = [input_api.os_path.join(presubmit_path, s) for s in sources]
+
+  # Files App is ChromeOS only and this test does not work on Windows.
+  if input_api.platform.startswith(('cygwin', 'win32')):
+    return []
+
   return input_api.canned_checks.RunUnitTests(
       input_api, output_api, tests, run_on_python2=False)
 
