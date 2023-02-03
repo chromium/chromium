@@ -14,6 +14,8 @@ namespace internal {
 // Expose metrics for tests.
 extern const char kHistogramCacheTransparencyFirstContentfulPaint[];
 extern const char kHistogramCacheTransparencyLargestContentfulPaint[];
+extern const char kHistogramCacheTransparencyInteractionToNextPaint[];
+extern const char kHistogramCacheTransparencyCumulativeLayoutShift[];
 
 }  // namespace internal
 

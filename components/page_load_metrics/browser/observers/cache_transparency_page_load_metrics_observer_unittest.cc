@@ -12,6 +12,11 @@
 #include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
+using UserInteractionLatencies =
+    page_load_metrics::mojom::UserInteractionLatencies;
+using UserInteractionLatency = page_load_metrics::mojom::UserInteractionLatency;
+using UserInteractionType = page_load_metrics::mojom::UserInteractionType;
+
 namespace {
 
 constexpr char kExampleUrl[] = "http://www.example.com/";
@@ -66,6 +71,8 @@ TEST_F(CacheTransparencyPageLoadMetricsObserverTest,
       internal::kHistogramCacheTransparencyFirstContentfulPaint, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramCacheTransparencyLargestContentfulPaint, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramCacheTransparencyCumulativeLayoutShift, 1);
 }
 
 TEST_F(CacheTransparencyPageLoadMetricsObserverTest,
@@ -73,8 +80,22 @@ TEST_F(CacheTransparencyPageLoadMetricsObserverTest,
   page_load_metrics::mojom::PageLoadTiming timing;
   InitializeTestPageLoadTiming(&timing);
 
+  page_load_metrics::mojom::InputTiming input_timing;
+  input_timing.num_interactions = 3;
+  input_timing.max_event_durations =
+      UserInteractionLatencies::NewUserInteractionLatencies({});
+  auto& max_event_durations =
+      input_timing.max_event_durations->get_user_interaction_latencies();
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(50), UserInteractionType::kKeyboard));
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(100), UserInteractionType::kTapOrClick));
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(150), UserInteractionType::kDrag));
+
   NavigateAndCommit(GURL(kExampleUrl));
   tester()->SimulateTimingUpdate(timing);
+  tester()->SimulateInputTimingUpdate(input_timing);
 
   // Navigate again to force logging.
   tester()->NavigateToUntrackedUrl();
@@ -84,4 +105,43 @@ TEST_F(CacheTransparencyPageLoadMetricsObserverTest,
       internal::kHistogramCacheTransparencyFirstContentfulPaint, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramCacheTransparencyLargestContentfulPaint, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramCacheTransparencyInteractionToNextPaint, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramCacheTransparencyCumulativeLayoutShift, 0);
+}
+
+TEST_F(CacheTransparencyPageLoadMetricsObserverTest,
+       NormalizedResponsivenessMetrics) {
+  base::test::ScopedFeatureList feature_list;
+  std::string pervasive_payloads_params =
+      "1,http://127.0.0.1:4353/pervasive.js,"
+      "2478392C652868C0AAF0316A28284610DBDACF02D66A00B39F3BA75D887F4829";
+  feature_list.InitWithFeaturesAndParameters(
+      {{network::features::kPervasivePayloadsList,
+        {{"pervasive-payloads", pervasive_payloads_params}}},
+       {network::features::kCacheTransparency, {}}},
+      {/* disabled_features */});
+
+  page_load_metrics::mojom::InputTiming input_timing;
+  input_timing.num_interactions = 3;
+  input_timing.max_event_durations =
+      UserInteractionLatencies::NewUserInteractionLatencies({});
+  auto& max_event_durations =
+      input_timing.max_event_durations->get_user_interaction_latencies();
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(50), UserInteractionType::kKeyboard));
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(100), UserInteractionType::kTapOrClick));
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(150), UserInteractionType::kDrag));
+
+  NavigateAndCommit(GURL(kExampleUrl));
+  tester()->SimulateInputTimingUpdate(input_timing);
+
+  // Navigate again to force logging.
+  tester()->NavigateToUntrackedUrl();
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramCacheTransparencyInteractionToNextPaint, 1);
 }
