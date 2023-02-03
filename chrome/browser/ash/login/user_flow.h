@@ -35,6 +35,9 @@ class DefaultUserFlow : public UserFlow {
 };
 
 // UserFlow stub for non-regular flows.
+// TODO(b/227674947): ExtendedUserFlow can be removed and the UserFlow hierarchy
+// can be consolidated now that sign in with Smart Lock is deprecated. The only
+// non-standard user login flow, EasyUnlockUserLoginFlow, no longer exists.
 class ExtendedUserFlow : public UserFlow {
  public:
   explicit ExtendedUserFlow(const AccountId& account_id);

@@ -103,6 +103,7 @@ class SmartLockMetricsRecorder {
   static void RecordAuthResultUnlockFailure(
       SmartLockAuthResultFailureReason failure_reason);
 
+  // TODO(b/227674947): Remove deprecated SignIn methods.
   static void RecordAuthResultSignInSuccess(bool success = true);
   static void RecordAuthResultSignInFailure(
       SmartLockAuthResultFailureReason failure_reason);

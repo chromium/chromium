@@ -306,27 +306,6 @@ const base::Value::List* EasyUnlockServiceRegular::GetRemoteDevices() const {
   return pairing_dict.FindList(kKeyDevices);
 }
 
-std::string EasyUnlockServiceRegular::GetChallenge() const {
-  NOTREACHED();
-  return std::string();
-}
-
-std::string EasyUnlockServiceRegular::GetWrappedSecret() const {
-  NOTREACHED();
-  return std::string();
-}
-
-void EasyUnlockServiceRegular::RecordEasySignInOutcome(
-    const AccountId& account_id,
-    bool success) const {
-  NOTREACHED();
-}
-
-void EasyUnlockServiceRegular::RecordPasswordLoginEvent(
-    const AccountId& account_id) const {
-  NOTREACHED();
-}
-
 void EasyUnlockServiceRegular::InitializeInternal() {
   pref_manager_ =
       std::make_unique<proximity_auth::ProximityAuthProfilePrefManager>(

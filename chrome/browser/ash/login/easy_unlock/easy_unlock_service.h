@@ -50,6 +50,8 @@ class SecureChannelClient;
 class EasyUnlockService : public KeyedService,
                           public proximity_auth::ScreenlockBridge::Observer {
  public:
+  // TODO(b/227674947): Delete this enum now that sign in with Smart Lock is
+  // deprecated.
   enum Type { TYPE_REGULAR, TYPE_SIGNIN };
 
   // Gets EasyUnlockService instance.
@@ -86,23 +88,6 @@ class EasyUnlockService : public KeyedService,
   //   * If in regular context, device list is retrieved from prefs.
   //   * If in sign-in context, device list is retrieved from TPM.
   virtual const base::Value::List* GetRemoteDevices() const = 0;
-
-  // Gets the challenge bytes for the user currently associated with the
-  // service.
-  virtual std::string GetChallenge() const = 0;
-
-  // Retrieved wrapped secret that should be used to unlock cryptohome for the
-  // user currently associated with the service. If the service does not support
-  // signin (i.e. service for a regular profile) or there is no secret available
-  // for the user, returns an empty string.
-  virtual std::string GetWrappedSecret() const = 0;
-
-  // Records metrics for Easy sign-in outcome for the given user.
-  virtual void RecordEasySignInOutcome(const AccountId& account_id,
-                                       bool success) const = 0;
-
-  // Records metrics for password based flow for the given user.
-  virtual void RecordPasswordLoginEvent(const AccountId& account_id) const = 0;
 
   // Sets the service up and schedules service initialization.
   void Initialize();
@@ -158,16 +143,13 @@ class EasyUnlockService : public KeyedService,
   // exists.
   void FinalizeUnlock(bool success);
 
-  // Finalizes previously started auth attempt for easy signin. If called on
-  // regular profile service, it will cancel the current auth attempt if one
-  // exists.
-  void FinalizeSignin(const std::string& secret);
-
   // Handles Easy Unlock auth failure for the user.
   void HandleAuthFailure(const AccountId& account_id);
 
   // Checks the consistency between pairing data and cryptohome keys. Set
   // hardlock state if the two do not match.
+  // TODO(b/227674947): Delete this method now that sign in with Smart Lock is
+  // deprecated.
   void CheckCryptohomeKeysAndMaybeHardlock();
 
   ChromeProximityAuthClient* proximity_auth_client() {

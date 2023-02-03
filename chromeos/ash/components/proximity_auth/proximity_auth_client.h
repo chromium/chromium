@@ -22,7 +22,7 @@ class ProximityAuthClient {
  public:
   virtual ~ProximityAuthClient() {}
 
-  // Updates the user pod on the signin or lock screen to reflect the provided
+  // Updates the user pod on the lock screen to reflect the provided
   // Smart Lock state.
   virtual void UpdateSmartLockState(ash::SmartLockState state) = 0;
 
@@ -31,15 +31,12 @@ class ProximityAuthClient {
   // attempt must be in progress before calling this function.
   virtual void FinalizeUnlock(bool success) = 0;
 
-  // Finalizes a sign-in attempt initiated by the user. If |secret| is valid,
-  // the user is signed in; otherwise, the auth attempt is rejected. An auth
-  // attempt must be in progress before calling this function.
-  virtual void FinalizeSignin(const std::string& secret) = 0;
-
   // Gets the wrapped challenge for the given |user_id| and |remote_public_key|
   // of the user's remote device. The challenge binds to the secure channel
   // using |channel_binding_data|.
   // |callback| will be invoked when the challenge is acquired.
+  // TODO(b/227674947): Delete this method now that sign in with Smart Lock is
+  // deprecated.
   virtual void GetChallengeForUserAndDevice(
       const std::string& user_email,
       const std::string& remote_public_key,

@@ -153,9 +153,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
                                        base::OnceClosure success_callback,
                                        base::OnceClosure failure_callback) = 0;
 
-  // Set up sign-in flow for Easy Unlock.
-  virtual void SetupEasyUnlockUserFlow(const AccountId& account_id) = 0;
-
   // Run policy check for |account_id|. If something is wrong, delegate's
   // PolicyLoadFailed is called.
   virtual bool CheckPolicyForUser(const AccountId& account_id) = 0;

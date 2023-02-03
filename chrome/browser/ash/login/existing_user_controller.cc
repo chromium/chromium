@@ -42,7 +42,6 @@
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
@@ -192,23 +191,6 @@ void TransferHttpAuthCaches() {
           ->GetNetworkContext();
   default_network_context->SaveHttpAuthCacheProxyEntries(base::BindOnce(
       &TransferHttpAuthCacheToSystemNetworkContext, completion_callback));
-}
-
-// Record UMA for password login of regular user when Signin with Smart Lock is
-// enabled. Excludes signins in the multi-signin context; only records for the
-// signin screen context.
-void RecordPasswordLoginEvent(const UserContext& user_context) {
-  // If a user is already logged in, this is a multi-signin attempt. Disregard.
-  if (session_manager::SessionManager::Get()->IsInSecondaryLoginScreen())
-    return;
-
-  EasyUnlockService* easy_unlock_service =
-      EasyUnlockService::Get(ProfileHelper::GetSigninProfile());
-  if (user_context.GetUserType() == user_manager::USER_TYPE_REGULAR &&
-      user_context.GetAuthFlow() == UserContext::AUTH_FLOW_OFFLINE &&
-      easy_unlock_service) {
-    easy_unlock_service->RecordPasswordLoginEvent(user_context.GetAccountId());
-  }
 }
 
 bool IsUpdateRequiredDeadlineReached() {
@@ -657,7 +639,6 @@ void ExistingUserController::PerformLogin(
   new_user_context.SetIsForcingDircrypto(
       ShouldForceDircrypto(new_user_context.GetAccountId()));
   login_performer_->PerformLogin(new_user_context, auth_mode);
-  RecordPasswordLoginEvent(new_user_context);
   SendAccessibilityAlert(
       l10n_util::GetStringUTF8(IDS_CHROMEOS_ACC_LOGIN_SIGNING_IN));
   if (timer_init_) {

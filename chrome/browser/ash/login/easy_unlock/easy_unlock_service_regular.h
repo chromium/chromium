@@ -81,11 +81,6 @@ class EasyUnlockServiceRegular
   EasyUnlockService::Type GetType() const override;
   AccountId GetAccountId() const override;
   const base::Value::List* GetRemoteDevices() const override;
-  std::string GetChallenge() const override;
-  std::string GetWrappedSecret() const override;
-  void RecordEasySignInOutcome(const AccountId& account_id,
-                               bool success) const override;
-  void RecordPasswordLoginEvent(const AccountId& account_id) const override;
   void InitializeInternal() override;
   void ShutdownInternal() override;
   bool IsAllowedInternal() const override;

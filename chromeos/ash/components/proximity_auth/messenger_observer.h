@@ -25,6 +25,8 @@ class MessengerObserver {
   // Called when a response to a 'decrypt_request' is received, with the
   // |decrypted_bytes| that were returned by the remote device. An empty string
   // indicates failure.
+  // TODO(b/227674947): Delete this method since it is only used for deprecated
+  // sign in with Smart Lock.
   virtual void OnDecryptResponse(const std::string& decrypted_bytes) {}
 
   // Called when a response to a 'unlock_request' is received.

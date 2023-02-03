@@ -26,7 +26,6 @@ class ChromeProximityAuthClient : public proximity_auth::ProximityAuthClient {
   // proximity_auth::ProximityAuthClient:
   void UpdateSmartLockState(SmartLockState state) override;
   void FinalizeUnlock(bool success) override;
-  void FinalizeSignin(const std::string& secret) override;
   void GetChallengeForUserAndDevice(
       const std::string& user_email,
       const std::string& remote_public_key,

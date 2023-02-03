@@ -94,9 +94,6 @@ class UserSelectionScreen
   ScreenType GetScreenType() const override;
 
   void Unlock(const AccountId& account_id) override;
-  void AttemptEasySignin(const AccountId& account_id,
-                         const std::string& secret,
-                         const std::string& key_label) override;
 
   // session_manager::SessionManagerObserver
   void OnSessionStateChanged() override;

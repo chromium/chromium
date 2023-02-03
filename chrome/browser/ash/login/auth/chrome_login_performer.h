@@ -61,8 +61,6 @@ class ChromeLoginPerformer : public LoginPerformer {
                                base::OnceClosure success_callback,
                                base::OnceClosure failure_callback) override;
 
-  void SetupEasyUnlockUserFlow(const AccountId& account_id) override;
-
   scoped_refptr<Authenticator> CreateAuthenticator() override;
   bool CheckPolicyForUser(const AccountId& account_id) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetSigninURLLoaderFactory()

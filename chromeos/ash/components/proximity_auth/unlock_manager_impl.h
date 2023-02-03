@@ -146,6 +146,8 @@ class UnlockManagerImpl : public UnlockManager,
 
   // Called when auth is attempted to send the sign-in challenge to the remote
   // device for decryption.
+  // TODO(b/227674947): This method can be removed now that sign in with Smart
+  // Lock is deprecated.
   void SendSignInChallenge();
 
   // Once the connection metadata is received from a ClientChannel, its channel
@@ -218,6 +220,8 @@ class UnlockManagerImpl : public UnlockManager,
       GetRemoteStatusResultFailureReason reason);
 
   // Whether |this| manager is being used for sign-in or session unlock.
+  // TODO(b/227674947): |screenlock_type_| and related methods can be removed
+  // now that sign in with Smart Lock is deprecated.
   const ProximityAuthSystem::ScreenlockType screenlock_type_;
 
   // Used to call into the embedder. Expected to outlive |this| instance.

@@ -138,11 +138,6 @@ class ScreenlockBridge {
     // Unlocks from easy unlock app for a user.
     virtual void Unlock(const AccountId& account_id) = 0;
 
-    // Attempts to login the user using an easy unlock key.
-    virtual void AttemptEasySignin(const AccountId& account_id,
-                                   const std::string& secret,
-                                   const std::string& key_label) = 0;
-
    protected:
     virtual ~LockHandler() {}
   };

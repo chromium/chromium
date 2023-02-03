@@ -149,6 +149,8 @@ std::string GetHistogramStatusSuffix(bool unlockable) {
   return unlockable ? "Unlockable" : "Other";
 }
 
+// TODO(b/227674947): Delete this method now that sign in with Smart Lock is
+// deprecated.
 std::string GetHistogramScreenLockTypeName(
     ProximityAuthSystem::ScreenlockType screenlock_type) {
   return screenlock_type == ProximityAuthSystem::SESSION_LOCK ? "Unlock"
@@ -810,14 +812,11 @@ void UnlockManagerImpl::FinalizeAuthAttempt(
     proximity_monitor_->RecordProximityMetricsOnAuthSuccess();
 
   is_attempting_auth_ = false;
-  if (screenlock_type_ == ProximityAuthSystem::SIGN_IN) {
-    PA_LOG(VERBOSE) << "Finalizing sign-in...";
-    proximity_auth_client_->FinalizeSignin(
-        should_accept && sign_in_secret_ ? *sign_in_secret_ : std::string());
-  } else {
-    PA_LOG(VERBOSE) << "Finalizing unlock...";
-    proximity_auth_client_->FinalizeUnlock(should_accept);
-  }
+  // TODO(b/227674947): Remove the ProximityAuthSystem::SIGN_IN type and this
+  // DCHECK shouldn't be necessary.
+  DCHECK_EQ(ProximityAuthSystem::SESSION_LOCK, screenlock_type_);
+  PA_LOG(VERBOSE) << "Finalizing unlock...";
+  proximity_auth_client_->FinalizeUnlock(should_accept);
 }
 
 UnlockManagerImpl::RemoteScreenlockState

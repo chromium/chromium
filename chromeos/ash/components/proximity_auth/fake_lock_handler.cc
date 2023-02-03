@@ -50,10 +50,6 @@ void FakeLockHandler::Unlock(const AccountId& account_id) {
   unlock_called_++;
 }
 
-void FakeLockHandler::AttemptEasySignin(const AccountId& account_id,
-                                        const std::string& secret,
-                                        const std::string& key_label) {}
-
 void FakeLockHandler::ClearSmartLockState() {
   smart_lock_state_.reset();
 }

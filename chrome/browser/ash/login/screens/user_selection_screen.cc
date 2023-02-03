@@ -50,7 +50,6 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -784,30 +783,6 @@ void UserSelectionScreen::EnableInput() {
 void UserSelectionScreen::Unlock(const AccountId& account_id) {
   DCHECK_EQ(GetScreenType(), LOCK_SCREEN);
   ScreenLocker::Hide();
-}
-
-void UserSelectionScreen::AttemptEasySignin(const AccountId& account_id,
-                                            const std::string& secret,
-                                            const std::string& key_label) {
-  DCHECK_EQ(GetScreenType(), SIGNIN_SCREEN);
-
-  const user_manager::User* const user =
-      user_manager::UserManager::Get()->FindUser(account_id);
-  DCHECK(user);
-  UserContext user_context(*user);
-  user_context.SetAuthFlow(UserContext::AUTH_FLOW_EASY_UNLOCK);
-  user_context.SetKey(Key(secret));
-  user_context.GetKey()->SetLabel(key_label);
-
-  // LoginDisplayHost does not exist in views-based lock screen.
-  if (LoginDisplayHost::default_host()) {
-    LoginDisplayHost::default_host()->GetLoginDisplay()->delegate()->Login(
-        user_context, SigninSpecifics());
-  } else {
-    SmartLockMetricsRecorder::RecordAuthResultSignInFailure(
-        SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
-            kLoginDisplayHostDoesNotExist);
-  }
 }
 
 void UserSelectionScreen::OnSessionStateChanged() {

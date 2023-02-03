@@ -45,8 +45,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
     AUTH_FLOW_GAIA_WITH_SAML,
     // Offline authentication against a cached key.
     AUTH_FLOW_OFFLINE,
-    // Offline authentication using and Easy unlock device (e.g. a phone).
-    AUTH_FLOW_EASY_UNLOCK,
     // Authentication against Active Directory server.
     AUTH_FLOW_ACTIVE_DIRECTORY,
   };

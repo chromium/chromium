@@ -7,10 +7,8 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_user_login_flow.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -126,12 +124,6 @@ void ChromeLoginPerformer::RunOnlineAllowlistCheck(
 
 scoped_refptr<Authenticator> ChromeLoginPerformer::CreateAuthenticator() {
   return UserSessionManager::GetInstance()->CreateAuthenticator(this);
-}
-
-void ChromeLoginPerformer::SetupEasyUnlockUserFlow(
-    const AccountId& account_id) {
-  ChromeUserManager::Get()->SetUserFlow(
-      account_id, new EasyUnlockUserLoginFlow(account_id));
 }
 
 bool ChromeLoginPerformer::CheckPolicyForUser(const AccountId& account_id) {

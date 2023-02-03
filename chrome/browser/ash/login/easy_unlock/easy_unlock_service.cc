@@ -428,36 +428,6 @@ void EasyUnlockService::FinalizeUnlock(bool success) {
   }
 }
 
-void EasyUnlockService::FinalizeSignin(const std::string& key) {
-  if (!auth_attempt_)
-    return;
-
-  std::string wrapped_secret = GetWrappedSecret();
-  if (!wrapped_secret.empty())
-    auth_attempt_->FinalizeSignin(GetAccountId(), wrapped_secret, key);
-
-  // If successful, allow |auth_attempt_| to continue until
-  // UpdateSmartLockState() is called (indicating sign in).
-
-  // Processing empty key is equivalent to auth cancellation. In this case the
-  // signin request will not actually be processed by login stack, so the lock
-  // screen state should be set from here.
-  bool success = !key.empty();
-
-  if (success) {
-    set_will_authenticate_using_easy_unlock(true);
-  } else {
-    auth_attempt_.reset();
-    if (!base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
-      HandleAuthFailure(GetAccountId());
-    }
-  }
-
-  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
-    NotifySmartLockAuthResult(success);
-  }
-}
-
 void EasyUnlockService::HandleAuthFailure(const AccountId& account_id) {
   if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
     NotifySmartLockAuthResult(/*success=*/false);

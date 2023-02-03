@@ -43,10 +43,6 @@ namespace {
 
 using SmartLockState = ash::SmartLockState;
 
-// The sign-in challenge to send to the remote device.
-const char kChallenge[] = "sign-in challenge";
-const char kSignInSecret[] = "decrypted challenge";
-
 // Note that the trust agent state is currently ignored by the UnlockManager
 // implementation.
 RemoteStatusUpdate kRemoteScreenUnlocked = {
@@ -112,7 +108,6 @@ class TestUnlockManager : public UnlockManagerImpl {
 
   ~TestUnlockManager() override {}
 
-  using MessengerObserver::OnDecryptResponse;
   using MessengerObserver::OnDisconnected;
   using MessengerObserver::OnRemoteStatusUpdate;
   using MessengerObserver::OnUnlockEventSent;
@@ -256,18 +251,6 @@ TEST_F(ProximityAuthUnlockManagerImplTest,
   unlock_manager_->SetRemoteDeviceLifeCycle(&life_cycle_);
   life_cycle_.ChangeState(
       RemoteDeviceLifeCycle::State::SECURE_CHANNEL_ESTABLISHED);
-  unlock_manager_->OnRemoteStatusUpdate(kRemoteScreenUnlocked);
-
-  EXPECT_TRUE(unlock_manager_->IsUnlockAllowed());
-}
-
-TEST_F(ProximityAuthUnlockManagerImplTest, IsUnlockAllowed_SignIn_AllGood) {
-  CreateUnlockManager(ProximityAuthSystem::SIGN_IN);
-  unlock_manager_->SetRemoteDeviceLifeCycle(&life_cycle_);
-
-  life_cycle_.ChangeState(
-      RemoteDeviceLifeCycle::State::SECURE_CHANNEL_ESTABLISHED);
-
   unlock_manager_->OnRemoteStatusUpdate(kRemoteScreenUnlocked);
 
   EXPECT_TRUE(unlock_manager_->IsUnlockAllowed());
@@ -742,7 +725,6 @@ TEST_F(ProximityAuthUnlockManagerImplTest,
   SimulateUserPresentState();
 
   EXPECT_CALL(proximity_auth_client_, FinalizeUnlock(_)).Times(0);
-  unlock_manager_.get()->OnDecryptResponse(kSignInSecret);
 }
 
 TEST_F(ProximityAuthUnlockManagerImplTest,
@@ -868,38 +850,6 @@ TEST_F(ProximityAuthUnlockManagerImplTest,
   unlock_manager_->OnUnlockResponse(true);
 
   EXPECT_CALL(proximity_auth_client_, FinalizeUnlock(true));
-  unlock_manager_->OnUnlockEventSent(true);
-}
-
-TEST_F(ProximityAuthUnlockManagerImplTest, OnAuthAttempted_SignIn_Success) {
-  CreateUnlockManager(ProximityAuthSystem::SIGN_IN);
-  SimulateUserPresentState();
-
-  std::string channel_binding_data = "channel binding data";
-
-  EXPECT_CALL(proximity_auth_client_,
-              GetChallengeForUserAndDevice(remote_device_.user_email(),
-                                           remote_device_.public_key(),
-                                           channel_binding_data, _))
-      .WillOnce(base::test::RunOnceCallback<3>(kChallenge));
-
-  EXPECT_CALL(messenger_, RequestDecryption(kChallenge));
-  unlock_manager_->OnAuthAttempted(mojom::AuthType::USER_CLICK);
-
-  std::vector<ash::secure_channel::mojom::ConnectionCreationDetail>
-      creation_details{ash::secure_channel::mojom::ConnectionCreationDetail::
-                           REMOTE_DEVICE_USED_BACKGROUND_BLE_ADVERTISING};
-  ash::secure_channel::mojom::ConnectionMetadataPtr connection_metadata_ptr =
-      ash::secure_channel::mojom::ConnectionMetadata::New(
-          creation_details, nullptr /* bluetooth_connection_metadata */,
-          channel_binding_data);
-  fake_client_channel_->InvokePendingGetConnectionMetadataCallback(
-      std::move(connection_metadata_ptr));
-
-  EXPECT_CALL(messenger_, DispatchUnlockEvent());
-  unlock_manager_->OnDecryptResponse(kSignInSecret);
-
-  EXPECT_CALL(proximity_auth_client_, FinalizeSignin(kSignInSecret));
   unlock_manager_->OnUnlockEventSent(true);
 }
 

@@ -41,14 +41,6 @@ void ChromeProximityAuthClient::FinalizeUnlock(bool success) {
 
 // TODO(b/227674947): Remove this method now that sign in with Smart Lock is
 // deprecated
-void ChromeProximityAuthClient::FinalizeSignin(const std::string& secret) {
-  EasyUnlockService* service = EasyUnlockService::Get(profile_);
-  if (service)
-    service->FinalizeSignin(secret);
-}
-
-// TODO(b/227674947): Remove this method now that sign in with Smart Lock is
-// deprecated
 void ChromeProximityAuthClient::GetChallengeForUserAndDevice(
     const std::string& user_email,
     const std::string& remote_public_key,

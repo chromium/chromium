@@ -36,9 +36,6 @@ class FakeLockHandler : public ScreenlockBridge::LockHandler {
   mojom::AuthType GetAuthType(const AccountId& account_id) const override;
   ScreenType GetScreenType() const override;
   void Unlock(const AccountId& account_id) override;
-  void AttemptEasySignin(const AccountId& account_id,
-                         const std::string& secret,
-                         const std::string& key_label) override;
 
   absl::optional<ash::SmartLockState> smart_lock_state() const {
     return smart_lock_state_;

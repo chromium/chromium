@@ -63,8 +63,7 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
       user_context.GetAccountId());
   metrics_recorder_->OnIsUserNew(is_known_user);
   bool is_login_offline =
-      user_context.GetAuthFlow() == UserContext::AUTH_FLOW_OFFLINE ||
-      user_context.GetAuthFlow() == UserContext::AUTH_FLOW_EASY_UNLOCK;
+      user_context.GetAuthFlow() == UserContext::AUTH_FLOW_OFFLINE;
   metrics_recorder_->OnIsLoginOffline(is_login_offline);
 
   VLOG(1) << "LoginSuccess hash: " << user_context.GetUserIDHash();
@@ -133,9 +132,6 @@ void LoginPerformer::DoPerformLogin(const UserContext& user_context,
                                   weak_factory_.GetWeakPtr()));
     return;
   }
-
-  if (user_context.GetAuthFlow() == UserContext::AUTH_FLOW_EASY_UNLOCK)
-    SetupEasyUnlockUserFlow(user_context.GetAccountId());
 
   switch (auth_mode_) {
     case AuthorizationMode::kExternal: {
