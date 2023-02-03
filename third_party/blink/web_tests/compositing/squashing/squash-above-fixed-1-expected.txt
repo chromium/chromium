@@ -6,7 +6,7 @@ CASE 1, original layer tree:
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [785, 1400],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -19,8 +19,9 @@ CASE 1, original layer tree:
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-a' class='overlapping cyan'",
-      "bounds": [200, 1400],
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
+      "position": [0, 100],
+      "bounds": [200, 1300],
       "contentsOpaqueForText": true
     },
     {
@@ -47,7 +48,7 @@ CASE 2, scrolling y to 80, new layers will be squashed, so things repaint:
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [785, 1400],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -61,8 +62,9 @@ CASE 2, scrolling y to 80, new layers will be squashed, so things repaint:
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-a' class='overlapping cyan'",
-      "bounds": [200, 1400],
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
+      "position": [0, 100],
+      "bounds": [200, 1300],
       "contentsOpaqueForText": true,
       "transform": 1
     },
@@ -99,7 +101,7 @@ CASE 3, scrolling y to 120, no repaints expected:
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [785, 1400],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -113,8 +115,9 @@ CASE 3, scrolling y to 120, no repaints expected:
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-a' class='overlapping cyan'",
-      "bounds": [200, 1400],
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
+      "position": [0, 100],
+      "bounds": [200, 1300],
       "contentsOpaqueForText": true,
       "transform": 1
     },
@@ -151,7 +154,7 @@ CASE 4, scrolling y to 170 new layers will be squashed, so things repaint:
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [785, 1400],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -165,8 +168,9 @@ CASE 4, scrolling y to 170 new layers will be squashed, so things repaint:
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-a' class='overlapping cyan'",
-      "bounds": [200, 1400],
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
+      "position": [0, 100],
+      "bounds": [200, 1300],
       "contentsOpaqueForText": true,
       "transform": 1
     },

@@ -177,6 +177,9 @@ void GeometryMapperTest::CheckMappings() {
   CheckCachedClip();
 }
 
+// Checks rect1 in state1 and rect2 in state2 exactly overlap. Any point inside
+// rect1 should overlap with rect2, and any point outside of rect1 should not
+// overlap with rect2, and vice versa.
 void GeometryMapperTest::CheckOverlap(const gfx::RectF& rect1,
                                       const PropertyTreeState& state1,
                                       const gfx::RectF& rect2,
@@ -1116,7 +1119,7 @@ TEST_P(GeometryMapperTest, MightOverlapFixed) {
   }
 
   {
-    SCOPED_TRACE("fixed_state and scroll_state1");
+    SCOPED_TRACE("fixed_state and scroll_state2");
     auto scroll_state2 = CreateScrollTranslationState(
         scroll_state1.GetPropertyTreeState(), -2345, -678,
         gfx::Rect(20, 10, 200, 100), gfx::Size(3000, 2000));
@@ -1125,84 +1128,105 @@ TEST_P(GeometryMapperTest, MightOverlapFixed) {
     EXPECT_FALSE(MightOverlapForCompositing(
         gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(1, 2, 3, 4),
         scroll_state2.GetPropertyTreeState()));
+    EXPECT_FALSE(MightOverlapForCompositing(
+        gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(0, 0, 1000, 1000),
+        scroll_state2.GetPropertyTreeState()));
   }
-    {
-      SCOPED_TRACE("fixed_state and scroll_state1");
-      auto scroll_state3 = CreateScrollTranslationState(
-          scroll_state1.GetPropertyTreeState(), -234, -567,
-          gfx::Rect(0, 300, 500, 500), gfx::Size(1000, 2000));
-      EXPECT_TRUE(MightOverlapForCompositing(
-          gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(1, 2, 3, 4),
-          scroll_state3.GetPropertyTreeState()));
+  {
+    SCOPED_TRACE("fixed_state and scroll_state3");
+    auto scroll_state3 = CreateScrollTranslationState(
+        scroll_state1.GetPropertyTreeState(), -234, -567,
+        gfx::Rect(0, 300, 500, 500), gfx::Size(1000, 2000));
+    EXPECT_FALSE(MightOverlapForCompositing(
+        gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(1, 2, 3, 4),
+        scroll_state3.GetPropertyTreeState()));
+    EXPECT_TRUE(MightOverlapForCompositing(
+        gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(0, 0, 500, 500),
+        scroll_state3.GetPropertyTreeState()));
   }
 }
 
 TEST_P(GeometryMapperTest, MightOverlapScroll) {
   auto viewport = CreateTransform(t0(), gfx::Transform());
-  auto scroll_state1 = CreateScrollTranslationState(
+  auto outer_scroll_state = CreateScrollTranslationState(
       PropertyTreeState(*viewport, c0(), e0()), -1234, -567,
-      gfx::Rect(10, 20, 100, 200), gfx::Size(2400, 1800));
-  auto scroll_state2 = CreateScrollTranslationState(
-      scroll_state1.GetPropertyTreeState(), -2345, -678,
+      gfx::Rect(10, 20, 100, 200), gfx::Size(150, 300));
+  auto inner_scroll_state = CreateScrollTranslationState(
+      outer_scroll_state.GetPropertyTreeState(), -2345, -678,
       gfx::Rect(20, 10, 200, 100), gfx::Size(3000, 2000));
 
   auto transform_outside = Create2DTranslation(*viewport, 100, 200);
   PropertyTreeState state_outside(*transform_outside, c0(), e0());
 
-  auto transform_under_scroll1 =
-      Create2DTranslation(scroll_state1.Transform(), 34, 56);
-  PropertyTreeState state_under_scroll1(
-      *transform_under_scroll1, scroll_state1.Clip(), scroll_state1.Effect());
+  auto transform_under_outer_scroll =
+      Create2DTranslation(outer_scroll_state.Transform(), 34, 56);
+  PropertyTreeState state_under_outer_scroll(*transform_under_outer_scroll,
+                                             outer_scroll_state.Clip(),
+                                             outer_scroll_state.Effect());
 
-  auto transform_under_scroll2 =
-      Create2DTranslation(scroll_state2.Transform(), 45, 67);
-  PropertyTreeState state_under_scroll2(
-      *transform_under_scroll2, scroll_state2.Clip(), scroll_state2.Effect());
+  auto transform_under_inner_scroll =
+      Create2DTranslation(inner_scroll_state.Transform(), 45, 67);
+  PropertyTreeState state_under_inner_scroll(*transform_under_inner_scroll,
+                                             inner_scroll_state.Clip(),
+                                             inner_scroll_state.Effect());
 
-  // For any rect directly or indirectly under scroll_state1, we should use
-  // the outer scroller's container rect to check overlap with any rect outside
-  // of the scroll_state1.
-  gfx::RectF outer_container_rect1_in_state_outside(-90, -180, 100, 200);
+  // For any rect directly or indirectly under outer_scroll_state, we should
+  // use the rect mapped for scroll to check overlap with any rect outside of
+  // the outer_scroll_state. The mapped rect of the following rect is defined
+  // in each SCOPED_TRACE() block.
+  gfx::RectF rect(70, 80, 3, 4);
+
+  // This is the outer container rect mapped into state_outside.
+  gfx::RectF outer_container_rect_in_state_outside(-90, -180, 100, 200);
+
   {
-    SCOPED_TRACE("scroll_state1 and state_outside");
-    CheckOverlap(gfx::RectF(1, 2, 3, 4), scroll_state1.GetPropertyTreeState(),
-                 outer_container_rect1_in_state_outside, state_outside);
+    SCOPED_TRACE("outer_scroll_state and state_outside");
+    // This is `rect` in outer_scroll's contents space expanded for scroll
+    // offset: (20, -20, 53, 104), clipped by the container rect:
+    // (20, 20, 53, 64), then mapped into state_outside. Other rects in other
+    // SCOPED_TRACE() blocks are computed similarly.
+    gfx::RectF rect_mapped_in_state_outside(-80, -180, 53, 64);
+    CheckOverlap(rect, outer_scroll_state.GetPropertyTreeState(),
+                 rect_mapped_in_state_outside, state_outside);
   }
   {
-    SCOPED_TRACE("state_under_scroll1 and state_outside");
-    CheckOverlap(gfx::RectF(1, 2, 3, 4), state_under_scroll1,
-                 outer_container_rect1_in_state_outside, state_outside);
+    SCOPED_TRACE("state_under_outer_scroll and state_outside");
+    CheckOverlap(rect, state_under_outer_scroll, gfx::RectF(-46, -164, 53, 104),
+                 state_outside);
   }
   {
-    SCOPED_TRACE("scroll_state2 and state_outside");
-    CheckOverlap(gfx::RectF(3, 4, 5, 6), scroll_state2.GetPropertyTreeState(),
-                 outer_container_rect1_in_state_outside, state_outside);
+    // Here we use outer_container_rect_in_state_outside because there are
+    // multiple scroll translations between the states.
+    SCOPED_TRACE("inner_scroll_state and state_outside");
+    CheckOverlap(rect, inner_scroll_state.GetPropertyTreeState(),
+                 outer_container_rect_in_state_outside, state_outside);
   }
   {
-    SCOPED_TRACE("state_under_scroll2 and state_outside");
-    CheckOverlap(gfx::RectF(3, 4, 5, 6), state_under_scroll2,
-                 outer_container_rect1_in_state_outside, state_outside);
+    // Here we use outer_container_rect_in_state_outside because there are
+    // multiple scroll translations between the states.
+    SCOPED_TRACE("state_under_inner_scroll and state_outside");
+    CheckOverlap(rect, state_under_inner_scroll,
+                 outer_container_rect_in_state_outside, state_outside);
   }
 
-  // For any rect under scroll_state2, we should use the inner scroller's
-  // container rect to check overlap with any rect between scroll_state1 and
-  // scroll_state2.
+  // For any rect under inner_scroll_state, we should use the inner scroller's
+  // container rect to check overlap with any rect between outer_scroll_state
+  // and inner_scroll_state.
   {
-    SCOPED_TRACE("scroll_state2 and scroll_state1");
-    CheckOverlap(gfx::RectF(5, 6, 7, 8), scroll_state2.GetPropertyTreeState(),
-                 gfx::RectF(20, 10, 200, 100),
-                 scroll_state1.GetPropertyTreeState());
+    SCOPED_TRACE("inner_scroll_state and outer_scroll_state");
+    CheckOverlap(rect, inner_scroll_state.GetPropertyTreeState(),
+                 gfx::RectF(20, 10, 53, 74),
+                 outer_scroll_state.GetPropertyTreeState());
   }
   {
-    SCOPED_TRACE("state_under_scroll2 and scroll_state1");
-    CheckOverlap(gfx::RectF(5, 6, 7, 8), state_under_scroll2,
-                 gfx::RectF(20, 10, 200, 100),
-                 scroll_state1.GetPropertyTreeState());
+    SCOPED_TRACE("state_under_inner_scroll and outer_scroll_state");
+    CheckOverlap(rect, state_under_inner_scroll, gfx::RectF(20, 10, 98, 100),
+                 outer_scroll_state.GetPropertyTreeState());
   }
   {
-    SCOPED_TRACE("state_under_scroll2 and state_under_scroll1");
-    CheckOverlap(gfx::RectF(7, 8, 9, 10), state_under_scroll2,
-                 gfx::RectF(-14, -46, 200, 100), state_under_scroll1);
+    SCOPED_TRACE("state_under_inner_scroll and state_under_outer_scroll");
+    CheckOverlap(rect, state_under_inner_scroll, gfx::RectF(-14, -46, 98, 100),
+                 state_under_outer_scroll);
   }
 }
 

@@ -223,6 +223,11 @@ class PLATFORM_EXPORT GeometryMapper {
       const PropertyTreeState& local_state,
       const PropertyTreeState& ancestor_state);
 
+  static gfx::RectF MapVisualRectAboveScrollForCompositingOverlap(
+      const PropertyTreeState& state,
+      const TransformPaintPropertyNode& scroll_translation,
+      gfx::RectF& rect);
+
   static void MoveRect(gfx::RectF& rect, const gfx::Vector2dF& delta) {
     rect.Offset(delta.x(), delta.y());
   }

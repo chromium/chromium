@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [785, 2016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -18,7 +18,6 @@
       "position": [2, 6],
       "bounds": [85, 136],
       "contentsOpaqueForText": true,
-      "drawsContent": false,
       "transform": 2
     },
     {
@@ -127,7 +126,6 @@
       "position": [2, 6],
       "bounds": [85, 136],
       "contentsOpaqueForText": true,
-      "drawsContent": false,
       "transform": 8
     },
     {
@@ -153,9 +151,10 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-sibling-grandchildren-not-contained' class='scrolled'",
-      "position": [6, 34],
-      "bounds": [75, 80],
-      "contentsOpaqueForText": true,
+      "position": [6, 90],
+      "bounds": [75, 24],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
       "transform": 8
     },
     {
@@ -319,7 +318,6 @@
       "position": [2, 6],
       "bounds": [85, 136],
       "contentsOpaqueForText": true,
-      "drawsContent": false,
       "transform": 18
     },
     {
@@ -331,9 +329,10 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed-sibling-grandchildren' class='scrolled'",
-      "position": [6, 34],
-      "bounds": [75, 80],
-      "contentsOpaqueForText": true,
+      "position": [6, 90],
+      "bounds": [75, 24],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
       "transform": 18
     },
     {
@@ -397,7 +396,6 @@
       "position": [2, 6],
       "bounds": [85, 136],
       "contentsOpaqueForText": true,
-      "drawsContent": false,
       "transform": 24
     },
     {
@@ -409,9 +407,10 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed-grandchildren' class='scrolled'",
-      "position": [6, 34],
-      "bounds": [75, 80],
-      "contentsOpaqueForText": true,
+      "position": [6, 90],
+      "bounds": [75, 24],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
       "transform": 24
     },
     {
