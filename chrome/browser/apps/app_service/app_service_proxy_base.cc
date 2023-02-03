@@ -87,7 +87,7 @@ AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
         allow_placeholder_icon, std::move(callback));
   }
 
-  if (host_->ShouldReadIcons()) {
+  if (host_->ShouldReadIcons(app_type)) {
     host_->ReadIcons(app_type, app_id, size_hint_in_dip, icon_key.Clone(),
                      icon_type, std::move(callback));
     return nullptr;
@@ -706,7 +706,7 @@ void AppServiceProxyBase::OnLaunched(LaunchCallback callback,
   std::move(callback).Run(std::move(launch_result));
 }
 
-bool AppServiceProxyBase::ShouldReadIcons() {
+bool AppServiceProxyBase::ShouldReadIcons(AppType app_type) {
   return false;
 }
 

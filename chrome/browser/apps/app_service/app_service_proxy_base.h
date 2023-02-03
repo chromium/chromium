@@ -391,7 +391,7 @@ class AppServiceProxyBase : public KeyedService,
 
   // Returns true if we should read icon image files from the local app_service
   // icon directory on disk, e.g. for ChromeOS. Otherwise, returns false.
-  virtual bool ShouldReadIcons();
+  virtual bool ShouldReadIcons(AppType app_type);
 
   // Reads icon image files from the local app_service icon directory on disk.
   virtual void ReadIcons(AppType app_type,

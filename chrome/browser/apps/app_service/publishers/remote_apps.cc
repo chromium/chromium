@@ -92,27 +92,6 @@ void RemoteApps::LoadIcon(const std::string& app_id,
                    std::move(callback));
 }
 
-void RemoteApps::GetCompressedIconData(const std::string& app_id,
-                                       int32_t size_in_dip,
-                                       ui::ResourceScaleFactor scale_factor,
-                                       LoadIconCallback callback) {
-  auto icon = std::make_unique<IconValue>();
-  gfx::ImageSkia icon_image = delegate_->GetIcon(app_id);
-  if (icon_image.isNull()) {
-    icon_image = delegate_->GetPlaceholderIcon(app_id, size_in_dip);
-    if (icon_image.isNull()) {
-      std::move(callback).Run(std::make_unique<IconValue>());
-      return;
-    }
-  }
-
-  icon->icon_type = IconType::kUncompressed;
-  icon->uncompressed = icon_image;
-  ConvertUncompressedIconToCompressedIconWithScale(
-      ui::GetScaleForResourceScaleFactor(scale_factor), std::move(callback),
-      std::move(icon));
-}
-
 void RemoteApps::Launch(const std::string& app_id,
                         int32_t event_flags,
                         LaunchSource launch_source,

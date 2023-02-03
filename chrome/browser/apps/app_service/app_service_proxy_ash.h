@@ -251,7 +251,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                     LaunchCallback callback,
                                     bool is_allowed);
 
-  bool ShouldReadIcons() override;
+  bool ShouldReadIcons(AppType app_type) override;
 
   // Reads icon image files from the local app_service icon directory on disk.
   void ReadIcons(AppType app_type,

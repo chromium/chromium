@@ -80,10 +80,6 @@ class RemoteApps : public AppPublisher {
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
-  void GetCompressedIconData(const std::string& app_id,
-                             int32_t size_in_dip,
-                             ui::ResourceScaleFactor scale_factor,
-                             LoadIconCallback callback) override;
   void Launch(const std::string& app_id,
               int32_t event_flags,
               LaunchSource launch_source,

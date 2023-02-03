@@ -711,8 +711,12 @@ void AppServiceProxyAsh::LaunchAppWithIntentIfAllowed(
       std::move(window_info), std::move(callback));
 }
 
-bool AppServiceProxyAsh::ShouldReadIcons() {
-  return base::FeatureList::IsEnabled(kUnifiedAppServiceIconLoading);
+bool AppServiceProxyAsh::ShouldReadIcons(AppType app_type) {
+  // Exclude the remote apps, because remote apps regenerate app id for each
+  // user login session. So we can't save the remote app icon image files in the
+  // app id directories.
+  return base::FeatureList::IsEnabled(kUnifiedAppServiceIconLoading) &&
+         app_type != AppType::kRemote;
 }
 
 void AppServiceProxyAsh::ReadIcons(AppType app_type,
