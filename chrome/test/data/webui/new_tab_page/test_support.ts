@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import {DomIf} from 'chrome://new-tab-page/new_tab_page.js';
-import {BackgroundImage, Theme} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {BackgroundImage, NtpBackgroundImageSource, Theme} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -56,6 +55,7 @@ export function installMock<T extends object>(
 export function createBackgroundImage(url: string): BackgroundImage {
   return {
     url: {url},
+    imageSource: NtpBackgroundImageSource.kNoImage,
   };
 }
 

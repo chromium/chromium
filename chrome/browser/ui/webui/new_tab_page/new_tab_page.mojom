@@ -33,6 +33,19 @@ struct CollectionImage {
   string collection_id;
 };
 
+/**
+ * New Tab Page image sources. This enum must match the numbering for
+ * NTPBackgroundImageSource in enums.xml. These values are persisted to
+ * logs. Entries should not be renumbered, removed or reused.
+ */
+ enum NtpBackgroundImageSource {
+  kNoImage,
+  kFirstPartyThemeWithoutDailyRefresh,
+  kFirstPartyThemeWithDailyRefresh,
+  kThirdPartyTheme,
+  kUploadedImage,
+};
+
 // The background image URL and styling.
 struct BackgroundImage {
   // URL to the background image. Can point to untrusted content.
@@ -49,6 +62,8 @@ struct BackgroundImage {
   string? position_y;
   // The CSS styling property set on the background image's scrim.
   string? scrim_display;
+  // Source of background image.
+  NtpBackgroundImageSource image_source;
 };
 
 // A generic theme.

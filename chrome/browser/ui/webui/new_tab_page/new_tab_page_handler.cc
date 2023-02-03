@@ -216,6 +216,10 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   const bool side_panel_enabled = customize_chrome::IsSidePanelEnabled();
   if (theme_has_custom_image &&
       (!custom_background.has_value() || side_panel_enabled)) {
+    if (theme_service->UsingExtensionTheme()) {
+      background_image->image_source =
+          new_tab_page::mojom::NtpBackgroundImageSource::kThirdPartyTheme;
+    }
     theme->is_custom_background = false;
     most_visited->use_title_pill = !remove_scrim;
     auto theme_id = theme_service->GetThemeID();
@@ -266,6 +270,16 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   } else if (custom_background.has_value()) {
     theme->is_custom_background = true;
     background_image->url = custom_background->custom_background_url;
+    new_tab_page::mojom::NtpBackgroundImageSource image_source = new_tab_page::
+        mojom::NtpBackgroundImageSource::kFirstPartyThemeWithoutDailyRefresh;
+    if (custom_background->daily_refresh_enabled) {
+      image_source = new_tab_page::mojom::NtpBackgroundImageSource::
+          kFirstPartyThemeWithDailyRefresh;
+    } else if (custom_background->is_uploaded_image) {
+      image_source =
+          new_tab_page::mojom::NtpBackgroundImageSource::kUploadedImage;
+    }
+    background_image->image_source = image_source;
   } else {
     background_image = nullptr;
   }
