@@ -5,7 +5,8 @@
 // https://dom.spec.whatwg.org/#interface-AbortSignal
 
 [
-    Exposed=(Window,Worker)
+    Exposed=(Window,Worker),
+    ActiveScriptWrappable
 ] interface AbortSignal : EventTarget {
     [
         CallWith=ScriptState,

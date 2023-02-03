@@ -98,6 +98,8 @@ class RemovableAbortAlgorithmCollection final
 
   void Clear() override { abort_algorithms_.clear(); }
 
+  bool Empty() const override { return abort_algorithms_.empty(); }
+
   void Run() override {
     for (AbortSignal::AlgorithmHandle* handle : abort_algorithms_) {
       handle->GetAlgorithm()->Run();
@@ -135,6 +137,8 @@ class UnremovableAbortAlgorithmCollection final
   void RemoveAlgorithm(AbortSignal::AlgorithmHandle* handle) override {}
 
   void Clear() override { abort_algorithms_.clear(); }
+
+  bool Empty() const override { return abort_algorithms_.empty(); }
 
   void Run() override {
     for (AbortSignal::Algorithm* algorithm : abort_algorithms_) {
@@ -201,6 +205,13 @@ void AbortSignal::InitializeCommon(ExecutionContext* execution_context,
     abort_algorithms_ =
         MakeGarbageCollected<UnremovableAbortAlgorithmCollection>();
   }
+
+  if (RuntimeEnabledFeatures::AbortSignalAnyEnabled() &&
+      signal_type_ == AbortSignal::SignalType::kComposite) {
+    // Composite signals need to be kept alive when they have relevant event
+    // listeners or pending algorithms.
+    RegisterActiveScriptWrappable();
+  }
 }
 
 AbortSignal::~AbortSignal() = default;
@@ -221,6 +232,9 @@ AbortSignal* AbortSignal::abort(ScriptState* script_state, ScriptValue reason) {
   AbortSignal* signal = MakeGarbageCollected<AbortSignal>(
       ExecutionContext::From(script_state), SignalType::kAborted);
   signal->abort_reason_ = reason;
+  if (RuntimeEnabledFeatures::AbortSignalAnyEnabled()) {
+    signal->composition_manager_->Settle();
+  }
   return signal;
 }
 
@@ -291,24 +305,29 @@ ExecutionContext* AbortSignal::GetExecutionContext() const {
 }
 
 AbortSignal::AlgorithmHandle* AbortSignal::AddAlgorithm(Algorithm* algorithm) {
-  if (aborted())
+  if (aborted() || (RuntimeEnabledFeatures::AbortSignalAnyEnabled() &&
+                    composition_manager_->IsSettled())) {
     return nullptr;
-
+  }
   auto* handle = MakeGarbageCollected<AlgorithmHandle>(algorithm);
   abort_algorithms_->AddAlgorithm(handle);
   return handle;
 }
 
 void AbortSignal::RemoveAlgorithm(AlgorithmHandle* handle) {
-  if (aborted())
+  if (aborted() || (RuntimeEnabledFeatures::AbortSignalAnyEnabled() &&
+                    composition_manager_->IsSettled())) {
     return;
+  }
   abort_algorithms_->RemoveAlgorithm(handle);
 }
 
 AbortSignal::AlgorithmHandle* AbortSignal::AddAlgorithm(
     base::OnceClosure algorithm) {
-  if (aborted())
+  if (aborted() || (RuntimeEnabledFeatures::AbortSignalAnyEnabled() &&
+                    composition_manager_->IsSettled())) {
     return nullptr;
+  }
   auto* callback_algorithm =
       MakeGarbageCollected<OnceCallbackAlgorithm>(std::move(algorithm));
   auto* handle = MakeGarbageCollected<AlgorithmHandle>(callback_algorithm);
@@ -339,7 +358,10 @@ void AbortSignal::SignalAbort(ScriptState* script_state, ScriptValue reason) {
     abort_reason_ = reason;
   }
   abort_algorithms_->Run();
-  abort_algorithms_->Clear();
+  if (!RuntimeEnabledFeatures::AbortSignalAnyEnabled()) {
+    // This is cleared when the signal is settled when the feature is enabled.
+    abort_algorithms_->Clear();
+  }
   dependent_signal_algorithms_.clear();
   DispatchEvent(*Event::Create(event_type_names::kAbort));
 
@@ -355,6 +377,7 @@ void AbortSignal::SignalAbort(ScriptState* script_state, ScriptValue reason) {
         signal->SignalAbort(script_state, abort_reason_);
       }
     }
+    composition_manager_->Settle();
   }
 }
 
@@ -387,6 +410,34 @@ AbortSignalCompositionManager* AbortSignal::GetCompositionManager(
     return composition_manager_;
   }
   return nullptr;
+}
+
+void AbortSignal::DetachFromController() {
+  DCHECK(RuntimeEnabledFeatures::AbortSignalAnyEnabled());
+  if (aborted()) {
+    return;
+  }
+  composition_manager_->Settle();
+}
+
+void AbortSignal::OnSignalSettled(AbortSignalCompositionType type) {
+  DCHECK(RuntimeEnabledFeatures::AbortSignalAnyEnabled());
+  DCHECK_EQ(type, AbortSignalCompositionType::kAbort);
+  abort_algorithms_->Clear();
+}
+
+bool AbortSignal::HasPendingActivity() const {
+  if (signal_type_ != SignalType::kComposite) {
+    return false;
+  }
+  DCHECK(RuntimeEnabledFeatures::AbortSignalAnyEnabled());
+  // Settled signals cannot signal abort, so they can be GCed.
+  if (composition_manager_->IsSettled()) {
+    return false;
+  }
+  // Otherwise the signal needs to be kept alive if aborting can be observed.
+  return HasEventListeners(event_type_names::kAbort) ||
+         !abort_algorithms_->Empty();
 }
 
 AbortSignal::AlgorithmHandle::AlgorithmHandle(AbortSignal::Algorithm* algorithm)
