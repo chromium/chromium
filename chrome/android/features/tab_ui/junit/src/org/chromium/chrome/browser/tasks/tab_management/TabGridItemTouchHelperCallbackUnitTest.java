@@ -157,6 +157,10 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         List<TabModel> tabModelList = new ArrayList<>();
         tabModelList.add(mTabModel);
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
+        // Incognito model is not used. Treat the profile as the same to simplify test.
+        doReturn(mTabModel).when(mTabModelSelector).getModel(false);
+        doReturn(mTabModel).when(mTabModelSelector).getModel(true);
+        doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(tabModelList).when(mTabModelSelector).getModels();
         doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
@@ -205,7 +209,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 ContextUtils.getApplicationContext(), mModel, mTabModelSelector, mTabClosedListener,
                 isDialog ? mTabGridDialogHandler : null, "", !isDialog, TabListMode.GRID,
                 mOnLongPressTabItemEventListener);
-        mItemTouchHelperCallback.setupCallback(THRESHOLD, THRESHOLD, THRESHOLD, mProfile);
+        mItemTouchHelperCallback.setupCallback(THRESHOLD, THRESHOLD, THRESHOLD);
         mItemTouchHelperCallback.getMovementFlags(mRecyclerView, mMockViewHolder1);
     }
 

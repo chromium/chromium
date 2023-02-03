@@ -110,14 +110,12 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
      *         order to be considered as a remove operation.
      * @param mergeThreshold                   Defines the threshold of how much two items need to
      *         be overlapped in order to be considered as a merge operation.
-     * @param profile                          The profile used to track user behavior.
      */
-    void setupCallback(float swipeToDismissThreshold, float mergeThreshold, float ungroupThreshold,
-            Profile profile) {
+    void setupCallback(
+            float swipeToDismissThreshold, float mergeThreshold, float ungroupThreshold) {
         mSwipeToDismissThreshold = swipeToDismissThreshold;
         mMergeThreshold = mergeThreshold;
         mUngroupThreshold = ungroupThreshold;
-        mProfile = profile;
         boolean isMRUEnabledInTabSwitcher =
                 TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode) && mActionsOnAllRelatedTabs;
         // Disable drag for MRU-order tab switcher in start surface.
@@ -426,7 +424,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
 
         // If user has used drop-to-merge, send a signal to disable
         // FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE.
-        final Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
+        final Tracker tracker = TrackerFactory.getTrackerForProfile(
+                mTabModelSelector.getCurrentModel().getProfile());
         tracker.notifyEvent(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP);
     }
 

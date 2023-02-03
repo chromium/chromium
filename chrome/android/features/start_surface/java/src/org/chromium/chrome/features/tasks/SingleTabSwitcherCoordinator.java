@@ -18,7 +18,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
@@ -33,9 +32,11 @@ class SingleTabSwitcherCoordinator implements TabSwitcher {
     private final SingleTabSwitcherMediator mMediator;
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final TabSwitcher.TabListDelegate mTabListDelegate;
+    private final TabModelSelector mTabModelSelector;
 
     SingleTabSwitcherCoordinator(@NonNull Activity activity, @NonNull ViewGroup container,
             @NonNull TabModelSelector tabModelSelector) {
+        mTabModelSelector = tabModelSelector;
         PropertyModel propertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
         SingleTabView singleTabView = (SingleTabView) LayoutInflater.from(activity).inflate(
                 R.layout.single_tab_view_layout, container, false);
@@ -131,7 +132,8 @@ class SingleTabSwitcherCoordinator implements TabSwitcher {
 
     @Override
     public void initWithNative() {
-        mTabListFaviconProvider.initWithNative(Profile.getLastUsedRegularProfile());
+        mTabListFaviconProvider.initWithNative(
+                mTabModelSelector.getModel(/*isIncognito=*/false).getProfile());
         mMediator.initWithNative();
     }
 

@@ -20,7 +20,6 @@ import android.util.Size;
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -357,10 +356,8 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
     }
 
     public void initWithNative() {
-        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
-        // incognito profile) instead of always using regular profile. It works correctly now, but
-        // it is not safe.
-        mTabListFaviconProvider.initWithNative(Profile.getLastUsedRegularProfile());
+        mTabListFaviconProvider.initWithNative(
+                mTabModelSelector.getModel(/*isIncognito=*/false).getProfile());
     }
 
     /**

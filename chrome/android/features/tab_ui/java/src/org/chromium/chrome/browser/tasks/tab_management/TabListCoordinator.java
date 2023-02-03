@@ -32,7 +32,6 @@ import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -327,8 +326,7 @@ public class TabListCoordinator
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.initWithNative")) {
             mIsInitialized = true;
 
-            Profile profile = Profile.getLastUsedRegularProfile();
-            mMediator.initWithNative(profile);
+            mMediator.initWithNative();
             if (dynamicResourceLoader != null) {
                 mRecyclerView.createDynamicView(dynamicResourceLoader);
             }
@@ -342,8 +340,7 @@ public class TabListCoordinator
                                 mContext.getResources().getDimension(
                                         R.dimen.tab_grid_merge_threshold),
                                 mContext.getResources().getDimension(
-                                        R.dimen.bottom_sheet_peek_height),
-                                profile);
+                                        R.dimen.bottom_sheet_peek_height));
 
                 // The block below creates an instance of the ItemTouchHelper and also utilizes the
                 // TabGridItemTouchHelperCallback and its shouldBlockAction after attaching to the

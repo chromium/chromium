@@ -317,9 +317,18 @@ public class TabListFaviconProvider {
     public void initWithNative(Profile profile) {
         if (mIsInitialized) return;
 
-        mIsInitialized = true;
         mProfile = profile;
+        assert mProfile != null : "Profile must exist for favicon fetching.";
         mFaviconHelper = new FaviconHelper();
+        mIsInitialized = true;
+    }
+
+    private Profile getProfile(boolean isIncognito) {
+        if (!isIncognito) return mProfile;
+
+        Profile otrProfile = mProfile.getPrimaryOTRProfile(/*createIfNeeded=*/false);
+        assert otrProfile != null : "Requesting favicon for OTR Profile when none exists.";
+        return otrProfile;
     }
 
     public boolean isInitialized() {
@@ -389,7 +398,7 @@ public class TabListFaviconProvider {
             faviconCallback.onResult(getRoundedChromeFavicon(isIncognito));
         } else {
             mFaviconHelper.getLocalFaviconImageForURL(
-                    mProfile, url, mFaviconSize, (image, iconUrl) -> {
+                    getProfile(isIncognito), url, mFaviconSize, (image, iconUrl) -> {
                         TabFavicon favicon;
                         if (image == null) {
                             favicon = getRoundedGlobeFavicon(isIncognito);
@@ -427,14 +436,15 @@ public class TabListFaviconProvider {
     void getComposedFaviconImageAsync(
             List<GURL> urls, boolean isIncognito, Callback<TabFavicon> faviconCallback) {
         assert urls != null && urls.size() > 1 && urls.size() <= 4;
-        mFaviconHelper.getComposedFaviconImage(mProfile, urls, mFaviconSize, (image, iconUrls) -> {
-            if (image == null) {
-                faviconCallback.onResult(getDefaultComposedImageFavicon(isIncognito));
-            } else {
-                faviconCallback.onResult(
-                        new ComposedTabFavicon(processBitmap(image, mIsTabStrip), iconUrls));
-            }
-        });
+        mFaviconHelper.getComposedFaviconImage(
+                getProfile(isIncognito), urls, mFaviconSize, (image, iconUrls) -> {
+                    if (image == null) {
+                        faviconCallback.onResult(getDefaultComposedImageFavicon(isIncognito));
+                    } else {
+                        faviconCallback.onResult(new ComposedTabFavicon(
+                                processBitmap(image, mIsTabStrip), iconUrls));
+                    }
+                });
     }
 
     private TabFavicon getDefaultComposedImageFavicon(boolean isIncognito) {
