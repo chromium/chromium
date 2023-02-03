@@ -3399,16 +3399,72 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     const FormStructure& form_structure) {
   // TODO(crbug.com/1325851): Log metrics if at least one field in the form was
   // classified as a certain type.
+  size_t num_ask_for_values_to_fill_event = 0;
+  size_t num_trigger_fill_event = 0;
+  size_t num_fill_event = 0;
+  size_t num_typing_event = 0;
+  size_t num_heuristic_prediction_event = 0;
+  size_t num_autocomplete_attribute_event = 0;
+  size_t num_server_prediction_event = 0;
+
   for (const auto& autofill_field : form_structure) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillLogUKMEventsWithSampleRate)) {
       form_interactions_ukm_logger()->LogAutofillFieldInfoAtFormRemove(
           form_structure, *autofill_field);
+      for (const auto& log_event : autofill_field->field_log_events()) {
+        static_assert(
+            absl::variant_size<AutofillField::FieldLogEventType>() == 8,
+            "When adding new variants check that this function does not "
+            "need to be updated.");
+        if (absl::holds_alternative<AskForValuesToFillFieldLogEvent>(
+                log_event)) {
+          ++num_ask_for_values_to_fill_event;
+        } else if (absl::holds_alternative<TriggerFillFieldLogEvent>(
+                       log_event)) {
+          ++num_trigger_fill_event;
+        } else if (absl::holds_alternative<FillFieldLogEvent>(log_event)) {
+          ++num_fill_event;
+        } else if (absl::holds_alternative<TypingFieldLogEvent>(log_event)) {
+          ++num_typing_event;
+        } else if (absl::holds_alternative<HeuristicPredictionFieldLogEvent>(
+                       log_event)) {
+          ++num_heuristic_prediction_event;
+        } else if (absl::holds_alternative<AutocompleteAttributeFieldLogEvent>(
+                       log_event)) {
+          ++num_autocomplete_attribute_event;
+        } else if (absl::holds_alternative<ServerPredictionFieldLogEvent>(
+                       log_event)) {
+          ++num_server_prediction_event;
+        } else {
+          NOTREACHED();
+        }
+      }
     }
 
     // Clear log events.
     autofill_field->ClearLogEvents();
   }
+
+  size_t total_num_log_events =
+      num_ask_for_values_to_fill_event + num_trigger_fill_event +
+      num_fill_event + num_typing_event + num_heuristic_prediction_event +
+      num_autocomplete_attribute_event + num_server_prediction_event;
+  // Record the number of each type of log events into UMA to decide if we need
+  // to clear them before the form is submitted or destroyed.
+  UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.AskForValuesToFillEvent",
+                             num_ask_for_values_to_fill_event);
+  UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.TriggerFillEvent",
+                             num_trigger_fill_event);
+  UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.FillEvent", num_fill_event);
+  UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.TypingEvent", num_typing_event);
+  UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.HeuristicPredictionEvent",
+                             num_heuristic_prediction_event);
+  UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.AutocompleteAttributeEvent",
+                             num_autocomplete_attribute_event);
+  UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.ServerPredictionEvent",
+                             num_server_prediction_event);
+  UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.All", total_num_log_events);
 }
 
 }  // namespace autofill

@@ -10488,6 +10488,8 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
 
     // Simulate text input in the first fields.
     SimulateUserChangedTextField(form, form.fields[0]);
+
+    base::HistogramTester histogram_tester;
     SubmitForm(form);
 
     // Record Autofill2.FieldInfo UKM event at autofill manager reset.
@@ -10536,6 +10538,20 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
         test_ukm_recorder_->ExpectEntryMetric(entry, metric, value);
       }
     }
+
+    histogram_tester.ExpectBucketCount(
+        "Autofill.LogEvent.AskForValuesToFillEvent", 1, 1);
+    histogram_tester.ExpectBucketCount("Autofill.LogEvent.TriggerFillEvent", 1,
+                                       1);
+    histogram_tester.ExpectBucketCount("Autofill.LogEvent.FillEvent", 3, 1);
+    histogram_tester.ExpectBucketCount("Autofill.LogEvent.TypingEvent", 1, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.LogEvent.HeuristicPredictionEvent", 0, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.LogEvent.AutocompleteAttributeEvent", 0, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.LogEvent.ServerPredictionEvent", 0, 1);
+    histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 6, 1);
   }
 }
 
@@ -10582,6 +10598,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   autofill_manager().OnLoadedServerPredictionsForTest(
       response_string, test::GetEncodedSignatures(*form_structure_ptr));
 
+  base::HistogramTester histogram_tester;
   SubmitForm(form);
   // Record Autofill2.FieldInfo UKM event at autofill manager reset.
   autofill_manager().Reset();
@@ -10650,6 +10667,26 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
       test_ukm_recorder_->ExpectEntryMetric(entry, metric, value);
     }
   }
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.LogEvent.AskForValuesToFillEvent", 0, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.TriggerFillEvent", 0,
+                                     1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.FillEvent", 0, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.TypingEvent", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.LogEvent.AutocompleteAttributeEvent", 3, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.ServerPredictionEvent",
+                                     4, 1);
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+  histogram_tester.ExpectBucketCount(
+      "Autofill.LogEvent.HeuristicPredictionEvent", 12, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 19, 1);
+#else
+  histogram_tester.ExpectBucketCount(
+      "Autofill.LogEvent.HeuristicPredictionEvent", 3, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 10, 1);
+#endif
 }
 
 // Test if we have recorded FieldInfo UKM metrics correctly after typing in
@@ -10671,11 +10708,11 @@ TEST_F(AutofillMetricsFromLogEventsTest,
 
   FormData form = GetAndAddSeenForm(form_description);
 
-  base::HistogramTester histogram_tester;
   // Simulate text input in the first and second fields.
   SimulateUserChangedTextField(form, form.fields[0]);
   SimulateUserChangedTextField(form, form.fields[1]);
 
+  base::HistogramTester histogram_tester;
   SubmitForm(form);
 
   // Record Autofill2.FieldInfo UKM event at autofill manager reset.
@@ -10708,6 +10745,20 @@ TEST_F(AutofillMetricsFromLogEventsTest,
       test_ukm_recorder_->ExpectEntryMetric(entry, metric, value);
     }
   }
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.LogEvent.AskForValuesToFillEvent", 0, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.TriggerFillEvent", 0,
+                                     1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.FillEvent", 0, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.TypingEvent", 2, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.LogEvent.HeuristicPredictionEvent", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.LogEvent.AutocompleteAttributeEvent", 0, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.ServerPredictionEvent",
+                                     0, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 2, 1);
 }
 
 // TODO(crbug.com/1352826) Delete this after collecting the metrics.

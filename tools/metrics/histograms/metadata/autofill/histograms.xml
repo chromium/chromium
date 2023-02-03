@@ -2539,6 +2539,38 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.LogEvent.{LogEventTypes}" units="units"
+    expires_after="2023-12-31">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of log events of type {LogEventTypes} which have been recorded
+    until the FieldInfo metric is recorded into UKM at form submission or form
+    destruction time (whatever comes first).
+  </summary>
+  <token key="LogEventTypes">
+    <variant name="All" summary="total number of all the log events recorded"/>
+    <variant name="AskForValuesToFillEvent"
+        summary="total number of AskForValuesToFillFieldLogEvent events
+                 recorded"/>
+    <variant name="AutocompleteAttributeEvent"
+        summary="total number of AutocompleteAttributeFieldLogEvent events
+                 recorded"/>
+    <variant name="FillEvent"
+        summary="total number of FillFieldLogEvent events recorded"/>
+    <variant name="HeuristicPredictionEvent"
+        summary="total number of HeuristicPredictionFieldLogEvent events
+                 recorded"/>
+    <variant name="ServerPredictionEvent"
+        summary="total number of ServerPredictionFieldLogEvent events
+                 recorded"/>
+    <variant name="TriggerFillEvent"
+        summary="total number of TriggerFillFieldLogEvent events recorded"/>
+    <variant name="TypingEvent"
+        summary="total number of TypingFieldLogEvent events recorded"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.ManageCardsPrompt{AutofillManageCardsPrompt}"
     enum="AutofillManageCardsPrompt" expires_after="2023-06-01">
   <owner>jsaul@google.com</owner>
