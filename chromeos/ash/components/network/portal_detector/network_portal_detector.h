@@ -37,12 +37,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetector {
   // Returns true if portal detection is enabled.
   virtual bool IsEnabled() = 0;
 
-  // Enable portal detection. This will do nothing if the EULA has not been
-  // accepted (i.e. OOBE has not completed) since we do not want to show a
-  // captive portal signin page until the user accepts the EULA. Once accepted,
-  // Enable() should be called again.
-  // Once enabled, portal detection for the default network will be handled any
-  // time the default network state changes.
+  // Enable portal detection. Once enabled, portal detection for the default
+  // network will be handled any time the default network state changes.
   virtual void Enable() = 0;
 
   // Returns non-localized string representation of |status|.

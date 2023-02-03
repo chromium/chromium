@@ -27,7 +27,6 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/test/chromeos_test_utils.h"
 #include "components/language/core/browser/pref_names.h"
@@ -105,9 +104,6 @@ class OobeConfigurationTest : public OobeBaseTest {
     // Make sure that OOBE is run as an "official" build.
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
-
-    // Clear portal list (as it is by default in OOBE).
-    NetworkHandler::Get()->network_state_handler()->SetCheckPortalList("");
   }
 
  protected:

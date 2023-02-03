@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -143,18 +142,13 @@ void NetworkPortalDetectorImpl::Enable() {
   if (enabled_)
     return;
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (!StartupUtils::IsEulaAccepted()) {
-    NET_LOG(EVENT) << "NetworkPortalDetector: Eula not accepted.";
-    return;
-  }
-#endif
-
   NET_LOG(EVENT) << "NetworkPortalDetector Enabled.";
   DCHECK(is_idle());
   enabled_ = true;
 
   // Ensure that Shill portal detection is enabled.
+  // TODO(b/265806000): Remove calls to SetCheckPortalList entirely once
+  // shill/init/shill.sh is updated.
   NetworkHandler::Get()->network_state_handler()->SetCheckPortalList(
       NetworkStateHandler::kDefaultCheckPortalList);
 
