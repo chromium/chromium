@@ -2585,7 +2585,7 @@
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
           'gtest_tests': 'blink_unittests',
-          'isolated_scripts': 'devtools_webkit_isolated_scripts',
+          'isolated_scripts': 'devtools_webkit_and_tab_target_isolated_scripts',
         },
       },
     },
