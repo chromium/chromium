@@ -32,9 +32,6 @@ _allowed_compiler_options = [
     'inlineSourceMap',
     'inlineSources',
     'skipLibCheck',
-    # TODO(https://www.crbug.com/1412155): Remove when Rollup is updated to the
-    # latest version.
-    'target',
 ]
 
 
