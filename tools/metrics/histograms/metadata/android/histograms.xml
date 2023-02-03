@@ -3640,6 +3640,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TopToolbar.InMotionStage" enum="ToolbarInMotionStage"
+    expires_after="2023-12-31">
+  <owner>skym@chromium.org</owner>
+  <owner>seacow@google.com</owner>
+  <summary>
+    Captures the stages reached in the Toolbar's in motion handling. Recorded
+    every time the in motion state of the compositor changes, before the event
+    is routed to the renderer process. Motion states include: flinging, swiping,
+    and any gesture that the CompositorViewHolder is processing. This metric
+    shows how often the in motion handling had to request the toolbar's capture
+    readiness state, which is a computationally expensive operation, and could
+    slow down input handling.
+  </summary>
+</histogram>
+
 <histogram name="Android.TopToolbar.SnapshotDifference"
     enum="ToolbarSnapshotDifference" expires_after="2023-05-16">
   <owner>skym@chromium.org</owner>

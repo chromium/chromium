@@ -17,6 +17,8 @@ public final class ToolbarFeatures {
     private static final String ALLOW_CAPTURES = "allow_captures";
     private static final MutableFlagWithSafeDefault sSuppressionFlag =
             new MutableFlagWithSafeDefault(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES, false);
+    private static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.RECORD_SUPPRESSION_METRICS, true);
 
     /** Private constructor to avoid instantiation. */
     private ToolbarFeatures() {}
@@ -40,5 +42,14 @@ public final class ToolbarFeatures {
 
     public static boolean shouldSuppressCaptures() {
         return sSuppressionFlag.isEnabled();
+    }
+
+    /**
+     * Returns whether to record metrics from suppression experiment. This allows an arm of
+     * suppression to run without the overhead from reporting any extra metrics in Java. Using a
+     * feature instead of a param to utilize Java side caching.
+     */
+    public static boolean shouldRecordSuppressionMetrics() {
+        return sRecordSuppressionMetrics.isEnabled();
     }
 }

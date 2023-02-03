@@ -271,6 +271,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kProbabilisticCryptidRenderer,
     &kReachedCodeProfiler,
     &kReaderModeInCCT,
+    &kRecordSuppressionMetrics,
     &kReengagementNotification,
     &kRelatedSearches,
     &kRelatedSearchesInBar,
@@ -870,6 +871,10 @@ BASE_FEATURE(kReachedCodeProfiler,
 
 BASE_FEATURE(kReaderModeInCCT,
              "ReaderModeInCCT",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRecordSuppressionMetrics,
+             "RecordSuppressionMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReengagementNotification,
