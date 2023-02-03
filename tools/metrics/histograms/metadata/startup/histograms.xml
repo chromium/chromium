@@ -302,6 +302,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.IsLastVisibleTimeLogged" enum="Boolean"
+    expires_after="2023-06-30">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Android: Records whether the last time when Chrome was showing in foreground
+    was logged. The histogram is recorded when onResumeWithNative() is called.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.LastVisitedTabIsSRPWhenOverviewShownAtLaunch"
     enum="Boolean" expires_after="2023-06-30">
   <owner>hanxi@chromium.org</owner>

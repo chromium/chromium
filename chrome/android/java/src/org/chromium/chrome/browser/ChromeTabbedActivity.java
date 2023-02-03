@@ -1038,6 +1038,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             ChromeAccessibilityUtil.get().addObserver(mLayoutManager);
             if (isTablet()) ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
             if (BackPressManager.isEnabled()) initializeBackPressHandlers();
+
+            mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
         }
     }
 
@@ -1074,6 +1076,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (!isWarmOnResume()) {
             SuggestionsMetrics.recordArticlesListVisible();
+        } else {
+            mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
         }
 
         FeatureNotificationUtils.handleIntentIfApplicable(getIntent());
@@ -1089,7 +1093,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         NavigationPredictorBridge.onPause();
         // Always track the last backgrounded time in case others are using the pref.
-        mInactivityTracker.setLastBackgroundedTimeInPrefsSync(System.currentTimeMillis());
+        mInactivityTracker.setLastBackgroundedTimeInPrefs(System.currentTimeMillis());
 
         super.onPauseWithNative();
     }

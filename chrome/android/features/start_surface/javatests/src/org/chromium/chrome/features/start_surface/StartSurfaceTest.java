@@ -69,6 +69,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -609,9 +610,11 @@ public class StartSurfaceTest {
             Assert.assertEquals(1,
                     RecordHistogram.getHistogramValueCountForTesting(
                             ReturnToChromeUtil.START_SHOW_STATE_UMA,
-
                             StartSurfaceState.SHOWING_HOMEPAGE));
         }
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ChromeInactivityTracker.UMA_IS_LAST_VISIBLE_TIME_LOGGED));
     }
 
     @Test

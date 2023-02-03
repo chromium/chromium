@@ -896,6 +896,8 @@ public final class ChromePreferenceKeys {
     public static final String TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF =
             "ChromeTabbedActivity.BackgroundTimeMs";
 
+    public static final String TABBED_ACTIVITY_LAST_VISIBLE_TIME_MS =
+            "Chrome.StartSurface.LastVisibleTimeMs";
     public static final String TABMODEL_ACTIVE_TAB_ID =
             "org.chromium.chrome.browser.tabmodel.TabPersistentStore.ACTIVE_TAB_ID";
     public static final String TABMODEL_HAS_COMPUTED_MAX_ID =
@@ -1130,6 +1132,7 @@ public final class ChromePreferenceKeys {
                 START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
                 SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP,
                 START_SHOW_ON_STARTUP,
+                TABBED_ACTIVITY_LAST_VISIBLE_TIME_MS,
                 TAP_FEED_CARDS_COUNT,
                 TAP_MV_TILES_COUNT,
                 TWA_DISCLOSURE_SEEN_PACKAGES,

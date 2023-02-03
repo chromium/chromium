@@ -146,16 +146,17 @@ public final class ReturnToChromeUtil {
 
     /**
      * Determine if we should show the tab switcher on returning to Chrome.
-     *   Returns true if enough time has elapsed since the app was last backgrounded.
-     *   The threshold time in milliseconds is set by experiment "enable-tab-switcher-on-return" or
-     *   from segmentation platform result if {@link ChromeFeatureList.START_SURFACE_RETURN_TIME} is
-     *   enabled.
+     *   Returns true if enough time has elapsed since the app was last backgrounded or foreground,
+     *   depending on which time is the max.
+     *   The threshold time in milliseconds is set by experiment "enable-start-surface-return-time"
+     *   or from segmentation platform result if {@link ChromeFeatureList.START_SURFACE_RETURN_TIME}
+     *   is enabled.
      *
-     * @param lastBackgroundedTimeMillis The last time the application was backgrounded. Set in
-     *                                   ChromeTabbedActivity::onStopWithNative
+     * @param lastTimeMillis The last time the application was backgrounded or foreground, depends
+     *                       on which time is the max. Set in ChromeTabbedActivity::onStopWithNative
      * @return true if past threshold, false if not past threshold or experiment cannot be loaded.
      */
-    public static boolean shouldShowTabSwitcher(final long lastBackgroundedTimeMillis) {
+    public static boolean shouldShowTabSwitcher(final long lastTimeMillis) {
         long tabSwitcherAfterMillis =
                 StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getValue()
                 * DateUtils.SECOND_IN_MILLIS;
@@ -165,7 +166,7 @@ public final class ReturnToChromeUtil {
             tabSwitcherAfterMillis = getReturnTimeFromSegmentation();
         }
 
-        if (lastBackgroundedTimeMillis == -1) {
+        if (lastTimeMillis == -1) {
             // No last background timestamp set, use control behavior unless "immediate" was set.
             return tabSwitcherAfterMillis == 0;
         }
@@ -175,7 +176,7 @@ public final class ReturnToChromeUtil {
             return false;
         }
 
-        return System.currentTimeMillis() - lastBackgroundedTimeMillis >= tabSwitcherAfterMillis;
+        return System.currentTimeMillis() - lastTimeMillis >= tabSwitcherAfterMillis;
     }
 
     /**
@@ -467,9 +468,11 @@ public final class ReturnToChromeUtil {
         }
 
         // Checks whether to show the Start surface due to feature flag TAB_SWITCHER_ON_RETURN_MS.
-        long lastBackgroundedTimeMillis = inactivityTracker.getLastBackgroundedTimeMs();
+        long lastVisibleTimeMs = inactivityTracker.getLastVisibleTimeMs();
+        long lastBackgroundTimeMs = inactivityTracker.getLastBackgroundedTimeMs();
         boolean tabSwitcherOnReturn = IntentUtils.isMainIntentFromLauncher(intent)
-                && ReturnToChromeUtil.shouldShowTabSwitcher(lastBackgroundedTimeMillis);
+                && ReturnToChromeUtil.shouldShowTabSwitcher(
+                        Math.max(lastBackgroundTimeMs, lastVisibleTimeMs));
 
         // If the overview page won't be shown on startup, stops here.
         if (!tabSwitcherOnReturn) return false;

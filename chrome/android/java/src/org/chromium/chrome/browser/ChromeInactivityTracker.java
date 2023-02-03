@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /**
@@ -25,6 +26,9 @@ public class ChromeInactivityTracker
             "Startup.Android.DurationSinceLastBackgroundTime";
     private static final String UMA_IS_LAST_BACKGROUND_TIME_LOGGED =
             "Startup.Android.IsLastBackgroundTimeLogged";
+    @VisibleForTesting
+    public static final String UMA_IS_LAST_VISIBLE_TIME_LOGGED =
+            "Startup.Android.IsLastVisibleTimeLogged";
 
     private static final long UNKNOWN_LAST_BACKGROUNDED_TIME = -1;
 
@@ -54,18 +58,9 @@ public class ChromeInactivityTracker
      * Updates the shared preferences to contain the given time. Used internally and for tests.
      * @param timeInMillis the time to record.
      */
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void setLastBackgroundedTimeInPrefs(long timeInMillis) {
         SharedPreferencesManager.getInstance().writeLong(mPrefName, timeInMillis);
-    }
-
-    /**
-     * Updates the shared preferences to contain the given time synchronously. Used only in shutdown
-     * or moving Chrome to the background.
-     * @param timeInMillis the time to record.
-     */
-    public void setLastBackgroundedTimeInPrefsSync(long timeInMillis) {
-        SharedPreferencesManager.getInstance().writeLongSync(mPrefName, timeInMillis);
     }
 
     /**
@@ -85,6 +80,31 @@ public class ChromeInactivityTracker
             return UNKNOWN_LAST_BACKGROUNDED_TIME;
         }
         return System.currentTimeMillis() - lastBackgroundedTimeMs;
+    }
+
+    /**
+     * Sets the last time when Chrome was launching or moving to foreground and became visible to
+     * users and record histogram.
+     */
+    public void setLastVisibleTimeMsAndRecord(long timeInMillis) {
+        // We log the last visible time here to prevent losing the time stamp during the shutdown.
+        long lastVisibleTime = getLastVisibleTimeMs();
+        SharedPreferencesManager.getInstance().writeLong(
+                ChromePreferenceKeys.TABBED_ACTIVITY_LAST_VISIBLE_TIME_MS, timeInMillis);
+
+        Log.i(TAG, "Last visible time read from the SharedPreference is:" + lastVisibleTime + ".");
+        RecordHistogram.recordBooleanHistogram(
+                UMA_IS_LAST_VISIBLE_TIME_LOGGED, lastVisibleTime != UNKNOWN_LAST_BACKGROUNDED_TIME);
+    }
+
+    /**
+     * Gets the last time when Chrome was launching or moving to foreground and became visible to
+     * users.
+     */
+    public long getLastVisibleTimeMs() {
+        return SharedPreferencesManager.getInstance().readLong(
+                ChromePreferenceKeys.TABBED_ACTIVITY_LAST_VISIBLE_TIME_MS,
+                UNKNOWN_LAST_BACKGROUNDED_TIME);
     }
 
     @Override
