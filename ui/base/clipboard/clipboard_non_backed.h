@@ -13,6 +13,10 @@
 #include "build/build_config.h"
 #include "ui/base/clipboard/clipboard.h"
 
+namespace headless {
+class HeadlessClipboard;
+}
+
 namespace ui {
 
 class ClipboardData;
@@ -53,6 +57,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
  private:
   friend class Clipboard;
   friend class ClipboardNonBackedTestBase;
+  friend class headless::HeadlessClipboard;
   FRIEND_TEST_ALL_PREFIXES(ClipboardNonBackedTest, TextURIList);
   FRIEND_TEST_ALL_PREFIXES(ClipboardNonBackedTest, ImageEncoding);
   FRIEND_TEST_ALL_PREFIXES(ClipboardNonBackedTest, EncodeImageOnce);

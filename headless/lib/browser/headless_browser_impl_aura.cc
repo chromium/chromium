@@ -8,27 +8,21 @@
 
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "headless/lib/browser/headless_clipboard.h"
 #include "headless/lib/browser/headless_screen.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/lib/browser/headless_window_tree_host.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
-#include "ui/base/clipboard/clipboard.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace headless {
 
 void HeadlessBrowserImpl::PlatformInitialize() {
   HeadlessScreen* screen = HeadlessScreen::Create(options()->window_size);
   display::Screen::SetScreenInstance(screen);
-
-  // TODO(eseckler): We shouldn't share clipboard contents across WebContents
-  // (or at least BrowserContexts).
-  ui::Clipboard::SetClipboardForCurrentThread(
-      std::make_unique<HeadlessClipboard>());
 }
 
 void HeadlessBrowserImpl::PlatformStart() {

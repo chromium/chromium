@@ -109,6 +109,13 @@ component("clipboard") {
       "clipboard_android.cc",
       "clipboard_android.h",
     ]
+  } else {
+    sources += [
+      "clipboard_data.cc",
+      "clipboard_data.h",
+      "clipboard_non_backed.cc",
+      "clipboard_non_backed.h",
+    ]
   }
 
   if (is_mac) {
@@ -121,13 +128,7 @@ component("clipboard") {
   }
 
   if (is_ios) {
-    sources += [
-      "clipboard_data.cc",
-      "clipboard_data.h",
-      "clipboard_ios.mm",
-      "clipboard_non_backed.cc",
-      "clipboard_non_backed.h",
-    ]
+    sources += [ "clipboard_ios.mm" ]
   }
   if (is_win) {
     sources += [
@@ -160,11 +161,7 @@ component("clipboard") {
   if (use_aura) {
     if (use_ozone) {
       sources += [
-        "clipboard_data.cc",
-        "clipboard_data.h",
         "clipboard_factory_ozone.cc",
-        "clipboard_non_backed.cc",
-        "clipboard_non_backed.h",
         "clipboard_ozone.cc",
         "clipboard_ozone.h",
       ]
