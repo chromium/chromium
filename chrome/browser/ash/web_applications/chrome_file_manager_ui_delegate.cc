@@ -6,6 +6,8 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/file_manager/file_manager_string_util.h"
+#include "chrome/browser/ash/file_manager/io_task_controller.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui.h"
@@ -21,4 +23,13 @@ base::Value::Dict ChromeFileManagerUIDelegate::GetLoadTimeData() const {
   const std::string locale = g_browser_process->GetApplicationLocale();
   AddFileManagerFeatureStrings(locale, Profile::FromWebUI(web_ui_), &dict);
   return dict;
+}
+
+void ChromeFileManagerUIDelegate::ProgressPausedTasks() const {
+  file_manager::VolumeManager* const volume_manager =
+      file_manager::VolumeManager::Get(Profile::FromWebUI(web_ui_));
+
+  if (volume_manager && volume_manager->io_task_controller()) {
+    volume_manager->io_task_controller()->ProgressPausedTasks();
+  }
 }
