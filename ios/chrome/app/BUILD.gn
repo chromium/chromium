@@ -370,8 +370,10 @@ source_set("feed_app_agent") {
   ]
   deps = [
     "//base",
+    "//components/metrics",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/discover_feed:discover_feed",
     "//ios/chrome/browser/discover_feed:discover_feed_factory",
