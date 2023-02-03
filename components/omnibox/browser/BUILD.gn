@@ -304,6 +304,7 @@ static_library("browser") {
     "//components/metrics",
     "//components/navigation_metrics",
     "//components/open_from_clipboard",
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/core:core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/pref_registry",

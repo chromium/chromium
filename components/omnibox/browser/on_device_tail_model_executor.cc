@@ -118,10 +118,11 @@ OnDeviceTailModelExecutor::~OnDeviceTailModelExecutor() = default;
 
 bool OnDeviceTailModelExecutor::Init(const base::FilePath& model_filepath,
                                      const base::FilePath& vocab_filepath,
-                                     size_t state_size,
-                                     size_t num_layer,
-                                     size_t embedding_dimension) {
+                                     const ModelMetadata& metadata) {
   Reset();
+  if (model_filepath.empty() || vocab_filepath.empty()) {
+    return false;
+  }
 
   auto tokenizer = std::make_unique<OnDeviceTailTokenizer>();
   tokenizer->Init(vocab_filepath);
@@ -137,9 +138,9 @@ bool OnDeviceTailModelExecutor::Init(const base::FilePath& model_filepath,
     return false;
   }
 
-  state_size_ = state_size;
-  num_layer_ = num_layer;
-  embedding_dimension_ = embedding_dimension;
+  state_size_ = metadata.lstm_model_params().state_size();
+  num_layer_ = metadata.lstm_model_params().num_layer();
+  embedding_dimension_ = metadata.lstm_model_params().embedding_dimension();
   vocab_size_ = tokenizer_->vocab_size();
 
   return true;
@@ -572,6 +573,11 @@ OnDeviceTailModelExecutor::GenerateSuggestionsForPrefix(
     std::string suggestion;
     for (size_t i = 1; i < beam.token_ids.size() - 1; ++i) {
       suggestion += tokenizer_->IdToToken(beam.token_ids[i]);
+    }
+
+    // Remove echo suggestion.
+    if (suggestion == prefix) {
+      continue;
     }
 
     Prediction prediction;

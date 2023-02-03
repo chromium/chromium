@@ -20,6 +20,7 @@ include_rules = [
   "+components/metrics",
   "+components/navigation_metrics",
   "+components/open_from_clipboard",
+  "+components/optimization_guide",
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
   "+components/pref_registry",
