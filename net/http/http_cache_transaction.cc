@@ -3973,6 +3973,15 @@ void HttpCache::Transaction::RecordHistograms() {
   UMA_HISTOGRAM_TIMES("HttpCache.AccessToDone", total_time);
 
   bool did_send_request = !send_request_since_.is_null();
+
+  // TODO(ricea): Understand why this DCHECK is failing in the wild, fix it, and
+  // remove it. See https://crbug.com/1409150.
+  // TODO(ricea): Change this to a CHECK on HEAD after merging this fix to M111.
+  if (did_send_request) {
+    DCHECK_NE(cache_entry_status_, CacheEntryStatus::ENTRY_USED);
+  }
+  // This DCHECK() should not fire, because the one above should catch all the
+  // erroneous cases.
   DCHECK(
       (did_send_request &&
        (cache_entry_status_ == CacheEntryStatus::ENTRY_NOT_IN_CACHE ||
@@ -4022,7 +4031,13 @@ void HttpCache::Transaction::RecordHistograms() {
       break;
     }
     default:
-      NOTREACHED();
+      // STATUS_UNDEFINED and STATUS_OTHER are explicitly handled earlier in
+      // the function so shouldn't reach here. STATUS_MAX should never be set.
+      // Originally it was asserted that STATUS_USED couldn't happen here, but
+      // it turns out that it can. We don't have histograms for it, so just
+      // ignore it.
+      DCHECK_EQ(cache_entry_status_, CacheEntryStatus::ENTRY_USED);
+      break;
   }
 
   if (!total_disk_cache_read_time_.is_zero()) {
