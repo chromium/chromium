@@ -307,6 +307,14 @@ source_set("common") {
     }
   }
 
+  if (is_ios) {
+    # TOOD: Create ios file instead of stealing android
+    sources += [
+      "cursors/webcursor_android.cc",
+      "font_list_android.cc",
+    ]
+  }
+
   if (is_mac) {
     sources += [
       "font_list_mac.mm",
@@ -367,7 +375,7 @@ source_set("common") {
     ]
   }
 
-  if (is_mac || is_win || is_android || is_fuchsia) {
+  if (is_mac || is_win || is_android || is_fuchsia || is_ios) {
     sources -= [ "font_list_fontconfig.cc" ]
   }
 

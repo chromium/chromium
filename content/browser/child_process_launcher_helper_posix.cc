@@ -59,7 +59,7 @@ std::unique_ptr<PosixFileDescriptorInfo> CreateDefaultPosixFilesToMap(
       PosixFileDescriptorInfoImpl::Create());
 
 // Mac shared memory doesn't use file descriptors.
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_APPLE)
   int fd = base::FieldTrialList::GetFieldTrialDescriptor();
   DCHECK_NE(fd, -1);
   files_to_register->Share(kFieldTrialDescriptor, fd);

@@ -8512,6 +8512,10 @@ gfx::Size WebContentsImpl::GetSize() {
 #elif BUILDFLAG(IS_ANDROID)
   ui::ViewAndroid* view_android = GetNativeView();
   return view_android->bounds().size();
+#elif BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/1411704): Implement me.
+  NOTREACHED();
+  return gfx::Size();
 #endif
 }
 

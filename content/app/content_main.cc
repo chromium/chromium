@@ -71,7 +71,9 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "content/app/mac_init.h"
+#endif
 
+#if BUILDFLAG(IS_APPLE)
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #endif
@@ -201,7 +203,7 @@ RunContentProcess(ContentMainParams params,
     content_main_runner->ReInitializeParams(std::move(params));
   } else {
     is_initialized = true;
-#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_ALLOCATOR_SHIM)
     allocator_shim::InitializeAllocatorShim();
 #endif
     base::EnableTerminationOnOutOfMemory();
@@ -281,6 +283,15 @@ RunContentProcess(ContentMainParams params,
     autorelease_pool = std::make_unique<base::mac::ScopedNSAutoreleasePool>();
     params.autorelease_pool = autorelease_pool.get();
     InitializeMac();
+#endif
+
+#if BUILDFLAG(IS_IOS)
+    // TODO(crbug.com/1412835): Remove this initialization on iOS. Everything
+    // runs in process for now as we have no fork.
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitch(switches::kSingleProcess);
+    command_line->AppendSwitch(switches::kEnableViewport);
+    command_line->AppendSwitch(switches::kUseMobileUserAgent);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

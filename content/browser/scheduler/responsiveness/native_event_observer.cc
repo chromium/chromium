@@ -78,7 +78,7 @@ void NativeEventObserver::DidDispatchMSG(const MSG& msg) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 void NativeEventObserver::RegisterObserver() {}
 void NativeEventObserver::DeregisterObserver() {}
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)

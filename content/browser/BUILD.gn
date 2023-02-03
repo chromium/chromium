@@ -267,6 +267,7 @@ source_set("browser") {
     "//ui/base/ime/init",
     "//ui/color",
     "//ui/color:mixers",
+    "//ui/compositor",
     "//ui/display",
     "//ui/display/types",
     "//ui/display/util",
@@ -2604,6 +2605,20 @@ source_set("browser") {
     weak_frameworks = [
       "UniformTypeIdentifiers.framework",  # macOS 11
     ]
+  } else if (is_ios) {
+    sources += [
+      "child_process_launcher_helper_ios.cc",
+      "renderer_host/browser_compositor_ios.h",
+      "renderer_host/browser_compositor_ios.mm",
+      "renderer_host/delegated_frame_host_client_ios.cc",
+      "renderer_host/delegated_frame_host_client_ios.h",
+      "renderer_host/render_widget_host_view_ios.h",
+      "renderer_host/render_widget_host_view_ios.mm",
+      "web_contents/web_contents_view_ios.h",
+      "web_contents/web_contents_view_ios.mm",
+    ]
+    frameworks += [ "IOSurface.framework" ]
+    deps += [ "//ui/accelerated_widget_mac" ]
   } else {
     # Not Mac.
     deps += [ "//sandbox" ]
@@ -2894,6 +2909,15 @@ source_set("browser") {
 
   if (use_pangocairo) {
     configs += [ "//build/config/linux/pangocairo" ]
+  }
+
+  if (is_ios) {
+    sources += [
+      "renderer_host/input/web_input_event_builders_ios.h",
+      "renderer_host/input/web_input_event_builders_ios.mm",
+      "renderer_host/native_web_keyboard_event_ios.mm",
+      "speech/tts_ios.mm",
+    ]
   }
 
   if (is_android) {

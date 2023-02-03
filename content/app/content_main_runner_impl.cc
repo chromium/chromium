@@ -1100,6 +1100,9 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
   main_params.sandbox_info = content_main_params_->sandbox_info;
 #elif BUILDFLAG(IS_MAC)
   main_params.autorelease_pool = content_main_params_->autorelease_pool;
+#elif BUILDFLAG(IS_IOS)
+  main_params.argc = content_main_params_->argc;
+  main_params.argv = content_main_params_->argv;
 #endif
 
   const bool start_minimal_browser = content_main_params_->minimal_browser_mode;

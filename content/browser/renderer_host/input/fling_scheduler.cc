@@ -68,15 +68,10 @@ void FlingScheduler::ProgressFlingOnBeginFrameIfneeded(
 }
 
 ui::Compositor* FlingScheduler::GetCompositor() {
-#if defined(USE_AURA)
-  if (host_->GetView() && host_->GetView()->GetNativeView() &&
-      host_->GetView()->GetNativeView()->GetHost() &&
-      host_->GetView()->GetNativeView()->GetHost()->compositor()) {
-    return host_->GetView()->GetNativeView()->GetHost()->compositor();
+  if (!host_->GetView()) {
+    return nullptr;
   }
-#endif
-
-  return nullptr;
+  return host_->GetView()->GetCompositor();
 }
 
 void FlingScheduler::OnAnimationStep(base::TimeTicks timestamp) {

@@ -419,6 +419,8 @@ bool SwiftShaderAllowed() {
 [[maybe_unused]] bool MetalAllowed() {
 #if BUILDFLAG(IS_MAC)
   return base::FeatureList::IsEnabled(features::kMetal);
+#elif BUILDFLAG(IS_IOS)
+  return true;
 #else
   return false;
 #endif
