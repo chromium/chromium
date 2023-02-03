@@ -18,6 +18,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -134,7 +135,8 @@ absl::optional<uint32_t> GetBatteryBatteryDischargeGranularity(
   if (!success)
     return absl::nullopt;
 
-  size_t nb_elements = bytes_returned / sizeof(BATTERY_REPORTING_SCALE);
+  ptrdiff_t nb_elements = base::checked_cast<ptrdiff_t>(
+      bytes_returned / sizeof(BATTERY_REPORTING_SCALE));
   if (!nb_elements)
     return absl::nullopt;
 
