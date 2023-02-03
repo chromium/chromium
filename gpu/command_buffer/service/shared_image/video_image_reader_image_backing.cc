@@ -180,6 +180,12 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
         RefCountedLockHelperDrDc(std::move(drdc_lock)),
         texture_(std::move(texture)) {}
 
+  ~GLTextureVideoImageRepresentation() override {
+    if (!has_context()) {
+      texture_->NotifyOnContextLost();
+    }
+  }
+
   // Disallow copy and assign.
   GLTextureVideoImageRepresentation(const GLTextureVideoImageRepresentation&) =
       delete;
@@ -247,6 +253,12 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
             abstract_texture_->GetTextureBase())) {
     // TODO(https://crbug.com/1172769): Remove this CHECK.
     CHECK(passthrough_texture_);
+  }
+
+  ~GLTexturePassthroughVideoImageRepresentation() override {
+    if (!has_context()) {
+      abstract_texture_->NotifyOnContextLost();
+    }
   }
 
   // Disallow copy and assign.

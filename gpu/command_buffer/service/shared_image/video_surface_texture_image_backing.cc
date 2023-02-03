@@ -90,6 +90,12 @@ class VideoSurfaceTextureImageBacking::GLTextureVideoImageRepresentation
       : GLTextureImageRepresentation(manager, backing, tracker),
         texture_(std::move(texture)) {}
 
+  ~GLTextureVideoImageRepresentation() override {
+    if (!has_context()) {
+      texture_->NotifyOnContextLost();
+    }
+  }
+
   // Disallow copy and assign.
   GLTextureVideoImageRepresentation(const GLTextureVideoImageRepresentation&) =
       delete;
@@ -138,6 +144,12 @@ class VideoSurfaceTextureImageBacking::
             abstract_texture_->GetTextureBase())) {
     // TODO(https://crbug.com/1172769): Remove this CHECK.
     CHECK(passthrough_texture_);
+  }
+
+  ~GLTexturePassthroughVideoImageRepresentation() override {
+    if (!has_context()) {
+      abstract_texture_->NotifyOnContextLost();
+    }
   }
 
   // Disallow copy and assign.
