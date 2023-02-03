@@ -45,6 +45,9 @@ BASE_DECLARE_FEATURE(kIOSPasswordManagerCrossOriginIframeSupport);
 BASE_DECLARE_FEATURE(kIOSPasswordCheckup);
 BASE_DECLARE_FEATURE(kIOSShowPasswordStorageInSaveInfobar);
 #endif  // IS_IOS
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+BASE_DECLARE_FEATURE(kMemoryMapWeaknessCheckDictionaries);
+#endif
 BASE_DECLARE_FEATURE(kMuteCompromisedPasswords);
 BASE_DECLARE_FEATURE(kNewRegexForOtpFields);
 BASE_DECLARE_FEATURE(kPasswordViewPageInSettings);

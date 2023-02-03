@@ -109,6 +109,14 @@ BASE_FEATURE(kIOSShowPasswordStorageInSaveInfobar,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
+// Enables memory mapping the word lists used in the zxcvbn library employed
+// for the password weakness check.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+BASE_FEATURE(kMemoryMapWeaknessCheckDictionaries,
+             "kMemoryMapWeaknessCheckDictionaries",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Enables (un)muting compromised passwords from bulk leak check in settings.
 BASE_FEATURE(kMuteCompromisedPasswords,
              "MuteCompromisedPasswords",

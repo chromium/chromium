@@ -12,8 +12,10 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -27,6 +29,7 @@
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
@@ -47,6 +50,9 @@ constexpr base::FilePath::StringPieceType
 constexpr base::FilePath::StringPieceType
     ZxcvbnDataComponentInstallerPolicy::kUsTvAndFilmTxtFileName;
 
+constexpr base::FilePath::StringPieceType
+    ZxcvbnDataComponentInstallerPolicy::kCombinedRankedDictsFileName;
+
 namespace {
 
 constexpr std::array<base::FilePath::StringPieceType, 6> kFileNames = {{
@@ -57,6 +63,8 @@ constexpr std::array<base::FilePath::StringPieceType, 6> kFileNames = {{
     ZxcvbnDataComponentInstallerPolicy::kSurnamesTxtFileName,
     ZxcvbnDataComponentInstallerPolicy::kUsTvAndFilmTxtFileName,
 }};
+
+constexpr char kFirstMemoryMappedVersion[] = "2";
 
 zxcvbn::RankedDicts ParseRankedDictionaries(const base::FilePath& install_dir) {
   std::vector<std::string> raw_dicts;
@@ -84,6 +92,19 @@ zxcvbn::RankedDicts ParseRankedDictionaries(const base::FilePath& install_dir) {
   return zxcvbn::RankedDicts(dicts);
 }
 
+zxcvbn::RankedDicts MemoryMapRankedDictionaries(
+    const base::FilePath& install_dir) {
+  base::FilePath dictionary_path = install_dir.Append(
+      ZxcvbnDataComponentInstallerPolicy::kCombinedRankedDictsFileName);
+  DVLOG(1) << "Memory mapping dictionary from file: " << dictionary_path;
+  auto map = std::make_unique<base::MemoryMappedFile>();
+  if (!map->Initialize(dictionary_path)) {
+    VLOG(1) << "Failed to memory map file from " << dictionary_path;
+    return zxcvbn::RankedDicts(nullptr);
+  }
+  return zxcvbn::RankedDicts(std::move(map));
+}
+
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: ojhpjlocmbogdgmfpkhlaaeamibhnphh
 constexpr std::array<uint8_t, 32> kZxcvbnDataPublicKeySha256 = {
@@ -97,9 +118,27 @@ constexpr std::array<uint8_t, 32> kZxcvbnDataPublicKeySha256 = {
 bool ZxcvbnDataComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
-  return base::ranges::all_of(kFileNames, [&](const auto& file_name) {
-    return base::PathExists(install_dir.Append(file_name));
-  });
+  const std::string* version_string = manifest.FindString("version");
+  if (!version_string) {
+    return false;
+  }
+
+  base::Version version(*version_string);
+  if (!version.IsValid()) {
+    return false;
+  }
+
+  if (base::ranges::any_of(kFileNames, [&](const auto& file_name) {
+        return !base::PathExists(install_dir.Append(file_name));
+      })) {
+    return false;
+  }
+
+  // If the version supports memory mapping, then the binary file that contains
+  // the combined ranked dictionaries must exist, too.
+  return version < base::Version(kFirstMemoryMappedVersion) ||
+         base::PathExists(install_dir.Append(
+             ZxcvbnDataComponentInstallerPolicy::kCombinedRankedDictsFileName));
 }
 
 bool ZxcvbnDataComponentInstallerPolicy::
@@ -127,10 +166,19 @@ void ZxcvbnDataComponentInstallerPolicy::ComponentReady(
   DVLOG(1) << "Zxcvbn Data Component ready, version " << version.GetString()
            << " in " << install_dir;
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&ParseRankedDictionaries, install_dir),
-      base::BindOnce(&zxcvbn::SetRankedDicts));
+  if (version >= base::Version(kFirstMemoryMappedVersion) &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kMemoryMapWeaknessCheckDictionaries)) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&MemoryMapRankedDictionaries, install_dir),
+        base::BindOnce(&zxcvbn::SetRankedDicts));
+  } else {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&ParseRankedDictionaries, install_dir),
+        base::BindOnce(&zxcvbn::SetRankedDicts));
+  }
 }
 
 base::FilePath ZxcvbnDataComponentInstallerPolicy::GetRelativeInstallDir()

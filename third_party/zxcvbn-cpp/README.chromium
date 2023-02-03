@@ -47,6 +47,9 @@ Applied the following patches:
   necessary for Chromium, includes applying patches/no-c-api.diff.
 - patches/reduce_memory_usage.diff: Reduce browser memory usage by ~2.0 MiB on
   64bit, ~0.65 MiB on 32bit (https://crrev.com/c/2842124).
+- patches/memory_mapping.diff: Adds a wrapper around the binary blob that
+  the contents of RankedDicts to allow reading it either directory from memory
+  or from a memory mapped file.
 
 Ran the following commands to generate adjacency graphs:
 $ python ./data-scripts/build_keyboard_adjacency_graphs.py ./native-src/zxcvbn/adjacency_graphs.hpp

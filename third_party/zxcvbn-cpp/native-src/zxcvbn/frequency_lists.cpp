@@ -6,9 +6,13 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/task/thread_pool.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace zxcvbn {
 
@@ -58,21 +62,25 @@ struct MergedEntry {
 // that stores the actual word.
 class RankedDictEntryRef {
  public:
-  explicit RankedDictEntryRef(const std::vector<char>& vec, size_t offset) {
-    CHECK_LT(offset + sizeof(MarkedBigEndianU15), vec.size());
-    const char* raw_rank = vec.data() + offset;
+  explicit RankedDictEntryRef(const RankedDicts::Datawrapper& wrapper,
+                              size_t offset) {
+    size_t size = wrapper.size();
+    const char* data = wrapper.data();
+
+    CHECK_LT(offset + sizeof(MarkedBigEndianU15), size);
+    const char* raw_rank = data + offset;
     rank_ = reinterpret_cast<const MarkedBigEndianU15*>(raw_rank)->get();
 
     size_t value_start = offset + sizeof(MarkedBigEndianU15);
     size_t value_end = value_start;
     while (true) {
-      CHECK_LT(value_end, vec.size());
-      if (MarkedBigEndianU15::IsPossibleMarkerByte(vec[value_end]))
+      CHECK_LT(value_end, size);
+      if (MarkedBigEndianU15::IsPossibleMarkerByte(data[value_end])) {
         break;
+      }
       value_end++;
     }
-    value_ =
-        base::StringPiece(vec.data() + value_start, value_end - value_start);
+    value_ = base::StringPiece(data + value_start, value_end - value_start);
   }
   RankedDictEntryRef(RankedDictEntryRef&) = delete;
   RankedDictEntryRef& operator=(const RankedDictEntryRef&) = delete;
@@ -93,7 +101,23 @@ class RankedDictEntryRef {
   size_t rank_;
   base::StringPiece value_;
 };
+
+// Helper function that does nothing with the RankedDicts apart from letting
+// it destruct as it goes out of scope. This is called on the ThreadPool to
+// allow for potentially blocking behavior of `RankedDicts` destructor.
+void DoNothing(RankedDicts dicts) {}
+
 }  // namespace
+
+RankedDicts::Datawrapper::Datawrapper(std::vector<char> data)
+    : size_(data.size()), data_(data.data()), content_(std::move(data)) {}
+
+RankedDicts::Datawrapper::Datawrapper(
+    std::unique_ptr<base::MemoryMappedFile> map)
+    : size_((map && map->IsValid()) ? map->length() : 0u),
+      data_(map && map->IsValid() ? reinterpret_cast<const char*>(map->data())
+                                  : nullptr),
+      content_(std::move(map)) {}
 
 RankedDicts::RankedDicts(
     const std::vector<std::vector<base::StringPiece>>& ordered_dicts) {
@@ -126,28 +150,35 @@ RankedDicts::RankedDicts(
     dict_size += entry.value.size();
 
   // 1 byte at the end for trailing marker byte (for finding last string size)
-  data_.reserve(dict_size + 1);
+  std::vector<char> vec;
+  vec.reserve(dict_size + 1);
 
   // second pass: place elements in allocated array
   for (MergedEntry& entry : merged_dicts)
-    RankedDictEntryRef::AppendToVector(entry, data_);
-  CHECK_EQ(data_.size(), dict_size);
-  data_.push_back(MarkedBigEndianU15::MARKER_BIT);
+    RankedDictEntryRef::AppendToVector(entry, vec);
+  CHECK_EQ(vec.size(), dict_size);
+  vec.push_back(MarkedBigEndianU15::MARKER_BIT);
+  data_ = Datawrapper(std::move(vec));
 }
+
+RankedDicts::RankedDicts(std::unique_ptr<base::MemoryMappedFile> map)
+    : data_(std::move(map)) {}
 
 // Performs a binary search over an array of variable-size elements.
 // To find an element in the middle between two others, we first locate the
 // *byte* in the middle, then seek forward until we hit a marker byte that
 // will only appear at the start of an allocation.
 absl::optional<rank_t> RankedDicts::Find(base::StringPiece needle) const {
-  // special case for empty dictionary
-  if (data_.size() == 0)
+  // Special case for empty dictionary.
+  size_t size = data_.size();
+  if (size == 0) {
     return absl::nullopt;
-  CHECK_GE(data_.size(), 3UL);  // 2 bytes header, 1 byte trailing marker
+  }
+  CHECK_GE(size, 3u);  // 2 bytes header, 1 byte trailing marker
 
   // Create a range whose start and end point to marker bytes.
   size_t range_start = 0;
-  size_t range_last = data_.size() - 2;
+  size_t range_last = size - 2u;
   CHECK(IsRealMarker(0));
   while (!IsRealMarker(range_last))
     range_last--;
@@ -186,16 +217,27 @@ absl::optional<rank_t> RankedDicts::Find(base::StringPiece needle) const {
 // determine whether a MarkedBigEndianU15 starts there.
 bool RankedDicts::IsRealMarker(size_t offset) const {
   CHECK_LT(offset, data_.size());
-  if (MarkedBigEndianU15::IsPossibleMarkerByte(data_[offset])) {
+  const char* data = data_.data();
+  if (MarkedBigEndianU15::IsPossibleMarkerByte(data[offset])) {
     if (offset == 0)
       return true;
-    if (!MarkedBigEndianU15::IsPossibleMarkerByte(data_[offset - 1]))
+    if (!MarkedBigEndianU15::IsPossibleMarkerByte(data[offset - 1])) {
       return true;
+    }
   }
   return false;
 }
 
+void SetRankedDictsImplementation(RankedDicts dicts) {
+  default_ranked_dicts() = std::move(dicts);
+}
+
 void SetRankedDicts(RankedDicts dicts) {
+  // Destroying a `RankedDict` may block if it is based on a `MemoryMappedFile`.
+  // Therefore this helper moves the task of doing it to a thread pool.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&DoNothing, std::move(default_ranked_dicts())));
   default_ranked_dicts() = std::move(dicts);
 }
 
