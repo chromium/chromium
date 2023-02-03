@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
+#include "ash/public/cpp/desk_template.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/app_constants/constants.h"
@@ -11,36 +12,93 @@
 
 namespace ash {
 
+enum class MetricsAction {
+  kDelete = 0,
+  kLaunch,
+  kNew,
+  kReplace,
+  kTabCount,
+  kWindowCount,
+  kWindowAndTabCount,
+  kUnsupportedAppDialogShow
+};
+
+const char* GetHistogramName(DeskTemplateType type,
+                             MetricsAction metrics_action_name) {
+  switch (type) {
+    case DeskTemplateType::kTemplate:
+      switch (metrics_action_name) {
+        case MetricsAction::kDelete:
+          return kDeleteTemplateHistogramName;
+        case MetricsAction::kLaunch:
+          return kLaunchTemplateHistogramName;
+        case MetricsAction::kNew:
+          return kNewTemplateHistogramName;
+        case MetricsAction::kReplace:
+          return kReplaceTemplateHistogramName;
+        case MetricsAction::kTabCount:
+          return kTemplateTabCountHistogramName;
+        case MetricsAction::kWindowCount:
+          return kTemplateWindowCountHistogramName;
+        case MetricsAction::kWindowAndTabCount:
+          return kTemplateWindowAndTabCountHistogramName;
+        case MetricsAction::kUnsupportedAppDialogShow:
+          return kTemplateUnsupportedAppDialogShowHistogramName;
+      }
+    case DeskTemplateType::kSaveAndRecall:
+      switch (metrics_action_name) {
+        case MetricsAction::kDelete:
+          return kDeleteSaveAndRecallHistogramName;
+        case MetricsAction::kLaunch:
+          return kLaunchSaveAndRecallHistogramName;
+        case MetricsAction::kNew:
+          return kNewSaveAndRecallHistogramName;
+        case MetricsAction::kReplace:
+          return kReplaceSaveAndRecallHistogramName;
+        case MetricsAction::kTabCount:
+          return kSaveAndRecallTabCountHistogramName;
+        case MetricsAction::kWindowCount:
+          return kSaveAndRecallWindowCountHistogramName;
+        case MetricsAction::kWindowAndTabCount:
+          return kSaveAndRecallWindowAndTabCountHistogramName;
+        case MetricsAction::kUnsupportedAppDialogShow:
+          return kSaveAndRecallUnsupportedAppDialogShowHistogramName;
+      }
+    case DeskTemplateType::kFloatingWorkspace:
+    case DeskTemplateType::kUnknown:
+      return nullptr;
+  }
+}
+
 void RecordLoadSavedDeskLibraryHistogram() {
   base::UmaHistogramBoolean(kLoadTemplateGridHistogramName, true);
 }
 
 void RecordDeleteSavedDeskHistogram(DeskTemplateType type) {
-  base::UmaHistogramBoolean(type == DeskTemplateType::kTemplate
-                                ? kDeleteTemplateHistogramName
-                                : kDeleteSaveAndRecallHistogramName,
-                            true);
+  if (const char* metrics_name =
+          GetHistogramName(type, MetricsAction::kDelete)) {
+    base::UmaHistogramBoolean(metrics_name, true);
+  }
 }
 
 void RecordLaunchSavedDeskHistogram(DeskTemplateType type) {
-  base::UmaHistogramBoolean(type == DeskTemplateType::kTemplate
-                                ? kLaunchTemplateHistogramName
-                                : kLaunchSaveAndRecallHistogramName,
-                            true);
+  if (const char* metrics_name =
+          GetHistogramName(type, MetricsAction::kLaunch)) {
+    base::UmaHistogramBoolean(metrics_name, true);
+  }
 }
 
 void RecordNewSavedDeskHistogram(DeskTemplateType type) {
-  base::UmaHistogramBoolean(type == DeskTemplateType::kTemplate
-                                ? kNewTemplateHistogramName
-                                : kNewSaveAndRecallHistogramName,
-                            true);
+  if (const char* metrics_name = GetHistogramName(type, MetricsAction::kNew)) {
+    base::UmaHistogramBoolean(metrics_name, true);
+  }
 }
 
 void RecordReplaceSavedDeskHistogram(DeskTemplateType type) {
-  base::UmaHistogramBoolean(type == DeskTemplateType::kTemplate
-                                ? kReplaceTemplateHistogramName
-                                : kReplaceSaveAndRecallHistogramName,
-                            true);
+  if (const char* metrics_name =
+          GetHistogramName(type, MetricsAction::kReplace)) {
+    base::UmaHistogramBoolean(metrics_name, true);
+  }
 }
 
 void RecordAddOrUpdateTemplateStatusHistogram(
@@ -52,12 +110,19 @@ void RecordAddOrUpdateTemplateStatusHistogram(
 void RecordUserSavedDeskCountHistogram(DeskTemplateType type,
                                        size_t entry_count,
                                        size_t max_entry_count) {
-  if (type == DeskTemplateType::kTemplate) {
-    UMA_HISTOGRAM_EXACT_LINEAR(kUserTemplateCountHistogramName, entry_count,
-                               max_entry_count);
-  } else {
-    UMA_HISTOGRAM_EXACT_LINEAR(kUserSaveAndRecallCountHistogramName,
-                               entry_count, max_entry_count);
+  switch (type) {
+    case DeskTemplateType::kTemplate:
+      UMA_HISTOGRAM_EXACT_LINEAR(kUserTemplateCountHistogramName, entry_count,
+                                 max_entry_count);
+      break;
+    case DeskTemplateType::kSaveAndRecall:
+      UMA_HISTOGRAM_EXACT_LINEAR(kUserSaveAndRecallCountHistogramName,
+                                 entry_count, max_entry_count);
+
+      break;
+    case DeskTemplateType::kFloatingWorkspace:
+    case DeskTemplateType::kUnknown:
+      break;
   }
 }
 
@@ -91,27 +156,26 @@ void RecordWindowAndTabCountHistogram(const DeskTemplate& desk_template) {
     }
   }
 
-  if (desk_template.type() == DeskTemplateType::kTemplate) {
-    base::UmaHistogramCounts100(kTemplateWindowCountHistogramName,
-                                window_count);
-    base::UmaHistogramCounts100(kTemplateTabCountHistogramName, tab_count);
-    base::UmaHistogramCounts100(kTemplateWindowAndTabCountHistogramName,
-                                total_count);
-  } else {
-    base::UmaHistogramCounts100(kSaveAndRecallWindowCountHistogramName,
-                                window_count);
-    base::UmaHistogramCounts100(kSaveAndRecallTabCountHistogramName, tab_count);
-    base::UmaHistogramCounts100(kSaveAndRecallWindowAndTabCountHistogramName,
-                                total_count);
+  if (const char* window_count_metrics_name =
+          GetHistogramName(desk_template.type(), MetricsAction::kWindowCount)) {
+    base::UmaHistogramCounts100(window_count_metrics_name, window_count);
+  }
+  if (const char* tab_count_metrics_name =
+          GetHistogramName(desk_template.type(), MetricsAction::kTabCount)) {
+    base::UmaHistogramCounts100(tab_count_metrics_name, tab_count);
+  }
+
+  if (const char* window_and_tab_count_metrics_name = GetHistogramName(
+          desk_template.type(), MetricsAction::kWindowAndTabCount)) {
+    base::UmaHistogramCounts100(window_and_tab_count_metrics_name, total_count);
   }
 }
 
 void RecordUnsupportedAppDialogShowHistogram(DeskTemplateType type) {
-  base::UmaHistogramBoolean(
-      type == DeskTemplateType::kTemplate
-          ? kTemplateUnsupportedAppDialogShowHistogramName
-          : kSaveAndRecallUnsupportedAppDialogShowHistogramName,
-      true);
+  if (const char* metrics_name =
+          GetHistogramName(type, MetricsAction::kUnsupportedAppDialogShow)) {
+    base::UmaHistogramBoolean(metrics_name, true);
+  }
 }
 
 void RecordTimeBetweenSaveAndRecall(base::TimeDelta duration) {
