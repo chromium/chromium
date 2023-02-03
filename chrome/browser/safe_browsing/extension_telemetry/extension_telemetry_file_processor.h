@@ -20,19 +20,13 @@ namespace safe_browsing {
 // Given an extension root path, the FileProcessor does the following:
 //   - Computes and retrieves the installed file hashes
 //   - Retrieves the manifest.json file contents
-// The FileProcessor is also instantiated on a separate thread due to its
-// expensive operations, such as file reading and hashing.
+// The FileProcessor is owned and instantiated by ExtensionTelemetryService when
+// it is enabled and destroyed when it is disabled. This object lives on a
+// different sequence from the ExtensionTelemetryService because it performs
+// blocking file read operations.
 class ExtensionTelemetryFileProcessor {
  public:
-  // TODO(richche): Add in logic to find latest version folder here or in the
-  // caller.
-  // Parameters:
-  // - max_files_to_process: max number of files processed per extension
-  // - max_file_size: max file size limit for extension files
-  // - extension_root_dir: root directory of extension files
-  explicit ExtensionTelemetryFileProcessor(const uint32_t max_files_to_process,
-                                           const int64_t max_file_size,
-                                           base::FilePath extension_root_dir);
+  ExtensionTelemetryFileProcessor();
 
   ExtensionTelemetryFileProcessor(const ExtensionTelemetryFileProcessor&) =
       delete;
@@ -41,15 +35,15 @@ class ExtensionTelemetryFileProcessor {
 
   virtual ~ExtensionTelemetryFileProcessor();
 
-  // Selects and processes installed extension files. Returns files data in a
-  // Dict:
+  // Selects and processes installed extension files from the given root
+  // directory. Returns files data in a Dict:
   // <file path 1, file hash 1>
   // ...
   // <file path N, file hash N>
   // <manifest.json, file contents>
   // Each file path is relative starting from the extension root. Manifest.json
   // file is unhashed.
-  base::Value::Dict ProcessExtension();
+  base::Value::Dict ProcessExtension(const base::FilePath& root_dir);
 
   void SetMaxFilesToReadForTest(int64_t max_files_to_read);
 
@@ -66,11 +60,12 @@ class ExtensionTelemetryFileProcessor {
   //   order
   //   - Ignore empty files
   //   - Ignore files over max_file_size_ limit
-  SortedFilePaths RetrieveFilePaths();
+  SortedFilePaths RetrieveFilePaths(const base::FilePath& root_dir);
 
   // Hashes the given list of extension files and returns a Dict of <relative
   // file path, file hash> until |max_files_to_process_| is reached.
-  base::Value::Dict ComputeHashes(const SortedFilePaths& file_paths);
+  base::Value::Dict ComputeHashes(const base::FilePath& root_dir,
+                                  const SortedFilePaths& file_paths);
 
   // Returns true if a file has JS, HTML, or CSS extension.
   bool IsApplicableType(const base::FilePath& file_path);
@@ -78,15 +73,12 @@ class ExtensionTelemetryFileProcessor {
   // Max number of files processed per extension.
   size_t max_files_to_process_;
 
-  // Max file size limit for extension files.
+  // Max file size limit for extension files in bytes.
   int64_t max_file_size_;
 
   // Max number of files read limit enforced in case an extension has too many
   // files.
   int64_t max_files_to_read_;
-
-  // Root directory path where the extension files are installed.
-  base::FilePath extension_root_dir_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

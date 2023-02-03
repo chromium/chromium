@@ -98,6 +98,20 @@ BASE_DECLARE_FEATURE(kExtensionTelemetry);
 // sent by the server.
 BASE_DECLARE_FEATURE(kExtensionTelemetryConfiguration);
 
+// Allows the Extension Telemetry Service to process installed extension files
+// and attach file data to reports.
+BASE_DECLARE_FEATURE(kExtensionTelemetryFileData);
+
+// Specifies the max number of files to process per extension in Extension
+// Telemetry's File Processor.
+extern const base::FeatureParam<int>
+    kExtensionTelemetryFileDataMaxFilesToProcess;
+
+// Specifies the max file size to process in Extension Telemetry's File
+// Processor.
+extern const base::FeatureParam<int>
+    kExtensionTelemetryFileDataMaxFileSizeBytes;
+
 // Enables data collected by the kExtensionTelemetry to be written and read to
 // disk. This data will be uploaded for analysis.
 BASE_DECLARE_FEATURE(kExtensionTelemetryPersistence);
