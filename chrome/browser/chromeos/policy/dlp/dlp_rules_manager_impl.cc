@@ -324,6 +324,10 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedComponent(
   DCHECK(restriction == Restriction::kClipboard ||
          restriction == Restriction::kFiles);
 
+  if (destination == Component::kUnknownComponent) {
+    return DlpRulesManager::Level::kAllow;
+  }
+
   const RulesConditionsMap src_rules_map = MatchUrlAndGetRulesMapping(
       source, src_url_matcher_.get(), src_url_rules_mapping_);
 

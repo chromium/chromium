@@ -110,6 +110,7 @@ TEST_F(DlpRulesManagerImplTest, UnknownRestriction) {
       DlpRulesManager::Restriction::kUnknownRestriction, 0);
 }
 
+// Unknown Components should be allowed, (b/267622459).
 TEST_F(DlpRulesManagerImplTest, UnknownComponent) {
   dlp_test_util::DlpRule rule("rule #1", "Unknown");
   rule.AddSrcUrl(kExampleUrl)
@@ -123,13 +124,12 @@ TEST_F(DlpRulesManagerImplTest, UnknownComponent) {
                                       1);
 
   std::string src_pattern;
-  std::string dst_pattern;
   EXPECT_EQ(
-      DlpRulesManager::Level::kBlock,
+      DlpRulesManager::Level::kAllow,
       dlp_rules_manager_.IsRestrictedComponent(
           GURL(kExampleUrl), DlpRulesManager::Component::kUnknownComponent,
           DlpRulesManager::Restriction::kClipboard, &src_pattern));
-  EXPECT_EQ(src_pattern, kExampleUrl);
+  EXPECT_EQ(src_pattern, "");
 }
 
 TEST_F(DlpRulesManagerImplTest, UnknownLevel) {
