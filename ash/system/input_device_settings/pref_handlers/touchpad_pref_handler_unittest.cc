@@ -29,8 +29,8 @@ const mojom::TouchpadSettings kTouchpadSettingsDefault(
     /*tap_dragging_enabled=*/kDefaultTapDraggingEnabled,
     /*scroll_sensitivity=*/kDefaultSensitivity,
     /*scroll_acceleration=*/kDefaultScrollAcceleration,
-    /*haptic_sensitivity=*/kDefaultSensitivity,
-    /*haptic_enabled);=*/kDefaultHapticFeedbackEnabled);
+    /*haptic_sensitivity=*/kDefaultHapticSensitivity,
+    /*haptic_enabled=*/kDefaultHapticFeedbackEnabled);
 
 const mojom::TouchpadSettings kTouchpadSettings1(
     /*sensitivity=*/1,
@@ -42,7 +42,7 @@ const mojom::TouchpadSettings kTouchpadSettings1(
     /*scroll_sensitivity=*/1,
     /*scroll_acceleration=*/false,
     /*haptic_sensitivity=*/1,
-    /*haptic_enabled);=*/false);
+    /*haptic_enabled=*/false);
 
 const mojom::TouchpadSettings kTouchpadSettings2(
     /*sensitivity=*/3,
@@ -54,7 +54,7 @@ const mojom::TouchpadSettings kTouchpadSettings2(
     /*scroll_sensitivity=*/3,
     /*scroll_acceleration=*/false,
     /*haptic_sensitivity=*/3,
-    /*haptic_enabled);=*/false);
+    /*haptic_enabled=*/false);
 }  // namespace
 
 class TouchpadPrefHandlerTest : public AshTestBase {
