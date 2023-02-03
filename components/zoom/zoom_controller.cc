@@ -54,7 +54,7 @@ ZoomController::ZoomController(content::WebContents* web_contents)
 ZoomController::~ZoomController() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (auto& observer : observers_) {
-    observer.OnZoomControllerDestroyed();
+    observer.OnZoomControllerDestroyed(this);
   }
 }
 
@@ -323,7 +323,7 @@ void ZoomController::WebContentsDestroyed() {
   // At this point we should no longer be sending any zoom events with this
   // WebContents.
   for (auto& observer : observers_) {
-    observer.OnZoomControllerDestroyed();
+    observer.OnZoomControllerDestroyed(this);
   }
   observers_.Clear();
 }

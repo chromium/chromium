@@ -1086,7 +1086,8 @@ void ChromeAutofillClient::OnWebContentsFocused(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void ChromeAutofillClient::OnZoomControllerDestroyed() {
+void ChromeAutofillClient::OnZoomControllerDestroyed(
+    zoom::ZoomController* source) {
   zoom_observation_.Reset();
 }
 

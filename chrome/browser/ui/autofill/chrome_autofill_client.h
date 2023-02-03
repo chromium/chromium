@@ -255,7 +255,7 @@ class ChromeAutofillClient
 
 #if !BUILDFLAG(IS_ANDROID)
   // ZoomObserver:
-  void OnZoomControllerDestroyed() override;
+  void OnZoomControllerDestroyed(zoom::ZoomController* source) override;
   void OnZoomChanged(
       const zoom::ZoomController::ZoomChangedEventData& data) override;
 #endif

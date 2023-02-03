@@ -13,7 +13,7 @@ namespace zoom {
 class ZoomObserver : public base::CheckedObserver {
  public:
   // Fired when the WebContents or the ZoomController is destructed.
-  virtual void OnZoomControllerDestroyed() {}
+  virtual void OnZoomControllerDestroyed(ZoomController* source) {}
 
   // Notification that the zoom percentage has changed.
   virtual void OnZoomChanged(const ZoomController::ZoomChangedEventData& data) {
