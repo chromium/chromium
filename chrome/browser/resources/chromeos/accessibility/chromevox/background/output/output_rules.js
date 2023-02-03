@@ -114,14 +114,16 @@ export class AncestryOutputRule extends OutputRule {
    * @param {ChromeVoxRole|undefined} nodeRole
    * @param {ChromeVoxRole|undefined} parentRole
    * @param {string|undefined} formatName
+   * @param {boolean} tryBraille
    */
-  constructor(eventType, nodeRole, parentRole, formatName) {
+  constructor(eventType, nodeRole, parentRole, formatName, tryBraille) {
     super(eventType);
     /** @private {string|undefined} */
     this.formatName_ = formatName;
 
     this.populateRole(nodeRole, parentRole, formatName);
     this.populateNavigation(formatName);
+    this.populateOutput(tryBraille);
   }
 
   /** @param {string|undefined} formatName */

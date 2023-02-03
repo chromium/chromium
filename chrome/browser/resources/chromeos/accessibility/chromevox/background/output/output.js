@@ -866,12 +866,14 @@ export class Output {
         continue;
       }
 
+      const parentRole = roleInfo.inherits || CustomRole.NO_ROLE;
       const rule = new AncestryOutputRule(
-          type, formatNode.role, roleInfo.inherits, formatName);
+          type, formatNode.role, parentRole, formatName,
+          this.formatOptions_.braille);
+
       // First, look up the event type's format block.
       const eventBlock = OutputRule.RULES[rule.event];
 
-      rule.populateOutput(this.formatOptions_.braille);
       if (eventBlock[rule.role][formatName]) {
         if (this.formatOptions_.braille) {
           buff = /** @type {!Array<Spannable>} */ ([]);
