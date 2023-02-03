@@ -992,6 +992,11 @@ void FrameTree::RegisterOriginForUnpartitionedSessionStorageAccess(
   unpartitioned_session_storage_origins_.insert(origin);
 }
 
+void FrameTree::UnregisterOriginForUnpartitionedSessionStorageAccess(
+    const url::Origin& origin) {
+  unpartitioned_session_storage_origins_.erase(origin);
+}
+
 const blink::StorageKey FrameTree::GetSessionStorageKey(
     const blink::StorageKey& storage_key) {
   if (unpartitioned_session_storage_origins_.find(storage_key.origin()) !=

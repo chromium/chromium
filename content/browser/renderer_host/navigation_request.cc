@@ -8687,10 +8687,14 @@ void NavigationRequest::
   if (!common_params_ || !response_head_ || !response_head_->headers) {
     return;
   }
-  if (!blink::TrialTokenValidator().RequestEnablesFeature(
+  if (!blink::TrialTokenValidator().RequestEnablesDeprecatedFeature(
           common_params_->url, response_head_->headers.get(),
           "DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning",
           base::Time::Now())) {
+    frame_tree_node()
+        ->frame_tree()
+        .UnregisterOriginForUnpartitionedSessionStorageAccess(
+            url::Origin::Create(common_params_->url));
     return;
   }
   frame_tree_node()
