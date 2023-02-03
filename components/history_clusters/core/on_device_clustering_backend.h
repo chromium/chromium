@@ -138,8 +138,8 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   //   which UI surface we want to calculate for.
   //
   // TODO(sophiechang): Remove `calculate_triggerability` field once the new
-  // path is fully migrated to. It is only separated out for metrics that are
-  // recorded by the fuller `ClusterVisitsOnBackgroundThread()`.
+  //   path is fully migrated to. It is only separated out for metrics that are
+  //   recorded by the fuller `ClusterVisitsOnBackgroundThread()`.
   static std::vector<history::Cluster> GetClustersForUIOnBackgroundThread(
       bool engagement_score_provider_is_valid,
       std::vector<history::Cluster> clusters,
@@ -150,12 +150,17 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   // Gets the metadata required for cluster triggerability (e.g. keywords,
   // whether to show on prominent UI surfaces) for each cluster in `clusters` on
   // background thread.
+  //
+  // TODO(sophiechang): Remove `from_ui` field once the new path is fully
+  //   migrated to. It is only separated so that users can flip between
+  //   experiments somewhat seamlessly.
   static std::vector<history::Cluster>
   GetClusterTriggerabilityOnBackgroundThread(
       bool engagement_score_provider_is_valid,
       std::vector<history::Cluster> clusters,
       base::flat_map<std::string, optimization_guide::EntityMetadata>&
-          entity_id_to_entity_metadata_map);
+          entity_id_to_entity_metadata_map,
+      bool from_ui);
 
   // Used to fetch entity metadata. Can be null if feature not enabled. Not
   // owned. Must outlive `this`.

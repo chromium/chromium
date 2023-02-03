@@ -450,7 +450,8 @@ void OnDeviceClusteringBackend::
       base::BindOnce(&OnDeviceClusteringBackend::
                          GetClusterTriggerabilityOnBackgroundThread,
                      engagement_score_provider_ != nullptr, std::move(clusters),
-                     base::OwnedRef(std::move(entity_metadata_map))),
+                     base::OwnedRef(std::move(entity_metadata_map)),
+                     /*from_ui=*/false),
       std::move(callback));
 }
 
@@ -487,7 +488,7 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
     base::ElapsedThreadTimer cluster_triggerability_timer;
     clusters = GetClusterTriggerabilityOnBackgroundThread(
         engagement_score_provider_is_valid, std::move(clusters),
-        entity_id_to_entity_metadata_map);
+        entity_id_to_entity_metadata_map, /*from_ui=*/true);
     base::UmaHistogramTimes(
         "History.Clusters.Backend.ComputeClusterTriggerability2.ThreadTime",
         cluster_triggerability_timer.Elapsed());
@@ -543,7 +544,7 @@ OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread(
   return calculate_triggerability
              ? GetClusterTriggerabilityOnBackgroundThread(
                    engagement_score_provider_is_valid, std::move(clusters),
-                   entity_id_to_entity_metadata_map)
+                   entity_id_to_entity_metadata_map, /*from_ui=*/true)
              : clusters;
 }
 
@@ -553,9 +554,23 @@ OnDeviceClusteringBackend::GetClusterTriggerabilityOnBackgroundThread(
     bool engagement_score_provider_is_valid,
     std::vector<history::Cluster> clusters,
     base::flat_map<std::string, optimization_guide::EntityMetadata>&
-        entity_id_to_entity_metadata_map) {
+        entity_id_to_entity_metadata_map,
+    bool from_ui) {
   // The cluster finalizers to be run.
   std::vector<std::unique_ptr<ClusterFinalizer>> cluster_finalizers;
+
+  if (!from_ui) {
+    // Cluster finalizers to run that affect the appearance of a cluster on a UI
+    // surface and are run here in case a user goes in and out of the new
+    // context clustering path so that the user will have presentable clusters
+    // when they swap back.
+    // TODO(b/259466296): Remove this block once that path is fully launched.
+    cluster_finalizers.push_back(
+        std::make_unique<SimilarVisitDeduperClusterFinalizer>());
+    cluster_finalizers.push_back(std::make_unique<RankingClusterFinalizer>());
+    cluster_finalizers.push_back(std::make_unique<LabelClusterFinalizer>(
+        &entity_id_to_entity_metadata_map));
+  }
 
   // Cluster finalizers that affect the keywords for a cluster.
   cluster_finalizers.push_back(std::make_unique<KeywordClusterFinalizer>(
