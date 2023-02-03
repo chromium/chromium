@@ -38,6 +38,8 @@
 #include "url/gurl.h"
 
 namespace {
+constexpr char kOwnerEmail[] = "test@example.com";
+
 constexpr char kGoogleDriveUrl[] = "https://drive.google.com/";
 constexpr char kGooglePhotosUrl[] = "https://photos.google.com/";
 
@@ -46,7 +48,14 @@ constexpr char kNotificationTitle[] = "NotificationTitle";
 constexpr char kNotificationMessage[] = "NotificationMessage";
 constexpr char kGetPerkButtonTitle[] = "GetPerkButtonTitle";
 
-enum UserSessionType { kGuest, kChild, kChildOwner, kRegular, kManaged };
+enum UserSessionType {
+  kGuest,
+  kChild,
+  kChildOwner,
+  kRegular,
+  kRegularNonOwner,
+  kManaged
+};
 
 class GoogleOneOfferIphTabHelperTest : public MixinBasedInProcessBrowserTest {
  public:
@@ -80,6 +89,9 @@ class GoogleOneOfferIphTabHelperTest : public MixinBasedInProcessBrowserTest {
                 FakeGaiaMixin::kEnterpriseUser1,
                 FakeGaiaMixin::kEnterpriseUser1GaiaId));
 
+        // If a device is not enrolled, simulate a case where a device is owned
+        // by the managed account. Note that an account cannot be an onwer of a
+        // device if a device is enrolled.
         if (device_state_ ==
             ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED) {
           owner_user_email_ =
@@ -93,12 +105,20 @@ class GoogleOneOfferIphTabHelperTest : public MixinBasedInProcessBrowserTest {
         owner_user_email_ =
             logged_in_user_mixin_->GetAccountId().GetUserEmail();
         break;
+      case kRegularNonOwner:
+        logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
+            &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
+            embedded_test_server(), this);
+
+        CHECK(kOwnerEmail !=
+              logged_in_user_mixin_->GetAccountId().GetUserEmail());
+        owner_user_email_ = kOwnerEmail;
+        break;
     }
 
     if (!owner_user_email_.empty()) {
       scoped_testing_cros_settings_.device_settings()->Set(
-          ash::kDeviceOwner,
-          base::Value(logged_in_user_mixin_->GetAccountId().GetUserEmail()));
+          ash::kDeviceOwner, base::Value(owner_user_email_));
     }
 
     subscription_ = BrowserContextDependencyManager::GetInstance()
@@ -343,6 +363,9 @@ class TestEnvironment {
       case kRegular:
         test_name += "_REGULAR";
         break;
+      case kRegularNonOwner:
+        test_name += "_REGULAR_NON_OWNER";
+        break;
       case kGuest:
         test_name += "_GUEST";
         break;
@@ -390,16 +413,20 @@ INSTANTIATE_TEST_SUITE_P(
         TestEnvironment(
             ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
             kChild),
-        // CHILD_OWNER tests a state where a child profile is an owner of a
-        // device.
+        // A test case where a child profile is an owner of a device.
         TestEnvironment(
             ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
             kChildOwner),
-        // Test case where a managed account is an owner of an un-enrolled
+        // A Test case where a managed account is an owner of an un-enrolled
         // device.
         TestEnvironment(
             ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
-            kManaged)),
+            kManaged),
+        // A test case where we do not show a notification if a profile is not
+        // an owner profile.
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
+            kRegularNonOwner)),
     [](testing::TestParamInfo<TestEnvironment> param_info) {
       return param_info.param.GetTestName();
     });
