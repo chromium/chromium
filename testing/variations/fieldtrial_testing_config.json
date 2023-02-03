@@ -10420,6 +10420,21 @@
             ]
         }
     ],
+    "SegmentationPlatformSegmentInfoCache": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SegmentationPlatformSegmentInfoCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "SegmentationStructuredMetrics": [
         {
             "platforms": [
