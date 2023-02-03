@@ -428,13 +428,13 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   }
 
   private shouldShowTrueWirelessImages_(): boolean {
-    if (!this.device_) {
+    if (!loadTimeData.getBoolean('enableFastPairFlag') || !this.device_) {
       return false;
     }
 
-    // The True Wireless Images component expects all True Wireless
-    // images and the default image to be displayable.
-    if (!hasDefaultImage(this.device_.deviceProperties) ||
+    // The True Wireless Images component expects either the True Wireless
+    // images or the default image to be displayable.
+    if (!hasDefaultImage(this.device_.deviceProperties) &&
         !hasTrueWirelessImages(this.device_.deviceProperties)) {
       return false;
     }

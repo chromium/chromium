@@ -162,7 +162,59 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertFalse(!!getManagedIcon());
   });
 
+  test(
+      'True Wireless Images not shown when Fast pair disabled',
+      async function() {
+        loadTimeData.overrideValues({'enableFastPairFlag': false});
+        init();
+        bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+
+        const getTrueWirelessImages = () =>
+            bluetoothDeviceDetailPage.shadowRoot.querySelector(
+                '#trueWirelessImages');
+
+        const navigateToDeviceDetailPage = () => {
+          const params = new URLSearchParams();
+          params.append('id', '12345/6789&');
+          Router.getInstance().navigateTo(
+              routes.BLUETOOTH_DEVICE_DETAIL, params);
+        };
+
+        const device = createDefaultBluetoothDevice(
+            /*id=*/ '12345/6789&',
+            /*publicName=*/ 'BeatsX',
+            /*connectionState=*/
+            DeviceConnectionState.kNotConnected,
+            /*opt_nickname=*/ 'device1',
+            /*opt_audioCapability=*/
+            AudioOutputCapability.kCapableOfAudioOutput,
+            /*opt_deviceType=*/ DeviceType.kMouse,
+            /*opt_isBlockedByPolicy=*/ true);
+        const fakeUrl = {url: 'fake_image'};
+        // Emulate missing the right bud image.
+        device.deviceProperties.imageInfo = {
+          trueWirelessImages: {
+            leftBudImageUrl: fakeUrl,
+            caseImageUrl: fakeUrl,
+            rightBudImageUrl: fakeUrl,
+          },
+        };
+        device.deviceProperties.batteryInfo = {
+          leftBudInfo: {batteryPercentage: 90},
+        };
+
+        bluetoothConfig.appendToPairedDeviceList([device]);
+        await flushAsync();
+
+        navigateToDeviceDetailPage();
+
+        // Since Fast Pair flag is false, we don't show the component.
+        await flushAsync();
+        assertFalse(!!getTrueWirelessImages());
+      });
+
   test('True Wireless Images shown when expected', async function() {
+    loadTimeData.overrideValues({'enableFastPairFlag': true});
     init();
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
@@ -189,7 +241,6 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     const fakeUrl = {url: 'fake_image'};
     // Emulate missing the right bud image.
     device.deviceProperties.imageInfo = {
-      defaultImageUrl: fakeUrl,
       trueWirelessImages: {leftBudImageUrl: fakeUrl, caseImageUrl: fakeUrl},
     };
     device.deviceProperties.batteryInfo = {
@@ -201,12 +252,22 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
 
     navigateToDeviceDetailPage();
 
-    // Don't display component unless all images are present.
+    // Don't display component unless either the default image is
+    // present OR all of the true wireless images are present.
     await flushAsync();
     assertFalse(!!getTrueWirelessImages());
 
+    // Try again with all 3 True Wireless images.
     device.deviceProperties.imageInfo.trueWirelessImages.rightBudImageUrl =
         fakeUrl;
+    bluetoothConfig.updatePairedDevice(device);
+    await flushAsync();
+    assertTrue(!!getTrueWirelessImages());
+
+    // Try again with just default image.
+    device.deviceProperties.imageInfo = {
+      defaultImageUrl: fakeUrl,
+    };
     bluetoothConfig.updatePairedDevice(device);
     await flushAsync();
     assertTrue(!!getTrueWirelessImages());
