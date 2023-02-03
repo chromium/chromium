@@ -35,7 +35,7 @@ class DecryptedBlockImpl final : public cdm::DecryptedBlock {
   int64_t Timestamp() const final;
 
  private:
-  raw_ptr<cdm::Buffer, DanglingUntriaged> buffer_;
+  raw_ptr<cdm::Buffer> buffer_;
   int64_t timestamp_;
 };
 
@@ -91,7 +91,7 @@ class MEDIA_EXPORT VideoFrameImpl : public cdm::VideoFrame,
   cdm::Size size_;
 
   // The video frame buffer.
-  raw_ptr<cdm::Buffer, DanglingUntriaged> frame_buffer_;
+  raw_ptr<cdm::Buffer> frame_buffer_;
 
   // Array of data pointers to each plane in the video frame buffer.
   uint32_t plane_offsets_[cdm::kMaxPlanes];
@@ -123,7 +123,7 @@ class AudioFramesImpl final : public cdm::AudioFrames {
   cdm::Buffer* PassFrameBuffer();
 
  private:
-  raw_ptr<cdm::Buffer, DanglingUntriaged> buffer_;
+  raw_ptr<cdm::Buffer> buffer_;
   cdm::AudioFormat format_;
 };
 
