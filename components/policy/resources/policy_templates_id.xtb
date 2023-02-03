@@ -4718,7 +4718,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
 <translation id="5457924070961220141">Memungkinkan Anda mengonfigurasi perender HTML default saat <ph name="PRODUCT_FRAME_NAME" /> dipasang. Setelan default yang digunakan ketika kebijakan ini tidak disetel adalah mengizinkan browser host melakukan rendering, tetapi Anda dapat menimpanya secara opsional dan membiarkan <ph name="PRODUCT_FRAME_NAME" /> merender halaman HTML secara default.</translation>
 <translation id="545817252640069915">Aktifkan intersepsi login</translation>
 <translation id="5460797984317417682">Aktifkan peringatan layar penuh</translation>
-<translation id="5464816904705580310">Mengonfigurasi setelan untuk pengguna yang dikelola.</translation>
+<translation id="5464816904705580310">Mengonfigurasi setelan untuk pengguna terkelola.</translation>
 <translation id="5466596281866046569">Melaporkan informasi aplikasi</translation>
 <translation id="546726650689747237">Penundaan peredupan layar saat menggunakan daya AC</translation>
 <translation id="546830339470589966">Pelengkapan otomatis domain untuk tiket Kerberos baru</translation>
@@ -5951,7 +5951,7 @@ hingga kebijakan ini tidak berlaku lagi.</translation>
       Jika kebijakan ini disetel ke aktif atau tidak disetel, Screencast akan diaktifkan.
       Jika kebijakan ini disetel ke nonaktif, Screencast akan dinonaktifkan.</translation>
 <translation id="665023848306499203">Mengizinkan perangkat memilih untuk mengupdate ke versi tertentu</translation>
-<translation id="6652197835259177259">Setelan pengguna yang dikelola secara lokal</translation>
+<translation id="6652197835259177259">Setelan pengguna terkelola lokal</translation>
 <translation id="6653897159826215341">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan membuka dialog cetak sistem, bukan pratinjau cetak bawaan saat pengguna meminta hasil cetak.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perintah cetak akan memicu layar pratinjau cetak.</translation>
@@ -7832,7 +7832,7 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8511192250554640451">Izinkan throttling timer JavaScript latar belakang dikontrol oleh logika Chrome dan dikonfigurasi oleh pengguna</translation>
 <translation id="8511708772548158302">Roll back perangkat ke versi target jika versi OS saat ini lebih baru dari target. Perangkat di-powerwash, tetapi konfigurasi jaringan seluruh perangkat tanpa sertifikat akan dipertahankan dan perangkat akan otomatis didaftarkan ulang.
 Rollback ke <ph name="PRODUCT_OS_NAME" /> versi 106 atau yang lebih lama tidak didukung.</translation>
-<translation id="8519264904050090490">URL pengecualian manual pengguna yang dikelola</translation>
+<translation id="8519264904050090490">URL pengecualian manual pengguna terkelola</translation>
 <translation id="8519516251436131647">Mengaktifkan pintasan fitur aksesibilitas.
 
           Jika kebijakan ini ditetapkan ke true, pintasan fitur aksesibilitas akan selalu diaktifkan.

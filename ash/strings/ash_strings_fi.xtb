@@ -492,7 +492,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3630697955794050612">poissa päältä</translation>
 <translation id="3631369015426612114">Salli ilmoitukset seuraavista:</translation>
 <translation id="3633097874324966332">Avaa Bluetooth-asetukset ja muodosta laitepari</translation>
-<translation id="3638400994746983214">Näytönsuoja päälle/pois. <ph name="STATE_TEXT" />.</translation>
+<translation id="3638400994746983214">Yksityinen näkyvyys päälle/pois. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Päivitys myöhässä</translation>
 <translation id="3659444876902283058">(päivä <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Noin <ph name="TIME_LEFT" /> jäljellä (<ph name="PERCENTAGE" /> %).
@@ -681,7 +681,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="468293128311738995">Puhelimesi sovellukset</translation>
 <translation id="4690510401873698237">Hylly alareunassa</translation>
 <translation id="4696813013609194136">Avaa lukitus vanhemman koodilla</translation>
-<translation id="4702647871202761252">Näytönsuoja on pois päältä</translation>
+<translation id="4702647871202761252">Yksityinen näkyvyys on pois päältä</translation>
 <translation id="4706121060329443414">Lataamista yritetään myöhemmin. Puhe lähetetään toistaiseksi Googlelle käsittelyyn.</translation>
 <translation id="470644585772471629">Käänteiset värit</translation>
 <translation id="4717575069099566988">USB-C-johto ei tue USB4:ää. Laitteen toiminta voi olla rajoitettua.</translation>
@@ -875,7 +875,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="576341972084747908">Lataa vaarallinen <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Hyllyryhmä on pois päältä.</translation>
 <translation id="576453121877257266">Yövalo on päällä.</translation>
-<translation id="5769373120130404283">Näytönsuoja</translation>
+<translation id="5769373120130404283">Yksityinen näkyvyys</translation>
 <translation id="5773950591113557721"><ph name="APP_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on joilla on kamera- ja mikrofonilupa, saavat pääsyn</translation>
 <translation id="5777841717266010279">Lopetetaanko näytön jakaminen?</translation>
 <translation id="5779721926447984944">Kiinnitetyt tiedostot</translation>
@@ -1027,7 +1027,7 @@ Uusi asennus</translation>
 <translation id="6597278316891651699">Kamera kohdistettu vasempaan alakulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="6612802754306526077">Näytön tallentajatila valittu</translation>
-<translation id="6614169507485700968">Näytönsuoja on päällä</translation>
+<translation id="6614169507485700968">Yksityinen näkyvyys on päällä</translation>
 <translation id="6625718907317144388">Ilmoitukset (<ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ja muita) on piilotettu, koska urkinnan esto on päällä</translation>
 <translation id="6627638273713273709">Haku+Vaihto+K</translation>
 <translation id="6637729079642709226">Muuta aikaa</translation>

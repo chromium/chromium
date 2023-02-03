@@ -497,7 +497,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3659444876902283058">(Hari <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Sekitar <ph name="TIME_LEFT" /> lagi (<ph name="PERCENTAGE" />%).
 Hubungkan perangkat ke sumber listrik.</translation>
-<translation id="366222428570480733">Pengguna yang Dikelola <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="366222428570480733">Pengguna Terkelola <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">Ponsel dan <ph name="DEVICE_NAME" /> akan menggunakan jaringan Wi-Fi yang sama</translation>
 <translation id="3694122362646626770">Situs web</translation>
 <translation id="3702809606464356667">Menampilkan jendela dari desktop saat ini, tekan tombol Panah atas untuk menampilkan jendela dari semua desktop</translation>
