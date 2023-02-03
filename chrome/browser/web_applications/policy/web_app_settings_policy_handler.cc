@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/policy/web_app_settings_policy_handler.h"
 
+#include "base/check_deref.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/common/pref_names.h"
@@ -42,7 +43,7 @@ bool WebAppSettingsPolicyHandler::CheckPolicySettings(
       policy_entry->value(base::Value::Type::LIST)->GetList();
   const auto it = base::ranges::find(
       web_apps_list, kWildcard, [](const base::Value& entry) {
-        return entry.FindKey(kManifestId)->GetString();
+        return CHECK_DEREF(entry.GetDict().FindString(kManifestId));
       });
 
   if (it != web_apps_list.end() && it->is_dict()) {
