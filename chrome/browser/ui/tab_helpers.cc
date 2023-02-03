@@ -553,6 +553,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopDemo) ||
       base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurvey) ||
+      base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2) ||
       base::FeatureList::IsEnabled(performance_manager::features::
                                        kPerformanceControlsPerformanceSurvey) ||
       base::FeatureList::IsEnabled(
