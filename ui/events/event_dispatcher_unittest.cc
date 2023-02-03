@@ -4,6 +4,9 @@
 
 #include "ui/events/event_dispatcher.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -122,11 +125,10 @@ typedef CancelModeEvent NonCancelableEvent;
 // Destroys the dispatcher-delegate when it receives any event.
 class EventHandlerDestroyDispatcherDelegate : public TestEventHandler {
  public:
-  EventHandlerDestroyDispatcherDelegate(EventDispatcherDelegate* delegate,
-                                        int id)
-      : TestEventHandler(id),
-        dispatcher_delegate_(delegate) {
-  }
+  EventHandlerDestroyDispatcherDelegate(
+      std::unique_ptr<EventDispatcherDelegate> delegate,
+      int id)
+      : TestEventHandler(id), dispatcher_delegate_(std::move(delegate)) {}
 
   EventHandlerDestroyDispatcherDelegate(
       const EventHandlerDestroyDispatcherDelegate&) = delete;
@@ -138,10 +140,10 @@ class EventHandlerDestroyDispatcherDelegate : public TestEventHandler {
  private:
   void ReceivedEvent(Event* event) override {
     TestEventHandler::ReceivedEvent(event);
-    delete dispatcher_delegate_;
+    dispatcher_delegate_.reset();
   }
 
-  raw_ptr<EventDispatcherDelegate> dispatcher_delegate_;
+  std::unique_ptr<EventDispatcherDelegate> dispatcher_delegate_;
 };
 
 // Invalidates the target when it receives any event.
@@ -167,34 +169,28 @@ class InvalidateTargetEventHandler : public TestEventHandler {
 // Optionally also destroys the dispatcher.
 class EventHandlerDestroyer : public TestEventHandler {
  public:
-  EventHandlerDestroyer(int id, EventHandler* destroy)
-      : TestEventHandler(id),
-        to_destroy_(destroy),
-        dispatcher_delegate_(nullptr) {}
+  EventHandlerDestroyer(int id, std::unique_ptr<EventHandler> destroy)
+      : TestEventHandler(id), to_destroy_(std::move(destroy)) {}
 
   EventHandlerDestroyer(const EventHandlerDestroyer&) = delete;
   EventHandlerDestroyer& operator=(const EventHandlerDestroyer&) = delete;
 
   ~EventHandlerDestroyer() override { CHECK(!to_destroy_); }
 
-  void set_dispatcher_delegate(EventDispatcherDelegate* dispatcher_delegate) {
-    dispatcher_delegate_ = dispatcher_delegate;
+  void set_dispatcher_delegate(
+      std::unique_ptr<EventDispatcherDelegate> dispatcher_delegate) {
+   dispatcher_delegate_ = std::move(dispatcher_delegate);
   }
 
  private:
   void ReceivedEvent(Event* event) override {
     TestEventHandler::ReceivedEvent(event);
-    delete to_destroy_;
-    to_destroy_ = nullptr;
-
-    if (dispatcher_delegate_) {
-      delete dispatcher_delegate_;
-      dispatcher_delegate_ = nullptr;
-    }
+    to_destroy_.reset();
+    dispatcher_delegate_.reset();
   }
 
-  raw_ptr<EventHandler> to_destroy_;
-  raw_ptr<EventDispatcherDelegate> dispatcher_delegate_;
+  std::unique_ptr<EventHandler> to_destroy_;
+  std::unique_ptr<EventDispatcherDelegate> dispatcher_delegate_;
 };
 
 class TestEventDispatcher : public EventDispatcherDelegate {
@@ -349,11 +345,14 @@ TEST(EventDispatcherTest, EventDispatchPhase) {
 TEST(EventDispatcherTest, EventDispatcherDestroyedDuringDispatch) {
   // Test for pre-target first.
   {
-    TestEventDispatcher* dispatcher = new TestEventDispatcher();
-    TestTarget target;
-    EventHandlerDestroyDispatcherDelegate handler(dispatcher, 5);
-    TestEventHandler h1(1), h2(2);
+    auto owned_dispatcher = std::make_unique<TestEventDispatcher>();
+    TestEventDispatcher* dispatcher = owned_dispatcher.get();
+    EventHandlerDestroyDispatcherDelegate handler(std::move(owned_dispatcher),
+                                                  5);
+    TestEventHandler h1(1);
+    TestEventHandler h2(2);
 
+    TestTarget target;
     target.AddPreTargetHandler(&h1);
     target.AddPreTargetHandler(&handler);
     target.AddPreTargetHandler(&h2);
@@ -380,11 +379,14 @@ TEST(EventDispatcherTest, EventDispatcherDestroyedDuringDispatch) {
 
   // Test for non-cancelable event.
   {
-    TestEventDispatcher* dispatcher = new TestEventDispatcher();
-    TestTarget target;
-    EventHandlerDestroyDispatcherDelegate handler(dispatcher, 5);
-    TestEventHandler h1(1), h2(2);
+    auto owned_dispatcher = std::make_unique<TestEventDispatcher>();
+    TestEventDispatcher* dispatcher = owned_dispatcher.get();
+    EventHandlerDestroyDispatcherDelegate handler(std::move(owned_dispatcher),
+                                                  5);
+    TestEventHandler h1(1);
+    TestEventHandler h2(2);
 
+    TestTarget target;
     target.AddPreTargetHandler(&h1);
     target.AddPreTargetHandler(&handler);
     target.AddPreTargetHandler(&h2);
@@ -409,11 +411,14 @@ TEST(EventDispatcherTest, EventDispatcherDestroyedDuringDispatch) {
 
   // Now test for post-target.
   {
-    TestEventDispatcher* dispatcher = new TestEventDispatcher();
-    TestTarget target;
-    EventHandlerDestroyDispatcherDelegate handler(dispatcher, 5);
-    TestEventHandler h1(1), h2(2);
+    auto owned_dispatcher = std::make_unique<TestEventDispatcher>();
+    TestEventDispatcher* dispatcher = owned_dispatcher.get();
+    EventHandlerDestroyDispatcherDelegate handler(std::move(owned_dispatcher),
+                                                  5);
+    TestEventHandler h1(1);
+    TestEventHandler h2(2);
 
+    TestTarget target;
     target.AddPostTargetHandler(&h1);
     target.AddPostTargetHandler(&handler);
     target.AddPostTargetHandler(&h2);
@@ -440,11 +445,14 @@ TEST(EventDispatcherTest, EventDispatcherDestroyedDuringDispatch) {
 
   // Test for non-cancelable event.
   {
-    TestEventDispatcher* dispatcher = new TestEventDispatcher();
-    TestTarget target;
-    EventHandlerDestroyDispatcherDelegate handler(dispatcher, 5);
-    TestEventHandler h1(1), h2(2);
+    auto owned_dispatcher = std::make_unique<TestEventDispatcher>();
+    TestEventDispatcher* dispatcher = owned_dispatcher.get();
+    EventHandlerDestroyDispatcherDelegate handler(std::move(owned_dispatcher),
+                                                  5);
+    TestEventHandler h1(1);
+    TestEventHandler h2(2);
 
+    TestTarget target;
     target.AddPostTargetHandler(&h1);
     target.AddPostTargetHandler(&handler);
     target.AddPostTargetHandler(&h2);
@@ -518,11 +526,12 @@ TEST(EventDispatcherTest, EventDispatcherInvalidateTarget) {
 TEST(EventDispatcherTest, EventHandlerDestroyedDuringDispatch) {
   {
     TestEventDispatcher dispatcher;
-    TestTarget target;
     TestEventHandler h1(1);
-    TestEventHandler* h3 = new TestEventHandler(3);
-    EventHandlerDestroyer handle_destroyer(2, h3);
+    auto owned_h3 = std::make_unique<TestEventHandler>(3);
+    TestEventHandler* h3 = owned_h3.get();
+    EventHandlerDestroyer handle_destroyer(2, std::move(owned_h3));
 
+    TestTarget target;
     target.AddPreTargetHandler(&h1);
     target.AddPreTargetHandler(&handle_destroyer);
     h3->set_pre_target(&target);
@@ -551,11 +560,12 @@ TEST(EventDispatcherTest, EventHandlerDestroyedDuringDispatch) {
   // Test for non-cancelable events.
   {
     TestEventDispatcher dispatcher;
-    TestTarget target;
     TestEventHandler h1(1);
-    TestEventHandler* h3 = new TestEventHandler(3);
-    EventHandlerDestroyer handle_destroyer(2, h3);
+    auto owned_h3 = std::make_unique<TestEventHandler>(3);
+    TestEventHandler* h3 = owned_h3.get();
+    EventHandlerDestroyer handle_destroyer(2, std::move(owned_h3));
 
+    TestTarget target;
     target.AddPreTargetHandler(&h1);
     target.AddPreTargetHandler(&handle_destroyer);
     target.AddPreTargetHandler(h3);
@@ -582,20 +592,21 @@ TEST(EventDispatcherTest, EventHandlerDestroyedDuringDispatch) {
 // dispatcher and a handler.
 TEST(EventDispatcherTest, EventHandlerAndDispatcherDestroyedDuringDispatch) {
   {
-    TestEventDispatcher* dispatcher = new TestEventDispatcher();
-    TestTarget target;
+    auto owned_dispatcher = std::make_unique<TestEventDispatcher>();
+    TestEventDispatcher* dispatcher = owned_dispatcher.get();
     TestEventHandler h1(1);
-    TestEventHandler* h3 = new TestEventHandler(3);
-    EventHandlerDestroyer destroyer(2, h3);
+    auto owned_h3 = std::make_unique<TestEventHandler>(3);
+    TestEventHandler* h3 = owned_h3.get();
+    EventHandlerDestroyer destroyer(2, std::move(owned_h3));
 
+    TestTarget target;
     target.AddPreTargetHandler(&h1);
     target.AddPreTargetHandler(&destroyer);
     target.AddPreTargetHandler(h3);
     h3->set_pre_target(&target);
-
     h1.set_expect_pre_target(true);
     destroyer.set_expect_pre_target(true);
-    destroyer.set_dispatcher_delegate(dispatcher);
+    destroyer.set_dispatcher_delegate(std::move(owned_dispatcher));
     // |h3| should not receive events since |destroyer| will have destroyed
     // it.
     h3->set_expect_pre_target(false);
@@ -615,12 +626,14 @@ TEST(EventDispatcherTest, EventHandlerAndDispatcherDestroyedDuringDispatch) {
 
   // Test for non-cancelable events.
   {
-    TestEventDispatcher* dispatcher = new TestEventDispatcher();
-    TestTarget target;
+    auto owned_dispatcher = std::make_unique<TestEventDispatcher>();
+    TestEventDispatcher* dispatcher = owned_dispatcher.get();
     TestEventHandler h1(1);
-    TestEventHandler* h3 = new TestEventHandler(3);
-    EventHandlerDestroyer destroyer(2, h3);
+    auto owned_h3 = std::make_unique<TestEventHandler>(3);
+    TestEventHandler* h3 = owned_h3.get();
+    EventHandlerDestroyer destroyer(2, std::move(owned_h3));
 
+    TestTarget target;
     target.AddPreTargetHandler(&h1);
     target.AddPreTargetHandler(&destroyer);
     target.AddPreTargetHandler(h3);
@@ -628,7 +641,7 @@ TEST(EventDispatcherTest, EventHandlerAndDispatcherDestroyedDuringDispatch) {
 
     h1.set_expect_pre_target(true);
     destroyer.set_expect_pre_target(true);
-    destroyer.set_dispatcher_delegate(dispatcher);
+    destroyer.set_dispatcher_delegate(std::move(owned_dispatcher));
     // |h3| should not receive events since |destroyer| will have destroyed
     // it.
     h3->set_expect_pre_target(false);
