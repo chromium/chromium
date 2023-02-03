@@ -427,7 +427,7 @@ void AttributionHost::BindReceiver(
   conversion_host->receivers_.Bind(rfh, std::move(receiver));
 }
 
-void AttributionHost::NotifyFencedFrameReportingBeaconSent(
+void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     BeaconId beacon_id,
     RenderFrameHostImpl* initiator_frame_host) {
   if (!initiator_frame_host) {
@@ -461,30 +461,9 @@ void AttributionHost::NotifyFencedFrameReportingBeaconSent(
                       ->GetMostRecentNavigationInputEvent();
   }
 
-  data_host_manager->NotifyFencedFrameReportingBeaconSent(
+  data_host_manager->NotifyFencedFrameReportingBeaconStarted(
       beacon_id, std::move(*initiator_root_frame_origin),
       initiator_frame_host->IsNestedWithinFencedFrame(), input_event);
-}
-
-void AttributionHost::NotifyFencedFrameReportingBeaconData(
-    BeaconId beacon_id,
-    const url::Origin& reporting_origin,
-    const net::HttpResponseHeaders* headers,
-    bool is_final_response) {
-  AttributionManager* attribution_manager =
-      AttributionManager::FromWebContents(web_contents());
-  if (!attribution_manager) {
-    return;
-  }
-
-  AttributionDataHostManager* data_host_manager =
-      attribution_manager->GetDataHostManager();
-  if (!data_host_manager) {
-    return;
-  }
-
-  data_host_manager->NotifyFencedFrameReportingBeaconData(
-      beacon_id, reporting_origin, headers, is_final_response);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AttributionHost);

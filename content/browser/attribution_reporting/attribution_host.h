@@ -25,14 +25,6 @@ namespace attribution_reporting {
 class SuitableOrigin;
 }  // namespace attribution_reporting
 
-namespace net {
-class HttpResponseHeaders;
-}  // namespace net
-
-namespace url {
-class Origin;
-}  // namespace url
-
 namespace content {
 
 struct AttributionInputEvent;
@@ -68,16 +60,13 @@ class CONTENT_EXPORT AttributionHost
   }
 #endif
 
-  // This should be called at the start of navigation for a navigation beacon.
-  void NotifyFencedFrameReportingBeaconSent(
+  // This should be called when the fenced frame reporting beacon was initiated
+  // for reportEvent or for an automatic beacon. It may be cached and sent
+  // later. This should be called before the navigation committed for a
+  // navigation beacon.
+  void NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,
       RenderFrameHostImpl* initiator_frame_host);
-
-  void NotifyFencedFrameReportingBeaconData(
-      BeaconId beacon_id,
-      const url::Origin& reporting_origin,
-      const net::HttpResponseHeaders* headers,
-      bool is_final_response);
 
  private:
   friend class AttributionHostTestPeer;

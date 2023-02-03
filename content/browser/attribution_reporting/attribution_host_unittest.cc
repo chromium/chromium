@@ -115,11 +115,16 @@ class MockDataHostManager : public AttributionDataHostManager {
               (override));
 
   MOCK_METHOD(void,
-              NotifyFencedFrameReportingBeaconSent,
+              NotifyFencedFrameReportingBeaconStarted,
               (BeaconId beacon_id,
                SuitableOrigin source_origin,
                bool is_within_fenced_frame,
                absl::optional<AttributionInputEvent> input_event),
+              (override));
+
+  MOCK_METHOD(void,
+              NotifyFencedFrameReportingBeaconSent,
+              (BeaconId beacon_id),
               (override));
 
   MOCK_METHOD(void,
@@ -561,7 +566,7 @@ TEST_F(AttributionHostTest, DataHost_RegisteredWithFencedFrame) {
   EXPECT_FALSE(bad_message_observer.got_bad_message());
 }
 
-TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconSent) {
+TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
   const struct {
     const char* source_origin;
     bool expected_valid;
@@ -577,13 +582,13 @@ TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconSent) {
   for (const auto& test_case : kTestCases) {
     if (test_case.expected_valid) {
       EXPECT_CALL(*mock_data_host_manager(),
-                  NotifyFencedFrameReportingBeaconSent(
+                  NotifyFencedFrameReportingBeaconStarted(
                       VariantWith<NavigationBeaconId>(navigation_id),
                       *SuitableOrigin::Deserialize(test_case.source_origin),
                       /*is_within_fenced_frame=*/true, _));
     } else {
       EXPECT_CALL(*mock_data_host_manager(),
-                  NotifyFencedFrameReportingBeaconSent)
+                  NotifyFencedFrameReportingBeaconStarted)
           .Times(0);
     }
 
@@ -594,25 +599,9 @@ TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconSent) {
     fenced_frame = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
         GURL("https://fencedframe.example"), fenced_frame);
 
-    conversion_host()->NotifyFencedFrameReportingBeaconSent(
+    conversion_host()->NotifyFencedFrameReportingBeaconStarted(
         navigation_id, static_cast<RenderFrameHostImpl*>(fenced_frame));
   }
-}
-
-TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconData) {
-  NavigationBeaconId navigation_id(123);
-
-  auto reporting_origin = url::Origin::Create(GURL("https://report.test"));
-
-  EXPECT_CALL(
-      *mock_data_host_manager(),
-      NotifyFencedFrameReportingBeaconData(
-          VariantWith<NavigationBeaconId>(navigation_id), reporting_origin,
-          /*headers=*/nullptr, /*is_final_response=*/true));
-
-  conversion_host()->NotifyFencedFrameReportingBeaconData(
-      navigation_id, reporting_origin, /*headers=*/nullptr,
-      /*is_final_response=*/true);
 }
 
 }  // namespace

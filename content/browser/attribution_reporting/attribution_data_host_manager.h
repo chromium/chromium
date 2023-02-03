@@ -90,12 +90,19 @@ class AttributionDataHostManager {
   // after the beacon data.
   virtual void NotifyNavigationSuccess(int64_t navigation_id) = 0;
 
-  // Notifies the manager that a beacon has been sent and should be tracked.
-  virtual void NotifyFencedFrameReportingBeaconSent(
+  // Notifies the manager that a fenced frame reporting beacon was initiated
+  // for reportEvent or for an automatic beacon and should be tracked.
+  // The actual beacon may be sent after the navigation finished or after the
+  // RFHI was destroyed, therefore we need to store the information for later
+  // use.
+  virtual void NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,
       attribution_reporting::SuitableOrigin source_origin,
       bool is_within_fenced_frame,
       absl::optional<AttributionInputEvent> input_event) = 0;
+
+  // Notifies the manager that a beacon has been sent.
+  virtual void NotifyFencedFrameReportingBeaconSent(BeaconId beacon_id) = 0;
 
   // Notifies the manager that a beacon data has been received.
   virtual void NotifyFencedFrameReportingBeaconData(

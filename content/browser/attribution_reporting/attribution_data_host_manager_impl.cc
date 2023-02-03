@@ -245,8 +245,8 @@ struct AttributionDataHostManagerImpl::BeaconSourceRegistrations {
   // `NotifyFencedFrameReportingBeaconData()`.
   bool beacon_complete = false;
 
-  // The time the beacon was sent. Will not change over the course of the
-  // beacon.
+  // The time the beacon was sent. Will be null when the beacon was started but
+  // not actually sent.
   base::TimeTicks register_time;
 
   // Whether the beacon was initiated within a fenced frame.
@@ -603,6 +603,10 @@ void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
 
 void AttributionDataHostManagerImpl::OnSourceEligibleDataHostFinished(
     base::TimeTicks register_time) {
+  if (register_time.is_null()) {
+    return;
+  }
+
   // Decrement the number of receivers in source mode and flush triggers if
   // applicable.
   //
@@ -679,7 +683,7 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
   }
 }
 
-void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconSent(
+void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconStarted(
     BeaconId beacon_id,
     SuitableOrigin source_origin,
     bool is_within_fenced_frame,
@@ -690,7 +694,6 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconSent(
   auto [it, inserted] = beacon_registrations_.try_emplace(
       beacon_id, BeaconSourceRegistrations{
                      .source_origin = std::move(source_origin),
-                     .register_time = base::TimeTicks::Now(),
                      .is_within_fenced_frame = is_within_fenced_frame,
                      .input_event = input_event});
 
@@ -701,6 +704,19 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconSent(
   if (is_navigation) {
     it->second.navigation_complete.emplace(false);
   }
+}
+
+void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconSent(
+    BeaconId beacon_id) {
+  auto it = beacon_registrations_.find(beacon_id);
+
+  // The registration may no longer be tracked in the event the navigation
+  // failed.
+  if (it == beacon_registrations_.end()) {
+    return;
+  }
+
+  it->second.register_time = base::TimeTicks::Now();
 
   // Treat ongoing beacon registrations as a data host for the purpose of
   // trigger queuing.

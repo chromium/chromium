@@ -88,11 +88,12 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       const absl::optional<blink::AttributionSrcToken>& attribution_src_token,
       int64_t navigation_id) override;
   void NotifyNavigationSuccess(int64_t navigation_id) override;
-  void NotifyFencedFrameReportingBeaconSent(
+  void NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,
       attribution_reporting::SuitableOrigin source_origin,
       bool is_within_fenced_frame,
       absl::optional<AttributionInputEvent> input_event) override;
+  void NotifyFencedFrameReportingBeaconSent(BeaconId beacon_id) override;
   void NotifyFencedFrameReportingBeaconData(
       BeaconId beacon_id,
       url::Origin reporting_origin,
