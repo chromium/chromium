@@ -450,12 +450,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - GridTransitionAnimationLayoutProviding properties
 
 - (BOOL)isSelectedCellVisible {
-  if (self.activePage != self.currentPage)
+  if (self.activePage != self.currentPage) {
     return NO;
-  GridViewController* gridViewController =
-      [self gridViewControllerForPage:self.activePage];
-  return gridViewController == nil ? NO
-                                   : gridViewController.selectedCellVisible;
+  }
+
+  return [self isSelectedCellVisibleForPage:self.activePage];
 }
 
 - (BOOL)shouldReparentSelectedCell:(GridAnimationDirection)animationDirection {
@@ -998,6 +997,30 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 
   return [self.pinnedTabsViewController hasSelectedCell];
+}
+
+// Returns whether selcted cell is visible for the provided `page`.
+- (BOOL)isSelectedCellVisibleForPage:(TabGridPage)page {
+  switch (page) {
+    case TabGridPageIncognitoTabs:
+      return self.incognitoTabsViewController.selectedCellVisible;
+    case TabGridPageRegularTabs:
+      return [self isSelectedCellVisibleForRegularTabsPage];
+    case TabGridPageRemoteTabs:
+      return NO;
+  }
+}
+
+// Returns whether selcted cell is visible for the regular tabs `page`.
+- (BOOL)isSelectedCellVisibleForRegularTabsPage {
+  BOOL isSelectedCellVisible =
+      self.regularTabsViewController.selectedCellVisible;
+
+  if (IsPinnedTabsEnabled()) {
+    isSelectedCellVisible |= self.pinnedTabsViewController.selectedCellVisible;
+  }
+
+  return isSelectedCellVisible;
 }
 
 // Returns transition layout for the provided `page`.

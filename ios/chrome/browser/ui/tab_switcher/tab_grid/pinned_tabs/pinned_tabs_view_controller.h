@@ -57,6 +57,10 @@
 // Tracks if a drop animation is in progress.
 @property(nonatomic, assign) BOOL dropAnimationInProgress;
 
+// YES if the selected cell is visible in the Pinned Tabs collection.
+@property(nonatomic, readonly, getter=isSelectedCellVisible)
+    BOOL selectedCellVisible;
+
 // Updates the view when starting or ending a drag action.
 - (void)dragSessionEnabled:(BOOL)enabled;
 

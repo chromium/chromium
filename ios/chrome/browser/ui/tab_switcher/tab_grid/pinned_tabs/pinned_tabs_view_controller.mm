@@ -59,6 +59,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Identifier of the selected item.
   NSString* _selectedItemID;
 
+  // Identifier of the last item to be inserted. This is used to track if the
+  // active tab was newly created when building the animation layout for
+  // transitions.
+  NSString* _lastInsertedItemID;
+
   // Constraints used to update the view during drag and drop actions.
   NSLayoutConstraint* _dragEnabledConstraint;
   NSLayoutConstraint* _defaultConstraint;
@@ -118,6 +123,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   // Update the delegate, in case it wasn't set when `items` was populated.
   [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
+
+  _lastInsertedItemID = nil;
 }
 
 - (void)contentWillDisappear {
@@ -172,8 +179,63 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (GridTransitionLayout*)transitionLayout {
-  // TODO(crbug.com/1406524): Implement this.
-  return nil;
+  [self.collectionView layoutIfNeeded];
+
+  NSMutableArray<GridTransitionItem*>* items = [[NSMutableArray alloc] init];
+  GridTransitionActiveItem* activeItem;
+  GridTransitionItem* selectionItem;
+
+  for (NSIndexPath* path in self.collectionView.indexPathsForVisibleItems) {
+    PinnedCell* cell = base::mac::ObjCCastStrict<PinnedCell>(
+        [self.collectionView cellForItemAtIndexPath:path]);
+
+    UICollectionViewLayoutAttributes* attributes =
+        [self.collectionView layoutAttributesForItemAtIndexPath:path];
+    // Normalize frame to window coordinates. The attributes class applies this
+    // change to the other properties such as center, bounds, etc.
+    attributes.frame = [self.collectionView convertRect:attributes.frame
+                                                 toView:nil];
+
+    if ([cell hasIdentifier:_selectedItemID]) {
+      PinnedTransitionCell* activeCell =
+          [PinnedTransitionCell transitionCellFromCell:cell];
+      activeItem = [GridTransitionActiveItem itemWithCell:activeCell
+                                                   center:attributes.center
+                                                     size:attributes.size];
+      // If the active item is the last inserted item, it needs to be animated
+      // differently.
+      if ([cell hasIdentifier:_lastInsertedItemID]) {
+        activeItem.isAppearing = YES;
+      }
+
+      selectionItem = [GridTransitionItem
+          itemWithCell:[PinnedTransitionCell transitionCellFromCell:cell]
+                center:attributes.center];
+    } else {
+      UIView* cellSnapshot = [cell snapshotViewAfterScreenUpdates:YES];
+      GridTransitionItem* item =
+          [GridTransitionItem itemWithCell:cellSnapshot
+                                    center:attributes.center];
+      [items addObject:item];
+    }
+  }
+
+  return [GridTransitionLayout layoutWithInactiveItems:items
+                                            activeItem:activeItem
+                                         selectionItem:selectionItem];
+}
+
+- (BOOL)isSelectedCellVisible {
+  // The collection view's selected item may not have updated yet, so use the
+  // selected index.
+  NSUInteger selectedIndex = self.selectedIndex;
+  if (selectedIndex == NSNotFound) {
+    return NO;
+  }
+
+  NSIndexPath* selectedIndexPath = CreateIndexPath(selectedIndex);
+  return [self.collectionView.indexPathsForVisibleItems
+      containsObject:selectedIndexPath];
 }
 
 - (BOOL)hasSelectedCell {
@@ -516,7 +578,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                    atIndex:(NSUInteger)index
                             selectedItemID:(NSString*)selectedItemID {
   [_items insertObject:item atIndex:index];
-  _selectedItemID = selectedItemID;
+  _selectedItemID = [selectedItemID copy];
+  _lastInsertedItemID = [item.identifier copy];
   [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
 
   [self.collectionView insertItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
