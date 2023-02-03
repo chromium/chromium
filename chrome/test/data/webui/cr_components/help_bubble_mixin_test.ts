@@ -21,6 +21,7 @@ const TITLE_NATIVE_ID: string = 'kHelpBubbleMixinTestTitleElementId';
 const PARAGRAPH_NATIVE_ID: string = 'kHelpBubbleMixinTestParagraphElementId';
 const LIST_NATIVE_ID: string = 'kHelpBubbleMixinTestListElementId';
 const SPAN_NATIVE_ID: string = 'kHelpBubbleMixinTestSpanElementId';
+const BUTTON_NATIVE_ID: string = 'kHelpBubbleMixinTestBubbleElementId';
 const LIST_ITEM_NATIVE_ID: string = 'kHelpBubbleMixinTestListItemElementId';
 const NESTED_CHILD_NATIVE_ID: string = 'kHelpBubbleMixinTestChildElementId';
 const EVENT1_NAME: string = 'kFirstExampleCustomEvent';
@@ -39,6 +40,7 @@ export interface HelpBubbleMixinTestElement {
     helpBubble: HelpBubbleElement,
     p1: HTMLElement,
     title: HTMLElement,
+    button: HTMLElement,
   };
 }
 
@@ -61,9 +63,14 @@ export class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
       <p id='p1'>Some paragraph text</p>
       <ul id='bulletList'>
         <li id='list-item'>List item 1</li>
-        <li>List item 2</li>
+        <li>List item 2
+          <button id="nestedButton">
+            <div id="nestedDiv">Nested Div</div>
+          </button>
+        </li>
       </ul>
       <span>Span text</span>
+      <button disabled id='button'></button>
       <container-element id='container-element'></container-element>
     </div>`;
   }
@@ -557,6 +564,37 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
         ],
         testProxy.getHandler().getArgs('helpBubbleAnchorCustomEvent'));
   });
+
+  test('help bubble mixin sends event on element clicked', async () => {
+    container.$.p1.click();
+    assertEquals(
+        1, testProxy.getHandler().getCallCount('helpBubbleAnchorActivated'));
+    assertDeepEquals(
+        [PARAGRAPH_NATIVE_ID],
+        testProxy.getHandler().getArgs('helpBubbleAnchorActivated'));
+  });
+
+  test(
+      'help bubble mixin does not send event on disabled element clicked',
+      async () => {
+        container.registerHelpBubble(BUTTON_NATIVE_ID, '#button');
+        container.$.button.click();
+        assertEquals(
+            0,
+            testProxy.getHandler().getCallCount('helpBubbleAnchorActivated'));
+      });
+
+  test(
+      'help bubble mixin does not send event on nested button clicked',
+      async () => {
+        (container.$.bulletList.querySelector('#nestedButton') as HTMLElement)
+            .click();
+        (container.$.bulletList.querySelector('#nestedDiv') as HTMLElement)
+            .click();
+        assertEquals(
+            0,
+            testProxy.getHandler().getCallCount('helpBubbleAnchorActivated'));
+      });
 
   test(
       'help bubble mixin sends event on closed due to anchor losing visibility',
