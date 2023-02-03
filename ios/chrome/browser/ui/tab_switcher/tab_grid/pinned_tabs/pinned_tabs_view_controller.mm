@@ -636,9 +636,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self updateEmptyCollectionViewLabelVisibility];
 }
 
-// Configures `cell`'s title synchronously, and favicon asynchronously with
-// information from `item`. Updates the `cell`'s theme to this view
-// controller's theme.
+// Configures `cell`'s identifier and title synchronously, favicon and snapshot
+// asynchronously with information from `item`.
 - (void)configureCell:(PinnedCell*)cell withItem:(TabSwitcherItem*)item {
   if (item) {
     cell.itemIdentifier = item.identifier;
@@ -652,6 +651,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                         cell.icon = icon;
                                       }
                                     }];
+    [self.imageDataSource
+        snapshotForIdentifier:itemIdentifier
+                   completion:^(UIImage* snapshot) {
+                     if ([cell hasIdentifier:itemIdentifier]) {
+                       cell.snapshot = snapshot;
+                     }
+                   }];
   }
 }
 
