@@ -133,10 +133,6 @@ const char kDeviceLocalAccountsWithSavedData[] = "PublicAccounts";
 
 constexpr char kBluetoothLoggingUpstartJob[] = "bluetoothlog";
 
-std::string FullyCanonicalize(const std::string& email) {
-  return gaia::CanonicalizeEmail(gaia::SanitizeEmail(email));
-}
-
 // Callback that is called after user removal is complete.
 void OnRemoveUserComplete(const AccountId& account_id,
                           absl::optional<user_data_auth::RemoveReply> reply) {
@@ -266,7 +262,6 @@ void ChromeUserManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kDeviceLocalAccountsWithSavedData);
   registry->RegisterStringPref(kDeviceLocalAccountPendingDataRemoval,
                                std::string());
-  registry->RegisterListPref(::prefs::kReportingUsers);
 
   SupervisedUserManager::RegisterLocalStatePrefs(registry);
   SessionLengthLimiter::RegisterPrefs(registry);
@@ -1271,13 +1266,6 @@ void ChromeUserManagerImpl::SetUserAffiliation(
   }
 }
 
-bool ChromeUserManagerImpl::ShouldReportUser(const std::string& user_id) const {
-  const base::Value::List& reporting_users =
-      GetLocalState()->GetList(::prefs::kReportingUsers);
-  base::Value user_id_value(FullyCanonicalize(user_id));
-  return base::Contains(reporting_users, user_id_value);
-}
-
 bool ChromeUserManagerImpl::IsFullManagementDisclosureNeeded(
     policy::DeviceLocalAccountPolicyBroker* broker) const {
   return AreRiskyPoliciesUsed(broker) ||
@@ -1285,23 +1273,6 @@ bool ChromeUserManagerImpl::IsFullManagementDisclosureNeeded(
              ::prefs::kManagedSessionUseFullLoginWarning) ||
          PolicyHasWebTrustedAuthorityCertificate(broker) ||
          IsProxyUsed(GetLocalState());
-}
-
-void ChromeUserManagerImpl::AddReportingUser(const AccountId& account_id) {
-  ScopedListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
-  base::Value email_value(account_id.GetUserEmail());
-  if (!base::Contains(users_update.Get(), email_value))
-    users_update->Append(std::move(email_value));
-}
-
-void ChromeUserManagerImpl::RemoveReportingUser(const AccountId& account_id) {
-  ScopedListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
-  base::Value::List& update_list = users_update.Get();
-  auto it = base::ranges::find(
-      update_list, base::Value(FullyCanonicalize(account_id.GetUserEmail())));
-  if (it == update_list.end())
-    return;
-  update_list.erase(it);
 }
 
 const AccountId& ChromeUserManagerImpl::GetGuestAccountId() const {

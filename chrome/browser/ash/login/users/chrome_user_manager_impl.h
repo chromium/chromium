@@ -140,7 +140,6 @@ class ChromeUserManagerImpl
   void SetUserAffiliation(
       const AccountId& account_id,
       const AffiliationIDSet& user_affiliation_ids) override;
-  bool ShouldReportUser(const std::string& user_id) const override;
   bool IsFullManagementDisclosureNeeded(
       policy::DeviceLocalAccountPolicyBroker* broker) const override;
   void CacheRemovedUser(const std::string& user_email,
@@ -225,12 +224,6 @@ class ChromeUserManagerImpl
   // Starts (or stops) automatic timezone refresh on geolocation,
   // depending on user preferences.
   void UpdateUserTimeZoneRefresher(Profile* profile);
-
-  // Adds user to the list of the users who should be reported.
-  void AddReportingUser(const AccountId& account_id);
-
-  // Removes user from the list of the users who should be reported.
-  void RemoveReportingUser(const AccountId& account_id);
 
   // Creates a user for the given device local account.
   std::unique_ptr<user_manager::User> CreateUserFromDeviceLocalAccount(

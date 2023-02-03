@@ -834,6 +834,9 @@ class DeviceStatusCollectorTest : public testing::Test {
     scoped_stub_install_attributes_.Get()->SetCloudManaged("managed.com",
                                                            "device_id");
     EXPECT_CALL(*user_manager_, Shutdown()).Times(1);
+    EXPECT_CALL(*user_manager_, GetLocalState())
+        .WillRepeatedly(Return(&local_state_));
+    ash::ChromeUserManager::RegisterPrefs(local_state_.registry());
 
     // Ensure mojo is started, otherwise browser context keyed services that
     // rely on mojo will explode.
@@ -1592,6 +1595,8 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   user_manager_->AddUserWithAffiliationAndType(account_id0, true,
                                                user_manager::USER_TYPE_REGULAR);
+  user_manager_->AddReportingUser(
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
 
   EXPECT_TRUE(status_collector_->IsReportingActivityTimes());
   EXPECT_TRUE(status_collector_->IsReportingUsers());
@@ -1804,6 +1809,11 @@ TEST_F(DeviceStatusCollectorTest, ReportUsers) {
                                                user_manager::USER_TYPE_REGULAR);
   user_manager_->AddUserWithAffiliationAndType(account_id5, true,
                                                user_manager::USER_TYPE_REGULAR);
+  user_manager_->AddReportingUser(account_id0);
+  user_manager_->AddReportingUser(account_id1);
+  user_manager_->AddReportingUser(account_id2);
+  user_manager_->AddReportingUser(account_id4);
+  user_manager_->AddReportingUser(account_id5);
 
   // Verify that users are reported by default.
   GetStatus();

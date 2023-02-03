@@ -6,23 +6,44 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
+namespace {
+
+std::string FullyCanonicalize(const std::string& email) {
+  return gaia::CanonicalizeEmail(gaia::SanitizeEmail(email));
+}
+
+}  // namespace
 
 ChromeUserManager::ChromeUserManager(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : UserManagerBase(std::move(task_runner)) {}
 
 ChromeUserManager::~ChromeUserManager() {}
+
+// static
+void ChromeUserManager::RegisterPrefs(PrefRegistrySimple* registry) {
+  UserManagerBase::RegisterPrefs(registry);
+
+  registry->RegisterListPref(::prefs::kReportingUsers);
+}
 
 bool ChromeUserManager::IsCurrentUserNew() const {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -114,6 +135,32 @@ LoginState::LoggedInUserType ChromeUserManager::GetLoggedInUserType(
 ChromeUserManager* ChromeUserManager::Get() {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   return user_manager ? static_cast<ChromeUserManager*>(user_manager) : nullptr;
+}
+
+bool ChromeUserManager::ShouldReportUser(const std::string& user_id) const {
+  const base::Value::List& reporting_users =
+      GetLocalState()->GetList(::prefs::kReportingUsers);
+  base::Value user_id_value(FullyCanonicalize(user_id));
+  return base::Contains(reporting_users, user_id_value);
+}
+
+void ChromeUserManager::AddReportingUser(const AccountId& account_id) {
+  ScopedListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
+  base::Value email_value(account_id.GetUserEmail());
+  if (!base::Contains(users_update.Get(), email_value)) {
+    users_update->Append(std::move(email_value));
+  }
+}
+
+void ChromeUserManager::RemoveReportingUser(const AccountId& account_id) {
+  ScopedListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
+  base::Value::List& update_list = users_update.Get();
+  auto it = base::ranges::find(
+      update_list, base::Value(FullyCanonicalize(account_id.GetUserEmail())));
+  if (it == update_list.end()) {
+    return;
+  }
+  update_list.erase(it);
 }
 
 }  // namespace ash

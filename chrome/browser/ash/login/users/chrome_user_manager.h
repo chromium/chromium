@@ -15,6 +15,8 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager_base.h"
 
+class PrefRegistrySimple;
+
 namespace ash {
 
 // Chrome specific interface of the UserManager.
@@ -28,6 +30,9 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   ChromeUserManager& operator=(const ChromeUserManager&) = delete;
 
   ~ChromeUserManager() override;
+
+  // Registers the preferences that this class uses.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // user_manager::UserManagerBase:
   bool IsCurrentUserNew() const override;
@@ -47,9 +52,18 @@ class ChromeUserManager : public user_manager::UserManagerBase,
       const AccountId& account_id,
       const AffiliationIDSet& user_affiliation_ids) = 0;
 
+  // TODO(crbug.com/1411338): Consider to move following methods out from
+  // ChromeUserManager to a dedicated place.
+
   // Return whether the given user should be reported (see
   // policy::DeviceStatusCollector).
-  virtual bool ShouldReportUser(const std::string& user_id) const = 0;
+  bool ShouldReportUser(const std::string& user_id) const;
+
+  // Adds user to the list of the users who should be reported.
+  void AddReportingUser(const AccountId& account_id);
+
+  // Removes user from the list of the users who should be reported.
+  void RemoveReportingUser(const AccountId& account_id);
 
   // Checks whether full management disclosure is needed for the public/managed
   // session login screen UI. Full disclosure is needed if the session is

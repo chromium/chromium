@@ -138,7 +138,6 @@ class MockUserManager : public ChromeUserManager {
                void(const AccountId& account_id,
                     const AffiliationIDSet& user_affiliation_ids));
 
-  bool ShouldReportUser(const std::string& user_id) const override;
   MOCK_CONST_METHOD1(IsFullManagementDisclosureNeeded,
                      bool(policy::DeviceLocalAccountPolicyBroker*));
   MOCK_METHOD2(CacheRemovedUser,

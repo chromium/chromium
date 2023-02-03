@@ -159,13 +159,4 @@ void MockUserManager::ClearUserList() {
   user_list_.clear();
 }
 
-bool MockUserManager::ShouldReportUser(const std::string& user_id) const {
-  for (auto* user : user_list_) {
-    if (user->GetAccountId().GetUserEmail() == user_id)
-      return user->IsAffiliated();
-  }
-  NOTREACHED();
-  return false;
-}
-
 }  // namespace ash
