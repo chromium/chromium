@@ -1672,6 +1672,21 @@ FileManagerPrivateResumeIOTaskFunction::Run() {
   return RespondNow(WithArguments());
 }
 
+ExtensionFunction::ResponseAction
+FileManagerPrivateProgressPausedTasksFunction::Run() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  VolumeManager* const volume_manager =
+      VolumeManager::Get(Profile::FromBrowserContext(browser_context()));
+  if (!volume_manager || !volume_manager->io_task_controller()) {
+    return RespondNow(Error("Cannot find VolumeManager"));
+  }
+
+  volume_manager->io_task_controller()->ProgressPausedTasks();
+
+  return RespondNow(WithArguments());
+}
+
 FileManagerPrivateInternalParseTrashInfoFilesFunction::
     FileManagerPrivateInternalParseTrashInfoFilesFunction() = default;
 

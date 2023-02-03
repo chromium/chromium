@@ -1581,6 +1581,12 @@ chrome.fileManagerPrivate.cancelIOTask = function (taskId) { };
 chrome.fileManagerPrivate.resumeIOTask = function (taskId, params) {};
 
 /**
+ * Makes all I/O tasks in state::PAUSED emit (broadcast) their current I/O
+ * task progress status.
+ */
+chrome.fileManagerPrivate.progressPausedTasks = function () {};
+
+/**
  * Tells DriveFS to update its cached pin states of hosted files (once).
  */
 chrome.fileManagerPrivate.pollDriveHostedFilePinStates = function() {};

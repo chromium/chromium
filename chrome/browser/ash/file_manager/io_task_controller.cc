@@ -95,6 +95,17 @@ void IOTaskController::Cancel(IOTaskId task_id) {
   }
 }
 
+void IOTaskController::ProgressPausedTasks() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (auto it = tasks_.begin(); it != tasks_.end(); ++it) {
+    IOTask* task = it->second.get();
+    if (task->progress().IsPaused()) {
+      NotifyIOTaskObservers(task->progress());
+    }
+  }
+}
+
 device::mojom::WakeLock* IOTaskController::GetWakeLock() {
   if (!wake_lock_) {
     mojo::Remote<device::mojom::WakeLockProvider> provider;
