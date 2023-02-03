@@ -5919,6 +5919,14 @@
     "expiry_milestone": 110
   },
   {
+    "name": "quick-delete-for-android",
+    "owners": [
+      "roagarwal",
+      "eokoyomon"
+    ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "quick-gesture-show-launcher",
     "owners": [ "anasalazar", "//ash/shelf/OWNERS" ],
     "expiry_milestone": 115

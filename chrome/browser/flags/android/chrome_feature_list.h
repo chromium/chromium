@@ -112,6 +112,7 @@ BASE_DECLARE_FEATURE(kBackGestureRefactorAndroid);
 BASE_DECLARE_FEATURE(kOpaqueOriginForIncomingIntents);
 BASE_DECLARE_FEATURE(kPostTaskFocusTab);
 BASE_DECLARE_FEATURE(kProbabilisticCryptidRenderer);
+BASE_DECLARE_FEATURE(kQuickDeleteForAndroid);
 BASE_DECLARE_FEATURE(kReachedCodeProfiler);
 BASE_DECLARE_FEATURE(kReengagementNotification);
 BASE_DECLARE_FEATURE(kReaderModeInCCT);

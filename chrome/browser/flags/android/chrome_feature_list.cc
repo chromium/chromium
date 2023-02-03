@@ -247,6 +247,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOptimizeGeolocationHeaderGeneration,
     &kPostTaskFocusTab,
     &kProbabilisticCryptidRenderer,
+    &kQuickDeleteForAndroid,
     &kReachedCodeProfiler,
     &kReaderModeInCCT,
     &kRecordSuppressionMetrics,
@@ -780,6 +781,10 @@ BASE_FEATURE(kPostTaskFocusTab,
 
 BASE_FEATURE(kProbabilisticCryptidRenderer,
              "ProbabilisticCryptidRenderer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kQuickDeleteForAndroid,
+             "QuickDeleteForAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReachedCodeProfiler,

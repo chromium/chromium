@@ -1443,6 +1443,9 @@ extern const char kQuickIntensiveWakeUpThrottlingAfterLoadingDescription[];
 extern const char kQuickActionShowBubbleLauncherName[];
 extern const char kQuickActionShowBubbleLauncherDescription[];
 
+extern const char kQuickDeleteForAndroidName[];
+extern const char kQuickDeleteForAndroidDescription[];
+
 extern const char kAppListDragAndDropRefactorName[];
 extern const char kAppListDragAndDropRefactorDescription[];
 
