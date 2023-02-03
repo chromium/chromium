@@ -116,23 +116,27 @@ void ViewTransition::ScriptBoundState::HandlePromise(
       break;
     case Response::kRejectAbort: {
       ScriptState::Scope scope(script_state);
-      property->Reject(V8ThrowDOMException::CreateOrEmpty(
-          script_state->GetIsolate(), DOMExceptionCode::kAbortError,
-          kAbortedMessage));
+      auto value = ScriptValue::From(
+          script_state, MakeGarbageCollected<DOMException>(
+                            DOMExceptionCode::kAbortError, kAbortedMessage));
+      property->Reject(value);
       break;
     }
     case Response::kRejectInvalidState: {
       ScriptState::Scope scope(script_state);
-      property->Reject(V8ThrowDOMException::CreateOrEmpty(
-          script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
-          kInvalidStateMessage));
+      auto value = ScriptValue::From(
+          script_state,
+          MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kInvalidStateError, kInvalidStateMessage));
+      property->Reject(value);
       break;
     }
     case Response::kRejectTimeout: {
       ScriptState::Scope scope(script_state);
-      property->Reject(V8ThrowDOMException::CreateOrEmpty(
-          script_state->GetIsolate(), DOMExceptionCode::kTimeoutError,
-          kTimeoutMessage));
+      auto value = ScriptValue::From(
+          script_state, MakeGarbageCollected<DOMException>(
+                            DOMExceptionCode::kTimeoutError, kTimeoutMessage));
+      property->Reject(value);
       break;
     }
   }
@@ -766,16 +770,16 @@ void ViewTransition::NotifyDOMCallbackFinished(bool success,
     if (IsDone())
       script_bound_state_->finished_promise_property->ResolveWithUndefined();
   } else {
-    script_bound_state_->dom_updated_promise_property->Reject(value.V8Value());
+    script_bound_state_->dom_updated_promise_property->Reject(value);
 
     // The ready promise rejects with the value of updateCallbackDone callback
     // if it's skipped because of an error in the callback.
     if (!IsDone())
-      script_bound_state_->ready_promise_property->Reject(value.V8Value());
+      script_bound_state_->ready_promise_property->Reject(value);
 
     // If the domUpdate callback fails the transition is skipped. The finish
     // promise should mirror the result of updateCallbackDone.
-    script_bound_state_->finished_promise_property->Reject(value.V8Value());
+    script_bound_state_->finished_promise_property->Reject(value);
   }
 
   dom_callback_succeeded_ = success;
