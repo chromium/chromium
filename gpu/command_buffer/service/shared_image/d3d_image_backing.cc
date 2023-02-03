@@ -129,13 +129,14 @@ gfx::Size PlaneSize(DXGI_FORMAT dxgi_format,
   }
 }
 
+// `row_bytes` is the number of bytes that need to be copied in each row, which
+// can be smaller than `source_stride` or `dest_stride`.
 void CopyPlane(const uint8_t* source_memory,
                size_t source_stride,
                uint8_t* dest_memory,
                size_t dest_stride,
-               viz::SharedImageFormat format,
+               size_t row_bytes,
                const gfx::Size& size) {
-  int row_bytes = size.width() * BitsPerPixel(format) / 8;
   libyuv::CopyPlane(source_memory, source_stride, dest_memory, dest_stride,
                     row_bytes, size.height());
 }
@@ -267,6 +268,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
   // since there's no GL context to MakeCurrent in the destructor.
   if (!has_webgpu_usage) {
     for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
+      gfx::Size plane_size = format.GetPlaneSize(plane, size);
       // For legacy multiplanar formats, format() is plane format (eg. RED, RG)
       // which is_single_plane(), but the real plane is in plane_index so we
       // pass that.
@@ -274,7 +276,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
       // Creating the GL texture doesn't require exclusive access to the
       // underlying D3D11 texture.
       scoped_refptr<gles2::TexturePassthrough> gl_texture =
-          CreateGLTexture(format, size, color_space, d3d11_texture,
+          CreateGLTexture(format, plane_size, color_space, d3d11_texture,
                           texture_target, array_slice, plane_id);
       if (!gl_texture) {
         LOG(ERROR) << "Failed to create GL texture";
@@ -477,7 +479,7 @@ bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
   auto& pixmap = pixmaps[0];
 
   const uint8_t* source_memory = static_cast<const uint8_t*>(pixmap.addr());
-  const size_t source_stride = pixmap.info().minRowBytes();
+  const size_t source_stride = pixmap.rowBytes();
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
   DCHECK(d3d11_texture_);
@@ -518,11 +520,10 @@ bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
     }
     uint8_t* dest_memory = static_cast<uint8_t*>(mapped_resource.pData);
     const size_t dest_stride = mapped_resource.RowPitch;
-    CopyPlane(source_memory, source_stride, dest_memory, dest_stride, format(),
-              size());
+    CopyPlane(source_memory, source_stride, dest_memory, dest_stride,
+              pixmap.info().minRowBytes(), size());
     device_context->Unmap(staging_texture, 0);
-    device_context->CopySubresourceRegion(d3d11_texture_.Get(), 0, 0, 0, 0,
-                                          staging_texture, 0, nullptr);
+    device_context->CopyResource(d3d11_texture_.Get(), staging_texture);
   }
   return true;
 }
@@ -532,7 +533,7 @@ bool D3DImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
   auto& pixmap = pixmaps[0];
 
   uint8_t* dest_memory = static_cast<uint8_t*>(pixmap.writable_addr());
-  const size_t dest_stride = pixmap.info().minRowBytes();
+  const size_t dest_stride = pixmap.rowBytes();
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
   DCHECK(d3d11_texture_);
@@ -562,10 +563,10 @@ bool D3DImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
     device_context->Unmap(d3d11_texture_.Get(), 0);
   } else {
     ID3D11Texture2D* staging_texture = GetOrCreateStagingTexture();
-    if (!staging_texture)
+    if (!staging_texture) {
       return false;
-    device_context->CopySubresourceRegion(staging_texture, 0, 0, 0, 0,
-                                          d3d11_texture_.Get(), 0, nullptr);
+    }
+    device_context->CopyResource(staging_texture, d3d11_texture_.Get());
     D3D11_MAPPED_SUBRESOURCE mapped_resource = {};
     HRESULT hr = device_context->Map(staging_texture, 0, D3D11_MAP_READ, 0,
                                      &mapped_resource);
@@ -575,8 +576,8 @@ bool D3DImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
     }
     const uint8_t* source_memory = static_cast<uint8_t*>(mapped_resource.pData);
     const size_t source_stride = mapped_resource.RowPitch;
-    CopyPlane(source_memory, source_stride, dest_memory, dest_stride, format(),
-              size());
+    CopyPlane(source_memory, source_stride, dest_memory, dest_stride,
+              pixmap.info().minRowBytes(), size());
     device_context->Unmap(staging_texture, 0);
   }
   return true;
@@ -975,6 +976,7 @@ D3DImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
   auto gl_textures = gl_textures_;
   if (gl_textures.empty()) {
     for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
+      gfx::Size plane_size = format().GetPlaneSize(plane, size());
       // For legacy multiplanar formats, format() is plane format (eg. RED, RG)
       // which is_single_plane(), but the real plane is in plane_index_ so we
       // pass that.
@@ -982,7 +984,7 @@ D3DImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
       // Creating the GL texture doesn't require exclusive access to the
       // underlying D3D11 texture.
       scoped_refptr<gles2::TexturePassthrough> gl_texture =
-          CreateGLTexture(format(), size(), color_space(), d3d11_texture_,
+          CreateGLTexture(format(), plane_size, color_space(), d3d11_texture_,
                           texture_target_, array_slice_, plane_id, swap_chain_);
       if (!gl_texture) {
         LOG(ERROR) << "Failed to create GL texture";
