@@ -1104,7 +1104,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1975841812214822307">Verwijderen...</translation>
 <translation id="1976150099241323601">Inloggen bij beveiligingsapparaat</translation>
 <translation id="1977965994116744507">Plaats je telefoon dichterbij om je <ph name="DEVICE_TYPE" /> te ontgrendelen.</translation>
-<translation id="1978057560491495741">Adres verwijderen</translation>
 <translation id="1979095679518582070">Als je deze functie uitzet, heeft dit geen gevolgen voor de mogelijkheid van dit apparaat om de informatie te sturen die nodig is voor essentiële services zoals systeemupdates en beveiliging.</translation>
 <translation id="1979280758666859181">Je wijzigt naar een kanaal met een oudere versie van <ph name="PRODUCT_NAME" />. De wijziging van kanaal wordt toegepast wanneer de versie van het kanaal overeenkomt met de versie die momenteel op het apparaat is geïnstalleerd.</translation>
 <translation id="197989455406964291">KDC ondersteunt versleutelingstype niet</translation>
@@ -4277,7 +4276,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4852916668365817106">Muiskleur</translation>
 <translation id="4853020600495124913">Openen in &amp;nieuw venster</translation>
 <translation id="4854317507773910281">Kies een ouderaccount voor goedkeuring</translation>
-<translation id="4854603338816296098">Adres verwijderd</translation>
 <translation id="485480310608090163">Meer instellingen en rechten</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">OCSP-antwoorden ondertekenen</translation>
@@ -6403,7 +6401,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6832218595502288407">Links uitlijnen</translation>
 <translation id="6833479554815567477">Tabblad verwijderd uit groep <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Overschakelen naar een slimme, beveiligde browser</translation>
-<translation id="6833996806551876956">Proef voor privacy-sandbox</translation>
+<translation id="6833996806551876956">Proef voor Privacy Sandbox</translation>
 <translation id="6835712061486505758">Maak een wifi-hotspot om andere apparaten een internetverbinding te bieden. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Maak verbinding met internet om je <ph name="DEVICE_TYPE" /> te updaten.</translation>
 <translation id="6839225236531462745">Fout tijdens verwijderen van certificaat</translation>
@@ -7475,7 +7473,6 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7819605256207059717">Geblokkeerd door je organisatie</translation>
 <translation id="7820561748632634942">Extra schakelaars toewijzen?</translation>
 <translation id="782057141565633384">Adres van video k&amp;opiëren</translation>
-<translation id="7822187537422052256">Weet je zeker dat je dit adres wilt verwijderen?</translation>
 <translation id="7824864914877854148">Back-up kan niet worden voltooid vanwege een fout</translation>
 <translation id="782590969421016895">Huidige pagina's gebruiken</translation>
 <translation id="7826174860695147464">Ondersteuning voor oudere browsers (LBS): intern</translation>
@@ -8886,7 +8883,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9094038138851891550">Ongeldige gebruikersnaam</translation>
 <translation id="9094859731829297286">Weet je zeker dat je een schijf van vaste grootte wilt reserveren voor Linux?</translation>
 <translation id="9094982973264386462">Verwijderen</translation>
-<translation id="9095253524804455615">Verwijderen</translation>
 <translation id="9095364055741191097">Kan lokale gegevens niet herstellen</translation>
 <translation id="909554839118732438">Incognitovenster sluiten</translation>
 <translation id="9099220545925418560">Gebaseerd op je browsegeschiedenis. Deze instelling staat uit.</translation>

@@ -251,6 +251,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="2426805022920575512">Choisir un autre compte</translation>
 <translation id="2433507940547922241">Apparence</translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
+<translation id="2439153523196674349">Aperçu de <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Voulez-vous recommencer le téléchargement de <ph name="FILE_NAME" />?</translation>
 <translation id="2453860139492968684">Terminer</translation>
 <translation id="2459390580524506445">Recherche vocale améliorée</translation>
@@ -389,6 +390,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="3066573403916685335">Déplacer vers le bas</translation>
 <translation id="3070005020161560471">Traduire automatiquement les pages rédigées en</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> s'ouvrira dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS<ph name="END_LINK2" />. La <ph name="BEGIN_LINK3" />politique de confidentialité<ph name="END_LINK3" /> s'applique également.</translation>
+<translation id="3083194063661536258">Déconnecté. Bouton. Ouvre une boîte de dialogue pour se connecter et activer la synchronisation.</translation>
 <translation id="3091010850649238832">Afficher le contenu du presse-papier</translation>
 <translation id="3098745985164956033">Certaines images sont envoyées à Google afin d'améliorer les descriptions pour vous</translation>
 <translation id="3104179992611025423">Votre navigateur est géré par vos parents</translation>
@@ -925,6 +927,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="604124094241169006">Automatique</translation>
 <translation id="6042308850641462728">Plus</translation>
+<translation id="6049046116080614938">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Bouton. Ouvre les paramètres.</translation>
 <translation id="604996488070107836">Le téléchargement de <ph name="FILE_NAME" /> a échoué en raison d'une erreur inconnue.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Gérez vos histoires et votre activité ici</translation>
@@ -1299,6 +1302,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7968014550143838305">Ajouté à la liste de lecture</translation>
 <translation id="7971136598759319605">Actif il y a 1 jour</translation>
 <translation id="7975379999046275268">Prévisualiser la page <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Connecté en tant que <ph name="USER_NAME" />. Bouton. Ouvre les paramètres.</translation>
 <translation id="7986497153528221272">Pour afficher les mots de passe, configurez d'abord un verrouillage d'écran sur votre appareil</translation>
 <translation id="7995059495660416932">Vous verrez le contenu lorsqu'il sera accessible</translation>
 <translation id="799576009106109668">Vous naviguerez plus rapidement parce que le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>

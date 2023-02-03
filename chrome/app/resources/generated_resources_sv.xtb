@@ -375,6 +375,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1339009753652684748">Starta assistenten när du säger ”Hey Google”. Batteriet räcker längre om du väljer På (rekommenderas). Assistenten svarar bara när enheten är ansluten till ett vägguttag eller laddas.</translation>
 <translation id="13392265090583506">Tillgänglighet</translation>
 <translation id="1340527397989195812">Säkerhetskopiera media från enheten med appen Filer.</translation>
+<translation id="1341871421050612057">Det gick inte att synkronisera med <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Ge Linux-appar åtkomstbehörighet till USB-enheter. När en USB-enhet tas bort sparas ingen information om den i Linux.</translation>
 <translation id="1343920184519992513">Fortsätt där du slutade och öppna en viss uppsättning sidor</translation>
 <translation id="134589511016534552">Mediaflikar visas också i Öppna flikar</translation>
@@ -1116,7 +1117,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1975841812214822307">Ta bort ...</translation>
 <translation id="1976150099241323601">Logga in på säkerhetsenhet</translation>
 <translation id="1977965994116744507">Håll mobilen närmare om du vill låsa upp din <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978057560491495741">Ta bort adress</translation>
 <translation id="1979095679518582070">Enheten kan fortfarande skicka den information som behövs för viktiga tjänster, som systemuppdateringar och säkerhet, även om du inaktiverar funktionen.</translation>
 <translation id="1979280758666859181">Du byter till en kanal med en äldre version av <ph name="PRODUCT_NAME" />. Kanalen byts när kanalversionen matchar den version som är installerad på din enhet.</translation>
 <translation id="197989455406964291">KDC har inte stöd för krypteringstypen</translation>
@@ -3056,6 +3056,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Du och Google</translation>
 <translation id="3722108462506185496">Det gick inte att starta den virtuella maskinen. Försök igen.</translation>
+<translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />-instruktionen har tagits emot</translation>
 <translation id="3726965532284929944">Qt</translation>
 <translation id="3727144509609414201">Tillgängliga wifi-nätverk</translation>
 <translation id="3727187387656390258">Kontrollera popup</translation>
@@ -3412,6 +3413,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="402211067068791756">Då rensas <ph name="TOTAL_USAGE" /> data som har lagrats av webbplatserna som visas</translation>
 <translation id="4022426551683927403">&amp;Lägg till i ordlistan</translation>
 <translation id="4025039777635956441">Stäng av ljudet för den valda webbplatsen</translation>
+<translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" />-instruktionen har tagits emot</translation>
 <translation id="4027958407426528157">Öppna webbplatser i appar som har installerats på <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Lägg till inmatningsmetoder</translation>
 <translation id="4029556917477724407">Tillbaka från sidan <ph name="PAGE_TITLE" /></translation>
@@ -4153,6 +4155,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4713409221649555176">Radera när du stänger alla fönster</translation>
 <translation id="47158868804223727">Utöka eller komprimera gruppen genom att klicka på namnet</translation>
 <translation id="4716483597559580346">Gör en powerwash för ökad säkerhet</translation>
+<translation id="471759229191973607">Byt tema</translation>
 <translation id="4722735765955348426">Lösenord för <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> delar din skärm.</translation>
 <translation id="4722989931633062466">Får inte visa inloggningsmeddelanden hos tredje part</translation>
@@ -4295,7 +4298,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4852916668365817106">Musfärg</translation>
 <translation id="4853020600495124913">Öppna i &amp;nytt fönster</translation>
 <translation id="4854317507773910281">Välj vilket föräldrakonto som ska godkänna</translation>
-<translation id="4854603338816296098">Adressen har tagits bort</translation>
 <translation id="485480310608090163">Fler inställningar och behörigheter</translation>
 <translation id="4858913220355269194">Fotboll</translation>
 <translation id="4862642413395066333">Signera OCSP-svar</translation>
@@ -4849,6 +4851,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5382591305415226340">Hantera länkar som stöds</translation>
 <translation id="5383377866517186886">Kamera har inaktiverats i systeminställningarna för Mac.</translation>
 <translation id="5383740867328871413">Namnlös grupp – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (id: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Företagets policy har ändrats. En knapp för experiment har lagts till i verktygsfältet. Om du klickar på den öppnas en dialogruta där du kan aktivera experiment.</translation>
 <translation id="5388885445722491159">Kopplad</translation>
 <translation id="5390112241331447203">Ta med filen system_logs.txt som skickas i feedbackrapporter.</translation>
@@ -5063,6 +5066,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5578059481725149024">Autoinloggning</translation>
 <translation id="5581134892342029705">Översättningen till <ph name="LANGUAGE" /> är klar</translation>
 <translation id="558170650521898289">Microsofts Verifiera Windows-maskinvarudrivrutin</translation>
+<translation id="5581876958763461074">Alla anteckningar</translation>
 <translation id="5581972110672966454">Det gick inte att ansluta enheten till domänen. Försök igen eller kontakta enhetens ägare eller administratör. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Huvudmeny</translation>
 <translation id="5583640892426849032">Backsteg</translation>
@@ -5691,6 +5695,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6150961653851236686">Översättning av sidor görs till det här språket</translation>
 <translation id="6151323131516309312">Tryck på <ph name="SEARCH_KEY" /> för att söka i <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Filen finns redan i nedladdningsmappen.</translation>
+<translation id="6152918902620844577">Väntar på nästa åtgärd</translation>
 <translation id="6154240335466762404">Ta bort alla portar</translation>
 <translation id="615436196126345398">Protokoll</translation>
 <translation id="6155141482566063812">En flik i bakgrunden delar din skärm</translation>
@@ -7173,6 +7178,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> svarar inte. Stäng appen med Tvångsavsluta.</translation>
 <translation id="7535730537657706072">Om du vill rensa webbhistoriken i inkognitoläget stänger du alla inkognitoflikar</translation>
 <translation id="7537451260744431038">Webbplatser får inte förbättra surfupplevelsen med hjälp av cookies, till exempel genom att låta dig förbli inloggad eller spara vad du har lagt till i kundvagnen</translation>
+<translation id="7538088324298143359">Sök i bilden med <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Det gick inte att söka efter uppdateringar: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> har återställt den här enheten till en tidigare version. Spara alla viktiga filer och starta sedan om enheten. All data raderas på enheten.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> med <ph name="APP_NAME" />-appen</translation>
@@ -7401,6 +7407,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7730683939467795481">Den här sidan ändrades av tillägget <ph name="EXTENSION_NAME" /></translation>
 <translation id="7735165285389721951">En installationsprocess för Steam körs redan. Vänta tills den är klar innan du försöker igen</translation>
 <translation id="7737115349420013392">Parkopplas med <ph name="DEVICE_NAME" /> …</translation>
+<translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" />-instruktionen har tagits emot</translation>
 <translation id="7737846262459425222">Du kan när som helst ändra detta i Inställningar &gt; Google Assistent &gt; Innehållet på skärmen.</translation>
 <translation id="7737948071472253612">Får inte använda kameran</translation>
 <translation id="77381465218432215">Visa accenttecken och specialtecken</translation>
@@ -7498,7 +7505,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7819605256207059717">Blockerades av organisationen</translation>
 <translation id="7820561748632634942">Vill du tilldela ytterligare brytare?</translation>
 <translation id="782057141565633384">K&amp;opiera videoadress</translation>
-<translation id="7822187537422052256">Vill du ta bort den här adressen?</translation>
 <translation id="7824864914877854148">Det gick inte att slutföra säkerhetskopieringen på grund av ett fel</translation>
 <translation id="782590969421016895">Använd aktuella sidor</translation>
 <translation id="7826174860695147464">Stöd för äldre webbläsare – interna inställningar</translation>
@@ -7602,6 +7608,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7912080627461681647">Lösenordet har ändrats på servern. Logga ut och logga sedan in igen.</translation>
 <translation id="7912974581251770345">Översättning</translation>
 <translation id="7915457674565721553">Anslut till internet om du vill ställa in föräldrakontroller</translation>
+<translation id="7916364730877325865">Organisationen tillåter inte att du aktiverar synkronisering med det här kontot</translation>
 <translation id="7918257978052780342">Registrera</translation>
 <translation id="7919123827536834358">Översätt dessa språk automatiskt</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sek</translation>
@@ -8908,7 +8915,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9094038138851891550">Ogiltigt användarnamn</translation>
 <translation id="9094859731829297286">Vill du reservera en disk med fast storlek för Linux (beta)?</translation>
 <translation id="9094982973264386462">Ta bort</translation>
-<translation id="9095253524804455615">Ta bort</translation>
 <translation id="9095364055741191097">Det gick inte att återställa lokala uppgifter</translation>
 <translation id="909554839118732438">Stäng inkognitoläget</translation>
 <translation id="9099220545925418560">Baserat på din webbhistorik. Inställningen är inaktiverad.</translation>

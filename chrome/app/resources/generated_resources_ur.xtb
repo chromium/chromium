@@ -1104,7 +1104,6 @@
 <translation id="1975841812214822307">ہٹائیں…</translation>
 <translation id="1976150099241323601">سیکیورٹی آلہ میں سائن ان کریں</translation>
 <translation id="1977965994116744507">اپنا <ph name="DEVICE_TYPE" /> غیر مقفل کرنے کیلئے اپنا فون قریب کریں۔</translation>
-<translation id="1978057560491495741">پتہ ہٹائیں</translation>
 <translation id="1979095679518582070">اس خصوصیت کو آف کرنے سے سسٹم اپ ڈیٹس اور سیکیورٹی جیسی لازمی سروسز کے لیے درکار معلومات بھیجنے کی آپ کے آلے کی اہلیت متاثر نہیں ہوتی ہے۔</translation>
 <translation id="1979280758666859181">آپ <ph name="PRODUCT_NAME" /> کے ایک پرانے ورژن کے ساتھ ایک چینل میں تبدیل ہو رہے ہیں۔ آپ کے آلہ پر فی الحال انسٹال کردہ ورژن سے اس چینل ورژن کے مماثل ہونے پر چینل کی تبدیلی لاگو ہوگی۔</translation>
 <translation id="197989455406964291">‏KDC مرموز کاری کی قسم کو سپورٹ نہیں کرتا ہے</translation>
@@ -2606,6 +2605,7 @@
 <translation id="3315442055907669208">ریڈر وضع داخل کریں</translation>
 <translation id="3317459757438853210">دو طرفہ</translation>
 <translation id="3317678681329786349">کیمرا اور مائیکروفون مسدود ہے</translation>
+<translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" /> کی مدد سے تصویر میں موجود ٹیکسٹ کا ترجمہ کریں</translation>
 <translation id="3320630259304269485">محفوظ براؤزنگ (خطرناک سائٹس سے تحفظ) اور سیکیورٹی کی دیگر ترتیبات</translation>
 <translation id="3323521181261657960">بونس! آپ کو اسکرین کا مزید وقت ملا</translation>
 <translation id="3323577066981719144">‏آپ یہاں جو تبدیلیاں کرتے ہیں وہ صرف Chrome براؤزر پر لاگو ہوتی ہیں۔ اپنے Lacros Chrome براؤزر کی ترتیبات میں تبدیلیاں کرنے کے لیے، Lacros Chrome براؤزر کھولیں اور ترتیبات پر جائیں۔</translation>
@@ -4280,7 +4280,6 @@
 <translation id="4852916668365817106">ماؤس کا رنگ</translation>
 <translation id="4853020600495124913">&amp;نئی ونڈو میں کھولیں</translation>
 <translation id="4854317507773910281">منظوری کے لیے والد/والدہ کا اکاؤنٹ منتخب کریں</translation>
-<translation id="4854603338816296098">پتہ ہٹا دیا گیا</translation>
 <translation id="485480310608090163">مزید ترتیبات اور اجازتیں</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">‏سائننگ OCSP جوابات</translation>
@@ -7484,7 +7483,6 @@
 <translation id="7819605256207059717">آپ کی تنظیم نے مسدود کر دیا</translation>
 <translation id="7820561748632634942">اضافی سوئچز تفویض کریں؟</translation>
 <translation id="782057141565633384">ویڈیو پتہ کا&amp;پی کریں</translation>
-<translation id="7822187537422052256">کیا آپ واقعی اس پتے کو ہٹانا چاہتے ہیں؟</translation>
 <translation id="7824864914877854148">خرابی کی وجہ سے بیک اپ مکمل نہیں ہو سکا</translation>
 <translation id="782590969421016895">حالیہ صفحات استعمال کریں</translation>
 <translation id="7826174860695147464">‏پرانے براؤزر کیلئے سپورٹ (LBS) - انٹرنلز</translation>
@@ -7681,6 +7679,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> آواز <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">سوئچ رسائی کی ترتیبات</translation>
 <translation id="7992203134935383159">اسپیچ سنتھیسس</translation>
+<translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" /> کی مدد سے تصویر میں موجود ٹیکسٹ کا ترجمہ کریں</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">کارروائی کی ترجیح</translation>
 <translation id="7999229196265990314">مندرجہ ذیل فائلز بنائی گئیں:
@@ -8892,7 +8891,6 @@
 <translation id="9094038138851891550">صارف نام غلط ہے</translation>
 <translation id="9094859731829297286">‏کیا آپ واقعی Linux کیلئے مقررہ سائز کی ڈسک ریزرو کرنا چاہتے ہیں؟</translation>
 <translation id="9094982973264386462">ہٹائیں</translation>
-<translation id="9095253524804455615">ہٹائیں</translation>
 <translation id="9095364055741191097">مقامی ڈیٹا بازیاب کرنے میں ناکام</translation>
 <translation id="909554839118732438">پوشیدگی ونڈوز بند کریں</translation>
 <translation id="9099220545925418560">آپ کی براؤزنگ کی سرگزشت کی بنیاد پر۔ یہ ترتیب آف ہے۔</translation>

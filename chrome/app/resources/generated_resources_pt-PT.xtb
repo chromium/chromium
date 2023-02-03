@@ -373,6 +373,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1339009753652684748">Aceda ao Assistente ao dizer "OK Google". Para poupar bateria, escolha a opção "Ativado (recomendado)". O Assistente responderá apenas quando o dispositivo estiver ligado a uma fonte de alimentação ou a carregar.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Fazer cópia de segurança de multimédia a partir do dispositivo com a aplicação Ficheiros.</translation>
+<translation id="1341871421050612057">Não é possível sincronizar com <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Conceda às aplicações Linux autorização de acesso a dispositivos USB. O Linux não memoriza um dispositivo USB após a sua remoção.</translation>
 <translation id="1343920184519992513">Continue onde parou e abra um conjunto específico de páginas</translation>
 <translation id="134589511016534552">Os separadores de multimédia também são apresentados na secção Separadores abertos</translation>
@@ -1104,7 +1105,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1975841812214822307">Remover...</translation>
 <translation id="1976150099241323601">Iniciar sessão no Dispositivo de segurança</translation>
 <translation id="1977965994116744507">Aproxime o telemóvel para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978057560491495741">Remover endereço</translation>
 <translation id="1979095679518582070">A desativação desta funcionalidade não afeta a capacidade de o dispositivo enviar as informações necessárias para serviços essenciais, como atualizações do sistema e segurança.</translation>
 <translation id="1979280758666859181">Está a mudar para um canal com uma versão mais antiga do <ph name="PRODUCT_NAME" />. A alteração de canal será aplicada quando a versão do canal corresponder à versão atualmente instalada no seu dispositivo.</translation>
 <translation id="197989455406964291">O KDC não suporta o tipo de encriptação.</translation>
@@ -4140,6 +4140,7 @@ Pretende pará-lo?</translation>
 <translation id="4713409221649555176">Eliminar quando fecha todas as janelas</translation>
 <translation id="47158868804223727">Clique no nome do grupo para o expandir ou reduzir</translation>
 <translation id="4716483597559580346">Efetuar Powerwash para maior segurança</translation>
+<translation id="471759229191973607">Alterar tema</translation>
 <translation id="4722735765955348426">Palavra-passe de <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> está a partilhar o seu ecrã.</translation>
 <translation id="4722989931633062466">Sem autorização para apresentar pedidos de início de sessão de terceiros</translation>
@@ -4282,7 +4283,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4852916668365817106">Cor do rato</translation>
 <translation id="4853020600495124913">Abrir numa &amp;nova janela</translation>
 <translation id="4854317507773910281">Escolhe a conta parental para aprovação</translation>
-<translation id="4854603338816296098">Endereço removido</translation>
 <translation id="485480310608090163">Mais definições e autorizações</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Respostas OCSP de assinatura</translation>
@@ -7164,6 +7164,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> não está a responder. Selecione "Forçar fecho" para fechar a aplicação.</translation>
 <translation id="7535730537657706072">Para limpar o histórico de navegação da Navegação anónima no seu dispositivo, feche todos os separadores de navegação anónima</translation>
 <translation id="7537451260744431038">Os sites não podem utilizar cookies para melhorar a experiência de navegação, por exemplo, para manter a sua sessão iniciada ou memorizar os artigos no seu carrinho de compras.</translation>
+<translation id="7538088324298143359">Pesquisar na imagem com o <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Ocorreu um erro durante a verificação de atualizações: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> colocou este dispositivo numa versão anterior. Guarde os ficheiros importantes e, em seguida, reinicie. Todos os dados no dispositivo serão eliminados.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> com a aplicação <ph name="APP_NAME" /></translation>
@@ -7490,7 +7491,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7819605256207059717">Bloqueado pela sua organização</translation>
 <translation id="7820561748632634942">Pretende adicionar outros interruptores?</translation>
 <translation id="782057141565633384">C&amp;opiar endereço do vídeo</translation>
-<translation id="7822187537422052256">Tem a certeza de que pretende remover este endereço?</translation>
 <translation id="7824864914877854148">Não foi possível concluir a cópia de segurança devido a um erro.</translation>
 <translation id="782590969421016895">Utilizar páginas atuais</translation>
 <translation id="7826174860695147464">Compatibilidade com o navegador antigo (LBS) – Parte interna</translation>
@@ -7594,6 +7594,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7912080627461681647">A sua palavra-passe foi alterada no servidor. Termine e inicie sessão novamente.</translation>
 <translation id="7912974581251770345">Tradução</translation>
 <translation id="7915457674565721553">Ligue-se à Internet para configurar o controlo parental.</translation>
+<translation id="7916364730877325865">A sua organização não lhe permite ativar a sincronização com esta conta</translation>
 <translation id="7918257978052780342">Inscrever</translation>
 <translation id="7919123827536834358">Traduza automaticamente estes idiomas</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
@@ -8379,6 +8380,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8639635302972078117">Envie dados de utilização e diagnóstico. Agora, este dispositivo está a enviar automaticamente dados de diagnóstico, de utilização de apps e do dispositivo para a Google. Estes dados não serão utilizados para identificar a criança e ajudarão a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Se a definição Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google.</translation>
 <translation id="8642900771896232685">2 segundos</translation>
 <translation id="8642947597466641025">Aumentar o tamanho do texto</translation>
+<translation id="8643403533759285912">Apagar grupo</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> pode ser perigoso. Pretende enviar para a Proteção avançada da Google para análise?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Sem cookies}=1{1 cookie está bloqueado}other{# cookies estão bloqueados}}</translation>
 <translation id="864423554496711319">Dispositivos guardados na sua conta</translation>
@@ -8852,6 +8854,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="90528604757378587">A atividade em segundo plano e alguns efeitos visuais, como o deslocamento suave, podem ser limitados.</translation>
 <translation id="9053563360605707198">Imprimir de ambos os lados</translation>
 <translation id="9055636786322918818">Aplicar a encriptação RC4. A utilização desta opção aumenta o seu risco, uma vez que as cifras RC4 são inseguras.</translation>
+<translation id="9056788090206401048">O Bluetooth tem de estar ativado para usar a sua chave de acesso num dispositivo diferente. Pode gerir esta opção em qualquer altura nas definições.</translation>
 <translation id="9056810968620647706">Não foram encontradas correspondências.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> pretende aceder ao seguinte conteúdo:</translation>
 <translation id="9057354806206861646">Programa de atualizações</translation>
@@ -8900,7 +8903,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9094038138851891550">Nome de utilizador inválido</translation>
 <translation id="9094859731829297286">Tem a certeza de que pretende reservar um disco de tamanho fixo para o Linux?</translation>
 <translation id="9094982973264386462">Remover</translation>
-<translation id="9095253524804455615">Remover</translation>
 <translation id="9095364055741191097">Falha ao recuperar dados locais</translation>
 <translation id="909554839118732438">Fechar janelas de navegação anónima</translation>
 <translation id="9099220545925418560">Com base no seu histórico de navegação. Esta definição está desativada.</translation>

@@ -1101,7 +1101,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1975841812214822307">Hiq...</translation>
 <translation id="1976150099241323601">Identifikohu në pajisjen e sigurisë</translation>
 <translation id="1977965994116744507">Afroje telefonin më shumë për të shkyçur pajisjen tënde <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978057560491495741">Hiq adresën</translation>
 <translation id="1979095679518582070">Çaktivizimi i kësaj veçorie nuk ndikon në aftësinë e kësaj pajisjeje për të dërguar informacionin e nevojshëm për shërbimet bazë, siç janë përditësimet dhe siguria e sistemit.</translation>
 <translation id="1979280758666859181">Po kalon në një kanal me version më të vjetër të <ph name="PRODUCT_NAME" />. Ndryshimi i kanalit do të zbatohet kur versioni i tij të përputhet me versionin e instaluar aktualisht në pajisjen tënde.</translation>
 <translation id="197989455406964291">KDC nuk mbështet llojin e enkriptimit</translation>
@@ -4276,7 +4275,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4852916668365817106">Ngjyra e kursorit të miut</translation>
 <translation id="4853020600495124913">Hape në dritare &amp;të re</translation>
 <translation id="4854317507773910281">Zgjidh llogarinë e prindit për miratimin</translation>
-<translation id="4854603338816296098">Adresa u hoq</translation>
 <translation id="485480310608090163">Cilësime dhe leje të tjera</translation>
 <translation id="4858913220355269194">Maradona</translation>
 <translation id="4862642413395066333">Po nënshkruan përgjigjet OCSP</translation>
@@ -4830,6 +4828,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5382591305415226340">Menaxho lidhjet e mbështetura</translation>
 <translation id="5383377866517186886">Kamera është çaktivizuar te Mac System Preferences</translation>
 <translation id="5383740867328871413">Grup pa emër - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Politika e ndërmarrjes u ndryshua. Butoni i eksperimenteve u shtua te shiriti i veglave. Kliko te butoni për të hapur një dialog për të aktivizuar eksperimentet.</translation>
 <translation id="5388885445722491159">I çiftuar</translation>
 <translation id="5390112241331447203">Përfshi skedarin system_logs.txt të dërguar në raportet e reagimeve.</translation>
@@ -5044,6 +5043,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5578059481725149024">Identifikimi automatik</translation>
 <translation id="5581134892342029705">Përkthimi në <ph name="LANGUAGE" /> përfundoi</translation>
 <translation id="558170650521898289">Verifikimi i drejtuesit të harduerit të Microsoft Windows</translation>
+<translation id="5581876958763461074">Të gjitha shënimet</translation>
 <translation id="5581972110672966454">Pajisja nuk mund të bashkohet në domen. Provo përsëri ose kontakto me zotëruesin e pajisjes ose administratorin. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Menyja kryesore</translation>
 <translation id="5583640892426849032">Hapësirë prapa</translation>
@@ -7478,7 +7478,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7819605256207059717">Bllokuar nga organizata jote</translation>
 <translation id="7820561748632634942">Të caktohen çelësa të tjerë?</translation>
 <translation id="782057141565633384">K&amp;opjo adresën e videos</translation>
-<translation id="7822187537422052256">Je i sigurt që dëshiron ta heqësh këtë adresë?</translation>
 <translation id="7824864914877854148">Rezervimi nuk mund të përfundonte për shkak të një gabimi</translation>
 <translation id="782590969421016895">Përdor faqet aktuale</translation>
 <translation id="7826174860695147464">Mbështetja e shfletuesit të trashëgimisë (LBS) - Pjesët e brendshme</translation>
@@ -8886,7 +8885,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="9094038138851891550">Emër i pavlefshëm përdoruesi</translation>
 <translation id="9094859731829297286">E konfirmon që dëshiron të rezervosh një disk me madhësi fikse për Linux?</translation>
 <translation id="9094982973264386462">Hiqe</translation>
-<translation id="9095253524804455615">Hiqe</translation>
 <translation id="9095364055741191097">Rikuperimi i të dhënave lokale dështoi</translation>
 <translation id="909554839118732438">Mbyll dritaret e fshehta</translation>
 <translation id="9099220545925418560">Bazuar në historikun tënd të shfletimit. Ky cilësim është joaktiv.</translation>

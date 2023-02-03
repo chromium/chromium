@@ -3553,13 +3553,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="4275048399551500192">Jangan tampilkan kontrol media untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain</translation>
 <translation id="4282243913059705499">Selalu tampilkan ikon <ph name="PRODUCT_NAME" /> di toolbar</translation>
 <translation id="4285674129118156176">Mengizinkan pengguna yang tak terafiliasi menggunakan ARC</translation>
-<translation id="4287344576768105337">Menyetel kebijakan ini akan mencegah pemuatan halaman web yang berisi URL terlarang. Kebijakan ini menyediakan daftar pola URL yang menentukan URL terlarang. Jika kebijakan ini tidak disetel, tidak akan ada URL yang dilarang di browser. Format pola URL sesuai dengan format ini ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Hingga 1.000 pengecualian dapat ditentukan di <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      Mulai <ph name="PRODUCT_NAME" /> versi 73, Anda dapat memblokir URL javascript://*. Namun, ini hanya akan memengaruhi JavaScript yang dimasukkan dalam kolom URL (atau, misalnya, bookmarklet). URL JavaScript dalam halaman dengan data yang dimuat secara dinamis tidak tunduk pada kebijakan ini. Misalnya, jika Anda memblokir example.com/abc, example.com tetap dapat memuat example.com/abc melalui XMLHTTPRequest.
-
-      Mulai <ph name="PRODUCT_NAME" /> versi 92, kebijakan ini juga didukung dalam mode headless.
-
-      Catatan: Jika diblokir, URL chrome://* dan chrome-untrusted://* internal dapat menyebabkan error yang tidak terduga atau mungkin akan dilewati dalam kasus tertentu. Daripada memblokir URL internal tertentu, sebaiknya periksa apakah tersedia kebijakan yang lebih spesifik. Kasus umum: Daripada memblokir chrome://settings/certificates, sebaiknya gunakan <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />. Daripada memblokir chrome-untrusted://crosh, sebaiknya gunakan <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="428948795004445932">Interval pada saat data jaringan diambil sampelnya dan dikumpulkan. Batas minimum yang diizinkan adalah 1 menit.
 
       Jika tidak disetel, interval default 10 menit akan berlaku.</translation>
@@ -3697,11 +3690,6 @@ Hal ini dihapus di M112.</translation>
 <translation id="4447668084338250480">Perilaku Pengalihan Intranet</translation>
 <translation id="4449469846627734399">Menetapkan konfigurasi hari pergeseran puncak daya</translation>
 <translation id="4449545651113180484">Putar layar searah jarum jam sebesar 270 derajat</translation>
-<translation id="4450005376189179872">Jika <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> disetel ke Aktif, menyetel <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> akan memungkinkan Anda menyiapkan mode pengisian daya baterai lanjutan. Nilai untuk <ph name="CHARGE_START_TIME_FIELD_NAME" /> harus lebih kecil dari <ph name="CHARGE_END_TIME_FIELD_NAME" />.
-
-      Jika kebijakan tidak disetel, mode pengisian daya baterai lanjutan akan tetap nonaktif.
-
-      Nilai yang valid untuk kolom <ph name="MINUTE_FIELD_NAME" /> dalam <ph name="CHARGE_START_TIME_FIELD_NAME" /> dan <ph name="CHARGE_END_TIME_FIELD_NAME" /> adalah 0, 15, 30, 45.</translation>
 <translation id="4452653762766030431">Mengontrol fitur Berbagi File Dalam Jaringan untuk ketersediaan Chrome OS</translation>
 <translation id="445270821089253489">Mengontrol jenis informasi perangkat dan pengguna yang dilaporkan.</translation>
 <translation id="4453913621209182880">Izinkan pencetakan hanya dengan grafis latar belakang</translation>
@@ -4780,7 +4768,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
 <translation id="5457924070961220141">Memungkinkan Anda mengonfigurasi perender HTML default saat <ph name="PRODUCT_FRAME_NAME" /> dipasang. Setelan default yang digunakan ketika kebijakan ini tidak disetel adalah mengizinkan browser host melakukan rendering, tetapi Anda dapat menimpanya secara opsional dan membiarkan <ph name="PRODUCT_FRAME_NAME" /> merender halaman HTML secara default.</translation>
 <translation id="545817252640069915">Aktifkan intersepsi login</translation>
 <translation id="5460797984317417682">Aktifkan peringatan layar penuh</translation>
-<translation id="5464816904705580310">Mengonfigurasi setelan untuk pengguna yang dikelola.</translation>
+<translation id="5464816904705580310">Mengonfigurasi setelan untuk pengguna terkelola.</translation>
 <translation id="5466596281866046569">Melaporkan informasi aplikasi</translation>
 <translation id="546726650689747237">Penundaan peredupan layar saat menggunakan daya AC</translation>
 <translation id="546830339470589966">Pelengkapan otomatis domain untuk tiket Kerberos baru</translation>
@@ -5137,11 +5125,6 @@ Waktu tunggu tidak ada aktivitas untuk memulai screensaver dan interval saat gam
 <translation id="5835674781974810379">Hapus Cookie dan Data Situs Lainnya</translation>
 <translation id="5836064773277134605">Batasi jangkauan port UDP yang digunakan oleh hosting akses jarak jauh</translation>
 <translation id="583627479140113555">Aktifkan impor sandi tersimpan saat browser pertama kali dijalankan</translation>
-<translation id="5837898601525273156">Jika <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> disetel, menyetel <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> ke Aktif akan membuat kebijakan pengelolaan daya mode pengisian daya baterai lanjutan tetap aktif (jika didukung di perangkat). Dengan algoritme pengisian daya standar dan teknik lainnya di luar jam kerja, mode ini memungkinkan pengguna memaksimalkan kesehatan baterai. Selama jam kerja, sistem akan menggunakan pengisian daya ekspres sehingga pengisian daya baterai dapat lebih cepat. Tentukan waktu saat sistem paling sering digunakan setiap harinya menurut waktu mulai dan durasi.
-
-      Jika kebijakan disetel ke Nonaktif atau tidak disetel, mode pengisian daya baterai lanjutan akan dinonaktifkan.
-
-      Pengguna tidak dapat mengubah setelan ini.</translation>
 <translation id="5838452040629810808">Aktifkan sorotan kursor</translation>
 <translation id="5842283830553218200">Perilaku baru pengiriman peristiwa pada kontrol formulir yang dinonaktifkan akan digunakan secara default.</translation>
 <translation id="5848438019586925019">Algoritme untuk pembuatan pasangan kunci.</translation>
@@ -6066,7 +6049,7 @@ hingga kebijakan ini tidak berlaku lagi.</translation>
       Jika kebijakan ini disetel ke aktif atau tidak disetel, Screencast akan diaktifkan.
       Jika kebijakan ini disetel ke nonaktif, Screencast akan dinonaktifkan.</translation>
 <translation id="665023848306499203">Mengizinkan perangkat memilih untuk mengupdate ke versi tertentu</translation>
-<translation id="6652197835259177259">Setelan pengguna yang dikelola secara lokal</translation>
+<translation id="6652197835259177259">Setelan pengguna terkelola lokal</translation>
 <translation id="6653897159826215341">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan membuka dialog cetak sistem, bukan pratinjau cetak bawaan saat pengguna meminta hasil cetak.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perintah cetak akan memicu layar pratinjau cetak.</translation>
@@ -8074,7 +8057,7 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8511192250554640451">Izinkan throttling timer JavaScript latar belakang dikontrol oleh logika Chrome dan dikonfigurasi oleh pengguna</translation>
 <translation id="8511708772548158302">Roll back perangkat ke versi target jika versi OS saat ini lebih baru dari target. Perangkat di-powerwash, tetapi konfigurasi jaringan seluruh perangkat tanpa sertifikat akan dipertahankan dan perangkat akan otomatis didaftarkan ulang.
 Rollback ke <ph name="PRODUCT_OS_NAME" /> versi 106 atau yang lebih lama tidak didukung.</translation>
-<translation id="8519264904050090490">URL pengecualian manual pengguna yang dikelola</translation>
+<translation id="8519264904050090490">URL pengecualian manual pengguna terkelola</translation>
 <translation id="8519516251436131647">Mengaktifkan pintasan fitur aksesibilitas.
 
           Jika kebijakan ini ditetapkan ke true, pintasan fitur aksesibilitas akan selalu diaktifkan.

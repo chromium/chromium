@@ -375,6 +375,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1339009753652684748">Gaan na jou Assistent toe wanneer jy "Ok Google" sê. Kies "Aan (aanbeveel)" om batterykrag te bespaar. Jou Assistent sal net reageer wanneer jou toestel ingeprop is of besig is om te laai.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Rugsteun media van die toestel af met die lêerprogram.</translation>
+<translation id="1341871421050612057">Kan nie met <ph name="USERNAME" /> sinkroniseer nie</translation>
 <translation id="1343865611738742294">Gee Linux-programme toestemming om toegang tot USB-toestelle te kry. Linux sal nie 'n USB-toestel onthou nadat dit verwyder is nie.</translation>
 <translation id="1343920184519992513">Gaan voort waar jy opgehou het en maak 'n spesifieke stel bladsye oop</translation>
 <translation id="134589511016534552">Media-oortjies wat ook in Oop Oortjies-afdeling gewys word</translation>
@@ -1116,7 +1117,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1975841812214822307">Verwyder …</translation>
 <translation id="1976150099241323601">Meld aan op sekuriteitstoestel</translation>
 <translation id="1977965994116744507">Bring jou foon nader om jou <ph name="DEVICE_TYPE" /> te ontsluit.</translation>
-<translation id="1978057560491495741">Verwyder adres</translation>
 <translation id="1979095679518582070">As jy hierdie kenmerk afskakel, beïnvloed dit nie hierdie toestel se vermoë om die inligting te stuur wat nodig is vir noodsaaklike dienste soos stelselopdaterings en sekuriteit nie.</translation>
 <translation id="1979280758666859181">Jy verander tans na 'n kanaal met 'n ouer weergawe van <ph name="PRODUCT_NAME" />. Die kanaalverandering sal toegepas word wanneer die kanaalweergawe ooreenstem met die weergawe wat tans op jou toestel geïnstalleer is.</translation>
 <translation id="197989455406964291">KDC steun nie enkripsiesoort nie</translation>
@@ -4153,6 +4153,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4713409221649555176">Vee uit wanneer jy alle vensters toemaak</translation>
 <translation id="47158868804223727">Klik die groepnaam om dit uit of in te vou</translation>
 <translation id="4716483597559580346">Powerwash vir bykomende sekuriteit</translation>
+<translation id="471759229191973607">Verander tema</translation>
 <translation id="4722735765955348426">Wagwoord vir <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deel tans jou skerm.</translation>
 <translation id="4722989931633062466">Word nie toegelaat om derdeparty-aanmeldingporboodskappe te wys nie</translation>
@@ -4295,7 +4296,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4852916668365817106">Muiskleur</translation>
 <translation id="4853020600495124913">Maak in nuwe venster oop</translation>
 <translation id="4854317507773910281">Kies ouerrekening vir goedkeuring</translation>
-<translation id="4854603338816296098">Adres is verwyder</translation>
 <translation id="485480310608090163">Meer instellings en toestemmings</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Onderteken tans OCSP-reaksies</translation>
@@ -7176,6 +7176,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> reageer nie. Kies "Forseer toemaak" om die program toe te maak.</translation>
 <translation id="7535730537657706072">Maak alle Incognito-oortjies toe om Incognito-blaaigeskiedenis op jou toestel uit te vee</translation>
 <translation id="7537451260744431038">Werwe kan nie webkoekies gebruik om jou blaai-ervaring beter te maak nie, byvoorbeeld, om jou aangemeld te hou of om items in jou inkopiemandjie te onthou nie</translation>
+<translation id="7538088324298143359">Soek op prent met <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Kon nie vir opdaterings kontroleer nie: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> het hierdie toestel op 'n vorige weergawe geplaas. Stoor asseblief belangrike lêers, en herbegin dit. Alle data op die toestel sal uitgevee word.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> met die program <ph name="APP_NAME" /></translation>
@@ -7501,7 +7502,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7819605256207059717">Geblokkeer deur jou organisasie</translation>
 <translation id="7820561748632634942">Wys bykomende skakelaars toe?</translation>
 <translation id="782057141565633384">Kopieer video-adres</translation>
-<translation id="7822187537422052256">Is jy seker jy wil hierdie adres verwyder?</translation>
 <translation id="7824864914877854148">Rugsteun kon weens 'n probleem nie voltooi word nie</translation>
 <translation id="782590969421016895">Gebruik huidige bladsye</translation>
 <translation id="7826174860695147464">Steun vir vorige blaaiers (LBS) – Interne items</translation>
@@ -7605,6 +7605,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7912080627461681647">Jou wagwoord is op die bediener verander. Meld af en meld dan weer aan.</translation>
 <translation id="7912974581251770345">Vertaling</translation>
 <translation id="7915457674565721553">Koppel aan die internet om ouerkontroles op te stel</translation>
+<translation id="7916364730877325865">Jou organisasie laat jou nie toe om sinkronisering met hierdie rekening aan te skakel nie</translation>
 <translation id="7918257978052780342">Skryf in</translation>
 <translation id="7919123827536834358">Vertaal hierdie tale outomaties</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s.</translation>
@@ -8910,7 +8911,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="9094038138851891550">Gebruikernaam is ongeldig</translation>
 <translation id="9094859731829297286">Is jy seker jy wil 'n vastegrootteskyf vir Linux reserveer?</translation>
 <translation id="9094982973264386462">Verwyder</translation>
-<translation id="9095253524804455615">Verwyder</translation>
 <translation id="9095364055741191097">Kon nie plaaslike data terugstel nie</translation>
 <translation id="909554839118732438">Maak incognito toe</translation>
 <translation id="9099220545925418560">Gegrond op jou blaaigeskiedenis. Hierdie instelling is af.</translation>

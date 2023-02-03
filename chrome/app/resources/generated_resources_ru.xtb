@@ -376,6 +376,7 @@
 <translation id="1339009753652684748">Включите, чтобы вызывать Ассистента голосовой командой "Окей, Google". Для экономии заряда батареи выберите "Вкл. (рекомендуется)". Ассистент будет отвечать, только если устройство подключено к источнику питания или заряжается.</translation>
 <translation id="13392265090583506">Специальные возможности</translation>
 <translation id="1340527397989195812">Создайте резервную копию медиафайлов, размещенных на устройстве, с помощью приложения "Файлы".</translation>
+<translation id="1341871421050612057">Не удалось синхронизировать данные с аккаунтом <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Вы можете предоставить приложениям Linux доступ к USB-устройствам. Когда устройство будет отключено, вся информация о нем будет удалена из Linux.</translation>
 <translation id="1343920184519992513">Ранее открытые вкладки и заданные страницы</translation>
 <translation id="134589511016534552">Вкладки с медиаконтентом также отображаются в разделе "Открытые вкладки"</translation>
@@ -1106,7 +1107,6 @@
 <translation id="1975841812214822307">Удалить</translation>
 <translation id="1976150099241323601">Вход в устройство безопасности</translation>
 <translation id="1977965994116744507">Чтобы снять блокировку, поднесите телефон ближе к устройству <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978057560491495741">Удаление адреса</translation>
 <translation id="1979095679518582070">Запретить отправку данных можно в любой момент. Это не повлияет на обновление и безопасность системы.</translation>
 <translation id="1979280758666859181">Вы переходите на канал обновления с более ранней версией <ph name="PRODUCT_NAME" />. Чтобы изменения вступили в силу, версия канала и текущая версия на вашем устройстве должны совпадать.</translation>
 <translation id="197989455406964291">Центр распространения ключей (KDC) не поддерживает такой тип шифрования.</translation>
@@ -2606,6 +2606,7 @@
 <translation id="3315442055907669208">Включить режим чтения</translation>
 <translation id="3317459757438853210">Двусторонняя печать</translation>
 <translation id="3317678681329786349">Доступ к камере и микрофону запрещен</translation>
+<translation id="3319306431415395200">Перевести текст на изображении с помощью <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Безопасный просмотр (защита от опасных сайтов) и другие настройки безопасности</translation>
 <translation id="3323521181261657960">Время использования устройства продлено</translation>
 <translation id="3323577066981719144">Параметры ниже относятся только к браузеру Chrome. Чтобы изменить параметры браузера Lacros, откройте его и перейдите в настройки.</translation>
@@ -3042,6 +3043,7 @@
 <translation id="372062398998492895">Принтеры CUPS</translation>
 <translation id="3721119614952978349">Я и Google</translation>
 <translation id="3722108462506185496">Не удалось запустить сервис виртуальной машины. Повторите попытку.</translation>
+<translation id="3722624153992426516">Получена инструкция: <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Доступные сети Wi-Fi</translation>
 <translation id="3727187387656390258">Просмотреть всплывающее окно</translation>
@@ -3398,6 +3400,7 @@
 <translation id="402211067068791756">Будут удалены сохраненные данные указанных сайтов (<ph name="TOTAL_USAGE" />).</translation>
 <translation id="4022426551683927403">Добавить в словарь</translation>
 <translation id="4025039777635956441">Отключить звук на выбранном сайте</translation>
+<translation id="402707738228916911">Получена инструкция: <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027958407426528157">Открывать сайты в приложениях, установленных на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Добавить способы ввода</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" />: перейти на предыдущую страницу</translation>
@@ -4138,6 +4141,7 @@
 <translation id="4713409221649555176">Удалять при закрытии всех окон</translation>
 <translation id="47158868804223727">Нажмите на название группы, чтобы развернуть или свернуть ее.</translation>
 <translation id="4716483597559580346">Обновите систему безопасности с помощью Powerwash</translation>
+<translation id="471759229191973607">Сменить тему</translation>
 <translation id="4722735765955348426">Пароль аккаунта пользователя <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">Приложению <ph name="APP_NAME" /> предоставлен доступ к вашему экрану.</translation>
 <translation id="4722989931633062466">Запретить предложения войти в аккаунт через сторонние сервисы</translation>
@@ -4280,7 +4284,6 @@
 <translation id="4852916668365817106">Цвет курсора</translation>
 <translation id="4853020600495124913">Открыть в &amp;новом окне</translation>
 <translation id="4854317507773910281">Выберите родителя, который должен одобрить расширение:</translation>
-<translation id="4854603338816296098">Адрес удален</translation>
 <translation id="485480310608090163">Дополнительные настройки и разрешения</translation>
 <translation id="4858913220355269194">Футбол</translation>
 <translation id="4862642413395066333">Подпись ответов OCSP</translation>
@@ -5678,6 +5681,7 @@
 <translation id="6150961653851236686">Этот язык используется для перевода страниц</translation>
 <translation id="6151323131516309312">Нажмите <ph name="SEARCH_KEY" /> для поиска на <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Файл уже есть в папке назначения</translation>
+<translation id="6152918902620844577">Ожидание следующей операции</translation>
 <translation id="6154240335466762404">Удалить все порты</translation>
 <translation id="615436196126345398">Протокол</translation>
 <translation id="6155141482566063812">На фоновой вкладке предоставлен доступ к вашему экрану.</translation>
@@ -7166,6 +7170,7 @@
 <translation id="7532009420053991888">Приложение "<ph name="LINUX_APP_NAME" />" не отвечает. Чтобы выйти из него, нажмите "Закрыть принудительно".</translation>
 <translation id="7535730537657706072">Чтобы удалить с устройства историю браузера в режиме инкогнито, закройте все вкладки инкогнито.</translation>
 <translation id="7537451260744431038">Сайты не могут использовать файлы cookie, чтобы сделать работу в браузере более удобной, например запоминая товары в корзине или информацию о том, что вы вошли в аккаунт</translation>
+<translation id="7538088324298143359">Искать на изображении с помощью <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">При проверке обновлений произошла ошибка: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232">По требованию <ph name="MANAGER" /> на устройстве была восстановлена предыдущая версия ОС. Сохраните важные файлы и перезапустите устройство. Все данные при этом будут удалены.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> в приложении "<ph name="APP_NAME" />"</translation>
@@ -7394,6 +7399,7 @@
 <translation id="7730683939467795481">Эта страница была изменена расширением "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7735165285389721951">Установка Steam уже запущена. Дождитесь ее завершения и повторите попытку.</translation>
 <translation id="7737115349420013392">Подключение к устройству "<ph name="DEVICE_NAME" />"...</translation>
+<translation id="7737203573077018777">Получена инструкция: <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
 <translation id="7737846262459425222">Этот параметр можно изменить в любой момент. Выберите "Настройки &gt; Google Ассистент &gt; Содержимое экрана".</translation>
 <translation id="7737948071472253612">Запретить сайтам использовать камеру</translation>
 <translation id="77381465218432215">Показывать диакритические знаки и специальные символы</translation>
@@ -7491,7 +7497,6 @@
 <translation id="7819605256207059717">Заблокировано вашей организацией</translation>
 <translation id="7820561748632634942">Назначить дополнительные переключатели?</translation>
 <translation id="782057141565633384">&amp;Копировать URL видео</translation>
-<translation id="7822187537422052256">Удалить этот адрес?</translation>
 <translation id="7824864914877854148">При сохранении резервной копии произошла ошибка.</translation>
 <translation id="782590969421016895">Использовать текущие страницы</translation>
 <translation id="7826174860695147464">Поддержка альтернативного браузера – внутренние настройки</translation>
@@ -7595,6 +7600,7 @@
 <translation id="7912080627461681647">Пароль был изменен на сервере. Выйдите из аккаунта и войдите снова.</translation>
 <translation id="7912974581251770345">Перевод</translation>
 <translation id="7915457674565721553">Чтобы настроить родительский контроль, подключитесь к Интернету.</translation>
+<translation id="7916364730877325865">Ваша организация запрещает включать синхронизацию для этого аккаунта.</translation>
 <translation id="7918257978052780342">Зарегистрироваться</translation>
 <translation id="7919123827536834358">Автоматически переводить страницы на этих языках</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> сек.</translation>
@@ -7688,6 +7694,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, голос <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Настройки функции Switch Access</translation>
 <translation id="7992203134935383159">Синтез речи</translation>
+<translation id="7994515119120860317">Перевести текст на изображении с помощью <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Приоритет процессов</translation>
 <translation id="7999229196265990314">Созданы следующие файлы:
@@ -8903,7 +8910,6 @@
 <translation id="9094038138851891550">Недопустимое имя пользователя.</translation>
 <translation id="9094859731829297286">Зарезервировать диск фиксированного размера для Linux?</translation>
 <translation id="9094982973264386462">Удалить</translation>
-<translation id="9095253524804455615">Удалить</translation>
 <translation id="9095364055741191097">Не удалось восстановить локальные данные</translation>
 <translation id="909554839118732438">Закрыть окна в режиме инкогнито</translation>
 <translation id="9099220545925418560">Подбираются на основе истории браузера. Параметр отключен.</translation>

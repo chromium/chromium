@@ -1117,7 +1117,6 @@
 <translation id="1975841812214822307">Отстрани...</translation>
 <translation id="1976150099241323601">Најавете се на безбедносниот уред</translation>
 <translation id="1977965994116744507">Приближете го вашиот телефон за да го отклучите вашиот <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978057560491495741">Отстранување на адресата</translation>
 <translation id="1979095679518582070">Исклучувањето на функцијава нема да влијае врз способноста на уредов да ги испраќа податоците што се потребни за основните услуги, како што се системските ажурирања и безбедноста на системот.</translation>
 <translation id="1979280758666859181">Се префрлате на канал со постара верзија на <ph name="PRODUCT_NAME" />. Промената на каналот ќе се примени кога неговата верзија ќе се совпадне со верзијата што тековно е инсталирана на уредот.</translation>
 <translation id="197989455406964291">KDC не го поддржува типот шифрирање</translation>
@@ -3057,6 +3056,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Вие и Google</translation>
 <translation id="3722108462506185496">Грешка при стартувањето на услугата за виртуелна машина. Обидете се повторно.</translation>
+<translation id="3722624153992426516">Примени се упатства од <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Достапни Wi-Fi мрежи</translation>
 <translation id="3727187387656390258">Провери појавен прозорец</translation>
@@ -3413,6 +3413,7 @@
 <translation id="402211067068791756">Ова ќе ги избрише податоците (<ph name="TOTAL_USAGE" />) складирани од прикажаните сајтови</translation>
 <translation id="4022426551683927403">&amp;Додај во речник</translation>
 <translation id="4025039777635956441">Исклучи звук на избраниот сајт</translation>
+<translation id="402707738228916911">Примени се упатства од <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027958407426528157">Отворајте веб-сајтови во апликации инсталирани на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Додајте методи за внесување</translation>
 <translation id="4029556917477724407">Вратете се наназад од страницата <ph name="PAGE_TITLE" /></translation>
@@ -4296,7 +4297,6 @@
 <translation id="4852916668365817106">Боја на глувчето</translation>
 <translation id="4853020600495124913">Отвори во &amp;нов прозорец</translation>
 <translation id="4854317507773910281">Избери сметка на родител за одобрување</translation>
-<translation id="4854603338816296098">Адресата е отстранета</translation>
 <translation id="485480310608090163">Повеќе лозинки и дозволи</translation>
 <translation id="4858913220355269194">Фудбалер</translation>
 <translation id="4862642413395066333">Најавување на одговори на OCSP</translation>
@@ -5694,6 +5694,7 @@
 <translation id="6150961653851236686">Овој јазик се користи при преведување страници</translation>
 <translation id="6151323131516309312">Притисни <ph name="SEARCH_KEY" /> за да ја побараш <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Датотеката веќе постои во папката со преземања.</translation>
+<translation id="6152918902620844577">Се чека следната операција</translation>
 <translation id="6154240335466762404">Отстрани ги сите порти</translation>
 <translation id="615436196126345398">Протокол</translation>
 <translation id="6155141482566063812">Картичка во заднина го споделува вашиот екран</translation>
@@ -7406,6 +7407,7 @@
 <translation id="7730683939467795481">Екстензијата „<ph name="EXTENSION_NAME" />“ ја промени страницава</translation>
 <translation id="7735165285389721951">Се извршува друго поставување на Steam. Почекајте да заврши пред да пробате повторно</translation>
 <translation id="7737115349420013392">Се спарува со „<ph name="DEVICE_NAME" />“…</translation>
+<translation id="7737203573077018777">Примени се упатства од <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
 <translation id="7737846262459425222">Ова може да го промените во секое време во „Поставки &gt; Помошник на Google &gt; Контекст на екранот“.</translation>
 <translation id="7737948071472253612">Не им е дозволено да ја користат камерата</translation>
 <translation id="77381465218432215">Прикажувај ги знаците за акцентирање и специјалните знаци</translation>
@@ -7503,7 +7505,6 @@
 <translation id="7819605256207059717">Блокирана од организацијата</translation>
 <translation id="7820561748632634942">Да се доделат дополнителни прекинувачи?</translation>
 <translation id="782057141565633384">К&amp;опирај ја адресата на видеото</translation>
-<translation id="7822187537422052256">Дали сигурно сакате да ја отстраните адресава?</translation>
 <translation id="7824864914877854148">Бекапот не може да се заврши поради грешка</translation>
 <translation id="782590969421016895">Користи тековни страници</translation>
 <translation id="7826174860695147464">Поддршка за застарени прелистувачи (LBS) - Внатрешни функции</translation>
@@ -8916,7 +8917,6 @@
 <translation id="9094038138851891550">Погрешно корисничко име</translation>
 <translation id="9094859731829297286">Дали сигурно сакате да резервирате фиксна големина на дискот за Linux?</translation>
 <translation id="9094982973264386462">Отстрани</translation>
-<translation id="9095253524804455615">Отстрани</translation>
 <translation id="9095364055741191097">Не успеа да се вратат локалните податоци</translation>
 <translation id="909554839118732438">Затвори „Инкогнито“</translation>
 <translation id="9099220545925418560">Според вашата историја на прелистувањето. Оваа поставка е исклучена.</translation>

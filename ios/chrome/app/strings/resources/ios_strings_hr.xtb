@@ -80,6 +80,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="149095475893949513">Web-lokacija pokušava preuzeti profil za konfiguraciju.</translation>
 <translation id="1491277525950327607">Dodirnite dvaput da biste promijenili postavku</translation>
 <translation id="1492417797159476138">Već ste spremili ovo korisničko ime za ovu web-lokaciju</translation>
+<translation id="1498283581832036924">Vaš <ph name="WEBSITE" /> račun neće se izbrisati.</translation>
 <translation id="1506063256525392513">To vam omogućuje snimanje i prijenos fotografija te skeniranje QR kodova.</translation>
 <translation id="1509486075633541495">Prijavite se na web-lokaciju</translation>
 <translation id="1509960214886564027">Značajke na mnogim web-lokacijama mogu prestati funkcionirati</translation>
@@ -219,6 +220,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2664621323652615289">Zaustavi</translation>
 <translation id="2671426118752779020">Zaporke koje ste spremili u Google upravitelj zaporki možete koristiti u drugim aplikacijama na iPhoneu.</translation>
 <translation id="2690858294534178585">Fotoaparat je aktivan</translation>
+<translation id="26915454213703967">Pretraži na slici pomoću Googlea</translation>
 <translation id="2691653761409724435">Nije dostupno offline</translation>
 <translation id="2695507686909505111">Stranica je prevedena</translation>
 <translation id="2697526135132990015">Odjava i brisanje podataka</translation>
@@ -382,6 +384,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3819183753496523827">Niste povezani s internetom. Provjerite internetsku vezu i pokušajte ponovo.</translation>
 <translation id="3835964409414434850">Prelazak na sljedeću karticu</translation>
 <translation id="385051799172605136">Natrag</translation>
+<translation id="3851938967634752633">Izbrisat će se zaporke za <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i još <ph name="NUMBER_OF_ACCOUNTS" /> račun/računa. Vaši se računi neće izbrisati.</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3861486700625780712">Prestani pratiti</translation>
 <translation id="3863769054730344136">Pošaljite na svoje uređaje</translation>
@@ -517,6 +520,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="4833786495304741580">Automatski šalje Googleu statistiku upotrebe i izvješća o padu programa.</translation>
 <translation id="4840495572919996524">Vaše oznake, povijest, zaporke i druge stavke više se neće sinkronizirati s vašim Google računom.</translation>
 <translation id="4844899002472726590">Pregled i uređivanje tema koje vas zanimaju</translation>
+<translation id="4848999860252535517">Želite li izbrisati zaporku za <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Postavite šifru zaporke</translation>
 <translation id="4858786880085262208">Nadogradite na HTTPS, kad je moguće. Sigurne web-lokacije mogu ugraditi sadržaj koji nije siguran.</translation>
 <translation id="4860895144060829044">Poziv</translation>
@@ -770,6 +774,7 @@ Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="6598875554591387303">Poredaj po izdavaču</translation>
 <translation id="6603393121510733479">Vaša organizacija isključila je anonimno pregledavanje.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Izbrisat će se zaporke za <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i <ph name="THIRD_WEBSITE" />. Vaši se računi neće izbrisati.</translation>
 <translation id="6610002944194042868">Opcije Prevoditelja</translation>
 <translation id="661266467055912436">Poboljšava sigurnost za vas i sve ostale na webu.</translation>
 <translation id="6620279676667515405">Otkaži</translation>
@@ -1047,6 +1052,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8756969031206844760">Želite li ažurirati zaporku?</translation>
 <translation id="8763613688786959833">Idi na zadnju karticu</translation>
 <translation id="8764015330924122850">Prestani pratiti <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Izbrisat će se zaporke za <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" />. Vaši se računi neće izbrisati.</translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>
 <translation id="8787968206789828143">Pretraživanje na webu</translation>
 <translation id="8792626944327216835">mikrofon</translation>
@@ -1096,6 +1102,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="9093271241977565440">Pri vrhu zaslona dodirnite ikonu pretraživanja</translation>
 <translation id="9094033019050270033">Ažuriraj zaporku</translation>
 <translation id="9097506547406246598">Prestanak praćenja nije uspio. Nešto nije u redu.</translation>
+<translation id="9098541895599151034">Želite li izbrisati zaporke (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9100610230175265781">Potrebna je zaporka</translation>
 <translation id="9107664647686727385">Traženje ugroženih zaporki</translation>
 <translation id="9124387962554796433">Google može upotrebljavati vašu povijest za prilagodbu Pretraživanja i drugih Googleovih usluga.</translation>

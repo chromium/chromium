@@ -1105,7 +1105,6 @@
 <translation id="1975841812214822307">移除...</translation>
 <translation id="1976150099241323601">登入安全性裝置</translation>
 <translation id="1977965994116744507">讓你的手機靠近 <ph name="DEVICE_TYPE" />，即可將其解鎖。</translation>
-<translation id="1978057560491495741">移除地址</translation>
 <translation id="1979095679518582070">即使關閉了這項功能，這部裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。</translation>
 <translation id="1979280758666859181">你即將變更為較舊版本的 <ph name="PRODUCT_NAME" />。該版本的版本號與你電腦上所安裝的版本號必須相符，系統才會套用版本變更。</translation>
 <translation id="197989455406964291">KDC 不支援加密類型</translation>
@@ -2605,6 +2604,7 @@
 <translation id="3315442055907669208">進入閱讀器模式</translation>
 <translation id="3317459757438853210">雙面</translation>
 <translation id="3317678681329786349">無法使用攝影機和麥克風</translation>
+<translation id="3319306431415395200">使用 <ph name="VISUAL_SEARCH_PROVIDER" /> 翻譯圖片中的文字</translation>
 <translation id="3320630259304269485">安全瀏覽功能 (可防範不安全的網站) 和其他安全性設定</translation>
 <translation id="3323521181261657960">恭喜！你的裝置使用時間增加了</translation>
 <translation id="3323577066981719144">你在這裡所做的變更僅適用於 Chrome 瀏覽器。如要變更 Lacros Chrome 瀏覽器設定，請開啟 Lacros Chrome 瀏覽器並前往設定頁面。</translation>
@@ -3041,6 +3041,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">你與 Google</translation>
 <translation id="3722108462506185496">啟用虛擬機器服務時發生錯誤，請再試一次。</translation>
+<translation id="3722624153992426516">已收到<ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />的操作說明</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">可用的 WiFi 網路</translation>
 <translation id="3727187387656390258">檢查彈出式視窗</translation>
@@ -3396,6 +3397,7 @@
 <translation id="402211067068791756">這會清除目前顯示的網站所儲存的資料，共 <ph name="TOTAL_USAGE" /></translation>
 <translation id="4022426551683927403">新增到字典(&amp;A)</translation>
 <translation id="4025039777635956441">關閉所選網站的音訊</translation>
+<translation id="402707738228916911">已收到<ph name="AUTHORIZE_INSTRUCTION_NAME" />的操作說明</translation>
 <translation id="4027958407426528157">使用 <ph name="DEVICE_TYPE" /> 上安裝的應用程式開啟網站</translation>
 <translation id="4028467762035011525">新增輸入法</translation>
 <translation id="4029556917477724407">從「<ph name="PAGE_TITLE" />」頁面返回</translation>
@@ -4279,7 +4281,6 @@
 <translation id="4852916668365817106">游標顏色</translation>
 <translation id="4853020600495124913">在新視窗中開啟(&amp;N)</translation>
 <translation id="4854317507773910281">選擇進行審核的家長帳戶</translation>
-<translation id="4854603338816296098">地址已移除</translation>
 <translation id="485480310608090163">更多設定和權限</translation>
 <translation id="4858913220355269194">飛球</translation>
 <translation id="4862642413395066333">簽署 OCSP 回應</translation>
@@ -5674,6 +5675,7 @@
 <translation id="6150961653851236686">這是翻譯網頁時使用的語言</translation>
 <translation id="6151323131516309312">按一下 <ph name="SEARCH_KEY" /> 以搜尋 <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">下載資料夾中已有這個檔案。</translation>
+<translation id="6152918902620844577">正在等待下一次操作</translation>
 <translation id="6154240335466762404">移除所有連接埠</translation>
 <translation id="615436196126345398">通訊協定</translation>
 <translation id="6155141482566063812">背景分頁正在分享你的螢幕畫面</translation>
@@ -7385,6 +7387,7 @@
 <translation id="7730683939467795481">「<ph name="EXTENSION_NAME" />」擴充功能已變更這個頁面</translation>
 <translation id="7735165285389721951">正在執行另一項 Steam 設定，請等到該設定完成後再試</translation>
 <translation id="7737115349420013392">正在與「<ph name="DEVICE_NAME" />」配對…</translation>
+<translation id="7737203573077018777">已收到<ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" />的操作說明</translation>
 <translation id="7737846262459425222">你隨時可以前往 [設定] &gt; [Google 助理] &gt; [畫面內容] 變更這項設定。</translation>
 <translation id="7737948071472253612">不得使用攝影機</translation>
 <translation id="77381465218432215">顯示重音標記和特殊字元</translation>
@@ -7482,7 +7485,6 @@
 <translation id="7819605256207059717">遭到貴機構封鎖</translation>
 <translation id="7820561748632634942">要指派其他外接切換裝置嗎？</translation>
 <translation id="782057141565633384">複製影片位址(&amp;O)</translation>
-<translation id="7822187537422052256">確定要移除這個地址嗎？</translation>
 <translation id="7824864914877854148">發生錯誤，因此無法完成備份程序</translation>
 <translation id="782590969421016895">使用目前的網頁</translation>
 <translation id="7826174860695147464">舊版瀏覽器支援 (LBS) 功能 - 內部設定</translation>
@@ -7680,6 +7682,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 語音 <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">切換控制功能設定</translation>
 <translation id="7992203134935383159">語音合成</translation>
+<translation id="7994515119120860317">使用 <ph name="VISUAL_SEARCH_PROVIDER" /> 翻譯圖片中的文字</translation>
 <translation id="799570308305997052">網頁檢視</translation>
 <translation id="7997826902155442747">處理優先順序</translation>
 <translation id="7999229196265990314">已建立下列檔案：
@@ -8892,7 +8895,6 @@
 <translation id="9094038138851891550">使用者名稱無效</translation>
 <translation id="9094859731829297286">確定要為 Linux 預留固定大小的磁碟空間嗎？</translation>
 <translation id="9094982973264386462">移除</translation>
-<translation id="9095253524804455615">移除</translation>
 <translation id="9095364055741191097">無法復原本機資料</translation>
 <translation id="909554839118732438">關閉無痕模式</translation>
 <translation id="9099220545925418560">根據你的瀏覽記錄獨家推薦。這項設定已關閉。</translation>

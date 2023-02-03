@@ -251,6 +251,7 @@
 <translation id="2426805022920575512">選擇其他帳戶</translation>
 <translation id="2433507940547922241">外觀</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
+<translation id="2439153523196674349"><ph name="SITE_NAME" />預覽</translation>
 <translation id="2450083983707403292">要重新下載 <ph name="FILE_NAME" /> 嗎？</translation>
 <translation id="2453860139492968684">完成</translation>
 <translation id="2459390580524506445">加強版語音搜尋</translation>
@@ -389,6 +390,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3066573403916685335">向下移動</translation>
 <translation id="3070005020161560471">自動翻譯</translation>
 <translation id="3072980200212375806">「<ph name="APP_NAME" />」將在 Chrome 中開啟。繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_LINK2" />。須同時受《<ph name="BEGIN_LINK3" />私隱權政策<ph name="END_LINK3" />》約束。</translation>
+<translation id="3083194063661536258">已登出。按鈕。開啟對話方塊即可登入並開啟同步功能。</translation>
 <translation id="3091010850649238832">顯示剪貼簿內容</translation>
 <translation id="3098745985164956033">部分圖片會傳送至 Google，以便為您提供更完善的說明</translation>
 <translation id="3104179992611025423">您的瀏覽器由家長管理</translation>
@@ -925,6 +927,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="6040143037577758943">關閉</translation>
 <translation id="604124094241169006">自動</translation>
 <translation id="6042308850641462728">更多選項</translation>
+<translation id="6049046116080614938">目前登入的帳戶是<ph name="USER_NAME" />。<ph name="USER_EMAIL" />。按鈕。開啟設定。</translation>
 <translation id="604996488070107836">發生不明錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">請在這裡控制您的報導和活動</translation>
@@ -1299,6 +1302,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="7968014550143838305">已加入閱讀清單</translation>
 <translation id="7971136598759319605">曾於 1 天前在線</translation>
 <translation id="7975379999046275268">預覽網頁<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">目前登入的帳戶是<ph name="USER_NAME" />。按鈕。開啟設定。</translation>
 <translation id="7986497153528221272">如要查看密碼，請先在裝置上設定螢幕鎖定</translation>
 <translation id="7995059495660416932">目前沒有內容，請耐心等候</translation>
 <translation id="799576009106109668">系統會根據您目前瀏覽的網頁主動載入內容，助您加快瀏覽速度</translation>

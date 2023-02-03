@@ -251,6 +251,7 @@
 <translation id="2426805022920575512">Επιλογή άλλου λογαριασμού</translation>
 <translation id="2433507940547922241">Εμφάνιση</translation>
 <translation id="2435457462613246316">Εμφάνιση κωδικού πρόσβασης</translation>
+<translation id="2439153523196674349">Προεπισκόπηση <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Θέλετε να ξεκινήσετε ξανά τη λήψη του αρχείου <ph name="FILE_NAME" />;</translation>
 <translation id="2453860139492968684">Τέλος</translation>
 <translation id="2459390580524506445">Βελτιωμένη φωνητική αναζήτηση</translation>
@@ -389,6 +390,7 @@
 <translation id="3066573403916685335">Μετακίνηση κάτω</translation>
 <translation id="3070005020161560471">Να γίνεται μετάφραση αυτόματα</translation>
 <translation id="3072980200212375806">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />. Επίσης, ισχύει η <ph name="BEGIN_LINK3" />Πολιτική απορρήτου<ph name="END_LINK3" />.</translation>
+<translation id="3083194063661536258">Αποσυνδεθήκατε. Κουμπί. Ανοίγει το παράθυρο διαλόγου για σύνδεση και ενεργοποίηση του συγχρονισμού.</translation>
 <translation id="3091010850649238832">Εμφάνιση περιεχομένων πρόχειρου</translation>
 <translation id="3098745985164956033">Ορισμένες εικόνες αποστέλλονται στην Google για τη βελτίωση των περιγραφών για εσάς.</translation>
 <translation id="3104179992611025423">Η διαχείριση του προγράμματος περιήγησης πραγματοποιείται από τους γονείς σου</translation>
@@ -925,6 +927,7 @@
 <translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="604124094241169006">Αυτόματη</translation>
 <translation id="6042308850641462728">Περισσότερα</translation>
+<translation id="6049046116080614938">Συνδεθήκατε ως <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Κουμπί. Ανοίγει τις ρυθμίσεις.</translation>
 <translation id="604996488070107836">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω άγνωστου σφάλματος.</translation>
 <translation id="605721222689873409">ΕΕ</translation>
 <translation id="6059830886158432458">Ελέγξτε τις ειδήσεις και τη δραστηριότητά σας εδώ</translation>
@@ -1299,6 +1302,7 @@
 <translation id="7968014550143838305">Προστέθηκε στη λίστα ανάγνωσης</translation>
 <translation id="7971136598759319605">Ενεργή 1 ημέρα πριν</translation>
 <translation id="7975379999046275268">Προεπισκόπηση σελίδας <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Συνδεθήκατε ως <ph name="USER_NAME" />. Κουμπί. Ανοίγει τις ρυθμίσεις.</translation>
 <translation id="7986497153528221272">Για να δείτε τους κωδικούς πρόσβασης, ορίστε πρώτα ένα κλείδωμα οθόνης στη συσκευή σας.</translation>
 <translation id="7995059495660416932">Το περιεχόμενο θα εμφανίζεται όταν καθίσταται διαθέσιμο</translation>
 <translation id="799576009106109668">Η περιήγησή σας θα είναι πιο γρήγορη επειδή το περιεχόμενο φορτώνεται προληπτικά με βάση την τρέχουσα επίσκεψή σας στην ιστοσελίδα</translation>

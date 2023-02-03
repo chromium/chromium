@@ -1117,7 +1117,6 @@
 <translation id="1975841812214822307">移除…</translation>
 <translation id="1976150099241323601">登入安全性裝置</translation>
 <translation id="1977965994116744507">手機靠近您的 <ph name="DEVICE_TYPE" /> 即可將其解鎖。</translation>
-<translation id="1978057560491495741">移除地址</translation>
 <translation id="1979095679518582070">即使關閉此功能，此裝置仍然可以傳送基本服務 (例如系統更新與安全性) 所需的資料。</translation>
 <translation id="1979280758666859181">您即將轉用較舊版本的 <ph name="PRODUCT_NAME" /> ，但其版本號與您裝置上所安裝的版本號必須相符，系統才會套用版本變更。</translation>
 <translation id="197989455406964291">KDC 不支援加密類型</translation>
@@ -3057,6 +3056,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">您和 Google</translation>
 <translation id="3722108462506185496">啟用虛擬機器服務時發生錯誤。請稍後再試。</translation>
+<translation id="3722624153992426516">已收到<ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />的操作說明</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">可用的 Wi-Fi 網絡</translation>
 <translation id="3727187387656390258">檢查彈出式視窗</translation>
@@ -3413,6 +3413,7 @@
 <translation id="402211067068791756">此操作會清除已顯示網站儲存的資料，共 <ph name="TOTAL_USAGE" /></translation>
 <translation id="4022426551683927403">新增到字典(&amp;A)</translation>
 <translation id="4025039777635956441">將已選取的網站設定為靜音</translation>
+<translation id="402707738228916911">已收到<ph name="AUTHORIZE_INSTRUCTION_NAME" />的操作說明</translation>
 <translation id="4027958407426528157">使用 <ph name="DEVICE_TYPE" /> 上安裝的應用程式開啟網站</translation>
 <translation id="4028467762035011525">新增輸入方法</translation>
 <translation id="4029556917477724407">從「<ph name="PAGE_TITLE" />」頁面返回</translation>
@@ -4297,7 +4298,6 @@
 <translation id="4852916668365817106">滑鼠顏色</translation>
 <translation id="4853020600495124913">在新視窗中開啟(&amp;N)</translation>
 <translation id="4854317507773910281">選擇執行審核的家長帳戶</translation>
-<translation id="4854603338816296098">移除咗地址</translation>
 <translation id="485480310608090163">更多設定和權限</translation>
 <translation id="4858913220355269194">飛球</translation>
 <translation id="4862642413395066333">簽署 OCSP 回應</translation>
@@ -5693,6 +5693,7 @@
 <translation id="6150961653851236686">將網頁翻譯成此語言</translation>
 <translation id="6151323131516309312">按一下 <ph name="SEARCH_KEY" /> 以搜尋 <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">下載資料夾中已有此檔案。</translation>
+<translation id="6152918902620844577">正在等待下一次操作</translation>
 <translation id="6154240335466762404">移除所有連接埠</translation>
 <translation id="615436196126345398">通訊協定</translation>
 <translation id="6155141482566063812">背景分頁正在分享您的螢幕畫面</translation>
@@ -7404,6 +7405,7 @@
 <translation id="7730683939467795481">「<ph name="EXTENSION_NAME" />」擴充程式已變更此頁面</translation>
 <translation id="7735165285389721951">正在執行另一項 Steam 設定，請等到該設定完成後再試</translation>
 <translation id="7737115349420013392">正在與「<ph name="DEVICE_NAME" />」配對…</translation>
+<translation id="7737203573077018777">已收到<ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" />的操作說明</translation>
 <translation id="7737846262459425222">您可隨時在 [設定] &gt; [Google 助理] &gt; [畫面內容] 中變更此設定。</translation>
 <translation id="7737948071472253612">不允許使用攝錄機</translation>
 <translation id="77381465218432215">顯示重音標記和特殊字元</translation>
@@ -7501,7 +7503,6 @@
 <translation id="7819605256207059717">已由機構封鎖</translation>
 <translation id="7820561748632634942">要指派其他按鈕裝置嗎？</translation>
 <translation id="782057141565633384">複製影片位址(&amp;O)</translation>
-<translation id="7822187537422052256">確定要移除此地址嗎？</translation>
 <translation id="7824864914877854148">發生錯誤，因此無法完成備份程序</translation>
 <translation id="782590969421016895">使用目前的網頁</translation>
 <translation id="7826174860695147464">舊版瀏覽器支援 (LBS) 功能 - 內部設定</translation>
@@ -8912,7 +8913,6 @@
 <translation id="9094038138851891550">使用者名稱無效</translation>
 <translation id="9094859731829297286">您確定要為 Linux 預留固定大小的磁碟空間嗎？</translation>
 <translation id="9094982973264386462">移除</translation>
-<translation id="9095253524804455615">移除</translation>
 <translation id="9095364055741191097">無法復原本機資料</translation>
 <translation id="909554839118732438">關閉無痕模式</translation>
 <translation id="9099220545925418560">根據您的瀏覽記錄推薦。此設定已關閉。</translation>

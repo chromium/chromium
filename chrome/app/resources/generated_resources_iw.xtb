@@ -377,6 +377,7 @@
 <translation id="1339009753652684748">‏כשאומרים "Hey Google", מתבצעת גישה ל-Assistant. כדי לחסוך בצריכת הסוללה, אפשר לבחור באפשרות "מופעל (מומלץ)". Assistant תגיב רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
 <translation id="13392265090583506">נגישות</translation>
 <translation id="1340527397989195812">‏גיבוי המדיה מהמכשיר באמצעות אפליקציית Files.</translation>
+<translation id="1341871421050612057">לא ניתן לסנכרן עם <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">‏הענקת הרשאה לאפליקציות Linux לגשת להתקני USB. אחרי שמוציאים התקן USB, הוא לא נשמר בזיכרון של Linux.</translation>
 <translation id="1343920184519992513">להמשיך מהמקום שבו הפסקת ולפתוח קבוצת דפים מסוימת</translation>
 <translation id="134589511016534552">כרטיסיות מדיה שמוצגות גם בקטע 'כרטיסיות פתוחות'</translation>
@@ -1115,7 +1116,6 @@
 <translation id="1975841812214822307">הסרה...</translation>
 <translation id="1976150099241323601">צריך להיכנס אל התקן אבטחה</translation>
 <translation id="1977965994116744507">יש לקרב את הטלפון כדי לבטל את הנעילה של <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978057560491495741">הסרת הכתובת</translation>
 <translation id="1979095679518582070">השבתת התכונה הזו לא משפיעה על היכולת של המכשיר הזה לשלוח את המידע הדרוש עבור שירותים חיוניים, כמו אבטחה ועדכוני מערכת.</translation>
 <translation id="1979280758666859181">עברת לערוץ עם גרסה ישנה יותר של <ph name="PRODUCT_NAME" />. שינוי הערוץ יוחל כאשר גרסת הערוץ תתאים לגרסה המותקנת כעת במכשיר שלך.</translation>
 <translation id="197989455406964291">‏KDC לא תומך בסוג ההצפנה</translation>
@@ -2619,6 +2619,7 @@
 <translation id="3315442055907669208">כניסה למצב קורא</translation>
 <translation id="3317459757438853210">דו-צדדי</translation>
 <translation id="3317678681329786349">לא ניתן להשתמש בדף זה במצלמה ובמיקרופון</translation>
+<translation id="3319306431415395200">תרגום הטקסט בתמונה באמצעות <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">גלישה בטוחה (הגנה מאתרים מסוכנים) והגדרות אבטחה אחרות</translation>
 <translation id="3323521181261657960">בונוס! קיבלת עוד זמן מסך</translation>
 <translation id="3323577066981719144">‏שינויים שיבוצעו כאן יחולו רק בדפדפן Chrome. כדי לבצע שינויים בהגדרות של דפדפן Chrome Lacros, עליך לפתוח את דפדפן Chrome Lacros ולעבור להגדרות.</translation>
@@ -4152,6 +4153,7 @@
 <translation id="4713409221649555176">כשכל החלונות נסגרים, מתבצעת מחיקה</translation>
 <translation id="47158868804223727">לוחצים על שם הקבוצה כדי להרחיב או לכווץ אותה</translation>
 <translation id="4716483597559580346">‏ביצוע Powerwash להגברת האבטחה</translation>
+<translation id="471759229191973607">שינוי העיצוב</translation>
 <translation id="4722735765955348426">הסיסמה של <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> משתף את המסך שלך.</translation>
 <translation id="4722989931633062466">לא מורשים להציג בקשות כניסה של צד שלישי</translation>
@@ -4294,7 +4296,6 @@
 <translation id="4852916668365817106">צבע סמן העכבר</translation>
 <translation id="4853020600495124913">פתיחה ב&amp;חלון חדש</translation>
 <translation id="4854317507773910281">בחירת חשבון הורה לשליחת בקשת אישור</translation>
-<translation id="4854603338816296098">הכתובת הוסרה</translation>
 <translation id="485480310608090163">עוד הגדרות והרשאות</translation>
 <translation id="4858913220355269194">מסי</translation>
 <translation id="4862642413395066333">‏חתימה על תגובות OCSP</translation>
@@ -4848,6 +4849,7 @@
 <translation id="5382591305415226340">ניהול קישורים נתמכים</translation>
 <translation id="5383377866517186886">‏המצלמה מושבתת בהעדפות המערכת של Mac</translation>
 <translation id="5383740867328871413">קבוצה ללא שם – <ph name="GROUP_CONTENTS" /> ‏– <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (מזהה: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">מדיניות הארגון השתנתה. לחצן הניסויים התווסף לסרגל הכלים. יש ללחוץ על הלחצן כדי לפתוח תיבת דו-שיח ולהפעיל ניסויים.</translation>
 <translation id="5388885445722491159">מתואם</translation>
 <translation id="5390112241331447203">‏הכללה של הקובץ system_logs.txt שנשלח בדוחות המשוב.</translation>
@@ -5062,6 +5064,7 @@
 <translation id="5578059481725149024">כניסה אוטומטית</translation>
 <translation id="5581134892342029705">התרגום ל<ph name="LANGUAGE" /> הושלם</translation>
 <translation id="558170650521898289">‏אימות מנהל התקן חומרה של Microsoft Windows </translation>
+<translation id="5581876958763461074">כל ההערות</translation>
 <translation id="5581972110672966454">לא ניתן לצרף את המכשיר אל הדומיין. יש לנסות שוב, או לפנות לבעלים או למנהל של המכשיר. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">תפריט ראשי</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -7176,6 +7179,7 @@
 <translation id="7532009420053991888">האפליקציה <ph name="LINUX_APP_NAME" /> לא מגיבה. כדי לסגור את האפליקציה, יש לבחור באפשרות "אילוץ סגירה".</translation>
 <translation id="7535730537657706072">כדי למחוק את היסטוריית הגלישה במצב אנונימי מהמכשיר, סוגרים את כל הכרטיסיות של המצב האנונימי.</translation>
 <translation id="7537451260744431038">‏אתרים לא יכולים להשתמש בקובצי cookie כדי לשפר את חוויית הגלישה – למשל, כדי למנוע ניתוק שלך מהחשבון או כדי לזכור את הפריטים שהוספת לעגלת הקניות</translation>
+<translation id="7538088324298143359">חיפוש בתמונה עם <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">אירעה שגיאה בעת בדיקת עדכונים: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232">המכשיר שלך הועבר לגרסה קודמת על ידי <ph name="MANAGER" />. עליך לשמור קבצים חשובים ולהפעיל אותו מחדש. כל הנתונים שבמכשיר יימחקו.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> עם האפליקציה <ph name="APP_NAME" /></translation>
@@ -7500,7 +7504,6 @@
 <translation id="7819605256207059717">נחסם על ידי הארגון שלך</translation>
 <translation id="7820561748632634942">להקצות עוד מתגים?</translation>
 <translation id="782057141565633384">העתקת כתובת &amp;סרטון</translation>
-<translation id="7822187537422052256">בחרת להסיר את הכתובת הזו. להמשיך?</translation>
 <translation id="7824864914877854148">אירעה שגיאה ולא ניתן להשלים את הגיבוי</translation>
 <translation id="782590969421016895">שימוש בדפים הנוכחיים</translation>
 <translation id="7826174860695147464">‏תמיכה בדפדפן מדור קודם (LBS) – הגדרות פנימיות</translation>
@@ -7604,6 +7607,7 @@
 <translation id="7912080627461681647">הסיסמה שלך שונתה בשרת. יש לצאת ולאחר מכן להיכנס מחדש.</translation>
 <translation id="7912974581251770345">תרגום</translation>
 <translation id="7915457674565721553">יש להתחבר לאינטרנט כדי להגדיר בקרת הורים</translation>
+<translation id="7916364730877325865">בהתאם למדיניות הארגון שלך, אי אפשר להפעיל סנכרון עם החשבון הזה</translation>
 <translation id="7918257978052780342">הרשמה</translation>
 <translation id="7919123827536834358">תרגום אוטומטי של שפות אלה</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> שנ'</translation>
@@ -7697,6 +7701,7 @@
 <translation id="7990863024647916394">קול <ph name="COUNT" /> ב<ph name="DISPLAY_NAME" /></translation>
 <translation id="7991296728590311172">הגדרות גישה באמצעות מתג</translation>
 <translation id="7992203134935383159">סינתזת דיבור</translation>
+<translation id="7994515119120860317">תרגום הטקסט בתמונה באמצעות <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">עדיפות תהליך</translation>
 <translation id="7999229196265990314">יצר את הקבצים הבאים:
@@ -8913,7 +8918,6 @@
 <translation id="9094038138851891550">שם משתמש לא חוקי</translation>
 <translation id="9094859731829297286">‏האם להקצות שטח דיסק קבוע בשביל Linux?</translation>
 <translation id="9094982973264386462">הסרה</translation>
-<translation id="9095253524804455615">הסרה</translation>
 <translation id="9095364055741191097">לא ניתן לשחזר את הנתונים המקומיים</translation>
 <translation id="909554839118732438">סגירת חלונות אנונימיים</translation>
 <translation id="9099220545925418560">על סמך היסטוריית הגלישה שלך. ההגדרה הזו מושבתת.</translation>

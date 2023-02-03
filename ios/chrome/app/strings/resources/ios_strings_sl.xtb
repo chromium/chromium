@@ -708,6 +708,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6284652193729350524">Ponudi prevajanje iz jezika <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Spremljanje <ph name="CHANNEL_NAME" /> je preklicano.</translation>
 <translation id="6293101329759844770">Če želite vklopiti Varno brskanje, odprite <ph name="BEGIN_LINK" />Google storitve<ph name="END_LINK" /> in se dotaknite »Varno brskanje«.</translation>
+<translation id="6320780930074869063">Če je vklopljeno, se gesla shranjujejo v računu <ph name="ACCOUNT" />. Če je izklopljeno, se gesla shranjujejo samo v tej napravi.</translation>
 <translation id="6321526113093607004">Dodaj med zaznamke</translation>
 <translation id="6324669097367352121">Nastavitve za prijavo</translation>
 <translation id="6337234675334993532">Šifriranje</translation>

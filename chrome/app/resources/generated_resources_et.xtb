@@ -1107,7 +1107,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1975841812214822307">Eemalda ...</translation>
 <translation id="1976150099241323601">Turvaseadmesse sisselogimine</translation>
 <translation id="1977965994116744507">Seadme <ph name="DEVICE_TYPE" /> avamiseks tooge oma telefon lähemale.</translation>
-<translation id="1978057560491495741">Eemalda aadress</translation>
 <translation id="1979095679518582070">Kui lülitate selle funktsiooni välja, saab seade endiselt saata oluliste teenuste (nagu süsteemivärskendused ja turvalisus) kasutamiseks vajalikku teavet.</translation>
 <translation id="1979280758666859181">Lülitute teenuse <ph name="PRODUCT_NAME" /> vanema versiooniga kanalile. Kanalivahetus rakendub, kui kanali versioon kattub teie seadmesse parajasti installitud versiooniga.</translation>
 <translation id="197989455406964291">KDC ei toeta krüpteerimistüüpi</translation>
@@ -2610,6 +2609,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3315442055907669208">Lugejarežiimi sisenemine</translation>
 <translation id="3317459757438853210">Kahepoolne</translation>
 <translation id="3317678681329786349">Kaamera ja mikrofon on blokeeritud</translation>
+<translation id="3319306431415395200">Pildil oleva teksti tõlkimine teenusega <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Google'i ohutu sirvimine (kaitse ohtlike saitide eest) ja muud turvaseaded</translation>
 <translation id="3323521181261657960">Boonus! Said ekraaniaega juurde</translation>
 <translation id="3323577066981719144">Siin tehtavad muudatused rakenduvad ainult Chrome'i brauserile. Lacrosi Chrome'i brauseri seadete muutmiseks avage Lacrosi Chrome'i brauseri menüü Seaded.</translation>
@@ -4284,7 +4284,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4852916668365817106">Hiirekursori värv</translation>
 <translation id="4853020600495124913">Ava &amp;uues aknas</translation>
 <translation id="4854317507773910281">Vali kinnitamiseks vanema konto</translation>
-<translation id="4854603338816296098">Aadress eemaldati</translation>
 <translation id="485480310608090163">Rohkem seadeid ja lube</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Signeerimise OCSP vastused</translation>
@@ -4838,6 +4837,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5382591305415226340">Toetatud linkide haldamine</translation>
 <translation id="5383377866517186886">Kaamera on Maci süsteemieelistustes välja lülitatud</translation>
 <translation id="5383740867328871413">Nimetu grupp – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Ettevõtte reegel on muutunud. Tööriistaribale on lisatud katsete nupp. Klõpsake nupul, et avada katsete lubamise dialoog.</translation>
 <translation id="5388885445722491159">Seotud</translation>
 <translation id="5390112241331447203">Tagasiside aruannetesse kaasatakse fail system_logs.txt.</translation>
@@ -5052,6 +5052,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5578059481725149024">Automaatne sisselogimine</translation>
 <translation id="5581134892342029705">Tõlge <ph name="LANGUAGE" /> keelde on valmis</translation>
 <translation id="558170650521898289">Microsoft Windowsi riistvara draiverite kontrollimine</translation>
+<translation id="5581876958763461074">Kõik märkmed</translation>
 <translation id="5581972110672966454">Ei õnnestunud seadet domeeniga ühendada. Proovige uuesti või võtke ühendust seadme omaniku või administraatoriga. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Peamenüü</translation>
 <translation id="5583640892426849032">Tagasilükkeklahv</translation>
@@ -7487,7 +7488,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7819605256207059717">Blokeeris teie organisatsioon</translation>
 <translation id="7820561748632634942">Kas määrata täiendavad lülitid?</translation>
 <translation id="782057141565633384">K&amp;opeeri video aadress</translation>
-<translation id="7822187537422052256">Kas olete kindel, et soovite selle aadressi eemaldada?</translation>
 <translation id="7824864914877854148">Varundamist ei saanud vea tõttu lõpule viia</translation>
 <translation id="782590969421016895">Kasuta praegusi lehti</translation>
 <translation id="7826174860695147464">Pärandbrauserite tugi (LBS) – sisemised</translation>
@@ -7684,6 +7684,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, hääl <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Lülitiga juurdepääsu seaded</translation>
 <translation id="7992203134935383159">Kõnesüntees</translation>
+<translation id="7994515119120860317">Pildil oleva teksti tõlkimine teenusega <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Veebikuva</translation>
 <translation id="7997826902155442747">Protsessi prioriteet</translation>
 <translation id="7999229196265990314">Loodi järgmised failid:
@@ -8896,7 +8897,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="9094038138851891550">Sobimatu kasutajanimi</translation>
 <translation id="9094859731829297286">Kas soovite kindlasti Linuxi jaoks kettal reserveerida fikseeritud mahu?</translation>
 <translation id="9094982973264386462">Eemalda</translation>
-<translation id="9095253524804455615">Eemalda</translation>
 <translation id="9095364055741191097">Kohalike andmete taastamine nurjus</translation>
 <translation id="909554839118732438">Sule inkognito aknad</translation>
 <translation id="9099220545925418560">Põhinevad teie sirvimisajalool. See seade on välja lülitatud.</translation>

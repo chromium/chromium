@@ -251,6 +251,7 @@
 <translation id="2426805022920575512">మరొక ఖాతాను ఎంచుకోండి</translation>
 <translation id="2433507940547922241">కనిపించే తీరు</translation>
 <translation id="2435457462613246316">పాస్‌వర్డ్‌ను చూపించు</translation>
+<translation id="2439153523196674349"><ph name="SITE_NAME" /> ప్రివ్యూ</translation>
 <translation id="2450083983707403292">మీరు <ph name="FILE_NAME" /> డౌన్‌లోడ్‌ని మళ్లీ ప్రారంభించాలనుకుంటున్నారా?</translation>
 <translation id="2453860139492968684">ముగించు</translation>
 <translation id="2459390580524506445">మెరుగైన వాయిస్ సెర్చ్</translation>
@@ -389,6 +390,7 @@
 <translation id="3066573403916685335">క్రిందికి తరలించండి</translation>
 <translation id="3070005020161560471">ఆటోమేటిక్‌గా అనువదించాల్సినవి</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeలో తెరవబడుతుంది. కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS అదనపు సర్వీస్ నియమాలకు<ph name="END_LINK2" /> అంగీకరిస్తున్నారు. <ph name="BEGIN_LINK3" />గోప్యతా పాలసీ<ph name="END_LINK3" /> కూడా వర్తిస్తుంది.</translation>
+<translation id="3083194063661536258">సైన్ అవుట్ చేశారు. బటన్. సైన్ ఇన్ చేసి, సింక్‌ను ఆన్ చేయడం కోసం డైలాగ్ తెరవబడుతుంది.</translation>
 <translation id="3091010850649238832">క్లిప్ బోర్డ్ కంటెంట్‌లను చూపండి</translation>
 <translation id="3098745985164956033">మీ కోసం వివరణలను మెరుగుపరచడానికి కొన్ని ఇమేజ్‌లు Googleకు పంపబడ్డాయి</translation>
 <translation id="3104179992611025423">మీ బ్రౌజర్ మీ పేరెంట్స్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
@@ -925,6 +927,7 @@
 <translation id="6040143037577758943">మూసివేయి</translation>
 <translation id="604124094241169006">ఆటోమేటిక్‌గా</translation>
 <translation id="6042308850641462728">మరింత చూపించు</translation>
+<translation id="6049046116080614938"><ph name="USER_NAME" />గా సైన్ ఇన్ చేశారు. <ph name="USER_EMAIL" />. బటన్. సెట్టింగ్‌లను తెరుస్తుంది.</translation>
 <translation id="604996488070107836">తెలియని ఎర్ర‌ర్‌ కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">ఇక్కడ మీ కథనాలు, యాక్టివిటీని కంట్రోల్ చేయండి</translation>
@@ -1299,6 +1302,7 @@
 <translation id="7968014550143838305">చదవాల్సిన లిస్ట్‌కు జోడించబడింది</translation>
 <translation id="7971136598759319605">1 రోజు క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />కొత్త<ph name="END_NEW" /> పేజీని ప్రివ్యూ చేయండి</translation>
+<translation id="7981085434646346979"><ph name="USER_NAME" />గా సైన్ ఇన్ చేశారు. బటన్. సెట్టింగ్‌లను తెరుస్తుంది.</translation>
 <translation id="7986497153528221272">పాస్‌వర్డ్‌లను చూడటానికి, ముందుగా మీ పరికరంపై స్క్రీన్ లాక్‍ను సెట్ చేయండి</translation>
 <translation id="7995059495660416932">కంటెంట్ అందుబాటులోకి వచ్చినప్పుడు దానిని మీరు చూడవచ్చు</translation>
 <translation id="799576009106109668">మీ ప్రస్తుత వెబ్‌పేజీ సందర్శన ఆధారంగా కంటెంట్ ముందస్తుగా లోడ్ చేయబడినందున మీరు వేగంగా బ్రౌజ్ చేస్తారు</translation>

@@ -1103,7 +1103,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1975841812214822307">O‘chirish...</translation>
 <translation id="1976150099241323601">Havfsizlik qurilmasiga kirish</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> qurilmasini qulfdan chiqarish uchun telefoningizni yaqinlashtiring.</translation>
-<translation id="1978057560491495741">Manzilni olib tashlash</translation>
 <translation id="1979095679518582070">Bu funksiya faol boʻlmasa ham tizim yangilanishlari va xavfsizlik kabi asosiy xizmatlarni yaxshilash maqsadida qurilma axborotlari yuborilaveradi.</translation>
 <translation id="1979280758666859181">Siz <ph name="PRODUCT_NAME" />‘ning ancha eski versiyasidan yangilanish kanaliga o‘tyapsiz. O‘zgartirishlar kuchga kirishi uchun kanal versiyasi qurilmangizdagi joriy versiya bilan bir xil bo‘lishi kerak.</translation>
 <translation id="197989455406964291">KDC bunday shifrlash turi bilan mos emas</translation>
@@ -4284,7 +4283,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4852916668365817106">Sichqoncha rangi</translation>
 <translation id="4853020600495124913">Yangi oynada &amp;ochish</translation>
 <translation id="4854317507773910281">Ruxsat olish uchun ota-onangiz hisobini tanlang</translation>
-<translation id="4854603338816296098">Manzil olib tashlandi</translation>
 <translation id="485480310608090163">Yana sozlamalar va ruxsatlar</translation>
 <translation id="4858913220355269194">Futbol</translation>
 <translation id="4862642413395066333">OCSP javoblarini imzolash</translation>
@@ -7490,7 +7488,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7819605256207059717">Tashkilotingiz bloklagan</translation>
 <translation id="7820561748632634942">Qoʻshimcha kalitlar tayinlansinmi?</translation>
 <translation id="782057141565633384">Videoning URL manzilini nusxalash</translation>
-<translation id="7822187537422052256">Bu manzil olib tashlansinmi?</translation>
 <translation id="7824864914877854148">Xato tufayli zaxiralanmadi</translation>
 <translation id="782590969421016895">Joriy sahifalarni ishlatish</translation>
 <translation id="7826174860695147464">Eski brauzerlar taʼminoti (LBS) - Ichki</translation>
@@ -8378,6 +8375,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8639635302972078117">Foydalanish statistikasi va diagnostika axborotini yuborish. Bu qurilma hozirda qurilma va ilovalardan foydalanish haqidagi hamda diagnostika axborotini avtomatik tarzda Google kompaniyasiga yubormoqda. Ushbu axborotdan farzandingiz shaxsini aniqlash uchun foydalanilmaydi. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Agar farzandingiz uchun Veb va ilovalardagi kengaytirilgan faoliyat tarixi yoqilgan boʻlsa, bu maʼlumotlar uning Google hisobiga saqlanadi.</translation>
 <translation id="8642900771896232685">2 soniya</translation>
 <translation id="8642947597466641025">Matnni yiriklashtirish</translation>
+<translation id="8643403533759285912">Guruhni olib tashlash</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> fayli xavfli boʻlishi mumkin. Tekshirish uchun Google kengaytirilgan himoya tizimiga yuborilsinmi?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Cookie fayllar yoʻq}=1{1 ta cookie fayl bloklandi}other{# ta cookie fayl bloklandi}}</translation>
 <translation id="864423554496711319">Qurilmalar hisobingizga saqlandi</translation>
@@ -8851,6 +8849,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="90528604757378587">Fondagi faollik va tekis aylantirish kabi ayrim vizual effektlar cheklangan boʻlishi mumkin.</translation>
 <translation id="9053563360605707198">Ikki tarafiga chop etish</translation>
 <translation id="9055636786322918818">RC4 shifrlash usulidan majburiy foydalanish. RC4 shifrlari himoyasizroq, shuning uchun bu usulni tanlash xavfliroq bo‘lishi mumkin.</translation>
+<translation id="9056788090206401048">Elektron kalit boshqa qurilmada ishlatilishi uchun Bluetooth yoniq boʻlishi kerak. Buni istalgan vaqtda sozlamalar orqali boshqarish mumkin.</translation>
 <translation id="9056810968620647706">Hech narsa topilmadi.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> quyidagi kontentga ruxsat olmoqchi:</translation>
 <translation id="9057354806206861646">Jadvalni yangilash</translation>
@@ -8899,7 +8898,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="9094038138851891550">Foydalanuvchi nomi yaroqsiz</translation>
 <translation id="9094859731829297286">Linux diski uchun belgilangan hajm saqlansinmi?</translation>
 <translation id="9094982973264386462">Olib tashlash</translation>
-<translation id="9095253524804455615">Olib tashlash</translation>
 <translation id="9095364055741191097">Qurilmadagi axborotlar tiklanmadi</translation>
 <translation id="909554839118732438">Inkognitoni yopish</translation>
 <translation id="9099220545925418560">Brauzeringiz tarixi asosida. Bu sozlama oʻchiq.</translation>

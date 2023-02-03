@@ -3012,6 +3012,14 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
       Se questa norma non viene impostata, per impostazione predefinita la funzione non è consentita per gli utenti gestiti dall'azienda ed è consentita per gli utenti non gestiti.</translation>
 <translation id="3791179836066841809">Documentazione per le norme</translation>
 <translation id="3791556154364029875">Abilita l'area di lavoro mobile e avvia le finestre del browser remoto al momento dell'accesso</translation>
+<translation id="3793998702484455655">Chrome tenterà di eseguire l'upgrade di alcuni tipi di sottorisorse di contenuto misto (HTTP su un sito HTTPS) su iOS.
+Per informazioni dettagliate, visita la pagina https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md.
+
+La funzionalità verrà attivata per impostazione predefinita. Se il criterio viene impostato su Enabled o se non viene configurato, la funzionalità rimarrà attiva.
+
+Se il criterio viene impostato su Disabled, la funzionalità verrà disattivata.
+
+Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il lancio di alcune nuove versioni (la rimozione è prevista nella versione M113).</translation>
 <translation id="3795413481405077588">Questo criterio consente a un amministratore di specificare le impostazioni relative alle app web installate.
 
       Questo criterio associa un ID app web alla relativa impostazione specifica. È possibile impostare con l'ID speciale <ph name="DEFAULT_SCOPE" /> una configurazione predefinita che verrà applicata a tutte le app web senza una configurazione personalizzata in questo criterio.
@@ -3518,13 +3526,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="4275048399551500192">Non mostrare i controlli multimediali per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi</translation>
 <translation id="4282243913059705499">Mostra sempre l'icona <ph name="PRODUCT_NAME" /> nella barra degli strumenti</translation>
 <translation id="4285674129118156176">Consenti agli utenti non affiliati di usare ARC</translation>
-<translation id="4287344576768105337">La configurazione del criterio consente di impedire il caricamento delle pagine web con URL vietati. Consente di fornire un elenco di pattern URL che specificano gli URL vietati. Se il criterio non viene configurato, nessun URL è vietato nel browser. I pattern URL devono avere il formato indicato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. È possibile definire fino a 1000 eccezioni nel criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      A partire da <ph name="PRODUCT_NAME" /> 73, puoi bloccare gli URL javascript://*. Tuttavia, questa operazione interessa solo il codice JavaScript inserito nella barra degli indirizzi o, ad esempio, nei bookmarklet. Gli URL JavaScript in-page con caricamento dinamico dei dati non sono soggetti a questo criterio. Ad esempio, se example.com/abc viene bloccato, example.com può comunque caricare example.com/abc tramite XMLHTTPRequest.
-
-      A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è supportato anche nella modalità headless.
-
-      Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare errori imprevisti o essere aggirato in casi speciali. Anziché bloccare determinati URL interni, controlla se sono disponibili criteri più specifici. Casi comuni: anziché bloccare chrome://settings/certificates, usa il criterio <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />. Anziché bloccare chrome-untrusted://crosh, usa il criterio <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="428948795004445932">La velocità di campionamento e raccolta dei dati di rete. Il valore minimo consentito è 1 minuto.
 
       Se il criterio non è impostato, viene applicata la velocità predefinita di 10 minuti.</translation>
@@ -3662,11 +3663,6 @@ Questo criterio è stato rimosso nella versione M112.</translation>
 <translation id="4447668084338250480">Comportamento di reindirizzamento Intranet</translation>
 <translation id="4449469846627734399">Consente di impostare la configurazione giornaliera della variazione dei picchi energetici</translation>
 <translation id="4449545651113180484">Ruota lo schermo in senso orario di 270°</translation>
-<translation id="4450005376189179872">Se il criterio <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> viene impostato su Attivato, la configurazione di <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> consente di impostare la modalità di ricarica avanzata della batteria. Il valore per il campo <ph name="CHARGE_START_TIME_FIELD_NAME" /> deve essere inferiore a quello per il campo <ph name="CHARGE_END_TIME_FIELD_NAME" />.
-
-      Se il criterio non viene configurato, la modalità di ricarica avanzata della batteria rimane disattivata.
-
-      I valori validi per il campo <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARGE_START_TIME_FIELD_NAME" /> e <ph name="CHARGE_END_TIME_FIELD_NAME" /> sono 0, 15, 30 e 45.</translation>
 <translation id="4452653762766030431">Consente di controllare la disponibilità della funzione Condivisioni file di rete per ChromeOS</translation>
 <translation id="445270821089253489">Consente di stabilire i tipi di informazioni su dispositivi e utenti da segnalare.</translation>
 <translation id="4453913621209182880">Consenti solo la stampa con immagini di sfondo</translation>
@@ -4748,6 +4744,10 @@ Se il criterio viene impostato su Disabled o se non viene configurato, gli eleme
       Quando il valore di questa norma è impostato e non è 0, l'utente Demo correntemente connesso verrà disconnesso automaticamente dopo che sarà trascorso il tempo di inattività della durata specificata.
 
       Il valore della norma deve essere specificato in millisecondi.</translation>
+<translation id="5501031245538651575">A partire dalla versione M110, verrà rimossa l'API window.webkitStorageInfo non standard. Questo criterio consente di riattivare l'API.
+Se questo criterio viene impostato su Enabled, l'API window.webkitStorageInfo sarà disponibile.
+Se questo criterio viene impostato su Disabled o se non viene configurato, l'API window.webkitStorageInfo non sarà disponibile.
+Questo criterio è stato rimosso nella versione M112.</translation>
 <translation id="5502683401545256109">Questo criterio controlla se all'utente viene richiesto di selezionare un certificato client nella schermata di accesso nel frame che ospita il flusso SAML quando più certificati corrispondono a <ph name="DEVICE_LOGIN_SCREEN_AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Se il criterio viene impostato su Attivato, all'utente viene richiesto di selezionare il certificato client quando il criterio di selezione automatica corrisponde a più certificati.
       Se il criterio viene impostato su Disattivato o se non viene configurato, all'utente non verrà mai richiesto di selezionare un certificato client nella schermata di accesso.
@@ -5061,11 +5061,6 @@ Il salvaschermo dell'utente mostra le immagini a cui fa riferimento il criterio 
 <translation id="5835674781974810379">Cancella cookie e altri dati dei siti</translation>
 <translation id="5836064773277134605">Limita l'intervallo di porte UDP utilizzate dall'host di accesso remoto</translation>
 <translation id="583627479140113555">Abilita l'importazione delle password salvate alla prima esecuzione</translation>
-<translation id="5837898601525273156">Se il criterio <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> viene configurato, l'impostazione di <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> su Attivato consente di mantenere attivo il criterio di gestione della modalità di ricarica avanzata della batteria (se supportato dal dispositivo). Tramite un algoritmo di ricarica standard e altre tecniche al di fuori dell'orario di lavoro, questa modalità consente agli utenti di ottimizzare le condizioni della batteria. Durante l'orario di lavoro, il sistema utilizza una ricarica express, consentendo alla batteria di ricaricarsi più rapidamente. Specifica quando il sistema viene utilizzato con maggiore frequenza ogni giorno e per quanto tempo tramite l'ora di inizio e la durata.
-
-      Se il criterio viene impostato su Disattivato o se non viene configurato, la modalità di ricarica avanzata della batteria rimane disabilitata.
-
-      Gli utenti non possono modificare questa impostazione.</translation>
 <translation id="5838452040629810808">Attiva l'evidenziazione del puntatore</translation>
 <translation id="5842283830553218200">Per impostazione predefinita verrà utilizzato il nuovo comportamento per l'esecuzione di eventi sui controlli dei moduli disattivati.</translation>
 <translation id="5848438019586925019">L'algoritmo per la generazione di coppie di chiavi.</translation>

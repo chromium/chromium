@@ -1116,7 +1116,6 @@
 <translation id="1975841812214822307">삭제...</translation>
 <translation id="1976150099241323601">보안 장치 로그인</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" />을(를) 잠금 해제하려면 휴대전화를 더 가까이 가져오세요.</translation>
-<translation id="1978057560491495741">주소 삭제</translation>
 <translation id="1979095679518582070">기능을 사용 중지해도 이 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 데는 영향을 미치지 않습니다.</translation>
 <translation id="1979280758666859181"><ph name="PRODUCT_NAME" />의 이전 버전으로 채널을 변경하려 합니다. 채널 버전이 현재 기기에 설치되어 있는 버전과 일치할 때 채널 변경이 적용됩니다.</translation>
 <translation id="197989455406964291">KDC가 암호화 유형을 지원하지 않습니다.</translation>
@@ -2620,6 +2619,7 @@
 <translation id="3315442055907669208">읽기 모드 시작</translation>
 <translation id="3317459757438853210">양면</translation>
 <translation id="3317678681329786349">카메라 및 마이크 차단됨</translation>
+<translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" />을 사용하여 이미지의 텍스트 번역</translation>
 <translation id="3320630259304269485">세이프 브라우징(위험한 사이트로부터 보호) 및 기타 보안 설정</translation>
 <translation id="3323521181261657960">보너스 기기 사용 시간이 추가되었습니다</translation>
 <translation id="3323577066981719144">여기에서 변경하는 사항은 Chrome 브라우저에만 적용됩니다. Lacros Chrome 브라우저 설정을 변경하려면 Lacros Chrome 브라우저를 열고 설정으로 이동하세요.</translation>
@@ -4293,7 +4293,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4852916668365817106">마우스 색상</translation>
 <translation id="4853020600495124913">새 창에서 열기(&amp;N)</translation>
 <translation id="4854317507773910281">승인을 요청할 부모 계정 선택</translation>
-<translation id="4854603338816296098">주소 삭제됨</translation>
 <translation id="485480310608090163">추가 설정 및 권한</translation>
 <translation id="4858913220355269194">축구왕</translation>
 <translation id="4862642413395066333">OCSP 응답 서명</translation>
@@ -7498,7 +7497,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7819605256207059717">조직에서 차단함</translation>
 <translation id="7820561748632634942">추가 스위치를 할당하시겠습니까?</translation>
 <translation id="782057141565633384">동영상 주소 복사(&amp;O)</translation>
-<translation id="7822187537422052256">주소를 삭제할까요?</translation>
 <translation id="7824864914877854148">오류로 인해 백업을 완료할 수 없습니다.</translation>
 <translation id="782590969421016895">현재 페이지 사용</translation>
 <translation id="7826174860695147464">이전 브라우저 지원(LBS): 내부</translation>
@@ -7696,6 +7694,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 음성 <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">스위치 제어 설정</translation>
 <translation id="7992203134935383159">음성 합성</translation>
+<translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" />을 사용하여 이미지의 텍스트 번역</translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">프로세스 우선순위</translation>
 <translation id="7999229196265990314">생성된 파일:
@@ -8908,7 +8907,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9094038138851891550">사용자 이름이 잘못되었습니다.</translation>
 <translation id="9094859731829297286">Linux에 사용할 고정된 크기의 디스크를 예약하시겠습니까?</translation>
 <translation id="9094982973264386462">제거</translation>
-<translation id="9095253524804455615">제거</translation>
 <translation id="9095364055741191097">로컬 데이터 복구 실패</translation>
 <translation id="909554839118732438">시크릿 창 닫기</translation>
 <translation id="9099220545925418560">방문 기록을 기반으로 추천됩니다. 설정이 사용 중지되어 있습니다.</translation>

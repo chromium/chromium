@@ -1115,7 +1115,6 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="1975841812214822307">Susa...</translation>
 <translation id="1976150099241323601">Ngena ngemvume ekuvikeleni idivayisi</translation>
 <translation id="1977965994116744507">Sondeza ifoni yakho ukuze uvule i-<ph name="DEVICE_TYPE" /> yakho.</translation>
-<translation id="1978057560491495741">Susa ikheli</translation>
 <translation id="1979095679518582070">Ukuvala lesi sici akuthinti ikhono lale divayisi lokwazi ukuthumela ulwazi oludingekayo lwamasevisi abalulekile afana nezibuyekezo zesistimu nokuvikelwa.</translation>
 <translation id="1979280758666859181">Uguqukela kusiteshi esinenguqulo endala ye-<ph name="PRODUCT_NAME" />. Ukuguqulwa kwesiteshi kuzosetshenziswa uma inguqulo yesiteshi ifana nenguqulo efakwe okwamanje kudivayisi yakho.</translation>
 <translation id="197989455406964291">I-KDC ayisekeli uhlobo lokubiyela</translation>
@@ -4295,7 +4294,6 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="4852916668365817106">Umbala wegundane</translation>
 <translation id="4853020600495124913">Vula kuwindi eli&amp;sha</translation>
 <translation id="4854317507773910281">Khetha i-akhawunti yomzali yokugunyaza</translation>
-<translation id="4854603338816296098">Ikheli lisusiwe</translation>
 <translation id="485480310608090163">Izilungiselelo eziningi nezimvume</translation>
 <translation id="4858913220355269194">I-Fritz</translation>
 <translation id="4862642413395066333">Isayina izimpendulo ze-OCSP</translation>
@@ -7504,7 +7502,6 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7819605256207059717">Ivinjwe inhlangano yakho</translation>
 <translation id="7820561748632634942">Nikeza amanye amaswishi angeziwe?</translation>
 <translation id="782057141565633384">K&amp;opisha ikheli levidiyo</translation>
-<translation id="7822187537422052256">Ingabe uqinisekile ukuthi ufuna ukususa le akhawunti?</translation>
 <translation id="7824864914877854148">Ukwenza isipele akukwazanga ukuqedwa ngenxa yephutha</translation>
 <translation id="782590969421016895">Sebenzisa amakhasi wamanje</translation>
 <translation id="7826174860695147464">I-Legacy Browser Support (LBS) - Okwangaphakathi</translation>
@@ -8914,7 +8911,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="9094038138851891550">Igama lomsebenzisi alivumelekile</translation>
 <translation id="9094859731829297286">Uqinisekile ukuthi ufuna ukugcina usayizi wediski ongaguquki we-Linux?</translation>
 <translation id="9094982973264386462">Susa</translation>
-<translation id="9095253524804455615">Susa</translation>
 <translation id="9095364055741191097">Yehlulekile ukubuyisela idatha yendawo</translation>
 <translation id="909554839118732438">Vala i-Incognito</translation>
 <translation id="9099220545925418560">Ngokususelwe kumlando wakho wokubhrawuza. Le sethingi ivaliwe.</translation>

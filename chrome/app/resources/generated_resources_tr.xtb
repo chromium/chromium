@@ -1104,7 +1104,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1975841812214822307">Kaldır...</translation>
 <translation id="1976150099241323601">Güvenlik Cihazında oturum açın</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> cihazınızın kilidini açmak için telefonunuzu cihaza yaklaştırın.</translation>
-<translation id="1978057560491495741">Adresi kaldır</translation>
 <translation id="1979095679518582070">Bu özelliğin kapatılması, bu cihazın sistem güncellemeleri ve güvenlik gibi önemli hizmetler için gereken bilgileri gönderme özelliğini etkilemez.</translation>
 <translation id="1979280758666859181"><ph name="PRODUCT_NAME" /> ürününün eski sürümünü destekleyen bir kanala geçiyorsunuz. Kanal değişikliği, kanalın sürümü cihazınızda şu an yüklenmiş olan sürümle eşleştiğinde uygulanacak.</translation>
 <translation id="197989455406964291">KDC, şifreleme türünü desteklemiyor</translation>
@@ -4276,7 +4275,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4852916668365817106">Fare rengi</translation>
 <translation id="4853020600495124913">&amp;Yeni pencerede aç</translation>
 <translation id="4854317507773910281">Onay için ebeveyn hesabı seçin</translation>
-<translation id="4854603338816296098">Adres kaldırıldı</translation>
 <translation id="485480310608090163">Diğer ayarlar ve izinler</translation>
 <translation id="4858913220355269194">Futbolcu</translation>
 <translation id="4862642413395066333">İmza OCSP Yanıtları</translation>
@@ -4830,6 +4828,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5382591305415226340">Desteklenen bağlantıları yönet</translation>
 <translation id="5383377866517186886">Kamera, Mac Sistem Tercihleri'nde kapatıldı</translation>
 <translation id="5383740867328871413">Adsız grup - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (Kimlik: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Kurumsal politika değişti. Araç çubuğuna denemeler düğmesi eklendi. Denemeleri etkinleştirmek için iletişim kutusunu açmak üzere tıklayın.</translation>
 <translation id="5388885445722491159">Eşleştirilmiş</translation>
 <translation id="5390112241331447203">Geri bildirim raporlarında gönderilen system_logs.txt dosyasını dahil et.</translation>
@@ -5044,6 +5043,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5578059481725149024">Otomatik oturum aç</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> diline çeviri tamamlandı</translation>
 <translation id="558170650521898289">Microsoft Windows Donanım Sürücüsü Doğrulaması</translation>
+<translation id="5581876958763461074">Tüm Notlar</translation>
 <translation id="5581972110672966454">Cihaz, alan adına eklenemiyor. Lütfen tekrar deneyin veya cihaz sahibi ya da yöneticisiyle iletişime geçin. Hata kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Ana menü</translation>
 <translation id="5583640892426849032">Geri al tuşu</translation>
@@ -7480,7 +7480,6 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7819605256207059717">Kuruluşunuz tarafından engellendi</translation>
 <translation id="7820561748632634942">Daha fazla anahtar atansın mı?</translation>
 <translation id="782057141565633384">Video adresini k&amp;opyala</translation>
-<translation id="7822187537422052256">Bu adresi kaldırmak istediğinizden emin misiniz?</translation>
 <translation id="7824864914877854148">Bir hata nedeniyle yedekleme işlemi tamamlanamadı</translation>
 <translation id="782590969421016895">Mevcut sayfaları kullan</translation>
 <translation id="7826174860695147464">Eski Tarayıcı Desteği (LBS) - Internals</translation>
@@ -8683,7 +8682,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8915307125957890427">Bir sekmeyi sağ tıklayıp "Sekmeyi gruba ekle"yi ve ardından "Yeni grup"u seçin</translation>
 <translation id="8915370057835397490">Öneriler yükleniyor</translation>
 <translation id="8916476537757519021">Gizli Alt Çerçeve: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8917490105272468696">Evet, istiyorum</translation>
+<translation id="8917490105272468696">Evet</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> adlı kişinin <ph name="DEVICE_TYPE" /> cihazı</translation>
 <translation id="8922624386829239660">Fare ekranın kenarlarına dokunduğunda ekranı taşı</translation>
 <translation id="8923880975836399332">Koyu turkuaz</translation>
@@ -8889,7 +8888,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="9094038138851891550">Kullanıcı adı geçersiz</translation>
 <translation id="9094859731829297286">Linux için sabit bir disk alanı ayırmak istediğinizden emin misiniz?</translation>
 <translation id="9094982973264386462">Kaldır</translation>
-<translation id="9095253524804455615">Kaldır</translation>
 <translation id="9095364055741191097">Yerel veriler kurtarılamadı</translation>
 <translation id="909554839118732438">Gizli pencereleri kapat</translation>
 <translation id="9099220545925418560">Tarama geçmişinize dayalı. Bu ayar kapalı.</translation>

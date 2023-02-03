@@ -80,6 +80,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="149095475893949513">Tento web se pokouší stáhnout profil konfigurace.</translation>
 <translation id="1491277525950327607">Nastavení můžete přepnout dvojitým klepnutím</translation>
 <translation id="1492417797159476138">Toto uživatelské jméno jste pro tento web už uložili</translation>
+<translation id="1498283581832036924">Účet v doméně <ph name="WEBSITE" /> smazán nebude</translation>
 <translation id="1506063256525392513">Toto umožňuje pořizovat a nahrávat fotky a skenovat QR kódy</translation>
 <translation id="1509486075633541495">Přihlásit se k webu</translation>
 <translation id="1509960214886564027">Mnoho webů může přestat fungovat</translation>
@@ -219,6 +220,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2664621323652615289">Ukončit</translation>
 <translation id="2671426118752779020">Hesla, která jste si uložili do Správce hesel Google, můžete používat v jiných aplikacích na svém iPhonu.</translation>
 <translation id="2690858294534178585">Kamera je používána</translation>
+<translation id="26915454213703967">Vyhledat na obrázku pomocí Googlu</translation>
 <translation id="2691653761409724435">Není k dispozici offline</translation>
 <translation id="2695507686909505111">Stránka byla přeložena</translation>
 <translation id="2697526135132990015">Odhlásit se a vymazat data</translation>
@@ -382,6 +384,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3819183753496523827">Jste offline. Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
 <translation id="3835964409414434850">Přejít na další kartu</translation>
 <translation id="385051799172605136">Zpět</translation>
+<translation id="3851938967634752633">Hesla pro domény <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> a další (<ph name="NUMBER_OF_ACCOUNTS" />) budou smazána. Vaše účty smazány nebudou.</translation>
 <translation id="3858860766373142691">Název</translation>
 <translation id="3861486700625780712">Ukončit sledování</translation>
 <translation id="3863769054730344136">Odeslat na vaše zařízení</translation>
@@ -517,6 +520,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="4833786495304741580">Automaticky odesílá statistiky o využívání a zprávy o selhání do Googlu</translation>
 <translation id="4840495572919996524">Vaše záložky, historie, hesla a další nastavení již nebudou synchronizovány do účtu Google.</translation>
 <translation id="4844899002472726590">Zobrazení a úprava témat, která vás zajímají</translation>
+<translation id="4848999860252535517">Smazat heslo domény <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Nastavte heslo</translation>
 <translation id="4858786880085262208">Pokud je to možné, upgradujte na HTTPS. Na zabezpečených webech může být vložen nezabezpečený obsah.</translation>
 <translation id="4860895144060829044">Volat</translation>
@@ -770,6 +774,7 @@ Pro každý web se pokuste použít jedinečné heslo.</translation>
 <translation id="6598875554591387303">Seřadit podle vydavatele</translation>
 <translation id="6603393121510733479">Vaše organizace vypnula soukromé prohlížení.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Hesla pro domény <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> a <ph name="THIRD_WEBSITE" /> budou smazána. Vaše účty smazány nebudou.</translation>
 <translation id="6610002944194042868">Možnosti Překladače</translation>
 <translation id="661266467055912436">Zlepšuje bezpečnost pro vás i všechny ostatní uživatele internetu.</translation>
 <translation id="6620279676667515405">Zrušit</translation>
@@ -1047,6 +1052,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8756969031206844760">Aktualizovat heslo?</translation>
 <translation id="8763613688786959833">Přejít na poslední kartu</translation>
 <translation id="8764015330924122850">Přestat sledovat web <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Hesla pro domény <ph name="WEBSITE" /> a <ph name="SECOND_WEBSITE" /> budou smazána. Vaše účty smazány nebudou.</translation>
 <translation id="8775144690796719618">Neplatná adresa URL</translation>
 <translation id="8787968206789828143">Vyhledat na webu</translation>
 <translation id="8792626944327216835">mikrofon</translation>
@@ -1096,6 +1102,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="9093271241977565440">V horní části obrazovky klepněte na ikonu Vyhledávání</translation>
 <translation id="9094033019050270033">Aktualizovat heslo</translation>
 <translation id="9097506547406246598">Sledování nelze zrušit. Něco se pokazilo.</translation>
+<translation id="9098541895599151034">Smazat hesla (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9100610230175265781">Je vyžadována heslová fráze</translation>
 <translation id="9107664647686727385">Kontroluje, zda nedošlo k prolomení hesel</translation>
 <translation id="9124387962554796433">Google vaši historii může používat k personalizaci Vyhledávání a dalších služeb Google</translation>

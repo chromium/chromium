@@ -251,6 +251,7 @@
 <translation id="2426805022920575512">Башка аккаунтту тандоо</translation>
 <translation id="2433507940547922241">Көрүнүш</translation>
 <translation id="2435457462613246316">Сырсөздү көрсөтүү</translation>
+<translation id="2439153523196674349"><ph name="SITE_NAME" /> алдын ала көрүү</translation>
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> файлын кайрадан жүктөп аласызбы?</translation>
 <translation id="2453860139492968684">Бүтүрүү</translation>
 <translation id="2459390580524506445">Жакшыртылган оозеки издөө</translation>
@@ -389,6 +390,7 @@
 <translation id="3066573403916685335">Төмөн жылдыруу</translation>
 <translation id="3070005020161560471">Автоматтык түрдө которуу</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макул болосуз. <ph name="BEGIN_LINK3" />Купуялык саясаты<ph name="END_LINK3" /> да колдонулат.</translation>
+<translation id="3083194063661536258">Аккаунтуңуздан чыктыңыз. Баскыч. Кирүү жана шайкештирүүнү күйгүзүү үчүн диалог ачылат.</translation>
 <translation id="3091010850649238832">Алмашуу буфериндеги мазмундарды көрсөтүү</translation>
 <translation id="3098745985164956033">Сүрөттөмөлөрдү жакшыртуу үчүн айрым сүрөттөр Google'га жөнөтүлөт</translation>
 <translation id="3104179992611025423">Серепчиңди ата-энең башкарат</translation>
@@ -925,6 +927,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="604124094241169006">Автоматтык</translation>
 <translation id="6042308850641462728">Дагы</translation>
+<translation id="6049046116080614938"><ph name="USER_NAME" /> катары кирдиңиз. <ph name="USER_EMAIL" />. Баскыч. Параметрлерди ачат.</translation>
 <translation id="604996488070107836">Белгисиз катадан улам <ph name="FILE_NAME" /> жүктөлүп алынбай калды.</translation>
 <translation id="605721222689873409">ЖЖ</translation>
 <translation id="6059830886158432458">Окуяларыңызды жана аракеттериңизди бул жерден көзөмөлдөңүз</translation>
@@ -1299,6 +1302,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7968014550143838305">Окуу тизмесине кошулду</translation>
 <translation id="7971136598759319605">Соңку аракеттер: 1 күн мурун</translation>
 <translation id="7975379999046275268">Баракты алдын ала көрүү <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979"><ph name="USER_NAME" /> катары кирдиңиз. Баскыч. Параметрлерди ачат.</translation>
 <translation id="7986497153528221272">Сырсөздөрдү көрүү үчүн түзмөгүңүзгө экран кулпусун коюп алыңыз</translation>
 <translation id="7995059495660416932">Контентти жеткиликтүү болгондо көрөсүз</translation>
 <translation id="799576009106109668">Мазмун учурда ачылып турган веб-баракчанын негизинде жүктөлгөндүктөн, барактарды тезирээк карап чыгасыз</translation>

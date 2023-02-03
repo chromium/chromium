@@ -708,6 +708,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6284652193729350524">Übersetzung für <ph name="LANGUAGE" /> anbieten</translation>
 <translation id="6289501276895392862">Du folgst <ph name="CHANNEL_NAME" /> nicht mehr</translation>
 <translation id="6293101329759844770">Wenn du Safe Browsing aktivieren möchtest, öffne <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" /> und tippe auf „Safe Browsing“.</translation>
+<translation id="6320780930074869063">Wenn diese Option aktiviert ist, werden Passwörter in <ph name="ACCOUNT" /> gespeichert. Wenn sie deaktiviert ist, werden Passwörter nur auf diesem Gerät gespeichert.</translation>
 <translation id="6321526113093607004">Zu Lesezeichen hinzufügen</translation>
 <translation id="6324669097367352121">Anmeldeeinstellungen</translation>
 <translation id="6337234675334993532">Verschlüsselung</translation>

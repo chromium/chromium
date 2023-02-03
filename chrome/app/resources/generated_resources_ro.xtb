@@ -1105,7 +1105,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1975841812214822307">Elimină...</translation>
 <translation id="1976150099241323601">Conectează-te la dispozitivul de securitate</translation>
 <translation id="1977965994116744507">Pentru a debloca dispozitivul <ph name="DEVICE_TYPE" />, apropie mai mult telefonul.</translation>
-<translation id="1978057560491495741">Elimină adresa</translation>
 <translation id="1979095679518582070">Dezactivarea acestei funcții nu afectează capacitatea dispozitivului de a trimite informațiile necesare pentru servicii esențiale, cum ar fi actualizările de sistem și securitate.</translation>
 <translation id="1979280758666859181">Treceți la un canal cu o versiune <ph name="PRODUCT_NAME" /> mai veche. Schimbarea canalului se va aplica atunci când versiunea canalului va corespunde cu versiunea instalată în prezent pe dispozitiv.</translation>
 <translation id="197989455406964291">KDC nu acceptă tipul de criptare</translation>
@@ -3042,6 +3041,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Tu și Google</translation>
 <translation id="3722108462506185496">A apărut o eroare la pornirea serviciului mașinii virtuale. Încearcă din nou.</translation>
+<translation id="3722624153992426516">S-a primit instrucțiunea <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Rețele Wi-Fi disponibile</translation>
 <translation id="3727187387656390258">Fereastră pop-up de inspectare</translation>
@@ -3398,6 +3398,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="402211067068791756">Astfel, se vor șterge <ph name="TOTAL_USAGE" /> din datele stocate de site-urile afișate</translation>
 <translation id="4022426551683927403">&amp;Adaugă în dicționar</translation>
 <translation id="4025039777635956441">Dezactivează sunetul pentru site-ul selectat</translation>
+<translation id="402707738228916911">S-a primit instrucțiunea <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027958407426528157">Deschide site-urile în aplicațiile instalate pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Adaugă metode de introducere a textului</translation>
 <translation id="4029556917477724407">Înapoi de la pagina <ph name="PAGE_TITLE" /></translation>
@@ -4280,7 +4281,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4852916668365817106">Culoarea mouse-ului</translation>
 <translation id="4853020600495124913">Deschideți într-o &amp;fereastră nouă</translation>
 <translation id="4854317507773910281">Alege contul de părinte pentru aprobare</translation>
-<translation id="4854603338816296098">Adresa a fost eliminată</translation>
 <translation id="485480310608090163">Mai multe setări și permisiuni</translation>
 <translation id="4858913220355269194">Jucător</translation>
 <translation id="4862642413395066333">Semnarea răspunsurilor OCSP</translation>
@@ -5678,6 +5678,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6150961653851236686">Această limbă este folosită la traducerea paginilor</translation>
 <translation id="6151323131516309312">Apasă pe <ph name="SEARCH_KEY" /> pentru a căuta în <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Fișierul există deja în dosarul de descărcare.</translation>
+<translation id="6152918902620844577">Se așteaptă următoarea operațiune</translation>
 <translation id="6154240335466762404">Elimină toate porturile</translation>
 <translation id="615436196126345398">Protocol</translation>
 <translation id="6155141482566063812">O filă din fundal permite accesul la ecran</translation>
@@ -7390,6 +7391,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7730683939467795481">Această pagină a fost modificată de extensia „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="7735165285389721951">Un alt proces de configurare pentru Steam este în desfășurare. Așteaptă să se finalizeze înainte de a încerca din nou</translation>
 <translation id="7737115349420013392">Se asociază cu „<ph name="DEVICE_NAME" />”...</translation>
+<translation id="7737203573077018777">S-a primit instrucțiunea <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
 <translation id="7737846262459425222">Poți modifica oricând opțiunea în Setări &gt; Asistent Google &gt; Contextul de pe ecran.</translation>
 <translation id="7737948071472253612">Nu au permisiunea de a folosi camera foto</translation>
 <translation id="77381465218432215">Afișează accentele și caracterele speciale</translation>
@@ -7487,7 +7489,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7819605256207059717">Blocat de organizația ta</translation>
 <translation id="7820561748632634942">Atribui comutatoare suplimentare?</translation>
 <translation id="782057141565633384">C&amp;opiază adresa videoclipului</translation>
-<translation id="7822187537422052256">Sigur vrei să elimini această adresă?</translation>
 <translation id="7824864914877854148">Backupul nu s-a putut finaliza din cauza unei erori</translation>
 <translation id="782590969421016895">Utilizează paginile actuale</translation>
 <translation id="7826174860695147464">Compatibilitate pentru browsere vechi (CBV) – Componente</translation>
@@ -8898,7 +8899,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="9094038138851891550">Nume de utilizator nevalid</translation>
 <translation id="9094859731829297286">Sigur vrei să rezervi un disc cu dimensiune fixă pentru Linux?</translation>
 <translation id="9094982973264386462">Elimină</translation>
-<translation id="9095253524804455615">Elimină</translation>
 <translation id="9095364055741191097">Datele locale nu au putut fi recuperate</translation>
 <translation id="909554839118732438">Închide ferestrele incognito</translation>
 <translation id="9099220545925418560">Pe baza istoricului de navigare. Setarea este dezactivată.</translation>

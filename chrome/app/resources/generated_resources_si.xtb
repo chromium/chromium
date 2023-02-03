@@ -1105,7 +1105,6 @@
 <translation id="1975841812214822307">ඉවත් කරන්න...</translation>
 <translation id="1976150099241323601">ආරක්ෂක උපාංගයට පිවිසෙන්න</translation>
 <translation id="1977965994116744507">ඔබගේ දුරකථනය ඔබගේ <ph name="DEVICE_TYPE" /> අගුලු හැරීමට සමීපයට ගෙන එන්න.</translation>
-<translation id="1978057560491495741">ලිපිනය ඉවත් කරන්න</translation>
 <translation id="1979095679518582070">මෙම විශේෂාංගය අක්‍රිය කිරීම මෙම උපාංගයේ පද්ධති යාවත්කාලීන කිරීම සහ ආරක්‍ෂාව වැනි අත්‍යවශ්‍ය සේවාවලට තොරතුරු යැවීමේ හැකියාවට බලපෑමක් නොකරයි.</translation>
 <translation id="1979280758666859181">ඔබ නාලිකාවට මාරු වනුයේ <ph name="PRODUCT_NAME" /> හි පැරණි සංස්කරණයක් මගිනි. නාලිකාවේ සංස්කරණය ඔබේ උපාංගයේ සංස්කරණයත් සමඟ ගැළපෙන විට නාලිකා වෙනස්වීම ඉටුවනු ඇත.</translation>
 <translation id="197989455406964291">KDC සංකේතන වර්ගයට සහය නොදක්වයි</translation>
@@ -4283,7 +4282,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4852916668365817106">මූසික වර්ණය</translation>
 <translation id="4853020600495124913">&amp;නව කවුළුවක විවෘත කරන්න</translation>
 <translation id="4854317507773910281">අනුමැතිය සඳහා මාපිය ගිණුම තෝරන්න</translation>
-<translation id="4854603338816296098">ලිපිනය ඉවත් කරන ලදි</translation>
 <translation id="485480310608090163">තවත් සැකසීම් සහ අවසර</translation>
 <translation id="4858913220355269194">ෆ්‍රිට්ස්</translation>
 <translation id="4862642413395066333">OCSP ප්‍රතිචාර අත්සන් කරමින්</translation>
@@ -4837,6 +4835,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5382591305415226340">සහාය දක්වන සබැඳි කළමනාකරණය කරන්න</translation>
 <translation id="5383377866517186886">Mac පද්ධති මනාප තුළ කැමරාව අක්‍රිය කෙරේ</translation>
 <translation id="5383740867328871413">නම් නොකළ සමූහය - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">ව්‍යවසාය ප්‍රතිපත්තිය වෙනස් විය. මෙවලම් තීරුවට අත්හදා බැලීම් බොත්තම එක් කරන ලදි. අත්හදා බැලීම් සබල කිරීම සඳහා සංවාදයක් විවෘත කිරීමට බොත්තම ක්ලික් කරන්න.</translation>
 <translation id="5388885445722491159">යුගලිතයි</translation>
 <translation id="5390112241331447203">ප්‍රතිපෝෂණ වාර්තාවල යවන system_logs.txt ගොනුව ඇතුළත් කරන්න</translation>
@@ -5051,6 +5050,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5578059481725149024">ස්වයං පුරනය</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> භාෂාවට පරිවර්තනය කරන්න</translation>
 <translation id="558170650521898289">Microsoft Windows දෘඩාංග ධාවක සත්‍යාපනය</translation>
+<translation id="5581876958763461074">සියලු සටහන්</translation>
 <translation id="5581972110672966454">වසමට උපාංගය එක් කළ නොහැකිය. කරුණාකර නැවත උත්සාහ කරන්න, නැති නම් ඔබේ උපාංග හිමිකරු හෝ පරිපාලක සම්බන්ධ කර ගන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">ප්‍රධාන මෙනුව</translation>
 <translation id="5583640892426849032">ආපසුයවනය</translation>
@@ -7486,7 +7486,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7819605256207059717">ඔබගේ සංවිධානය විසින් බාගන්නා ලදි</translation>
 <translation id="7820561748632634942">අතිරේක ස්විච පවරන්නද?</translation>
 <translation id="782057141565633384">වීඩියෝ ලිපිනය පිටපත් කරන්න</translation>
-<translation id="7822187537422052256">ඔබට මෙම ලිපිනය ඉවත් කිරීමට අවශ්‍ය බව ඔබට විශ්වාසද?</translation>
 <translation id="7824864914877854148">දෝෂයක් හේතුවෙන් උපස්ථය සම්පූර්ණ කළ නොහැකි විය</translation>
 <translation id="782590969421016895">වත්මන් පිටු භාවිතා කරන්න</translation>
 <translation id="7826174860695147464">පැරණි බ්‍රවුසර සහාය (LBS) - අභ්‍යන්තර</translation>
@@ -8895,7 +8894,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9094038138851891550">පරිශීලක නාමය අවලංගුයි</translation>
 <translation id="9094859731829297286">ඔබට Linux සඳහා ස්ථිර තරමේ තැටියක් වෙන් කිරීමට අවශ්‍ය බව විශ්වාසද?</translation>
 <translation id="9094982973264386462">ඉවත් කරන්න</translation>
-<translation id="9095253524804455615">ඉවත් කරන්න</translation>
 <translation id="9095364055741191097">ස්ථානීය දත්ත ප්‍රතිසාධනය කිරීමට අසමත් විය</translation>
 <translation id="909554839118732438">අප්‍රසිද්ධ ප්‍රකාරය වසන්න</translation>
 <translation id="9099220545925418560">ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය මත පදනම්ව. මෙම සැකසීම ක්‍රියාවිරහිතයි.</translation>

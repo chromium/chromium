@@ -1117,7 +1117,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1975841812214822307">Alisin...</translation>
 <translation id="1976150099241323601">Mag-sign in sa Pangseguridad na Device</translation>
 <translation id="1977965994116744507">Ilapit pa ang iyong telepono upang ma-unlock ang <ph name="DEVICE_TYPE" /> mo.</translation>
-<translation id="1978057560491495741">Alisin ang address</translation>
 <translation id="1979095679518582070">Ang pag-off sa feature na ito ay hindi nakakaapekto sa kakayahan ng device na ito na ipadala ang impormasyong kinakailangan para sa mahahalagang serbisyo tulad ng mga pag-update ng system at seguridad.</translation>
 <translation id="1979280758666859181">Lumilipat ka sa isang channel na may lumang bersyon ng <ph name="PRODUCT_NAME" />. Ilalapat ang paglilipat ng channel kapag tumugma ang bersyon ng channel sa bersyong kasalukuyang naka-install sa iyong device.</translation>
 <translation id="197989455406964291">Hindi sinusuportahan ng KDC ang uri ng pag-encrypt</translation>
@@ -4298,7 +4297,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4852916668365817106">Kulay ng mouse</translation>
 <translation id="4853020600495124913">Buksan sa &amp;bagong window</translation>
 <translation id="4854317507773910281">Pumili ng account ng magulang para sa pag-apruba</translation>
-<translation id="4854603338816296098">Inalis ang address</translation>
 <translation id="485480310608090163">Higit pang setting at pahintulot</translation>
 <translation id="4858913220355269194">Azkals</translation>
 <translation id="4862642413395066333">Paglagda sa Mga Pagtugon sa OCSP</translation>
@@ -7507,7 +7505,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7819605256207059717">Na-block ng iyong organisasyon</translation>
 <translation id="7820561748632634942">Magtalaga ng mga karagdagang switch?</translation>
 <translation id="782057141565633384">K&amp;opyahin ang address ng video</translation>
-<translation id="7822187537422052256">Sigurado ka bang gusto mong alisin ang address na ito?</translation>
 <translation id="7824864914877854148">Hindi makumpleto ang pag-back up dahil sa error</translation>
 <translation id="782590969421016895">Gamitin ang mga kasalukuyang page</translation>
 <translation id="7826174860695147464">Legacy Browser Support (LBS) - Mga Internal</translation>
@@ -8920,7 +8917,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9094038138851891550">Di-wasto ang username</translation>
 <translation id="9094859731829297286">Sigurado ka bang gusto mong magreserba ng fixed na espasyo sa disk para sa Linux?</translation>
 <translation id="9094982973264386462">Alisin</translation>
-<translation id="9095253524804455615">Alisin</translation>
 <translation id="9095364055741191097">Hindi na-recover ang lokal na data</translation>
 <translation id="909554839118732438">Isara ang Incognito</translation>
 <translation id="9099220545925418560">Batay sa iyong history ng pag-browse. Naka-off ang setting na ito.</translation>

@@ -377,6 +377,7 @@
 <translation id="1339009753652684748">‏يمكنك الوصول إلى "مساعد Google" عند قول "Ok Google". لتوفير طاقة البطارية، اختَر "تفعيل (مُقترح)". ولن تستجيب خدمة "مساعد Google" إلا عند توصيل جهازك بمصدر طاقة أو عند شحنه.</translation>
 <translation id="13392265090583506">إمكانية الوصول</translation>
 <translation id="1340527397989195812">‏احتفظ بنسخة احتياطية للوسائط من الجهاز باستخدام تطبيق Files.</translation>
+<translation id="1341871421050612057">يتعذّر تفعيل المزامنة باستخدام <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">‏يمنح Linux أذونات التطبيق للوصول إلى أجهزة USB. لن يتذكر Linux جهاز USB بعد إزالته.</translation>
 <translation id="1343920184519992513">المتابعة من حيث توقفت وفتح مجموعة مُحدَّدة من الصفحات</translation>
 <translation id="134589511016534552">تظهر علامات تبويب الوسائط أيضًا في القسم "علامات التبويب المفتوحة".</translation>
@@ -1108,7 +1109,6 @@
 <translation id="1975841812214822307">إزالة...</translation>
 <translation id="1976150099241323601">تسجيل الدخول إلى جهاز الأمان</translation>
 <translation id="1977965994116744507">اجعل هاتفك قريبًا منك لإلغاء قفل جهاز <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978057560491495741">إزالة العنوان</translation>
 <translation id="1979095679518582070">لن يؤثر إيقاف هذه الميزة في قدرة هذا الجهاز على إرسال المعلومات اللازمة للحصول على خدمات ضرورية مثل تحديثات النظام والأمان.</translation>
 <translation id="1979280758666859181">أنت الآن تُجري تغييرًا إلى قناة ذات إصدار سابق من <ph name="PRODUCT_NAME" />. وسيسري تغيير القناة عند تطابق إصدار القناة مع الإصدار المثبت حاليًا على الجهاز.</translation>
 <translation id="197989455406964291">‏لا يدعم KDC (مركز توزيع المفاتيح) نوع التشفير</translation>
@@ -3839,6 +3839,7 @@
 <translation id="4441147046941420429">للمواصلة، يُرجى إزالة مفتاح الأمان من جهازك، ثم إعادة إدخاله ولمسه.</translation>
 <translation id="444134486829715816">توسيع...</translation>
 <translation id="4441928470323187829">ثبَّت المشرف هذه الإضافة.</translation>
+<translation id="4442863809158514979">عرض أذونات الويب</translation>
 <translation id="4443536555189480885">&amp;تعليمات</translation>
 <translation id="4444304522807523469">‏الدخول إلى الماسحات الضوئية للمستند الملحق عبر جهاز USB أو على الشبكة المحلية</translation>
 <translation id="4444512841222467874">إذا لم تتوفر مساحة، فقد تتم إزالة المستخدمين والبيانات تلقائيًا.</translation>
@@ -4140,6 +4141,7 @@
 <translation id="4713409221649555176">حذف البيانات عند إغلاق جميع النوافذ</translation>
 <translation id="47158868804223727">انقر على اسم المجموعة لتوسيعها أو تصغيرها.</translation>
 <translation id="4716483597559580346">‏Powerwash لمزيد من الأمان</translation>
+<translation id="471759229191973607">تغيير المظهر</translation>
 <translation id="4722735765955348426">كلمة مرور <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> يشارك شاشتك.</translation>
 <translation id="4722989931633062466">مواقع إلكترونية لا يُسمح لها بعرض رسائل المطالبة بتسجيل الدخول في الخدمات التابعة لجهات خارجية</translation>
@@ -4282,7 +4284,6 @@
 <translation id="4852916668365817106">لون مؤشر الماوس</translation>
 <translation id="4853020600495124913">فتح في &amp;نافذة جديدة</translation>
 <translation id="4854317507773910281">اختَر حساب أحد الوالدَين للحصول على موافقة.</translation>
-<translation id="4854603338816296098">تمّت إزالة العنوان.</translation>
 <translation id="485480310608090163">المزيد من الإعدادات والأذونات</translation>
 <translation id="4858913220355269194">فريتز</translation>
 <translation id="4862642413395066333">‏توقيع استجابات OCSP</translation>
@@ -4836,6 +4837,7 @@
 <translation id="5382591305415226340">إدارة الروابط المدعومة</translation>
 <translation id="5383377866517186886">‏تم إيقاف الكاميرا في إعدادات نظام Mac المفضلة</translation>
 <translation id="5383740867328871413">مجموعة لم تتم تسميتها - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511">‫<ph name="EXTENSION_NAME" /> (معرّف الإضافة: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">تم تغيير سياسة المؤسسة، وبموجب هذا التغيير، تمت إضافة زر "التجارب" إلى شريط الأدوات. انقر على الزرّ لفتح مربّع حوار لتفعيل التجارب.</translation>
 <translation id="5388885445722491159">مقترن</translation>
 <translation id="5390112241331447203">‏إدراج ملف system_logs.txt المُرسَل في تقارير التعليقات</translation>
@@ -5050,6 +5052,7 @@
 <translation id="5578059481725149024">تسجيل الدخول تلقائيًا</translation>
 <translation id="5581134892342029705">اكتملت الترجمة إلى اللغة <ph name="LANGUAGE" />.</translation>
 <translation id="558170650521898289">‏التحقق من برنامج تشغيل الأجهزة لـ Microsoft Windows</translation>
+<translation id="5581876958763461074">كل الملاحظات</translation>
 <translation id="5581972110672966454">يتعذَّر ضم الجهاز إلى النطاق. يُرجى إعادة المحاولة أو التواصل مع مشرف الجهاز أو مالكه. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="5582839680698949063">القائمة الرئيسية</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -7169,6 +7172,7 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> لا يستجيب. اختَر "فرض الإغلاق" لإغلاق التطبيق.</translation>
 <translation id="7535730537657706072">لمحو سجل التصفّح في وضع التصفّح المتخفي على جهازك، عليك إغلاق كل علامات التبويب في وضع التصفُّح المتخفي.</translation>
 <translation id="7537451260744431038">يمنع هذا الإجراء المواقع الإلكترونية من استخدام ملفات تعريف الارتباط لتحسين تجربة التصفُّح، مثل إبقائك مُسجِّلاً الدخول أو تذكُّر عناصر في سلة التسوق.</translation>
+<translation id="7538088324298143359">البحث في الصور باستخدام <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">حدث خطأ أثناء التحقق من التحديثات: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232">أعاد <ph name="MANAGER" /> هذا الجهاز إلى إصدار سابق من نظام التشغيل. يُرجى حفظ الملفات المُهمة، ثم إعادة تشغيل الجهاز. سيتم حذف كل البيانات على الجهاز.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> في التطبيق <ph name="APP_NAME" /></translation>
@@ -7475,6 +7479,7 @@
 <translation id="779308894558717334">أخضر فاتح</translation>
 <translation id="7793098747275782155">أزرق داكن</translation>
 <translation id="7797571222998226653">غير مفعّل</translation>
+<translation id="7798504574384119986">عرض أذونات الويب</translation>
 <translation id="7798844538707273832">تم حظر إذن <ph name="PERMISSION" /> تلقائيًا.</translation>
 <translation id="7800518121066352902">تدوير ع&amp;كس اتجاه عقارب الساعة</translation>
 <translation id="7801679634091975683">‏لا يتم تطبيق التغييرات التي تجريها هنا إلا على متصفّح Chrome في Lacros. ولإجراء تغييرات على إعدادات متصفّح Chrome، افتح متصفّح Chrome ثم انتقِل إلى الإعدادات.</translation>
@@ -7493,7 +7498,6 @@
 <translation id="7819605256207059717">حظرت مؤسستك هذا الملف.</translation>
 <translation id="7820561748632634942">هل تريد تخصيص مفاتيح تحكّم إضافية؟</translation>
 <translation id="782057141565633384">نس&amp;خ عنوان الفيديو</translation>
-<translation id="7822187537422052256">هل تريد فعلاً إزالة هذا العنوان؟</translation>
 <translation id="7824864914877854148">تعذَّر إكمال النسخ الاحتياطي بسبب حدوث خطأ</translation>
 <translation id="782590969421016895">استخدام الصفحات الحالية</translation>
 <translation id="7826174860695147464">‏الوصول إلى المتصفحات القديمة (LBS): العناصر الداخلية</translation>
@@ -7597,6 +7601,7 @@
 <translation id="7912080627461681647">تم تغيير كلمة المرور على الخادم. يُرجى الخروج ثم تسجيل الدخول مجددًا.</translation>
 <translation id="7912974581251770345">الترجمة</translation>
 <translation id="7915457674565721553">الاتصال بالإنترنت لإعداد أدوات الرقابة الأبوية</translation>
+<translation id="7916364730877325865">لا تسمح لك مؤسستك بتفعيل المزامنة من خلال هذا الحساب.</translation>
 <translation id="7918257978052780342">تسجيل</translation>
 <translation id="7919123827536834358">ترجمة هذه اللغات تلقائيًا</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> ثوانٍ</translation>
@@ -8908,7 +8913,6 @@
 <translation id="9094038138851891550">اسم المستخدم غير صالح</translation>
 <translation id="9094859731829297286">‏هل تريد فعلاً حجز قرص بحجم ثابت لنظام التشغيل Linux؟</translation>
 <translation id="9094982973264386462">إزالة</translation>
-<translation id="9095253524804455615">إزالة</translation>
 <translation id="9095364055741191097">تعذَّر استرداد البيانات المخزَّنة على الجهاز</translation>
 <translation id="909554839118732438">إغلاق جميع النوافذ في وضع "التصفُّح المتخفي"</translation>
 <translation id="9099220545925418560">تستند مواضيع الإعلانات إلى سجلّ التصفُّح الخاص بك. هذا الإعداد غير مفعَّل.</translation>

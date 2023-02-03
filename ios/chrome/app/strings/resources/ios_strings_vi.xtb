@@ -80,6 +80,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="149095475893949513">Trang web này đang cố gắng tải một hồ sơ cấu hình xuống.</translation>
 <translation id="1491277525950327607">Nhấn đúp để chuyển đổi cài đặt</translation>
 <translation id="1492417797159476138">Bạn đã lưu tên người dùng này cho trang web này</translation>
+<translation id="1498283581832036924">Tài khoản <ph name="WEBSITE" /> của bạn sẽ không bị xoá.</translation>
 <translation id="1506063256525392513">Quyền này cho phép bạn chụp ảnh, tải ảnh lên và quét mã QR.</translation>
 <translation id="1509486075633541495">Đăng nhập vào trang web</translation>
 <translation id="1509960214886564027">Các tính năng trên nhiều trang web có thể hoạt động không đúng cách</translation>
@@ -219,6 +220,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="2664621323652615289">Dừng</translation>
 <translation id="2671426118752779020">Bạn có thể sử dụng mật khẩu đã lưu vào Trình quản lý mật khẩu của Google trong ứng dụng khác trên iPhone.</translation>
 <translation id="2690858294534178585">Máy ảnh đang được sử dụng</translation>
+<translation id="26915454213703967">Tìm kiếm trong hình ảnh bằng Google</translation>
 <translation id="2691653761409724435">Ko khả dụng khi ngoại tuyến</translation>
 <translation id="2695507686909505111">Đã dịch trang</translation>
 <translation id="2697526135132990015">Đăng xuất và xoá dữ liệu</translation>
@@ -382,6 +384,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3819183753496523827">Bạn hiện không có kết nối mạng. Hãy kiểm tra kết nối Internet rồi thử lại.</translation>
 <translation id="3835964409414434850">Chuyển sang thẻ tiếp theo</translation>
 <translation id="385051799172605136">Quay lại</translation>
+<translation id="3851938967634752633">Mật khẩu của <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> và <ph name="NUMBER_OF_ACCOUNTS" /> tài khoản khác sẽ bị xoá. Các tài khoản của bạn sẽ không bị xoá.</translation>
 <translation id="3858860766373142691">Tên</translation>
 <translation id="3861486700625780712">Ngừng theo dõi</translation>
 <translation id="3863769054730344136">Gửi đến các thiết bị của bạn</translation>
@@ -517,6 +520,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="4833786495304741580">Tự động gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google.</translation>
 <translation id="4840495572919996524">Dấu trang, lịch sử, mật khẩu và các dữ liệu khác sẽ không còn đồng bộ hóa với Tài khoản Google của bạn nữa.</translation>
 <translation id="4844899002472726590">Xem và chỉnh sửa những chủ đề bạn quan tâm</translation>
+<translation id="4848999860252535517">Xoá mật khẩu của <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Đặt mật mã</translation>
 <translation id="4858786880085262208">Nâng cấp lên HTTPS (khi có thể). Các trang web an toàn có thể nhúng nội dung không an toàn.</translation>
 <translation id="4860895144060829044">Gọi</translation>
@@ -770,6 +774,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="6598875554591387303">Sắp xếp theo Nhà xuất bản</translation>
 <translation id="6603393121510733479">Tổ chức của bạn đã tắt tính năng duyệt web ở chế độ riêng tư.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Mật khẩu của <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> và <ph name="THIRD_WEBSITE" /> sẽ bị xoá. Các tài khoản của bạn sẽ không bị xoá.</translation>
 <translation id="6610002944194042868">Tùy chọn dịch</translation>
 <translation id="661266467055912436">Tăng độ bảo mật cho bạn và mọi người trên web.</translation>
 <translation id="6620279676667515405">Hủy</translation>
@@ -1022,7 +1027,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8533670235862049797">Tính năng Duyệt web an toàn đang bật</translation>
 <translation id="8534481786647257214">Đã đăng lên Google+.</translation>
 <translation id="8548878600947630424">Tìm trong trang...</translation>
-<translation id="8558480467877843976">Giờ đây, bạn có thể dùng Chrome mỗi khi duyệt web hoặc nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
+<translation id="8558480467877843976">Giờ bạn có thể dùng Chrome mỗi khi duyệt web hoặc nhấn vào liên kết trong thư/tin nhắn, tài liệu, v.v.</translation>
 <translation id="8588404856427128947">Đang tắt</translation>
 <translation id="8591976964826315682">Chặn cookie của bên thứ ba ở chế độ ẩn danh</translation>
 <translation id="8605219856220328675">Đóng thẻ.</translation>
@@ -1047,6 +1052,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8756969031206844760">Cập nhật mật khẩu?</translation>
 <translation id="8763613688786959833">Chuyển đến thẻ cuối cùng</translation>
 <translation id="8764015330924122850">Ngừng theo dõi <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Mật khẩu của <ph name="WEBSITE" /> và <ph name="SECOND_WEBSITE" /> sẽ bị xoá. Các tài khoản của bạn sẽ không bị xoá.</translation>
 <translation id="8775144690796719618">URL không hợp lệ</translation>
 <translation id="8787968206789828143">Tìm trên web</translation>
 <translation id="8792626944327216835">micrô</translation>
@@ -1096,6 +1102,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="9093271241977565440">Nhấn vào biểu tượng Tìm kiếm ở đầu màn hình</translation>
 <translation id="9094033019050270033">Cập nhật mật khẩu</translation>
 <translation id="9097506547406246598">Không ngừng theo dõi được. Đã xảy ra lỗi.</translation>
+<translation id="9098541895599151034">Xoá <ph name="NUMBER_OF_ACCOUNTS" /> mật khẩu?</translation>
 <translation id="9100610230175265781">Yêu cầu cụm mật khẩu</translation>
 <translation id="9107664647686727385">Kiểm tra để tìm mật khẩu bị lộ</translation>
 <translation id="9124387962554796433">Google có thể sử dụng nhật ký hoạt động của bạn để điều chỉnh tính năng Tìm kiếm và các dịch vụ khác của Google cho phù hợp hơn với bạn.</translation>

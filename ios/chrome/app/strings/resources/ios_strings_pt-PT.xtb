@@ -80,6 +80,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="149095475893949513">Este Website está a tentar transferir um perfil de configuração.</translation>
 <translation id="1491277525950327607">Toque duas vezes para ativar ou desativar a definição</translation>
 <translation id="1492417797159476138">Já guardou este nome de utilizador para este site.</translation>
+<translation id="1498283581832036924">A sua conta de <ph name="WEBSITE" /> não vai ser apagada.</translation>
 <translation id="1506063256525392513">Isto permite-lhe tirar e carregar fotos, bem como ler códigos QR</translation>
 <translation id="1509486075633541495">Inicie sessão no Website</translation>
 <translation id="1509960214886564027">As funcionalidades em muitos sites podem falhar.</translation>
@@ -219,6 +220,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2664621323652615289">Parar</translation>
 <translation id="2671426118752779020">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe da Google noutras apps no seu iPhone.</translation>
 <translation id="2690858294534178585">A câmara está a ser utilizada</translation>
+<translation id="26915454213703967">Pesquisar na imagem com o Google</translation>
 <translation id="2691653761409724435">Não disponível offline</translation>
 <translation id="2695507686909505111">Página traduzida</translation>
 <translation id="2697526135132990015">Terminar sessão e limpar dados</translation>
@@ -382,6 +384,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3819183753496523827">Está offline. Verifique a ligação à Internet e tente novamente.</translation>
 <translation id="3835964409414434850">Aceder ao separador seguinte</translation>
 <translation id="385051799172605136">Anterior</translation>
+<translation id="3851938967634752633">As palavras-passe de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e outros <ph name="NUMBER_OF_ACCOUNTS" /> URLs vão ser apagadas. As suas contas não vão ser apagadas.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861486700625780712">Não seguir</translation>
 <translation id="3863769054730344136">Enviar para os seus dispositivos</translation>
@@ -517,6 +520,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="4833786495304741580">Envia automaticamente estatísticas de utilização e relatórios de falhas para a Google.</translation>
 <translation id="4840495572919996524">Os seus marcadores, o histórico, as palavras-passe, entre outros, deixam de ser sincronizados com a sua Conta Google.</translation>
 <translation id="4844899002472726590">Veja e edite tópicos nos quais tem interesse</translation>
+<translation id="4848999860252535517">Apagar a palavra-passe de <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Definir um código secreto</translation>
 <translation id="4858786880085262208">Sempre que possível, atualize para HTTPS. Os sites seguros podem incorporar conteúdo que não é seguro.</translation>
 <translation id="4860895144060829044">Telefonar</translation>
@@ -770,6 +774,7 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="6598875554591387303">Ordenar por publicador</translation>
 <translation id="6603393121510733479">A sua entidade desativou a navegação anónima.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">As palavras-passe de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="THIRD_WEBSITE" /> vão ser apagadas. As suas contas não vão ser apagadas.</translation>
 <translation id="6610002944194042868">Opções de tradução</translation>
 <translation id="661266467055912436">Melhora a segurança para si e todas as pessoas na Web.</translation>
 <translation id="6620279676667515405">Cancelar</translation>
@@ -1047,6 +1052,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8756969031206844760">Pretende atualizar a palavra-passe?</translation>
 <translation id="8763613688786959833">Ir para o último separador</translation>
 <translation id="8764015330924122850">Deixar de seguir <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">As palavras-passe de <ph name="WEBSITE" /> e <ph name="SECOND_WEBSITE" /> vão ser apagadas. As suas contas não vão ser apagadas.</translation>
 <translation id="8775144690796719618">URL inválido</translation>
 <translation id="8787968206789828143">Pesquise na Web</translation>
 <translation id="8792626944327216835">microfone</translation>
@@ -1096,6 +1102,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9093271241977565440">Na parte superior do ecrã, toque no ícone de pesquisa</translation>
 <translation id="9094033019050270033">Atualizar a palavra-passe</translation>
 <translation id="9097506547406246598">Não é possível deixar de seguir. Algo correu mal.</translation>
+<translation id="9098541895599151034">Apagar <ph name="NUMBER_OF_ACCOUNTS" /> palavras-passe?</translation>
 <translation id="9100610230175265781">Frase de acesso obrigatória</translation>
 <translation id="9107664647686727385">Verifique a existência de palavras-passe comprometidas.</translation>
 <translation id="9124387962554796433">A Google pode utilizar o seu histórico para personalizar a Pesquisa e outros serviços Google.</translation>

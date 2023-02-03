@@ -80,6 +80,7 @@
 <translation id="149095475893949513">ఈ వెబ్‌సైట్, కాన్ఫిగరేషన్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయడానికి ప్రయత్నిస్తోంది.</translation>
 <translation id="1491277525950327607">సెట్టింగ్‌ను టోగుల్ చేయడానికి రెండుసార్లు నొక్కండి</translation>
 <translation id="1492417797159476138">మీరు ఇప్పటికే ఈ సైట్ కోసం ఈ యూజర్‌నేమ్‌ను సేవ్ చేశారు</translation>
+<translation id="1498283581832036924">మీ <ph name="WEBSITE" /> ఖాతా తొలగించబడదు.</translation>
 <translation id="1506063256525392513">ఫోటోలను తీసి, వాటిని అప్‌లోడ్ చేయడానికి, అలాగే QR కోడ్‌లను స్కాన్ చేయడానికి ఇది మిమ్మల్ని అనుమతిస్తుంది</translation>
 <translation id="1509486075633541495">వెబ్‌సైట్‌కు సైన్ ఇన్ చేయండి</translation>
 <translation id="1509960214886564027">చాలా సైట్‌లలోని ఫీచర్‌లు పని చేయకుండాపోవచ్చు</translation>
@@ -219,6 +220,7 @@
 <translation id="2664621323652615289">ఆపివేయండి</translation>
 <translation id="2671426118752779020">మీరు మీ iPhoneలోని ఇతర యాప్‌లలో Google Password Managerలో సేవ్ చేసిన పాస్‌వర్డ్‌లను ఉపయోగించవచ్చు.</translation>
 <translation id="2690858294534178585">కెమెరా వినియోగంలో ఉంది</translation>
+<translation id="26915454213703967">Googleతో ఇమేజ్ లోపల సెర్చ్ చేయండి</translation>
 <translation id="2691653761409724435">ఆఫ్‌లైన్‌లో అందుబాటులో లేదు</translation>
 <translation id="2695507686909505111">పేజీ అనువాదం చేయబడింది</translation>
 <translation id="2697526135132990015">సైన్ అవుట్ చేసి, డేటాను క్లియర్ చేయండి</translation>
@@ -382,6 +384,7 @@
 <translation id="3819183753496523827">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3835964409414434850">తర్వాతి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="385051799172605136">వెనుకకు</translation>
+<translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, మరో <ph name="NUMBER_OF_ACCOUNTS" /> URLలకు సంబంధించిన పాస్‌వర్డ్‌లు తొలగించబడతాయి. మీ ఖాతాలు తొలగించబడవు.</translation>
 <translation id="3858860766373142691">పేరు</translation>
 <translation id="3861486700625780712">అన్-ఫాలో చేయండి</translation>
 <translation id="3863769054730344136">మీ పరికరాలకు పంపండి</translation>
@@ -517,6 +520,7 @@
 <translation id="4833786495304741580">Googleకు ఆటోమేటిక్‌గా వినియోగ గణాంకాలు, క్రాష్ రిపోర్ట్‌లను పంపుతుంది.</translation>
 <translation id="4840495572919996524">మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు మరియు మరిన్ని ఇప్పటి నుండి మీ Google ఖాతాకి సింక్ చేయబడవు.</translation>
 <translation id="4844899002472726590">మీకు ఆసక్తి ఉన్న టాపిక్‌లను చూడండి, ఎడిట్ చేయండి</translation>
+<translation id="4848999860252535517"><ph name="WEBSITE" />‌కు సంబంధించిన పాస్‌వర్డ్‌ను తొలగించాలా?</translation>
 <translation id="4854345657858711387">పాస్‌కోడ్‌ని సెట్ చేయండి</translation>
 <translation id="4858786880085262208">సాధ్యమైనప్పుడు, HTTPSకు అప్‌గ్రేడ్ చేయండి. సురక్షిత సైట్‌లు సురక్షితం కాని కంటెంట్‌ను పొందుపరచవచ్చు.</translation>
 <translation id="4860895144060829044">కాల్ చేయండి</translation>
@@ -708,6 +712,7 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" />లోకి అనువాదం అందించే సూచన</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" />‌ను అన్-ఫాలో చేశారు</translation>
 <translation id="6293101329759844770">సురక్షిత బ్రౌజింగ్ ఆన్ చేయడానికి, <ph name="BEGIN_LINK" />Google సర్వీస్‌ల<ph name="END_LINK" />ను తెరిచి, 'సురక్షిత బ్రౌజింగ్'ను ట్యాప్ చేయండి.</translation>
+<translation id="6320780930074869063">ఈమెయిల్ ఆన్‌లో ఉన్నప్పుడు, పాస్‌వర్డ్‌లు <ph name="ACCOUNT" />ఈమెయిల్‌కు సేవ్ చేయబడతాయి. ఈమెయిల్ ఆఫ్‌లో ఉన్నప్పుడు, పాస్‌వర్డ్‌లు ఈ పరికరంలో మాత్రమే సేవ్ చేయబడతాయి.</translation>
 <translation id="6321526113093607004">బుక్‌మార్క్‌లకు జోడించండి</translation>
 <translation id="6324669097367352121">సైన్ ఇన్ సెట్టింగ్‌లు</translation>
 <translation id="6337234675334993532">ఎన్‌క్రిప్షన్</translation>
@@ -769,6 +774,7 @@
 <translation id="6598875554591387303">పబ్లిషర్ ఆధారంగా క్రమపద్ధతిలో అమర్చండి</translation>
 <translation id="6603393121510733479">మీ సంస్థ, ప్రైవేట్ బ్రౌజింగ్‌ను ఆఫ్ చేసింది.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, మరో <ph name="THIRD_WEBSITE" /> URLలకు సంబంధించిన పాస్‌వర్డ్‌లు తొలగించబడతాయి. మీ ఖాతాలు తొలగించబడవు.</translation>
 <translation id="6610002944194042868">అనువాదం ఎంపికలు</translation>
 <translation id="661266467055912436">మీకు, వెబ్‌లోని ప్రతి ఒక్కరికీ సెక్యూరిటీని మెరుగుపరుస్తుంది.</translation>
 <translation id="6620279676667515405">రద్దు చేయండి</translation>
@@ -1046,6 +1052,7 @@
 <translation id="8756969031206844760">పాస్‌వర్డ్‌ను అప్‌డేట్ చేయాలా?</translation>
 <translation id="8763613688786959833">చివరి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> ను అన్-ఫాలో చేయండి</translation>
+<translation id="8766790350274092814"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> URLలకు సంబంధించిన పాస్‌వర్డ్‌లు తొలగించబడతాయి. మీ ఖాతాలు తొలగించబడవు.</translation>
 <translation id="8775144690796719618">URL చెల్లదు</translation>
 <translation id="8787968206789828143">వెబ్‌లో సెర్చ్ చేయండి</translation>
 <translation id="8792626944327216835">మైక్రోఫోన్</translation>
@@ -1095,6 +1102,7 @@
 <translation id="9093271241977565440">స్క్రీన్ ఎగువున, సెర్చ్ చిహ్నాన్ని ట్యాప్ చేయండి</translation>
 <translation id="9094033019050270033">పాస్‌వర్డ్‌ను అప్‌డేట్ చేయి</translation>
 <translation id="9097506547406246598">అన్-ఫాలో చేయడం సాధ్యం కాదు. ఏదో తప్పు జరిగింది.</translation>
+<translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> URLలకు సంబంధించిన పాస్‌వర్డ్‌లను తొలగించాలా?</translation>
 <translation id="9100610230175265781">రహస్య పదబంధం అవసరం</translation>
 <translation id="9107664647686727385">చోరీకి గురైన పాస్‌వర్డ్‌ల కోసం చెక్ చేయండి</translation>
 <translation id="9124387962554796433">Search, అలాగే ఇతర Google సర్వీస్‌లను వ్యక్తిగతీకరించడం కోసం Google మీ హిస్టరీని ఉపయోగించవచ్చు.</translation>

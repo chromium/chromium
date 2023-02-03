@@ -80,6 +80,7 @@
 <translation id="149095475893949513">Овај веб-сајт покушава да преузме профил конфигурације.</translation>
 <translation id="1491277525950327607">Двапут додирните да бисте укључили/искључили подешавање</translation>
 <translation id="1492417797159476138">Већ сте сачували ово корисничко име за овај сајт</translation>
+<translation id="1498283581832036924">Налог за <ph name="WEBSITE" /> неће бити избрисан.</translation>
 <translation id="1506063256525392513">Ово вам омогућава да снимате и отпремате слике, као и да скенирате QR кодове</translation>
 <translation id="1509486075633541495">Пријавите се на веб-сајт</translation>
 <translation id="1509960214886564027">Функције на многим сајтовима могу да престану са радом</translation>
@@ -219,6 +220,7 @@
 <translation id="2664621323652615289">Заустави</translation>
 <translation id="2671426118752779020">Можете да користите лозинке које сте сачували у Google менаџеру лозинки у другим апликацијама на iPhone-у.</translation>
 <translation id="2690858294534178585">Камера се користи</translation>
+<translation id="26915454213703967">Претражи у слици уз Google</translation>
 <translation id="2691653761409724435">Није доступно офлајн</translation>
 <translation id="2695507686909505111">Страница је преведена</translation>
 <translation id="2697526135132990015">Одјави ме и обриши податке</translation>
@@ -382,6 +384,7 @@
 <translation id="3819183753496523827">Офлајн сте. Проверите интернет везу и пробајте поново.</translation>
 <translation id="3835964409414434850">Иди на следећу картицу</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3851938967634752633">Лозинке за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и још <ph name="NUMBER_OF_ACCOUNTS" /> ће бити избрисане. Ваши налози неће бити избрисани.</translation>
 <translation id="3858860766373142691">Назив</translation>
 <translation id="3861486700625780712">Опозови праћење</translation>
 <translation id="3863769054730344136">Пошаљи на уређаје</translation>
@@ -517,6 +520,7 @@
 <translation id="4833786495304741580">Аутоматски шаље Google-у статистику коришћења и извештаје о отказивању.</translation>
 <translation id="4840495572919996524">Обележивачи, историја, лозинке и други подаци више се неће синхронизовати са Google налогом.</translation>
 <translation id="4844899002472726590">Прегледајте и мењајте теме које вас интересују</translation>
+<translation id="4848999860252535517">Желите да избришете лозинку за <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Подесите шифру</translation>
 <translation id="4858786880085262208">Надоградите на HTTPS када је то могуће. Безбедни сајтови могу да уграде садржај који није безбедан.</translation>
 <translation id="4860895144060829044">Позовите</translation>
@@ -770,6 +774,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6598875554591387303">Сортирај према објављивачу</translation>
 <translation id="6603393121510733479">Организација је искључила приватно прегледање.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Лозинке за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и <ph name="THIRD_WEBSITE" /> ће бити избрисане. Ваши налози неће бити избрисани.</translation>
 <translation id="6610002944194042868">Опције превода</translation>
 <translation id="661266467055912436">Побољшава безбедност за вас и друге на вебу.</translation>
 <translation id="6620279676667515405">Откажи</translation>
@@ -1047,6 +1052,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8756969031206844760">Желите ли да ажурирате лозинку?</translation>
 <translation id="8763613688786959833">Иде на последњу картицу</translation>
 <translation id="8764015330924122850">Опозовите праћење: <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Лозинке за <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> ће бити избрисане. Ваши налози неће бити избрисани.</translation>
 <translation id="8775144690796719618">Неважећи URL</translation>
 <translation id="8787968206789828143">Претражите на вебу</translation>
 <translation id="8792626944327216835">микрофон</translation>
@@ -1096,6 +1102,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9093271241977565440">У врху екрана додирните икону Претрага</translation>
 <translation id="9094033019050270033">Ажурирај лозинку</translation>
 <translation id="9097506547406246598">Опозивање праћења није успело. Дошло је до грешке.</translation>
+<translation id="9098541895599151034">Желите ли да избришете лозинке за <ph name="NUMBER_OF_ACCOUNTS" /> налога?</translation>
 <translation id="9100610230175265781">Потребна је приступна фраза</translation>
 <translation id="9107664647686727385">Траже угрожене лозинке</translation>
 <translation id="9124387962554796433">Google може да користи историју за персонализацију Претраге и других Google услуга.</translation>

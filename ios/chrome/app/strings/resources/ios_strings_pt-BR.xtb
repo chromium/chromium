@@ -80,6 +80,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="149095475893949513">O site está tentando fazer o download de um perfil de configuração.</translation>
 <translation id="1491277525950327607">Toque duas vezes para alternar a configuração</translation>
 <translation id="1492417797159476138">Você já salvou este nome de usuário para este site</translation>
+<translation id="1498283581832036924">Sua conta de <ph name="WEBSITE" /> não será excluída.</translation>
 <translation id="1506063256525392513">Esse app permite que você tire fotos, faça upload delas e leia códigos QR</translation>
 <translation id="1509486075633541495">Fazer login no site</translation>
 <translation id="1509960214886564027">Os recursos de muitos sites podem apresentar falhas</translation>
@@ -219,6 +220,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2664621323652615289">Parar</translation>
 <translation id="2671426118752779020">Você pode usar as senhas armazenadas no Gerenciador de senhas do Google em outros apps do iPhone.</translation>
 <translation id="2690858294534178585">A câmera está sendo usada</translation>
+<translation id="26915454213703967">Pesquisar na imagem com o Google</translation>
 <translation id="2691653761409724435">Não está disponível off-line</translation>
 <translation id="2695507686909505111">Página traduzida</translation>
 <translation id="2697526135132990015">Sair e limpar dados</translation>
@@ -382,6 +384,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3819183753496523827">Você está off-line. Verifique sua conexão de Internet e tente novamente.</translation>
 <translation id="3835964409414434850">Ir para a próxima guia</translation>
 <translation id="385051799172605136">Voltar</translation>
+<translation id="3851938967634752633">As senhas de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e mais <ph name="NUMBER_OF_ACCOUNTS" /> outras contas vão ser excluídas. Suas contas não serão excluídas.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861486700625780712">Parar de seguir</translation>
 <translation id="3863769054730344136">Enviar para seus dispositivos</translation>
@@ -517,6 +520,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="4833786495304741580">Envia automaticamente estatísticas de uso e relatórios de erros para o Google.</translation>
 <translation id="4840495572919996524">Seus favoritos, histórico, senhas e outras configurações não serão mais sincronizados com sua Conta do Google.</translation>
 <translation id="4844899002472726590">Ver e editar temas relevantes para você</translation>
+<translation id="4848999860252535517">Excluir a senha de <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Defina uma senha</translation>
 <translation id="4858786880085262208">Fazer upgrade para HTTPS, quando possível. Sites seguros podem incorporar conteúdo não seguro.</translation>
 <translation id="4860895144060829044">Ligar</translation>
@@ -770,6 +774,7 @@ Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="6598875554591387303">Ordenar por editor</translation>
 <translation id="6603393121510733479">Sua organização desativou a navegação privada.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">As senhas de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="THIRD_WEBSITE" /> vão ser excluídas. Suas contas não serão excluídas.</translation>
 <translation id="6610002944194042868">Opções de tradução</translation>
 <translation id="661266467055912436">Melhora a segurança para você e para todos na Web.</translation>
 <translation id="6620279676667515405">Cancelar</translation>
@@ -1047,6 +1052,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8756969031206844760">Atualizar senha?</translation>
 <translation id="8763613688786959833">Ir para a última guia</translation>
 <translation id="8764015330924122850">Parar de seguir <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">As senhas de <ph name="WEBSITE" /> e <ph name="SECOND_WEBSITE" /> vão ser excluídas. Suas contas não serão excluídas.</translation>
 <translation id="8775144690796719618">URL inválido</translation>
 <translation id="8787968206789828143">Pesquisar na Web</translation>
 <translation id="8792626944327216835">microfone</translation>
@@ -1096,6 +1102,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9093271241977565440">Na parte de cima da tela, toque no ícone de pesquisa</translation>
 <translation id="9094033019050270033">Atualizar senha</translation>
 <translation id="9097506547406246598">Não foi possível parar de seguir. Algo deu errado.</translation>
+<translation id="9098541895599151034">Excluir <ph name="NUMBER_OF_ACCOUNTS" /> senhas?</translation>
 <translation id="9100610230175265781">Senha necessária</translation>
 <translation id="9107664647686727385">Verificar senhas comprometidas</translation>
 <translation id="9124387962554796433">O Google pode usar seu histórico para personalizar a Pesquisa e outros Serviços do Google.</translation>

@@ -80,6 +80,7 @@
 <translation id="149095475893949513">കോൺഫിഗറേഷൻ പ്രൊഫൈൽ ഡൗൺലോഡ് ചെയ്യാൻ ഈ വെബ്സൈറ്റ് ശ്രമിക്കുന്നു.</translation>
 <translation id="1491277525950327607">ക്രമീകരണം മാറ്റാൻ ഡബിൾ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1492417797159476138">ഈ സൈറ്റിനായി നിങ്ങൾ ഇതിനകം തന്നെ ഈ ഉപയോക്തൃനാമം സംരക്ഷിച്ചു</translation>
+<translation id="1498283581832036924">നിങ്ങളുടെ <ph name="WEBSITE" /> അക്കൗണ്ട് ഇല്ലാതാക്കില്ല.</translation>
 <translation id="1506063256525392513">ഫോട്ടോകളെടുത്ത് അപ്‌ലോഡ് ചെയ്യാനും QR കോഡുകൾ സ്‌കാൻ ചെയ്യാനും ഇത് നിങ്ങളെ അനുവദിക്കുന്നു</translation>
 <translation id="1509486075633541495">വെബ്‌സൈറ്റിലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="1509960214886564027">നിരവധി സൈറ്റുകളിലെ ഫീച്ചറുകൾക്ക് പ്രവർത്തനം നടത്താനായേക്കില്ല</translation>
@@ -219,6 +220,7 @@
 <translation id="2664621323652615289">നിർത്തുക</translation>
 <translation id="2671426118752779020">Google പാസ്‌വേഡ് മാനേജറിൽ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ നിങ്ങളുടെ iPhone-ലുള്ള മറ്റ് ആപ്പുകളിൽ ഉപയോഗിക്കാനാകും.</translation>
 <translation id="2690858294534178585">ക്യാമറ ഉപയോഗത്തിലാണ്</translation>
+<translation id="26915454213703967">Google ഉപയോഗിച്ച് ചിത്രത്തിൽ തിരയൂ</translation>
 <translation id="2691653761409724435">ഓഫ്‌ലൈനിൽ ലഭ്യമല്ല</translation>
 <translation id="2695507686909505111">പേജ് വിവർത്തനം ചെയ്‌തു</translation>
 <translation id="2697526135132990015">സൈൻ ഔട്ട് ചെയ്ത് ഡാറ്റ മായ്ക്കുക</translation>
@@ -382,6 +384,7 @@
 <translation id="3819183753496523827">നിങ്ങൾ ഓഫ്‌ലൈനാണ്. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3835964409414434850">അടുത്ത ടാബിലേക്ക് പോകുക</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
+<translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> എന്നിവയുടെയും മറ്റ് <ph name="NUMBER_OF_ACCOUNTS" /> അക്കൗണ്ടുകളുടെയും പാസ്‌വേഡുകൾ ഇല്ലാതാക്കും. നിങ്ങളുടെ അക്കൗണ്ടുകൾ ഇല്ലാതാക്കില്ല.</translation>
 <translation id="3858860766373142691">പേര്</translation>
 <translation id="3861486700625780712">പിന്തുടരുന്നത് ഒഴിവാക്കുക</translation>
 <translation id="3863769054730344136">നിങ്ങളുടെ ഉപകരണങ്ങളിലേക്ക് അയയ്ക്കുക</translation>
@@ -517,6 +520,7 @@
 <translation id="4833786495304741580">Google-ലേക്ക് സ്വയമേവ ഉപയോഗ സ്ഥിതിവിവരക്കണക്കുകളും ക്രാഷ് റിപ്പോർട്ടുകളും അയയ്ക്കുന്നു.</translation>
 <translation id="4840495572919996524">നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ എന്നിവയും മറ്റും ഇനിയങ്ങോട്ട് Google അക്കൗണ്ടുമായി സമന്വയിപ്പിക്കില്ല.</translation>
 <translation id="4844899002472726590">നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങൾ കാണുക, എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="4848999860252535517"><ph name="WEBSITE" /> എന്നതിന്റെ പാസ്‌വേഡ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="4854345657858711387">പാസ്‌കോഡ് സജ്ജമാക്കുക</translation>
 <translation id="4858786880085262208">സാധ്യമാകുമ്പോൾ HTTPS-ലേക്ക് അപ്ഗ്രേഡ് ചെയ്യുക. സുരക്ഷിത സൈറ്റുകൾ, സുരക്ഷിതമല്ലാത്ത ഉള്ളടക്കം ഉൾച്ചേർത്തേക്കാം.</translation>
 <translation id="4860895144060829044">വിളിക്കുക</translation>
@@ -708,6 +712,7 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> വിവർത്തനം ചെയ്യാനുള്ള അനുമതി</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> പിന്തുടരുന്നത് ഒഴിവാക്കി</translation>
 <translation id="6293101329759844770">സുരക്ഷിത ബ്രൗസിംഗ് ഓണാക്കാൻ, <ph name="BEGIN_LINK" />Google സേവനങ്ങൾ<ph name="END_LINK" /> തുറന്ന് സുരക്ഷിത ബ്രൗസിംഗ് ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="6320780930074869063">ഓണായിരിക്കുമ്പോൾ, പാസ്‌വേഡുകൾ <ph name="ACCOUNT" /> എന്നതിലേക്ക് സംരക്ഷിക്കും. ഓഫായിരിക്കുമ്പോൾ, ഈ ഉപകരണത്തിൽ മാത്രമേ പാസ്‌വേഡുകൾ സംരക്ഷിക്കൂ.</translation>
 <translation id="6321526113093607004">ബുക്ക്‌മാർക്കുകളിൽ ചേർക്കുക</translation>
 <translation id="6324669097367352121">സൈൻ ഇൻ ക്രമീകരണങ്ങൾ</translation>
 <translation id="6337234675334993532">എന്‍ക്രിപ്ഷന്‍</translation>
@@ -769,6 +774,7 @@
 <translation id="6598875554591387303">പ്രസാധകർക്ക് അനുസരിച്ച് അടുക്കുക</translation>
 <translation id="6603393121510733479">നിങ്ങളുടെ സ്ഥാപനം സ്വകാര്യ ബ്രൗസിംഗ് ഓഫാക്കി.
 <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, <ph name="THIRD_WEBSITE" /> എന്നിവയുടെ പാസ്‌വേഡുകൾ ഇല്ലാതാക്കും. നിങ്ങളുടെ അക്കൗണ്ടുകൾ ഇല്ലാതാക്കില്ല.</translation>
 <translation id="6610002944194042868">വിവർത്തന ഓപ്‌ഷനുകൾ</translation>
 <translation id="661266467055912436">നിങ്ങൾക്കും വെബിലെ എല്ലാവർക്കും സുരക്ഷ മെച്ചപ്പെടുത്തുന്നു.</translation>
 <translation id="6620279676667515405">റദ്ദാക്കുക</translation>
@@ -1046,6 +1052,7 @@
 <translation id="8756969031206844760">പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="8763613688786959833">അവസാന ടാബിലേക്ക് പോകുക</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> പിന്തുടരുന്നത് ഒഴിവാക്കുക</translation>
+<translation id="8766790350274092814"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> എന്നിവയുടെ പാസ്‌വേഡുകൾ ഇല്ലാതാക്കും. നിങ്ങളുടെ അക്കൗണ്ടുകൾ ഇല്ലാതാക്കില്ല.</translation>
 <translation id="8775144690796719618">URL അസാധുവാണ്</translation>
 <translation id="8787968206789828143">വെബിൽ തിരയുക</translation>
 <translation id="8792626944327216835">മൈക്രോഫോൺ</translation>
@@ -1095,6 +1102,7 @@
 <translation id="9093271241977565440">സ്‌ക്രീനിന്റെ മുകളിലുള്ള തിരയൽ ഐക്കൺ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="9094033019050270033">പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="9097506547406246598">പിന്തുടരുന്നത് ഒഴിവാക്കാനാകുന്നില്ല. എന്തോ കുഴപ്പമുണ്ടായി.</translation>
+<translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> പാസ്‌വേഡുകൾ ഇല്ലാതാക്കണോ?</translation>
 <translation id="9100610230175265781">പാസ്‌ഫ്രെയ്‌സ് ആവശ്യമാണ്</translation>
 <translation id="9107664647686727385">അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ കണ്ടെത്താൻ പരിശോധിക്കുക</translation>
 <translation id="9124387962554796433">Search-ഉം മറ്റ് Google സേവനങ്ങളും വ്യക്തിപരമാക്കാൻ Google നിങ്ങളുടെ ചരിത്രം ഉപയോഗിച്ചേക്കാം.</translation>

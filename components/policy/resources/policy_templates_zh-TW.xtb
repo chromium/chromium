@@ -3480,13 +3480,6 @@
 <translation id="4275048399551500192">不要顯示由其他裝置啟動的 <ph name="PRODUCT_NAME" /> 工作階段媒體控制項</translation>
 <translation id="4282243913059705499">一律在工具列顯示 <ph name="PRODUCT_NAME" /> 圖示</translation>
 <translation id="4285674129118156176">允許無關聯的使用者使用 ARC</translation>
-<translation id="4287344576768105337">如果設定這項政策，就可以禁止系統載入網址已遭禁止的網頁。你可以透過這項政策的網址模式清單指定要禁止的網址。如果未設定這項政策，瀏覽器就不會禁止任何網址。網址模式必須符合一定的格式，詳情請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定義 1,000 個例外網址。
-
-      自 <ph name="PRODUCT_NAME" /> 73 版開始，你可以封鎖 javascript://* 網址。不過，這項政策只適用於在網址列 (或書籤小程式等) 輸入的 JavaScript 網址，內含動態載入資料的網頁內 JavaScript 網址則不在此限。舉例來說，即使你封鎖了 example.com/abc，example.com 仍可透過 XMLHTTPRequest 載入 example.com/abc。
-
-      自 <ph name="PRODUCT_NAME" /> 92 版起，系統在無頭模式下也會支援這項政策。
-
-      注意：封鎖內部 chrome://* 和 chrome-untrusted://* 網址可能會導致非預期的錯誤，使用者也可能會在特殊情況下突破內部網址封鎖。在不封鎖特定內部網址的情況下，看看是否可以使用其他更合適的政策。常見情形：不封鎖 chrome://settings/certificates，改為使用 <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />。不封鎖 chrome-untrusted://crosh，改為使用 <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />。</translation>
 <translation id="428948795004445932">系統取樣和收集網路資料的頻率。下限值是 1 分鐘。
 
       如果未設定，系統會套用 10 分鐘的預設頻率。</translation>
@@ -3622,11 +3615,6 @@
 <translation id="4447668084338250480">內部網路重新導向行為</translation>
 <translation id="4449469846627734399">設定日間用電尖峰轉移配置</translation>
 <translation id="4449545651113180484">將畫面以順時針方向旋轉 270 度</translation>
-<translation id="4450005376189179872">如果將 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> 設為啟用，則你可以透過 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> 設定進階充電模式。<ph name="CHARGE_START_TIME_FIELD_NAME" /> 的值必須小於 <ph name="CHARGE_END_TIME_FIELD_NAME" />。
-
-      如果不設定這項政策，系統會將進階充電模式保持關閉。
-
-      在 <ph name="CHARGE_START_TIME_FIELD_NAME" /> 和 <ph name="CHARGE_END_TIME_FIELD_NAME" /> 的 <ph name="MINUTE_FIELD_NAME" /> 欄位中，有效值為 0、15、30、45。</translation>
 <translation id="4452653762766030431">控管是否允許在 Chrome 作業系統使用網路檔案共用區</translation>
 <translation id="445270821089253489">控管 Chrome 回報的使用者與裝置資訊類型。</translation>
 <translation id="4453913621209182880">只允許使用背景圖形列印</translation>
@@ -4690,6 +4678,10 @@
       如果這項政策設為 0 以外的值，則系統會在指定的閒置時間過後，自動登出目前登入示範模式的使用者。
 
       該政策的指定值單位為毫秒。</translation>
+<translation id="5501031245538651575">自 M110 起，系統將移除非標準 API window.webkitStorageInfo。這項政策會重新啟用這個 API。
+如果將這項政策設為啟用，系統將開放使用 window.webkitStorageInfo API。
+如果將這項政策設為停用或不設定，window.webkitStorageInfo API 就無法使用。
+這項政策將在 M112 中移除。</translation>
 <translation id="5502683401545256109">當多個憑證與 <ph name="DEVICE_LOGIN_SCREEN_AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> 相符時，這項政策可控管是否要在 SAML 流程代管架構的登入畫面中，提示使用者選取用戶端憑證。
       如果將這項政策設為 Enabled，每當自動選取政策與多個憑證相符時，系統會要求使用者選取用戶端憑證。
       如果將這項政策設為 Disabled 或不予設定，則系統就不會在登入畫面中提示使用者選取用戶端憑證。
@@ -4989,11 +4981,6 @@
 <translation id="5835674781974810379">清除 Cookie 和其他網站資料</translation>
 <translation id="5836064773277134605">限制遠端存取主機所使用的 UDP 連接埠範圍</translation>
 <translation id="583627479140113555">允許在第一次執行時匯入儲存的密碼</translation>
-<translation id="5837898601525273156">如果已設定 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />，你可以將 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> 設為啟用，以在支援的裝置上，將進階充電模式電源管理政策保持啟用。這個模式會在非工作時間採用標準充電演算法和其他技術，讓使用者盡可能延長電池壽命。系統在工作時間會使用快速充電模式，加快充電的速度。請設定開始時間和持續期間，指定每天最常使用系統的時間。
-
-      如果將這項政策設為停用或不設定，系統會將進階充電模式保持關閉。
-
-      使用者無法變更這項設定。</translation>
 <translation id="5838452040629810808">啟用游標醒目顯示功能</translation>
 <translation id="5842283830553218200">根據預設，系統將使用在已停用的表單控制項上傳送事件的新行為。</translation>
 <translation id="5848438019586925019">用於產生金鑰組的演算法。</translation>

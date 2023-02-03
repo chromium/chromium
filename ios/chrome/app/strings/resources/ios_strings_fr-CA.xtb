@@ -708,6 +708,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6284652193729350524">Offrir de traduire du <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Désabonné de <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Pour activer la navigation sécurisée, ouvrez le menu <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /> et touchez Navigation sécurisée.</translation>
+<translation id="6320780930074869063">Si cette option est activée, les mots de passe sont enregistrés dans <ph name="ACCOUNT" />. Si cette option est désactivée, les mots de passe sont enregistrés uniquement sur cet appareil.</translation>
 <translation id="6321526113093607004">Ajouter aux favoris</translation>
 <translation id="6324669097367352121">Param. de connexion</translation>
 <translation id="6337234675334993532">Chiffrement</translation>

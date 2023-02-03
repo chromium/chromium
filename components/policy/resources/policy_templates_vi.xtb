@@ -3031,6 +3031,14 @@ Nếu bạn không đặt chính sách này hoặc danh sách không chứa tệ
       Nếu bạn không đặt chính sách này, thì tùy chọn cài đặt mặc định sẽ không được cho phép cho người dùng do doanh nghiệp quan lý và được cho phép cho người dùng không được quản lý.</translation>
 <translation id="3791179836066841809">Tài liệu chính sách</translation>
 <translation id="3791556154364029875">Bật chế độ không gian làm việc nổi và chạy cửa sổ trình duyệt từ xa khi đăng nhập</translation>
+<translation id="3793998702484455655">Chrome sẽ nỗ lực nâng cấp một số loại nguồn phụ của nội dung hỗn hợp (HTTP trên trang web HTTPS) trên iOS.
+Truy cập https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md để biết thông tin chi tiết.
+
+Tính năng này sẽ được bật theo mặc định. Nếu bạn đặt chính sách này thành Bật hoặc không đặt thì tính năng này sẽ vẫn bật.
+
+Nếu bạn đặt chính sách này thành Tắt thì tính năng này sẽ tắt.
+
+Chính sách này là giải pháp tạm thời và sẽ bị xoá ở một vài mốc quan trọng (dự kiến xoá ở M113).</translation>
 <translation id="3795413481405077588">Chính sách này cho phép quản trị viên chỉ định chế độ cài đặt cho các ứng dụng web đã cài đặt.
 
       Chính sách này liên kết một mã nhận dạng ứng dụng web với chế độ cài đặt cụ thể tương ứng. Bạn có thể đặt một cấu hình mặc định bằng mã đặc biệt <ph name="DEFAULT_SCOPE" />. Cấu hình này sẽ áp dụng cho tất cả ứng dụng web chưa đặt cấu hình tuỳ chỉnh trong chính sách này.
@@ -3529,13 +3537,6 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
 <translation id="4275048399551500192">Không hiện bộ điều khiển nội dung nghe nhìn cho các phiên <ph name="PRODUCT_NAME" /> do các thiết bị khác bắt đầu</translation>
 <translation id="4282243913059705499">Luôn hiển thị biểu tượng <ph name="PRODUCT_NAME" /> trên thanh công cụ</translation>
 <translation id="4285674129118156176">Cho phép người dùng không được liên kết sử dụng ARC</translation>
-<translation id="4287344576768105337">Việc đặt chính sách này sẽ khiến những trang web có URL bị cấm không tải được. Chính sách này cung cấp danh sách các mẫu URL chỉ định URL bị cấm. Nếu bạn không đặt chính sách này thì sẽ không có URL nào bị cấm trong trình duyệt. Đặt định dạng mẫu URL theo định dạng này (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Bạn có thể xác định tối đa 1.000 trường hợp ngoại lệ trong <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      Từ <ph name="PRODUCT_NAME" /> phiên bản 73, bạn có thể chặn các URL javascript://*. Tuy nhiên, chính sách này chỉ ảnh hưởng đến JavaScript đã nhập vào thanh địa chỉ (hoặc các bookmarklet chẳng hạn). Các URL JavaScript trong trang có dữ liệu được tải tự động không phải tuân theo chính sách này. Ví dụ: Nếu bạn chặn example.com/abc thì example.com vẫn có thể tải example.com/abc qua XMLHTTPRequest.
-
-      Từ <ph name="PRODUCT_NAME" /> phiên bản 92, chính sách này cũng được hỗ trợ ở chế độ không có giao diện người dùng.
-
-      Lưu ý: Việc chặn các URL nội bộ chrome://* và chrome-untrusted://* có thể dẫn đến các lỗi không mong muốn hoặc có thể bị bỏ qua trong những trường hợp đặc biệt. Thay vì chặn một số URL nội bộ nhất định, hãy xem có chính sách cụ thể hơn không. Các trường hợp phổ biến: Thay vì chặn chrome://settings/certificates, hãy sử dụng <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />. Thay vì chặn chrome-untrusted://crosh, hãy sử dụng <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="428948795004445932">Chu kỳ hệ thống lấy mẫu và thu thập dữ liệu mạng. Thời gian tối thiểu cho phép là 1 phút.
 
       Nếu bạn không đặt chính sách này, thì chu kỳ mặc định là 10 phút sẽ được áp dụng.</translation>
@@ -3673,11 +3674,6 @@ Chính sách này đã bị loại bỏ ở M112.</translation>
 <translation id="4447668084338250480">Hoạt động chuyển hướng mạng nội bộ</translation>
 <translation id="4449469846627734399">Đặt cấu hình ngày cho chế độ chuyển đổi điện năng cao điểm</translation>
 <translation id="4449545651113180484">Xoay màn hình 270 độ theo chiều kim đồng hồ</translation>
-<translation id="4450005376189179872">Nếu bạn đặt <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> thành Bật thì việc đặt <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> sẽ cho phép bạn thiết lập chế độ sạc pin nâng cao. Giá trị <ph name="CHARGE_START_TIME_FIELD_NAME" /> phải nhỏ hơn <ph name="CHARGE_END_TIME_FIELD_NAME" />.
-
-      Nếu bạn không đặt chính sách này, chế độ sạc pin nâng cao sẽ tắt liên tục.
-
-      Các giá trị hợp lệ dành cho trường <ph name="MINUTE_FIELD_NAME" /> trong <ph name="CHARGE_START_TIME_FIELD_NAME" /> và <ph name="CHARGE_END_TIME_FIELD_NAME" /> là 0, 15, 30, 45.</translation>
 <translation id="4452653762766030431">Kiểm soát khả năng dùng ứng dụng Chia sẻ tệp trên cùng mạng trong Chrome OS</translation>
 <translation id="445270821089253489">Kiểm soát loại thông tin thiết bị và người dùng được báo cáo.</translation>
 <translation id="4453913621209182880">Chỉ cho phép in có đồ họa nền</translation>
@@ -4762,6 +4758,10 @@ Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính 
       Khi giá trị của chính sách này được đặt và giá trị đó khác 0, người dùng hiện được đăng nhập vào bản trình diễn sẽ tự động bị đăng xuất sau khi thời gian không hoạt động của khoảng thời gian đã chỉ định trôi qua.
 
       Giá trị của chính sách này sẽ được chỉ định theo mili giây.</translation>
+<translation id="5501031245538651575">Kể từ M110, API window.webkitStorageInfo không chuẩn sẽ bị loại bỏ. Chính sách này sẽ bật lại API này.
+Nếu bạn đặt chính sách này thành Bật, thì API window.webkitStorageInfo sẽ hoạt động.
+Nếu bạn đặt chính sách này thành Tắt hoặc không đặt, API window.webkitStorageInfo sẽ không hoạt động.
+API này đã bị loại bỏ ở M112.</translation>
 <translation id="5502683401545256109">Chính sách này kiểm soát việc người dùng có được nhắc chọn chứng chỉ máy khách trên màn hình đăng nhập trong khung lưu trữ quy trình SAML hay không khi nhiều chứng chỉ khớp <ph name="DEVICE_LOGIN_SCREEN_AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Nếu bạn bật chính sách này, thì người dùng được yêu cầu chọn chứng chỉ máy khách mỗi khi chính sách tự động chọn khớp với nhiều chứng chỉ.
       Nếu bạn tắt hoặc không đặt chính sách này, thì người dùng sẽ không bao giờ được nhắc chọn chứng chỉ máy khách trên màn hình đăng nhập.
@@ -5086,11 +5086,6 @@ Bạn có thể điều chỉnh thời gian chờ ở trạng thái không hoạ
 <translation id="5835674781974810379">Xoá cookie và dữ liệu trang web khác</translation>
 <translation id="5836064773277134605">Hạn chế phạm vi cổng UDP được máy chủ truy cập từ xa sử dụng</translation>
 <translation id="583627479140113555">Bật chính sách nhập mật khẩu đã lưu trong lần chạy đầu tiên</translation>
-<translation id="5837898601525273156">Nếu bạn đặt <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> thì việc đặt <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> thành Bật sẽ luôn bật chính sách quản lý nguồn điện của chế độ sạc pin nâng cao (nếu được hỗ trợ trên thiết bị). Khi sử dụng một thuật toán sạc chuẩn và các kỹ thuật khác ngoài giờ làm việc, chế độ này cho phép người dùng tăng tối đa độ bền của pin. Trong giờ làm việc, hệ thống sử dụng chế độ sạc nhanh nên quá trình sạc pin sẽ nhanh hơn. Hãy chỉ định thời gian mà hệ thống được sử dụng nhiều nhất trong ngày theo thời gian bắt đầu và lượng thời gian.
-
-      Nếu bạn đặt thành Tắt hoặc không đặt chính sách này, chế độ sạc pin nâng cao sẽ luôn tắt.
-
-      Người dùng không thể quản lý tùy chọn cài đặt này.</translation>
 <translation id="5838452040629810808">Bật tính năng làm nổi bật con trỏ</translation>
 <translation id="5842283830553218200">Thao tác gửi sự kiện mới trên các đối tượng kiểm soát biểu mẫu đã tắt sẽ được sử dụng theo mặc định.</translation>
 <translation id="5848438019586925019">Thuật toán để tạo cặp khóa.</translation>

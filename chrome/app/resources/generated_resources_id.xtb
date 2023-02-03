@@ -1116,7 +1116,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1975841812214822307">Buang...</translation>
 <translation id="1976150099241323601">Login ke Peranti Keamanan</translation>
 <translation id="1977965994116744507">Dekatkan ponsel untuk membuka kunci <ph name="DEVICE_TYPE" /> Anda.</translation>
-<translation id="1978057560491495741">Hapus alamat</translation>
 <translation id="1979095679518582070">Menonaktifkan fitur ini tidak memengaruhi kemampuan perangkat ini dalam mengirimkan informasi yang diperlukan bagi layanan penting seperti keamanan dan update sistem.</translation>
 <translation id="1979280758666859181">Anda mengubah ke saluran dengan versi <ph name="PRODUCT_NAME" /> yang lebih lama. Perubahan saluran ini akan berlaku jika versi saluran cocok dengan versi yang saat ini terpasang pada perangkat Anda.</translation>
 <translation id="197989455406964291">KDC tidak mendukung jenis enkripsi</translation>
@@ -2619,6 +2618,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3315442055907669208">Masuk ke Mode Pembaca</translation>
 <translation id="3317459757438853210">Dua sisi</translation>
 <translation id="3317678681329786349">Kamera dan mikrofon diblokir</translation>
+<translation id="3319306431415395200">Terjemahkan teks dalam gambar dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Safe Browsing (perlindungan dari situs berbahaya) dan setelan keamanan lainnya</translation>
 <translation id="3323521181261657960">Bonus! Kamu boleh memakainya lebih lama</translation>
 <translation id="3323577066981719144">Perubahan yang Anda buat di sini hanya akan diterapkan ke Browser Chrome. Untuk membuat perubahan ke setelan Browser Chrome Lacros, buka Browser Chrome Lacros lalu buka setelan.</translation>
@@ -4294,7 +4294,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4852916668365817106">Warna mouse</translation>
 <translation id="4853020600495124913">Buka di &amp;jendela baru</translation>
 <translation id="4854317507773910281">Pilih akun orang tua yang akan memberi persetujuan</translation>
-<translation id="4854603338816296098">Alamat dihapus</translation>
 <translation id="485480310608090163">Setelan dan izin lainnya</translation>
 <translation id="4858913220355269194">Ronaldo</translation>
 <translation id="4862642413395066333">Tanggapan OCSP Penandatanganan</translation>
@@ -7499,7 +7498,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7819605256207059717">Diblokir oleh organisasi Anda</translation>
 <translation id="7820561748632634942">Tetapkan tombol akses tambahan?</translation>
 <translation id="782057141565633384">S&amp;alin alamat video</translation>
-<translation id="7822187537422052256">Yakin ingin menghapus alamat ini?</translation>
 <translation id="7824864914877854148">Tidak dapat menyelesaikan pencadangan karena terjadi error</translation>
 <translation id="782590969421016895">Gunakan halaman saat ini</translation>
 <translation id="7826174860695147464">Dukungan Browser Lama (LBS) - Internal</translation>
@@ -7696,6 +7694,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Suara <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Setelan Tombol Akses</translation>
 <translation id="7992203134935383159">Sintesis ucapan</translation>
+<translation id="7994515119120860317">Terjemahkan Teks dalam Gambar dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Tampilan web</translation>
 <translation id="7997826902155442747">Prioritas Proses</translation>
 <translation id="7999229196265990314">Membuat file berikut:
@@ -8908,7 +8907,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="9094038138851891550">Nama pengguna tidak valid</translation>
 <translation id="9094859731829297286">Yakin ingin menetapkan disk ukuran tetap untuk Linux?</translation>
 <translation id="9094982973264386462">Hapus</translation>
-<translation id="9095253524804455615">Hapus</translation>
 <translation id="9095364055741191097">Gagal memulihkan data lokal</translation>
 <translation id="909554839118732438">Tutup Jendela Samaran</translation>
 <translation id="9099220545925418560">Berdasarkan histori penjelajahan Anda. Setelan ini nonaktif.</translation>

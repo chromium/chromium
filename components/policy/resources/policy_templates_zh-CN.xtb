@@ -3495,13 +3495,6 @@
 <translation id="4275048399551500192">不显示由其他设备启动的 <ph name="PRODUCT_NAME" /> 会话的媒体控件</translation>
 <translation id="4282243913059705499">始终在工具栏中显示 <ph name="PRODUCT_NAME" /> 图标</translation>
 <translation id="4285674129118156176">允许独立用户使用 ARC</translation>
-<translation id="4287344576768105337">通过设置此政策，您可禁止加载已列入屏蔽名单的网址所对应的网页。此政策让您能够列出一系列网址格式，从而指定禁止加载的网址。如果您未设置此政策，那么任何网址都能在浏览器中加载。所列网址必须采用 https://support.google.com/chrome/a?p=url_blocklist_filter_format 规定的格式。在 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 中，您最多可定义 1,000 个例外情况。
-
-      从 <ph name="PRODUCT_NAME" /> 73 版开始，您可以屏蔽 javascript://* 网址。不过，这仅会影响在地址栏（或小书签等）中输入的 JavaScript 网址。凡是能动态加载数据的页内 JavaScript 网址都不会受此政策影响。例如，即使您屏蔽了 example.com/abc，example.com 仍可以使用 XMLHTTPRequest 加载 example.com/abc。
-
-      从 <ph name="PRODUCT_NAME" /> 92 版开始，此政策在无头模式中也受支持。
-
-      注意：屏蔽内部 chrome://* 网址和 chrome-trusted://* 网址可能会导致意外错误，或者可能会在特殊情况下被规避。您最好查看是否存在更多的具体政策，而不是屏蔽某些内部网址。对于常见情况：请使用 <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />，而不要屏蔽 chrome://settings/certificates。请使用 <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />，而不要屏蔽 chrome-trusted://crosh。</translation>
 <translation id="428948795004445932">网络数据的取样和收集时间间隔。所允许的最低时间间隔为 1 分钟。
 
       如果此政策未设置，系统会应用默认时间间隔（10 分钟）。</translation>
@@ -3639,11 +3632,6 @@
 <translation id="4447668084338250480">内网重定向行为</translation>
 <translation id="4449469846627734399">设定日间用电高峰转移配置</translation>
 <translation id="4449545651113180484">将屏幕顺时针旋转 270 度</translation>
-<translation id="4450005376189179872">如果 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> 已启用，您便可通过设置 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> 来指定高级电池充电模式。<ph name="CHARGE_START_TIME_FIELD_NAME" /> 的值必须小于 <ph name="CHARGE_END_TIME_FIELD_NAME" />。
-
-      如果您未设置此政策，高级电池充电模式会保持关闭状态。
-
-      <ph name="CHARGE_START_TIME_FIELD_NAME" /> 和 <ph name="CHARGE_END_TIME_FIELD_NAME" /> 中的有效 <ph name="MINUTE_FIELD_NAME" /> 字段值为 0、15、30、45。</translation>
 <translation id="4452653762766030431">控制是否允许在 Chrome 操作系统中使用“网络文件共享”功能</translation>
 <translation id="445270821089253489">控制要报告的用户和设备信息种类。</translation>
 <translation id="4453913621209182880">仅允许在有背景图片的情况下打印</translation>
@@ -5021,11 +5009,6 @@
 <translation id="5835674781974810379">清除 Cookie 和其他网站数据</translation>
 <translation id="5836064773277134605">限制远程访问主机使用的UDP端口范围</translation>
 <translation id="583627479140113555">允许在首次运行时导入已保存的密码</translation>
-<translation id="5837898601525273156">如果您设置了 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />，并且 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> 已启用，高级电池充电模式电源管理政策会保持开启状态（如果相应设备支持的话）。在此模式下，系统可以在非工作时间使用标准充电算法和其他技术来最大限度地延长电池寿命。在工作时间，系统会使用快速充电，以加快充电速度。您应通过开始时间和持续时间指定每天系统使用量最大的时段。
-
-      如果此政策已停用或未设置，高级电池充电模式会保持关闭状态。
-
-      用户无法更改此设置。</translation>
 <translation id="5838452040629810808">允许使用光标突出显示</translation>
 <translation id="5842283830553218200">系统将默认使用针对已停用的表单控件分派事件的新行为。</translation>
 <translation id="5848438019586925019">用于生成密钥对的算法。</translation>

@@ -80,6 +80,7 @@
 <translation id="149095475893949513">এই ওয়েবসাইটটি একটি কনফিগারেশন প্রোফাইল ডাউনলোড করার চেষ্টা করছে।</translation>
 <translation id="1491277525950327607">সেটিং টগল করতে দুবার আলতো চাপুন</translation>
 <translation id="1492417797159476138">আপনি আগেই এই সাইটের জন্য ইউজারনেমটি সেভ করেছেন</translation>
+<translation id="1498283581832036924">আপনার <ph name="WEBSITE" /> অ্যাকাউন্ট মুছে ফেলা হবে না</translation>
 <translation id="1506063256525392513">এর সাহায্যে আপনি ফটো তুলতে ও আপলোড করতে, এমনকি QR কোড স্ক্যানও করতে পারবেন</translation>
 <translation id="1509486075633541495">ওয়েবসাইটে সাইন-ইন করুন</translation>
 <translation id="1509960214886564027">একাধিক সাইটের ফিচারগুলি কাজ নাও করতে পারে</translation>
@@ -219,6 +220,7 @@
 <translation id="2664621323652615289">বন্ধ করুন</translation>
 <translation id="2671426118752779020">আপনার iPhone-এর অন্যান্য অ্যাপে Google পাসওয়ার্ড ম্যানেজারে সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
 <translation id="2690858294534178585">ক্যামেরা ব্যবহার করা হচ্ছে</translation>
+<translation id="26915454213703967">Google ব্যবহার করে ছবির মধ্যে সার্চ করুন</translation>
 <translation id="2691653761409724435">অফলাইনে উপলব্ধ নেই</translation>
 <translation id="2695507686909505111">পৃষ্ঠা অনুবাদ করা হয়ে গেছে</translation>
 <translation id="2697526135132990015">সাইন-আউট করে ডেটা মুছুন</translation>
@@ -382,6 +384,7 @@
 <translation id="3819183753496523827">আপনি অফলাইন আছেন। ইন্টারনেট কানেকশন ঠিক আছে কিনা দেখে আবার চেষ্টা করুন।</translation>
 <translation id="3835964409414434850">পরের ট্যাবে যান</translation>
 <translation id="385051799172605136">ফিরুন</translation>
+<translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />-এর পাসওয়ার্ড এবং অন্য <ph name="NUMBER_OF_ACCOUNTS" />টি পাসওয়ার্ড মুছে ফেলা হবে। আপনার অ্যাকাউন্ট মুছে ফেলা হবে না।</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3861486700625780712">ফলো করা বন্ধ করুন</translation>
 <translation id="3863769054730344136">আপনার ডিভাইসে পাঠান</translation>
@@ -517,6 +520,7 @@
 <translation id="4833786495304741580">Google-কে অটোমেটিক ব্যবহারের পরিসংখ্যান ও ক্র্যাশ রিপোর্ট পাঠায়।</translation>
 <translation id="4840495572919996524">আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং আরও অনেক কিছু আপনার Google অ্যাকাউন্টের সাথে আর সিঙ্ক করা হবে না।</translation>
 <translation id="4844899002472726590">আপনার পছন্দের বিষয়গুলি দেখুন ও এডিট করুন</translation>
+<translation id="4848999860252535517"><ph name="WEBSITE" />-এর পাসওয়ার্ড মুছে দেবেন?</translation>
 <translation id="4854345657858711387">একটি পাসকোড সেট করুন</translation>
 <translation id="4858786880085262208">সম্ভব হলে HTTPS-এ আপগ্রেড করুন। নিরাপদ সাইট এমন কন্টেন্ট এম্বেড করতে পারে যা নিরাপদ নয়।</translation>
 <translation id="4860895144060829044">কল করুন</translation>
@@ -709,6 +713,7 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> ভাষায় অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> ফলো করা বন্ধ করেছেন</translation>
 <translation id="6293101329759844770">Safe Browsing চালু করতে, <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> বিকল্পটি খুলে Safe Browsing-এ ট্যাপ করুন।</translation>
+<translation id="6320780930074869063">চালু থাকলে, পাসওয়ার্ড <ph name="ACCOUNT" />-এ সেভ হয়। বন্ধ থাকলে, পাসওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ হয়।</translation>
 <translation id="6321526113093607004">বুকমার্কে যোগ করুন</translation>
 <translation id="6324669097367352121">সাইন-ইন সেটিংস</translation>
 <translation id="6337234675334993532">এনক্রিপশন</translation>
@@ -770,6 +775,7 @@
 <translation id="6598875554591387303">প্রকাশক অনুযায়ী সাজান</translation>
 <translation id="6603393121510733479">আপনার সংস্থা ব্যক্তিগত ব্রাউজিংয়ের সুবিধা বন্ধ করে দিয়েছে।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> এবং <ph name="THIRD_WEBSITE" />-এর পাসওয়ার্ড মুছে ফেলা হবে। আপনার অ্যাকাউন্ট মুছে ফেলা হবে না।</translation>
 <translation id="6610002944194042868">অনুবাদের বিকল্প</translation>
 <translation id="661266467055912436">ওয়েবে আপনার এবং সকলের জন্য নিরাপত্তা আরও উন্নত করুন।</translation>
 <translation id="6620279676667515405">বাতিল করুন</translation>
@@ -1047,6 +1053,7 @@
 <translation id="8756969031206844760">পাসওয়ার্ড আপডেট করবেন?</translation>
 <translation id="8763613688786959833">শেষে ট্যাবে যান</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> ফলো করা বন্ধ করুন</translation>
+<translation id="8766790350274092814"><ph name="WEBSITE" /> এবং <ph name="SECOND_WEBSITE" />-এর পাসওয়ার্ড মুছে ফেলা হবে। আপনার অ্যাকাউন্ট মুছে ফেলা হবে না।</translation>
 <translation id="8775144690796719618">ভুল ইউআরএল</translation>
 <translation id="8787968206789828143">ওয়েবে সার্চ করুন</translation>
 <translation id="8792626944327216835">মাইক্রোফোন</translation>
@@ -1096,6 +1103,7 @@
 <translation id="9093271241977565440">স্ক্রিনের উপরে, Search আইকনে ট্যাপ করুন</translation>
 <translation id="9094033019050270033">পাসওয়ার্ড আপডেট করুন</translation>
 <translation id="9097506547406246598">আনফলো করা যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>
+<translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" />টি পাসওয়ার্ড মুছবেন?</translation>
 <translation id="9100610230175265781">পাসফ্রেজের প্রয়োজন</translation>
 <translation id="9107664647686727385">কোনও পাসওয়ার্ড লিক হয়েছে কিনা দেখুন</translation>
 <translation id="9124387962554796433">সার্চ এবং অন্যান্য Google পরিষেবা আপনার পছন্দমতো সাজানোর জন্য Google আপনার ইতিহাস ব্যবহার করতে পারে।</translation>

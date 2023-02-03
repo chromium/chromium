@@ -1119,7 +1119,6 @@
 <translation id="1975841812214822307">Видалити…</translation>
 <translation id="1976150099241323601">Увійти в пристрій безпеки</translation>
 <translation id="1977965994116744507">Щоб розблокувати свій пристрій <ph name="DEVICE_TYPE" />, розташуйте телефон ближче.</translation>
-<translation id="1978057560491495741">Видалити адресу</translation>
 <translation id="1979095679518582070">Якщо вимкнути цю функцію, пристрій усе одно зможе надсилати інформацію, потрібну для отримання важливих послуг, як-от оновлень системи та засобів безпеки.</translation>
 <translation id="1979280758666859181">Ви переходите на старішу версію <ph name="PRODUCT_NAME" />. Щоб зміни набули чинності, версія на вашому пристрої та версія, яку ви встановлюєте, мають збігатися.</translation>
 <translation id="197989455406964291">KDC не підтримує тип шифрування</translation>
@@ -4297,7 +4296,6 @@
 <translation id="4852916668365817106">Колір курсора миші</translation>
 <translation id="4853020600495124913">Відкрити в &amp;новому вікні</translation>
 <translation id="4854317507773910281">Вибери батьківський обліковий запис, який має надати дозвіл</translation>
-<translation id="4854603338816296098">Адресу вилучено</translation>
 <translation id="485480310608090163">Додаткові налаштування та дозволи</translation>
 <translation id="4858913220355269194">Футбол</translation>
 <translation id="4862642413395066333">Підписування відповідей OCSP</translation>
@@ -4851,6 +4849,7 @@
 <translation id="5382591305415226340">Керувати підтримуваними посиланнями</translation>
 <translation id="5383377866517186886">Камеру вимкнено в параметрах системи Mac</translation>
 <translation id="5383740867328871413">Група без назви – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ідентифікатор: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Корпоративне правило змінено. Кнопку експериментів додано на панель інструментів. Натисніть її, щоб відкрити вікно й увімкнути експерименти.</translation>
 <translation id="5388885445722491159">Парні</translation>
 <translation id="5390112241331447203">Включити файл system_logs.txt, який надіслано у звітах про відгуки.</translation>
@@ -5065,6 +5064,7 @@
 <translation id="5578059481725149024">Автоматичний вхід</translation>
 <translation id="5581134892342029705">Виконано переклад такою мовою: <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Перевірка драйверів пристроїв Microsoft Windows</translation>
+<translation id="5581876958763461074">Усі нотатки</translation>
 <translation id="5581972110672966454">Не вдається приєднати пристрій до домену. Повторіть спробу або зв'яжіться з адміністратором чи власником пристрою. Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Головне меню</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -7503,7 +7503,6 @@
 <translation id="7819605256207059717">Заблоковано вашою організацією</translation>
 <translation id="7820561748632634942">Призначити додаткові перемикачі?</translation>
 <translation id="782057141565633384">Копіювати адресу відео</translation>
-<translation id="7822187537422052256">Вилучити цю адресу?</translation>
 <translation id="7824864914877854148">Не вдалося створити резервну копію через помилку</translation>
 <translation id="782590969421016895">Використати поточні сторінки</translation>
 <translation id="7826174860695147464">Підтримка застарілих веб-переглядачів – Властивості</translation>
@@ -8915,7 +8914,6 @@
 <translation id="9094038138851891550">Ім'я користувача не дійсне</translation>
 <translation id="9094859731829297286">Зарезервувати фіксований розмір диска для Linux?</translation>
 <translation id="9094982973264386462">Видалити</translation>
-<translation id="9095253524804455615">Видалити</translation>
 <translation id="9095364055741191097">Не вдалося відновити локальні дані</translation>
 <translation id="909554839118732438">Закрити вікна в анонімному режимі</translation>
 <translation id="9099220545925418560">На основі історії веб-перегляду. Це налаштування вимкнено.</translation>

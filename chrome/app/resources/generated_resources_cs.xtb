@@ -375,6 +375,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1339009753652684748">Aktivovat Asistenta, když řeknete „Ok Google“. Pokud chcete ušetřit baterii, vyberte výchozí možnost Zapnout (doporučeno). Asistent vám odpoví jen v případě, že je zařízení připojené ke zdroji napájení nebo se nabíjí.</translation>
 <translation id="13392265090583506">Přístupnost</translation>
 <translation id="1340527397989195812">Zálohujte média ze zařízení pomocí aplikace Soubory.</translation>
+<translation id="1341871421050612057">Účet <ph name="USERNAME" /> nelze synchronizovat</translation>
 <translation id="1343865611738742294">Udělte linuxovým aplikacím oprávnění k používání zařízení USB. Po odebrání si Linux nebude zařízení USB pamatovat.</translation>
 <translation id="1343920184519992513">Pokračujte, kde jste skončili, a otevírejte vybrané stránky</translation>
 <translation id="134589511016534552">V sekci Otevřené karty se zobrazují i mediální karty</translation>
@@ -1106,7 +1107,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1975841812214822307">Odebrat...</translation>
 <translation id="1976150099241323601">Přihlášení do zabezpečeného zařízení</translation>
 <translation id="1977965994116744507">Chcete-li odemknout své zařízení <ph name="DEVICE_TYPE" />, umístěte telefon blíže k němu.</translation>
-<translation id="1978057560491495741">Odstranění adresy</translation>
 <translation id="1979095679518582070">Vypnutí této funkce nemá vliv na schopnost zařízení odesílat informace, které potřebuje pro základní služby, jako jsou aktualizace systému a zabezpečení.</translation>
 <translation id="1979280758666859181">Přepínáte na kanál s nižší verzí <ph name="PRODUCT_NAME" />. Změna kanálu bude použita, až bude verze v nově zvoleném kanálu odpovídat verzi nainstalované v zařízení.</translation>
 <translation id="197989455406964291">KDC nepodporuje typ šifrování</translation>
@@ -4138,6 +4138,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4713409221649555176">Smazat při zavření všech oken</translation>
 <translation id="47158868804223727">Kliknutím na název skupiny ji rozbalíte nebo sbalíte</translation>
 <translation id="4716483597559580346">Kvůli lepšímu zabezpečení zařízení vyčistěte pomocí funkce Powerwash</translation>
+<translation id="471759229191973607">Změnit motiv</translation>
 <translation id="4722735765955348426">Heslo uživatele <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> sdílí vaši obrazovku.</translation>
 <translation id="4722989931633062466">Zákaz zobrazovat výzvy třetích stran k přihlášení</translation>
@@ -4280,7 +4281,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4852916668365817106">Barva myši</translation>
 <translation id="4853020600495124913">Otevřít v &amp;novém okně</translation>
 <translation id="4854317507773910281">Vyber účet rodiče, který to schválí</translation>
-<translation id="4854603338816296098">Adresa byla odstraněna</translation>
 <translation id="485480310608090163">Další nastavení a oprávnění</translation>
 <translation id="4858913220355269194">Fotbal</translation>
 <translation id="4862642413395066333">Podepisování odpovědí OCSP</translation>
@@ -7161,6 +7161,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7532009420053991888">Aplikace <ph name="LINUX_APP_NAME" /> neodpovídá. Chcete-li ji zavřít, vyberte Ukončit aplikaci.</translation>
 <translation id="7535730537657706072">Pokud ze zařízení chcete vymazat historii anonymního prohlížení, zavřete všechny anonymní karty</translation>
 <translation id="7537451260744431038">Weby nemohou používat soubory cookie ke zlepšování prostředí při prohlížení, například si pomocí nich nemohou pamatovat vaše přihlášení a položky v nákupním košíku</translation>
+<translation id="7538088324298143359">Hledat v obrázku pomocí vyhledávače <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Při kontrole aktualizací došlo k chybě: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232">Organizace <ph name="MANAGER" /> toto zařízení převedla na předchozí verzi. Uložte důležité soubory a poté zařízení restartujte. Veškerá data zařízení budou vymazána.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> pomocí aplikace <ph name="APP_NAME" /></translation>
@@ -7486,7 +7487,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7819605256207059717">Zablokováno vaší organizací</translation>
 <translation id="7820561748632634942">Přiřadit další přepínače?</translation>
 <translation id="782057141565633384">K&amp;opírovat adresu souboru videa</translation>
-<translation id="7822187537422052256">Opravdu chcete tuto adresu odstranit?</translation>
 <translation id="7824864914877854148">Zálohování se kvůli chybě nepodařilo dokončit</translation>
 <translation id="782590969421016895">Použít aktuální stránky</translation>
 <translation id="7826174860695147464">Podpora starších prohlížečů – interní nastavení</translation>
@@ -7590,6 +7590,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7912080627461681647">Vaše heslo bylo na serveru změněno. Odhlaste se a poté se znovu přihlaste.</translation>
 <translation id="7912974581251770345">Překlad</translation>
 <translation id="7915457674565721553">Chcete-li nastavit rodičovskou kontrolu, připojte se k internetu</translation>
+<translation id="7916364730877325865">Vaše organizace nedovoluje zapnutí synchronizace s tímto účtem</translation>
 <translation id="7918257978052780342">Zaregistrovat</translation>
 <translation id="7919123827536834358">Tyto jazyky překládat automaticky</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
@@ -8375,6 +8376,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8639635302972078117">Odesílat údaje o využití a diagnostice. Toto zařízení aktuálně automaticky odesílá do Googlu diagnostické údaje a údaje o zařízení a aplikacích a jejich využití. Tyto údaje nebudou používány ke zjištění totožnosti dítěte a pomohou nám se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Pokud má dítě zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google.</translation>
 <translation id="8642900771896232685">2 sekundy</translation>
 <translation id="8642947597466641025">Zvětšit text</translation>
+<translation id="8643403533759285912">Smazat skupinu</translation>
 <translation id="8643443571868262066">Soubor <ph name="FILE_NAME" /> může být nebezpečný. Chcete ho odeslat ke kontrole prostřednictvím pokročilé ochrany Google?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Žádné soubory cookie}=1{1 soubor cookie je blokován}few{# soubory cookie jsou blokovány}many{# souboru cookie je blokováno}other{# souborů cookie je blokováno}}</translation>
 <translation id="864423554496711319">Zařízení uložená do vašeho účtu</translation>
@@ -8850,6 +8852,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="90528604757378587">Aktivita na pozadí a některé vizuální efekty, například plynulé posouvání, mohou být omezeny.</translation>
 <translation id="9053563360605707198">Oboustranný tisk</translation>
 <translation id="9055636786322918818">Vynutit šifrování RC4. Použití této možnosti zvyšuje riziko, protože šifry RC4 nejsou bezpečné.</translation>
+<translation id="9056788090206401048">Aby bylo možné přístupový klíč použít v jiném zařízení, musí být zapnuté Bluetooth. Tuto možnost můžete kdykoli změnit v nastavení.</translation>
 <translation id="9056810968620647706">Nebyly nalezeny žádné shody.</translation>
 <translation id="9057007989365783744">Uživatel <ph name="SUPERVISED_USER_NAME" /> žádá o přístup k následujícímu obsahu:</translation>
 <translation id="9057354806206861646">Plán aktualizací</translation>
@@ -8898,7 +8901,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9094038138851891550">Neplatné uživatelské jméno</translation>
 <translation id="9094859731829297286">Opravdu chcete pevně dané množství místa na disku rezervovat pro Linux?</translation>
 <translation id="9094982973264386462">Odstranit</translation>
-<translation id="9095253524804455615">Odstranit</translation>
 <translation id="9095364055741191097">Místní data se nepodařilo obnovit</translation>
 <translation id="909554839118732438">Zavřít anonymní okna</translation>
 <translation id="9099220545925418560">Na základě vaší historie prohlížení. Toto nastavení je vypnuté.</translation>

@@ -80,6 +80,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="149095475893949513">Verkkosivusto yrittää ladata määritysprofiilia.</translation>
 <translation id="1491277525950327607">Muuta asetusta kaksoisnapauttamalla.</translation>
 <translation id="1492417797159476138">Tallensit jo tämän käyttäjänimen sivustolle</translation>
+<translation id="1498283581832036924">Tiliäsi (<ph name="WEBSITE" />) ei poisteta.</translation>
 <translation id="1506063256525392513">Tämän avulla voit ottaa kuvia ja ladata niitä palvelimelle sekä skannata QR-koodeja</translation>
 <translation id="1509486075633541495">Kirjaudu sisään verkkosivustolle</translation>
 <translation id="1509960214886564027">Useiden sivustojen ominaisuudet saattavat lakata toimimasta</translation>
@@ -219,6 +220,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2664621323652615289">Lopeta</translation>
 <translation id="2671426118752779020">Voit käyttää Googlen Salasanojen ylläpitoon tallennettuja salasanoja muissa iPhonesi sovelluksissa.</translation>
 <translation id="2690858294534178585">Kamera on käytössä</translation>
+<translation id="26915454213703967">Hae kuvasta Googlella</translation>
 <translation id="2691653761409724435">Ei offline-käytössä</translation>
 <translation id="2695507686909505111">Sivu käännetty</translation>
 <translation id="2697526135132990015">Kirjaudu ulos ja poista data</translation>
@@ -382,6 +384,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3819183753496523827">Olet offline-tilassa. Tarkista internetyhteytesi ja yritä uudelleen.</translation>
 <translation id="3835964409414434850">Siirry seuraavalle välilehdelle</translation>
 <translation id="385051799172605136">Takaisin</translation>
+<translation id="3851938967634752633">Näiden salasanat poistetaan: <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ja <ph name="NUMBER_OF_ACCOUNTS" /> muuta. Tilejäsi ei poisteta.</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3861486700625780712">Lopeta seuraaminen</translation>
 <translation id="3863769054730344136">Laitteille lähettäminen</translation>
@@ -517,6 +520,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="4833786495304741580">Lähettää automaattisesti käyttötilastoja ja virheraportteja Googlelle.</translation>
 <translation id="4840495572919996524">Kirjanmerkkejä, historiaa, salasanoja tai muita tietojasi ei enää synkronoida Google-tilille.</translation>
 <translation id="4844899002472726590">Katso ja muokkaa aiheita, jotka kiinnostavat sinua</translation>
+<translation id="4848999860252535517">Poistetaanko salasana: <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Määritä tunnuskoodi</translation>
 <translation id="4858786880085262208">Päivitä HTTPS:ään kun mahdollista Turvalliset sivustot voivat upottaa sisältöä, joka ei ole turvallista.</translation>
 <translation id="4860895144060829044">Soita</translation>
@@ -769,6 +773,7 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="6598875554591387303">Lajittele julkaisijan mukaan</translation>
 <translation id="6603393121510733479">Organisaatiosi on laittanut yksityisen selaamisen pois päältä.
 <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Näiden salasanat poistetaan: <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ja <ph name="THIRD_WEBSITE" />. Tilejäsi ei poisteta.</translation>
 <translation id="6610002944194042868">Käännösasetukset</translation>
 <translation id="661266467055912436">Parantaa sinun ja kaikkien verkon käyttäjien suojausta</translation>
 <translation id="6620279676667515405">Peru</translation>
@@ -1046,6 +1051,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8756969031206844760">Päivitetäänkö salasana?</translation>
 <translation id="8763613688786959833">Siirry viimeiselle välilehdelle</translation>
 <translation id="8764015330924122850">Älä seuraa: <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Näiden salasanat poistetaan: <ph name="WEBSITE" /> ja <ph name="SECOND_WEBSITE" />. Tilejäsi ei poisteta.</translation>
 <translation id="8775144690796719618">Virheellinen URL-osoite</translation>
 <translation id="8787968206789828143">Hae verkosta</translation>
 <translation id="8792626944327216835">mikrofoni</translation>
@@ -1095,6 +1101,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="9093271241977565440">Napauta näytön yläreunasta hakukuvaketta</translation>
 <translation id="9094033019050270033">Päivitä salasana</translation>
 <translation id="9097506547406246598">Seuraamista ei voi lopettaa. Jotain meni pieleen.</translation>
+<translation id="9098541895599151034">Poistetaanko <ph name="NUMBER_OF_ACCOUNTS" /> salasanaa?</translation>
 <translation id="9100610230175265781">Tunnuslause tarvitaan</translation>
 <translation id="9107664647686727385">Tarkista salasanojen vaarantuminen</translation>
 <translation id="9124387962554796433">Google voi muokata Hakua ja muita Googlen palveluita historiasi perusteella.</translation>

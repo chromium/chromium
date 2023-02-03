@@ -1101,7 +1101,6 @@
 <translation id="1975841812214822307">削除...</translation>
 <translation id="1976150099241323601">セキュリティ デバイスへのログイン</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> のロックを解除するにはスマートフォンを近づけます。</translation>
-<translation id="1978057560491495741">住所を削除</translation>
 <translation id="1979095679518582070">この機能を OFF にしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。</translation>
 <translation id="1979280758666859181">古いバージョンの <ph name="PRODUCT_NAME" /> のチャンネルに変更しようとしています。このチャンネル変更は、チャンネルのバージョンとお使いのデバイスにインストールされているバージョンとが一致したときに適用されます。</translation>
 <translation id="197989455406964291">KDC でサポートされていない暗号化タイプです</translation>
@@ -4270,7 +4269,6 @@
 <translation id="4852916668365817106">マウスの色</translation>
 <translation id="4853020600495124913">新しいウィンドウで開く(&amp;N)</translation>
 <translation id="4854317507773910281">承認してもらう保護者のアカウントを選択</translation>
-<translation id="4854603338816296098">住所を削除しました</translation>
 <translation id="485480310608090163">その他の設定と権限</translation>
 <translation id="4858913220355269194">フリッツ</translation>
 <translation id="4862642413395066333">OCSP 応答の署名</translation>
@@ -7466,7 +7464,6 @@
 <translation id="7819605256207059717">組織でブロックされました</translation>
 <translation id="7820561748632634942">スイッチを追加で割り当てますか？</translation>
 <translation id="782057141565633384">動画アドレスをコピー(&amp;C)</translation>
-<translation id="7822187537422052256">この住所を削除してもよろしいですか？</translation>
 <translation id="7824864914877854148">エラーが発生したため、バックアップを完了できませんでした</translation>
 <translation id="782590969421016895">現在のページを使用</translation>
 <translation id="7826174860695147464">従来のブラウザのサポート（LBS） - 内部</translation>
@@ -8670,7 +8667,7 @@
 <translation id="8915307125957890427">タブを右クリックして [タブをグループに追加]、[新しいグループ] の順に選択します</translation>
 <translation id="8915370057835397490">候補を読み込んでいます</translation>
 <translation id="8916476537757519021">シークレット サブフレーム: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8917490105272468696">有効にする</translation>
+<translation id="8917490105272468696">オンにする</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> さんの <ph name="DEVICE_TYPE" /></translation>
 <translation id="8922624386829239660">マウスが画面の端に触れたときに画面を移動する</translation>
 <translation id="8923880975836399332">暗い青緑</translation>
@@ -8876,7 +8873,6 @@
 <translation id="9094038138851891550">無効なユーザー名です</translation>
 <translation id="9094859731829297286">Linux 用に固定のディスクサイズを予約してもよろしいですか？</translation>
 <translation id="9094982973264386462">削除</translation>
-<translation id="9095253524804455615">削除</translation>
 <translation id="9095364055741191097">ローカルデータを復元できませんでした</translation>
 <translation id="909554839118732438">シークレット モードを終了</translation>
 <translation id="9099220545925418560">閲覧履歴に基づいて特定されます。この設定はオフになっています。</translation>

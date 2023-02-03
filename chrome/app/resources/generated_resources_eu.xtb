@@ -1104,7 +1104,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1975841812214822307">Kendu…</translation>
 <translation id="1976150099241323601">Hasi saioa segurtasun-gailuan</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> gailua desblokeatzeko, hurbildu telefonoa.</translation>
-<translation id="1978057560491495741">Kendu helbidea</translation>
 <translation id="1979095679518582070">Eginbidea desaktibatuta ere, gailu honek beharrezko informazioa bidaltzen jarraitu ahal izango du funtsezko zerbitzuak jasotzeko, hala nola sistemaren eguneratzeak eta segurtasuna.</translation>
 <translation id="1979280758666859181"><ph name="PRODUCT_NAME" /> sistemaren bertsio zaharragoa duen kanal batera aldatzen ari zara. Kanalaren bertsioa gailuan instalatutakoarekin bat datorrenean aldatuko da kanala.</translation>
 <translation id="197989455406964291">KDC zentroak ez du onartzen enkriptatze mota hori</translation>
@@ -2604,6 +2603,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3315442055907669208">Sartu irakurgailu moduan</translation>
 <translation id="3317459757438853210">Bi aldetan</translation>
 <translation id="3317678681329786349">Kamera eta mikrofonoa blokeatuta daude</translation>
+<translation id="3319306431415395200">Itzuli irudiko testua <ph name="VISUAL_SEARCH_PROVIDER" /> erabilita</translation>
 <translation id="3320630259304269485">Arakatze segurua (webgune kaltegarrien aurreko babesa) eta bestelako segurtasun-ezarpenak</translation>
 <translation id="3323521181261657960">Erabilera-denbora gehiago eman dizute!</translation>
 <translation id="3323577066981719144">Chrome arakatzailean soilik aplikatuko dira hemen egiten dituzun aldaketak. Lacros darabilen Chrome arakatzailearen ezarpenetan aldaketak egiteko, ireki Lacros darabilen Chrome arakatzailea eta joan ezarpenetara.</translation>
@@ -4278,7 +4278,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4852916668365817106">Sagu-kurtsorearen kolorea</translation>
 <translation id="4853020600495124913">Ireki leiho &amp;berrian</translation>
 <translation id="4854317507773910281">Aukeratu onartu beharreko guraso-kontua</translation>
-<translation id="4854603338816296098">Kendu da helbidea</translation>
 <translation id="485480310608090163">Ezarpen eta baimen gehiago</translation>
 <translation id="4858913220355269194">Mikel</translation>
 <translation id="4862642413395066333">OCSP erantzunak sinatzen</translation>
@@ -4832,6 +4831,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5382591305415226340">Kudeatu esteka bateragarriak</translation>
 <translation id="5383377866517186886">Kamera erabiltzeko baimena desaktibatuta dago Mac sistemaren hobespenetan</translation>
 <translation id="5383740867328871413">Talde izengabea. <ph name="GROUP_CONTENTS" />. <ph name="COLLAPSED_STATE" />.</translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (identifikatzailea: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Enterprise-ren gidalerroak aldatu egin dira. Proben botoia gehitu egin da tresna-barran. Probak gaitzeko leihoa ireki dadin, sakatu botoia.</translation>
 <translation id="5388885445722491159">Parekatuta</translation>
 <translation id="5390112241331447203">Gehitu iritzi-txostenetan bidalitako system_logs.txt fitxategia.</translation>
@@ -5046,6 +5046,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5578059481725149024">Saio-hasiera automatikoa</translation>
 <translation id="5581134892342029705">Osatu da itzulpena <ph name="LANGUAGE" /> hizkuntzara</translation>
 <translation id="558170650521898289">Microsoft Windows hardware-kontrolatzaileen egiaztapena</translation>
+<translation id="5581876958763461074">Ohar guztiak</translation>
 <translation id="5581972110672966454">Ezin da gehitu gailua domeinuan. Saiatu berriro edo jarri harremanetan gailuaren jabearekin edo administratzailearekin. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Menu nagusia</translation>
 <translation id="5583640892426849032">Atzera tekla</translation>
@@ -7478,7 +7479,6 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7819605256207059717">Zure erakundeak blokeatu du</translation>
 <translation id="7820561748632634942">Erabilerraztasun-etengailu gehiago esleitu nahi dizkiozu?</translation>
 <translation id="782057141565633384">K&amp;opiatu bideoaren helbidea</translation>
-<translation id="7822187537422052256">Ziur helbidea kendu nahi duzula?</translation>
 <translation id="7824864914877854148">Ezin izan da osatu babeskopia errore bat gertatu delako</translation>
 <translation id="782590969421016895">Erabili oraingo orriak</translation>
 <translation id="7826174860695147464">Arakatzaile zaharrekiko bateragarritasuna (LBS) - Barnekoak</translation>
@@ -7675,6 +7675,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> <ph name="COUNT" />. ahotsa</translation>
 <translation id="7991296728590311172">Erabilerraztasun-osagarriaren ezarpenak</translation>
 <translation id="7992203134935383159">Hizketaren sintesia</translation>
+<translation id="7994515119120860317">Itzuli irudiko testua <ph name="VISUAL_SEARCH_PROVIDER" /> erabilita</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Prozesuaren lehentasuna</translation>
 <translation id="7999229196265990314">Fitxategi hauek sortu dira:
@@ -8886,7 +8887,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9094038138851891550">Erabiltzaile-izenak ez du balio</translation>
 <translation id="9094859731829297286">Ziur tamaina finkoko disko bat erreserbatu nahi duzula Linux-erako?</translation>
 <translation id="9094982973264386462">Kendu</translation>
-<translation id="9095253524804455615">Kendu</translation>
 <translation id="9095364055741191097">Ezin izan dira berreskuratu gailuko datuak</translation>
 <translation id="909554839118732438">Itxi ezkutuko moduko leiho guztiak</translation>
 <translation id="9099220545925418560">Arakatze-historian oinarrituta. Desaktibatuta dago ezarpena.</translation>

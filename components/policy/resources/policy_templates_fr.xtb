@@ -701,6 +701,14 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle n'est pas configurée, toutes les fonctionnalités <ph name="PRODUCT_OS_NAME" /> sont activées par défaut et accessibles à l'utilisateur.
 
       Remarque : la fonctionnalité de numérisation est actuellement désactivée par défaut au moyen d'un flag de fonctionnalité. Si l'utilisateur active la fonctionnalité via ce flag, elle peut toujours être désactivée à l'aide de cette règle.</translation>
+<translation id="1642854499667422595">Si cette règle est activée, les extensions dont la publication est annulée sur le Chrome Web Store sont désactivées sur <ph name="PRODUCT_NAME" />.
+Cette règle ignorera les extensions installées en mode développeur et par ligne de commande, et d'autres qui ne sont pas installées depuis le Chrome Web Store (par exemple, l'auto-hébergement).
+
+Si elle est définie sur <ph name="ALLOW_UNPUBLISHED" /> (0), ou si elle n'est pas configurée, les extensions dont la publication est annulée sont autorisées.
+Si elle est définie sur <ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED" /> (1), les extensions dont la publication est annulée sur le Chrome Web Store sont désactivées, sauf celles installées d'office ou dont la version est fixée par une règle d'entreprise (voir la remarque).
+Si elle est définie sur <ph name="DISABLE_UNPUBLISHED" /> (2), les extensions dont la publication est annulée sur le Chrome Web Store sont désactivées, même celles installées d'office ou dont la version est fixée par une règle d'entreprise (voir la remarque).
+
+Remarque : L'installation d'office et l'épinglage de la version sont configurés à l'aide des règles <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> et <ph name="EXTENSION_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1645793986494086629">Schéma :</translation>
 <translation id="1647558381546345298">Cette règle permet de définir la taille du cache utilisé par <ph name="PRODUCT_NAME" /> pour stocker les fichiers multimédias mis en cache sur le disque, que l'utilisateur ait spécifié ou non le flag "--media-cache-size". La valeur définie dans cette règle ne constitue pas une limite absolue. Il s'agit plutôt d'une suggestion pour le système de mise en cache. Toute valeur inférieure à quelques mégaoctets est arrondie.
 
@@ -929,6 +937,7 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
       Si elle est activée, WebDriver pourra ignorer les règles non compatibles.
 
       Si elle est désactivée ou qu'elle n'est pas configurée, la fonctionnalité WebDriver ne sera pas autorisée à ignorer les règles non compatibles.</translation>
+<translation id="1883274744253492031">Activer la mise à niveau automatique du contenu mixte</translation>
 <translation id="1885782360784839335">Activer l'affichage de contenus promotionnels en mode Plein onglet</translation>
 <translation id="1888871729456797026">Jeton d'enregistrement des règles relatives au cloud sur ordinateur</translation>
 <translation id="1893271062894546361">Lorsque cette règle est activée, l'UI des commandes de lecture multimédia est disponible pour les sessions <ph name="PRODUCT_NAME" /> lancées par d'autres appareils sur le réseau local.
@@ -1077,6 +1086,7 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="1997943707974344423">Autoriser Smart Lock</translation>
 <translation id="1998504583649140526">Paramètres des requêtes à un réseau privé</translation>
 <translation id="1999000620918508488">Forcer l'écran de connexion à afficher ou à masquer les informations système.</translation>
+<translation id="1999401210569035434">Autoriser les extensions dont la publication a été annulée</translation>
 <translation id="1999942889260716089">Si cette règle est définie sur "True", la fonctionnalité Suggestions de recherche est activée dans la barre d'adresse du navigateur <ph name="PRODUCT_NAME" />. Si cette règle est définie sur "False", cette fonctionnalité est désactivée.
 
       Les suggestions basées sur les favoris ou sur l'historique ne sont pas concernées par cette règle.
@@ -1630,6 +1640,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
        Si cette règle n'est pas configurée, l'alimentation alternée en heures pleines est désactivée.</translation>
 <translation id="2502467045153796624">Comportement de retour à une version antérieure</translation>
+<translation id="2505101658854883014">Désactiver les extensions dont la publication a été annulée, y compris celles installées d'office ou dont la version est fixe</translation>
 <translation id="250670737672448119">Active la fonctionnalité d'accessibilité de mise en surbrillance du curseur de saisie.
 
           Cette fonctionnalité permet de mettre en surbrillance la zone autour du curseur de saisie lorsque l'utilisateur effectue une modification.
@@ -3504,13 +3515,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4275048399551500192">Ne pas afficher les commandes multimédias pour les sessions <ph name="PRODUCT_NAME" /> lancées par d'autres appareils</translation>
 <translation id="4282243913059705499">Toujours afficher l'icône <ph name="PRODUCT_NAME" /> dans la barre d'outils</translation>
 <translation id="4285674129118156176">Autoriser les utilisateurs non affiliés à utiliser ARC</translation>
-<translation id="4287344576768105337">Configurer cette règle empêche les pages Web ayant des URL interdites de se charger. Cette règle fournit une liste de formats d'URL précisant les URL interdites. Si elle n'est pas configurée, aucune URL n'est interdite dans le navigateur. Utilisez le format d'URL suivant : https://support.google.com/chrome/a?p=url_blocklist_filter_format. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      À compter de la version 73 de <ph name="PRODUCT_NAME" />, vous pouvez bloquer les URL javascript://*. Toutefois, cela ne concerne que le code JavaScript saisi dans la barre d'adresse (ou, par exemple, les favoris intelligents). Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages si les données sont chargées dynamiquement. Par exemple, si vous bloquez "example.com/abc", la page example.com pourra quand même charger "example.com/abc" via une requête XMLHTTPRequest.
-
-      À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode sans interface graphique.
-
-      Remarque : bloquer des URL internes chrome://* et chrome-untrusted://* peut entraîner des erreurs inattendues ou être contourné dans certains cas particuliers. Au lieu de bloquer certaines URL internes, vérifiez si des règles plus spécifiques sont disponibles. Cas courants : au lieu de bloquer chrome://settings/certificates, utilisez <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />. Au lieu de bloquer chrome-untrusted://crosh, utilisez <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="428948795004445932">Fréquence à laquelle les données du réseau sont échantillonnées et collectées. La valeur minimale autorisée est de 1 minute.
 
       Si la règle n'est pas configurée, la fréquence par défaut (10 minutes) est appliquée.</translation>
@@ -3591,6 +3595,10 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="439661169333921592">Désactiver la mise en surbrillance des éléments sélectionnés au clavier sur l'écran de connexion</translation>
 <translation id="4397045637922200204">Désactiver la récupération de compte</translation>
 <translation id="4397464099112037398">Paramètre d'autorisation de positionnement des fenêtres par défaut</translation>
+<translation id="4401196752827224189">WebSQL dans les contextes non sécurisés sera supprimé à partir de M110. Cette règle réactive l'API.
+          Si cette règle est définie sur "True", WebSQL est disponible dans des contextes non sécurisés.
+          Si elle est définie sur "False" ou n'est pas configurée, WebSQL restera disponible dans les contextes non sécurisés jusqu'à M109, puis sera indisponible à partir de M110.
+Cette fonctionnalité a été supprimée dans M112.</translation>
 <translation id="4401496838830169080">Permet de contrôler si la fonctionnalité de navigation sécurisée de <ph name="PRODUCT_NAME" /> est activée ou non, ainsi que le mode dans lequel elle est définie.
 
       Si cette règle est définie sur "NoProtection" (valeur 0), la navigation sécurisée n'est jamais active.
@@ -3644,11 +3652,6 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4447668084338250480">Comportement de redirection vers un intranet</translation>
 <translation id="4449469846627734399">Définir la configuration quotidienne de l'alimentation alternée en heures pleines</translation>
 <translation id="4449545651113180484">Faire pivoter l'écran vers la droite de 270 degrés</translation>
-<translation id="4450005376189179872">La règle "<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />" permet de configurer le mode avancé de recharge de la batterie (si la règle "<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />" est activée). La valeur du champ "<ph name="CHARGE_START_TIME_FIELD_NAME" />" doit être inférieure à celle du champ "<ph name="CHARGE_END_TIME_FIELD_NAME" />".
-
-      Si cette règle n'est pas configurée, le mode avancé de recharge de la batterie est désactivé.
-
-      Les valeurs autorisées dans le champ "<ph name="MINUTE_FIELD_NAME" />" de "<ph name="CHARGE_START_TIME_FIELD_NAME" />" et "<ph name="CHARGE_END_TIME_FIELD_NAME" />" sont 0, 15, 30 et 45.</translation>
 <translation id="4452653762766030431">Vérifie la disponibilité de Partages de fichiers en réseau pour Chrome OS</translation>
 <translation id="445270821089253489">Contrôle le type d'informations figurant dans les rapports sur les utilisateurs et les appareils.</translation>
 <translation id="4453913621209182880">Autoriser l'impression uniquement avec des images de fond</translation>
@@ -3934,6 +3937,7 @@ Il est prévu que cette règle soit supprimée dans la version 113 de <ph name=
 <translation id="4703402283970867140">Activer le modèle de réduction intelligente de la luminosité pour augmenter le délai d'assombrissement de l'écran</translation>
 <translation id="4704958130749494760">Autoriser automatiquement les sites à se connecter aux appareils série USB.</translation>
 <translation id="471360812659157054">window.webkitStorageInfo ne sera pas disponible.</translation>
+<translation id="4715773950737036924">Contrôlez la disponibilité des extensions dont la publication a été annulée sur le Chrome Web Store.</translation>
 <translation id="4722122254122249791">Activer l'isolation des sites pour des origines définies</translation>
 <translation id="4723829699367336876">Activer la traversée de pare-feu depuis le client d'accès à distance</translation>
 <translation id="4725528134735324213">Activer Android Backup Service</translation>
@@ -5052,11 +5056,6 @@ Vous pouvez modifier le délai d'inactivité avant l'affichage de l'économiseur
 <translation id="5835674781974810379">Effacer les cookies et autres données de sites</translation>
 <translation id="5836064773277134605">Restreindre la plage de ports UDP utilisés par l'hôte d'accès à distance</translation>
 <translation id="583627479140113555">Activer l'importation des mots de passe enregistrés à la première exécution</translation>
-<translation id="5837898601525273156">Si la règle "<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />" est activée et que la règle "<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />" est configurée, le mode avancé de recharge de la batterie pour la gestion de l'alimentation est activé (si l'appareil le permet). Ce mode permet aux utilisateurs de maximiser les performances de la batterie grâce à un algorithme de recharge standard conjugué à d'autres techniques en dehors des heures de travail. Pendant les heures de travail, le système utilise une option de recharge rapide afin d'atteindre plus vite le niveau de charge complète. Indiquez l'heure à laquelle le système est le plus sollicité chaque jour en précisant l'heure de début et la durée.
-
-      Si cette règle est désactivée ou qu'elle n'est pas configurée, le mode avancé de recharge de la batterie est désactivé.
-
-      Les utilisateurs ne peuvent pas modifier ce paramètre.</translation>
 <translation id="5838452040629810808">Activer la mise en surbrillance du curseur</translation>
 <translation id="5842283830553218200">Le nouveau comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé par défaut.</translation>
 <translation id="5848438019586925019">Algorithme pour la génération de paires de clés.</translation>
@@ -6453,6 +6452,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="7126716959063786004">Mettre fin aux processus dans le gestionnaire des tâches</translation>
 <translation id="7126928806195745404">Paramètres JavaScript</translation>
 <translation id="7127980134843952133">Historique des téléchargements</translation>
+<translation id="7128513247945602297">Activer la mise à niveau automatique du contenu mixte sur les sites HTTPS</translation>
 <translation id="712963038874313213">Fournit un playbook Ansible à exécuter dans le conteneur Crostini par défaut.
 
       Cette règle permet de fournir un playbook Ansible à appliquer au conteneur Crostini par défaut s'il est disponible sur l'appareil concerné et que les règles l'autorisent.
@@ -7210,6 +7210,7 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
       Les valeurs autorisées dans le champ "<ph name="MINUTE_FIELD_NAME" />" de "<ph name="START_TIME_FIELD_NAME" />", "<ph name="END_TIME_FIELD_NAME" />" et "<ph name="CHARGE_START_TIME_FIELD_NAME" />" sont 0, 15, 30 et 45.</translation>
 <translation id="7840258755683573560">Activer les clics automatiques</translation>
 <translation id="7841880500990419427">Version minimale de TLS à utiliser en remplacement</translation>
+<translation id="7841883965249733328">Désactiver la mise à niveau automatique du contenu mixte</translation>
 <translation id="7845130996290850593">Activer Kerberos</translation>
 <translation id="7846952520291088817">URL pour lesquelles les candidats WebRTC ICE affichent les adresses IP locales</translation>
 <translation id="7848641140449742406">Paramètres de l'OS</translation>
@@ -8641,6 +8642,7 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
 
       Cette règle est une mesure temporaire qui sera supprimée dans les futures versions de <ph name="PRODUCT_NAME" />. Après la suppression de cette règle, il sera toujours possible d'envoyer d'autres types de requêtes DNS avec <ph name="PRODUCT_NAME" />.</translation>
 <translation id="9167719789236691545">Désactiver Drive dans l'application "Fichiers" de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="9169161075831670233">Désactiver les extensions dont la publication a été annulée, sauf celles installées d'office ou dont la version est fixe</translation>
 <translation id="9172911925443428317">Ne pas autoriser l'affichage de la promo concernant la note sur l'App Store</translation>
 <translation id="9180108183162961002">Autoriser les connexions en mode Invité dans le navigateur</translation>
 <translation id="9185963199234034321">Activer le contraste élevé sur l'écran de connexion et permettre à l'utilisateur de le désactiver temporairement</translation>

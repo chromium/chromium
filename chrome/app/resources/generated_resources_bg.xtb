@@ -1112,7 +1112,6 @@
 <translation id="1975841812214822307">Премахване...</translation>
 <translation id="1976150099241323601">Вход в защитното устройство</translation>
 <translation id="1977965994116744507">За да отключите своя <ph name="DEVICE_TYPE" />, приближете телефона си до него.</translation>
-<translation id="1978057560491495741">Премахване на адреса</translation>
 <translation id="1979095679518582070">Изключването на тази функция няма да засегне възможността на устройството да изпраща информацията, необходима за получаването на основни услуги, като системни актуализации и подобрения в сигурността.</translation>
 <translation id="1979280758666859181">Преминавате към канал с по-стара версия на <ph name="PRODUCT_NAME" />. Промяната на канала ще се приложи, когато версията в него вече съответства на инсталираната понастоящем на устройството ви.</translation>
 <translation id="197989455406964291">Типът шифроване не се поддържа от KDC</translation>
@@ -4292,7 +4291,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4852916668365817106">Цвят на курсора на мишката</translation>
 <translation id="4853020600495124913">Отваряне в &amp;нов прозорец</translation>
 <translation id="4854317507773910281">Изберете профил на родител за одобрение</translation>
-<translation id="4854603338816296098">Адресът бе премахнат</translation>
 <translation id="485480310608090163">Още настройки и разрешения</translation>
 <translation id="4858913220355269194">Фриц</translation>
 <translation id="4862642413395066333">Подписване на OCSP отговори</translation>
@@ -7498,7 +7496,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7819605256207059717">Блокирано от организацията ви</translation>
 <translation id="7820561748632634942">Да се зададат ли още превключватели?</translation>
 <translation id="782057141565633384">К&amp;опиране на адреса на видеоклипа</translation>
-<translation id="7822187537422052256">Наистина ли искате да премахнете този адрес?</translation>
 <translation id="7824864914877854148">Създаването на резервно копие не можа да завърши поради грешка</translation>
 <translation id="782590969421016895">Използване на текущите страници</translation>
 <translation id="7826174860695147464">Поддръжка на наследени браузъри (LBS) – Вътрешни настройки</translation>
@@ -8908,7 +8905,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9094038138851891550">Потребителското име е невалидно</translation>
 <translation id="9094859731829297286">Наистина ли искате да резервирате диск с фиксиран размер за Linux?</translation>
 <translation id="9094982973264386462">Премахване</translation>
-<translation id="9095253524804455615">Премахване</translation>
 <translation id="9095364055741191097">Възстановяването на локалните данни не бе успешно</translation>
 <translation id="909554839118732438">Затваряне на прозореца в режим „инкогнито“</translation>
 <translation id="9099220545925418560">Въз основа на историята ви на сърфиране. Тази настройка е изключена.</translation>

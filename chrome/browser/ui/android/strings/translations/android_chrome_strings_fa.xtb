@@ -251,6 +251,7 @@
 <translation id="2426805022920575512">انتخاب یک حساب دیگر</translation>
 <translation id="2433507940547922241">شکل ظاهری</translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
+<translation id="2439153523196674349">پیش‌نمای <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">می‌خواهید بارگیری <ph name="FILE_NAME" /> را دوباره شروع کنید؟</translation>
 <translation id="2453860139492968684">پایان</translation>
 <translation id="2459390580524506445">جستجوی گفتاری بهبودیافته</translation>
@@ -389,6 +390,7 @@
 <translation id="3066573403916685335">حرکت به پایین</translation>
 <translation id="3070005020161560471">ترجمه خودکار</translation>
 <translation id="3072980200212375806">‏<ph name="APP_NAME" /> در Chrome باز می‌شود. درصورت ادامه دادن، با <ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Google Chrome و ChromeOS<ph name="END_LINK2" /> موافقت می‌کنید. <ph name="BEGIN_LINK3" />خط‌مشی رازداری<ph name="END_LINK3" /> نیز اعمال می‌شود.</translation>
+<translation id="3083194063661536258">از سیستم خارج شده‌اید. دکمه. کادر گفتگوی ورود به سیستم و روشن کردن همگام‌سازی را باز می‌کند.</translation>
 <translation id="3091010850649238832">نمایش محتوای بریده‌دان</translation>
 <translation id="3098745985164956033">‏برخی از تصاویر به Google ارسال می‌شوند تا شرح آن‌ها برایتان بهبود یابد</translation>
 <translation id="3104179992611025423">مرورگر شما را والدینتان مدیریت می‌کنند</translation>
@@ -925,6 +927,7 @@
 <translation id="6040143037577758943">بستن</translation>
 <translation id="604124094241169006">خودکار</translation>
 <translation id="6042308850641462728">بیشتر</translation>
+<translation id="6049046116080614938">به‌عنوان <ph name="USER_NAME" /> به سیستم وارد شده‌اید. <ph name="USER_EMAIL" />. دکمه. تنظیمات را باز می‌کند.</translation>
 <translation id="604996488070107836">به‌دلیل خطایی ناشناس، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
 <translation id="605721222689873409">سال</translation>
 <translation id="6059830886158432458">داستان‌ها و فعالیت خود را اینجا کنترل کنید</translation>
@@ -1299,6 +1302,7 @@
 <translation id="7968014550143838305">به فهرست خواندن اضافه شد</translation>
 <translation id="7971136598759319605">آخرین فعالیت: ۱ روز قبل</translation>
 <translation id="7975379999046275268">پیش‌نمایش صفحه <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">به‌عنوان <ph name="USER_NAME" /> به سیستم وارد شده‌اید. دکمه. تنظیمات را باز می‌کند.</translation>
 <translation id="7986497153528221272">برای مشاهده گذرواژه‌ها، ابتدا در دستگاهتان قفل صفحه تنظیم کنید</translation>
 <translation id="7995059495660416932">وقتی محتوا دردسترس قرار گیرد آن را خواهید دید</translation>
 <translation id="799576009106109668">سریع‌تر مرور خواهید کرد چون محتوا به‌صورت پیش‌نگرانه براساس بازدید صفحه وب فعلی‌تان بار می‌شود</translation>

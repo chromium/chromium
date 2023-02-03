@@ -1113,7 +1113,6 @@
 <translation id="1975841812214822307">حذف...</translation>
 <translation id="1976150099241323601">ورود به سیستم دستگاه امنیتی</translation>
 <translation id="1977965994116744507">برای باز کردن قفل <ph name="DEVICE_TYPE" />، تلفنتان را نزدیک‌تر کنید.</translation>
-<translation id="1978057560491495741">حذف نشانی</translation>
 <translation id="1979095679518582070">خاموش کردن این ویژگی توانایی این دستگاه را برای ارسال اطلاعات موردنیاز برای سرویس‌های ضروری، مانند امنیت و به‌روزرسانی‌های سیستم تحت‌تأثیر قرار نمی‌دهد.</translation>
 <translation id="1979280758666859181">شما در حال تغییر کانال به نسخه قدیمی‌تر <ph name="PRODUCT_NAME" /> هستید. تغییر کانال زمانی اعمال می‌شود که نسخه کانال با نسخه فعلی نصب شده در دستگاه یکسان باشد.</translation>
 <translation id="197989455406964291">‏KDC از نوع رمزگذاری پشتیبانی نمی‌کند</translation>
@@ -2616,6 +2615,7 @@
 <translation id="3315442055907669208">ورود به «حالت خواننده»</translation>
 <translation id="3317459757438853210">دو طرفه</translation>
 <translation id="3317678681329786349">دوربین و میکروفون مسدود شده‌اند</translation>
+<translation id="3319306431415395200">ترجمه نوشتار درون تصویر با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">«مرور ایمن» (محافظت در برابر سایت‌های خطرناک) و دیگر تنظیمات امنیتی</translation>
 <translation id="3323521181261657960">پاداش! وقت تماشای صفحه بیشتر شد</translation>
 <translation id="3323577066981719144">‏تغییراتی که اینجا ایجاد می‌کنید فقط در «مرورگر Chrome» اعمال می‌شود. برای ایجاد تغییرات در تنظیمات «مرورگر Lacros Chrome»، «مرورگر Lacros Chrome» را باز کنید و به تنظیمات بروید.</translation>
@@ -3052,6 +3052,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">‏شما و Google</translation>
 <translation id="3722108462506185496">هنگام شروع سرویس دستگاه مجازی خطایی روی داد. لطفاً دوباره امتحان کنید.</translation>
+<translation id="3722624153992426516">دستورالعمل <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> دریافت شده است</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">‏شبکه‌های WiFi دردسترس</translation>
 <translation id="3727187387656390258">بازرسی پنجره بازشو</translation>
@@ -3408,6 +3409,7 @@
 <translation id="402211067068791756">با این کار <ph name="TOTAL_USAGE" /> از داده‌هایی که سایت‌های نشان‌داده‌شده ذخیره کرده‌اند پاک می‌شود</translation>
 <translation id="4022426551683927403">&amp;افزودن به واژه‌نامه</translation>
 <translation id="4025039777635956441">بی‌صدا کردن سایت انتخاب‌شده</translation>
+<translation id="402707738228916911">دستورالعمل <ph name="AUTHORIZE_INSTRUCTION_NAME" /> دریافت شده است</translation>
 <translation id="4027958407426528157">وب‌سایت‌ها در برنامه‌های نصب‌شده در <ph name="DEVICE_TYPE" /> شما باز می‌شوند</translation>
 <translation id="4028467762035011525">افزودن روش‌های ورودی</translation>
 <translation id="4029556917477724407">برگشتن از صفحه <ph name="PAGE_TITLE" /></translation>
@@ -4291,7 +4293,6 @@
 <translation id="4852916668365817106">رنگ موشواره</translation>
 <translation id="4853020600495124913">باز کردن در پنجره &amp;جدید</translation>
 <translation id="4854317507773910281">حساب ولی را برای تأیید انتخاب کنید</translation>
-<translation id="4854603338816296098">نشانی برداشته شد</translation>
 <translation id="485480310608090163">تنظیمات و اجازه‌های بیشتر</translation>
 <translation id="4858913220355269194">فوتبالی</translation>
 <translation id="4862642413395066333">‏امضا کردن پاسخ‌های OCSP</translation>
@@ -5689,6 +5690,7 @@
 <translation id="6150961653851236686">از این زبان هنگام ترجمه صفحه‌ها استفاده می‌شود</translation>
 <translation id="6151323131516309312"><ph name="SEARCH_KEY" /> را فشار دهید تا <ph name="SITE_NAME" /> جستجو شود</translation>
 <translation id="6151771661215463137">فایل از قبل در پوشه بارگیری‌تان وجود دارد.</translation>
+<translation id="6152918902620844577">درانتظار عملیات بعدی</translation>
 <translation id="6154240335466762404">برداشتن همه درگاه‌ها</translation>
 <translation id="615436196126345398">پروتکل</translation>
 <translation id="6155141482566063812">برگه پس‌زمینه درحال هم‌رسانی صفحه‌نمایش است</translation>
@@ -7401,6 +7403,7 @@
 <translation id="7730683939467795481">افزونه «<ph name="EXTENSION_NAME" />» این صفحه را تغییر داد</translation>
 <translation id="7735165285389721951">‏راه‌اندازی Steam دیگری درحال اجرا است. قبل‌از امتحان دوباره، منتظر بمانید تا این راه‌اندازی تکمیل شود.</translation>
 <translation id="7737115349420013392">درحال مرتبط‌سازی با «<ph name="DEVICE_NAME" />» …</translation>
+<translation id="7737203573077018777">دستورالعمل <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> دریافت شده است</translation>
 <translation id="7737846262459425222">‏هر زمان خواستید می‌توانید این گزینه را در «تنظیمات &gt; دستیار Google &gt; اطلاعات روی صفحه» تغییر دهید.</translation>
 <translation id="7737948071472253612">اجازه ندارد از دوربین استفاده کند</translation>
 <translation id="77381465218432215">نمایش نشانه‌های تکیه (اِعراب) و نویسه‌های خاص</translation>
@@ -7497,7 +7500,6 @@
 <translation id="7819605256207059717">سازمانتان آن را مسدود کرده است</translation>
 <translation id="7820561748632634942">کلیدهای بیشتری اختصاص داده شوند؟</translation>
 <translation id="782057141565633384">کپی آدرس ویدئو</translation>
-<translation id="7822187537422052256">مطمئنید می‌خواهید این نشانی را حذف کنید؟</translation>
 <translation id="7824864914877854148">به‌دلیل بروز خطا، پشتیبان‌گیری کامل نشد</translation>
 <translation id="782590969421016895">استفاده از صفحات فعلی</translation>
 <translation id="7826174860695147464">‏«پشتیبانی از مرورگر قدیمی» (LBS) - داخلی</translation>
@@ -7694,6 +7696,7 @@
 <translation id="7990863024647916394">صدای <ph name="DISPLAY_NAME" />‏ <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">تنظیمات دسترسی کلیدی</translation>
 <translation id="7992203134935383159">ترکیب گفتار</translation>
+<translation id="7994515119120860317">ترجمه نوشتار درون تصویر با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">وب‌نما</translation>
 <translation id="7997826902155442747">پردازش اولویت‌دار</translation>
 <translation id="7999229196265990314">فایل‌های زیر ایجاد شده است:
@@ -8907,7 +8910,6 @@
 <translation id="9094038138851891550">نام کاربری نامعتبر است</translation>
 <translation id="9094859731829297286">‏مطمئنید می‌خواهید حجم مشخصی از دیسک را به Linux اختصاص دهید؟</translation>
 <translation id="9094982973264386462">پاک کردن</translation>
-<translation id="9095253524804455615">پاک کردن</translation>
 <translation id="9095364055741191097">داده‌های محلی بازیابی نشد</translation>
 <translation id="909554839118732438">بستن پنجره ناشناس</translation>
 <translation id="9099220545925418560">براساس سابقه مرور شما. این تنظیم خاموش است.</translation>

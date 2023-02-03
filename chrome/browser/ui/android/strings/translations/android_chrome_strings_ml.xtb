@@ -251,6 +251,7 @@
 <translation id="2426805022920575512">മറ്റൊരു അക്കൗണ്ട് തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="2433507940547922241">കാഴ്ച്ച</translation>
 <translation id="2435457462613246316">പാസ്‌വേഡ് കാണിക്കുക</translation>
+<translation id="2439153523196674349"><ph name="SITE_NAME" /> പ്രിവ്യൂ</translation>
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> വീണ്ടും ഡൗൺലോഡുചെയ്യാൻ തുടങ്ങണോ?</translation>
 <translation id="2453860139492968684">പൂര്‍ത്തിയാക്കുക</translation>
 <translation id="2459390580524506445">മെച്ചപ്പെടുത്തിയ ശബ്ദ തിരയൽ</translation>
@@ -389,6 +390,7 @@
 <translation id="3066573403916685335">താഴേക്ക് നീക്കുക</translation>
 <translation id="3070005020161560471">സ്വയമേവ വിവർത്തനം ചെയ്യുക</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_LINK3" />സ്വകാര്യതാ നയവും<ph name="END_LINK3" /> ബാധകമാണ്.</translation>
+<translation id="3083194063661536258">സൈൻ ഔട്ട് ചെയ്‌തു. ബട്ടൺ. സൈൻ ഇൻ ചെയ്യാനും സമന്വയം ഓണാക്കാനും ഡയലോഗ് തുറക്കുന്നു.</translation>
 <translation id="3091010850649238832">ക്ലിപ്പ്ബോർഡിലെ ഉള്ളടക്കങ്ങൾ കാണിക്കുക</translation>
 <translation id="3098745985164956033">മെച്ചപ്പെട്ട വിവരണങ്ങൾ നിങ്ങൾക്ക് നൽകുന്നതിന് ചില ചിത്രങ്ങൾ Google-ന് അയയ്ക്കുന്നു</translation>
 <translation id="3104179992611025423">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ രക്ഷിതാക്കളാണ്</translation>
@@ -925,6 +927,7 @@
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="604124094241169006">സ്വയമേവ</translation>
 <translation id="6042308850641462728">കൂടുതൽ</translation>
+<translation id="6049046116080614938"><ph name="USER_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. <ph name="USER_EMAIL" />. ബട്ടൺ. ക്രമീകരണം തുറക്കുന്നു.</translation>
 <translation id="604996488070107836">ഒരു അജ്ഞാതമായ പിശക് കാരണം <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">നിങ്ങളുടെ സ്‌റ്റോറികളും ആക്റ്റിവിറ്റികളും ഇവിടെ നിയന്ത്രിക്കുക</translation>
@@ -1299,6 +1302,7 @@
 <translation id="7968014550143838305">വായനാ ലിസ്റ്റിൽ ചേർത്തു</translation>
 <translation id="7971136598759319605">ഒരു ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />പുതിയ<ph name="END_NEW" /> പേജ് പ്രിവ്യൂ ചെയ്യുക</translation>
+<translation id="7981085434646346979"><ph name="USER_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. ബട്ടൺ. ക്രമീകരണം തുറക്കുന്നു.</translation>
 <translation id="7986497153528221272">പാസ്‌വേഡുകൾ കാണാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ സ്‌ക്രീൻ ലോക്ക് സജ്ജീകരിക്കുക</translation>
 <translation id="7995059495660416932">ഉള്ളടക്കം ലഭ്യമാകുമ്പോൾ നിങ്ങൾക്കവ കാണാനാകും</translation>
 <translation id="799576009106109668">നിങ്ങളുടെ നിലവിലെ വെബ്‌പേജ് സന്ദർശനം അടിസ്ഥാനമാക്കി സമയോചിതമായി ഉള്ളടക്കം ലോഡ് ചെയ്യുന്നതിനാൽ നിങ്ങൾക്ക് കൂടുതൽ വേഗത്തിൽ ബ്രൗസ് ചെയ്യാം</translation>

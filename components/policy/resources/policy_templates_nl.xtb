@@ -3507,13 +3507,6 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
 <translation id="4275048399551500192">Mediabediening niet tonen voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten</translation>
 <translation id="4282243913059705499"><ph name="PRODUCT_NAME" />-icoon altijd tonen in de werkbalk</translation>
 <translation id="4285674129118156176">Toestaan dat niet-gelieerde gebruikers ARC gebruiken</translation>
-<translation id="4287344576768105337">Als je het beleid instelt, wordt voorkomen dat webpagina's met verboden URL's worden geladen. Het beleid biedt een lijst met URL-patronen die verboden URL's definiëren. Als je het beleid niet instelt, worden er geen URL's verboden in de browser. Gebruik een notatie voor het URL-patroon volgens deze indeling (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      Vanaf <ph name="PRODUCT_NAME" /> versie 73 kun je javascript://*-URL's blokkeren. Dit heeft alleen gevolgen voor JavaScript die wordt ingevoerd in de adresbalk (of bijvoorbeeld bookmarklets). In-page JavaScript-URL's met dynamisch geladen gegevens vallen niet onder dit beleid. Als je bijvoorbeeld example.com/abc blokkeert, kan de pagina example.com nog steeds example.com/abc laden via XMLHTTPRequest.
-
-      Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in de stand zonder interface.
-
-      Opmerking: Als je interne URL's met chrome://* en chrome-untrusted://* blokkeert, kan dit leiden tot onverwachte fouten of kan de blokkering worden omzeild in speciale gevallen. In plaats van bepaalde interne URL's te blokkeren, kun je beter checken of er specifiekere beleidsregels beschikbaar zijn. Veelvoorkomende gevallen: Gebruik <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" /> in plaats van chrome://settings/certificates te blokkeren. Gebruik <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> in plaats van chrome-untrusted://crosh te blokkeren.</translation>
 <translation id="428948795004445932">Snelheid waarmee netwerkgegevens worden bemonsterd en verzameld. Het toegestane minimum is 1 minuut.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 10 minuten van toepassing.</translation>
@@ -3650,11 +3643,6 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="4447668084338250480">Gedrag voor intranetomleidingen</translation>
 <translation id="4449469846627734399">Dagelijkse configuratie voor stroompiekverschuiving instellen</translation>
 <translation id="4449545651113180484">Scherm 270 graden met de klok mee draaien</translation>
-<translation id="4450005376189179872">Als <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> aanstaat, kun je met <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> de geavanceerde batterijoplaadmodus instellen. De waarde voor <ph name="CHARGE_START_TIME_FIELD_NAME" /> moet minder dan <ph name="CHARGE_END_TIME_FIELD_NAME" /> zijn.
-
-      Als je het beleid niet instelt, blijft de geavanceerde batterijoplaadmodus uit.
-
-Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARGE_START_TIME_FIELD_NAME" /> en <ph name="CHARGE_END_TIME_FIELD_NAME" /> zijn 0, 15, 30, 45.</translation>
 <translation id="4452653762766030431">Beheert netwerk-fileshares voor Chrome OS-beschikbaarheid</translation>
 <translation id="445270821089253489">Beheert welke gebruikers- en apparaatgegevens worden gerapporteerd.</translation>
 <translation id="4453913621209182880">Alleen afdrukken met achtergrondbeelden toestaan</translation>
@@ -5036,11 +5024,6 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid
 <translation id="5835674781974810379">Cookies en andere sitegegevens wissen</translation>
 <translation id="5836064773277134605">Het UDP-poortbereik beperken dat voor de host voor externe toegang wordt gebruikt</translation>
 <translation id="583627479140113555">Import van opgeslagen wachtwoorden bij eerste uitvoering aanzetten</translation>
-<translation id="5837898601525273156">Als <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> is ingesteld en je <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> aanzet, blijft het stroombeheerbeleid voor de geavanceerde batterijoplaadmodus aan (als het apparaat dit ondersteunt). Deze modus gebruikt buiten werktijden een standaard oplaadalgoritme en andere technieken waarmee gebruikers de batterijprestaties kunnen maximaliseren. Tijdens werktijden wordt snelladen gebruikt. Hiermee wordt de batterij sneller opgeladen. Geef de tijd op wanneer het systeem elke dag het meest wordt gebruikt met een begintijd en de duur.
-
-      Als je het beleid niet toepast of niet instelt, blijft de geavanceerde batterijoplaadmodus uit.
-
-Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="5838452040629810808">Cursormarkering aanzetten</translation>
 <translation id="5842283830553218200">Standaard wordt het nieuwe gedrag voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren gebruikt.</translation>
 <translation id="5848438019586925019">Het algoritme voor het genereren van sleutelparen.</translation>

@@ -375,6 +375,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1339009753652684748">Nói "Ok Google" khi bạn muốn dùng Trợ lý. Để tiết kiệm pin, hãy chọn “Bật (Khuyên dùng)”. Trợ lý của bạn sẽ chỉ phản hồi khi thiết bị đã cắm điện hoặc đang sạc.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Sao lưu phương tiện từ thiết bị bằng ứng dụng Tệp.</translation>
+<translation id="1341871421050612057">Không thể đồng bộ hoá bằng <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Cấp cho các ứng dụng Linux quyền truy cập vào thiết bị USB. Linux sẽ không nhớ thiết bị USB sau khi bạn rút thiết bị ra.</translation>
 <translation id="1343920184519992513">Tiếp tục từ nơi bạn đang xem dở và mở một nhóm trang cụ thể</translation>
 <translation id="134589511016534552">Thẻ Nội dung phương tiện cũng xuất hiện trong mục Thẻ đang mở</translation>
@@ -1116,7 +1117,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1975841812214822307">Xóa...</translation>
 <translation id="1976150099241323601">Đăng nhập vào thiết bị bảo mật</translation>
 <translation id="1977965994116744507">Mang điện thoại tới gần hơn để mở khóa <ph name="DEVICE_TYPE" /> của bạn.</translation>
-<translation id="1978057560491495741">Xóa địa chỉ</translation>
 <translation id="1979095679518582070">Việc tắt tính năng này sẽ không ảnh hưởng đến khả năng thiết bị gửi thông tin cần thiết cho các dịch vụ thiết yếu như bảo mật và cập nhật hệ thống.</translation>
 <translation id="1979280758666859181">Bạn đang thay đổi sang kênh có phiên bản <ph name="PRODUCT_NAME" /> cũ hơn. Sẽ áp dụng thay đổi kênh khi phiên bản kênh khớp với phiên bản hiện được cài đặt trên thiết bị của bạn.</translation>
 <translation id="197989455406964291">KDC không hỗ trợ loại mã hóa</translation>
@@ -3056,6 +3056,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Bạn và Google</translation>
 <translation id="3722108462506185496">Lỗi khi khởi động dịch vụ máy ảo. Vui lòng thử lại.</translation>
+<translation id="3722624153992426516">Đã nhận được hướng dẫn <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Các mạng WiFi có sẵn</translation>
 <translation id="3727187387656390258">Kiểm tra cửa sổ bật lên</translation>
@@ -3412,6 +3413,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="402211067068791756">Thao tác này sẽ xoá <ph name="TOTAL_USAGE" /> dữ liệu do các trang web hiển thị lưu trữ.</translation>
 <translation id="4022426551683927403">&amp;Thêm vào Từ điển</translation>
 <translation id="4025039777635956441">Tắt tiếng trang web đã chọn</translation>
+<translation id="402707738228916911">Đã nhận được hướng dẫn <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027958407426528157">Mở trang web trong các ứng dụng đã cài đặt trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Thêm phương thức nhập</translation>
 <translation id="4029556917477724407">Quay về trang trước trang <ph name="PAGE_TITLE" /></translation>
@@ -4153,6 +4155,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4713409221649555176">Xoá khi bạn đóng tất cả cửa sổ</translation>
 <translation id="47158868804223727">Nhấp vào tên nhóm để mở rộng hoặc thu gọn</translation>
 <translation id="4716483597559580346">Powerwash giúp tăng cường bảo mật</translation>
+<translation id="471759229191973607">Thay đổi giao diện</translation>
 <translation id="4722735765955348426">Mật khẩu của <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> đang chia sẻ màn hình của bạn.</translation>
 <translation id="4722989931633062466">Không được phép đưa ra lời nhắc đăng nhập qua bên thứ ba</translation>
@@ -4295,7 +4298,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4852916668365817106">Màu chuột</translation>
 <translation id="4853020600495124913">Mở trong &amp;cửa sổ mới</translation>
 <translation id="4854317507773910281">Chọn tài khoản của cha mẹ sẽ dùng để phê duyệt</translation>
-<translation id="4854603338816296098">Đã xoá địa chỉ</translation>
 <translation id="485480310608090163">Các quyền và tùy chọn cài đặt khác</translation>
 <translation id="4858913220355269194">Nam cầu thủ Fritz</translation>
 <translation id="4862642413395066333">Ký Phản hồi OCSP</translation>
@@ -5693,6 +5695,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6150961653851236686">Ngôn ngữ này được sử dụng khi dịch các trang</translation>
 <translation id="6151323131516309312">Nhấp vào <ph name="SEARCH_KEY" /> để tìm kiếm <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Tệp đã tồn tại trong thư mục tải xuống của bạn.</translation>
+<translation id="6152918902620844577">Đang chờ thao tác tiếp theo</translation>
 <translation id="6154240335466762404">Xóa mọi cổng</translation>
 <translation id="615436196126345398">Giao thức</translation>
 <translation id="6155141482566063812">Thẻ nền đang chia sẻ màn hình</translation>
@@ -7175,6 +7178,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> hiện không phản hồi. Hãy chọn "Buộc đóng" để đóng ứng dụng.</translation>
 <translation id="7535730537657706072">Để xóa nhật ký duyệt web Ẩn danh khỏi thiết bị của bạn, hãy đóng tất cả thẻ Ẩn danh</translation>
 <translation id="7537451260744431038">Các trang web không thể dùng cookie để cải thiện trải nghiệm duyệt web của bạn, chẳng hạn như để duy trì trạng thái đăng nhập hoặc ghi nhớ các mục có trong giỏ hàng</translation>
+<translation id="7538088324298143359">Tìm kiếm trong hình ảnh bằng <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Đã xảy ra lỗi khi kiểm tra cập nhật: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> đã hạ cấp hệ điều hành trên thiết bị này về một phiên bản trước. Vui lòng lưu các tệp quan trọng rồi khởi động lại. Toàn bộ dữ liệu trên thiết bị sẽ bị xoá.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> bằng ứng dụng <ph name="APP_NAME" /></translation>
@@ -7403,6 +7407,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7730683939467795481">Tiện ích "<ph name="EXTENSION_NAME" />" đã thay đổi trang này</translation>
 <translation id="7735165285389721951">Có một quy trình thiết lập Steam khác đang chạy. Vui lòng đợi quy trình đó hoàn tất rồi thử lại</translation>
 <translation id="7737115349420013392">Đang ghép nối với "<ph name="DEVICE_NAME" />"...</translation>
+<translation id="7737203573077018777">Đã nhận được hướng dẫn <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
 <translation id="7737846262459425222">Bạn có thể thay đổi tính năng này bất kỳ lúc nào trong phần Cài đặt &gt; Trợ lý Google &gt; Ngữ cảnh trên màn hình.</translation>
 <translation id="7737948071472253612">Không được phép sử dụng máy ảnh của bạn</translation>
 <translation id="77381465218432215">Hiển thị dấu phụ và ký tự đặc biệt</translation>
@@ -7500,7 +7505,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7819605256207059717">Tổ chức của bạn đã chặn</translation>
 <translation id="7820561748632634942">Gán thêm công tắc?</translation>
 <translation id="782057141565633384">S&amp;ao chép địa chỉ video</translation>
-<translation id="7822187537422052256">Bạn có chắc chắn muốn xóa địa chỉ này không?</translation>
 <translation id="7824864914877854148">Không thể hoàn tất quá trình sao lưu do lỗi</translation>
 <translation id="782590969421016895">Sử dụng các trang hiện tại</translation>
 <translation id="7826174860695147464">Hỗ trợ Trình duyệt cũ (LBS) – Nội bộ</translation>
@@ -7604,6 +7608,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7912080627461681647">Đã thay đổi mật khẩu của bạn trên máy chủ. Vui lòng đăng xuất rồi đăng nhập lại.</translation>
 <translation id="7912974581251770345">Bản dịch</translation>
 <translation id="7915457674565721553">Hãy kết nối Internet để thiết lập quyền kiểm soát của cha mẹ</translation>
+<translation id="7916364730877325865">Tổ chức của bạn không cho phép bạn bật tính năng đồng bộ hoá bằng tài khoản này</translation>
 <translation id="7918257978052780342">Đăng ký</translation>
 <translation id="7919123827536834358">Tự động dịch những ngôn ngữ này</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> giây</translation>
@@ -8910,7 +8915,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9094038138851891550">Tên người dùng không hợp lệ</translation>
 <translation id="9094859731829297286">Bạn có chắc chắn muốn dự trữ đĩa có dung lượng cố định cho Linux không?</translation>
 <translation id="9094982973264386462">Xóa</translation>
-<translation id="9095253524804455615">Xóa</translation>
 <translation id="9095364055741191097">Không thể khôi phục dữ liệu cục bộ</translation>
 <translation id="909554839118732438">Đóng cửa sổ ẩn danh</translation>
 <translation id="9099220545925418560">Dựa trên nhật ký duyệt web của bạn. Chế độ cài đặt này đang tắt.</translation>

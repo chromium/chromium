@@ -373,6 +373,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1339009753652684748">Accedi all'assistente quando dici "Hey Google". Per consumare meno batteria, seleziona "On (opzione consigliata)". L'assistente risponderà soltanto quando il dispositivo è collegato a una fonte di alimentazione o in carica.</translation>
 <translation id="13392265090583506">Impostazioni di accessibilità</translation>
 <translation id="1340527397989195812">Importa elementi multimediali dal dispositivo utilizzando l'app File.</translation>
+<translation id="1341871421050612057">Impossibile sincronizzare con <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Concedi alle app Linux l'autorizzazione ad accedere ai dispositivi USB. Dopo la rimozione di un dispositivo USB, Linux non manterrà memorizzato il dispositivo.</translation>
 <translation id="1343920184519992513">Continua dal punto in cui avevi interrotto e apri un insieme di pagine specifiche</translation>
 <translation id="134589511016534552">Le schede di contenuti multimediali vengono mostrate anche nella sezione Schede aperte</translation>
@@ -1104,7 +1105,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1975841812214822307">Rimuovi...</translation>
 <translation id="1976150099241323601">Accedi a dispositivo di sicurezza</translation>
 <translation id="1977965994116744507">Avvicina il telefono per sbloccare il tuo dispositivo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978057560491495741">Rimuovi indirizzo</translation>
 <translation id="1979095679518582070">La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e sicurezza.</translation>
 <translation id="1979280758666859181">Stai per passare a un canale con una versione precedente di <ph name="PRODUCT_NAME" />. Il cambio di canale verrà applicato quando la versione del canale corrisponderà alla versione attualmente installata sul dispositivo.</translation>
 <translation id="197989455406964291">KDC non supporta il tipo di crittografia</translation>
@@ -3041,6 +3041,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Tu e Google</translation>
 <translation id="3722108462506185496">Errore durante l'avvio del servizio macchina virtuale. Riprova.</translation>
+<translation id="3722624153992426516">È stata ricevuta l'istruzione <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Reti Wi-Fi disponibili</translation>
 <translation id="3727187387656390258">Ispeziona popup</translation>
@@ -3397,6 +3398,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="402211067068791756">Verranno cancellati <ph name="TOTAL_USAGE" /> di dati memorizzati dai siti visualizzati</translation>
 <translation id="4022426551683927403">&amp;Aggiungi al dizionario</translation>
 <translation id="4025039777635956441">Disattiva l'audio del sito selezionato</translation>
+<translation id="402707738228916911">È stata ricevuta l'istruzione <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027958407426528157">Apri i siti web nelle app installate su <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Aggiungi metodi di immissione</translation>
 <translation id="4029556917477724407">Indietro dalla pagina <ph name="PAGE_TITLE" /></translation>
@@ -4136,6 +4138,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4713409221649555176">Elimina alla chiusura di tutte le finestre</translation>
 <translation id="47158868804223727">Fai clic sul nome del gruppo per espanderlo o comprimerlo</translation>
 <translation id="4716483597559580346">Powerwash per maggiore sicurezza</translation>
+<translation id="471759229191973607">Cambia tema</translation>
 <translation id="4722735765955348426">Password di <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> sta condividendo il tuo schermo.</translation>
 <translation id="4722989931633062466">Non autorizzati a mostrare richieste di accesso di terze parti</translation>
@@ -4278,7 +4281,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4852916668365817106">Colore del puntatore del mouse</translation>
 <translation id="4853020600495124913">Apri in &amp;un'altra finestra</translation>
 <translation id="4854317507773910281">Scegli un account genitore per l'approvazione</translation>
-<translation id="4854603338816296098">Indirizzo rimosso</translation>
 <translation id="485480310608090163">Altre impostazioni e autorizzazioni</translation>
 <translation id="4858913220355269194">Holly</translation>
 <translation id="4862642413395066333">Firma risposte OCSP</translation>
@@ -5673,6 +5675,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6150961653851236686">Questa lingua è utilizzata per la traduzione delle pagine</translation>
 <translation id="6151323131516309312">Premi <ph name="SEARCH_KEY" /> per cercare su <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">File già esistente nella cartella dei download.</translation>
+<translation id="6152918902620844577">In attesa della prossima operazione</translation>
 <translation id="6154240335466762404">Rimuovi tutte le porte</translation>
 <translation id="615436196126345398">Protocollo</translation>
 <translation id="6155141482566063812">Una scheda in secondo piano sta condividendo il tuo schermo</translation>
@@ -7155,6 +7158,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> non risponde. Seleziona "Termina" per chiudere l'app.</translation>
 <translation id="7535730537657706072">Per cancellare la cronologia di navigazione in incognito dal tuo dispositivo, chiudi tutte le schede di navigazione in incognito</translation>
 <translation id="7537451260744431038">I siti non possono utilizzare i cookie per migliorare la tua esperienza di navigazione, ad esempio per mantenere l'accesso o memorizzare gli articoli aggiunti al carrello</translation>
+<translation id="7538088324298143359">Cerca nell'immagine con <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Si è verificato un errore durante il controllo della disponibilità di aggiornamenti: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> ha riportato questo dispositivo a una versione precedente. Salva i file importanti, poi riavvia. Tutti i dati memorizzati sul dispositivo verranno eliminati.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> con l'app <ph name="APP_NAME" /></translation>
@@ -7383,6 +7387,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7730683939467795481">Questa pagina è stata modificata dall'estensione "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7735165285389721951">È in corso un'altra configurazione di Steam. Attendi che venga completata prima di riprovare</translation>
 <translation id="7737115349420013392">Accoppiamento con "<ph name="DEVICE_NAME" />"…</translation>
+<translation id="7737203573077018777">È stata ricevuta l'istruzione <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
 <translation id="7737846262459425222">Puoi modificare questa preferenza in qualsiasi momento in Impostazioni &gt; Assistente Google &gt; Contesto dello schermo.</translation>
 <translation id="7737948071472253612">Non possono utilizzare la videocamera</translation>
 <translation id="77381465218432215">Mostra lettere accentate e caratteri speciali</translation>
@@ -7479,7 +7484,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7819605256207059717">Bloccato dalla tua organizzazione</translation>
 <translation id="7820561748632634942">Vuoi assegnare sensori aggiuntivi?</translation>
 <translation id="782057141565633384">C&amp;opia l'indirizzo del video</translation>
-<translation id="7822187537422052256">Vuoi rimuovere questo indirizzo?</translation>
 <translation id="7824864914877854148">Impossibile completare il backup a causa di un errore.</translation>
 <translation id="782590969421016895">Usa pagine correnti</translation>
 <translation id="7826174860695147464">Supporto dei browser precedenti (LBS) - Interni</translation>
@@ -7583,6 +7587,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7912080627461681647">La password è stata modificata sul server. Esci e accedi nuovamente.</translation>
 <translation id="7912974581251770345">Traduzione</translation>
 <translation id="7915457674565721553">Connettiti a Internet per configurare il Controllo genitori</translation>
+<translation id="7916364730877325865">La tua organizzazione non ti consente di attivare la sincronizzazione con questo account</translation>
 <translation id="7918257978052780342">Registrati</translation>
 <translation id="7919123827536834358">Traduci queste lingue automaticamente</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
@@ -8889,7 +8894,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9094038138851891550">Nome utente non valido</translation>
 <translation id="9094859731829297286">Vuoi riservare un disco di dimensione fissa per Linux?</translation>
 <translation id="9094982973264386462">Rimuovi</translation>
-<translation id="9095253524804455615">Rimuovi</translation>
 <translation id="9095364055741191097">Impossibile recuperare i dati locali</translation>
 <translation id="909554839118732438">Chiudi finestre in incognito</translation>
 <translation id="9099220545925418560">In base alla tua cronologia di navigazione. Questa impostazione non è attiva.</translation>

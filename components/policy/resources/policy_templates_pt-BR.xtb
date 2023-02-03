@@ -3037,6 +3037,14 @@ Se a política for deixada sem definição ou se a lista não tiver referências
       Se esta política não for definida, o comportamento padrão será não permitir o login para usuários gerenciados por empresas e permitir o login para usuários não gerenciados.</translation>
 <translation id="3791179836066841809">Documentação da política</translation>
 <translation id="3791556154364029875">Ativar o Workspace flutuante e abrir janelas do navegador remoto ao fazer login</translation>
+<translation id="3793998702484455655">O Chrome tentará fazer upgrade de alguns tipos de recursos secundários de conteúdo misto (HTTP em um site HTTPS) no iOS.
+Consulte https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md para mais detalhes.
+
+O recurso vai ser ativado por padrão. Se a política for ativada ou deixada sem definição, o recurso será ativado.
+
+Se ela for desativada, o recurso será desativado.
+
+Esta política é uma solução temporária e vai ser removida em marcos futuros. A remoção está prevista para acontecer na versão M113.</translation>
 <translation id="3795413481405077588">Esta política permite que um administrador especifique configurações para apps da Web instalados.
 
       Esta política mapeia um ID de app da Web para a própria configuração específica. É possível usar o ID especial <ph name="DEFAULT_SCOPE" /> para definir uma configuração padrão, que será aplicada a todos os apps da Web que não tiverem uma configuração personalizada definida nesta política.
@@ -3544,13 +3552,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="4275048399551500192">Não mostrar controles de mídia para sessões do <ph name="PRODUCT_NAME" /> iniciadas por outros dispositivos</translation>
 <translation id="4282243913059705499">Sempre mostrar o ícone do <ph name="PRODUCT_NAME" /> na barra de ferramentas</translation>
 <translation id="4285674129118156176">Permitir que usuários sem afiliação utilizem o ARC</translation>
-<translation id="4287344576768105337">A definição da política impede que páginas da Web com URLs proibidos sejam carregadas. Ela fornece uma lista de padrões de URL que especificam URLs proibidos. Deixar a política sem definição significa que nenhum URL será proibido no navegador. Formate o padrão de URL da maneira descrita em https://support.google.com/chrome/a?p=url_blocklist_filter_format. É possível definir até 1.000 exceções em <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      Na versão 73 e mais recentes do <ph name="PRODUCT_NAME" />, é possível bloquear URLs "javascript://*". No entanto, isso só afeta JavaScript inserido na barra de endereço (ou, por exemplo, bookmarklets). URLs com JavaScript na página que tenham dados dinamicamente carregados não estarão sujeitos a esta política. Por exemplo, se você bloquear example.com/abc, ainda será possível carregar example.com/abc na página example.com usando XMLHTTPRequest.
-
-      Na versão 92 e mais recentes do <ph name="PRODUCT_NAME" />, esta política também vai oferecer suporte ao modo headless.
-
-      Observação: o bloqueio de URLs internos chrome://* e chrome-untrusted://* pode gerar erros inesperados ou ser ignorado em casos especiais. Em vez de bloquear determinados URLs internos, confira se há políticas mais específicas disponíveis. Casos comuns: em vez de bloquear chrome://settings/certificates, use a <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />. Em vez de bloquear chrome-untrusted://crosh, use a <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="428948795004445932">Frequência de amostragem e coleta de dados de rede. O mínimo permitido é de um minuto.
 
       Se deixada sem definição, a frequência padrão de 10 minutos será aplicada.</translation>
@@ -3688,11 +3689,6 @@ A remoção foi feita na versão M112.</translation>
 <translation id="4447668084338250480">Comportamento de redirecionamento à intranet</translation>
 <translation id="4449469846627734399">Definir configuração do dia para a economia de energia no período de pico</translation>
 <translation id="4449545651113180484">Girar tela no sentido horário em 270 graus</translation>
-<translation id="4450005376189179872">Se <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> for definida como "Ativada", a definição de <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> permitirá a configuração do modo avançado de carregamento da bateria. O valor para <ph name="CHARGE_START_TIME_FIELD_NAME" /> precisa ser menor que <ph name="CHARGE_END_TIME_FIELD_NAME" />.
-
-      Se a política não for definida, o modo avançado de carregamento da bateria ficará desativado.
-
-      Valores válidos para o campo <ph name="MINUTE_FIELD_NAME" /> em <ph name="CHARGE_START_TIME_FIELD_NAME" /> e <ph name="CHARGE_END_TIME_FIELD_NAME" /> são 0, 15, 30, 45.</translation>
 <translation id="4452653762766030431">Controla a disponibilidade do compartilhamento de arquivos por rede no ChromeOS</translation>
 <translation id="445270821089253489">Controla quais tipos de informações do usuário e do dispositivo são enviadas.</translation>
 <translation id="4453913621209182880">Permitir impressão somente com gráficos de segundo plano</translation>
@@ -4800,6 +4796,10 @@ Se a política for desativada ou deixada sem definição, as configurações de 
       Quando o valor desta política está definido e não é 0, o usuário conectado no momento é desconectado automaticamente após um tempo de inatividade de duração especificada.
 
       O valor da política deve ser especificado em milissegundos.</translation>
+<translation id="5501031245538651575">Da versão M110 em diante, a API window.webkitStorageInfo não padrão vai ser removida. A política reativa essa API.
+Se a política for ativada, a API window.webkitStorageInfo ficará disponível.
+Se ela for desativada ou deixada sem definição, a API vai ficar indisponível.
+A remoção foi feita na versão M112.</translation>
 <translation id="5502683401545256109">Esta política controla se o usuário receberá uma notificação para selecionar um certificado de cliente na tela de login no frame que hospeda o fluxo SAML quando houver correspondência da política <ph name="DEVICE_LOGIN_SCREEN_AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> com mais de um certificado.
       Se esta política for definida como "Ativada", o usuário receberá uma solicitação para selecionar um certificado do cliente sempre que a política de seleção automática tiver correspondência com vários certificados.
       Se esta política for definida como "Desativada" ou deixada sem definição, o usuário nunca receberá uma solicitação para selecionar um certificado do cliente na tela de login.
@@ -5123,11 +5123,6 @@ O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de e
 <translation id="5835674781974810379">Limpar cookies e outros dados do site</translation>
 <translation id="5836064773277134605">Restringir o intervalo de portas UDP usado pelo host de acesso remoto</translation>
 <translation id="583627479140113555">Ativar a importação de senhas salvas na primeira execução</translation>
-<translation id="5837898601525273156">Se <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> estiver definida, a definição de <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> como "Ativada" manterá a política avançada de gerenciamento de energia para o modo de carregamento da bateria ativada, se ela for compatível com o dispositivo. Esse modo permite que os usuários maximizem a integridade da bateria ao usar um algoritmo de carregamento padrão e outras técnicas fora do horário de trabalho. Durante o horário de trabalho, o sistema usa um carregamento expresso, que permite que a bateria carregue mais rapidamente. Para cada dia, especifique o período em que o sistema será mais utilizado pelo horário de início e a duração.
-
-      Se a política for definida como "Desativada" ou não for definida, o modo avançado de carregamento da bateria ficará desativado.
-
-      Os usuários não poderão mudar essa configuração.</translation>
 <translation id="5838452040629810808">Ativar destaque do cursor</translation>
 <translation id="5842283830553218200">O novo comportamento para envio de eventos em controles de formulário desativados vai ser usado por padrão.</translation>
 <translation id="5848438019586925019">O algoritmo para gerar pares de chaves.</translation>

@@ -376,6 +376,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1339009753652684748">Acesse o Google Assistente sempre que você disser "Ok Google". Para economizar bateria, selecione “Ativado (recomendado)”. O Google Assistente responderá apenas quando o dispositivo estiver conectado ou carregando.</translation>
 <translation id="13392265090583506">Configurações e acessibilidade</translation>
 <translation id="1340527397989195812">Fazer backup de mídia do dispositivo usando o aplicativo Arquivos.</translation>
+<translation id="1341871421050612057">Não é possível sincronizar com <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Conceder aos apps Linux permissão para acessar dispositivos USB. O Linux não terá informações do dispositivo USB depois que ele for removido.</translation>
 <translation id="1343920184519992513">Continuar de onde parou e abrir um conjunto específico de páginas</translation>
 <translation id="134589511016534552">As guias de mídia também aparecem na seção "Guias abertas"</translation>
@@ -1117,7 +1118,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1975841812214822307">Remover...</translation>
 <translation id="1976150099241323601">Faça login no dispositivo seguro</translation>
 <translation id="1977965994116744507">Aproxime o smartphone para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978057560491495741">Remover endereço</translation>
 <translation id="1979095679518582070">A desativação desse recurso não afeta a capacidade do dispositivo de enviar as informações necessárias para serviços básicos, como atualizações do sistema e segurança.</translation>
 <translation id="1979280758666859181">Você está mudando para um canal com uma versão mais antiga do <ph name="PRODUCT_NAME" />. A mudança de canal será aplicada quando a versão do canal corresponder à versão instalada atualmente no dispositivo.</translation>
 <translation id="197989455406964291">O KDC não é compatível com esse tipo de criptografia</translation>
@@ -3058,6 +3058,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Você e o Google</translation>
 <translation id="3722108462506185496">Erro ao iniciar o serviço da máquina virtual. Tente novamente.</translation>
+<translation id="3722624153992426516">Instrução <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> recebida</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Redes W-Fi disponíveis</translation>
 <translation id="3727187387656390258">Inspecionar pop-up</translation>
@@ -3414,6 +3415,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="402211067068791756">Essa ação vai apagar <ph name="TOTAL_USAGE" /> de dados armazenados pelos sites mostrados</translation>
 <translation id="4022426551683927403">&amp;Adicionar ao dicionário</translation>
 <translation id="4025039777635956441">Desativar som do site selecionado</translation>
+<translation id="402707738228916911">Instrução <ph name="AUTHORIZE_INSTRUCTION_NAME" /> recebida</translation>
 <translation id="4027958407426528157">Abrir sites em apps instalados no dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Adicionar métodos de entrada</translation>
 <translation id="4029556917477724407">Voltar da página <ph name="PAGE_TITLE" /></translation>
@@ -4155,6 +4157,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4713409221649555176">Excluir ao fechar todas as janelas</translation>
 <translation id="47158868804223727">Clique no nome do grupo para abrir ou fechar</translation>
 <translation id="4716483597559580346">Executar Powerwash para maior segurança</translation>
+<translation id="471759229191973607">Mudar tema</translation>
 <translation id="4722735765955348426">Senha para <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">O <ph name="APP_NAME" /> está compartilhando sua tela.</translation>
 <translation id="4722989931633062466">Não pode mostrar solicitações de login de terceiros</translation>
@@ -4297,7 +4300,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4852916668365817106">Cor do mouse</translation>
 <translation id="4853020600495124913">Abrir em &amp;nova janela</translation>
 <translation id="4854317507773910281">Escolha uma conta de familiar responsável para aprovação</translation>
-<translation id="4854603338816296098">O endereço foi removido</translation>
 <translation id="485480310608090163">Mais configurações e permissões</translation>
 <translation id="4858913220355269194">Pelé</translation>
 <translation id="4862642413395066333">Respostas OCSP de assinatura</translation>
@@ -5696,6 +5698,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6150961653851236686">Este idioma é usado ao traduzir as páginas</translation>
 <translation id="6151323131516309312">Pressione <ph name="SEARCH_KEY" /> para pesquisar <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">O arquivo já existe na sua pasta de download.</translation>
+<translation id="6152918902620844577">Aguardando a próxima operação</translation>
 <translation id="6154240335466762404">Remover todas as portas</translation>
 <translation id="615436196126345398">Protocolo</translation>
 <translation id="6155141482566063812">A guia em segundo plano está compartilhando sua tela</translation>
@@ -7180,6 +7183,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> não está respondendo. Selecione "Forçar fechamento" para fechar o app.</translation>
 <translation id="7535730537657706072">Para limpar o histórico de navegação anônima do seu dispositivo, feche todas as guias anônimas</translation>
 <translation id="7537451260744431038">Os sites não podem usar cookies para melhorar sua experiência de navegação, como manter sua conta conectada ou se lembrar dos itens em um carrinho de compras</translation>
+<translation id="7538088324298143359">Pesquisar na imagem com o <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Ocorreu um erro durante a verificação de atualizações: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> reverteu este dispositivo para uma versão anterior. Salve arquivos importantes e o reinicie. Todos os dados do dispositivo serão excluídos.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> com o app <ph name="APP_NAME" /></translation>
@@ -7408,6 +7412,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7730683939467795481">Esta página foi mudada pela extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="7735165285389721951">Outra configuração do Steam está em execução. Aguarde a conclusão para tentar novamente</translation>
 <translation id="7737115349420013392">Pareando com "<ph name="DEVICE_NAME" />"…</translation>
+<translation id="7737203573077018777">Instrução <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> recebida</translation>
 <translation id="7737846262459425222">Você pode mudar essa opção a qualquer momento em Configurações &gt; Google Assistente &gt; Contexto da tela.</translation>
 <translation id="7737948071472253612">Bloquear o uso da câmera</translation>
 <translation id="77381465218432215">Mostrar acentos e caracteres especiais</translation>
@@ -7505,7 +7510,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7819605256207059717">Bloqueado pela sua organização</translation>
 <translation id="7820561748632634942">Atribuir mais interruptores?</translation>
 <translation id="782057141565633384">C&amp;opiar endereço do vídeo</translation>
-<translation id="7822187537422052256">Tem certeza de que quer remover esse endereço?</translation>
 <translation id="7824864914877854148">Ocorreu um erro e não foi possível concluir o backup</translation>
 <translation id="782590969421016895">Usar as páginas atuais</translation>
 <translation id="7826174860695147464">Suporte a navegadores legados (LBS): configurações internas</translation>
@@ -7609,6 +7613,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7912080627461681647">Sua senha foi alterada no servidor. Saia e faça login novamente.</translation>
 <translation id="7912974581251770345">Tradução</translation>
 <translation id="7915457674565721553">Conecte-se à Internet para configurar o controle dos pais</translation>
+<translation id="7916364730877325865">Sua organização não permite ativar a sincronização com esta conta</translation>
 <translation id="7918257978052780342">Inscrever-se</translation>
 <translation id="7919123827536834358">Traduzir estes idiomas automaticamente</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>
@@ -8916,7 +8921,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9094038138851891550">Nome de usuário inválido</translation>
 <translation id="9094859731829297286">Tem certeza de que quer reservar um disco de tamanho fixo no Linux?</translation>
 <translation id="9094982973264386462">Remover</translation>
-<translation id="9095253524804455615">Remover</translation>
 <translation id="9095364055741191097">Falha ao acessar dados locais</translation>
 <translation id="909554839118732438">Fechar navegação anônima</translation>
 <translation id="9099220545925418560">Com base no seu histórico de navegação. Esta configuração está desativada.</translation>

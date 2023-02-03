@@ -704,6 +704,16 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si no estableces la política, se habilitarán todas las funciones de <ph name="PRODUCT_OS_NAME" /> de forma predeterminada, y el usuario podrá usar cualquiera de ellas.
 
       Nota: Por el momento, la función de Análisis está inhabilitada de forma predeterminada mediante una marca de función. Si el usuario habilita la función mediante la marca de función, se podrá inhabilitar a través de la política.</translation>
+<translation id="1642854499667422595">Si habilitas esta política, las extensiones que no estén publicadas en Chrome Web
+Store se inhabilitarán en <ph name="PRODUCT_NAME" />.
+Esta política ignorará las extensiones instaladas en el modo de desarrollador, con una línea de comandos y otras que no se instalen desde Chrome Web Store (p. ej., autohosting).
+
+Si estableces la política como <ph name="ALLOW_UNPUBLISHED" /> (0) o no la estableces, se permitirán las extensiones no publicadas.
+Si estableces la política como <ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED" /> (1), se inhabilitarán las extensiones no publicadas de Chrome Web Store, salvo que la extensión esté instalada de manera automática o esté fijada a la versión según la política empresarial (consulta la nota).
+Si estableces la política como <ph name="DISABLE_UNPUBLISHED" /> (2), se inhabilitarán las extensiones no publicadas de Chrome Web Store, incluso las que estén instaladas de manera automática o fijadas a la versión según la política empresarial (consulta la nota).
+
+Nota: La instalación automática y la fijación a la versión se configuran con las políticas <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> y
+<ph name="EXTENSION_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1645793986494086629">Esquema:</translation>
 <translation id="1647558381546345298">Si estableces la política, se configurará el tamaño del almacenamiento en caché que use <ph name="PRODUCT_NAME" /> para guardar en el disco los archivos multimedia almacenados en caché, independientemente de que los usuarios hayan especificado o no la marca --media-cache-size. El valor especificado en esta política no establece un límite estricto, sino una sugerencia para el sistema de almacenamiento en caché. Se podrían redondear hacia arriba los valores por debajo de un gigabyte según las necesidades del navegador.
 
@@ -931,6 +941,7 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
       Si habilitas la política, WebDriver podrá anular las políticas incompatibles.
 
       Si inhabilitas la política o no la configuras, WebDriver no podrá anular las políticas incompatibles.</translation>
+<translation id="1883274744253492031">Habilitar la actualización automática de contenido mixto</translation>
 <translation id="1885782360784839335">Permitir que se muestre el contenido promocional en la pestaña completa</translation>
 <translation id="1888871729456797026">El token de inscripción de la política de nube en computadoras de escritorio</translation>
 <translation id="1893271062894546361">Si habilitas esta política, la IU de los controles de reproducción de contenido multimedia estará disponible en las sesiones de <ph name="PRODUCT_NAME" /> que inicien otros dispositivos en la red local.
@@ -1080,6 +1091,7 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 <translation id="1997943707974344423">Permitir Smart Lock</translation>
 <translation id="1998504583649140526">Configuración de solicitudes de red privada</translation>
 <translation id="1999000620918508488">Fuerza la pantalla de acceso para ocultar o mostrar la información del sistema.</translation>
+<translation id="1999401210569035434">Permitir extensiones no publicadas</translation>
 <translation id="1999942889260716089">Si estableces la política como verdadera, se activarán las sugerencias de búsqueda en la barra de direcciones de <ph name="PRODUCT_NAME" />. Si la estableces como falsa, se desactivarán estas sugerencias de búsqueda.
 
       Las sugerencias basadas en los favoritos o el Historial no se ven afectadas por la política.
@@ -1642,6 +1654,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
        Si no estableces la política, se mantendrá desactivada la carga fuera del horario de mayor consumo.</translation>
 <translation id="2502467045153796624">Comportamiento del cambio a una versión inferior del canal</translation>
+<translation id="2505101658854883014">Inhabilitar las extensiones no publicadas, incluidas las instaladas de manera automática o fijadas a la versión</translation>
 <translation id="250670737672448119">Habilita la función de accesibilidad de resaltar el signo de intercalación.
 
           Esta función resalta el área que rodea al cursor de texto mientras se está editando texto.
@@ -3532,13 +3545,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="4275048399551500192">No mostrar los controles multimedia de las sesiones de <ph name="PRODUCT_NAME" /> que iniciaron otros dispositivos</translation>
 <translation id="4282243913059705499">Mostrar siempre el ícono <ph name="PRODUCT_NAME" /> en la barra de herramientas</translation>
 <translation id="4285674129118156176">Permitir que los usuarios no afiliados usen ARC</translation>
-<translation id="4287344576768105337">Si estableces la política, no podrán cargarse las páginas web que tengan URLs prohibidas. Proporciona una lista de patrones de URL donde se especifican URLs prohibidas. Si no estableces la política, no se prohibirá ninguna URL en el navegador. El patrón de una URL debe presentar un formato conforme a lo especificado en ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Se pueden definir 1,000 excepciones como máximo en la política <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      A partir de la versión 73 de <ph name="PRODUCT_NAME" />, podrás bloquear las URLs javascript://*. Sin embargo, la política solo afectará el lenguaje JavaScript ingresado en la barra de direcciones (o, por ejemplo, bookmarklets). Quedan excluidas de esta política las URLs de JavaScript en páginas con datos cargados dinámicamente. Por ejemplo, si bloqueas example.com/abc, la página example.com podrá seguir cargando example.com/abc mediante XMLHTTPRequest.
-
-      A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política también es compatible en el modo sin interfaz gráfica.
-
-      Nota: Si bloqueas las URLs internas chrome://* y chrome-untrusted://*, es posible que se produzcan errores inesperados o que se eludan en casos especiales. En lugar de bloquear determinadas URLs internas, consulta si hay más políticas específicas disponibles. Casos comunes: En lugar de bloquear chrome://settings/certificates, usa <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />. En lugar de bloquear chrome-untrusted://crosh, usa <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="428948795004445932">Es la tasa a la que se toman muestras de los datos de red y se los recopila. El mínimo permitido es 1 minuto.
 
       Si no estableces la política, se aplicará la tasa predeterminada de 10 minutos.</translation>
@@ -3619,6 +3625,10 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="439661169333921592">Inhabilitar la función para destacar el cursor del teclado en la pantalla de acceso</translation>
 <translation id="4397045637922200204">Desactivar la recuperación de la cuenta</translation>
 <translation id="4397464099112037398">Configuración predeterminada del permiso de Ubicación de ventanas</translation>
+<translation id="4401196752827224189">Se quitará WebSQL en contextos no seguros a partir de M110. Esta política vuelve a habilitar la API.
+          Si la estableces como verdadera, WebSQL en contextos no seguros estará disponible.
+          Si estableces esta política como falsa o no la estableces, WebSQL en contextos no seguros seguirá disponible hasta la versión M109 y, luego, no estará disponible a partir de M110.
+Esto se quitó en M112.</translation>
 <translation id="4401496838830169080">Te permite controlar si se habilita o no la función de Navegación segura de <ph name="PRODUCT_NAME" /> y el modo en el que opera.
 
       Si se establece esta política como "NoProtection" (valor 0), no se activará nunca la Navegación segura.
@@ -3672,11 +3682,6 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4447668084338250480">Comportamiento de la redirección de intranet</translation>
 <translation id="4449469846627734399">Establecer la configuración diurna para el cambio de carga fuera del horario de mayor consumo</translation>
 <translation id="4449545651113180484">Rotar la pantalla hacia la derecha 270 grados</translation>
-<translation id="4450005376189179872">Si habilitas <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> y, luego, estableces <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />, podrás configurar un modo avanzado para la carga de la batería. El valor de <ph name="CHARGE_START_TIME_FIELD_NAME" /> debe ser inferior a <ph name="CHARGE_END_TIME_FIELD_NAME" />.
-
-      Si no estableces la política, el modo avanzado para la carga de la batería se mantendrá desactivado.
-
-      Los valores válidos para el campo <ph name="MINUTE_FIELD_NAME" /> en <ph name="CHARGE_START_TIME_FIELD_NAME" /> y <ph name="CHARGE_END_TIME_FIELD_NAME" /> son 0, 15, 30 y 45.</translation>
 <translation id="4452653762766030431">Controlar la disponibilidad del sistema de archivos compartidos en red para Chrome OS</translation>
 <translation id="445270821089253489">Controla el tipo de información sobre el dispositivo y el usuario que se envía.</translation>
 <translation id="4453913621209182880">Habilitar la impresión solo con los gráficos de fondo</translation>
@@ -3965,6 +3970,7 @@ Se planea quitar esta política en la versión 113 de <ph name="PRODUCT_NAME" />
 <translation id="4703402283970867140">Habilitar un modelo de atenuación inteligente para extender el tiempo de atenuación de la pantalla</translation>
 <translation id="4704958130749494760">Otorgar permiso automáticamente a los sitios para conectarse a dispositivos seriales USB</translation>
 <translation id="471360812659157054">No hacer que window.webkitStorageInfo esté disponible</translation>
+<translation id="4715773950737036924">Controlar la disponibilidad de las extensiones no publicadas en Chrome Web Store</translation>
 <translation id="4722122254122249791">Permite el aislamiento de sitios específicos</translation>
 <translation id="4723829699367336876">Habilitar el cruce seguro de firewall desde clientes de acceso remoto</translation>
 <translation id="4725528134735324213">Habilitar Android Backup Service</translation>
@@ -5107,11 +5113,6 @@ El tiempo de espera de inactividad para iniciar el protector de pantalla y el in
 <translation id="5835674781974810379">Borrar cookies y otros datos de sitios</translation>
 <translation id="5836064773277134605">Restringir el intervalo de puertos UDP que utiliza el host de acceso remoto</translation>
 <translation id="583627479140113555">Habilitar la importación de contraseñas guardadas en la primera ejecución</translation>
-<translation id="5837898601525273156">Si estableces <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> y habilitas <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />, se mantendrá activada la política para administrar la energía en el modo avanzado de carga de la batería (cuando lo admita el dispositivo). Gracias a un algoritmo para la carga estándar y otras técnicas durante las horas en que no se utilice el dispositivo, este modo permite que los usuarios optimicen el estado de la batería. Durante las horas de funcionamiento, el sistema utiliza una carga rápida, la cual permite que la batería se cargue en menos tiempo. Debes especificar el período en que el sistema tendrá más actividad cada día, mediante la hora de inicio y la duración.
-
-      Si se inhabilita la política o no se establece, se mantendrá desactivado el modo avanzado de carga de la batería.
-
-      Los usuarios no podrán cambiar esta configuración.</translation>
 <translation id="5838452040629810808">Habilitar la función para destacar el cursor</translation>
 <translation id="5842283830553218200">Usar el comportamiento nuevo de envío de eventos en los controles de formulario inhabilitados de forma predeterminada</translation>
 <translation id="5848438019586925019">El algoritmo para la generación del par de claves.</translation>
@@ -6548,6 +6549,7 @@ política mientras se esté ejecutando el navegador.</translation>
 <translation id="7126716959063786004">Permitir finalizar procesos en el Administrador de tareas</translation>
 <translation id="7126928806195745404">Configuración de JavaScript</translation>
 <translation id="7127980134843952133">Historial de descargas</translation>
+<translation id="7128513247945602297">Habilitar la actualización automática de contenido mixto en sitios HTTPS</translation>
 <translation id="712963038874313213">Proporciona un playbook de Ansible que debe ejecutarse en el contenedor predeterminado de Crostini.
 
       Esta política proporciona un playbook de Ansible para aplicarlo en el contenedor predeterminado de Crostini si este está disponible en el dispositivo determinado y si lo permiten las políticas.
@@ -7307,6 +7309,7 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
       Los valores válidos para el campo <ph name="MINUTE_FIELD_NAME" /> en <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> y <ph name="CHARGE_START_TIME_FIELD_NAME" /> son 0, 15, 30 y 45.</translation>
 <translation id="7840258755683573560">Habilitar el clic automático</translation>
 <translation id="7841880500990419427">Versión mínima de TLS para resguardo</translation>
+<translation id="7841883965249733328">Inhabilitar la actualización automática de contenido mixto</translation>
 <translation id="7845130996290850593">Habilitar Kerberos</translation>
 <translation id="7846952520291088817">Las URL para las que se exponen las IP locales en los candidatos ICE de WebRTC</translation>
 <translation id="7848641140449742406">Configuración del SO</translation>
@@ -8766,6 +8769,7 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 
       Esta política es una medida temporal y se eliminará en las futuras versiones de <ph name="PRODUCT_NAME" />. Después de que se elimine la política, <ph name="PRODUCT_NAME" /> podrá seguir haciendo consultas sobre los tipos de DNS adicionales.</translation>
 <translation id="9167719789236691545">Inhabilitar Drive en la app de Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="9169161075831670233">Inhabilitar las extensiones no publicadas, excepto las que se instalaron de manera automática o las que están fijadas a la versión</translation>
 <translation id="9172911925443428317">No permitir que se muestre la promoción para calificar en la App Store</translation>
 <translation id="9180108183162961002">Permitir los accesos con la navegación como invitado</translation>
 <translation id="9185963199234034321">Habilitar el contraste alto en la pantalla de acceso y permitir que el usuario lo inhabilite temporalmente</translation>

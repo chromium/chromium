@@ -1117,7 +1117,6 @@
 <translation id="1975841812214822307">निकालें...</translation>
 <translation id="1976150099241323601">सुरक्षा डिवाइस में साइन इन करें</translation>
 <translation id="1977965994116744507">अपने <ph name="DEVICE_TYPE" /> को अनलॉक करने के लिए अपने फ़ोन को पास लाएं.</translation>
-<translation id="1978057560491495741">पता हटाएं</translation>
 <translation id="1979095679518582070">इस सुविधा को बंद करने के बाद भी यह डिवाइस, सिस्टम अपडेट, और सुरक्षा जैसी ज़रूरी सेवाएं पाने के लिए जानकारी भेज सकेगा.</translation>
 <translation id="1979280758666859181">आप <ph name="PRODUCT_NAME" /> के पुराने वर्शन वाले चैनल में बदल रहे हैं. चैनल बदलाव तब लागू किया जाएगा जब चैनल का वर्शन आपके डिवाइस पर वर्तमान में इंस्टॉल किए गए वर्शन से मिलान करेगा.</translation>
 <translation id="197989455406964291">केडीसी में सुरक्षित करने का यह तरीका इस्तेमाल नहीं किया जा सकता.</translation>
@@ -4294,7 +4293,6 @@
 <translation id="4852916668365817106">माउस का रंग बदलने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="4853020600495124913">&amp;नई विंडो में खोलें</translation>
 <translation id="4854317507773910281">मंज़ूरी के लिए माता-पिता का खाता चुनें</translation>
-<translation id="4854603338816296098">पता हटाया गया</translation>
 <translation id="485480310608090163">ज़्यादा सेटिंग और अनुमतियां</translation>
 <translation id="4858913220355269194">फ्रिट्ज़</translation>
 <translation id="4862642413395066333">OCSP प्रतिसाद हस्ताक्षरित करना</translation>
@@ -4848,6 +4846,7 @@
 <translation id="5382591305415226340">समर्थित लिंक प्रबंधित करें</translation>
 <translation id="5383377866517186886">Mac सिस्टम प्राथमिकताओं में कैमरा बंद किया गया है</translation>
 <translation id="5383740867328871413">बिना नाम वाला ग्रुप - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (आईडी: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Chrome Enterprise नीति बदल गई है. एक्सपेरिमेंट बटन को टूलबार में जोड़ा गया. एक्सपेरिमेंट चालू करने के लिए, बटन पर क्लिक करके डायलॉग खोलें.</translation>
 <translation id="5388885445722491159">युग्मित</translation>
 <translation id="5390112241331447203">फ़ीडबैक रिपोर्ट में भेजी गई system_logs.txt फ़ाइलें शामिल करें.</translation>
@@ -5062,6 +5061,7 @@
 <translation id="5578059481725149024">अपने आप साइन इन करें</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> भाषा में अनुवाद पूरा हो गया है</translation>
 <translation id="558170650521898289">Microsoft Windows Hardware Driver Verification</translation>
+<translation id="5581876958763461074">सभी नोट</translation>
 <translation id="5581972110672966454">डिवाइस को डोमेन से नहीं जोड़ा जा सकता. कृपया फिर से कोशिश करें. इसके अलावा, डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">मुख्य मेन्यू</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -7497,7 +7497,6 @@
 <translation id="7819605256207059717">आपके संगठन ने इसे ब्लॉक किया है</translation>
 <translation id="7820561748632634942">क्या आप अन्य स्विच असाइन करना चाहते हैं?</translation>
 <translation id="782057141565633384">वीडियो के पते को कॉ&amp;पी करें</translation>
-<translation id="7822187537422052256">क्या आप वाकई इस पते को हटाना चाहते हैं?</translation>
 <translation id="7824864914877854148">गड़बड़ी की वजह से बैकअप पूरा नहीं किया जा सका</translation>
 <translation id="782590969421016895">वर्तमान पृष्ठों का उपयोग करें</translation>
 <translation id="7826174860695147464">लेगसी ब्राउज़र के लिए सपोर्ट (एलबीएस) - अंदरूनी सेटिंग</translation>
@@ -8908,7 +8907,6 @@
 <translation id="9094038138851891550">उपयोगकर्ता का नाम अमान्य है</translation>
 <translation id="9094859731829297286">क्या आप वाकई Linux के लिए, एक तय साइज़ की डिस्क रिज़र्व करना चाहते हैं?</translation>
 <translation id="9094982973264386462">हटाएं</translation>
-<translation id="9095253524804455615">हटाएं</translation>
 <translation id="9095364055741191097">लोकल डेटा वापस नहीं लाया जा सका</translation>
 <translation id="909554839118732438">गुप्त विंडो बंद करें</translation>
 <translation id="9099220545925418560">विज्ञापन के विषय, आपके ब्राउज़िंग इतिहास के आधार पर चुने गए हैं. यह सेटिंग बंद है.</translation>

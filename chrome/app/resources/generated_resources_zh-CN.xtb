@@ -1097,7 +1097,6 @@
 <translation id="1975841812214822307">移除…</translation>
 <translation id="1976150099241323601">登录安全设备</translation>
 <translation id="1977965994116744507">需将您的手机靠近您的 <ph name="DEVICE_TYPE" />，才能为其解锁。</translation>
-<translation id="1978057560491495741">移除地址</translation>
 <translation id="1979095679518582070">关闭这项功能，设备仍然可以发送基本服务（例如系统更新和安全服务）所需的信息。</translation>
 <translation id="1979280758666859181">您正将版本更改为较旧版的 <ph name="PRODUCT_NAME" />。该版本的版本号必须与您设备上目前所安装版本的版本号相符，版本变更才会生效。</translation>
 <translation id="197989455406964291">KDC 不支持加密类型</translation>
@@ -4268,7 +4267,6 @@
 <translation id="4852916668365817106">鼠标光标颜色</translation>
 <translation id="4853020600495124913">在新窗口中打开(&amp;O)</translation>
 <translation id="4854317507773910281">请选择家长帐号以寻求批准</translation>
-<translation id="4854603338816296098">地址已移除</translation>
 <translation id="485480310608090163">更多设置和权限</translation>
 <translation id="4858913220355269194">足球</translation>
 <translation id="4862642413395066333">签名 OCSP 响应</translation>
@@ -7470,7 +7468,6 @@
 <translation id="7819605256207059717">已被贵组织屏蔽</translation>
 <translation id="7820561748632634942">分配更多开关？</translation>
 <translation id="782057141565633384">复制视频地址(&amp;O)</translation>
-<translation id="7822187537422052256">确定要移除此地址吗？</translation>
 <translation id="7824864914877854148">发生错误，因此无法完成备份</translation>
 <translation id="782590969421016895">使用当前网页</translation>
 <translation id="7826174860695147464">旧版浏览器支持 (LBS) - 内部设置</translation>
@@ -8880,7 +8877,6 @@
 <translation id="9094038138851891550">用户名无效</translation>
 <translation id="9094859731829297286">确定要为 Linux 预留固定大小的磁盘空间吗？</translation>
 <translation id="9094982973264386462">移除</translation>
-<translation id="9095253524804455615">移除</translation>
 <translation id="9095364055741191097">未能恢复本地数据</translation>
 <translation id="909554839118732438">关闭无痕模式</translation>
 <translation id="9099220545925418560">根据您的浏览记录。此设置已关闭。</translation>

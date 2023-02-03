@@ -80,6 +80,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="149095475893949513">Hierdie webwerf probeer tans om 'n opstellingprofiel af te laai.</translation>
 <translation id="1491277525950327607">Dubbeltik om instelling te wissel</translation>
 <translation id="1492417797159476138">Jy het hierdie gebruikernaam reeds vir hierdie werf gestoor</translation>
+<translation id="1498283581832036924">Jou <ph name="WEBSITE" />-rekening sal nie uitgevee word nie.</translation>
 <translation id="1506063256525392513">Dit maak dit vir jou moontlik om foto's te neem en op te laai, asook om QR-kodes te skandeer.</translation>
 <translation id="1509486075633541495">Meld by webwerf aan</translation>
 <translation id="1509960214886564027">Kenmerke op baie werwe kan breek</translation>
@@ -219,6 +220,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2664621323652615289">Stop</translation>
 <translation id="2671426118752779020">Jy kan die wagwoorde wat jy in Google Wagwoordbestuurder gestoor het in ander programme op jou iPhone gebruik.</translation>
 <translation id="2690858294534178585">Kamera word tans gebruik</translation>
+<translation id="26915454213703967">Soek op prent met Google</translation>
 <translation id="2691653761409724435">Nie vanlyn beskikbaar nie</translation>
 <translation id="2695507686909505111">Bladsy is vertaal</translation>
 <translation id="2697526135132990015">Meld af en vee data uit</translation>
@@ -382,6 +384,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3819183753496523827">Jy is vanlyn. Gaan jou internetverbinding na en probeer weer.</translation>
 <translation id="3835964409414434850">Gaan na volgende oortjie</translation>
 <translation id="385051799172605136">Terug</translation>
+<translation id="3851938967634752633">Wagwoorde vir <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> en <ph name="NUMBER_OF_ACCOUNTS" /> ander sal uitgevee word. Jou rekeninge sal nie uitgevee word nie.</translation>
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3861486700625780712">Ontvolg</translation>
 <translation id="3863769054730344136">Stuur na jou toestelle toe</translation>
@@ -517,6 +520,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="4833786495304741580">Stuur gebruikstatistieke en omvalverslae outomaties na Google toe.</translation>
 <translation id="4840495572919996524">Jou boekmerke, geskiedenis, wagwoorde en meer sal nie meer met jou Google-rekening gesinkroniseer word nie.</translation>
 <translation id="4844899002472726590">Sien en wysig die onderwerpe waarin jy belangstel</translation>
+<translation id="4848999860252535517">Vee wagwoord vir <ph name="WEBSITE" /> uit?</translation>
 <translation id="4854345657858711387">Stel 'n wagkode</translation>
 <translation id="4858786880085262208">Gradeer waar moontlik op na HTTPS. Veilige webwerwe kan dalk inhoud inbed wat nie veilig is nie.</translation>
 <translation id="4860895144060829044">Bel</translation>
@@ -770,6 +774,7 @@ Probeer 'n unieke wagwoord vir elke werf gebruik.</translation>
 <translation id="6598875554591387303">Rangskik volgens Uitgewer</translation>
 <translation id="6603393121510733479">Jou organisasie het private blaai afgeskakel.
 <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Wagwoorde vir <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> en <ph name="THIRD_WEBSITE" /> sal uitgevee word. Jou rekeninge sal nie uitgevee word nie.</translation>
 <translation id="6610002944194042868">Vertaalopsies</translation>
 <translation id="661266467055912436">Verbeter sekuriteit vir jou en almal op die web.</translation>
 <translation id="6620279676667515405">Kanselleer</translation>
@@ -1047,6 +1052,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8756969031206844760">Dateer wagwoord op?</translation>
 <translation id="8763613688786959833">Gaan na laaste oortjie</translation>
 <translation id="8764015330924122850">Ontvolg <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Wagwoorde vir <ph name="WEBSITE" /> en <ph name="SECOND_WEBSITE" /> sal uitgevee word. Jou rekeninge sal nie uitgevee word nie.</translation>
 <translation id="8775144690796719618">Ongeldige URL</translation>
 <translation id="8787968206789828143">Soek op web</translation>
 <translation id="8792626944327216835">mikrofoon</translation>
@@ -1096,6 +1102,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9093271241977565440">Tik op die soekikoon boaan die skerm</translation>
 <translation id="9094033019050270033">Dateer wagwoord op</translation>
 <translation id="9097506547406246598">Kan nie ontvolg nie. Iets was fout.</translation>
+<translation id="9098541895599151034">Vee <ph name="NUMBER_OF_ACCOUNTS" /> wagwoorde uit?</translation>
 <translation id="9100610230175265781">Wagwoordfrase word vereis</translation>
 <translation id="9107664647686727385">Gaan na vir gekompromitteerde wagwoorde</translation>
 <translation id="9124387962554796433">Google kan dalk jou geskiedenis gebruik om Search en ander Google-dienste te personaliseer.</translation>

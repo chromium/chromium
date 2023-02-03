@@ -1100,7 +1100,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1975841812214822307">Silin...</translation>
 <translation id="1976150099241323601">Təhlükəsizlik Cihazına daxil olun</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> cihazını kiliddən çıxarmaq üçün telefonunuzu yaxın tutun.</translation>
-<translation id="1978057560491495741">Ünvanı silin</translation>
 <translation id="1979095679518582070">Bu xüsusiyyəti söndürmək bu cihazın sistem yeniləmələri və təhlükəsizlik kimi vacib xidmətlər üçün lazım olan məlumatları göndərmə imkanına təsir göstərmir.</translation>
 <translation id="1979280758666859181">Köhnə versiyalı <ph name="PRODUCT_NAME" /> ilə kanala keçirsiniz.</translation>
 <translation id="197989455406964291">KDC şifrələmə növünü dəstəkləmir</translation>
@@ -2603,6 +2602,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3315442055907669208">Oxucu rejiminə daxil olun</translation>
 <translation id="3317459757438853210">İkitərəfli</translation>
 <translation id="3317678681329786349">Kamera və mikrofon blok edildi</translation>
+<translation id="3319306431415395200">Şəkildəki mətni <ph name="VISUAL_SEARCH_PROVIDER" /> ilə tərcümə edin</translation>
 <translation id="3320630259304269485">Təhlükəsiz Baxış (təhlükəli saytlardan qoruma) və digər güvənlik ayarları</translation>
 <translation id="3323521181261657960">Bonus! Daha çox ekran vaxtı əldə etdiniz</translation>
 <translation id="3323577066981719144">Burada etdiyiniz dəyişikliklər yalnız Chrome Brauzerinə aiddir. Lacros Chrome Brauzer ayarlarınızda dəyişiklik etmək üçün Lacros Chrome Brauzerini açın və ayarlara keçin.</translation>
@@ -4275,7 +4275,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4852916668365817106">Maus rəngi</translation>
 <translation id="4853020600495124913">Yeni pəncərədə açın</translation>
 <translation id="4854317507773910281">Təsdiq üçün valideyn hesabı seçin</translation>
-<translation id="4854603338816296098">Ünvan silindi</translation>
 <translation id="485480310608090163">Daha çox ayar və icazələr</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">OCSP Cavabları imzalanır</translation>
@@ -7340,7 +7339,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7696063401938172191">"<ph name="PHONE_NAME" />" telefonunuzda:</translation>
 <translation id="769824636077131955">Bu sənəd güvənlik yoxlanışı üçün çox böyükdür. 50 MB ölçüyə qədər sənədləri çap edə bilərsiniz.</translation>
 <translation id="7698507637739331665">Bəzi elementlər bloklanıb</translation>
-<translation id="7701040980221191251">Heç bir</translation>
+<translation id="7701040980221191251">Heç biri</translation>
 <translation id="7701869757853594372">USER tutacaqları</translation>
 <translation id="7702574632857388784"><ph name="FILE_NAME" /> faylını siyahıdan silin</translation>
 <translation id="7702907602086592255">Domen</translation>
@@ -7478,7 +7477,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7819605256207059717">Təşkilatınız tərəfindən bloklanıb</translation>
 <translation id="7820561748632634942">Əlavə keçiricilər əldə edilsin?</translation>
 <translation id="782057141565633384">Video ünvanını kopyalayın</translation>
-<translation id="7822187537422052256">Bu ünvanı silmək istədiyinizə əminsiniz?</translation>
 <translation id="7824864914877854148">Xəta baş verdiyinə görə yedəklənmə tamamlanmadı</translation>
 <translation id="782590969421016895">Cari səhifələri işlədin</translation>
 <translation id="7826174860695147464">Köhnə Brauzer Dəstəyi (LBS) - Daxili</translation>
@@ -7675,6 +7673,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Səsi <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Keçid Düyməsi ayarları</translation>
 <translation id="7992203134935383159">Nitq sintezi</translation>
+<translation id="7994515119120860317">Şəkildəki Mətni <ph name="VISUAL_SEARCH_PROVIDER" /> ilə tərcümə edin</translation>
 <translation id="799570308305997052">Veb görünüşü</translation>
 <translation id="7997826902155442747">Proses Prioriteti</translation>
 <translation id="7999229196265990314">Aşağıdakı fayllar yaradıldı:
@@ -8884,7 +8883,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="9094038138851891550">İstifadəçi adı yanlışdır</translation>
 <translation id="9094859731829297286">Linux üçün sabit ölçülü diski saxlamaq istədiyinizə əminsiniz?</translation>
 <translation id="9094982973264386462">Silin</translation>
-<translation id="9095253524804455615">Silin</translation>
 <translation id="9095364055741191097">Lokal datanı bərpa etmək alınmadı</translation>
 <translation id="909554839118732438">Anonim pəncərəni bağlayın</translation>
 <translation id="9099220545925418560">Axtarış tarixçənizə əsaslanır. Bu ayar deaktivdir.</translation>

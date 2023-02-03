@@ -1119,7 +1119,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1975841812214822307">Odstrani ...</translation>
 <translation id="1976150099241323601">Prijava v varnostno napravo</translation>
 <translation id="1977965994116744507">Približajte telefon, če želite odkleniti napravo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978057560491495741">Odstrani naslov</translation>
 <translation id="1979095679518582070">Izklop te funkcije ne vpliva na zmožnost te naprave, da pošilja podatke, potrebne za ključne storitve, kot so posodobitve in varnost sistema.</translation>
 <translation id="1979280758666859181">Preklapljate na kanal s starejšo različico brskalnika <ph name="PRODUCT_NAME" />. Sprememba kanala bo uporabljena, ko se različica kanala ujema z različico, ki je trenutno nameščena v vaši napravi.</translation>
 <translation id="197989455406964291">KDC ne podpira vrste šifriranja</translation>
@@ -2622,6 +2621,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3315442055907669208">Vklop načina bralnika</translation>
 <translation id="3317459757438853210">Obojestransko</translation>
 <translation id="3317678681329786349">Kamera in mikrofon sta blokirana</translation>
+<translation id="3319306431415395200">Prevajanje besedila na sliki s storitvijo <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Varno brskanje (zaščita pred nevarnimi spletnimi mesti) in druge varnostne nastavitve</translation>
 <translation id="3323521181261657960">Nagrada! Čas uporabe je podaljšan.</translation>
 <translation id="3323577066981719144">Spremembe, ki jih naredite tukaj, se uporabljajo samo za brskalnik Chrome. Če želite spreminjati nastavitve brskalnika Chrome Lacros, odprite brskalnik Chrome Lacros in nato nastavitve.</translation>
@@ -4297,7 +4297,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4852916668365817106">Barva kazalca</translation>
 <translation id="4853020600495124913">Odpri v &amp;novem oknu</translation>
 <translation id="4854317507773910281">Izbira starševskega računa za odobritev</translation>
-<translation id="4854603338816296098">Naslov je bil odstranjen</translation>
 <translation id="485480310608090163">Več nastavitev in dovoljenj</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Podpisovanje odgovorov OCSP</translation>
@@ -7510,7 +7509,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7819605256207059717">Blokirala organizacija</translation>
 <translation id="7820561748632634942">Želite dodeliti dodatna stikala?</translation>
 <translation id="782057141565633384">Kopiraj naslov videoposnetka</translation>
-<translation id="7822187537422052256">Ali ste prepričani, da želite odstraniti ta naslov?</translation>
 <translation id="7824864914877854148">Varnostnega kopiranja ni bilo mogoče dokončati zaradi napake</translation>
 <translation id="782590969421016895">Uporabi trenutne strani</translation>
 <translation id="7826174860695147464">Podpora za starejše brskalnike – notranji elementi</translation>
@@ -7707,6 +7705,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7990863024647916394">Glas v jeziku <ph name="DISPLAY_NAME" /> št. <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Nastavitve stikalnega dostopa</translation>
 <translation id="7992203134935383159">Sinteza govora</translation>
+<translation id="7994515119120860317">Prevajanje besedila na sliki s storitvijo <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Spletni pogled</translation>
 <translation id="7997826902155442747">Prednost postopkov</translation>
 <translation id="7999229196265990314">Ustvarjene so bile te datoteke:
@@ -8922,7 +8921,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9094038138851891550">Neveljavno uporabniško ime</translation>
 <translation id="9094859731829297286">Ali ste prepričani, da želite rezervirati disk fiksne velikosti za Linux?</translation>
 <translation id="9094982973264386462">Odstrani</translation>
-<translation id="9095253524804455615">Odstrani</translation>
 <translation id="9095364055741191097">Obnovitev lokalnih podatkov ni uspela</translation>
 <translation id="909554839118732438">Zapri anonimna okna</translation>
 <translation id="9099220545925418560">Na podlagi zgodovine brskanja. Ta nastavitev je izklopljena.</translation>

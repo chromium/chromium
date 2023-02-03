@@ -708,6 +708,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> dilindən tərcümə etməyi təklif edin</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> izləmədən çıxarıldı</translation>
 <translation id="6293101329759844770">Təhlükəsiz Baxışı aktiv etmək üçün <ph name="BEGIN_LINK" />Google Xidmətləri<ph name="END_LINK" /> bölməsini açın və Təhlükəsiz Baxış seçiminə toxunun.</translation>
+<translation id="6320780930074869063">Aktiv olduqda parollar burada saxlanılır: <ph name="ACCOUNT" />. Deaktiv olduqda parollar yalnız bu cihazda saxlanılır.</translation>
 <translation id="6321526113093607004">Əlfəcinlərə əlavə edin</translation>
 <translation id="6324669097367352121">Daxil olma ayarları</translation>
 <translation id="6337234675334993532">Şifrələmə</translation>
@@ -904,7 +905,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7671141431838911305">QURAŞDIRIN</translation>
 <translation id="7679915578945954324">Sayt ünvanları kopyalanıb</translation>
 <translation id="7687508192620387263">Təqvim Faylı Əlçatandır</translation>
-<translation id="7701040980221191251">Heç bir</translation>
+<translation id="7701040980221191251">Heç biri</translation>
 <translation id="7720410380936703141">YENİDƏN SINAYIN</translation>
 <translation id="7726702057919861819">Menyu → Tarixçə → Brauzer Datasını Silin</translation>
 <translation id="7738120385185846461">Problemi xəbər verin…</translation>

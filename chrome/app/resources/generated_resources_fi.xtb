@@ -375,6 +375,7 @@
 <translation id="1339009753652684748">Käytä Assistantia sanomalla "Hey Google". Jos haluat säästää virtaa, valitse Käytössä (suositus). Assistant vastaa vain, jos laite on kytketty virtalähteeseen tai laturiin.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Varmuuskopioi mediatiedostot laitteelta Tiedostot-sovelluksen avulla.</translation>
+<translation id="1341871421050612057">Synkronointi ei onnistu: <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Anna Linux-sovelluksille USB-laitteiden käyttöoikeus. Linux ei muista USB-laitetta, kun se on poistettu.</translation>
 <translation id="1343920184519992513">Jatka siitä, mihin jäit, ja avaa tietyt sivut</translation>
 <translation id="134589511016534552">Mediavälilehdet näkyvät myös Avoimet välilehdet ‑kohdassa</translation>
@@ -1115,7 +1116,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1975841812214822307">Poista...</translation>
 <translation id="1976150099241323601">Kirjaudu sisään suojauslaitteeseen</translation>
 <translation id="1977965994116744507">Tuo puhelimesi lähemmäs, jotta voit avata laitteen <ph name="DEVICE_TYPE" /> lukituksen.</translation>
-<translation id="1978057560491495741">Poista osoite</translation>
 <translation id="1979095679518582070">Jos tämä ominaisuus laitetaan pois päältä, laite voi edelleen lähettää järjestelmäpäivitysten, tietoturvan ja muiden tärkeiden palvelujen edellyttämiä tietoja.</translation>
 <translation id="1979280758666859181">Olet vaihtamassa kanavalle, jossa on käytössä tuotteen <ph name="PRODUCT_NAME" /> vanhempi versio. Kanavan muutos otetaan käyttöön, kun kanavaversio vastaa tällä hetkellä laitteellesi asennettua versiota.</translation>
 <translation id="197989455406964291">KDC ei tue salaustyyppiä</translation>
@@ -4148,6 +4148,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4713409221649555176">Poista, kun kaikki ikkunat suljetaan</translation>
 <translation id="47158868804223727">Laajenna tai tiivistä ryhmä klikkaamalla sen nimeä</translation>
 <translation id="4716483597559580346">Paranna suojausta powerwashin avulla</translation>
+<translation id="471759229191973607">Vaihda teema</translation>
 <translation id="4722735765955348426">Salasana: <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> jakaa näyttösi.</translation>
 <translation id="4722989931633062466">Kolmannen osapuolen kirjautumiskehotuksia ei saa näyttää</translation>
@@ -4290,7 +4291,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4852916668365817106">Hiiren väri</translation>
 <translation id="4853020600495124913">Avaa uudessa ikkunassa</translation>
 <translation id="4854317507773910281">Valitse vanhemman tili hyväksymistä varten</translation>
-<translation id="4854603338816296098">Osoite poistettu</translation>
 <translation id="485480310608090163">Lisää asetuksia ja käyttöoikeuksia</translation>
 <translation id="4858913220355269194">Litti</translation>
 <translation id="4862642413395066333">OCSP-vastauksien allekirjoittaminen</translation>
@@ -6420,7 +6420,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6832218595502288407">Tasaa vasemmalle</translation>
 <translation id="6833479554815567477">Välilehti poistettu ryhmästä <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Siirry käyttämään älykästä ja turvallista selainta.</translation>
-<translation id="6833996806551876956">Tietosuojan hiekkalaatikko ‑kokeilu</translation>
+<translation id="6833996806551876956">Privacy Sandbox ‑kokeilu</translation>
 <translation id="6835712061486505758">Luo Wi-Fi-hotspot, jolla voit jakaa internetyhteyden muille laitteille. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Muodosta internetyhteys, niin voit päivittää laitteen <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Varmenteen poistovirhe</translation>
@@ -7170,6 +7170,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ei vastaa. Sulje sovellus valitsemalla Pakota sulkeutumaan.</translation>
 <translation id="7535730537657706072">Tyhjennä laitteen incognito-selaushistoria sulkemalla kaikki incognito-välilehdet</translation>
 <translation id="7537451260744431038">Sivustot eivät voi käyttää evästeitä selauskokemuksesi parantamiseen, esimerkiksi pitää sinua kirjautuneena tai muistaa ostoskorisi sisältöä</translation>
+<translation id="7538088324298143359">Hae kuvasta: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Virhe tarkistettaessa päivityksiä: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> on päivittänyt laitteen aiempaan versioon. Tallenna tärkeät tiedostot ja käynnistä laite sitten uudelleen. Kaikki laitteen data poistetaan.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> sovelluksella <ph name="APP_NAME" /></translation>
@@ -7494,7 +7495,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7819605256207059717">Organisaatiosi estämä</translation>
 <translation id="7820561748632634942">Määritetäänkö lisää kytkimiä?</translation>
 <translation id="782057141565633384">K&amp;opioi videon osoite</translation>
-<translation id="7822187537422052256">Haluatko varmasti poistaa tämän osoitteen?</translation>
 <translation id="7824864914877854148">Varmuuskopiointi epäonnistui virheen takia</translation>
 <translation id="782590969421016895">Käytä nykyisiä sivuja</translation>
 <translation id="7826174860695147464">Vanhojen selaimien tuki – Sisäiset asetukset</translation>
@@ -7598,6 +7598,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7912080627461681647">Salasana vaihdettiin palvelimella. Kirjaudu ulos ja sitten uudelleen sisään.</translation>
 <translation id="7912974581251770345">Käännös</translation>
 <translation id="7915457674565721553">Muodosta yhteys internetiin, niin voit määrittää lapsilukon</translation>
+<translation id="7916364730877325865">Organisaatiosi ei salli sinun laittaa synkronointia päälle tällä tilillä</translation>
 <translation id="7918257978052780342">Rekisteröidy</translation>
 <translation id="7919123827536834358">Käännä nämä kielet automaattisesti</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
@@ -8903,7 +8904,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="9094038138851891550">Virheellinen käyttäjänimi</translation>
 <translation id="9094859731829297286">Haluatko varmasti varata kiinteän kokoisen levyn Linuxille?</translation>
 <translation id="9094982973264386462">Poista</translation>
-<translation id="9095253524804455615">Poista</translation>
 <translation id="9095364055741191097">Paikallisen datan palauttaminen epäonnistui</translation>
 <translation id="909554839118732438">Sulje incognito-ikkunat</translation>
 <translation id="9099220545925418560">Perustuu selaushistoriaasi. Tämä asetus on poissa päältä.</translation>

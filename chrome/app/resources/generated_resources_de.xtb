@@ -1101,7 +1101,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1975841812214822307">Entfernen...</translation>
 <translation id="1976150099241323601">In Sicherheitsgerät anmelden</translation>
 <translation id="1977965994116744507">Verringere den Abstand zwischen Smartphone und <ph name="DEVICE_TYPE" />, um das Gerät zu entsperren.</translation>
-<translation id="1978057560491495741">Adresse entfernen</translation>
 <translation id="1979095679518582070">Wenn du diese Funktion deaktivierst, kann dieses Gerät weiterhin Informationen senden, die für grundlegende Dienste wie Systemupdates und -sicherheit erforderlich sind.</translation>
 <translation id="1979280758666859181">Du möchtest zu einem Kanal mit einer älteren Version von <ph name="PRODUCT_NAME" /> wechseln. Die Änderung erfolgt, sobald die Kanalversion der aktuell auf deinem Gerät installierten Version entspricht.</translation>
 <translation id="197989455406964291">KDC unterstützt den Verschlüsselungstyp nicht</translation>
@@ -2601,6 +2600,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3315442055907669208">Lesemodus aktivieren</translation>
 <translation id="3317459757438853210">Beidseitig</translation>
 <translation id="3317678681329786349">Kamera und Mikrofon blockiert</translation>
+<translation id="3319306431415395200">Text im Bild mit <ph name="VISUAL_SEARCH_PROVIDER" /> übersetzen</translation>
 <translation id="3320630259304269485">Safe Browsing (Schutz vor schädlichen Websites) und andere Sicherheitseinstellungen</translation>
 <translation id="3323521181261657960">Bonus! Gerätenutzungsdauer verlängert</translation>
 <translation id="3323577066981719144">Änderungen, die du hier vornimmst, werden nur auf den Chrome-Browser angewendet. Wenn du die Einstellungen des Lacros Chrome-Browsers ändern möchtest, öffne den Lacros Chrome-Browser und rufe die Einstellungen auf.</translation>
@@ -4275,7 +4275,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4852916668365817106">Cursorfarbe</translation>
 <translation id="4853020600495124913">In &amp;neuem Fenster öffnen</translation>
 <translation id="4854317507773910281">Elternkonto für die Genehmigung auswählen</translation>
-<translation id="4854603338816296098">Adresse entfernt</translation>
 <translation id="485480310608090163">Weitere Einstellungen und Berechtigungen</translation>
 <translation id="4858913220355269194">Fußball</translation>
 <translation id="4862642413395066333">Signatur von OCSP-Antworten</translation>
@@ -7477,7 +7476,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7819605256207059717">Von deiner Organisation blockiert</translation>
 <translation id="7820561748632634942">Weitere Schalter zuweisen?</translation>
 <translation id="782057141565633384">Videoadresse k&amp;opieren</translation>
-<translation id="7822187537422052256">Adresse wirklich entfernen?</translation>
 <translation id="7824864914877854148">Sicherung konnte aufgrund eines Fehlers nicht abgeschlossen werden</translation>
 <translation id="782590969421016895">Aktuelle Seiten verwenden</translation>
 <translation id="7826174860695147464">Unterstützung älterer Browser – interne Elemente</translation>
@@ -7674,6 +7672,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> – Stimme <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Einstellungen für Schalterzugriff</translation>
 <translation id="7992203134935383159">Sprachsynthese</translation>
+<translation id="7994515119120860317">Text im Bild mit <ph name="VISUAL_SEARCH_PROVIDER" /> übersetzen</translation>
 <translation id="799570308305997052">Webansicht</translation>
 <translation id="7997826902155442747">Prozesspriorität</translation>
 <translation id="7999229196265990314">Folgende Dateien wurden erstellt:
@@ -8886,7 +8885,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9094038138851891550">Nutzername ungültig</translation>
 <translation id="9094859731829297286">Bist du sicher, dass du ein Laufwerk mit einer festen Größe für Linux reservieren möchtest?</translation>
 <translation id="9094982973264386462">Entfernen</translation>
-<translation id="9095253524804455615">Entfernen</translation>
 <translation id="9095364055741191097">Lokale Daten konnten nicht wiederhergestellt werden</translation>
 <translation id="909554839118732438">Inkognitofenster schließen</translation>
 <translation id="9099220545925418560">Basierend auf deinem Browserverlauf. Diese Einstellung ist deaktiviert.</translation>

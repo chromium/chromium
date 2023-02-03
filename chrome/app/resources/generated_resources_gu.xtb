@@ -1101,7 +1101,6 @@
 <translation id="1975841812214822307">દૂર કરો ...</translation>
 <translation id="1976150099241323601">સુરક્ષા ઉપકરણ પર સાઇન ઇન કરો </translation>
 <translation id="1977965994116744507">તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરવા તમારા ફોનને વધુ નજીક લાવો.</translation>
-<translation id="1978057560491495741">સરનામું દૂર કરો</translation>
 <translation id="1979095679518582070">આ સુવિધાને બંધ કરવાથી સિસ્ટમ અપડેટ અને સુરક્ષા જેવી આવશ્યક સેવાઓ માટે આવશ્યક માહિતી મોકલવાની આ ડિવાઇસની ક્ષમતાને અસર થતી નથી.</translation>
 <translation id="1979280758666859181">તમે ચેનલને <ph name="PRODUCT_NAME" />ના જૂના વર્ઝન સાથે બદલી રહ્યા છો. જ્યારે ચેનલ વર્ઝન હાલમાં તમારા ડિવાઇસ પર ઇન્સ્ટૉલ કરેલા વર્ઝનથી મેળ ખાતું હોય ત્યારે ચેનલ ફેરફાર લાગુ થશે.</translation>
 <translation id="197989455406964291">KDCમાં એન્ક્રિપ્શન પ્રકારની સુવિધા નથી</translation>
@@ -4276,7 +4275,6 @@
 <translation id="4852916668365817106">માઉસનો રંગ</translation>
 <translation id="4853020600495124913">&amp;નવી વિંડોમાં ખોલો</translation>
 <translation id="4854317507773910281">મંજૂરી માટે માતાપિતાનું એકાઉન્ટ પસંદ કરો</translation>
-<translation id="4854603338816296098">સરનામું કાઢી નાખવામાં આવ્યું છે</translation>
 <translation id="485480310608090163">વધુ સેટિંગ અને પરવાનગીઓ</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">OCSP પ્રતિસાદોને સાઇન ઇન કરે છે</translation>
@@ -7484,7 +7482,6 @@ USB ડિવાઇસ</translation>
 <translation id="7819605256207059717">તમારી સંસ્થા દ્વારા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="7820561748632634942">શું વધારાની સ્વિચ માટે સોંપણી કરીએ?</translation>
 <translation id="782057141565633384">વીડિયો ઍડ્રેસ કૉ&amp;પિ કરો</translation>
-<translation id="7822187537422052256">શું તમે ખરેખર આ સરનામું કાઢી નાખવા માગો છો?</translation>
 <translation id="7824864914877854148">ભૂલને કારણે બૅકઅપ પૂર્ણ ન કરી શકાયું</translation>
 <translation id="782590969421016895">હાલના પેજનો ઉપયોગ કરો</translation>
 <translation id="7826174860695147464">લેગસી બ્રાઉઝર સહાય (LBS) - ઇન્ટર્નલ</translation>
@@ -8889,7 +8886,6 @@ USB ડિવાઇસ</translation>
 <translation id="9094038138851891550">વપરાશકર્તાનું નામ અમાન્ય છે</translation>
 <translation id="9094859731829297286">શું તમે ખરેખર Linux માટે સ્થિર કદની ડિસ્ક આરક્ષિત કરવા માગો છો?</translation>
 <translation id="9094982973264386462">દૂર કરો</translation>
-<translation id="9095253524804455615">દૂર કરો</translation>
 <translation id="9095364055741191097">સ્થાનિક ડેટા રિકવર કરવામાં મળેલી નિષ્ફળતા</translation>
 <translation id="909554839118732438">છૂપી વિન્ડો બંધ કરો</translation>
 <translation id="9099220545925418560">તમારા બ્રાઉઝિંગ ઇતિહાસના આધારે. આ સેટિંગ બંધ છે.</translation>

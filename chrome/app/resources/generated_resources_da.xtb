@@ -1117,7 +1117,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1975841812214822307">Fjern...</translation>
 <translation id="1976150099241323601">Log ind på sikkerhedsenhed</translation>
 <translation id="1977965994116744507">Flyt din telefon tættere på din <ph name="DEVICE_TYPE" /> for at låse den op.</translation>
-<translation id="1978057560491495741">Fjern adresse</translation>
 <translation id="1979095679518582070">Deaktivering af denne funktion påvirker ikke denne enheds evne til at sende oplysninger, der skal bruges til vigtige tjenester som f.eks. systemopdateringer og sikkerhed.</translation>
 <translation id="1979280758666859181">Du er ved at skifte til en kanal med en ældre version af <ph name="PRODUCT_NAME" />. Kanalskiftet træder i kraft, når kanalversionen matcher den version, der i øjeblikket er installeret på din enhed.</translation>
 <translation id="197989455406964291">KDC understøtter ikke krypteringstypen</translation>
@@ -2620,6 +2619,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3315442055907669208">Start Læser-tilstand</translation>
 <translation id="3317459757438853210">Tosidet</translation>
 <translation id="3317678681329786349">Der er blokeret for adgang til kameraet og mikrofonen</translation>
+<translation id="3319306431415395200">Oversæt tekst på billedet med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Beskyttet browsing (beskyttelse mod farlige websites) og andre sikkerhedsindstillinger</translation>
 <translation id="3323521181261657960">Ekstra tid! Du har fået mere skærmtid</translation>
 <translation id="3323577066981719144">De ændringer, du foretager her, anvendes kun i Chrome-browseren. Hvis du vil skifte indstillinger for din Lacros Chrome-browser, skal du åbne Lacros Chrome-browseren og gå til indstillingerne.</translation>
@@ -4295,7 +4295,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4852916668365817106">Musemarkørens farve</translation>
 <translation id="4853020600495124913">Åbn i &amp;nyt vindue</translation>
 <translation id="4854317507773910281">Vælg en forældrekonto, der skal godkende</translation>
-<translation id="4854603338816296098">Adressen er fjernet</translation>
 <translation id="485480310608090163">Flere indstillinger og tilladelser</translation>
 <translation id="4858913220355269194">Laudrup</translation>
 <translation id="4862642413395066333">Signering af OCSP-svar</translation>
@@ -4849,6 +4848,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5382591305415226340">Administrer understøttede links</translation>
 <translation id="5383377866517186886">Kameraet er deaktiveret i Systemindstillinger for Mac</translation>
 <translation id="5383740867328871413">Unavngiven gruppe – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (id: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Virksomhedspolitikken blev ændret. Knappen Eksperimenter er føjet til værktøjslinjen. Klik på knappen for at åbne en dialogboks og aktivere eksperimenter.</translation>
 <translation id="5388885445722491159">Parret</translation>
 <translation id="5390112241331447203">Medtag system_logs.txt-filen, der sendes i feedbackrapporterne.</translation>
@@ -5063,6 +5063,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5578059481725149024">Automatisk login</translation>
 <translation id="5581134892342029705">Oversættelsen til <ph name="LANGUAGE" /> er udført</translation>
 <translation id="558170650521898289">Verificering af Microsoft Windows-hardwaredriver</translation>
+<translation id="5581876958763461074">Alle noter</translation>
 <translation id="5581972110672966454">Enheden kunne ikke knyttes til domænet. Prøv igen, eller kontakt enhedens ejer eller administrator. Fejlkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Hovedmenu</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -5734,7 +5735,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6200151268994853226">Administrer udvidelse</translation>
 <translation id="6201608810045805374">Vil du fjerne denne konto?</translation>
 <translation id="6202304368170870640">Du kan bruge din pinkode til at logge ind på din enhed eller låse den op.</translation>
-<translation id="6205314730813004066">Privatlivfunktioner til annoncer</translation>
+<translation id="6205314730813004066">Privatliv ved annoncering</translation>
 <translation id="6206199626856438589">Du logges ud af de viste websites, også i åbne faner</translation>
 <translation id="6206311232642889873">Ko&amp;pier billede</translation>
 <translation id="6206521455877863927">Dette omfatter websites fra det samme domæne, f.eks. google.com og mail.google.com. De websites, du besøger, kan gemme data på din enhed.</translation>
@@ -7499,7 +7500,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7819605256207059717">Blokeret af din organisation</translation>
 <translation id="7820561748632634942">Vil du tildele flere kontakter?</translation>
 <translation id="782057141565633384">K&amp;opiér webadressen til videoen</translation>
-<translation id="7822187537422052256">Er du sikker på, at du vil fjerne denne adresse?</translation>
 <translation id="7824864914877854148">Sikkerhedskopieringen kunne ikke fuldføres på grund af en fejl</translation>
 <translation id="782590969421016895">Brug aktuelle sider</translation>
 <translation id="7826174860695147464">Emulator til ældre websites (LBS, Legacy Browser Support) – Interne indstillinger</translation>
@@ -7696,6 +7696,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Stemme <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Indstillinger for kontaktadgang</translation>
 <translation id="7992203134935383159">Talesyntese</translation>
+<translation id="7994515119120860317">Oversæt tekst på billedet med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Webvisning</translation>
 <translation id="7997826902155442747">Procesprioritet</translation>
 <translation id="7999229196265990314">Oprettede følgende filer:
@@ -8910,7 +8911,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9094038138851891550">Brugernavnet er ugyldigt</translation>
 <translation id="9094859731829297286">Er du sikker på, at du vil reservere en disk med fast størrelse til Linux?</translation>
 <translation id="9094982973264386462">Fjern</translation>
-<translation id="9095253524804455615">Fjern</translation>
 <translation id="9095364055741191097">De lokale data kunne ikke gendannes</translation>
 <translation id="909554839118732438">Luk inkognitovinduer</translation>
 <translation id="9099220545925418560">Baseret på din browserhistorik. Denne indstilling er deaktiveret.</translation>

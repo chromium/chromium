@@ -1114,7 +1114,6 @@
 <translation id="1975841812214822307">ဖယ်ရှားရန်</translation>
 <translation id="1976150099241323601">လုံခြုံရေး ကိရိယာ ထဲကို လက်မှတ်ထိုး ဝင်ရန်</translation>
 <translation id="1977965994116744507">သင်၏ <ph name="DEVICE_TYPE" /> ကို လော့ခ်ဖွင့်ရန် သင့်ဖုန်းကို နီးကပ်စွာထားပါ။</translation>
-<translation id="1978057560491495741">လိပ်စာ ဖယ်ရှားခြင်း</translation>
 <translation id="1979095679518582070">ဤဝန်ဆောင်မှုကို ပိတ်ခြင်းအားဖြင့် စနစ်အပ်ဒိတ်များနှင့် လုံခြုံရေးကဲ့သို့သော အရေးကြီးသည့် အချက်အလက်များကို ဤစက်ပစ္စည်းက ပို့ခြင်းမပို့ခြင်းအပေါ် သက်ရောက်မှု မရှိပါ။</translation>
 <translation id="1979280758666859181">သင်သည် <ph name="PRODUCT_NAME" />၏ ပိုဟောင်းသော ဗားရှင်း ရှိနေသည့် ချာနယ်သို့ ပြောင်းနေသည်။ ချာနယ်၏ ဗားရှင်းမှာ သင့် ကိရိယာ ပေါ်မှာ လက်ရှိ အချိန်တွင် ရှိနေသည့် ဗားရှင်းနှင့် တိုက်ဆိုင်မှသာ ချာနယ် ပြောင်းလဲမှု အတည် ဖြစ်လာမည်။</translation>
 <translation id="197989455406964291">KDC က အသွင်ဝှက်သည့် ပုံစံကို မပံ့ပိုးပါ</translation>
@@ -3054,6 +3053,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">သင်နှင့် Google</translation>
 <translation id="3722108462506185496">ပကတိအသွင်စက် ဝန်ဆောင်မှု စတင်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> ညွှန်ကြားချက် ရရှိထားသည်</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">ရနိုင်သော WiFi ကွန်ရက်များ</translation>
 <translation id="3727187387656390258">ပေါ့အာပ်ကို စစ်ဆေးရန်</translation>
@@ -3409,6 +3409,7 @@
 <translation id="402211067068791756">ဤလုပ်ဆောင်ချက်က ပြထားသည့်ဝဘ်ဆိုက်များတွင် သိမ်းထားသည့် ဒေတာ <ph name="TOTAL_USAGE" /> ကို ရှင်းထုတ်လိုက်ပါမည်</translation>
 <translation id="4022426551683927403">&amp;အဘိဓာန်သို့ ထည့်ရန်</translation>
 <translation id="4025039777635956441">ရွေးထားသောဝဘ်ဆိုက် ဖျောက်ထားရန်</translation>
+<translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> ညွှန်ကြားချက် ရရှိထားသည်</translation>
 <translation id="4027958407426528157">သင့်စက် <ph name="DEVICE_TYPE" /> ၌ထည့်သွင်းထားသော အက်ပ်များတွင် ဝဘ်ဆိုက်များကို ဖွင့်နိုင်သည်</translation>
 <translation id="4028467762035011525">လက်ကွက်များ ထည့်ရန်</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> စာမျက်နှာမှ နောက်ပြန်သွားရန်</translation>
@@ -4292,7 +4293,6 @@
 <translation id="4852916668365817106">မောက်စ်အရောင်</translation>
 <translation id="4853020600495124913">ဝင်ဒိုးအသစ် &amp;ထဲမှာ &amp;ဖွင့်ရန်</translation>
 <translation id="4854317507773910281">အတည်ပြုရန်အတွက် မိဘအကောင့်ကို ရွေးပါ</translation>
-<translation id="4854603338816296098">လိပ်စာကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="485480310608090163">နောက်ထပ် ဆက်တင်များနှင့် ခွင့်ပြုချက်များ</translation>
 <translation id="4858913220355269194">ဖရစ်ဇ်</translation>
 <translation id="4862642413395066333">OCSP တုံ့ပြန်မှုများကို လက်မှတ်ထိုးနေ</translation>
@@ -5689,6 +5689,7 @@
 <translation id="6150961653851236686">စာမျက်နှာများ ပြန်ဆိုသည့်အခါ ဤဘာသာစကားကို အသုံးပြုသည်</translation>
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> ကိုရှာရန် <ph name="SEARCH_KEY" /> ကိုနှိပ်ပါ</translation>
 <translation id="6151771661215463137">ဖိုင်သည် သင်၏ဒေါင်းလုဒ်အကန့်တွင် ရှိနှင့်ပြီးသား ဖြစ်ပါသည်။</translation>
+<translation id="6152918902620844577">လာမည့်လုပ်ငန်းစဉ်ကို စောင့်နေသည်</translation>
 <translation id="6154240335466762404">ပို့တ်အားလုံး ဖယ်ရှားရန်</translation>
 <translation id="615436196126345398">ပရိုတိုကော</translation>
 <translation id="6155141482566063812">နောက်ခံတဘ်သည် သင်၏ မျက်နှာပြင်ကို မျှဝေနေသည်</translation>
@@ -7398,6 +7399,7 @@
 <translation id="7730683939467795481">ဤစာမျက်နှာကို "<ph name="EXTENSION_NAME" />" နောက်ဆက်တွဲက ပြောင်းထားသည်</translation>
 <translation id="7735165285389721951">နောက်ထပ် Steam စနစ်ထည့်သွင်းမှုတစ်ခု လုပ်ဆောင်နေသည်။ ထပ်မံမလုပ်ဆောင်မီ ၎င်းကိုပြီးဆုံးသည်အထိ စောင့်ပါ</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" နှင့် တွဲချိတ်နေသည် ...</translation>
+<translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> ညွှန်ကြားချက် ရရှိထားသည်</translation>
 <translation id="7737846262459425222">၎င်းကို ဆက်တင်များ &gt; Google Assistant &gt; ‘ဖန်သားပြင်’ အကြောင်းအရာ တွင် အချိန်မရွေး ပြောင်းနိုင်သည်။</translation>
 <translation id="7737948071472253612">သင့်ကင်မရာ သုံးရန် ခွင့်ပြုမထားပါ</translation>
 <translation id="77381465218432215">အသံပြောင်းသင်္ကေတနှင့် အထူးစာလုံးများ ပြရန်</translation>
@@ -7495,7 +7497,6 @@
 <translation id="7819605256207059717">သင့်အဖွဲ့အစည်းက ပိတ်ထားသည်</translation>
 <translation id="7820561748632634942">နောက်ထပ် အသွင်တူခလုတ်များ သတ်မှတ်မလား။</translation>
 <translation id="782057141565633384">ဗီဒီယို လိပ်စာ မိ&amp;တ္တူ ကူးပါ</translation>
-<translation id="7822187537422052256">ဤလိပ်စာကို ဖယ်ရှားလိုသည်မှာ သေချာသလား။</translation>
 <translation id="7824864914877854148">အမှားအယွင်းတစ်ခုကြောင့် အရန်သိမ်းခြင်းကို အပြီးသတ်၍မရပါ</translation>
 <translation id="782590969421016895">လက်ရှိ စာမျက်နှာများကို သုံးရန်</translation>
 <translation id="7826174860695147464">‘ဝဘ်ဆိုက်အဟောင်း ဖွင့်ရန် အကူအညီ’ (LBS) - အတွင်းပိုင်းများ</translation>
@@ -8904,7 +8905,6 @@
 <translation id="9094038138851891550">အသုံးပြုသူအမည် မမှန်ပါ</translation>
 <translation id="9094859731829297286">Linux အတွက် သတ်မှတ်ဒစ်ခ်အရွယ်အစား ဖယ်ထားလိုသည်မှာ သေချာသလား။</translation>
 <translation id="9094982973264386462">ဖယ်ရှားရန်</translation>
-<translation id="9095253524804455615">ဖယ်ရှားရန်</translation>
 <translation id="9095364055741191097">စက်တွင်းရှိဒေတာကို ပြန်လည်ရယူ၍ မရပါ</translation>
 <translation id="909554839118732438">ရုပ်ဖျက်မုဒ် ပိတ်ရန်</translation>
 <translation id="9099220545925418560">သင်၏ကြည့်ရှုမှုမှတ်တမ်းကို အခြေခံထားသည်။ ဤဆက်တင်ကို ပိတ်ထားသည်။</translation>

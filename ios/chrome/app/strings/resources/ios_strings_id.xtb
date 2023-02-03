@@ -708,6 +708,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6284652193729350524">Tawarkan untuk menerjemahkan bahasa <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Berhenti mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Untuk mengaktifkan Safe Browsing, buka <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" /> dan ketuk Safe Browsing.</translation>
+<translation id="6320780930074869063">Jika diaktifkan, sandi akan disimpan ke <ph name="ACCOUNT" />. Jika dinonaktifkan, sandi hanya akan disimpan di perangkat ini.</translation>
 <translation id="6321526113093607004">Tambahkan ke Bookmark</translation>
 <translation id="6324669097367352121">Setelan masuk</translation>
 <translation id="6337234675334993532">Enkripsi</translation>

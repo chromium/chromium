@@ -80,6 +80,7 @@
 <translation id="149095475893949513">เว็บไซต์นี้พยายามดาวน์โหลดโปรไฟล์การกำหนดค่า</translation>
 <translation id="1491277525950327607">แตะ 2 ครั้งเพื่อสลับการตั้งค่า</translation>
 <translation id="1492417797159476138">คุณบันทึกชื่อผู้ใช้นี้สำหรับเว็บไซต์นี้แล้ว</translation>
+<translation id="1498283581832036924">บัญชี <ph name="WEBSITE" /> จะไม่ถูกลบ</translation>
 <translation id="1506063256525392513">ช่วยให้คุณถ่ายและอัปโหลดรูปภาพ รวมถึงสแกนคิวอาร์โค้ดได้</translation>
 <translation id="1509486075633541495">ลงชื่อเข้าใช้เว็บไซต์</translation>
 <translation id="1509960214886564027">ฟีเจอร์ในหลายเว็บไซต์อาจใช้งานไม่ได้</translation>
@@ -219,6 +220,7 @@
 <translation id="2664621323652615289">หยุด</translation>
 <translation id="2671426118752779020">คุณใช้รหัสผ่านที่บันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google ในแอปอื่นๆ บน iPhone ได้</translation>
 <translation id="2690858294534178585">ใช้กล้องถ่ายรูปอยู่</translation>
+<translation id="26915454213703967">ค้นหาในรูปภาพด้วย Google</translation>
 <translation id="2691653761409724435">ไม่สามารถใช้ออฟไลน์</translation>
 <translation id="2695507686909505111">แปลหน้าเว็บแล้ว</translation>
 <translation id="2697526135132990015">ออกจากระบบและล้างข้อมูล</translation>
@@ -304,7 +306,7 @@
 <translation id="3181954750937456830">Google Safe Browsing (ปกป้องคุณและอุปกรณ์จากเว็บไซต์ที่เป็นอันตราย)</translation>
 <translation id="3184767182050912705">ปลดล็อกด้วย <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">บุ๊กมาร์กแล้ว</translation>
-<translation id="3214379938835224220">คุณออกจากระบบในขั้นตอนการรีเซ็ต iPad แตะ "ดําเนินการต่อ" ด้านล่างเพื่อลงชื่อเข้าใช้</translation>
+<translation id="3214379938835224220">คุณออกจากระบบในขั้นตอนการรีเซ็ต iPad แตะ "ต่อไป" ด้านล่างเพื่อลงชื่อเข้าใช้</translation>
 <translation id="3224641773458703735">หากต้องการส่งออกรหัสผ่าน คุณต้องตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
 <translation id="3227137524299004712">ไมโครโฟน</translation>
 <translation id="3240426699337459095">คัดลอกลิงก์แล้ว</translation>
@@ -382,6 +384,7 @@
 <translation id="3819183753496523827">คุณออฟไลน์อยู่ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
 <translation id="3835964409414434850">ไปที่แท็บถัดไป</translation>
 <translation id="385051799172605136">กลับ</translation>
+<translation id="3851938967634752633">ระบบจะลบรหัสผ่านสําหรับ <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> และอีก <ph name="NUMBER_OF_ACCOUNTS" /> บัญชี โดยระบบจะไม่ลบบัญชีของคุณ</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
 <translation id="3861486700625780712">เลิกติดตาม</translation>
 <translation id="3863769054730344136">ส่งไปยังอุปกรณ์</translation>
@@ -517,6 +520,7 @@
 <translation id="4833786495304741580">ส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google โดยอัตโนมัติ</translation>
 <translation id="4840495572919996524">บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และอื่นๆ จะไม่ซิงค์กับบัญชี Google อีกต่อไป</translation>
 <translation id="4844899002472726590">ดูและแก้ไขหัวข้อที่คุณสนใจ</translation>
+<translation id="4848999860252535517">ลบรหัสผ่านสำหรับ <ph name="WEBSITE" /> ใช่ไหม</translation>
 <translation id="4854345657858711387">ตั้งพาสโค้ด</translation>
 <translation id="4858786880085262208">อัปเกรดเป็น HTTPS เมื่อทำได้ เว็บไซต์ที่ปลอดภัยอาจฝังเนื้อหาที่ไม่ปลอดภัย</translation>
 <translation id="4860895144060829044">โทร</translation>
@@ -770,6 +774,7 @@
 <translation id="6598875554591387303">จัดเรียงตามผู้เผยแพร่เนื้อหา</translation>
 <translation id="6603393121510733479">องค์กรปิดการเรียกดูแบบส่วนตัวไว้
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">ระบบจะลบรหัสผ่านสําหรับ <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> และ <ph name="THIRD_WEBSITE" /> โดยระบบจะไม่ลบบัญชีของคุณ</translation>
 <translation id="6610002944194042868">ตัวเลือกการแปลภาษา</translation>
 <translation id="661266467055912436">ปรับปรุงความปลอดภัยให้คุณและทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="6620279676667515405">ยกเลิก</translation>
@@ -1047,6 +1052,7 @@
 <translation id="8756969031206844760">อัปเดตรหัสผ่านไหม</translation>
 <translation id="8763613688786959833">ไปที่แท็บสุดท้าย</translation>
 <translation id="8764015330924122850">เลิกติดตาม <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">ระบบจะลบรหัสผ่านสําหรับ <ph name="WEBSITE" /> และ <ph name="SECOND_WEBSITE" /> โดยระบบจะไม่ลบบัญชีของคุณ</translation>
 <translation id="8775144690796719618">URL ไม่ถูกต้อง</translation>
 <translation id="8787968206789828143">ค้นหาในเว็บ</translation>
 <translation id="8792626944327216835">ไมโครโฟน</translation>
@@ -1096,6 +1102,7 @@
 <translation id="9093271241977565440">แตะไอคอนค้นหาที่ด้านบนของหน้าจอ</translation>
 <translation id="9094033019050270033">อัปเดตรหัสผ่าน</translation>
 <translation id="9097506547406246598">เลิกติดตามไม่ได้ เกิดข้อผิดพลาด</translation>
+<translation id="9098541895599151034">ลบรหัสผ่าน <ph name="NUMBER_OF_ACCOUNTS" /> บัญชีใช่ไหม</translation>
 <translation id="9100610230175265781">ต้องระบุรหัสผ่าน</translation>
 <translation id="9107664647686727385">ตรวจหารหัสผ่านที่ถูกละเมิด</translation>
 <translation id="9124387962554796433">Google อาจใช้ประวัติการเข้าชมเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ให้เหมาะกับคุณ</translation>

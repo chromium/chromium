@@ -80,6 +80,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="149095475893949513">Ovaj veb-sajt pokušava da preuzme profil konfiguracije.</translation>
 <translation id="1491277525950327607">Dvaput dodirnite da biste uključili/isključili podešavanje</translation>
 <translation id="1492417797159476138">Već ste sačuvali ovo korisničko ime za ovaj sajt</translation>
+<translation id="1498283581832036924">Nalog za <ph name="WEBSITE" /> neće biti izbrisan.</translation>
 <translation id="1506063256525392513">Ovo vam omogućava da snimate i otpremate slike, kao i da skenirate QR kodove</translation>
 <translation id="1509486075633541495">Prijavite se na veb-sajt</translation>
 <translation id="1509960214886564027">Funkcije na mnogim sajtovima mogu da prestanu sa radom</translation>
@@ -219,6 +220,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2664621323652615289">Zaustavi</translation>
 <translation id="2671426118752779020">Možete da koristite lozinke koje ste sačuvali u Google menadžeru lozinki u drugim aplikacijama na iPhone-u.</translation>
 <translation id="2690858294534178585">Kamera se koristi</translation>
+<translation id="26915454213703967">Pretraži u slici uz Google</translation>
 <translation id="2691653761409724435">Nije dostupno oflajn</translation>
 <translation id="2695507686909505111">Stranica je prevedena</translation>
 <translation id="2697526135132990015">Odjavi me i obriši podatke</translation>
@@ -382,6 +384,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3819183753496523827">Oflajn ste. Proverite internet vezu i probajte ponovo.</translation>
 <translation id="3835964409414434850">Idi na sledeću karticu</translation>
 <translation id="385051799172605136">Nazad</translation>
+<translation id="3851938967634752633">Lozinke za <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i još <ph name="NUMBER_OF_ACCOUNTS" /> će biti izbrisane. Vaši nalozi neće biti izbrisani.</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3861486700625780712">Opozovi praćenje</translation>
 <translation id="3863769054730344136">Pošalji na uređaje</translation>
@@ -517,6 +520,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="4833786495304741580">Automatski šalje Google-u statistiku korišćenja i izveštaje o otkazivanju.</translation>
 <translation id="4840495572919996524">Obeleživači, istorija, lozinke i drugi podaci više se neće sinhronizovati sa Google nalogom.</translation>
 <translation id="4844899002472726590">Pregledajte i menjajte teme koje vas interesuju</translation>
+<translation id="4848999860252535517">Želite da izbrišete lozinku za <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Podesite šifru</translation>
 <translation id="4858786880085262208">Nadogradite na HTTPS kada je to moguće. Bezbedni sajtovi mogu da ugrade sadržaj koji nije bezbedan.</translation>
 <translation id="4860895144060829044">Pozovite</translation>
@@ -770,6 +774,7 @@ Potrudite se da koristite jedinstvenu lozinku za svaki sajt.</translation>
 <translation id="6598875554591387303">Sortiraj prema objavljivaču</translation>
 <translation id="6603393121510733479">Organizacija je isključila privatno pregledanje.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Lozinke za <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i <ph name="THIRD_WEBSITE" /> će biti izbrisane. Vaši nalozi neće biti izbrisani.</translation>
 <translation id="6610002944194042868">Opcije prevoda</translation>
 <translation id="661266467055912436">Poboljšava bezbednost za vas i druge na vebu.</translation>
 <translation id="6620279676667515405">Otkaži</translation>
@@ -1047,6 +1052,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8756969031206844760">Želite li da ažurirate lozinku?</translation>
 <translation id="8763613688786959833">Ide na poslednju karticu</translation>
 <translation id="8764015330924122850">Opozovite praćenje: <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Lozinke za <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" /> će biti izbrisane. Vaši nalozi neće biti izbrisani.</translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>
 <translation id="8787968206789828143">Pretražite na vebu</translation>
 <translation id="8792626944327216835">mikrofon</translation>
@@ -1096,6 +1102,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="9093271241977565440">U vrhu ekrana dodirnite ikonu Pretraga</translation>
 <translation id="9094033019050270033">Ažuriraj lozinku</translation>
 <translation id="9097506547406246598">Opozivanje praćenja nije uspelo. Došlo je do greške.</translation>
+<translation id="9098541895599151034">Želite li da izbrišete lozinke za <ph name="NUMBER_OF_ACCOUNTS" /> naloga?</translation>
 <translation id="9100610230175265781">Potrebna je pristupna fraza</translation>
 <translation id="9107664647686727385">Traže ugrožene lozinke</translation>
 <translation id="9124387962554796433">Google može da koristi istoriju za personalizaciju Pretrage i drugih Google usluga.</translation>

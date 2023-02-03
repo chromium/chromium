@@ -1106,7 +1106,6 @@
 <translation id="1975841812214822307">Հեռացնել…</translation>
 <translation id="1976150099241323601">Մուտք անվտանգության սարք</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> սարքն ապակողպելու համար մոտեցրեք հեռախոսը։</translation>
-<translation id="1978057560491495741">Հասցեի հեռացում</translation>
 <translation id="1979095679518582070">Այս գործառույթն անջատելու դեպքում ձեր սարքը նախկինի պես կուղարկի տվյալներ, որոնք անհրաժեշտ են հիմնական ծառայություններին (օրինակ՝ համակարգային թարմացումներին ու անվտանգությանը)։</translation>
 <translation id="1979280758666859181">Դուք անցնում եք <ph name="PRODUCT_NAME" />-ի ավելի թողարկման վարկածի, որի տարբերակն ավելի հին է: Որպեսզի փոփոխությունը կիրառվի, տարբերակը պետք է համընկնի ձեր սարքում տեղադրված տարբերակի հետ:</translation>
 <translation id="197989455406964291">KDC-ն չի աջակցում գաղտնագրման տեսակը</translation>
@@ -4280,7 +4279,6 @@
 <translation id="4852916668365817106">Մկնիկի գույնը</translation>
 <translation id="4853020600495124913">Բացել &amp;նոր պատուհանում</translation>
 <translation id="4854317507773910281">Հաստատման համար ընտրեք ծնողի հաշիվը</translation>
-<translation id="4854603338816296098">Հասցեն հեռացվեց</translation>
 <translation id="485480310608090163">Այլ կարգավորումներ և թույլտվություններ</translation>
 <translation id="4858913220355269194">Ֆուտբոլ</translation>
 <translation id="4862642413395066333">OCSP պատասխանների ստորագրում</translation>
@@ -4837,6 +4835,7 @@
 <translation id="5382591305415226340">Կառավարել աջակցվող հղումները</translation>
 <translation id="5383377866517186886">Տեսախցիկն անջատված է Mac-ի համակարգի կարգավորումներում</translation>
 <translation id="5383740867328871413">Անանուն խումբ – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID՝ <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Կորպորատիվ կանոն է փոխվել։ Գործիքագոտում ավելացվել է «Փորձարկումներ» կոճակը։ Սեղմեք կոճակը՝ փորձարկումները միացնելու պատուհանը բացելու համար։</translation>
 <translation id="5388885445722491159">Զուգակցված է</translation>
 <translation id="5390112241331447203">Ներառել system_logs.txt ֆայլը, որն ուղարկվում է կարծիքի հաշվետվություններում։</translation>
@@ -5051,6 +5050,7 @@
 <translation id="5578059481725149024">Ավտոմատ մուտք</translation>
 <translation id="5581134892342029705">Թարգմանությունը կատարված է (<ph name="LANGUAGE" />)</translation>
 <translation id="558170650521898289">Microsoft Windows-ի սարքակազմի սարքավարի հաստատում</translation>
+<translation id="5581876958763461074">Բոլոր նշումները</translation>
 <translation id="5581972110672966454">Չհաջողվեց միացնել սարքը տիրույթին։ Փորձեք նորից կամ կապվեք սարքի սեփականատիրոջ կամ ադմինիստրատորի հետ։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="5582839680698949063">Հիմնական ընտրացանկ</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -7484,7 +7484,6 @@
 <translation id="7819605256207059717">Արգելափակվել է ձեր կազմակերպության կողմից</translation>
 <translation id="7820561748632634942">Նշանակե՞լ այլ փոխանջատիչներ</translation>
 <translation id="782057141565633384">Պատճենել տեսանյութի հասցեն</translation>
-<translation id="7822187537422052256">Իսկապե՞ս ուզում եք հեռացնել այս հաշիվը։</translation>
 <translation id="7824864914877854148">Չհաջողվեց ավարտել սխալի պատճառով</translation>
 <translation id="782590969421016895">Օգտագործել ընթացիկ էջերը</translation>
 <translation id="7826174860695147464">Հնացած դիտարկիչների աջակցում (LBS) – Ներքին</translation>
@@ -8893,7 +8892,6 @@
 <translation id="9094038138851891550">Օգտանունն անվավեր է</translation>
 <translation id="9094859731829297286">Պահպանե՞լ ֆիքսված չափ Լինուքսի սկավառակի համար</translation>
 <translation id="9094982973264386462">Հեռացնել</translation>
-<translation id="9095253524804455615">Հեռացնել</translation>
 <translation id="9095364055741191097">Չհաջողվեց վերականգնել սարքի տվյալները</translation>
 <translation id="909554839118732438">Փակել ինկոգնիտո պատուհանները</translation>
 <translation id="9099220545925418560">Ձեր այցելությունների պատմության հիման վրա։ Այս կարգավորումն անջատված է։</translation>

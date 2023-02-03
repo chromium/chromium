@@ -251,6 +251,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="2426805022920575512">Izaberite drugi nalog</translation>
 <translation id="2433507940547922241">Izgled</translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
+<translation id="2439153523196674349">Pregled sajta <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Da li želite da ponovo počnete da preuzimate datoteku <ph name="FILE_NAME" />?</translation>
 <translation id="2453860139492968684">Završi</translation>
 <translation id="2459390580524506445">Poboljšana glasovna pretraga</translation>
@@ -389,6 +390,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="3066573403916685335">Pomeri nadole</translation>
 <translation id="3070005020161560471">Automatski prevodi</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> će se otvoriti u Chrome-u. Ako nastavite, prihvatate <ph name="BEGIN_LINK1" />Google uslove korišćenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne uslove korišćenja usluge za Google Chrome i Chrome OS<ph name="END_LINK2" />. Primenjuje se i <ph name="BEGIN_LINK3" />politika privatnosti<ph name="END_LINK3" />.</translation>
+<translation id="3083194063661536258">Odjavljeni ste. Dugme. Otvara dijalog za prijavljivanje i uključivanje sinhronizacije.</translation>
 <translation id="3091010850649238832">Prikaži sadržaj privremene memorije</translation>
 <translation id="3098745985164956033">Neke slike se šalju Google-u radi poboljšanja opisa</translation>
 <translation id="3104179992611025423">Roditelji upravljaju pregledačem</translation>
@@ -925,6 +927,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604124094241169006">Automatski</translation>
 <translation id="6042308850641462728">Još</translation>
+<translation id="6049046116080614938">Prijavljeni ste kao <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Dugme. Otvara podešavanja.</translation>
 <translation id="604996488070107836">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog nepoznate greške.</translation>
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Ovde kontrolišite priče i aktivnosti</translation>
@@ -1299,6 +1302,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7968014550143838305">Dodato je na listu za čitanje</translation>
 <translation id="7971136598759319605">Poslednja aktivnost: pre 1 dan</translation>
 <translation id="7975379999046275268">Prikaži stranicu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Prijavljeni ste kao <ph name="USER_NAME" />. Dugme. Otvara podešavanja.</translation>
 <translation id="7986497153528221272">Da biste videli lozinke, prvo podesite zaključavanje ekrana na uređaju</translation>
 <translation id="7995059495660416932">Videćete sadržaj kada postane dostupan</translation>
 <translation id="799576009106109668">Pregledaćete brže jer se sadržaj proaktivno učitava na osnovu aktuelne posete veb-stranici</translation>

@@ -1112,7 +1112,6 @@
 <translation id="1975841812214822307">አስወግድ...</translation>
 <translation id="1976150099241323601">የደህንነት መሣሪያ ውስጥ ይግቡ</translation>
 <translation id="1977965994116744507">የእርስዎን <ph name="DEVICE_TYPE" /> ለመክፈት የእርስዎን ስልክ ያስጠጉት።</translation>
-<translation id="1978057560491495741">አድራሻ አስወግድ</translation>
 <translation id="1979095679518582070">ይህን ባሕሪ ማጥፋት ይህ መሣሪያ እንደ የሥርዓት ዝማኔዎች እና ደህንነት ላሉ አስፈላጊ አገልግሎቶች የሚያስፈልገውን መረጃ የመላክ ችሎታው ላይ ተጽዕኖ አያሳርፍበትም።</translation>
 <translation id="1979280758666859181">የቆየ የ<ph name="PRODUCT_NAME" /> ስሪት ወዳለው ሰርጥ እየቀየሩ ነው። የስርጡ ስሪት አሁን በመሣሪያዎ ላይ ከተጫነው ስሪት ጋር ሲዛመድ ነው የሰርጡ ለውጥ የሚተገበረው።</translation>
 <translation id="197989455406964291">KDC የምስጠራ ዓይነትን አይደግፍም</translation>
@@ -2613,6 +2612,7 @@
 <translation id="3315442055907669208">ወደ የአንባቢ ሁነታ ግባ</translation>
 <translation id="3317459757438853210">ፊትና ጀርባ</translation>
 <translation id="3317678681329786349">ካሜራ እና ማይክሮፎን ታግደዋል</translation>
+<translation id="3319306431415395200">በ<ph name="VISUAL_SEARCH_PROVIDER" /> በምስሎች ውስጥ ያለ ጽሑፍን ተርጉም</translation>
 <translation id="3320630259304269485">የጥንቃቄ አሰሳ (ከአደገኛ ጣቢያዎች መጠበቅ) እና ሌሎች የደህንነት ቅንብሮች</translation>
 <translation id="3323521181261657960">ጉርሻ! ተጨማሪ የማያ ገጽ ጊዜ አለዎት</translation>
 <translation id="3323577066981719144">እዚህ የሚያደርጓቸው ለውጦች በChrome አሳሽ ላይ ብቻ ይተገበራሉ። በእርስዎ የLacros Chrome አሳሽ ቅንብሮች ላይ ለውጦችን ለማድረግ የLacros Chrome አሳሽ ይክፈቱ እና ወደ ቅንብሮች ይሂዱ።</translation>
@@ -4285,7 +4285,6 @@
 <translation id="4852916668365817106">የመዳፊት ቀለም</translation>
 <translation id="4853020600495124913">&amp;በአዲስ መስኮት ውስጥ ክፈት</translation>
 <translation id="4854317507773910281">የሚጸድቅ የወላጅ መለያ ይምረጡ</translation>
-<translation id="4854603338816296098">አድራሻ ተወግዷል</translation>
 <translation id="485480310608090163">ተጨማሪ ቅንብሮች እና ፈቃዶች</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">OCSP ምላሾችን መፈረም</translation>
@@ -7492,7 +7491,6 @@
 <translation id="7819605256207059717">በድርጅትዎ ታግዷል</translation>
 <translation id="7820561748632634942">ተጨማሪ መቀየሪያዎች ይመደቡ?</translation>
 <translation id="782057141565633384">የቪዲዮ አድራሻ &amp;ቅዳ</translation>
-<translation id="7822187537422052256">ይህን አድራሻ ማስወገድ እንደሚፈልጉ እርግጠኛ ነዎት?</translation>
 <translation id="7824864914877854148">በስህተት ምክንያት በምትኬ ማስቀመጥ ሊጠናቀቅ አልተቻለም</translation>
 <translation id="782590969421016895">የአሁኑ ገጾችን ይጠቀሙ</translation>
 <translation id="7826174860695147464">የቆየ የአሳሽ ድጋፍ (ኤልቢኤስ) - የውስጥ</translation>
@@ -7689,6 +7687,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> ድምፅ <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">የመቀያየሪያ መዳረሻ ቅንብሮች</translation>
 <translation id="7992203134935383159">የተሰራ ንግግር</translation>
+<translation id="7994515119120860317">በ<ph name="VISUAL_SEARCH_PROVIDER" /> በምስሎች ውስጥ ያለ ጽሑፍን ይተርጉሙ</translation>
 <translation id="799570308305997052">የድር ዕይታ</translation>
 <translation id="7997826902155442747">የቅድሚያ ሂደት</translation>
 <translation id="7999229196265990314">'የሚከተሉትን ፋይሎች ፈጥሯል፦ 
@@ -8907,7 +8906,6 @@ nil</translation>
 <translation id="9094038138851891550">ልክ ያልሆነ ተጠቃሚ ስም</translation>
 <translation id="9094859731829297286">እርግጠኛ ነዎት ለLinux ቋሚ የዲስክ መጠንን ማቆየት ይፈልጋሉ?</translation>
 <translation id="9094982973264386462">አስወግድ</translation>
-<translation id="9095253524804455615">አስወግድ</translation>
 <translation id="9095364055741191097">አካባቢያዊ ውሂብን መልሶ ማግኘት አልተሳካም</translation>
 <translation id="909554839118732438">ማንነት የማያሳውቅ ሁነታን ዝጋ</translation>
 <translation id="9099220545925418560">በእርስዎ የአሰሳ ታሪክ ላይ የተመሠረተ። ይህ ቅንብር ጠፍቷል።</translation>

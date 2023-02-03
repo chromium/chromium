@@ -1105,7 +1105,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1975841812214822307">Supprimer...</translation>
 <translation id="1976150099241323601">Connexion au dispositif de sécurité</translation>
 <translation id="1977965994116744507">Rapprochez votre téléphone de votre <ph name="DEVICE_TYPE" /> pour le déverrouiller.</translation>
-<translation id="1978057560491495741">Retirer l'adresse</translation>
 <translation id="1979095679518582070">La désactivation de cette fonctionnalité n'empêche pas cet appareil d'envoyer les données nécessaires aux services essentiels, comme les mises à jour du système et la sécurité.</translation>
 <translation id="1979280758666859181">Vous passez à un canal ayant une ancienne version de <ph name="PRODUCT_NAME" />. Le changement de canal sera appliqué lorsque la version du canal correspondra à la version actuellement installée sur votre appareil.</translation>
 <translation id="197989455406964291">KDC ne prend pas en charge ce type de chiffrement</translation>
@@ -2606,6 +2605,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3315442055907669208">Activer le mode Lecture</translation>
 <translation id="3317459757438853210">Recto verso</translation>
 <translation id="3317678681329786349">La caméra et le microphone sont bloqués</translation>
+<translation id="3319306431415395200">Traduire le texte de l'image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Navigation sécurisée (protection contre les sites dangereux) et autres paramètres de sécurité</translation>
 <translation id="3323521181261657960">Hé hé! Ton temps d'écran a été prolongé!</translation>
 <translation id="3323577066981719144">Les modifications que vous apportez ici s'appliquent uniquement au navigateur Chrome. Pour modifier les paramètres de votre navigateur Chrome utilisant l'architecture Lacros, ouvrez celui-ci et accédez aux paramètres.</translation>
@@ -3042,6 +3042,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="372062398998492895">Imprimantes CUPS</translation>
 <translation id="3721119614952978349">Vous et Google</translation>
 <translation id="3722108462506185496">Erreur lors du démarrage du service de machine virtuelle. Veuillez réessayer.</translation>
+<translation id="3722624153992426516">Instruction <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> reçue</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Réseaux Wi-Fi disponibles</translation>
 <translation id="3727187387656390258">Inspecter la fenêtre contextuelle</translation>
@@ -3398,6 +3399,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="402211067068791756">Cette action effacera <ph name="TOTAL_USAGE" /> de données stockées par les sites affichés</translation>
 <translation id="4022426551683927403">&amp;Ajouter au dictionnaire</translation>
 <translation id="4025039777635956441">Désactiver le son pour le site sélectionné</translation>
+<translation id="402707738228916911">Instruction <ph name="AUTHORIZE_INSTRUCTION_NAME" /> reçue</translation>
 <translation id="4027958407426528157">Ouvrez des sites Web dans les applications installées sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Ajouter des méthodes d'entrée</translation>
 <translation id="4029556917477724407">Retour à partir de la page <ph name="PAGE_TITLE" /></translation>
@@ -4280,7 +4282,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4852916668365817106">Couleur du curseur de souris</translation>
 <translation id="4853020600495124913">Ouvrir dans une &amp;nouvelle fenêtre</translation>
 <translation id="4854317507773910281">Sélectionner le compte parental pour l'approbation</translation>
-<translation id="4854603338816296098">Adresse retirée</translation>
 <translation id="485480310608090163">Plus de paramètres et d'autorisations</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Réponses OCSP de signature</translation>
@@ -5678,6 +5679,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6150961653851236686">Cette langue est utilisée pour la traduction de pages</translation>
 <translation id="6151323131516309312">Appuyez sur <ph name="SEARCH_KEY" /> pour faire une recherche sur <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Le fichier existe déjà dans votre dossier de téléchargements.</translation>
+<translation id="6152918902620844577">En attente de la prochaine opération</translation>
 <translation id="6154240335466762404">Supprimer tous les ports</translation>
 <translation id="615436196126345398">Protocole</translation>
 <translation id="6155141482566063812">L'onglet d'arrière-plan partage votre écran</translation>
@@ -7390,6 +7392,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7730683939467795481">Cette page a été modifiée par l'extension « <ph name="EXTENSION_NAME" /> »</translation>
 <translation id="7735165285389721951">Une autre installation de Steam est en cours d'exécution. Veuillez attendre qu'elle soit terminée avant de réessayer.</translation>
 <translation id="7737115349420013392">Association avec « <ph name="DEVICE_NAME" /> » en cours…</translation>
+<translation id="7737203573077018777">Instruction <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> reçue</translation>
 <translation id="7737846262459425222">Vous pouvez modifier cette option en tout temps dans Paramètres &gt; Assistant Google &gt; Contexte à l'écran.</translation>
 <translation id="7737948071472253612">Non autorisés à utiliser votre caméra</translation>
 <translation id="77381465218432215">Afficher les accents et les caractères spéciaux</translation>
@@ -7487,7 +7490,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7819605256207059717">Bloqué par votre organisation</translation>
 <translation id="7820561748632634942">Attribuer des commutateurs supplémentaires?</translation>
 <translation id="782057141565633384">C&amp;opier l'adresse de la vidéo</translation>
-<translation id="7822187537422052256">Voulez-vous vraiment retirer cette adresse?</translation>
 <translation id="7824864914877854148">Une erreur s'est produite et la sauvegarde n'a pas pu être terminée</translation>
 <translation id="782590969421016895">Utilisez les pages actuelles</translation>
 <translation id="7826174860695147464">Prise en charge de navigateurs hérités (LBS) – paramètres internes</translation>
@@ -7684,6 +7686,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, voix <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Paramètres de Switch Access</translation>
 <translation id="7992203134935383159">Synthèse vocale</translation>
+<translation id="7994515119120860317">Traduire le texte de l'image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Priorité de processus</translation>
 <translation id="7999229196265990314">Les fichiers suivants ont été créés :
@@ -8896,7 +8899,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9094038138851891550">Nom d'utilisateur incorrect</translation>
 <translation id="9094859731829297286">Voulez-vous vraiment réserver une quantité fixe d'espace disque pour Linux?</translation>
 <translation id="9094982973264386462">Supprimer</translation>
-<translation id="9095253524804455615">Supprimer</translation>
 <translation id="9095364055741191097">Échec de la récupération des données locales</translation>
 <translation id="909554839118732438">Fermer les fenêtres de navigation privée</translation>
 <translation id="9099220545925418560">En fonction de votre historique de navigation. Ce paramètre est désactivé.</translation>

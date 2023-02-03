@@ -251,6 +251,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2426805022920575512">Välj ett annat konto</translation>
 <translation id="2433507940547922241">Utseende</translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
+<translation id="2439153523196674349">Förhandsgranskning av <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Vill du börja ladda ned <ph name="FILE_NAME" /> igen?</translation>
 <translation id="2453860139492968684">Slutför</translation>
 <translation id="2459390580524506445">Förbättrad röstsökning</translation>
@@ -389,6 +390,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="3066573403916685335">Flytta ner</translation>
 <translation id="3070005020161560471">Översätt automatiskt</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> öppnas i Chrome. Genom att fortsätta godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Integritetspolicyn<ph name="END_LINK3" /> gäller också.</translation>
+<translation id="3083194063661536258">Utloggad. Knapp. Öppnar dialogrutan för att logga in och aktivera synkronisering.</translation>
 <translation id="3091010850649238832">Visa innehållet i Urklipp</translation>
 <translation id="3098745985164956033">Vissa bilder skickas till Google så att du får bättre beskrivningar</translation>
 <translation id="3104179992611025423">Webbläsaren hanteras av dina föräldrar</translation>
@@ -926,6 +928,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="604124094241169006">Automatisk</translation>
 <translation id="6042308850641462728">Mer</translation>
+<translation id="6049046116080614938">Inloggad som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Knapp. Öppnar inställningarna.</translation>
 <translation id="604996488070107836">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av ett okänt fel.</translation>
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Styr dina berättelser och din aktivitet här</translation>
@@ -1300,6 +1303,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7968014550143838305">Har lagts till i läslistan</translation>
 <translation id="7971136598759319605">Aktiv för 1 dag sedan</translation>
 <translation id="7975379999046275268">Förhandsgranska sida <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Inloggad som <ph name="USER_NAME" />. Knapp. Öppnar inställningarna.</translation>
 <translation id="7986497153528221272">Om du vill kunna se lösenorden måste du först ställa in ett skärmlås på enheten</translation>
 <translation id="7995059495660416932">Innehåll visas när det blir tillgängligt</translation>
 <translation id="799576009106109668">Du surfar snabbare eftersom innehåll läses in proaktivt baserat på den webbsida du besöker för tillfället</translation>

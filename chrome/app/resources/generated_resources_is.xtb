@@ -1117,7 +1117,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1975841812214822307">Fjarlægja...</translation>
 <translation id="1976150099241323601">Innskráning á öryggistæki</translation>
 <translation id="1977965994116744507">Færðu símann nær til að taka <ph name="DEVICE_TYPE" /> úr lás.</translation>
-<translation id="1978057560491495741">Fjarlægja heimilisfang</translation>
 <translation id="1979095679518582070">Þótt slökkt sé á þessum eiginleika hefur það ekki áhrif á getu þessa tækis til að senda mikilvægar upplýsingar fyrir nauðsynlega þjónustu á borð við kerfisuppfærslur og öryggisþjónustu.</translation>
 <translation id="1979280758666859181">Þú ert að skipta yfir á rás með eldri útgáfu af <ph name="PRODUCT_NAME" />. Rásabreytingin öðlast gildi þegar rásarútgáfan samsvarar útgáfunni sem uppsett er í tækni þínu núna.</translation>
 <translation id="197989455406964291">KDC styður ekki dulkóðunargerðina</translation>
@@ -2620,6 +2619,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3315442055907669208">Opna lesstillingu</translation>
 <translation id="3317459757438853210">Tvíhliða</translation>
 <translation id="3317678681329786349">Lokað á myndavél og hljóðnema</translation>
+<translation id="3319306431415395200">Þýða texta á mynd með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Örugg vefskoðun (vörn gegn hættulegum vefsvæðum) og aðrar öryggisstillingar</translation>
 <translation id="3323521181261657960">Bónus! Þú fékkst meiri skjátíma</translation>
 <translation id="3323577066981719144">Breytingar sem þú gerir hér eiga eingöngu við um Chrome vafra. Opnaðu Lacros Chrome vafrann og farðu í stillingar til að breyta stillingum Lacros Chrome vafrans.</translation>
@@ -4295,7 +4295,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4852916668365817106">Litur músar</translation>
 <translation id="4853020600495124913">Opna í &amp;nýjum glugga</translation>
 <translation id="4854317507773910281">Veldu reikning foreldris sem á að samþykkja</translation>
-<translation id="4854603338816296098">Heimilisfang fjarlægt</translation>
 <translation id="485480310608090163">Fleiri stillingar og heimildir</translation>
 <translation id="4858913220355269194">Falur</translation>
 <translation id="4862642413395066333">Undirritar OCSP-svör</translation>
@@ -4849,6 +4848,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5382591305415226340">Vinna með studda tengla</translation>
 <translation id="5383377866517186886">Slökkt er á myndavélinni í kerfisstillingum Mac</translation>
 <translation id="5383740867328871413">Ónefndur hópur - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (auðkenni: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Fyrirtækjareglu var breytt. Tilraunahnapp var bætt við tækjastiku. Smelltu á hnappinn til að opna svarglugga og virkja tilraunir.</translation>
 <translation id="5388885445722491159">Pörun lokið</translation>
 <translation id="5390112241331447203">Hafa skrána system_logs.txt sem var send með í ábendingaskýrslum.</translation>
@@ -5063,6 +5063,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5578059481725149024">Sjálfvirk innskráning</translation>
 <translation id="5581134892342029705">Þýðingu yfir á <ph name="LANGUAGE" /> er lokið</translation>
 <translation id="558170650521898289">Staðfesting Microsoft Windows vélbúnaðarrekla</translation>
+<translation id="5581876958763461074">Allar glósur</translation>
 <translation id="5581972110672966454">Ekki er hægt að tengja tækið við lén. Reyndu aftur eða hafðu samband við eiganda tækisins þíns eða kerfisstjóra. Villukóði: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Aðalvalmynd</translation>
 <translation id="5583640892426849032">Bakklykill</translation>
@@ -7500,7 +7501,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7819605256207059717">Fyrirtækið setti á bannlista</translation>
 <translation id="7820561748632634942">Úthluta fleiri rofum?</translation>
 <translation id="782057141565633384">A&amp;frita slóð myndskeiðs</translation>
-<translation id="7822187537422052256">Viltu örugglega fjarlægja þetta heimilisfang?</translation>
 <translation id="7824864914877854148">Villa kom í veg fyrir að hægt væri að ljúka afritun</translation>
 <translation id="782590969421016895">Nota núverandi síður</translation>
 <translation id="7826174860695147464">Stuðningur við eldri vafra – innri stillingar</translation>
@@ -7697,6 +7697,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Rödd <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Stillingar rofaaðgangs</translation>
 <translation id="7992203134935383159">Talgervill</translation>
+<translation id="7994515119120860317">Þýða texta á mynd með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Vefyfirlit</translation>
 <translation id="7997826902155442747">Forgangur ferla</translation>
 <translation id="7999229196265990314">Bjó til eftirfarandi skrár:
@@ -8909,7 +8910,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9094038138851891550">Ógilt notandanafn</translation>
 <translation id="9094859731829297286">Viltu örugglega taka frá fasta diskstærð fyrir Linux?</translation>
 <translation id="9094982973264386462">Fjarlægja</translation>
-<translation id="9095253524804455615">Fjarlægja</translation>
 <translation id="9095364055741191097">Ekki tókst að endurheimta staðbundin gögn</translation>
 <translation id="909554839118732438">Loka huliðsgluggum</translation>
 <translation id="9099220545925418560">Byggt á vafraferlinum þínum. Slökkt er á þessari stillingu.</translation>

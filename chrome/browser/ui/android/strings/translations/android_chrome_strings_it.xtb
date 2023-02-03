@@ -251,6 +251,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="2426805022920575512">Scegli un altro account</translation>
 <translation id="2433507940547922241">Aspetto</translation>
 <translation id="2435457462613246316">Mostra password</translation>
+<translation id="2439153523196674349">Anteprima di <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Vuoi avviare di nuovo il download di <ph name="FILE_NAME" />?</translation>
 <translation id="2453860139492968684">Termina</translation>
 <translation id="2459390580524506445">Ricerca vocale migliorata</translation>
@@ -389,6 +390,7 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="3066573403916685335">Sposta giù</translation>
 <translation id="3070005020161560471">Traduci automaticamente</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> si aprirà in Chrome. Se continui, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e ChromeOS<ph name="END_LINK2" />. Si applicano anche le <ph name="BEGIN_LINK3" />Norme sulla privacy<ph name="END_LINK3" />.</translation>
+<translation id="3083194063661536258">Accesso non eseguito. Pulsante. Consente di aprire la finestra di dialogo per accedere e attivare la sincronizzazione.</translation>
 <translation id="3091010850649238832">Mostra contenuti degli appunti</translation>
 <translation id="3098745985164956033">Alcune immagini vengono inviate a Google per migliorare le descrizioni</translation>
 <translation id="3104179992611025423">Il tuo browser è gestito dai tuoi genitori</translation>
@@ -925,6 +927,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="604124094241169006">Automatico</translation>
 <translation id="6042308850641462728">Altro</translation>
+<translation id="6049046116080614938">Accesso eseguito come <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Pulsante. Consente di aprire le impostazioni.</translation>
 <translation id="604996488070107836">Download del file <ph name="FILE_NAME" /> non riuscito a causa di un errore sconosciuto.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controlla notizie e attività qui</translation>
@@ -1299,6 +1302,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7968014550143838305">Aggiunto all'elenco di lettura</translation>
 <translation id="7971136598759319605">Attivo 1 giorno fa</translation>
 <translation id="7975379999046275268">Anteprima pagina <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Accesso eseguito come <ph name="USER_NAME" />. Pulsante. Consente di aprire le impostazioni.</translation>
 <translation id="7986497153528221272">Per visualizzare le password, imposta un blocco schermo sul tuo dispositivo</translation>
 <translation id="7995059495660416932">Vedrai i contenuti non appena saranno disponibili</translation>
 <translation id="799576009106109668">Navigherai più velocemente perché i contenuti vengono caricati in modo proattivo in base alla pagina web che stai visitando</translation>

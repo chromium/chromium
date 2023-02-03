@@ -708,6 +708,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6284652193729350524">Tilbyd at oversætte fra <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Følger ikke længere <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Åbn <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />, og tryk på Beskyttet browsing for at aktivere Beskyttet browsing.</translation>
+<translation id="6320780930074869063">Når denne indstilling er aktiveret, gemmes adgangskoder på <ph name="ACCOUNT" />. Når indstillingen er deaktiveret, gemmes adgangskoder kun på denne enhed.</translation>
 <translation id="6321526113093607004">Føj til Bogmærker</translation>
 <translation id="6324669097367352121">Loginindstillinger</translation>
 <translation id="6337234675334993532">Kryptering</translation>

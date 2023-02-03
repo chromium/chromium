@@ -3512,13 +3512,6 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 <translation id="4275048399551500192">Keine Mediensteuerelemente für <ph name="PRODUCT_NAME" />-Sitzungen anzeigen, die von anderen Geräten gestartet werden</translation>
 <translation id="4282243913059705499"><ph name="PRODUCT_NAME" />-Symbol immer in der Symbolleiste anzeigen</translation>
 <translation id="4285674129118156176">Nicht verknüpften Nutzern die Verwendung von ARC gestatten</translation>
-<translation id="4287344576768105337">Ist die Richtlinie konfiguriert, wird verhindert, dass Webseiten mit unzulässigen URLs geladen werden. Sie enthält eine Liste mit URL-Mustern unzulässiger URLs. Wird die Richtlinie nicht konfiguriert, werden keine URLs im Browser blockiert. Formatiere das URL-Muster, wie unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegeben. In <ph name="URL_ALLOWLIST_POLICY_NAME" /> können bis zu 1.000 Ausnahmen definiert werden.
-
-      Ab Version 73 von <ph name="PRODUCT_NAME" /> kannst du „javascript://*“-URLs blockieren. Das betrifft jedoch nur JavaScript, das in die Adressleiste eingegeben wird, oder beispielsweise Bookmarklets. Die Richtlinie hat keine Auswirkungen auf In-Page-JavaScript-URLs mit dynamisch geladenen Daten. Wenn du beispielsweise „beispiel.de/abc“ blockierst, kann „beispiel.de“ trotzdem „beispiel.de/abc“ über „XMLHTTPRequest“ laden.
-
-      Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im monitorlosen Modus unterstützt.
-
-      Hinweis: Wenn interne URLs von „chrome://*“ und „chrome-untrusted://*“ blockiert werden, kann dies zu unerwarteten Fehlern führen oder in Sonderfällen umgangen werden. Statt bestimmte interne URLs zu blockieren, solltest du nachsehen, ob es spezifischere Richtlinien gibt. Häufige Fälle: Anstatt „chrome://settings/certificates“ zu blockieren, verwende <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />. Anstatt „chrome-untrusted://crosh“ zu blockieren, verwende <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="428948795004445932">Häufigkeit, mit der Netzwerkdaten analysiert und erhoben werden. Die geringste zulässige Häufigkeit beträgt 1 Minute.
 
       Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 10 Minuten.</translation>
@@ -3656,11 +3649,6 @@ WebSQL in unsicheren Kontexten wurde in M112 entfernt.</translation>
 <translation id="4447668084338250480">Verhalten zur Intranet-Weiterleitung</translation>
 <translation id="4449469846627734399">Tageskonfiguration für das Umschalten bei Leistungsspitzen festlegen</translation>
 <translation id="4449545651113180484">Bildschirm um 270 Grad im Uhrzeigersinn drehen</translation>
-<translation id="4450005376189179872">Wenn „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />“ aktiviert und „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />“ konfiguriert ist, kann der intelligente Akkulademodus eingerichtet werden. Der Wert für <ph name="CHARGE_START_TIME_FIELD_NAME" /> muss kleiner als <ph name="CHARGE_END_TIME_FIELD_NAME" /> sein.
-
-      Wenn die Richtlinie nicht konfiguriert ist, ist der intelligente Akkulademodus immer deaktiviert.
-
-      Zulässige Werte für das Feld „<ph name="MINUTE_FIELD_NAME" />“ in „<ph name="CHARGE_START_TIME_FIELD_NAME" />“ und „<ph name="CHARGE_END_TIME_FIELD_NAME" />“ sind 0, 15, 30 und 45.</translation>
 <translation id="4452653762766030431">Steuert die Verfügbarkeit von Netzwerkfreigaben unter Chrome OS</translation>
 <translation id="445270821089253489">Legt fest, welche Art von Nutzer- und Geräteinformationen gesendet wird.</translation>
 <translation id="4453913621209182880">Drucken nur mit Hintergrundgrafiken zulassen</translation>
@@ -5042,11 +5030,6 @@ Das Zeitlimit bei Inaktivität bis zum Start Bildschirmschoners und das Interval
 <translation id="5835674781974810379">Cookies und andere Websitedaten löschen</translation>
 <translation id="5836064773277134605">Vom Host für den Remotezugriff verwendeten UDP-Portbereich einschränken</translation>
 <translation id="583627479140113555">Import von gespeicherten Passwörtern bei der ersten Ausführung aktivieren</translation>
-<translation id="5837898601525273156">Wenn „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />“ konfiguriert und „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />“ aktiviert ist, ist der intelligente Akkulademodus immer aktiviert, sofern diese Funktion vom Gerät unterstützt wird. Dieser Modus verwendet außerhalb der Arbeitszeit den Standardladealgorithmus und weitere Verfahren, um die Lebensdauer des Akkus zu maximieren. Während der Arbeitszeit wird dagegen das Schnellladen verwendet. Für jeden Tag wird die Zeit, in der das System am intensivsten genutzt wird, durch einen Startzeitpunkt und eine Dauer angegeben.
-
-      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, ist der intelligente Akkulademodus immer deaktiviert.
-
-      Nutzer können diese Einstellung nicht ändern.</translation>
 <translation id="5838452040629810808">„Mauszeiger hervorheben“ aktivieren</translation>
 <translation id="5842283830553218200">Bei deaktivierten Formularsteuerelementen wird standardmäßig die neue Ereignisweiterleitung verwendet.</translation>
 <translation id="5848438019586925019">Algorithmus für die Generierung von Schlüsselpaaren.</translation>

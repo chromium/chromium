@@ -373,6 +373,7 @@
 <translation id="1339009753652684748">เข้าถึง Assistant ได้เมื่อพูดว่า "Ok Google" หากต้องการประหยัดแบตเตอรี่ ให้เลือก "เปิด (แนะนำ)" Assistant จะตอบสนองเฉพาะเมื่ออุปกรณ์เสียบปลั๊กหรือชาร์จไฟอยู่</translation>
 <translation id="13392265090583506">การช่วยเหลือพิเศษ</translation>
 <translation id="1340527397989195812">สำรองสื่อจากอุปกรณ์โดยใช้แอป Files</translation>
+<translation id="1341871421050612057">ซิงค์กับ <ph name="USERNAME" /> ไม่ได้</translation>
 <translation id="1343865611738742294">ให้สิทธิ์แอป Linux เข้าถึงอุปกรณ์ USB Linux จะไม่จำอุปกรณ์ USB หลังจากที่นำอุปกรณ์ดังกล่าวออก</translation>
 <translation id="1343920184519992513">ดำเนินการต่อจากจุดที่คุณค้างไว้และเปิดกลุ่มหน้าเว็บที่ต้องการ</translation>
 <translation id="134589511016534552">แท็บสื่อจะแสดงในส่วนแท็บที่เปิดอยู่ด้วย</translation>
@@ -1104,7 +1105,6 @@
 <translation id="1975841812214822307">นำออก...</translation>
 <translation id="1976150099241323601">ลงชื่อเข้าใช้อุปกรณ์รักษาความปลอดภัย</translation>
 <translation id="1977965994116744507">นำโทรศัพท์เข้ามาใกล้ๆ เพื่อปลดล็อก <ph name="DEVICE_TYPE" /></translation>
-<translation id="1978057560491495741">นำที่อยู่ออก</translation>
 <translation id="1979095679518582070">การปิดฟีเจอร์นี้จะไม่ส่งผลต่อความสามารถของอุปกรณ์ในการส่งข้อมูลที่จำเป็นต่อบริการสำคัญ เช่น การอัปเดตระบบและการรักษาความปลอดภัย</translation>
 <translation id="1979280758666859181">คุณกำลังเปลี่ยนเป็นช่องที่มี <ph name="PRODUCT_NAME" /> เวอร์ชันเก่ากว่า การเปลี่ยนช่องจะถูกนำมาใช้เมื่อเวอร์ชันของช่องตรงกับเวอร์ชันที่ติดตั้งอยู่ในอุปกรณ์ของคุณในปัจจุบัน</translation>
 <translation id="197989455406964291">KDC ไม่รองรับการเข้ารหัสประเภทนี้</translation>
@@ -3041,6 +3041,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">คุณและ Google</translation>
 <translation id="3722108462506185496">เกิดข้อผิดพลาดขณะเริ่มบริการเครื่องเสมือน โปรดลองอีกครั้ง</translation>
+<translation id="3722624153992426516">ได้รับคำสั่ง <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> รายการแล้ว</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">เครือข่าย Wi-Fi ที่พร้อมใช้งาน</translation>
 <translation id="3727187387656390258">ตรวจสอบป๊อปอัป</translation>
@@ -3397,6 +3398,7 @@
 <translation id="402211067068791756">การดำเนินการนี้จะล้างข้อมูลซึ่งจัดเก็บโดยเว็บไซต์ที่แสดงรวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
 <translation id="4022426551683927403">&amp;เพิ่มลงในพจนานุกรม</translation>
 <translation id="4025039777635956441">ปิดเสียงเว็บไซต์ที่เลือก</translation>
+<translation id="402707738228916911">ได้รับคำสั่ง <ph name="AUTHORIZE_INSTRUCTION_NAME" /> รายการแล้ว</translation>
 <translation id="4027958407426528157">เปิดเว็บไซต์ในแอปที่ติดตั้งใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">เพิ่มวิธีการป้อนข้อมูล</translation>
 <translation id="4029556917477724407">กลับไปจากหน้า <ph name="PAGE_TITLE" /></translation>
@@ -4137,6 +4139,7 @@
 <translation id="4713409221649555176">ลบเมื่อคุณปิดหน้าต่างทั้งหมด</translation>
 <translation id="47158868804223727">คลิกชื่อกลุ่มเพื่อขยายหรือยุบ</translation>
 <translation id="4716483597559580346">Powerwash เพื่อเพิ่มความปลอดภัย</translation>
+<translation id="471759229191973607">เปลี่ยนธีม</translation>
 <translation id="4722735765955348426">รหัสผ่านของ <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> กำลังแชร์หน้าจอของคุณ</translation>
 <translation id="4722989931633062466">ไม่ได้รับอนุญาตให้แสดงข้อความแจ้งให้ลงชื่อเข้าใช้ของบุคคลที่สาม</translation>
@@ -4279,7 +4282,6 @@
 <translation id="4852916668365817106">สีของเมาส์</translation>
 <translation id="4853020600495124913">เปิดใน&amp;หน้าต่างใหม่</translation>
 <translation id="4854317507773910281">เลือกบัญชีผู้ปกครองที่จะเป็นผู้อนุมัติ</translation>
-<translation id="4854603338816296098">นำที่อยู่ออกแล้ว</translation>
 <translation id="485480310608090163">การตั้งค่าและสิทธิ์อื่นๆ</translation>
 <translation id="4858913220355269194">ฟริทซ์</translation>
 <translation id="4862642413395066333">การเซ็นชื่อในการตอบสนอง OCSP</translation>
@@ -5674,6 +5676,7 @@
 <translation id="6150961653851236686">นี่เป็นภาษาที่ใช้ในการแปลหน้าเว็บ</translation>
 <translation id="6151323131516309312">กด <ph name="SEARCH_KEY" /> เพื่อค้นหา <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">มีไฟล์นี้อยู่แล้วในโฟลเดอร์ดาวน์โหลด</translation>
+<translation id="6152918902620844577">กำลังรอการดำเนินการถัดไป</translation>
 <translation id="6154240335466762404">นำพอร์ตทั้งหมดออก</translation>
 <translation id="615436196126345398">โปรโตคอล</translation>
 <translation id="6155141482566063812">แท็บพื้นหลังกำลังแชร์หน้าจอ</translation>
@@ -7156,6 +7159,7 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ไม่ตอบสนอง เลือก "บังคับปิด" เพื่อปิดแอป</translation>
 <translation id="7535730537657706072">ปิดแท็บที่ไม่ระบุตัวตนทั้งหมดเพื่อล้างประวัติการท่องเว็บแบบไม่ระบุตัวตนออกจากอุปกรณ์</translation>
 <translation id="7537451260744431038">เว็บไซต์จะใช้คุกกี้เพื่อปรับปรุงประสบการณ์การท่องเว็บไม่ได้ เช่น ให้คุณลงชื่อเข้าใช้ต่อไปเรื่อยๆ หรือจำรายการในรถเข็นช็อปปิ้ง</translation>
+<translation id="7538088324298143359">ค้นหาภายในรูปภาพด้วย <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">เกิดข้อผิดพลาดในขณะทำการตรวจสอบการอัปเดต: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> ได้ทำให้อุปกรณ์นี้เป็นเวอร์ชันก่อนหน้า โปรดบันทึกไฟล์สำคัญแล้วจึงรีสตาร์ท ระบบจะลบข้อมูลทั้งหมดในเครื่อง</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" />ด้วยแอป <ph name="APP_NAME" /></translation>
@@ -7384,6 +7388,7 @@
 <translation id="7730683939467795481">หน้านี้มีการเปลี่ยนแปลงจากส่วนขยาย "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7735165285389721951">กำลังตั้งค่า Steam อีกรายการ โปรดรอให้ตั้งค่าเสร็จก่อนแล้วลองอีกครั้ง</translation>
 <translation id="7737115349420013392">กำลังจับคู่กับ "<ph name="DEVICE_NAME" />" ...</translation>
+<translation id="7737203573077018777">ได้รับคำสั่ง <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> รายการแล้ว</translation>
 <translation id="7737846262459425222">คุณเปลี่ยนได้ทุกเมื่อในการตั้งค่า &gt; Google Assistant &gt; บริบทบนหน้าจอ</translation>
 <translation id="7737948071472253612">ไม่ได้รับอนุญาตให้ใช้กล้อง</translation>
 <translation id="77381465218432215">แสดงเครื่องหมายกำกับการออกเสียงและสัญลักษณ์พิเศษ</translation>
@@ -7481,7 +7486,6 @@
 <translation id="7819605256207059717">บล็อกโดยองค์กร</translation>
 <translation id="7820561748632634942">กำหนดสวิตช์เพิ่มอีกไหม</translation>
 <translation id="782057141565633384">คัด&amp;ลอกที่อยู่วิดีโอ</translation>
-<translation id="7822187537422052256">คุณแน่ใจไหมว่าต้องการนำที่อยู่นี้ออก</translation>
 <translation id="7824864914877854148">สำรองข้อมูลให้เสร็จสมบูรณ์ไม่ได้เนื่องจากเกิดข้อผิดพลาด</translation>
 <translation id="782590969421016895">ใช้หน้าเว็บปัจจุบัน</translation>
 <translation id="7826174860695147464">การรองรับเบราว์เซอร์เวอร์ชันเก่า (LBS) - ภายใน</translation>
@@ -7585,6 +7589,7 @@
 <translation id="7912080627461681647">มีการเปลี่ยนรหัสผ่านของคุณในเซิร์ฟเวอร์ โปรดออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="7912974581251770345">คำแปล</translation>
 <translation id="7915457674565721553">เชื่อมต่ออินเทอร์เน็ตเพื่อตั้งค่าการควบคุมโดยผู้ปกครอง</translation>
+<translation id="7916364730877325865">องค์กรของคุณไม่อนุญาตให้เปิดการซิงค์กับบัญชีนี้</translation>
 <translation id="7918257978052780342">ลงทะเบียน</translation>
 <translation id="7919123827536834358">แปลภาษาเหล่านี้โดยอัตโนมัติ</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> วิ</translation>
@@ -8891,7 +8896,6 @@
 <translation id="9094038138851891550">ชื่อผู้ใช้ไม่ถูกต้อง</translation>
 <translation id="9094859731829297286">คุณแน่ใจไหมว่าต้องการสำรองพื้นที่ดิสก์ขนาดคงที่สำหรับ Linux</translation>
 <translation id="9094982973264386462">นำออก</translation>
-<translation id="9095253524804455615">นำออก</translation>
 <translation id="9095364055741191097">กู้คืนข้อมูลในเครื่องไม่สําเร็จ</translation>
 <translation id="909554839118732438">ปิดหน้าต่างที่ไม่ระบุตัวตน</translation>
 <translation id="9099220545925418560">อิงจากประวัติการท่องเว็บของคุณ การตั้งค่านี้ปิดอยู่</translation>

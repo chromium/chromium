@@ -80,6 +80,7 @@
 <translation id="149095475893949513">Этот сайт пытается скачать профиль конфигурации.</translation>
 <translation id="1491277525950327607">Для переключения нажмите дважды</translation>
 <translation id="1492417797159476138">Вы уже сохранили это имя пользователя для данного сайта.</translation>
+<translation id="1498283581832036924">Данные аккаунта для сайта <ph name="WEBSITE" /> удалены не будут.</translation>
 <translation id="1506063256525392513">Это нужно, чтобы делать снимки, загружать фотографии и сканировать QR-коды.</translation>
 <translation id="1509486075633541495">Войдите в аккаунт</translation>
 <translation id="1509960214886564027">Многие функции на сайтах могут работать некорректно</translation>
@@ -219,6 +220,7 @@
 <translation id="2664621323652615289">Остановить</translation>
 <translation id="2671426118752779020">Вы можете использовать пароли, сохраненные в Google Менеджере паролей, для других приложений на своем устройстве iPhone.</translation>
 <translation id="2690858294534178585">Камера уже используется</translation>
+<translation id="26915454213703967">Искать на изображении с помощью Google</translation>
 <translation id="2691653761409724435">Недоступно в офлайн-режиме</translation>
 <translation id="2695507686909505111">Страница переведена</translation>
 <translation id="2697526135132990015">Выйти и удалить данные</translation>
@@ -382,6 +384,7 @@
 <translation id="3819183753496523827">Нет подключения к интернету. Проверьте соединение и повторите попытку.</translation>
 <translation id="3835964409414434850">Перейти на следующую вкладку</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3851938967634752633">Пароли для <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и ещё нескольких сайтов (<ph name="NUMBER_OF_ACCOUNTS" />) будут удалены. При этом сохранятся другие данные аккаунтов для этих сайтов.</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="3861486700625780712">Отменить подписку</translation>
 <translation id="3863769054730344136">Отправить на свои устройства</translation>
@@ -517,6 +520,7 @@
 <translation id="4833786495304741580">Автоматически отправлять в Google статистику использования и отчеты о сбоях.</translation>
 <translation id="4840495572919996524">Ваши закладки, пароли, история и другие данные больше не будут синхронизироваться с аккаунтом Google.</translation>
 <translation id="4844899002472726590">Просмотр и изменение тем, которые вас интересуют</translation>
+<translation id="4848999860252535517">Удалить пароль для <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Установите код доступа</translation>
 <translation id="4858786880085262208">По возможности использовать HTTPS. Безопасные сайты могут содержать небезопасный встроенный контент.</translation>
 <translation id="4860895144060829044">Позвонить</translation>
@@ -708,6 +712,7 @@
 <translation id="6284652193729350524">Предлагать перевести страницы на этом языке (<ph name="LANGUAGE" />)</translation>
 <translation id="6289501276895392862">Подписка на "<ph name="CHANNEL_NAME" />" отменена.</translation>
 <translation id="6293101329759844770">Чтобы включить Безопасный просмотр, откройте <ph name="BEGIN_LINK" />сервисы Google<ph name="END_LINK" /> и нажмите "Безопасный просмотр".</translation>
+<translation id="6320780930074869063">Если параметр включен, пароли сохраняются в аккаунте <ph name="ACCOUNT" />. Иначе они сохраняются только на этом устройстве.</translation>
 <translation id="6321526113093607004">Добавить в закладки</translation>
 <translation id="6324669097367352121">Настройки входа</translation>
 <translation id="6337234675334993532">Шифрование</translation>
@@ -769,6 +774,7 @@
 <translation id="6598875554591387303">Сортировать по издателю</translation>
 <translation id="6603393121510733479">В вашей организации режим инкогнито отключен.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Пароли для <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и <ph name="THIRD_WEBSITE" /> будут удалены. При этом сохранятся другие данные аккаунтов для этих сайтов.</translation>
 <translation id="6610002944194042868">Параметры перевода</translation>
 <translation id="661266467055912436">Делает Интернет безопаснее для вас и других пользователей.</translation>
 <translation id="6620279676667515405">Отмена</translation>
@@ -1046,6 +1052,7 @@
 <translation id="8756969031206844760">Обновить пароль?</translation>
 <translation id="8763613688786959833">Перейти к последней вкладке</translation>
 <translation id="8764015330924122850">Отменить подписку на <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Пароли для <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> будут удалены. При этом сохранятся другие данные аккаунтов для этих сайтов.</translation>
 <translation id="8775144690796719618">Недействительный URL</translation>
 <translation id="8787968206789828143">Найти в интернете</translation>
 <translation id="8792626944327216835">Микрофон</translation>
@@ -1095,6 +1102,7 @@
 <translation id="9093271241977565440">В верхней части экрана нажмите на значок поиска</translation>
 <translation id="9094033019050270033">Обновить пароль</translation>
 <translation id="9097506547406246598">Не удалось отменить подписку. Произошла ошибка.</translation>
+<translation id="9098541895599151034">Удалить выбранные пароли (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9100610230175265781">Необходима кодовая фраза</translation>
 <translation id="9107664647686727385">Определяет раскрытые пароли</translation>
 <translation id="9124387962554796433">Google может использовать вашу историю для персонализации Поиска и других сервисов.</translation>

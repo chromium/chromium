@@ -1115,7 +1115,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1975841812214822307">Eltávolítás…</translation>
 <translation id="1976150099241323601">Bejelentkezés a biztonságos eszközre</translation>
 <translation id="1977965994116744507">Tegye közelebb a telefonját a(z) <ph name="DEVICE_TYPE" /> zárolásának feloldásához.</translation>
-<translation id="1978057560491495741">Cím eltávolítása</translation>
 <translation id="1979095679518582070">A funkció kikapcsolása nem korlátozza ezt az eszközt abban, hogy elküldje az alapvető fontosságú szolgáltatásokkal (pl. a rendszerfrissítésekkel és -biztonsággal) kapcsolatos információkat.</translation>
 <translation id="1979280758666859181">A(z) <ph name="PRODUCT_NAME" /> egy régebbi verziójával vált csatornát. A csatornamódosítás akkor lép érvénybe, amikor a csatorna verziószáma megegyezik az eszközön jelenleg telepített verziószámmal.</translation>
 <translation id="197989455406964291">A KDC nem támogatja a titkosítástípust</translation>
@@ -4292,7 +4291,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4852916668365817106">Egér színe</translation>
 <translation id="4853020600495124913">Megnyitás új &amp;ablakban</translation>
 <translation id="4854317507773910281">Szülői fiók kiválasztása a jóváhagyáshoz</translation>
-<translation id="4854603338816296098">Cím eltávolítva</translation>
 <translation id="485480310608090163">További beállítások és engedélyek</translation>
 <translation id="4858913220355269194">Foci</translation>
 <translation id="4862642413395066333">OCSP (valós idejű tanúsítványlekérdezés) válaszok aláírása</translation>
@@ -7499,7 +7497,6 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7819605256207059717">Letiltotta a szervezete</translation>
 <translation id="7820561748632634942">Hozzárendel további kapcsolókat?</translation>
 <translation id="782057141565633384">Vide&amp;ocím másolása</translation>
-<translation id="7822187537422052256">Biztosan eltávolítja ezt a címet?</translation>
 <translation id="7824864914877854148">Hiba történt, ezért nem lehetett végrehajtani a biztonsági mentést.</translation>
 <translation id="782590969421016895">Jelenlegi oldalak használata</translation>
 <translation id="7826174860695147464">Régi böngészők támogatás – belső</translation>
@@ -8908,7 +8905,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="9094038138851891550">Érvénytelen felhasználónév</translation>
 <translation id="9094859731829297286">Biztosan lefoglal fix méretű lemezt a Linux számára?</translation>
 <translation id="9094982973264386462">Eltávolítás</translation>
-<translation id="9095253524804455615">Eltávolítás</translation>
 <translation id="9095364055741191097">Nem sikerült visszaállítani a helyi adatokat</translation>
 <translation id="909554839118732438">Inkognitó ablakok bezárása</translation>
 <translation id="9099220545925418560">A böngészési előzményei alapján. Ez a beállítás ki van kapcsolva.</translation>

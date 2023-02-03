@@ -708,6 +708,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6284652193729350524">Ofrecer traducir del <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Has dejado de seguir a <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6293101329759844770">Para activar Navegación segura, abre <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" /> y toca Navegación segura.</translation>
+<translation id="6320780930074869063">Cuando esta opción está activada, las contraseñas se guardan en <ph name="ACCOUNT" />. Si está desactivada, las contraseñas solo se guardan en este dispositivo.</translation>
 <translation id="6321526113093607004">Añadir a Marcadores</translation>
 <translation id="6324669097367352121">Configuración de inicio de sesión</translation>
 <translation id="6337234675334993532">Cifrado</translation>

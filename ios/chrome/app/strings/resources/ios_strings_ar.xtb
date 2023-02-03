@@ -80,6 +80,7 @@
 <translation id="149095475893949513">يحاول هذا الموقع الإلكتروني تنزيل ملف شخصي يتضمّن إعدادات.</translation>
 <translation id="1491277525950327607">انقر مرّتين لتبديل الإعداد</translation>
 <translation id="1492417797159476138">سبق لك حفظ اسم المستخدم لهذا الموقع الإلكتروني.</translation>
+<translation id="1498283581832036924">لن يتم حذف حسابك على <ph name="WEBSITE" />.</translation>
 <translation id="1506063256525392513">يتيح لك هذا الإجراء التقاط الصور وتحميلها، بالإضافة إلى مسح رموز الاستجابة السريعة ضوئيًا.</translation>
 <translation id="1509486075633541495">تسجيل الدخول إلى الموقع الإلكتروني</translation>
 <translation id="1509960214886564027">قد تتوقف الميزات عن العمل في العديد من المواقع الإلكترونية.</translation>
@@ -221,6 +222,7 @@
 <translation id="2664621323652615289">إيقاف</translation>
 <translation id="2671426118752779020">‏يمكنك استخدام كلمات المرور التي حفظتها في "مدير كلمات المرور" من Google في التطبيقات الأخرى على هاتف iPhone.</translation>
 <translation id="2690858294534178585">الكاميرا قيد الاستخدام</translation>
+<translation id="26915454213703967">‏البحث في الصور باستخدام Google</translation>
 <translation id="2691653761409724435">غير متاح بلا اتصال</translation>
 <translation id="2695507686909505111">تمت ترجمة الصفحة</translation>
 <translation id="2697526135132990015">تسجيل الخروج ومحو البيانات</translation>
@@ -384,6 +386,7 @@
 <translation id="3819183753496523827">لا يتوفّر اتصال بالإنترنت. يُرجى التحقّق من الاتصال بالإنترنت ثم إعادة المحاولة.</translation>
 <translation id="3835964409414434850">الانتقال إلى علامة التبويب التالية</translation>
 <translation id="385051799172605136">رجوع</translation>
+<translation id="3851938967634752633">سيتم حذف كلمات المرور المحفوظة في <ph name="WEBSITE" /> و<ph name="SECOND_WEBSITE" /> وكلمات المرور في حسابات أخرى يبلغ عددها <ph name="NUMBER_OF_ACCOUNTS" />. لن يتم حذف حساباتك.</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3861486700625780712">إلغاء المتابعة</translation>
 <translation id="3863769054730344136">إرسال إلى أجهزتك</translation>
@@ -519,6 +522,7 @@
 <translation id="4833786495304741580">‏إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
 <translation id="4840495572919996524">‏لن تتم مزامنة الإشارات المرجعية والسجلّ وكلمات المرور وغيرها مع حسابك على Google بعد الآن.</translation>
 <translation id="4844899002472726590">يمكنك الاطّلاع على المواضيع التي تحظى باهتمامك وتعديلها.</translation>
+<translation id="4848999860252535517">هل تريد حذف كلمة المرور في <ph name="WEBSITE" />؟</translation>
 <translation id="4854345657858711387">تعيين رمز المرور</translation>
 <translation id="4858786880085262208">‏ستتم الترقية إلى بروتوكول HTTPS إذا أمكن. قد تتضمَّن المواقع الإلكترونية الآمنة محتوى غير آمن.</translation>
 <translation id="4860895144060829044">اتصال</translation>
@@ -773,6 +777,7 @@
 <translation id="6598875554591387303">الترتيب حسب الناشر</translation>
 <translation id="6603393121510733479">أوقفت مؤسستك وضع "التصفّح بخصوصيّة تامّة".
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">سيتم حذف كلمات المرور المحفوظة في <ph name="WEBSITE" /> و<ph name="SECOND_WEBSITE" /> و<ph name="THIRD_WEBSITE" />. لن يتم حذف حساباتك.</translation>
 <translation id="6610002944194042868">خيارات الترجمة</translation>
 <translation id="661266467055912436">تحسين الأمان من أجلك ومن أجل جميع المستخدمين على الإنترنت</translation>
 <translation id="6620279676667515405">إلغاء</translation>
@@ -1050,6 +1055,7 @@
 <translation id="8756969031206844760">هل تريد تعديل كلمة المرور؟</translation>
 <translation id="8763613688786959833">الانتقال إلى علامة التبويب الأخيرة</translation>
 <translation id="8764015330924122850">إلغاء متابعة <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">سيتم حذف كلمات المرور المحفوظة في <ph name="WEBSITE" /> و<ph name="SECOND_WEBSITE" />. لن يتم حذف حساباتك.</translation>
 <translation id="8775144690796719618">‏عنوان URL غير صالح</translation>
 <translation id="8787968206789828143">البحث على الويب</translation>
 <translation id="8792626944327216835">الميكروفون</translation>
@@ -1099,6 +1105,7 @@
 <translation id="9093271241977565440">انقر على رمز البحث في أعلى الشاشة.</translation>
 <translation id="9094033019050270033">تحديث كلمة المرور</translation>
 <translation id="9097506547406246598">يتعذّر إلغاء المتابعة. حدث خطأ.</translation>
+<translation id="9098541895599151034">هل تريد حذف كلمات مرور <ph name="NUMBER_OF_ACCOUNTS" /> حساب؟</translation>
 <translation id="9100610230175265781">عبارة المرور مطلوبة</translation>
 <translation id="9107664647686727385">التحقُّق من كلمات المرور المحتمَل تعرّضها للاختراق</translation>
 <translation id="9124387962554796433">‏قد تستخدم Google سجلّك لتخصيص "بحث Google" وخدمات Google الأخرى.</translation>

@@ -1118,7 +1118,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1975841812214822307">Tynnu...</translation>
 <translation id="1976150099241323601">Mewngofnodi i Ddyfais Diogelwch</translation>
 <translation id="1977965994116744507">Dewch â'ch ffôn yn agosach i ddatgloi eich <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978057560491495741">Tynnu'r cyfeiriad</translation>
 <translation id="1979095679518582070">Nid yw diffodd y nodwedd hon yn effeithio ar allu'r ddyfais hon i anfon y wybodaeth sydd ei hangen ar gyfer gwasanaethau hanfodol megis diweddariadau system a diogelwch.</translation>
 <translation id="1979280758666859181">Rydych yn newid i sianel â fersiwn hŷn o <ph name="PRODUCT_NAME" />. Bydd y sianel yn newid pan fydd fersiwn y sianel yn cyd-fynd â'r fersiwn sydd wedi'i osod ar hyn o bryd ar eich dyfais.</translation>
 <translation id="197989455406964291">Nid yw KDC yn cefnogi'r math amgryptio</translation>
@@ -2621,6 +2620,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3315442055907669208">Dechrau'r modd darllenydd</translation>
 <translation id="3317459757438853210">Dwy ochr</translation>
 <translation id="3317678681329786349">Rwystrir y camera a'r meicroffon</translation>
+<translation id="3319306431415395200">Cyfieithu testun mewn llun gyda <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Pori'n Ddiogel (amddiffyniad rhag gwefannau peryglus) a gosodiadau diogelwch eraill</translation>
 <translation id="3323521181261657960">Bonws! Cei di fwy o amser sgrîn</translation>
 <translation id="3323577066981719144">Mae newidiadau a wnewch yma yn berthnasol i'r Porwr Chrome yn unig. I wneud newidiadau yn eich gosodiadau Lacros Porwr Chrome, agorwch Lacros Porwr Chrome ac ewch i'r gosodiadau.</translation>
@@ -4296,7 +4296,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4852916668365817106">Lliw y llygoden</translation>
 <translation id="4853020600495124913">Agor mewn &amp;ffenestr newydd</translation>
 <translation id="4854317507773910281">Dewiswch gyfrif rhiant i'w gymeradwyo</translation>
-<translation id="4854603338816296098">Cyfeiriad wedi'i dynnu</translation>
 <translation id="485480310608090163">Rhagor o osodiadau a chaniatadau</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Llofnodi Ymatebion OCSP</translation>
@@ -7509,7 +7508,6 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7819605256207059717">Rhwystrwyd gan eich sefydliad</translation>
 <translation id="7820561748632634942">Aseinio switchis ychwanegol?</translation>
 <translation id="782057141565633384">C&amp;opïo cyfeiriad fideo</translation>
-<translation id="7822187537422052256">Ydych chi'n siŵr eich bod am dynnu'r cyfeiriad hwn?</translation>
 <translation id="7824864914877854148">Ni ellid cwblhau gwneud copïau wrth gefn oherwydd gwall</translation>
 <translation id="782590969421016895">Defnyddio'r tudalennau presennol</translation>
 <translation id="7826174860695147464">Cefnogaeth Porwr Etifeddiaeth (LBS) - Mewnol</translation>
@@ -7706,6 +7704,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7990863024647916394">Llais <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Newid gosodiadau Mynediad</translation>
 <translation id="7992203134935383159">Synthesis lleferydd</translation>
+<translation id="7994515119120860317">Cyfieithu Testun mewn Llun gyda <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">Blaenoriaeth Prosesau</translation>
 <translation id="7999229196265990314">Crëwyd y ffeiliau canlynol:
@@ -8921,7 +8920,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="9094038138851891550">Enw defnyddiwr annilys</translation>
 <translation id="9094859731829297286">Ydych chi'n siŵr eich bod am gadw disg maint sefydlog ar gyfer Linux?</translation>
 <translation id="9094982973264386462">Tynnu</translation>
-<translation id="9095253524804455615">Tynnu</translation>
 <translation id="9095364055741191097">Wedi methu ag adfer data lleol</translation>
 <translation id="909554839118732438">Cau'r Modd Anhysbys</translation>
 <translation id="9099220545925418560">Yn seiliedig ar eich hanes pori. Mae'r gosodiad hwn wedi'i ddiffodd.</translation>

@@ -1112,7 +1112,6 @@
 <translation id="1975841812214822307">Устгах...</translation>
 <translation id="1976150099241323601">Аюулгүй байдлын төхөөрөмж рүү нэвтэрнэ үү.</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" />-н түгжээг тайлахын тулд утсаа ойртуулна уу.</translation>
-<translation id="1978057560491495741">Хаяг хасах</translation>
 <translation id="1979095679518582070">Энэ онцлогийг унтраах нь системийн шинэчлэлт, аюулгүй байдал зэрэг чухал үйлчилгээнд шаардлагатай мэдээлэл илгээх энэ төхөөрөмжийн чадварт нөлөөлөхгүй.</translation>
 <translation id="1979280758666859181">Та сувгаа <ph name="PRODUCT_NAME" />-ийн хуучин хувилбар луу сольж байна. Сувгийн хувилбар нь одоогоор таны төхөөрөмж дээр суулгасан хувилбартай таарч байгаа үед сувгийн өөрчлөлт хэрэгжинэ.</translation>
 <translation id="197989455406964291">KDC нь шифрлэлтийн төрлийг дэмждэггүй</translation>
@@ -2615,6 +2614,7 @@
 <translation id="3315442055907669208">Уншигчийн горимд орох</translation>
 <translation id="3317459757438853210">Хоёр талт</translation>
 <translation id="3317678681329786349">Камер болон микрофоныг блоклосон</translation>
+<translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" />-р зургийн текстийг орчуулах</translation>
 <translation id="3320630259304269485">Аюулгүй үзэх (аюултай сайтаас хамгаалах хамгаалалт) болон аюулгүй байдлын бусад тохиргоо</translation>
 <translation id="3323521181261657960">Бонус! Таны дэлгэцийн цагийг сунгалаа</translation>
 <translation id="3323577066981719144">Таны энд хийсэн өөрчлөлтүүд зөвхөн Chrome хөтчид хэрэгжинэ. Lacros Chrome хөтчийн тохиргоондоо өөрчлөлтүүд хийхийн тулд Lacros Chrome хөтчийг нээж, тохиргоо руу очно уу.</translation>
@@ -4289,7 +4289,6 @@
 <translation id="4852916668365817106">Хулганын өнгө</translation>
 <translation id="4853020600495124913">&amp; Шинэ цонхонд нээх</translation>
 <translation id="4854317507773910281">Зөвшөөрөл хүсэх эцэг эхийн бүртгэлийг сонгоно уу</translation>
-<translation id="4854603338816296098">Хаягийг хассан</translation>
 <translation id="485480310608090163">Бусад тохиргоо болон зөвшөөрөл</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">OCSP хариултууд руу нэвтэрч байна</translation>
@@ -7493,7 +7492,6 @@
 <translation id="7819605256207059717">Танай байгууллагаас блоклосон</translation>
 <translation id="7820561748632634942">Нэмэлт сэлгүүр оноох уу?</translation>
 <translation id="782057141565633384">Видео хаягийг хуулах</translation>
-<translation id="7822187537422052256">Та энэ хаягийг хасахдаа итгэлтэй байна уу?</translation>
 <translation id="7824864914877854148">Алдааны улмаас нөөцлөлтийг дуусгаж чадсангүй</translation>
 <translation id="782590969421016895">Одоогийн хуудсуудыг ашигла</translation>
 <translation id="7826174860695147464">Одоогийн хөтчийн дэмжлэг (LBS) - Дотоод</translation>
@@ -7690,6 +7688,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Дуу хоолой <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Сэлгүүрийн тохиргоо</translation>
 <translation id="7992203134935383159">Ярианы синтез</translation>
+<translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" />-р зургийн текстийг орчуулах</translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">Боловсруулалтын тэргүүлэх чиглэл</translation>
 <translation id="7999229196265990314">Дараах файлуудыг үүсгэсэн болно:
@@ -8898,7 +8897,6 @@
 <translation id="9094038138851891550">Хэрэглэгчийн нэр буруу</translation>
 <translation id="9094859731829297286">Та Linux-т тогтсон хэмжээтэй дискийг хадгалахдаа итгэлтэй байна уу?</translation>
 <translation id="9094982973264386462">Устгах</translation>
-<translation id="9095253524804455615">Устгах</translation>
 <translation id="9095364055741191097">Дотоод өгөгдлийг сэргээж чадсангүй</translation>
 <translation id="909554839118732438">Нууцлалтайг хаах</translation>
 <translation id="9099220545925418560">Таны хөтчийн түүхэд тулгуурласан. Энэ тохиргоо унтраалттай байна.</translation>

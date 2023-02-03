@@ -1104,7 +1104,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1975841812214822307">Suprimeix...</translation>
 <translation id="1976150099241323601">Inici de sessió al dispositiu de seguretat</translation>
 <translation id="1977965994116744507">Acosta el telèfon per desbloquejar <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978057560491495741">Suprimeix l'adreça</translation>
 <translation id="1979095679518582070">Si aquesta funció es desactiva, no afectarà la capacitat d'aquest dispositiu d'enviar la informació necessària per rebre serveis bàsics, com ara seguretat i actualitzacions del sistema.</translation>
 <translation id="1979280758666859181">Esteu a punt de canviar a un canal amb una versió més antiga de <ph name="PRODUCT_NAME" />. El canvi de canal s'aplicarà quan la versió del canal coincideixi amb la versió qui hi ha instal·lada actualment en el vostre dispositiu.</translation>
 <translation id="197989455406964291">El Centre de distribució de claus de Kerberos no admet aquest tipus d'encriptació</translation>
@@ -2604,6 +2603,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3315442055907669208">Entra al mode de lector</translation>
 <translation id="3317459757438853210">A dues cares</translation>
 <translation id="3317678681329786349">La càmera i el micròfon estan bloquejats</translation>
+<translation id="3319306431415395200">Tradueix el text de la imatge amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Configuració de la navegació segura (protecció contra llocs web perillosos) i altres opcions de configuració de seguretat</translation>
 <translation id="3323521181261657960">Has obtingut més temps de connexió!</translation>
 <translation id="3323577066981719144">Els canvis que facis aquí només s'apliquen al navegador Chrome. Per fer canvis a la configuració del navegador Chrome de Lacros, obre'l i ves a la configuració.</translation>
@@ -4276,7 +4276,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4852916668365817106">Color del ratolí</translation>
 <translation id="4853020600495124913">Obre en una &amp;finestra nova</translation>
 <translation id="4854317507773910281">Tria un compte parental per a l'aprovació</translation>
-<translation id="4854603338816296098">S'ha suprimit l'adreça</translation>
 <translation id="485480310608090163">Més opcions de configuració i permisos</translation>
 <translation id="4858913220355269194">Pilota</translation>
 <translation id="4862642413395066333">Signatura de respostes OCSP</translation>
@@ -4831,6 +4830,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5382591305415226340">Gestiona els enllaços admesos</translation>
 <translation id="5383377866517186886">La càmera està desactivada a les preferències del sistema de Mac</translation>
 <translation id="5383740867328871413">Grup sense nom; <ph name="GROUP_CONTENTS" />; <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (identificador: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">S'ha modificat la política d'Enterprise. S'ha afegit el botó Experiments a la barra d'eines. Fes clic al botó per obrir un diàleg i activar els experiments.</translation>
 <translation id="5388885445722491159">Vinculat</translation>
 <translation id="5390112241331447203">Inclou el fitxer system_logs.txt que s'envia en els informes de suggeriments.</translation>
@@ -5045,6 +5045,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5578059481725149024">Inici de sessió automàtic</translation>
 <translation id="5581134892342029705">Traducció a <ph name="LANGUAGE" /> completa</translation>
 <translation id="558170650521898289">Verificació de programes de control de maquinari de Microsoft Windows</translation>
+<translation id="5581876958763461074">Totes les notes</translation>
 <translation id="5581972110672966454">No es pot connectar el dispositiu al domini. Torna-ho a provar o contacta amb el propietari o l'administrador del dispositiu. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Menú principal</translation>
 <translation id="5583640892426849032">Retrocés</translation>
@@ -7477,7 +7478,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7819605256207059717">Bloquejat per la teva organització</translation>
 <translation id="7820561748632634942">Vols assignar més interruptors?</translation>
 <translation id="782057141565633384">C&amp;opia l'adreça del vídeo</translation>
-<translation id="7822187537422052256">Confirmes que vols suprimir aquesta adreça?</translation>
 <translation id="7824864914877854148">La còpia de seguretat no s'ha pogut completar a causa d'un error</translation>
 <translation id="782590969421016895">Utilitza les pàgines actuals</translation>
 <translation id="7826174860695147464">Compatibilitat amb navegadors antics (LBS): configuració interna</translation>
@@ -7674,6 +7674,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7990863024647916394">Veu en <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Configuració d'accés amb interruptors</translation>
 <translation id="7992203134935383159">Síntesi de veu</translation>
+<translation id="7994515119120860317">Tradueix el text de la imatge amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">Prioritat del procés</translation>
 <translation id="7999229196265990314">S'han creat els fitxers següents:
@@ -8887,7 +8888,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9094038138851891550">El nom d'usuari no és vàlid</translation>
 <translation id="9094859731829297286">Confirmes que vols reservar un disc de mida fixa per a Linux?</translation>
 <translation id="9094982973264386462">Suprimeix</translation>
-<translation id="9095253524804455615">Suprimeix</translation>
 <translation id="9095364055741191097">No s'han pogut recuperar les dades locals</translation>
 <translation id="909554839118732438">Tanca les finestres d'incògnit</translation>
 <translation id="9099220545925418560">Segons el teu historial de navegació. Aquesta opció de configuració està desactivada.</translation>

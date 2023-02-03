@@ -1110,7 +1110,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1975841812214822307">Fjern</translation>
 <translation id="1976150099241323601">Logg på sikkerhetsenhet</translation>
 <translation id="1977965994116744507">Hold telefonen nærmere for å låse opp <ph name="DEVICE_TYPE" />-enheten.</translation>
-<translation id="1978057560491495741">Fjern adresse</translation>
 <translation id="1979095679518582070">Enhetens evne til å sende informasjonen som kreves for nødvendige tjenester, for eksempel systemoppdateringer og sikkerhet, påvirkes ikke hvis du slår av denne funksjonen.</translation>
 <translation id="1979280758666859181">Du endrer til en kanal med en eldre versjon av <ph name="PRODUCT_NAME" />. Kanalendringen trer i kraft når kanalversjonen samsvarer med versjonen som allerede er installert på enheten din.</translation>
 <translation id="197989455406964291">KDC støtter ikke krypteringstypen</translation>
@@ -3050,6 +3049,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Deg og Google</translation>
 <translation id="3722108462506185496">Feil ved oppstart av den virtuelle maskinen. Prøv på nytt.</translation>
+<translation id="3722624153992426516">En <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />-instruksjon er mottatt</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Tilgjengelige Wifi-nettverk</translation>
 <translation id="3727187387656390258">Undersøk hurtigvindu</translation>
@@ -3404,6 +3404,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="402211067068791756">Dette medfører sletting av <ph name="TOTAL_USAGE" /> data som er lagret av nettstedene som vises</translation>
 <translation id="4022426551683927403">&amp;Legg til i ordliste</translation>
 <translation id="4025039777635956441">Kutt lyden for det valgte nettstedet</translation>
+<translation id="402707738228916911">En <ph name="AUTHORIZE_INSTRUCTION_NAME" />-instruksjon er mottatt</translation>
 <translation id="4027958407426528157">Åpne nettsteder i apper som er installert på <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Legg til inndatametoder</translation>
 <translation id="4029556917477724407">Tilbake fra siden <ph name="PAGE_TITLE" /></translation>
@@ -4286,7 +4287,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4852916668365817106">Musefarge</translation>
 <translation id="4853020600495124913">Åpne i &amp;nytt vindu</translation>
 <translation id="4854317507773910281">Velg foreldrekonto for godkjenning</translation>
-<translation id="4854603338816296098">Adressen er fjernet</translation>
 <translation id="485480310608090163">Flere innstillinger og tillatelser</translation>
 <translation id="4858913220355269194">Drible</translation>
 <translation id="4862642413395066333">Signering av OCSP-svar</translation>
@@ -5683,6 +5683,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6150961653851236686">Dette språket brukes til å oversette sider</translation>
 <translation id="6151323131516309312">Trykk <ph name="SEARCH_KEY" /> for å søke på <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Filen finnes allerede i nedlastingsmappen.</translation>
+<translation id="6152918902620844577">Venter på neste operasjon</translation>
 <translation id="6154240335466762404">Fjern alle porter</translation>
 <translation id="615436196126345398">Protokoll</translation>
 <translation id="6155141482566063812">En fane i bakgrunnen deler skjermen din</translation>
@@ -7393,6 +7394,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7730683939467795481">Denne siden ble endret av utvidelsen «<ph name="EXTENSION_NAME" />»</translation>
 <translation id="7735165285389721951">En annen Steam-konfigurering kjører. Vent til den er ferdig, før du prøver på nytt</translation>
 <translation id="7737115349420013392">Sammenkobler med «<ph name="DEVICE_NAME" />» …</translation>
+<translation id="7737203573077018777">En <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" />-instruksjon er mottatt</translation>
 <translation id="7737846262459425222">Du kan når som helst endre dette i Innstillinger &gt; Google-assistent &gt; Skjermkontekst.</translation>
 <translation id="7737948071472253612">Nettsteder som ikke har lov til å bruke kameraet ditt</translation>
 <translation id="77381465218432215">Vis aksenttegn og spesialtegn</translation>
@@ -7490,7 +7492,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7819605256207059717">Blokkert av organisasjonen din</translation>
 <translation id="7820561748632634942">Vil du tilordne flere brytere?</translation>
 <translation id="782057141565633384">K&amp;opiér videoadressen</translation>
-<translation id="7822187537422052256">Er du sikker på at du vil fjerne denne adressen?</translation>
 <translation id="7824864914877854148">Kunne ikke fullføre sikkerhetskopieringen på grunn av en feil</translation>
 <translation id="782590969421016895">Bruk nåværende sider</translation>
 <translation id="7826174860695147464">Støtte for eldre nettlesere – internt</translation>
@@ -8379,6 +8380,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8639635302972078117">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto.</translation>
 <translation id="8642900771896232685">2 sekunder</translation>
 <translation id="8642947597466641025">Forstørr teksten</translation>
+<translation id="8643403533759285912">Slett gruppen</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> kan være farlig. Vil du sende filen til Google Avansert beskyttelse for gjennomsøking?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Ingen informasjonskapsler}=1{1 informasjonskapsel er blokkert}other{# informasjonskapsler er blokkert}}</translation>
 <translation id="864423554496711319">Enheter som er lagret i kontoen din</translation>
@@ -8852,6 +8854,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="90528604757378587">Aktivitet i bakgrunnen og enkelte visuelle effekter, for eksempel jevn rulling, kan være begrenset.</translation>
 <translation id="9053563360605707198">Skriv ut på begge sider</translation>
 <translation id="9055636786322918818">Start håndheving av RC4-kryptering. Hvis du bruker dette alternativet, øker risikoen, ettersom RC4-chiffere ikke er sikre.</translation>
+<translation id="9056788090206401048">Bluetooth må være påslått for at du skal kunne bruke tilgangsnøkkelen din på en annen enhet. Du kan alltid administrere dette i innstillingene.</translation>
 <translation id="9056810968620647706">Finner ingen treff.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> vil ha tilgang til følgende innhold:</translation>
 <translation id="9057354806206861646">Oppdateringsplan</translation>
@@ -8900,7 +8903,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="9094038138851891550">Ugyldig brukernavn</translation>
 <translation id="9094859731829297286">Er du sikker på at du vil reservere en disk med fast størrelse for Linux?</translation>
 <translation id="9094982973264386462">Fjern</translation>
-<translation id="9095253524804455615">Fjern</translation>
 <translation id="9095364055741191097">Kunne ikke gjenopprette lokale data</translation>
 <translation id="909554839118732438">Lukk alle inkognitovinduer</translation>
 <translation id="9099220545925418560">Basert på nettleserloggen din. Denne innstillingen er slått av.</translation>
