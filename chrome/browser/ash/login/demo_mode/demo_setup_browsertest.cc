@@ -448,11 +448,11 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
 
   system::ScopedFakeStatisticsProvider statistics_provider_;
 
-  void SelectFranceAndFinishSetup() {
-    // Select France as the Demo Mode country.
+  void PopulateDemoPreferencesAndFinishSetup() {
+    // Select France as the Demo Mode country and test retailer name and store
+    // number.
     test::OobeJS().SelectElementInPath("FR", kDemoPreferencesCountrySelect);
-    test::OobeJS().ExpectEnabledPath(kDemoPreferencesNext);
-    test::OobeJS().ClickOnPath(kDemoPreferencesNext);
+    ProceedThroughDemoPreferencesScreen();
 
     AcceptTermsAndExpectDemoSetupProgress();
 
@@ -592,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::OobeJS().ExpectEnabledPath(kDemoPreferencesNext);
   test::OobeJS().ExpectElementValue("US", kDemoPreferencesCountrySelect);
 
-  SelectFranceAndFinishSetup();
+  PopulateDemoPreferencesAndFinishSetup();
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -1091,9 +1091,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupVirtualSetRegionCodeTest,
   // Expect inactive "OK" button when entering the preference screen.
   test::OobeJS().ExpectDisabledPath(kDemoPreferencesNext);
   test::OobeJS().ExpectElementValue("N/A", kDemoPreferencesCountrySelect);
-  // test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  SelectFranceAndFinishSetup();
+  PopulateDemoPreferencesAndFinishSetup();
 }
 
 /**
@@ -1108,24 +1107,22 @@ class DemoSetupRegionCodeNotExistTest : public DemoSetupArcSupportedTest {
   }
 };
 
-// TODO(crbug.com/1320444): Flaky test.
 IN_PROC_BROWSER_TEST_F(DemoSetupRegionCodeNotExistTest,
-                       DISABLED_RegionCodeNotExistPlaceholderIsSet) {
+                       RegionCodeNotExistPlaceholderIsSet) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
   enrollment_helper_.ExpectAttestationEnrollmentSuccess();
   SimulateNetworkConnected();
 
-  // TODO(crbug.com/1320412): Re-enable this test
   TriggerDemoModeOnWelcomeScreen();
   UseOnlineModeOnNetworkScreen();
+
   // Expect inactive "OK" button when entering the preference screen.
   test::OobeJS().ExpectDisabledPath(kDemoPreferencesNext);
   test::OobeJS().ExpectElementValue("N/A", kDemoPreferencesCountrySelect);
-  // test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  SelectFranceAndFinishSetup();
+  PopulateDemoPreferencesAndFinishSetup();
 }
 
 /**
