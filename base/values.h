@@ -779,24 +779,6 @@ class BASE_EXPORT GSL_OWNER Value {
   Value* FindPath(StringPiece path);
   const Value* FindPath(StringPiece path) const;
 
-  // There are also deprecated versions that take the path parameter
-  // as either a std::initializer_list<StringPiece> or a
-  // span<const StringPiece>. The latter is useful to use a
-  // std::vector<std::string> as a parameter but creates huge dynamic
-  // allocations and should be avoided!
-  // Note: If there is only one component in the path, use `FindKey()` instead.
-  //
-  // Example:
-  //   std::vector<StringPiece> components = ...
-  //   auto* found = FindPath(components);
-  //
-  // DEPRECATED: These are not common, and there is no currently planned
-  // replacement.
-  Value* FindPath(std::initializer_list<StringPiece> path);
-  Value* FindPath(span<const StringPiece> path);
-  const Value* FindPath(std::initializer_list<StringPiece> path) const;
-  const Value* FindPath(span<const StringPiece> path) const;
-
   // Like FindPath() but will only return the value if the leaf Value type
   // matches the given type. Will return nullptr otherwise.
   // Note: Prefer `Find<Type>Path()` for simple values.
@@ -838,17 +820,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // dots.
   Value* FindListPath(StringPiece path);
   const Value* FindListPath(StringPiece path) const;
-
-  // The following forms are deprecated too, use the ones that take the path
-  // as a single StringPiece instead.
-  //
-  // DEPRECATED: These are not common, and there is no currently planned
-  // replacement.
-  Value* FindPathOfType(std::initializer_list<StringPiece> path, Type type);
-  Value* FindPathOfType(span<const StringPiece> path, Type type);
-  const Value* FindPathOfType(std::initializer_list<StringPiece> path,
-                              Type type) const;
-  const Value* FindPathOfType(span<const StringPiece> path, Type type) const;
 
   // Sets the given path, expanding and creating dictionary keys as necessary.
   //
