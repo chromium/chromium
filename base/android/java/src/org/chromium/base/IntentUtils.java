@@ -457,6 +457,9 @@ public class IntentUtils {
      * @return A safe to use version of this intent.
      */
     public static Intent sanitizeIntent(final Intent incomingIntent) {
+        // On Android T+, items are only deserialized when the items themselves are queried, so the
+        // code below is a no-op.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) return incomingIntent;
         if (incomingIntent == null) return null;
         try {
             incomingIntent.getBooleanExtra("TriggerUnparcel", false);
