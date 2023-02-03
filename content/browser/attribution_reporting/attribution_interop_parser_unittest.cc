@@ -11,7 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "content/public/browser/attribution_config.h"
+#include "content/browser/attribution_reporting/attribution_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

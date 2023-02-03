@@ -13,12 +13,12 @@
 #include "base/guid.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_reporting.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/combinatorics.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
-#include "content/public/browser/attribution_reporting.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {

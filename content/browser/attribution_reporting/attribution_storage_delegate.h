@@ -11,10 +11,10 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/attribution_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {

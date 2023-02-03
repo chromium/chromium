@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/thread_annotations.h"
+#include "content/browser/attribution_reporting/attribution_reporting.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/attribution_reporting.h"
 
 namespace content {
 

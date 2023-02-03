@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_ATTRIBUTION_CONFIG_H_
-#define CONTENT_PUBLIC_BROWSER_ATTRIBUTION_CONFIG_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_CONFIG_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_CONFIG_H_
 
 #include <stdint.h>
 
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_reporting.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/attribution_reporting.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -120,4 +120,4 @@ struct CONTENT_EXPORT AttributionConfig {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_ATTRIBUTION_CONFIG_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_CONFIG_H_
