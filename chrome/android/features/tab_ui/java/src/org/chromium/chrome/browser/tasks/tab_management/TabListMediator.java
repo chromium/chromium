@@ -347,10 +347,10 @@ class TabListMediator {
     private final SelectionDelegateProvider mSelectionDelegateProvider;
     private final GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
     private final TabGridDialogHandler mTabGridDialogHandler;
-    private final String mComponentName;
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final PriceWelcomeMessageController mPriceWelcomeMessageController;
 
+    private String mComponentName;
     private ThumbnailProvider mThumbnailProvider;
     private boolean mActionsOnAllRelatedTabs;
     private ComponentCallbacks mComponentCallbacks;
@@ -648,8 +648,9 @@ class TabListMediator {
                     @TabCreationState int creationState, boolean markedForSelection) {
                 if (!mTabModelSelector.isTabStateInitialized()) return;
                 // Check if we need to delay tab addition to model.
-                boolean delayAdd =
-                        (type == TabLaunchType.FROM_TAB_SWITCHER_UI) && markedForSelection;
+                boolean delayAdd = (type == TabLaunchType.FROM_TAB_SWITCHER_UI)
+                        && markedForSelection
+                        && TabSwitcherCoordinator.COMPONENT_NAME.equals(mComponentName);
                 if (delayAdd) {
                     mTabToAddDelayed = tab;
                     return;
@@ -2047,5 +2048,10 @@ class TabListMediator {
     @VisibleForTesting
     Tab getTabToAddDelayedForTesting() {
         return mTabToAddDelayed;
+    }
+
+    @VisibleForTesting
+    void setComponentNameForTesting(String name) {
+        mComponentName = name;
     }
 }
