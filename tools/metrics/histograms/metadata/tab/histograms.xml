@@ -515,9 +515,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.PullDownGesture" enum="PullDownGestureAction"
-    expires_after="2020-01-15">
+    expires_after="2024-01-15">
   <owner>gambard@chromium.org</owner>
-  <owner>kkhorimoto@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
   <summary>
     Record the action executed when the user performs a pull down gesture. This
     feature is currently iOS only.
