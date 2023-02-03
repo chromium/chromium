@@ -159,14 +159,6 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
         try (TraceEvent te = TraceEvent.scoped("BackgroundTaskScheduler.checkForOSUpgrade")) {
             ThreadUtils.assertOnUiThread();
 
-            // Update tasks stored in the old format to the proto format at Chrome Startup, if
-            // tasks are found to be stored in the old format. This allows to keep only one
-            // implementation of the storage methods.
-            // This proto store was added in M78, and should be deleted when upgrades from that
-            // of Chrome is no longer considered a core user journey.
-            // TODO(crbug.com/1406114) Remove this migration and the underlying preferences.
-            BackgroundTaskSchedulerPrefs.migrateStoredTasksToProto();
-
             BackgroundTaskSchedulerUma.getInstance().flushStats();
         }
     }

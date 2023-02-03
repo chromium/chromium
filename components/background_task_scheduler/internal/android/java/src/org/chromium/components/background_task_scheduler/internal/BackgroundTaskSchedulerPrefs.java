@@ -30,80 +30,8 @@ import java.util.Set;
 public class BackgroundTaskSchedulerPrefs {
     private static final String TAG = "BTSPrefs";
     @VisibleForTesting
-    static final String KEY_SCHEDULED_TASKS = "bts_scheduled_tasks";
     private static final String KEY_LAST_SDK_VERSION = "bts_last_sdk_version";
     private static final String PREF_PACKAGE = "org.chromium.components.background_task_scheduler";
-
-    /**
-     * Class abstracting conversions between a string kept in shared preferences and actual values
-     * held there.
-     */
-    @VisibleForTesting
-    static class ScheduledTaskPreferenceEntry {
-        private static final String ENTRY_SEPARATOR = ":";
-        private int mTaskId;
-
-        /**
-         * Parses a preference entry from input string.
-         *
-         * @param entry An input string to parse.
-         * @return A parsed entry or null if the input is not valid.
-         */
-        public static ScheduledTaskPreferenceEntry parseEntry(String entry) {
-            if (entry == null) return null;
-
-            String[] entryParts = entry.split(ENTRY_SEPARATOR);
-            if (entryParts.length != 2 || entryParts[0].isEmpty() || entryParts[1].isEmpty()) {
-                return null;
-            }
-            int taskId = 0;
-            try {
-                taskId = Integer.parseInt(entryParts[1]);
-            } catch (NumberFormatException e) {
-                return null;
-            }
-            return new ScheduledTaskPreferenceEntry(taskId);
-        }
-
-        public ScheduledTaskPreferenceEntry(int taskId) {
-            mTaskId = taskId;
-        }
-
-        /** Gets the ID of the task in this entry. */
-        public int getTaskId() {
-            return mTaskId;
-        }
-    }
-
-    static void migrateStoredTasksToProto() {
-        try (TraceEvent te = TraceEvent.scoped(
-                     "BackgroundTaskSchedulerPrefs.migrateStoredTasksToProto")) {
-            Set<String> scheduledTasks =
-                    ContextUtils.getAppSharedPreferences().getStringSet(KEY_SCHEDULED_TASKS, null);
-
-            if (scheduledTasks == null) return;
-            ContextUtils.getAppSharedPreferences().edit().remove(KEY_SCHEDULED_TASKS).apply();
-
-            SharedPreferences.Editor editor = getSharedPreferences().edit();
-            for (String entry : scheduledTasks) {
-                ScheduledTaskPreferenceEntry parsed =
-                        ScheduledTaskPreferenceEntry.parseEntry(entry);
-                if (parsed == null) {
-                    Log.w(TAG, "Scheduled task could not be parsed from storage.");
-                    continue;
-                }
-                editor.putString(
-                        String.valueOf(parsed.getTaskId()), getEmptySerializedScheduledTaskProto());
-            }
-            editor.apply();
-        }
-    }
-
-    private static String getEmptySerializedScheduledTaskProto() {
-        ScheduledTaskProto.ScheduledTask scheduledTask =
-                ScheduledTaskProto.ScheduledTask.newBuilder().build();
-        return Base64.encodeToString(scheduledTask.toByteArray(), Base64.DEFAULT);
-    }
 
     /** Adds a task to scheduler's preferences, so that it can be rescheduled with OS upgrade. */
     public static void addScheduledTask(TaskInfo taskInfo) {
@@ -251,12 +179,10 @@ public class BackgroundTaskSchedulerPrefs {
     }
 
     /**
-     * Removes all scheduled tasks from shared preferences store. Removes tasks from the old
-     * storage format and from the proto format.
+     * Removes all scheduled tasks from shared preferences store.
      */
     public static void removeAllTasks() {
         try (TraceEvent te = TraceEvent.scoped("BackgroundTaskSchedulerPrefs.removeAllTasks")) {
-            ContextUtils.getAppSharedPreferences().edit().remove(KEY_SCHEDULED_TASKS).apply();
             getSharedPreferences().edit().clear().apply();
         }
     }

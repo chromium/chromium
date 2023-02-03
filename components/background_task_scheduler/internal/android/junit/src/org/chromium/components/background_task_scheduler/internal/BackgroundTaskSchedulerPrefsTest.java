@@ -9,8 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import android.content.SharedPreferences;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -166,36 +164,5 @@ public class BackgroundTaskSchedulerPrefsTest {
         BackgroundTaskSchedulerPrefs.removeAllTasks();
         assertTrue("We are expecting a all tasks to be gone.",
                 BackgroundTaskSchedulerPrefs.getScheduledTaskIds().isEmpty());
-    }
-
-    @Test
-    @Feature("BackgroundTaskScheduler")
-    public void testMigrationToProto() {
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        Set<String> scheduledTasks = prefs.getStringSet(
-                BackgroundTaskSchedulerPrefs.KEY_SCHEDULED_TASKS, new HashSet<String>(1));
-
-        // Create a valid BackgroundTaskSchedulerPrefs entry corresponding to TaskIds.TEST.
-        scheduledTasks.add("foo:33656");
-
-        // Create a valid BackgroundTaskSchedulerPrefs entry corresponding to
-        // TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID.
-        scheduledTasks.add("foo:77");
-
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putStringSet(BackgroundTaskSchedulerPrefs.KEY_SCHEDULED_TASKS, scheduledTasks);
-        editor.apply();
-
-        BackgroundTaskSchedulerPrefs.migrateStoredTasksToProto();
-
-        Set<Integer> taskIds = BackgroundTaskSchedulerPrefs.getScheduledTaskIds();
-        assertTrue(taskIds.contains(mTask1.getTaskId()));
-        assertTrue(taskIds.contains(mTask2.getTaskId()));
-        assertEquals("mTask1 class name in scheduled tasks.", TestBackgroundTask.class,
-                BackgroundTaskSchedulerFactoryInternal
-                        .getBackgroundTaskFromTaskId(mTask1.getTaskId())
-                        .getClass());
-
-        BackgroundTaskSchedulerPrefs.migrateStoredTasksToProto();
     }
 }
