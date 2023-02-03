@@ -41,6 +41,10 @@ void RoundedLabelWidget::Init(InitParams params) {
   }
   views::Widget::Init(std::move(widget_params));
 
+  if (params.disable_default_visibility_animation) {
+    SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
+  }
+
   SetContentsView(std::make_unique<RoundedLabel>(
       params.horizontal_padding, params.vertical_padding, params.rounding_dp,
       params.preferred_height, l10n_util::GetStringUTF16(params.message_id)));

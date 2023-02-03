@@ -30,6 +30,7 @@ class RoundedLabelWidget : public views::Widget {
     int message_id;
     aura::Window* parent;
     bool hide_in_mini_view;
+    bool disable_default_visibility_animation = false;
   };
 
   RoundedLabelWidget();

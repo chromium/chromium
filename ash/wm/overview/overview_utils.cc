@@ -258,11 +258,7 @@ gfx::Rect GetGridBoundsInScreen(
     auto* overview_session =
         Shell::Get()->overview_controller()->overview_session();
     const bool hotseat_will_extend =
-        overview_session &&
-        (overview_session->enter_exit_overview_type() ==
-             OverviewEnterExitType::kImmediateEnter ||
-         overview_session->enter_exit_overview_type() ==
-             OverviewEnterExitType::kImmediateEnterWithoutFocus) &&
+        overview_session && overview_session->ShouldEnterWithoutAnimations() &&
         !split_view_controller->InSplitViewMode();
     if (hotseat_extended || hotseat_will_extend) {
       // Use the default hotseat size here to avoid the possible re-layout

@@ -307,6 +307,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // True if the saved desk library will be shown shortly.
   bool WillShowSavedDeskLibrary() const;
 
+  // True if we want to enter overview without animations.
+  bool ShouldEnterWithoutAnimations() const;
+
   // Updates the focusable overview widgets so that they point to the correct
   // next and previous widgets for a11y purposes. Needs to be updated when a
   // piece of UI is shown or hidden.

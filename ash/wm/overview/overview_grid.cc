@@ -1967,6 +1967,10 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items) {
     params.parent =
         root_window_->GetChildById(desks_util::GetActiveDeskContainerId());
     params.hide_in_mini_view = true;
+    if (overview_session_ &&
+        overview_session_->ShouldEnterWithoutAnimations()) {
+      params.disable_default_visibility_animation = true;
+    }
     no_windows_widget_ = std::make_unique<RoundedLabelWidget>();
     no_windows_widget_->Init(std::move(params));
 

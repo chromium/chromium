@@ -1316,15 +1316,10 @@ void OverviewItem::CreateItemWidget() {
                               base::Unretained(this)),
           GetWindow(), transform_window_.IsMinimized()));
   item_widget_->Show();
-  if (overview_session_ &&
-      (overview_session_->enter_exit_overview_type() ==
-           OverviewEnterExitType::kImmediateEnter ||
-       overview_session_->enter_exit_overview_type() ==
-           OverviewEnterExitType::kImmediateEnterWithoutFocus)) {
-    item_widget_->SetOpacity(1.f);
-  } else {
-    item_widget_->SetOpacity(0.f);
-  }
+  item_widget_->SetOpacity(
+      overview_session_ && overview_session_->ShouldEnterWithoutAnimations()
+          ? 1.f
+          : 0.f);
   widget_layer->SetMasksToBounds(false);
 }
 

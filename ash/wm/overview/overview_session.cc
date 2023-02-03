@@ -227,9 +227,7 @@ void OverviewSession::Init(const WindowList& windows,
 
     // Do not animate if there is any window that is being dragged in the
     // grid.
-    if (enter_exit_overview_type_ == OverviewEnterExitType::kImmediateEnter ||
-        enter_exit_overview_type_ ==
-            OverviewEnterExitType::kImmediateEnterWithoutFocus) {
+    if (ShouldEnterWithoutAnimations()) {
       overview_grid->PositionWindows(/*animate=*/false);
     } else {
       // Exit only types should not appear here:
@@ -1108,6 +1106,12 @@ bool OverviewSession::IsShowingSavedDeskLibrary() const {
 bool OverviewSession::WillShowSavedDeskLibrary() const {
   return grid_list_.empty() ? false
                             : grid_list_.front()->WillShowSavedDeskLibrary();
+}
+
+bool OverviewSession::ShouldEnterWithoutAnimations() const {
+  return enter_exit_overview_type_ == OverviewEnterExitType::kImmediateEnter ||
+         enter_exit_overview_type_ ==
+             OverviewEnterExitType::kImmediateEnterWithoutFocus;
 }
 
 void OverviewSession::UpdateAccessibilityFocus() {
