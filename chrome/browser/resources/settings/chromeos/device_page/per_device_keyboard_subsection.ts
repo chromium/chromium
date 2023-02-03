@@ -140,6 +140,10 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends PolymerElement {
   private onSettingsChanged(): void {
     // TODO(wangdanny): Implement onSettingsChanged.
   }
+
+  private onRemapKeyboardKeysTap(): void {
+    // TODO(yyhyyh@): Create keyboard remapping page and its route.
+  }
 }
 
 declare global {
