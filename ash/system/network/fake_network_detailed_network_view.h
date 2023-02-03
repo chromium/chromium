@@ -57,6 +57,8 @@ class ASH_EXPORT FakeNetworkDetailedNetworkView
   void ReorderMobileTopContainer(size_t index) override {}
   void ReorderMobileListView(size_t index) override {}
   void MaybeRemoveFirstListView() override {}
+  void UpdateWifiStatus(bool enabled) override {}
+  void UpdateMobileStatus(bool enabled) override {}
 
   // ViewClickListener:
   void OnViewClicked(views::View* view) override;

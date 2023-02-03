@@ -56,6 +56,8 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   void ReorderMobileTopContainer(size_t index) override;
   void ReorderMobileListView(size_t index) override;
   void MaybeRemoveFirstListView() override;
+  void UpdateWifiStatus(bool enabled) override;
+  void UpdateMobileStatus(bool enabled) override;
 
   // NetworkListNetworkHeaderView::Delegate:
   void OnMobileToggleClicked(bool new_state) override;

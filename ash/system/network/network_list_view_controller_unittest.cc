@@ -298,7 +298,7 @@ class NetworkListViewControllerTest : public AshTestBase,
 
       // Expect that the view at `index` is a network item, and that it is an
       // wifi network.
-      if (!wifi_network_count) {
+      if (!wifi_network_count && GetWifiToggleButton()->GetIsOn()) {
         // When no WiFi networks are available, status message is shown.
         EXPECT_NE(nullptr, GetWifiStatusMessage());
       }
@@ -986,11 +986,18 @@ TEST_P(NetworkListViewControllerTest,
   properties->device_state = DeviceStateType::kDisabled;
   cros_network()->SetDeviceProperties(properties.Clone());
 
-  // Message is shown when device is disabled.
-  ASSERT_THAT(GetMobileStatusMessage(), NotNull());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLED),
-      GetMobileStatusMessage()->label()->GetText());
+  if (features::IsQsRevampEnabled()) {
+    // No mobile network list is shown when device is disabled.
+    EXPECT_FALSE(network_list(NetworkType::kMobile)->GetVisible());
+  } else {
+    EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
+    // Message is shown when device is disabled.
+    ASSERT_THAT(GetMobileStatusMessage(), NotNull());
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLED),
+        GetMobileStatusMessage()->label()->GetText());
+  }
+
   EXPECT_TRUE(GetMobileToggleButton()->GetEnabled());
   EXPECT_FALSE(GetMobileToggleButton()->GetIsOn());
   EXPECT_TRUE(GetMobileToggleButton()->GetVisible());
@@ -1080,10 +1087,14 @@ TEST_P(NetworkListViewControllerTest, HasCorrectWifiStatusMessage) {
   // Disable wifi device.
   properties->device_state = DeviceStateType::kDisabled;
   cros_network()->SetDeviceProperties(properties.Clone());
-
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_WIFI_DISABLED),
-      GetWifiStatusMessage()->label()->GetText());
+  if (IsQsRevampEnabled()) {
+    EXPECT_FALSE(network_list(NetworkType::kWiFi)->GetVisible());
+  } else {
+    EXPECT_TRUE(network_list(NetworkType::kWiFi)->GetVisible());
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_WIFI_DISABLED),
+        GetWifiStatusMessage()->label()->GetText());
+  }
 
   // Enable and add wifi network.
   cros_network()->AddNetworkAndDevice(

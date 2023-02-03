@@ -15,6 +15,7 @@
 #include "ash/system/network/network_list_mobile_header_view.h"
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/network/tray_network_state_model.h"
+#include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/i18n/rtl.h"
@@ -72,8 +73,9 @@ NetworkListMobileHeaderViewImpl::~NetworkListMobileHeaderViewImpl() = default;
 
 void NetworkListMobileHeaderViewImpl::AddExtraButtons() {
   // The button navigates to Settings, only add it if this can occur.
-  if (!TrayPopupUtils::CanOpenWebUISettings())
+  if (!TrayPopupUtils::CanOpenWebUISettings()) {
     return;
+  }
 
   const gfx::VectorIcon& icon = base::i18n::IsRTL() ? kAddCellularNetworkRtlIcon
                                                     : kAddCellularNetworkIcon;
@@ -85,8 +87,12 @@ void NetworkListMobileHeaderViewImpl::AddExtraButtons() {
       /*has_border=*/false);
   add_esim_button.get()->SetID(kAddESimButtonId);
   add_esim_button_ = add_esim_button.get();
-  container()->AddViewAt(TriView::Container::END, add_esim_button.release(),
-                         /*index=*/0);
+  if (features::IsQsRevampEnabled()) {
+    entry_row()->AddAdditionalRightView(add_esim_button.release());
+  } else {
+    container()->AddViewAt(TriView::Container::END, add_esim_button.release(),
+                           /*index=*/0);
+  }
 }
 
 void NetworkListMobileHeaderViewImpl::OnToggleToggled(bool is_on) {
@@ -100,8 +106,9 @@ void NetworkListMobileHeaderViewImpl::AddESimButtonPressed() {
 
 void NetworkListMobileHeaderViewImpl::SetAddESimButtonState(bool enabled,
                                                             bool visible) {
-  if (!add_esim_button_)
+  if (!add_esim_button_) {
     return;
+  }
 
   add_esim_button_->SetVisible(visible);
   add_esim_button_->SetEnabled(enabled);
@@ -109,8 +116,9 @@ void NetworkListMobileHeaderViewImpl::SetAddESimButtonState(bool enabled,
   // We do not bother updating the tooltip when the "add eSIM" button is
   // not visible to avoid the case where no Cellular device is available
   // since we do not have a tooltip for this situation.
-  if (!visible)
+  if (!visible) {
     return;
+  }
 
   add_esim_button_->SetTooltipText(
       l10n_util::GetStringUTF16(GetAddESimTooltipMessageId()));

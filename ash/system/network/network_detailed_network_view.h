@@ -93,15 +93,19 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   virtual views::View* GetNetworkList(
       chromeos::network_config::mojom::NetworkType type) = 0;
 
-  // Reorder the container or list view based on the index.
+  // Reorders the container or list view based on the index.
   virtual void ReorderFirstListView(size_t index) = 0;
   virtual void ReorderNetworkTopContainer(size_t index) = 0;
   virtual void ReorderNetworkListView(size_t index) = 0;
   virtual void ReorderMobileTopContainer(size_t index) = 0;
   virtual void ReorderMobileListView(size_t index) = 0;
 
-  // Remove the first list view if there's no child views in it.
+  // Removes the first list view if there's no child views in it.
   virtual void MaybeRemoveFirstListView() = 0;
+
+  // Updates the containers, shows or hides the corresponding list view.
+  virtual void UpdateWifiStatus(bool enabled) = 0;
+  virtual void UpdateMobileStatus(bool enabled) = 0;
 
  protected:
   explicit NetworkDetailedNetworkView(Delegate* delegate);

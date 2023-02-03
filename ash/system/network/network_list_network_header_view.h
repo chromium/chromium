@@ -46,7 +46,7 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
  protected:
   virtual void AddExtraButtons();
 
-  // Called when |toggle_| is clicked and toggled. Subclasses should override to
+  // Called when `toggle_` is clicked and toggled. Subclasses should override to
   // enabled/disable their respective technology.
   virtual void OnToggleToggled(bool is_on);
 
@@ -66,7 +66,11 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
 
   void ToggleButtonPressed();
 
+  // NetworkListHeaderView:
+  void UpdateToggleState(bool has_new_state) override;
+
   TrayNetworkStateModel* model_;
+  int const enabled_label_id_;
 
   // ToggleButton to toggle section on or off.
   views::ToggleButton* toggle_ = nullptr;

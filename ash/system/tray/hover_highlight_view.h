@@ -74,6 +74,10 @@ class ASH_EXPORT HoverHighlightView : public ActionableView {
   void AddRightView(views::View* view,
                     std::unique_ptr<views::Border> border = nullptr);
 
+  // Adds an additional right view next to the `right_view_`.
+  // TODO (b/266761290): Remove this method when it's not needed.
+  void AddAdditionalRightView(views::View* view);
+
   // Hides or shows the right view for an already populated view.
   void SetRightViewVisible(bool visible);
 

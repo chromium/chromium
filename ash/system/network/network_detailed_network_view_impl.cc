@@ -215,6 +215,28 @@ void NetworkDetailedNetworkViewImpl::MaybeRemoveFirstListView() {
   }
 }
 
+void NetworkDetailedNetworkViewImpl::UpdateWifiStatus(bool enabled) {
+  if (wifi_top_container_) {
+    wifi_top_container_->SetBehavior(
+        enabled ? RoundedContainer::Behavior::kTopRounded
+                : RoundedContainer::Behavior::kAllRounded);
+  }
+  if (wifi_network_list_view_) {
+    wifi_network_list_view_->SetVisible(enabled);
+  }
+}
+
+void NetworkDetailedNetworkViewImpl::UpdateMobileStatus(bool enabled) {
+  if (mobile_top_container_) {
+    mobile_top_container_->SetBehavior(
+        enabled ? RoundedContainer::Behavior::kTopRounded
+                : RoundedContainer::Behavior::kAllRounded);
+  }
+  if (mobile_network_list_view_) {
+    mobile_network_list_view_->SetVisible(enabled);
+  }
+}
+
 void NetworkDetailedNetworkViewImpl::OnMobileToggleClicked(bool new_state) {
   NetworkDetailedNetworkView::delegate()->OnMobileToggleClicked(new_state);
 }

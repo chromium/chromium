@@ -334,8 +334,9 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
     } else {
       RemoveAndResetViewIfExists(&unknown_header_);
     }
-    network_item_index = CreateJoinWifiEntry(network_item_index);
-    if (!is_wifi_enabled_) {
+    if (is_wifi_enabled_) {
+      network_item_index = CreateJoinWifiEntry(network_item_index);
+    } else {
       RemoveAndResetViewIfExists(&join_wifi_entry_);
     }
     network_detailed_network_view()->ReorderNetworkListView(index++);
@@ -678,7 +679,14 @@ void NetworkListViewControllerImpl::UpdateWifiSection() {
                                     /*is_on=*/is_wifi_enabled_,
                                     /*animate_toggle=*/true);
 
+  if (features::IsQsRevampEnabled()) {
+    network_detailed_network_view()->UpdateWifiStatus(is_wifi_enabled_);
+  }
+
   if (!is_wifi_enabled_) {
+    if (features::IsQsRevampEnabled()) {
+      return;
+    }
     CreateInfoLabelIfMissingAndUpdate(IDS_ASH_STATUS_TRAY_NETWORK_WIFI_DISABLED,
                                       &wifi_status_message_);
   } else if (!has_wifi_networks_) {
@@ -751,6 +759,9 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
           &mobile_status_message_);
       return;
     }
+    if (features::IsQsRevampEnabled()) {
+      network_detailed_network_view()->UpdateMobileStatus(cellular_enabled);
+    }
 
     if (cellular_enabled) {
       if (has_mobile_networks_) {
@@ -763,8 +774,10 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
       return;
     }
 
-    CreateInfoLabelIfMissingAndUpdate(
-        IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLED, &mobile_status_message_);
+    if (!features::IsQsRevampEnabled()) {
+      CreateInfoLabelIfMissingAndUpdate(
+          IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLED, &mobile_status_message_);
+    }
     return;
   }
 
