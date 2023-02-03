@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom_component("mojom") {
@@ -25,7 +26,7 @@ mojom_component("mojom") {
     "//sandbox/policy/mojom",
   ]
 
-  if (!is_nacl && !is_ios) {
+  if (!is_nacl && use_blink) {
     enabled_features += [ "is_perfetto_supported_os" ]
     sources += [
       "constants.mojom",

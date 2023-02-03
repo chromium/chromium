@@ -6,9 +6,10 @@
 
 #include <utility>
 
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
 #include "services/tracing/public/cpp/traced_process_impl.h"
 #endif
 
@@ -16,7 +17,7 @@ namespace tracing {
 
 // static
 void TracedProcess::ResetTracedProcessReceiver() {
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
   tracing::TracedProcessImpl::GetInstance()->ResetTracedProcessReceiver();
 #endif
 }
@@ -24,7 +25,7 @@ void TracedProcess::ResetTracedProcessReceiver() {
 // static
 void TracedProcess::OnTracedProcessRequest(
     mojo::PendingReceiver<mojom::TracedProcess> receiver) {
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
   tracing::TracedProcessImpl::GetInstance()->OnTracedProcessRequest(
       std::move(receiver));
 #endif
@@ -34,7 +35,7 @@ void TracedProcess::OnTracedProcessRequest(
 void TracedProcess::EnableSystemTracingService(
     mojo::PendingRemote<mojom::SystemTracingService> remote) {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_NACL) && \
-    !BUILDFLAG(IS_IOS)
+    BUILDFLAG(USE_BLINK)
   tracing::TracedProcessImpl::GetInstance()->EnableSystemTracingService(
       std::move(remote));
 #endif

@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/features.gni")
 import("//build_overrides/build.gni")
 import("//services/tracing/public/cpp/stack_sampling/loader_lock_sampling.gni")
 
@@ -21,14 +22,17 @@ source_set("traced_process") {
 
   public_deps = [ "//services/tracing/public/mojom" ]
 
-  deps = [ ":cpp" ]
+  deps = [
+    ":cpp",
+    "//build:blink_buildflags",
+  ]
 }
 
 # On IOS and NACL we don't support tracing so we only include the minimum needed
 # to support a fake typed TRACE_EVENT macro. However this means we don't have
 # any .cc files and thus on iOS and NaCl it needs to be a source_set and not a
 # component. |tracing_lib_type| decides which version to build.
-if (!is_nacl && !is_ios) {
+if (!is_nacl && use_blink) {
   tracing_lib_type = "component"
 } else {
   tracing_lib_type = "source_set"
@@ -52,7 +56,7 @@ target(tracing_lib_type, "cpp") {
 
   all_dependent_configs = []
 
-  if (!is_nacl && !is_ios) {
+  if (!is_nacl && use_blink) {
     sources += [
       "base_agent.cc",
       "base_agent.h",

@@ -73,7 +73,7 @@ void TracingService::AddClient(mojom::ClientInfoPtr client) {
                      std::move(service_receiver)));
 }
 
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
 void TracingService::BindConsumerHost(
     mojo::PendingReceiver<mojom::ConsumerHost> receiver) {
   ConsumerHost::BindConsumerReceiver(perfetto_service_, std::move(receiver));

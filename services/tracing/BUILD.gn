@@ -30,6 +30,7 @@ source_set("lib") {
   public_deps = [
     ":privacy_check",
     "//base",
+    "//build:blink_buildflags",
     "//mojo/public/cpp/bindings",
     "//services/tracing/public/cpp",
     "//services/tracing/public/mojom:mojom",

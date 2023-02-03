@@ -6,6 +6,7 @@
 #define SERVICES_TRACING_TRACING_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -27,7 +28,7 @@ class TracingService : public mojom::TracingService {
   // mojom::TracingService implementation:
   void Initialize(std::vector<mojom::ClientInfoPtr> clients) override;
   void AddClient(mojom::ClientInfoPtr client) override;
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
   void BindConsumerHost(
       mojo::PendingReceiver<mojom::ConsumerHost> receiver) override;
 #endif
