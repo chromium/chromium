@@ -212,6 +212,9 @@ bool IsValidSourceUrl(content::RenderProcessHost& process,
   url::Origin source_url_origin = url::Origin::Resolve(source_url, base_origin);
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   if (!policy->CanAccessDataForOrigin(process.GetID(), source_url_origin)) {
+    SCOPED_CRASH_KEY_STRING256(
+        "EMF_INVALID_SOURCE_URL", "base_origin",
+        base_origin.GetDebugString(false /* include_nonce */));
     bad_message::ReceivedBadMessage(&process,
                                     bad_message::EMF_INVALID_SOURCE_URL);
     return false;
@@ -291,6 +294,9 @@ absl::optional<ExtensionId> ValidateSourceContextAndExtractExtensionId(
     // `frame->GetLastCommittedOrigin()` to return the origin of the IPC sender.
     const url::Origin& origin = frame->GetLastCommittedOrigin();
     if (origin.scheme() != kExtensionScheme) {
+      SCOPED_CRASH_KEY_STRING256(
+          "EMF_NON_EXTENSION_SENDER_FRAME", "origin",
+          origin.GetDebugString(false /* include_nonce */));
       bad_message::ReceivedBadMessage(
           &process, bad_message::EMF_NON_EXTENSION_SENDER_FRAME);
       return absl::nullopt;
