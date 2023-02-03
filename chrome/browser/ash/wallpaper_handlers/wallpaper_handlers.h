@@ -239,6 +239,9 @@ class GooglePhotosAlbumsFetcher
       const base::Value::Dict* response) override;
   absl::optional<size_t> GetResultCount(
       const GooglePhotosAlbumsCbkArgs& result) override;
+
+ private:
+  int albums_api_refresh_counter_ = 0;
 };
 
 using GooglePhotosAlbumsCbkArgs =
@@ -266,6 +269,9 @@ class GooglePhotosSharedAlbumsFetcher
       const base::Value::Dict* response) override;
   absl::optional<size_t> GetResultCount(
       const GooglePhotosAlbumsCbkArgs& result) override;
+
+ private:
+  int shared_albums_api_refresh_counter_ = 0;
 };
 
 using ash::personalization_app::mojom::GooglePhotosEnablementState;
@@ -320,6 +326,9 @@ class GooglePhotosPhotosFetcher
       const base::Value::Dict* response) override;
   absl::optional<size_t> GetResultCount(
       const GooglePhotosPhotosCbkArgs& result) override;
+
+ private:
+  int photos_api_refresh_counter_ = 0;
 };
 
 }  // namespace wallpaper_handlers

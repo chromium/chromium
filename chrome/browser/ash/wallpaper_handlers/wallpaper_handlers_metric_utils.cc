@@ -55,4 +55,12 @@ void RecordGooglePhotosApiResponseParsed(GooglePhotosApi api,
   }
 }
 
+void RecordGooglePhotosApiRefreshCount(GooglePhotosApi api, int refresh_count) {
+  // Record refresh count.
+  const std::string histogram_base = ToHistogramBase(api);
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.RefreshCount", histogram_base.c_str()),
+      refresh_count, 11);
+}
+
 }  // namespace wallpaper_handlers

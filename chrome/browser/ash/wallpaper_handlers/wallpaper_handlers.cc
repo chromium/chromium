@@ -726,7 +726,12 @@ GooglePhotosAlbumsFetcher::GooglePhotosAlbumsFetcher(Profile* profile)
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-GooglePhotosAlbumsFetcher::~GooglePhotosAlbumsFetcher() = default;
+GooglePhotosAlbumsFetcher::~GooglePhotosAlbumsFetcher() {
+  // Records Ash.Wallpaper.GooglePhotos.Api.GetAlbums.RefreshCount metric
+  // at the end of the session.
+  RecordGooglePhotosApiRefreshCount(GooglePhotosApi::kGetAlbums,
+                                    albums_api_refresh_counter_);
+}
 
 void GooglePhotosAlbumsFetcher::AddRequestAndStartIfNecessary(
     const absl::optional<std::string>& resume_token,
@@ -735,6 +740,9 @@ void GooglePhotosAlbumsFetcher::AddRequestAndStartIfNecessary(
   if (resume_token.has_value()) {
     service_url = net::AppendQueryParameter(service_url, "resume_token",
                                             resume_token.value());
+    // Increase the refresh counter every time the user scrolls down to the
+    // bottom of the page to fetch more albums with a valid refresh token.
+    albums_api_refresh_counter_++;
   }
   GooglePhotosFetcher::AddRequestAndStartIfNecessary(service_url,
                                                      std::move(callback));
@@ -802,7 +810,12 @@ GooglePhotosSharedAlbumsFetcher::GooglePhotosSharedAlbumsFetcher(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-GooglePhotosSharedAlbumsFetcher::~GooglePhotosSharedAlbumsFetcher() = default;
+GooglePhotosSharedAlbumsFetcher::~GooglePhotosSharedAlbumsFetcher() {
+  // Records Ash.Wallpaper.GooglePhotos.Api.GetSharedAlbums.RefreshCount metric
+  // at the end of the session.
+  RecordGooglePhotosApiRefreshCount(GooglePhotosApi::kGetSharedAlbums,
+                                    shared_albums_api_refresh_counter_);
+}
 
 void GooglePhotosSharedAlbumsFetcher::AddRequestAndStartIfNecessary(
     const absl::optional<std::string>& resume_token,
@@ -811,6 +824,10 @@ void GooglePhotosSharedAlbumsFetcher::AddRequestAndStartIfNecessary(
   if (resume_token.has_value()) {
     service_url = net::AppendQueryParameter(service_url, "resume_token",
                                             resume_token.value());
+    // Increase the refresh counter every time the user scrolls down to the
+    // bottom of the page to fetch more shared albums with a valid refresh
+    // token.
+    shared_albums_api_refresh_counter_++;
   }
   GooglePhotosFetcher::AddRequestAndStartIfNecessary(service_url,
                                                      std::move(callback));
@@ -913,8 +930,12 @@ GooglePhotosPhotosFetcher::GooglePhotosPhotosFetcher(Profile* profile)
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-GooglePhotosPhotosFetcher::~GooglePhotosPhotosFetcher() = default;
-
+GooglePhotosPhotosFetcher::~GooglePhotosPhotosFetcher() {
+  // Records Ash.Wallpaper.GooglePhotos.Api.GetPhotos.RefreshCount metric
+  // at the end of the session.
+  RecordGooglePhotosApiRefreshCount(GooglePhotosApi::kGetPhotos,
+                                    photos_api_refresh_counter_);
+}
 void GooglePhotosPhotosFetcher::AddRequestAndStartIfNecessary(
     const absl::optional<std::string>& item_id,
     const absl::optional<std::string>& album_id,
@@ -941,6 +962,9 @@ void GooglePhotosPhotosFetcher::AddRequestAndStartIfNecessary(
   if (resume_token.has_value()) {
     service_url = net::AppendQueryParameter(service_url, "resume_token",
                                             resume_token.value());
+    // Increase the refresh counter every time the user scrolls down to the
+    // bottom of the page to fetch more photos with a valid refresh token.
+    photos_api_refresh_counter_++;
   }
   GooglePhotosFetcher::AddRequestAndStartIfNecessary(service_url,
                                                      std::move(callback));

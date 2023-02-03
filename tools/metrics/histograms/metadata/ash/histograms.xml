@@ -5559,6 +5559,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Wallpaper.GooglePhotos.Api.{Api}.RefreshCount"
+    units="count" expires_after="2024-01-27">
+  <owner>thuongphan@google.com</owner>
+  <owner>cowmoo@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records the refresh count for the request of the Google Photos API which
+    {Api} with a valid refresh token. The count increases each time a user
+    scrolls down to the end of the page to fetch more photos or albums from the
+    Google Photos API. Emitted only at the end of a session.
+  </summary>
+  <token key="Api" variants="GooglePhotosApi"/>
+</histogram>
+
 <histogram name="Ash.Wallpaper.GooglePhotos.Api.{Api}.ResponseTime.{Result}"
     units="ms" expires_after="2022-11-15">
   <owner>xiaohuic@google.com</owner>
