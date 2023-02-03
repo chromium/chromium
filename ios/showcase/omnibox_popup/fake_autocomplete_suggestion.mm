@@ -289,9 +289,8 @@ NSAttributedString* calculatorText() {
     _text = [[NSAttributedString alloc] initWithString:@""];
     _detailText = [[NSAttributedString alloc] initWithString:@""];
     _numberOfLines = 1;
-    _suggestionTypeIcon =
-        [[UIImage imageNamed:@"omnibox_completion_default_favicon"]
-            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _suggestionTypeIcon = [[UIImage imageNamed:@"favicon_fallback"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _icon = [[SimpleOmniboxIcon alloc] init];
   }
   return self;

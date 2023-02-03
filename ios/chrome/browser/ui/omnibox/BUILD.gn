@@ -49,7 +49,6 @@ source_set("omnibox_suggestion_icon_util") {
     "resources:answer_when_is",
     "resources:background_solid",
     "resources:favicon_fallback",
-    "resources:omnibox_completion_default_favicon",
     "resources:omnibox_popup_recent_query",
     "resources:pedal_clear_browsing_data",
     "resources:pedal_default_browser",
@@ -78,8 +77,6 @@ source_set("omnibox_util") {
   ]
   deps = [
     ":omnibox_suggestion_icon_util",
-    "resources:omnibox_completion_default_favicon",
-    "resources:search",
     "//base",
     "//components/omnibox/browser",
     "//components/security_state/core",
