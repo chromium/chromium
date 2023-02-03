@@ -283,6 +283,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/badges:unit_tests",
     "//ios/chrome/browser/ui/bookmarks:unit_tests",
     "//ios/chrome/browser/ui/bookmarks/cells:unit_tests",
+    "//ios/chrome/browser/ui/bookmarks/editor:unit_tests",
     "//ios/chrome/browser/ui/bookmarks/home:unit_tests",
     "//ios/chrome/browser/ui/broadcaster:unit_tests",
     "//ios/chrome/browser/ui/browser_container:unit_tests",
