@@ -215,7 +215,7 @@ gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForTabStripRegion(
 
 gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForWebAppFrameToolbar(
     const gfx::Size& toolbar_preferred_size) const {
-  if (!GetShowCaptionButtons()) {
+  if (!GetShowCaptionButtons() || AppIsBorderlessPwa()) {
     return gfx::Rect();
   }
   if (browser_view()->browser()->is_type_app_popup() &&
@@ -463,7 +463,7 @@ void BrowserNonClientFrameViewChromeOS::UpdateBorderlessModeEnabled() {
       browser_view()->IsBorderlessModeEnabled());
 }
 
-bool BrowserNonClientFrameViewChromeOS::AppIsBorderlessPwa() {
+bool BrowserNonClientFrameViewChromeOS::AppIsBorderlessPwa() const {
   return browser_view()->GetIsWebAppType() &&
          browser_view()->AppUsesBorderlessMode() &&
          browser_view()->IsBorderlessModeEnabled();

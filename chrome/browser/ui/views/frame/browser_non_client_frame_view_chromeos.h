@@ -134,7 +134,7 @@ class BrowserNonClientFrameViewChromeOS
   FRIEND_TEST_ALL_PREFIXES(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
                            ImmersiveFullscreen);
 
-  bool AppIsBorderlessPwa();
+  bool AppIsBorderlessPwa() const;
 
   // Returns true if `GetShowCaptionButtonsWhenNotInOverview()` returns true
   // and this browser window is not showing in overview.
