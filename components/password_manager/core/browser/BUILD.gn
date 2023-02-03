@@ -10,6 +10,10 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 config("password_reuse_detection_config") {
   defines = []
   if (!is_ios) {
@@ -584,54 +588,12 @@ static_library("test_support") {
   ]
 }
 
-bundle_data("unit_tests_bundle_data") {
-  visibility = [ ":unit_tests" ]
-  testonly = true
-  sources = [
-    "//components/test/data/password_manager/affiliation_db_v1.sql",
-    "//components/test/data/password_manager/affiliation_db_v2.sql",
-    "//components/test/data/password_manager/affiliation_db_v3.sql",
-    "//components/test/data/password_manager/login_db_v1.sql",
-    "//components/test/data/password_manager/login_db_v10.sql",
-    "//components/test/data/password_manager/login_db_v11.sql",
-    "//components/test/data/password_manager/login_db_v12.sql",
-    "//components/test/data/password_manager/login_db_v13.sql",
-    "//components/test/data/password_manager/login_db_v14.sql",
-    "//components/test/data/password_manager/login_db_v15.sql",
-    "//components/test/data/password_manager/login_db_v16.sql",
-    "//components/test/data/password_manager/login_db_v17.sql",
-    "//components/test/data/password_manager/login_db_v18.sql",
-    "//components/test/data/password_manager/login_db_v19.sql",
-    "//components/test/data/password_manager/login_db_v1_broken.sql",
-    "//components/test/data/password_manager/login_db_v2.sql",
-    "//components/test/data/password_manager/login_db_v20.sql",
-    "//components/test/data/password_manager/login_db_v21.sql",
-    "//components/test/data/password_manager/login_db_v22.sql",
-    "//components/test/data/password_manager/login_db_v23.sql",
-    "//components/test/data/password_manager/login_db_v24.sql",
-    "//components/test/data/password_manager/login_db_v24_broken.sql",
-    "//components/test/data/password_manager/login_db_v25.sql",
-    "//components/test/data/password_manager/login_db_v26.sql",
-    "//components/test/data/password_manager/login_db_v27.sql",
-    "//components/test/data/password_manager/login_db_v28.sql",
-    "//components/test/data/password_manager/login_db_v29.sql",
-    "//components/test/data/password_manager/login_db_v2_broken.sql",
-    "//components/test/data/password_manager/login_db_v3.sql",
-    "//components/test/data/password_manager/login_db_v30.sql",
-    "//components/test/data/password_manager/login_db_v31.sql",
-    "//components/test/data/password_manager/login_db_v32.sql",
-    "//components/test/data/password_manager/login_db_v33.sql",
-    "//components/test/data/password_manager/login_db_v3_broken.sql",
-    "//components/test/data/password_manager/login_db_v4.sql",
-    "//components/test/data/password_manager/login_db_v5.sql",
-    "//components/test/data/password_manager/login_db_v6.sql",
-    "//components/test/data/password_manager/login_db_v7.sql",
-    "//components/test/data/password_manager/login_db_v8.sql",
-    "//components/test/data/password_manager/login_db_v9.sql",
-    "//components/test/data/password_manager/login_db_v9_without_use_additional_auth_field.sql",
-  ]
-  outputs = [ "{{bundle_resources_dir}}/" +
-              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+if (is_ios) {
+  bundle_data_from_filelist("unit_tests_bundle_data") {
+    visibility = [ ":unit_tests" ]
+    testonly = true
+    filelist_name = "unit_tests_bundle_data.filelist"
+  }
 }
 
 source_set("unit_tests") {
@@ -761,7 +723,6 @@ source_set("unit_tests") {
     ":password_generator",
     ":password_hash_data",
     ":test_support",
-    ":unit_tests_bundle_data",
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
@@ -829,6 +790,8 @@ source_set("unit_tests") {
       "//components/password_manager/core/browser/import:importer",
       "//components/password_manager/core/browser/import:importer_unit_tests",
     ]
+  } else {
+    deps += [ ":unit_tests_bundle_data" ]
   }
 
   if (is_android) {

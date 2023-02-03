@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 component("common") {
   output_name = "webdata_common"
 
@@ -34,41 +38,12 @@ component("common") {
   ]
 }
 
-bundle_data("unit_tests_bundle_data") {
-  visibility = [ ":unit_tests" ]
-  testonly = true
-  sources = [
-    "//components/test/data/web_database/version_100.sql",
-    "//components/test/data/web_database/version_101.sql",
-    "//components/test/data/web_database/version_102.sql",
-    "//components/test/data/web_database/version_103.sql",
-    "//components/test/data/web_database/version_104.sql",
-    "//components/test/data/web_database/version_105.sql",
-    "//components/test/data/web_database/version_106.sql",
-    "//components/test/data/web_database/version_107.sql",
-    "//components/test/data/web_database/version_108.sql",
-    "//components/test/data/web_database/version_109.sql",
-    "//components/test/data/web_database/version_82.sql",
-    "//components/test/data/web_database/version_83.sql",
-    "//components/test/data/web_database/version_84.sql",
-    "//components/test/data/web_database/version_85.sql",
-    "//components/test/data/web_database/version_86.sql",
-    "//components/test/data/web_database/version_87.sql",
-    "//components/test/data/web_database/version_88.sql",
-    "//components/test/data/web_database/version_89.sql",
-    "//components/test/data/web_database/version_90.sql",
-    "//components/test/data/web_database/version_91.sql",
-    "//components/test/data/web_database/version_92.sql",
-    "//components/test/data/web_database/version_93.sql",
-    "//components/test/data/web_database/version_94.sql",
-    "//components/test/data/web_database/version_95.sql",
-    "//components/test/data/web_database/version_96.sql",
-    "//components/test/data/web_database/version_97.sql",
-    "//components/test/data/web_database/version_98.sql",
-    "//components/test/data/web_database/version_99.sql",
-  ]
-  outputs = [ "{{bundle_resources_dir}}/" +
-              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+if (is_ios) {
+  bundle_data_from_filelist("unit_tests_bundle_data") {
+    visibility = [ ":unit_tests" ]
+    testonly = true
+    filelist_name = "unit_tests_bundle_data.filelist"
+  }
 }
 
 source_set("unit_tests") {
@@ -77,7 +52,6 @@ source_set("unit_tests") {
 
   deps = [
     ":common",
-    ":unit_tests_bundle_data",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -87,4 +61,7 @@ source_set("unit_tests") {
     "//sql",
     "//testing/gtest",
   ]
+  if (is_ios) {
+    deps += [ ":unit_tests_bundle_data" ]
+  }
 }

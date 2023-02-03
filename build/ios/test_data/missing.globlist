@@ -1,0 +1,4 @@
+# This should cover every file in test_data/ and its subdirectories (including
+# test files).
+
+test_data/**

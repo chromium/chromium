@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/bundle_data_from_filelist.gni")
 import("//ios/build/config.gni")
 import("//testing/test.gni")
 
@@ -116,62 +117,7 @@ test("ios_testing_unittests") {
   assert_no_deps = ios_assert_no_deps
 }
 
-bundle_data("http_server_bundle_data") {
+bundle_data_from_filelist("http_server_bundle_data") {
   testonly = true
-
-  sources = [
-    "data/http_server_files/autofill_smoke_test.html",
-    "data/http_server_files/browsing_prevent_default_test_page.html",
-    "data/http_server_files/chromium_logo.png",
-    "data/http_server_files/chromium_logo_page.html",
-    "data/http_server_files/complex_document.pdf",
-    "data/http_server_files/console.html",
-    "data/http_server_files/console_with_iframe.html",
-    "data/http_server_files/context_menu.html",
-    "data/http_server_files/destination.html",
-    "data/http_server_files/download_test_page.html",
-    "data/http_server_files/fullscreen.html",
-    "data/http_server_files/generic.pkpass",
-    "data/http_server_files/history.html",
-    "data/http_server_files/history.js",
-    "data/http_server_files/history_go.html",
-    "data/http_server_files/history_go.js",
-    "data/http_server_files/iframe_form.html",
-    "data/http_server_files/iframe_host.html",
-    "data/http_server_files/links.html",
-    "data/http_server_files/memory_usage.html",
-    "data/http_server_files/multi_field_form.html",
-    "data/http_server_files/onload_replacestate_reload.html",
-    "data/http_server_files/onload_replacestate_reload.js",
-    "data/http_server_files/opensearch.xml",
-    "data/http_server_files/permissions/camera_and_microphone.html",
-    "data/http_server_files/permissions/camera_only.html",
-    "data/http_server_files/permissions/microphone_only.html",
-    "data/http_server_files/pony.html",
-    "data/http_server_files/profile_form.html",
-    "data/http_server_files/readonly_form.html",
-    "data/http_server_files/redchair.usdz",
-    "data/http_server_files/redirect_refresh.html",
-    "data/http_server_files/sample.ics",
-    "data/http_server_files/sample.mobileconfig",
-    "data/http_server_files/simple_login_form.html",
-    "data/http_server_files/simple_signup_form.html",
-    "data/http_server_files/single_page_wide.pdf",
-    "data/http_server_files/state_operations.html",
-    "data/http_server_files/state_operations.js",
-    "data/http_server_files/tall_page.html",
-    "data/http_server_files/testpage.pdf",
-    "data/http_server_files/two_pages.pdf",
-    "data/http_server_files/user_agent_test_page.html",
-    "data/http_server_files/username_password_field_form.html",
-    "data/http_server_files/vcard.vcf",
-    "data/http_server_files/video_sample.mov",
-    "data/http_server_files/window_close.html",
-    "data/http_server_files/window_location.html",
-    "data/http_server_files/window_location.js",
-    "data/http_server_files/window_open.html",
-    "data/http_server_files/window_proxy.html",
-  ]
-  outputs = [ "{{bundle_resources_dir}}/" +
-              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+  filelist_name = "http_server_bundle_data.filelist"
 }

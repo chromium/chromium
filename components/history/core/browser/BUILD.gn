@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 static_library("browser") {
   sources = [
     "browsing_history_driver.h",
@@ -158,67 +162,12 @@ static_library("browser") {
   }
 }
 
-bundle_data("unit_tests_bundle_data") {
-  visibility = [ ":unit_tests" ]
-  testonly = true
-  sources = [
-    "//components/test/data/history/Favicons.v3.sql",
-    "//components/test/data/history/Favicons.v4.sql",
-    "//components/test/data/history/Favicons.v5.sql",
-    "//components/test/data/history/Favicons.v6.sql",
-    "//components/test/data/history/Favicons.v7.sql",
-    "//components/test/data/history/Favicons.v8.sql",
-    "//components/test/data/history/HistoryNoDuration",
-    "//components/test/data/history/HistoryNoSource",
-    "//components/test/data/history/History_with_starred",
-    "//components/test/data/history/TopSites.v1.sql",
-    "//components/test/data/history/TopSites.v2.sql",
-    "//components/test/data/history/TopSites.v3.sql",
-    "//components/test/data/history/TopSites.v4.sql",
-    "//components/test/data/history/TopSites.v5.sql",
-    "//components/test/data/history/history.22.sql",
-    "//components/test/data/history/history.26.sql",
-    "//components/test/data/history/history.27.sql",
-    "//components/test/data/history/history.28.sql",
-    "//components/test/data/history/history.29.sql",
-    "//components/test/data/history/history.30.sql",
-    "//components/test/data/history/history.31.sql",
-    "//components/test/data/history/history.32.sql",
-    "//components/test/data/history/history.38.sql",
-    "//components/test/data/history/history.39.sql",
-    "//components/test/data/history/history.40.sql",
-    "//components/test/data/history/history.41.sql",
-    "//components/test/data/history/history.42.sql",
-    "//components/test/data/history/history.43.sql",
-    "//components/test/data/history/history.44.sql",
-    "//components/test/data/history/history.45.sql",
-    "//components/test/data/history/history.46.sql",
-    "//components/test/data/history/history.47.sql",
-    "//components/test/data/history/history.48.sql",
-    "//components/test/data/history/history.49.sql",
-    "//components/test/data/history/history.50.sql",
-    "//components/test/data/history/history.52.sql",
-    "//components/test/data/history/history.53.sql",
-    "//components/test/data/history/history.54.sql",
-    "//components/test/data/history/history.55.sql",
-    "//components/test/data/history/history.56.sql",
-    "//components/test/data/history/history.57.sql",
-    "//components/test/data/history/history.58.sql",
-    "//components/test/data/history/history.59.sql",
-    "//components/test/data/history/history.60.sql",
-    "//components/test/data/history/history.61.sql",
-    "//components/test/data/history/thumbnail_wild/Favicons.corrupt_meta.disable",
-    "//components/test/data/history/thumbnail_wild/Favicons.v2.init.sql",
-    "//components/test/data/history/thumbnail_wild/Favicons.v3.init.sql",
-    "//components/test/data/history/thumbnail_wild/Favicons.v4.init.sql",
-    "//components/test/data/history/thumbnail_wild/Favicons.v5.icon_type.sql",
-    "//components/test/data/history/thumbnail_wild/Favicons.v5.icon_type2.sql",
-    "//components/test/data/history/thumbnail_wild/Favicons.v5.init.sql",
-    "//components/test/data/history/thumbnail_wild/Favicons.v5.sizes.sql",
-    "//components/test/data/history/thumbnail_wild/Favicons.v6.init.sql",
-  ]
-  outputs = [ "{{bundle_resources_dir}}/" +
-              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+if (is_ios) {
+  bundle_data_from_filelist("unit_tests_bundle_data") {
+    filelist_name = "unit_tests_bundle_data.filelist"
+    visibility = [ ":unit_tests" ]
+    testonly = true
+  }
 }
 
 source_set("unit_tests") {
@@ -254,7 +203,6 @@ source_set("unit_tests") {
   ]
   deps = [
     ":browser",
-    ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
     "//components/favicon/core:database",
@@ -275,6 +223,9 @@ source_set("unit_tests") {
     "//ui/gfx:test_support",
     "//url",
   ]
+  if (is_ios) {
+    deps += [ ":unit_tests_bundle_data" ]
+  }
   if (is_android) {
     sources += [ "android/android_history_types_unittest.cc" ]
   }

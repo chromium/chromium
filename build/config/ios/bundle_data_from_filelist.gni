@@ -1,0 +1,24 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(current_os == "ios")
+
+template("bundle_data_from_filelist") {
+  assert(defined(invoker.filelist_name), "Requires setting filelist_name")
+
+  _filelist_content = read_file(invoker.filelist_name, "list lines")
+  bundle_data(target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "filelist_name",
+                             "sources",
+                           ])
+    sources = filter_exclude(_filelist_content, [ "#*" ])
+    if (!defined(outputs)) {
+      outputs = [ "{{bundle_resources_dir}}/" +
+                  "{{source_root_relative_dir}}/{{source_file_part}}" ]
+    }
+  }
+}
