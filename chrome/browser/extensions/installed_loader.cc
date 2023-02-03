@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
+#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
@@ -362,48 +363,17 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
   extension_service_->AddExtension(extension.get());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void InstalledLoader::LoadAllExtensions() {
-  LoadAllExtensions(extension_service_->profile(), ash::ProfileHelper::Get());
-}
-#else
 void InstalledLoader::LoadAllExtensions() {
   LoadAllExtensions(extension_service_->profile());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void InstalledLoader::LoadAllExtensions(Profile* profile,
-                                        ash::ProfileHelper* profile_helper) {
-#else
 void InstalledLoader::LoadAllExtensions(Profile* profile) {
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT0("browser,startup", "InstalledLoader::LoadAllExtensions");
 
-// TODO(crbug.com/1383740): Have profile checking logic handle profile_helper
-// swapping by itself.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // These two conditionals allow testing code to pass in a mock/fake.
-  if (!profile_helper) {
-    profile_helper = ash::ProfileHelper::Get();
-  }
-  if (!profile) {
-    profile = extension_service_->profile();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  bool should_record_incremented_metrics =
+      profile_util::ProfileCanUseNonComponentExtensions(profile);
 
-  bool profile_can_use_non_component_extensions = false;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  profile_can_use_non_component_extensions =
-      ProfileCanUseNonComponentExtensions(profile, profile_helper);
-#else
-  profile_can_use_non_component_extensions =
-      ProfileCanUseNonComponentExtensions(profile);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // TODO(crbug.com/1383740): Split this into user and non-user profile metrics.
   SCOPED_UMA_HISTOGRAM_TIMER("Extensions.LoadAllTime2");
 
   std::unique_ptr<ExtensionPrefs::ExtensionsInfo> extensions_info(
@@ -458,14 +428,14 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
                            extension_registry_->enabled_extensions().size());
   UMA_HISTOGRAM_COUNTS_100("Extensions.Disabled",
                            extension_registry_->disabled_extensions().size());
-  if (profile_can_use_non_component_extensions) {
+  if (should_record_incremented_metrics) {
     UMA_HISTOGRAM_COUNTS_100("Extensions.LoadAll2",
                              extension_registry_->enabled_extensions().size());
     UMA_HISTOGRAM_COUNTS_100("Extensions.Disabled2",
                              extension_registry_->disabled_extensions().size());
   }
 
-  RecordExtensionsMetrics(profile, profile_can_use_non_component_extensions);
+  RecordExtensionsMetrics(profile, should_record_incremented_metrics);
 }
 
 void InstalledLoader::RecordExtensionsMetricsForTesting() {
@@ -473,63 +443,10 @@ void InstalledLoader::RecordExtensionsMetricsForTesting() {
                           /*log_user_profile_histograms=*/false);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void InstalledLoader::RecordExtensionsProfileSpecificMetricsForTesting(
-    Profile* profile,
-    ash::ProfileHelper* profile_helper) {
-  LoadAllExtensions(profile, profile_helper);
-}
-#else
-void InstalledLoader::RecordExtensionsProfileSpecificMetricsForTesting(
+void InstalledLoader::RecordExtensionsIncrementedMetricsForTesting(
     Profile* profile) {
   LoadAllExtensions(profile);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// static
-bool InstalledLoader::ProfileCanUseNonComponentExtensions(
-    const Profile* profile,
-    ash::ProfileHelper* profile_helper) {
-  if (!profile || !profile_helper ||
-      !ash::ProfileHelper::IsUserProfile(profile)) {
-    return false;
-  }
-
-  const user_manager::User* user = profile_helper->GetUserByProfile(profile);
-  if (!user) {
-    return false;
-  }
-
-  // ChromeOS has special irregular profiles that must also be filtered
-  // out in addition to `ProfileHelper::IsUserProfile()`. `IsUserProfile()`
-  // includes guest and public users (which cannot use non-component
-  // extensions) so instead only look for those user types that can use them.
-  switch (user->GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_CHILD:
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
-      return true;
-
-    case user_manager::USER_TYPE_GUEST:
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
-    case user_manager::NUM_USER_TYPES:
-      return false;
-  }
-}
-#else
-// static
-bool InstalledLoader::ProfileCanUseNonComponentExtensions(
-    const Profile* profile) {
-  if (!profile) {
-    return false;
-  }
-  return profile->IsRegularProfile();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(crbug.com/1163038): Separate out Webstore/Offstore metrics.
 void InstalledLoader::RecordExtensionsMetrics(

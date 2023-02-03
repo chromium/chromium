@@ -9,14 +9,8 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 
 class Profile;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace ash {
-class ProfileHelper;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
 
@@ -53,42 +47,15 @@ class InstalledLoader {
   // Loads all installed extensions (used by startup and testing code).
   void LoadAllExtensions();
 
-  // Loads all installed extensions (used by startup and testing code).
+  // Loads all installed extensions (used by testing code).
   void LoadAllExtensions(Profile* profile);
 
   // Allows tests to verify metrics without needing to go through
   // LoadAllExtensions().
   void RecordExtensionsMetricsForTesting();
 
-  // Allows tests to verify incremented metrics without needing to go through
-  // LoadAllExtensions().
-  void RecordExtensionsProfileSpecificMetricsForTesting(Profile* profile);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Loads all installed extensions (used by testing code).
-  void LoadAllExtensions(Profile* profile, ash::ProfileHelper* profile_helper);
-
-  // Allows tests to verify incremented metrics without needing to go through
-  // LoadAllExtensions().
-  void RecordExtensionsProfileSpecificMetricsForTesting(
-      Profile* profile,
-      ash::ProfileHelper* profile_helper);
-
-  // TODO(crbug.com/1383740): Move ProfileCanUseNonComponentExtensions to
-  // another file in //chrome/browser/extensions.
-
-  // Returns true for ChromeOS Ash profiles that can use anything other than
-  // component extensions. It is required to provide a `profile_helper`
-  // otherwise this will always be `false`.
-  static bool ProfileCanUseNonComponentExtensions(
-      const Profile* profile,
-      ash::ProfileHelper* profile_helper);
-#else
-  // Returns true for (browser and Lacros) profiles that can use anything other
-  // than component extensions. Lacros uses multi-profiles like the browser
-  // (go/multi-something).
-  static bool ProfileCanUseNonComponentExtensions(const Profile* profile);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  // Allows tests to verify incremented metrics.
+  void RecordExtensionsIncrementedMetricsForTesting(Profile* profile);
 
  private:
   // Returns the flags that should be used with Extension::Create() for an
