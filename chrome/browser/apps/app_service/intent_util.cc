@@ -242,7 +242,7 @@ apps::IntentFilters CreateIntentFiltersFromArcBridge(
   const std::vector<arc::IntentFilter>& arc_intent_filters =
       intent_helper_bridge->GetIntentFilterForPackage(package_name);
   for (const auto& arc_intent_filter : arc_intent_filters) {
-    filters.push_back(apps_util::CreateIntentFilterForArc(arc_intent_filter));
+    filters.push_back(CreateIntentFilterForArc(arc_intent_filter));
   }
   return filters;
 }
