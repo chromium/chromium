@@ -1291,9 +1291,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:AddToBookmarksButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
-                     IDS_IOS_BOOKMARK_CHOOSE_GROUP_BUTTON)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_BOOKMARK_CHOOSE_GROUP_BUTTON))]
       assertWithMatcher:grey_notNil()];
 
   // Choose "Mobile Bookmarks" folder as the destination.

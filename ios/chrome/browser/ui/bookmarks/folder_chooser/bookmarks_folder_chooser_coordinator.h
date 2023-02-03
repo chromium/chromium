@@ -23,8 +23,9 @@ class BookmarkNode;
 
 // Initializes BookmarksFolderChooserCoordinator. The view is pushed into
 // `navigationController`.
-// The view will hide `hiddenNodes`. This is to make sure a folder cannot be
-// moved into one of its children.
+// `selectedFolder` will be the folder with check mark in the UI.
+// `hiddenNodes` is a list of nodes to hide in the chooser view. This is to
+// make sure a folder cannot be moved into one of its children.
 - (instancetype)
     initWithNavigationController:(UINavigationController*)navigationController
                          browser:(Browser*)browser
@@ -35,11 +36,15 @@ class BookmarkNode;
 
 // Initializes BookmarksFolderChooserCoordinator. A navigation controller is
 // created, with the chooser folder view as the root view controller.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                            selectedFolder:
-                                (const bookmarks::BookmarkNode*)folder
-    NS_DESIGNATED_INITIALIZER;
+// `selectedFolder` will be the folder with check mark in the UI.
+// `hiddenNodes` is a list of nodes to hide in the chooser view. This is to
+// make sure a folder cannot be moved into one of its children.
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                selectedFolder:(const bookmarks::BookmarkNode*)folder
+                   hiddenNodes:(const std::set<const bookmarks::BookmarkNode*>&)
+                                   hiddenNodes NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

@@ -11,10 +11,10 @@
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
-#import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,7 +27,7 @@
   // in the end.
   // Otherwise, folder chooser is pushed into the `_baseNavigationController`
   // that it doesn't own.
-  TableViewNavigationController* _navigationController;
+  BookmarkNavigationController* _navigationController;
   // Delegate for `_navigationController` if it was created inside folder
   // chooser and needs to be deleted with it.
   BookmarkNavigationControllerDelegate* _navigationControllerDelegate;
@@ -54,21 +54,24 @@
                              hiddenNodes {
   self = [self initWithBaseViewController:navigationController
                                   browser:browser
-                           selectedFolder:folder];
+                           selectedFolder:folder
+                              hiddenNodes:hiddenNodes];
   if (self) {
     _baseNavigationController = navigationController;
-    _hiddenNodes = hiddenNodes;
   }
   return self;
 }
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                            selectedFolder:
-                                (const bookmarks::BookmarkNode*)folder {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                selectedFolder:(const bookmarks::BookmarkNode*)folder
+                   hiddenNodes:(const std::set<const bookmarks::BookmarkNode*>&)
+                                   hiddenNodes {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _selectedFolder = folder;
+    _hiddenNodes = hiddenNodes;
   }
   return self;
 }
@@ -92,8 +95,8 @@
     [_baseNavigationController pushViewController:_folderChooserViewController
                                          animated:YES];
   } else {
-    _navigationController = [[TableViewNavigationController alloc]
-        initWithTable:_folderChooserViewController];
+    _navigationController = [[BookmarkNavigationController alloc]
+        initWithRootViewController:_folderChooserViewController];
     _navigationControllerDelegate =
         [[BookmarkNavigationControllerDelegate alloc] init];
     _navigationController.delegate = _navigationControllerDelegate;
