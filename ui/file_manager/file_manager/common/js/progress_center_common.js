@@ -152,6 +152,13 @@ export class ProgressCenterItem {
      * @type {!Map<!ProgressItemState, !ProgressItemExtraButton>}
      */
     this.extraButton = new Map();
+
+    /**
+     * In the case of a copy/move operation, whether the destination folder is
+     * a child of My Drive.
+     * @type {boolean}
+     */
+    this.isDestinationDrive = false;
   }
 
   /**

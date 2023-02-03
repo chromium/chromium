@@ -109,7 +109,6 @@ export class ProgressCenterPanel {
           return strf('RESTORING_FROM_TRASH_ITEMS_REMAINING', count);
         }
         return item.message;
-        break;
       case ProgressItemState.COMPLETED:
         if (count > 1) {
           return strf('FILE_ITEMS', count);
@@ -162,7 +161,7 @@ export class ProgressCenterPanel {
         if (item.itemCount === 1) {
           if (item.type === ProgressItemType.COPY) {
             return hasDestination ?
-                strf('COPY_FILE_NAME_LONG', source, destination) :
+                getStrForCopyWithDestination(item, source, destination) :
                 strf('FILE_COPIED', source);
           }
           if (item.type === ProgressItemType.EXTRACT) {
@@ -172,7 +171,7 @@ export class ProgressCenterPanel {
           }
           if (item.type === ProgressItemType.MOVE) {
             return hasDestination ?
-                strf('MOVE_FILE_NAME_LONG', source, destination) :
+                getStrForMoveWithDestination(item, source, destination) :
                 strf('FILE_MOVED', source);
           }
           if (item.type === ProgressItemType.ZIP) {
@@ -198,6 +197,8 @@ export class ProgressCenterPanel {
         // Multiple items:
         if (item.type === ProgressItemType.COPY) {
           return hasDestination ?
+              item.isDestinationDrive ?
+              strf('PREPARING_ITEMS_MY_DRIVE', count, destination) :
               strf('COPY_ITEMS_REMAINING_LONG', count, destination) :
               strf('FILE_ITEMS_COPIED', source);
         }
@@ -208,6 +209,8 @@ export class ProgressCenterPanel {
         }
         if (item.type === ProgressItemType.MOVE) {
           return hasDestination ?
+              item.isDestinationDrive ?
+              strf('PREPARING_ITEMS_MY_DRIVE', count, destination) :
               strf('MOVE_ITEMS_REMAINING_LONG', count, destination) :
               strf('FILE_ITEMS_MOVED', count);
         }
@@ -229,7 +232,6 @@ export class ProgressCenterPanel {
               strf('RESTORE_TRASH_MANY_ITEMS', count);
         }
         return item.message;
-        break;
       case ProgressItemState.ERROR:
         return item.message;
       case ProgressItemState.CANCELED:
@@ -239,6 +241,18 @@ export class ProgressCenterPanel {
         break;
     }
     return '';
+
+    function getStrForMoveWithDestination(item, source, destination) {
+      return item.isDestinationDrive ?
+          strf('PREPARING_FILE_NAME_MY_DRIVE', source, destination) :
+          strf('MOVE_FILE_NAME_LONG', source, destination);
+    }
+
+    function getStrForCopyWithDestination(item, source, destination) {
+      return item.isDestinationDrive ?
+          strf('PREPARING_FILE_NAME_MY_DRIVE', source, destination) :
+          strf('COPY_FILE_NAME_LONG', source, destination);
+    }
   }
 
   /**
@@ -388,7 +402,9 @@ export class ProgressCenterPanel {
             donePanelItem.id = item.id;
             donePanelItem.panelType = donePanelItem.panelTypeDone;
             donePanelItem.primaryText = primaryText;
-            donePanelItem.secondaryText = str('COMPLETE_LABEL');
+            donePanelItem.secondaryText = item.isDestinationDrive ?
+                str('READY_TO_SYNC_MY_DRIVE') :
+                str('COMPLETE_LABEL');
             donePanelItem.signalCallback = (signal) => {
               if (signal === 'dismiss') {
                 this.feedbackHost_.removePanelItem(donePanelItem);

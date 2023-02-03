@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/drive/drivefs_native_message_host.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/drivefs_event_router.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -79,14 +80,33 @@ std::u16string GetIOTaskMessage(Profile* profile,
   int single_file_message_id;
   int multiple_file_message_id;
 
+  // Display special copy to help users understand that pasting files to "My
+  // Drive" does not mean that they are immediately synced.
+  auto* drive_integration_service =
+      drive::util::GetIntegrationServiceByProfile(profile);
+  bool is_destination_drive =
+      drive_integration_service &&
+      drive_integration_service->GetMountPointPath().IsParent(
+          status.destination_folder.path());
+
   switch (status.type) {
     case OperationType::kCopy:
-      single_file_message_id = IDS_FILE_BROWSER_COPY_FILE_NAME;
-      multiple_file_message_id = IDS_FILE_BROWSER_COPY_ITEMS_REMAINING;
+      if (is_destination_drive) {
+        single_file_message_id = IDS_FILE_BROWSER_PREPARING_FILE_NAME_MY_DRIVE;
+        multiple_file_message_id = IDS_FILE_BROWSER_PREPARING_ITEMS_MY_DRIVE;
+      } else {
+        single_file_message_id = IDS_FILE_BROWSER_COPY_FILE_NAME;
+        multiple_file_message_id = IDS_FILE_BROWSER_COPY_ITEMS_REMAINING;
+      }
       break;
     case OperationType::kMove:
-      single_file_message_id = IDS_FILE_BROWSER_MOVE_FILE_NAME;
-      multiple_file_message_id = IDS_FILE_BROWSER_MOVE_ITEMS_REMAINING;
+      if (is_destination_drive) {
+        single_file_message_id = IDS_FILE_BROWSER_PREPARING_FILE_NAME_MY_DRIVE;
+        multiple_file_message_id = IDS_FILE_BROWSER_PREPARING_ITEMS_MY_DRIVE;
+      } else {
+        single_file_message_id = IDS_FILE_BROWSER_MOVE_FILE_NAME;
+        multiple_file_message_id = IDS_FILE_BROWSER_MOVE_ITEMS_REMAINING;
+      }
       break;
     case OperationType::kDelete:
       single_file_message_id = IDS_FILE_BROWSER_DELETE_FILE_NAME;

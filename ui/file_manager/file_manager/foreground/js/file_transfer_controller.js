@@ -485,14 +485,13 @@ export class FileTransferController {
               strf('DLP_BLOCK_COPY_TOAST_PLURAL', disallowedTransfers.length);
         }
       }
-      this.filesToast_.show(
-          toastText, {
-            text: str('DLP_TOAST_BUTTON_LABEL'),
-            callback: () => {
-              util.visitURL(
-                  'https://support.google.com/chrome/a/?p=chromeos_datacontrols');
-            },
-          });
+      this.filesToast_.show(toastText, {
+        text: str('DLP_TOAST_BUTTON_LABEL'),
+        callback: () => {
+          util.visitURL(
+              'https://support.google.com/chrome/a/?p=chromeos_datacontrols');
+        },
+      });
       return 'dlp-blocked';
     }
     if (sourceEntries.length == 0) {
@@ -632,8 +631,20 @@ export class FileTransferController {
                                     chrome.fileManagerPrivate.IOTaskType.COPY;
           // TODO(crbug/1290197): Start tracking the copy/move operation
           // starting here.
-          await startIOTask(
-              taskType, entries, {destinationFolder: destinationEntry});
+          const item = new ProgressCenterItem();
+          item.type = /** @type {!ProgressItemType} */ (taskType);
+          item.state = ProgressItemState.SCANNING;
+          item.itemCount = entries.length;
+          item.remainingTime = 0;
+          item.cancelCallback = () => {
+            chrome.fileManagerPrivate.cancelIOTask(Number(item.id));
+          };
+          item.isDestinationDrive =
+              this.volumeManager_.getVolumeInfo(destinationEntry).volumeType ===
+              VolumeManagerCommon.VolumeType.DRIVE;
+          item.id = String(await startIOTask(
+              taskType, entries, {destinationFolder: destinationEntry}));
+          this.progressCenter_.updateItem(item);
         }
       } catch (error) {
         console.warn(error.stack ? error.stack : error);
