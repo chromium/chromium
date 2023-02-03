@@ -2078,7 +2078,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return nil;
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   if (NTPHelper && NTPHelper->IsActive()) {
-    return self.ntpCoordinator.visible ? self.ntpCoordinator.viewController.view
+    return self.ntpCoordinator.started ? self.ntpCoordinator.viewController.view
                                        : nil;
   }
   DCHECK(self.browser->GetWebStateList()->GetIndexOfWebState(webState) !=
@@ -3130,6 +3130,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                 oldWebState:(web::WebState*)oldWebState
                     atIndex:(int)atIndex
                      reason:(ActiveWebStateChangeReason)reason {
+  if (reason == ActiveWebStateChangeReason::Inserted) {
+    [self didInsertActiveWebState:newWebState];
+  }
+
   if (oldWebState) {
     // TODO(crbug.com/1272514): Move webstate lifecycle updates to a browser
     // agent.
@@ -3188,6 +3192,19 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK(webState);
 
   DCHECK_EQ(self.browser->GetWebStateList(), webStateList);
+  // If activating, action will be taken when the didChangeActiveWebState
+  // call is received.
+  if (!activating) {
+    [self initiateNewTabAnimationForWebState:webState willOpenInBackground:YES];
+  }
+}
+
+#pragma mark - WebStateListObserver helpers (new tab animations)
+
+// Called when a WebState is inserted and made active, in order to start the
+// new tab animation.
+- (void)didInsertActiveWebState:(web::WebState*)webState {
+  DCHECK(webState);
 
   // Don't initiate Tab animation while session restoration is in progress
   // (see crbug.com/763964).
@@ -3208,6 +3225,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // be different from default, so we reset it.
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   if (NTPHelper && NTPHelper->IsActive()) {
+    // TODO(crbug.com/1411808): The NTP should be started by the mediator or
+    // coordinator layer.
+    [self.ntpCoordinator start];
     FeedType defaultFeedType = NTPHelper->DefaultFeedType();
     if (self.ntpCoordinator.selectedFeed != defaultFeedType) {
       [self.ntpCoordinator selectFeedType:defaultFeedType];
@@ -3215,14 +3235,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 
   BOOL inBackground =
-      !activating ||
-      NewTabPageTabHelper::FromWebState(webState)->ShouldShowStartSurface() ||
-      !animated;
+      (NTPHelper && NTPHelper->ShouldShowStartSurface()) || !animated;
   [self initiateNewTabAnimationForWebState:webState
                       willOpenInBackground:inBackground];
 }
-
-#pragma mark - WebStateListObserver helpers (new tab animations)
 
 - (void)initiateNewTabAnimationForWebState:(web::WebState*)webState
                       willOpenInBackground:(BOOL)background {
@@ -3301,6 +3317,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Create the new page image, and load with the new tab snapshot except if
   // it is the NTP.
   UIView* newPage = [self viewForWebState:webState];
+  DCHECK(newPage);
   GURL tabURL = webState->GetVisibleURL();
   // Toolbar snapshot is only used for the UIRefresh animation.
   UIView* toolbarSnapshot;

@@ -264,6 +264,11 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
 - (void)start {
   if (self.started) {
+    // The coordinator is already started, but the call to -start is a hint
+    // that the active WebState may have changed and the observer callback
+    // might not have happened yet.
+    [self didChangeActiveWebState:self.browser->GetWebStateList()
+                                      ->GetActiveWebState()];
     return;
   }
 
@@ -1287,6 +1292,13 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
                 oldWebState:(web::WebState*)oldWebState
                     atIndex:(int)atIndex
                      reason:(ActiveWebStateChangeReason)reason {
+  [self didChangeActiveWebState:newWebState];
+}
+
+#pragma mark - Private
+
+// Handles a change in the active WebState.
+- (void)didChangeActiveWebState:(web::WebState*)newWebState {
   if (self.webState == newWebState) {
     return;
   }
@@ -1302,8 +1314,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
     [self ntpDidChangeVisibility:YES];
   }
 }
-
-#pragma mark - Private
 
 // Updates the feed visibility or content based on the supervision state
 // of the account defined in `value`.
