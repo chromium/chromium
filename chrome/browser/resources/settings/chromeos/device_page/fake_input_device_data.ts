@@ -49,7 +49,7 @@ export const fakeTouchpads: Touchpad[] = [
     id: 2,
     name: 'Default Touchpad',
     isExternal: false,
-    isHaptic: false,
+    isHaptic: true,
   },
   {
     id: 3,
