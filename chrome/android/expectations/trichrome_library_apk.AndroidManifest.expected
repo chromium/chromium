@@ -3,7 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.trichromelibrary"
     platformBuildVersionCode="33"
-    platformBuildVersionName="13">
+    platformBuildVersionName="13"
+    android:versionCode="OFFSET=30"
+    android:versionName="#.#.#.#">
   <uses-feature android:glEsVersion="0x00020000"/>
   <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
   <uses-feature android:name="android.software.leanback" android:required="false"/>
@@ -15,6 +17,6 @@
       android:label="Trichrome Library"
       android:multiArch="true"
       android:use32bitAbi="true">
-    <static-library android:name="$PACKAGE" android:version="$VERSION_NUMBER"/>
+    <static-library android:name="$PACKAGE" android:version="OFFSET=30"/>
   </application>
 </manifest>

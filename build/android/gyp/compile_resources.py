@@ -178,6 +178,12 @@ def _ParseArgs(args):
   input_opts.add_argument(
       '--uses-split',
       help='Value to set uses-split to in the AndroidManifest.xml.')
+  input_opts.add_argument(
+      '--verification-version-code-offset',
+      help='Subtract this from versionCode for expectation files')
+  input_opts.add_argument(
+      '--verification-library-version-offset',
+      help='Subtract this from static-library version for expectation files')
 
   build_utils.AddDepfileOption(output_opts)
   output_opts.add_argument('--arsc-path', help='Apk output for arsc format.')
@@ -346,6 +352,36 @@ def _MoveImagesToNonMdpiFolders(res_root, path_info):
           os.path.relpath(dst_file, res_root))
 
 
+def _DeterminePlatformVersion(aapt2_path, jar_candidates):
+  def maybe_extract_version(j):
+    try:
+      return resource_utils.ExtractBinaryManifestValues(aapt2_path, j)
+    except build_utils.CalledProcessError:
+      return None
+
+  def is_sdk_jar(jar_name):
+    if jar_name in ('android.jar', 'android_system.jar'):
+      return True
+    # Robolectric jar looks a bit different.
+    return 'android-all' in jar_name and 'robolectric' in jar_name
+
+  android_sdk_jars = [
+      j for j in jar_candidates if is_sdk_jar(os.path.basename(j))
+  ]
+  extract_all = [maybe_extract_version(j) for j in android_sdk_jars]
+  extract_all = [x for x in extract_all if x]
+  if len(extract_all) == 0:
+    raise Exception(
+        'Unable to find android SDK jar among candidates: %s'
+            % ', '.join(android_sdk_jars))
+  if len(extract_all) > 1:
+    raise Exception(
+        'Found multiple android SDK jars among candidates: %s'
+            % ', '.join(android_sdk_jars))
+  platform_version_code, platform_version_name = extract_all.pop()[:2]
+  return platform_version_code, platform_version_name
+
+
 def _FixManifest(options, temp_dir):
   """Fix the APK's AndroidManifest.xml.
 
@@ -362,64 +398,34 @@ def _FixManifest(options, temp_dir):
      * Original package_name.
      * Manifest package name.
   """
-  def maybe_extract_version(j):
-    try:
-      return resource_utils.ExtractBinaryManifestValues(options.aapt2_path, j)
-    except build_utils.CalledProcessError:
-      return None
-
-  def is_sdk_jar(jar_name):
-    if jar_name in ('android.jar', 'android_system.jar'):
-      return True
-    # Robolectric jar looks a bit different.
-    return 'android-all' in jar_name and 'robolectric' in jar_name
-
-  android_sdk_jars = [
-      j for j in options.include_resources if is_sdk_jar(os.path.basename(j))
-  ]
-  extract_all = [maybe_extract_version(j) for j in android_sdk_jars]
-  successful_extractions = [x for x in extract_all if x]
-  if len(successful_extractions) == 0:
-    raise Exception(
-        'Unable to find android SDK jar among candidates: %s'
-            % ', '.join(android_sdk_jars))
-  if len(successful_extractions) > 1:
-    raise Exception(
-        'Found multiple android SDK jars among candidates: %s'
-            % ', '.join(android_sdk_jars))
-  version_code, version_name = successful_extractions.pop()[:2]
-
-  debug_manifest_path = os.path.join(temp_dir, 'AndroidManifest.xml')
   doc, manifest_node, app_node = manifest_utils.ParseManifest(
       options.android_manifest)
 
-  manifest_utils.AssertUsesSdk(manifest_node, options.min_sdk_version,
-                               options.target_sdk_version)
-  # We explicitly check that maxSdkVersion is set in the manifest since we don't
-  # add it later like minSdkVersion and targetSdkVersion.
-  manifest_utils.AssertUsesSdk(
-      manifest_node,
-      max_sdk_version=options.max_sdk_version,
-      fail_if_not_exist=True)
-  manifest_utils.AssertPackage(manifest_node, options.manifest_package)
+  # merge_manifest.py also sets package & <uses-sdk>. We may want to ensure
+  # manifest merger is always enabled and remove these command-line arguments.
+  manifest_utils.SetUsesSdk(manifest_node, options.target_sdk_version,
+                            options.min_sdk_version, options.max_sdk_version)
+  orig_package = manifest_node.get('package') or options.manifest_package
+  fixed_package = (options.arsc_package_name or options.manifest_package
+                   or orig_package)
+  manifest_node.set('package', fixed_package)
 
-  manifest_node.set('platformBuildVersionCode', version_code)
-  manifest_node.set('platformBuildVersionName', version_name)
-
-  orig_package = manifest_node.get('package')
-  fixed_package = orig_package
-  if options.arsc_package_name:
-    manifest_node.set('package', options.arsc_package_name)
-    fixed_package = options.arsc_package_name
-
+  platform_version_code, platform_version_name = _DeterminePlatformVersion(
+      options.aapt2_path, options.include_resources)
+  manifest_node.set('platformBuildVersionCode', platform_version_code)
+  manifest_node.set('platformBuildVersionName', platform_version_name)
+  if options.version_code:
+    manifest_utils.NamespacedSet(manifest_node, 'versionCode',
+                                 options.version_code)
+  if options.version_name:
+    manifest_utils.NamespacedSet(manifest_node, 'versionName',
+                                 options.version_name)
   if options.debuggable:
-    app_node.set('{%s}%s' % (manifest_utils.ANDROID_NAMESPACE, 'debuggable'),
-                 'true')
+    manifest_utils.NamespacedSet(app_node, 'debuggable', 'true')
 
   if options.uses_split:
     uses_split = ElementTree.SubElement(manifest_node, 'uses-split')
-    uses_split.set('{%s}name' % manifest_utils.ANDROID_NAMESPACE,
-                   options.uses_split)
+    manifest_utils.NamespacedSet(uses_split, 'name', options.uses_split)
 
   # Make sure the min-sdk condition is not less than the min-sdk of the bundle.
   for min_sdk_node in manifest_node.iter('{%s}min-sdk' %
@@ -428,6 +434,7 @@ def _FixManifest(options, temp_dir):
     if int(min_sdk_node.get(dist_value)) < int(options.min_sdk_version):
       min_sdk_node.set(dist_value, options.min_sdk_version)
 
+  debug_manifest_path = os.path.join(temp_dir, 'AndroidManifest.xml')
   manifest_utils.SaveManifest(doc, debug_manifest_path)
   return debug_manifest_path, orig_package, fixed_package
 
@@ -739,21 +746,12 @@ def _PackageApk(options, build):
       'link',
       '--auto-add-overlay',
       '--no-version-vectors',
-      # Set SDK versions in case they are not set in the Android manifest.
-      '--min-sdk-version',
-      options.min_sdk_version,
-      '--target-sdk-version',
-      options.target_sdk_version,
       '--output-text-symbols',
       build.r_txt_path,
   ]
 
   for j in options.include_resources:
     link_command += ['-I', j]
-  if options.version_code:
-    link_command += ['--version-code', options.version_code]
-  if options.version_name:
-    link_command += ['--version-name', options.version_name]
   if options.proguard_file:
     link_command += ['--proguard', build.proguard_path]
     link_command += ['--proguard-minimal-keep-rules']
@@ -913,7 +911,9 @@ def _CreateNormalizedManifestForVerification(options):
   with build_utils.TempDir() as tempdir:
     fixed_manifest, _, _ = _FixManifest(options, tempdir)
     with open(fixed_manifest) as f:
-      return manifest_utils.NormalizeManifest(f.read())
+      return manifest_utils.NormalizeManifest(
+          f.read(), options.verification_version_code_offset,
+          options.verification_library_version_offset)
 
 
 def main(args):

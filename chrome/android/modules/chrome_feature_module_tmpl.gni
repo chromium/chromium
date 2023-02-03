@@ -94,6 +94,8 @@ template("chrome_feature_module") {
                              "enable_jni_multiplexing",
                              "expected_android_manifest",
                              "expected_android_manifest_base",
+                             "expected_android_manifest_library_version_offset",
+                             "expected_android_manifest_version_code_offset",
                              "manifest_package",
                              "min_sdk_version",
                              "package_id",

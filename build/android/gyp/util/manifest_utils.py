@@ -45,6 +45,14 @@ def _RegisterElementTreeNamespaces():
   ElementTree.register_namespace('dist', DIST_NAMESPACE)
 
 
+def NamespacedGet(node, key):
+  return node.get('{%s}%s' % (ANDROID_NAMESPACE, key))
+
+
+def NamespacedSet(node, key, value):
+  node.set('{%s}%s' % (ANDROID_NAMESPACE, key), value)
+
+
 def ParseManifest(path):
   """Parses an AndroidManifest.xml using ElementTree.
 
@@ -81,62 +89,27 @@ def GetPackage(manifest_node):
   return manifest_node.get('package')
 
 
-def AssertUsesSdk(manifest_node,
-                  min_sdk_version=None,
-                  target_sdk_version=None,
-                  max_sdk_version=None,
-                  fail_if_not_exist=False):
-  """Asserts values of attributes of <uses-sdk> element.
-
-  Unless |fail_if_not_exist| is true, will only assert if both the passed value
-  is not None and the value of attribute exist. If |fail_if_not_exist| is true
-  will fail if passed value is not None but attribute does not exist.
-  """
-  uses_sdk_node = _FindUsesSdkNode(manifest_node)
+def SetUsesSdk(manifest_node,
+               target_sdk_version,
+               min_sdk_version,
+               max_sdk_version=None):
+  uses_sdk_node = manifest_node.find('./uses-sdk')
   if uses_sdk_node is None:
-    return
-  for prefix, sdk_version in (('min', min_sdk_version), ('target',
-                                                         target_sdk_version),
-                              ('max', max_sdk_version)):
-    value = uses_sdk_node.get('{%s}%sSdkVersion' % (ANDROID_NAMESPACE, prefix))
-    if fail_if_not_exist and not value and sdk_version:
-      assert False, (
-          '%sSdkVersion in Android manifest does not exist but we expect %s' %
-          (prefix, sdk_version))
-    if not value or not sdk_version:
-      continue
-    assert value == sdk_version, (
-        '%sSdkVersion in Android manifest is %s but we expect %s' %
-        (prefix, value, sdk_version))
+    uses_sdk_node = ElementTree.SubElement(manifest_node, 'uses-sdk')
+  NamespacedSet(uses_sdk_node, 'targetSdkVersion', target_sdk_version)
+  NamespacedSet(uses_sdk_node, 'minSdkVersion', min_sdk_version)
+  if max_sdk_version:
+    NamespacedSet(uses_sdk_node, 'maxSdkVersion', max_sdk_version)
 
 
 def SetTargetApiIfUnset(manifest_node, target_sdk_version):
-  uses_sdk_node = _FindUsesSdkNode(manifest_node)
+  uses_sdk_node = manifest_node.find('./uses-sdk')
   if uses_sdk_node is None:
-    # Right now it seems like only some random test-only manifests don't have
-    # any uses-sdk. If we start seeing some libraries which need their target
-    # api to be set, but don't have a uses-sdk node, we may have to insert the
-    # node here.
-    return
-  target_sdk_attribute_name = '{%s}targetSdkVersion' % ANDROID_NAMESPACE
-  curr_target_sdk_version = uses_sdk_node.get(target_sdk_attribute_name)
+    uses_sdk_node = ElementTree.SubElement(manifest_node, 'uses-sdk')
+  curr_target_sdk_version = NamespacedGet(uses_sdk_node, 'targetSdkVersion')
   if curr_target_sdk_version is None:
-    uses_sdk_node.set(target_sdk_attribute_name, target_sdk_version)
-
-
-def AssertPackage(manifest_node, package):
-  """Asserts that manifest package has desired value.
-
-  Will only assert if both |package| is not None and the package is set in the
-  manifest.
-  """
-  package_value = GetPackage(manifest_node)
-  if package_value is None or package is None or (
-      package_value == 'no.manifest.configured'):
-    return
-  assert package_value == package, (
-      'Package in Android manifest is %s but we expect %s' % (package_value,
-                                                              package))
+    NamespacedSet(uses_sdk_node, 'targetSdkVersion', target_sdk_version)
+  return curr_target_sdk_version is None
 
 
 def _SortAndStripElementTree(root):
@@ -193,10 +166,6 @@ def _SplitElement(line):
   attrs = parts[1:]
 
   return start_tag, [restore_quotes(x) for x in attrs], end_tag
-
-
-def _FindUsesSdkNode(manifest_node):
-  return manifest_node.find('./uses-sdk')
 
 
 def _CreateNodeHash(lines):
@@ -271,7 +240,8 @@ def _AddDiffTags(lines):
   assert not hash_stack, 'hash_stack was not empty:\n' + '\n'.join(hash_stack)
 
 
-def NormalizeManifest(manifest_contents):
+def NormalizeManifest(manifest_contents, version_code_offset,
+                      library_version_offset):
   _RegisterElementTreeNamespaces()
   # This also strips comments and sorts node attributes alphabetically.
   root = ElementTree.fromstring(manifest_contents)
@@ -286,14 +256,24 @@ def NormalizeManifest(manifest_contents):
     if debuggable_name in app_node.attrib:
       del app_node.attrib[debuggable_name]
 
+    version_code = NamespacedGet(root, 'versionCode')
+    if version_code and version_code_offset:
+      version_code = int(version_code) - int(version_code_offset)
+      NamespacedSet(root, 'versionCode', f'OFFSET={version_code}')
+    version_name = NamespacedGet(root, 'versionName')
+    if version_name:
+      version_name = re.sub(r'\d+', '#', version_name)
+      NamespacedSet(root, 'versionName', version_name)
+
     # Trichrome's static library version number is updated daily. To avoid
     # frequent manifest check failures, we remove the exact version number
     # during normalization.
     for node in app_node:
-      if (node.tag in ['uses-static-library', 'static-library']
-          and '{%s}version' % ANDROID_NAMESPACE in node.keys()
-          and '{%s}name' % ANDROID_NAMESPACE in node.keys()):
-        node.set('{%s}version' % ANDROID_NAMESPACE, '$VERSION_NUMBER')
+      if node.tag in ['uses-static-library', 'static-library']:
+        version = NamespacedGet(node, 'version')
+        if version and library_version_offset:
+          version = int(version) - int(library_version_offset)
+          NamespacedSet(node, 'version', f'OFFSET={version}')
 
   # We also remove the exact package name (except the one at the root level)
   # to avoid noise during manifest comparison.

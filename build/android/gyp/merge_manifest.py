@@ -20,17 +20,14 @@ _MANIFEST_MERGER_MAIN_CLASS = 'com.android.manifmerger.Merger'
 
 
 @contextlib.contextmanager
-def _ProcessManifest(manifest_path, min_sdk_version, target_sdk_version,
-                     max_sdk_version, manifest_package):
-  """Patches an Android manifest's package and performs assertions to ensure
-  correctness for the manifest.
-  """
+def _ProcessMainManifest(manifest_path, min_sdk_version, target_sdk_version,
+                         max_sdk_version, manifest_package):
+  """Patches the main Android manifest"""
   doc, manifest, _ = manifest_utils.ParseManifest(manifest_path)
-  manifest_utils.AssertUsesSdk(manifest, min_sdk_version, target_sdk_version,
-                               max_sdk_version)
+  manifest_utils.SetUsesSdk(manifest, target_sdk_version, min_sdk_version,
+                            max_sdk_version)
   assert manifest_utils.GetPackage(manifest) or manifest_package, \
             'Must set manifest package in GN or in AndroidManifest.xml'
-  manifest_utils.AssertPackage(manifest, manifest_package)
   if manifest_package:
     manifest.set('package', manifest_package)
   tmp_prefix = manifest_path.replace(os.path.sep, '-')
@@ -40,7 +37,7 @@ def _ProcessManifest(manifest_path, min_sdk_version, target_sdk_version,
 
 
 @contextlib.contextmanager
-def _SetTargetApi(manifest_path, target_sdk_version):
+def _ProcessOtherManifest(manifest_path, target_sdk_version):
   """Patches an Android manifest's TargetApi if not set.
 
   We do this to avoid the manifest merger assuming we have a targetSdkVersion
@@ -48,11 +45,13 @@ def _SetTargetApi(manifest_path, target_sdk_version):
   See b/222331337 for more details.
   """
   doc, manifest, _ = manifest_utils.ParseManifest(manifest_path)
-  manifest_utils.SetTargetApiIfUnset(manifest, target_sdk_version)
-  tmp_prefix = manifest_path.replace(os.path.sep, '-')
-  with tempfile.NamedTemporaryFile(prefix=tmp_prefix) as patched_manifest:
-    manifest_utils.SaveManifest(doc, patched_manifest.name)
-    yield patched_manifest.name
+  if manifest_utils.SetTargetApiIfUnset(manifest, target_sdk_version):
+    tmp_prefix = manifest_path.replace(os.path.sep, '-')
+    with tempfile.NamedTemporaryFile(prefix=tmp_prefix) as patched_manifest:
+      manifest_utils.SaveManifest(doc, patched_manifest.name)
+      yield patched_manifest.name
+  else:
+    yield manifest_path
 
 
 def main(argv):
@@ -109,12 +108,13 @@ def main(argv):
 
     with contextlib.ExitStack() as stack:
       root_manifest, package = stack.enter_context(
-          _ProcessManifest(args.root_manifest, args.min_sdk_version,
-                           args.target_sdk_version, args.max_sdk_version,
-                           args.manifest_package))
+          _ProcessMainManifest(args.root_manifest, args.min_sdk_version,
+                               args.target_sdk_version, args.max_sdk_version,
+                               args.manifest_package))
       if extras:
         extras_processed = [
-            stack.enter_context(_SetTargetApi(e, args.target_sdk_version))
+            stack.enter_context(
+                _ProcessOtherManifest(e, args.target_sdk_version))
             for e in extras
         ]
         cmd += ['--libs', ':'.join(extras_processed)]
@@ -132,12 +132,6 @@ def main(argv):
           fail_func=lambda returncode, stderr: returncode != 0 or build_utils.
           IsTimeStale(output.name, [root_manifest] + extras),
           fail_on_output=args.warnings_as_errors)
-
-    # Check for correct output.
-    _, manifest, _ = manifest_utils.ParseManifest(output.name)
-    manifest_utils.AssertUsesSdk(manifest, args.min_sdk_version,
-                                 args.target_sdk_version)
-    manifest_utils.AssertPackage(manifest, package)
 
   if args.depfile:
     build_utils.WriteDepfile(args.depfile, args.output, inputs=extras)

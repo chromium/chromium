@@ -14,6 +14,8 @@ from util import manifest_utils
 _TEST_MANIFEST = """\
 <?xml version="1.0" ?>
 <manifest package="test.pkg"
+    android:versionCode="1234"
+    android:versionName="1.2.33.4"
     tools:ignore="MissingVersion"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
@@ -52,6 +54,8 @@ _TEST_MANIFEST_NORMALIZED = """\
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="test.pkg"
+    android:versionCode="OFFSET=4"
+    android:versionName="#.#.#.#"
     tools:ignore="MissingVersion">
   <uses-feature android:name="android.hardware.vr.headtracking" \
 android:required="false" android:version="1"/>
@@ -106,19 +110,19 @@ class ManifestUtilsTest(unittest.TestCase):
 
   def testNormalizeManifest_golden(self):
     test_manifest, expected = _CreateTestData()
-    actual = manifest_utils.NormalizeManifest(test_manifest)
+    actual = manifest_utils.NormalizeManifest(test_manifest, 1230, None)
     self.assertMultiLineEqual(expected, actual)
 
   def testNormalizeManifest_nameUsedForActivity(self):
     test_manifest, expected = _CreateTestData(extra_activity_attr='a="b"')
-    actual = manifest_utils.NormalizeManifest(test_manifest)
+    actual = manifest_utils.NormalizeManifest(test_manifest, 1230, None)
     # Checks that the DIFF-ANCHOR does not change with the added attribute.
     self.assertMultiLineEqual(expected, actual)
 
   def testNormalizeManifest_nameNotUsedForIntentFilter(self):
     test_manifest, expected = _CreateTestData(
         extra_intent_filter_elem='<a/>', intent_filter_diff_anchor='5f5c8a70')
-    actual = manifest_utils.NormalizeManifest(test_manifest)
+    actual = manifest_utils.NormalizeManifest(test_manifest, 1230, None)
     # Checks that the DIFF-ANCHOR does change with the added element despite
     # having a nested element with an android:name set.
     self.assertMultiLineEqual(expected, actual)

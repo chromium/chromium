@@ -13,6 +13,7 @@ found in the LICENSE file.
     <uses-permission android:name="android.permission.INJECT_EVENTS"
         tools:ignore="ProtectedPermissions"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
 
     <!-- We add an application tag here just so that we can indicate that this

@@ -15,9 +15,10 @@ enable_libs_and_assets_verification =
       # Disable checks in official arm64 builds due to unwind assets.
       !is_official_build))
 
-# Having //clank present causes different flags because of how play services
-# is wired up.
-# The channel is required because manifest entries vary based on channel.
+# enable_chrome_android_internal: Manifest merging of play services deps vary.
+# use_jacoco_coverage: Adds proguard flags.
+# android_channel: Manifest entries vary based on channel.
+# target_cpu: android:versionCode varies.
 enable_manifest_verification =
     !is_java_debug && !enable_chrome_android_internal && !use_jacoco_coverage &&
-    android_channel == "stable"
+    android_channel == "stable" && target_cpu == "arm"

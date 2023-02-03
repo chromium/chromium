@@ -4,7 +4,9 @@
     package="com.android.webview"
     platformBuildVersionCode="33"
     platformBuildVersionName="13"
-    android:isolatedSplits="true">
+    android:isolatedSplits="true"
+    android:versionCode="OFFSET=30"
+    android:versionName="#.#.#.#">
   <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
   <uses-feature android:name="android.software.leanback" android:required="false"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -480,6 +482,6 @@
         android:process=":sandboxed_process9"
         android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: e2f3bbbd
-    <uses-static-library android:name="org.chromium.trichromelibrary" android:certDigest="32a2fc74d731105859e5a85df16d95f102d85b22099b8064c5d8915c61dad1e0" android:version="$VERSION_NUMBER"/>
+    <uses-static-library android:name="org.chromium.trichromelibrary" android:certDigest="32a2fc74d731105859e5a85df16d95f102d85b22099b8064c5d8915c61dad1e0" android:version="OFFSET=30"/>
   </application>
 </manifest>

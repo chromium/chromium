@@ -90,6 +90,10 @@ template("chrome_public_common_apk_or_module_tmpl") {
         min_sdk_version = default_min_sdk_version
       }
     }
+    if (defined(expected_android_manifest)) {
+      expected_android_manifest_version_code_offset = chrome_version_code
+      expected_android_manifest_library_version_offset = chrome_version_code
+    }
 
     resource_exclusion_regex = common_resource_exclusion_regex
     resource_exclusion_exceptions = common_resource_exclusion_exceptions

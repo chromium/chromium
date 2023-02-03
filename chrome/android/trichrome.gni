@@ -47,6 +47,10 @@ template("trichrome_library_apk_tmpl") {
                              "min_sdk_version",
                              "target_sdk_version",
                            ])
+    if (defined(expected_android_manifest)) {
+      expected_android_manifest_version_code_offset = chrome_version_code
+      expected_android_manifest_library_version_offset = chrome_version_code
+    }
 
     # TODO(torne): since there's no real java code in the library right now,
     # leave out the build hooks and let them get compiled into each APK. Later

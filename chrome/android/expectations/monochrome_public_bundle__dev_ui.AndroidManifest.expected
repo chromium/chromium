@@ -5,7 +5,9 @@
     featureSplit="dev_ui"
     package="org.chromium.chrome.stable"
     platformBuildVersionCode="33"
-    platformBuildVersionName="13">
+    platformBuildVersionName="13"
+    android:versionCode="OFFSET=20"
+    android:versionName="#.#.#.#">
   <dist:module dist:onDemand="true" dist:title="@string/dev_ui_module_title">  # DIFF-ANCHOR: 671a5c9f
     <dist:fusing dist:include="true"/>
   </dist:module>  # DIFF-ANCHOR: 671a5c9f

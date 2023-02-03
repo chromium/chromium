@@ -2396,6 +2396,18 @@ if (enable_java_templates) {
           ]
           inputs += [ invoker.expected_android_manifest_base ]
         }
+        if (defined(invoker.expected_android_manifest_version_code_offset)) {
+          args += [
+            "--verification-version-code-offset",
+            invoker.expected_android_manifest_version_code_offset,
+          ]
+        }
+        if (defined(invoker.expected_android_manifest_library_version_offset)) {
+          args += [
+            "--verification-library-version-offset",
+            invoker.expected_android_manifest_library_version_offset,
+          ]
+        }
         if (fail_on_android_expectations) {
           args += [ "--fail-on-expectations" ]
         }

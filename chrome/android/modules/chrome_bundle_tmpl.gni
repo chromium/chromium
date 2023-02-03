@@ -153,12 +153,14 @@ template("chrome_bundle") {
       version_code = _version_code
 
       if (defined(invoker.expected_android_manifest_template)) {
+        expected_android_manifest_version_code_offset = chrome_version_code
         expected_android_manifest =
             string_replace(invoker.expected_android_manifest_template,
                            "SPLIT_NAME",
                            _module_desc.name)
       }
       if (defined(invoker.expected_android_manifest_base_template)) {
+        expected_android_manifest_version_code_offset = chrome_version_code
         if (defined(_module_desc.ignore_base_manifest_expectations) &&
             _module_desc.ignore_base_manifest_expectations) {
           # Remove ".diff" since it's not actually a diff.
