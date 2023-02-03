@@ -30349,20 +30349,30 @@ Called by update_document_policy_enum.py.-->
   </summary>
   <int value="345599" label="480 x 720 (deprecated)"/>
   <int value="345600" label="720 x 480 (deprecated)"/>
-  <int value="349183" label="512 x 682"/>
-  <int value="349184" label="682 x 512"/>
-  <int value="387203" label="492 x 787"/>
-  <int value="387204" label="787 x 492"/>
-  <int value="409439" label="480 x 853"/>
-  <int value="409440" label="853 x 480"/>
+  <int value="348501" label="511 x 682"/>
+  <int value="348502" label="682 x 511"/>
+  <int value="349183" label="512 x 682 (deprecated)"/>
+  <int value="349184" label="682 x 512 (deprecated)"/>
+  <int value="386416" label="491 x 787"/>
+  <int value="386417" label="787 x 491"/>
+  <int value="387203" label="492 x 787 (deprecated)"/>
+  <int value="387204" label="787 x 492 (deprecated)"/>
+  <int value="408586" label="479 x 853"/>
+  <int value="408587" label="853 x 479"/>
+  <int value="409439" label="480 x 853 (deprecated)"/>
+  <int value="409440" label="853 x 480 (deprecated)"/>
   <int value="426399" label="533 x 800"/>
   <int value="426400" label="800 x 533"/>
-  <int value="430769" label="519 x 830"/>
-  <int value="430770" label="830 x 519"/>
+  <int value="429939" label="518 x 830"/>
+  <int value="429940" label="830 x 518"/>
+  <int value="430769" label="519 x 830 (deprecated)"/>
+  <int value="430770" label="830 x 519 (deprecated)"/>
   <int value="454648" label="533 x 853"/>
   <int value="454649" label="853 x 533"/>
-  <int value="465919" label="512 x 910"/>
-  <int value="465920" label="910 x 512"/>
+  <int value="465009" label="511 x 910"/>
+  <int value="465010" label="910 x 511"/>
+  <int value="465919" label="512 x 910 (deprecated)"/>
+  <int value="465920" label="910 x 512 (deprecated)"/>
   <int value="479036" label="519 x 923"/>
   <int value="479037" label="923 x 519"/>
   <int value="482797" label="566 x 853"/>
@@ -30383,8 +30393,10 @@ Called by update_document_policy_enum.py.-->
   <int value="540330" label="930 x 581"/>
   <int value="544151" label="553 x 984"/>
   <int value="544152" label="984 x 553"/>
-  <int value="553279" label="608 x 910"/>
-  <int value="553280" label="910 x 608"/>
+  <int value="552369" label="607 x 910"/>
+  <int value="552370" label="910 x 607"/>
+  <int value="553279" label="608 x 910 (deprecated)"/>
+  <int value="553280" label="910 x 608 (deprecated)"/>
   <int value="567644" label="615 x 923"/>
   <int value="567645" label="923 x 615"/>
   <int value="575999" label="600 x 960"/>
@@ -30401,34 +30413,46 @@ Called by update_document_policy_enum.py.-->
   <int value="614400" label="960 x 640"/>
   <int value="619499" label="590 x 1050"/>
   <int value="619500" label="1050 x 590"/>
-  <int value="639599" label="600 x 1066"/>
-  <int value="639600" label="1066 x 600"/>
+  <int value="638533" label="599 x 1066"/>
+  <int value="638534" label="1066 x 599"/>
+  <int value="639599" label="600 x 1066 (deprecatd)"/>
+  <int value="639600" label="1066 x 600 (deprecated)"/>
   <int value="641573" label="654 x 981 (deprecated)"/>
   <int value="641574" label="981 x 654 (deprecated)"/>
-  <int value="649139" label="698 x 930"/>
-  <int value="649140" label="930 x 698"/>
+  <int value="648209" label="697 x 930"/>
+  <int value="648210" label="930 x 697"/>
+  <int value="649139" label="698 x 930 (deprecated)"/>
+  <int value="649140" label="930 x 698 (deprecated)"/>
   <int value="655359" label="640 x 1024"/>
   <int value="655360" label="1024 x 640"/>
   <int value="665999" label="666 x 1000"/>
   <int value="666000" label="1000 x 666"/>
-  <int value="670487" label="614 x 1092"/>
-  <int value="670488" label="1092 x 614"/>
+  <int value="669395" label="613 x 1092"/>
+  <int value="669396" label="1092 x 613"/>
+  <int value="670487" label="614 x 1092 (deprecated)"/>
+  <int value="670488" label="1092 x 614 (deprecated)"/>
   <int value="676848" label="617 x 1097"/>
   <int value="676849" label="1097 x 617"/>
-  <int value="680035" label="652 x 1043"/>
-  <int value="680036" label="1043 x 652"/>
+  <int value="678992" label="651 x 1043"/>
+  <int value="678993" label="1043 x 651"/>
+  <int value="680035" label="652 x 1043 (deprecated)"/>
+  <int value="680036" label="1043 x 652 (deprecated)"/>
   <int value="696319" label="680 x 1024"/>
   <int value="696320" label="1024 x 680"/>
   <int value="696737" label="626 x 1113"/>
   <int value="696738" label="1113 x 626"/>
-  <int value="699391" label="683 x 1024"/>
-  <int value="699392" label="1024 x 683"/>
+  <int value="698367" label="682 x 1024"/>
+  <int value="698368" label="1024 x 682"/>
+  <int value="699391" label="683 x 1024 (deprecated)"/>
+  <int value="699392" label="1024 x 683 (deprecated)"/>
   <int value="709955" label="666 x 1066"/>
   <int value="709956" label="1066 x 666"/>
   <int value="724820" label="673 x 1077"/>
   <int value="724821" label="1077 x 673"/>
-  <int value="728319" label="640 x 1138"/>
-  <int value="728320" label="1138 x 640"/>
+  <int value="727181" label="639 x 1138"/>
+  <int value="727182" label="1138 x 639"/>
+  <int value="728319" label="640 x 1138 (deprecated)"/>
+  <int value="728320" label="1138 x 640 (deprecated)"/>
   <int value="728999" label="675 x 1080"/>
   <int value="729000" label="1080 x 675"/>
   <int value="736049" label="701 x 1050"/>
@@ -30441,34 +30465,48 @@ Called by update_document_policy_enum.py.-->
   <int value="773535" label="1113 x 695"/>
   <int value="777599" label="720 x 1080 (deprecated)"/>
   <int value="777600" label="1080 x 720 (deprecated)"/>
-  <int value="783731" label="723 x 1084"/>
-  <int value="783732" label="1084 x 723"/>
+  <int value="782647" label="722 x 1084"/>
+  <int value="782648" label="1084 x 722"/>
+  <int value="783731" label="723 x 1084 (deprecated)"/>
+  <int value="783732" label="1084 x 723 (deprecated)"/>
   <int value="784183" label="664 x 1181"/>
   <int value="784184" label="1181 x 664"/>
   <int value="786431" label="768 x 1024"/>
   <int value="786432" label="1024 x 768"/>
   <int value="789209" label="666 x 1185"/>
   <int value="789210" label="1185 x 666"/>
+  <int value="791339" label="726 x 1090"/>
+  <int value="791340" label="1090 x 726"/>
   <int value="791728" label="667 x 1187"/>
   <int value="791729" label="1187 x 667"/>
-  <int value="792429" label="727 x 1090"/>
-  <int value="792430" label="1090 x 727"/>
+  <int value="792429" label="727 x 1090 (deprecated)"/>
+  <int value="792430" label="1090 x 727 (deprecated)"/>
   <int value="796067" label="729 x 1092"/>
   <int value="796068" label="1092 x 729"/>
-  <int value="808406" label="711 x 1137"/>
-  <int value="808407" label="1137 x 711"/>
+  <int value="807269" label="710 x 1137"/>
+  <int value="807270" label="1137 x 710"/>
+  <int value="808406" label="711 x 1137 (deprecated)"/>
+  <int value="808407" label="1137 x 711 (deprecated)"/>
   <int value="809999" label="675 x 1200"/>
   <int value="810000" label="1200 x 675"/>
   <int value="835014" label="685 x 1219"/>
   <int value="835015" label="1219 x 685"/>
-  <int value="845500" label="727 x 1163"/>
-  <int value="845501" label="1163 x 727"/>
-  <int value="851159" label="692 x 1230"/>
-  <int value="851160" label="1230 x 692"/>
-  <int value="864879" label="760 x 1138"/>
-  <int value="864880" label="1138 x 760"/>
-  <int value="866217" label="698 x 1241"/>
-  <int value="866218" label="1241 x 698"/>
+  <int value="844337" label="726 x 1163"/>
+  <int value="844338" label="1163 x 726"/>
+  <int value="845500" label="727 x 1163 (deprecated)"/>
+  <int value="845501" label="1163 x 727 (deprecated)"/>
+  <int value="849929" label="691 x 1230"/>
+  <int value="849930" label="1230 x 691"/>
+  <int value="851159" label="692 x 1230 (deprecated)"/>
+  <int value="851160" label="1230 x 692 (deprecated)"/>
+  <int value="863741" label="759 x 1138"/>
+  <int value="863742" label="1138 x 759"/>
+  <int value="864879" label="760 x 1138 (deprecated)"/>
+  <int value="864880" label="1138 x 760 (deprecated)"/>
+  <int value="864976" label="697 x 1241"/>
+  <int value="864977" label="1241 x 697"/>
+  <int value="866217" label="698 x 1241 (deprecated)"/>
+  <int value="866218" label="1241 x 698 (deprecated)"/>
   <int value="871577" label="738 x 1181"/>
   <int value="871578" label="1181 x 738"/>
   <int value="893975" label="772 x 1158"/>
@@ -30483,22 +30521,32 @@ Called by update_document_policy_enum.py.-->
   <int value="921600" label="1280 x 720"/>
   <int value="927658" label="761 x 1219"/>
   <int value="927659" label="1219 x 761"/>
-  <int value="941290" label="793 x 1187"/>
-  <int value="941291" label="1187 x 793"/>
-  <int value="950299" label="731 x 1300"/>
-  <int value="950300" label="1300 x 731"/>
+  <int value="940103" label="792 x 1187"/>
+  <int value="940104" label="1187 x 792"/>
+  <int value="941290" label="793 x 1187 (deprecated)"/>
+  <int value="941291" label="1187 x 793 (deprecated)"/>
+  <int value="948999" label="730 x 1300"/>
+  <int value="949000" label="1300 x 730"/>
+  <int value="950299" label="731 x 1300 (deprecated)"/>
+  <int value="950300" label="1300 x 731 (deprecated)"/>
   <int value="959999" label="800 x 1200"/>
   <int value="960000" label="1200 x 800"/>
-  <int value="969860" label="853 x 1137"/>
-  <int value="969861" label="1137 x 853"/>
-  <int value="999749" label="750 x 1333"/>
-  <int value="999750" label="1333 x 750"/>
+  <int value="968723" label="852 x 1137"/>
+  <int value="968724" label="1137 x 852"/>
+  <int value="969860" label="853 x 1137 (deprecated)"/>
+  <int value="969861" label="1137 x 853 (deprecated)"/>
+  <int value="998416" label="749 x 1333"/>
+  <int value="998417" label="1333 x 749"/>
+  <int value="999749" label="750 x 1333 (deprecated)"/>
+  <int value="999750" label="1333 x 750 (deprecated)"/>
   <int value="1001641" label="817 x 1226"/>
   <int value="1001642" label="1226 x 817"/>
   <int value="1023999" label="800 x 1280"/>
   <int value="1024000" label="1280 x 800"/>
-  <int value="1028788" label="829 x 1241"/>
-  <int value="1028789" label="1241 x 829"/>
+  <int value="1027547" label="828 x 1241"/>
+  <int value="1027548" label="1241 x 828"/>
+  <int value="1028788" label="829 x 1241 (deprecated)"/>
+  <int value="1028789" label="1241 x 829 (deprecated)"/>
   <int value="1049087" label="768 x 1366"/>
   <int value="1049088" label="1366 x 768"/>
   <int value="1057040" label="771 x 1371"/>
@@ -30511,24 +30559,34 @@ Called by update_document_policy_enum.py.-->
   <int value="1095860" label="1396 x 785"/>
   <int value="1110388" label="833 x 1333"/>
   <int value="1110389" label="1333 x 833"/>
-  <int value="1120333" label="794 x 1411"/>
-  <int value="1120334" label="1411 x 794"/>
-  <int value="1128399" label="868 x 1300"/>
-  <int value="1128400" label="1300 x 868"/>
-  <int value="1137599" label="800 x 1422"/>
-  <int value="1137600" label="1422 x 800"/>
+  <int value="1118922" label="793 x 1411"/>
+  <int value="1118923" label="1411 x 793"/>
+  <int value="1120333" label="794 x 1411 (deprecated)"/>
+  <int value="1120334" label="1411 x 794 (deprecated)"/>
+  <int value="1127099" label="867 x 1300"/>
+  <int value="1127100" label="1300 x 867"/>
+  <int value="1128399" label="868 x 1300 (deprecated)"/>
+  <int value="1128400" label="1300 x 868 (deprecated)"/>
+  <int value="1136177" label="799 x 1422"/>
+  <int value="1136178" label="1422 x 799"/>
+  <int value="1137599" label="800 x 1422 (deprecated)"/>
+  <int value="1137600" label="1422 x 800 (deprecated)"/>
   <int value="1138049" label="843 x 1350"/>
   <int value="1138050" label="1350 x 843"/>
   <int value="1166399" label="810 x 1440"/>
   <int value="1166400" label="1440 x 810"/>
-  <int value="1174946" label="857 x 1371"/>
-  <int value="1174947" label="1371 x 857"/>
+  <int value="1173575" label="856 x 1371"/>
+  <int value="1173576" label="1371 x 856"/>
+  <int value="1174946" label="857 x 1371 (deprecated)"/>
+  <int value="1174947" label="1371 x 857 (deprecated)"/>
   <int value="1182815" label="888 x 1332"/>
   <int value="1182816" label="1332 x 888"/>
   <int value="1183703" label="888 x 1333"/>
   <int value="1183704" label="1333 x 888"/>
-  <int value="1189371" label="818 x 1454"/>
-  <int value="1189372" label="1454 x 818"/>
+  <int value="1187917" label="817 x 1454"/>
+  <int value="1187918" label="1454 x 817"/>
+  <int value="1189371" label="818 x 1454 (deprecated)"/>
+  <int value="1189372" label="1454 x 818 (deprecated)"/>
   <int value="1214999" label="900 x 1350 (deprecated)"/>
   <int value="1215000" label="1350 x 900 (deprecated)"/>
   <int value="1217311" label="872 x 1396"/>
@@ -30537,30 +30595,40 @@ Called by update_document_policy_enum.py.-->
   <int value="1225080" label="1476 x 830"/>
   <int value="1228799" label="960 x 1280"/>
   <int value="1228800" label="1280 x 960"/>
-  <int value="1244501" label="882 x 1411"/>
-  <int value="1244502" label="1411 x 882"/>
+  <int value="1243090" label="881 x 1411"/>
+  <int value="1243091" label="1411 x 881"/>
+  <int value="1244501" label="882 x 1411 (deprecated)"/>
+  <int value="1244502" label="1411 x 882 (deprecated)"/>
   <int value="1245791" label="912 x 1366"/>
   <int value="1245792" label="1366 x 912"/>
   <int value="1262735" label="888 x 1422"/>
   <int value="1262736" label="1422 x 888"/>
   <int value="1264499" label="843 x 1500"/>
   <int value="1264500" label="1500 x 843"/>
-  <int value="1294000" label="853 x 1517"/>
-  <int value="1294001" label="1517 x 853"/>
+  <int value="1292483" label="852 x 1517"/>
+  <int value="1292484" label="1517 x 852"/>
+  <int value="1294000" label="853 x 1517 (deprecated)"/>
+  <int value="1294001" label="1517 x 853 (deprecated)"/>
   <int value="1295999" label="900 x 1440"/>
   <int value="1296000" label="1440 x 900"/>
-  <int value="1305210" label="857 x 1523"/>
-  <int value="1305211" label="1523 x 857"/>
+  <int value="1303687" label="856 x 1523"/>
+  <int value="1303688" label="1523 x 856"/>
+  <int value="1305210" label="857 x 1523 (deprecated)"/>
+  <int value="1305211" label="1523 x 857 (deprecated)"/>
   <int value="1325399" label="940 x 1410"/>
   <int value="1325400" label="1410 x 940"/>
   <int value="1327103" label="864 x 1536"/>
   <int value="1327104" label="1536 x 864"/>
-  <int value="1336267" label="914 x 1462"/>
-  <int value="1336268" label="1462 x 914"/>
+  <int value="1334805" label="913 x 1462"/>
+  <int value="1334806" label="1462 x 913"/>
+  <int value="1336267" label="914 x 1462 (deprecated)"/>
+  <int value="1336268" label="1462 x 914 (deprecated)"/>
   <int value="1342367" label="944 x 1422"/>
   <int value="1342368" label="1422 x 944"/>
-  <int value="1362347" label="923 x 1476"/>
-  <int value="1362348" label="1476 x 923"/>
+  <int value="1360871" label="922 x 1476"/>
+  <int value="1360872" label="1476 x 922"/>
+  <int value="1362347" label="923 x 1476 (deprecated)"/>
+  <int value="1362348" label="1476 x 923 (deprecated)"/>
   <int value="1405499" label="937 x 1500"/>
   <int value="1405500" label="1500 x 937"/>
   <int value="1439999" label="900 x 1600"/>
@@ -30573,22 +30641,30 @@ Called by update_document_policy_enum.py.-->
   <int value="1474560" label="1536 x 960"/>
   <int value="1499999" label="1000 x 1500"/>
   <int value="1500000" label="1500 x 1000"/>
-  <int value="1536720" label="1013 x 1517"/>
-  <int value="1536721" label="1517 x 1013"/>
-  <int value="1567190" label="939 x 1669"/>
-  <int value="1567191" label="1669 x 939"/>
+  <int value="1535203" label="1012 x 1517"/>
+  <int value="1535204" label="1517 x 1012"/>
+  <int value="1536720" label="1013 x 1517 (deprecated)"/>
+  <int value="1536721" label="1517 x 1013 (deprecated)"/>
+  <int value="1565521" label="938 x 1669"/>
+  <int value="1565522" label="1669 x 938"/>
+  <int value="1567190" label="939 x 1669 (deprecated)"/>
+  <int value="1567191" label="1669 x 939 (deprecated)"/>
   <int value="1585175" label="1028 x 1542 (deprecated)"/>
   <int value="1585176" label="1542 x 1028 (deprecated)"/>
   <int value="1599999" label="1000 x 1600"/>
   <int value="1600000" label="1600 x 1000"/>
-  <int value="1603813" label="1097 x 1462"/>
-  <int value="1603814" label="1462 x 1097"/>
+  <int value="1602351" label="1096 x 1462"/>
+  <int value="1602352" label="1462 x 1096"/>
+  <int value="1603813" label="1097 x 1462 (deprecated)"/>
+  <int value="1603814" label="1462 x 1097 (deprecated)"/>
   <int value="1632159" label="1010 x 1616"/>
   <int value="1632160" label="1616 x 1010"/>
   <int value="1634903" label="1044 x 1566"/>
   <int value="1634904" label="1566 x 1044"/>
-  <int value="1637759" label="960 x 1706"/>
-  <int value="1637760" label="1706 x 960"/>
+  <int value="1636053" label="959 x 1706"/>
+  <int value="1636054" label="1706 x 959"/>
+  <int value="1637759" label="960 x 1706 (deprecated)"/>
+  <int value="1637760" label="1706 x 960 (deprecated)"/>
   <int value="1652295" label="964 x 1714"/>
   <int value="1652296" label="1714 x 964"/>
   <int value="1699199" label="1062 x 1600"/>
@@ -30601,8 +30677,10 @@ Called by update_document_policy_enum.py.-->
   <int value="1724118" label="1661 x 1038"/>
   <int value="1740766" label="1043 x 1669"/>
   <int value="1740767" label="1669 x 1043"/>
-  <int value="1776999" label="1000 x 1777"/>
-  <int value="1777000" label="1777 x 1000"/>
+  <int value="1775222" label="999 x 1777"/>
+  <int value="1775223" label="1777 x 999"/>
+  <int value="1776999" label="1000 x 1777 (deprecated)"/>
+  <int value="1777000" label="1777 x 1000 (deprecated)"/>
   <int value="1818595" label="1066 x 1706"/>
   <int value="1818596" label="1706 x 1066"/>
   <int value="1821599" label="1012 x 1800"/>
@@ -30623,16 +30701,22 @@ Called by update_document_policy_enum.py.-->
   <int value="1957388" label="1714 x 1142"/>
   <int value="2040102" label="1129 x 1807"/>
   <int value="2040103" label="1807 x 1129"/>
-  <int value="2070349" label="1175 x 1762"/>
-  <int value="2070350" label="1762 x 1175"/>
+  <int value="2068587" label="1174 x 1762"/>
+  <int value="2068588" label="1762 x 1174"/>
+  <int value="2070349" label="1175 x 1762 (deprecated)"/>
+  <int value="2070350" label="1762 x 1175 (deprecated)"/>
   <int value="2073599" label="1080 x 1920"/>
   <int value="2073600" label="1920 x 1080"/>
   <int value="2159999" label="1200 x 1800 (deprecated)"/>
   <int value="2160000" label="1800 x 1200 (deprecated)"/>
-  <int value="2183679" label="1280 x 1706"/>
-  <int value="2183680" label="1706 x 1280"/>
-  <int value="2219191" label="1214 x 1828"/>
-  <int value="2219192" label="1828 x 1214"/>
+  <int value="2181973" label="1279 x 1706"/>
+  <int value="2181974" label="1706 x 1279"/>
+  <int value="2183679" label="1280 x 1706 (deprecated)"/>
+  <int value="2183680" label="1706 x 1280 (deprecated)"/>
+  <int value="2217363" label="1213 x 1828"/>
+  <int value="2217364" label="1828 x 1213"/>
+  <int value="2219191" label="1214 x 1828 (deprecated)"/>
+  <int value="2219192" label="1828 x 1214 (deprecated)"/>
   <int value="2249999" label="1125 x 2000"/>
   <int value="2250000" label="2000 x 1125"/>
   <int value="2270579" label="1230 x 1846"/>
@@ -30643,8 +30727,10 @@ Called by update_document_policy_enum.py.-->
   <int value="2355640" label="1880 x 1253"/>
   <int value="2411735" label="1268 x 1902"/>
   <int value="2411736" label="1902 x 1268"/>
-  <int value="2559599" label="1200 x 2133"/>
-  <int value="2559600" label="2133 x 1200"/>
+  <int value="2557466" label="1199 x 2133"/>
+  <int value="2557467" label="2133 x 1199"/>
+  <int value="2559599" label="1200 x 2133 (deprecated)"/>
+  <int value="2559600" label="2133 x 1200 (deprecated)"/>
   <int value="2665999" label="1333 x 2000"/>
   <int value="2666000" label="2000 x 1333"/>
   <int value="2702787" label="1342 x 2014"/>
@@ -30671,8 +30757,10 @@ Called by update_document_policy_enum.py.-->
   <int value="3686400" label="2560 x 1440"/>
   <int value="3839999" label="1600 x 2400"/>
   <int value="3840000" label="2400 x 1600"/>
-  <int value="3998999" label="1500 x 2666"/>
-  <int value="3999000" label="2666 x 1500"/>
+  <int value="3996333" label="1499 x 2666"/>
+  <int value="3996334" label="2666 x 1499"/>
+  <int value="3998999" label="1500 x 2666 (deprecated)"/>
+  <int value="3999000" label="2666 x 1500 (deprecated)"/>
   <int value="4351999" label="1700 x 2560"/>
   <int value="4352000" label="2560 x 1700"/>
   <int value="4665599" label="1620 x 2880"/>

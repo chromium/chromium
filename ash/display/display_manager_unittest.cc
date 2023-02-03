@@ -2202,12 +2202,12 @@ TEST_F(DisplayManagerTest, UpdateMouseCursorAfterRotateZoom) {
   generator2.MoveMouseToInHost(200, 250);
   EXPECT_EQ(gfx::Point(700, 125), env->last_mouse_location());
   UpdateDisplay("600x400,400x300*2@1.5");
-  EXPECT_EQ(gfx::Point(666, 83), env->last_mouse_location());
+  EXPECT_EQ(gfx::Point(666, 84), env->last_mouse_location());
 
   // The native location is now outside, so move to the
   // center of closest display.
   UpdateDisplay("600x400,400x200*2@1.5");
-  EXPECT_EQ(gfx::Point(666, 67), env->last_mouse_location());
+  EXPECT_EQ(gfx::Point(665, 66), env->last_mouse_location());
 }
 
 class TestDisplayObserver : public display::DisplayObserver {

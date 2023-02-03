@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -479,7 +480,19 @@ void ManagedDisplayInfo::SetBounds(const gfx::Rect& new_bounds_in_native) {
 }
 
 float ManagedDisplayInfo::GetEffectiveDeviceScaleFactor() const {
-  return device_scale_factor_ * zoom_factor_;
+  if (zoom_factor_ == 1.0f) {
+    return device_scale_factor_;
+  }
+  // When the display zoom is applied, try to adjust the final scale so that it
+  // will produce the integer pixel size (wider side) when the scale is applied
+  // to the logical size. Note that this a best effort and not guaranteed.
+  const float scale_factor = device_scale_factor_ * zoom_factor_;
+  const int pixel_size =
+      std::max(bounds_in_native_.width(), bounds_in_native_.height());
+  const float logical_size_f = pixel_size / scale_factor;
+  // Floor the value by default but allow very close value to be roudnd up.
+  const int32_t logical_size = base::ClampFloor(logical_size_f + 0.0005);
+  return pixel_size / static_cast<float>(logical_size);
 }
 
 gfx::Size ManagedDisplayInfo::GetSizeInPixelWithPanelOrientation() const {

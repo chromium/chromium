@@ -27,6 +27,11 @@ constexpr int64_t kUnifiedDisplayId = -10;
 // Invalid year of manufacture of the display.
 constexpr int32_t kInvalidYearOfManufacture = -1;
 
+// Used to determine if the two scale factor values are considered the same.
+// TODO(crbug.com/1412420): Remove this when the scale factor precision issue
+// in lacros is fixed.
+constexpr float kDeviceScaleFactorErrorTolerance = 0.01f;
+
 // The minimum HDR headroom for an HDR capable display. On macOS, when a
 // display's brightness is set to maximum, it can report that there is no
 // HDR headroom via maximumExtendedDynamicRangeColorComponentValue being 1.

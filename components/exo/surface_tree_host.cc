@@ -37,6 +37,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -453,8 +454,16 @@ void SurfaceTreeHost::HandleContextLost() {
 }
 
 float SurfaceTreeHost::GetScaleFactor() {
-  if (scale_factor_)
+  if (scale_factor_) {
+    // TODO(crbug.com/1412420): Remove this once the scale factor precision
+    // issue is fixed.
+    if (std::abs(scale_factor_.value() -
+                 host_window_->layer()->device_scale_factor()) <
+        display::kDeviceScaleFactorErrorTolerance) {
+      return host_window_->layer()->device_scale_factor();
+    }
     return scale_factor_.value();
+  }
   return host_window_->layer()->device_scale_factor();
 }
 

@@ -206,7 +206,7 @@ void DisplayChangeObserver::OnDisplayModeChanged(
     if (!mode_info)
       continue;
 
-    displays.emplace_back(CreateManagedDisplayInfo(state, mode_info));
+    displays.emplace_back(CreateManagedDisplayInfoInternal(state, mode_info));
   }
 
   display_manager_->touch_device_manager()->AssociateTouchscreens(
@@ -246,46 +246,41 @@ void DisplayChangeObserver::OnInputDeviceConfigurationChanged(
   }
 }
 
-void DisplayChangeObserver::UpdateInternalDisplay(
-    const DisplayConfigurator::DisplayStateList& display_states) {
-  bool force_first_display_internal = ForceFirstDisplayInternal();
+// static
+float DisplayChangeObserver::FindDeviceScaleFactor(
+    float dpi,
+    const gfx::Size& size_in_pixels) {
+  // Nocturne has special scale factor 3000/1332=2.252.. for the panel 3kx2k.
+  constexpr gfx::Size k225DisplaySizeHackNocturne(3000, 2000);
+  // Keep the Chell's scale factor 2.252 until we make decision.
+  constexpr gfx::Size k2DisplaySizeHackChell(3200, 1800);
+  constexpr gfx::Size k18DisplaySizeHackCoachZ(2160, 1440);
 
-  for (auto* state : display_states) {
-    if (state->type() == DISPLAY_CONNECTION_TYPE_INTERNAL ||
-        (force_first_display_internal &&
-         (!HasInternalDisplay() || IsInternalDisplayId(state->display_id())))) {
-      if (HasInternalDisplay())
-        DCHECK_EQ(Display::InternalDisplayId(), state->display_id());
-      SetInternalDisplayIds({state->display_id()});
-
-      if (state->native_mode() &&
-          (!display_manager_->IsDisplayIdValid(state->display_id()) ||
-           !state->current_mode())) {
-        // Register the internal display info if
-        // 1) If it's not already registered. It'll be treated as
-        // new display in |UpdateDisplaysWith()|.
-        // 2) If it's not connected, because the display info will not
-        // be updated in |UpdateDisplaysWith()|, which will skips the
-        // disconnected displays.
-        ManagedDisplayInfo new_info =
-            CreateManagedDisplayInfo(state, state->native_mode());
-        display_manager_->UpdateInternalDisplay(new_info);
-      }
-      return;
+  if (size_in_pixels == k225DisplaySizeHackNocturne) {
+    return kDsf_2_252;
+  }
+  if (size_in_pixels == k2DisplaySizeHackChell) {
+    return 2.f;
+  }
+  if (size_in_pixels == k18DisplaySizeHackCoachZ) {
+    return kDsf_1_8;
+  }
+  for (size_t i = 0; i < std::size(kThresholdTableForInternal); ++i) {
+    if (dpi >= kThresholdTableForInternal[i].dpi) {
+      return kThresholdTableForInternal[i].device_scale_factor;
     }
   }
+  return 1.0f;
 }
 
+// static
 ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
     const DisplaySnapshot* snapshot,
-    const DisplayMode* mode_info) {
-  std::string name = (snapshot->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
-                         ? l10n_util::GetStringUTF8(IDS_DISPLAY_NAME_INTERNAL)
-                         : snapshot->display_name();
-
-  if (name.empty())
-    name = l10n_util::GetStringUTF8(IDS_DISPLAY_NAME_UNKNOWN);
-
+    const DisplayMode* mode_info,
+    bool native,
+    float device_scale_factor,
+    float dpi,
+    const std::string& name) {
   const bool has_overscan = snapshot->has_overscan();
   const int64_t id = snapshot->display_id();
 
@@ -310,23 +305,7 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
   new_info.set_sys_path(snapshot->sys_path());
   new_info.set_from_native_platform(true);
 
-  float device_scale_factor = 1.0f;
-  // Sets dpi only if the screen size is valid.
-  const float dpi = IsDisplaySizeValid(snapshot->physical_size())
-                        ? kInchInMm * mode_info->size().width() /
-                              snapshot->physical_size().width()
-                        : 0;
-  if (snapshot->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
-    new_info.set_native(true);
-    device_scale_factor = FindDeviceScaleFactor(dpi, mode_info->size());
-  } else {
-    ManagedDisplayMode mode;
-    if (display_manager_->GetSelectedModeForDisplayId(snapshot->display_id(),
-                                                      &mode)) {
-      device_scale_factor = mode.device_scale_factor();
-      new_info.set_native(mode.native());
-    }
-  }
+  new_info.set_native(native);
   new_info.set_device_scale_factor(device_scale_factor);
 
   const gfx::Rect display_bounds(snapshot->origin(), mode_info->size());
@@ -336,13 +315,6 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
   if (dpi)
     new_info.set_device_dpi(dpi);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1012846): This should configure the HDR color spaces.
-  gfx::DisplayColorSpaces display_color_spaces(
-      snapshot->color_space(), DisplaySnapshot::PrimaryFormat());
-  new_info.set_display_color_spaces(display_color_spaces);
-  new_info.set_bits_per_channel(snapshot->bits_per_channel());
-#else
   // TODO(crbug.com/1012846): Remove kEnableUseHDRTransferFunction usage when
   // HDR is fully supported on ChromeOS.
   const bool allow_high_bit_depth =
@@ -354,7 +326,6 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
   constexpr int32_t kNormalBitDepth = 8;
   new_info.set_bits_per_channel(
       allow_high_bit_depth ? snapshot->bits_per_channel() : kNormalBitDepth);
-#endif
 
   new_info.set_refresh_rate(mode_info->refresh_rate());
   new_info.set_is_interlaced(mode_info->is_interlaced());
@@ -378,29 +349,68 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
   return new_info;
 }
 
-// static
-float DisplayChangeObserver::FindDeviceScaleFactor(
-    float dpi,
-    const gfx::Size& size_in_pixels) {
-  // Nocturne has special scale factor 3000/1332=2.252.. for the panel 3kx2k.
-  constexpr gfx::Size k225DisplaySizeHackNocturne(3000, 2000);
-  // Keep the Chell's scale factor 2.252 until we make decision.
-  constexpr gfx::Size k2DisplaySizeHackChell(3200, 1800);
-  constexpr gfx::Size k18DisplaySizeHackCoachZ(2160, 1440);
+void DisplayChangeObserver::UpdateInternalDisplay(
+    const DisplayConfigurator::DisplayStateList& display_states) {
+  bool force_first_display_internal = ForceFirstDisplayInternal();
 
-  if (size_in_pixels == k225DisplaySizeHackNocturne) {
-    return kDsf_2_252;
-  } else if (size_in_pixels == k2DisplaySizeHackChell) {
-    return 2.f;
-  } else if (size_in_pixels == k18DisplaySizeHackCoachZ) {
-    return kDsf_1_8;
-  } else {
-    for (size_t i = 0; i < std::size(kThresholdTableForInternal); ++i) {
-      if (dpi >= kThresholdTableForInternal[i].dpi)
-        return kThresholdTableForInternal[i].device_scale_factor;
+  for (auto* state : display_states) {
+    if (state->type() == DISPLAY_CONNECTION_TYPE_INTERNAL ||
+        (force_first_display_internal &&
+         (!HasInternalDisplay() || IsInternalDisplayId(state->display_id())))) {
+      if (HasInternalDisplay()) {
+        DCHECK_EQ(Display::InternalDisplayId(), state->display_id());
+      }
+      SetInternalDisplayIds({state->display_id()});
+
+      if (state->native_mode() &&
+          (!display_manager_->IsDisplayIdValid(state->display_id()) ||
+           !state->current_mode())) {
+        // Register the internal display info if
+        // 1) If it's not already registered. It'll be treated as
+        // new display in |UpdateDisplaysWith()|.
+        // 2) If it's not connected, because the display info will not
+        // be updated in |UpdateDisplaysWith()|, which will skips the
+        // disconnected displays.
+        ManagedDisplayInfo new_info =
+            CreateManagedDisplayInfoInternal(state, state->native_mode());
+        display_manager_->UpdateInternalDisplay(new_info);
+      }
+      return;
     }
   }
-  return 1.0f;
+}
+
+ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfoInternal(
+    const DisplaySnapshot* snapshot,
+    const DisplayMode* mode_info) {
+  bool native = false;
+  float device_scale_factor = 1.0f;
+  // Sets dpi only if the screen size is valid.
+  const float dpi = IsDisplaySizeValid(snapshot->physical_size())
+                        ? kInchInMm * mode_info->size().width() /
+                              snapshot->physical_size().width()
+                        : 0;
+  if (snapshot->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
+    native = true;
+    device_scale_factor = FindDeviceScaleFactor(dpi, mode_info->size());
+  } else {
+    ManagedDisplayMode mode;
+    if (display_manager_->GetSelectedModeForDisplayId(snapshot->display_id(),
+                                                      &mode)) {
+      device_scale_factor = mode.device_scale_factor();
+      native = mode.native();
+    }
+  }
+  std::string name = (snapshot->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
+                         ? l10n_util::GetStringUTF8(IDS_DISPLAY_NAME_INTERNAL)
+                         : snapshot->display_name();
+
+  if (name.empty()) {
+    name = l10n_util::GetStringUTF8(IDS_DISPLAY_NAME_UNKNOWN);
+  }
+
+  return CreateManagedDisplayInfo(snapshot, mode_info, native,
+                                  device_scale_factor, dpi, name);
 }
 
 }  // namespace display

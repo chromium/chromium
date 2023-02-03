@@ -986,7 +986,7 @@ TEST_P(CaptureModeDemoToolsTestWithAllSources, DeviceScaleFactorTest) {
   const float kDeviceScaleFactors[] = {0.5f, 1.2f, 2.5f};
   for (const float dsf : kDeviceScaleFactors) {
     SetDeviceScaleFactor(dsf);
-    EXPECT_EQ(dsf, window()->GetHost()->device_scale_factor());
+    EXPECT_NEAR(dsf, window()->GetHost()->device_scale_factor(), 0.01);
     VerifyKeyComboWidgetPosition();
   }
 }
