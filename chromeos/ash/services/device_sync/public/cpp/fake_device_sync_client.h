@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/services/device_sync/feature_status_change.h"
+#include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
@@ -111,6 +112,8 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
 
   int GetForceEnrollmentNowCallbackQueueSize() const;
   int GetForceSyncNowCallbackQueueSize() const;
+  int GetBetterTogetherMetadataStatusCallbackQueueSize() const;
+  int GetGroupPrivateKeyStatusCallbackQueueSize() const;
   int GetSetSoftwareFeatureStateInputsQueueSize() const;
   int GetSetFeatureStatusInputsQueueSize() const;
   int GetFindEligibleDevicesInputsQueueSize() const;
@@ -119,6 +122,10 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
 
   void InvokePendingForceEnrollmentNowCallback(bool success);
   void InvokePendingForceSyncNowCallback(bool success);
+  void InvokePendingGetBetterTogetherMetadataStatusCallback(
+      BetterTogetherMetadataStatus status);
+  void InvokePendingGetGroupPrivateKeyStatusCallback(
+      GroupPrivateKeyStatus status);
   void InvokePendingSetSoftwareFeatureStateCallback(
       mojom::NetworkRequestResult result_code);
   void InvokePendingSetFeatureStatusCallback(

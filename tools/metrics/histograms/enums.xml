@@ -75553,6 +75553,32 @@ Called by update_net_trust_anchors.py.-->
   <int value="36" label="WorkerScriptLoader (Proxy)"/>
 </enum>
 
+<enum name="OobeMultideviceScreenSkippedReason">
+  <int value="0" label="Public session or ephermeral login"/>
+  <int value="1" label="Host phone already set"/>
+  <int value="2" label="Device sync finished and no eligible host phone found"/>
+  <int value="3" label="Setup client not initialized"/>
+  <int value="4"
+      label="Device sync not initialized during better together metadata
+             status fetch"/>
+  <int value="5"
+      label="Device sync not initialized during group private key status
+             fetch"/>
+  <int value="6"
+      label="No device syncer set during better together metadata status
+             fetch"/>
+  <int value="7"
+      label="No device syncer set during group private key status fetch"/>
+  <int value="8" label="Encrypted metadata empty"/>
+  <int value="9" label="Waiting to receive group private key"/>
+  <int value="10" label="No encrypted group private key received"/>
+  <int value="11" label="Encrypted group private key empty"/>
+  <int value="12" label="Local device sync better together key missing"/>
+  <int value="13" label="Group private key decryption failed"/>
+  <int value="14" label="Screen destroyed before reason could be determined"/>
+  <int value="15" label="Unknown"/>
+</enum>
+
 <enum name="OobeUserClickTarget">
   <int value="0" label="Shut down button"/>
   <int value="1" label="Browse as guest button"/>
