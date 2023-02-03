@@ -540,6 +540,10 @@ void TaskEnvironment::DestroyThreadPool() {
   ThreadPoolInstance::Get()->JoinForTesting();
   DCHECK_EQ(g_task_tracker, task_tracker_);
   g_task_tracker = nullptr;
+
+  // Task runner lists will be destroyed when resetting thread pool instance.
+  scoped_lazy_task_runner_list_for_testing_.reset();
+
   // Destroying ThreadPoolInstance state can result in waiting on worker
   // threads. Make sure this is allowed to avoid flaking tests that have
   // disallowed waits on their main thread.
