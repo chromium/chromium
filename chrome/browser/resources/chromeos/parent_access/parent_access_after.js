@@ -8,9 +8,11 @@ import './flows/local_web_approvals_after.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LocalWebApprovalsAfterElement} from './flows/local_web_approvals_after.js';
+import {ParentAccessScreenInterface} from './parent_access_screen.js';
 import {ParentAccessParams_FlowType, ParentAccessResult} from './parent_access_ui.mojom-webui.js';
 import {getParentAccessParams, getParentAccessUIHandler} from './parent_access_ui_handler.js';
 
+/** @implements {ParentAccessScreenInterface} */
 class ParentAccessAfter extends PolymerElement {
   constructor() {
     super();
@@ -28,18 +30,15 @@ class ParentAccessAfter extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
-    this.renderFlowSpecificContent_();
+    this.renderFlowSpecificContent();
   }
 
   onShowAfterScreen() {
     this.shadowRoot.querySelector('.action-button').focus();
   }
 
-  /**
-   * Renders the correct after screen based on the ParentAccessParams flowtype.
-   * @private
-   */
-  async renderFlowSpecificContent_() {
+  /** @override */
+  async renderFlowSpecificContent() {
     const response = await getParentAccessParams();
     switch (response.params.flowType) {
       case ParentAccessParams_FlowType.kWebsiteAccess:

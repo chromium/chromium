@@ -6046,7 +6046,12 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_PARENT_ACCESS_OK_BUTTON" desc="OK button text on the parent access dialog.">
     OK
   </message>
-
+  <message name="IDS_PARENT_ACCESS_EXTENSION_APPROVALS_DISABLED_TITLE" desc="Title for the extension approvals disabled page indicating that an extension cannot be installed.">
+    Can't add extension
+  </message>
+  <message name="IDS_PARENT_ACCESS_EXTENSION_APPROVALS_DISABLED_SUBTITLE" desc="Text telling the user that an extension cannot be installed because a parent has disallowed it.">
+    Your parent has turned off "Permissions for sites, apps, and extensions" for Chrome. Adding this extension is not allowed.
+  </message>
 
   <!-- Strings shared among supervised user experiences -->
   <message name="IDS_SUPERVISED_USER_ERROR_TITLE" desc="Title for the UI shown to supervised users when an error has occurred.">

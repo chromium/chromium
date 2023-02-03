@@ -24,8 +24,8 @@ parent_access_app_tests.TestNames = {
       'Tests that the web approvals after flow is shown',
   TestShowExtensionApprovalsFlow:
       'Tests that the extension approvals flow is shown',
-  TestDisabledScreenIsTerminal:
-      'Tests that the disabled flow is shown and is terminal',
+  TestShowExtensionApprovalsDisabledScreen:
+      'Tests that the extensions disabled flow is shown and is terminal',
   TestShowErrorScreenOnOAuthFailure: 'Tests that the error screen is shown',
   TestWebApprovalsOffline:
       'Tests that dialog switches in/out of offline screen',
@@ -95,7 +95,8 @@ suite(parent_access_app_tests.suiteName, function() {
       });
 
   test(
-      parent_access_app_tests.TestNames.TestDisabledScreenIsTerminal,
+      parent_access_app_tests.TestNames
+          .TestShowExtensionApprovalsDisabledScreen,
       async () => {
         // Set up the TestParentAccessUIHandler
         const handler = new TestParentAccessUIHandler();
@@ -111,6 +112,13 @@ suite(parent_access_app_tests.suiteName, function() {
 
         // Verify disabled flow is showing.
         assertEquals(parentAccessApp.currentScreen_, Screens.DISABLED);
+        // Verify extension approvals disabled screen is showing.
+        const parentAccessAfter =
+            parentAccessApp.shadowRoot.querySelector('parent-access-disabled');
+        const extensionApprovalsDisabled =
+            parentAccessAfter.shadowRoot.querySelector(
+                'extension-approvals-disabled');
+        assertNotEquals(null, extensionApprovalsDisabled);
 
         // Verify disabled screen still showing after triggering offline event.
         window.dispatchEvent(new Event('offline'));

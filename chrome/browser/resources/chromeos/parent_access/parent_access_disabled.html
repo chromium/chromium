@@ -1,4 +1,8 @@
 <style>
+  .action-button {
+    margin-inline-start: 8px;
+  }
+
   #disabled-screen {
     background-color: var(--cros-bg-color-elevation-1);
     box-sizing: border-box;
@@ -29,7 +33,7 @@
         media="(prefers-color-scheme: dark)">
     <img src="images/request_approval.svg" id="illustration">
   </picture>
-  <div class="disabled-screen-content"></div>
+  <div id="disabled-screen-content"></div>
   <div id="disabled-screen-buttons">
     <cr-button class="action-button" on-click="onDisabledScreenClosed_">
       $i18n{okButtonText}

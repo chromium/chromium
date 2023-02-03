@@ -6,6 +6,9 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ParentAccessScreenInterface} from './parent_access_screen.js';
+
+/** @implements {ParentAccessScreenInterface} */
 class ParentAccessBefore extends PolymerElement {
   constructor() {
     super();
@@ -22,6 +25,12 @@ class ParentAccessBefore extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
+    this.renderFlowSpecificContent();
+  }
+
+  /** @override */
+  async renderFlowSpecificContent() {
+    // TODO(b/262448127): Implement flow specific content.
   }
 
   /** @private */

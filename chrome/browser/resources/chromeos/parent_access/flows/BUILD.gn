@@ -5,6 +5,12 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
 
+js_library("extension_approvals_disabled") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("local_web_approvals_after") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
@@ -14,5 +20,8 @@ js_library("local_web_approvals_after") {
 }
 
 html_to_js("web_components") {
-  js_files = [ "local_web_approvals_after.js" ]
+  js_files = [
+    "extension_approvals_disabled.js",
+    "local_web_approvals_after.js",
+  ]
 }

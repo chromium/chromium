@@ -81,6 +81,8 @@ void ParentAccessUI::SetUpResources() {
   source->AddResourcePath("parent_access_after.js", IDR_PARENT_ACCESS_AFTER_JS);
   source->AddResourcePath("flows/local_web_approvals_after.js",
                           IDR_LOCAL_WEB_APPROVALS_AFTER_JS);
+  source->AddResourcePath("flows/extension_approvals_disabled.js",
+                          IDR_EXTENSION_APPROVALS_DISABLED_JS);
   source->AddResourcePath("parent_access_before.js",
                           IDR_PARENT_ACCESS_BEFORE_JS);
   source->AddResourcePath("parent_access_disabled.js",
@@ -89,6 +91,8 @@ void ParentAccessUI::SetUpResources() {
                           IDR_PARENT_ACCESS_UI_MOJOM_WEBUI_JS);
   source->AddResourcePath("webview_manager.js",
                           IDR_PARENT_ACCESS_WEBVIEW_MANAGER_JS);
+  source->AddResourcePath("parent_access_screen.js",
+                          IDR_PARENT_ACCESS_SCREEN_JS);
   source->AddResourcePaths(
       base::make_span(kSupervisionResources, kSupervisionResourcesSize));
   source->AddResourcePath("images/request_approval.svg",
@@ -117,7 +121,10 @@ void ParentAccessUI::SetUpResources() {
        IDS_SUPERVISED_USER_OFFLINE_DESCRIPTION},
       {"supervisedUserErrorTitle", IDS_SUPERVISED_USER_ERROR_TITLE},
       {"supervisedUserErrorDescription", IDS_SUPERVISED_USER_ERROR_DESCRIPTION},
-  };
+      {"extensionApprovalsDisabledTitle",
+       IDS_PARENT_ACCESS_EXTENSION_APPROVALS_DISABLED_TITLE},
+      {"extensionApprovalsDisabledSubtitle",
+       IDS_PARENT_ACCESS_EXTENSION_APPROVALS_DISABLED_SUBTITLE}};
   source->AddLocalizedStrings(kLocalizedStrings);
 
   // Enables use of test_loader.html
