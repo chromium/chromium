@@ -380,8 +380,12 @@ class BASE_EXPORT ThreadController {
       RunLevel(State initial_state,
                bool is_nested,
                TimeKeeper& time_keeper,
-               LazyNow& lazy_now,
-               TerminatingFlowLambda& terminating_flow_lambda);
+               LazyNow& lazy_now
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+               ,
+               TerminatingFlowLambda& terminating_flow_lambda
+#endif
+      );
       ~RunLevel();
 
       // Move-constructible for STL compat. Flags `other.was_moved_` so it noops
@@ -410,7 +414,9 @@ class BASE_EXPORT ThreadController {
 
       SampleMetadata thread_controller_sample_metadata_;
       size_t thread_controller_active_id_ = 0;
+#if BUILDFLAG(ENABLE_BASE_TRACING)
       TerminatingFlowLambda& terminating_wakeup_flow_lambda_;
+#endif
 
       // Toggles to true when used as RunLevel&& input to construct another
       // RunLevel. This RunLevel's destructor will then no-op.
@@ -431,8 +437,10 @@ class BASE_EXPORT ThreadController {
 
     [[maybe_unused]] const raw_ref<const ThreadController> outer_;
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
     TerminatingFlowLambda terminating_wakeup_lambda_{
         perfetto::TerminatingFlow::FromPointer(this)};
+#endif
 
     std::stack<RunLevel, std::vector<RunLevel>> run_levels_
         GUARDED_BY_CONTEXT(outer_->associated_thread_->thread_checker);

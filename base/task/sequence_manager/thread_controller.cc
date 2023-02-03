@@ -197,13 +197,20 @@ ThreadController::RunLevelTracker::RunLevel::RunLevel(
     State initial_state,
     bool is_nested,
     TimeKeeper& time_keeper,
-    LazyNow& lazy_now,
-    TerminatingFlowLambda& terminating_wakeup_flow_lambda)
+    LazyNow& lazy_now
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+    ,
+    TerminatingFlowLambda& terminating_wakeup_flow_lambda
+#endif
+    )
     : is_nested_(is_nested),
       time_keeper_(time_keeper),
       thread_controller_sample_metadata_("ThreadController active",
                                          base::SampleMetadataScope::kThread),
-      terminating_wakeup_flow_lambda_(terminating_wakeup_flow_lambda) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+      terminating_wakeup_flow_lambda_(terminating_wakeup_flow_lambda)
+#endif
+{
   if (is_nested_) {
     // Stop the current kWorkItem phase now, it will resume after the kNested
     // phase ends.
