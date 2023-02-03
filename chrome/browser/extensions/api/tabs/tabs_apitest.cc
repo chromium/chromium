@@ -84,9 +84,9 @@ class ExtensionApiTabBackForwardCacheTest : public ExtensionApiTabTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class ExtensionApiNewTabTest : public ExtensionApiTabTest {
+class ExtensionApiNewTabTest : public ExtensionApiTabTestWithContextType {
  public:
-  ExtensionApiNewTabTest() : ExtensionApiTabTest(ContextType::kServiceWorker) {}
+  ExtensionApiNewTabTest() = default;
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTabTest::SetUpCommandLine(command_line);
     // Override the default which InProcessBrowserTest adds if it doesn't see a
@@ -96,7 +96,6 @@ class ExtensionApiNewTabTest : public ExtensionApiTabTest {
   }
 };
 
-#if 0
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionApiNewTabTest,
                          ::testing::Values(ContextType::kPersistentBackground));
@@ -104,16 +103,8 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionApiNewTabTest,
                          ::testing::Values(ContextType::kServiceWorker));
-#else
-class ExtensionApiNewTabFlakyTest : public ExtensionApiNewTabTest,
-                                    public testing::WithParamInterface<int> {};
 
-INSTANTIATE_TEST_SUITE_P(AAAA,
-                         ExtensionApiNewTabFlakyTest,
-                         testing::Range(0, 500));
-#endif
-
-IN_PROC_BROWSER_TEST_P(ExtensionApiNewTabFlakyTest, Tabs) {
+IN_PROC_BROWSER_TEST_P(ExtensionApiNewTabTest, Tabs) {
   // The test creates a tab and checks that the URL of the new tab
   // is that of the new tab page.  Make sure the pref that controls
   // this is set.
