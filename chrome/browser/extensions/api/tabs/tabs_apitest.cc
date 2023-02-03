@@ -86,7 +86,7 @@ class ExtensionApiTabBackForwardCacheTest : public ExtensionApiTabTest {
 
 class ExtensionApiNewTabTest : public ExtensionApiTabTest {
  public:
-  ExtensionApiNewTabTest() {}
+  ExtensionApiNewTabTest() : ExtensionApiTabTest(ContextType::kServiceWorker) {}
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTabTest::SetUpCommandLine(command_line);
     // Override the default which InProcessBrowserTest adds if it doesn't see a
@@ -96,15 +96,31 @@ class ExtensionApiNewTabTest : public ExtensionApiTabTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiNewTabTest, Tabs) {
+#if 0
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionApiNewTabTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionApiNewTabTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+#else
+class ExtensionApiNewTabFlakyTest : public ExtensionApiNewTabTest,
+                                    public testing::WithParamInterface<int> {};
+
+INSTANTIATE_TEST_SUITE_P(AAAA,
+                         ExtensionApiNewTabFlakyTest,
+                         testing::Range(0, 500));
+#endif
+
+IN_PROC_BROWSER_TEST_P(ExtensionApiNewTabFlakyTest, Tabs) {
   // The test creates a tab and checks that the URL of the new tab
   // is that of the new tab page.  Make sure the pref that controls
   // this is set.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kHomePageIsNewTabPage, true);
 
-  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.extension_url = "crud.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/crud")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
@@ -129,15 +145,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabDuplicate) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabSize) {
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Size) {
   // TODO(crbug.com/1240482): the test expectations fail if the window gets CSD
   // and becomes smaller because of that.  Investigate this and remove the line
   // below if possible.
   ui::ScopedDisableClientSideDecorationsForTest scoped_disabled_csd;
 
-  ASSERT_TRUE(
-      RunExtensionTest("tabs/basics", {.extension_url = "tab_size.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/tab_size")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabUpdate) {
@@ -145,19 +159,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabUpdate) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabPinned) {
-  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.extension_url = "pinned.html"}))
-      << message_;
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Pinned) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/pinned")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabMove) {
-  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.extension_url = "move.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/move")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabEvents) {
-  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.extension_url = "events.html"}))
-      << message_;
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Events) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/events")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabRelativeURLs) {

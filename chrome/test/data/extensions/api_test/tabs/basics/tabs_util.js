@@ -8,8 +8,9 @@ var assertEq = chrome.test.assertEq;
 var assertFalse = chrome.test.assertFalse;
 var assertTrue = chrome.test.assertTrue;
 
-function pageUrl(letter) {
-  return chrome.extension.getURL(letter + ".html");
+function pageUrl(name) {
+  return chrome.extension.getURL(
+      '_test_resources/api_test/tabs/basics/' + name + '.html');
 }
 
 // Creates one window with tabs set to the urls in the array |tabUrls|.

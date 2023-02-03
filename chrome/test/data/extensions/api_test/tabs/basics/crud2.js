@@ -8,6 +8,7 @@ var newTabUrls = [
   'chrome-search://local-ntp/local-ntp.html',
 ];
 
+var firstWindowId;
 var secondWindowId;
 var thirdWindowId;
 var testTabId;
@@ -19,6 +20,12 @@ function clickLink(id) {
 }
 
 chrome.test.runTests([
+
+  function getFirstWindowId() {
+    chrome.windows.getCurrent(pass(function(window) {
+      firstWindowId = window.id;
+    }));
+  },
 
   function setupTwoWindows() {
     createWindow(["about:blank", "chrome://newtab/", pageUrl("a")], {},
@@ -62,6 +69,16 @@ chrome.test.runTests([
       }
       assertTrue(newTabUrls.includes(tabs[0].url));
       assertEq(pageUrl("b"), tabs[1].url);
+    }));
+  },
+
+  // TODO(crbug.com/1093066): This test must either be run in a window context
+  // where the current window is guaranteed, or be moved to the interactive
+  // test so there's consistent focus to guarantee which window is the default.
+  function getAllInWindowNullArg() {
+    chrome.tabs.getAllInWindow(null, pass(function(tabs) {
+      assertEq(1, tabs.length);
+      assertEq(firstWindowId, tabs[0].windowId);
     }));
   },
 
@@ -193,5 +210,31 @@ chrome.test.runTests([
       }));
     }));
   },
+
+  // TODO(crbug.com/1093066): This test only runs in a window context.
+  // We should collect it with other such tests and put them together
+  // in a new test suite. Also, chrome.tabs.detectLanguage has been
+  // broken for a while, so this test really isn't accomplishing
+  // anything right now. See crbug.com/1410643.
+  function detectLanguage() {
+    chrome.tabs.getAllInWindow(null, pass(function(tabs) {
+      chrome.tabs.detectLanguage(tabs[0].id, pass(function(lang) {
+        assertEq("und", lang);
+      }));
+    }));
+  },
+
+  // TODO(crbug.com/1093066): This test must either be run in a window context
+  // where the current window is guaranteed, or be moved to the interactive
+  // test so there's consistent focus to guarantee which window is the default.
+  function getCurrentWindow() {
+    var errorMsg = "No window with id: -1.";
+    chrome.windows.get(chrome.windows.WINDOW_ID_NONE, fail(errorMsg));
+    chrome.windows.get(chrome.windows.WINDOW_ID_CURRENT, pass(function(win1) {
+      chrome.windows.getCurrent(pass(function(win2) {
+        assertEq(win1.id, win2.id);
+      }));
+    }));
+  }
 
 ]);

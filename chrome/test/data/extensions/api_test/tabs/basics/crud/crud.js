@@ -3,12 +3,17 @@
 // found in the LICENSE file.
 
 var firstWindowId;
+var lastWindowId;
 
+const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
 chrome.test.runTests([
   function getSelected() {
     chrome.tabs.getSelected(null, pass(function(tab) {
-      assertEq(location.href, tab.url);
-      assertEq(location.href, tab.title);
+      assertEq('about:blank', tab.url);
+      assertEq('about:blank', tab.title);
       firstWindowId = tab.windowId;
     }));
   },
@@ -102,21 +107,7 @@ chrome.test.runTests([
         assertEq(tab.id, win.tabs[0].id);
         assertEq(win.id, win.tabs[0].windowId);
         assertEq(pageUrl('a'), win.tabs[0].pendingUrl);
-      }));
-    }));
-  },
-
-  function getAllInWindowNullArg() {
-    chrome.tabs.getAllInWindow(null, pass(function(tabs) {
-      assertEq(6, tabs.length);
-      assertEq(firstWindowId, tabs[0].windowId);
-    }));
-  },
-
-  function detectLanguage() {
-    chrome.tabs.getAllInWindow(firstWindowId, pass(function(tabs) {
-      chrome.tabs.detectLanguage(tabs[0].id, pass(function(lang) {
-        assertEq("und", lang);
+        lastWindowId = win.id;
       }));
     }));
   },
@@ -133,13 +124,4 @@ chrome.test.runTests([
     }));
   },
 
-  function getCurrentWindow() {
-    var errorMsg = "No window with id: -1.";
-    chrome.windows.get(chrome.windows.WINDOW_ID_NONE, fail(errorMsg));
-    chrome.windows.get(chrome.windows.WINDOW_ID_CURRENT, pass(function(win1) {
-      chrome.windows.getCurrent(pass(function(win2) {
-        assertEq(win1.id, win2.id);
-      }));
-    }));
-  }
-]);
+])});

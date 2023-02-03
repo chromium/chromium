@@ -7,6 +7,10 @@ var otherTabId;
 var firstWindowId;
 var secondWindowId;
 
+const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
 chrome.test.runTests([
   function init() {
     chrome.tabs.getSelected(null, pass(function(tab) {
@@ -212,4 +216,4 @@ chrome.test.runTests([
     }));
   }
   */
-]);
+])});

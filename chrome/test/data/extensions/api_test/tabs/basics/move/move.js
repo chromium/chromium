@@ -43,6 +43,10 @@ function moveTab(tabId, toWindowId, toIndex) {
   });
 }
 
+const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
 chrome.test.runTests([
   // Do a series of moves and removes so that we get the following
   //
@@ -414,4 +418,4 @@ chrome.test.runTests([
       }).catch(() => {});
     });
   }
-]);
+])});
