@@ -166,8 +166,9 @@ void TestUnreadContentObserver::HasUnreadContentChanged(
 }
 
 TestSurfaceBase::TestSurfaceBase(const StreamType& stream_type,
-                                 FeedStream* stream)
-    : FeedStreamSurface(stream_type) {
+                                 FeedStream* stream,
+                                 SingleWebFeedEntryPoint entry_point)
+    : FeedStreamSurface(stream_type, entry_point) {
   if (stream)
     Attach(stream);
 }
@@ -334,10 +335,13 @@ TestForYouSurface::TestForYouSurface(FeedStream* stream)
     : TestSurfaceBase(StreamType(StreamKind::kForYou), stream) {}
 TestWebFeedSurface::TestWebFeedSurface(FeedStream* stream)
     : TestSurfaceBase(StreamType(StreamKind::kFollowing), stream) {}
-TestSingleWebFeedSurface::TestSingleWebFeedSurface(FeedStream* stream,
-                                                   std::string web_feed_id)
+TestSingleWebFeedSurface::TestSingleWebFeedSurface(
+    FeedStream* stream,
+    std::string web_feed_id,
+    SingleWebFeedEntryPoint entry_point)
     : TestSurfaceBase(StreamType(StreamKind::kSingleWebFeed, web_feed_id),
-                      stream) {}
+                      stream,
+                      entry_point) {}
 
 TestReliabilityLoggingBridge::TestReliabilityLoggingBridge() = default;
 TestReliabilityLoggingBridge::~TestReliabilityLoggingBridge() = default;

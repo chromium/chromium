@@ -15,7 +15,6 @@ namespace feed {
 // Note: currently there are two options, but this leaves room for more
 // parameters.
 class StreamType {
-  // TODO(crbug.com/1369784) rename to StreamID.
  public:
   StreamType() = default;
   virtual ~StreamType() = default;

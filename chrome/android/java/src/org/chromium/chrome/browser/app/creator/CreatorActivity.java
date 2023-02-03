@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.creator.CreatorCoordinator;
+import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
 import org.chromium.chrome.browser.feed.webfeed.CreatorIntentConstants;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.init.ActivityLifecycleDispatcherImpl;
@@ -33,6 +34,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
+// import org.chromium.components.feed.proto.wire.FeedEntryPointSource;
 
 /**
  * Activity for the Creator Page.
@@ -57,6 +59,8 @@ public class CreatorActivity extends SnackbarActivity {
                 getIntent().getByteArrayExtra(CreatorIntentConstants.CREATOR_WEB_FEED_ID);
         String mTitle = getIntent().getStringExtra(CreatorIntentConstants.CREATOR_TITLE);
         String mUrl = getIntent().getStringExtra(CreatorIntentConstants.CREATOR_URL);
+        int mEntryPoint = getIntent().getIntExtra(
+                CreatorIntentConstants.CREATOR_ENTRY_POINT, SingleWebFeedEntryPoint.OTHER);
         mActivityTabProvider = new ActivityTabProvider();
         mLifecycleDispatcher = new ActivityLifecycleDispatcherImpl(this);
         mShareDelegateSupplier = new ShareDelegateSupplier();
@@ -68,9 +72,10 @@ public class CreatorActivity extends SnackbarActivity {
         super.onCreate(savedInstanceState);
         IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
         mWindowAndroid = new ActivityWindowAndroid(this, false, intentRequestTracker);
-        CreatorCoordinator coordinator = new CreatorCoordinator(this, mWebFeedId,
-                getSnackbarManager(), mWindowAndroid, mProfile, mTitle, mUrl,
-                this::createWebContents, this::createNewTab, mTabShareDelegateSupplier);
+        CreatorCoordinator coordinator =
+                new CreatorCoordinator(this, mWebFeedId, getSnackbarManager(), mWindowAndroid,
+                        mProfile, mTitle, mUrl, this::createWebContents, this::createNewTab,
+                        mTabShareDelegateSupplier, mEntryPoint);
 
         mBottomSheetController = coordinator.getBottomSheetController();
         ShareDelegate shareDelegate = new ShareDelegateImpl(mBottomSheetController,

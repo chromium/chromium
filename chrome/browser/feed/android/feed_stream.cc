@@ -23,6 +23,7 @@
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/stream_type.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/variations/variations_ids_provider.h"
 #include "url/android/gurl_android.h"
 
@@ -42,28 +43,34 @@ static jlong JNI_FeedStream_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(
       new FeedStream(j_this, stream_kind, std::string(),
                      reinterpret_cast<FeedReliabilityLoggingBridge*>(
-                         native_feed_reliability_logging_bridge)));
+                         native_feed_reliability_logging_bridge),
+                     (int)SingleWebFeedEntryPoint::kOther));
 }
 
 static jlong JNI_FeedStream_InitWebFeed(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_this,
     const JavaParamRef<jbyteArray>& j_web_feed_id,
-    jlong native_feed_reliability_logging_bridge) {
+    jlong native_feed_reliability_logging_bridge,
+    jint j_entry_point) {
   std::string web_feed_id;
   base::android::JavaByteArrayToString(env, j_web_feed_id, &web_feed_id);
   return reinterpret_cast<intptr_t>(new FeedStream(
       j_this, static_cast<jint>(StreamKind::kSingleWebFeed), web_feed_id,
       reinterpret_cast<FeedReliabilityLoggingBridge*>(
-          native_feed_reliability_logging_bridge)));
+          native_feed_reliability_logging_bridge),
+      j_entry_point));
 }
 
 FeedStream::FeedStream(const JavaRef<jobject>& j_this,
                        jint stream_kind,
                        std::string web_feed_id,
-                       FeedReliabilityLoggingBridge* reliability_logging_bridge)
-    : ::feed::FeedStreamSurface(StreamType(static_cast<StreamKind>(stream_kind),
-                                           std::move(web_feed_id))),
+                       FeedReliabilityLoggingBridge* reliability_logging_bridge,
+                       jint feed_entry_point)
+    : ::feed::FeedStreamSurface(
+          StreamType(static_cast<StreamKind>(stream_kind),
+                     std::move(web_feed_id)),
+          static_cast<SingleWebFeedEntryPoint>(feed_entry_point)),
       feed_stream_api_(nullptr),
       reliability_logging_bridge_(reliability_logging_bridge) {
   java_ref_.Reset(j_this);

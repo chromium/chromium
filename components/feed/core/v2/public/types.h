@@ -269,6 +269,21 @@ enum class StreamKind : int {
   kMaxValue = kSingleWebFeed,
 };
 
+// Singe Web entry points
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed
+enum class SingleWebFeedEntryPoint : int {
+  // Three dot menu
+  kMenu = 0,
+  // Feed Atteribution
+  kAttribution = 1,
+  // Feed Recomentation
+  kRecommendation = 2,
+  // Other
+  kOther = 3,
+
+  kMaxValue = kOther,
+};
+
 // For testing and debugging only.
 std::ostream& operator<<(std::ostream& out,
                          WebFeedPageInformationRequestReason value);

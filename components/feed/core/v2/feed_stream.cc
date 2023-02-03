@@ -219,7 +219,8 @@ StreamModel* FeedStream::GetModel(const StreamType& stream_type) {
 }
 
 feedwire::DiscoverLaunchResult FeedStream::TriggerStreamLoad(
-    const StreamType& stream_type) {
+    const StreamType& stream_type,
+    SingleWebFeedEntryPoint entry_point) {
   Stream& stream = GetStream(stream_type);
   if (stream.model || stream.model_loading_in_progress)
     return feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED;
@@ -240,6 +241,7 @@ feedwire::DiscoverLaunchResult FeedStream::TriggerStreamLoad(
   stream.surface_updater->LoadStreamStarted(/*manual_refreshing=*/false);
   LoadStreamTask::Options options;
   options.stream_type = stream_type;
+  options.single_feed_entry_point = entry_point;
   task_queue_.AddTask(FROM_HERE,
                       std::make_unique<LoadStreamTask>(
                           options, this,
@@ -448,8 +450,9 @@ void FeedStream::AttachSurface(FeedStreamSurface* surface) {
     return;
   }
 
-  stream.surfaces.SurfaceAdded(surface,
-                               TriggerStreamLoad(surface->GetStreamType()));
+  stream.surfaces.SurfaceAdded(
+      surface, TriggerStreamLoad(surface->GetStreamType(),
+                                 surface->GetSingleWebFeedEntryPoint()));
 
   // Cancel any scheduled model unload task.
   ++stream.unload_on_detach_sequence_number;

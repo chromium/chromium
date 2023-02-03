@@ -46,6 +46,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/ScrollListener.java",
     "java/src/org/chromium/chrome/browser/feed/ScrollTracker.java",
     "java/src/org/chromium/chrome/browser/feed/ScrollableContainerDelegate.java",
+    "java/src/org/chromium/chrome/browser/feed/SingleWebFeedParameters.java",
     "java/src/org/chromium/chrome/browser/feed/SnapScrollHelper.java",
     "java/src/org/chromium/chrome/browser/feed/Stream.java",
     "java/src/org/chromium/chrome/browser/feed/VideoPreviewsType.java",

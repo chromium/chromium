@@ -53,6 +53,9 @@ class LoadStreamTask : public offline_pages::Task {
     // Abort the background refresh if there's already unread content.
     bool abort_if_unread_content = false;
     bool refresh_even_when_not_stale = false;
+    // The Entry point for a singlewebfeed stream
+    SingleWebFeedEntryPoint single_feed_entry_point =
+        SingleWebFeedEntryPoint::kOther;
   };
 
   struct Result {

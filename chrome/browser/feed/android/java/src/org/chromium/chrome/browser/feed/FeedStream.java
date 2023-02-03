@@ -684,6 +684,9 @@ public class FeedStream implements Stream {
      * @param feedAutoplaySettingsDelegate The delegate to invoke autoplay settings.
      * @param actionDelegate Implements some Feed actions.
      * @param helpAndFeedbackLauncher A HelpAndFeedbackLauncher.
+     * @param feedContentFirstLoadWatcher a listener for events about feed loading.
+     * @param streamsMediator the mediator for multiple streams.
+     * @param singleWebFeedParameters the parameters needed to create a single web feed.
      */
     public FeedStream(Activity activity, SnackbarManager snackbarManager,
             BottomSheetController bottomSheetController, boolean isPlaceholderShown,
@@ -691,13 +694,16 @@ public class FeedStream implements Stream {
             int streamKind, FeedAutoplaySettingsDelegate feedAutoplaySettingsDelegate,
             FeedActionDelegate actionDelegate, HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             FeedContentFirstLoadWatcher feedContentFirstLoadWatcher,
-            Stream.StreamsMediator streamsMediator, byte[] webFeedId) {
+            Stream.StreamsMediator streamsMediator,
+            SingleWebFeedParameters singleWebFeedParameters) {
         mActivity = activity;
         mStreamKind = streamKind;
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
         if (streamKind == StreamKind.SINGLE_WEB_FEED) {
-            mNativeFeedStream = FeedStreamJni.get().initWebFeed(
-                    this, webFeedId, mReliabilityLoggingBridge.getNativePtr());
+            mNativeFeedStream =
+                    FeedStreamJni.get().initWebFeed(this, singleWebFeedParameters.getWebFeedId(),
+                            mReliabilityLoggingBridge.getNativePtr(),
+                            singleWebFeedParameters.getEntryPoint());
         } else {
             mNativeFeedStream = FeedStreamJni.get().init(
                     this, streamKind, mReliabilityLoggingBridge.getNativePtr());
@@ -1451,8 +1457,8 @@ public class FeedStream implements Stream {
     public interface Natives {
         long init(FeedStream caller, @StreamKind int streamKind,
                 long nativeFeedReliabilityLoggingBridge);
-        long initWebFeed(
-                FeedStream caller, byte[] webFeedId, long nativeFeedReliabilityLoggingBridge);
+        long initWebFeed(FeedStream caller, byte[] webFeedId,
+                long nativeFeedReliabilityLoggingBridge, int entryPoint);
         void reportFeedViewed(long nativeFeedStream, FeedStream caller);
         void reportSliceViewed(long nativeFeedStream, FeedStream caller, String sliceId);
         void reportPageLoaded(long nativeFeedStream, FeedStream caller, boolean inNewTab);

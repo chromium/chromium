@@ -119,8 +119,10 @@ class TestSurfaceBase : public FeedStreamSurface {
  public:
   // Provide some helper functionality to attach/detach the surface.
   // This way we can auto-detach in the destructor.
-  explicit TestSurfaceBase(const StreamType& stream_type,
-                           FeedStream* stream = nullptr);
+  explicit TestSurfaceBase(
+      const StreamType& stream_type,
+      FeedStream* stream = nullptr,
+      SingleWebFeedEntryPoint entry_point = SingleWebFeedEntryPoint::kOther);
 
   ~TestSurfaceBase() override;
 
@@ -183,8 +185,10 @@ class TestWebFeedSurface : public TestSurfaceBase {
 };
 class TestSingleWebFeedSurface : public TestSurfaceBase {
  public:
-  explicit TestSingleWebFeedSurface(FeedStream* stream = nullptr,
-                                    std::string = "");
+  explicit TestSingleWebFeedSurface(
+      FeedStream* stream = nullptr,
+      std::string = "",
+      SingleWebFeedEntryPoint entry_point = SingleWebFeedEntryPoint::kOther);
 };
 
 class TestImageFetcher : public ImageFetcher {

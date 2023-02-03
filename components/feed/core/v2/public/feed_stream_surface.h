@@ -19,7 +19,9 @@ namespace feed {
 // Consumes stream data for a single `StreamType` and displays it to the user.
 class FeedStreamSurface : public base::CheckedObserver {
  public:
-  explicit FeedStreamSurface(StreamType type);
+  explicit FeedStreamSurface(
+      StreamType type,
+      SingleWebFeedEntryPoint entry_point = SingleWebFeedEntryPoint::kOther);
   ~FeedStreamSurface() override;
 
   // Returns a unique ID for the surface. The ID will not be reused until
@@ -28,6 +30,12 @@ class FeedStreamSurface : public base::CheckedObserver {
 
   // Returns the `StreamType` this `FeedStreamSurface` requests.
   StreamType GetStreamType() const { return stream_type_; }
+
+  // Returns the `SingleWebFeedEntryPoint` this `FeedStreamSurface` was created
+  // with.
+  SingleWebFeedEntryPoint GetSingleWebFeedEntryPoint() const {
+    return entry_point_;
+  }
 
   // Called after registering the observer to provide the full stream state.
   // Also called whenever the stream changes.
@@ -44,6 +52,7 @@ class FeedStreamSurface : public base::CheckedObserver {
  private:
   StreamType stream_type_;
   SurfaceId surface_id_;
+  SingleWebFeedEntryPoint entry_point_ = SingleWebFeedEntryPoint::kOther;
 };
 
 }  // namespace feed

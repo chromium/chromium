@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProvider;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.NativeViewListRenderer;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
+import org.chromium.chrome.browser.feed.SingleWebFeedParameters;
 import org.chromium.chrome.browser.feed.Stream;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
@@ -119,6 +120,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     private NewTabCreator mCreatorOpenTab;
     private final UnownedUserDataSupplier<ShareDelegate> mBottomsheetShareDelegateSupplier;
     private GURL mBottomSheetUrl;
+    int mEntryPoint;
 
     private static final String CREATOR_PROFILE_ID = "CreatorProfileView";
 
@@ -140,7 +142,8 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     public CreatorCoordinator(Activity activity, byte[] webFeedId, SnackbarManager snackbarManager,
             WindowAndroid windowAndroid, Profile profile, String title, String url,
             WebContentsCreator creatorWebContents, NewTabCreator creatorOpenTab,
-            UnownedUserDataSupplier<ShareDelegate> bottomsheetShareDelegateSupplier) {
+            UnownedUserDataSupplier<ShareDelegate> bottomsheetShareDelegateSupplier,
+            int entryPoint) {
         mActivity = activity;
         mWebFeedId = webFeedId;
         mProfile = profile;
@@ -152,6 +155,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         mCreatorWebContents = creatorWebContents;
         mCreatorOpenTab = creatorOpenTab;
         mBottomsheetShareDelegateSupplier = bottomsheetShareDelegateSupplier;
+        mEntryPoint = entryPoint;
         mCreatorSnackbarController = new CreatorSnackbarController(mActivity, mSnackbarManager);
 
         mProfileView =
@@ -199,7 +203,8 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
                 /* FeedAutoplaySettingsDelegate */ this, feedActionDelegate,
                 helpAndFeedbackLauncher,
                 /* FeedContentFirstLoadWatcher */ this,
-                /* streamsMediator */ new StreamsMediatorImpl(), mWebFeedId);
+                /* streamsMediator */ new StreamsMediatorImpl(),
+                new SingleWebFeedParameters(mWebFeedId, mEntryPoint));
 
         mStream.bind(mRecyclerView, mContentManager, /*FeedScrollState*/ null, mSurfaceScope,
                 mHybridListRenderer, new FeedLaunchReliabilityLogger() {}, mHeaderCount,

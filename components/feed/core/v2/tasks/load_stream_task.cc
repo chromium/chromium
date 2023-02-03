@@ -303,7 +303,8 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
   feedwire::Request request = CreateFeedQueryRefreshRequest(
       options_.stream_type,
       GetRequestReason(options_.stream_type, options_.load_type),
-      request_metadata, stream_->GetMetadata().consistency_token());
+      request_metadata, stream_->GetMetadata().consistency_token(),
+      options_.single_feed_entry_point);
 
   const AccountInfo account_info =
       force_signed_out_request ? AccountInfo{} : stream_->GetAccountInfo();

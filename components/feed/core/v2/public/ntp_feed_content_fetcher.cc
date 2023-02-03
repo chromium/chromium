@@ -85,7 +85,7 @@ void NtpFeedContentFetcher::FetchFollowingFeedArticles(
   feedwire::Request request = CreateFeedQueryRefreshRequest(
       StreamType(StreamKind::kFollowing),
       feedwire::FeedQuery::INTERACTIVE_WEB_FEED, RequestMetadata(),
-      /*consistency_token=*/std::string());
+      /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kOther);
 
   feedwire::ClientInfo* client_info =
       request.mutable_feed_request()->mutable_client_info();
