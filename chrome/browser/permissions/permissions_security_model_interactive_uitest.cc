@@ -19,6 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/embedder_support/switches.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
@@ -617,6 +618,26 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                        WindowOpenAboutBlank) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* opener_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(opener_contents);
+
+  content::WebContents* popup_contents =
+      OpenPopup(browser(), GURL("about:blank"));
+  ASSERT_TRUE(popup_contents);
+
+  VerifyPermissionsExceptGetUserMedia(opener_contents,
+                                      popup_contents->GetPrimaryMainFrame());
+  VerifyPopupWindowGetUserMedia(opener_contents, popup_contents);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
+                       WindowOpenAboutBlankToUseQuiet) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kEnableQuietNotificationPermissionUi, true);
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

@@ -770,8 +770,9 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
        selector_index < permission_ui_selectors_.size(); ++selector_index) {
     // Skip if we have already made a decision due to a higher priority
     // selector
-    if (current_request_ui_to_use_.has_value())
+    if (current_request_ui_to_use_.has_value() || !IsRequestInProgress()) {
       break;
+    }
 
     if (permission_ui_selectors_[selector_index]->IsPermissionRequestSupported(
             requests_.front()->request_type())) {
