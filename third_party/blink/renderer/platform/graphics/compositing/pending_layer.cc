@@ -142,6 +142,16 @@ std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
   return result;
 }
 
+String PendingLayer::DebugName() const {
+  return Chunks().GetPaintArtifact().ClientDebugName(
+      FirstPaintChunk().id.client_id);
+}
+
+DOMNodeId PendingLayer::OwnerNodeId() const {
+  return Chunks().GetPaintArtifact().ClientOwnerNodeId(
+      FirstPaintChunk().id.client_id);
+}
+
 std::ostream& operator<<(std::ostream& os, const PendingLayer& layer) {
   return os << layer.ToJSON()->ToPrettyJSONString().Utf8();
 }

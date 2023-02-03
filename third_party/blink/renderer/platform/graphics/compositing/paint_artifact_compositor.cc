@@ -930,36 +930,22 @@ void PaintArtifactCompositor::SetLayerDebugInfoEnabled(bool enabled) {
 
 static void UpdateLayerDebugInfo(
     cc::Layer& layer,
-    const PaintChunk::Id& id,
-    const String& name,
-    DOMNodeId owner_node_id,
+    const PendingLayer& pending_layer,
     CompositingReasons compositing_reasons,
     RasterInvalidationTracking* raster_invalidation_tracking) {
   cc::LayerDebugInfo& debug_info = layer.EnsureDebugInfo();
-
-  debug_info.name = name.Utf8();
+  debug_info.name = pending_layer.DebugName().Utf8();
   debug_info.compositing_reasons =
       CompositingReason::Descriptions(compositing_reasons);
   debug_info.compositing_reason_ids =
       CompositingReason::ShortNames(compositing_reasons);
-  debug_info.owner_node_id = owner_node_id;
+  debug_info.owner_node_id = pending_layer.OwnerNodeId();
 
   if (RasterInvalidationTracking::IsTracingRasterInvalidations() &&
       raster_invalidation_tracking) {
     raster_invalidation_tracking->AddToLayerDebugInfo(debug_info);
     raster_invalidation_tracking->ClearInvalidations();
   }
-}
-
-static void UpdateLayerDebugInfo(
-    cc::Layer& layer,
-    const PaintChunk::Id& id,
-    const PaintArtifact& paint_artifact,
-    CompositingReasons compositing_reasons,
-    RasterInvalidationTracking* raster_invalidation_tracking) {
-  UpdateLayerDebugInfo(layer, id, paint_artifact.ClientDebugName(id.client_id),
-                       paint_artifact.ClientOwnerNodeId(id.client_id),
-                       compositing_reasons, raster_invalidation_tracking);
 }
 
 void PaintArtifactCompositor::UpdateDebugInfo() const {
@@ -973,8 +959,7 @@ void PaintArtifactCompositor::UpdateDebugInfo() const {
     if (auto* client = pending_layer.GetContentLayerClient())
       tracking = client->GetRasterInvalidator().GetTracking();
     UpdateLayerDebugInfo(
-        layer, pending_layer.FirstPaintChunk().id,
-        pending_layer.Chunks().GetPaintArtifact(),
+        layer, pending_layer,
         GetCompositingReasons(pending_layer, previous_pending_layer), tracking);
     previous_pending_layer = &pending_layer;
   }
@@ -1005,6 +990,15 @@ CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
   }
 
   CompositingReasons reasons = CompositingReason::kNone;
+  if (layer.GetPropertyTreeState().Transform().IsBackfaceHidden() &&
+      (!previous_layer || !previous_layer->GetPropertyTreeState()
+                               .Transform()
+                               .IsBackfaceHidden())) {
+    reasons = CompositingReason::kBackfaceVisibilityHidden;
+  } else if (layer.GetCompositingType() == PendingLayer::kOverlap) {
+    return CompositingReason::kOverlap;
+  }
+
   if (!previous_layer ||
       &layer.GetPropertyTreeState().Transform() !=
           &previous_layer->GetPropertyTreeState().Transform()) {
@@ -1034,10 +1028,6 @@ CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
         reasons |= CompositingReason::kBlendingWithCompositedDescendants;
     }
   }
-
-  if (reasons == CompositingReason::kNone &&
-      layer.GetCompositingType() == PendingLayer::kOverlap)
-    reasons = CompositingReason::kOverlap;
 
   return reasons;
 }
