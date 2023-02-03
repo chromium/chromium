@@ -714,7 +714,7 @@ TEST_F(AcceleratorConfigurationProviderTest, TestGetKeyDisplay) {
   EXPECT_EQ(u"esc", GetKeyDisplay(ui::VKEY_ESCAPE));
   EXPECT_EQ(u"backspace", GetKeyDisplay(ui::VKEY_BACK));
   EXPECT_EQ(u"enter", GetKeyDisplay(ui::VKEY_RETURN));
-  EXPECT_EQ(u"space", GetKeyDisplay(ui::VKEY_SPACE));
+  EXPECT_EQ(u"Space", GetKeyDisplay(ui::VKEY_SPACE));
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableActions) {
