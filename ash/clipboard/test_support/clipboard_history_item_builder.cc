@@ -66,7 +66,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFormat(
     case ui::ClipboardInternalFormat::kText:
       return SetText("Text");
     case ui::ClipboardInternalFormat::kHtml:
-      return SetMarkup("Markup");
+      return SetMarkup("Markup with an <img> tag");
     case ui::ClipboardInternalFormat::kSvg:
       return SetMarkup("Svg");
     case ui::ClipboardInternalFormat::kRtf:

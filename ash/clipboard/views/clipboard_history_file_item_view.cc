@@ -38,7 +38,7 @@ ClipboardHistoryFileItemView::CreateContentsView() {
   file_icon->SetImageSize(kIconSize);
   file_icon->SetProperty(views::kMarginsKey, kIconMargin);
   file_icon->SetImage(clipboard_history_util::GetIconForFileClipboardItem(
-      *clipboard_history_item(), base::UTF16ToUTF8(text())));
+      clipboard_history_item(), base::UTF16ToUTF8(text())));
 
   return contents_view;
 }

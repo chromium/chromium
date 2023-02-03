@@ -12,7 +12,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history.h"
-#include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/functional/callback.h"
@@ -36,6 +35,7 @@ class Rect;
 
 namespace ash {
 
+class ClipboardHistoryItem;
 class ClipboardHistoryMenuModelAdapter;
 class ClipboardHistoryResourceManager;
 class ClipboardNudgeController;

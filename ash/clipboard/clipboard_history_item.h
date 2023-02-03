@@ -5,9 +5,12 @@
 #ifndef ASH_CLIPBOARD_CLIPBOARD_HISTORY_ITEM_H_
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_ITEM_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_data.h"
 
 namespace ash {
@@ -43,11 +46,14 @@ class ASH_EXPORT ClipboardHistoryItem {
   // Returns the replaced `data_`.
   ui::ClipboardData ReplaceEquivalentData(ui::ClipboardData&& new_data);
 
+  // Returns the data URL for this item's PNG or bitmap image, if any.
+  absl::optional<std::string> GetImageDataUrl() const;
+
   const base::UnguessableToken& id() const { return id_; }
   const ui::ClipboardData& data() const { return data_; }
+  const base::Time time_copied() const { return time_copied_; }
   ui::ClipboardInternalFormat main_format() const { return main_format_; }
   DisplayFormat display_format() const { return display_format_; }
-  const base::Time time_copied() const { return time_copied_; }
   const std::u16string& display_text() const { return display_text_; }
 
  private:
@@ -57,6 +63,9 @@ class ASH_EXPORT ClipboardHistoryItem {
   // Underlying data for an item in the clipboard history menu.
   ui::ClipboardData data_;
 
+  // Time when the item's current data was set.
+  base::Time time_copied_;
+
   // The most highly prioritized format present in `data_`, based on the
   // usefulness of that format's presentation to the user.
   const ui::ClipboardInternalFormat main_format_;
@@ -64,9 +73,6 @@ class ASH_EXPORT ClipboardHistoryItem {
   // The item's categorization based on the options we have for presenting data
   // to the user.
   const DisplayFormat display_format_;
-
-  // Time when the item's current data was set.
-  base::Time time_copied_;
 
   // The text that should be displayed on this item's menu entry.
   const std::u16string display_text_;

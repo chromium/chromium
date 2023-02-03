@@ -163,10 +163,10 @@ bool IsEnabledInCurrentMode() {
   }
 }
 
-ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem& item,
+ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem* item,
                                            const std::string& file_name) {
-  DCHECK_EQ(item.display_format(), ClipboardHistoryItem::DisplayFormat::kFile);
-  const int copied_files_count = GetCountOfCopiedFiles(item.data());
+  DCHECK_EQ(item->display_format(), ClipboardHistoryItem::DisplayFormat::kFile);
+  const int copied_files_count = GetCountOfCopiedFiles(item->data());
 
   if (copied_files_count == 0)
     return ui::ImageModel();

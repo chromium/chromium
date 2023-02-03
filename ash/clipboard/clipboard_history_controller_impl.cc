@@ -69,13 +69,15 @@ namespace ash {
 
 namespace {
 
+constexpr char kIDKey[] = "id";
 constexpr char kImageDataKey[] = "imageData";
 constexpr char kTextDataKey[] = "textData";
-constexpr char kFormatDataKey[] = "displayFormat";
+constexpr char kDisplayFormatKey[] = "displayFormat";
+constexpr char kTimeCopiedKey[] = "timeCopied";
 
+constexpr char kTextFormat[] = "text";
 constexpr char kPngFormat[] = "png";
 constexpr char kHtmlFormat[] = "html";
-constexpr char kTextFormat[] = "text";
 constexpr char kFileFormat[] = "file";
 
 ui::ClipboardNonBacked* GetClipboard() {
@@ -511,67 +513,47 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
       continue;
     }
 
-    base::Value::Dict item_dict;
-    switch (item.display_format()) {
-      case ClipboardHistoryItem::DisplayFormat::kPng: {
-        if (!item.data().maybe_png().has_value()) {
-          // The clipboard contains an image which has not yet been encoded to a
-          // PNG. Hopefully we just finished encoding and the PNG can be found
-          // in `encoded_pngs`, otherwise this item was added while other PNGs
-          // were being encoded.
-          auto png_it = encoded_pngs->find(item.id());
-          if (png_it == encoded_pngs->end()) {
-            // Can't find the encoded PNG. We'll need to restart
-            // GetHistoryValues from the top, but allow this for loop to finish
-            // to let PNGs we've already encoded get set to their appropriate
-            // clipboards, to avoid re-encoding.
-            all_images_encoded = false;
-          } else {
-            item.data().SetPngDataAfterEncoding(std::move(png_it->second));
-          }
-        }
-
-        const auto& maybe_png = item.data().maybe_png();
-        if (maybe_png.has_value()) {
-          item_dict.Set(kImageDataKey,
-                        webui::GetPngDataUrl(maybe_png.value().data(),
-                                             maybe_png.value().size()));
-          item_dict.Set(kFormatDataKey, kPngFormat);
-        }
-        break;
-      }
-      case ClipboardHistoryItem::DisplayFormat::kHtml: {
-        const SkBitmap& bitmap =
-            *(resource_manager_->GetImageModel(item).GetImage().ToSkBitmap());
-        item_dict.Set(kImageDataKey, webui::GetBitmapDataUrl(bitmap));
-        item_dict.Set(kFormatDataKey, kHtmlFormat);
-        break;
-      }
-      case ClipboardHistoryItem::DisplayFormat::kText:
-        item_dict.Set(kTextDataKey, item.display_text());
-        item_dict.Set(kFormatDataKey, kTextFormat);
-        break;
-      case ClipboardHistoryItem::DisplayFormat::kFile: {
-        std::string file_name = base::UTF16ToUTF8(item.display_text());
-        item_dict.Set(kTextDataKey, file_name);
-        ui::ImageModel image_model =
-            clipboard_history_util::GetIconForFileClipboardItem(item,
-                                                                file_name);
-        // TODO(b/252366283): Refactor so we don't use the RootWindow from
-        // Shell.
-        const ui::ColorProvider* color_provider =
-            ColorUtil::GetColorProviderSourceForWindow(
-                Shell::Get()->GetPrimaryRootWindow())
-                ->GetColorProvider();
-        std::string data_url = webui::GetBitmapDataUrl(
-            *image_model.Rasterize(color_provider).bitmap());
-        item_dict.Set(kImageDataKey, data_url);
-        item_dict.Set(kFormatDataKey, kFileFormat);
-        break;
+    if (item.display_format() == ClipboardHistoryItem::DisplayFormat::kPng &&
+        !item.data().maybe_png().has_value()) {
+      // The clipboard contains an image which has not yet been encoded to a
+      // PNG. Hopefully we just finished encoding and the PNG can be found
+      // in `encoded_pngs`; otherwise this item was added while other PNGs
+      // were being encoded.
+      auto png_it = encoded_pngs->find(item.id());
+      if (png_it == encoded_pngs->end()) {
+        // Can't find the encoded PNG. We'll need to restart
+        // `GetHistoryValues()` from the top, but allow this for loop to finish
+        // to let PNGs we've already encoded get set to their appropriate
+        // clipboards, to avoid re-encoding.
+        all_images_encoded = false;
+      } else {
+        item.data().SetPngDataAfterEncoding(std::move(png_it->second));
       }
     }
-    item_dict.Set("id", item.id().ToString());
-    item_dict.Set("timeCopied", item.time_copied().ToJsTimeIgnoringNull());
+
+    base::Value::Dict item_dict;
+    item_dict.Set(kIDKey, item.id().ToString());
+    item_dict.Set(kTimeCopiedKey, item.time_copied().ToJsTimeIgnoringNull());
+    if (const auto maybe_image_data_url = item.GetImageDataUrl();
+        maybe_image_data_url.has_value()) {
+      item_dict.Set(kImageDataKey, maybe_image_data_url.value());
+    }
+    switch (item.display_format()) {
+      case ClipboardHistoryItem::DisplayFormat::kText:
+        item_dict.Set(kTextDataKey, item.display_text());
+        item_dict.Set(kDisplayFormatKey, kTextFormat);
+        break;
+      case ClipboardHistoryItem::DisplayFormat::kPng:
+        item_dict.Set(kDisplayFormatKey, kPngFormat);
+        break;
+      case ClipboardHistoryItem::DisplayFormat::kHtml:
+        item_dict.Set(kDisplayFormatKey, kHtmlFormat);
+        break;
+      case ClipboardHistoryItem::DisplayFormat::kFile:
+        item_dict.Set(kTextDataKey, item.display_text());
+        item_dict.Set(kDisplayFormatKey, kFileFormat);
+        break;
+    }
     item_results.Append(std::move(item_dict));
   }
 

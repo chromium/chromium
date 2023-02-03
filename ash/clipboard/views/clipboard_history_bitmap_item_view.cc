@@ -113,11 +113,13 @@ class FadeImageView : public views::ImageView,
   }
 
   void SetImageFromModel() {
+    // TODO(b/267677307): Make cached image an item field, set and updated
+    // directly by the resource manager.
     const gfx::ImageSkia& image =
         *(resource_manager_->GetImageModel(clipboard_history_item_)
               .GetImage()
               .ToImageSkia());
-      SetImage(image);
+    SetImage(image);
 
     // When fading in a new image, the ImageView's image has likely changed
     // sizes.

@@ -7,6 +7,7 @@
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
+#include "base/strings/string_util.h"
 #include "base/test/icu_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,6 +19,41 @@
 namespace ash {
 
 using ClipboardHistoryItemTest = AshTestBase;
+
+TEST_F(ClipboardHistoryItemTest, GetImageDataUrl) {
+  using DisplayFormat = ClipboardHistoryItem::DisplayFormat;
+
+  constexpr const auto* kDataUrlStart = "data:image/png;base64,";
+
+  for (size_t i = 0; i <= static_cast<size_t>(DisplayFormat::kMaxValue); ++i) {
+    ClipboardHistoryItemBuilder builder;
+    const auto display_format = static_cast<DisplayFormat>(i);
+    switch (display_format) {
+      case DisplayFormat::kText:
+        builder.SetFormat(ui::ClipboardInternalFormat::kText);
+        break;
+      case DisplayFormat::kPng:
+        builder.SetFormat(ui::ClipboardInternalFormat::kPng);
+        break;
+      case DisplayFormat::kHtml:
+        builder.SetFormat(ui::ClipboardInternalFormat::kHtml);
+        break;
+      case DisplayFormat::kFile:
+        builder.SetFormat(ui::ClipboardInternalFormat::kFilenames);
+        break;
+    }
+    const auto item = builder.Build();
+    EXPECT_EQ(item.display_format(), display_format);
+
+    const auto maybe_image_data_url = item.GetImageDataUrl();
+    if (display_format == DisplayFormat::kText) {
+      EXPECT_FALSE(maybe_image_data_url);
+    } else {
+      ASSERT_TRUE(maybe_image_data_url);
+      EXPECT_TRUE(base::StartsWith(*maybe_image_data_url, kDataUrlStart));
+    }
+  }
+}
 
 TEST_F(ClipboardHistoryItemTest, DisplayText) {
   base::test::ScopedRestoreICUDefaultLocale locale("en_US");

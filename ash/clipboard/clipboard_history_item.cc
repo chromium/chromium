@@ -6,12 +6,22 @@
 
 #include <vector>
 
+#include "ash/clipboard/clipboard_history_controller_impl.h"
+#include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ash/shell.h"
+#include "ash/style/color_util.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/webui/web_ui_util.h"
+#include "ui/color/color_provider_source.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace ash {
@@ -102,9 +112,9 @@ std::u16string DetermineDisplayText(const ui::ClipboardData& data) {
 ClipboardHistoryItem::ClipboardHistoryItem(ui::ClipboardData data)
     : id_(base::UnguessableToken::Create()),
       data_(std::move(data)),
+      time_copied_(base::Time::Now()),
       main_format_(clipboard_history_util::CalculateMainFormat(data_).value()),
       display_format_(CalculateDisplayFormat(main_format_, data_)),
-      time_copied_(base::Time::Now()),
       display_text_(DetermineDisplayText(data_)) {}
 
 ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem&) =
@@ -123,6 +133,48 @@ ui::ClipboardData ClipboardHistoryItem::ReplaceEquivalentData(
   if (data_.maybe_png() && !new_data.maybe_png())
     new_data.SetPngDataAfterEncoding(*data_.maybe_png());
   return std::exchange(data_, std::move(new_data));
+}
+
+absl::optional<std::string> ClipboardHistoryItem::GetImageDataUrl() const {
+  absl::optional<std::string> maybe_url;
+  switch (display_format_) {
+    case DisplayFormat::kText:
+      break;
+    case DisplayFormat::kPng:
+      if (const auto& maybe_png = data_.maybe_png(); maybe_png.has_value()) {
+        maybe_url = webui::GetPngDataUrl(maybe_png.value().data(),
+                                         maybe_png.value().size());
+      }
+      break;
+    case DisplayFormat::kHtml: {
+      // TODO(b/267677307): Make cached image an item field, set and updated
+      // directly by the resource manager.
+      const SkBitmap& bitmap = *(Shell::Get()
+                                     ->clipboard_history_controller()
+                                     ->resource_manager()
+                                     ->GetImageModel(*this)
+                                     .GetImage()
+                                     .ToSkBitmap());
+      maybe_url = webui::GetBitmapDataUrl(bitmap);
+      break;
+    }
+    case DisplayFormat::kFile: {
+      // TODO(b/267690087): Treat icons as their own item field, separate from
+      // potential image data.
+      std::string file_name = base::UTF16ToUTF8(display_text_);
+      ui::ImageModel image_model =
+          clipboard_history_util::GetIconForFileClipboardItem(this, file_name);
+      // TODO(b/252366283): Refactor so we don't use the RootWindow from Shell.
+      const ui::ColorProvider* color_provider =
+          ColorUtil::GetColorProviderSourceForWindow(
+              Shell::Get()->GetPrimaryRootWindow())
+              ->GetColorProvider();
+      maybe_url = webui::GetBitmapDataUrl(
+          *image_model.Rasterize(color_provider).bitmap());
+      break;
+    }
+  }
+  return maybe_url;
 }
 
 }  // namespace ash

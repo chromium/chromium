@@ -148,7 +148,7 @@ ASH_EXPORT bool IsEnabledInCurrentMode();
 
 // Returns an image icon for the file clipboard item.
 ASH_EXPORT ui::ImageModel GetIconForFileClipboardItem(
-    const ClipboardHistoryItem& item,
+    const ClipboardHistoryItem* item,
     const std::string& file_name);
 
 }  // namespace clipboard_history_util
