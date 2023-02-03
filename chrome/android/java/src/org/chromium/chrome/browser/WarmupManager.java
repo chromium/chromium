@@ -238,8 +238,10 @@ public class WarmupManager {
      * @param url URL from which the domain to query is extracted.
      */
     public void maybePrefetchDnsForUrlInBackground(Context context, String url) {
-        ThreadUtils.assertOnUiThread();
+        try (TraceEvent e = TraceEvent.scoped("WarmupManager.maybePrefetchDnsForUrlInBackground")) {
+            ThreadUtils.assertOnUiThread();
             prefetchDnsForUrlInBackground(url);
+        }
     }
 
     /**
@@ -251,8 +253,11 @@ public class WarmupManager {
      * @param profile The profile to use for the predictor.
      */
     public static void startPreconnectPredictorInitialization(Profile profile) {
-        ThreadUtils.assertOnUiThread();
-        WarmupManagerJni.get().startPreconnectPredictorInitialization(profile);
+        try (TraceEvent e =
+                        TraceEvent.scoped("WarmupManager.startPreconnectPredictorInitialization")) {
+            ThreadUtils.assertOnUiThread();
+            WarmupManagerJni.get().startPreconnectPredictorInitialization(profile);
+        }
     }
 
     /** Asynchronously preconnects to a given URL if the data reduction proxy is not in use.
@@ -261,29 +266,32 @@ public class WarmupManager {
      * @param url The URL we want to preconnect to.
      */
     public void maybePreconnectUrlAndSubResources(Profile profile, String url) {
-        ThreadUtils.assertOnUiThread();
+        try (TraceEvent e = TraceEvent.scoped("WarmupManager.maybePreconnectUrlAndSubResources")) {
+            ThreadUtils.assertOnUiThread();
 
-        Uri uri = Uri.parse(url);
-        if (uri == null) return;
-        String scheme = uri.normalizeScheme().getScheme();
-        if (!UrlConstants.HTTP_SCHEME.equals(scheme) && !UrlConstants.HTTPS_SCHEME.equals(scheme)) {
-            return;
-        }
+            Uri uri = Uri.parse(url);
+            if (uri == null) return;
+            String scheme = uri.normalizeScheme().getScheme();
+            if (!UrlConstants.HTTP_SCHEME.equals(scheme)
+                    && !UrlConstants.HTTPS_SCHEME.equals(scheme)) {
+                return;
+            }
 
-        // If there is already a DNS request in flight for this URL, then the preconnection will
-        // start by issuing a DNS request for the same domain, as the result is not cached. However,
-        // such a DNS request has already been sent from this class, so it is better to wait for the
-        // answer to come back before preconnecting. Otherwise, the preconnection logic will wait
-        // for the result of the second DNS request, which should arrive after the result of the
-        // first one. Note that we however need to wait for the main thread to be available in this
-        // case, since the preconnection will be sent from AsyncTask.onPostExecute(), which may
-        // delay it.
-        if (mDnsRequestsInFlight.contains(url)) {
-            // Note that if two requests come for the same URL with two different profiles, the last
-            // one will win.
-            mPendingPreconnectWithProfile.put(url, profile);
-        } else {
-            WarmupManagerJni.get().preconnectUrlAndSubresources(profile, url);
+            // If there is already a DNS request in flight for this URL, then the preconnection will
+            // start by issuing a DNS request for the same domain, as the result is not cached.
+            // However, such a DNS request has already been sent from this class, so it is better to
+            // wait for the answer to come back before preconnecting. Otherwise, the preconnection
+            // logic will wait for the result of the second DNS request, which should arrive after
+            // the result of the first one. Note that we however need to wait for the main thread to
+            // be available in this case, since the preconnection will be sent from
+            // AsyncTask.onPostExecute(), which may delay it.
+            if (mDnsRequestsInFlight.contains(url)) {
+                // Note that if two requests come for the same URL with two different profiles, the
+                // last one will win.
+                mPendingPreconnectWithProfile.put(url, profile);
+            } else {
+                WarmupManagerJni.get().preconnectUrlAndSubresources(profile, url);
+            }
         }
     }
 
@@ -294,22 +302,26 @@ public class WarmupManager {
      * Can be called multiple times, and must be called from the UI thread.
      */
     public void createSpareWebContents() {
-        ThreadUtils.assertOnUiThread();
-        if (!LibraryLoader.getInstance().isInitialized() || mSpareWebContents != null) return;
+        try (TraceEvent e = TraceEvent.scoped("WarmupManager.createSpareWebContents")) {
+            ThreadUtils.assertOnUiThread();
+            if (!LibraryLoader.getInstance().isInitialized() || mSpareWebContents != null) return;
 
-        mSpareWebContents = new WebContentsFactory().createWebContentsWithWarmRenderer(
-                Profile.getLastUsedRegularProfile(), true /* initiallyHidden */);
-        mObserver = new RenderProcessGoneObserver();
-        mSpareWebContents.addObserver(mObserver);
+            mSpareWebContents = new WebContentsFactory().createWebContentsWithWarmRenderer(
+                    Profile.getLastUsedRegularProfile(), true /* initiallyHidden */);
+            mObserver = new RenderProcessGoneObserver();
+            mSpareWebContents.addObserver(mObserver);
+        }
     }
 
     /**
      * Destroys the spare WebContents if there is one.
      */
     public void destroySpareWebContents() {
-        ThreadUtils.assertOnUiThread();
-        if (mSpareWebContents == null) return;
-        destroySpareWebContentsInternal();
+        try (TraceEvent e = TraceEvent.scoped("WarmupManager.destroySpareWebContents")) {
+            ThreadUtils.assertOnUiThread();
+            if (mSpareWebContents == null) return;
+            destroySpareWebContentsInternal();
+        }
     }
 
     /**
@@ -321,15 +333,17 @@ public class WarmupManager {
      * @return a WebContents, or null.
      */
     public WebContents takeSpareWebContents(boolean incognito, boolean initiallyHidden) {
-        ThreadUtils.assertOnUiThread();
-        if (incognito) return null;
-        WebContents result = mSpareWebContents;
-        if (result == null) return null;
-        mSpareWebContents = null;
-        result.removeObserver(mObserver);
-        mObserver = null;
-        if (!initiallyHidden) result.onShow();
-        return result;
+        try (TraceEvent e = TraceEvent.scoped("WarmupManager.takeSpareWebContents")) {
+            ThreadUtils.assertOnUiThread();
+            if (incognito) return null;
+            WebContents result = mSpareWebContents;
+            if (result == null) return null;
+            mSpareWebContents = null;
+            result.removeObserver(mObserver);
+            mObserver = null;
+            if (!initiallyHidden) result.onShow();
+            return result;
+        }
     }
 
     /**
