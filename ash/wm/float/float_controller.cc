@@ -572,8 +572,13 @@ void FloatController::OnMovingFloatedWindowToDesk(aura::Window* floated_window,
                                          .id());
   }
 
-  // Hide `floated_window` since it's been moved to an inactive desk.
-  HideFloatedWindow(floated_window);
+  // Update `floated_window` visibility based on target desk's activation
+  // status.
+  if (target_desk->is_active()) {
+    ShowFloatedWindow(floated_window);
+  } else {
+    HideFloatedWindow(floated_window);
+  }
   active_desk->NotifyContentChanged();
   target_desk->NotifyContentChanged();
 }
