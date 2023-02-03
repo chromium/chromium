@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -360,49 +361,12 @@
                                  anchorView:(UIView*)anchorView
                                  anchorRect:(CGRect)anchorRect {
   DCHECK(origins.count >= 1);
-  NSString* title;
-  NSString* message;
-  if (origins.count == 1) {
-    title =
-        l10n_util::GetNSStringF(IDS_IOS_DELETE_PASSWORD_TITLE_FOR_SINGLE_URL,
-                                base::SysNSStringToUTF16(origins[0]));
-    // Message: Your <URL 1> account won't be deleted.
-    message = l10n_util::GetNSStringF(
-        IDS_IOS_DELETE_PASSWORD_DESCRIPTION_FOR_SINGLE_URL,
-        base::SysNSStringToUTF16(origins[0]));
-  } else {
-    NSString* countStr =
-        [[NSNumber numberWithInteger:origins.count] stringValue];
-    title =
-        l10n_util::GetNSStringF(IDS_IOS_DELETE_PASSWORD_TITLE_FOR_MULTI_GROUPS,
-                                base::SysNSStringToUTF16(countStr));
-    if (origins.count == 2) {
-      // Message: Password for <URL 1> and <URL 2> will be deleted. Your
-      // accounts won't be deleted.
-      message = l10n_util::GetNSStringF(
-          IDS_IOS_DELETE_PASSWORD_DESCRIPTION_FOR_TWO_URLS,
-          base::SysNSStringToUTF16(origins[0]),
-          base::SysNSStringToUTF16(origins[1]));
-    } else if (origins.count == 3) {
-      // Message: Password for <URL 1>, <URL 2> and <URL 3> will be deleted.
-      // Your accounts won't be deleted.
-      message = l10n_util::GetNSStringF(
-          IDS_IOS_DELETE_PASSWORD_DESCRIPTION_FOR_THREE_URLS,
-          base::SysNSStringToUTF16(origins[0]),
-          base::SysNSStringToUTF16(origins[1]),
-          base::SysNSStringToUTF16(origins[2]));
-    } else {
-      // Message: Password for <URL 1>, <URL 2> and <number> others will be
-      // deleted. Your accounts won't be deleted.
-      NSString* leftoverCountStr =
-          [[NSNumber numberWithInteger:(origins.count - 2)] stringValue];
-      message = l10n_util::GetNSStringF(
-          IDS_IOS_DELETE_PASSWORD_DESCRIPTION_FOR_MULTI_URLS,
-          base::SysNSStringToUTF16(origins[0]),
-          base::SysNSStringToUTF16(origins[1]),
-          base::SysNSStringToUTF16(leftoverCountStr));
-    }
-  }
+
+  std::pair<NSString*, NSString*> titleAndMessage =
+      GetPasswordAlertTitleAndMessageForOrigins(origins);
+  NSString* title = titleAndMessage.first;
+  NSString* message = titleAndMessage.second;
+
   [self showPasswordDeleteDialogWithTitle:title
                                   message:message
                       compromisedPassword:compromisedPassword

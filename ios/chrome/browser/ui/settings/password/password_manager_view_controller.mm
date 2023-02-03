@@ -625,9 +625,45 @@ NSInteger kTrailingSymbolSize = 18;
   _tableIsInSearchMode = NO;
 }
 
+// Returns YES if the array of index path contains a saved password. This is to
+// determine if we need to show the user the alert dialog.
+- (BOOL)indexPathsContainsSavedPassword:(NSArray<NSIndexPath*>*)indexPaths {
+  for (NSIndexPath* indexPath : indexPaths) {
+    if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+        ItemTypeSavedPassword) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
 - (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths {
-  // Do not call super as this also deletes the section if it is empty.
-  [self deleteItemAtIndexPaths:indexPaths];
+  // Only show the user the alert dialog if the index path array contain at
+  // least one saved password.
+  if (IsPasswordGroupingEnabled() &&
+      [self indexPathsContainsSavedPassword:indexPaths]) {
+    // Show password delete dialog before deleting the passwords.
+    NSMutableArray<NSString*>* origins = [[NSMutableArray alloc] init];
+    for (NSIndexPath* indexPath : indexPaths) {
+      NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+      if (itemType == ItemTypeSavedPassword) {
+        password_manager::AffiliatedGroup affiliatedGroup =
+            base::mac::ObjCCastStrict<PasswordFormContentItem>(
+                [self.tableViewModel itemAtIndexPath:indexPath])
+                .affiliatedGroup;
+        [origins addObject:base::SysUTF8ToNSString(
+                               affiliatedGroup.GetDisplayName())];
+      }
+    }
+    [self.handler
+        showPasswordDeleteDialogWithOrigins:origins
+                                 completion:^{
+                                   [self deleteItemAtIndexPaths:indexPaths];
+                                 }];
+  } else {
+    // Do not call super as this also deletes the section if it is empty.
+    [self deleteItemAtIndexPaths:indexPaths];
+  }
 }
 
 - (void)reloadData {
@@ -1942,7 +1978,6 @@ NSInteger kTrailingSymbolSize = 18;
   }
 }
 
-// TODO(crbug.com/1358976): Fix batch delete logic with affiliated groups.
 - (void)deleteItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
   std::vector<password_manager::CredentialUIEntry> credentialsToDelete;
 
@@ -2203,6 +2238,10 @@ NSInteger kTrailingSymbolSize = 18;
     return self.passwordCheckState ==
            PasswordCheckStateUnmutedCompromisedPasswords;
   }
+}
+
+- (void)deleteItemAtIndexPathsForTesting:(NSArray<NSIndexPath*>*)indexPaths {
+  [self deleteItemAtIndexPaths:indexPaths];
 }
 
 #pragma mark - UITableViewDelegate

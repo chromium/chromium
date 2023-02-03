@@ -232,6 +232,17 @@ id<GREYMatcher> DeleteConfirmationButtonForGrouping() {
                     grey_interactable(), nullptr);
 }
 
+// Matcher for the Delete button in Confirmation Alert for batch passwords
+// deletion when password grouping is enabled.
+id<GREYMatcher> BatchDeleteConfirmationButtonForGrouping() {
+  return grey_allOf(
+      grey_accessibilityID([NSString
+          stringWithFormat:@"%@%@",
+                           l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE),
+                           @"AlertAction"]),
+      grey_interactable(), nullptr);
+}
+
 // Matcher for the Delete button in the list view, located at the bottom of the
 // screen.
 id<GREYMatcher> DeleteButtonAtBottom() {
@@ -1449,6 +1460,13 @@ id<GREYMatcher> EditDoneButton() {
   [[EarlGrey selectElementWithMatcher:DeleteButtonAtBottom()]
       performAction:grey_tap()];
 
+  if ([self groupingEnabled]) {
+    // Tap on the Delete button of the alert dialog.
+    [[EarlGrey
+        selectElementWithMatcher:BatchDeleteConfirmationButtonForGrouping()]
+        performAction:grey_tap()];
+  }
+
   // Verify that the deletion was propagated to the PasswordStore.
   GREYAssertEqual(0, [PasswordSettingsAppInterface passwordStoreResultsCount],
                   @"Stored password was not removed from PasswordStore.");
@@ -1620,6 +1638,13 @@ id<GREYMatcher> EditDoneButton() {
 
   [[EarlGrey selectElementWithMatcher:DeleteButtonAtBottom()]
       performAction:grey_tap()];
+
+  if ([self groupingEnabled]) {
+    // Tap on the Delete button of the alert dialog.
+    [[EarlGrey
+        selectElementWithMatcher:BatchDeleteConfirmationButtonForGrouping()]
+        performAction:grey_tap()];
+  }
 
   // Verify that the Add button is visible and enabled.
   [[EarlGrey selectElementWithMatcher:AddPasswordToolbarButton()]

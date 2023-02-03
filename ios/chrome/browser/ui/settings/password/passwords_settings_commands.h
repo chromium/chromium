@@ -31,6 +31,10 @@ struct CredentialUIEntry;
 // Shows promotional view for Passwords In Other Apps.
 - (void)showPasswordsInOtherAppsPromo;
 
+// Shows delete confirmation for batch passwords delete.
+- (void)showPasswordDeleteDialogWithOrigins:(NSArray<NSString*>*)origins
+                                 completion:(void (^)(void))completion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_SETTINGS_COMMANDS_H_
