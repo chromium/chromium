@@ -585,7 +585,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     // sense only in this case.
     if ([self.passwords[0].password length]) {
       [self.handler
-          showPasswordDeleteDialogWithOrigin:self.passwords[0].origin
+          showPasswordDeleteDialogWithOrigin:self.passwords[0].origins[0]
                          compromisedPassword:self.passwords[0].isCompromised];
     } else {
       [self.handler showPasswordDeleteDialogWithOrigin:nil
@@ -853,7 +853,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 // Updates the title displayed in the navigation bar.
 - (void)updateNavigationTitle {
   if (!self.pageTitle || self.pageTitle.length == 0) {
-    self.pageTitle = self.passwords[0].origin;
+    self.pageTitle = self.passwords[0].origins[0];
   }
   _titleLabel.text = self.pageTitle;
 }
