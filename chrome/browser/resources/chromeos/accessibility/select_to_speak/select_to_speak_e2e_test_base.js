@@ -90,4 +90,20 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
   waitOneEventLoop(callback) {
     setTimeout(this.newCallback(callback), 0);
   }
+
+  /**
+   * Waits for mockTts to speak.
+   * @return {?Promise}
+   */
+  async waitForSpeech() {
+    // No need to do anything if TTS is already happening.
+    if (this.mockTts.currentlySpeaking()) {
+      return;
+    }
+    return new Promise(resolve => {
+      this.mockTts.setOnSpeechCallbacks([this.newCallback((utterance) => {
+        resolve();
+      })]);
+    });
+  }
 };

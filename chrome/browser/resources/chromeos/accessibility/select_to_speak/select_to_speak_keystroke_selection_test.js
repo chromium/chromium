@@ -25,9 +25,18 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
         'SelectToSpeakConstants',
         '/select_to_speak/select_to_speak_constants.js');
     await importModule('PrefsManager', '/select_to_speak/prefs_manager.js');
-    chrome.settingsPrivate.setPref(
-        PrefsManager.ENHANCED_VOICES_DIALOG_SHOWN_KEY, true,
-        '' /* unused, see crbug.com/866161 */, () => {});
+    await new Promise(resolve => {
+      chrome.settingsPrivate.setPref(
+          PrefsManager.ENHANCED_VOICES_DIALOG_SHOWN_KEY, true,
+          '' /* unused, see crbug.com/866161 */, () => resolve());
+    });
+    if (!selectToSpeak.prefsManager_.enhancedVoicesDialogShown()) {
+      // TODO(b/267705784): This shouldn't happen, but sometimes the
+      // setPref call above does not cause PrefsManager.updateSettingsPrefs_ to
+      // be called (test: listen to updateSettingsPrefsCallbackForTest_, never
+      // called).
+      selectToSpeak.prefsManager_.enhancedVoicesDialogShown_ = true;
+    }
   }
 
   /**
@@ -44,18 +53,19 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
    *     extra whitespace, after this selection is triggered.
    */
   async testSimpleTextAtKeystroke(text, anchorOffset, focusOffset, expected) {
-    await this.testReadTextAtKeystroke('<p>' + text + '</p>', function(root) {
-      // Set the document selection. This will fire the changed event
-      // above, allowing us to do the keystroke and test that speech
-      // occurred properly.
-      const textNode = this.findTextNode(root, 'This is some text');
-      chrome.automation.setDocumentSelection({
-        anchorObject: textNode,
-        anchorOffset,
-        focusObject: textNode,
-        focusOffset,
-      });
-    }, expected);
+    await this.testReadTextAtKeystroke(
+        '<p>' + text + '</p>', async function(root) {
+          // Set the document selection. This will fire the changed event
+          // above, allowing us to do the keystroke and test that speech
+          // occurred properly.
+          const textNode = this.findTextNode(root, 'This is some text');
+          chrome.automation.setDocumentSelection({
+            anchorObject: textNode,
+            anchorOffset,
+            focusObject: textNode,
+            focusOffset,
+          });
+        }, expected);
   }
 
   /**
@@ -64,7 +74,7 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
    * the selected text. Tests that the tts output matches the expected
    * output.
    * @param {string} contents The web contents to load
-   * @param {function(AutomationNode)} setSelectionCallback Callback
+   * @param {function(AutomationNode)} setFocusCallback Callback
    *     to take the root node and set the selection appropriately. Once
    *     selection is set, the test will listen for the focus set event and
    *     trigger select-to-speak, comparing the resulting tts output to what
@@ -76,18 +86,17 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
   async testReadTextAtKeystroke(contents, setFocusCallback, expected) {
     setFocusCallback = this.newCallback(setFocusCallback);
     const root = await this.runWithLoadedTree(contents);
-    // Add an event listener that will start the user interaction
-    // of the test once the selection is completed.
-    root.addEventListener(
-        'documentSelectionChanged', this.newCallback(function(event) {
-          this.triggerReadSelectedText();
-          assertTrue(this.mockTts.currentlySpeaking());
-          assertEquals(this.mockTts.pendingUtterances().length, 1);
-          this.assertEqualsCollapseWhitespace(
-              this.mockTts.pendingUtterances()[0], expected);
-        }),
-        false);
+    // Set the selection.
     setFocusCallback(root);
+    // Wait for Automation to update.
+    await this.waitForEvent(
+        root, 'documentSelectionChanged', /*capture=*/ false);
+    // Speak selected text.
+    this.triggerReadSelectedText();
+    await this.waitForSpeech();
+    assertEquals(this.mockTts.pendingUtterances().length, 1);
+    this.assertEqualsCollapseWhitespace(
+        this.mockTts.pendingUtterances()[0], expected);
   }
 
   generateHtmlWithSelection(selectionCode, bodyHtml) {
