@@ -1498,7 +1498,6 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
     return NGLayoutResult::kBfcBlockOffsetResolved;
 
   if (UNLIKELY(child.Style().AlignSelfBlockCenter())) {
-    DCHECK(Node().IsTextField());
     // The block-size of a textfield doesn't depend on its contents, so we can
     // compute the block-size without passing the actual intrinsic block-size.
     const LayoutUnit bsp_block_sum = BorderScrollbarPadding().BlockSum();
@@ -1509,11 +1508,14 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
         ConstraintSpace(), Style(), BorderPadding(), block_size,
         container_builder_.InitialBorderBoxSize().inline_size);
     block_size -= bsp_block_sum;
-    logical_offset =
-        CenterBlockChild(logical_offset, block_size, fragment.BlockSize());
-    // We can't apply the simplified layout to the container if
-    // |-internal-align-self-block:center| is specified to a child.
-    container_builder_.SetDisableSimplifiedLayout();
+    if (block_size > 0 || !Style().LogicalHeight().IsAuto() ||
+        Node().IsOutOfFlowPositioned()) {
+      logical_offset =
+          CenterBlockChild(logical_offset, block_size, fragment.BlockSize());
+      // We can't apply the simplified layout to the container if
+      // |-internal-align-self-block:center| is specified to a child.
+      container_builder_.SetDisableSimplifiedLayout();
+    }
   }
 
   PropagateBaselineFromBlockChild(physical_fragment, child_data.margins,

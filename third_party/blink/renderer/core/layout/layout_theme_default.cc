@@ -78,11 +78,19 @@ String LayoutThemeDefault::ExtraDefaultStyleSheet() {
           ? UncompressResourceAsASCIIString(
                 IDR_UASTYLE_THEME_INPUT_MULTIPLE_FIELDS_CSS)
           : String();
+  String multiple_fields_inline_flex_style_sheet =
+      RuntimeEnabledFeatures::InputMultipleFieldsUIEnabled() &&
+              !RuntimeEnabledFeatures::DateInputInlineBlockEnabled()
+          ? UncompressResourceAsASCIIString(
+                IDR_UASTYLE_THEME_INPUT_MULTIPLE_FIELDS_INLINE_FLEX_CSS)
+          : String();
   StringBuilder builder;
   builder.ReserveCapacity(extra_style_sheet.length() +
-                          multiple_fields_style_sheet.length());
+                          multiple_fields_style_sheet.length() +
+                          multiple_fields_inline_flex_style_sheet.length());
   builder.Append(extra_style_sheet);
   builder.Append(multiple_fields_style_sheet);
+  builder.Append(multiple_fields_inline_flex_style_sheet);
   return builder.ToString();
 }
 

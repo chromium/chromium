@@ -1764,5 +1764,19 @@
     ],
     "args": ["--disable-features=UseBlinkSchedulerTaskRunnerWithCustomDeleter"],
     "expires": "Jul 1, 2023"
+  },
+  {
+    "prefix": "date-input-inline-block-disabled",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/html/rendering/non-replaced-elements/form-controls/resets.html",
+      "fast/forms/suggested-value.html",
+      "fast/forms/date/date-appearance-pseudo-elements.html",
+      "fast/forms/month/month-appearance-pseudo-elements.html",
+      "fast/forms/time/time-appearance-pseudo-elements.html",
+      "fast/forms/week/week-appearance-pseudo-elements.html"
+    ],
+    "args": ["--disable-blink-features=DateInputInlineBlock"],
+    "expires": "Jun 1, 2023"
   }
 ]

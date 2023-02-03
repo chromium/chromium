@@ -502,7 +502,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool IsDescendantOfDisabledNode() const;
   bool ComputeAccessibilityIsIgnoredButIncludedInTree() const;
   const AXObject* GetAtomicTextFieldAncestor(int max_levels_to_check = 3) const;
-  const AXObject* DatetimeAncestor(int max_levels_to_check = 3) const;
+  const AXObject* DatetimeAncestor() const;
   bool ComputeIsDescendantOfDisabledNode() const;
   bool LastKnownIsIgnoredValue() const;
   bool LastKnownIsIgnoredButIncludedInTreeValue() const;

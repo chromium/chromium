@@ -975,6 +975,11 @@
       status: "stable",
     },
     {
+      name: "DateInputInlineBlock",
+      base_feature: "DateInputInlineBlock",
+      status: "stable",
+    },
+    {
       name: "DecodeJpeg420ImagesToYUV",
       public: true,
       status: "stable",

@@ -1,0 +1,98 @@
+This test setting suggested values on an input element 
+and a textarea element. The dump below should have the "suggested value"
+instead of "initial value".
+| <input>
+|   id="test"
+|   type="text"
+|   value="initial value"
+|   this.value="initial value"
+|   <shadow:root>
+|     <div>
+|       id="placeholder"
+|       pseudo="-internal-input-suggested"
+|       style="display: block !important; user-select: none !important;"
+|       shadow:pseudoId="-internal-input-suggested"
+|       "suggested value"
+|     <div>
+|       "initial value"
+| <input>
+|   id="month"
+|   type="month"
+|   this.value=""
+|   <shadow:root>
+|     <div>
+|       datetimeformat="MMMM yyyy"
+|       id="date-time-edit"
+|       pseudo="-webkit-datetime-edit"
+|       shadow:pseudoId="-webkit-datetime-edit"
+|       <div>
+|         pseudo="-webkit-datetime-edit-fields-wrapper"
+|         shadow:pseudoId="-webkit-datetime-edit-fields-wrapper"
+|         <span>
+|           aria-label="Month"
+|           aria-placeholder="---------"
+|           aria-valuemax="12"
+|           aria-valuemin="1"
+|           aria-valuenow="1"
+|           aria-valuetext="January"
+|           pseudo="-webkit-datetime-edit-month-field"
+|           role="spinbutton"
+|           shadow:pseudoId="-webkit-datetime-edit-month-field"
+|           "January"
+|         <div>
+|           pseudo="-webkit-datetime-edit-text"
+|           shadow:pseudoId="-webkit-datetime-edit-text"
+|           " "
+|         <span>
+|           aria-label="Year"
+|           aria-placeholder="----"
+|           aria-valuemax="275760"
+|           aria-valuemin="1"
+|           aria-valuenow="2014"
+|           aria-valuetext="2014"
+|           pseudo="-webkit-datetime-edit-year-field"
+|           role="spinbutton"
+|           shadow:pseudoId="-webkit-datetime-edit-year-field"
+|           "2014"
+|     <div>
+|       id="picker"
+|       pseudo="-webkit-calendar-picker-indicator"
+|       shadow:pseudoId="-webkit-calendar-picker-indicator"
+| <textarea>
+|   id="textarea"
+|   this.value="initial value"
+|   <shadow:root>
+|     <div>
+|       id="placeholder"
+|       pseudo="-internal-input-suggested"
+|       style="display: block !important; user-select: none !important;"
+|       shadow:pseudoId="-internal-input-suggested"
+|       "suggested value"
+|     <div>
+|       "initial value"
+| <select>
+|   id="select"
+|   <option>
+|     "initial value"
+|     <shadow:root>
+|       "initial value"
+|   <option>
+|     "inserted value"
+|     <shadow:root>
+|       "inserted value"
+|   <shadow:root>
+|     <div>
+|       aria-hidden="true"
+|       "initial value"
+|     <slot>
+| "input.value: initial value"
+| "internals.suggestedValue(input): suggested value"
+| "input.selectionStart: 0"
+| "input.selectionEnd: 0"
+| "month.value: "
+| "internals.suggestedValue(month): 2014-01"
+| "textarea.value: initial value"
+| "internals.suggestedValue(textarea): suggested value"
+| "select.value: initial value"
+| "internals.suggestedValue(select): suggested value"
+| "internals.suggestedValue(select): "

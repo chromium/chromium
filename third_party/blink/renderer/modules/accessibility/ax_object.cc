@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -3517,24 +3518,24 @@ const AXObject* AXObject::GetAtomicTextFieldAncestor(
   return nullptr;
 }
 
-const AXObject* AXObject::DatetimeAncestor(int max_levels_to_check) const {
-  switch (RoleValue()) {
-    case ax::mojom::blink::Role::kDateTime:
-    case ax::mojom::blink::Role::kDate:
-    case ax::mojom::blink::Role::kInputTime:
-    case ax::mojom::blink::Role::kTime:
-      return this;
-    default:
-      break;
-  }
-
-  if (max_levels_to_check == 0)
+const AXObject* AXObject::DatetimeAncestor() const {
+  ShadowRoot* shadow_root = GetNode()->ContainingShadowRoot();
+  if (!shadow_root || shadow_root->GetType() != ShadowRootType::kUserAgent) {
     return nullptr;
-
-  if (AXObject* parent = ParentObject())
-    return parent->DatetimeAncestor(max_levels_to_check - 1);
-
-  return nullptr;
+  }
+  auto* input = DynamicTo<HTMLInputElement>(&shadow_root->host());
+  if (!input) {
+    return nullptr;
+  }
+  if (input->type() != input_type_names::kDatetimeLocal &&
+      input->type() != input_type_names::kDatetime &&
+      input->type() != input_type_names::kDate &&
+      input->type() != input_type_names::kTime &&
+      input->type() != input_type_names::kMonth &&
+      input->type() != input_type_names::kWeek) {
+    return nullptr;
+  }
+  return AXObjectCache().GetOrCreate(input);
 }
 
 bool AXObject::LastKnownIsIgnoredValue() const {
