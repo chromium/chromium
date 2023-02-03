@@ -64,55 +64,59 @@ GURL GetUrlForAssetLinks(const url::Origin& origin) {
 //    }
 //  }]
 
-bool StatementHasMatchingRelationship(const base::Value& statement,
+bool StatementHasMatchingRelationship(const base::Value::Dict& statement,
                                       const std::string& target_relation) {
-  const base::Value* relations =
-      statement.FindKeyOfType("relation", base::Value::Type::LIST);
-
-  if (!relations)
+  const base::Value::List* relations = statement.FindList("relation");
+  if (!relations) {
     return false;
+  }
 
-  for (const auto& relation : relations->GetList()) {
-    if (relation.is_string() && relation.GetString() == target_relation)
+  for (const auto& relation : *relations) {
+    if (relation.is_string() && relation.GetString() == target_relation) {
       return true;
+    }
   }
 
   return false;
 }
 
 bool StatementHasMatchingTargetValue(
-    const base::Value& statement,
+    const base::Value::Dict& statement,
     const std::string& target_key,
     const std::set<std::string>& target_value) {
-  const base::Value* package = statement.FindPathOfType(
-      {"target", target_key}, base::Value::Type::STRING);
+  const base::Value::Dict* target = statement.FindDict("target");
+  if (!target) {
+    return false;
+  }
 
-  return package &&
-         target_value.find(package->GetString()) != target_value.end();
+  const std::string* package = target->FindString(target_key);
+
+  return package && target_value.find(*package) != target_value.end();
 }
 
 bool StatementHasMatchingFingerprint(
-    const base::Value& statement,
+    const base::Value::Dict& statement,
     const std::vector<std::string>& target_fingerprints) {
-  const base::Value* fingerprints = statement.FindPathOfType(
-      {"target", "sha256_cert_fingerprints"}, base::Value::Type::LIST);
+  const base::Value::List* fingerprints =
+      statement.FindListByDottedPath("target.sha256_cert_fingerprints");
 
-  if (!fingerprints)
+  if (!fingerprints) {
     return false;
+  }
 
-  const auto& listed_fingerprints = fingerprints->GetList();
-  RecordNumFingerprints(listed_fingerprints.size());
+  RecordNumFingerprints(fingerprints->size());
   for (const std::string& target_fingerprint : target_fingerprints) {
     bool verified_fingerprint = false;
-    for (const auto& fingerprint : listed_fingerprints) {
+    for (const auto& fingerprint : *fingerprints) {
       if (fingerprint.is_string() &&
           fingerprint.GetString() == target_fingerprint) {
         verified_fingerprint = true;
         break;
       }
     }
-    if (!verified_fingerprint)
+    if (!verified_fingerprint) {
       return false;
+    }
   }
 
   return true;
@@ -199,8 +203,8 @@ void DigitalAssetLinksHandler::OnJSONParseResult(
     return;
   }
 
-  auto& statement_list = *result;
-  if (!statement_list.is_list()) {
+  base::Value::List* statement_list = result->GetIfList();
+  if (!statement_list) {
     std::move(callback_).Run(RelationshipCheckResult::kFailure);
     AddMessageToConsole(web_contents_.get(), "Statement List is not a list.");
     return;
@@ -209,26 +213,27 @@ void DigitalAssetLinksHandler::OnJSONParseResult(
   // We only output individual statement failures if none match.
   std::vector<std::string> failures;
 
-  for (const auto& statement : statement_list.GetList()) {
-    if (!statement.is_dict()) {
+  for (const base::Value& statement : *statement_list) {
+    const base::Value::Dict* statement_dict = statement.GetIfDict();
+    if (!statement_dict) {
       failures.push_back("Statement is not a dictionary.");
       continue;
     }
 
-    if (!StatementHasMatchingRelationship(statement, relationship)) {
+    if (!StatementHasMatchingRelationship(*statement_dict, relationship)) {
       failures.push_back("Statement failure matching relationship.");
       continue;
     }
 
     if (fingerprints &&
-        !StatementHasMatchingFingerprint(statement, *fingerprints)) {
+        !StatementHasMatchingFingerprint(*statement_dict, *fingerprints)) {
       failures.push_back("Statement failure matching fingerprint.");
       continue;
     }
 
     bool failed_target_check = false;
     for (const auto& key_value : target_values) {
-      if (!StatementHasMatchingTargetValue(statement, key_value.first,
+      if (!StatementHasMatchingTargetValue(*statement_dict, key_value.first,
                                            key_value.second)) {
         failures.push_back("Statement failure matching " + key_value.first +
                            ".");
