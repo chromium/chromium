@@ -13,7 +13,6 @@
 #include "net/quic/mock_crypto_client_stream.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_http_utils.h"
-#include "net/third_party/quiche/src/quiche/quic/core/crypto/null_encrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/http_constants.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_framer.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_stream.h"
@@ -1463,8 +1462,10 @@ std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::BuildPacketImpl(
                                      ? header_.destination_connection_id
                                      : header_.source_connection_id);
   } else {
-    framer.SetEncrypter(encryption_level_,
-                        std::make_unique<quic::NullEncrypter>(perspective_));
+    framer.SetEncrypter(
+        encryption_level_,
+        std::make_unique<quic::test::TaggingEncrypter>(  // IN-TEST
+            encryption_level_));
   }
   if (data_producer != nullptr) {
     framer.set_data_producer(data_producer);
@@ -1490,19 +1491,25 @@ std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::BuildPacketImpl(
         quic::QuicPacketCreator::MinPlaintextPacketSize(
             version_, header_.packet_number_length);
     if (frames_size < min_plaintext_packet_size) {
-      const size_t expansion_on_new_frame =
-          frames.empty()
-              ? 0
-              : quic::QuicPacketCreator::ExpansionOnNewFrameWithLastFrame(
-                    frames.back(), version_.transport_version);
-      const size_t padding_length =
-          std::max(1 + expansion_on_new_frame,
-                   min_plaintext_packet_size - frames_size) -
-          expansion_on_new_frame;
-      CHECK_LE(padding_length + packet_size + expansion_on_new_frame,
-               max_plaintext_size);
-      frames_copy.push_back(
-          quic::QuicFrame(quic::QuicPaddingFrame(padding_length)));
+      if (GetQuicRestartFlag(quic_allow_smaller_packets)) {
+        frames_copy.insert(frames_copy.begin(),
+                           quic::QuicFrame(quic::QuicPaddingFrame(
+                               min_plaintext_packet_size - frames_size)));
+      } else {
+        const size_t expansion_on_new_frame =
+            frames.empty()
+                ? 0
+                : quic::QuicPacketCreator::ExpansionOnNewFrameWithLastFrame(
+                      frames.back(), version_.transport_version);
+        const size_t padding_length =
+            std::max(1 + expansion_on_new_frame,
+                     min_plaintext_packet_size - frames_size) -
+            expansion_on_new_frame;
+        CHECK_LE(padding_length + packet_size + expansion_on_new_frame,
+                 max_plaintext_size);
+        frames_copy.push_back(
+            quic::QuicFrame(quic::QuicPaddingFrame(padding_length)));
+      }
     }
   }
   std::unique_ptr<quic::QuicPacket> packet(quic::test::BuildUnsizedDataPacket(

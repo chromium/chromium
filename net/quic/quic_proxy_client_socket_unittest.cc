@@ -49,7 +49,6 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
-#include "net/third_party/quiche/src/quiche/quic/core/crypto/null_encrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_clock.h"
@@ -122,7 +121,7 @@ class QuicProxyClientSocketTest
             : quiche::VARIABLE_LENGTH_INTEGER_LENGTH_0;
     size_t min_data_length = 1;
     size_t min_packet_length =
-        quic::NullEncrypter(quic::Perspective::IS_CLIENT)
+        quic::test::TaggingEncrypter(quic::ENCRYPTION_FORWARD_SECURE)
             .GetCiphertextSize(min_data_length) +
         quic::QuicPacketCreator::StreamFramePacketOverhead(
             version.transport_version, k8ByteConnectionId, k0ByteConnectionId,
@@ -1073,8 +1072,8 @@ TEST_P(QuicProxyClientSocketTest, WriteSplitsLargeDataIntoMultiplePackets) {
         !kIncludeDiversificationNonce, k8ByteConnectionId,
         quic::PACKET_1BYTE_PACKET_NUMBER, offset);
     if (version_.HasIetfQuicFrames() && i == 0) {
-      // 3673 is the data frame length from packet length.
-      std::string header2 = ConstructDataHeader(3673);
+      // 3661 is the data frame length from packet length.
+      std::string header2 = ConstructDataHeader(3661);
       mock_quic_data_.AddWrite(
           SYNCHRONOUS,
           ConstructDataPacket(

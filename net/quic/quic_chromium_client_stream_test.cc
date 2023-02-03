@@ -18,7 +18,6 @@
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
-#include "net/third_party/quiche/src/quiche/quic/core/crypto/null_encrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_stream.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/spdy_utils.h"
@@ -192,7 +191,8 @@ class QuicChromiumClientStreamTest
     helper_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
     session_.connection()->SetEncrypter(
         quic::ENCRYPTION_FORWARD_SECURE,
-        std::make_unique<quic::NullEncrypter>(quic::Perspective::IS_CLIENT));
+        std::make_unique<quic::test::TaggingEncrypter>(
+            quic::ENCRYPTION_FORWARD_SECURE));
   }
 
   void InitializeHeaders() {

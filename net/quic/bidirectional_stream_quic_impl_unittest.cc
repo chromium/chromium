@@ -47,7 +47,6 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/common/quiche_text_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
-#include "net/third_party/quiche/src/quiche/quic/core/crypto/null_decrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_decrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_encrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/spdy_utils.h"
@@ -503,7 +502,8 @@ class BidirectionalStreamQuicImplTest
     if (connection_->version().KnowsWhichDecrypterToUse()) {
       connection_->InstallDecrypter(
           quic::ENCRYPTION_FORWARD_SECURE,
-          std::make_unique<quic::NullDecrypter>(quic::Perspective::IS_CLIENT));
+          std::make_unique<quic::test::StrictTaggingDecrypter>(
+              quic::ENCRYPTION_FORWARD_SECURE));
     }
     base::TimeTicks dns_end = base::TimeTicks::Now();
     base::TimeTicks dns_start = dns_end - base::Milliseconds(1);
