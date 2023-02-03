@@ -40,7 +40,7 @@ struct PasswordGroupingInfo {
 
   // Structure to keep track of the blocked sites by user. They are not grouped
   // into affiliated groups.
-  std::vector<password_manager::CredentialUIEntry> blocked_sites;
+  std::vector<PasswordForm> blocked_sites;
 
   // Call clear method on all the variables in this struct.
   void clear() {
@@ -54,6 +54,10 @@ struct PasswordGroupingInfo {
   // object.
   std::vector<PasswordForm> GetPasswordFormsVector(
       const CredentialUIEntry& credential) const;
+
+  // Returns a sorted vector of CredentialUIEntry corresponding to the user's
+  // blocked sites.
+  std::vector<CredentialUIEntry> GetBlockedSites() const;
 };
 
 // Apply grouping algorithm to credentials. The grouping algorithm group

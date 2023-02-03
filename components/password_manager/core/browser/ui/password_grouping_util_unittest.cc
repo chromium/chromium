@@ -143,7 +143,7 @@ TEST(PasswordGroupingUtilTest, GroupPasswords) {
   PasswordGroupingInfo expected_password_grouping_info;
   expected_password_grouping_info.map_group_id_to_forms = map_group_id_to_forms;
 
-  std::vector<password_manager::CredentialUIEntry> expected_blocked_sites;
+  std::vector<PasswordForm> expected_blocked_sites;
   expected_blocked_sites.emplace_back(blocked_form);
 
   PasswordGroupingInfo password_grouping_info =
@@ -210,7 +210,7 @@ TEST(PasswordGroupingUtilTest, GroupPasswordsWithoutAffiliation) {
   PasswordGroupingInfo expected_password_grouping_info;
   expected_password_grouping_info.map_group_id_to_forms = map_group_id_to_forms;
 
-  std::vector<password_manager::CredentialUIEntry> expected_blocked_sites;
+  std::vector<PasswordForm> expected_blocked_sites;
   expected_blocked_sites.emplace_back(blocked_form);
 
   PasswordGroupingInfo password_grouping_info =
