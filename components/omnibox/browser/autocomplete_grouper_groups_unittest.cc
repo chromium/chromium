@@ -53,7 +53,13 @@ TEST(AutocompleteGrouperGroupsTest, Group) {
 }
 
 TEST(AutocompleteGrouperGroupsTest, DefaultGroup) {
-  DefaultGroup group{};
+  Group default_group({1,
+                       {{omnibox::GROUP_STARTER_PACK, {1}},
+                        {omnibox::GROUP_SEARCH, {1}},
+                        {omnibox::GROUP_OTHER_NAVS, {1}}},
+                       /*is_default=*/true});
+  ACMatches matches{{}, {}, {}};
+
   // Can't be added because `allowed_to_be_default` is false.
   AutocompleteMatch non_default_match{};
   non_default_match.suggestion_group_id = omnibox::GROUP_STARTER_PACK;
@@ -66,12 +72,12 @@ TEST(AutocompleteGrouperGroupsTest, DefaultGroup) {
   default_match_search.suggestion_group_id = omnibox::GROUP_SEARCH;
   default_match_search.allowed_to_be_default_match = true;
 
-  EXPECT_FALSE(group.CanAdd(non_default_match));
-  EXPECT_TRUE(group.CanAdd(default_match_search));
-  EXPECT_FALSE(group.CanAdd(default_match_doc));
+  EXPECT_FALSE(default_group.CanAdd(non_default_match));
+  EXPECT_TRUE(default_group.CanAdd(default_match_search));
+  EXPECT_FALSE(default_group.CanAdd(default_match_doc));
 
-  group.Add(default_match_search);
-  EXPECT_FALSE(group.CanAdd(non_default_match));
-  EXPECT_FALSE(group.CanAdd(default_match_search));
-  EXPECT_FALSE(group.CanAdd(default_match_doc));
+  default_group.Add(default_match_search);
+  EXPECT_FALSE(default_group.CanAdd(non_default_match));
+  EXPECT_FALSE(default_group.CanAdd(default_match_search));
+  EXPECT_FALSE(default_group.CanAdd(default_match_doc));
 }

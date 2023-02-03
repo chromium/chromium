@@ -10,9 +10,10 @@
 
 #include "components/omnibox/browser/autocomplete_grouper_groups.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 
 class Section;
-using PGroups = std::vector<std::unique_ptr<Group>>;
+using Groups = std::vector<Group>;
 using PSections = std::vector<std::unique_ptr<Section>>;
 
 // `Section` class and subclasses used to implement the various autocomplete
@@ -21,7 +22,9 @@ using PSections = std::vector<std::unique_ptr<Section>>;
 // Section containing no `Groups` and, therefore, no matches.
 class Section {
  public:
-  explicit Section(size_t limit);
+  explicit Section(size_t limit,
+                   Groups groups,
+                   omnibox::GroupConfigMap& group_configs);
   virtual ~Section();
   // Returns `matches` ranked and culled according to `sections`. All `matches`
   // should have `suggestion_group_id` set and be sorted by relevance.
@@ -33,7 +36,7 @@ class Section {
   // Returns the first `Group` in this `Section` `match` can be added to or
   // `groups_.end()` if none can be found. Does not take the total limit into
   // account.
-  PGroups::iterator FindGroup(const AutocompleteMatch& match);
+  Groups::iterator FindGroup(const AutocompleteMatch& match);
   // Returns whether `match` was added to a `Group` in this `Section`. Does not
   // add a match beyond the total limit.
   bool Add(const AutocompleteMatch& match);
@@ -43,7 +46,7 @@ class Section {
   // The number of matches this `Section` contains across `groups_`.
   size_t count_{0};
   // The `Group`s this `Section` contains.
-  PGroups groups_{};
+  Groups groups_{};
 };
 
 // Base section for zps limits and grouping. Ensures that matches with higher
@@ -51,7 +54,9 @@ class Section {
 // expected to be placed earlier based on their `Group`'s position.
 class ZpsSection : public Section {
  public:
-  explicit ZpsSection(size_t limit);
+  ZpsSection(size_t limit,
+             Groups groups,
+             omnibox::GroupConfigMap& group_configs);
   // Section:
   void InitFromMatches(ACMatches& matches) override;
 };
@@ -62,7 +67,7 @@ class ZpsSection : public Section {
 // - Allow up to 15 suggestions total.
 class AndroidZpsSection : public ZpsSection {
  public:
-  AndroidZpsSection();
+  explicit AndroidZpsSection(omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the Desktop zps limits and grouping. The rules are:
@@ -71,7 +76,7 @@ class AndroidZpsSection : public ZpsSection {
 // - Allow up to 8 suggestions total.
 class DesktopZpsSection : public ZpsSection {
  public:
-  DesktopZpsSection();
+  explicit DesktopZpsSection(omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the Desktop, non-zps limits and grouping. The rules are:
@@ -85,7 +90,7 @@ class DesktopZpsSection : public ZpsSection {
 // - Group defaults 1st, then searches and history clusters, then navs.
 class DesktopNonZpsSection : public Section {
  public:
-  DesktopNonZpsSection();
+  explicit DesktopNonZpsSection(omnibox::GroupConfigMap& group_configs);
   // Section:
   void InitFromMatches(ACMatches& matches) override;
 };

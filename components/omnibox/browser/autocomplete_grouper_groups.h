@@ -27,9 +27,13 @@ class Group {
   };
   using GroupIdLimitsAndCounts = std::map<omnibox::GroupId, LimitAndCount>;
 
-  Group(size_t limit, GroupIdLimitsAndCounts group_id_limits_and_counts);
+  Group(size_t limit,
+        GroupIdLimitsAndCounts group_id_limits_and_counts,
+        bool is_default = false);
   // Construct a `Group` with just 1 `GroupId`.
   Group(size_t limit, omnibox::GroupId group_id);
+  Group(const Group& group);
+  Group& operator=(const Group& group);
   virtual ~Group();
 
   // Returns if `match` can be added to this `Group`. Checks if the `GroupId` of
@@ -43,6 +47,9 @@ class Group {
 
   size_t limit() const { return limit_; }
   void set_limit(size_t limit) { limit_ = limit; }
+  const GroupIdLimitsAndCounts& group_id_limits_and_counts() const {
+    return group_id_limits_and_counts_;
+  }
   const PMatches& matches() const { return matches_; }
 
  private:
@@ -54,15 +61,9 @@ class Group {
   GroupIdLimitsAndCounts group_id_limits_and_counts_;
   // The matches this `Group` contains.
   PMatches matches_;
-};
-
-// Group containing up to 1 match that's `allowed_to_be_default` with the
-// `GroupId`s `omnibox::GROUP_STARTER_PACK`, `omnibox::GROUP_SEARCH`, or
-// `omnibox::GROUP_OTHER_NAVS`.
-class DefaultGroup : public Group {
- public:
-  DefaultGroup();
-  bool CanAdd(const AutocompleteMatch& match) const override;
+  // Whether is a default `Group`, i.e., allows only matches that are
+  // `allowed_to_be_default_match`.
+  bool is_default_{false};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_GROUPER_GROUPS_H_

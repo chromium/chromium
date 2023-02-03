@@ -383,9 +383,11 @@ void AutocompleteResult::SortAndCull(
 
     PSections sections;
     if (is_zero_suggest) {
-      sections.push_back(std::make_unique<DesktopZpsSection>());
+      sections.push_back(
+          std::make_unique<DesktopZpsSection>(suggestion_groups_map_));
     } else {
-      sections.push_back(std::make_unique<DesktopNonZpsSection>());
+      sections.push_back(
+          std::make_unique<DesktopNonZpsSection>(suggestion_groups_map_));
     }
     matches_ = Section::GroupMatches(std::move(sections), matches_);
 
