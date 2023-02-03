@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/input_device_settings/pref_handlers/pointing_stick_pref_handler.h"
+#include "base/values.h"
 
 class PrefService;
 
@@ -28,6 +29,14 @@ class ASH_EXPORT PointingStickPrefHandlerImpl
   void UpdatePointingStickSettings(
       PrefService* pref_service,
       const mojom::PointingStick& pointing_stick) override;
+
+ private:
+  mojom::PointingStickSettingsPtr GetNewPointingStickSettings(
+      const mojom::PointingStick& pointing_stick);
+  mojom::PointingStickSettingsPtr RetreivePointingStickSettings(
+      PrefService* prefs,
+      const mojom::PointingStick& pointing_stick,
+      const base::Value::Dict& settings_dict);
 };
 
 }  // namespace ash

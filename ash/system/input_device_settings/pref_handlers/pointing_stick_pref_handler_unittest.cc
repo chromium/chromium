@@ -5,6 +5,7 @@
 #include "ash/system/input_device_settings/pref_handlers/pointing_stick_pref_handler_impl.h"
 
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/test/ash_test_base.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -18,6 +19,11 @@ const std::string kDictFakeValue = "fake_value";
 
 const std::string kPointingStickKey1 = "device_key1";
 const std::string kPointingStickKey2 = "device_key2";
+
+const mojom::PointingStickSettings kPointingStickSettingsDefault(
+    /*swap_right=*/kDefaultSwapRight,
+    /*sensitivity=*/kDefaultSensitivity,
+    /*acceleration_enabled=*/kDefaultAccelerationEnabled);
 
 const mojom::PointingStickSettings kPointingStickSettings1(
     /*swap_right=*/true,
@@ -86,6 +92,16 @@ class PointingStickPrefHandlerTest : public AshTestBase {
 
     pref_handler_->UpdatePointingStickSettings(pref_service_.get(),
                                                *pointing_stick);
+  }
+
+  mojom::PointingStickSettingsPtr CallInitializePointingStickSettings(
+      const std::string& device_key) {
+    mojom::PointingStickPtr pointing_stick = mojom::PointingStick::New();
+    pointing_stick->device_key = device_key;
+
+    pref_handler_->InitializePointingStickSettings(pref_service_.get(),
+                                                   pointing_stick.get());
+    return std::move(pointing_stick->settings);
   }
 
  protected:
@@ -177,6 +193,55 @@ TEST_F(PointingStickPrefHandlerTest, UpdateSettings) {
   ASSERT_NE(nullptr, unchanged_settings_dict);
   CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettings2,
                                             *unchanged_settings_dict);
+}
+
+TEST_F(PointingStickPrefHandlerTest, NewSettingAddedRoundTrip) {
+  mojom::PointingStickSettings test_settings = kPointingStickSettings1;
+  test_settings.swap_right = !kDefaultSwapRight;
+
+  CallUpdatePointingStickSettings(kPointingStickKey1, test_settings);
+  auto devices_dict =
+      pref_service_->GetDict(prefs::kPointingStickDeviceSettingsDictPref)
+          .Clone();
+  auto* settings_dict = devices_dict.FindDict(kPointingStickKey1);
+
+  // Remove key from the dict to mock adding a new setting in the future.
+  settings_dict->Remove(prefs::kPointingStickSettingSwapRight);
+  pref_service_->SetDict(prefs::kPointingStickDeviceSettingsDictPref,
+                         std::move(devices_dict));
+
+  // Initialize keyboard settings for the device and check that
+  // "new settings" match their default values.
+  mojom::PointingStickSettingsPtr settings =
+      CallInitializePointingStickSettings(kPointingStickKey1);
+  EXPECT_EQ(kDefaultSwapRight, settings->swap_right);
+
+  // Reset "new settings" to the values that match `test_settings` and check
+  // that the rest of the fields are equal.
+  settings->swap_right = !kDefaultSwapRight;
+  EXPECT_EQ(test_settings, *settings);
+}
+
+TEST_F(PointingStickPrefHandlerTest, NewPointingStickDefaultSettings) {
+  mojom::PointingStickSettingsPtr settings =
+      CallInitializePointingStickSettings(kPointingStickKey1);
+  EXPECT_EQ(*settings, kPointingStickSettingsDefault);
+  settings = CallInitializePointingStickSettings(kPointingStickKey2);
+  EXPECT_EQ(*settings, kPointingStickSettingsDefault);
+
+  auto devices_dict =
+      pref_service_->GetDict(prefs::kPointingStickDeviceSettingsDictPref)
+          .Clone();
+  ASSERT_EQ(2u, devices_dict.size());
+  auto* settings_dict = devices_dict.FindDict(kPointingStickKey1);
+  ASSERT_NE(nullptr, settings_dict);
+  CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettingsDefault,
+                                            *settings_dict);
+
+  settings_dict = devices_dict.FindDict(kPointingStickKey2);
+  ASSERT_NE(nullptr, settings_dict);
+  CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettingsDefault,
+                                            *settings_dict);
 }
 
 class PointingStickSettingsPrefConversionTest
