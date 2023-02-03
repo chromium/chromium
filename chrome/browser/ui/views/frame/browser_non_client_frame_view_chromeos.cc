@@ -215,7 +215,7 @@ gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForTabStripRegion(
 
 gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForWebAppFrameToolbar(
     const gfx::Size& toolbar_preferred_size) const {
-  if (!GetShowCaptionButtons() || AppIsBorderlessPwa()) {
+  if (!GetShowCaptionButtons()) {
     return gfx::Rect();
   }
   if (browser_view()->browser()->is_type_app_popup() &&

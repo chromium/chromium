@@ -481,6 +481,14 @@ int BrowserViewLayout::LayoutTitleBarForWebApp(int top) {
     return top;
   }
 
+  if (delegate_->GetBorderlessModeEnabled()) {
+    web_app_frame_toolbar_->SetVisible(false);
+    if (web_app_window_title_) {
+      web_app_window_title_->SetVisible(false);
+    }
+    return top;
+  }
+
   gfx::Rect toolbar_bounds(
       delegate_->GetBoundsForWebAppFrameToolbarInBrowserView());
 
