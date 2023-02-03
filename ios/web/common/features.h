@@ -73,6 +73,9 @@ BASE_DECLARE_FEATURE(kLongPressSurroundingText);
 // the old one.
 BASE_DECLARE_FEATURE(kScrollViewProxyScrollEnabledWorkaround);
 
+// Feature flag to prevent navigation without user interaction.
+BASE_DECLARE_FEATURE(kPreventNavigationWithoutUserInteraction);
+
 // When true, user control for camera and/or microphone access should be
 // enabled.
 bool IsMediaPermissionsControlEnabled();
