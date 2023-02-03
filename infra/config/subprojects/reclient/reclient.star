@@ -518,6 +518,7 @@ ci.builder(
         "RBE_enable_deps_cache": "false",
         "RBE_clang_depscan_archive": "true",
         "RBE_use_unified_uploads": "false",
+        "RBE_experimental_sysroot_do_not_upload": "true",
     },
     reclient_cache_silo = "Comparison Linux remote links - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
