@@ -1353,7 +1353,7 @@ BASE_FEATURE(kUserActivityEventLogging,
 // makes Web App windows work more similarly to regular browser windows.
 BASE_FEATURE(kWebAppFrameToolbarInBrowserView,
              "WebAppFrameToolbarInBrowserView",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kWebAppManifestIconUpdating,
