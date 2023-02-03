@@ -18,7 +18,6 @@
 #include "net/base/proxy_server.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "services/proxy_resolver_win/winhttp_api_wrapper_impl.h"
-#include "services/proxy_resolver_win/winhttp_proxy_resolver_functions.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
@@ -379,13 +378,6 @@ net::WinHttpStatus WindowsSystemProxyResolverImpl::EnsureInitialized() {
 
   // TODO(https://crbug.com/1032820): Limit the number of times this can
   // fail to initialize.
-
-  if (!WinHttpProxyResolverFunctions::GetInstance()
-           .are_all_functions_loaded()) {
-    LOG(ERROR) << "Failed to load functions necessary for "
-                  "WindowsSystemProxyResolutionService!";
-    return net::WinHttpStatus::kFunctionsNotLoaded;
-  }
 
   // The `winhttp_api_wrapper_` is intended to only get set when initialization
   // is successful. However, it may have been pre-populated via

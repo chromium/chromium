@@ -12,7 +12,6 @@ import "url/mojom/url.mojom";
 enum WinHttpStatus {
   kOk,
   kAborted,
-  kFunctionsNotLoaded,
   kWinHttpOpenFailed,
   kWinHttpSetTimeoutsFailed,
   kWinHttpSetStatusCallbackFailed,
