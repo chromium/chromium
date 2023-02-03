@@ -3365,6 +3365,7 @@ if (!is_android) {
         "//google_apis/common:test_support",
         "//google_apis/drive",
         "//ui/base/idle:test_support",
+        "//ui/views:test_support",
       ]
 
       data += [

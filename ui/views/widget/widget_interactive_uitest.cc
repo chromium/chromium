@@ -41,6 +41,7 @@
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_interactive_uitest_utils.h"
 #include "ui/views/widget/widget_utils.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/wm/public/activation_client.h"
@@ -272,43 +273,6 @@ void ShowInactiveSync(Widget* widget) {
   widget->ShowInactive();
   RunPendingMessagesForActiveStatusChange();
 }
-
-// Wait until |callback| returns |expected_value|, but no longer than 1 second.
-class PropertyWaiter {
- public:
-  PropertyWaiter(base::RepeatingCallback<bool(void)> callback,
-                 bool expected_value)
-      : callback_(std::move(callback)), expected_value_(expected_value) {}
-
-  bool Wait() {
-    if (callback_.Run() == expected_value_) {
-      success_ = true;
-      return success_;
-    }
-    start_time_ = base::TimeTicks::Now();
-    timer_.Start(FROM_HERE, base::TimeDelta(), this, &PropertyWaiter::Check);
-    run_loop_.Run();
-    return success_;
-  }
-
- private:
-  void Check() {
-    DCHECK(!success_);
-    success_ = callback_.Run() == expected_value_;
-    if (success_ || base::TimeTicks::Now() - start_time_ > kTimeout) {
-      timer_.Stop();
-      run_loop_.Quit();
-    }
-  }
-
-  const base::TimeDelta kTimeout = base::Seconds(1);
-  base::RepeatingCallback<bool(void)> callback_;
-  const bool expected_value_;
-  bool success_ = false;
-  base::TimeTicks start_time_;
-  base::RunLoop run_loop_;
-  base::RepeatingTimer timer_;
-};
 
 std::unique_ptr<Textfield> CreateTextfield() {
   auto textfield = std::make_unique<Textfield>();

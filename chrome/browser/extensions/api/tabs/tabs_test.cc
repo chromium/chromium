@@ -68,6 +68,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
@@ -884,13 +885,29 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
   Browser* new_window = ExtensionTabUtil::GetBrowserFromWindowID(
       ChromeExtensionFunctionDetails(function.get()), window_id, &error);
   EXPECT_TRUE(error.empty());
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+
+// TODO(crbug.com/1410400): Remove this workaround if this wait is no longer
+// needed.
+// These builds flags are limiting the check for IsMinimized() for Linux
+// and Lacros. For Linux and Lacros we only check X11 window manager and not
+// wayland since our current fix only applies to X11.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Must be checked inside IS_LINUX to compile on windows/mac.
+#if BUILDFLAG(OZONE_PLATFORM_X11)
   // DesktopWindowTreeHostX11::IsMinimized() relies on an asynchronous update
-  // from the window server.
-  EXPECT_TRUE(new_window->window()->IsMinimized());
+  // from the window server
+  views::test::PropertyWaiter minimize_waiter(
+      base::BindRepeating(&BrowserWindow::IsMinimized,
+                          base::Unretained(new_window->window())),
+      true);
+  EXPECT_TRUE(minimize_waiter.Wait());
+#elif BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+  // TODO(crbug.com/1406188): Find a fix/workaround for wayland and add
+  // verification of IsMinimized() for as well.
 #endif
+#else
+  EXPECT_TRUE(new_window->window()->IsMinimized());
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   function = new WindowsCreateFunction();
   function->set_extension(extension.get());
