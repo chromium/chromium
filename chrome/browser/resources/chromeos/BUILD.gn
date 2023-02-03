@@ -18,6 +18,7 @@ group("resources") {
     "audio:resources",
     "desk_api:resources",
     "emoji_picker:resources",
+    "enterprise_reporting:resources",
     "gaia_action_buttons:resources",
     "launcher_internals:resources",
     "lock_screen_reauth:resources",

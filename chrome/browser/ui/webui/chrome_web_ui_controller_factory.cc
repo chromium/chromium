@@ -273,6 +273,7 @@
 #include "chrome/browser/ui/webui/ash/cryptohome_ui.h"
 #include "chrome/browser/ui/webui/ash/drive_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
+#include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_ui.h"
 #include "chrome/browser/ui/webui/ash/human_presence_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
@@ -966,6 +967,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       return nullptr;
     }
     return &NewComponentUI<ash::FaceMLAppUI, ash::ChromeFaceMLUserProvider>;
+  }
+  if (url.host_piece() == chrome::kChromeUIEnterpriseReportingHost &&
+      base::FeatureList::IsEnabled(ash::features::kEnterpriseReportingUI)) {
+    return &NewWebUI<ash::reporting::EnterpriseReportingUI>;
   }
   if (url.host_piece() == ash::file_manager::kChromeUIFileManagerHost) {
     return &NewComponentUI<ash::file_manager::FileManagerUI,

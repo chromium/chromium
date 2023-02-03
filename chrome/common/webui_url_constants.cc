@@ -330,6 +330,8 @@ const char kChromeUICryptohomeHost[] = "cryptohome";
 const char kChromeUICryptohomeURL[] = "chrome://cryptohome";
 const char kChromeUIDeviceEmulatorHost[] = "device-emulator";
 const char kChromeUIDiagnosticsAppURL[] = "chrome://diagnostics";
+const char kChromeUIEnterpriseReportingHost[] = "enterprise-reporting";
+const char kChromeUIEnterpriseReportingURL[] = "chrome://enterprise-reporting";
 const char kChromeUIInternetConfigDialogURL[] =
     "chrome://internet-config-dialog/";
 const char kChromeUIInternetDetailDialogURL[] =

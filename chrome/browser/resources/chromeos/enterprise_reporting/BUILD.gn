@@ -1,0 +1,16 @@
+# Copyright 2023 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/build_webui.gni")
+
+assert(is_chromeos_ash)
+
+build_webui("build") {
+  grd_prefix = "enterprise_reporting"
+  static_files = [ "enterprise_reporting.html" ]
+  non_web_component_files = [ "enterprise_reporting.ts" ]
+
+  ts_use_local_config = true
+  ts_deps = [ "//ui/webui/resources/js:build_ts" ]
+}
