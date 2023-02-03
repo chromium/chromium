@@ -69,7 +69,9 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -78,10 +80,13 @@ import java.util.function.BooleanSupplier;
  * Tests AMP url handling in the CustomTab Toolbar.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowLooper.class, ShadowPostTask.class})
+@Config(manifest = Config.NONE,
+        shadows = {ShadowGURL.class, ShadowLooper.class, ShadowPostTask.class})
 @LooperMode(Mode.PAUSED)
 @DisableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
 public class CustomTabToolbarUnitTest {
+    private static final String TEST_URL = JUnitTestGURLs.INITIAL_URL;
+
     @Rule
     public MockitoRule mRule = MockitoJUnit.rule();
     @Rule
@@ -130,18 +135,20 @@ public class CustomTabToolbarUnitTest {
         Mockito.doReturn(R.color.default_icon_color_tint_list)
                 .when(mLocationBarModel)
                 .getSecurityIconColorStateList();
+        when(mToolbarDataProvider.getTab()).thenReturn(mTab);
+        when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
+        setUpForUrl(TEST_URL);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
         mToolbar = (CustomTabToolbar) LayoutInflater.from(mActivity).inflate(
                 R.layout.custom_tabs_toolbar, null, false);
+        mToolbar.initialize(mToolbarDataProvider, mTabController, mMenuButtonCoordinator,
+                mHistoryDelegate, mPartnerHomepageEnabledSupplier, mOfflineDownloader);
         mLocationBar = (CustomTabLocationBar) mToolbar.createLocationBar(mLocationBarModel,
                 mActionModeCallback, () -> null, () -> null, mControlsVisibleDelegate);
         mUrlBar = mToolbar.findViewById(R.id.url_bar);
         mTitleBar = mToolbar.findViewById(R.id.title_bar);
         mLocationBar.setAnimDelegateForTesting(mAnimationDelegate);
-
-        mToolbar.initialize(mToolbarDataProvider, mTabController, mMenuButtonCoordinator,
-                mHistoryDelegate, mPartnerHomepageEnabledSupplier, mOfflineDownloader);
     }
 
     @After
@@ -173,14 +180,13 @@ public class CustomTabToolbarUnitTest {
         verify(mAnimationDelegate, never()).prepareTitleAnim(mUrlBar, mTitleBar);
         verify(mAnimationDelegate, never()).startTitleAnimation(any());
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
+        assertBrandingTextShowingOnUrlBar();
 
         // Run all UI tasks, until the branding is finished.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mLocationBarModel, never()).notifyTitleChanged();
-        verify(mLocationBarModel).notifyUrlChanged();
         verify(mLocationBarModel).notifySecurityStateChanged();
-
-        assertEquals("URL bar is not visible.", mUrlBar.getVisibility(), View.VISIBLE);
+        assertUrlBarShowingText(TEST_URL);
     }
 
     @Test
@@ -198,15 +204,14 @@ public class CustomTabToolbarUnitTest {
         ShadowLooper.idleMainLooper();
         verify(mLocationBarModel, times(2)).notifyTitleChanged();
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
+        assertBrandingTextShowingOnUrlBar();
 
         // Run all UI tasks, until the branding is finished.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mLocationBarModel, times(3)).notifyTitleChanged();
-        verify(mLocationBarModel).notifyUrlChanged();
         verify(mLocationBarModel).notifySecurityStateChanged();
         verify(mAnimationDelegate, times(2)).prepareTitleAnim(mUrlBar, mTitleBar);
-
-        assertEquals("URL bar is not visible.", mUrlBar.getVisibility(), View.VISIBLE);
+        assertUrlBarShowingText(TEST_URL);
     }
 
     @Test
@@ -220,15 +225,14 @@ public class CustomTabToolbarUnitTest {
         // Attempt to update title and URL, should noop since location bar is still in empty state.
         mLocationBar.onTitleChanged();
         mLocationBar.onUrlChanged();
-        verify(mLocationBarModel, never()).notifyUrlChanged();
         verify(mLocationBarModel, never()).notifySecurityStateChanged();
 
         mLocationBar.showRegularToolbar();
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
-        verify(mLocationBarModel).notifyUrlChanged();
         verify(mLocationBarModel).notifyTitleChanged();
         verify(mLocationBarModel).notifySecurityStateChanged();
         verifyBrowserControlVisibleForRequiredDuration();
+        assertUrlBarShowingText(TEST_URL);
     }
 
     @Test
@@ -253,15 +257,16 @@ public class CustomTabToolbarUnitTest {
         // Attempt to update title and URL, should noop since location bar is still in empty state.
         mLocationBar.setShowTitle(true);
         mLocationBar.setUrlBarHidden(false);
-        verify(mLocationBarModel, never()).notifyUrlChanged();
         verify(mLocationBarModel, never()).notifySecurityStateChanged();
 
         mLocationBar.showBrandingLocationBar();
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
         verify(mAnimationDelegate).updateSecurityButton(anyInt(), eq(animateIconTransition));
+        assertBrandingTextShowingOnUrlBar();
 
         // Attempt to update title and URL to show Title only - should be ignored during branding.
         reset(mLocationBarModel);
+        setUpForUrl(TEST_URL);
         mLocationBar.setShowTitle(true);
         mLocationBar.setUrlBarHidden(true);
         verifyNoMoreInteractions(mLocationBarModel);
@@ -269,7 +274,6 @@ public class CustomTabToolbarUnitTest {
         // After getting back to regular toolbar, title should become visible now.
         mLocationBar.showRegularToolbar();
         assertUrlAndTitleVisible(/*titleVisible=*/true, /*urlVisible=*/false);
-        verify(mLocationBarModel, atLeastOnce()).notifyUrlChanged();
         verify(mLocationBarModel, atLeastOnce()).notifyTitleChanged();
         verify(mLocationBarModel, atLeastOnce()).notifySecurityStateChanged();
         verifyBrowserControlVisibleForRequiredDuration();
@@ -367,6 +371,15 @@ public class CustomTabToolbarUnitTest {
         assertEquals("URL bar visibility is off.", expectedUrlVisibility, mUrlBar.getVisibility());
     }
 
+    private void assertUrlBarShowingText(String expectedString) {
+        assertEquals("URL bar is not visible.", mUrlBar.getVisibility(), View.VISIBLE);
+        assertEquals("URL bar text does not match.", expectedString, mUrlBar.getText().toString());
+    }
+
+    private void assertBrandingTextShowingOnUrlBar() {
+        assertUrlBarShowingText(mActivity.getResources().getString(R.string.twa_running_in_chrome));
+    }
+
     private void verifyBrowserControlVisibleForRequiredDuration() {
         // Verify browser control is visible for required duration (3000ms).
         ShadowLooper looper = Shadows.shadowOf(Looper.getMainLooper());
@@ -384,10 +397,14 @@ public class CustomTabToolbarUnitTest {
     }
 
     private void setUpForAboutBlank() {
-        when(mToolbarDataProvider.getTab()).thenReturn(mTab);
-        when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
         UrlBarData urlBarData = UrlBarData.forUrl(JUnitTestGURLs.ABOUT_BLANK);
         when(mLocationBarModel.getUrlBarData()).thenReturn(urlBarData);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.ABOUT_BLANK));
+    }
+
+    private void setUpForUrl(String url) {
+        GURL currentGurl = new GURL(url);
+        Mockito.doReturn(currentGurl).when(mTab).getUrl();
+        Mockito.doReturn(UrlBarData.forUrl(url)).when(mLocationBarModel).getUrlBarData();
     }
 }
