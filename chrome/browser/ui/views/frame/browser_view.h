@@ -964,6 +964,7 @@ class BrowserView : public BrowserWindow,
   const WebAppFrameToolbarView* web_app_frame_toolbar() const;
 
   void PaintAsActiveChanged();
+  void FrameColorsChanged();
 
   // The BrowserFrame that hosts this view.
   raw_ptr<BrowserFrame, DanglingUntriaged> frame_ = nullptr;

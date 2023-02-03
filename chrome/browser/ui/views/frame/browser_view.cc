@@ -3997,6 +3997,8 @@ void BrowserView::OnThemeChanged() {
 
   if (status_bubble_)
     status_bubble_->OnThemeChanged();
+
+  FrameColorsChanged();
 }
 
 bool BrowserView::GetDropFormats(
@@ -4860,6 +4862,10 @@ void BrowserView::PaintAsActiveChanged() {
   if (web_app_frame_toolbar()) {
     web_app_frame_toolbar()->SetPaintAsActive(frame_->ShouldPaintAsActive());
   }
+  FrameColorsChanged();
+}
+
+void BrowserView::FrameColorsChanged() {
   if (web_app_window_title_) {
     SkColor frame_color = frame_->GetFrameView()->GetFrameColor(
         BrowserFrameActiveState::kUseCurrent);
