@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace arc::input_overlay {
 
@@ -23,6 +24,13 @@ bool UpdatePositionByArrowKey(ui::KeyboardCode key, gfx::Point& position);
 // Return the input binding filtered by |binding_option| in |action|.
 InputElement* GetInputBindingByBindingOption(Action* action,
                                              BindingOption binding_option);
+
+// Clamp position |position| inside of the |parent_size| with padding of
+// |parent_padding|
+void ClampPosition(gfx::Point& position,
+                   const gfx::Size& ui_size,
+                   const gfx::Size& parent_size,
+                   int parent_padding = 0);
 
 // TODO(b/260937747): Update or remove when removing flags
 // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.

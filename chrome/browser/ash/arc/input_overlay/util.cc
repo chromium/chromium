@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
@@ -47,6 +49,29 @@ InputElement* GetInputBindingByBindingOption(Action* action,
       NOTREACHED();
   }
   return input_binding;
+}
+
+void ClampPosition(gfx::Point& position,
+                   const gfx::Size& ui_size,
+                   const gfx::Size& parent_size,
+                   int parent_padding) {
+  int lo = parent_padding;
+  int hi = parent_size.width() - ui_size.width() - parent_padding;
+  if (lo >= hi) {
+    // Ignore |parent_padding| if there is not enough space.
+    lo = 0;
+    hi += parent_padding;
+    position.set_x(std::clamp(position.x(), lo, hi));
+  }
+
+  lo = parent_padding;
+  hi = parent_size.height() - ui_size.height() - parent_padding;
+  if (lo >= hi) {
+    // Ignore |parent_padding| if there is not enough space.
+    lo = 0;
+    hi += parent_padding;
+    position.set_y(std::clamp(position.y(), lo, hi));
+  }
 }
 
 bool AllowReposition() {

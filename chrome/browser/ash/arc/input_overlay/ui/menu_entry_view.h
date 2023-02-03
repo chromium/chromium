@@ -54,6 +54,8 @@ class MenuEntryView : public views::ImageButton {
 
   // Change menu entry properties if currently in dragging state.
   void ChangeMenuEntryOnDrag(bool is_dragging);
+  // Set cusor type.
+  void SetCursor(ui::mojom::CursorType cursor_type);
 
   // LocatedEvent's position when drag starts.
   gfx::Point start_drag_event_pos_;
