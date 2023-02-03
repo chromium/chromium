@@ -54,6 +54,7 @@ export function setUp() {
   directoryModel = createFakeDirectoryModel();
   fileListModel = new FileListModel(new MockMetadataModel({}));
   directoryModel.getFileList = () => fileListModel;
+  directoryModel.isSearching = () => false;
   recentEntry = new FakeEntryImpl(
       'Recent', VolumeManagerCommon.RootType.RECENT,
       chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE,
@@ -158,4 +159,16 @@ export function testShownForTrash() {
   assertFalse(element.hidden);
   const text = emptyFolderController.label_.innerText;
   assertTrue(text.includes(str('EMPTY_TRASH_FOLDER_TITLE')));
+}
+
+/**
+ * Tests that the empty state image shows up when search is active.
+ * @suppress {accessControls} access private method in test.
+ */
+export function testShowNoSearchResult() {
+  directoryModel.isSearching = () => true;
+  emptyFolderController.updateUI_();
+  assertFalse(element.hidden);
+  const text = emptyFolderController.label_.innerText;
+  assertTrue(text.includes(str('SEARCH_NO_MATCHING_RESULTS_TITLE')));
 }

@@ -20,6 +20,14 @@ const RECENTS_EMPTY_FOLDER =
     'foreground/images/files/ui/empty_folder.svg#empty_folder';
 
 /**
+ * The image shown when search returned no results.
+ * @type {string}
+ * @const
+ */
+const SEARCH_EMPTY_RESULTS =
+    'foreground/images/files/ui/empty_search_results.svg#empty_search_results';
+
+/**
  * The empty state image for the Trash folder.
  * @type {string}
  * @const
@@ -100,56 +108,85 @@ export class EmptyFolderController {
   }
 
   /**
+   * Shows the given message. It may consist of just the `title`, or
+   * `title` and `description`.
+   * @param {string} title
+   * @param {string=} description
+   * @private
+   */
+  showMessage_(title, description = '') {
+    if (!description) {
+      this.label_.appendChild(document.createTextNode(title));
+      return;
+    }
+
+    const titleSpan = document.createElement('span');
+    titleSpan.id = 'empty-folder-title';
+    titleSpan.innerText = title;
+    const descSpan = document.createElement('span');
+    descSpan.innerText = description;
+    this.label_.appendChild(titleSpan);
+    this.label_.appendChild(document.createElement('br'));
+    this.label_.appendChild(descSpan);
+  }
+
+  /**
    * Updates visibility of empty folder UI.
    * @private
    */
   updateUI_() {
     const currentRootType = this.directoryModel_.getCurrentRootType();
 
-    const isRecent = util.isRecentRootType(currentRootType);
-    const isTrash = currentRootType === VolumeManagerCommon.RootType.TRASH;
+    let svgRef = null;
+    if (util.isRecentRootType(currentRootType)) {
+      svgRef = RECENTS_EMPTY_FOLDER;
+    } else if (currentRootType === VolumeManagerCommon.RootType.TRASH) {
+      svgRef = TRASH_EMPTY_FOLDER;
+    } else if (this.directoryModel_.isSearching()) {
+      svgRef = SEARCH_EMPTY_RESULTS;
+    }
+
     const fileListModel = assert(this.directoryModel_.getFileList());
 
     this.label_.innerText = '';
-    if ((!isRecent && !isTrash) || this.isScanning_ ||
-        fileListModel.length > 0) {
+    if (svgRef === null || this.isScanning_ || fileListModel.length > 0) {
       this.emptyFolder_.hidden = true;
       return;
     }
 
     const svgUseElement = this.image_.querySelector('.image > svg > use');
     svgUseElement.setAttributeNS(
-        'http://www.w3.org/1999/xlink', 'xlink:href',
-        (isTrash) ? TRASH_EMPTY_FOLDER : RECENTS_EMPTY_FOLDER);
+        'http://www.w3.org/1999/xlink', 'xlink:href', svgRef);
     this.emptyFolder_.hidden = false;
-    if (isTrash) {
-      const titleSpan = document.createElement('span');
-      titleSpan.id = 'empty-folder-title';
-      titleSpan.innerText = str('EMPTY_TRASH_FOLDER_TITLE');
-      const descSpan = document.createElement('span');
-      descSpan.innerText = str('EMPTY_TRASH_FOLDER_DESC');
-      const breakElement = document.createElement('br');
-      this.label_.appendChild(titleSpan);
-      this.label_.appendChild(breakElement);
-      this.label_.appendChild(descSpan);
+
+    if (svgRef === TRASH_EMPTY_FOLDER) {
+      this.showMessage_(
+          str('EMPTY_TRASH_FOLDER_TITLE'), str('EMPTY_TRASH_FOLDER_DESC'));
+      return;
+    }
+
+    if (svgRef === SEARCH_EMPTY_RESULTS) {
+      this.showMessage_(
+          str('SEARCH_NO_MATCHING_RESULTS_TITLE'),
+          str('SEARCH_NO_MATCHING_RESULTS_DESC'));
       return;
     }
 
     switch (this.recentEntry_.fileCategory) {
       case chrome.fileManagerPrivate.FileCategory.AUDIO:
-        this.label_.innerText = str('RECENT_EMPTY_AUDIO_FOLDER');
+        this.showMessage_(str('RECENT_EMPTY_AUDIO_FOLDER'));
         break;
       case chrome.fileManagerPrivate.FileCategory.DOCUMENT:
-        this.label_.innerText = str('RECENT_EMPTY_DOCUMENTS_FOLDER');
+        this.showMessage_(str('RECENT_EMPTY_DOCUMENTS_FOLDER'));
         break;
       case chrome.fileManagerPrivate.FileCategory.IMAGE:
-        this.label_.innerText = str('RECENT_EMPTY_IMAGES_FOLDER');
+        this.showMessage_(str('RECENT_EMPTY_IMAGES_FOLDER'));
         break;
       case chrome.fileManagerPrivate.FileCategory.VIDEO:
-        this.label_.innerText = str('RECENT_EMPTY_VIDEOS_FOLDER');
+        this.showMessage_(str('RECENT_EMPTY_VIDEOS_FOLDER'));
         break;
       default:
-        this.label_.innerText = str('RECENT_EMPTY_FOLDER');
+        this.showMessage_(str('RECENT_EMPTY_FOLDER'));
     }
   }
 }

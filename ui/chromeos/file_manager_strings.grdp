@@ -852,6 +852,13 @@
   <message name="IDS_FILE_BROWSER_SEARCH_A11Y_RESULT" desc="Text spoken by ChromeVox/screen reader when a search has some result">
     Showing results for <ph name="SEARCH_TERM">$1<ex>ABC</ex></ph>.
   </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_NO_MATCHING_RESULTS_TITLE" desc="Text displayed in the files app when a search has no results">
+    No matching results
+  </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_NO_MATCHING_RESULTS_DESC" desc="Text displayed in the files under the title when a search has no results">
+    Try another search
+  </message>
+
   <message name="IDS_FILE_BROWSER_SEARCH_A11Y_CLEAR_SEARCH" desc="Text spoken by ChromeVox/screen reader when a search term has been cleared">
     Search text cleared, showing all files and folders.
   </message>
