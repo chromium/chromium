@@ -808,7 +808,7 @@ void ChannelLinux::SharedMemReadReady() {
         DispatchResult result = TryDispatchMessage(
             base::make_span(
                 reinterpret_cast<char*>(read_buf_.data() + data_offset),
-                bytes_read - data_offset),
+                static_cast<size_t>(bytes_read - data_offset)),
             &read_size_hint);
 
         // We cannot have a message parse failure, we KNOW that we wrote a
