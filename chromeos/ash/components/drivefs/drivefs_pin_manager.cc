@@ -334,8 +334,6 @@ bool PinManager::Add(const Id id,
   progress_.bytes_to_pin += size;
   progress_.required_space += RoundToBlockSize(size);
   progress_.files_to_pin++;
-  DCHECK_EQ(static_cast<size_t>(progress_.files_to_pin),
-            files_to_track_.size());
 
   if (pinned) {
     progress_.syncing_files++;
@@ -639,14 +637,6 @@ void PinManager::StartPinning() {
     return Complete(Stage::kSuccess);
   }
 
-  if (files_to_track_.empty()) {
-    VLOG(1) << "Nothing to pin or track";
-    DCHECK(files_to_pin_.empty());
-    DCHECK_EQ(progress_.files_to_pin, 0);
-    DCHECK_EQ(progress_.syncing_files, 0);
-    return Complete(Stage::kSuccess);
-  }
-
   timer_ = base::ElapsedTimer();
   progress_.stage = Stage::kSyncing;
   NotifyProgress();
@@ -665,11 +655,6 @@ void PinManager::PinSomeFiles() {
 
   if (progress_.stage != Stage::kSyncing) {
     return;
-  }
-
-  if (files_to_track_.empty() && files_to_pin_.empty()) {
-    VLOG(1) << "Nothing left to pin or track";
-    return Complete(Stage::kSuccess);
   }
 
   while (progress_.syncing_files < 50 && !files_to_pin_.empty()) {
