@@ -456,16 +456,16 @@ TEST(FirstPartySetParser, Rejects_NonSchemefulSiteCcTLDAliases) {
 TEST(FirstPartySetParser, Rejects_NondisjointCcTLDAliases) {
   // These two sets overlap only via a ccTLD variant.
   EXPECT_THAT(
-      ParseSets("{"                                         //
-                "\"owner\": \"https://example.test\","      //
-                "\"members\": [\"https://member.test1\"],"  //
-                "\"ccTLDs\": {"                             //
+      ParseSets("{"                                                 //
+                "\"primary\": \"https://example.test\","            //
+                "\"associatedSites\": [\"https://member.test1\"],"  //
+                "\"ccTLDs\": {"                                     //
                 "\"https://member.test1\": [\"https://member.cctld\"],"
                 "}"                                                     //
                 "}\n"                                                   //
                 "{"                                                     //
-                "\"owner\": \"https://foo.test\","                      //
-                "\"members\": [\"https://member.test2\"],"              //
+                "\"primary\": \"https://foo.test\","                    //
+                "\"associatedSites\": [\"https://member.test2\"],"      //
                 "\"ccTLDs\": {"                                         //
                 "\"https://member.test2\": [\"https://member.cctld\"]"  //
                 "}"                                                     //
