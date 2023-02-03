@@ -37,9 +37,10 @@ class WaylandProxy;
 
 namespace ui {
 
-class DeviceHotplugEventObserver;
+struct InputDevice;
 class OrgKdeKwinIdle;
 class SurfaceAugmenter;
+struct TouchscreenDevice;
 class WaylandBufferFactory;
 class WaylandBufferManagerHost;
 class WaylandCursor;
@@ -337,13 +338,23 @@ class WaylandConnection {
   void RegisterGlobalObjectFactory(const char* interface_name,
                                    wl::GlobalObjectFactory factory);
 
+  // Updates InputDevice structures in Chrome. Currently, Wayland doesn't
+  // support such, so the devices are derived from the connected interfaces.
+  // Also, currently, Wayland doesn't expose InputDeviceType so marked as
+  // UNKNOWN.
+  // TODO(crbug.com/1409793): We need further investigation and proper design
+  // how to model these input devices.
   void UpdateInputDevices();
+  std::vector<InputDevice> CreateMouseDevices() const;
+  std::vector<InputDevice> CreateKeyboardDevices() const;
+  std::vector<TouchscreenDevice> CreateTouchscreenDevices() const;
+
+  // Updates cursor related objects in this instance.
+  void UpdateCursor();
 
   // Initialize data-related objects if required protocol objects are already
   // in place, i.e: wl_seat and wl_data_device_manager.
   void CreateDataObjectsIfReady();
-
-  DeviceHotplugEventObserver* GetHotplugEventObserver();
 
   // wl_registry_listener
   static void Global(void* data,

@@ -133,6 +133,7 @@ void WaylandSeat::OnCapabilities(void* data,
   }
 
   connection_->UpdateInputDevices();
+  connection_->UpdateCursor();
   connection_->Flush();
 }
 

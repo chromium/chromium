@@ -23,6 +23,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/common/features.h"
@@ -312,18 +313,51 @@ void WaylandConnection::Flush() {
 }
 
 void WaylandConnection::UpdateInputDevices() {
-  // Container for devices. Can be empty.
-  std::vector<InputDevice> devices;
+  DeviceHotplugEventObserver* observer = DeviceDataManager::GetInstance();
+  observer->OnMouseDevicesUpdated(CreateMouseDevices());
+  observer->OnKeyboardDevicesUpdated(CreateKeyboardDevices());
+  observer->OnTouchscreenDevicesUpdated(CreateTouchscreenDevices());
+  observer->OnDeviceListsComplete();
+}
 
-  if (seat_->pointer()) {
-    cursor_ = std::make_unique<WaylandCursor>(seat_->pointer(), this);
+std::vector<InputDevice> WaylandConnection::CreateMouseDevices() const {
+  std::vector<InputDevice> devices;
+  if (const auto* pointer = seat_->pointer()) {
+    devices.emplace_back(pointer->id(), InputDeviceType::INPUT_DEVICE_UNKNOWN,
+                         "pointer");
+  }
+  return devices;
+}
+
+std::vector<InputDevice> WaylandConnection::CreateKeyboardDevices() const {
+  std::vector<InputDevice> devices;
+  if (const auto* keyboard = seat_->keyboard()) {
+    devices.emplace_back(keyboard->id(), InputDeviceType::INPUT_DEVICE_UNKNOWN,
+                         "keyboard");
+  }
+  return devices;
+}
+
+std::vector<TouchscreenDevice> WaylandConnection::CreateTouchscreenDevices()
+    const {
+  std::vector<TouchscreenDevice> devices;
+  if (const auto* touch = seat_->touch()) {
+    // Currently, there's no protocol on wayland to know how many touch points
+    // are supported on the device. Just use a fixed number to tell Chrome
+    // that there's some touch point available. Currently, 10, which is
+    // derived from some ChromeOS devices.
+    devices.emplace_back(touch->id(), InputDeviceType::INPUT_DEVICE_UNKNOWN,
+                         "touch", gfx::Size(),
+                         /*touch_points=*/10);
+  }
+  return devices;
+}
+
+void WaylandConnection::UpdateCursor() {
+  if (auto* pointer = seat_->pointer()) {
+    cursor_ = std::make_unique<WaylandCursor>(pointer, this);
     cursor_->set_listener(listener_);
     cursor_position_ = std::make_unique<WaylandCursorPosition>();
-
-    // Wayland doesn't expose InputDeviceType.
-    devices.emplace_back(InputDevice(seat_->pointer()->id(),
-                                     InputDeviceType::INPUT_DEVICE_UNKNOWN,
-                                     "pointer"));
 
     // Pointer is required for PointerGestures to be functional.
     if (zwp_pointer_gestures_) {
@@ -333,32 +367,6 @@ void WaylandConnection::UpdateInputDevices() {
     cursor_.reset();
     cursor_position_.reset();
   }
-
-  // Notify about mouse changes.
-  GetHotplugEventObserver()->OnMouseDevicesUpdated(devices);
-
-  // Clear the local container to store a keyboard device now.
-  devices.clear();
-  if (seat_->keyboard()) {
-    // Wayland doesn't expose InputDeviceType.
-    devices.emplace_back(InputDevice(seat_->keyboard()->id(),
-                                     InputDeviceType::INPUT_DEVICE_UNKNOWN,
-                                     "keyboard"));
-  }
-
-  // Notify about keyboard changes.
-  GetHotplugEventObserver()->OnKeyboardDevicesUpdated(devices);
-
-  // TODO(msisov): wl_touch doesn't expose the display it belongs to. Thus, it's
-  // impossible to figure out the size of the touchscreen for TouchscreenDevice
-  // struct that should be passed to a DeviceDataManager instance.
-
-  // Notify update completed.
-  GetHotplugEventObserver()->OnDeviceListsComplete();
-}
-
-DeviceHotplugEventObserver* WaylandConnection::GetHotplugEventObserver() {
-  return DeviceDataManager::GetInstance();
 }
 
 void WaylandConnection::CreateDataObjectsIfReady() {

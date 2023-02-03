@@ -62,6 +62,8 @@ class WaylandTouchTest : public WaylandTestSimple {
 
     EXPECT_EQ(1u,
               DeviceDataManager::GetInstance()->GetKeyboardDevices().size());
+    EXPECT_EQ(1u,
+              DeviceDataManager::GetInstance()->GetTouchscreenDevices().size());
   }
 
  protected:

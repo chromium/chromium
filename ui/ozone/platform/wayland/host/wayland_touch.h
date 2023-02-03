@@ -38,6 +38,8 @@ class WaylandTouch {
 
   ~WaylandTouch();
 
+  uint32_t id() const { return obj_.id(); }
+
  private:
   // wl_touch_listener
   static void Down(void* data,
