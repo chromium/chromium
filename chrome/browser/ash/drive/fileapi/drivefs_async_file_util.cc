@@ -180,14 +180,13 @@ class DeleteOperation {
     drive_ = drive_integration_service;
 
     if (ash::features::IsDriveFsBulkPinningEnabled()) {
-      base::FilePath drive_path;
-      if (drive_->GetRelativeDrivePath(path_, &drive_path)) {
+      if (drive_->GetRelativeDrivePath(path_, &drive_path_)) {
         // TODO(b/266168982): In the case this is a folder, only the folder will
         // get unpinned leaving all the children pinned. When the new method is
         // exposed (or parameter on the existing method) update the
         // implementation here.
         drive_->GetDriveFsInterface()->GetMetadata(
-            std::move(drive_path),
+            std::move(drive_path_),
             base::BindOnce(&DeleteOperation::OnGotMetadata,
                            base::Unretained(this)));
         return;
@@ -242,7 +241,7 @@ class DeleteOperation {
         content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, base::BindOnce(&PinManager::NotifyDelete,
                                       base::Unretained(pin_manager),
-                                      PinManager::Id(stable_id_), path_));
+                                      PinManager::Id(stable_id_), drive_path_));
       }
     }
     origin_task_runner_->PostTask(FROM_HERE,
@@ -252,6 +251,7 @@ class DeleteOperation {
 
   Profile* const profile_;
   const base::FilePath path_;
+  base::FilePath drive_path_;
   int64_t stable_id_ = -1;
   storage::AsyncFileUtil::StatusCallback callback_;
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
