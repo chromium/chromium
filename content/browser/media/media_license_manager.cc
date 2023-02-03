@@ -142,6 +142,9 @@ void MediaLicenseManager::DidGetBucket(
     // We could consider falling back to using an in-memory database in this
     // case, but failing here seems easier to reason about from a website
     // author's point of view.
+    MediaLicenseStorageHost::ReportDatabaseOpenError(
+        MediaLicenseStorageHost::MediaLicenseStorageHostOpenError::
+            kBucketLocatorError);
     DCHECK(bucket_locator.id.is_null());
     bucket_locator.storage_key = storage_key;
   }

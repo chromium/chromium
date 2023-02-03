@@ -30,6 +30,15 @@ namespace content {
 
 using CdmFileId = MediaLicenseManager::CdmFileId;
 
+// static
+void MediaLicenseStorageHost::ReportDatabaseOpenError(
+    MediaLicenseStorageHostOpenError error) {
+  DCHECK_NE(error, MediaLicenseStorageHostOpenError::kOk);
+  const char kDatabaseOpenErrorUmaName[] =
+      "Media.EME.MediaLicenseStorageHostOpenError";
+  base::UmaHistogramEnumeration(kDatabaseOpenErrorUmaName, error);
+}
+
 MediaLicenseStorageHost::MediaLicenseStorageHost(
     MediaLicenseManager* manager,
     const storage::BucketLocator& bucket_locator)
@@ -126,14 +135,6 @@ void MediaLicenseStorageHost::DidOpenFile(
       base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(std::move(callback), Status::kSuccess,
                      std::move(cdm_file)));
-}
-
-void MediaLicenseStorageHost::ReportDatabaseOpenError(
-    MediaLicenseStorageHostOpenError error) {
-  DCHECK_NE(error, MediaLicenseStorageHostOpenError::kOk);
-  const char kDatabaseOpenErrorUmaName[] =
-      "Media.EME.MediaLicenseStorageHostOpenError";
-  base::UmaHistogramEnumeration(kDatabaseOpenErrorUmaName, error);
 }
 
 void MediaLicenseStorageHost::ReadFile(const media::CdmType& cdm_type,

@@ -51,8 +51,14 @@ class CONTENT_EXPORT MediaLicenseStorageHost : public media::mojom::CdmStorage {
     kDatabaseRazeError = 5,  // The database was in an invalid state and failed
                              // to be razed.
     kSQLExecutionError = 6,  // Error executing the SQL statement.
-    kMaxValue = kSQLExecutionError
+    kBucketLocatorError = 7,  // Error with the bucket locator. This error was
+                              // introduced after the previous errors so that
+                              // we can drill down deeper on the source of the
+                              // errors.
+    kMaxValue = kBucketLocatorError
   };
+
+  static void ReportDatabaseOpenError(MediaLicenseStorageHostOpenError error);
 
   MediaLicenseStorageHost(MediaLicenseManager* manager,
                           const storage::BucketLocator& bucket_locator);
@@ -106,8 +112,6 @@ class CONTENT_EXPORT MediaLicenseStorageHost : public media::mojom::CdmStorage {
                    OpenCallback callback,
                    MediaLicenseStorageHostOpenError error);
   void DidWriteFile(WriteFileCallback callback, bool success);
-
-  void ReportDatabaseOpenError(MediaLicenseStorageHostOpenError error);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
