@@ -198,7 +198,7 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
 
   const CGSize singleLineStringSize = wrappingString.size;
   const NSInteger wrappingStringNumberOfLines =
-      wrappingStringSize.height / singleLineStringSize.height;
+      round(wrappingStringSize.height / singleLineStringSize.height);
   const NSInteger numberOfLinesToDraw =
       MIN(maxNumberOfLines, wrappingStringNumberOfLines);
 
