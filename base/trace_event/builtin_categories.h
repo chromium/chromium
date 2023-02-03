@@ -280,6 +280,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime"))                   \
   X(TRACE_DISABLED_BY_DEFAULT("viz.triangles"))                          \
   X(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"))                     \
+  X(TRACE_DISABLED_BY_DEFAULT("webgpu"))                                 \
   X(TRACE_DISABLED_BY_DEFAULT("webrtc"))                                 \
   X(TRACE_DISABLED_BY_DEFAULT("worker.scheduler"))                       \
   X(TRACE_DISABLED_BY_DEFAULT("xr.debug"))

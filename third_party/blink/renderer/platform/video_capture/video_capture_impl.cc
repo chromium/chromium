@@ -433,7 +433,10 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
       CHECK(buffer_context_->GetGpuMemoryBuffer());
 
       auto buffer_handle = buffer_context_->GetGpuMemoryBuffer()->CloneHandle();
-
+#if BUILDFLAG(IS_CHROMEOS)
+      is_webgpu_compatible_ =
+          buffer_handle.native_pixmap_handle.supports_zero_copy_webgpu_import;
+#endif
       // No need to propagate shared memory region further as it's already
       // exposed by |buffer_context_->data()|.
       buffer_handle.region = base::UnsafeSharedMemoryRegion();
@@ -526,6 +529,9 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
 #if BUILDFLAG(IS_MAC)
   usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+  usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
+#endif
 
   if (base::FeatureList::IsEnabled(
           media::kMultiPlaneVideoCaptureSharedImages)) {
@@ -577,6 +583,9 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   }
   frame_->metadata().allow_overlay = true;
   frame_->metadata().read_lock_fences_enabled = true;
+#if BUILDFLAG(IS_CHROMEOS)
+  frame_->metadata().is_webgpu_compatible = is_webgpu_compatible_;
+#endif
   return true;
 }
 

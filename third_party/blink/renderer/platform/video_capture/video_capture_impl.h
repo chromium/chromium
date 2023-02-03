@@ -177,6 +177,9 @@ class PLATFORM_EXPORT VideoCaptureImpl
     scoped_refptr<BufferContext> buffer_context_;
     scoped_refptr<media::VideoFrame> frame_;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
+#if BUILDFLAG(IS_CHROMEOS)
+    bool is_webgpu_compatible_ = false;
+#endif
   };
 
   // Contains information about a video capture client, including capture

@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
@@ -200,11 +201,16 @@ ExternalTexture CreateExternalTexture(
   external_texture_desc.visibleSize = {
       static_cast<uint32_t>(visible_rect.width()),
       static_cast<uint32_t>(visible_rect.height())};
-
-  if (media_video_frame->HasTextures() &&
-      (media_video_frame->format() == media::PIXEL_FORMAT_NV12) &&
-      device_support_zero_copy &&
-      media_video_frame->metadata().is_webgpu_compatible) {
+  const bool zero_copy =
+      (media_video_frame->HasTextures() &&
+       (media_video_frame->format() == media::PIXEL_FORMAT_NV12) &&
+       device_support_zero_copy &&
+       media_video_frame->metadata().is_webgpu_compatible);
+  TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("webgpu"),
+                       "CreateExternalTexture", TRACE_EVENT_SCOPE_THREAD,
+                       "zero_copy", !!zero_copy, "video_frame",
+                       media_video_frame->AsHumanReadableString());
+  if (zero_copy) {
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
         WebGPUMailboxTexture::FromVideoFrame(
             device->GetDawnControlClient(), device->GetHandle(),
