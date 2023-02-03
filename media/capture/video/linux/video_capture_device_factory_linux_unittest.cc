@@ -40,9 +40,9 @@ class VideoCaptureDeviceFactoryLinuxTest
   void TearDown() override { task_environment_.RunUntilIdle(); }
 
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<VideoCaptureDeviceFactoryLinux> factory_;
   raw_ptr<FakeV4L2Impl> fake_v4l2_;
   raw_ptr<FakeDeviceProvider> fake_device_provider_;
-  std::unique_ptr<VideoCaptureDeviceFactoryLinux> factory_;
 };
 
 TEST_P(VideoCaptureDeviceFactoryLinuxTest, EnumerateSingleFakeV4L2DeviceUsing) {
