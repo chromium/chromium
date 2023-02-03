@@ -25,7 +25,7 @@ class Section {
   virtual ~Section();
   // Returns `matches` ranked and culled according to `sections`. All `matches`
   // should have `suggestion_group_id` set and be sorted by relevance.
-  static ACMatches GroupMatches(PSections sections, ACMatches matches);
+  static ACMatches GroupMatches(PSections sections, ACMatches& matches);
   // Used to adjust this `Section`'s and its `Group`s' total limits.
   virtual void InitFromMatches(ACMatches& matches) {}
 

@@ -11,6 +11,8 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 
+using PMatches = std::vector<AutocompleteMatch*>;
+
 // `Group` class and subclasses used to compose `Section`s.
 
 // Group containing matches with the given `GroupId`s, limited per `GroupId` and
@@ -41,7 +43,7 @@ class Group {
 
   size_t limit() const { return limit_; }
   void set_limit(size_t limit) { limit_ = limit; }
-  const ACMatches& matches() const { return matches_; }
+  const PMatches& matches() const { return matches_; }
 
  private:
   // Max number of matches this `Group` can contain.
@@ -51,7 +53,7 @@ class Group {
   // The limit and count per `GroupId`.
   GroupIdLimitsAndCounts group_id_limits_and_counts_;
   // The matches this `Group` contains.
-  ACMatches matches_;
+  PMatches matches_;
 };
 
 // Group containing up to 1 match that's `allowed_to_be_default` with the

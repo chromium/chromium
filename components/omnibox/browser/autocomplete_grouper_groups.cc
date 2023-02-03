@@ -32,7 +32,7 @@ bool Group::CanAdd(const AutocompleteMatch& match) const {
 
 void Group::Add(const AutocompleteMatch& match) {
   DCHECK(CanAdd(match));
-  matches_.push_back(match);
+  matches_.push_back(&const_cast<AutocompleteMatch&>(match));
   count_++;
   DCHECK_EQ(count_, matches_.size());
   group_id_limits_and_counts_[match.suggestion_group_id.value()].count++;

@@ -387,7 +387,7 @@ void AutocompleteResult::SortAndCull(
     } else {
       sections.push_back(std::make_unique<DesktopNonZpsSection>());
     }
-    matches_ = Section::GroupMatches(std::move(sections), std::move(matches_));
+    matches_ = Section::GroupMatches(std::move(sections), matches_);
 
   } else {
     // Limit history cluster suggestions to 1. This has to be done before

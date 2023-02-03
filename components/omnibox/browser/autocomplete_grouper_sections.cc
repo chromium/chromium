@@ -18,7 +18,7 @@ Section::Section(size_t limit) : limit_(limit) {}
 Section::~Section() = default;
 
 // static
-ACMatches Section::GroupMatches(PSections sections, ACMatches matches) {
+ACMatches Section::GroupMatches(PSections sections, ACMatches& matches) {
   for (auto& section : sections) {
     section->InitFromMatches(matches);
   }
@@ -34,8 +34,9 @@ ACMatches Section::GroupMatches(PSections sections, ACMatches matches) {
   ACMatches grouped_matches = {};
   for (const auto& section : sections) {
     for (const auto& group : section->groups_) {
-      grouped_matches.insert(grouped_matches.end(), group->matches().begin(),
-                             group->matches().end());
+      for (auto* match : group->matches()) {
+        grouped_matches.push_back(std::move(*match));
+      }
     }
   }
 
