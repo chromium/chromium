@@ -51,7 +51,7 @@ ci.builder(
         category = "presubmit",
         short_name = "win",
     ),
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    execution_timeout = 6 * time.hour,
 
     # TODO(crbug.com/1370463): remove this.
     omit_python2 = False,
