@@ -96,7 +96,8 @@ enum class PrerenderFinalStatus {
   kPreloadingDisabled = 59,
   kBatterySaverEnabled = 60,
   kActivatedDuringMainFrameNavigation = 61,
-  kMaxValue = kActivatedDuringMainFrameNavigation,
+  kPreloadingUnsupportedByWebContents = 62,
+  kMaxValue = kPreloadingUnsupportedByWebContents,
 };
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.

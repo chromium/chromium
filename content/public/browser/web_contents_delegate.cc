@@ -356,9 +356,7 @@ bool WebContentsDelegate::IsBackForwardCacheSupported() {
 
 PreloadingEligibility WebContentsDelegate::IsPrerender2Supported(
     WebContents& web_contents) {
-  // TODO(crbug.com/1382315): add
-  // PreloadingEligibility::kPreloadingUnsupportedByWebContents
-  return PreloadingEligibility::kPreloadingDisabled;
+  return PreloadingEligibility::kPreloadingUnsupportedByWebContents;
 }
 
 std::unique_ptr<WebContents> WebContentsDelegate::ActivatePortalWebContents(

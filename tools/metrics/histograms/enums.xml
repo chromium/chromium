@@ -83897,6 +83897,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="59" label="kPreloadingDisabled"/>
   <int value="60" label="kBatterySaverEnabled"/>
   <int value="61" label="kActivatedDuringMainFrameNavigation"/>
+  <int value="62" label="kPreloadingUnsupportedByWebContents"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

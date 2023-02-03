@@ -8596,6 +8596,7 @@ domain Page
       PreloadingDisabled
       BatterySaverEnabled
       ActivatedDuringMainFrameNavigation
+      PreloadingUnsupportedByWebContents
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted

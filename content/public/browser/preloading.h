@@ -182,6 +182,9 @@ enum class PreloadingEligibility {
   // Preloading was ineligible because the Battery Saver setting was enabled.
   kBatterySaverEnabled = 14,
 
+  // Preloading was ineligible because it is not supported for WebContents.
+  kPreloadingUnsupportedByWebContents = 15,
+
   // Values between `kPreloadingEligibilityCommonEnd` (inclusive) and
   // `kPreloadingEligibilityContentEnd` (exclusive) are reserved for enums
   // defined under `//content`.

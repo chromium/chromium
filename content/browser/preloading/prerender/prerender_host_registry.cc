@@ -138,16 +138,22 @@ int PrerenderHostRegistry::CreateAndStartHost(
                   PrerenderFinalStatus::kPreloadingDisabled),
               attributes);
           break;
+        case PreloadingEligibility::kDataSaverEnabled:
+          RecordFailedPrerenderFinalStatus(
+              PrerenderCancellationReason(
+                  PrerenderFinalStatus::kDataSaverEnabled),
+              attributes);
+          break;
         case PreloadingEligibility::kBatterySaverEnabled:
           RecordFailedPrerenderFinalStatus(
               PrerenderCancellationReason(
                   PrerenderFinalStatus::kBatterySaverEnabled),
               attributes);
           break;
-        case PreloadingEligibility::kDataSaverEnabled:
+        case PreloadingEligibility::kPreloadingUnsupportedByWebContents:
           RecordFailedPrerenderFinalStatus(
               PrerenderCancellationReason(
-                  PrerenderFinalStatus::kDataSaverEnabled),
+                  PrerenderFinalStatus::kPreloadingUnsupportedByWebContents),
               attributes);
           break;
         default:

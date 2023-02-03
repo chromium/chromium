@@ -1601,6 +1601,8 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Page::PrerenderFinalStatusEnum::BatterySaverEnabled;
     case PrerenderFinalStatus::kActivatedDuringMainFrameNavigation:
       return Page::PrerenderFinalStatusEnum::ActivatedDuringMainFrameNavigation;
+    case PrerenderFinalStatus::kPreloadingUnsupportedByWebContents:
+      return Page::PrerenderFinalStatusEnum::PreloadingUnsupportedByWebContents;
   }
 }
 

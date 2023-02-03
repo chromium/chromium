@@ -997,6 +997,7 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kPreloadingDisabled:
     case PrerenderFinalStatus::kBatterySaverEnabled:
     case PrerenderFinalStatus::kActivatedDuringMainFrameNavigation:
+    case PrerenderFinalStatus::kPreloadingUnsupportedByWebContents:
       attempt_->SetFailureReason(ToPreloadingFailureReason(status));
       // We reset the attempt to ensure we don't update once we have reported it
       // as failure or accidentally use it for any other prerender attempts as
