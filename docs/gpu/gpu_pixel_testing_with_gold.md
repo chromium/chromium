@@ -222,29 +222,23 @@ by Chromium.
 sync` To update the binary used in Chromium, perform the following steps:
 
 1. (One-time only) get an [infra checkout][infra repo]
-2. Run `infra $ ./go/env.py` and run each of the commands it outputs to change
-your GOPATH and other environment variables for your terminal
-3. Update the Skia revision in [`deps.yaml`][deps yaml] to match the revision
-of your `goldctl` CL (or some revision after it)
-4. Run `infra $ ./go/deps.py update` and copy the list of repos it updated
-(include this in your CL description)
-5. Upload the changelist ([sample CL][sample roll cl])
-6. Once the CL is merged, wait until the git revision of your merged CL shows
-up in the tags of one of the instances for the [CIPD package][goldctl package]
-7. Update the [revision in DEPS][goldctl deps entry] to be the merged CL's
-revision
+1. Run `infra $ eval ``./go/env.py`` ` to ensure that the environment in the
+   terminal is correct
+1. Run `infra $ cd go/src/infra`
+1. Run `infra/go/src/infra $ go get go.skia.org/infra`
+1. Run `infra/go/src/infra $ go mod tidy`
+1. Upload the changelist ([sample CL][sample roll cl])
+1. Once the CL is merged, the goldctl autoroller should automatically detect it
+   and create Chromium CLs to roll the DEPS version.
 
 [infra repo]: https://chromium.googlesource.com/infra/infra/
-[deps yaml]: https://chromium.googlesource.com/infra/infra/+/91333d832a4d871b4219580dfb874b49a97e6da4/go/deps.yaml#432
-[sample roll cl]: https://chromium-review.googlesource.com/c/infra/infra/+/1493426
-[goldctl package]: https://chrome-infra-packages.appspot.com/p/skia/tools/goldctl/linux-amd64/+/
-[goldctl deps entry]: https://chromium.googlesource.com/chromium/src/+/6b7213a45382f01ac0a2efec1015545bd051da89/DEPS#1304
+[sample roll cl]: https://chromium-review.googlesource.com/c/infra/infra/+/4218809
 
 If you want to make sure that `goldctl` builds after the update before
 committing (e.g. to ensure that no extra third party dependencies were added),
-run the following after the `./go/deps.py update` step:
+run the following after the `go mod tidy` step:
 
-1. `infra $ ./go/deps.py install`
-2. `infra $ go install go.skia.org/infra/gold-client/cmd/goldctl`
-3. `infra $ which goldctl` which should point to a binary in `infra/go/bin/`
-4. `infra $ goldctl` to make sure it actually runs
+1. `infra/go/src/infra $ rm -f "$GOBIN/goldctl"` to avoid accidentally checking
+   a stale binary at the end
+1. `infra/go/src/infra $ go install -v go.skia.org/infra/gold-client/cmd/goldctl`
+1. `infra/go/src/infra $ "$GOBIN/goldctl` to ensure that the binary runs
