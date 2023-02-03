@@ -46,6 +46,17 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends PolymerElement {
         },
       },
 
+      blockMetaFunctionKeyRewritesPref: {
+        type: Object,
+        value() {
+          return {
+            key: 'fakeBlockMetaFunctionKeyRewritesPref',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+          };
+        },
+      },
+
       enableAutoRepeatPref: {
         type: Object,
         value() {
@@ -121,6 +132,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends PolymerElement {
   private autoRepeatIntervals: number[];
   private keyboard: Object;
   private topRowAreFunctionKeysPref: chrome.settingsPrivate.PrefObject;
+  private blockMetaFunctionKeyRewritesPref: chrome.settingsPrivate.PrefObject;
   private enableAutoRepeatPref: chrome.settingsPrivate.PrefObject;
   private autoRepeatDelaysPref: chrome.settingsPrivate.PrefObject;
   private autoRepeatIntervalsPref: chrome.settingsPrivate.PrefObject;

@@ -16,13 +16,29 @@
 </style>
 <h2>[[keyboard.name]]</h2>
 <div class="subsection">
-  <settings-toggle-button
-      id="topRowAreFunctionKeysButton"
-      class="hr"
-      pref="{{topRowAreFunctionKeysPref}}"
-      label="$i18n{keyboardSendFunctionKeys}"
-      sub-label="$i18n{keyboardSendFunctionKeysDescription}">
-  </settings-toggle-button>
+  <template is="dom-if" if="[[keyboard.isExternal]]">
+    <settings-toggle-button
+        class="hr" inverted="true"
+        id="externalTopRowAreFunctionKeysButton"
+        pref="{{topRowAreFunctionKeysPref}}"
+        label="$i18n{keyboardSendInvertedFunctionKeys}"
+        sub-label="$i18n{keyboardSendInvertedFunctionKeysDescription}">
+    </settings-toggle-button>
+    <settings-toggle-button
+        class="hr" id="blockMetaFunctionKeyRewritesButton"
+        pref="{{blockMetaFunctionKeyRewritesPref}}"
+        label="$i18n{keyboardBlockMetaFunctionKeyRewrites}"
+        sub-label="$i18n{keyboardBlockMetaFunctionKeyRewritesDescription}">
+    </settings-toggle-button>
+  </template>
+  <template is="dom-if" if="[[!keyboard.isExternal]]">
+    <settings-toggle-button
+        class="hr" id="internalTopRowAreFunctionKeysButton"
+        pref="{{topRowAreFunctionKeysPref}}"
+        label="$i18n{keyboardSendFunctionKeys}"
+        sub-label="$i18n{keyboardSendFunctionKeysDescription}">
+    </settings-toggle-button>
+  </template>
   <settings-toggle-button
       id="enableAutoRepeatButton"
       class="hr"

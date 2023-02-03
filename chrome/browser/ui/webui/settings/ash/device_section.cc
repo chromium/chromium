@@ -579,6 +579,10 @@ bool IsListAllDisplayModesEnabled() {
 
 void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString keyboard_strings[] = {
+      {"keyboardBlockMetaFunctionKeyRewrites",
+       IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES},
+      {"keyboardBlockMetaFunctionKeyRewritesDescription",
+       IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION},
       {"keyboardEnableAutoRepeat", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE},
       {"keyboardKeyAlt", IDS_SETTINGS_KEYBOARD_KEY_LEFT_ALT},
       {"keyboardKeyAssistant", IDS_SETTINGS_KEYBOARD_KEY_ASSISTANT},
@@ -594,6 +598,10 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"keyboardKeyExternalMeta", IDS_SETTINGS_KEYBOARD_KEY_EXTERNAL_META},
       {"keyboardKeyMeta", IDS_SETTINGS_KEYBOARD_KEY_META},
       {"keyboardSendFunctionKeys", IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS},
+      {"keyboardSendInvertedFunctionKeys",
+       IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS},
+      {"keyboardSendInvertedFunctionKeysDescription",
+       IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS_DESCRIPTION},
       {"keyboardShowInputSettings", IDS_SETTINGS_KEYBOARD_SHOW_INPUT_SETTINGS},
       // TODO(crbug.com/1097328): Remove this string, as it is unused.
       {"keyboardShowLanguageAndInput",
