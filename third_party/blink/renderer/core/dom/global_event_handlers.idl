@@ -84,8 +84,6 @@
     attribute EventHandler onpause;
     attribute EventHandler onplay;
     attribute EventHandler onplaying;
-    [RuntimeEnabled=HTMLPopoverAttribute] attribute EventHandler onpopoverhide;
-    [RuntimeEnabled=HTMLPopoverAttribute] attribute EventHandler onpopovershow;
     attribute EventHandler onprogress;
     attribute EventHandler onratechange;
     attribute EventHandler onreset;

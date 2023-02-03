@@ -238,8 +238,6 @@
     "onpointerrawupdate",
     "onpointerup",
     "onpopstate",
-    "onpopoverhide",
-    "onpopovershow",
     "onportalactivate",
     "onprogress",
     "onratechange",

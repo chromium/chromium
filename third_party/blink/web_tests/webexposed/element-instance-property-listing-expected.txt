@@ -251,8 +251,6 @@ namespace http://www.w3.org/1999/xhtml
     property onpointerover
     property onpointerrawupdate
     property onpointerup
-    property onpopoverhide
-    property onpopovershow
     property onprogress
     property onratechange
     property onreset
@@ -1484,8 +1482,6 @@ namespace http://www.w3.org/2000/svg
     property onpointerover
     property onpointerrawupdate
     property onpointerup
-    property onpopoverhide
-    property onpopovershow
     property onprogress
     property onratechange
     property onreset
