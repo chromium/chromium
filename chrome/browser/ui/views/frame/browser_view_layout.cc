@@ -456,7 +456,13 @@ std::vector<views::View*> BrowserViewLayout::GetChildViewsInPaintOrder(
     // drawn on top of anything else.
     if (delegate_->IsWindowControlsOverlayEnabled()) {
       auto iter = base::ranges::find(result, top_container_);
-      std::rotate(iter, iter + 1, result.end());
+      // When in Immersive Fullscreen `top_container_` might not be one of our
+      // children at all. While Window Controls Overlay shouldn't be enabled in
+      // fullscreen either, during the transition there is a moment where both
+      // could be true at the same time.
+      if (iter != result.end()) {
+        std::rotate(iter, iter + 1, result.end());
+      }
     }
   }
   return result;
