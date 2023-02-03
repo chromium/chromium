@@ -611,6 +611,19 @@
       "options_page": "hmm_options.html?code=xkb:gb:extd:eng"
     },
     {
+      "name": "__MSG_keyboard_english_india__",
+      "id": "xkb:in::eng",
+      "indicator": "IN",
+      "language": [
+        "en",
+        "en-IN"
+      ],
+      "layouts": [
+        "in(eng)"
+      ],
+      "options_page": "hmm_options.html?code=xkb:in::eng"
+    },
+    {
       "name": "__MSG_keyboard_english_pakistan__",
       "id": "xkb:pk::eng",
       "indicator": "PK",

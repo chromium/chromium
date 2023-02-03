@@ -130,6 +130,7 @@ export function getInputMethodSettings(
     'xkb:us::msa': [SettingsType.BASIC_SETTINGS],
 
     // ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS
+    'xkb:in::eng': [SettingsType.ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS],
     'xkb:pk::eng': [SettingsType.ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS],
     'xkb:za:gb:eng': [SettingsType.ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS],
   };
