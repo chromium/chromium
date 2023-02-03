@@ -227,6 +227,21 @@ suite('ThemesTest', () => {
     checkedThemes =
         themesElement.shadowRoot!.querySelectorAll('.theme [checked]');
     assertEquals(0, checkedThemes.length);
+
+    // Set a CWS theme.
+    theme.thirdPartyThemeInfo = {
+      id: '123',
+      name: 'test',
+    };
+    theme.backgroundImage.dailyRefreshEnabled = false;
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(themesElement);
+
+    // Check that nothing is selected.
+    checkedThemes =
+        themesElement.shadowRoot!.querySelectorAll('.theme [checked]');
+    assertEquals(0, checkedThemes.length);
   });
 
   test(

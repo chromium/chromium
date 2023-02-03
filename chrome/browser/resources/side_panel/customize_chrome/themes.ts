@@ -138,7 +138,8 @@ export class ThemesElement extends PolymerElement {
   }
 
   private isThemeSelected_(url: string) {
-    return this.theme_ && this.theme_.backgroundImage &&
+    return this.theme_ && !this.theme_.thirdPartyThemeInfo &&
+        this.theme_.backgroundImage &&
         this.theme_.backgroundImage.url.url === url &&
         !this.isRefreshToggleChecked_;
   }

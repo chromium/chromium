@@ -128,6 +128,7 @@ suite('ChromeColorsTest', () => {
     theme.foregroundColor = {value: 3};
     callbackRouter.setTheme(theme);
     await callbackRouter.$.flushForTesting();
+    await waitAfterNextRender(chromeColorsElement);
 
     // Check Chrome color selected.
     checkedColors =
@@ -141,11 +142,26 @@ suite('ChromeColorsTest', () => {
     theme.foregroundColor = {value: 5};
     callbackRouter.setTheme(theme);
     await callbackRouter.$.flushForTesting();
+    await waitAfterNextRender(chromeColorsElement);
 
     // Check custom color selected.
     checkedColors =
         chromeColorsElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals(chromeColorsElement.$.customColor, checkedColors[0]);
+
+    // Set a CWS theme.
+    theme.thirdPartyThemeInfo = {
+      id: '123',
+      name: 'test',
+    };
+    callbackRouter.setTheme(theme);
+    await callbackRouter.$.flushForTesting();
+    await waitAfterNextRender(chromeColorsElement);
+
+    // Check that no color is selected.
+    checkedColors =
+        chromeColorsElement.shadowRoot!.querySelectorAll('[checked]');
+    assertEquals(0, checkedColors.length);
   });
 });
