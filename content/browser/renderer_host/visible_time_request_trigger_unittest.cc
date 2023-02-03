@@ -4,10 +4,9 @@
 
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 
-#include <ios>
+#include <tuple>
 #include <utility>
 
-#include "base/containers/enum_set.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
@@ -23,17 +22,6 @@ class VisibleTimeRequestTriggerTest : public testing::Test {
   using RecordContentToVisibleTimeRequestPtr =
       blink::mojom::RecordContentToVisibleTimeRequestPtr;
 
-  // Set of RecordContentToVisibleTimeRequest boolean fields to enable.
-  enum class RequestField {
-    kDestinationIsLoaded,
-    kShowReasonTabSwitching,
-    kShowReasonBFCacheRestore,
-  };
-  using RequestFieldSet =
-      base::EnumSet<RequestField,
-                    RequestField::kDestinationIsLoaded,
-                    RequestField::kShowReasonBFCacheRestore>;
-
   // Converts a base::TimeDelta into a base::TimeTicks value suitable for
   // storing in the `event_start_time` field of a
   // RecordContentToVisibleTimeRequest.
@@ -43,16 +31,15 @@ class VisibleTimeRequestTriggerTest : public testing::Test {
 
   // Returns a request with the given `start_time`, which is given as a delta
   // from 0 since callers don't have an easy way to create base::TimeTicks
-  // directly. Only the boolean fields given in `enabled_fields` will be set to
-  // true.
+  // directly.
   static RecordContentToVisibleTimeRequestPtr CreateRequestPtr(
       base::TimeDelta start_time,
-      RequestFieldSet enabled_fields = RequestFieldSet()) {
+      bool destination_is_loaded = false,
+      bool show_reason_tab_switching = false,
+      bool show_reason_bfcache_restore = false) {
     return RecordContentToVisibleTimeRequest::New(
-        StartTimeFromDelta(start_time),
-        enabled_fields.Has(RequestField::kDestinationIsLoaded),
-        enabled_fields.Has(RequestField::kShowReasonTabSwitching),
-        enabled_fields.Has(RequestField::kShowReasonBFCacheRestore));
+        StartTimeFromDelta(start_time), destination_is_loaded,
+        show_reason_tab_switching, show_reason_bfcache_restore);
   }
 
   // Expects that all fields of `request` and `expected` match.
@@ -138,51 +125,78 @@ TEST_F(VisibleTimeRequestTriggerTest, MergeStartTimes) {
                            base::TimeDelta::Max());
 }
 
-TEST_F(VisibleTimeRequestTriggerTest, MergeFlags) {
-  auto request_with_fields = [](RequestFieldSet fields) {
-    return CreateRequestPtr(base::TimeDelta(), fields);
+TEST_F(VisibleTimeRequestTriggerTest, MergeRequests) {
+  // Iterate over all possible combinations of request parameters. Tuple
+  // contains `destination_is_loaded`, `show_reason_tab_switching`,
+  // `show_reason_bfcache_restore`.
+  using ParamTuple = std::tuple<bool, bool, bool>;
+  constexpr ParamTuple kRequestParams[] = {
+      // show_reason_tab_switching = true
+      ParamTuple(false, true, false),
+      ParamTuple(true, true, false),
+      ParamTuple(false, true, true),
+      ParamTuple(true, true, true),
+      // show_reason_tab_switching = false
+      ParamTuple(false, false, false),
+      ParamTuple(false, false, true),
   };
 
-  // Iterate over all possible combinations of flags.
-  for (uint64_t i = 0; i <= RequestFieldSet::All().ToEnumBitmask(); ++i) {
+  auto request_with_params = [](const ParamTuple& params) {
+    return CreateRequestPtr(base::TimeDelta(), std::get<0>(params),
+                            std::get<1>(params), std::get<2>(params));
+  };
+
+  auto request_with_union_of_params = [](const ParamTuple& params1,
+                                         const ParamTuple& params2) {
+    const bool destination_is_loaded =
+        std::get<0>(params1) || std::get<0>(params2);
+    const bool show_reason_tab_switching =
+        std::get<1>(params1) || std::get<1>(params2);
+    const bool show_reason_bfcache_restore =
+        std::get<2>(params1) || std::get<2>(params2);
+    return CreateRequestPtr(base::TimeDelta(), destination_is_loaded,
+                            show_reason_tab_switching,
+                            show_reason_bfcache_restore);
+  };
+
+  for (const ParamTuple& params : kRequestParams) {
     SCOPED_TRACE(::testing::Message()
-                 << "With field bitmask " << std::hex << i);
-    const auto fields = RequestFieldSet::FromEnumBitmask(i);
+                 << "With params " << std::get<0>(params) << ","
+                 << std::get<1>(params) << "," << std::get<2>(params));
 
     {
       // Check that these fields are set in the result if they're set in either
       // or both of the requests.
-      const auto expected = request_with_fields(fields);
+      const auto expected = request_with_params(params);
 
       ExpectEqualRequests(VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
                               RecordContentToVisibleTimeRequest::New(),
-                              request_with_fields(fields)),
+                              request_with_params(params)),
                           *expected);
       ExpectEqualRequests(VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
-                              request_with_fields(fields),
+                              request_with_params(params),
                               RecordContentToVisibleTimeRequest::New()),
                           *expected);
       ExpectEqualRequests(
           VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
-              request_with_fields(fields), request_with_fields(fields)),
+              request_with_params(params), request_with_params(params)),
           *expected);
     }
 
     // Check that when these fields are combined with another set of fields,
     // all fields are set in the result.
-    for (uint64_t j = 0; j <= RequestFieldSet::All().ToEnumBitmask(); ++j) {
+    for (const ParamTuple& params2 : kRequestParams) {
       SCOPED_TRACE(::testing::Message()
-                   << "Combining field bitmask " << std::hex << j);
-      const auto fields2 = RequestFieldSet::FromEnumBitmask(j);
-
-      const auto expected = request_with_fields(base::Union(fields, fields2));
+                   << "Combining with params " << std::get<0>(params2) << ","
+                   << std::get<1>(params2) << "," << std::get<2>(params2));
+      const auto expected = request_with_union_of_params(params, params2);
       ExpectEqualRequests(
           VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
-              request_with_fields(fields), request_with_fields(fields2)),
+              request_with_params(params), request_with_params(params2)),
           *expected);
       ExpectEqualRequests(
           VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
-              request_with_fields(fields2), request_with_fields(fields)),
+              request_with_params(params2), request_with_params(params)),
           *expected);
     }
   }
@@ -194,8 +208,9 @@ TEST_F(VisibleTimeRequestTriggerTest, UpdateAndTakeRequest) {
 
   // Calling Update then Take should clear the stored request.
   {
-    const auto expected = CreateRequestPtr(
-        base::Seconds(1), RequestField::kShowReasonTabSwitching);
+    const auto expected =
+        CreateRequestPtr(base::Seconds(1), /*destination_is_loaded=*/false,
+                         /*show_reason_tab_switching=*/true);
     trigger.UpdateRequest(StartTimeFromDelta(base::Seconds(1)),
                           /*destination_is_loaded=*/false,
                           /*show_reason_tab_switching=*/true,
@@ -206,11 +221,10 @@ TEST_F(VisibleTimeRequestTriggerTest, UpdateAndTakeRequest) {
 
   // Calling Update twice should merge the requests.
   {
-    const auto expected = CreateRequestPtr(
-        base::Seconds(2),
-        RequestFieldSet(RequestField::kDestinationIsLoaded,
-                        RequestField::kShowReasonTabSwitching,
-                        RequestField::kShowReasonBFCacheRestore));
+    const auto expected =
+        CreateRequestPtr(base::Seconds(2), /*destination_is_loaded=*/true,
+                         /*show_reason_tab_switching=*/true,
+                         /*show_reason_bfcache_restore=*/true);
     trigger.UpdateRequest(StartTimeFromDelta(base::Seconds(2)),
                           /*destination_is_loaded=*/true,
                           /*show_reason_tab_switching=*/true,
