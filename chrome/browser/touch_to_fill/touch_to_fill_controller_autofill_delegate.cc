@@ -39,6 +39,7 @@ bool ShouldTriggerSubmission(SubmissionReadinessState submission_readiness,
     case SubmissionReadinessState::kNoInformation:
     case SubmissionReadinessState::kError:
     case SubmissionReadinessState::kNoUsernameField:
+    case SubmissionReadinessState::kNoPasswordField:
     case SubmissionReadinessState::kFieldBetweenUsernameAndPassword:
     case SubmissionReadinessState::kFieldAfterPasswordField:
       *ready_for_submission = false;

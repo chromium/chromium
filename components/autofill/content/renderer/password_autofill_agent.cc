@@ -475,7 +475,9 @@ mojom::SubmissionReadinessState CalculateSubmissionReadiness(
     const FormData& form_data,
     WebInputElement& username_element,
     WebInputElement& password_element) {
-  DCHECK(!password_element.IsNull());
+  if (password_element.IsNull()) {
+    return mojom::SubmissionReadinessState::kNoPasswordField;
+  }
 
   if (username_element.IsNull())
     return mojom::SubmissionReadinessState::kNoUsernameField;
@@ -1053,32 +1055,34 @@ bool PasswordAutofillAgent::TryToShowTouchToFill(
   WebInputElement username_element;
   WebInputElement password_element;
   PasswordInfo* password_info = nullptr;
-  if (input_element.IsNull() ||
+  if (input_element.IsNull() || !IsElementEditable(input_element) ||
       !FindPasswordInfoForElement(input_element, UseFallbackData(false),
                                   &username_element, &password_element,
                                   &password_info)) {
     return false;
   }
 
-  // Don't trigger Touch To Fill when there is no password element or it is not
-  // editable.
-  if (password_element.IsNull() || !IsElementEditable(password_element))
-    return false;
+  bool has_amendable_username_element = IsUsernameAmendable(
+      username_element, input_element.IsPasswordFieldForAutofill());
+  bool has_editable_password_element =
+      !password_element.IsNull() && IsElementEditable(password_element);
+  DCHECK(has_amendable_username_element || has_editable_password_element);
 
   // Highlight the fields that are about to be filled by the user and remember
   // the old autofill state of |username_element| and |password_element|.
-  if (IsUsernameAmendable(username_element,
-                          input_element.IsPasswordFieldForAutofill())) {
+  if (has_amendable_username_element) {
     username_autofill_state_ = username_element.GetAutofillState();
     username_element.SetAutofillState(WebAutofillState::kPreviewed);
   }
-
-  password_autofill_state_ = password_element.GetAutofillState();
-  password_element.SetAutofillState(WebAutofillState::kPreviewed);
+  if (has_editable_password_element) {
+    password_autofill_state_ = password_element.GetAutofillState();
+    password_element.SetAutofillState(WebAutofillState::kPreviewed);
+  }
 
   focused_input_element_ = input_element;
 
-  WebFormElement form = password_element.Form();
+  WebFormElement form = !password_element.IsNull() ? password_element.Form()
+                                                   : username_element.Form();
   std::unique_ptr<FormData> form_data =
       form.IsNull() ? GetFormDataFromUnownedInputElements()
                     : GetFormDataFromWebForm(form);

@@ -125,6 +125,12 @@ const char kVisibleFormWithNoUsernameHTML[] =
     "  </form>"
     "</body>";
 
+const char kSingleUsernameFormHTML[] =
+    "<FORM name='LoginTestForm' action='http://www.bidule.com'>"
+    "  <INPUT type='text' id='username' autocomplete='username'/>"
+    "  <INPUT type='submit' value='Login'/>"
+    "</FORM>";
+
 const char kEmptyFormHTML[] =
     "<head> <style> form {display: inline;} </style> </head>"
     "<body> <form> </form> </body>";
@@ -1951,13 +1957,61 @@ TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_TwoFields) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(PasswordAutofillAgentTest, DontTryToShowTouchToFillReadonlyPassword) {
+TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_NoPasswordField) {
+  LoadHTML(kSingleUsernameFormHTML);
+  UpdateUrlForHTML(kSingleUsernameFormHTML);
+  UpdateOnlyUsernameElement();
+  SimulateOnFillPasswordForm(fill_data_);
+
+  EXPECT_TRUE(
+      password_autofill_agent_->TryToShowTouchToFill(username_element_));
+
+  EXPECT_CALL(fake_driver_,
+              ShowTouchToFill(
+                  autofill::mojom::SubmissionReadinessState::kNoPasswordField));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PasswordAutofillAgentTest, DontTryToShowTouchToFillOnReadonlyForm) {
+  SetElementReadOnly(username_element_, true);
   SetElementReadOnly(password_element_, true);
   SimulateOnFillPasswordForm(fill_data_);
 
   EXPECT_FALSE(
+      password_autofill_agent_->TryToShowTouchToFill(username_element_));
+  EXPECT_FALSE(
       password_autofill_agent_->TryToShowTouchToFill(password_element_));
 }
+
+class PasswordAutofillAgentTestReadonlyElementVariationTest
+    : public PasswordAutofillAgentTest,
+      public testing::WithParamInterface<bool> {};
+
+TEST_P(PasswordAutofillAgentTestReadonlyElementVariationTest,
+       DontTryToShowTouchToFillOnReadonlyElement) {
+  bool is_password_readonly = GetParam();
+
+  WebInputElement readonly_element =
+      is_password_readonly ? password_element_ : username_element_;
+  WebInputElement editable_element =
+      is_password_readonly ? username_element_ : password_element_;
+  SetElementReadOnly(readonly_element, true);
+  SetElementReadOnly(editable_element, false);
+  base::RunLoop().RunUntilIdle();
+
+  SimulateOnFillPasswordForm(fill_data_);
+
+  // Firstly, check that Touch-To-Fill is not shown on the readonly element.
+  EXPECT_FALSE(
+      password_autofill_agent_->TryToShowTouchToFill(readonly_element));
+
+  // Secondly, check that Touch-To-Fill can be shown on the editable element.
+  EXPECT_TRUE(password_autofill_agent_->TryToShowTouchToFill(editable_element));
+}
+
+INSTANTIATE_TEST_SUITE_P(ReadonlyElementVariation,
+                         PasswordAutofillAgentTestReadonlyElementVariationTest,
+                         testing::Bool());
 
 // Credentials are sent to the renderer even for sign-up forms as these may be
 // eligible for filling via manual fall back. In this case, the username_field
@@ -1985,7 +2039,7 @@ TEST_F(PasswordAutofillAgentTest, DontTryToShowTouchToFillSignUpForm) {
   EXPECT_FALSE(
       password_autofill_agent_->TryToShowTouchToFill(password_element_));
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Tests that |FillIntoFocusedField| doesn't fill read-only text fields.
 TEST_F(PasswordAutofillAgentTest, FillIntoFocusedReadonlyTextField) {
@@ -2324,11 +2378,6 @@ TEST_F(PasswordAutofillAgentTest,
 // Similar to RememberLastNonEmptyUsernameAndPasswordOnSubmit_New, but uses
 // no password fields on single username form
 TEST_F(PasswordAutofillAgentTest, RememberLastNonEmptySingleUsername) {
-  const char kSingleUsernameFormHTML[] =
-      "<FORM name='LoginTestForm' action='http://www.bidule.com'>"
-      "  <INPUT type='text' id='username' autocomplete='username'/>"
-      "  <INPUT type='submit' value='Login'/>"
-      "</FORM>";
   LoadHTML(kSingleUsernameFormHTML);
   UpdateOnlyUsernameElement();
 
