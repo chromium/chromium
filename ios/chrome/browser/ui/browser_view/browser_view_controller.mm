@@ -405,6 +405,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Command handler for application commands
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
 
+// Command handler for browser coordinator commands
+@property(nonatomic, weak) id<BrowserCoordinatorCommands>
+    browserCoordinatorCommandsHandler;
+
 // The FullscreenController.
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
@@ -496,6 +500,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.popupMenuCommandsHandler = dependencies.popupMenuCommandsHandler;
     self.snackbarCommandsHandler = dependencies.snackbarCommandsHandler;
     self.applicationCommandsHandler = dependencies.applicationCommandsHandler;
+    self.browserCoordinatorCommandsHandler =
+        dependencies.browserCoordinatorCommandsHandler;
     dependencies.lensCoordinator.delegate = self;
 
     _inNewTabAnimation = NO;
@@ -528,10 +534,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - Public Properties
 
-- (id<BrowserCoordinatorCommands, FindInPageCommands, ToolbarCommands>)
-    dispatcher {
-  return static_cast<
-      id<BrowserCoordinatorCommands, FindInPageCommands, ToolbarCommands>>(
+- (id<FindInPageCommands, ToolbarCommands>)dispatcher {
+  return static_cast<id<FindInPageCommands, ToolbarCommands>>(
       self.commandDispatcher);
 }
 
@@ -2742,7 +2746,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       break;
     case OverscrollAction::CLOSE_TAB:
       base::RecordAction(base::UserMetricsAction("MobilePullGestureCloseTab"));
-      [self.dispatcher closeCurrentTab];
+      [self.browserCoordinatorCommandsHandler closeCurrentTab];
       break;
     case OverscrollAction::REFRESH:
       base::RecordAction(base::UserMetricsAction("MobilePullGestureReload"));

@@ -431,6 +431,7 @@ enum class ToolbarKind {
   id<PopupMenuCommands> _popupMenuCommandsHandler;
   id<SnackbarCommands> _snackbarCommandsHandler;
   id<ApplicationCommands> _applicationCommandsHandler;
+  id<BrowserCoordinatorCommands> _browserCoordinatorCommandsHandler;
   absl::optional<ToolbarKind> _nextToolbarToPresent;
   CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
 }
@@ -787,6 +788,8 @@ enum class ToolbarKind {
       HandlerForProtocol(_dispatcher, PopupMenuCommands);
   _applicationCommandsHandler =
       HandlerForProtocol(_dispatcher, ApplicationCommands);
+  _browserCoordinatorCommandsHandler =
+      HandlerForProtocol(_dispatcher, BrowserCoordinatorCommands);
 
   // SnackbarCoordinator is not created yet and therefore not dispatching
   // SnackbarCommands.
@@ -817,6 +820,8 @@ enum class ToolbarKind {
       _snackbarCommandsHandler;
   _viewControllerDependencies.applicationCommandsHandler =
       _applicationCommandsHandler;
+  _viewControllerDependencies.browserCoordinatorCommandsHandler =
+      _browserCoordinatorCommandsHandler;
 }
 
 - (void)updateViewControllerDependencies {
@@ -869,6 +874,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.popupMenuCommandsHandler = nil;
   _viewControllerDependencies.snackbarCommandsHandler = nil;
   _viewControllerDependencies.applicationCommandsHandler = nil;
+  _viewControllerDependencies.browserCoordinatorCommandsHandler = nil;
 
   [_bookmarksCoordinator shutdown];
   _bookmarksCoordinator = nil;

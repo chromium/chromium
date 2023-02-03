@@ -27,6 +27,7 @@
 class Browser;
 @class BookmarksCoordinator;
 @class BrowserContainerViewController;
+@protocol BrowserCoordinatorCommands;
 @class BubblePresenter;
 @class CommandDispatcher;
 @protocol CRWResponderInputView;
@@ -72,6 +73,7 @@ typedef struct {
   id<PopupMenuCommands> popupMenuCommandsHandler;
   id<SnackbarCommands> snackbarCommandsHandler;
   id<ApplicationCommands> applicationCommandsHandler;
+  id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers
