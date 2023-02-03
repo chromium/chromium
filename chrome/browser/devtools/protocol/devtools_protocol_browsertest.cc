@@ -16,6 +16,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -26,6 +27,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -274,6 +276,34 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_NE(nullptr, navigation_controller.GetPendingEntry());
   EXPECT_EQ(GURL("about:blank"),
             navigation_controller.GetVisibleEntry()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetRPHRegistrationMode) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  Attach();
+
+  // Initial value
+  custom_handlers::ProtocolHandlerRegistry* registry =
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(
+          browser()->profile());
+  EXPECT_EQ(custom_handlers::RphRegistrationMode::kNone,
+            registry->registration_mode());
+
+  // Set an invalid value
+  base::Value::Dict params_invalid;
+  params_invalid.Set("mode", "accept");
+  SendCommandAsync("Page.setRPHRegistrationMode", std::move(params_invalid));
+  EXPECT_EQ(custom_handlers::RphRegistrationMode::kNone,
+            registry->registration_mode());
+
+  // Set an value value
+  base::Value::Dict params;
+  params.Set("mode", "autoaccept");
+  SendCommandAsync("Page.setRPHRegistrationMode", std::move(params));
+  EXPECT_EQ(custom_handlers::RphRegistrationMode::kAutoAccept,
+            registry->registration_mode());
 }
 
 using DevToolsProtocolTest_AppId = DevToolsProtocolTest;

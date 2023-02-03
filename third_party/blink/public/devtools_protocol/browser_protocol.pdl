@@ -8159,6 +8159,15 @@ domain Page
         autoReject
         autoOptOut
 
+  # Extensions for Custom Handlers API:
+  # https://html.spec.whatwg.org/multipage/system-state.html#rph-automation
+  experimental command setRPHRegistrationMode
+    parameters
+      enum mode
+        none
+        autoaccept
+        autoreject
+
   # Generates a report for testing.
   experimental command generateTestReport
     parameters

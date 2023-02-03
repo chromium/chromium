@@ -237,6 +237,7 @@ static_library("devtools") {
     deps += [
       ":protocol_generated_sources",
       "//chrome/app:command_ids",
+      "//components/custom_handlers",
       "//components/media_router/browser",
       "//components/media_router/common/mojom:media_router",
       "//components/payments/content",

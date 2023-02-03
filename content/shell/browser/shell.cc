@@ -542,7 +542,10 @@ void Shell::RegisterProtocolHandler(RenderFrameHost* requesting_frame,
 
   // TODO(jfernandez): Are we interested at all on using the
   // PermissionRequestManager in the ContentShell ?
-  registry->OnAcceptRegisterProtocolHandler(handler);
+  if (registry->registration_mode() ==
+      custom_handlers::RphRegistrationMode::kAutoAccept) {
+    registry->OnAcceptRegisterProtocolHandler(handler);
+  }
 }
 #endif
 

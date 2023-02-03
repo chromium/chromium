@@ -30,6 +30,12 @@ using DefaultClientCallback = base::OnceCallback<void(bool)>;
 
 namespace custom_handlers {
 
+enum class RphRegistrationMode {
+  kNone,
+  kAutoAccept,
+  kAutoReject,
+};
+
 class ProtocolHandler;
 
 // This is where handlers for protocols registered with
@@ -220,6 +226,11 @@ class ProtocolHandlerRegistry : public KeyedService {
 
   base::WeakPtr<ProtocolHandlerRegistry> GetWeakPtr();
 
+  void SetRphRegistrationMode(RphRegistrationMode mode) {
+    registration_mode_ = mode;
+  }
+  RphRegistrationMode registration_mode() const { return registration_mode_; }
+
  private:
   friend class base::DeleteHelper<ProtocolHandlerRegistry>;
   friend struct content::BrowserThread::DeleteOnThread<
@@ -363,6 +374,10 @@ class ProtocolHandlerRegistry : public KeyedService {
   bool is_loaded_;
 
   base::ObserverList<Observer> observers_;
+
+  // The current registration automation mode for registerProtocolHandler API,
+  // to be used for any future RegisterProtocolHandler requests.
+  RphRegistrationMode registration_mode_ = RphRegistrationMode::kNone;
 
   // Makes it possible to invalidate the callback for the
   // DefaultProtocolClientWorker.

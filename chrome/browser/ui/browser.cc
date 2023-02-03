@@ -2113,6 +2113,12 @@ void Browser::RegisterProtocolHandler(
     window_->GetLocationBar()->UpdateContentSettingsIcons();
   }
 
+  if (registry->registration_mode() ==
+      custom_handlers::RphRegistrationMode::kAutoAccept) {
+    registry->OnAcceptRegisterProtocolHandler(handler);
+    return;
+  }
+
   permissions::PermissionRequestManager* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   if (permission_request_manager) {
