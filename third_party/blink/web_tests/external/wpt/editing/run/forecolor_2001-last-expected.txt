@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 275 tests; 269 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 323 tests; 315 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("stylewithcss") after
 FAIL [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("forecolor") before assert_equals: Wrong result returned expected true but got false
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandState("forecolor") before
@@ -275,5 +275,53 @@ PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>ab
 PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>ab[c]</font>": execCommand("foreColor", false, "#ff0000") return value
 PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>ab[c]</font>" checks for modifications to non-editable content
 PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>ab[c]</font>" compare innerHTML
+PASS [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+PASS [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "#0000FF") return value
+PASS [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+PASS [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+PASS [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c" compare innerHTML
+PASS [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+PASS [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "rgb(0, 0, 255)") return value
+PASS [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+PASS [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+PASS [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c" compare innerHTML
+PASS [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+PASS [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "rgba(0, 0, 255, 0.5)") return value
+PASS [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+PASS [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+FAIL [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "a<span style=\"color:rgba(0, 0, 255, 0.5)\">b</span>c" but got "a<font color=\"rgba(0, 0, 255, 0.5)\">b</font>c"
+PASS [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+PASS [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "transparent") return value
+PASS [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+PASS [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+FAIL [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "a<span style=\"color:rgba(0, 0, 0, 0)\">b</span>c" but got "a<font color=\"rgba(0, 0, 0, 0)\">b</font>c"
+PASS [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "#0000FF") return value
+PASS [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+PASS [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+PASS [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c" compare innerHTML
+PASS [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "rgb(0, 0, 255)") return value
+PASS [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+PASS [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+PASS [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c" compare innerHTML
+PASS [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "rgba(0, 0, 255, 0.5)") return value
+PASS [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+PASS [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+PASS [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c" compare innerHTML
+PASS [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "transparent") return value
+PASS [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+PASS [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+PASS [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c" compare innerHTML
 Harness: the test ran to completion.
 

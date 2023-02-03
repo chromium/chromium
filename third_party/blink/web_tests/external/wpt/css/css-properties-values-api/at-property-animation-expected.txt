@@ -13,5 +13,9 @@ PASS No transition when changing types
 FAIL No transition when removing @property rule assert_equals: expected "100px" but got " 100px"
 FAIL Unregistered properties referencing animated properties update correctly. assert_equals: expected "150px" but got " 150px"
 FAIL Registered properties referencing animated properties update correctly. assert_equals: expected "150px" but got " 150px"
+PASS CSS animation setting "inherit" for a custom property on a keyframe is responsive to changing that custom property on the parent.
+PASS JS-originated animation setting "inherit" for a custom property on a keyframe is responsive to changing that custom property on the parent.
+PASS CSS animation setting "currentColor" for a custom property on a keyframe is responsive to changing "color" on the parent.
+PASS JS-originated animation setting "currentColor" for a custom property on a keyframe is responsive to changing "color" on the parent.
 Harness: the test ran to completion.
 

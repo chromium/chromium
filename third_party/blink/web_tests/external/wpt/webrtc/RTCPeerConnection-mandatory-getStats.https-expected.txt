@@ -9,10 +9,10 @@ PASS RTCRtpStreamStats's codecId
 PASS RTCReceivedRtpStreamStats's packetsReceived
 PASS RTCReceivedRtpStreamStats's packetsLost
 PASS RTCReceivedRtpStreamStats's jitter
-PASS RTCReceivedRtpStreamStats's framesDropped
 PASS RTCInboundRtpStreamStats's trackIdentifier
 PASS RTCInboundRtpStreamStats's remoteId
 PASS RTCInboundRtpStreamStats's framesDecoded
+PASS RTCInboundRtpStreamStats's framesDropped
 PASS RTCInboundRtpStreamStats's nackCount
 PASS RTCInboundRtpStreamStats's framesReceived
 PASS RTCInboundRtpStreamStats's bytesReceived
