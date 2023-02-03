@@ -7331,6 +7331,8 @@ bool ChromeContentBrowserClient::OpenExternally(
     const GURL& url,
     WindowOpenDisposition disposition) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  const bool from_webui = opener->GetWebUI() != nullptr;
+
   // If Lacros is the primary browser, we intercept requests from Ash WebUIs and
   // redirect them to Lacros via crosapi. This is to make window.open and <a
   // href target="_blank"> links in WebUIs (e.g. ChromeOS Settings app) open in
@@ -7341,9 +7343,8 @@ bool ChromeContentBrowserClient::OpenExternally(
   // with separately) as well as some existing links that currently must remain
   // in Ash.
   bool should_open_in_lacros =
-      crosapi::lacros_startup_state::IsLacrosEnabled() &&
+      from_webui && crosapi::lacros_startup_state::IsLacrosEnabled() &&
       crosapi::lacros_startup_state::IsLacrosPrimaryEnabled() &&
-      opener->GetWebUI() != nullptr &&
       disposition != WindowOpenDisposition::NEW_POPUP &&
       !url.SchemeIs(content::kChromeDevToolsScheme) &&
       !url.SchemeIs(content::kChromeUIScheme) &&
@@ -7359,13 +7360,25 @@ bool ChromeContentBrowserClient::OpenExternally(
     return true;
   }
 
+  Profile* profile = Profile::FromBrowserContext(opener->GetBrowserContext());
+
+  // Handle capturing system apps directly, as otherwise an additional empty
+  // browser window could be created.
+  const absl::optional<ash::SystemWebAppType> capturing_system_app_type =
+      ash::GetCapturingSystemAppForURL(profile, url);
+  if (capturing_system_app_type) {
+    ash::SystemAppLaunchParams swa_params;
+    swa_params.url = url;
+    ash::LaunchSystemWebAppAsync(profile, capturing_system_app_type.value(),
+                                 swa_params);
+    return true;
+  }
+
   // If Lacros is the only browser, we intercept any WebUI URLs that would be
   // opened in a regular browser window. We open these with the OsUrlHandler SWA
   // instead, which will load them in an app window.
-  Profile* profile = Profile::FromBrowserContext(opener->GetBrowserContext());
   bool should_open_in_ash_app =
-      !crosapi::browser_util::IsAshWebBrowserEnabled() &&
-      opener->GetWebUI() != nullptr &&
+      from_webui && !crosapi::browser_util::IsAshWebBrowserEnabled() &&
       ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url) &&
       !ash::GetCapturingSystemAppForURL(profile, url);
   if (should_open_in_ash_app) {
@@ -7380,6 +7393,7 @@ bool ChromeContentBrowserClient::OpenExternally(
     return true;
   }
 #endif
+
   return false;
 }
 
