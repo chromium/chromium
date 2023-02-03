@@ -248,10 +248,12 @@ class Metric:
     self.type = util.get_attr(elem, 'type', Model.TYPE_REGEX)
     self.summary = util.get_text_child(elem, 'summary')
 
-    if self.type == 'raw-string' and project.id != 'none':
+    if self.type == 'raw-string' and (
+        project.id != 'none' and project.name != EVENT_SEQUENCE_PROJECT_NAME):
       util.error(
           elem, 'raw-string metrics must be in a project with id type '
-          "'none', but {} has id type '{}'".format(project.name, project.id))
+          "'none' or project name '{}', but {} has id type '{}'".format(
+              EVENT_SEQUENCE_PROJECT_NAME, project.name, project.id))
 
   def __repr__(self):
     summary = wrap(self.summary, indent='    ')
