@@ -415,8 +415,8 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   }
 
   std::unique_ptr<quic::QuicEncryptedPacket>
-  ConstructClientConnectionClosePacket(uint64_t num) {
-    return client_maker_.MakeConnectionClosePacket(
+  ConstructServerConnectionClosePacket(uint64_t num) {
+    return server_maker_.MakeConnectionClosePacket(
         num, false, quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED, "Time to panic!");
   }
 
@@ -12406,6 +12406,12 @@ TEST_P(QuicStreamFactoryTest,
 }
 
 TEST_P(QuicStreamFactoryTest, YieldAfterPackets) {
+  if (!version_.SupportsClientConnectionIds()) {
+    // When the version allows omitting the connection ID in short headers,
+    // this test lacks the proper initialization for clients to successfully
+    // process the packet.
+    return;
+  }
   Initialize();
   factory_->set_is_quic_known_to_work_on_current_network(true);
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -12413,11 +12419,10 @@ TEST_P(QuicStreamFactoryTest, YieldAfterPackets) {
   QuicStreamFactoryPeer::SetYieldAfterPackets(factory_.get(), 0);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ConstructClientConnectionClosePacket(1));
+  socket_data.AddRead(SYNCHRONOUS, ConstructServerConnectionClosePacket(1));
   client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   if (VersionUsesHttp3(version_.transport_version))
     socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
-  socket_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   crypto_client_stream_factory_.set_handshake_mode(
@@ -12457,6 +12462,12 @@ TEST_P(QuicStreamFactoryTest, YieldAfterPackets) {
 }
 
 TEST_P(QuicStreamFactoryTest, YieldAfterDuration) {
+  if (!version_.SupportsClientConnectionIds()) {
+    // When the version allows omitting the connection ID in short headers,
+    // this test lacks the proper initialization for clients to successfully
+    // process the packet.
+    return;
+  }
   Initialize();
   factory_->set_is_quic_known_to_work_on_current_network(true);
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -12465,11 +12476,10 @@ TEST_P(QuicStreamFactoryTest, YieldAfterDuration) {
       factory_.get(), quic::QuicTime::Delta::FromMilliseconds(-1));
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ConstructClientConnectionClosePacket(1));
+  socket_data.AddRead(SYNCHRONOUS, ConstructServerConnectionClosePacket(1));
   client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   if (VersionUsesHttp3(version_.transport_version))
     socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
-  socket_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   crypto_client_stream_factory_.set_handshake_mode(
