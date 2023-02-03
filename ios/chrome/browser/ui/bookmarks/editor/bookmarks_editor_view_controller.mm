@@ -17,8 +17,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/url_formatter/url_fixer.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -28,7 +26,6 @@
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_parent_folder_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_text_field_item.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mutator.h"
-#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
@@ -80,14 +77,7 @@ const CGFloat kEstimatedTableRowHeight = 50;
 const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }  // namespace
 
-@interface BookmarksEditorViewController () <
-    BookmarksFolderChooserViewControllerDelegate,
-    BookmarkTextFieldItemDelegate>
-
-// The folder picker view controller.
-// Redefined to be readwrite.
-@property(nonatomic, strong)
-    BookmarksFolderChooserViewController* folderViewController;
+@interface BookmarksEditorViewController () <BookmarkTextFieldItemDelegate>
 
 @property(nonatomic, assign) Browser* browser;
 
@@ -126,7 +116,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 @synthesize delegate = _delegate;
 @synthesize displayingValidURL = _displayingValidURL;
-@synthesize folderViewController = _folderViewController;
 @synthesize browser = _browser;
 @synthesize browserState = _browserState;
 @synthesize cancelItem = _cancelItem;
@@ -148,14 +137,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
     _browserState = browser->GetBrowserState()->GetOriginalChromeBrowserState();
   }
   return self;
-}
-
-- (void)dealloc {
-  [self shutdown];
-}
-
-- (void)shutdown {
-  _folderViewController.delegate = nil;
 }
 
 #pragma mark View lifecycle
@@ -278,7 +259,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
               self.browserState)];
 }
 
-- (void)dismissBookmarkEditView {
+- (void)dismissBookmarkEditorView {
   [self.view endEditing:YES];
 
   // Dismiss this controller.
@@ -303,10 +284,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }
 
 #pragma mark - BookmarksEditorConsumer
-
-- (void)bookmarkDidMoveToParent:(const bookmarks::BookmarkNode*)newParent {
-  [self.folderViewController changeSelectedFolder:newParent];
-}
 
 - (void)updateFolderLabel {
   NSIndexPath* indexPath =
@@ -397,35 +374,16 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }
 
 - (void)moveBookmark {
-  DCHECK([self.mutator bookmarkModel]);
-  DCHECK(!self.folderViewController);
-
-  std::set<const BookmarkNode*> editedNodes;
-  editedNodes.insert([self.mutator bookmark]);
-  BookmarksFolderChooserViewController* folderViewController =
-      [[BookmarksFolderChooserViewController alloc]
-          initWithBookmarkModel:[self.mutator bookmarkModel]
-               allowsNewFolders:YES
-                    editedNodes:editedNodes
-                   allowsCancel:NO
-                 selectedFolder:[self.mutator folder]
-                        browser:_browser];
-  folderViewController.delegate = self;
-  folderViewController.snackbarCommandsHandler = self.snackbarCommandsHandler;
-  self.folderViewController = folderViewController;
-  self.folderViewController.navigationItem.largeTitleDisplayMode =
-      UINavigationItemLargeTitleDisplayModeNever;
-  [self.navigationController pushViewController:self.folderViewController
-                                       animated:YES];
+  [self.delegate moveBookmark];
 }
 
 - (void)cancel {
-  [self dismissBookmarkEditView];
+  [self dismissBookmarkEditorView];
 }
 
 - (void)save {
   [self commitBookmarkChanges];
-  [self dismissBookmarkEditView];
+  [self dismissBookmarkEditorView];
 }
 
 #pragma mark - BookmarkTextFieldItemDelegate
@@ -506,41 +464,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   return footerView;
 }
 
-#pragma mark - BookmarksFolderChooserViewControllerDelegate
-
-- (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
-    didFinishWithFolder:(const BookmarkNode*)folder {
-  [self.mutator changeFolder:folder];
-  // This delegate method can be called on two occasions:
-  // - the user selected a folder in the folder picker. In that case, the folder
-  // picker should be popped;
-  // - the user created a new folder, in which case the navigation stack
-  // contains this bookmark editor (`self`), a folder picker and a folder
-  // creator. In such a case, both the folder picker and creator shoud be popped
-  // to reveal this bookmark editor. Thus the call to
-  // `popToViewController:animated:`.
-  [self.navigationController popToViewController:self animated:YES];
-  self.folderViewController.delegate = nil;
-  self.folderViewController = nil;
-}
-
-- (void)folderPickerDidCancel:
-    (BookmarksFolderChooserViewController*)folderPicker {
-  // This delegate method can only be called from the folder picker, which is
-  // the only view controller on top of this bookmark editor (`self`). Thus the
-  // call to `popViewControllerAnimated:`.
-  [self.navigationController popViewControllerAnimated:YES];
-  self.folderViewController.delegate = nil;
-  self.folderViewController = nil;
-}
-
-- (void)folderPickerDidDismiss:
-    (BookmarksFolderChooserViewController*)folderPicker {
-  self.folderViewController.delegate = nil;
-  self.folderViewController = nil;
-  [self dismissBookmarkEditView];
-}
-
 #pragma mark - UIResponder
 
 // To always be able to register key commands via -keyCommands, the VC must be
@@ -555,7 +478,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
-  [self dismissBookmarkEditView];
+  [self dismissBookmarkEditorView];
 }
 
 @end

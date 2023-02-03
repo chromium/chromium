@@ -21,10 +21,6 @@ class BookmarkNode;
 // Update the UI’s folder using current `folder` value.
 - (void)updateFolderLabel;
 
-// Change the folder in the folder selector.
-// TODO(crbug.com/1404311) Moves this method in the coordinator.
-- (void)bookmarkDidMoveToParent:(const bookmarks::BookmarkNode*)newParent;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_EDITOR_BOOKMARKS_EDITOR_CONSUMER_H_

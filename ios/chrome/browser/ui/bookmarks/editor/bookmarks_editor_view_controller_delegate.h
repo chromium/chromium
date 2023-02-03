@@ -18,6 +18,9 @@
 - (void)bookmarkEditorWillCommitTitleOrURLChange:
     (BookmarksEditorViewController*)controller;
 
+// Called when the user wants to select a folder to move the bookmark into.
+- (void)moveBookmark;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_EDITOR_BOOKMARKS_EDITOR_VIEW_CONTROLLER_DELEGATE_H_

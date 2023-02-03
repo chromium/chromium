@@ -102,7 +102,7 @@
   }
 
   if (self.bookmark == bookmarkNode) {
-    [self.consumer bookmarkDidMoveToParent:newParent];
+    [self.delegate bookmarkDidMoveToParent:newParent];
   }
 }
 

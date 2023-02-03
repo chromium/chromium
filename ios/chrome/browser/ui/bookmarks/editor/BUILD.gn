@@ -50,7 +50,6 @@ source_set("editor_ui") {
     "//components/strings",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/main:public",

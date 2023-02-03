@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mediator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_coordinator.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -23,8 +24,10 @@
 #error "This file requires ARC support."
 #endif
 
-@interface BookmarksEditorCoordinator () <BookmarksEditorViewControllerDelegate,
-                                          BookmarksEditorMediatorDelegate> {
+@interface BookmarksEditorCoordinator () <
+    BookmarksEditorViewControllerDelegate,
+    BookmarksEditorMediatorDelegate,
+    BookmarksFolderChooserViewControllerDelegate> {
   // BookmarkNode to edit.
   const bookmarks::BookmarkNode* _node;
 
@@ -45,6 +48,9 @@
 
   // The delegate provided to `_bookmarkNavigationController`.
   BookmarkNavigationControllerDelegate* _navigationControllerDelegate;
+
+  // The folder picker view controller.
+  BookmarksFolderChooserViewController* _folderViewController;
 }
 
 // The action sheet coordinator, if one is currently being shown.
@@ -107,12 +113,13 @@
   [_mediator disconnect];
   _mediator.consumer = nil;
   _mediator = nil;
-  [_viewController shutdown];
   _viewController.delegate = nil;
   _viewController.snackbarCommandsHandler = nil;
   _viewController.mutator = nil;
   _viewController = nil;
   _snackbarCommandsHandler = nil;
+  _folderViewController.delegate = nil;
+  _folderViewController = nil;
 
   // animatedDismissal should have been explicitly set before calling stop.
   [_navigationController dismissViewControllerAnimated:self.animatedDismissal
@@ -123,6 +130,25 @@
 
 #pragma mark - BookmarksEditorViewControllerDelegate
 
+- (void)moveBookmark {
+  DCHECK([_mediator bookmarkModel]);
+  DCHECK(!_folderViewController);
+
+  std::set<const bookmarks::BookmarkNode*> editedNodes{[_mediator bookmark]};
+  _folderViewController = [[BookmarksFolderChooserViewController alloc]
+      initWithBookmarkModel:[_mediator bookmarkModel]
+           allowsNewFolders:YES
+                editedNodes:editedNodes
+               allowsCancel:NO
+             selectedFolder:[_mediator folder]
+                    browser:self.browser];
+  _folderViewController.delegate = self;
+  _folderViewController.snackbarCommandsHandler = _snackbarCommandsHandler;
+  _folderViewController.navigationItem.largeTitleDisplayMode =
+      UINavigationItemLargeTitleDisplayModeNever;
+  [_navigationController pushViewController:_folderViewController animated:YES];
+}
+
 - (void)bookmarkEditorWantsDismissal:
     (BookmarksEditorViewController*)controller {
   [self.delegate bookmarksEditorCoordinatorShouldStop:self];
@@ -132,7 +158,6 @@
     (BookmarksEditorViewController*)controller {
   [self.delegate bookmarkEditorWillCommitTitleOrURLChange:self];
 }
-
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidAttemptToDismiss:
@@ -189,7 +214,7 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [_viewController dismissBookmarkEditView];
+  [_viewController dismissBookmarkEditorView];
 }
 
 #pragma mark - BookmarksEditorMediatorDelegate
@@ -199,4 +224,43 @@
   [self.delegate bookmarksEditorCoordinatorShouldStop:self];
 }
 
+- (void)bookmarkDidMoveToParent:(const bookmarks::BookmarkNode*)newParent {
+  [_folderViewController changeSelectedFolder:newParent];
+}
+
+#pragma mark - BookmarksFolderChooserViewControllerDelegate
+
+- (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
+    didFinishWithFolder:(const bookmarks::BookmarkNode*)folder {
+  [_mediator changeFolder:folder];
+  // This delegate method can be called on two occasions:
+  // - the user selected a folder in the folder picker. In that case, the folder
+  // picker should be popped;
+  // - the user created a new folder, in which case the navigation stack
+  // contains this bookmark editor (`self`), a folder picker and a folder
+  // creator. In such a case, both the folder picker and creator shoud be popped
+  // to reveal this bookmark editor. Thus the call to
+  // `popToViewController:animated:`.
+  [_navigationController popToViewController:_viewController animated:YES];
+  _folderViewController.delegate = nil;
+  _folderViewController = nil;
+}
+
+- (void)folderPickerDidCancel:
+    (BookmarksFolderChooserViewController*)folderPicker {
+  // This delegate method can only be called from the folder picker, which is
+  // the only view controller on top of this bookmark editor (`self`). Thus the
+  // call to `popViewControllerAnimated:`.
+  [_navigationController popViewControllerAnimated:YES];
+  _folderViewController.delegate = nil;
+  _folderViewController = nil;
+}
+
+- (void)folderPickerDidDismiss:
+    (BookmarksFolderChooserViewController*)folderPicker {
+  _folderViewController.delegate = nil;
+  _folderViewController = nil;
+  [_viewController.view endEditing:YES];
+  [self.delegate bookmarksEditorCoordinatorShouldStop:self];
+}
 @end

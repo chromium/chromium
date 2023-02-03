@@ -16,10 +16,6 @@ class BookmarkModel;
 // model.
 @protocol BookmarksEditorMutator <NSObject>
 
-// Changes `self.folder` and updates the UI accordingly.
-// The change is not committed until the user taps the Save button.
-- (void)changeFolder:(const bookmarks::BookmarkNode*)folder;
-
 // TODO(crbug.com/1404311): Remove those accessor and setters.
 // We temporarily use them to facilitate code migration.
 - (const bookmarks::BookmarkNode*)bookmark;

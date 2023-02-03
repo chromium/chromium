@@ -47,6 +47,10 @@ class PrefService;
 // Disconnects the mediator.
 - (void)disconnect;
 
+// Changes `self.folder` and updates the UI accordingly.
+// The change is not committed until the user taps the Save button.
+- (void)changeFolder:(const bookmarks::BookmarkNode*)folder;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_EDITOR_BOOKMARKS_EDITOR_MEDIATOR_H_
