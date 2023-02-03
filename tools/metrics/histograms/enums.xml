@@ -26696,6 +26696,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
 <enum name="DevToolsRecordingReplayStarted">
   <int value="1" label="Replay only"/>
   <int value="2" label="Replay with performance tracing"/>
+  <int value="3" label="Replay via an extension"/>
 </enum>
 
 <enum name="DevToolsRecordingToggled">
