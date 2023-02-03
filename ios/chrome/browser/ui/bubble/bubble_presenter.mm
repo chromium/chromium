@@ -258,7 +258,6 @@ const CGFloat kBubblePresentationDelay = 1;
     return;
 
   self.defaultPageModeTipBubblePresenter = presenter;
-  base::UmaHistogramBoolean("IOS.IPH.DefaultSite.Presented", true);
 }
 
 - (void)presentWhatsNewBottomToolbarBubble {

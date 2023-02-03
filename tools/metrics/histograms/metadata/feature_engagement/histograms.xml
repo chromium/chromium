@@ -95,6 +95,7 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_DataSaverMilestonePromo"
       summary="data saver milestone promo"/>
   <variant name="IPH_DataSaverPreview" summary="data saver preview"/>
+  <variant name="IPH_DefaultSiteView" summary="default site view info on iOS"/>
   <variant name="IPH_DesktopPwaInstall" summary="desktop PWA install icon"/>
   <variant name="IPH_DesktopTabGroupsNewGroup"
       summary="creating a new tab group"/>
