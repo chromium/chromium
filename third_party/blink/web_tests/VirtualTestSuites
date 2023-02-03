@@ -1201,13 +1201,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "object-param-url",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/html/semantics/embedded-content/the-object-element/object-param-url.html"],
-    "args": ["--disable-features=HTMLParamElementUrlSupport"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "parakeet",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/parakeet"],

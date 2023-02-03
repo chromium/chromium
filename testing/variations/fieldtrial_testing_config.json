@@ -5437,29 +5437,6 @@
             ]
         }
     ],
-    "HTMLParamElementUrlSupport": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled_20220615",
-                    "disable_features": [
-                        "HTMLParamElementUrlSupport"
-                    ]
-                }
-            ]
-        }
-    ],
     "HTMLPopoverAttribute": [
         {
             "platforms": [

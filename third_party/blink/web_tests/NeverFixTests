@@ -1583,9 +1583,6 @@ external/wpt/serial/serialPort_loopback_flowControl-manual.https.html [ Skip ]
 external/wpt/serial/serialPort_disconnect-manual.https.html [ Skip ]
 external/wpt/serial/serialPort_readable-manual.https.html [ Skip ]
 
-# Content-shell doesn't support plugins
-fast/dom/HTMLObjectElement/object-param-url-usecounter-manual.html [ Skip ]
-
 # CPU test is enough for this one as there are gradient issues on the GPU
 crbug.com/626703 [ Linux ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-query-nosw-manual.https.html [ Skip ]
 crbug.com/626703 [ Mac ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-query-nosw-manual.https.html [ Skip ]
