@@ -100,14 +100,11 @@ bool IsAutoConnectEnabledInPolicy(const base::Value& policy) {
   return network_dict->FindBoolKey(autoconnect_key).value_or(false);
 }
 
-base::Value* GetOrCreateNestedDictionary(const std::string& key1,
-                                         const std::string& key2,
-                                         base::Value* dict) {
-  base::Value* inner_dict =
-      dict->FindPathOfType({key1, key2}, base::Value::Type::DICT);
-  if (inner_dict)
-    return inner_dict;
-  return dict->SetPath({key1, key2}, base::Value(base::Value::Type::DICT));
+base::Value::Dict* GetOrCreateNestedDictionary(const std::string& key1,
+                                               const std::string& key2,
+                                               base::Value* dict) {
+  base::Value::Dict* outer_dict = dict->GetDict().EnsureDict(key1);
+  return outer_dict->EnsureDict(key2);
 }
 
 void ApplyGlobalAutoconnectPolicy(NetworkProfile::Type profile_type,
@@ -121,7 +118,7 @@ void ApplyGlobalAutoconnectPolicy(NetworkProfile::Type profile_type,
 
   // Managed dictionaries don't contain empty dictionaries (see onc_merger.cc),
   // so add the Autoconnect dictionary in case Shill didn't report a value.
-  base::Value* auto_connect_dictionary = nullptr;
+  base::Value::Dict* auto_connect_dictionary = nullptr;
   if (type == ::onc::network_type::kWiFi) {
     auto_connect_dictionary = GetOrCreateNestedDictionary(
         ::onc::network_config::kWiFi, ::onc::wifi::kAutoConnect,
@@ -145,9 +142,9 @@ void ApplyGlobalAutoconnectPolicy(NetworkProfile::Type profile_type,
   }
   DCHECK(!policy_source.empty());
 
-  auto_connect_dictionary->SetKey(policy_source, base::Value(false));
-  auto_connect_dictionary->SetKey(::onc::kAugmentationEffectiveSetting,
-                                  base::Value(policy_source));
+  auto_connect_dictionary->Set(policy_source, false);
+  auto_connect_dictionary->Set(::onc::kAugmentationEffectiveSetting,
+                               policy_source);
 }
 
 }  // namespace

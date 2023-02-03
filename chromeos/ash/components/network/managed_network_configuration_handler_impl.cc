@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -134,24 +135,28 @@ bool MatchesExistingNetworkState(const base::Value::Dict& properties,
 }
 
 // Checks if |onc| is an unmanaged wifi network that has AutoConnect=true.
-bool EnablesUnmanagedWifiAutoconnect(const base::Value& onc_dict) {
-  const base::Value* type = onc_dict.FindKeyOfType(::onc::network_config::kType,
-                                                   base::Value::Type::STRING);
-  if (!type || type->GetString() != ::onc::network_type::kWiFi)
-    return false;
-
-  const base::Value* source = onc_dict.FindKeyOfType(
-      ::onc::network_config::kSource, base::Value::Type::STRING);
-  if (!source ||
-      source->GetString() == ::onc::network_config::kSourceDevicePolicy ||
-      source->GetString() == ::onc::network_config::kSourceUserPolicy) {
+bool EnablesUnmanagedWifiAutoconnect(const base::Value::Dict& onc_dict) {
+  const std::string* type = onc_dict.FindString(::onc::network_config::kType);
+  if (!type || *type != ::onc::network_type::kWiFi) {
     return false;
   }
 
-  const base::Value* autoconnect = onc_dict.FindPathOfType(
-      {::onc::network_config::kWiFi, ::onc::wifi::kAutoConnect},
-      base::Value::Type::BOOLEAN);
-  return autoconnect && autoconnect->GetBool();
+  const std::string* source =
+      onc_dict.FindString(::onc::network_config::kSource);
+  if (!source || *source == ::onc::network_config::kSourceDevicePolicy ||
+      *source == ::onc::network_config::kSourceUserPolicy) {
+    return false;
+  }
+
+  const base::Value::Dict* wifi_config =
+      onc_dict.FindDict(::onc::network_config::kWiFi);
+  if (!wifi_config) {
+    return false;
+  }
+
+  absl::optional<bool> autoconnect =
+      wifi_config->FindBool(::onc::wifi::kAutoConnect);
+  return autoconnect.has_value() && autoconnect.value();
 }
 
 }  // namespace
@@ -301,7 +306,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
 
   // Don't allow AutoConnect=true for unmanaged wifi networks if
   // 'AllowOnlyPolicyNetworksToAutoconnect' policy is active.
-  if (EnablesUnmanagedWifiAutoconnect(validated_user_settings) &&
+  if (EnablesUnmanagedWifiAutoconnect(validated_user_settings.GetDict()) &&
       AllowOnlyPolicyNetworksToAutoconnect()) {
     InvokeErrorCallback(service_path, std::move(error_callback),
                         kInvalidUserSettings);
