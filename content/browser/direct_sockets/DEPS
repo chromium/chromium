@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "direct_sockets_test_utils.(cc|h)": [
+    # direct_sockets_test_utils is used in browser_tests.
+    "+content/shell/browser",
+  ],
+}

@@ -14,11 +14,13 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
@@ -122,7 +124,13 @@ namespace content {
 
 namespace {
 
-ShellContentBrowserClient* g_browser_client = nullptr;
+// Tests may install their own ShellContentBrowserClient, track the list here.
+// The list is ordered with oldest first and newer ones added after it.
+std::vector<ShellContentBrowserClient*>&
+GetShellContentBrowserClientInstances() {
+  static base::NoDestructor<std::vector<ShellContentBrowserClient*>> instances;
+  return *instances;
+}
 
 #if BUILDFLAG(IS_ANDROID)
 int GetCrashSignalFD(const base::CommandLine& command_line) {
@@ -272,21 +280,21 @@ bool ShellContentBrowserClient::allow_any_cors_exempt_header_for_browser_ =
     false;
 
 ShellContentBrowserClient* ShellContentBrowserClient::Get() {
-  return g_browser_client;
+  auto& instances = GetShellContentBrowserClientInstances();
+  return instances.empty() ? nullptr : instances.back();
 }
 
 ShellContentBrowserClient::ShellContentBrowserClient() {
-  DCHECK(!g_browser_client);
+  GetShellContentBrowserClientInstances().push_back(this);
 #if BUILDFLAG(IS_MAC)
   location_manager_ = std::make_unique<device::FakeGeolocationManager>();
   location_manager_->SetSystemPermission(
       device::LocationSystemPermissionStatus::kAllowed);
 #endif
-  g_browser_client = this;
 }
 
 ShellContentBrowserClient::~ShellContentBrowserClient() {
-  g_browser_client = nullptr;
+  base::Erase(GetShellContentBrowserClientInstances(), this);
 }
 
 std::unique_ptr<BrowserMainParts>
