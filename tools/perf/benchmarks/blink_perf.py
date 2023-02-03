@@ -392,9 +392,7 @@ class BlinkPerfAccessibility(_BlinkPerfBenchmark):
     return 'blink_perf.accessibility'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs([
-        '--force-renderer-accessibility', '--disable-features=DeferredShaping'
-    ])
+    options.AppendExtraBrowserArgs(['--force-renderer-accessibility'])
 
 
 @benchmark.Info(
@@ -620,9 +618,6 @@ class BlinkPerfPaint(_BlinkPerfBenchmark):
   @classmethod
   def Name(cls):
     return 'blink_perf.paint'
-
-  def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(['--disable-features=DeferredShaping'])
 
 
 @benchmark.Info(emails=['yoavweiss@chromium.org'],
