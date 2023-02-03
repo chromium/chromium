@@ -7,8 +7,6 @@
 #include "base/notreached.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/canvas.h"
@@ -28,31 +26,39 @@ enum OverflowFeatureFlag {
 }  // anonymous namespace
 
 TabStripScrollingOverflowIndicatorStrategy::
-    TabStripScrollingOverflowIndicatorStrategy(views::ScrollView* scroll_view,
-                                               TabStrip* tab_strip)
-    : scroll_view_(scroll_view), tab_strip_(tab_strip) {}
+    TabStripScrollingOverflowIndicatorStrategy(
+        views::ScrollView* scroll_view,
+        base::RepeatingCallback<SkColor4f()> get_frame_color,
+        base::RepeatingCallback<SkColor4f()> get_shadow_color)
+    : scroll_view_(scroll_view),
+      get_frame_color_(get_frame_color),
+      get_shadow_color_(get_shadow_color) {}
+
+TabStripScrollingOverflowIndicatorStrategy::
+    ~TabStripScrollingOverflowIndicatorStrategy() = default;
 
 // static
 std::unique_ptr<TabStripScrollingOverflowIndicatorStrategy>
 TabStripScrollingOverflowIndicatorStrategy::CreateFromFeatureFlag(
     views::ScrollView* scroll_view,
-    TabStrip* tab_strip) {
-  int overview_feature_flag = base::GetFieldTrialParamByFeatureAsInt(
+    base::RepeatingCallback<SkColor4f()> get_frame_color,
+    base::RepeatingCallback<SkColor4f()> get_shadow_color) {
+  const int overflow_feature_flag = base::GetFieldTrialParamByFeatureAsInt(
       features::kScrollableTabStripOverflow,
       features::kScrollableTabStripOverflowModeName,
       OverflowFeatureFlag::kDefault);
 
-  switch (overview_feature_flag) {
+  switch (overflow_feature_flag) {
     case OverflowFeatureFlag::kDivider:
-      return std::make_unique<DividerOverflowIndicatorStrategy>(scroll_view,
-                                                                tab_strip);
+      return std::make_unique<DividerOverflowIndicatorStrategy>(
+          scroll_view, get_frame_color, get_shadow_color);
     case OverflowFeatureFlag::kFade:
-      return std::make_unique<FadeOverflowIndicatorStrategy>(scroll_view,
-                                                             tab_strip);
+      return std::make_unique<FadeOverflowIndicatorStrategy>(
+          scroll_view, get_frame_color, get_shadow_color);
     case OverflowFeatureFlag::kShadow:
     case OverflowFeatureFlag::kDefault:
-      return std::make_unique<ShadowOverflowIndicatorStrategy>(scroll_view,
-                                                               tab_strip);
+      return std::make_unique<ShadowOverflowIndicatorStrategy>(
+          scroll_view, get_frame_color, get_shadow_color);
     default:
       NOTREACHED();
       return nullptr;
@@ -133,8 +139,11 @@ END_METADATA
 
 GradientOverflowIndicatorStrategy::GradientOverflowIndicatorStrategy(
     views::ScrollView* scroll_view,
-    TabStrip* tab_strip)
-    : TabStripScrollingOverflowIndicatorStrategy(scroll_view, tab_strip) {}
+    base::RepeatingCallback<SkColor4f()> get_frame_color,
+    base::RepeatingCallback<SkColor4f()> get_shadow_color)
+    : TabStripScrollingOverflowIndicatorStrategy(scroll_view,
+                                                 get_frame_color,
+                                                 get_shadow_color) {}
 
 void GradientOverflowIndicatorStrategy::Init() {
   scroll_view()->SetDrawOverflowIndicator(true);
@@ -162,15 +171,15 @@ void GradientOverflowIndicatorStrategy::Init() {
 
 ShadowOverflowIndicatorStrategy::ShadowOverflowIndicatorStrategy(
     views::ScrollView* scroll_view,
-    TabStrip* tab_strip)
-    : GradientOverflowIndicatorStrategy(scroll_view, tab_strip) {}
+    base::RepeatingCallback<SkColor4f()> get_frame_color,
+    base::RepeatingCallback<SkColor4f()> get_shadow_color)
+    : GradientOverflowIndicatorStrategy(scroll_view,
+                                        get_frame_color,
+                                        get_shadow_color) {}
 
 void ShadowOverflowIndicatorStrategy::FrameColorsChanged() {
-  SkColor4f frame_color =
-      SkColor4f::FromColor(tab_strip()->controller()->GetFrameColor(
-          BrowserFrameActiveState::kUseCurrent));
-  SkColor4f shadow_color = SkColor4f::FromColor(
-      tab_strip()->GetColorProvider()->GetColor(ui::kColorShadowBase));
+  const SkColor4f frame_color = get_frame_color();
+  const SkColor4f shadow_color = get_shadow_color();
 
   left_overflow_indicator()->SetFrameColor(frame_color);
   right_overflow_indicator()->SetFrameColor(frame_color);
@@ -181,8 +190,11 @@ void ShadowOverflowIndicatorStrategy::FrameColorsChanged() {
 
 FadeOverflowIndicatorStrategy::FadeOverflowIndicatorStrategy(
     views::ScrollView* scroll_view,
-    TabStrip* tab_strip)
-    : GradientOverflowIndicatorStrategy(scroll_view, tab_strip) {}
+    base::RepeatingCallback<SkColor4f()> get_frame_color,
+    base::RepeatingCallback<SkColor4f()> get_shadow_color)
+    : GradientOverflowIndicatorStrategy(scroll_view,
+                                        get_frame_color,
+                                        get_shadow_color) {}
 
 void FadeOverflowIndicatorStrategy::Init() {
   scroll_view()->SetDrawOverflowIndicator(true);
@@ -197,7 +209,7 @@ void FadeOverflowIndicatorStrategy::Init() {
           views::OverflowIndicatorAlignment::kRight);
   right_overflow_indicator_ = right_overflow_indicator.get();
 
-  int min_tab_width = TabStyleViews::GetMinimumInactiveWidth();
+  const int min_tab_width = TabStyleViews::GetMinimumInactiveWidth();
 
   left_overflow_indicator_->SetShadowBlurWidth(std::min(64, min_tab_width * 2));
   right_overflow_indicator_->SetShadowBlurWidth(
@@ -215,9 +227,7 @@ void FadeOverflowIndicatorStrategy::Init() {
 }
 
 void FadeOverflowIndicatorStrategy::FrameColorsChanged() {
-  SkColor4f frame_color =
-      SkColor4f::FromColor(tab_strip()->controller()->GetFrameColor(
-          BrowserFrameActiveState::kUseCurrent));
+  const SkColor4f frame_color = get_frame_color();
 
   left_overflow_indicator()->SetFrameColor(frame_color);
   right_overflow_indicator()->SetFrameColor(frame_color);
@@ -228,8 +238,11 @@ void FadeOverflowIndicatorStrategy::FrameColorsChanged() {
 
 DividerOverflowIndicatorStrategy::DividerOverflowIndicatorStrategy(
     views::ScrollView* scroll_view,
-    TabStrip* tab_strip)
-    : GradientOverflowIndicatorStrategy(scroll_view, tab_strip) {}
+    base::RepeatingCallback<SkColor4f()> get_frame_color,
+    base::RepeatingCallback<SkColor4f()> get_shadow_color)
+    : GradientOverflowIndicatorStrategy(scroll_view,
+                                        get_frame_color,
+                                        get_shadow_color) {}
 
 void DividerOverflowIndicatorStrategy::Init() {
   scroll_view()->SetDrawOverflowIndicator(true);
@@ -259,8 +272,7 @@ void DividerOverflowIndicatorStrategy::Init() {
 }
 
 void DividerOverflowIndicatorStrategy::FrameColorsChanged() {
-  SkColor4f shadow_color = SkColor4f::FromColor(
-      tab_strip()->GetColorProvider()->GetColor(ui::kColorShadowBase));
+  const SkColor4f shadow_color = get_shadow_color();
   left_overflow_indicator()->SetShadowColor(shadow_color);
   right_overflow_indicator()->SetShadowColor(shadow_color);
 }

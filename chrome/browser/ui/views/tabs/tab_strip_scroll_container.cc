@@ -33,6 +33,16 @@
 #include "ui/views/view.h"
 
 namespace {
+SkColor4f GetCurrentFrameColor(TabStrip* tab_strip) {
+  return SkColor4f::FromColor(tab_strip->controller()->GetFrameColor(
+      BrowserFrameActiveState::kUseCurrent));
+}
+
+SkColor4f GetShadowColor(TabStrip* tab_strip) {
+  return SkColor4f::FromColor(
+      tab_strip->GetColorProvider()->GetColor(ui::kColorShadowBase));
+}
+
 // Define a custom FlexRule for |scroll_view_|. Equivalent to using a
 // (kScaleToMinimum, kPreferred) flex specification on the tabstrip itself,
 // bypassing the ScrollView.
@@ -108,7 +118,8 @@ TabStripScrollContainer::TabStripScrollContainer(
 
   overflow_indicator_strategy_ =
       TabStripScrollingOverflowIndicatorStrategy::CreateFromFeatureFlag(
-          scroll_view_, tab_strip_);
+          scroll_view_, base::BindRepeating(&GetCurrentFrameColor, tab_strip_),
+          base::BindRepeating(&GetShadowColor, tab_strip_));
   overflow_indicator_strategy_->Init();
   // This base::Unretained is safe because the callback is called by the
   // layout manager, which is cleaned up before view children like

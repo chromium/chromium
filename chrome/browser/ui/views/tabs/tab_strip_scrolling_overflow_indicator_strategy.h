@@ -5,14 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_SCROLLING_OVERFLOW_INDICATOR_STRATEGY_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_SCROLLING_OVERFLOW_INDICATOR_STRATEGY_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
-
-class TabStrip;
 
 /* Class for defining the different Overflow View Strategies, some do not have
  * a corresponding view class and require different methods for displaying than
@@ -22,12 +21,15 @@ class TabStripScrollingOverflowIndicatorStrategy {
   TabStripScrollingOverflowIndicatorStrategy() = delete;
   explicit TabStripScrollingOverflowIndicatorStrategy(
       views::ScrollView* scroll_view,
-      TabStrip* tab_strip);
-  virtual ~TabStripScrollingOverflowIndicatorStrategy() = default;
+      base::RepeatingCallback<SkColor4f()> get_frame_color,
+      base::RepeatingCallback<SkColor4f()> get_shadow_color);
+  virtual ~TabStripScrollingOverflowIndicatorStrategy();
 
   // Function to get the Featured Overflow Indicator Strategy
   static std::unique_ptr<TabStripScrollingOverflowIndicatorStrategy>
-  CreateFromFeatureFlag(views::ScrollView* scroll_view, TabStrip* tab_strip);
+  CreateFromFeatureFlag(views::ScrollView* scroll_view,
+                        base::RepeatingCallback<SkColor4f()> get_frame_color,
+                        base::RepeatingCallback<SkColor4f()> get_shadow_color);
 
   // Performs the setup for the Strategy. Initialize any views for overflow to
   // the scroll view here.
@@ -37,15 +39,19 @@ class TabStripScrollingOverflowIndicatorStrategy {
   virtual void FrameColorsChanged() {}
 
   // Accessors.
-  views::ScrollView* scroll_view() { return scroll_view_; }
-  TabStrip* tab_strip() { return tab_strip_; }
+  views::ScrollView* scroll_view() const { return scroll_view_; }
+  SkColor4f get_frame_color() const { return get_frame_color_.Run(); }
+  SkColor4f get_shadow_color() const { return get_shadow_color_.Run(); }
 
  private:
   // The scroll view the indicators are attached to/owned by if they are views.
-  raw_ptr<views::ScrollView> scroll_view_;
+  const raw_ptr<views::ScrollView> scroll_view_;
 
-  // The tabstrip which owns the scroll view.
-  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_;
+  // A callback to get the current frame color.
+  const base::RepeatingCallback<SkColor4f()> get_frame_color_;
+
+  // A callback to get the shadow color.
+  const base::RepeatingCallback<SkColor4f()> get_shadow_color_;
 
   // The callback used to update the inidicators from the scrollview.
   base::CallbackListSubscription on_contents_scrolled_subscription_;
@@ -94,7 +100,7 @@ class GradientIndicatorView : public views::View {
 
  private:
   // Which side of the scroll view the indicator is on.
-  views::OverflowIndicatorAlignment side_;
+  const views::OverflowIndicatorAlignment side_;
 
   // The color used for the shadow part of the view.
   SkColor4f shadow_color_;
@@ -112,17 +118,19 @@ class GradientIndicatorView : public views::View {
 class GradientOverflowIndicatorStrategy
     : public TabStripScrollingOverflowIndicatorStrategy {
  public:
-  GradientOverflowIndicatorStrategy(views::ScrollView* scroll_view,
-                                    TabStrip* tab_strip);
+  GradientOverflowIndicatorStrategy(
+      views::ScrollView* scroll_view,
+      base::RepeatingCallback<SkColor4f()> get_frame_color,
+      base::RepeatingCallback<SkColor4f()> get_shadow_color);
   ~GradientOverflowIndicatorStrategy() override = default;
 
   void Init() override;
 
-  GradientIndicatorView* left_overflow_indicator() {
+  GradientIndicatorView* left_overflow_indicator() const {
     return left_overflow_indicator_;
   }
 
-  GradientIndicatorView* right_overflow_indicator() {
+  GradientIndicatorView* right_overflow_indicator() const {
     return right_overflow_indicator_;
   }
 
@@ -136,8 +144,10 @@ class GradientOverflowIndicatorStrategy
 class ShadowOverflowIndicatorStrategy
     : public GradientOverflowIndicatorStrategy {
  public:
-  ShadowOverflowIndicatorStrategy(views::ScrollView* scroll_view,
-                                  TabStrip* tab_strip);
+  ShadowOverflowIndicatorStrategy(
+      views::ScrollView* scroll_view,
+      base::RepeatingCallback<SkColor4f()> get_frame_color,
+      base::RepeatingCallback<SkColor4f()> get_shadow_color);
   ~ShadowOverflowIndicatorStrategy() override = default;
 
   void FrameColorsChanged() override;
@@ -145,8 +155,10 @@ class ShadowOverflowIndicatorStrategy
 
 class FadeOverflowIndicatorStrategy : public GradientOverflowIndicatorStrategy {
  public:
-  FadeOverflowIndicatorStrategy(views::ScrollView* scroll_view,
-                                TabStrip* tab_strip);
+  FadeOverflowIndicatorStrategy(
+      views::ScrollView* scroll_view,
+      base::RepeatingCallback<SkColor4f()> get_frame_color,
+      base::RepeatingCallback<SkColor4f()> get_shadow_color);
   ~FadeOverflowIndicatorStrategy() override = default;
 
   void Init() override;
@@ -156,8 +168,10 @@ class FadeOverflowIndicatorStrategy : public GradientOverflowIndicatorStrategy {
 class DividerOverflowIndicatorStrategy
     : public GradientOverflowIndicatorStrategy {
  public:
-  DividerOverflowIndicatorStrategy(views::ScrollView* scroll_view,
-                                   TabStrip* tab_strip);
+  DividerOverflowIndicatorStrategy(
+      views::ScrollView* scroll_view,
+      base::RepeatingCallback<SkColor4f()> get_frame_color,
+      base::RepeatingCallback<SkColor4f()> get_shadow_color);
   ~DividerOverflowIndicatorStrategy() override = default;
 
   void Init() override;
