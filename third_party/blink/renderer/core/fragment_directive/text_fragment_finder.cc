@@ -363,11 +363,13 @@ void TextFragmentFinder::GoToStep(SelectorMatchStep step) {
 bool TextFragmentFinder::IsInSameUninterruptedBlock(
     const PositionInFlatTree& start,
     const PositionInFlatTree& end) {
-  if (!start.ComputeContainerNode()->GetLayoutObject() ||
-      !end.ComputeContainerNode()->GetLayoutObject())
+  Node* start_node = start.ComputeContainerNode();
+  Node* end_node = end.ComputeContainerNode();
+  if (!start_node || !start_node->GetLayoutObject() || !end_node ||
+      !end_node->GetLayoutObject()) {
     return true;
-  return FindBuffer::IsInSameUninterruptedBlock(*start.ComputeContainerNode(),
-                                                *end.ComputeContainerNode());
+  }
+  return FindBuffer::IsInSameUninterruptedBlock(*start_node, *end_node);
 }
 
 TextFragmentFinder::TextFragmentFinder(Client& client,
