@@ -140,8 +140,10 @@ Color SelectionBackgroundColor(const Document& document,
   // If the text color ends up being the same as the selection background,
   // invert the selection background.
   if (text_color == color) {
-    UseCounter::Count(node->GetDocument(),
-                      WebFeature::kSelectionBackgroundColorInversion);
+    if (node) {
+      UseCounter::Count(node->GetDocument(),
+                        WebFeature::kSelectionBackgroundColorInversion);
+    }
     return Color(0xff - color.Red(), 0xff - color.Green(), 0xff - color.Blue());
   }
   return color;
