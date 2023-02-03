@@ -381,9 +381,8 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-// crbug.com/1356181 Disable due to flaky.
 AX_TEST_F(
-    'ChromeVoxBackgroundTest', 'DISABLED_SelectSingleBasic', async function() {
+    'ChromeVoxBackgroundTest', 'SelectSingleBasic', async function() {
       const mockFeedback = this.createMockFeedback();
       await this.runWithLoadedTree(this.formsDoc);
       mockFeedback.expectSpeech('apple', 'has pop up', 'Collapsed')
@@ -3132,9 +3131,8 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'SwipeLeftRight2', async function() {
 });
 
 // TODO(crbug.com/1228418) - Improve the generation of summaries across ChromeOS
-// crbug.com/1356181 Disable due to flaky.
 AX_TEST_F(
-    'ChromeVoxBackgroundTest', 'DISABLED_AlertDialogAutoSummaryTextContent',
+    'ChromeVoxBackgroundTest', 'AlertDialogAutoSummaryTextContent',
     async function() {
       this.resetContextualOutput();
       const mockFeedback = this.createMockFeedback();
@@ -4036,10 +4034,8 @@ AX_TEST_F(
     });
 
 // Make sure navigation with touch to ListBox lands on options.
-// crbug.com/1356181 Disable due to flaky.
 AX_TEST_F(
-    'ChromeVoxBackgroundTest',
-    'DISABLED_TouchListBoxItemsNavigation', async function() {
+    'ChromeVoxBackgroundTest', 'TouchListBoxItemsNavigation', async function() {
       const mockFeedback = this.createMockFeedback();
       await this.runWithLoadedTree(this.listBoxDoc);
       mockFeedback
