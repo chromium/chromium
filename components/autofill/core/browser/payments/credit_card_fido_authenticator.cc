@@ -658,12 +658,11 @@ base::Value::Dict CreditCardFidoAuthenticator::ParseAttestationResponse(
       "attestation_object",
       BytesToBase64(attestation_response->attestation_object));
 
-  base::Value authenticator_transport_list =
-      base::Value(base::Value::Type::LIST);
+  base::Value::List authenticator_transport_list;
   for (device::FidoTransportProtocol protocol :
        attestation_response->transports) {
     authenticator_transport_list.Append(
-        base::Value(base::ToUpperASCII(device::ToString(protocol))));
+        base::ToUpperASCII(device::ToString(protocol)));
   }
 
   response.Set("fido_attestation_info", std::move(fido_attestation_info));
