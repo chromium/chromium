@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -282,7 +283,7 @@ WebTestBluetoothAdapterProvider::GetBluetoothAdapter(
   if (fake_adapter_name.empty())
     return nullptr;
 
-  NOTREACHED() << fake_adapter_name;
+  LOG(ERROR) << "Test requested unrecognized adapter: " << fake_adapter_name;
   return nullptr;
 }
 
