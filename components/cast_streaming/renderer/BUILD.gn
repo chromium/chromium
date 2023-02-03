@@ -85,7 +85,11 @@ source_set("buffer_requester") {
     "buffer_requester.h",
     "public/decoder_buffer_provider.h",
   ]
-  sources = [ "decoder_buffer_provider_impl.h" ]
+  sources = [
+    "decoder_buffer_provider_impl.h",
+    "decoder_buffer_reader.cc",
+    "decoder_buffer_reader.h",
+  ]
   public_deps = [
     "//base",
     "//components/cast_streaming/public:demuxer_stream_traits",
@@ -96,7 +100,6 @@ source_set("buffer_requester") {
   ]
   deps = [
     "//base",
-    "//components/cast_streaming/public:decoder_buffer_reader",
     "//media",
     "//media/mojo/common",
     "//mojo/public/cpp/system",
@@ -131,6 +134,7 @@ source_set("unit_tests") {
   sources = [
     "buffer_requester_unittest.cc",
     "decoder_buffer_provider_impl_unittest.cc",
+    "decoder_buffer_reader_unittest.cc",
     "playback_command_forwarding_renderer_factory_unittest.cc",
     "playback_command_forwarding_renderer_unittest.cc",
     "web_codecs/delegating_decoder_buffer_provider_unittest.cc",

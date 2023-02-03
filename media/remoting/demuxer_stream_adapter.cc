@@ -16,7 +16,6 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/timestamp_constants.h"
-#include "media/mojo/common/media_type_converters.h"
 
 // Convenience logging macro used throughout this file.
 #define DEMUXER_VLOG(level) VLOG(level) << __func__ << "[" << name_ << "]: "
@@ -70,6 +69,7 @@ DemuxerStreamAdapter::DemuxerStreamAdapter(
       read_until_count_(0),
       last_count_(0),
       pending_flush_(false),
+      pending_frame_is_eos_(false),
       media_status_(DemuxerStream::kOk),
       data_pipe_writer_(std::move(producer_handle)),
       bytes_written_to_pipe_(0) {
@@ -107,6 +107,8 @@ absl::optional<uint32_t> DemuxerStreamAdapter::SignalFlush(bool flushing) {
   if (pending_flush_ == flushing)
     return absl::nullopt;
 
+  // Cleans up pending frame data.
+  pending_frame_is_eos_ = false;
   // Invalidates pending Read() tasks.
   request_buffer_weak_factory_.InvalidateWeakPtrs();
 
@@ -320,10 +322,12 @@ void DemuxerStreamAdapter::OnNewBuffer(DemuxerStream::Status status,
       return;
     case DemuxerStream::kOk: {
       media_status_ = status;
-      DCHECK(!pending_frame_);
+      DCHECK(pending_frame_.empty());
       if (!data_pipe_writer_.IsPipeValid())
         return;  // Do not start sending (due to previous fatal error).
-      pending_frame_ = std::move(input);
+      pending_frame_ =
+          cast_streaming::remoting::DecoderBufferToByteArray(*input);
+      pending_frame_is_eos_ = input->end_of_stream();
       WriteFrame();
     } break;
   }
@@ -333,27 +337,17 @@ void DemuxerStreamAdapter::WriteFrame() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!pending_flush_);
   DCHECK(is_processing_read_request());
-  DCHECK(pending_frame_);
+  DCHECK(!pending_frame_.empty());
 
   if (!stream_sender_ || !data_pipe_writer_.IsPipeValid()) {
     DEMUXER_VLOG(1) << "Ignore since data pipe stream sender is invalid";
     return;
   }
 
-  // Unretained is safe because `this` owns the mojo::Remote.
-  stream_sender_->SendFrame(
-      media::mojom::DecoderBuffer::From(*pending_frame_),
-      base::BindOnce(&DemuxerStreamAdapter::OnWrittenFrameRead,
-                     base::Unretained(this)));
-
-  if (!pending_frame_->end_of_stream()) {
-    data_pipe_writer_.Write(
-        pending_frame_->data(), pending_frame_->data_size(),
-        base::BindOnce(&DemuxerStreamAdapter::OnFrameWritten,
-                       base::Unretained(this)));
-  } else {
-    DemuxerStreamAdapter::OnFrameWritten(true);
-  }
+  stream_sender_->SendFrame(pending_frame_.size());
+  data_pipe_writer_.Write(pending_frame_.data(), pending_frame_.size(),
+                          base::BindOnce(&DemuxerStreamAdapter::OnFrameWritten,
+                                         base::Unretained(this)));
 }
 
 void DemuxerStreamAdapter::OnFrameWritten(bool success) {
@@ -362,26 +356,9 @@ void DemuxerStreamAdapter::OnFrameWritten(bool success) {
     return;
   }
 
-  was_pending_frame_written_ = true;
-  TryCompleteFrameWrite();
-}
-
-void DemuxerStreamAdapter::OnWrittenFrameRead() {
-  was_pending_frame_read_ = true;
-  TryCompleteFrameWrite();
-}
-
-void DemuxerStreamAdapter::TryCompleteFrameWrite() {
-  if (!was_pending_frame_written_ || !was_pending_frame_read_) {
-    return;
-  }
-
+  bytes_written_to_pipe_ += pending_frame_.size();
   // Resets frame buffer variables.
-  const bool pending_frame_is_eos = pending_frame_->end_of_stream();
-  if (!pending_frame_is_eos) {
-    bytes_written_to_pipe_ += pending_frame_->data_size();
-  }
-
+  bool pending_frame_is_eos = pending_frame_is_eos_;
   ++last_count_;
   ResetPendingFrame();
 
@@ -454,9 +431,8 @@ void DemuxerStreamAdapter::SendReadAck() {
 
 void DemuxerStreamAdapter::ResetPendingFrame() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  pending_frame_.reset();
-  was_pending_frame_read_ = false;
-  was_pending_frame_written_ = false;
+  pending_frame_.clear();
+  pending_frame_is_eos_ = false;
 }
 
 void DemuxerStreamAdapter::OnFatalError(StopTrigger stop_trigger) {

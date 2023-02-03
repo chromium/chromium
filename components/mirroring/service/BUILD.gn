@@ -49,7 +49,6 @@ component("mirroring_service") {
   deps = [
     "//build:chromeos_buildflags",
     "//components/cast_streaming/public:config_conversions",
-    "//components/cast_streaming/public:decoder_buffer_reader",
     "//components/mirroring/mojom:service",
     "//components/openscreen_platform",
     "//components/version_info",
@@ -118,7 +117,6 @@ source_set("unittests") {
     "//media/cast:net",
     "//media/cast:sender",
     "//media/cast:test_support",
-    "//media/mojo/common",
     "//media/mojo/mojom",
     "//media/mojo/mojom:remoting",
     "//mojo/public/cpp/bindings",
