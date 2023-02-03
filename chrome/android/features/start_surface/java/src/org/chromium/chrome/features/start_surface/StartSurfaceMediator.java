@@ -315,17 +315,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                     // don't want to hide the overview when creating a tab in the background, so
                     // when a background tab is added to an empty tab model, we should skip the next
                     // onTabSelecting().
-                    int tabCount = mTabModelSelector.getModel(false).getCount();
-                    mHideOverviewOnTabSelecting =
-                            tabCount != 0 || type != TabLaunchType.FROM_LONGPRESS_BACKGROUND;
-
-                    // Updates the visibility of the tab switcher module if it is invisible and a
-                    // new Tab is created in the background without hiding the Start surface
-                    // homepage.
-                    if (isHomepageShown() && !mHideOverviewOnTabSelecting
-                            && !mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE)) {
-                        setTabCarouselVisibility(!mIsIncognito);
-                    }
+                    mHideOverviewOnTabSelecting = mTabModelSelector.getModel(false).getCount() != 0
+                            || type != TabLaunchType.FROM_LONGPRESS_BACKGROUND;
                 }
 
                 @Override
