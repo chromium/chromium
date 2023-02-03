@@ -86,6 +86,12 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
     return audio_processor_->input_format();
   }
 
+  // If true, `audio::ReferenceOutput::Listener::OnPlayoutData()` should be
+  // called.
+  bool needs_playout_reference() const {
+    return audio_processor_->needs_playout_reference();
+  }
+
  private:
   // Used in the mojom::AudioProcessorControls implementation.
   using GetStatsCallback =

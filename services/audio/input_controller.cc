@@ -255,8 +255,9 @@ void InputController::MaybeSetUpAudioProcessing(
 
   // If the required processing is lightweight, there is no need to offload work
   // to a new thread.
-  if (!processing_config->settings.NeedPlayoutReference())
+  if (!audio_processor_handler_->needs_playout_reference()) {
     return;
+  }
 
   int fifo_size =
       media::IsChromeWideEchoCancellationEnabled()

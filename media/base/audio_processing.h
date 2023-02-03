@@ -76,6 +76,9 @@ struct MEDIA_EXPORT AudioProcessingSettings {
     return NeedWebrtcAudioProcessing() || stereo_mirroring;
   }
 
+  // Deprecated.
+  // TODO(crbug.com/1410129): Use `AudioProcessor::NeedsPlayoutReference()`
+  // instead.
   bool NeedPlayoutReference() const {
     return echo_cancellation || automatic_gain_control;
   }
