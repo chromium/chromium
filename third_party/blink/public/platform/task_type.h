@@ -13,10 +13,14 @@ namespace blink {
 // For the task type usage guideline, see https://bit.ly/2vMAsQ4
 //
 // When a new task type is created:
-// * Update kMaxValue to point to a new value
+// * Set the new task type's value to "Next value"
+// * Update kMaxValue to point to the new task type
+// * Increment "Next value"
 // * in tools/metrics/histograms/enums.xml update the
 //   "RendererSchedulerTaskType" enum
 // * update TaskTypes.md
+//
+// Next value: 83
 enum class TaskType : unsigned char {
   ///////////////////////////////////////
   // Speced tasks should use one of the following task types
@@ -174,6 +178,9 @@ enum class TaskType : unsigned char {
   // https://w3c.github.io/screen-wake-lock/#dfn-screen-wake-lock-task-source
   kWakeLock = 76,
 
+  // https://storage.spec.whatwg.org/#storage-task-source
+  kStorage = 82,
+
   ///////////////////////////////////////
   // Not-speced tasks should use one of the following task types
   ///////////////////////////////////////
@@ -294,7 +301,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kMaxValue = kLowPriorityScriptExecution,
+  kMaxValue = kStorage,
 };
 
 }  // namespace blink

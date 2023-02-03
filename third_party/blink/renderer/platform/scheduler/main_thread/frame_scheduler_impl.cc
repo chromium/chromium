@@ -417,6 +417,7 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kBackgroundFetch:
     case TaskType::kPermission:
     case TaskType::kWakeLock:
+    case TaskType::kStorage:
       // TODO(altimin): Move appropriate tasks to throttleable task queue.
       return DeferrableTaskQueueTraits();
     // PostedMessage can be used for navigation, so we shouldn't defer it

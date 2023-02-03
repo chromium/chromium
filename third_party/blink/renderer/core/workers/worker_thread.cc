@@ -577,6 +577,7 @@ void WorkerThread::InitializeSchedulerOnWorkerThread(
       TaskType::kPermission,
       TaskType::kPostedMessage,
       TaskType::kRemoteEvent,
+      TaskType::kStorage,
       TaskType::kUserInteraction,
       TaskType::kWakeLock,
       TaskType::kWebGL,

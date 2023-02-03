@@ -164,6 +164,8 @@ RendererMainThreadTaskExecution::TaskType TaskTypeToProto(TaskType task_type) {
           TASK_TYPE_INTERNAL_CONTINUE_SCRIPT_LOADING;
     case TaskType::kWebLocks:
       return RendererMainThreadTaskExecution::TASK_TYPE_WEB_LOCKS;
+    case TaskType::kStorage:
+      return RendererMainThreadTaskExecution::TASK_TYPE_STORAGE;
     case TaskType::kWebSchedulingPostedTask:
       return RendererMainThreadTaskExecution::
           TASK_TYPE_WEB_SCHEDULING_POSTED_TASK;
