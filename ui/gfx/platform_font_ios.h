@@ -5,6 +5,7 @@
 #ifndef UI_GFX_PLATFORM_FONT_IOS_H_
 #define UI_GFX_PLATFORM_FONT_IOS_H_
 
+#include "build/blink_buildflags.h"
 #include "ui/gfx/platform_font.h"
 
 namespace gfx {
@@ -15,7 +16,14 @@ class PlatformFontIOS : public PlatformFont {
   explicit PlatformFontIOS(NativeFont native_font);
   PlatformFontIOS(const std::string& font_name,
                   int font_size);
-
+#if BUILDFLAG(USE_BLINK)
+  // Constructs a PlatformFontIOS representing the font specified by |typeface|
+  // and the size |font_size_pixels|. Do not call this for a system-specified
+  // font; use the |SystemFontType| constructor for that.
+  PlatformFontIOS(sk_sp<SkTypeface> typeface,
+                  int font_size_pixels,
+                  const absl::optional<FontRenderParams>& params);
+#endif
   PlatformFontIOS(const PlatformFontIOS&) = delete;
   PlatformFontIOS& operator=(const PlatformFontIOS&) = delete;
 

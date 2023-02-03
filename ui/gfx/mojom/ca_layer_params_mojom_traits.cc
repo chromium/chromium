@@ -13,7 +13,7 @@ namespace mojo {
 gfx::mojom::CALayerContentPtr
 StructTraits<gfx::mojom::CALayerParamsDataView, gfx::CALayerParams>::content(
     const gfx::CALayerParams& ca_layer_params) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   if (ca_layer_params.io_surface_mach_port) {
     DCHECK(!ca_layer_params.ca_context_id);
     return gfx::mojom::CALayerContent::NewIoSurfaceMachPort(
@@ -37,7 +37,7 @@ bool StructTraits<gfx::mojom::CALayerParamsDataView, gfx::CALayerParams>::Read(
       out->ca_context_id = content_data.ca_context_id();
       break;
     case gfx::mojom::CALayerContentDataView::Tag::kIoSurfaceMachPort:
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
       mojo::PlatformHandle platform_handle =
           content_data.TakeIoSurfaceMachPort();
       if (!platform_handle.is_mach_send())

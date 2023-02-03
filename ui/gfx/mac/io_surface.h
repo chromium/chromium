@@ -5,7 +5,8 @@
 #ifndef UI_GFX_MAC_IO_SURFACE_H_
 #define UI_GFX_MAC_IO_SURFACE_H_
 
-#include <IOSurface/IOSurface.h>
+#include <IOKit/IOReturn.h>
+#include <IOSurface/IOSurfaceRef.h>
 #include <mach/mach.h>
 
 #include "base/mac/scoped_cftyperef.h"

@@ -5,7 +5,7 @@
 module gfx.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
-[EnableIf=is_mac]
+[EnableIf=is_apple]
 import "ui/gfx/mojom/ca_layer_result.mojom";
 
 // gfx::PresentationFeedback
@@ -18,6 +18,6 @@ struct PresentationFeedback {
   mojo_base.mojom.TimeTicks ready_timestamp;
   mojo_base.mojom.TimeTicks latch_timestamp;
   mojo_base.mojom.TimeTicks writes_done_timestamp;
-[EnableIf=is_mac]
+[EnableIf=is_apple]
   CALayerResult ca_layer_error_code;
 };

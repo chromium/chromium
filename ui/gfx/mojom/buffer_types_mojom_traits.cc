@@ -122,7 +122,7 @@ bool StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
       out->native_pixmap_handle =
           std::move(platform_handle->get_native_pixmap_handle());
       return true;
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
     case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::kMachPort: {
       out->type = gfx::IO_SURFACE_BUFFER;
       if (!platform_handle->get_mach_port().is_mach_send())

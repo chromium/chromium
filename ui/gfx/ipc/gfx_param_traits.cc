@@ -41,7 +41,7 @@ void ParamTraits<gfx::Range>::Log(const gfx::Range& r, std::string* l) {
   l->append(base::StringPrintf("(%" PRIuS ", %" PRIuS ")", r.start(), r.end()));
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 void ParamTraits<gfx::ScopedRefCountedIOSurfaceMachPort>::Write(
     base::Pickle* m,
     const param_type p) {
@@ -99,7 +99,7 @@ void ParamTraits<gfx::ScopedIOSurface>::Log(const param_type& p,
   }
   l->append(")");
 }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 void ParamTraits<gfx::SelectionBound>::Write(base::Pickle* m,
                                              const param_type& p) {

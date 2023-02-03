@@ -89,7 +89,7 @@ struct PresentationFeedback {
   // when rendering on the GPU finished.
   base::TimeTicks writes_done_timestamp;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
 #endif
 };
@@ -101,7 +101,7 @@ inline bool operator==(const PresentationFeedback& lhs,
          lhs.available_timestamp == rhs.available_timestamp &&
          lhs.ready_timestamp == rhs.ready_timestamp &&
          lhs.latch_timestamp == rhs.latch_timestamp &&
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
          lhs.ca_layer_error_code == rhs.ca_layer_error_code &&
 #endif
          lhs.writes_done_timestamp == rhs.writes_done_timestamp;

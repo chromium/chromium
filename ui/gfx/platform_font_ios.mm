@@ -19,6 +19,20 @@
 
 namespace gfx {
 
+#if BUILDFLAG(USE_BLINK)
+
+namespace {
+
+std::string GetFamilyNameFromTypeface(sk_sp<SkTypeface> typeface) {
+  SkString family;
+  typeface->getFamilyName(&family);
+  return family.c_str();
+}
+
+}  // namespace
+
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 // PlatformFontIOS, public:
 
@@ -41,6 +55,18 @@ PlatformFontIOS::PlatformFontIOS(const std::string& font_name, int font_size) {
   InitWithNameSizeAndStyle(font_name, font_size, Font::NORMAL,
                            Font::Weight::NORMAL);
 }
+
+#if BUILDFLAG(USE_BLINK)
+PlatformFontIOS::PlatformFontIOS(
+    sk_sp<SkTypeface> typeface,
+    int font_size_pixels,
+    const absl::optional<FontRenderParams>& params) {
+  InitWithNameSizeAndStyle(GetFamilyNameFromTypeface(typeface),
+                           font_size_pixels,
+                           (typeface->isItalic() ? Font::ITALIC : Font::NORMAL),
+                           FontWeightFromInt(typeface->fontStyle().weight()));
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // PlatformFontIOS, PlatformFont implementation:
@@ -150,5 +176,17 @@ PlatformFont* PlatformFont::CreateFromNameAndSize(const std::string& font_name,
                                                   int font_size) {
   return new PlatformFontIOS(font_name, font_size);
 }
+
+#if BUILDFLAG(USE_BLINK)
+
+// static
+PlatformFont* PlatformFont::CreateFromSkTypeface(
+    sk_sp<SkTypeface> typeface,
+    int font_size_pixels,
+    const absl::optional<FontRenderParams>& params) {
+  return new PlatformFontIOS(typeface, font_size_pixels, params);
+}
+
+#endif
 
 }  // namespace gfx

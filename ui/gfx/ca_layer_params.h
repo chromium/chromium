@@ -9,7 +9,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gfx_export.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "ui/gfx/mac/io_surface.h"
 #endif
 
@@ -28,7 +28,7 @@ struct GFX_EXPORT CALayerParams {
   bool operator==(const CALayerParams& params) const {
     return is_empty == params.is_empty &&
            ca_context_id == params.ca_context_id &&
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
            io_surface_mach_port == params.io_surface_mach_port &&
 #endif
            pixel_size == params.pixel_size &&
@@ -47,7 +47,7 @@ struct GFX_EXPORT CALayerParams {
   // Used to set the contents of a CALayer in the browser to an IOSurface that
   // is specified by the GPU process. This is non-null iff |ca_context_id| is
   // zero.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   gfx::ScopedRefCountedIOSurfaceMachPort io_surface_mach_port;
 #endif
 

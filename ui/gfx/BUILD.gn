@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -225,8 +226,6 @@ component("gfx") {
   if (is_ios) {
     sources += [
       "image/image_ios.mm",
-      "image/image_skia_rep_ios.cc",
-      "image/image_skia_rep_ios.h",
       "image/image_skia_util_ios.h",
       "image/image_skia_util_ios.mm",
       "image/image_util_ios.mm",
@@ -238,8 +237,16 @@ component("gfx") {
       "scoped_ui_graphics_push_context_ios.mm",
       "text_utils_ios.mm",
     ]
+    if (use_blink) {
+      sources += [ "font_render_params_mac.cc" ]
+    } else {
+      sources += [
+        "image/image_skia_rep_ios.cc",
+        "image/image_skia_rep_ios.h",
+      ]
+    }
   }
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "blit.cc",
       "blit.h",
@@ -297,6 +304,7 @@ component("gfx") {
     "//base:base_static",
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
+    "//build:blink_buildflags",
     "//build:chromeos_buildflags",
     "//device/vr/buildflags",
     "//mojo/public/cpp/bindings:struct_traits",
@@ -315,7 +323,9 @@ component("gfx") {
   if (is_ios) {
     sources += [ "scoped_cg_context_save_gstate_mac.h" ]
     public_deps += [ "//ui/gfx/ios:uikit_util" ]
-  } else {
+  }
+
+  if (use_blink) {
     public_deps += [ "//cc/paint" ]
     deps += [ "//third_party:freetype_harfbuzz" ]
   }
@@ -334,21 +344,21 @@ component("gfx") {
     ]
   }
 
-  if (is_android || is_fuchsia) {
-    sources += [
-      "font_fallback_skia.cc",
-      "font_render_params_skia.cc",
-    ]
-  }
+  if (use_blink) {
+    if (is_android || is_fuchsia || is_ios) {
+      sources += [
+        "font_fallback_skia.cc",
+        "font_render_params_skia.cc",
+      ]
+    }
 
-  if (is_android || is_fuchsia || is_win || is_mac) {
-    sources += [
-      "font_fallback_skia_impl.cc",
-      "font_fallback_skia_impl.h",
-    ]
-  }
+    if (is_android || is_fuchsia || is_win || is_apple) {
+      sources += [
+        "font_fallback_skia_impl.cc",
+        "font_fallback_skia_impl.h",
+      ]
+    }
 
-  if (!is_ios) {
     sources += [
       "bidi_line_iterator.cc",
       "bidi_line_iterator.h",
@@ -461,6 +471,16 @@ component("color_space") {
       "CoreGraphics.framework",
     ]
   }
+  if (use_blink && is_ios) {
+    sources += [
+      "hdr_metadata_mac.h",
+      "hdr_metadata_mac.mm",
+    ]
+    frameworks = [
+      "CoreFoundation.framework",
+      "CoreGraphics.framework",
+    ]
+  }
   defines = [ "COLOR_SPACE_IMPLEMENTATION" ]
 }
 
@@ -541,8 +561,6 @@ source_set("memory_buffer_sources") {
     "buffer_format_util.h",
     "buffer_usage_util.cc",
     "buffer_usage_util.h",
-    "ca_layer_params.cc",
-    "ca_layer_params.h",
     "client_native_pixmap.h",
     "client_native_pixmap_factory.h",
     "generic_shared_memory_id.cc",
@@ -558,8 +576,10 @@ source_set("memory_buffer_sources") {
     "surface_origin.h",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
+      "ca_layer_params.cc",
+      "ca_layer_params.h",
       "gpu_memory_buffer.cc",
       "gpu_memory_buffer.h",
     ]
@@ -597,7 +617,7 @@ source_set("memory_buffer_sources") {
     deps += [ "//third_party/libsync" ]
   }
 
-  if (is_mac) {
+  if (use_blink && is_apple) {
     sources += [
       "mac/io_surface.cc",
       "mac/io_surface.h",
@@ -674,7 +694,7 @@ static_library("test_support") {
     "//ui/gfx/geometry",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [ "render_text_test_api.h" ]
 
     deps += [ "//third_party:freetype_harfbuzz" ]
@@ -828,7 +848,7 @@ test("gfx_unittests") {
     "//ui/gfx/range",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "bidi_line_iterator_unittest.cc",
       "render_text_unittest.cc",
@@ -879,7 +899,7 @@ test("gfx_unittests") {
     ]
   }
 
-  if (!is_ios) {
+  if (use_blink) {
     deps += [
       "//cc/paint",
       "//mojo/core/embedder",

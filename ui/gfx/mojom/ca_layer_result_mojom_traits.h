@@ -8,13 +8,13 @@
 #include "build/build_config.h"
 #include "ui/gfx/ca_layer_result.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "ui/gfx/mojom/ca_layer_result.mojom-shared.h"
 #endif
 
 namespace mojo {
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 template <>
 struct EnumTraits<gfx::mojom::CALayerResult, gfx::CALayerResult> {
   static gfx::mojom::CALayerResult ToMojom(

@@ -62,6 +62,10 @@ class GFX_EXPORT PlatformFontSkia : public PlatformFont {
   const FontRenderParams& GetFontRenderParams() override;
   sk_sp<SkTypeface> GetNativeSkTypeface() const override;
 
+#if BUILDFLAG(IS_APPLE)
+  NativeFont GetNativeFont() const override;
+#endif
+
  private:
   // Create a new instance of this object with the specified properties. Called
   // from DeriveFont.

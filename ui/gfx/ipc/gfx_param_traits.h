@@ -15,7 +15,7 @@
 #include "ui/gfx/ipc/gfx_param_traits_macros.h"
 #include "ui/gfx/selection_bound.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "ui/gfx/mac/io_surface.h"
 #endif
 
@@ -35,7 +35,7 @@ struct GFX_IPC_EXPORT ParamTraits<gfx::Range> {
   static void Log(const param_type& p, std::string* l);
 };
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 template <>
 struct GFX_IPC_EXPORT ParamTraits<gfx::ScopedRefCountedIOSurfaceMachPort> {
   typedef gfx::ScopedRefCountedIOSurfaceMachPort param_type;
@@ -59,7 +59,7 @@ struct GFX_IPC_EXPORT ParamTraits<gfx::ScopedIOSurface> {
                    param_type* r);
   static void Log(const param_type& p, std::string* l);
 };
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 template <>
 struct GFX_IPC_EXPORT ParamTraits<gfx::SelectionBound> {

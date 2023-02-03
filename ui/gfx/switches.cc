@@ -46,7 +46,7 @@ const char kNoXshm[] = "no-xshm";
 namespace features {
 BASE_FEATURE(kOddHeightMultiPlanarBuffers,
              "OddHeightMultiPlanarBuffers",
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -55,7 +55,7 @@ BASE_FEATURE(kOddHeightMultiPlanarBuffers,
 
 BASE_FEATURE(kOddWidthMultiPlanarBuffers,
              "OddWidthMultiPlanarBuffers",
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
