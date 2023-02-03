@@ -14733,7 +14733,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="158774237" label="WebAuthn.removeCredential"/>
   <int value="159066111" label="WebAudio.getRealtimeData"/>
   <int value="169232265" label="Storage.clearTrustTokens"/>
-  <int value="171091294" label="InputDeviceSettingsSplit:disabled"/>
   <int value="174855927" label="DOMStorage.removeDOMStorageItem"/>
   <int value="177653395" label="Browser.setPermission"/>
   <int value="187560850" label="Emulation.setEmulatedMedia"/>
@@ -57626,6 +57625,7 @@ from previous Chrome versions.
   <int value="-2099608999" label="CrOSEnforceSystemAecNs:enabled"/>
   <int value="-2099486626" label="DownloadLater:enabled"/>
   <int value="-2099457894" label="Mash:enabled"/>
+  <int value="-2099050164" label="InputDeviceSettingsSplit:disabled"/>
   <int value="-2099035488" label="enable-data-reduction-proxy-bypass-warning"/>
   <int value="-2098610409" label="disable-lcd-text"/>
   <int value="-2098294029" label="PageInfoStoreInfo:enabled"/>
