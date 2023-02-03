@@ -182,8 +182,8 @@
     label="$i18n{storageItemApps}"
     sub-label="$i18n{storageSizeComputing}" external>
 </cr-link-row>
-<template is="dom-if" if="[[showOfflineStorage_]]">
-  <cr-link-row id="offlineSize" class="hr" on-click="onOfflineTap_"
+<template is="dom-if" if="[[showDriveOfflineStorage_]]">
+  <cr-link-row id="driveOfflineSize" class="hr" on-click="onDriveOfflineTap_"
       label="$i18n{storageItemOffline}"
       sub-label="$i18n{storageSizeComputing}" external>
   </cr-link-row>

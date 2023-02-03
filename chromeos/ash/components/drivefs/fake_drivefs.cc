@@ -262,6 +262,16 @@ FakeDriveFs::FakeDriveFs(const base::FilePath& mount_path)
     : mount_path_(mount_path) {
   CHECK(mount_path.IsAbsolute());
   CHECK(!mount_path.ReferencesParent());
+
+  ON_CALL(*this, StartSearchQuery)
+      .WillByDefault(
+          [this](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                 drivefs::mojom::QueryParametersPtr query_params) {
+            auto search_query = std::make_unique<SearchQuery>(
+                weak_factory_.GetWeakPtr(), std::move(query_params));
+            mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                        std::move(receiver));
+          });
 }
 
 FakeDriveFs::~FakeDriveFs() = default;
@@ -479,14 +489,6 @@ void FakeDriveFs::CopyFile(const base::FilePath& source,
   metadata_[target_absolute_path] = metadata_[source_absolute_path];
   metadata_[target_absolute_path].stable_id = next_stable_id_++;
   std::move(callback).Run(drive::FILE_ERROR_OK);
-}
-
-void FakeDriveFs::StartSearchQuery(
-    mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
-    drivefs::mojom::QueryParametersPtr query_params) {
-  auto search_query = std::make_unique<SearchQuery>(weak_factory_.GetWeakPtr(),
-                                                    std::move(query_params));
-  mojo::MakeSelfOwnedReceiver(std::move(search_query), std::move(receiver));
 }
 
 void FakeDriveFs::FetchAllChangeLogs() {}

@@ -80,6 +80,12 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
               (drivefs::mojom::DriveFs::GetSyncingPathsCallback callback),
               (override));
 
+  MOCK_METHOD(void,
+              StartSearchQuery,
+              (mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+               drivefs::mojom::QueryParametersPtr query_params),
+              (override));
+
   const base::FilePath& mount_path() { return mount_path_; }
 
   absl::optional<bool> IsItemPinned(const std::string& path);
@@ -137,10 +143,6 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   void CopyFile(const base::FilePath& source,
                 const base::FilePath& target,
                 CopyFileCallback callback) override;
-
-  void StartSearchQuery(
-      mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
-      drivefs::mojom::QueryParametersPtr query_params) override;
 
   void FetchAllChangeLogs() override;
 

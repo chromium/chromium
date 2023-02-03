@@ -104,6 +104,7 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   // Instances calculating the size of each storage items.
   TotalDiskSpaceCalculator total_disk_space_calculator_;
   FreeDiskSpaceCalculator free_disk_space_calculator_;
+  DriveOfflineSizeCalculator drive_offline_size_calculator_;
   MyFilesSizeCalculator my_files_size_calculator_;
   BrowsingDataSizeCalculator browsing_data_size_calculator_;
   AppsSizeCalculator apps_size_calculator_;

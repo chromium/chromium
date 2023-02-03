@@ -48,6 +48,8 @@ const char* CalculationTypeToEventName(SizeCalculator::CalculationType x) {
       return "storage-browsing-data-size-changed";
     case SizeCalculator::CalculationType::kAppsExtensions:
       return "storage-apps-size-changed";
+    case SizeCalculator::CalculationType::kDriveOfflineFiles:
+      return "storage-drive-offline-size-changed";
     case SizeCalculator::CalculationType::kCrostini:
       return "storage-crostini-size-changed";
     case SizeCalculator::CalculationType::kOtherUsers:
@@ -66,6 +68,7 @@ StorageHandler::StorageHandler(Profile* profile,
                                content::WebUIDataSource* html_source)
     : total_disk_space_calculator_(profile),
       free_disk_space_calculator_(profile),
+      drive_offline_size_calculator_(profile),
       my_files_size_calculator_(profile),
       browsing_data_size_calculator_(profile),
       apps_size_calculator_(profile),
@@ -123,6 +126,7 @@ void StorageHandler::OnJavascriptAllowed() {
   // Start observing calculators.
   total_disk_space_calculator_.AddObserver(this);
   free_disk_space_calculator_.AddObserver(this);
+  drive_offline_size_calculator_.AddObserver(this);
   my_files_size_calculator_.AddObserver(this);
   browsing_data_size_calculator_.AddObserver(this);
   apps_size_calculator_.AddObserver(this);
@@ -152,6 +156,7 @@ void StorageHandler::HandleUpdateStorageInfo(const base::Value::List& args) {
   AllowJavascript();
   total_disk_space_calculator_.StartCalculation();
   free_disk_space_calculator_.StartCalculation();
+  drive_offline_size_calculator_.StartCalculation();
   my_files_size_calculator_.StartCalculation();
   browsing_data_size_calculator_.StartCalculation();
   apps_size_calculator_.StartCalculation();
@@ -264,6 +269,7 @@ void StorageHandler::OnSizeCalculated(
     case SizeCalculator::CalculationType::kMyFiles:
     case SizeCalculator::CalculationType::kBrowsingData:
     case SizeCalculator::CalculationType::kAppsExtensions:
+    case SizeCalculator::CalculationType::kDriveOfflineFiles:
     case SizeCalculator::CalculationType::kCrostini:
     case SizeCalculator::CalculationType::kOtherUsers:
       UpdateStorageItem(calculation_type);
@@ -281,6 +287,7 @@ void StorageHandler::StopObservingEvents() {
   // Stop observing calculators.
   total_disk_space_calculator_.RemoveObserver(this);
   free_disk_space_calculator_.RemoveObserver(this);
+  drive_offline_size_calculator_.RemoveObserver(this);
   my_files_size_calculator_.RemoveObserver(this);
   browsing_data_size_calculator_.RemoveObserver(this);
   apps_size_calculator_.RemoveObserver(this);
@@ -370,6 +377,11 @@ void StorageHandler::UpdateSystemSizeItem() {
         return;
       }
       system_bytes += total_bytes_for_current_item;
+      continue;
+    }
+    // The size taken by offline files should not affect the system size.
+    if (i ==
+        static_cast<int>(SizeCalculator::CalculationType::kDriveOfflineFiles)) {
       continue;
     }
     // All other items are subtracted from the total amount of disk space.

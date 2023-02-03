@@ -106,6 +106,8 @@ class StorageHandlerTest : public testing::Test {
     browsing_data_size_test_api_ =
         std::make_unique<BrowsingDataSizeTestAPI>(handler_, profile_);
     apps_size_test_api_ = std::make_unique<AppsSizeTestAPI>(handler_, profile_);
+    drive_offline_size_test_api_ =
+        std::make_unique<DriveOfflineSizeTestAPI>(handler_, profile_);
     crostini_size_test_api_ =
         std::make_unique<CrostiniSizeTestAPI>(handler_, profile_);
     other_users_size_test_api_ =
@@ -138,6 +140,7 @@ class StorageHandlerTest : public testing::Test {
     my_files_size_test_api_.reset();
     browsing_data_size_test_api_.reset();
     apps_size_test_api_.reset();
+    drive_offline_size_test_api_.reset();
     crostini_size_test_api_.reset();
     other_users_size_test_api_.reset();
     arc_session_manager_.reset();
@@ -222,6 +225,7 @@ class StorageHandlerTest : public testing::Test {
   std::unique_ptr<MyFilesSizeTestAPI> my_files_size_test_api_;
   std::unique_ptr<BrowsingDataSizeTestAPI> browsing_data_size_test_api_;
   std::unique_ptr<AppsSizeTestAPI> apps_size_test_api_;
+  std::unique_ptr<DriveOfflineSizeTestAPI> drive_offline_size_test_api_;
   std::unique_ptr<CrostiniSizeTestAPI> crostini_size_test_api_;
   std::unique_ptr<OtherUsersSizeTestAPI> other_users_size_test_api_;
   MockNewWindowDelegate* new_window_delegate_primary_;
@@ -494,6 +498,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
   int64_t available_size = 100 * GB;
   total_disk_space_test_api_->SimulateOnGetRootDeviceSize(total_size);
   free_disk_space_test_api_->SimulateOnGetFreeDiskSpace(&available_size);
+  drive_offline_size_test_api_->SimulateOnGetOfflineItemsSize(available_size);
   const base::Value* callback =
       GetWebUICallbackMessage("storage-size-stat-changed");
   ASSERT_TRUE(callback) << "No 'storage-size-stat-changed' callback";

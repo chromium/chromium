@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 
+#include <cstdint>
 #include <memory>
 #include <set>
 #include <string>
@@ -16,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
@@ -1194,6 +1196,55 @@ void DriveIntegrationService::ToggleBulkPinning() {
       GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled);
   GetDriveFsHost()->SetAlwaysEnableDocsOffline(enabled);
   pin_manager_->Enable(enabled);
+}
+
+void DriveIntegrationService::GetTotalPinnedSize(
+    base::OnceCallback<void(int64_t)> callback) {
+  if (!ash::features::IsDriveFsBulkPinningEnabled() || !IsMounted() ||
+      !GetDriveFsInterface()) {
+    std::move(callback).Run(-1);
+    return;
+  }
+
+  auto query_params = drivefs::mojom::QueryParameters::New();
+  query_params->query_source =
+      drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
+  query_params->available_offline = true;
+
+  int64_t total_size = 0;
+  mojo::Remote<drivefs::mojom::SearchQuery> search_query;
+
+  GetDriveFsInterface()->StartSearchQuery(
+      search_query.BindNewPipeAndPassReceiver(), std::move(query_params));
+
+  auto* raw_search_query = search_query.get();
+  raw_search_query->GetNextPage(
+      base::BindOnce(&DriveIntegrationService::OnGetOfflineItemsPage,
+                     weak_ptr_factory_.GetWeakPtr(), total_size,
+                     std::move(search_query), std::move(callback)));
+}
+
+void DriveIntegrationService::OnGetOfflineItemsPage(
+    int64_t total_size,
+    mojo::Remote<drivefs::mojom::SearchQuery> search_query,
+    base::OnceCallback<void(int64_t)> callback,
+    drive::FileError error,
+    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> results) {
+  if (!ash::features::IsDriveFsBulkPinningEnabled() ||
+      error != drive::FILE_ERROR_OK || results->empty()) {
+    std::move(callback).Run(total_size);
+    return;
+  }
+
+  for (auto& result : *results) {
+    total_size += result->metadata->size;
+  }
+
+  auto* raw_search_query = search_query.get();
+  raw_search_query->GetNextPage(
+      base::BindOnce(&DriveIntegrationService::OnGetOfflineItemsPage,
+                     weak_ptr_factory_.GetWeakPtr(), total_size,
+                     std::move(search_query), std::move(callback)));
 }
 
 void DriveIntegrationService::GetQuickAccessItems(

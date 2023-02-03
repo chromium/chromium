@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base_switches.h"
@@ -13,10 +15,12 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_test_utils.h"
@@ -365,6 +369,18 @@ class DriveIntegrationBrowserTestWithMirrorSyncEnabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class DriveIntegrationBrowserTestWithBulkPinningEnabled
+    : public DriveIntegrationServiceBrowserTest {
+ public:
+  DriveIntegrationBrowserTestWithBulkPinningEnabled() {
+    scoped_feature_list_.InitWithFeatures({ash::features::kDriveFsBulkPinning},
+                                          {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
                        EnableMirrorSync) {
   auto* drive_service =
@@ -555,6 +571,61 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
   // Kick off the GetMachineRootID method and wait for it to return
   // successfully.
   fake->delegate()->GetMachineRootID(machine_root_id_callback.Get());
+  run_loop.Run();
+}
+
+class FakeSearchQueryImpl : public drivefs::mojom::SearchQuery {
+ public:
+  // Produces 2 pages of fake results, each page with 2 items with a combined
+  // size of 75 bytes (50 + 25). From the 3rd call onwards, returns an empty
+  // page.
+  void GetNextPage(GetNextPageCallback reply) override {
+    std::vector<drivefs::mojom::QueryItemPtr> page;
+
+    if (pages_counter_ < 2) {
+      pages_counter_++;
+      auto qi1 = drivefs::mojom::QueryItem::New();
+      auto qi2 = drivefs::mojom::QueryItem::New();
+      qi1->metadata = drivefs::mojom::FileMetadata::New();
+      qi2->metadata = drivefs::mojom::FileMetadata::New();
+      qi1->metadata->capabilities = drivefs::mojom::Capabilities::New();
+      qi2->metadata->capabilities = drivefs::mojom::Capabilities::New();
+      qi1->metadata->size = 50;
+      qi2->metadata->size = 25;
+      page.emplace_back(std::move(qi1));
+      page.emplace_back(std::move(qi2));
+    }
+
+    std::move(reply).Run(drive::FILE_ERROR_OK, std::move(page));
+  }
+
+ private:
+  int pages_counter_ = 0;
+};
+
+IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithBulkPinningEnabled,
+                       GetTotalPinnedSize) {
+  auto* drive_integration_service =
+      DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+
+  FakeSearchQueryImpl fake_search_query_impl;
+  mojo::Receiver<drivefs::mojom::SearchQuery> receiver(&fake_search_query_impl);
+
+  EXPECT_CALL(*fake_drivefs, StartSearchQuery(_, _))
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery>
+                        pending_receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        receiver.Bind(std::move(pending_receiver));
+      });
+
+  base::RunLoop run_loop;
+  base::MockOnceCallback<void(int64_t)> mock_callback;
+  EXPECT_CALL(mock_callback, Run(/* 2 * (25 + 50) = */ 150))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  drive_integration_service->GetTotalPinnedSize(mock_callback.Get());
+
   run_loop.Run();
 }
 

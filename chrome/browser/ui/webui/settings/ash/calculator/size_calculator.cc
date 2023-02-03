@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator.h"
 
+#include <cstdint>
 #include <numeric>
 
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/storage_manager/arc_storage_manager.h"
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
@@ -176,6 +179,32 @@ void FreeDiskSpaceCalculator::PerformCalculation() {
 
 void FreeDiskSpaceCalculator::OnGetFreeDiskSpace(int64_t* available_bytes) {
   NotifySizeCalculated(*available_bytes);
+}
+
+DriveOfflineSizeCalculator::DriveOfflineSizeCalculator(Profile* profile)
+    : SizeCalculator(CalculationType::kDriveOfflineFiles), profile_(profile) {}
+
+DriveOfflineSizeCalculator::~DriveOfflineSizeCalculator() = default;
+
+void DriveOfflineSizeCalculator::PerformCalculation() {
+  if (!base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning)) {
+    return;
+  }
+
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
+
+  if (!integration_service) {
+    return;
+  }
+
+  integration_service->GetTotalPinnedSize(
+      base::BindOnce(&DriveOfflineSizeCalculator::OnGetOfflineItemsSize,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DriveOfflineSizeCalculator::OnGetOfflineItemsSize(int64_t offline_bytes) {
+  NotifySizeCalculated(offline_bytes);
 }
 
 MyFilesSizeCalculator::MyFilesSizeCalculator(Profile* profile)

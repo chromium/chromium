@@ -291,6 +291,10 @@ class DriveIntegrationService : public KeyedService,
   void GetReadOnlyAuthenticationToken(
       GetReadOnlyAuthenticationTokenCallback callback);
 
+  // Returns via callback the amount of storage taken by all currently pinned
+  // files.
+  void GetTotalPinnedSize(base::OnceCallback<void(int64_t)> callback);
+
  private:
   enum State {
     NOT_INITIALIZED,
@@ -372,6 +376,13 @@ class DriveIntegrationService : public KeyedService,
 
   // Enable or disable DriveFS bulk pinning.
   void ToggleBulkPinning();
+
+  void OnGetOfflineItemsPage(
+      int64_t total_size,
+      mojo::Remote<drivefs::mojom::SearchQuery> search_query,
+      base::OnceCallback<void(int64_t)> callback,
+      drive::FileError error,
+      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
 
   void OnGetQuickAccessItems(
       GetQuickAccessItemsCallback callback,

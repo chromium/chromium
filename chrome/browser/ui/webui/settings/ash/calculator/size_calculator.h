@@ -38,6 +38,7 @@ class SizeCalculator {
     kMyFiles,
     kBrowsingData,
     kAppsExtensions,
+    kDriveOfflineFiles,
     kCrostini,
     kOtherUsers,
     kLastCalculationItem = kOtherUsers,
@@ -131,6 +132,27 @@ class FreeDiskSpaceCalculator : public SizeCalculator {
 
   Profile* profile_;
   base::WeakPtrFactory<FreeDiskSpaceCalculator> weak_ptr_factory_{this};
+};
+
+class DriveOfflineSizeCalculator : public SizeCalculator {
+ public:
+  explicit DriveOfflineSizeCalculator(Profile* profile);
+
+  DriveOfflineSizeCalculator(const DriveOfflineSizeCalculator&) = delete;
+  DriveOfflineSizeCalculator& operator=(const DriveOfflineSizeCalculator&) =
+      delete;
+
+  ~DriveOfflineSizeCalculator() override;
+
+ private:
+  friend class DriveOfflineSizeTestAPI;
+
+  void PerformCalculation() override;
+
+  void OnGetOfflineItemsSize(int64_t offline_bytes);
+
+  Profile* profile_;
+  base::WeakPtrFactory<DriveOfflineSizeCalculator> weak_ptr_factory_{this};
 };
 
 // Class handling the calculation of the size of the user's personal files: My
