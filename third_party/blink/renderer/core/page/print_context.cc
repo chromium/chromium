@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -155,11 +156,15 @@ void PrintContext::BeginPrintMode(float width, float height) {
       original_page_size, gfx::SizeF(width * kPrintingMinimumShrinkFactor,
                                      height * kPrintingMinimumShrinkFactor));
 
+  const Settings* settings = frame_->GetSettings();
+  DCHECK(settings);
+  int printingMaximumShrinkFactor = settings->GetPrintingMaximumShrinkFactor();
+
   // This changes layout, so callers need to make sure that they don't paint to
   // screen while in printing mode.
   frame_->StartPrinting(
       min_layout_size, original_page_size,
-      kPrintingMaximumShrinkFactor / kPrintingMinimumShrinkFactor);
+      printingMaximumShrinkFactor / kPrintingMinimumShrinkFactor);
 }
 
 void PrintContext::EndPrintMode() {

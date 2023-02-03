@@ -1058,6 +1058,15 @@
       name: "modalContextMenu",
       initial: true,
       type: "bool",
-    }
+    },
+    {
+      // This number determines how small we are willing to reduce the page
+      // content in order to accommodate the widest piece of content. If the
+      // page would have to be reduced smaller to make the widest line fit, we
+      // just clip instead.
+      name: "printingMaximumShrinkFactor",
+      initial: 2,
+      type: "int",
+    },
   ],
 }
