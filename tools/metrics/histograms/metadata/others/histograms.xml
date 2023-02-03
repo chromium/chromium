@@ -2889,12 +2889,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ClientHints.FetchLatency{OperationType}" units="ms"
+<histogram name="ClientHints.FetchLatency{OperationType}" units="microseconds"
     expires_after="2023-06-25">
   <owner>miketaylr@chromium.org</owner>
   <owner>potassium-katabolism@google.com</owner>
   <summary>
-    The latency (in milliseconds) to fetch the client hints for a given origin
+    The latency (in microseconds) to fetch the client hints for a given origin
     from the Accept-CH cache for {OperationType}.
   </summary>
   <token key="OperationType">
