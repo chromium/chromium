@@ -24,7 +24,7 @@
     "html-minifier": "4.0.0",
     "rollup": "3.12.0",
     "svgo": "2.8.0",
-    "terser": "5.3.3",
+    "terser": "5.16.2",
     "typescript": "4.9.4"
   }
 }
