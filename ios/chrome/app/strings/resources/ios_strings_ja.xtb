@@ -597,7 +597,6 @@
 <translation id="5520466080178053306">パスワード マネージャーをタップして、[追加] をタップします</translation>
 <translation id="5525095647255982834">このタブを別のデバイスに送信するには、送信先のデバイスで Chrome にログインしてください。</translation>
 <translation id="5525269841082836315">パスフレーズの作成</translation>
-<translation id="5530084793407600786">Google で画像内を検索</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> 件見つかりました</translation>
 <translation id="5548760955356983418">Handoffを使うと、このデバイスで見ているウェブサイトの続きをMacで見ることができます。現在開いているウェブサイトはMacのDockに表示されます。
 
@@ -1072,7 +1071,7 @@
 <translation id="8909135823018751308">共有...</translation>
 <translation id="8911759861431145525">[追加] をタップして情報を入力します</translation>
 <translation id="891658175948553296">サイトのテキストをハイライト表示します</translation>
-<translation id="8917490105272468696">有効にする</translation>
+<translation id="8917490105272468696">オンにする</translation>
 <translation id="8928133177108699615">デスクトップ</translation>
 <translation id="8952559610785099500">パスワードの追加</translation>
 <translation id="8953046091948372197">パスワードはここに表示されます</translation>
