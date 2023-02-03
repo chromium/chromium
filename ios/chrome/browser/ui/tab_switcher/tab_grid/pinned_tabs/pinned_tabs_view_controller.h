@@ -70,6 +70,9 @@
 // Returns the layout of the pinned tabs to be used in an animated transition.
 - (GridTransitionLayout*)transitionLayout;
 
+// Returns whether there is a selected cell in the collection.
+- (BOOL)hasSelectedCell;
+
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

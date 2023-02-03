@@ -176,6 +176,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return nil;
 }
 
+- (BOOL)hasSelectedCell {
+  return self.selectedIndex != NSNotFound;
+}
+
 #pragma mark - TabCollectionConsumer
 
 - (void)populateItems:(NSArray<TabSwitcherItem*>*)items

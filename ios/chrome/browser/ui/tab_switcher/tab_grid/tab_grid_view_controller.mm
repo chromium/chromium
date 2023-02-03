@@ -458,6 +458,18 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                    : gridViewController.selectedCellVisible;
 }
 
+- (BOOL)shouldReparentSelectedCell:(GridAnimationDirection)animationDirection {
+  switch (animationDirection) {
+    // For contracting animation only selected pinned cells should be
+    // reparented.
+    case GridAnimationDirectionContracting:
+      return [self isPinnedCellSelected];
+    // For expanding animation any selected cell should be reparented.
+    case GridAnimationDirectionExpanding:
+      return YES;
+  }
+}
+
 - (GridTransitionLayout*)transitionLayout:(TabGridPage)activePage {
   GridTransitionLayout* layout = [self transitionLayoutForPage:activePage];
   if (!layout) {
@@ -978,6 +990,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 #pragma mark - Private
+
+// Returns wether there is a selected pinned cell.
+- (BOOL)isPinnedCellSelected {
+  if (!IsPinnedTabsEnabled() || self.currentPage != TabGridPageRegularTabs) {
+    return NO;
+  }
+
+  return [self.pinnedTabsViewController hasSelectedCell];
+}
 
 // Returns transition layout for the provided `page`.
 - (GridTransitionLayout*)transitionLayoutForPage:(TabGridPage)page {

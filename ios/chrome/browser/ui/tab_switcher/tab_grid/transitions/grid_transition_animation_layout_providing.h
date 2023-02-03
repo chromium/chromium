@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_animation.h"
 
 @class GridTransitionLayout;
 
@@ -18,6 +19,11 @@
 // YES if the currently selected cell is visible in the grid.
 @property(nonatomic, readonly, getter=isSelectedCellVisible)
     BOOL selectedCellVisible;
+
+// Asks the provider if the currently selected cell should be reparented to the
+// topmost view. Proper view parenting/layouting is needed in order to provide
+// a smooth animation from the Tab View to the Tab Grid (and vice versa).
+- (BOOL)shouldReparentSelectedCell:(GridAnimationDirection)animationDirection;
 
 // Asks the provider for the layout of the grid for the `activePage`, used in
 // transition animations.

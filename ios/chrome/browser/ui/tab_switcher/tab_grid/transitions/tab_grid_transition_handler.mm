@@ -59,12 +59,14 @@ const CGFloat kReducedMotionDuration = 0.25;
     return;
   }
 
+  GridAnimationDirection direction = GridAnimationDirectionContracting;
   CGFloat duration = self.animationDisabled ? 0 : kBrowserToGridDuration;
+
   self.animation = [[GridTransitionAnimation alloc]
       initWithLayout:[self transitionLayoutForTabInViewController:browser
                                                        activePage:activePage]
             duration:duration
-           direction:GridAnimationDirectionContracting];
+           direction:direction];
 
   UIView* animationContainer = [self.layoutProvider animationViewsContainer];
   UIView* bottomViewForAnimations =
@@ -72,11 +74,22 @@ const CGFloat kReducedMotionDuration = 0.25;
   [animationContainer insertSubview:self.animation
                        aboveSubview:bottomViewForAnimations];
 
+  UIView* selectedCell = self.animation.activeCell;
+  BOOL shouldReparentSelectedCell =
+      [self.layoutProvider shouldReparentSelectedCell:direction];
+
+  if (shouldReparentSelectedCell) {
+    [tabGrid.view addSubview:selectedCell];
+  }
+
   [self.animation.animator addAnimations:^{
     [tabGrid setNeedsStatusBarAppearanceUpdate];
   }];
 
   [self.animation.animator addCompletion:^(UIViewAnimatingPosition position) {
+    if (shouldReparentSelectedCell) {
+      [selectedCell removeFromSuperview];
+    }
     [self.animation removeFromSuperview];
     if (position == UIViewAnimatingPositionEnd) {
       [browser.view removeFromSuperview];
@@ -129,12 +142,14 @@ const CGFloat kReducedMotionDuration = 0.25;
     return;
   }
 
+  GridAnimationDirection direction = GridAnimationDirectionExpanding;
   CGFloat duration = self.animationDisabled ? 0 : kGridToBrowserDuration;
+
   self.animation = [[GridTransitionAnimation alloc]
       initWithLayout:[self transitionLayoutForTabInViewController:browser
                                                        activePage:activePage]
             duration:duration
-           direction:GridAnimationDirectionExpanding];
+           direction:direction];
 
   UIView* animationContainer = [self.layoutProvider animationViewsContainer];
   UIView* bottomViewForAnimations =
@@ -142,14 +157,22 @@ const CGFloat kReducedMotionDuration = 0.25;
   [animationContainer insertSubview:self.animation
                        aboveSubview:bottomViewForAnimations];
 
-  [tabGrid.view addSubview:self.animation.activeCell];
+  UIView* selectedCell = self.animation.activeCell;
+  BOOL shouldReparentSelectedCell =
+      [self.layoutProvider shouldReparentSelectedCell:direction];
+
+  if (shouldReparentSelectedCell) {
+    [tabGrid.view addSubview:selectedCell];
+  }
 
   [self.animation.animator addAnimations:^{
     [tabGrid setNeedsStatusBarAppearanceUpdate];
   }];
 
   [self.animation.animator addCompletion:^(UIViewAnimatingPosition position) {
-    [self.animation.activeCell removeFromSuperview];
+    if (shouldReparentSelectedCell) {
+      [selectedCell removeFromSuperview];
+    }
     [self.animation removeFromSuperview];
     if (position == UIViewAnimatingPositionEnd) {
       browser.view.alpha = 1;
