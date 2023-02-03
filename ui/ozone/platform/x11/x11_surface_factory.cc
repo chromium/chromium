@@ -179,6 +179,9 @@ scoped_refptr<gfx::NativePixmap> X11SurfaceFactory::CreateNativePixmap(
       format, size, usage);
   if (buffer) {
     gfx::NativePixmapHandle handle = buffer->ExportHandle();
+    if (handle.planes.empty()) {
+      return nullptr;
+    }
     pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(size, format,
                                                            std::move(handle));
   }
@@ -219,6 +222,9 @@ X11SurfaceFactory::CreateNativePixmapFromHandle(
           size, format, std::move(handle));
   if (buffer) {
     gfx::NativePixmapHandle buffer_handle = buffer->ExportHandle();
+    if (buffer_handle.planes.empty()) {
+      return nullptr;
+    }
     pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
         size, format, std::move(buffer_handle));
   }
