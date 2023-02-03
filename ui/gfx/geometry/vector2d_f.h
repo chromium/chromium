@@ -15,6 +15,9 @@
 
 #include "ui/gfx/geometry/geometry_export.h"
 
+namespace perfetto {
+class TracedValue;
+}
 namespace gfx {
 
 class GEOMETRY_EXPORT Vector2dF {
@@ -80,6 +83,8 @@ class GEOMETRY_EXPORT Vector2dF {
   }
 
   std::string ToString() const;
+
+  void WriteIntoTrace(perfetto::TracedValue) const;
 
  private:
   float x_;

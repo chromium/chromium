@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "base/cpu_reduction_experiment.h"
@@ -211,6 +212,42 @@ double DetermineHighestContribution(
     high_latency_stages = {stage_name};
   }
   return highest_contribution_change;
+}
+
+void TraceScrollJankMetrics(const EventMetrics::List& events_metrics,
+                            int32_t fling_input_count,
+                            int32_t normal_input_count,
+                            perfetto::EventContext& ctx) {
+  using TraceId = base::IdType64<class ui::LatencyInfo>;
+  auto dict = std::make_unique<base::trace_event::TracedValue>();
+  float delta = 0;
+  float predicted_delta = 0;
+  std::vector<absl::optional<TraceId>> trace_ids;
+  std::vector<float> original_deltas;
+  std::vector<float> predicted_deltas;
+
+  for (const auto& event : events_metrics) {
+    auto type = event->type();
+    if (type != EventMetrics::EventType::kGestureScrollUpdate &&
+        type != EventMetrics::EventType::kFirstGestureScrollUpdate &&
+        type != EventMetrics::EventType::kInertialGestureScrollUpdate) {
+      continue;
+    }
+    original_deltas.push_back(event->AsScrollUpdate()->delta());
+    predicted_deltas.push_back(event->AsScrollUpdate()->predicted_delta());
+    trace_ids.push_back(event->AsScrollUpdate()->trace_id());
+    delta += event->AsScrollUpdate()->delta();
+    predicted_delta += event->AsScrollUpdate()->predicted_delta();
+  }
+  if (trace_ids.empty()) {
+    return;
+  }
+  ctx.AddDebugAnnotation("event_count", fling_input_count + normal_input_count);
+  ctx.AddDebugAnnotation("original_delta", delta);
+  ctx.AddDebugAnnotation("predicted_delta", predicted_delta);
+  ctx.AddDebugAnnotation("trace_ids", trace_ids);
+  ctx.AddDebugAnnotation("segregated_original_deltas", original_deltas);
+  ctx.AddDebugAnnotation("segregated_predicted_deltas", predicted_deltas);
 }
 
 }  // namespace
@@ -1334,6 +1371,12 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
     }
   }
 
+  TRACE_EVENT("input", "PresentedFrameInformation",
+              [events_metrics = std::cref(events_metrics_), fling_input_count,
+               normal_input_count](perfetto::EventContext& ctx) {
+                TraceScrollJankMetrics(events_metrics, fling_input_count,
+                                       normal_input_count, ctx);
+              });
   // Counting number of inputs per frame for flings and normal input has
   // to be separate as the rate of input generation is different for each
   // of them, normal input is screen generated, and flings are GPU vsync

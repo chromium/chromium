@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_IOS)
@@ -46,6 +47,12 @@ bool PointF::IsWithinDistance(const PointF& rhs,
 
 std::string PointF::ToString() const {
   return base::StringPrintf("%g,%g", x(), y());
+}
+
+void PointF::WriteIntoTrace(perfetto::TracedValue ctx) const {
+  perfetto::TracedDictionary dict = std::move(ctx).WriteDictionary();
+  dict.Add("x", x());
+  dict.Add("y", y());
 }
 
 PointF ScalePoint(const PointF& p, float x_scale, float y_scale) {

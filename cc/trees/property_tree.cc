@@ -1896,6 +1896,8 @@ const gfx::Vector2dF ScrollTree::GetScrollOffsetDeltaForTesting(
 gfx::Vector2dF ScrollTree::ScrollBy(const ScrollNode& scroll_node,
                                     const gfx::Vector2dF& scroll,
                                     LayerTreeImpl* layer_tree_impl) {
+  TRACE_EVENT_BEGIN("input", "ScrollTree::ScrollBy", "scroll", scroll,
+                    "scroll_node_id", scroll_node.id);
   gfx::Vector2dF adjusted_scroll(scroll);
   if (!scroll_node.user_scrollable_horizontal)
     adjusted_scroll.set_x(0);
@@ -1907,6 +1909,9 @@ gfx::Vector2dF ScrollTree::ScrollBy(const ScrollNode& scroll_node,
       ClampScrollOffsetToLimits(old_offset + adjusted_scroll, scroll_node);
   if (SetScrollOffset(scroll_node.element_id, new_offset))
     layer_tree_impl->DidUpdateScrollOffset(scroll_node.element_id);
+
+  TRACE_EVENT_END("input", /* ScrollTree::ScrollBy */
+                  "old_offset", old_offset, "new_offset", new_offset);
 
   // Return the amount of scroll delta we could not consume for this node.
   return old_offset + scroll - new_offset;

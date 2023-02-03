@@ -18,6 +18,9 @@
 struct CGPoint;
 #endif
 
+namespace perfetto {
+class TracedValue;
+}
 namespace gfx {
 
 // A floating version of gfx::Point.
@@ -105,6 +108,9 @@ class GEOMETRY_EXPORT PointF {
 
   // Returns a string representation of point.
   std::string ToString() const;
+
+  // Write a represtation of this object into a trace event argument.
+  void WriteIntoTrace(perfetto::TracedValue) const;
 
  private:
   float x_;

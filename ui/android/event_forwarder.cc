@@ -5,6 +5,7 @@
 #include "ui/android/event_forwarder.h"
 
 #include "base/android/jni_array.h"
+#include "base/trace_event/typed_macros.h"
 #include "ui/android/ui_android_jni_headers/EventForwarder_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/base/ui_base_switches_util.h"
@@ -76,6 +77,9 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
                                       jint android_button_state,
                                       jint android_meta_state,
                                       jboolean for_touch_handle) {
+  TRACE_EVENT("input", "EventForwarder::OnTouchEvent", "history_size",
+              history_size, "time_ms", time_ms, "x", pos_x_0, "y", pos_y_0);
+
   ui::MotionEventAndroid::Pointer pointer0(
       pointer_id_0, pos_x_0, pos_y_0, touch_major_0, touch_minor_0,
       orientation_0, tilt_0, android_tool_type_0);

@@ -9,6 +9,8 @@
 
 namespace cc {
 namespace {
+
+using TraceId = base::IdType64<class ui::LatencyInfo>;
 class EventMetricsTest : public testing::Test {
  private:
   base::SimpleTestTickClock test_tick_clock_;
@@ -161,6 +163,7 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateWithNullBeginRwhTime) {
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Microseconds(100);
   base::TimeTicks arrived_in_browser_main_timestamp;
   base::TimeTicks now = base::TimeTicks::Now();
+  TraceId trace_id(123);
 
   // Act
   std::unique_ptr<ScrollUpdateEventMetrics> scroll_event_metric =
@@ -168,9 +171,10 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateWithNullBeginRwhTime) {
           ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false,
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/0.4,
-          event_time, arrived_in_browser_main_timestamp);
+          event_time, arrived_in_browser_main_timestamp, trace_id);
 
   // Assert
+  EXPECT_EQ(trace_id, scroll_event_metric->trace_id());
   EXPECT_EQ(event_time, scroll_event_metric->GetDispatchStageTimestamp(
                             EventMetrics::DispatchStage::kGenerated));
   EXPECT_LE(now,
@@ -205,6 +209,7 @@ TEST_F(EventMetricsTest, ScrollUpdateCreate) {
   base::TimeTicks arrived_in_browser_main_timestamp =
       base::TimeTicks::Now() - base::Microseconds(50);
   base::TimeTicks now = base::TimeTicks::Now();
+  TraceId trace_id(123);
 
   // Act
   std::unique_ptr<ScrollUpdateEventMetrics> scroll_event_metric =
@@ -212,9 +217,10 @@ TEST_F(EventMetricsTest, ScrollUpdateCreate) {
           ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false,
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/0.4,
-          event_time, arrived_in_browser_main_timestamp);
+          event_time, arrived_in_browser_main_timestamp, TraceId(trace_id));
 
   // Assert
+  EXPECT_EQ(trace_id, scroll_event_metric->trace_id());
   EXPECT_EQ(event_time, scroll_event_metric->GetDispatchStageTimestamp(
                             EventMetrics::DispatchStage::kGenerated));
   EXPECT_EQ(arrived_in_browser_main_timestamp,
@@ -247,12 +253,13 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateFromExisting) {
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Microseconds(100);
   base::TimeTicks arrived_in_browser_main_timestamp =
       base::TimeTicks::Now() - base::Microseconds(50);
+  TraceId trace_id(123);
   std::unique_ptr<ScrollUpdateEventMetrics> scroll_metric =
       ScrollUpdateEventMetrics::Create(
           ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false,
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/0.4,
-          event_time, arrived_in_browser_main_timestamp);
+          event_time, arrived_in_browser_main_timestamp, trace_id);
 
   // Act
   std::unique_ptr<ScrollUpdateEventMetrics> copy_scroll_metric =
@@ -264,6 +271,7 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateFromExisting) {
           scroll_metric.get());
 
   // Assert
+  EXPECT_NE(scroll_metric->trace_id(), copy_scroll_metric->trace_id());
   EXPECT_EQ(scroll_metric->GetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kGenerated),
             copy_scroll_metric->GetDispatchStageTimestamp(

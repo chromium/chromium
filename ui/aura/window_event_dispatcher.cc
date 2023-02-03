@@ -1123,7 +1123,8 @@ WindowEventDispatcher::CreateScropedMetricsMonitorForEvent(
           has_seen_gesture_scroll_update_after_begin_
               ? cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued
               : cc::ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
-          gesture->details().scroll_y(), gesture->time_stamp());
+          gesture->details().scroll_y(), gesture->time_stamp(),
+          base::IdType64<class ui::LatencyInfo>(event.latency()->trace_id()));
       has_seen_gesture_scroll_update_after_begin_ = true;
     } else if (gesture->IsScrollGestureEvent()) {
       metrics = cc::ScrollEventMetrics::CreateForBrowser(

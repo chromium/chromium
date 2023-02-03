@@ -543,7 +543,8 @@ std::unique_ptr<ScrollUpdateEventMetrics> ScrollUpdateEventMetrics::Create(
     ScrollUpdateType scroll_update_type,
     float delta,
     base::TimeTicks timestamp,
-    base::TimeTicks arrived_in_browser_main_timestamp) {
+    base::TimeTicks arrived_in_browser_main_timestamp,
+    TraceId trace_id) {
   // TODO(crbug.com/1157090): We expect that `timestamp` is not null, but there
   // seems to be some tests that are emitting events with null timestamp. We
   // should investigate and try to fix those cases and add a `DCHECK` here to
@@ -551,9 +552,10 @@ std::unique_ptr<ScrollUpdateEventMetrics> ScrollUpdateEventMetrics::Create(
 
   DCHECK(IsGestureScrollUpdate(type));
 
-  std::unique_ptr<ScrollUpdateEventMetrics> metrics = CreateInternal(
-      type, input_type, is_inertial, scroll_update_type, delta, timestamp,
-      arrived_in_browser_main_timestamp, base::DefaultTickClock::GetInstance());
+  std::unique_ptr<ScrollUpdateEventMetrics> metrics =
+      CreateInternal(type, input_type, is_inertial, scroll_update_type, delta,
+                     timestamp, arrived_in_browser_main_timestamp,
+                     base::DefaultTickClock::GetInstance(), trace_id);
   if (!metrics)
     return nullptr;
 
@@ -569,9 +571,10 @@ ScrollUpdateEventMetrics::CreateForBrowser(ui::EventType type,
                                            bool is_inertial,
                                            ScrollUpdateType scroll_update_type,
                                            float delta,
-                                           base::TimeTicks timestamp) {
+                                           base::TimeTicks timestamp,
+                                           TraceId trace_id) {
   return Create(type, input_type, is_inertial, scroll_update_type, delta,
-                timestamp, base::TimeTicks());
+                timestamp, base::TimeTicks(), trace_id);
 }
 
 // static
@@ -587,9 +590,9 @@ ScrollUpdateEventMetrics::CreateForTesting(
     const base::TickClock* tick_clock) {
   DCHECK(!timestamp.is_null());
 
-  std::unique_ptr<ScrollUpdateEventMetrics> metrics =
-      CreateInternal(type, input_type, is_inertial, scroll_update_type, delta,
-                     timestamp, arrived_in_browser_main_timestamp, tick_clock);
+  std::unique_ptr<ScrollUpdateEventMetrics> metrics = CreateInternal(
+      type, input_type, is_inertial, scroll_update_type, delta, timestamp,
+      arrived_in_browser_main_timestamp, tick_clock, absl::nullopt);
   if (!metrics)
     return nullptr;
 
@@ -616,9 +619,10 @@ ScrollUpdateEventMetrics::CreateFromExisting(
   if (!existing)
     return nullptr;
 
-  std::unique_ptr<ScrollUpdateEventMetrics> metrics = CreateInternal(
-      type, input_type, is_inertial, scroll_update_type, delta,
-      base::TimeTicks(), base::TimeTicks(), existing->tick_clock_);
+  std::unique_ptr<ScrollUpdateEventMetrics> metrics =
+      CreateInternal(type, input_type, is_inertial, scroll_update_type, delta,
+                     base::TimeTicks(), base::TimeTicks(),
+                     existing->tick_clock_, absl::nullopt);
   if (!metrics)
     return nullptr;
 
@@ -639,14 +643,15 @@ ScrollUpdateEventMetrics::CreateInternal(
     float delta,
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
-    const base::TickClock* tick_clock) {
+    const base::TickClock* tick_clock,
+    absl::optional<TraceId> trace_id) {
   absl::optional<EventType> interesting_type =
       ToInterestingEventType(type, is_inertial, scroll_update_type);
   if (!interesting_type)
     return nullptr;
   return base::WrapUnique(new ScrollUpdateEventMetrics(
       *interesting_type, ToScrollType(input_type), scroll_update_type, delta,
-      timestamp, arrived_in_browser_main_timestamp, tick_clock));
+      timestamp, arrived_in_browser_main_timestamp, tick_clock, trace_id));
 }
 
 ScrollUpdateEventMetrics::ScrollUpdateEventMetrics(
@@ -656,7 +661,8 @@ ScrollUpdateEventMetrics::ScrollUpdateEventMetrics(
     float delta,
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
-    const base::TickClock* tick_clock)
+    const base::TickClock* tick_clock,
+    absl::optional<TraceId> trace_id)
     : ScrollEventMetrics(type,
                          scroll_type,
                          timestamp,
@@ -664,7 +670,8 @@ ScrollUpdateEventMetrics::ScrollUpdateEventMetrics(
                          tick_clock),
       delta_(delta),
       predicted_delta_(delta),
-      last_timestamp_(timestamp) {}
+      last_timestamp_(timestamp),
+      trace_id_(trace_id) {}
 
 ScrollUpdateEventMetrics::ScrollUpdateEventMetrics(
     const ScrollUpdateEventMetrics&) = default;

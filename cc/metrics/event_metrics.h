@@ -13,11 +13,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/types/id_type.h"
 #include "cc/cc_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/types/event_type.h"
 #include "ui/events/types/scroll_input_type.h"
-
+#include "ui/latency/latency_info.h"
 namespace cc {
 class PinchEventMetrics;
 class ScrollEventMetrics;
@@ -28,7 +29,7 @@ class ScrollUpdateEventMetrics;
 class CC_EXPORT EventMetrics {
  public:
   using List = std::vector<std::unique_ptr<EventMetrics>>;
-
+  using TraceId = base::IdType64<class ui::LatencyInfo>;
   // Event types we are interested in. This list should be in the same order as
   // values of EventLatencyEventType enum from enums.xml file.
   enum class EventType {
@@ -328,7 +329,8 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
       ScrollUpdateType scroll_update_type,
       float delta,
       base::TimeTicks timestamp,
-      base::TimeTicks arrived_in_browser_main_timestamp);
+      base::TimeTicks arrived_in_browser_main_timestamp,
+      TraceId trace_id);
 
   // Prefer to use `Create()` above. This method is used only by the Browser
   // process which have own breakdowns.
@@ -339,7 +341,8 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
       bool is_inertial,
       ScrollUpdateType scroll_update_type,
       float delta,
-      base::TimeTicks timestamp);
+      base::TimeTicks timestamp,
+      TraceId trace_id);
 
   // Similar to `Create()` with an extra `base::TickClock` to use in tests.
   // Should only be used for scroll-update events.
@@ -380,6 +383,9 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
   float predicted_delta() const { return predicted_delta_; }
 
   int32_t coalesced_event_count() { return coalesced_event_count_; }
+
+  absl::optional<TraceId> trace_id() { return trace_id_; }
+
   void set_predicted_delta(float predicted_delta) {
     predicted_delta_ = predicted_delta;
   }
@@ -395,7 +401,8 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
                            float delta,
                            base::TimeTicks timestamp,
                            base::TimeTicks arrived_in_browser_main_timestamp,
-                           const base::TickClock* tick_clock);
+                           const base::TickClock* tick_clock,
+                           absl::optional<TraceId> trace_id);
   ScrollUpdateEventMetrics(const ScrollUpdateEventMetrics&);
 
  private:
@@ -407,7 +414,8 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
       float delta,
       base::TimeTicks timestamp,
       base::TimeTicks arrived_in_browser_main_timestamp,
-      const base::TickClock* tick_clock);
+      const base::TickClock* tick_clock,
+      absl::optional<TraceId> trace_id);
 
   float delta_;
   float predicted_delta_;
@@ -417,6 +425,10 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
 
   // Total events that were coalesced into this into this ScrollUpdate
   int32_t coalesced_event_count_ = 1;
+  // This is a trace id of an input event. It can be null for events which don't
+  // have a corresponding input, for example a generated event based on existing
+  // event.
+  absl::optional<TraceId> trace_id_;
 };
 
 class CC_EXPORT PinchEventMetrics : public EventMetrics {

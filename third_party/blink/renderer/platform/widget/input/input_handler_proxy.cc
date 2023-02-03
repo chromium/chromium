@@ -698,7 +698,8 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
     case WebInputEvent::Type::kGestureScrollUpdate:
       return HandleGestureScrollUpdate(
           static_cast<const WebGestureEvent&>(event), original_attribution,
-          event_with_callback->metrics());
+          event_with_callback->metrics(),
+          event_with_callback->latency_info().trace_id());
 
     case WebInputEvent::Type::kGestureScrollEnd:
       return HandleGestureScrollEnd(static_cast<const WebGestureEvent&>(event));
@@ -1055,10 +1056,12 @@ InputHandlerProxy::EventDisposition
 InputHandlerProxy::HandleGestureScrollUpdate(
     const WebGestureEvent& gesture_event,
     const WebInputEventAttribution& original_attribution,
-    cc::EventMetrics* metrics) {
-  TRACE_EVENT2("input", "InputHandlerProxy::HandleGestureScrollUpdate", "dx",
-               -gesture_event.data.scroll_update.delta_x, "dy",
-               -gesture_event.data.scroll_update.delta_y);
+    cc::EventMetrics* metrics,
+    int64_t trace_id) {
+  TRACE_EVENT("input", "InputHandlerProxy::HandleGestureScrollUpdate",
+              "trace_id", trace_id, "dx",
+              -gesture_event.data.scroll_update.delta_x, "dy",
+              -gesture_event.data.scroll_update.delta_y);
 
   if (scroll_sequence_ignored_) {
     TRACE_EVENT_INSTANT0("input", "Scroll Sequence Ignored",
@@ -1106,6 +1109,11 @@ InputHandlerProxy::HandleGestureScrollUpdate(
 
   cc::InputHandlerScrollResult scroll_result =
       input_handler_->ScrollUpdate(&scroll_state, delay);
+
+  TRACE_EVENT("input", "InputHandlerProxy::HandleGestureScrollUpdate_Result",
+              "trace_id", trace_id, "did_scroll_y",
+              scroll_state.caused_scroll_y(), "current_visual_offset",
+              scroll_result.current_visual_offset);
 
   HandleOverscroll(gesture_event.PositionInWidget(), scroll_result);
 

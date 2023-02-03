@@ -92,10 +92,12 @@ class AverageLagTrackingManagerTest : public testing::Test {
       base::TimeTicks arrived_in_browser_main_timestamp,
       float delta) {
     const bool kScrollIsNotInertial = false;
+    const int64_t trace_id = 123;
     return ScrollUpdateEventMetrics::Create(
         ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
         kScrollIsNotInertial, scroll_update_type, delta, event_time,
-        arrived_in_browser_main_timestamp);
+        arrived_in_browser_main_timestamp,
+        base::IdType64<class ui::LatencyInfo>(trace_id));
   }
 
   AverageLagTrackingManager average_lag_tracking_manager_;
