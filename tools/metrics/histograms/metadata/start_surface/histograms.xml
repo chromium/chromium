@@ -47,8 +47,9 @@ chromium-metrics-reviews@google.com.
     or check about this source and topic; 3) click the learn more button on the
     top of the feeds section. For omnibox: is recorded every time when user uses
     Omnibox or voice search on Omnibox to navigate. This is consistent with
-    MobileOmniboxUse. The histogram is logged on Start surface and is
-    Android-only.
+    MobileOmniboxUse. For single tab card: is recorded every time when user
+    clicks on the single tab card. The histogram is logged on Start surface and
+    is Android-only.
   </summary>
 </histogram>
 
