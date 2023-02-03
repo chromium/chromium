@@ -265,6 +265,7 @@ PowerButton::PowerButton()
       ->SetPathGenerator(
           std::make_unique<HighlightPathGenerator>(/*power_button=*/this));
   button_content_->SetFocusPainter(nullptr);
+  button_content_->SetIconColorId(cros_tokens::kCrosSysOnSurface);
 }
 
 PowerButton::~PowerButton() = default;
@@ -277,10 +278,8 @@ bool PowerButton::IsMenuShowing() {
 void PowerButton::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  button_content_->SetIconColor(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysPrimary));
   SkColor inactive_color =
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnPrimary);
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase);
   SkColor active_color =
       GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemPrimaryContainer);
   background_view_->layer()->SetColor(IsMenuShowing() ? active_color
@@ -314,14 +313,15 @@ void PowerButton::OnButtonActivated(const ui::Event& event) {
       QsButtonCatalogName::kPowerButton);
   ui::MenuSourceType type;
 
-  if (event.IsMouseEvent())
+  if (event.IsMouseEvent()) {
     type = ui::MENU_SOURCE_MOUSE;
-  else if (event.IsTouchEvent())
+  } else if (event.IsTouchEvent()) {
     type = ui::MENU_SOURCE_TOUCH;
-  else if (event.IsKeyEvent())
+  } else if (event.IsKeyEvent()) {
     type = ui::MENU_SOURCE_KEYBOARD;
-  else
+  } else {
     type = ui::MENU_SOURCE_STYLUS;
+  }
 
   context_menu_->ShowContextMenuForView(
       /*source=*/this, GetBoundsInScreen().CenterPoint(), type);
