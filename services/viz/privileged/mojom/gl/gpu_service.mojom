@@ -207,12 +207,12 @@ interface GpuService {
   OnMemoryPressure(mojo_base.mojom.MemoryPressureLevel level);
 
   // Begin a batch of layer tree changes.
-  [EnableIf=is_mac]
+  [EnableIf=is_apple]
   BeginCATransaction();
 
   // Commit a batch of layer tree changes atomically. Returns after the commit
   // completes.
-  [EnableIf=is_mac]
+  [EnableIf=is_apple]
   CommitCATransaction() => ();
 
   // Write out the accumulated code profiling profile to the configured file.
