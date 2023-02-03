@@ -189,7 +189,6 @@ public class StripLayoutTab implements VirtualView {
     private static final float DETACHED_CONTENT_OFFSET_Y = 10.f;
 
     // Divider Constants
-    // TODO(crbug.com/1373632): Temp value until the 9-patches are updated.
     private static final int DIVIDER_OFFSET_X = 13;
     @VisibleForTesting
     static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.2f;
@@ -207,11 +206,12 @@ public class StripLayoutTab implements VirtualView {
     private boolean mIsDying;
     private boolean mCanShowCloseButton = true;
     private boolean mFolioAttached = true;
+    private boolean mStartDividerVisible;
+    private boolean mEndDividerVisible;
     private final boolean mIncognito;
     private float mBottomMargin;
     private float mContainerOpacity;
     private float mContentOffsetX;
-    private float mDividerOpacity;
     private float mVisiblePercentage = 1.f;
     private String mAccessibilityDescription;
 
@@ -459,17 +459,31 @@ public class StripLayoutTab implements VirtualView {
     }
 
     /**
-     * @param dividerOpacity The new opacity for the tab divider.
+     * @param visible Visibility of tab's start divider.
      */
-    public void setDividerOpacity(float dividerOpacity) {
-        mDividerOpacity = dividerOpacity;
+    public void setStartDividerVisible(boolean visible) {
+        mStartDividerVisible = visible;
     }
 
     /**
-     * @return The opacity of the tab divider.
+     * @return Visibility of tab's start divider.
      */
-    public float getDividerOpacity() {
-        return mDividerOpacity;
+    public boolean isStartDividerVisible() {
+        return mStartDividerVisible;
+    }
+
+    /**
+     * @param visible Visibility of end divider.
+     */
+    public void setEndDividerVisible(boolean visible) {
+        mEndDividerVisible = visible;
+    }
+
+    /**
+     * @return Visibility of tab's end divider.
+     */
+    public boolean isEndDividerVisible() {
+        return mEndDividerVisible;
     }
 
     /**

@@ -155,8 +155,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     static final float TAB_OPACITY_VISIBLE_FOREGROUND = 1.f;
     static final float BACKGROUND_TAB_BRIGHTNESS_DEFAULT = 1.f;
     static final float BACKGROUND_TAB_BRIGHTNESS_DIMMED = 0.65f;
-    static final float DIVIDER_HIDDEN_OPACITY = 0.f;
-    static final float DIVIDER_DEFAULT_OPACITY = 1.f;
     static final float FADE_FULL_OPACITY_THRESHOLD_DP = 24.f;
 
     private static final int MESSAGE_RESIZE = 1;
@@ -884,8 +882,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         int selectedTabId = mStripTabs[index].getId();
 
         // Divider is never shown for the first tab.
-        mStripTabs[0].setDividerOpacity(DIVIDER_HIDDEN_OPACITY);
+        mStripTabs[0].setStartDividerVisible(false);
         setForegroundTabContainerVisible(mStripTabs[0], selectedTabId);
+        // End divider for first tab is only shown in reorder mode when tab has trailing margin and
+        // container is not visible.
+        boolean endDividerVisible = mInReorderMode
+                && mStripTabs[0].getContainerOpacity() == TAB_OPACITY_HIDDEN
+                && mStripTabs[0].getTrailingMargin() > 0;
+        mStripTabs[0].setEndDividerVisible(endDividerVisible);
 
         for (int i = 1; i < mStripTabs.length; i++) {
             final StripLayoutTab prevTab = mStripTabs[i - 1];
@@ -894,17 +898,30 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             // Set container opacity.
             setForegroundTabContainerVisible(currTab, selectedTabId);
 
-            // Set divider opacity.
-            if (prevTab.getId() == selectedTabId || currTab.getId() == selectedTabId
-                    || currTab.getContainerOpacity() > TAB_OPACITY_HIDDEN) {
-                // Dividers adjacent to selected tab are hidden. Additionally, when tab containers
-                // are visible for grouped tabs in edit mode, tab dividers are unneeded and
-                // therefore hidden.
-                currTab.setDividerOpacity(DIVIDER_HIDDEN_OPACITY);
-            } else {
-                // All other dividers are visible.
-                currTab.setDividerOpacity(DIVIDER_DEFAULT_OPACITY);
-            }
+            /**
+             * Start divider should be visible when:
+             * 1. In reorder mode and currTab container is hidden
+             * 2. Not in reorder mode and prevTab is not selected and currTab is not selected
+             */
+            boolean startDividerVisible =
+                    (mInReorderMode && currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN)
+                    || (!mInReorderMode && prevTab.getId() != selectedTabId
+                            && currTab.getId() != selectedTabId);
+            currTab.setStartDividerVisible(startDividerVisible);
+
+            /**
+             * End divider should be applied when:
+             * 1. In reorder mode and currTab container is hidden and
+             * (a) currTab's trailing margin > 0  (ie last tab in group) OR
+             * (b) currTab is last tab in strip (last tab does not have trailing margin)
+             * 2. Not in reorder mode and currTab is last tab on strip and is not selected
+             */
+            endDividerVisible =
+                    (mInReorderMode && currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN
+                            && (currTab.getTrailingMargin() > 0 || i == (mStripTabs.length - 1)))
+                    || (!mInReorderMode && i == (mStripTabs.length - 1)
+                            && currTab.getId() != selectedTabId);
+            currTab.setEndDividerVisible(endDividerVisible);
         }
     }
 

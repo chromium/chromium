@@ -410,7 +410,8 @@ void TabStripSceneLayer::PutStripTabLayer(
     jfloat bottom_offset_y,
     jfloat close_button_padding,
     jfloat close_button_alpha,
-    jfloat divider_alpha,
+    jboolean is_start_divider_visible,
+    jboolean is_end_divider_visible,
     jboolean is_loading,
     jfloat spinner_rotation,
     jfloat brightness,
@@ -437,9 +438,9 @@ void TabStripSceneLayer::PutStripTabLayer(
       id, close_button_resource, divider_resource, tab_handle_resource,
       tab_handle_outline_resource, foreground, close_pressed, toolbar_width, x,
       y, width, height, content_offset_x, content_offset_y, divider_offset_x,
-      bottom_offset_y, close_button_padding, close_button_alpha, divider_alpha,
-      is_loading, spinner_rotation, brightness, opacity,
-      tab_strip_redesign_enabled);
+      bottom_offset_y, close_button_padding, close_button_alpha,
+      is_start_divider_visible, is_end_divider_visible, is_loading,
+      spinner_rotation, brightness, opacity, tab_strip_redesign_enabled);
 }
 
 scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextLayer(

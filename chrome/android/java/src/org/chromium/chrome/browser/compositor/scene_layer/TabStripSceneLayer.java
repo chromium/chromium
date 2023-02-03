@@ -209,9 +209,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     st.getHeight() * mDpToPx, st.getContentOffsetX() * mDpToPx,
                     st.getContentOffsetY() * mDpToPx, st.getDividerOffsetX() * mDpToPx,
                     st.getBottomMargin() * mDpToPx, st.getCloseButtonPadding() * mDpToPx,
-                    st.getCloseButton().getOpacity(), st.getDividerOpacity(), st.isLoading(),
-                    st.getLoadingSpinnerRotation(), st.getBrightness(), st.getContainerOpacity(),
-                    layerTitleCache, resourceManager);
+                    st.getCloseButton().getOpacity(), st.isStartDividerVisible(),
+                    st.isEndDividerVisible(), st.isLoading(), st.getLoadingSpinnerRotation(),
+                    st.getBrightness(), st.getContainerOpacity(), layerTitleCache, resourceManager);
         }
     }
 
@@ -255,9 +255,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int handleOutlineTint, boolean foreground, boolean closePressed, float toolbarWidth,
                 float x, float y, float width, float height, float contentOffsetX,
                 float contentOffsetY, float dividerOffsetX, float bottomOffsetY,
-                float closeButtonPadding, float closeButtonAlpha, float dividerAlpha,
-                boolean isLoading, float spinnerRotation, float brightness, float opacity,
-                LayerTitleCache layerTitleCache, ResourceManager resourceManager);
+                float closeButtonPadding, float closeButtonAlpha, boolean isStartDividerVisible,
+                boolean isEndDividerVisible, boolean isLoading, float spinnerRotation,
+                float brightness, float opacity, LayerTitleCache layerTitleCache,
+                ResourceManager resourceManager);
         void setContentTree(
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, SceneLayer contentTree);
     }
