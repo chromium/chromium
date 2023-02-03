@@ -275,7 +275,6 @@ blink_mac_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    goma_backend = None,
 )
 
 blink_mac_builder(

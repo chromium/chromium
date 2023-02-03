@@ -18,10 +18,8 @@ try_.defaults.set(
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     compilator_cores = 16,
-    compilator_goma_jobs = goma.jobs.J300,
     compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
     orchestrator_cores = 2,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -34,6 +32,7 @@ consoles.list_view(
 
 try_.builder(
     name = "win-annotator-rel",
+    goma_backend = goma.backend.RBE_PROD,
     mirrors = ["ci/win-annotator-rel"],
 )
 
@@ -43,14 +42,12 @@ try_.builder(
         "ci/win-asan",
     ],
     execution_timeout = 6 * time.hour,
-    goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "win-celab-try-rel",
     executable = "recipe:celab",
-    goma_backend = None,
     properties = {
         "exclude": "chrome_only",
         "pool_name": "celab-chromium-try",
@@ -66,7 +63,6 @@ try_.builder(
     builderless = False,
     os = os.WINDOWS_ANY,
     main_list_view = "try",
-    goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
 )
@@ -102,6 +98,8 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "win-rel-compilator",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    goma_backend = goma.backend.RBE_PROD,
+    goma_jobs = goma.jobs.J300,
     main_list_view = "try",
     check_for_flakiness = True,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
@@ -113,7 +111,6 @@ try_.builder(
     mirrors = [
         "ci/win32-archive-rel",
     ],
-    goma_backend = None,
 )
 
 try_.builder(
@@ -130,7 +127,6 @@ try_.builder(
     cores = 16,
     ssd = True,
     main_list_view = "try",
-    goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
         # TODO(crbug.com/1335555) Remove once cancelling doesn't wipe
@@ -148,7 +144,6 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
-    goma_backend = None,
 )
 
 try_.builder(
@@ -156,7 +151,6 @@ try_.builder(
     mirrors = [
         "ci/Win x64 Builder",
     ],
-    goma_backend = None,
 )
 
 try_.builder(
@@ -166,12 +160,12 @@ try_.builder(
     cores = 32,
     os = os.WINDOWS_ANY,
     execution_timeout = 6 * time.hour,
-    goma_backend = None,
     reclient_instance = None,
 )
 
 try_.builder(
     name = "win_x64_archive",
+    goma_backend = goma.backend.RBE_PROD,
     mirrors = [
         "ci/win-archive-rel",
     ],
@@ -184,11 +178,11 @@ try_.builder(
         "ci/Win10 Tests x64 (dbg)",
     ],
     os = os.WINDOWS_10,
-    goma_backend = None,
 )
 
 try_.builder(
     name = "win10-wpt-content-shell-fyi-rel",
+    goma_backend = goma.backend.RBE_PROD,
     mirrors = [
         "ci/win10-wpt-content-shell-fyi-rel",
     ],
@@ -197,6 +191,7 @@ try_.builder(
 
 try_.builder(
     name = "win11-wpt-content-shell-fyi-rel",
+    goma_backend = goma.backend.RBE_PROD,
     mirrors = [
         "ci/win11-wpt-content-shell-fyi-rel",
     ],
@@ -212,12 +207,12 @@ try_.builder(
     builderless = True,
     os = os.WINDOWS_10,
     coverage_test_types = ["unit", "overall"],
-    goma_backend = None,
     use_clang_coverage = True,
 )
 
 try_.builder(
     name = "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng",
+    goma_backend = goma.backend.RBE_PROD,
     mirrors = [
         "ci/Win x64 Builder",
         "ci/Win10 Tests x64",
@@ -253,12 +248,14 @@ try_.orchestrator_builder(
 
 try_.builder(
     name = "win-fieldtrial-rel",
+    goma_backend = goma.backend.RBE_PROD,
     mirrors = ["ci/win-fieldtrial-rel"],
     os = os.WINDOWS_DEFAULT,
 )
 
 try_.builder(
     name = "win-perfetto-rel",
+    goma_backend = goma.backend.RBE_PROD,
     mirrors = [
         "ci/win-perfetto-rel",
     ],
@@ -266,6 +263,7 @@ try_.builder(
 
 try_.builder(
     name = "win10-code-coverage",
+    goma_backend = goma.backend.RBE_PROD,
     mirrors = ["ci/win10-code-coverage"],
     execution_timeout = 20 * time.hour,
 )
@@ -295,7 +293,6 @@ try_.gpu.optional_tests_builder(
     ),
     os = os.WINDOWS_DEFAULT,
     main_list_view = "try",
-    goma_backend = None,
     tryjob = try_.job(
         location_filters = [
             cq.location_filter(path_regexp = "chrome/browser/vr/.+"),

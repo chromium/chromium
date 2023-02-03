@@ -17,8 +17,6 @@ try_.defaults.set(
     pool = try_.DEFAULT_POOL,
     service_account = try_.gpu.SERVICE_ACCOUNT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.J150,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
@@ -37,7 +35,6 @@ try_.builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    goma_backend = None,
 )
 
 try_.builder(
@@ -50,12 +47,13 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
-    goma_backend = None,
 )
 
 try_.builder(
     name = "linux-angle-chromium-try",
     executable = "recipe:angle_chromium_trybot",
+    goma_backend = goma.backend.RBE_PROD,
+    goma_jobs = goma.jobs.J150,
     mirrors = [
         "ci/linux-angle-chromium-builder",
         "ci/linux-angle-chromium-intel",
@@ -79,7 +77,6 @@ try_.builder(
         retry_failed_shards = False,
     ),
     cores = None,
-    goma_backend = None,
     os = os.MAC_ANY,
 )
 
@@ -95,7 +92,6 @@ try_.builder(
         retry_failed_shards = False,
     ),
     os = os.WINDOWS_ANY,
-    goma_backend = None,
 )
 
 try_.builder(
@@ -110,5 +106,4 @@ try_.builder(
         retry_failed_shards = False,
     ),
     os = os.WINDOWS_ANY,
-    goma_backend = None,
 )

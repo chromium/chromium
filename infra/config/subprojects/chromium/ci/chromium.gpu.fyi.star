@@ -697,7 +697,6 @@ ci.gpu.mac_builder(
         category = "Mac|Builder",
         short_name = "arm",
     ),
-    goma_backend = None,
 )
 
 ci.thin_tester(

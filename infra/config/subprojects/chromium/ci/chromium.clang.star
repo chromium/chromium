@@ -100,7 +100,6 @@ ci.builder(
         category = "CFI|Linux",
         short_name = "CF",
     ),
-    goma_backend = None,
     notifies = ["CFI Linux"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
