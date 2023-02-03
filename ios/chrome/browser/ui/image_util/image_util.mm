@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ui/gfx/color_analysis.h"
@@ -82,12 +82,13 @@ NSString* GetImageExtensionFromData(NSData* data) {
 
 NSString* GetImageUTIFromData(NSData* data) {
   static NSDictionary* dict = @{
-    kImageExtensionJPG : (__bridge NSString*)kUTTypeJPEG,
-    kImageExtensionPNG : (__bridge NSString*)kUTTypePNG,
-    kImageExtensionGIF : (__bridge NSString*)kUTTypeGIF,
-    kImageExtensionTIF : (__bridge NSString*)kUTTypeTIFF,
-    kImageExtensionBMP : (__bridge NSString*)kUTTypeBMP,
-    kImageExtensionICO : (__bridge NSString*)kUTTypeICO
+    kImageExtensionJPG : UTTypeJPEG.identifier,
+    kImageExtensionPNG : UTTypePNG.identifier,
+    kImageExtensionGIF : UTTypeGIF.identifier,
+    kImageExtensionTIF : UTTypeTIFF.identifier,
+    kImageExtensionBMP : UTTypeBMP.identifier,
+    kImageExtensionICO : UTTypeICO.identifier
   };
+
   return dict[GetImageExtensionFromData(data)];
 }

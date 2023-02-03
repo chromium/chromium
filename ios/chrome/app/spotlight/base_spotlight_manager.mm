@@ -4,7 +4,7 @@
 
 #import "ios/chrome/app/spotlight/base_spotlight_manager.h"
 
-#import <MobileCoreServices/MobileCoreServices.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import <memory>
 #import <set>
@@ -182,8 +182,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
                                 : indexedURL.spec();
 
   CSSearchableItemAttributeSet* attributeSet =
-      [[CSSearchableItemAttributeSet alloc]
-          initWithItemContentType:(NSString*)kUTTypeURL];
+      [[CSSearchableItemAttributeSet alloc] initWithContentType:UTTypeURL];
   [attributeSet setTitle:defaultTitle];
   [attributeSet setDisplayName:defaultTitle];
   [attributeSet setURL:nsURL];

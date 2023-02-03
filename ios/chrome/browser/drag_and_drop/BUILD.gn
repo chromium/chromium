@@ -19,5 +19,8 @@ source_set("drag_and_drop") {
     "//net",
     "//url",
   ]
-  frameworks = [ "UIKit.framework" ]
+  frameworks = [
+    "UIKit.framework",
+    "UniformTypeIdentifiers.framework",
+  ]
 }

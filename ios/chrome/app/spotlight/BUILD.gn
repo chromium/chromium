@@ -46,6 +46,7 @@ source_set("spotlight") {
   frameworks = [
     "CoreSpotlight.framework",
     "UIKit.framework",
+    "UniformTypeIdentifiers.framework",
   ]
 }
 

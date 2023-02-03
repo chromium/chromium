@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
 
-#import <MobileCoreServices/UTCoreTypes.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
@@ -59,9 +59,8 @@
   // TODO(crbug.com/1100940): Enable multi-item drops.
   return session.items.count == 1U &&
          [self.dropDelegate canHandleURLDropInTableView:tableView] &&
-         [session hasItemsConformingToTypeIdentifiers:@[
-           (__bridge NSString*)kUTTypeURL
-         ]];
+         [session
+             hasItemsConformingToTypeIdentifiers:@[ UTTypeURL.identifier ]];
 }
 
 - (UITableViewDropProposal*)tableView:(UITableView*)tableView
