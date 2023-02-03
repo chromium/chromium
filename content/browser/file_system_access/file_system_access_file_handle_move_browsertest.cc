@@ -4,6 +4,8 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_feature_list.h"
+#include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_chooser_test_helpers.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -105,6 +107,32 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleMoveBrowserTest,
              "return await sandboxFile.move(localDir); })()");
   EXPECT_TRUE(result.error.find("can not be modified in this way") !=
               std::string::npos)
+      << result.error;
+}
+
+class FileSystemAccessFileHandleMoveLocalBrowserTest
+    : public FileSystemAccessFileHandleMoveBrowserTest {
+ public:
+  FileSystemAccessFileHandleMoveLocalBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kFileSystemAccessMoveLocalFiles);
+  }
+
+  void SetUp() override { FileSystemAccessFileHandleMoveBrowserTest::SetUp(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleMoveLocalBrowserTest,
+                       RenameLocal) {
+  std::string file_contents = "move me";
+  CreateTestFileInDirectory(temp_dir_.GetPath(), file_contents);
+
+  auto result = EvalJs(shell(),
+                       "(async () => {"
+                       "return await self.localFile.move('renamed.txt'); })()");
+  EXPECT_TRUE(result.error.find("not support") != std::string::npos)
       << result.error;
 }
 

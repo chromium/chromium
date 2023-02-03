@@ -25,6 +25,13 @@ BASE_FEATURE(kFileSystemAccessDoNotOverwriteOnMove,
              "FileSystemAccessDoNotOverwriteOnMove",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(crbug.com/1140805): Remove this flag eventually.
+// When enabled, move() supports moving local files (i.e. that do not live in
+// the OPFS).
+BASE_FEATURE(kFileSystemAccessMoveLocalFiles,
+             "FileSystemAccessMoveLocalFiles",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // TODO(crbug.com/1114923): Remove this flag eventually.
 // When enabled, the remove() method is enabled. Otherwise, throws a
 // NotSupportedError DomException.
