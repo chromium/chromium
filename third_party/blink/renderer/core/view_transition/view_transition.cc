@@ -499,6 +499,13 @@ void ViewTransition::ProcessCurrentState() {
     switch (state_) {
       // Initial state: nothing to do, just advance the state
       case State::kInitial:
+        // We require a new effect node to be generated for the LayoutView when
+        // a transition is not in terminal state. Dirty paint to ensure
+        // generation of this effect node.
+        if (auto* layout_view = document_->GetLayoutView()) {
+          layout_view->SetNeedsPaintPropertyUpdate();
+        }
+
         process_next_state = AdvanceTo(State::kCaptureTagDiscovery);
         DCHECK(!process_next_state);
         break;
