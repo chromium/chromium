@@ -310,6 +310,7 @@ class KioskUpdateTest : public KioskBaseTest {
     TestAppInfo primary_app(kTestPrimaryKioskApp, "1.0.0",
                             std::string(kTestPrimaryKioskApp) + "-1.0.0.crx",
                             extensions::Manifest::TYPE_PLATFORM_APP);
+    SetupAppDetailInFakeCws(primary_app);
 
     std::vector<TestAppInfo> secondary_apps;
     TestAppInfo secondary_app_1(kTestSecondaryApp1, "1.0.0",
@@ -328,6 +329,7 @@ class KioskUpdateTest : public KioskBaseTest {
     TestAppInfo primary_app(kTestPrimaryKioskApp, "24.0.0",
                             std::string(kTestPrimaryKioskApp) + "-24.0.0.crx",
                             extensions::Manifest::TYPE_PLATFORM_APP);
+    SetupAppDetailInFakeCws(primary_app);
 
     std::vector<TestAppInfo> secondary_apps;
     TestAppInfo secondary_extension(
@@ -344,6 +346,7 @@ class KioskUpdateTest : public KioskBaseTest {
         kTestSharedModulePrimaryApp, "1.0.0",
         std::string(kTestSharedModulePrimaryApp) + "-1.0.0.crx",
         extensions::Manifest::TYPE_PLATFORM_APP);
+    SetupAppDetailInFakeCws(primary_app);
 
     std::vector<TestAppInfo> secondary_apps;
     TestAppInfo secondary_app(kTestSecondaryApp, "1.0.0",
@@ -366,6 +369,7 @@ class KioskUpdateTest : public KioskBaseTest {
         kTestSharedModulePrimaryApp, "2.0.0",
         std::string(kTestSharedModulePrimaryApp) + "-2.0.0.crx",
         extensions::Manifest::TYPE_PLATFORM_APP);
+    SetupAppDetailInFakeCws(primary_app);
 
     std::vector<TestAppInfo> secondary_apps;
     // Setting up FakeCWS for shared module is the same for shared module as
@@ -383,6 +387,13 @@ class KioskUpdateTest : public KioskBaseTest {
     return !!extensions::ExtensionSystem::Get(app_profile)
                  ->extension_service()
                  ->GetPendingExtensionUpdate(test_app_id());
+  }
+
+  void SetupAppDetailInFakeCws(const TestAppInfo& app) {
+    // In these tests we need to provide any app detail, not necessary correct
+    // one, just to prevent KioskAppData to remove the app.
+    fake_cws()->SetAppDetails(app.id, /*localized_name*/ "Test App",
+                              /*manifest_json*/ "");
   }
 
  private:
@@ -949,6 +960,7 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
       kTestSharedModulePrimaryApp, "3.0.0",
       std::string(kTestSharedModulePrimaryApp) + "-3.0.0.crx",
       extensions::Manifest::TYPE_PLATFORM_APP);
+  SetupAppDetailInFakeCws(primary_app);
 
   std::vector<TestAppInfo> secondary_apps;
   // Setting up FakeCWS for shared module is the same for shared module as

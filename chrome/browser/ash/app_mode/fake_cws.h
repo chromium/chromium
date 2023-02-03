@@ -47,6 +47,11 @@ class FakeCWS {
   // Sets up the update check response with no_update template.
   void SetNoUpdate(const std::string& app_id);
 
+  // Set the details to be returned via Chrome Web Store details query.
+  void SetAppDetails(const std::string& app_id,
+                     std::string localized_name,
+                     std::string manifest_json);
+
   // Returns the current |update_check_count_| and resets it.
   int GetUpdateCheckCountAndReset();
 
@@ -54,6 +59,11 @@ class FakeCWS {
   enum class GalleryUpdateMode {
     kOnlyCommandLine,
     kModifyExtensionsClient,
+  };
+
+  struct AppDetails {
+    std::string localized_name;
+    std::string manifest_json;
   };
 
   void SetupWebStoreURL(const GURL& test_server_url);
@@ -77,6 +87,13 @@ class FakeCWS {
   std::map<std::string, base::RepeatingCallback<std::string(bool, bool)>>
       id_to_update_check_content_map_;
   int update_check_count_;
+
+  // Map keyed by app_id to app details. These are details returned via a
+  // special request to Chrome Web Store and normally used to render app's item
+  // in the kiosk app menu. Since test which use them don't rely on these
+  // details so far, only two necessary ones are supported at the moment (see
+  // the AppDetails struct).
+  std::map<std::string, AppDetails> id_to_details_map_;
 
   // FakeCWS overrides Chrome Web Store URLs, so extensions it provides in tests
   // are considered as extensions from Chrome Web Store. ContentVerifier assumes

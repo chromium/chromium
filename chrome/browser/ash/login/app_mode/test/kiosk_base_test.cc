@@ -17,7 +17,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -101,22 +100,6 @@ Browser* OpenA11ySettingsBrowser(AppSessionAsh* app_session) {
 KioskBaseTest::KioskBaseTest()
     : settings_helper_(false), fake_cws_(new FakeCWS) {
   set_exit_when_last_browser_closes(false);
-
-  // This test does not operate any real App, so App data does not exist.
-  // Depending on timing, the asynchronous check for app data may or may not
-  // complete before test checks pass. And if the check does complete, it will
-  // mark app status KioskAppData::Status::kError, and exclude it from the
-  // list of populated apps.
-  //
-  // Then, any Update UI event (asynchronous) (like
-  // LoginDisplayHostCommon::OnStartSignInScreenCommon() will invoke
-  // SendKioskApps() and destroy test configuration.
-  //
-  // We default to ignore test data, as most of test cases use app ids only,
-  // So individual checks should revert it to default when needed.
-  //
-  // TODO(https://crbug.com/937244): Remove this.
-  KioskAppData::SetIgnoreKioskAppDataLoadFailuresForTesting(true);
 }
 
 KioskBaseTest::~KioskBaseTest() = default;

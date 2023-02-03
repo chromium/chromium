@@ -90,10 +90,6 @@ class KioskAppData : public KioskAppDataBase,
       const GURL& update_url,
       const std::string& required_platform_version);
 
-  // Tests do not always fake app data download.
-  // This allows to ignore download errors.
-  static void SetIgnoreKioskAppDataLoadFailuresForTesting(bool value);
-
  private:
   class CrxLoader;
   class WebstoreDataParser;

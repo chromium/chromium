@@ -20,6 +20,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "crypto/sha2.h"
 #include "extensions/common/extensions_client.h"
+#include "extensions/common/value_builder.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -35,6 +36,8 @@ namespace {
 const char kWebstoreDomain[] = "cws.com";
 // Kiosk app crx file download path under web store site.
 const char kCrxDownloadPath[] = "/chromeos/app_mode/webstore/downloads/";
+const char kDetailsURLPrefix[] =
+    "/chromeos/app_mode/webstore/inlineinstall/detail/";
 
 const char kAppNoUpdateTemplate[] =
     "<app appid=\"$AppId\" status=\"ok\">"
@@ -129,6 +132,19 @@ bool GetAppIdsFromUpdateUrl(const GURL& update_url,
     ids->push_back(id);
   }
   return !ids->empty();
+}
+
+// The detail request has an URL in form of
+// https://<domain>/chromeos/app_mode/webstore/inlineinstall/detail/<id>.
+// Returns absl::nullopt if the `request_path` doesn't look like request for
+// extension details.
+absl::optional<std::string> GetExtensionIdFromDetailRequest(
+    const std::string& request_path) {
+  size_t prefix_length = strlen(kDetailsURLPrefix);
+  if (request_path.substr(0, prefix_length) != kDetailsURLPrefix) {
+    return absl::nullopt;
+  }
+  return request_path.substr(prefix_length);
 }
 
 // FakeCWS uses ScopedIgnoreContentVerifierForTest to disable extension
@@ -244,6 +260,14 @@ void FakeCWS::SetNoUpdate(const std::string& app_id) {
       base::BindRepeating(&ApplyHasNoUpdateTemplate, app_id);
 }
 
+void FakeCWS::SetAppDetails(const std::string& app_id,
+                            std::string localized_name,
+                            std::string manifest_json) {
+  id_to_details_map_[app_id] =
+      AppDetails{.localized_name = std::move(localized_name),
+                 .manifest_json = std::move(manifest_json)};
+}
+
 int FakeCWS::GetUpdateCheckCountAndReset() {
   int current_count = update_check_count_;
   update_check_count_ = 0;
@@ -325,6 +349,25 @@ std::unique_ptr<HttpResponse> FakeCWS::HandleRequest(
         http_response->set_content(update_check_content);
         return std::move(http_response);
       }
+    }
+  }
+
+  absl::optional details_id = GetExtensionIdFromDetailRequest(request_path);
+  if (details_id) {
+    auto it = id_to_details_map_.find(*details_id);
+    if (it != id_to_details_map_.end()) {
+      std::string details =
+          extensions::DictionaryBuilder()
+              .Set("id", *details_id)
+              .Set("icon_url", "")
+              .Set("localized_name", it->second.localized_name)
+              .Set("manifest", it->second.manifest_json)
+              .ToJSON();
+      std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse());
+      http_response->set_code(net::HTTP_OK);
+      http_response->set_content_type("application/json");
+      http_response->set_content(details);
+      return std::move(http_response);
     }
   }
 
