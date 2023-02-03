@@ -1404,8 +1404,8 @@
     },
 
     'tryserver.v8': {
-      'v8_linux_blink_rel': 'release_trybot_blink',
-      'v8_linux_chromium_gn_rel': 'release_trybot',
+      'v8_linux_blink_rel': 'release_trybot_blink_reclient',
+      'v8_linux_chromium_gn_rel': 'release_trybot_reclient',
     },
 
     'tryserver.webrtc': {
@@ -3599,6 +3599,10 @@
 
     'release_trybot_blink_do_typecheck': [
       'release_trybot_blink', 'devtools_do_typecheck',
+    ],
+
+    'release_trybot_blink_reclient': [
+      'release_trybot_blink_reclient',
     ],
 
     'release_trybot_cxx17': [
