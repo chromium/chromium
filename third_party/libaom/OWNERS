@@ -1,5 +1,7 @@
-tomfinegan@chromium.org
-johannkoenig@google.com
+# Primary OWNERS
 jzern@chromium.org
 jzern@google.com
 wtc@google.com
+
+# Past project member, please only use when primaries are unavailable.
+johannkoenig@google.com   # Prefer jzern@/wtc@ if available.
