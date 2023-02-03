@@ -1592,6 +1592,8 @@ NavigationRequest::NavigationRequest(
   // If `rfh_restored_from_back_forward_cache` was set, it should not be
   // invalidated yet at this point.
   CHECK(!rfh_restored_from_back_forward_cache.WasInvalidated());
+  CheckSoftNavigationHeuristicsInvariants();
+
   ScopedCrashKeys crash_keys(*this);
 
   ComputeDownloadPolicy();
@@ -2746,6 +2748,8 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
 
   policy_container_builder_->ResetForCrossDocumentRestart();
   commit_params_->soft_navigation_heuristics_task_id = absl::nullopt;
+
+  CheckSoftNavigationHeuristicsInvariants();
 }
 
 void NavigationRequest::ResetStateForSiteInstanceChange() {
@@ -5174,16 +5178,7 @@ void NavigationRequest::CommitNavigation() {
   // A navigation request should only commit once the response has been
   // processed.
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
-#if DCHECK_IS_ON()
-  // In NavigationControllerImpl::NavigateToExistingPendingEntry we're verifying
-  // that the task ID is only passed along if the initiator RFH is the same as
-  // the navigated RFH.
-  if (commit_params_->soft_navigation_heuristics_task_id) {
-    DCHECK(IsSameDocument());
-    DCHECK(IsInMainFrame());
-    DCHECK(!frame_tree_node()->IsFencedFrameRoot());
-  }
-#endif
+  CheckSoftNavigationHeuristicsInvariants();
 
   if (!CoopCoepSanityCheck())
     return;
@@ -8702,6 +8697,18 @@ void NavigationRequest::
       ->frame_tree()
       .RegisterOriginForUnpartitionedSessionStorageAccess(
           url::Origin::Create(common_params_->url));
+}
+
+void NavigationRequest::CheckSoftNavigationHeuristicsInvariants() {
+  if (!commit_params_->soft_navigation_heuristics_task_id) {
+    return;
+  }
+  // In NavigationControllerImpl::NavigateToExistingPendingEntry we're verifying
+  // that the task ID is only passed along if the initiator RFH is the same as
+  // the navigated RFH.
+  DCHECK(IsSameDocument());
+  DCHECK(IsInMainFrame());
+  DCHECK(!frame_tree_node()->IsFencedFrameRoot());
 }
 
 }  // namespace content

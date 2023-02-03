@@ -1715,6 +1715,9 @@ class CONTENT_EXPORT NavigationRequest
   // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
   void MaybeRegisterOriginForUnpartitionedSessionStorageAccess();
 
+  // See https://crbug.com/1412365
+  void CheckSoftNavigationHeuristicsInvariants();
+
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
 
