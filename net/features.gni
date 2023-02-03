@@ -8,9 +8,9 @@ declare_args() {
   # Disables support for file URLs.  File URL support requires use of icu.
   disable_file_support = false
 
-  # WebSockets and socket stream code are not used on iOS and are optional in
-  # cronet.
-  enable_websockets = !is_ios
+  # WebSockets and socket stream code are not used when blink is not used
+  # and are optional in cronet.
+  enable_websockets = use_blink
 
   # Enable Kerberos authentication. It is disabled by default on iOS, Fuchsia
   # and Chromecast, at least for now. This feature needs configuration
