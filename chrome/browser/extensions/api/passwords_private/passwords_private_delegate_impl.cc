@@ -548,6 +548,18 @@ void PasswordsPrivateDelegateImpl::SetCredentials(
           CreatePasswordUiEntryFromCredentialUiEntry(std::move(credential)));
     }
   }
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordsGrouping)) {
+    for (CredentialUIEntry& credential :
+         saved_passwords_presenter_.GetBlockedSites()) {
+      api::passwords_private::ExceptionEntry current_exception_entry;
+      current_exception_entry.urls =
+          CreateUrlCollectionFromCredential(credential);
+      current_exception_entry.id =
+          credential_id_generator_.GenerateId(std::move(credential));
+      current_exceptions_.push_back(std::move(current_exception_entry));
+    }
+  }
 
   if (current_entries_initialized_) {
     DCHECK(get_saved_passwords_list_callbacks_.empty());
