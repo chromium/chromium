@@ -5,8 +5,12 @@
 #ifndef CONTENT_PUBLIC_BROWSER_WEB_CONTENTS_VIEW_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_WEB_CONTENTS_VIEW_DELEGATE_H_
 
+#include "build/build_config.h"
+
 #if defined(__OBJC__)
+#if BUILDFLAG(IS_MAC)
 #import <Cocoa/Cocoa.h>
+#endif
 #endif
 
 #include "base/functional/callback_forward.h"
@@ -15,7 +19,9 @@
 #include "ui/gfx/native_widget_types.h"
 
 #if defined(__OBJC__)
+#if BUILDFLAG(IS_MAC)
 @protocol RenderWidgetHostViewMacDelegate;
+#endif
 #endif
 
 namespace content {
@@ -79,9 +85,11 @@ class CONTENT_EXPORT WebContentsViewDelegate {
   // Returns a newly-created delegate for the RenderWidgetHostViewMac, to handle
   // events on the responder chain.
 #if defined(__OBJC__)
+#if BUILDFLAG(IS_MAC)
   virtual NSObject<RenderWidgetHostViewMacDelegate>*
   CreateRenderWidgetHostViewDelegate(RenderWidgetHost* render_widget_host,
                                      bool is_popup);
+#endif
 #else
   virtual void* CreateRenderWidgetHostViewDelegate(
       RenderWidgetHost* render_widget_host,

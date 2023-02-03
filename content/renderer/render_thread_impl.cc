@@ -198,7 +198,7 @@
 #include "mojo/public/cpp/bindings/message_dumper.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 #else
 #include <malloc.h>

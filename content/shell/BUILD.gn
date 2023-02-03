@@ -30,6 +30,8 @@ if (is_android) {
   import("//build/config/fuchsia/generate_runner_scripts.gni")
   import("//third_party/fuchsia-sdk/sdk/build/component.gni")
   import("//third_party/fuchsia-sdk/sdk/build/package.gni")
+} else if (is_ios) {
+  import("//build/config/ios/config.gni")
 }
 
 # TODO(crbug.com/1336055, spang): Investigate using shell_views with cast builds as
@@ -100,10 +102,14 @@ static_library("content_shell_app") {
       "//components/crash/core/app:test_support",
     ]
   }
-  if (is_mac) {
+  if (is_apple) {
     sources += [
       "app/paths_mac.h",
       "app/paths_mac.mm",
+    ]
+  }
+  if (is_mac) {
+    sources += [
       "app/shell_main_delegate_mac.h",
       "app/shell_main_delegate_mac.mm",
     ]
@@ -194,6 +200,16 @@ static_library("content_shell_lib") {
       "browser/shell_platform_delegate_mac.mm",
       "browser/shell_web_contents_view_delegate_mac.mm",
     ]
+  }
+
+  if (is_ios) {
+    sources += [
+      "browser/shell_application_ios.h",
+      "browser/shell_application_ios.mm",
+      "browser/shell_platform_delegate_ios.mm",
+      "browser/shell_web_contents_view_delegate_ios.mm",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -531,6 +547,38 @@ if (is_android) {
       ldflags = [ "-Wl,-rpath,@executable_path/../Frameworks" ]
     }
   }
+} else if (is_ios) {
+  declare_args() {
+    # The bundle identifier. Overriding this will affect the provisioning profile
+    # used, and hence will affect the app's capabilities.
+    ios_content_shell_bundle_identifier =
+        "$ios_app_bundle_id_prefix.ios-content-shell"
+
+    # Path to an entitlements file used in ios_content_shell. Can be overridden
+    # to provide an alternative.
+    ios_content_shell_entitlements_path =
+        "//build/config/ios/entitlements.plist"
+  }
+
+  ios_app_bundle("content_shell") {
+    info_plist = "app/ios-Info.plist"
+    testonly = true
+
+    sources = [ "app/shell_main.cc" ]
+
+    deps = [
+      ":content_shell_app",
+      "//content/public/app",
+    ]
+    bundle_deps = [
+      ":content_shell_framework_resources",
+      "app/ios/resources",
+    ]
+    entitlements_path = ios_content_shell_entitlements_path
+    bundle_identifier = ios_content_shell_bundle_identifier
+
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
 } else {
   executable("content_shell") {
     testonly = true
@@ -609,14 +657,14 @@ if (is_android) {
   }
 }
 
-if (is_mac) {
+if (is_apple) {
   bundle_data("content_shell_framework_resources") {
     testonly = true
     sources = [ "$root_out_dir/content_shell.pak" ]
 
     public_deps = [ ":pak" ]
 
-    if (icu_use_data_file) {
+    if (is_mac && icu_use_data_file) {
       sources += [ "$root_out_dir/icudtl.dat" ]
       deps = [ "//third_party/icu:icudata" ]
     }
@@ -633,7 +681,9 @@ if (is_mac) {
 
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
+}
 
+if (is_mac) {
   if (enable_ppapi) {
     bundle_data("content_shell_framework_plugins") {
       sources = [

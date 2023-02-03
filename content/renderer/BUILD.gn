@@ -208,6 +208,10 @@ target(link_target_type, "renderer") {
     ]
   }
 
+  if (is_ios) {
+    sources += [ "renderer_main_platform_delegate_ios.mm" ]
+  }
+
   if (is_win) {
     sources += [ "renderer_main_platform_delegate_win.cc" ]
   }

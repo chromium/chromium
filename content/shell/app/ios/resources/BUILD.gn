@@ -1,0 +1,61 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/rules.gni")
+
+group("resources") {
+  public_deps = [
+    ":ic_back",
+    ":ic_forward",
+    ":ic_menu",
+    ":ic_reload",
+    ":ic_stop",
+  ]
+}
+
+imageset("ic_stop") {
+  sources = [
+    "ic_stop.imageset/Contents.json",
+    "ic_stop.imageset/ic_stop.png",
+    "ic_stop.imageset/ic_stop_2x.png",
+    "ic_stop.imageset/ic_stop_3x.png",
+  ]
+}
+
+imageset("ic_menu") {
+  sources = [
+    "ic_menu.imageset/Contents.json",
+    "ic_menu.imageset/ic_menu.png",
+    "ic_menu.imageset/ic_menu_2x.png",
+    "ic_menu.imageset/ic_menu_3x.png",
+  ]
+}
+
+imageset("ic_forward") {
+  sources = [
+    "ic_forward.imageset/Contents.json",
+    "ic_forward.imageset/ic_forward.png",
+    "ic_forward.imageset/ic_forward_2x.png",
+    "ic_forward.imageset/ic_forward_3x.png",
+  ]
+}
+
+imageset("ic_back") {
+  sources = [
+    "ic_back.imageset/Contents.json",
+    "ic_back.imageset/ic_back.png",
+    "ic_back.imageset/ic_back_2x.png",
+    "ic_back.imageset/ic_back_3x.png",
+  ]
+}
+
+imageset("ic_reload") {
+  sources = [
+    "ic_reload.imageset/Contents.json",
+    "ic_reload.imageset/ic_reload.png",
+    "ic_reload.imageset/ic_reload_2x.png",
+    "ic_reload.imageset/ic_reload_3x.png",
+  ]
+}

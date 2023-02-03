@@ -15,6 +15,9 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "content/public/browser/native_web_keyboard_event.h"
+#endif
+
+#if BUILDFLAG(IS_APPLE)
 #include "ui/display/screen.h"
 #endif
 
@@ -140,7 +143,7 @@ class ShellPlatformDelegate {
 #endif
 
  private:
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   std::unique_ptr<display::ScopedNativeScreen> screen_;
 #endif
   // Data held for each Shell instance, since there is one ShellPlatformDelegate

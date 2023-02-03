@@ -43,7 +43,7 @@
 namespace content {
 
 // TODO(jrg): Find out if setproctitle or equivalent is available on Android.
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_SOLARIS) && \
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_SOLARIS) && \
     !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
 void SetProcessTitleFromCommandLine(const char** main_argv) {

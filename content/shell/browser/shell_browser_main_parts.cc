@@ -75,7 +75,7 @@
 namespace content {
 
 namespace {
-
+#if !BUILDFLAG(IS_IOS)
 GURL GetStartupURL() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kBrowserTest))
@@ -101,6 +101,7 @@ GURL GetStartupURL() {
       base::MakeAbsoluteFilePath(base::FilePath(args[0])));
 #endif
 }
+#endif
 
 scoped_refptr<base::RefCountedMemory> PlatformResourceProvider(int key) {
   if (key == IDR_DIR_HEADER_HTML) {
@@ -156,8 +157,10 @@ void ShellBrowserMainParts::InitializeBrowserContexts() {
 }
 
 void ShellBrowserMainParts::InitializeMessageLoopContext() {
+#if !BUILDFLAG(IS_IOS)
   Shell::CreateNewWindow(browser_context_.get(), GetStartupURL(), nullptr,
                          gfx::Size());
+#endif
 }
 
 void ShellBrowserMainParts::ToolkitInitialized() {

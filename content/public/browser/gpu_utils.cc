@@ -121,6 +121,8 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
 
 #if BUILDFLAG(IS_MAC)
   gpu_preferences.enable_metal = base::FeatureList::IsEnabled(features::kMetal);
+#elif BUILDFLAG(IS_IOS)
+  gpu_preferences.enable_metal = true;
 #endif
 
   gpu_preferences.enable_gpu_benchmarking_extension =
