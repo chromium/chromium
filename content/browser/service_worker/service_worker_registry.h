@@ -329,8 +329,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       int64_t trace_event_id,
       FindRegistrationCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
-      storage::mojom::ServiceWorkerFindRegistrationResultPtr result,
-      const absl::optional<std::vector<GURL>>& scopes);
+      storage::mojom::ServiceWorkerFindRegistrationResultPtr result);
   void RunFindRegistrationCallbacks(
       const GURL& client_url,
       const blink::StorageKey& key,
@@ -369,7 +368,6 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       uint64_t deleted_resources_size);
   void DidDeleteRegistration(
       int64_t registration_id,
-      const GURL& stored_scope,
       const blink::StorageKey& key,
       StatusCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
@@ -513,10 +511,6 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   base::flat_map<std::pair<GURL, blink::StorageKey>,
                  std::vector<FindRegistrationCallback>>
       find_registration_callbacks_;
-
-  // ServiceWorker registration scope cache to skip calling
-  // FindRegistrationForClientUrl mojo function (https://crbug.com/1411197).
-  std::map<blink::StorageKey, std::set<GURL>> registration_scope_cache_;
 
   enum class ConnectionState {
     kNormal,

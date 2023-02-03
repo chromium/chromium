@@ -335,14 +335,12 @@ class ServiceWorkerStorageTest : public testing::Test {
     base::RunLoop loop;
     storage()->FindRegistrationForClientUrl(
         document_url, key,
-        base::BindLambdaForTesting(
-            [&](mojom::ServiceWorkerRegistrationDataPtr,
-                std::unique_ptr<ResourceList>,
-                const absl::optional<std::vector<GURL>>& scopes,
-                ServiceWorkerDatabase::Status status) {
-              result = status;
-              loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](mojom::ServiceWorkerRegistrationDataPtr,
+                                       std::unique_ptr<ResourceList>,
+                                       ServiceWorkerDatabase::Status status) {
+          result = status;
+          loop.Quit();
+        }));
     loop.Run();
     return result;
   }
