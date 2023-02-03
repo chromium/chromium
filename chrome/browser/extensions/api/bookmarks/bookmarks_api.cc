@@ -13,32 +13,23 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/i18n/file_util_icu.h"
-#include "base/i18n/time_formatting.h"
 #include "base/lazy_instance.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/thread_pool.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/bookmarks/bookmark_html_writer.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmark_api_constants.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmark_api_helpers.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api_watcher.h"
-#include "chrome/browser/importer/external_process_importer_host.h"
-#include "chrome/browser/importer/importer_uma.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/bookmarks.h"
 #include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
@@ -64,29 +55,6 @@ using api::bookmarks::CreateDetails;
 using content::BrowserContext;
 using content::BrowserThread;
 using content::WebContents;
-
-namespace {
-
-// Generates a default path (including a default filename) that will be
-// used for pre-populating the "Export Bookmarks" file chooser dialog box.
-base::FilePath GetDefaultFilepathForBookmarkExport() {
-  base::Time time = base::Time::Now();
-
-  // Concatenate a date stamp to the filename.
-  std::string filename =
-      l10n_util::GetStringFUTF8(IDS_EXPORT_BOOKMARKS_DEFAULT_FILENAME,
-                                base::TimeFormatShortDateNumeric(time));
-  base::FilePath path = base::FilePath::FromUTF8Unsafe(filename);
-  base::FilePath::StringType path_str = path.value();
-  base::i18n::ReplaceIllegalCharactersInPath(&path_str, '_');
-  path = base::FilePath(path_str);
-
-  base::FilePath default_path;
-  base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &default_path);
-  return default_path.Append(path);
-}
-
-}  // namespace
 
 ExtensionFunction::ResponseAction BookmarksFunction::Run() {
   BookmarkModel* model =
@@ -708,119 +676,6 @@ ExtensionFunction::ResponseValue BookmarksUpdateFunction::RunOnReady() {
   BookmarkTreeNode tree_node = bookmark_api_helpers::GetBookmarkTreeNode(
       GetManagedBookmarkService(), node, false, false);
   return ArgumentList(api::bookmarks::Update::Results::Create(tree_node));
-}
-
-BookmarksIOFunction::BookmarksIOFunction() {}
-
-BookmarksIOFunction::~BookmarksIOFunction() {
-  // There may be pending file dialogs, we need to tell them that we've gone
-  // away so they don't try and call back to us.
-  if (select_file_dialog_.get())
-    select_file_dialog_->ListenerDestroyed();
-}
-
-void BookmarksIOFunction::ShowSelectFileDialog(
-    ui::SelectFileDialog::Type type,
-    const base::FilePath& default_path) {
-  if (!dispatcher())
-    return;  // Extension was unloaded.
-
-  // Early return if the select file dialog is already active.
-  if (select_file_dialog_)
-    return;
-
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Balanced in one of the three callbacks of SelectFileDialog:
-  // either FileSelectionCanceled, MultiFilesSelected, or FileSelected
-  AddRef();
-
-  WebContents* web_contents = GetSenderWebContents();
-
-  select_file_dialog_ = ui::SelectFileDialog::Create(
-      this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
-  ui::SelectFileDialog::FileTypeInfo file_type_info;
-  file_type_info.extensions.resize(1);
-  file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("html"));
-  gfx::NativeWindow owning_window =
-      web_contents ? platform_util::GetTopLevel(web_contents->GetNativeView())
-                   : gfx::kNullNativeWindow;
-  // |web_contents| can be nullptr (for background pages), which is fine. In
-  // such a case if file-selection dialogs are forbidden by policy, we will not
-  // show an InfoBar, which is better than letting one appear out of the blue.
-  select_file_dialog_->SelectFile(
-      type, std::u16string(), default_path, &file_type_info, 0,
-      base::FilePath::StringType(), owning_window, nullptr);
-}
-
-void BookmarksIOFunction::FileSelectionCanceled(void* params) {
-  select_file_dialog_.reset();
-  Release();  // Balanced in BookmarksIOFunction::SelectFile()
-}
-
-void BookmarksIOFunction::MultiFilesSelected(
-    const std::vector<base::FilePath>& files, void* params) {
-  select_file_dialog_.reset();
-  Release();  // Balanced in BookmarsIOFunction::SelectFile()
-  NOTREACHED() << "Should not be able to select multiple files";
-}
-
-ExtensionFunction::ResponseValue BookmarksImportFunction::RunOnReady() {
-  if (!EditBookmarksEnabled())
-    return Error(bookmark_api_constants::kEditBookmarksDisabled);
-  ShowSelectFileDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
-                       base::FilePath());
-  // TODO(crbug.com/1073255): This will respond before a file is selected, which
-  // seems incorrect. Waiting and responding until after
-  // ui::SelectFileDialog::Listener is fired should be right thing to do, but
-  // that requires auditing bookmark page callsites.
-  return NoArguments();
-}
-
-void BookmarksImportFunction::FileSelected(const base::FilePath& path,
-                                           int index,
-                                           void* params) {
-  // Deletes itself.
-  ExternalProcessImporterHost* importer_host = new ExternalProcessImporterHost;
-  importer::SourceProfile source_profile;
-  source_profile.importer_type = importer::TYPE_BOOKMARKS_FILE;
-  source_profile.source_path = path;
-  importer_host->StartImportSettings(source_profile,
-                                     GetProfile(),
-                                     importer::FAVORITES,
-                                     new ProfileWriter(GetProfile()));
-
-  importer::LogImporterUseToMetrics("BookmarksAPI",
-                                    importer::TYPE_BOOKMARKS_FILE);
-  select_file_dialog_.reset();
-  Release();  // Balanced in BookmarksIOFunction::SelectFile()
-}
-
-ExtensionFunction::ResponseValue BookmarksExportFunction::RunOnReady() {
-  // "bookmarks.export" is exposed to a small number of extensions. These
-  // extensions use user gesture for export, so use USER_VISIBLE priority.
-  // GetDefaultFilepathForBookmarkExport() might have to touch filesystem
-  // (stat or access, for example), so this requires IO.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&GetDefaultFilepathForBookmarkExport),
-      base::BindOnce(&BookmarksIOFunction::ShowSelectFileDialog, this,
-                     ui::SelectFileDialog::SELECT_SAVEAS_FILE));
-  // TODO(crbug.com/1073255): This will respond before a file is selected, which
-  // seems incorrect. Waiting and responding until after
-  // ui::SelectFileDialog::Listener is fired should be right thing to do, but
-  // that requires auditing bookmark page callsites.
-  return NoArguments();
-}
-
-void BookmarksExportFunction::FileSelected(const base::FilePath& path,
-                                           int index,
-                                           void* params) {
-  bookmark_html_writer::WriteBookmarks(GetProfile(), path, nullptr);
-  select_file_dialog_.reset();
-  Release();  // Balanced in BookmarksIOFunction::SelectFile()
 }
 
 }  // namespace extensions

@@ -427,10 +427,10 @@ export class BookmarksCommandManagerElement extends
         this.$.editDialog.get().showAddDialog(true, state.selectedFolder);
         break;
       case Command.IMPORT:
-        chrome.bookmarks.import();
+        chrome.bookmarkManagerPrivate.import();
         break;
       case Command.EXPORT:
-        chrome.bookmarks.export();
+        chrome.bookmarkManagerPrivate.export();
         break;
       case Command.HELP_CENTER:
         window.open('https://support.google.com/chrome/?p=bookmarks');

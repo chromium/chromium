@@ -21,6 +21,7 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 class Profile;
 
@@ -302,6 +303,67 @@ class BookmarkManagerPrivateOpenInNewWindowFunction
  protected:
   ~BookmarkManagerPrivateOpenInNewWindowFunction() override = default;
 
+  // BookmarksFunction:
+  ResponseValue RunOnReady() override;
+};
+
+class BookmarkManagerPrivateIOFunction : public BookmarksFunction,
+                                         public ui::SelectFileDialog::Listener {
+ public:
+  BookmarkManagerPrivateIOFunction();
+
+  void FileSelected(const base::FilePath& path,
+                    int index,
+                    void* params) override = 0;
+
+  // ui::SelectFileDialog::Listener:
+  void MultiFilesSelected(const std::vector<base::FilePath>& files,
+                          void* params) override;
+  void FileSelectionCanceled(void* params) override;
+
+  void ShowSelectFileDialog(
+      ui::SelectFileDialog::Type type,
+      const base::FilePath& default_path);
+
+ protected:
+  ~BookmarkManagerPrivateIOFunction() override;
+
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+};
+
+class BookmarkManagerPrivateImportFunction
+    : public BookmarkManagerPrivateIOFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("bookmarkManagerPrivate.import",
+                             BOOKMARKMANAGERPRIVATE_IMPORT)
+
+  // BookmarkManagerIOFunction:
+  void FileSelected(const base::FilePath& path,
+                    int index,
+                    void* params) override;
+
+ protected:
+  ~BookmarkManagerPrivateImportFunction() override = default;
+
+ private:
+  // BookmarksFunction:
+  ResponseValue RunOnReady() override;
+};
+
+class BookmarkManagerPrivateExportFunction
+    : public BookmarkManagerPrivateIOFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("bookmarkManagerPrivate.export",
+                             BOOKMARKMANAGERPRIVATE_EXPORT)
+
+  // BookmarkManagerIOFunction:
+  void FileSelected(const base::FilePath& path,
+                    int index,
+                    void* params) override;
+ protected:
+  ~BookmarkManagerPrivateExportFunction() override = default;
+
+ private:
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
 };

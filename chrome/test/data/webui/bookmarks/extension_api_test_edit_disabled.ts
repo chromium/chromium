@@ -69,7 +69,7 @@ suite('Bookmarks API with edit disabled', () => {
   });
 
   test('disables import', function() {
-    return chrome.bookmarks.import()
+    return bookmarkManager.import()
         .then(_ => assertNotReached())
         .catch(error => assertEquals(error.message, ERROR));
   });

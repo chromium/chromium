@@ -41,6 +41,10 @@ declare global {
       export function openInNewTab(id: string, active: boolean): void;
       export function openInNewWindow(idList: string[], incognito: boolean):
           void;
+      function importAlias(): Promise<void>;
+      function exportAlias(): Promise<void>;
+      export {importAlias as import};
+      export {exportAlias as export};
 
       export interface DragData {
         elements: chrome.bookmarks.BookmarkTreeNode[]|null;

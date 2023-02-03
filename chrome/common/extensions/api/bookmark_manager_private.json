@@ -295,6 +295,28 @@
             "type": "boolean"
           }
         ]
+      },
+      {
+        "name": "import",
+        "type": "function",
+        "description": "Imports bookmarks from a Chrome html bookmark file",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
+      },
+      {
+        "name": "export",
+        "type": "function",
+        "description": "Exports bookmarks to a Chrome html bookmark file",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       }
     ],
     "events": [

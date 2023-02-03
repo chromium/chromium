@@ -313,62 +313,6 @@ class BookmarksUpdateFunction : public BookmarksFunction {
   ResponseValue RunOnReady() override;
 };
 
-class BookmarksIOFunction : public BookmarksFunction,
-                            public ui::SelectFileDialog::Listener {
- public:
-  BookmarksIOFunction();
-
-  void FileSelected(const base::FilePath& path,
-                    int index,
-                    void* params) override = 0;
-
-  // ui::SelectFileDialog::Listener:
-  void MultiFilesSelected(const std::vector<base::FilePath>& files,
-                          void* params) override;
-  void FileSelectionCanceled(void* params) override;
-
-  void ShowSelectFileDialog(
-      ui::SelectFileDialog::Type type,
-      const base::FilePath& default_path);
-
- protected:
-  ~BookmarksIOFunction() override;
-
-  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-};
-
-class BookmarksImportFunction : public BookmarksIOFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("bookmarks.import", BOOKMARKS_IMPORT)
-
-  // BookmarkManagerIOFunction:
-  void FileSelected(const base::FilePath& path,
-                    int index,
-                    void* params) override;
-
- private:
-  ~BookmarksImportFunction() override {}
-
-  // BookmarksFunction:
-  ResponseValue RunOnReady() override;
-};
-
-class BookmarksExportFunction : public BookmarksIOFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("bookmarks.export", BOOKMARKS_EXPORT)
-
-  // BookmarkManagerIOFunction:
-  void FileSelected(const base::FilePath& path,
-                    int index,
-                    void* params) override;
-
- private:
-  ~BookmarksExportFunction() override {}
-
-  // BookmarksFunction:
-  ResponseValue RunOnReady() override;
-};
-
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_BOOKMARKS_BOOKMARKS_API_H_

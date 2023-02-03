@@ -69,10 +69,6 @@ declare global {
 
       export function remove(id: string): Promise<void>;
       export function removeTree(id: string): Promise<void>;
-      function importAlias(): Promise<void>;
-      function exportAlias(): Promise<void>;
-      export {importAlias as import};
-      export {exportAlias as export};
 
       export const onCreated:
           ChromeEvent<(id: string, bookmark: BookmarkTreeNode) => void>;
