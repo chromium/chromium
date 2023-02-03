@@ -1675,11 +1675,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "enable-access-code-cast-tabswitching-ui",
-    "owners": [ "//chrome/browser/media/router/discovery/access_code/OWNERS" ],
-    "expiry_milestone": 111
-  },
-  {
     "name": "enable-accessibility-accelerators-notifications-timeout",
     "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 120

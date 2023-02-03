@@ -9275,13 +9275,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kSameAppWindowCycle)},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"enable-access-code-cast-tabswitching-ui",
-     flag_descriptions::kAccessCodeCastTabSwitchingUIName,
-     flag_descriptions::kAccessCodeCastTabSwitchingUIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(::features::kAccessCodeCastTabSwitchingUI)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"promise-icons", flag_descriptions::kPromiseIconsName,
      flag_descriptions::kPromiseIconsDescription, kOsCrOS,
@@ -9537,14 +9530,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
       channel != version_info::Channel::UNKNOWN) {
     return true;
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Only show the AccessCodeCast tab switching flag if the AccessCodeCast Ui is
-  // displayed.
-  if (!strcmp("enable-access-code-cast-tabswitching-ui", entry.internal_name)) {
-    return !media_router::IsAccessCodeCastEnabled();
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (flags::IsFlagExpired(storage, entry.internal_name)) {
     return true;
