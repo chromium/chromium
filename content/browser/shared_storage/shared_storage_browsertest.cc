@@ -4098,6 +4098,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
           blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
   ON_CALL(browser_client(), IsPrivateAggregationAllowed)
       .WillByDefault(testing::Return(true));
+  ON_CALL(browser_client(), IsSharedStorageAllowed)
+      .WillByDefault(testing::Return(true));
 
   GURL out_script_url;
   ExecuteScriptInWorklet(shell(), R"(
@@ -4124,6 +4126,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
           shell()->web_contents()->GetPrimaryMainFrame(),
           blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
   ON_CALL(browser_client(), IsPrivateAggregationAllowed)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(browser_client(), IsSharedStorageAllowed)
       .WillByDefault(testing::Return(true));
 
   GURL out_script_url;
@@ -4179,6 +4183,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
           blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
   ON_CALL(browser_client(), IsPrivateAggregationAllowed)
       .WillByDefault(testing::Return(true));
+  ON_CALL(browser_client(), IsSharedStorageAllowed)
+      .WillByDefault(testing::Return(true));
 
   GURL out_script_url;
   ExecuteScriptInWorklet(shell(), R"(
@@ -4212,6 +4218,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
           shell()->web_contents()->GetPrimaryMainFrame(),
           blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
   ON_CALL(browser_client(), IsPrivateAggregationAllowed)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(browser_client(), IsSharedStorageAllowed)
       .WillByDefault(testing::Return(true));
 
   GURL out_script_url;

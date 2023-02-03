@@ -417,6 +417,21 @@ bool ShellContentBrowserClient::IsIsolatedContextAllowedForUrl(
   return isolated_context_origins.contains(url::Origin::Create(lock_url));
 }
 
+bool ShellContentBrowserClient::IsSharedStorageAllowed(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost* rfh,
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin) {
+  return true;
+}
+
+bool ShellContentBrowserClient::IsSharedStorageSelectURLAllowed(
+    content::BrowserContext* browser_context,
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin) {
+  return true;
+}
+
 GeneratedCodeCacheSettings
 ShellContentBrowserClient::GetGeneratedCodeCacheSettings(
     content::BrowserContext* context) {
