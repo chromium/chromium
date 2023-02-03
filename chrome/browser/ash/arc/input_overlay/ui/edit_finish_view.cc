@@ -7,6 +7,7 @@
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -22,18 +23,27 @@ namespace {
 // About the whole view.
 constexpr int kViewHeight = 184;
 constexpr int kSideMargin = 24;
+constexpr int kViewMargin = 8;
+constexpr int kViewCornerRadius = 16;
+constexpr int kViewBackgroundColor = SkColorSetA(SK_ColorBLACK, 0xCC /*80%*/);
 // Space between children.
-constexpr int kSpaceRow = 8;
+constexpr int kSpaceRow = 4;
+// Alpha view features.
+constexpr int kSpaceRowAlpha = 8;
 
 // About button.
 constexpr int kButtonHeight = 56;
-constexpr int kButtonSideInset = 20;
-constexpr int kButtonCornerRadius = 16;
+constexpr int kButtonSideInset = 24;
+constexpr int kButtonCornerRadius = 12;
 constexpr SkColor kButtonTextColor = gfx::kGoogleGrey200;
 constexpr SkColor kSaveButtonBackgroundColor = gfx::kGoogleBlue300;
 constexpr SkColor kSaveButtonTextColor = gfx::kGoogleGrey900;
 constexpr char kFontStyle[] = "Google Sans";
-constexpr int kFontSize = 16;
+constexpr int kFontSize = 13;
+// Alpha button features.
+constexpr int kButtonCornerRadiusAlpha = 16;
+constexpr int kFontSizeAlpha = 16;
+constexpr int kButtonSideInsetAlpha = 20;
 // This color is same as the background color of input_mapping_view in kEdit
 // mode and is used for buttons to decide what ink drop color should be. If the
 // dark background color is set, then it will show the light ink drop color.
@@ -55,19 +65,24 @@ class EditFinishView::ChildButton : public views::LabelButton {
                        SkColor background_color,
                        SkColor text_color)
       : LabelButton(callback, l10n_util::GetStringUTF16(text_source_id)) {
-    label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL,
-                                       kFontSize, gfx::Font::Weight::MEDIUM));
+    label()->SetFontList(
+        gfx::FontList({kFontStyle}, gfx::Font::NORMAL,
+                      AllowReposition() ? kFontSize : kFontSizeAlpha,
+                      gfx::Font::Weight::MEDIUM));
     SetEnabledTextColors(text_color);
     SetAccessibleName(l10n_util::GetStringUTF16(text_source_id));
-    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kButtonSideInset)));
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+        0, AllowReposition() ? kButtonSideInset : kButtonSideInsetAlpha)));
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
     SetMinSize(gfx::Size(0, kButtonHeight));
-    SetBackground(views::CreateRoundedRectBackground(background_color,
-                                                     kButtonCornerRadius));
+    SetBackground(views::CreateRoundedRectBackground(
+        background_color,
+        AllowReposition() ? kButtonCornerRadius : kButtonCornerRadiusAlpha));
 
     // Set states.
-    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                  kButtonCornerRadius);
+    views::InstallRoundRectHighlightPathGenerator(
+        this, gfx::Insets(),
+        AllowReposition() ? kButtonCornerRadius : kButtonCornerRadiusAlpha);
     auto* focus_ring = views::FocusRing::Get(this);
     focus_ring->SetHaloInset(kHaloInset);
     focus_ring->SetHaloThickness(kHaloThickness);
@@ -100,7 +115,11 @@ EditFinishView::~EditFinishView() {}
 void EditFinishView::Init(const gfx::Size& parent_size) {
   DCHECK(display_overlay_controller_);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(), kSpaceRow));
+      views::BoxLayout::Orientation::kVertical,
+      AllowReposition()
+          ? gfx::Insets().set_left(kViewMargin).set_right(kViewMargin)
+          : gfx::Insets(),
+      AllowReposition() ? kSpaceRow : kSpaceRowAlpha));
   SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
 
   reset_button_ = AddChildView(std::make_unique<ChildButton>(
@@ -122,10 +141,15 @@ void EditFinishView::Init(const gfx::Size& parent_size) {
       kButtonTextColor));
 
   const int width = CalculateWidth();
-  SetSize(gfx::Size(width, kViewHeight));
+  SetSize(gfx::Size(AllowReposition() ? width + 2 * kViewMargin : width,
+                    kViewHeight));
   SetPosition(
       gfx::Point(std::max(0, parent_size.width() - width - kSideMargin),
                  std::max(0, parent_size.height() / 3 - kViewHeight / 2)));
+  if (AllowReposition()) {
+    SetBackground(views::CreateRoundedRectBackground(kViewBackgroundColor,
+                                                     kViewCornerRadius));
+  }
 }
 
 int EditFinishView::CalculateWidth() {
