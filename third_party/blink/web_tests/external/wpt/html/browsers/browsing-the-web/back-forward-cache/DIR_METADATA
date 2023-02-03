@@ -1,0 +1,5 @@
+monorail {
+  component: "UI>Browser>Navigation>BFCache"
+}
+team_email: "bfcache-dev@chromium.org"
+

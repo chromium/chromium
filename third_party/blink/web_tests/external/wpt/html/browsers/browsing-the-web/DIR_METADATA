@@ -1,0 +1,5 @@
+monorail {
+  component: "UI>Browser>Navigation"
+}
+team_email: "navigation-dev@chromium.org"
+

@@ -1,0 +1,5 @@
+monorail {
+  component: "Blink>History"
+}
+team_email: "navigation-dev@chromium.org, dom-dev@chromium.org"
+
