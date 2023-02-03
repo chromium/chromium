@@ -11,9 +11,13 @@ import org.chromium.base.metrics.RecordHistogram;
  */
 public class MetricsUtils {
     /**
+     *
      * Helper class that snapshots the given bucket of the given UMA histogram on its creation,
      * allowing to inspect the number of samples recorded during its lifetime.
+     *
+     * @deprecated Use {@link HistogramWatcher} instead.
      */
+    @Deprecated
     public static class HistogramDelta {
         private final String mHistogram;
         private final int mSampleValue;

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.metrics;
 
-import static org.junit.Assert.assertEquals;
-
 import android.app.ActivityManager;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
@@ -20,14 +18,11 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivityManager;
 import org.robolectric.shadows.ShadowUsageStatsManager;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
+import org.chromium.base.test.util.HistogramWatcher;
 
 /**
  * Unit tests for {@link UmaUtils}.
- *
- * TODO(crbug.com/1411456): Use HistogramDelta for total counts too.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -40,8 +35,6 @@ public class UmaUtilsTest {
             "Android.BackgroundRestrictions.StandbyBucket.WithUserRestriction";
     private static final String HISTOGRAM_STANDBY_BUCKET_WITHOUT_USER_RESTRICTION =
             "Android.BackgroundRestrictions.StandbyBucket.WithoutUserRestriction";
-    private static final int FALSE_BUCKET = 0;
-    private static final int TRUE_BUCKET = 1;
     private static final String HISTOGRAM_MINIDUMP_UPLOADING_TIME =
             "Stability.Android.MinidumpUploadingTime";
     private static final String HISTOGRAM_MINIDUMP_UPLOADING_TIME_ACTIVE =
@@ -49,13 +42,6 @@ public class UmaUtilsTest {
 
     private ShadowActivityManager mShadowActivityManager;
     private ShadowUsageStatsManager mShadowUsageStatsManager;
-
-    private HistogramDelta mDeltaIsBackgroundRestricted;
-    private HistogramDelta mDeltaStandbyBucket;
-    private HistogramDelta mDeltaStandbyBucketWithUserRestriction;
-    private HistogramDelta mDeltaStandbyBucketWithoutUserRestriction;
-    private HistogramDelta mDeltaMinidumpUploadingTime;
-    private HistogramDelta mDeltaMinidumpUploadingTimeSpecific;
 
     @Before
     public void setUp() {
@@ -70,14 +56,20 @@ public class UmaUtilsTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.O_MR1)
     public void testRecordBackgroundRestrictions_noRestrictionsUnderPie() {
+        // Arrange
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(HISTOGRAM_IS_BACKGROUND_RESTRICTED)
+                        .expectNoRecords(HISTOGRAM_STANDBY_BUCKET)
+                        .expectNoRecords(HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION)
+                        .expectNoRecords(HISTOGRAM_STANDBY_BUCKET_WITHOUT_USER_RESTRICTION)
+                        .build();
+
         // Act
         UmaUtils.recordBackgroundRestrictions();
 
         // Assert
-        assertHistogramNotRecorded(HISTOGRAM_IS_BACKGROUND_RESTRICTED);
-        assertHistogramNotRecorded(HISTOGRAM_STANDBY_BUCKET);
-        assertHistogramNotRecorded(HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION);
-        assertHistogramNotRecorded(HISTOGRAM_STANDBY_BUCKET_WITHOUT_USER_RESTRICTION);
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -176,25 +168,20 @@ public class UmaUtilsTest {
         mShadowActivityManager.setBackgroundRestricted(false);
         mShadowUsageStatsManager.setCurrentAppStandbyBucket(androidStandbyBucketStatus);
 
-        mDeltaIsBackgroundRestricted =
-                new HistogramDelta(HISTOGRAM_IS_BACKGROUND_RESTRICTED, FALSE_BUCKET);
-        mDeltaStandbyBucket =
-                new HistogramDelta(HISTOGRAM_STANDBY_BUCKET, expectedUmaStandbyBucketStatus);
-        mDeltaStandbyBucketWithUserRestriction = null;
-        mDeltaStandbyBucketWithoutUserRestriction = new HistogramDelta(
-                HISTOGRAM_STANDBY_BUCKET_WITHOUT_USER_RESTRICTION, expectedUmaStandbyBucketStatus);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HISTOGRAM_IS_BACKGROUND_RESTRICTED, false)
+                        .expectIntRecord(HISTOGRAM_STANDBY_BUCKET, expectedUmaStandbyBucketStatus)
+                        .expectNoRecords(HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION)
+                        .expectIntRecord(HISTOGRAM_STANDBY_BUCKET_WITHOUT_USER_RESTRICTION,
+                                expectedUmaStandbyBucketStatus)
+                        .build();
 
         // Act
         UmaUtils.recordBackgroundRestrictions();
 
         // Assert
-        assertBooleanHistogramRecordedOnce(HISTOGRAM_IS_BACKGROUND_RESTRICTED,
-                /* recordedValue */ true, mDeltaIsBackgroundRestricted);
-        assertIntHistogramRecordedOnce(HISTOGRAM_STANDBY_BUCKET,
-                /* recordedValue */ expectedUmaStandbyBucketStatus, mDeltaStandbyBucket);
-        assertHistogramNotRecorded(HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION);
-        assertIntHistogramRecordedOnce(HISTOGRAM_STANDBY_BUCKET_WITHOUT_USER_RESTRICTION,
-                expectedUmaStandbyBucketStatus, mDeltaStandbyBucketWithoutUserRestriction);
+        histogramWatcher.assertExpected();
     }
 
     private void doTestRecordBackgroundRestrictions_restricted(
@@ -203,25 +190,20 @@ public class UmaUtilsTest {
         mShadowActivityManager.setBackgroundRestricted(true);
         mShadowUsageStatsManager.setCurrentAppStandbyBucket(androidStandbyBucketStatus);
 
-        mDeltaIsBackgroundRestricted =
-                new HistogramDelta(HISTOGRAM_IS_BACKGROUND_RESTRICTED, TRUE_BUCKET);
-        mDeltaStandbyBucket =
-                new HistogramDelta(HISTOGRAM_STANDBY_BUCKET, expectedUmaStandbyBucketStatus);
-        mDeltaStandbyBucketWithUserRestriction = new HistogramDelta(
-                HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION, expectedUmaStandbyBucketStatus);
-        mDeltaStandbyBucketWithoutUserRestriction = null;
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HISTOGRAM_IS_BACKGROUND_RESTRICTED, true)
+                        .expectIntRecord(HISTOGRAM_STANDBY_BUCKET, expectedUmaStandbyBucketStatus)
+                        .expectIntRecord(HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION,
+                                expectedUmaStandbyBucketStatus)
+                        .expectNoRecords(HISTOGRAM_STANDBY_BUCKET_WITHOUT_USER_RESTRICTION)
+                        .build();
 
         // Act
         UmaUtils.recordBackgroundRestrictions();
 
         // Assert
-        assertBooleanHistogramRecordedOnce(HISTOGRAM_IS_BACKGROUND_RESTRICTED,
-                /* recordedValue */ true, mDeltaIsBackgroundRestricted);
-        assertIntHistogramRecordedOnce(HISTOGRAM_STANDBY_BUCKET,
-                /* recordedValue */ expectedUmaStandbyBucketStatus, mDeltaStandbyBucket);
-        assertIntHistogramRecordedOnce(HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION,
-                expectedUmaStandbyBucketStatus, mDeltaStandbyBucketWithUserRestriction);
-        assertHistogramNotRecorded(HISTOGRAM_STANDBY_BUCKET_WITHOUT_USER_RESTRICTION);
+        histogramWatcher.assertExpected();
     }
 
     private static final int UPLOAD_TIME_MS = 5678;
@@ -232,18 +214,18 @@ public class UmaUtilsTest {
         String specificHistogram = "Stability.Android.MinidumpUploadingTime.Unsupported";
 
         // Arrange
-        mDeltaMinidumpUploadingTime =
-                new HistogramDelta(HISTOGRAM_MINIDUMP_UPLOADING_TIME, UPLOAD_TIME_MS);
-        mDeltaMinidumpUploadingTimeSpecific = new HistogramDelta(specificHistogram, UPLOAD_TIME_MS);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_MINIDUMP_UPLOADING_TIME, UPLOAD_TIME_MS)
+                        .expectNoRecords(specificHistogram)
+                        .expectNoRecords(HISTOGRAM_MINIDUMP_UPLOADING_TIME_ACTIVE)
+                        .build();
 
         // Act
         UmaUtils.recordMinidumpUploadingTime(UPLOAD_TIME_MS);
 
         // Assert
-        assertIntHistogramRecordedOnce(
-                HISTOGRAM_MINIDUMP_UPLOADING_TIME, UPLOAD_TIME_MS, mDeltaMinidumpUploadingTime);
-        assertHistogramNotRecorded(specificHistogram);
-        assertHistogramNotRecorded(HISTOGRAM_MINIDUMP_UPLOADING_TIME_ACTIVE);
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -314,74 +296,24 @@ public class UmaUtilsTest {
             int androidStandbyBucketStatus, String specificHistogram) {
         // Arrange
         mShadowUsageStatsManager.setCurrentAppStandbyBucket(androidStandbyBucketStatus);
-        mDeltaMinidumpUploadingTime =
-                new HistogramDelta(HISTOGRAM_MINIDUMP_UPLOADING_TIME, UPLOAD_TIME_MS);
-        mDeltaMinidumpUploadingTimeSpecific = new HistogramDelta(specificHistogram, UPLOAD_TIME_MS);
+
+        var histogramWatcherBuilder =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_MINIDUMP_UPLOADING_TIME, UPLOAD_TIME_MS)
+                        .expectIntRecord(specificHistogram, UPLOAD_TIME_MS);
+
+        // Check .Active as evidence that other histograms weren't recorded, unless we are testing
+        // the Active status itself.
+        if (androidStandbyBucketStatus != UsageStatsManager.STANDBY_BUCKET_ACTIVE) {
+            histogramWatcherBuilder.expectNoRecords(HISTOGRAM_MINIDUMP_UPLOADING_TIME_ACTIVE);
+        }
+
+        HistogramWatcher histogramWatcher = histogramWatcherBuilder.build();
 
         // Act
         UmaUtils.recordMinidumpUploadingTime(UPLOAD_TIME_MS);
 
         // Assert
-        assertIntHistogramRecordedOnce(
-                HISTOGRAM_MINIDUMP_UPLOADING_TIME, UPLOAD_TIME_MS, mDeltaMinidumpUploadingTime);
-        assertIntHistogramRecordedOnce(
-                specificHistogram, UPLOAD_TIME_MS, mDeltaMinidumpUploadingTimeSpecific);
-        // Check .Active as evidence that other histograms weren't recorded, unless we are testing
-        // the Active status itself.
-        if (androidStandbyBucketStatus != UsageStatsManager.STANDBY_BUCKET_ACTIVE) {
-            assertHistogramNotRecorded(HISTOGRAM_MINIDUMP_UPLOADING_TIME_ACTIVE);
-        }
-    }
-
-    // TODO(crbug.com/1411456): Use HistogramDelta for total counts too. Move to MetricsUtils.
-
-    /**
-     * Asserts that the given histogram was not recorded during this test.
-     * @param histogram the histogram name
-     */
-    private static void assertHistogramNotRecorded(String histogram) {
-        int actualCount = RecordHistogram.getHistogramTotalCountForTesting(histogram);
-        assertEquals("Expected no records of histogram " + histogram + " but it was recorded "
-                        + actualCount + " time(s)",
-                0, actualCount);
-    }
-
-    private static void assertHistogramRecordedOnce(String histogram) {
-        int actualCount = RecordHistogram.getHistogramTotalCountForTesting(histogram);
-        assertEquals("Expected 1 record of histogram " + histogram + " but it was recorded "
-                        + actualCount + " time(s)",
-                1, actualCount);
-    }
-
-    /**
-     * Asserts that the given histogram was recorded only once and with a given value during this
-     * test.
-     * @param histogram the histogram name
-     * @param recordedValue the expected boolean value
-     */
-    private static void assertBooleanHistogramRecordedOnce(
-            String histogram, boolean recordedValue, HistogramDelta delta) {
-        int expectedBucket = recordedValue ? 1 : 0;
-        assertHistogramRecordedOnceToBucket(histogram, expectedBucket, delta);
-    }
-
-    /**
-     * Asserts that the given histogram was recorded only once and with a given value during this
-     * test.
-     * @param histogram the histogram name
-     * @param recordedValue the expected int value
-     */
-    private static void assertIntHistogramRecordedOnce(
-            String histogram, int recordedValue, HistogramDelta delta) {
-        assertHistogramRecordedOnceToBucket(histogram, recordedValue, delta);
-    }
-
-    private static void assertHistogramRecordedOnceToBucket(
-            String histogram, int expectedBucket, HistogramDelta delta) {
-        assertHistogramRecordedOnce(histogram);
-        int actualCountInBucket = delta.getDelta();
-        assertEquals("Expected 1 record of histogram " + histogram + " with value " + expectedBucket
-                        + " but bucket had " + actualCountInBucket + " record(s)",
-                1, actualCountInBucket);
+        histogramWatcher.assertExpected();
     }
 }
