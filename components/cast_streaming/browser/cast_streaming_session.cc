@@ -4,13 +4,16 @@
 
 #include "components/cast_streaming/browser/cast_streaming_session.h"
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/cast_streaming/browser/stream_consumer.h"
 #include "components/cast_streaming/public/config_conversions.h"
+#include "components/cast_streaming/public/features.h"
 #include "media/base/demuxer_stream.h"
+#include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -233,6 +236,15 @@ void CastStreamingSession::ReceiverSessionClient::StartStreamingSession(
         &CastStreamingSession::ReceiverSessionClient::StartStreamingSession,
         weak_factory_.GetWeakPtr(), std::move(initialization_info));
     return;
+  }
+
+  // If audio is not supported on this receiver, disable it to avoid AV-sync
+  // issues arising from waiting for audio frames before starting playback.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableAudioOutput)) {
+    LOG(WARNING) << "Disabling audio for this session due to non-support by "
+                    "the hosting product instance";
+    initialization_info.audio_stream_info = absl::nullopt;
   }
 
   // This is necessary in case the offer message had no audio and no video
