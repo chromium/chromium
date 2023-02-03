@@ -2547,10 +2547,9 @@
             ]
         }
     ],
-    "ChromeAppsDeprecationWinMacLinux": [
+    "ChromeAppsDeprecationNoLaunchWinMacLinux": [
         {
             "platforms": [
-                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2558,12 +2557,6 @@
             "experiments": [
                 {
                     "name": "Enabled_20221215",
-                    "params": {
-                        "allow_list": "alhngdkjgnedakdlnamimgfihgkmenbh,gnddkmpjjjcimefninepfmmddpgaaado"
-                    },
-                    "enable_features": [
-                        "ChromeAppsDeprecation"
-                    ],
                     "disable_features": [
                         "KeepForceInstalledPreinstalledApps"
                     ]
