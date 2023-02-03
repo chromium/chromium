@@ -290,7 +290,9 @@
     "matches": [
       "chrome-untrusted://camera-app/*",
       "chrome-untrusted://help-app/*",
-      "chrome-untrusted://media-app/*"
+      "chrome-untrusted://media-app/*",
+      "chrome-untrusted://projector/*",
+      "chrome-untrusted://projector-annotator/*"
     ]
   }],
   "dashboardPrivate": {
