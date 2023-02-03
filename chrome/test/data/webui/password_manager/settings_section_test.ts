@@ -92,7 +92,8 @@ suite('SettingsSectionTest', function() {
   // Tests that biometric auth pref is visible, and clicking on it triggers
   // biometric auth validation instead of directly updating the pref value.
   test('biometric auth prefs when feature is available', async function() {
-    await prefsProxy.setPref('biometric_authentication_filling', false);
+    await prefsProxy.setPref(
+        'password_manager.biometric_authentication_filling', false);
     loadTimeData.overrideValues(
         {biometricAuthenticationForFillingToggleVisible: true});
 
@@ -114,7 +115,8 @@ suite('SettingsSectionTest', function() {
 
     // Imitate prefs changing after successful identification.
     prefsProxy.prefs = makePasswordManagerPrefs();
-    await prefsProxy.setPref('biometric_authentication_filling', true);
+    await prefsProxy.setPref(
+        'password_manager.biometric_authentication_filling', true);
     assertTrue(biometricAuthenticationToggle.checked);
   });
 
