@@ -34,6 +34,9 @@ BASE_FEATURE(kPageInfoAboutThisSiteEn,
 BASE_FEATURE(kPageInfoAboutThisSiteNonEn,
              "PageInfoAboutThisSiteNonEn",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPageInfoAboutThisSiteNonMsbb,
+             "PageInfoAboutThisSiteNonMsbb",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kShowSampleContent{&kPageInfoAboutThisSiteEn,
                                                   "ShowSampleContent", false};
