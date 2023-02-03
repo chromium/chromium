@@ -26,9 +26,11 @@ const KeyPermanentFailureMap = {
       'The browser is missing permissions and is unable to create a Device ' +
       'Trust key.',
   [KeyManagerPermanentFailure.OS_RESTRICTION]:
-      'This device is missing a critical feature.',
+      'This device is missing a critical feature (e.g. no SecureEnclave ' +
+      'support on Mac).',
   [KeyManagerPermanentFailure.INVALID_INSTALLATION]:
-      'The browser is missing a critical installation dependency.',
+      'The browser is missing a critical installation dependency (e.g. is ' +
+      'a user-level installation on Windows).',
 };
 
 export class DeviceTrustConnectorElement extends CustomElement {
