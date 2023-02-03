@@ -52,6 +52,12 @@ constexpr char kTouchpadSettingThreeFingerClickEnabled[] =
 constexpr char kTouchpadSettingTapDraggingEnabled[] = "tap_dragging_enabled";
 constexpr char kTouchpadSettingHapticSensitivity[] = "haptic_sensitivity";
 constexpr char kTouchpadSettingHapticEnabled[] = "haptic_enabled";
+
+// Pointing stick settings dictionary keys.
+constexpr char kPointingStickSettingSensitivity[] = "sensitivity";
+constexpr char kPointingStickSettingSwapRight[] = "swap_right";
+constexpr char kPointingStickSettingAcceleration[] = "acceleration";
+
 }  // namespace ash::prefs
 
 #endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_PREF_NAMES_H_
