@@ -1196,20 +1196,19 @@ class AutofillInteractiveTestWithHistogramTester
   }
 
   void SetUp() override {
-    // Only allow requests to be loaded that are necessary for the test. This
-    // allows a histogram to test properties of some specific requests.
-    std::vector<std::string> allowlist = {
-        "/internal/test_url_path", "https://clients1.google.com/tbproxy",
-        "https://content-autofill.googleapis.com/"};
-    url_loader_interceptor_ =
-        std::make_unique<URLLoaderInterceptor>(base::BindLambdaForTesting(
-            [&](URLLoaderInterceptor::RequestParams* params) {
-              // Intercept if not allow-listed.
-              return base::ranges::all_of(allowlist, [&params](const auto& s) {
-                return params->url_request.url.spec().find(s) ==
-                       std::string::npos;
-              });
-            }));
+    url_loader_interceptor_ = std::make_unique<URLLoaderInterceptor>(
+        base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
+          // Only allow requests to be loaded that are necessary for the test.
+          // This allows a histogram to test properties of some specific
+          // requests.
+          std::vector<std::string> allowlist = {
+              "/internal/test_url_path", "https://clients1.google.com/tbproxy",
+              "https://content-autofill.googleapis.com/"};
+          // Intercept if not allow-listed.
+          return base::ranges::all_of(allowlist, [&params](const auto& s) {
+            return params->url_request.url.spec().find(s) == std::string::npos;
+          });
+        }));
     AutofillInteractiveTest::SetUp();
   }
 
