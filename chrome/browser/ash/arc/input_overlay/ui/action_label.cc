@@ -41,13 +41,17 @@ constexpr float kHaloThicknessAlpha = 4;
 constexpr char kFontStyle[] = "Google Sans";
 constexpr int kIconSize = 20;
 
+// TODO(b/260937747): Remove colors for Alpha when AlphaV2 flag is removed.
+// About colors - Alpha.
+constexpr SkColor kViewModeForeColorAlpha = SkColorSetA(SK_ColorBLACK, 0x29);
+constexpr SkColor kViewModeBackColorAlpha =
+    SkColorSetA(gfx::kGoogleGrey800, 0xCC);
+constexpr SkColor kViewTextColorAlpha = SK_ColorWHITE;
+
 // About colors.
-constexpr SkColor kViewModeForeColor = SkColorSetA(SK_ColorBLACK, 0x29);
-constexpr SkColor kViewModeBackColor = SkColorSetA(gfx::kGoogleGrey800, 0xCC);
-constexpr SkColor kEditModeBgColor = SK_ColorWHITE;
+constexpr SkColor kBackgroundColorDefault = SK_ColorWHITE;
 constexpr SkColor kEditedUnboundBgColor = gfx::kGoogleRed300;
-constexpr SkColor kViewTextColor = SK_ColorWHITE;
-constexpr SkColor kEditTextColor = gfx::kGoogleGrey900;
+constexpr SkColor kTextColorDefault = gfx::kGoogleGrey900;
 
 // UI specs - AlphaV2.
 constexpr gfx::Size kLabelSize(22, 22);
@@ -541,7 +545,8 @@ void ActionLabel::SetToViewMode() {
   label()->SetFontList(gfx::FontList(
       {kFontStyle}, gfx::Font::NORMAL,
       allow_reposition_ ? kFontSize : kFontSizeAlpha, gfx::Font::Weight::BOLD));
-  SetEnabledTextColors(kViewTextColor);
+  SetEnabledTextColors(allow_reposition_ ? kTextColorDefault
+                                         : kViewTextColorAlpha);
 
   if (mouse_action_ != MouseAction::NONE) {
     if (mouse_action_ == MouseAction::PRIMARY_CLICK) {
@@ -556,8 +561,9 @@ void ActionLabel::SetToViewMode() {
   }
 
   SetBackground(views::CreateRoundedRectBackground(
-      color_utils::GetResultingPaintColor(kViewModeForeColor,
-                                          kViewModeBackColor),
+      allow_reposition_ ? kBackgroundColorDefault
+                        : color_utils::GetResultingPaintColor(
+                              kViewModeForeColorAlpha, kViewModeBackColorAlpha),
       allow_reposition_ ? kCornerRadius : kCornerRadiusAlpha));
   SetPreferredSize(CalculatePreferredSize());
 }
@@ -580,7 +586,7 @@ void ActionLabel::SetToEditMode() {
     return view->IsMouseHovered() || view->HasFocus();
   });
 
-  SetEnabledTextColors(kEditTextColor);
+  SetEnabledTextColors(kTextColorDefault);
 
   if (mouse_action_ != MouseAction::NONE) {
     if (mouse_action_ == MouseAction::PRIMARY_CLICK) {
@@ -634,7 +640,7 @@ void ActionLabel::SetToEditUnbindInput() {
 
 void ActionLabel::SetBackgroundForEdit() {
   SetBackground(views::CreateRoundedRectBackground(
-      IsInputUnbound() ? kEditedUnboundBgColor : kEditModeBgColor,
+      IsInputUnbound() ? kEditedUnboundBgColor : kBackgroundColorDefault,
       allow_reposition_ ? kCornerRadius : kCornerRadiusAlpha));
 }
 
