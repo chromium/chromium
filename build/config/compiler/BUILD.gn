@@ -1668,6 +1668,9 @@ config("default_warnings") {
 
           # TODO(crbug.com/1352183) Evaluate and possibly enable.
           "-Wno-bitfield-constant-conversion",
+
+          # TODO(crbug.com/1412713) Evaluate and possibly enable.
+          "-Wno-deprecated-this-capture",
         ]
       }
     }
