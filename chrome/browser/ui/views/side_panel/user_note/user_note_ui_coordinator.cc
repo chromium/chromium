@@ -30,7 +30,8 @@ void UserNoteUICoordinator::CreateAndRegisterEntry(
   global_registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kUserNote,
       l10n_util::GetStringUTF16(IDS_USER_NOTE_TITLE),
-      ui::ImageModel::FromVectorIcon(kInkHighlighterIcon, ui::kColorIcon),
+      ui::ImageModel::FromVectorIcon(kNoteIcon, ui::kColorIcon,
+                                     /*icon_size=*/16),
       base::BindRepeating(&UserNoteUICoordinator::CreateUserNotesWebUIView,
                           base::Unretained(this))));
 }
