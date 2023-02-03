@@ -162,7 +162,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     private void initializeSize() {
         initializeHeight();
-        mHeight = mDisplayHeight - mNavbarHeight;
+        mHeight = mDisplayHeight - mStatusbarHeight - mNavbarHeight;
 
         positionOnWindow();
         setCoordinatorLayoutHeight(MATCH_PARENT);
