@@ -976,7 +976,7 @@ Response InspectorDOMAgent::setAttributesAsText(int element_id,
   }
 
   if (!found_original_attribute && name.isJust() &&
-      !name.fromJust().StripWhiteSpace().empty()) {
+      name.fromJust().LengthWithStrippedWhiteSpace() > 0) {
     return dom_editor_->RemoveAttribute(element, case_adjusted_name);
   }
   return Response::Success();
@@ -2077,7 +2077,7 @@ bool InspectorDOMAgent::ShouldSkipNode(
     return false;
 
   bool is_whitespace = node && node->getNodeType() == Node::kTextNode &&
-                       node->nodeValue().StripWhiteSpace().length() == 0;
+                       node->nodeValue().LengthWithStrippedWhiteSpace() == 0;
 
   return is_whitespace;
 }

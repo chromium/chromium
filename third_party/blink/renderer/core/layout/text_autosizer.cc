@@ -156,9 +156,11 @@ static bool BlockIsRowOfLinks(const LayoutBlock* block) {
   while (layout_object) {
     if (!IsPotentialClusterRoot(layout_object)) {
       if (layout_object->IsText() &&
-          To<LayoutText>(layout_object)->GetText().StripWhiteSpace().length() >
-              3)
+          To<LayoutText>(layout_object)
+                  ->GetText()
+                  .LengthWithStrippedWhiteSpace() > 3) {
         return false;
+      }
       if (!layout_object->IsInline() || layout_object->IsBR())
         return false;
     }
@@ -818,12 +820,12 @@ bool TextAutosizer::ClusterHasEnoughTextToAutosize(
         continue;
       }
     } else if (descendant->IsText()) {
-      // Note: Using text().stripWhiteSpace().length() instead of
+      // Note: Using text().LengthWithStrippedWhiteSpace() instead of
       // resolvedTextLength() because the lineboxes will not be built until
       // layout. These values can be different.
       // Note: This is an approximation assuming each character is 1em wide.
       length +=
-          To<LayoutText>(descendant)->GetText().StripWhiteSpace().length() *
+          To<LayoutText>(descendant)->GetText().LengthWithStrippedWhiteSpace() *
           descendant->StyleRef().SpecifiedFontSize();
 
       if (length >= minimum_text_length_to_autosize) {

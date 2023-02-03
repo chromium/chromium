@@ -144,6 +144,13 @@ String String::UpperASCII() const {
   return impl_->UpperASCII();
 }
 
+unsigned String::LengthWithStrippedWhiteSpace() const {
+  if (!impl_) {
+    return 0;
+  }
+  return impl_->LengthWithStrippedWhiteSpace();
+}
+
 String String::StripWhiteSpace() const {
   if (!impl_)
     return String();

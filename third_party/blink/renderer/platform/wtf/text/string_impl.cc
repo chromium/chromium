@@ -466,6 +466,36 @@ scoped_refptr<StringImpl> StringImpl::Truncate(wtf_size_t length) {
 }
 
 template <class UCharPredicate>
+inline unsigned StringImpl::LengthWithStrippedMatchedCharacters(
+    UCharPredicate predicate) const {
+  if (!length_) {
+    return 0;
+  }
+
+  wtf_size_t start = 0;
+  wtf_size_t end = length_ - 1;
+
+  // Skip white space from the start.
+  while (start <= end &&
+         predicate(Is8Bit() ? Characters8()[start] : Characters16()[start])) {
+    ++start;
+  }
+
+  // String only contains white space.
+  if (start > end) {
+    return 0;
+  }
+
+  // Skip white space from the end.
+  while (end &&
+         predicate(Is8Bit() ? Characters8()[end] : Characters16()[end])) {
+    --end;
+  }
+
+  return end + 1 - start;
+}
+
+template <class UCharPredicate>
 inline scoped_refptr<StringImpl> StringImpl::StripMatchedCharacters(
     UCharPredicate predicate) {
   if (!length_)
@@ -474,16 +504,16 @@ inline scoped_refptr<StringImpl> StringImpl::StripMatchedCharacters(
   wtf_size_t start = 0;
   wtf_size_t end = length_ - 1;
 
-  // skip white space from start
+  // Skip white space from the start.
   while (start <= end &&
          predicate(Is8Bit() ? Characters8()[start] : Characters16()[start]))
     ++start;
 
-  // only white space
+  // String only contains white space.
   if (start > end)
     return empty_;
 
-  // skip white space from end
+  // Skip white space from the end
   while (end && predicate(Is8Bit() ? Characters8()[end] : Characters16()[end]))
     --end;
 
@@ -513,6 +543,10 @@ class SpaceOrNewlinePredicate final {
  public:
   inline bool operator()(UChar ch) const { return IsSpaceOrNewline(ch); }
 };
+
+unsigned StringImpl::LengthWithStrippedWhiteSpace() const {
+  return LengthWithStrippedMatchedCharacters(SpaceOrNewlinePredicate());
+}
 
 scoped_refptr<StringImpl> StringImpl::StripWhiteSpace() {
   return StripMatchedCharacters(SpaceOrNewlinePredicate());

@@ -352,6 +352,10 @@ class WTF_EXPORT String {
   // This function converts ASCII characters only.
   [[nodiscard]] String UpperASCII() const;
 
+  // Returns the length of the string after stripping white spaces.
+  // This is equivalent (minus the allocation overhead) of doing:
+  // `string.StripWhiteSpace().length()`
+  [[nodiscard]] unsigned LengthWithStrippedWhiteSpace() const;
   [[nodiscard]] String StripWhiteSpace() const;
   [[nodiscard]] String StripWhiteSpace(IsWhiteSpaceFunctionPtr) const;
   [[nodiscard]] String SimplifyWhiteSpace(

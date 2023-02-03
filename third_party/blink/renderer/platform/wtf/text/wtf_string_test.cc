@@ -170,6 +170,25 @@ TEST(StringTest, ComparisonOfSameStringVectors) {
   EXPECT_EQ(string_vector, same_string_vector);
 }
 
+TEST(WTF, LengthWithStrippedWhiteSpace) {
+  String stripped("Hello  world");
+  EXPECT_EQ(stripped.LengthWithStrippedWhiteSpace(), stripped.length());
+  EXPECT_EQ(String("  Hello  world  ").LengthWithStrippedWhiteSpace(),
+            stripped.length());
+  EXPECT_EQ(String("Hello  world  ").LengthWithStrippedWhiteSpace(),
+            stripped.length());
+  EXPECT_EQ(String("  Hello  world").LengthWithStrippedWhiteSpace(),
+            stripped.length());
+  EXPECT_EQ(String("\nHello\n world  ").LengthWithStrippedWhiteSpace(),
+            stripped.length());
+  EXPECT_EQ(String().LengthWithStrippedWhiteSpace(), 0u);
+  EXPECT_EQ(String("").LengthWithStrippedWhiteSpace(), 0u);
+  EXPECT_EQ(String("\n").LengthWithStrippedWhiteSpace(), 0u);
+  EXPECT_EQ(String("\n\n").LengthWithStrippedWhiteSpace(), 0u);
+  String only_spaces("   ");
+  EXPECT_EQ(only_spaces.LengthWithStrippedWhiteSpace(), 0u);
+}
+
 TEST(WTF, SimplifyWhiteSpace) {
   String extra_spaces("  Hello  world  ");
   EXPECT_EQ(String("Hello world"), extra_spaces.SimplifyWhiteSpace());
