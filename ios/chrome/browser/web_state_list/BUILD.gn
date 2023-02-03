@@ -50,6 +50,7 @@ source_set("web_state_list") {
     "//ios/chrome/browser/sessions:features",
     "//ios/chrome/browser/sessions:restoration_observer",
     "//ios/chrome/browser/sessions:serialisation",
+    "//ios/chrome/browser/tabs:features",
     "//ios/web",
     "//ios/web/public/session",
   ]
