@@ -8,27 +8,16 @@
 #include <string>
 #include <vector>
 
-#include "base/check.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/sequence_checker.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_client_impl.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/browser/ash/policy/enrollment/psm/rlwe_test_support.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -38,7 +27,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
-#include "third_party/shell-encryption/src/testing/status_testing.h"
 
 namespace psm_rlwe = private_membership::rlwe;
 namespace em = enterprise_management;
@@ -48,7 +36,6 @@ using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
 
 namespace policy::psm {
 
-namespace {
 // A struct reporesents the PSM execution result params.
 using PsmResultHolder = RlweDmserverClient::ResultHolder;
 
@@ -58,47 +45,17 @@ using ::testing::InSequence;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 using ::testing::SaveArg;
+using ::testing::StrictMock;
 
-// Number of test cases exist in cros_test_data.binarypb file, which is part of
-// private_membership third_party library.
-const int kNumberOfPsmTestCases = 10;
-
-// PrivateSetMembership regression tests maximum file size which is 4MB.
-const size_t kMaxFileSizeInBytes = 4 * 1024 * 1024;
-
-bool ParseProtoFromFile(const base::FilePath& file_path,
-                        google::protobuf::MessageLite* out_proto) {
-  DCHECK(out_proto);
-
-  if (!base::PathExists(file_path))
-    return false;
-
-  std::string file_content;
-  if (!base::ReadFileToStringWithMaxSize(file_path, &file_content,
-                                         kMaxFileSizeInBytes)) {
-    return false;
-  }
-
-  return out_proto->ParseFromString(file_content);
-}
-
-}  // namespace
-
-// The integer parameter represents the index of PSM test case.
-class RlweDmserverClientImplTest : public testing::TestWithParam<int> {
+class RlweDmserverClientImplTest
+    : public ::testing::TestWithParam</*is_member*/ bool> {
  public:
   RlweDmserverClientImplTest() {
-    // Create PSM test case, before PSM client to construct the
-    // PSM RLWE testing client factory and its RLWE ID.
-    CreatePsmTestCase();
-
     // Create PSM RLWE DMServer client.
     CreateClient();
   }
 
   ~RlweDmserverClientImplTest() override = default;
-
-  int GetPsmTestCaseIndex() const { return GetParam(); }
 
   void CreateClient() {
     service_ =
@@ -109,36 +66,12 @@ class RlweDmserverClientImplTest : public testing::TestWithParam<int> {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &url_loader_factory_);
 
+    const bool is_member = GetParam();
+    psm_test_case_ = testing::LoadTestCase(is_member);
     psm_client_ = std::make_unique<RlweDmserverClientImpl>(
         service_.get(), shared_url_loader_factory_,
-        std::move(psm_rlwe_test_client_));
-  }
-
-  void CreatePsmTestCase() {
-    // Verify PSM test case index is valid.
-    ASSERT_GE(GetPsmTestCaseIndex(), 0);
-    ASSERT_LT(GetPsmTestCaseIndex(), kNumberOfPsmTestCases);
-
-    // Retrieve the PSM test case.
-    base::FilePath src_root_dir;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root_dir));
-    const base::FilePath kPsmTestDataPath =
-        src_root_dir.AppendASCII("third_party")
-            .AppendASCII("private_membership")
-            .AppendASCII("src")
-            .AppendASCII("internal")
-            .AppendASCII("testing")
-            .AppendASCII("regression_test_data")
-            .AppendASCII("test_data.binarypb");
-    psm_rlwe::PrivateMembershipRlweClientRegressionTestData test_data;
-    ASSERT_TRUE(ParseProtoFromFile(kPsmTestDataPath, &test_data));
-    EXPECT_EQ(test_data.test_cases_size(), kNumberOfPsmTestCases);
-    psm_test_case_ = test_data.test_cases(GetPsmTestCaseIndex());
-
-    // Create PSM RLWE test client.
-    psm_rlwe_test_client_ = RlweClientImpl::CreateForTesting(
-        psm_test_case_.ec_cipher_key(), psm_test_case_.seed(),
-        psm_test_case_.plaintext_id());
+        testing::CreateClientFactory(is_member).Run(
+            /* unused plaintext id*/ {}));
   }
 
   // Start the `RlweDmserverClient` to retrieve the device state.
@@ -292,7 +225,7 @@ class RlweDmserverClientImplTest : public testing::TestWithParam<int> {
   std::unique_ptr<FakeDeviceManagementService> service_;
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
+  StrictMock<MockJobCreationHandler> job_creation_handler_;
   base::RunLoop run_loop_;
 
   DeviceManagementService::JobConfiguration::JobType psm_last_job_type_ =
@@ -437,8 +370,6 @@ TEST_P(RlweDmserverClientImplTest, NetworkFailureForRlweQueryResponse) {
 
 INSTANTIATE_TEST_SUITE_P(RlweDmserverClientImplTest,
                          RlweDmserverClientImplTest,
-                         // Loop over all indices starting from 0, and smaller
-                         // than `kNumberOfPsmTestCases`.
-                         ::testing::Range(0, kNumberOfPsmTestCases));
+                         /*is_member=*/::testing::Bool());
 
 }  // namespace policy::psm

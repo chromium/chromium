@@ -26,13 +26,6 @@ class RlweClientImpl : public RlweClient {
   // key.
   static std::unique_ptr<RlweClient> Create(const PlaintextId& plaintext_id);
 
-  // In contrast to `Create` this creates a PSM RLWE client for testing with a
-  // fixed `ec_cipher_key` and `seed`.
-  static std::unique_ptr<RlweClient> CreateForTesting(
-      const std::string& ec_cipher_key,
-      const std::string& seed,
-      const PlaintextId& plaintext_id);
-
   explicit RlweClientImpl(
       std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
           psm_rlwe_client,

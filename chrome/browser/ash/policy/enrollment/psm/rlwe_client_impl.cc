@@ -29,20 +29,6 @@ std::unique_ptr<RlweClient> RlweClientImpl::Create(
       std::move(status_or_client).value(), plaintext_id);
 }
 
-std::unique_ptr<RlweClient> RlweClientImpl::CreateForTesting(
-    const std::string& ec_cipher_key,
-    const std::string& seed,
-    const psm_rlwe::RlwePlaintextId& plaintext_id) {
-  auto status_or_client =
-      psm_rlwe::PrivateMembershipRlweClient::CreateForTesting(
-          private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE,
-          {plaintext_id}, ec_cipher_key, seed);
-  DCHECK(status_or_client.ok()) << status_or_client.status().message();
-
-  return std::make_unique<RlweClientImpl>(std::move(status_or_client).value(),
-                                          plaintext_id);
-}
-
 RlweClientImpl::~RlweClientImpl() = default;
 
 ::rlwe::StatusOr<psm_rlwe::PrivateMembershipRlweOprfRequest>
