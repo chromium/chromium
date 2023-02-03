@@ -71,8 +71,7 @@ class WebApiHandshakeChecker::CheckerOnIO
         content::GetUIThreadTaskRunner({}),
         /*url_lookup_service=*/nullptr, WebUIInfoSingleton::GetInstance(),
         /*hash_realtime_service_on_ui=*/nullptr,
-        /*mechanism_experimenter=*/nullptr,
-        /*is_mechanism_experiment_allowed=*/false);
+        /*mechanism_experimenter=*/nullptr);
     url_checker_->CheckUrl(
         url, "GET",
         base::BindOnce(&WebApiHandshakeChecker::CheckerOnIO::OnCheckUrlResult,

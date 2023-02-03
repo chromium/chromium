@@ -194,8 +194,7 @@ bool RemoteSafeBrowsingDatabaseManager::ChecksAreAlwaysAsync() const {
 bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
-    Client* client,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection) {
+    Client* client) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!threat_types.empty());
   DCHECK(SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types));

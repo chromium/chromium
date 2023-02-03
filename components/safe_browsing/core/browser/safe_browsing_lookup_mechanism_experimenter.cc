@@ -42,14 +42,12 @@ SafeBrowsingLookupMechanismExperimenter::RunChecks(
       url, threat_types, request_destination, database_manager, can_check_db,
       can_check_high_confidence_allowlist, url_lookup_service_metric_suffix,
       last_committed_url, ui_task_runner, url_lookup_service_on_ui,
-      webui_delegate, MechanismExperimentHashDatabaseCache::kUrlRealTimeOnly);
+      webui_delegate);
   auto hash_database_mechanism = std::make_unique<HashDatabaseMechanism>(
-      url, threat_types, database_manager, can_check_db,
-      MechanismExperimentHashDatabaseCache::kHashDatabaseOnly);
+      url, threat_types, database_manager, can_check_db);
   auto hash_real_time_mechanism = std::make_unique<HashRealTimeMechanism>(
       url, threat_types, database_manager, can_check_db, ui_task_runner,
-      hash_real_time_service_on_ui,
-      MechanismExperimentHashDatabaseCache::kHashRealTimeOnly);
+      hash_real_time_service_on_ui);
 
   return RunChecksInternal(
       safe_browsing_url_checker_index, std::move(url_real_time_mechanism),

@@ -53,14 +53,10 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   // It crashes if the threat type of |gurl| is not set in advance.
   bool CheckBrowseUrl(const GURL& gurl,
                       const safe_browsing::SBThreatTypeSet& threat_types,
-                      Client* client,
-                      MechanismExperimentHashDatabaseCache
-                          experiment_cache_selection) override {
+                      Client* client) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_threat_type_, url));
     DCHECK(base::Contains(urls_delayed_callback_, url));
-    EXPECT_TRUE(base::Contains(acceptable_cache_selections_,
-                               experiment_cache_selection));
     if (urls_threat_type_[url] == SB_THREAT_TYPE_SAFE) {
       return true;
     }
@@ -126,12 +122,6 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     urls_allowlist_match_[url] = match;
   }
 
-  void SetAcceptableExperimentCacheSelections(
-      std::set<MechanismExperimentHashDatabaseCache>
-          acceptable_cache_selections) {
-    acceptable_cache_selections_ = acceptable_cache_selections;
-  }
-
   void CancelCheck(Client* client) override { called_cancel_check_ = true; }
 
   bool HasCalledCancelCheck() { return called_cancel_check_; }
@@ -154,8 +144,6 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   base::flat_map<std::string, bool> urls_delayed_callback_;
   base::flat_map<std::string, Client*> urls_client_;
   base::flat_map<std::string, bool> urls_allowlist_match_;
-  std::set<MechanismExperimentHashDatabaseCache> acceptable_cache_selections_ =
-      {MechanismExperimentHashDatabaseCache::kNoExperiment};
 
   bool called_cancel_check_ = false;
 };
@@ -463,8 +451,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr() : nullptr,
         /*webui_delegate_=*/nullptr,
         /*hash_realtime_service=*/hash_realtime_service_->GetWeakPtr(),
-        /*mechanism_experimenter=*/mechanism_experimenter,
-        is_lookup_mechanism_experiment_enabled);
+        /*mechanism_experimenter=*/mechanism_experimenter);
   }
 
   // This can be used as the CheckUrl callback in cases where it's a local check
@@ -1053,12 +1040,6 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   // allowlist, set threat type to phishing for hash based check.
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
-  std::set<MechanismExperimentHashDatabaseCache> cache_selections = {
-      MechanismExperimentHashDatabaseCache::kUrlRealTimeOnly,
-      MechanismExperimentHashDatabaseCache::kHashRealTimeOnly,
-      MechanismExperimentHashDatabaseCache::kHashDatabaseOnly,
-  };
-  database_manager_->SetAcceptableExperimentCacheSelections(cache_selections);
   url_checker_delegate_->SetLookupMechanismExperimentEligibility(
       url, /*eligibility=*/true);
 
@@ -1094,12 +1075,6 @@ TEST_F(
   // allowlist, set threat type to phishing for hash based check.
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
-  std::set<MechanismExperimentHashDatabaseCache> cache_selections = {
-      MechanismExperimentHashDatabaseCache::kUrlRealTimeOnly,
-      MechanismExperimentHashDatabaseCache::kHashRealTimeOnly,
-      MechanismExperimentHashDatabaseCache::kHashDatabaseOnly,
-  };
-  database_manager_->SetAcceptableExperimentCacheSelections(cache_selections);
   url_checker_delegate_->SetLookupMechanismExperimentEligibility(
       url, /*eligibility=*/false);
 
@@ -1135,9 +1110,6 @@ TEST_F(SafeBrowsingUrlCheckerTest,
                                            /*should_complete_lookup=*/true);
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
-  std::set<MechanismExperimentHashDatabaseCache> cache_selections = {
-      MechanismExperimentHashDatabaseCache::kHashDatabaseOnly};
-  database_manager_->SetAcceptableExperimentCacheSelections(cache_selections);
   hash_realtime_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                               /*should_fail_lookup=*/false);
   url_checker_delegate_->SetLookupMechanismExperimentEligibility(
@@ -1180,10 +1152,6 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       /*real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
       /*is_lookup_mechanism_experiment_enabled=*/true);
-
-  std::set<MechanismExperimentHashDatabaseCache> cache_selections = {
-      MechanismExperimentHashDatabaseCache::kHashDatabaseOnly};
-  database_manager_->SetAcceptableExperimentCacheSelections(cache_selections);
 
   GURL origin_url("https://example.test/");
   // Sanity check only the URL real-time result is used by setting the other

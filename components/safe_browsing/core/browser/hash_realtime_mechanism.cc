@@ -20,13 +20,11 @@ HashRealTimeMechanism::HashRealTimeMechanism(
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
     bool can_check_db,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    base::WeakPtr<HashRealTimeService> lookup_service_on_ui,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection)
+    base::WeakPtr<HashRealTimeService> lookup_service_on_ui)
     : SafeBrowsingLookupMechanism(url,
                                   threat_types,
                                   database_manager,
-                                  can_check_db,
-                                  experiment_cache_selection),
+                                  can_check_db),
       ui_task_runner_(ui_task_runner),
       lookup_service_on_ui_(lookup_service_on_ui) {}
 
@@ -128,8 +126,7 @@ void HashRealTimeMechanism::PerformHashBasedCheck(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   hash_database_mechanism_ = std::make_unique<HashDatabaseMechanism>(
-      url, threat_types_, database_manager_, can_check_db_,
-      experiment_cache_selection_);
+      url, threat_types_, database_manager_, can_check_db_);
   auto result = hash_database_mechanism_->StartCheck(
       base::BindOnce(&HashRealTimeMechanism::OnHashDatabaseCompleteCheckResult,
                      weak_factory_.GetWeakPtr()));

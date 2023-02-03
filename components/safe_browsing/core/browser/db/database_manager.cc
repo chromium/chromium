@@ -156,12 +156,6 @@ bool SafeBrowsingDatabaseManager::IsDatabaseReady() {
   return enabled_;
 }
 
-void SafeBrowsingDatabaseManager::SetLookupMechanismExperimentIsEnabled() {
-  if (v4_get_hash_protocol_manager_) {
-    v4_get_hash_protocol_manager_->SetLookupMechanismExperimentIsEnabled();
-  }
-}
-
 SafeBrowsingDatabaseManager::SafeBrowsingApiCheck::SafeBrowsingApiCheck(
     const GURL& url,
     Client* client)

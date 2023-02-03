@@ -10,13 +10,11 @@ SafeBrowsingLookupMechanism::SafeBrowsingLookupMechanism(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-    bool can_check_db,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection)
+    bool can_check_db)
     : url_(url),
       threat_types_(threat_types),
       database_manager_(database_manager),
-      can_check_db_(can_check_db),
-      experiment_cache_selection_(experiment_cache_selection) {}
+      can_check_db_(can_check_db) {}
 
 SafeBrowsingLookupMechanism::~SafeBrowsingLookupMechanism() = default;
 

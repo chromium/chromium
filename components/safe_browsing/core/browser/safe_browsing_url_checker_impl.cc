@@ -131,8 +131,7 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     UrlRealTimeMechanism::WebUIDelegate* webui_delegate,
     base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
     scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
-        mechanism_experimenter,
-    bool is_mechanism_experiment_allowed)
+        mechanism_experimenter)
     : headers_(headers),
       load_flags_(load_flags),
       request_destination_(request_destination),
@@ -153,8 +152,7 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       url_lookup_service_on_ui_(url_lookup_service_on_ui),
       webui_delegate_(webui_delegate),
       hash_realtime_service_on_ui_(hash_realtime_service_on_ui),
-      mechanism_experimenter_(mechanism_experimenter),
-      is_mechanism_experiment_allowed_(is_mechanism_experiment_allowed) {
+      mechanism_experimenter_(mechanism_experimenter) {
   DCHECK(!web_contents_getter_.is_null());
   DCHECK(!can_rt_check_subresource_url_ || real_time_lookup_enabled_);
   DCHECK(real_time_lookup_enabled_ || can_check_db_);
@@ -528,9 +526,6 @@ SafeBrowsingLookupMechanism::StartCheckResult
 SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(
     const GURL& url,
     bool can_perform_full_url_lookup) {
-  if (is_mechanism_experiment_allowed_) {
-    database_manager_->SetLookupMechanismExperimentIsEnabled();
-  }
   base::UmaHistogramBoolean("SafeBrowsing.RT.CanCheckDatabase", can_check_db_);
   std::unique_ptr<SafeBrowsingLookupMechanism> lookup_mechanism;
   DCHECK(!lookup_mechanism_runner_);
@@ -554,13 +549,12 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(
           database_manager_, can_check_db_,
           can_check_high_confidence_allowlist_,
           url_lookup_service_metric_suffix_, last_committed_url_,
-          ui_task_runner_, url_lookup_service_on_ui_, webui_delegate_,
-          MechanismExperimentHashDatabaseCache::kNoExperiment);
+          ui_task_runner_, url_lookup_service_on_ui_, webui_delegate_);
     }
   } else {
     lookup_mechanism = std::make_unique<HashDatabaseMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
-        can_check_db_, MechanismExperimentHashDatabaseCache::kNoExperiment);
+        can_check_db_);
   }
   lookup_mechanism_runner_ =
       std::make_unique<SafeBrowsingLookupMechanismRunner>(

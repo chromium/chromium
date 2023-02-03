@@ -60,9 +60,7 @@ class FakeGetHashProtocolManager : public V4GetHashProtocolManager {
 
   void GetFullHashes(const FullHashToStoreAndHashPrefixesMap,
                      const std::vector<std::string>&,
-                     FullHashCallback callback,
-                     MechanismExperimentHashDatabaseCache
-                         mechanism_experiment_cache_selection) override {
+                     FullHashCallback callback) override {
     // Async, since the real manager might use a fetcher.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), full_hash_infos_));
@@ -515,8 +513,7 @@ TEST_F(V4LocalDatabaseManagerTest,
   WaitForTasksOnTaskRunner();
   // Both the stores are empty right now so CheckBrowseUrl should return true.
   EXPECT_TRUE(v4_local_database_manager_->CheckBrowseUrl(
-      GURL("http://example.com/a/"), usual_threat_types_, nullptr,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      GURL("http://example.com/a/"), usual_threat_types_, nullptr));
 }
 
 TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithFakeDbReturnsMatch) {
@@ -535,8 +532,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithFakeDbReturnsMatch) {
   const GURL url_bad("https://" + url_bad_no_scheme);
   TestClient client(SB_THREAT_TYPE_SAFE, url_bad);
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url_bad, usual_threat_types_, &client,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url_bad, usual_threat_types_, &client));
 
   // Wait for PerformFullHashCheck to complete.
   WaitForTasksOnTaskRunner();
@@ -682,8 +678,7 @@ TEST_F(V4LocalDatabaseManagerTest,
   ForceDisableLocalDatabaseManager();
 
   EXPECT_TRUE(v4_local_database_manager_->CheckBrowseUrl(
-      GURL("http://example.com/a/"), usual_threat_types_, nullptr,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      GURL("http://example.com/a/"), usual_threat_types_, nullptr));
 }
 
 // Hash prefix matches on the high confidence allowlist, but not a full hash
@@ -864,9 +859,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestChecksAreQueued) {
   const GURL url("https://www.example.com/");
   TestClient client(SB_THREAT_TYPE_SAFE, url);
   EXPECT_TRUE(GetQueuedChecks().empty());
-  v4_local_database_manager_->CheckBrowseUrl(
-      url, usual_threat_types_, &client,
-      MechanismExperimentHashDatabaseCache::kNoExperiment);
+  v4_local_database_manager_->CheckBrowseUrl(url, usual_threat_types_, &client);
   // The database is unavailable so the check should get queued.
   EXPECT_EQ(1ul, GetQueuedChecks().size());
 
@@ -875,9 +868,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestChecksAreQueued) {
   EXPECT_TRUE(GetQueuedChecks().empty());
 
   ResetV4Database();
-  v4_local_database_manager_->CheckBrowseUrl(
-      url, usual_threat_types_, &client,
-      MechanismExperimentHashDatabaseCache::kNoExperiment);
+  v4_local_database_manager_->CheckBrowseUrl(url, usual_threat_types_, &client);
   // The database is unavailable so the check should get queued.
   EXPECT_EQ(1ul, GetQueuedChecks().size());
 
@@ -907,8 +898,7 @@ TEST_F(V4LocalDatabaseManagerTest, CancelPending) {
   {
     TestClient client(SB_THREAT_TYPE_SAFE, url_bad);
     EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-        url_bad, usual_threat_types_, &client,
-        MechanismExperimentHashDatabaseCache::kNoExperiment));
+        url_bad, usual_threat_types_, &client));
     EXPECT_FALSE(client.on_check_browse_url_result_called());
     WaitForTasksOnTaskRunner();
     EXPECT_TRUE(client.on_check_browse_url_result_called());
@@ -918,8 +908,7 @@ TEST_F(V4LocalDatabaseManagerTest, CancelPending) {
   {
     TestClient client(SB_THREAT_TYPE_SAFE, url_bad);
     EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-        url_bad, usual_threat_types_, &client,
-        MechanismExperimentHashDatabaseCache::kNoExperiment));
+        url_bad, usual_threat_types_, &client));
     v4_local_database_manager_->CancelCheck(&client);
     EXPECT_FALSE(client.on_check_browse_url_result_called());
     WaitForTasksOnTaskRunner();
@@ -931,8 +920,7 @@ TEST_F(V4LocalDatabaseManagerTest, CancelPending) {
   {
     TestClient client(SB_THREAT_TYPE_SAFE, url_bad);
     EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-        url_bad, usual_threat_types_, &client,
-        MechanismExperimentHashDatabaseCache::kNoExperiment));
+        url_bad, usual_threat_types_, &client));
     EXPECT_EQ(1ul, GetPendingChecks().size());
     EXPECT_FALSE(client.on_check_browse_url_result_called());
     EXPECT_TRUE((*GetPendingChecks().begin())->is_in_pending_checks);
@@ -951,11 +939,9 @@ TEST_F(V4LocalDatabaseManagerTest, CancelQueued) {
                      v4_local_database_manager_.get());
   TestClient client2(SB_THREAT_TYPE_SAFE, url);
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url, usual_threat_types_, &client1,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url, usual_threat_types_, &client1));
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url, usual_threat_types_, &client2,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url, usual_threat_types_, &client2));
   EXPECT_EQ(2ul, GetQueuedChecks().size());
   EXPECT_FALSE(client1.on_check_browse_url_result_called());
   EXPECT_FALSE(client2.on_check_browse_url_result_called());
@@ -980,8 +966,7 @@ TEST_F(V4LocalDatabaseManagerTest, PerformFullHashCheckCalledAsync) {
   const GURL url_bad("https://" + url_bad_no_scheme);
   // The fake database returns a matched hash prefix.
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url_bad, usual_threat_types_, nullptr,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url_bad, usual_threat_types_, nullptr));
 
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
       v4_local_database_manager_));
@@ -1006,8 +991,7 @@ TEST_F(V4LocalDatabaseManagerTest, UsingWeakPtrDropsCallback) {
   const GURL url_bad("https://" + url_bad_no_scheme);
   TestClient client(SB_THREAT_TYPE_SAFE, url_bad);
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url_bad, usual_threat_types_, &client,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url_bad, usual_threat_types_, &client));
   v4_local_database_manager_->StopOnIOThread(true);
 
   // Release the V4LocalDatabaseManager object right away before the callback
@@ -1084,8 +1068,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithSameClientAndCancel) {
   TestClient client(SB_THREAT_TYPE_SAFE, first_url);
   // The fake database returns a matched hash prefix.
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      first_url, usual_threat_types_, &client,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      first_url, usual_threat_types_, &client));
 
   // That check gets queued. Now, let's cancel the check. After this, we should
   // not receive a call for |OnCheckBrowseUrlResult| with |first_url|.
@@ -1094,8 +1077,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithSameClientAndCancel) {
   // Now, re-use that client but for |second_url|.
   client.mutable_expected_urls()->assign(1, second_url);
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      second_url, usual_threat_types_, &client,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      second_url, usual_threat_types_, &client));
 
   // Wait for PerformFullHashCheck to complete.
   WaitForTasksOnTaskRunner();
@@ -1325,8 +1307,7 @@ TEST_F(V4LocalDatabaseManagerTest, FlagOneUrlAsPhishing) {
 
   const GURL url_bad("https://example.com/1/");
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url_bad, usual_threat_types_, nullptr,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url_bad, usual_threat_types_, nullptr));
   // PerformFullHashCheck will not be called if there is a match within the
   // artificial database
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
@@ -1334,8 +1315,7 @@ TEST_F(V4LocalDatabaseManagerTest, FlagOneUrlAsPhishing) {
 
   const GURL url_good("https://other.example.com");
   EXPECT_TRUE(v4_local_database_manager_->CheckBrowseUrl(
-      url_good, usual_threat_types_, nullptr,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url_good, usual_threat_types_, nullptr));
 
   WaitForTasksOnTaskRunner();
   StopLocalDatabaseManager();
@@ -1349,8 +1329,7 @@ TEST_F(V4LocalDatabaseManagerTest, FlagOneUrlAsMalware) {
 
   const GURL url_bad("https://example.com/1/");
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url_bad, usual_threat_types_, nullptr,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url_bad, usual_threat_types_, nullptr));
   // PerformFullHashCheck will not be called if there is a match within the
   // artificial database
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
@@ -1358,8 +1337,7 @@ TEST_F(V4LocalDatabaseManagerTest, FlagOneUrlAsMalware) {
 
   const GURL url_good("https://other.example.com");
   EXPECT_TRUE(v4_local_database_manager_->CheckBrowseUrl(
-      url_good, usual_threat_types_, nullptr,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url_good, usual_threat_types_, nullptr));
 
   WaitForTasksOnTaskRunner();
   StopLocalDatabaseManager();
@@ -1373,8 +1351,7 @@ TEST_F(V4LocalDatabaseManagerTest, FlagOneUrlAsUWS) {
 
   const GURL url_bad("https://example.com/1/");
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url_bad, usual_threat_types_, nullptr,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url_bad, usual_threat_types_, nullptr));
   // PerformFullHashCheck will not be called if there is a match within the
   // artificial database
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
@@ -1382,8 +1359,7 @@ TEST_F(V4LocalDatabaseManagerTest, FlagOneUrlAsUWS) {
 
   const GURL url_good("https://other.example.com");
   EXPECT_TRUE(v4_local_database_manager_->CheckBrowseUrl(
-      url_good, usual_threat_types_, nullptr,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url_good, usual_threat_types_, nullptr));
 
   WaitForTasksOnTaskRunner();
   StopLocalDatabaseManager();
@@ -1402,18 +1378,15 @@ TEST_F(V4LocalDatabaseManagerTest, FlagMultipleUrls) {
   const GURL url_phishing("https://example.com/1/");
   TestClient client_phishing(SB_THREAT_TYPE_SAFE, url_phishing);
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url_phishing, usual_threat_types_, &client_phishing,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url_phishing, usual_threat_types_, &client_phishing));
   const GURL url_malware("https://2.example.com");
   TestClient client_malware(SB_THREAT_TYPE_SAFE, url_malware);
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url_malware, usual_threat_types_, &client_malware,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url_malware, usual_threat_types_, &client_malware));
   const GURL url_uws("https://example.test.com");
   TestClient client_uws(SB_THREAT_TYPE_SAFE, url_uws);
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
-      url_uws, usual_threat_types_, &client_uws,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url_uws, usual_threat_types_, &client_uws));
   // PerformFullHashCheck will not be called if there is a match within the
   // artificial database
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
@@ -1422,8 +1395,7 @@ TEST_F(V4LocalDatabaseManagerTest, FlagMultipleUrls) {
   const GURL url_good("https://other.example.com");
   TestClient client_good(SB_THREAT_TYPE_SAFE, url_good);
   EXPECT_TRUE(v4_local_database_manager_->CheckBrowseUrl(
-      url_good, usual_threat_types_, &client_good,
-      MechanismExperimentHashDatabaseCache::kNoExperiment));
+      url_good, usual_threat_types_, &client_good));
 
   StopLocalDatabaseManager();
 }

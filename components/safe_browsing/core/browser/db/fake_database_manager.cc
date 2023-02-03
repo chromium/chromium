@@ -45,8 +45,7 @@ bool FakeSafeBrowsingDatabaseManager::ChecksAreAlwaysAsync() const {
 bool FakeSafeBrowsingDatabaseManager::CheckBrowseUrl(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
-    Client* client,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection) {
+    Client* client) {
   const auto it = dangerous_urls_.find(url);
   if (it == dangerous_urls_.end())
     return true;
