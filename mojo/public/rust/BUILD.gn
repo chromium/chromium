@@ -85,11 +85,6 @@ rust_static_library("mojo_rust") {
     "//third_party/rust/bitflags/v1:lib",
   ]
 
-  # TODO(crbug.com/1274864): find a better way to reference generated bindings.
-  # Right now a gen/ file is `include!`ed directly in Rust, meaning there's no
-  # way to detect dependency issues.
-  test_deps = [ "//mojo/public/interfaces/bindings/tests:test_interfaces" ]
-
   bindgen_output = get_target_outputs(":mojo_c_system_binding")
   inputs = bindgen_output
   rustenv = [ "BINDGEN_RS_FILE=" + rebase_path(bindgen_output[0]) ]
