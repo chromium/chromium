@@ -209,11 +209,13 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
   }
 
   std::vector<history::Cluster> GetClustersForUI(
+      ClusteringRequestSource clustering_request_source,
       const std::vector<history::Cluster>& in_clusters) {
     std::vector<history::Cluster> clusters;
 
     base::RunLoop run_loop;
     clustering_backend_->GetClustersForUI(
+        clustering_request_source,
         base::BindOnce(
             [](base::RunLoop* run_loop,
                std::vector<history::Cluster>* out_clusters,
@@ -392,7 +394,8 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
           2, GURL("https://google.com/"), base::Time::FromTimeT(2))));
   clusters.push_back(cluster2);
 
-  std::vector<history::Cluster> result_clusters = GetClustersForUI(clusters);
+  std::vector<history::Cluster> result_clusters =
+      GetClustersForUI(ClusteringRequestSource::kJourneysPage, clusters);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
               ElementsAre(ElementsAre(testing::VisitResult(
                   2, 1.0, {history::DuplicateClusterVisit{1}}))));
@@ -737,7 +740,8 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, GetClustersForUIWithContent) {
   cluster2.visits.push_back(testing::CreateClusterVisit(visit5));
   clusters.push_back(cluster2);
 
-  std::vector<history::Cluster> result_clusters = GetClustersForUI(clusters);
+  std::vector<history::Cluster> result_clusters =
+      GetClustersForUI(ClusteringRequestSource::kJourneysPage, clusters);
   EXPECT_THAT(
       testing::ToVisitResults(result_clusters),
       ElementsAre(ElementsAre(

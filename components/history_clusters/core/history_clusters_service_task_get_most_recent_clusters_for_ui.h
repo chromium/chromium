@@ -36,6 +36,7 @@ class HistoryClustersServiceTaskGetMostRecentClustersForUI
       base::WeakPtr<HistoryClustersService> weak_history_clusters_service,
       ClusteringBackend* const backend,
       history::HistoryService* const history_service,
+      ClusteringRequestSource clustering_request_source,
       base::Time begin_time,
       QueryClustersContinuationParams continuation_params,
       QueryClustersCallback callback);
@@ -65,6 +66,8 @@ class HistoryClustersServiceTaskGetMostRecentClustersForUI
   const raw_ptr<ClusteringBackend> backend_;
   // Non-owning pointer, but never nullptr.
   const raw_ptr<history::HistoryService> history_service_;
+
+  ClusteringRequestSource clustering_request_source_;
 
   // Used to make requests to `HistoryService`.
   base::Time begin_time_;

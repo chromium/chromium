@@ -63,7 +63,8 @@ class TestClusteringBackend : public ClusteringBackend {
     std::move(wait_for_get_clusters_closure_).Run();
   }
 
-  void GetClustersForUI(ClustersCallback callback,
+  void GetClustersForUI(ClusteringRequestSource clustering_request_source,
+                        ClustersCallback callback,
                         std::vector<history::Cluster> clusters) override {
     callback_ = std::move(callback);
     last_clustered_clusters_ = clusters;

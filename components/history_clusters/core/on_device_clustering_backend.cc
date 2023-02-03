@@ -169,6 +169,7 @@ void OnDeviceClusteringBackend::GetClusters(
 }
 
 void OnDeviceClusteringBackend::GetClustersForUI(
+    ClusteringRequestSource clustering_request_source,
     ClustersCallback callback,
     std::vector<history::Cluster> clusters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -182,7 +183,8 @@ void OnDeviceClusteringBackend::GetClustersForUI(
   EntityMetadataProcessedCallback entity_metadata_processed_callback =
       base::BindOnce(&OnDeviceClusteringBackend::
                          DispatchGetClustersForUIToBackgroundThread,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+                     weak_ptr_factory_.GetWeakPtr(), clustering_request_source,
+                     std::move(callback));
   RetrieveBatchEntityMetadata(
       std::move(entity_ids),
       base::BindOnce(&ProcessEntityMetadata,
@@ -407,8 +409,8 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
   base::OnceCallback<std::vector<history::Cluster>()> clustering_callback =
       base::BindOnce(
           &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
-          engagement_score_provider_ != nullptr, std::move(cluster_visits),
-          requires_ui_and_triggerability,
+          clustering_request_source, engagement_score_provider_ != nullptr,
+          std::move(cluster_visits), requires_ui_and_triggerability,
           base::OwnedRef(std::move(entity_id_to_metadata_map)));
 
   if (IsUIRequestSource(clustering_request_source)) {
@@ -421,6 +423,7 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
 }
 
 void OnDeviceClusteringBackend::DispatchGetClustersForUIToBackgroundThread(
+    ClusteringRequestSource clustering_request_source,
     ClustersCallback callback,
     std::vector<history::Cluster> clusters,
     base::flat_map<std::string, optimization_guide::EntityMetadata>
@@ -431,8 +434,8 @@ void OnDeviceClusteringBackend::DispatchGetClustersForUIToBackgroundThread(
       FROM_HERE,
       base::BindOnce(
           &OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread,
-          engagement_score_provider_ != nullptr, std::move(clusters),
-          base::OwnedRef(std::move(entity_metadata_map)),
+          clustering_request_source, engagement_score_provider_ != nullptr,
+          std::move(clusters), base::OwnedRef(std::move(entity_metadata_map)),
           /*calculate_triggerability=*/true),
       std::move(callback));
 }
@@ -458,6 +461,7 @@ void OnDeviceClusteringBackend::
 // static
 std::vector<history::Cluster>
 OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
+    ClusteringRequestSource clustering_request_source,
     bool engagement_score_provider_is_valid,
     std::vector<history::ClusterVisit> visits,
     bool requires_ui_and_triggerability,
@@ -478,8 +482,9 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
     // 2. Determine how the clusters should be displayed.
     base::ElapsedThreadTimer compute_clusters_for_ui_timer;
     clusters = GetClustersForUIOnBackgroundThread(
-        engagement_score_provider_is_valid, std::move(clusters),
-        entity_id_to_entity_metadata_map, /*calculate_triggerability=*/false);
+        clustering_request_source, engagement_score_provider_is_valid,
+        std::move(clusters), entity_id_to_entity_metadata_map,
+        /*calculate_triggerability=*/false);
     base::UmaHistogramTimes(
         "History.Clusters.Backend.ComputeClustersForUI.ThreadTime",
         compute_clusters_for_ui_timer.Elapsed());
@@ -504,6 +509,7 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
 // static
 std::vector<history::Cluster>
 OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread(
+    ClusteringRequestSource clustering_request_source,
     bool engagement_score_provider_is_valid,
     std::vector<history::Cluster> clusters,
     base::flat_map<std::string, optimization_guide::EntityMetadata>&
