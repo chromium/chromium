@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher_ui_controller.h"
@@ -194,10 +195,15 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         add_page_action_icon(
             type, std::make_unique<autofill::SavePaymentIconView>(
                       params.command_updater, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate));
+                      params.page_action_icon_delegate,
+                      IDC_SAVE_CREDIT_CARD_FOR_PAGE));
         break;
       case PageActionIconType::kSaveIban:
-        // TODO(crbug.com/1349109): Create SaveIBANIconView.
+        add_page_action_icon(
+            type,
+            std::make_unique<autofill::SavePaymentIconView>(
+                params.command_updater, params.icon_label_bubble_delegate,
+                params.page_action_icon_delegate, IDC_SAVE_IBAN_FOR_PAGE));
         break;
       case PageActionIconType::kSendTabToSelf:
         add_page_action_icon(

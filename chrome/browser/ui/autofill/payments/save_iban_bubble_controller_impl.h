@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
+#include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -22,6 +23,7 @@ enum class IbanBubbleType;
 class SaveIbanBubbleControllerImpl
     : public AutofillBubbleControllerBase,
       public SaveIbanBubbleController,
+      public SavePaymentIconController,
       public content::WebContentsUserData<SaveIbanBubbleControllerImpl> {
  public:
   // An observer class used by browsertests that gets notified whenever
@@ -29,6 +31,7 @@ class SaveIbanBubbleControllerImpl
   class ObserverForTest {
    public:
     virtual void OnBubbleShown() = 0;
+    virtual void OnIconShown() = 0;
   };
 
   SaveIbanBubbleControllerImpl(const SaveIbanBubbleControllerImpl&) = delete;
@@ -44,15 +47,27 @@ class SaveIbanBubbleControllerImpl
       bool should_show_prompt,
       AutofillClient::LocalSaveIBANPromptCallback save_iban_prompt_callback);
 
+  // No-op if the bubble is already shown, otherwise, shows the bubble.
+  void EnsureBubbleShown();
+
   // SaveIbanBubbleController:
   std::u16string GetWindowTitle() const override;
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetDeclineButtonText() const override;
   const IBAN& GetIBAN() const override;
-  AutofillBubbleBase* GetSaveBubbleView() const override;
   void OnSaveButton(const std::u16string& nickname) override;
   void OnCancelButton() override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
+  IbanBubbleType GetBubbleType() const override;
+
+  // SavePaymentIconController:
+  std::u16string GetSavePaymentIconTooltipText() const override;
+  bool ShouldShowSavingPaymentAnimation() const override;
+  bool ShouldShowPaymentSavedLabelAnimation() const override;
+  bool ShouldShowSaveFailureBadge() const override;
+  void OnAnimationEnded() override;
+  bool IsIconVisible() const override;
+  AutofillBubbleBase* GetSaveBubbleView() const override;
 
   // For testing.
   void SetEventObserverForTesting(ObserverForTest* observer) {
@@ -72,6 +87,9 @@ class SaveIbanBubbleControllerImpl
   // Displays both the offer-to-save bubble and its associated omnibox icon.
   void ShowBubble();
 
+  // Displays omnibox icon only.
+  void ShowIconOnly();
+
   // Should outlive this object.
   raw_ptr<PersonalDataManager> personal_data_manager_;
 
@@ -80,6 +98,9 @@ class SaveIbanBubbleControllerImpl
 
   // Note: Below fields are set when IBAN save is offered.
   //
+  // Is true only if the [IBAN saved] label animation should be shown.
+  bool should_show_iban_saved_label_animation_ = false;
+
   // The type of bubble that is either currently being shown or would
   // be shown when the IBAN save icon is clicked.
   IbanBubbleType current_bubble_type_ = IbanBubbleType::kInactive;

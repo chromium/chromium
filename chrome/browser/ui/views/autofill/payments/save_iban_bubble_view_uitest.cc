@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
@@ -30,6 +32,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -83,6 +86,7 @@ class SaveIbanBubbleViewFullFormBrowserTest
     ACCEPT_SAVE_IBAN_COMPLETE,
     DECLINE_SAVE_IBAN_COMPLETE,
     BUBBLE_SHOWN,
+    ICON_SHOWN
   };
 
   // SyncTest::SetUpOnMainThread:
@@ -146,6 +150,12 @@ class SaveIbanBubbleViewFullFormBrowserTest
   void OnBubbleShown() override {
     if (event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::BUBBLE_SHOWN);
+    }
+  }
+
+  void OnIconShown() override {
+    if (event_waiter_) {
+      event_waiter_->OnEvent(DialogEvent::ICON_SHOWN);
     }
   }
 
@@ -222,6 +232,15 @@ class SaveIbanBubbleViewFullFormBrowserTest
         FindViewInBubbleById(DialogViewId::CANCEL_BUTTON));
   }
 
+  void ClickOnCloseButton() {
+    SaveIbanBubbleView* save_iban_bubble_views = GetSaveIbanBubbleView();
+    CHECK(save_iban_bubble_views);
+    ClickOnDialogViewAndWaitForWidgetDestruction(
+        save_iban_bubble_views->GetBubbleFrameView()
+            ->GetCloseButtonForTesting());
+    CHECK(!GetSaveIbanBubbleView());
+  }
+
   SaveIbanBubbleView* GetSaveIbanBubbleView() {
     SaveIbanBubbleController* save_iban_bubble_controller =
         SaveIbanBubbleController::GetOrCreate(GetActiveWebContents());
@@ -236,6 +255,16 @@ class SaveIbanBubbleViewFullFormBrowserTest
     }
 
     return static_cast<SaveIbanBubbleView*>(save_iban_bubble_view);
+  }
+
+  SavePaymentIconView* GetSaveIbanIconView() {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(GetBrowser(0));
+    PageActionIconView* icon =
+        browser_view->toolbar_button_provider()->GetPageActionIconView(
+            PageActionIconType::kSaveIban);
+    CHECK(browser_view->GetLocationBarView()->Contains(icon));
+    return static_cast<SavePaymentIconView*>(icon);
   }
 
   content::WebContents* GetActiveWebContents() {
@@ -341,13 +370,26 @@ IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
   // Submit the form a fourth time. Since the IBAN now has maximum strikes,
   // the bubble should not be shown.
   FillForm(kIbanValue);
-  ResetEventWaiterForSequence({DialogEvent::OFFERED_LOCAL_SAVE});
+  ResetEventWaiterForSequence(
+      {DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::ICON_SHOWN});
   SubmitForm();
   WaitForObservedEvent();
 
   EXPECT_TRUE(iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()
                   ->ShouldBlockFeature(kIbanValue));
+
+  EXPECT_TRUE(GetSaveIbanIconView()->GetVisible());
   EXPECT_FALSE(GetSaveIbanBubbleView());
+
+  // Click the icon to show the bubble.
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+  ClickOnView(GetSaveIbanIconView());
+  WaitForObservedEvent();
+  EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
+                  ->GetVisible());
+
+  ClickOnCancelButton();
+  WaitForObservedEvent();
 }
 
 // Tests the local save bubble. Ensures that clicking the 'Save' button
@@ -361,6 +403,18 @@ IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
   ClickOnSaveButton();
   WaitForObservedEvent();
 
+  EXPECT_FALSE(GetSaveIbanBubbleView());
+}
+
+// Tests the local save bubble. Ensures that clicking the [X] button will still
+// see the omnibox icon.
+IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
+                       Local_ClickingClosesBubbleStillShowOmnibox) {
+  FillForm();
+  SubmitFormAndWaitForIbanLocalSaveBubble();
+
+  ClickOnCloseButton();
+  EXPECT_TRUE(GetSaveIbanIconView()->GetVisible());
   EXPECT_FALSE(GetSaveIbanBubbleView());
 }
 

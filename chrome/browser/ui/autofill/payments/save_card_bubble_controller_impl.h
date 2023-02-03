@@ -135,8 +135,8 @@ class SaveCardBubbleControllerImpl
 
   // SavePaymentIconController:
   std::u16string GetSavePaymentIconTooltipText() const override;
-  bool ShouldShowSavingCardAnimation() const override;
-  bool ShouldShowCardSavedLabelAnimation() const override;
+  bool ShouldShowSavingPaymentAnimation() const override;
+  bool ShouldShowPaymentSavedLabelAnimation() const override;
   bool ShouldShowSaveFailureBadge() const override;
   void OnAnimationEnded() override;
   bool IsIconVisible() const override;

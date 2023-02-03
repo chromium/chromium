@@ -7653,6 +7653,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TOOLTIP_SAVE_CREDIT_CARD_FAILURE" desc="The tooltip for the icon that shows the credit card is not successfully uploaded">
         Can't save card right now
       </message>
+      <message name="IDS_TOOLTIP_SAVE_IBAN" desc="The tooltip for the icon that shows the save IBAN (International Bank Account Number) bubble">
+        Save IBAN
+      </message>
       <message name="IDS_TOOLTIP_MIGRATE_LOCAL_CARD" desc="Tooltip for the credit card icon that appears in the address bar. Icon is shown when a user has a credit card stored locally in Chrome but not in Google Pay.">
         Save payment method
       </message>

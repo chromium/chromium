@@ -109,12 +109,18 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveIbanBubble(
     content::WebContents* web_contents,
     SaveIbanBubbleController* controller,
     bool is_user_gesture) {
-  // TODO(crbug.com/1349109): Add page action icon view for IBAN.
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kSaveIban);
   views::View* anchor_view =
       toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveIban);
 
   SaveIbanBubbleView* bubble =
       new SaveIbanBubbleView(anchor_view, web_contents, controller);
+
+  DCHECK(bubble);
+  DCHECK(icon_view);
+  bubble->SetHighlightedButton(icon_view);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE

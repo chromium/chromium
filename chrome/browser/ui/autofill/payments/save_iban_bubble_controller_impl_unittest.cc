@@ -50,6 +50,9 @@ class SaveIbanBubbleControllerImplTest : public BrowserWithTestWindowTest {
   void ClickSaveButton(const std::u16string& nickname) {
     controller()->OnSaveButton(nickname);
     controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kAccepted);
+    if (controller()->ShouldShowPaymentSavedLabelAnimation()) {
+      controller()->OnAnimationEnded();
+    }
   }
 
   std::u16string saved_nickname() { return saved_nickname_; }
@@ -75,8 +78,7 @@ class SaveIbanBubbleControllerImplTest : public BrowserWithTestWindowTest {
 
 TEST_F(SaveIbanBubbleControllerImplTest, LocalIbanSavedSuccessfully) {
   std::u16string nickname = u"My doctor's IBAN";
-  IBAN iban = autofill::test::GetIBAN();
-  ShowLocalBubble(iban);
+  ShowLocalBubble(autofill::test::GetIBAN());
   ClickSaveButton(nickname);
 
   EXPECT_EQ(nickname, saved_nickname());

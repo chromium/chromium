@@ -154,8 +154,9 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
   void ClickSaveButton() {
     controller()->OnSaveButton({});
     controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kAccepted);
-    if (controller()->ShouldShowCardSavedLabelAnimation())
+    if (controller()->ShouldShowPaymentSavedLabelAnimation()) {
       controller()->OnAnimationEnded();
+    }
   }
 
  protected:

@@ -15,7 +15,7 @@ namespace autofill {
 
 class AutofillBubbleBase;
 class IBAN;
-enum class IBANBubbleType;
+enum class IbanBubbleType;
 
 // Interface that exposes controller functionality to save IBAN bubbles.
 class SaveIbanBubbleController {
@@ -47,6 +47,9 @@ class SaveIbanBubbleController {
   virtual void OnSaveButton(const std::u16string& nickname) = 0;
   virtual void OnCancelButton() = 0;
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
+
+  // Returns the current state of the bubble.
+  virtual IbanBubbleType GetBubbleType() const = 0;
 };
 
 }  // namespace autofill

@@ -470,11 +470,12 @@ std::u16string SaveCardBubbleControllerImpl::GetSavePaymentIconTooltipText()
   }
 }
 
-bool SaveCardBubbleControllerImpl::ShouldShowSavingCardAnimation() const {
+bool SaveCardBubbleControllerImpl::ShouldShowSavingPaymentAnimation() const {
   return current_bubble_type_ == BubbleType::UPLOAD_IN_PROGRESS;
 }
 
-bool SaveCardBubbleControllerImpl::ShouldShowCardSavedLabelAnimation() const {
+bool SaveCardBubbleControllerImpl::ShouldShowPaymentSavedLabelAnimation()
+    const {
   return should_show_card_saved_label_animation_;
 }
 
