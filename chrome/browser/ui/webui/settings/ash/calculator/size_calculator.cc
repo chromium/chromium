@@ -42,15 +42,17 @@ namespace {
 void GetTotalDiskSpaceBlocking(const base::FilePath& mount_path,
                                int64_t* total_bytes) {
   int64_t size = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
-  if (size >= 0)
+  if (size >= 0) {
     *total_bytes = size;
+  }
 }
 
 void GetFreeDiskSpaceBlocking(const base::FilePath& mount_path,
                               int64_t* available_bytes) {
   int64_t size = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
-  if (size >= 0)
+  if (size >= 0) {
     *available_bytes = size;
+  }
 }
 
 // Computes the size of My Files and Play files.
@@ -82,8 +84,9 @@ SizeCalculator::SizeCalculator(const CalculationType& calculation_type)
 SizeCalculator::~SizeCalculator() {}
 
 void SizeCalculator::StartCalculation() {
-  if (calculating_)
+  if (calculating_) {
     return;
+  }
   calculating_ = true;
   PerformCalculation();
 }
@@ -490,8 +493,9 @@ void OtherUsersSizeCalculator::PerformCalculation() {
   const user_manager::UserList& users =
       user_manager::UserManager::Get()->GetUsers();
   for (auto* user : users) {
-    if (user->is_active())
+    if (user->is_active()) {
       continue;
+    }
     other_users_.push_back(user);
     user_data_auth::GetAccountDiskUsageRequest request;
     *request.mutable_identifier() =
@@ -510,8 +514,9 @@ void OtherUsersSizeCalculator::OnGetOtherUserSize(
     absl::optional<user_data_auth::GetAccountDiskUsageReply> reply) {
   user_sizes_.push_back(
       user_data_auth::AccountDiskUsageReplyToUsageSize(reply));
-  if (user_sizes_.size() != other_users_.size())
+  if (user_sizes_.size() != other_users_.size()) {
     return;
+  }
   int64_t other_users_total_bytes;
   // If all the requests succeed, shows the total bytes in the UI.
   other_users_total_bytes =

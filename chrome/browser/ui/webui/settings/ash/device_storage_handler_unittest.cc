@@ -172,8 +172,9 @@ class StorageHandlerTest : public testing::Test {
       if (data->function_name() != "cr.webUIListenerCallback" || !name) {
         continue;
       }
-      if (*name == event_name)
+      if (*name == event_name) {
         return data->arg2();
+      }
     }
     return nullptr;
   }
