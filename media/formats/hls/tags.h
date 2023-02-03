@@ -190,6 +190,10 @@ struct MEDIA_EXPORT XStreamInfTag {
   // The id of an audio rendition group that should be used when playing this
   // variant.
   absl::optional<ResolvedSourceString> audio;
+
+  // The id of a video rendition group that should be used when playing this
+  // variant.
+  absl::optional<ResolvedSourceString> video;
 };
 
 // Represents the contents of the #EXTINF tag

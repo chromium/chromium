@@ -62,6 +62,16 @@ class PlaylistTestBuilder {
         std::move(fn), std::move(arg), std::move(location)));
   }
 
+  scoped_refptr<PlaylistT> Parse(
+      const base::Location& from = base::Location::Current()) {
+    auto result = PlaylistT::Parse(source_, uri_, version_);
+    EXPECT_TRUE(result.has_value()) << "Error: " << from.ToString();
+    auto playlist = std::move(result).value();
+    // Ensure that playlist has expected version
+    EXPECT_EQ(playlist->GetVersion(), version_) << from.ToString();
+    return std::move(playlist);
+  }
+
  protected:
   // Attempts to parse the playlist as-is, checking for the given
   // error code.

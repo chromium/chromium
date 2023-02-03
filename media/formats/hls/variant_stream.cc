@@ -22,7 +22,8 @@ VariantStream::VariantStream(
     absl::optional<std::vector<std::string>> codecs,
     absl::optional<types::DecimalResolution> resolution,
     absl::optional<types::DecimalFloatingPoint> frame_rate,
-    scoped_refptr<AudioRenditionGroup> audio_rendition_group)
+    scoped_refptr<AudioRenditionGroup> audio_rendition_group,
+    absl::optional<std::string> video_rendition_group_name)
     : primary_rendition_uri_(std::move(primary_rendition_uri)),
       bandwidth_(bandwidth),
       average_bandwidth_(average_bandwidth),
@@ -30,7 +31,8 @@ VariantStream::VariantStream(
       codecs_(std::move(codecs)),
       resolution_(resolution),
       frame_rate_(frame_rate),
-      audio_rendition_group_(std::move(audio_rendition_group)) {}
+      audio_rendition_group_(std::move(audio_rendition_group)),
+      video_rendition_group_name_(video_rendition_group_name) {}
 
 VariantStream::VariantStream(VariantStream&&) = default;
 

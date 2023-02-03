@@ -179,6 +179,7 @@ VariableDictionary CreateBasicDictionary(
   EXPECT_TRUE(dict.Insert(CreateVarName("FOO"), "bar")) << from.ToString();
   EXPECT_TRUE(dict.Insert(CreateVarName("BAR"), "baz")) << from.ToString();
   EXPECT_TRUE(dict.Insert(CreateVarName("EMPTY"), "")) << from.ToString();
+  EXPECT_TRUE(dict.Insert(CreateVarName("BAZ"), "foo")) << from.ToString();
 
   return dict;
 }
@@ -1197,7 +1198,28 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   EXPECT_EQ(result.tag.codecs, absl::nullopt);
   EXPECT_EQ(result.tag.resolution, absl::nullopt);
   ASSERT_TRUE(result.tag.audio.has_value());
+  ASSERT_FALSE(result.tag.video.has_value());
   EXPECT_EQ(result.tag.audio->Str(), "barbaz");
+
+  // "VIDEO" must be a valid quoted-string
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,VIDEO=1)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,VIDEO="")", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,VIDEO=stereo)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+
+  // "VIDEO" is subject to variable substitution
+  result = OkTest<XStreamInfTag>(R"(BANDWIDTH=1010,VIDEO="{$BAZ}{$FOO}")",
+                                 variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.bandwidth, 1010u);
+  EXPECT_EQ(result.tag.average_bandwidth, absl::nullopt);
+  EXPECT_EQ(result.tag.score, absl::nullopt);
+  EXPECT_EQ(result.tag.codecs, absl::nullopt);
+  EXPECT_EQ(result.tag.resolution, absl::nullopt);
+  ASSERT_TRUE(result.tag.video.has_value());
+  ASSERT_FALSE(result.tag.audio.has_value());
+  EXPECT_EQ(result.tag.video->Str(), "foobar");
 }
 
 TEST(HlsTagsTest, ParseInfTag) {

@@ -44,6 +44,8 @@ struct MEDIA_EXPORT DecimalResolution {
 
   types::DecimalInteger width;
   types::DecimalInteger height;
+
+  types::DecimalInteger Area() const { return width * height; }
 };
 
 // A `ByteRangeExpression` represents the 'length[@offset]' syntax that appears

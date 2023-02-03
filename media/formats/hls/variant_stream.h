@@ -25,7 +25,8 @@ class MEDIA_EXPORT VariantStream {
                 absl::optional<std::vector<std::string>> codecs,
                 absl::optional<types::DecimalResolution> resolution,
                 absl::optional<types::DecimalFloatingPoint> frame_rate,
-                scoped_refptr<AudioRenditionGroup> audio_renditions);
+                scoped_refptr<AudioRenditionGroup> audio_renditions,
+                absl::optional<std::string> video_rendition_group_name);
   VariantStream(const VariantStream&) = delete;
   VariantStream(VariantStream&&);
   ~VariantStream();
@@ -103,6 +104,11 @@ class MEDIA_EXPORT VariantStream {
     return audio_rendition_group_;
   }
 
+  // Returns the name of the video rendition group, if it exists.
+  const absl::optional<std::string> GetVideoRenditionGroupName() const {
+    return video_rendition_group_name_;
+  }
+
  private:
   GURL primary_rendition_uri_;
   types::DecimalInteger bandwidth_;
@@ -112,6 +118,7 @@ class MEDIA_EXPORT VariantStream {
   absl::optional<types::DecimalResolution> resolution_;
   absl::optional<types::DecimalFloatingPoint> frame_rate_;
   scoped_refptr<AudioRenditionGroup> audio_rendition_group_;
+  absl::optional<std::string> video_rendition_group_name_;
 };
 
 }  // namespace media::hls

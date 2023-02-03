@@ -136,13 +136,16 @@ enum class XStreamInfTagAttribute {
   kProgramId,  // Ignored for backwards compatibility
   kResolution,
   kScore,
-  kMaxValue = kScore,
+  kVideo,
+  kMaxValue = kVideo,
 };
 
 constexpr base::StringPiece GetAttributeName(XStreamInfTagAttribute attribute) {
   switch (attribute) {
     case XStreamInfTagAttribute::kAudio:
       return "AUDIO";
+    case XStreamInfTagAttribute::kVideo:
+      return "VIDEO";
     case XStreamInfTagAttribute::kAverageBandwidth:
       return "AVERAGE-BANDWIDTH";
     case XStreamInfTagAttribute::kBandwidth:
@@ -841,6 +844,18 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
           .AddCause(std::move(audio).error());
     }
     out.audio = std::move(audio).value();
+  }
+
+  // Extract the 'VIDEO' attribute
+  if (map.HasValue(XStreamInfTagAttribute::kVideo)) {
+    auto video =
+        types::ParseQuotedString(map.GetValue(XStreamInfTagAttribute::kVideo),
+                                 variable_dict, sub_buffer);
+    if (!video.has_value()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(video).error());
+    }
+    out.video = std::move(video).value();
   }
 
   return out;

@@ -221,10 +221,16 @@ MultivariantPlaylist::Parse(base::StringPiece source,
                                                    inf_tag->audio->Str());
     }
 
+    absl::optional<std::string> video_rendition_group_name;
+    if (inf_tag->video.has_value()) {
+      video_rendition_group_name = std::string(inf_tag->video->Str());
+    }
+
     variants.emplace_back(std::move(variant_uri), inf_tag->bandwidth,
                           inf_tag->average_bandwidth, inf_tag->score,
                           std::move(inf_tag->codecs), inf_tag->resolution,
-                          inf_tag->frame_rate, std::move(audio_renditions));
+                          inf_tag->frame_rate, std::move(audio_renditions),
+                          std::move(video_rendition_group_name));
 
     // Reset per-variant tags
     inf_tag.reset();
