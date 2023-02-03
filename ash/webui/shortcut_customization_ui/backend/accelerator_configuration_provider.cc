@@ -316,6 +316,20 @@ void AcceleratorConfigurationProvider::UpdateKeyboards() {
 void AcceleratorConfigurationProvider::InitializeNonConfigurableAccelerators(
     NonConfigurableActionsMap mapping) {
   non_configurable_actions_mapping_ = std::move(mapping);
+  for (const auto& [ambient_action_id, accelerators_details] :
+       non_configurable_actions_mapping_) {
+    if (accelerators_details.IsStandardAccelerator()) {
+      DCHECK(!accelerators_details.replacements.has_value());
+      DCHECK(!accelerators_details.message_id.has_value());
+      for (const auto& accelerator :
+           accelerators_details.accelerators.value()) {
+        const uint32_t action_id = static_cast<uint32_t>(ambient_action_id);
+        non_configurable_accelerator_to_id_.InsertNew(
+            std::make_pair(accelerator, action_id));
+        id_to_non_configurable_accelerators_[action_id].push_back(accelerator);
+      }
+    }
+  }
   NotifyAcceleratorsUpdated();
 }
 

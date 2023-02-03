@@ -22,6 +22,7 @@
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -265,6 +266,19 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     return non_configurable_actions_map_
         .find(static_cast<ash::NonConfigurableActions>(action_id))
         ->second.message_id.value();
+  }
+
+  const std::vector<ui::Accelerator>& GetNonConfigurableAcceleratorsForActionId(
+      uint32_t id) {
+    const auto accelerator_iter =
+        provider_->id_to_non_configurable_accelerators_.find(id);
+    DCHECK(accelerator_iter !=
+           provider_->id_to_non_configurable_accelerators_.end());
+    return accelerator_iter->second;
+  }
+
+  uint32_t GetNonConfigurableIdFromAccelerator(ui::Accelerator accelerator) {
+    return provider_->non_configurable_accelerator_to_id_.Get(accelerator);
   }
 
   std::unique_ptr<AcceleratorConfigurationProvider> provider_;
@@ -721,10 +735,6 @@ TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableActions) {
   FakeAcceleratorsUpdatedObserver observer;
   SetUpObserver(&observer);
   base::RunLoop().RunUntilIdle();
-  // Reinitialize the non-configurable accelerators to trigger the observer.
-  provider_->InitializeNonConfigurableAccelerators(
-      non_configurable_actions_map_);
-  base::RunLoop().RunUntilIdle();
   auto config = observer.config();
   for (const auto& [id, accel_infos] :
        config[mojom::AcceleratorSource::kAmbient]) {
@@ -757,6 +767,41 @@ TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableActions) {
         for (size_t i = 0; i < replacement_parts.size(); i++) {
           ValidateTextAccelerators(replacement_parts[i], text_accel_parts[i]);
         }
+      }
+    }
+  }
+}
+
+// Tests that standard non-configurable look up is correctly configured and
+// matches the predefined non-configurable list.
+TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableLookup) {
+  base::RunLoop().RunUntilIdle();
+  for (const auto& [ambient_action_id, accelerators_details] :
+       non_configurable_actions_map_) {
+    // Only standard accelerators are present in the lookup maps.
+    if (accelerators_details.IsStandardAccelerator()) {
+      std::vector<ui::Accelerator> actual_accelerators =
+          GetNonConfigurableAcceleratorsForActionId(
+              static_cast<uint32_t>(ambient_action_id));
+      EXPECT_TRUE(base::ranges::is_permutation(
+          actual_accelerators, accelerators_details.accelerators.value()));
+    }
+  }
+}
+
+// Tests that standard non-configurable reverse look up is correctly configured
+// and matches the predefined non-configurable list.
+TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableReverseLookup) {
+  base::RunLoop().RunUntilIdle();
+  for (const auto& [ambient_action_id, accelerators_details] :
+       non_configurable_actions_map_) {
+    // Only standard accelerators are present in the lookup maps.
+    if (accelerators_details.IsStandardAccelerator()) {
+      for (const auto& accelerator :
+           accelerators_details.accelerators.value()) {
+        const uint32_t found_id =
+            GetNonConfigurableIdFromAccelerator(accelerator);
+        EXPECT_EQ(ambient_action_id, found_id);
       }
     }
   }
