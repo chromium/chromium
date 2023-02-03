@@ -14,7 +14,6 @@ import argparse
 import json
 import logging
 import re
-from typing import FrozenSet
 
 from blinkpy.common.net.git_cl import GitCL
 from blinkpy.common.net.network_transaction import NetworkTimeout
@@ -230,8 +229,7 @@ class TestImporter(object):
         try_results = cl_status.try_job_results
 
         if try_results and self.git_cl.some_failed(try_results):
-            builders = frozenset(build.builder_name for build in try_results)
-            self.fetch_new_expectations_and_baselines(builders)
+            self.fetch_new_expectations_and_baselines()
             # Update metadata after baselines so that `rebaseline-cl` does not
             # complain about uncommitted files. `update-metadata` has a similar
             # but more fine-grained check.
@@ -661,7 +659,7 @@ class TestImporter(object):
             return ''
         return data['emails'][0]
 
-    def fetch_new_expectations_and_baselines(self, builders: FrozenSet[str]):
+    def fetch_new_expectations_and_baselines(self):
         """Modifies expectation lines and baselines based on try job results.
 
         Assuming that there are some try job results available, this
@@ -675,13 +673,7 @@ class TestImporter(object):
             self._expectations_updater.update_expectations())
         tests_to_rebaseline.update(to_rebaseline)
 
-        flag_spec_options = set()
-        for builder in builders:
-            for step in self.host.builders.step_names_for_builder(builder):
-                option = self.host.builders.flag_specific_option(builder, step)
-                if option:
-                    flag_spec_options.add(option)
-
+        flag_spec_options = self.host.builders.all_flag_specific_options()
         for flag_specific in sorted(flag_spec_options):
             _log.info('Adding test expectations lines for %s', flag_specific)
             to_rebaseline, _ = self._expectations_updater.update_expectations(

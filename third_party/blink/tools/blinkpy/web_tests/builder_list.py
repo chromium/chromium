@@ -207,6 +207,9 @@ class BuilderList:
     def port_name_for_flag_specific_option(self, option):
         return self._flag_spec_to_port[option]
 
+    def all_flag_specific_options(self) -> Set[str]:
+        return set(self._flag_spec_to_port)
+
     def specifiers_for_builder(self, builder_name):
         return self._builders[builder_name]['specifiers']
 

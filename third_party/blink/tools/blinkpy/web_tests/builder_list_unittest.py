@@ -181,6 +181,10 @@ class BuilderListTest(unittest.TestCase):
         self.assertEqual(['port-a', 'port-b', 'port-c'],
                          builders.all_port_names())
 
+    def test_all_flag_specific_options(self):
+        builders = self.sample_builder_list()
+        self.assertEqual({'highdpi'}, builders.all_flag_specific_options())
+
     def test_bucket_for_builder_default_bucket(self):
         builders = self.sample_builder_list()
         self.assertEqual('', builders.bucket_for_builder('Try A'))
