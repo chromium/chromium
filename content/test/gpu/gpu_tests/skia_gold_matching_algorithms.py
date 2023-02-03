@@ -3,7 +3,8 @@
 # found in the LICENSE file.
 """Classes related to the possible matching algorithms for Skia Gold."""
 
-from typing import List, Union
+import math
+from typing import List, Optional, Union
 
 
 class Parameters():
@@ -30,6 +31,18 @@ class Parameters():
   # blacked out, while 255 results in no pixels being blacked out, i.e. no
   # Sobel filter functionality.
   EDGE_THRESHOLD = 'sobel_edge_threshold'
+  # A number in the range [1, sqrt(MAX_INT32)] specifying how large the sample
+  # area should be for the sample_area algorithm.
+  SAMPLE_AREA_WIDTH = 'sample_area_width'
+  # A number in the range [0, SAMPLE_AREA_WIDTH^2] specifying how many pixels
+  # are allowed to differ in the sample area and not cause the matching to fail
+  # in the sample_area algorithm.
+  SAMPLE_AREA_MAX_DIFFERENT_PIXELS_PER_AREA = (
+      'sample_area_max_different_pixels_per_area')
+  # An optional number in the range [0, 255] specifying how much a pair of
+  # pixels between the two images can differ on a single channel and still be
+  # considered identical when using the sample_area algorithm.
+  SAMPLE_AREA_CHANNEL_DELTA_THRESHOLD = 'sample_area_channel_delta_threshold'
 
 
 class SkiaGoldMatchingAlgorithm():
@@ -128,3 +141,50 @@ class SobelMatchingAlgorithm(FuzzyMatchingAlgorithm):
 
 def _GenerateOptionalKey(key: str, value: Union[int, str]) -> List[str]:
   return ['--add-test-optional-key', '%s:%s' % (key, value)]
+
+
+class SampleAreaMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
+  """Class for the sample_area matching algorithm in Gold."""
+
+  def __init__(self,
+               sample_area_width: int,
+               max_different_pixels_per_area: int,
+               sample_area_channel_delta_threshold: Optional[int] = None):
+    super().__init__()
+    assert sample_area_width >= 1
+    assert sample_area_width <= math.sqrt(2**31 - 1)
+    assert max_different_pixels_per_area >= 0
+    assert max_different_pixels_per_area <= sample_area_width**2
+    if max_different_pixels_per_area == sample_area_width**2:
+      raise RuntimeError(
+          'sample_area matching with a max different pixels per area set to '
+          'the sample area size is equivalent to auto-approving any image.')
+    if sample_area_channel_delta_threshold is not None:
+      assert sample_area_channel_delta_threshold >= 0
+      assert sample_area_channel_delta_threshold <= 255
+      if sample_area_channel_delta_threshold == 255:
+        raise RuntimeError(
+            'sample area matching with a tolerance of 255 is equivalent to '
+            'auto-approving any image.')
+    self._sample_area_width = sample_area_width
+    self._max_different_pixels_per_area = max_different_pixels_per_area
+    self._sample_area_channel_delta_threshold = (
+        sample_area_channel_delta_threshold)
+
+  def GetCmdline(self) -> List[str]:
+    retval = super().GetCmdline()
+    retval.extend(
+        _GenerateOptionalKey(Parameters.SAMPLE_AREA_WIDTH,
+                             self._sample_area_width))
+    retval.extend(
+        _GenerateOptionalKey(
+            Parameters.SAMPLE_AREA_MAX_DIFFERENT_PIXELS_PER_AREA,
+            self._max_different_pixels_per_area))
+    if self._sample_area_channel_delta_threshold is not None:
+      retval.extend(
+          _GenerateOptionalKey(Parameters.SAMPLE_AREA_CHANNEL_DELTA_THRESHOLD,
+                               self._sample_area_channel_delta_threshold))
+    return retval
+
+  def Name(self) -> str:
+    return 'sample_area'
