@@ -369,24 +369,22 @@ class AttributionEventHandler : public AttributionObserver {
 
 }  // namespace
 
-base::Value RunAttributionSimulation(base::Value input,
-                                     const AttributionConfig& config,
-                                     std::ostream& error_stream) {
+base::expected<base::Value::Dict, std::string> RunAttributionSimulation(
+    base::Value::Dict input,
+    const AttributionConfig& config) {
   // Prerequisites for using an environment with mock time.
   content::BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestBrowserContext browser_context;
   const base::Time time_origin = base::Time::Now();
 
-  absl::optional<AttributionSimulationEvents> events =
-      ParseAttributionSimulationInput(std::move(input), time_origin,
-                                      error_stream);
-  if (!events) {
-    return base::Value();
+  auto events = ParseAttributionSimulationInput(std::move(input), time_origin);
+  if (!events.has_value()) {
+    return base::unexpected(events.error());
   }
 
   if (events->empty()) {
-    return base::Value(base::Value::Dict());
+    return base::Value::Dict();
   }
 
   base::ranges::stable_sort(*events, /*comp=*/{}, &GetEventTime);
@@ -441,7 +439,7 @@ base::Value RunAttributionSimulation(base::Value input,
     task_environment.FastForwardBy(max_report_time - base::Time::Now());
   }
 
-  return base::Value(handler.TakeOutput());
+  return handler.TakeOutput();
 }
 
 }  // namespace content

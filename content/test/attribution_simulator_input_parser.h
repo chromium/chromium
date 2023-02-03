@@ -5,18 +5,16 @@
 #ifndef CONTENT_TEST_ATTRIBUTION_SIMULATOR_INPUT_PARSER_H_
 #define CONTENT_TEST_ATTRIBUTION_SIMULATOR_INPUT_PARSER_H_
 
-#include <iosfwd>
+#include <string>
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace content {
 
@@ -36,10 +34,9 @@ using AttributionSimulationEvent =
 
 using AttributionSimulationEvents = std::vector<AttributionSimulationEvent>;
 
-absl::optional<AttributionSimulationEvents> ParseAttributionSimulationInput(
-    base::Value input,
-    base::Time offset_time,
-    std::ostream& error_stream);
+base::expected<AttributionSimulationEvents, std::string>
+ParseAttributionSimulationInput(base::Value::Dict input,
+                                base::Time offset_time);
 
 }  // namespace content
 

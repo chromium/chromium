@@ -213,7 +213,7 @@ TEST(AttributionInteropParserTest, ValidOutput) {
       }]
     })json";
 
-  base::Value input = base::test::ParseJson(kInputJson);
+  base::Value::Dict input = base::test::ParseJsonDict(kInputJson);
 
   std::ostringstream error_stream;
   EXPECT_THAT(AttributionInteropParser(error_stream)
@@ -757,7 +757,7 @@ class AttributionInteropParseOutputErrorTest
 TEST_P(AttributionInteropParseOutputErrorTest, InvalidOutputFails) {
   const ParseErrorTestCase& test_case = GetParam();
 
-  base::Value value = base::test::ParseJson(test_case.json);
+  base::Value::Dict value = base::test::ParseJsonDict(test_case.json);
 
   std::ostringstream error_stream;
   AttributionInteropParser parser(error_stream);
@@ -768,10 +768,6 @@ TEST_P(AttributionInteropParseOutputErrorTest, InvalidOutputFails) {
 }
 
 const ParseErrorTestCase kParseOutputErrorTestCases[] = {
-    {
-        R"(input root: must be a dictionary)",
-        R"json(1)json",
-    },
     {
         R"(["event_level_reports"]: must be a list)",
         R"json({

@@ -39,13 +39,13 @@ class AttributionInteropParser {
 
   // Converts interop test input to simulator input format. The error state from
   // the previous parsing will be reset.
-  absl::optional<base::Value> SimulatorInputFromInteropInput(
+  absl::optional<base::Value::Dict> SimulatorInputFromInteropInput(
       base::Value::Dict& input);
 
   // Converts simulator output to interop test output format. The error state
   // from the previous parsing will be reset.
-  absl::optional<base::Value> InteropOutputFromSimulatorOutput(
-      base::Value output);
+  absl::optional<base::Value::Dict> InteropOutputFromSimulatorOutput(
+      base::Value::Dict output);
 
   // Parses the configuration. The error state from the previous parsing will be
   // reset.

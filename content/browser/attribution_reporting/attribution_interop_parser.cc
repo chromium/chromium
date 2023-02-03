@@ -239,7 +239,7 @@ base::Value::List AttributionInteropParser::ParseEvents(base::Value::Dict& dict,
   return results;
 }
 
-absl::optional<base::Value>
+absl::optional<base::Value::Dict>
 AttributionInteropParser::SimulatorInputFromInteropInput(
     base::Value::Dict& input) {
   static constexpr char kKey[] = "input";
@@ -263,7 +263,7 @@ AttributionInteropParser::SimulatorInputFromInteropInput(
   base::Value::Dict result;
   result.Set("sources", std::move(sources));
   result.Set("triggers", std::move(triggers));
-  return base::Value(std::move(result));
+  return result;
 }
 
 base::Value::List AttributionInteropParser::ParseEventLevelReports(
@@ -390,22 +390,16 @@ base::Value::List AttributionInteropParser::ParseVerboseDebugReports(
   return reports;
 }
 
-absl::optional<base::Value>
-AttributionInteropParser::InteropOutputFromSimulatorOutput(base::Value output) {
+absl::optional<base::Value::Dict>
+AttributionInteropParser::InteropOutputFromSimulatorOutput(
+    base::Value::Dict output) {
   error_manager_.ResetErrorState();
 
-  if (!EnsureDictionary(&output)) {
-    return absl::nullopt;
-  }
+  base::Value::List event_level_results = ParseEventLevelReports(output);
 
-  base::Value::List event_level_results =
-      ParseEventLevelReports(output.GetDict());
+  base::Value::List aggregatable_results = ParseAggregatableReports(output);
 
-  base::Value::List aggregatable_results =
-      ParseAggregatableReports(output.GetDict());
-
-  base::Value::List verbose_debug_reports =
-      ParseVerboseDebugReports(output.GetDict());
+  base::Value::List verbose_debug_reports = ParseVerboseDebugReports(output);
 
   if (has_error()) {
     return absl::nullopt;
@@ -424,7 +418,7 @@ AttributionInteropParser::InteropOutputFromSimulatorOutput(base::Value output) {
     dict.Set("verbose_debug_reports", std::move(verbose_debug_reports));
   }
 
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 bool AttributionInteropParser::ParseInt(const base::Value::Dict& dict,

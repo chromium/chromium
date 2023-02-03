@@ -22,10 +22,10 @@
 namespace content {
 namespace {
 
-base::Value ReadJsonFromFile(const base::FilePath& path) {
+base::Value::Dict ReadJsonFromFile(const base::FilePath& path) {
   std::string contents;
   EXPECT_TRUE(base::ReadFileToString(path, &contents));
-  return base::test::ParseJson(contents);
+  return base::test::ParseJsonDict(contents);
 }
 
 // Removes `.input.json` from the path.
@@ -63,15 +63,14 @@ class AttributionSimulatorImplTest
 
 TEST_P(AttributionSimulatorImplTest, HasExpectedOutput) {
   const base::FilePath input_path = GetParam();
-  base::Value input = ReadJsonFromFile(input_path);
+  base::Value::Dict input = ReadJsonFromFile(input_path);
 
-  const base::Value expected_output = ReadJsonFromFile(OutputPath(input_path));
+  const base::Value::Dict expected_output =
+      ReadJsonFromFile(OutputPath(input_path));
 
-  std::ostringstream error_stream;
-  EXPECT_THAT(RunAttributionSimulation(std::move(input), AttributionConfig(),
-                                       error_stream),
-              base::test::IsJson(expected_output));
-  EXPECT_EQ(error_stream.str(), "");
+  auto result = RunAttributionSimulation(std::move(input), AttributionConfig());
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(*result, base::test::IsJson(expected_output));
 }
 
 INSTANTIATE_TEST_SUITE_P(

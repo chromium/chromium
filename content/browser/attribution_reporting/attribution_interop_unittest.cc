@@ -94,7 +94,7 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
     error_stream.str("");
   }
 
-  absl::optional<base::Value> input =
+  absl::optional<base::Value::Dict> input =
       parser.SimulatorInputFromInteropInput(dict);
   EXPECT_TRUE(input) << error_stream.str();
 
@@ -103,12 +103,11 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
 
   ASSERT_TRUE(is_config_valid && input);
 
-  base::Value simulator_output =
-      RunAttributionSimulation(std::move(*input), config, error_stream);
-  ASSERT_FALSE(simulator_output.is_none()) << error_stream.str();
+  auto simulator_output = RunAttributionSimulation(std::move(*input), config);
+  ASSERT_TRUE(simulator_output.has_value()) << simulator_output.error();
 
-  absl::optional<base::Value> actual_output =
-      parser.InteropOutputFromSimulatorOutput(std::move(simulator_output));
+  absl::optional<base::Value::Dict> actual_output =
+      parser.InteropOutputFromSimulatorOutput(std::move(*simulator_output));
   EXPECT_TRUE(actual_output) << error_stream.str();
 
   if (expected_output) {

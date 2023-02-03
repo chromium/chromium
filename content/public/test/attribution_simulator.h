@@ -5,11 +5,10 @@
 #ifndef CONTENT_PUBLIC_TEST_ATTRIBUTION_SIMULATOR_H_
 #define CONTENT_PUBLIC_TEST_ATTRIBUTION_SIMULATOR_H_
 
-#include <iosfwd>
+#include <string>
 
-namespace base {
-class Value;
-}  // namespace base
+#include "base/types/expected.h"
+#include "base/values.h"
 
 namespace content {
 
@@ -17,13 +16,10 @@ struct AttributionConfig;
 
 // Simulates the Attribution Reporting API for a single user on sources and
 // triggers specified in `input`. Returns the generated reports, if any, as a
-// JSON document. On error, writes to `error_stream` and returns
-// `base::ValueType::NONE`.
-//
-// Exits if `input` cannot be parsed.
-base::Value RunAttributionSimulation(base::Value input,
-                                     const AttributionConfig&,
-                                     std::ostream& error_stream);
+// JSON document.
+base::expected<base::Value::Dict, std::string> RunAttributionSimulation(
+    base::Value::Dict input,
+    const AttributionConfig&);
 
 }  // namespace content
 

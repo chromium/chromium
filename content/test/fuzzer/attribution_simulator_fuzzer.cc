@@ -4,8 +4,8 @@
 
 #include <stdlib.h>
 #include <iostream>
-#include <sstream>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/command_line.h"
@@ -40,17 +40,18 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   json_proto::JsonProtoConverter converter;
   std::string native_input = converter.Convert(json_value);
 
-  if (getenv("LPM_DUMP_NATIVE_INPUT"))
+  if (getenv("LPM_DUMP_NATIVE_INPUT")) {
     std::cout << native_input << std::endl;
+  }
 
   absl::optional<base::Value> input = base::JSONReader::Read(
       native_input, base::JSONParserOptions::JSON_PARSE_RFC);
-  if (!input)
+  if (!input || !input->is_dict()) {
     return;
+  }
 
-  std::ostringstream error_stream;
-  ParseAttributionSimulationInput(std::move(*input),
-                                  /*offset_time=*/base::Time(), error_stream);
+  std::ignore = ParseAttributionSimulationInput(std::move(*input).TakeDict(),
+                                                /*offset_time=*/base::Time());
 }
 
 }  // namespace content

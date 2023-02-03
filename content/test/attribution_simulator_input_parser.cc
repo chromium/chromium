@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <ostream>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -42,7 +42,7 @@ constexpr char kTimestampKey[] = "timestamp";
 class AttributionSimulatorInputParser {
  public:
   AttributionSimulatorInputParser(base::Time offset_time,
-                                  std::ostream& error_stream)
+                                  std::ostringstream& error_stream)
       : offset_time_(offset_time), error_manager_(error_stream) {}
 
   ~AttributionSimulatorInputParser() = default;
@@ -56,19 +56,17 @@ class AttributionSimulatorInputParser {
   AttributionSimulatorInputParser& operator=(
       AttributionSimulatorInputParser&&) = delete;
 
-  absl::optional<AttributionSimulationEvents> Parse(base::Value input) && {
-    if (!EnsureDictionary(input))
-      return absl::nullopt;
-
+  absl::optional<AttributionSimulationEvents> Parse(
+      base::Value::Dict input) && {
     static constexpr char kKeySources[] = "sources";
-    if (base::Value* sources = input.GetDict().Find(kKeySources)) {
+    if (base::Value* sources = input.Find(kKeySources)) {
       auto context = PushContext(kKeySources);
       ParseList(std::move(*sources),
                 [&](base::Value source) { ParseSource(std::move(source)); });
     }
 
     static constexpr char kKeyTriggers[] = "triggers";
-    if (base::Value* triggers = input.GetDict().Find(kKeyTriggers)) {
+    if (base::Value* triggers = input.Find(kKeyTriggers)) {
       auto context = PushContext(kKeyTriggers);
       ParseList(std::move(*triggers),
                 [&](base::Value trigger) { ParseTrigger(std::move(trigger)); });
@@ -299,12 +297,16 @@ class AttributionSimulatorInputParser {
 
 }  // namespace
 
-absl::optional<AttributionSimulationEvents> ParseAttributionSimulationInput(
-    base::Value input,
-    const base::Time offset_time,
-    std::ostream& error_stream) {
-  return AttributionSimulatorInputParser(offset_time, error_stream)
-      .Parse(std::move(input));
+base::expected<AttributionSimulationEvents, std::string>
+ParseAttributionSimulationInput(base::Value::Dict input,
+                                const base::Time offset_time) {
+  std::ostringstream error_stream;
+  auto result = AttributionSimulatorInputParser(offset_time, error_stream)
+                    .Parse(std::move(input));
+  if (!result.has_value()) {
+    return base::unexpected(error_stream.str());
+  }
+  return *result;
 }
 
 }  // namespace content
