@@ -684,7 +684,6 @@ class WPTExpectationsUpdater(object):
 
         return line_dict, {}
 
-
     def create_line_dict(self, merged_results):
         """Creates list of test expectations lines.
 
@@ -874,9 +873,6 @@ class WPTExpectationsUpdater(object):
         comment line. If this marker comment line is not found, then everything
         including the marker line is appended to the end of the file.
 
-        All WontFix tests are inserted to NeverFixTests file instead of TextExpectations
-        file.
-
         Args:
             test_expectations: A dictionary mapping test names to a dictionary
             mapping platforms and test results.
@@ -889,10 +885,8 @@ class WPTExpectationsUpdater(object):
         else:
             line_dict, configs_to_remove = self.create_line_dict(test_expectations)
         if not line_dict:
-            _log.info(
-                'No lines to write to %s, WebdriverExpectations'
-                ' or NeverFixTests.' % (flag_specific or 'TestExpectations')
-            )
+            _log.info('No lines to write to %s or WebdriverExpectations.',
+                      flag_specific or 'TestExpectations')
             return {}
 
         if configs_to_remove:
@@ -901,8 +895,9 @@ class WPTExpectationsUpdater(object):
             self.remove_configurations(configs_to_remove)
 
         line_list = []
-        wont_fix_list = []
         webdriver_list = []
+        # CQ/CI always skips manual tests, so writing them to `NeverFixTests`
+        # is unnecessary. See also: crrev.com/c/3658291.
         for lines in line_dict.values():
             for line in lines:
                 if self.finder.webdriver_prefix() in line:
@@ -943,20 +938,6 @@ class WPTExpectationsUpdater(object):
             self.host.filesystem.write_text_file(expectations_file_path,
                                                  file_contents)
 
-        # only write to NeverFixTests for the generic round
-        if wont_fix_list and flag_specific is None:
-            _log.info('Lines to write to NeverFixTests:\n %s',
-                      '\n'.join(wont_fix_list))
-            # Writes to NeverFixTests file.
-            wont_fix_path = self.port.path_to_never_fix_tests_file()
-            wont_fix_file_content = self.host.filesystem.read_text_file(
-                wont_fix_path)
-            if not wont_fix_file_content.endswith('\n'):
-                wont_fix_file_content += '\n'
-            wont_fix_file_content += '\n'.join(wont_fix_list)
-            wont_fix_file_content += '\n'
-            self.host.filesystem.write_text_file(wont_fix_path,
-                                                 wont_fix_file_content)
         return line_dict
 
     def skip_slow_timeout_tests(self, port):

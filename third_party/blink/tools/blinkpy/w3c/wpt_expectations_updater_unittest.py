@@ -906,8 +906,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         self.assertEqual(exp_dict, {})
         logs = ''.join(self.logMessages()).lower()
         self.assertIn(
-            ('no lines to write to testexpectations,'
-             ' webdriverexpectations or neverfixtests.'),
+            'no lines to write to testexpectations or webdriverexpectations.',
             logs)
 
     def test_cleanup_outside_affected_expectations_in_cl(self):
