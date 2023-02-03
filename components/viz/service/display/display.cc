@@ -619,8 +619,34 @@ void DebugDrawFrame(const AggregatedFrame& frame) {
                       base::NumberToString(static_cast<int>(quad->material)));
     DBG_DRAW_TEXT_OPT("frame.root.display_rect", DBG_OPT_GREEN,
                       display_rect.origin(), display_rect.ToString());
+    DBG_DRAW_TEXT_OPT(
+        "frame.root.resource_id", DBG_OPT_RED, display_rect.origin(),
+        base::NumberToString(quad->resources.ids[0].GetUnsafeValue()));
     DBG_DRAW_RECT("frame.root.quad", display_rect);
   }
+}
+
+void DebugDrawFrameVisible(const AggregatedFrame& frame) {
+  if (!VizDebugger::GetInstance()->IsEnabled()) {
+    return;
+  }
+
+  auto& root_render_pass = *frame.render_pass_list.back();
+  [[maybe_unused]] int num_quad_empty = 0;
+  for (auto* quad : root_render_pass.quad_list) {
+    auto& transform = quad->shared_quad_state->quad_to_target_transform;
+    auto display_rect = transform.MapRect(gfx::RectF(quad->visible_rect));
+    DBG_DRAW_TEXT_OPT("frame.root.display_rect_visible", DBG_OPT_GREEN,
+                      display_rect.origin(), display_rect.ToString());
+    DBG_DRAW_RECT("frame.root.visible", display_rect);
+
+    if (quad->visible_rect.IsEmpty()) {
+      num_quad_empty++;
+    }
+  }
+
+  DBG_LOG_OPT("frame.root.num_empty_visible", DBG_OPT_BLUE,
+              "Num quads that have empty visibility =%d", num_quad_empty);
 }
 
 void VisualDebuggerSync(gfx::OverlayTransform current_display_transform,
@@ -819,6 +845,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
                                  swapped_trace_id_, "Draw");
     base::ElapsedTimer draw_occlusion_timer;
     RemoveOverdrawQuads(&frame);
+    DebugDrawFrameVisible(frame);
     UMA_HISTOGRAM_COUNTS_1000(
         "Compositing.Display.Draw.Occlusion.Calculation.Time",
         draw_occlusion_timer.Elapsed().InMicroseconds());
