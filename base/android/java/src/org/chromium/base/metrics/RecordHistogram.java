@@ -261,9 +261,7 @@ public class RecordHistogram {
      *
      * WARNING:
      * Does not reset between batched tests. Use
-     * {@link org.chromium.base.test.metrics.HistogramTestRule} instead. Or use
-     * {@link org.chromium.base.test.util.MetricsUtils.HistogramDelta} to account for cases where
-     * the initial histogram value is not 0 at the start of the testing logic.
+     * {@link org.chromium.base.test.util.HistogramWatcher} instead.
      *
      * @param name name of the histogram to look up
      * @param sample the bucket containing this sample value will be looked up
@@ -278,7 +276,7 @@ public class RecordHistogram {
      *
      * WARNING:
      * Does not reset between batched tests. Use
-     * {@link org.chromium.base.test.metrics.HistogramTestRule} instead.
+     * {@link org.chromium.base.test.util.HistogramWatcher} instead.
      *
      * @param name name of the histogram to look up
      */
