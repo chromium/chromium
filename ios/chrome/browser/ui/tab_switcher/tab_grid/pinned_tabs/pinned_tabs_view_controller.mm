@@ -114,7 +114,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.collectionView reloadData];
   [self updateEmptyCollectionViewLabelVisibility];
 
-  [self scrollCollectionViewToSelectedItem];
+  [self scrollCollectionViewToSelectedItemAnimated:NO];
 
   // Update the delegate, in case it wasn't set when `items` was populated.
   [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
@@ -201,10 +201,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.delegate pinnedTabsViewController:self didChangeItemCount:items.count];
 
   [self.collectionView reloadData];
-  [self.collectionView
-      selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                   animated:YES
-             scrollPosition:UICollectionViewScrollPositionNone];
+  [self selectCollectionViewItemWithID:_selectedItemID animated:YES];
 }
 
 - (void)insertItem:(TabSwitcherItem*)item
@@ -251,14 +248,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     return;
   }
 
-  [self.collectionView
-      deselectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                     animated:NO];
+  [self deselectCollectionViewItemWithID:_selectedItemID animated:NO];
   _selectedItemID = selectedItemID;
-  [self.collectionView
-      selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                   animated:NO
-             scrollPosition:UICollectionViewScrollPositionNone];
+  [self selectCollectionViewItemWithID:_selectedItemID animated:NO];
 }
 
 - (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
@@ -558,19 +550,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
 }
 
-// Scrolls collection view to make the selected item visible.
-- (void)scrollCollectionViewToSelectedItem {
-  NSUInteger selectedIndex = self.selectedIndex;
-
-  if (selectedIndex != NSNotFound && selectedIndex < _items.count) {
-    [self.collectionView
-        selectItemAtIndexPath:CreateIndexPath(selectedIndex)
-                     animated:NO
-               scrollPosition:
-                   UICollectionViewScrollPositionCenteredHorizontally];
-  }
-}
-
 // Configures the collectionView.
 - (void)configureCollectionView {
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
@@ -696,15 +675,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // selected item id.
 - (void)updateCollectionViewAfterItemInsertionWithPreviousItemID:
     (NSString*)previousItemID {
-  [self.collectionView
-      deselectItemAtIndexPath:CreateIndexPath(
-                                  [self indexOfItemWithID:previousItemID])
-                     animated:NO];
+  [self deselectCollectionViewItemWithID:previousItemID animated:NO];
 
-  [self.collectionView
-      selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                   animated:NO
-             scrollPosition:UICollectionViewScrollPositionNone];
+  // Scroll the collection view to the newly added item, so it doesn't
+  // disappear from the user's sight.
+  [self scrollCollectionViewToLastItemAnimated:NO];
 
   [self pinnedTabsAvailable:_available];
 }
@@ -712,10 +687,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Updates the collection view after an item deletion.
 - (void)updateCollectionViewAfterItemDeletion {
   if (_items.count > 0) {
-    [self.collectionView
-        selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                     animated:NO
-               scrollPosition:UICollectionViewScrollPositionNone];
+    [self selectCollectionViewItemWithID:_selectedItemID animated:NO];
   } else {
     [self pinnedTabsAvailable:_available];
   }
@@ -736,10 +708,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                  [self.collectionView reloadItemsAtIndexPaths:@[
                    CreateIndexPath(self.selectedIndex)
                  ]];
-                 [self.collectionView
-                     selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                                  animated:NO
-                            scrollPosition:UICollectionViewScrollPositionNone];
+                 [self selectCollectionViewItemWithID:self->_selectedItemID
+                                             animated:NO];
                }
                completion:nil];
 }
@@ -758,6 +728,54 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)resetCollectionViewBackground {
   self.collectionView.backgroundColor = _backgroundColor;
   self.collectionView.backgroundView.hidden = NO;
+}
+
+// Selects the collection view's item with `itemID`.
+- (void)selectCollectionViewItemWithID:(NSString*)itemID
+                              animated:(BOOL)animated {
+  NSUInteger itemIndex = [self indexOfItemWithID:itemID];
+  NSIndexPath* itemIndexPath = CreateIndexPath(itemIndex);
+
+  [self.collectionView
+      selectItemAtIndexPath:itemIndexPath
+                   animated:animated
+             scrollPosition:UICollectionViewScrollPositionCenteredHorizontally];
+}
+
+// Deselects the collection view's item with `itemID`.
+- (void)deselectCollectionViewItemWithID:(NSString*)itemID
+                                animated:(BOOL)animated {
+  NSUInteger itemIndex = [self indexOfItemWithID:itemID];
+  NSIndexPath* itemIndexPath = CreateIndexPath(itemIndex);
+
+  [self.collectionView deselectItemAtIndexPath:itemIndexPath animated:animated];
+}
+
+// Scrolls the collection view to the currently selected item.
+- (void)scrollCollectionViewToSelectedItemAnimated:(BOOL)animated {
+  [self scrollCollectionViewToItemWithIndex:self.selectedIndex
+                                   animated:animated];
+}
+
+// Scrolls the collection view to the last item.
+- (void)scrollCollectionViewToLastItemAnimated:(BOOL)animated {
+  [self scrollCollectionViewToItemWithIndex:_items.count - 1 animated:animated];
+}
+
+// Scrolls the collection view to the item with specified `itemIndex`.
+- (void)scrollCollectionViewToItemWithIndex:(NSUInteger)itemIndex
+                                   animated:(BOOL)animated {
+  // Check `itemIndex` boundaries in order to filter out possible race
+  // conditions while mutating the collection.
+  if (itemIndex == NSNotFound || itemIndex >= _items.count) {
+    return;
+  }
+
+  NSIndexPath* itemIndexPath = CreateIndexPath(itemIndex);
+  [self.collectionView
+      selectItemAtIndexPath:itemIndexPath
+                   animated:YES
+             scrollPosition:UICollectionViewScrollPositionCenteredHorizontally];
 }
 
 @end
