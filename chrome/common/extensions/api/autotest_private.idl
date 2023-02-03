@@ -528,6 +528,10 @@ namespace autotestPrivate {
     boolean hasCapture;
     boolean canResize;
 
+    // Stacking order of the window in relation to its siblings. 0 indicates
+    // that the window is topmost. -1 if stacking info is not available
+    long stackingOrder;
+
     // Window frame info
     FrameMode frameMode;
     boolean isFrameVisible;
