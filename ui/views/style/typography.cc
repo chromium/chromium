@@ -5,8 +5,11 @@
 #include "ui/views/style/typography.h"
 
 #include "base/check_op.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography_provider.h"
+#include "ui/views/view.h"
 
 namespace views::style {
 namespace {
@@ -32,8 +35,15 @@ const gfx::FontList& GetFont(int context, int style) {
 
 SkColor GetColor(const views::View& view, int context, int style) {
   ValidateContextAndStyle(context, style);
-  return LayoutProvider::Get()->GetTypographyProvider().GetColor(view, context,
-                                                                 style);
+  return view.GetColorProvider()->GetColor(
+      LayoutProvider::Get()->GetTypographyProvider().GetColorId(context,
+                                                                style));
+}
+
+ui::ColorId GetColorId(int context, int style) {
+  ValidateContextAndStyle(context, style);
+  return LayoutProvider::Get()->GetTypographyProvider().GetColorId(context,
+                                                                   style);
 }
 
 int GetLineHeight(int context, int style) {

@@ -7,6 +7,7 @@
 
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
@@ -115,14 +116,17 @@ enum TextStyle {
 };
 
 // Helpers to obtain text properties from the TypographyProvider given by the
-// current LayoutProvider. |view| is the View requesting the property. |context|
+// current LayoutProvider. `view` is the View requesting the property. `context`
 // can be an enum value from TextContext, or a value understood by the
-// embedder's TypographyProvider. Similarly, |style| corresponds to TextStyle.
+// embedder's TypographyProvider. Similarly, `style` corresponds to TextStyle.
 VIEWS_EXPORT ui::ResourceBundle::FontDetails GetFontDetails(int context,
                                                             int style);
 VIEWS_EXPORT const gfx::FontList& GetFont(int context, int style);
-VIEWS_EXPORT SkColor GetColor(const views::View& view, int context, int style);
 VIEWS_EXPORT int GetLineHeight(int context, int style);
+
+// `GetColor` is deprecated - use `GetColorId` instead. (crbug.com/1412688)
+VIEWS_EXPORT SkColor GetColor(const views::View& view, int context, int style);
+VIEWS_EXPORT ui::ColorId GetColorId(int context, int style);
 
 }  // namespace style
 }  // namespace views

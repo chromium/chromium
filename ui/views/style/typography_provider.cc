@@ -6,14 +6,11 @@
 
 #include <string>
 
-#include "base/logging.h"
 #include "build/build_config.h"
 #include "ui/base/default_style.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/views/style/typography.h"
-#include "ui/views/view.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -65,41 +62,6 @@ ui::ColorId GetHintColorId(int context) {
   return (context == style::CONTEXT_TEXTFIELD)
              ? ui::kColorTextfieldForegroundPlaceholder
              : ui::kColorLabelForegroundSecondary;
-}
-
-ui::ColorId GetColorId(int context, int style) {
-  if (style == style::STYLE_DIALOG_BUTTON_DEFAULT) {
-    return ui::kColorButtonForegroundProminent;
-  }
-  if (style == style::STYLE_DIALOG_BUTTON_TONAL) {
-    return ui::kColorButtonForegroundTonal;
-  }
-  if (style == style::STYLE_DISABLED) {
-    return GetDisabledColorId(context);
-  }
-  if (style == style::STYLE_LINK) {
-    return ui::kColorLinkForeground;
-  }
-  if (style == style::STYLE_HINT) {
-    return GetHintColorId(context);
-  }
-  if (context == style::CONTEXT_BUTTON_MD) {
-    return ui::kColorButtonForeground;
-  }
-  if (context == style::CONTEXT_LABEL && style == style::STYLE_SECONDARY) {
-    return ui::kColorLabelForegroundSecondary;
-  }
-  if (context == style::CONTEXT_DIALOG_BODY_TEXT &&
-      (style == style::STYLE_PRIMARY || style == style::STYLE_SECONDARY)) {
-    return ui::kColorDialogForeground;
-  }
-  if (context == style::CONTEXT_TEXTFIELD) {
-    return ui::kColorTextfieldForeground;
-  }
-  if (context == style::CONTEXT_MENU || context == style::CONTEXT_TOUCH_MENU) {
-    return GetMenuColorId(style);
-  }
-  return ui::kColorLabelForeground;
 }
 
 }  // namespace
@@ -155,10 +117,41 @@ const gfx::FontList& TypographyProvider::GetFont(int context, int style) const {
       GetFontDetails(context, style));
 }
 
-SkColor TypographyProvider::GetColor(const View& view,
-                                     int context,
-                                     int style) const {
-  return view.GetColorProvider()->GetColor(GetColorId(context, style));
+ui::ColorId TypographyProvider::GetColorId(int context, int style) const {
+  switch (style) {
+    case style::STYLE_DIALOG_BUTTON_DEFAULT:
+      return ui::kColorButtonForegroundProminent;
+    case style::STYLE_DIALOG_BUTTON_TONAL:
+      return ui::kColorButtonForegroundTonal;
+    case style::STYLE_DISABLED:
+      return GetDisabledColorId(context);
+    case style::STYLE_LINK:
+      return ui::kColorLinkForeground;
+    case style::STYLE_HINT:
+      return GetHintColorId(context);
+  }
+
+  switch (context) {
+    case style::CONTEXT_BUTTON_MD:
+      return ui::kColorButtonForeground;
+    case style::CONTEXT_LABEL:
+      if (style == style::STYLE_SECONDARY) {
+        return ui::kColorLabelForegroundSecondary;
+      }
+      break;
+    case style::CONTEXT_DIALOG_BODY_TEXT:
+      if (style == style::STYLE_PRIMARY || style == style::STYLE_SECONDARY) {
+        return ui::kColorDialogForeground;
+      }
+      break;
+    case style::CONTEXT_TEXTFIELD:
+      return ui::kColorTextfieldForeground;
+    case style::CONTEXT_MENU:
+    case style::CONTEXT_TOUCH_MENU:
+      return GetMenuColorId(style);
+  }
+
+  return ui::kColorLabelForeground;
 }
 
 int TypographyProvider::GetLineHeight(int context, int style) const {

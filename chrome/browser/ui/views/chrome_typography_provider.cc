@@ -11,12 +11,10 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/platform_font.h"
 #include "ui/views/style/typography.h"
-#include "ui/views/view.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -115,9 +113,7 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
   return details;
 }
 
-SkColor ChromeTypographyProvider::GetColor(const views::View& view,
-                                           int context,
-                                           int style) const {
+ui::ColorId ChromeTypographyProvider::GetColorId(int context, int style) const {
   // Body text styles are the same as for labels.
   if (context == views::style::CONTEXT_DIALOG_BODY_TEXT ||
       context == CONTEXT_DIALOG_BODY_TEXT_SMALL)
@@ -130,38 +126,28 @@ SkColor ChromeTypographyProvider::GetColor(const views::View& view,
     style = views::style::STYLE_SECONDARY;
   }
 
-  const auto* color_provider = view.GetColorProvider();
-  ui::ColorId color_id;
   if (context == CONTEXT_DOWNLOAD_SHELF ||
       context == CONTEXT_DOWNLOAD_SHELF_STATUS) {
     switch (style) {
       case STYLE_RED:
-        color_id = kColorDownloadItemForegroundDangerous;
-        break;
+        return kColorDownloadItemForegroundDangerous;
       case STYLE_GREEN:
-        color_id = kColorDownloadItemForegroundSafe;
-        break;
+        return kColorDownloadItemForegroundSafe;
       case views::style::STYLE_DISABLED:
-        color_id = kColorDownloadItemForegroundDisabled;
-        break;
+        return kColorDownloadItemForegroundDisabled;
       default:
-        color_id = kColorDownloadItemForeground;
-        break;
+        return kColorDownloadItemForeground;
     }
-    return color_provider->GetColor(color_id);
   }
 
   switch (style) {
     case STYLE_RED:
-      color_id = ui::kColorAlertHighSeverity;
-      break;
+      return ui::kColorAlertHighSeverity;
     case STYLE_GREEN:
-      color_id = ui::kColorAlertLowSeverity;
-      break;
+      return ui::kColorAlertLowSeverity;
     default:
-      return TypographyProvider::GetColor(view, context, style);
+      return TypographyProvider::GetColorId(context, style);
   }
-  return color_provider->GetColor(color_id);
 }
 
 int ChromeTypographyProvider::GetLineHeight(int context, int style) const {
