@@ -172,11 +172,6 @@ extern const char kDefaultChromeAppsMigrationDescription[] =
     "Enable replacing policies to force install Chrome apps with policies to "
     "force install PWAs";
 
-const char kDeferredFontShapingName[] = "Deferred Font Shaping";
-const char kDeferredFontShapingDescription[] =
-    "Defer text rendering in invisible CSS boxes until the boxes become "
-    "visible.";
-
 const char kDocumentPictureInPictureApiName[] =
     "Document Picture-in-Picture API";
 const char kDocumentPictureInPictureApiDescription[] =

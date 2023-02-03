@@ -7622,10 +7622,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBlockInsecureDownloadsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kBlockInsecureDownloads)},
 
-    {"deferred-font-shaping", flag_descriptions::kDeferredFontShapingName,
-     flag_descriptions::kDeferredFontShapingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kDeferredShaping)},
-
     {"show-performance-metrics-hud",
      flag_descriptions::kShowPerformanceMetricsHudName,
      flag_descriptions::kShowPerformanceMetricsHudDescription, kOsAll,
