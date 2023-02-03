@@ -56,6 +56,9 @@ source_set("lib") {
     ]
 
     deps += [
+      "//components/discardable_memory/client",
+      "//content/public/child",
+      "//content/public/utility",
       "//pdf",
       "//ui/gfx/codec",
     ]
@@ -70,6 +73,9 @@ source_set("lib") {
     ]
 
     deps += [
+      "//components/discardable_memory/client",
+      "//content/public/child",
+      "//content/public/utility",
       "//skia",
       "//ui/gfx",
     ]

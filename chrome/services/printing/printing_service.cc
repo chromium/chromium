@@ -4,6 +4,8 @@
 
 #include "chrome/services/printing/printing_service.h"
 
+#include <utility>
+
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/services/printing/pdf_nup_converter.h"
@@ -12,6 +14,15 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/services/printing/pdf_flattener.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#include "base/memory/discardable_memory_allocator.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
+#include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"  // nogncheck
+#include "content/public/child/child_thread.h"      // nogncheck
+#include "content/public/utility/utility_thread.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -27,7 +38,21 @@ namespace printing {
 
 PrintingService::PrintingService(
     mojo::PendingReceiver<mojom::PrintingService> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    : receiver_(this, std::move(receiver)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+  // Set up discardable memory for printing and thumbnailer.
+  mojo::PendingRemote<discardable_memory::mojom::DiscardableSharedMemoryManager>
+      manager_remote;
+  content::ChildThread::Get()->BindHostReceiver(
+      manager_remote.InitWithNewPipeAndPassReceiver());
+  discardable_shared_memory_manager_ = base::MakeRefCounted<
+      discardable_memory::ClientDiscardableSharedMemoryManager>(
+      std::move(manager_remote),
+      content::UtilityThread::Get()->GetIOTaskRunner());
+  base::DiscardableMemoryAllocator::SetInstance(
+      discardable_shared_memory_manager_.get());
+#endif
+}
 
 PrintingService::~PrintingService() = default;
 

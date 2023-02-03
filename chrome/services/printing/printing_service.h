@@ -11,6 +11,12 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+namespace discardable_memory {
+class ClientDiscardableSharedMemoryManager;
+}
+#endif
+
 namespace printing {
 
 class PrintingService : public mojom::PrintingService {
@@ -40,8 +46,12 @@ class PrintingService : public mojom::PrintingService {
 #if BUILDFLAG(IS_WIN)
   void BindPdfToEmfConverterFactory(
       mojo::PendingReceiver<mojom::PdfToEmfConverterFactory> receiver) override;
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+  scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
+      discardable_shared_memory_manager_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
   mojo::Receiver<mojom::PrintingService> receiver_;
 };
 
