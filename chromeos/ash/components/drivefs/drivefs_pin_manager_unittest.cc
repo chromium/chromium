@@ -539,7 +539,7 @@ TEST_F(DriveFsPinManagerTest, Update) {
     EXPECT_EQ(progress.pinned_files, 0);
     EXPECT_EQ(progress.pinned_bytes, 7000);
     EXPECT_EQ(progress.bytes_to_pin, 13000);
-    EXPECT_EQ(progress.required_space, 24576);
+    EXPECT_EQ(progress.required_space, 20480);
   }
 
   // Update path.
@@ -562,7 +562,7 @@ TEST_F(DriveFsPinManagerTest, Update) {
     EXPECT_EQ(progress.pinned_files, 0);
     EXPECT_EQ(progress.pinned_bytes, 7000);
     EXPECT_EQ(progress.bytes_to_pin, 13000);
-    EXPECT_EQ(progress.required_space, 24576);
+    EXPECT_EQ(progress.required_space, 20480);
   }
 
   // Progress goes backwards.
@@ -585,7 +585,7 @@ TEST_F(DriveFsPinManagerTest, Update) {
     EXPECT_EQ(progress.pinned_files, 0);
     EXPECT_EQ(progress.pinned_bytes, 6000);
     EXPECT_EQ(progress.bytes_to_pin, 13000);
-    EXPECT_EQ(progress.required_space, 24576);
+    EXPECT_EQ(progress.required_space, 20480);
   }
 }
 
@@ -687,7 +687,7 @@ TEST_F(DriveFsPinManagerTest, Remove) {
     EXPECT_EQ(progress.pinned_files, 0);
     EXPECT_EQ(progress.pinned_bytes, 5600);
     EXPECT_EQ(progress.bytes_to_pin, 7000);
-    EXPECT_EQ(progress.required_space, 16384);
+    EXPECT_EQ(progress.required_space, 20480);
     EXPECT_EQ(progress.syncing_files, 0);
   }
 
@@ -837,7 +837,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
     EXPECT_EQ(progress.pinned_files, 0);
     EXPECT_EQ(progress.pinned_bytes, 5000);
     EXPECT_EQ(progress.bytes_to_pin, 30000);
-    EXPECT_EQ(progress.required_space, 32768);
+    EXPECT_EQ(progress.required_space, 24576);
   }
 
   {
@@ -873,7 +873,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
     EXPECT_EQ(progress.pinned_files, 1);
     EXPECT_EQ(progress.pinned_bytes, 10000);
     EXPECT_EQ(progress.bytes_to_pin, 30000);
-    EXPECT_EQ(progress.required_space, 32768);
+    EXPECT_EQ(progress.required_space, 20480);
   }
 
   {
@@ -902,7 +902,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
     EXPECT_EQ(progress.pinned_files, 1);
     EXPECT_EQ(progress.pinned_bytes, 10000);
     EXPECT_EQ(progress.bytes_to_pin, 10000);
-    EXPECT_EQ(progress.required_space, 12288);
+    EXPECT_EQ(progress.required_space, 0);
   }
 
   {

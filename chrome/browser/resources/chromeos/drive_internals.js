@@ -107,6 +107,7 @@ function updateBulkPinning(enabled) {
 function onBulkPinningProgress(progress) {
   $('bulk-pinning-stage').innerText = progress.stage;
   $('bulk-pinning-free-space').innerText = progress.free_space;
+  $('bulk-pinning-required-space').innerText = progress.required_space;
   $('bulk-pinning-bytes-to-pin').innerText = progress.bytes_to_pin;
   $('bulk-pinning-pinned-bytes').innerText = progress.pinned_bytes;
   $('bulk-pinning-files-to-pin').innerText = progress.files_to_pin;

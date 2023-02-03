@@ -71,10 +71,11 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   // of the setup process and left unchanged afterwards.
   int64_t free_space = 0;
 
-  // Estimated number of bytes that are required to store the files to pin. This
-  // is a pessimistic estimate based on the assumption that each file uses an
-  // integral number of fixed-size blocks. Estimated at the beginning of the
-  // setup process and updated if necessary afterwards.
+  // Estimated number of extra bytes that are required to store the files to
+  // pin. This is a pessimistic estimate based on the assumption that each file
+  // uses an integral number of fixed-size blocks. Estimated at the beginning of
+  // the setup process and updated if necessary afterwards. When everything is
+  // pinned and cached, the required space is zero.
   int64_t required_space = 0;
 
   // Estimated number of bytes that are required to download the files to pin.

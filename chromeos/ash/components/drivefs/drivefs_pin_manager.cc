@@ -31,7 +31,7 @@ bool InProgress(const Stage stage) {
 int Percentage(const int64_t a, const int64_t b) {
   DCHECK_GE(a, 0);
   DCHECK_LE(a, b);
-  return b ? 100 * a / b : 0;
+  return b ? 100 * a / b : 100;
 }
 
 mojom::QueryParametersPtr CreateMyDriveQuery() {
@@ -458,6 +458,8 @@ bool PinManager::Update(Files::value_type& entry,
         << HumanReadableSize(transferred) << " for " << id << " "
         << Quote(path);
     progress_.pinned_bytes += transferred - file.transferred;
+    progress_.required_space -=
+        RoundToBlockSize(transferred) - RoundToBlockSize(file.transferred);
     file.transferred = transferred;
     modified = true;
   }
