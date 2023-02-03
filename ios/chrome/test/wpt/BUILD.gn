@@ -21,6 +21,7 @@ copy("copy_clusterfuzz_scripts") {
   sources = [
     "//ios/build/bots/scripts",
     "//ios/chrome/test/wpt/tools",
+    "//ios/testing/plugin",
 
     # Variations test utilities used by variations_runner script.
     "//testing/scripts/variations_seed_access_helper.py",

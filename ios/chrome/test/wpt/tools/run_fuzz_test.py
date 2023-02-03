@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -46,7 +46,7 @@ def StartServer(*, port, build_dir, device, os_version):
       else:
         time.sleep(1)
 
-def IsCurrentVersion(*, version, revision, build_dir):
+def IsCurrentVersion(*, version, build_dir):
   plist_path = os.path.join(build_dir, 'ios_cwt_chromedriver_tests.app',
                             'Info.plist')
   version_command = 'defaults read ' + plist_path + ' CFBundleVersion'
@@ -54,16 +54,7 @@ def IsCurrentVersion(*, version, revision, build_dir):
                                      capture_output=True)
   current_version = completed_process.stdout.decode('utf-8').strip()
 
-  if version != current_version:
-    return False
-
-  revision_command = 'defaults read ' + plist_path + ' SCMRevision'
-  completed_process = subprocess.run(revision_command, shell=True,
-                                     capture_output=True)
-  full_revision = completed_process.stdout.decode('utf-8').strip()
-  current_revision = re.search('.*{#(.+?)}', full_revision).group(1)
-
-  return current_revision == revision
+  return version == current_version
 
 def KillServer():
   # Gather all running run_cwt_chromedriver.py and xcodebuild instances. There
@@ -98,9 +89,7 @@ def EnsureServerStarted(*, port, build_dir, device, os_version):
     response = requests.get(server_url + '/session/chrome_versionInfo')
     assert response.status_code == 200
     chrome_version = response.json()['value']['browserVersion']
-    chrome_revision = response.json()['value']['chrome_revisionNumber']
-    if IsCurrentVersion(version=chrome_version, revision=chrome_revision,
-                        build_dir=build_dir):
+    if IsCurrentVersion(version=chrome_version, build_dir=build_dir):
       return True
     else:
       KillServer()

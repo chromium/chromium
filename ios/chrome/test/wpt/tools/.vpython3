@@ -1,0 +1,58 @@
+# This is a vpython "spec" file that documents dependencies needed
+# to run the python scripts in this directory.
+#
+# Read more about `vpython` and how to modify this file here:
+#   https://chromium.googlesource.com/infra/infra/+/master/doc/users/vpython.md
+
+# This specifies the platforms to be checked when verifying the validity of the
+# dependencies listed in this file. This verification happens during presubmit.
+verify_pep425_tag: [
+    {python: "cp38", abi: "cp38", platform: "macosx_11_0_intel"},
+    {python: "cp38", abi: "cp38", platform: "macosx_11_0_arm64"}
+]
+
+wheel: <
+  name: "infra/python/wheels/psutil/${vpython_platform}"
+  version: "version:5.8.0.chromium.3"
+>
+
+# requests and its transitive dependencies
+wheel: <
+  name: "infra/python/wheels/requests-py2_py3"
+  version: "version:2.26.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/charset_normalizer-py3"
+  version: "version:2.0.4"
+>
+
+wheel: <
+  name: "infra/python/wheels/idna-py2_py3"
+  version: "version:2.10"
+>
+
+wheel: <
+  name: "infra/python/wheels/urllib3-py2_py3"
+  version: "version:1.26.6"
+>
+
+wheel: <
+  name: "infra/python/wheels/certifi-py2_py3"
+  version: "version:2021.5.30"
+>
+
+wheel: <
+  name: "infra/python/wheels/grpcio/${vpython_platform}"
+  version: "version:1.44.0"
+>
+
+wheel <
+  name: "infra/python/wheels/six-py2_py3"
+  version: "version:1.15.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/protobuf-py3"
+  version: "version:3.20.0"
+>
