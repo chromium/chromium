@@ -407,12 +407,11 @@ struct MTECheckedPtrImpl {
     return wrapped_ptr;
   }
 
-  // Unwraps the pointer's uintptr_t representation, while asserting that memory
-  // hasn't been freed. The function must handle nullptr gracefully.
+  // Unwraps the pointer as a T*, without making an assertion on whether
+  // memory was freed or not.
   template <typename T>
   static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
-    // SafelyUnwrapPtrForDereference handles nullptr case well.
-    return SafelyUnwrapPtrForDereference(wrapped_ptr);
+    return ExtractPtr(wrapped_ptr);
   }
 
   // Unwraps the pointer's uintptr_t representation, without making an assertion

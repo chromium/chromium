@@ -2268,6 +2268,23 @@ TEST(MTECheckedPtrImpl, PointerBeyondAllocationCanBeExtracted) {
   }
 }
 
+// Verifies that MTECheckedPtr allows pointer extraction, even from
+// a dangling `raw_ptr`. Historically, MTECheckedPtr simply handed off
+// extraction to the "get for dereference" method, which would crash
+// eagerly on dangling pointers. This was too noisy to be helpful; we
+// now believe that allowing (potentially dangerous) extraction without
+// crashing is the way to go.
+TEST(MTECheckedPtrImpl, DanglingExtractionIsAcceptable) {
+  int* will_dangle = new int;
+  raw_ptr<int> dangling = will_dangle;
+  delete will_dangle;
+
+  // Both `get()` and `operator T*()` express the same thing even if
+  // they are physically distinct methods in the definition. In any
+  // case, neither is permitted to crash.
+  EXPECT_EQ(will_dangle, dangling.get());
+  will_dangle = dangling;
+}
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
