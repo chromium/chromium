@@ -712,8 +712,8 @@ def AskIsGoodBuild(rev, exit_status, stdout, stderr):
     if response == 'q':
       raise SystemExit()
     if response == 's':
-      print(stdout)
-      print(stderr)
+      print(stdout.decode('utf-8', 'ignore'))
+      print(stderr.decode('utf-8', 'ignore'))
 
 
 def IsGoodASANBuild(rev, exit_status, stdout, stderr):
