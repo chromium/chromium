@@ -1461,6 +1461,13 @@ void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
   base::CommandLine command_line = BuildCommandLineForShimLaunch();
   command_line.AppendSwitch(app_mode::kLaunchedForTest);
   command_line.AppendSwitch(app_mode::kIsNormalLaunch);
+  if (mojo::core::IsMojoIpczEnabled()) {
+    command_line.AppendSwitchASCII(switches::kEnableFeatures,
+                                   mojo::core::kMojoIpcz.name);
+  } else {
+    command_line.AppendSwitchASCII(switches::kDisableFeatures,
+                                   mojo::core::kMojoIpcz.name);
+  }
 
   std::vector<std::string> url_specs;
   url_specs.reserve(urls.size());
