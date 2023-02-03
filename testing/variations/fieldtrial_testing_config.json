@@ -5262,21 +5262,36 @@
             ]
         }
     ],
-    "GoogleLensDesktopTransparentImagesFix": [
+    "GoogleLensDesktopImageFormatOptimizations": [
         {
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
-                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "UseWebpFormatV2",
+                    "params": {
+                        "use-jpeg-region-search": "false",
+                        "use-webp-image-search": "true",
+                        "use-webp-region-search": "true"
+                    },
                     "enable_features": [
-                        "LensTransparentImagesFix"
+                        "LensImageFormatOptimizations"
+                    ]
+                },
+                {
+                    "name": "UseJpegFormatV2",
+                    "params": {
+                        "use-jpeg-region-search": "true",
+                        "use-webp-image-search": "false",
+                        "use-webp-region-search": "false"
+                    },
+                    "enable_features": [
+                        "LensImageFormatOptimizations"
                     ]
                 }
             ]
