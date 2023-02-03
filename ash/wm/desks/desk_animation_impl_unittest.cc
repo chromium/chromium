@@ -288,6 +288,9 @@ TEST_F(OverviewDeskNavigationTest, ShortSwipeStaysInOverview) {
   EnterOverview();
   auto* overview_controller = Shell::Get()->overview_controller();
   ASSERT_TRUE(overview_controller->InOverviewSession());
+  const gfx::Rect initial_overview_grid_bounds =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+          ->bounds_for_testing();
 
   // Start a swipe animation, but only swipe to show 1/10 of the next desk. This
   // will cause the animation to animate back to the starting desk.
@@ -321,6 +324,13 @@ TEST_F(OverviewDeskNavigationTest, ShortSwipeStaysInOverview) {
   // we animated back to it), and are still in overview.
   EXPECT_TRUE(desks_controller->desks()[0].get()->is_active());
   ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  // Verify that the grid bounds haven't changed, especially since we
+  // specifically use `OverviewEnterExitType::kImmediateEnter` to enter overview
+  // in these cases.
+  EXPECT_EQ(initial_overview_grid_bounds,
+            GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+                ->bounds_for_testing());
 }
 
 // Tests that inputs to exit overview are ignored during the desk switch

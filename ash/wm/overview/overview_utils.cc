@@ -242,9 +242,10 @@ gfx::Rect GetGridBoundsInScreen(
       NOTREACHED();
   }
 
-  // Hotseat is overlaps the work area / split view bounds when extended, but in
+  // Hotseat overlaps the work area / split view bounds when extended, but in
   // some cases we don't want its bounds in our calculations.
-  if (account_for_hotseat) {
+  if (account_for_hotseat &&
+      Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     Shelf* shelf = Shelf::ForWindow(target_root);
     const bool hotseat_extended =
         shelf->shelf_layout_manager()->hotseat_state() ==
