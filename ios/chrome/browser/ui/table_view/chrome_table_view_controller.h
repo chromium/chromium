@@ -103,14 +103,6 @@ extern const CGFloat kTableViewSeparatorInsetWithIcon;
 // Methods for reconfiguring and reloading the table view are provided by
 // ChromeTableViewConsumer.
 
-#pragma mark - Presentation Controller integration
-
-// Returns YES if this view controller should be dismissed when the user touches
-// outside the bounds of the table view.  Defaults to YES.  Subclasses should
-// override this to return NO if they allow the user to edit data, so that
-// accidental touches outside the table view cannot lose user data.
-- (BOOL)shouldBeDismissedOnTouchOutside;
-
 #pragma mark - UITableViewDelegate
 
 // Prevents non-editable (i.e. returns NO in `tableView:canEditRowAtIndexPath:`)

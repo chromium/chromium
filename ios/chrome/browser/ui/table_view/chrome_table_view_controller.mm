@@ -274,12 +274,6 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
   return [self.tableViewModel numberOfSections];
 }
 
-#pragma mark - Presentation Controller integration
-
-- (BOOL)shouldBeDismissedOnTouchOutside {
-  return YES;
-}
-
 #pragma mark - UITableViewDelegate
 
 - (UIView*)tableView:(UITableView*)tableView

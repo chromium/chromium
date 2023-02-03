@@ -17,29 +17,11 @@
 - (void)navigationController:(UINavigationController*)navigationController
       willShowViewController:(UIViewController*)viewController
                     animated:(BOOL)animated {
-  BOOL shouldDismissOnTouchOutside = YES;
-
   UIViewController<UIAdaptivePresentationControllerDelegate>*
       adaptiveViewController = base::mac::ObjCCast<
           UIViewController<UIAdaptivePresentationControllerDelegate>>(
           viewController);
   navigationController.presentationController.delegate = adaptiveViewController;
-
-  ChromeTableViewController* tableViewController =
-      base::mac::ObjCCast<ChromeTableViewController>(viewController);
-  if (tableViewController) {
-    shouldDismissOnTouchOutside =
-        [tableViewController shouldBeDismissedOnTouchOutside];
-  }
-
-  id<UIViewControllerTransitionCoordinator> transitionCoordinator = nil;
-  if (animated) {
-    transitionCoordinator = navigationController.transitionCoordinator;
-  }
-
-  [self.modalController
-      setShouldDismissOnTouchOutside:shouldDismissOnTouchOutside
-           withTransitionCoordinator:transitionCoordinator];
 }
 
 @end

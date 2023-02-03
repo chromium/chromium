@@ -204,12 +204,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   self.navigationController.toolbarHidden = NO;
 }
 
-#pragma mark - Presentation controller integration
-
-- (BOOL)shouldBeDismissedOnTouchOutside {
-  return NO;
-}
-
 #pragma mark - Accessibility
 
 - (BOOL)accessibilityPerformEscape {
