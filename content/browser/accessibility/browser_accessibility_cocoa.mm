@@ -2673,7 +2673,12 @@ bool content::IsNSRange(id value) {
     }
   }
   if ([attribute
-          isEqualToString:NSAccessibilitySelectedTextMarkerRangeAttribute]) {
+          isEqualToString:NSAccessibilitySelectedTextMarkerRangeAttribute] &&
+      // Condition also on when this node is editable. VoiceOver as of Mac 13
+      // sets selections as users navigate on read only content. This has
+      // adverse side effects on VoiceOver's a11y focus causing loops in
+      // navigation.
+      _owner->HasState(ax::mojom::State::kEditable)) {
     AXRange range = AXTextMarkerRangeToAXRange(value);
     if (range.IsNull())
       return;
