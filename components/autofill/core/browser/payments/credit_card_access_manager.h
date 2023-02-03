@@ -171,6 +171,11 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
       const CreditCardOtpAuthenticator::OtpAuthenticationResponse& response)
       override;
 
+  void SetUnmaskDetailsRequestInProgressForTesting(
+      bool unmask_details_request_in_progress) {
+    unmask_details_request_in_progress_ = unmask_details_request_in_progress;
+  }
+
  private:
   // TODO(crbug.com/1249665): Remove FRIEND and change everything to _ForTesting
   // or public.

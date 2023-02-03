@@ -738,12 +738,14 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCTryAgainFailure) {
 
 // Ensures that CardUnmaskPreflightCalled metrics are logged correctly.
 TEST_F(CreditCardAccessManagerTest, CardUnmaskPreflightCalledMetric) {
-  std::string verifiability_check_metric =
+  const std::string kVerifiabilityCheckMetrics =
       "Autofill.BetterAuth.UserVerifiabilityCheckDuration";
-  std::string preflight_call_metric =
+  const std::string kPreflightCallMetrics =
       "Autofill.BetterAuth.CardUnmaskPreflightCalledWithFidoOptInStatus";
-  std::string preflight_latency_metric =
+  const std::string kPreflightLatencyMetrics =
       "Autofill.BetterAuth.CardUnmaskPreflightDuration";
+  const std::string kPreflightFlowInitiatedMetrics =
+      "Autofill.BetterAuth.CardUnmaskPreflightInitiated";
 
   {
     // Create local card and set user as eligible for FIDO auth.
@@ -761,9 +763,10 @@ TEST_F(CreditCardAccessManagerTest, CardUnmaskPreflightCalledMetric) {
 
     // If only local cards are available, then no preflight call nor check for
     // verifiability is made.
-    histogram_tester.ExpectTotalCount(verifiability_check_metric, 0);
-    histogram_tester.ExpectTotalCount(preflight_call_metric, 0);
-    histogram_tester.ExpectTotalCount(preflight_latency_metric, 0);
+    histogram_tester.ExpectTotalCount(kVerifiabilityCheckMetrics, 0);
+    histogram_tester.ExpectTotalCount(kPreflightCallMetrics, 0);
+    histogram_tester.ExpectTotalCount(kPreflightLatencyMetrics, 0);
+    histogram_tester.ExpectTotalCount(kPreflightFlowInitiatedMetrics, 0);
   }
 
   {
@@ -783,12 +786,16 @@ TEST_F(CreditCardAccessManagerTest, CardUnmaskPreflightCalledMetric) {
     // Server cards are available, check for verifiability is made.
     // But since user is not verifiable, no preflight call is made.
 #if BUILDFLAG(IS_IOS)
-    histogram_tester.ExpectTotalCount(verifiability_check_metric, 0);
+    histogram_tester.ExpectTotalCount(kVerifiabilityCheckMetrics, 0);
+    histogram_tester.ExpectTotalCount(kPreflightFlowInitiatedMetrics, 0);
 #else
-    histogram_tester.ExpectTotalCount(verifiability_check_metric, 1);
+    histogram_tester.ExpectTotalCount(kVerifiabilityCheckMetrics, 1);
+    histogram_tester.ExpectUniqueSample(kPreflightFlowInitiatedMetrics,
+                                        /*sample=*/true,
+                                        /*expected_bucket_count=*/1);
 #endif
-    histogram_tester.ExpectTotalCount(preflight_call_metric, 0);
-    histogram_tester.ExpectTotalCount(preflight_latency_metric, 0);
+    histogram_tester.ExpectTotalCount(kPreflightCallMetrics, 0);
+    histogram_tester.ExpectTotalCount(kPreflightLatencyMetrics, 0);
   }
 
   {
@@ -819,15 +826,19 @@ TEST_F(CreditCardAccessManagerTest, CardUnmaskPreflightCalledMetric) {
       // Preflight call is made only if a server card is available and the user
       // is eligible for FIDO authentication, except on iOS.
 #if BUILDFLAG(IS_IOS)
-      histogram_tester.ExpectTotalCount(verifiability_check_metric, 0);
-      histogram_tester.ExpectTotalCount(preflight_call_metric, 0);
-      histogram_tester.ExpectTotalCount(preflight_latency_metric, 0);
+      histogram_tester.ExpectTotalCount(kVerifiabilityCheckMetrics, 0);
+      histogram_tester.ExpectTotalCount(kPreflightCallMetrics, 0);
+      histogram_tester.ExpectTotalCount(kPreflightLatencyMetrics, 0);
+      histogram_tester.ExpectTotalCount(kPreflightFlowInitiatedMetrics, 0);
 #else
-      histogram_tester.ExpectTotalCount(verifiability_check_metric, 1);
-      histogram_tester.ExpectUniqueSample(preflight_call_metric,
+      histogram_tester.ExpectTotalCount(kVerifiabilityCheckMetrics, 1);
+      histogram_tester.ExpectUniqueSample(kPreflightCallMetrics,
                                           /*sample=*/is_user_opted_in_to_fido,
                                           /*expected_bucket_count=*/1);
-      histogram_tester.ExpectTotalCount(preflight_latency_metric, 1);
+      histogram_tester.ExpectTotalCount(kPreflightLatencyMetrics, 1);
+      histogram_tester.ExpectUniqueSample(kPreflightFlowInitiatedMetrics,
+                                          /*sample=*/true,
+                                          /*expected_bucket_count=*/1);
 #endif
     }
   }
