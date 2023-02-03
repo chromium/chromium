@@ -380,7 +380,7 @@ mac_app_bundle("keystone_agent_bundle") {
   sources = [ "keystone/agent_main.cc" ]
   output_name = keystone_app_name + "Agent"
   extra_substitutions = [
-    "MAC_BUNDLE_IDENTIFIER=${keystone_app_name}Agent",
+    "MAC_BUNDLE_IDENTIFIER=${keystone_bundle_identifier}.Agent",
     "PACKAGE_TYPE=APPL",
   ]
 }
@@ -410,7 +410,7 @@ mac_app_bundle("keystone_bundle") {
   output_name = keystone_app_name
   package_type = "bundle"
   extra_substitutions = [
-    "MAC_BUNDLE_IDENTIFIER=$keystone_app_name",
+    "MAC_BUNDLE_IDENTIFIER=$keystone_bundle_identifier",
     "PACKAGE_TYPE=BNDL",
   ]
   public_deps = [ ":keystone_helpers" ]
