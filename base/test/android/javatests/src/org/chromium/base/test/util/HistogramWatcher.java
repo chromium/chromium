@@ -45,6 +45,22 @@ public class HistogramWatcher {
     }
 
     /**
+     * Convenience method to create a new {@link HistogramWatcher} that expects a single boolean
+     * record with {@code value} for {@code histogram} and no more records to the same histogram.
+     */
+    public static HistogramWatcher newSingleRecordWatcher(String histogram, boolean value) {
+        return newBuilder().expectBooleanRecord(histogram, value).build();
+    }
+
+    /**
+     * Convenience method to create a new {@link HistogramWatcher} that expects a single integer
+     * record with {@code value} for {@code histogram} and no more records to the same histogram.
+     */
+    public static HistogramWatcher newSingleRecordWatcher(String histogram, int value) {
+        return newBuilder().expectIntRecord(histogram, value).build();
+    }
+
+    /**
      * Builder for {@link HistogramWatcher}. Use to list the expectations of records.
      */
     public static class Builder {

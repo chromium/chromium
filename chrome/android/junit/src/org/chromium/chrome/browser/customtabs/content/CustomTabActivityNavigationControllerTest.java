@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,7 +27,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishHandler;
@@ -73,19 +72,19 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Test
     public void finishes_IfBackNavigationClosesTheOnlyTab() {
-        HistogramDelta d1 = new HistogramDelta(
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
                 MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
                 MinimizeAppAndCloseTabType.MINIMIZE_APP);
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
 
         mNavigationController.navigateOnBack();
-        Assert.assertEquals(1, d1.getDelta());
+        histogramWatcher.assertExpected();
         verify(mFinishHandler).onFinish(eq(FinishReason.USER_NAVIGATION));
     }
 
     @Test
     public void doesntFinish_IfBackNavigationReplacesTabWithPreviousOne() {
-        HistogramDelta d1 = new HistogramDelta(
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
                 MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
                 MinimizeAppAndCloseTabType.CLOSE_TAB);
         doAnswer((Answer<Void>) invocation -> {
@@ -94,7 +93,7 @@ public class CustomTabActivityNavigationControllerTest {
         }).when(mTabController).closeTab();
 
         mNavigationController.navigateOnBack();
-        Assert.assertEquals(1, d1.getDelta());
+        histogramWatcher.assertExpected();
         verify(mFinishHandler, never()).onFinish(anyInt());
     }
 
