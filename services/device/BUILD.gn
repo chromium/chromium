@@ -344,8 +344,8 @@ source_set("tests") {
     ]
   }
 
-  # USB does not compile on iOS.
-  if (!is_ios) {
+  # USB does not compile on Chromium without blink.
+  if (use_blink) {
     sources += [
       "public/cpp/usb/usb_utils_unittest.cc",
       "usb/mojo/device_impl_unittest.cc",

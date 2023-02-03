@@ -242,7 +242,9 @@ source_set("protobuf_support") {
   ]
 }
 
-if (!is_ios) {
+import("//build/config/features.gni")
+
+if (use_blink) {
   source_set("run_all_unittests") {
     testonly = true
 

@@ -353,8 +353,8 @@ source_set("headers") {
     "//ui/base:base",
   ]
 
-  # iOS doesn't use and must not depend on //media
-  if (!is_ios) {
+  # Chromium without blink doesn't use and must not depend on //media
+  if (use_blink) {
     deps += [
       "//media",
       "//media/capture:capture_base",

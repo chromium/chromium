@@ -3217,7 +3217,7 @@ source_set("browser") {
     ]
   }
 
-  if (use_aura || is_mac) {
+  if (use_aura || is_apple) {
     sources += [
       "compositor/image_transport_factory.cc",
       "compositor/image_transport_factory.h",

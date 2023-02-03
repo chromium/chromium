@@ -37,7 +37,7 @@ group("telemetry_chrome_test") {
   ]
   data = []
 
-  if (!is_fuchsia && !is_android && !is_castos) {
+  if (!is_fuchsia && !is_android && !is_castos && !is_ios) {
     data_deps += [ "//chrome" ]
   }
 
