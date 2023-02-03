@@ -55,7 +55,8 @@ enum class DefaultAppName {
   kYouTubeMusic = 38,
   // This is our test SWA. It's only installed in tests.
   kMockSystemApp = 39,
-  kStadia = 40,
+  // Stadia was removed from the web app definitions in M112.
+  kDeletedStadia = 40,
   kScanningApp = 41,
   kDiagnosticsApp = 42,
   kPrintManagementApp = 43,

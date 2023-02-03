@@ -164,10 +164,6 @@ inline constexpr char kShimlessRMAAppId[] = "ijolhdommgkkhpenofmpkkhlepahelcm";
 inline constexpr char kShowtimeAppId[] = "eoccpgmpiempcflglfokeengliildkag";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
-//     "https://stadia.google.com/?lfhs=2"))
-inline constexpr char kStadiaAppId[] = "pnkcfpnngfokcnnijgkllghjlhkailce";
-
-// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "https://www.youtube.com/?feature=ytca"))
 inline constexpr char kYoutubeAppId[] = "agimnkijcaahngcdmfeangaknmldooml";
 

@@ -275,8 +275,6 @@ void RecordAppLaunch(const std::string& app_id,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == web_app::kYoutubeMusicAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kYouTubeMusic, launch_source);
-  } else if (app_id == web_app::kStadiaAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kStadia, launch_source);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == web_app::kScanningAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kScanningApp, launch_source);

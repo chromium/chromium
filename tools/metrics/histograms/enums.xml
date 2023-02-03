@@ -25236,7 +25236,7 @@ Called by update_debug_scenarios.py.-->
   <int value="36" label="Web Store"/>
   <int value="37" label="YouTube"/>
   <int value="38" label="YouTube Music"/>
-  <int value="40" label="Stadia"/>
+  <int value="40" label="(Obsolete) Stadia"/>
   <int value="41" label="ScanningApp"/>
   <int value="42" label="DiagnosticsApp"/>
   <int value="43" label="PrintManagementApp"/>

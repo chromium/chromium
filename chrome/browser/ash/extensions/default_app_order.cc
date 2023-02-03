@@ -152,8 +152,6 @@ void GetDefault(std::vector<std::string>* app_ids) {
     arc::kGooglePhotosAppId,
     extension_misc::kGooglePhotosAppId,
 
-    web_app::kStadiaAppId,
-
     arc::kGoogleMapsAppId,
     web_app::kGoogleMapsAppId,
 
