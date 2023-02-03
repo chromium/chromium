@@ -6,16 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_CAPACITY_TRACKER_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-
-namespace base {
-class SequencedTaskRunner;
-}  // namespace base
 
 namespace blink {
 
@@ -98,8 +93,6 @@ class FileSystemAccessCapacityTracker final
   // A file's initial capacity is its size, hence `file_capacity_` is
   // initialized with `file_size_`.
   int64_t file_capacity_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 }  // namespace blink

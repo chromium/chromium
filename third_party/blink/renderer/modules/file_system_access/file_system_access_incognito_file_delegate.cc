@@ -88,8 +88,10 @@ FileSystemAccessIncognitoFileDelegate::FileSystemAccessIncognitoFileDelegate(
         incognito_file_remote,
     base::PassKey<FileSystemAccessFileDelegate>)
     : mojo_ptr_(context),
-      task_runner_(context->GetTaskRunner(TaskType::kMiscPlatformAPI)) {
-  mojo_ptr_.Bind(std::move(incognito_file_remote), task_runner_);
+      write_helper_task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({})) {
+  mojo_ptr_.Bind(std::move(incognito_file_remote),
+                 context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   DCHECK(mojo_ptr_.is_bound());
 }
 
@@ -146,10 +148,8 @@ base::FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Write(
   // data is written. The `Write()` call won't complete until the mojo datapipe
   // has closed, so we must write to the data pipe on anther thread to be able
   // to close the pipe when all data has been written.
-  scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner({});
   PostCrossThreadTask(
-      *task_runner, FROM_HERE,
+      *write_helper_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&WriteDataToProducer, std::move(producer_handle),
                           ref_counted_data));
 

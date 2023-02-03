@@ -50,7 +50,7 @@ class FileSystemAccessIncognitoFileDelegate final
   // Used to route file operations to the browser.
   HeapMojoRemote<mojom::blink::FileSystemAccessFileDelegateHost> mojo_ptr_;
 
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> write_helper_task_runner_;
 };
 
 }  // namespace blink
