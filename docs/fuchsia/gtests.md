@@ -14,6 +14,9 @@ gtest binary, check this [documentation](build_instructions.md).
 For the sake of this example, we will be using `base_unittests` as the package
 we wish to install and/or execute.
 
+For details of the implementation of `run_<test_target_name>` scripts, see
+[here](test_scripts.md).
+
 ## Hermetic emulation
 
 The test script brings up an emulator, runs the tests on it, and
@@ -27,7 +30,7 @@ by the emulator. For instance, setting
 `--custom-image=workstation.qemu-x64-release` would run the test on a
 workstation image.
 
-## Run on a persistent device
+## Run on a persistent emulator
 
 You can also run tests on physical devices or start a persistent emulator
 from the Chromium tree. To start a persistent emulator, run:
@@ -97,3 +100,4 @@ arguments to the test runner script:
 * `--gtest_repeat=[number] --gtest_break_on_failure` to run a test or test suite
   a certain number of times until it fails. This is useful to investigate flaky
   tests.
+

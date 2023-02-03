@@ -1,17 +1,20 @@
 # Run Tests on Fuchsia with CFv2 Test Scripts
 
+**If you are looking for information on _running_ tests, see
+[Deploying and running gtests on Fuchsia](gtests.md).**
+
 [TOC]
 
-A new version of scripts for testing on Fuchsia is being developed
-[here](../../build/fuchsia/test/) and the plan is to migrate all use cases
-to these scripts by the end of Q422. The new scripts currently support:
+This page documents the individual scripts that support running various Chromium
+[test types](build_instructions.md#running-test-suites).
+The scripts can be found [here](../../build/fuchsia/test/) The new scripts currently support:
 
 ## Run CFv2 gtest binaries on Fuchsia
 
-To build Fuchsia gtest binaries follow
+To build gtest binaries for Fuchsia follow
 [build instructions](build_instructions.md).
 
-#### E2E Testing Script
+#### E2E Testing Script (recommended)
 
 Once the emulator is running, you can run tests on this emulator instance by
 adding the command line arguments indicated above:
@@ -20,6 +23,9 @@ adding the command line arguments indicated above:
 $ ./build/fuchsia/test/run_test.py [TEST_BINARY] -C [OUTPUT_DIR] \
   --target-id [EMULATOR_NAME]
 ```
+
+For gtests, there are scripts that further abstract the command line above.
+See [Deploying and running gtests on Fuchsia](gtests.md).
 
 #### Step by step approach
 

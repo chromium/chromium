@@ -244,7 +244,7 @@ arguments passed to `ninja`.)
 
 Once you've built a package, you'll want to run it!
 
-### (Recommended)(Linux-only) Enable KVM acceleration
+### (Linux-only) Enable KVM acceleration (strongly recommended)
 
 Under Linux, if your host and target CPU architectures are the same (e.g. you're
 building for Fuchsia/x64 on a Linux/x64 host) then you can benefit from QEMU's
@@ -259,9 +259,6 @@ support for the KVM hypervisor:
 
 ### Running test suites
 
-A description of how our testing scripts work can be found
-[here](test_scripts.md).
-
 There are four types of tests available to run on Fuchsia:
 
 1.  [Gtests](gtests.md)
@@ -270,6 +267,9 @@ There are four types of tests available to run on Fuchsia:
 4.  [Webpage tests](webpage_tests.md)
 
 Check the documentations to learn more about how to run these tests.
+
+Documentation for the underlying testing scripts work can be found
+[here](test_scripts.md).
 
 ### Working with the Fuchsia tree
 
