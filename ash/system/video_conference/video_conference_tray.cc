@@ -90,11 +90,24 @@ VideoConferenceTrayButton::VideoConferenceTrayButton(
 
 VideoConferenceTrayButton::~VideoConferenceTrayButton() = default;
 
-void VideoConferenceTrayButton::SetShowPrivacyIndicator(bool show) {
-  if (show_privacy_indicator_ == show)
+void VideoConferenceTrayButton::SetIsCapturing(bool is_capturing) {
+  if (is_capturing_ == is_capturing) {
     return;
+  }
+  is_capturing_ = is_capturing;
+  UpdateCapturingState();
+}
 
-  show_privacy_indicator_ = show;
+void VideoConferenceTrayButton::UpdateCapturingState() {
+  // We should only show the privacy indicator when the button is not
+  // muted/untoggled.
+  const bool show_privacy_indicator = is_capturing_ && !toggled();
+
+  if (show_privacy_indicator_ == show_privacy_indicator) {
+    return;
+  }
+
+  show_privacy_indicator_ = show_privacy_indicator;
   SchedulePaint();
 }
 
@@ -226,15 +239,16 @@ void VideoConferenceTray::OnMicrophonePermissionStateChange(
 
 void VideoConferenceTray::OnScreenSharingStateChange(bool is_capturing_screen) {
   screen_share_icon_->SetVisible(is_capturing_screen);
-  screen_share_icon_->SetShowPrivacyIndicator(/*show=*/is_capturing_screen);
+  screen_share_icon_->SetIsCapturing(
+      /*is_capturing=*/is_capturing_screen);
 }
 
 void VideoConferenceTray::OnCameraCapturingStateChange(bool is_capturing) {
-  camera_icon_->SetShowPrivacyIndicator(/*show=*/is_capturing);
+  camera_icon_->SetIsCapturing(is_capturing);
 }
 
 void VideoConferenceTray::OnMicrophoneCapturingStateChange(bool is_capturing) {
-  audio_icon_->SetShowPrivacyIndicator(/*show=*/is_capturing);
+  audio_icon_->SetIsCapturing(is_capturing);
 }
 
 SkScalar VideoConferenceTray::GetRotationValueForToggleBubbleButton() {

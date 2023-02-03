@@ -264,4 +264,25 @@ TEST_F(VideoConferenceTrayTest, PrivacyIndicator) {
   EXPECT_FALSE(audio_icon()->show_privacy_indicator());
 }
 
+TEST_F(VideoConferenceTrayTest, PrivacyIndicatorOnToggled) {
+  SetTrayAndButtonsVisible();
+
+  VideoConferenceMediaState state;
+  state.is_capturing_camera = true;
+  controller()->UpdateWithMediaState(state);
+  EXPECT_TRUE(camera_icon()->show_privacy_indicator());
+
+  // Privacy indicator should not be shown when camera button is toggled.
+  LeftClickOn(camera_icon());
+  EXPECT_FALSE(camera_icon()->show_privacy_indicator());
+
+  state.is_capturing_microphone = true;
+  controller()->UpdateWithMediaState(state);
+  EXPECT_TRUE(audio_icon()->show_privacy_indicator());
+
+  // Privacy indicator should not be shown when audio button is toggled.
+  LeftClickOn(audio_icon());
+  EXPECT_FALSE(audio_icon()->show_privacy_indicator());
+}
+
 }  // namespace ash

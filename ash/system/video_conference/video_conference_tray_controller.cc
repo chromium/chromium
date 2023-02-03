@@ -71,10 +71,12 @@ void VideoConferenceTrayController::OnCameraSWPrivacySwitchStateChanged(
     DCHECK(root_window_controller);
     DCHECK(root_window_controller->GetStatusAreaWidget());
 
-    root_window_controller->GetStatusAreaWidget()
-        ->video_conference_tray()
-        ->camera_icon()
-        ->SetToggled(state == cros::mojom::CameraPrivacySwitchState::ON);
+    auto* camera_icon = root_window_controller->GetStatusAreaWidget()
+                            ->video_conference_tray()
+                            ->camera_icon();
+
+    camera_icon->SetToggled(state == cros::mojom::CameraPrivacySwitchState::ON);
+    camera_icon->UpdateCapturingState();
   }
 }
 
@@ -86,10 +88,12 @@ void VideoConferenceTrayController::OnInputMuteChanged(
     DCHECK(root_window_controller);
     DCHECK(root_window_controller->GetStatusAreaWidget());
 
-    root_window_controller->GetStatusAreaWidget()
-        ->video_conference_tray()
-        ->audio_icon()
-        ->SetToggled(mute_on);
+    auto* audio_icon = root_window_controller->GetStatusAreaWidget()
+                           ->video_conference_tray()
+                           ->audio_icon();
+
+    audio_icon->SetToggled(mute_on);
+    audio_icon->UpdateCapturingState();
   }
 }
 

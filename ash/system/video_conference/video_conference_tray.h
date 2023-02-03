@@ -54,14 +54,23 @@ class VideoConferenceTrayButton : public IconButton {
   ~VideoConferenceTrayButton() override;
 
   bool show_privacy_indicator() const { return show_privacy_indicator_; }
+  bool is_capturing() const { return is_capturing_; }
 
-  // Sets the state of showing the privacy indicator in the button.
-  void SetShowPrivacyIndicator(bool show);
+  // Set the state of `is_capturing_`.
+  void SetIsCapturing(bool is_capturing);
+
+  // Updates the capturing state and show/hide the privacy indicator
+  // accordingly.
+  void UpdateCapturingState();
 
   // IconButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
  private:
+  // Cache of the capturing state received from `VideoConferenceManagerAsh`.
+  bool is_capturing_ = false;
+
+  // Indicates whether we are showing the privacy indicator in the button.
   bool show_privacy_indicator_ = false;
 };
 
