@@ -44313,6 +44313,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Error raised">
     The cloud policy store raised an error while loading.
   </int>
+  <int value="4" label="Store is null">
+    The cloud policy store was null (no CBCM).
+  </int>
 </enum>
 
 <enum name="FirstRunLaunchSource">

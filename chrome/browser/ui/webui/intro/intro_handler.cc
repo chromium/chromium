@@ -43,7 +43,9 @@ enum class PolicyStoreState {
   kTimeout = 2,
   // OnStoreError called.
   kStoreError = 3,
-  kMaxValue = kStoreError,
+  // Store is null for a managed device.
+  kStoreNull = 4,
+  kMaxValue = kStoreNull,
 };
 
 void RecordDisclaimerMetrics(PolicyStoreState state,
@@ -67,6 +69,17 @@ class PolicyStoreObserver : public policy::CloudPolicyStore::Observer {
 
     // Update the disclaimer directly if the policy store is already loaded.
     auto* policy_store = GetCloudPolicyStore();
+
+    // GetCloudPolicyStore will return nullptr for managed devices with
+    // non-branded builds because the machine level cloud policy manager will be
+    // null while the device is still managed. In that case, we show a generic
+    // disclaimer.
+    if (!policy_store) {
+      // The device is not enrolled in Chrome Browser Cloud Management
+      HandlePolicyStoreStatusChange(PolicyStoreState::kStoreNull);
+      return;
+    }
+
     if (policy_store->is_initialized()) {
       HandlePolicyStoreStatusChange(PolicyStoreState::kSuccessAlreadyLoaded);
       return;
