@@ -109,8 +109,6 @@ AmbientClientImpl::AmbientClientImpl() = default;
 AmbientClientImpl::~AmbientClientImpl() = default;
 
 bool AmbientClientImpl::IsAmbientModeAllowed() {
-  DCHECK(ash::features::IsAmbientModeEnabled());
-
   if (is_allowed_for_testing_.has_value()) {
     return is_allowed_for_testing_.value();
   }

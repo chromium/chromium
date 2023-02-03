@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/personalization_app/enterprise_policy_delegate.h"
@@ -24,11 +23,9 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom-test-utils.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -147,12 +144,7 @@ class TestEnterprisePolicyDelegate : public EnterprisePolicyDelegate {
 
 class PersonalizationAppSearchHandlerTest : public AshTestBase {
  protected:
-  PersonalizationAppSearchHandlerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{::chromeos::features::kDarkLightMode,
-                              ::ash::features::kAmbientModeFeature},
-        /*disabled_features=*/{});
-  }
+  PersonalizationAppSearchHandlerTest() = default;
 
   ~PersonalizationAppSearchHandlerTest() override = default;
 
@@ -234,7 +226,6 @@ class PersonalizationAppSearchHandlerTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_;
   std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;

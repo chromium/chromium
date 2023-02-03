@@ -1300,15 +1300,13 @@ void RootWindowController::CreateContainers() {
   overlay_container->SetLayoutManager(
       std::make_unique<OverlayLayoutManager>(overlay_container));
 
-  if (features::IsAmbientModeEnabled()) {
-    aura::Window* ambient_container =
-        CreateContainer(kShellWindowId_AmbientModeContainer,
-                        "AmbientModeContainer", lock_screen_related_containers);
-    ::wm::SetChildWindowVisibilityChangesAnimated(ambient_container);
-    ambient_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
-    ambient_container->SetLayoutManager(
-        std::make_unique<FillLayoutManager>(ambient_container));
-  }
+  aura::Window* ambient_container =
+      CreateContainer(kShellWindowId_AmbientModeContainer,
+                      "AmbientModeContainer", lock_screen_related_containers);
+  ::wm::SetChildWindowVisibilityChangesAnimated(ambient_container);
+  ambient_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
+  ambient_container->SetLayoutManager(
+      std::make_unique<FillLayoutManager>(ambient_container));
 
   aura::Window* mouse_cursor_container =
       CreateContainer(kShellWindowId_MouseCursorContainer,

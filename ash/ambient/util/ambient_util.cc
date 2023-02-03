@@ -76,20 +76,14 @@ gfx::ShadowValues GetTextShadowValues(const ui::ColorProvider* color_provider,
 
 bool IsAmbientModeTopicTypeAllowed(::ambient::TopicType topic_type) {
   switch (topic_type) {
-    case ::ambient::TopicType::kCurated:
-      return features::kAmbientModeDefaultFeedEnabled.Get();
-    case ::ambient::TopicType::kCapturedOnPixel:
-      return features::kAmbientModeCapturedOnPixelPhotosEnabled.Get();
-    case ::ambient::TopicType::kCulturalInstitute:
-      return features::kAmbientModeCulturalInstitutePhotosEnabled.Get();
     case ::ambient::TopicType::kFeatured:
-      return features::kAmbientModeFeaturedPhotosEnabled.Get();
     case ::ambient::TopicType::kGeo:
-      return features::kAmbientModeGeoPhotosEnabled.Get();
     case ::ambient::TopicType::kPersonal:
-      return features::kAmbientModePersonalPhotosEnabled.Get();
+      return true;
+    case ::ambient::TopicType::kCurated:
+    case ::ambient::TopicType::kCapturedOnPixel:
+    case ::ambient::TopicType::kCulturalInstitute:
     case ::ambient::TopicType::kRss:
-      return features::kAmbientModeRssPhotosEnabled.Get();
     case ::ambient::TopicType::kOther:
       return false;
   }

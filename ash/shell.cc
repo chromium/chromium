@@ -1416,15 +1416,11 @@ void Shell::Init(
   multi_display_metrics_controller_ =
       std::make_unique<MultiDisplayMetricsController>();
 
-  // |assistant_controller_| is put before |ambient_controller_| as it will be
-  // used by the latter.
-  if (features::IsAmbientModeEnabled()) {
-    mojo::PendingRemote<device::mojom::Fingerprint> fingerprint;
-    shell_delegate_->BindFingerprint(
-        fingerprint.InitWithNewPipeAndPassReceiver());
-    ambient_controller_ =
-        std::make_unique<AmbientController>(std::move(fingerprint));
-  }
+  mojo::PendingRemote<device::mojom::Fingerprint> ambient_fingerprint;
+  shell_delegate_->BindFingerprint(
+      ambient_fingerprint.InitWithNewPipeAndPassReceiver());
+  ambient_controller_ =
+      std::make_unique<AmbientController>(std::move(ambient_fingerprint));
 
   mojo::PendingRemote<video_capture::mojom::MultiCaptureService>
       multi_capture_service;

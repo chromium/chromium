@@ -34,7 +34,7 @@ namespace ash::personalization_app {
 namespace {
 
 bool IsAmbientModeAllowed() {
-  return features::IsAmbientModeEnabled() && ash::AmbientClient::Get() &&
+  return ash::AmbientClient::Get() &&
          ash::AmbientClient::Get()->IsAmbientModeAllowed();
 }
 

@@ -68,47 +68,6 @@ BASE_FEATURE(kAllowScrollSettings,
              "AllowScrollSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to enable Ambient mode feature.
-BASE_FEATURE(kAmbientModeFeature,
-             "ChromeOSAmbientMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<bool> kAmbientModeCapturedOnPixelAlbumEnabled{
-    &kAmbientModeFeature, "CapturedOnPixelAlbumEnabled", false};
-
-constexpr base::FeatureParam<bool> kAmbientModeCapturedOnPixelPhotosEnabled{
-    &kAmbientModeFeature, "CapturedOnPixelPhotosEnabled", false};
-
-constexpr base::FeatureParam<bool> kAmbientModeCulturalInstitutePhotosEnabled{
-    &kAmbientModeFeature, "CulturalInstitutePhotosEnabled", false};
-
-constexpr base::FeatureParam<bool> kAmbientModeDefaultFeedEnabled{
-    &kAmbientModeFeature, "DefaultFeedEnabled", false};
-
-constexpr base::FeatureParam<bool> kAmbientModeEarthAndSpaceAlbumEnabled{
-    &kAmbientModeFeature, "EarthAndSpaceAlbumEnabled", true};
-
-constexpr base::FeatureParam<bool> kAmbientModeFeaturedPhotoAlbumEnabled{
-    &kAmbientModeFeature, "FeaturedPhotoAlbumEnabled", true};
-
-constexpr base::FeatureParam<bool> kAmbientModeFeaturedPhotosEnabled{
-    &kAmbientModeFeature, "FeaturedPhotosEnabled", true};
-
-constexpr base::FeatureParam<bool> kAmbientModeFineArtAlbumEnabled{
-    &kAmbientModeFeature, "FineArtAlbumEnabled", false};
-
-constexpr base::FeatureParam<bool> kAmbientModeGeoPhotosEnabled{
-    &kAmbientModeFeature, "GeoPhotosEnabled", true};
-
-constexpr base::FeatureParam<bool> kAmbientModePersonalPhotosEnabled{
-    &kAmbientModeFeature, "PersonalPhotosEnabled", true};
-
-constexpr base::FeatureParam<bool> kAmbientModeRssPhotosEnabled{
-    &kAmbientModeFeature, "RssPhotosEnabled", false};
-
-constexpr base::FeatureParam<bool> kAmbientModeStreetArtAlbumEnabled{
-    &kAmbientModeFeature, "StreetArtAlbumEnabled", false};
-
 // Controls whether to enable AutoEnrollment for Kiosk in OOBE
 BASE_FEATURE(kAutoEnrollmentKioskInOobe,
              "AutoEnrollmentKioskInOobe",
@@ -2287,10 +2246,6 @@ bool IsAllowAmbientEQEnabled() {
 
 bool IsAmbientModeDevUseProdEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModeDevUseProdFeature);
-}
-
-bool IsAmbientModeEnabled() {
-  return base::FeatureList::IsEnabled(kAmbientModeFeature);
 }
 
 bool IsAmbientModePhotoPreviewEnabled() {

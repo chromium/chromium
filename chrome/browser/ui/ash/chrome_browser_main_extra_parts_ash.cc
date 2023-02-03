@@ -151,8 +151,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
       std::make_unique<CastConfigControllerMediaRouter>();
 
   // Needed by AmbientController in ash.
-  if (ash::features::IsAmbientModeEnabled())
-    ambient_client_ = std::make_unique<AmbientClientImpl>();
+  ambient_client_ = std::make_unique<AmbientClientImpl>();
 
   // This controller MUST be initialized before the UI (AshShellInit) is
   // constructed. The video conferencing views will observe and have their own

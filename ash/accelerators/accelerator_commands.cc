@@ -25,6 +25,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
+#include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/projector/projector_controller.h"
@@ -484,7 +485,7 @@ bool CanShowStylusTools() {
 }
 
 bool CanStartAmbientMode() {
-  return features::IsAmbientModeEnabled();
+  return AmbientClient::Get() && AmbientClient::Get()->IsAmbientModeAllowed();
 }
 
 bool CanSwapPrimaryDisplay() {

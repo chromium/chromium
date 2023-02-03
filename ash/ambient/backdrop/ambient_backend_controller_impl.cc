@@ -296,22 +296,8 @@ ScreenUpdate ToScreenUpdate(
 bool IsArtSettingVisible(const ArtSetting& art_setting) {
   const auto& album_id = art_setting.album_id;
 
-  if (album_id == kAmbientModeStreetArtAlbumId)
-    return features::kAmbientModeStreetArtAlbumEnabled.Get();
-
-  if (album_id == kAmbientModeCapturedOnPixelAlbumId)
-    return features::kAmbientModeCapturedOnPixelAlbumEnabled.Get();
-
-  if (album_id == kAmbientModeEarthAndSpaceAlbumId)
-    return features::kAmbientModeEarthAndSpaceAlbumEnabled.Get();
-
-  if (album_id == kAmbientModeFeaturedPhotoAlbumId)
-    return features::kAmbientModeFeaturedPhotoAlbumEnabled.Get();
-
-  if (album_id == kAmbientModeFineArtAlbumId)
-    return features::kAmbientModeFineArtAlbumEnabled.Get();
-
-  return false;
+  return album_id == kAmbientModeEarthAndSpaceAlbumId ||
+         album_id == kAmbientModeFeaturedPhotoAlbumId;
 }
 
 }  // namespace
