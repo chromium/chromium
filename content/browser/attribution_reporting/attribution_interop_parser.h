@@ -12,7 +12,7 @@
 #include <ostream>
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_parser_test_utils.h"
@@ -75,7 +75,7 @@ class AttributionInteropParser {
                                             base::StringPiece key);
 
   void ParseList(base::Value* values,
-                 base::RepeatingCallback<void(base::Value)> callback,
+                 base::FunctionRef<void(base::Value)> callback,
                  size_t expected_size = 0);
 
   // Returns `attribution_src_url` in the request if exists.

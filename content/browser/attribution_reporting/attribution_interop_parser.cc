@@ -11,10 +11,9 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "content/public/browser/attribution_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -107,7 +106,7 @@ absl::optional<std::string> AttributionInteropParser::ExtractString(
 
 void AttributionInteropParser::ParseList(
     base::Value* values,
-    base::RepeatingCallback<void(base::Value)> callback,
+    base::FunctionRef<void(base::Value)> parse_element,
     size_t expected_size) {
   if (!values) {
     *Error() << "must be present";
@@ -128,7 +127,7 @@ void AttributionInteropParser::ParseList(
   size_t index = 0;
   for (auto& value : values->GetList()) {
     auto context = PushContext(index);
-    callback.Run(std::move(value));
+    parse_element(std::move(value));
     index++;
   }
 }
@@ -161,34 +160,36 @@ void AttributionInteropParser::ParseResponse(
 
   auto context = PushContext(kKey);
 
-  ParseList(in.Find(kKey), base::BindLambdaForTesting([&](base::Value value) {
-              if (!EnsureDictionary(&value)) {
-                return;
-              }
+  ParseList(
+      in.Find(kKey),
+      [&](base::Value value) {
+        if (!EnsureDictionary(&value)) {
+          return;
+        }
 
-              static constexpr char kKeyUrl[] = "url";
-              if (absl::optional<std::string> url =
-                      ExtractString(value.GetDict(), kKeyUrl);
-                  url && *url != attribution_src_url) {
-                auto inner_context = PushContext(kKeyUrl);
-                *Error() << "must match " << attribution_src_url;
-              }
+        static constexpr char kKeyUrl[] = "url";
+        if (absl::optional<std::string> url =
+                ExtractString(value.GetDict(), kKeyUrl);
+            url && *url != attribution_src_url) {
+          auto inner_context = PushContext(kKeyUrl);
+          *Error() << "must match " << attribution_src_url;
+        }
 
-              static constexpr char kKeyDebugPermission[] = "debug_permission";
-              if (value.GetDict().contains(kKeyDebugPermission)) {
-                MoveValue(value.GetDict(), kKeyDebugPermission, out);
-              }
+        static constexpr char kKeyDebugPermission[] = "debug_permission";
+        if (value.GetDict().contains(kKeyDebugPermission)) {
+          MoveValue(value.GetDict(), kKeyDebugPermission, out);
+        }
 
-              static constexpr char kKeyResponse[] = "response";
-              auto inner_context = PushContext(kKeyResponse);
-              base::Value* response = value.GetDict().Find(kKeyResponse);
-              if (!EnsureDictionary(response)) {
-                return;
-              }
+        static constexpr char kKeyResponse[] = "response";
+        auto inner_context = PushContext(kKeyResponse);
+        base::Value* response = value.GetDict().Find(kKeyResponse);
+        if (!EnsureDictionary(response)) {
+          return;
+        }
 
-              MoveDictValues(response->GetDict(), out);
-            }),
-            /*expected_size=*/1);
+        MoveDictValues(response->GetDict(), out);
+      },
+      /*expected_size=*/1);
 }
 
 base::Value::List AttributionInteropParser::ParseEvents(base::Value::Dict& dict,
@@ -197,7 +198,8 @@ base::Value::List AttributionInteropParser::ParseEvents(base::Value::Dict& dict,
 
   base::Value::List results;
 
-  ParseList(dict.Find(key), base::BindLambdaForTesting([&](base::Value value) {
+  ParseList(dict.Find(key),
+            [&](base::Value value) {
               if (!EnsureDictionary(&value)) {
                 return;
               }
@@ -232,7 +234,7 @@ base::Value::List AttributionInteropParser::ParseEvents(base::Value::Dict& dict,
                       .Serialize());
 
               results.Append(std::move(dict));
-            }));
+            });
 
   return results;
 }
@@ -276,25 +278,24 @@ base::Value::List AttributionInteropParser::ParseEventLevelReports(
   }
 
   auto context = PushContext(kKey);
-  ParseList(
-      output.Find(kKey), base::BindLambdaForTesting([&](base::Value value) {
-        if (!EnsureDictionary(&value)) {
-          return;
-        }
+  ParseList(output.Find(kKey), [&](base::Value value) {
+    if (!EnsureDictionary(&value)) {
+      return;
+    }
 
-        base::Value::Dict result;
+    base::Value::Dict result;
 
-        base::Value::Dict& value_dict = value.GetDict();
-        MoveValue(value_dict, "report", result, "payload");
-        MoveValue(value_dict, "report_url", result);
-        MoveValue(value_dict, "intended_report_time", result, "report_time");
+    base::Value::Dict& value_dict = value.GetDict();
+    MoveValue(value_dict, "report", result, "payload");
+    MoveValue(value_dict, "report_url", result);
+    MoveValue(value_dict, "intended_report_time", result, "report_time");
 
-        if (has_error()) {
-          return;
-        }
+    if (has_error()) {
+      return;
+    }
 
-        event_level_results.Append(std::move(result));
-      }));
+    event_level_results.Append(std::move(result));
+  });
 
   return event_level_results;
 }
@@ -311,47 +312,46 @@ base::Value::List AttributionInteropParser::ParseAggregatableReports(
   }
 
   auto context = PushContext(kKey);
-  ParseList(
-      output.Find(kKey), base::BindLambdaForTesting([&](base::Value value) {
-        if (!EnsureDictionary(&value)) {
-          return;
-        }
+  ParseList(output.Find(kKey), [&](base::Value value) {
+    if (!EnsureDictionary(&value)) {
+      return;
+    }
 
-        base::Value::Dict result;
+    base::Value::Dict result;
 
-        base::Value::Dict& value_dict = value.GetDict();
-        MoveValue(value_dict, "report_url", result);
-        MoveValue(value_dict, "intended_report_time", result, "report_time");
+    base::Value::Dict& value_dict = value.GetDict();
+    MoveValue(value_dict, "report_url", result);
+    MoveValue(value_dict, "intended_report_time", result, "report_time");
 
-        static constexpr char kKeyTestInfo[] = "test_info";
-        base::Value* test_info;
-        {
-          auto test_info_context = PushContext(kKeyTestInfo);
-          test_info = value_dict.Find(kKeyTestInfo);
-          if (!EnsureDictionary(test_info)) {
-            return;
-          }
-        }
+    static constexpr char kKeyTestInfo[] = "test_info";
+    base::Value* test_info;
+    {
+      auto test_info_context = PushContext(kKeyTestInfo);
+      test_info = value_dict.Find(kKeyTestInfo);
+      if (!EnsureDictionary(test_info)) {
+        return;
+      }
+    }
 
-        static constexpr char kKeyReport[] = "report";
-        {
-          auto report_context = PushContext(kKeyReport);
-          base::Value* report = value_dict.Find(kKeyReport);
-          if (!EnsureDictionary(report)) {
-            return;
-          }
+    static constexpr char kKeyReport[] = "report";
+    {
+      auto report_context = PushContext(kKeyReport);
+      base::Value* report = value_dict.Find(kKeyReport);
+      if (!EnsureDictionary(report)) {
+        return;
+      }
 
-          MoveDictValues(test_info->GetDict(), report->GetDict());
-        }
+      MoveDictValues(test_info->GetDict(), report->GetDict());
+    }
 
-        MoveValue(value_dict, "report", result, "payload");
+    MoveValue(value_dict, "report", result, "payload");
 
-        if (has_error()) {
-          return;
-        }
+    if (has_error()) {
+      return;
+    }
 
-        aggregatable_results.Append(std::move(result));
-      }));
+    aggregatable_results.Append(std::move(result));
+  });
 
   return aggregatable_results;
 }
@@ -368,25 +368,24 @@ base::Value::List AttributionInteropParser::ParseVerboseDebugReports(
   }
 
   auto context = PushContext(kKey);
-  ParseList(output.Find(kKey),
-            base::BindLambdaForTesting([&](base::Value value) {
-              if (!EnsureDictionary(&value)) {
-                return;
-              }
+  ParseList(output.Find(kKey), [&](base::Value value) {
+    if (!EnsureDictionary(&value)) {
+      return;
+    }
 
-              base::Value::Dict report;
+    base::Value::Dict report;
 
-              base::Value::Dict& value_dict = value.GetDict();
-              MoveValue(value_dict, "report", report, "payload");
-              MoveValue(value_dict, "report_url", report);
-              MoveValue(value_dict, "report_time", report);
+    base::Value::Dict& value_dict = value.GetDict();
+    MoveValue(value_dict, "report", report, "payload");
+    MoveValue(value_dict, "report_url", report);
+    MoveValue(value_dict, "report_time", report);
 
-              if (has_error()) {
-                return;
-              }
+    if (has_error()) {
+      return;
+    }
 
-              reports.Append(std::move(report));
-            }));
+    reports.Append(std::move(report));
+  });
 
   return reports;
 }

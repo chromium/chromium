@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/invoke.h"
+#include "base/functional/function_ref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
@@ -33,10 +33,10 @@ namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
-template <typename F>
-TriggerRegistration TriggerRegistrationWith(F&& f) {
+TriggerRegistration TriggerRegistrationWith(
+    base::FunctionRef<void(TriggerRegistration&)> f) {
   TriggerRegistration r;
-  base::invoke<F, TriggerRegistration&>(std::move(f), r);
+  f(r);
   return r;
 }
 
@@ -83,7 +83,7 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "filters_valid",
           R"json({"filters":{"a":["b"]}})json",
-          TriggerRegistrationWith([](auto& r) {
+          TriggerRegistrationWith([](TriggerRegistration& r) {
             r.filters = *Filters::Create({{"a", {"b"}}});
           }),
       },
@@ -95,7 +95,7 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "not_filters_valid",
           R"json({"not_filters":{"a":["b"]}})json",
-          TriggerRegistrationWith([](auto& r) {
+          TriggerRegistrationWith([](TriggerRegistration& r) {
             r.not_filters = *Filters::Create({{"a", {"b"}}});
           }),
       },
@@ -107,7 +107,8 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "debug_key_valid",
           R"json({"debug_key":"5"})json",
-          TriggerRegistrationWith([](auto& r) { r.debug_key = 5; }),
+          TriggerRegistrationWith(
+              [](TriggerRegistration& r) { r.debug_key = 5; }),
       },
       {
           "debug_key_invalid",
@@ -123,7 +124,7 @@ TEST(TriggerRegistrationTest, Parse) {
           "aggregatable_dedup_key_valid",
           R"json({"aggregatable_deduplication_key":"10"})json",
           TriggerRegistrationWith(
-              [](auto& r) { r.aggregatable_dedup_key = 10; }),
+              [](TriggerRegistration& r) { r.aggregatable_dedup_key = 10; }),
       },
       {
           "aggregatable_dedup_key_invalid",
@@ -139,7 +140,7 @@ TEST(TriggerRegistrationTest, Parse) {
           "event_triggers_valid",
           R"json({"event_trigger_data":[{}, {"trigger_data":"5"}]})json",
           TriggerRegistrationWith(
-              [](auto& r) {
+              [](TriggerRegistration& r) {
                 r.event_triggers = *EventTriggerDataList::Create(
                     {EventTriggerData(),
                      EventTriggerData(/*data=*/5, /*priority=*/0,
@@ -174,7 +175,7 @@ TEST(TriggerRegistrationTest, Parse) {
             }
           ]
         })json",
-          TriggerRegistrationWith([](auto& r) {
+          TriggerRegistrationWith([](TriggerRegistration& r) {
             r.aggregatable_trigger_data = *AggregatableTriggerDataList::Create(
                 {*AggregatableTriggerData::Create(
                      /*key_piece=*/1,
@@ -203,7 +204,7 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "aggregatable_values_valid",
           R"json({"aggregatable_values":{"a":1}})json",
-          TriggerRegistrationWith([](auto& r) {
+          TriggerRegistrationWith([](TriggerRegistration& r) {
             r.aggregatable_values = *AggregatableValues::Create({{"a", 1}});
           }),
       },
@@ -216,7 +217,8 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "debug_reporting_valid",
           R"json({"debug_reporting": true})json",
-          TriggerRegistrationWith([](auto& r) { r.debug_reporting = true; }),
+          TriggerRegistrationWith(
+              [](TriggerRegistration& r) { r.debug_reporting = true; }),
       },
       {
           "debug_reporting_wrong_type",
@@ -226,7 +228,7 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "aggregation_coordinator_identifier_valid",
           R"json({"aggregation_coordinator_identifier":"aws-cloud"})json",
-          TriggerRegistrationWith([](auto& r) {
+          TriggerRegistrationWith([](TriggerRegistration& r) {
             r.aggregation_coordinator =
                 aggregation_service::mojom::AggregationCoordinator::kAwsCloud;
           }),
@@ -333,7 +335,7 @@ TEST(TriggerRegistrationTest, ToJson) {
           })json",
       },
       {
-          TriggerRegistrationWith([](auto& r) {
+          TriggerRegistrationWith([](TriggerRegistration& r) {
             r.aggregatable_dedup_key = 1;
             r.aggregatable_trigger_data = *AggregatableTriggerDataList::Create(
                 {AggregatableTriggerData()});

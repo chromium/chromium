@@ -4,9 +4,7 @@
 
 #include "components/attribution_reporting/event_trigger_data.h"
 
-#include <utility>
-
-#include "base/functional/invoke.h"
+#include "base/functional/function_ref.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -20,10 +18,10 @@ namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
-template <typename F>
-EventTriggerData EventTriggerDataWith(F&& f) {
+EventTriggerData EventTriggerDataWith(
+    base::FunctionRef<void(EventTriggerData&)> f) {
   EventTriggerData data;
-  base::invoke<F, EventTriggerData&>(std::move(f), data);
+  f(data);
   return data;
 }
 
@@ -41,7 +39,7 @@ TEST(EventTriggerDataTest, FromJSON) {
       {
           "trigger_data_valid",
           R"json({"trigger_data":"123"})json",
-          EventTriggerDataWith([](auto& data) { data.data = 123; }),
+          EventTriggerDataWith([](EventTriggerData& data) { data.data = 123; }),
       },
       {
           "trigger_data_wrong_type",
@@ -56,7 +54,8 @@ TEST(EventTriggerDataTest, FromJSON) {
       {
           "priority_valid",
           R"json({"priority":"-5"})json",
-          EventTriggerDataWith([](auto& data) { data.priority = -5; }),
+          EventTriggerDataWith(
+              [](EventTriggerData& data) { data.priority = -5; }),
       },
       {
           "priority_wrong_type",
@@ -71,7 +70,8 @@ TEST(EventTriggerDataTest, FromJSON) {
       {
           "dedup_key_valid",
           R"json({"deduplication_key":"3"})json",
-          EventTriggerDataWith([](auto& data) { data.dedup_key = 3; }),
+          EventTriggerDataWith(
+              [](EventTriggerData& data) { data.dedup_key = 3; }),
       },
       {
           "dedup_key_wrong_type",
@@ -86,7 +86,7 @@ TEST(EventTriggerDataTest, FromJSON) {
       {
           "filters_valid",
           R"json({"filters":{"a":["b"]}})json",
-          EventTriggerDataWith([](auto& data) {
+          EventTriggerDataWith([](EventTriggerData& data) {
             data.filters = *Filters::Create({{"a", {"b"}}});
           }),
       },
@@ -98,7 +98,7 @@ TEST(EventTriggerDataTest, FromJSON) {
       {
           "not_filters_valid",
           R"json({"not_filters":{"a":["b"]}})json",
-          EventTriggerDataWith([](auto& data) {
+          EventTriggerDataWith([](EventTriggerData& data) {
             data.not_filters = *Filters::Create({{"a", {"b"}}});
           }),
       },

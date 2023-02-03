@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/functional/invoke.h"
+#include "base/functional/function_ref.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,11 +28,12 @@ class BoundedList {
     return BoundedList(std::move(vec));
   }
 
-  template <typename Error, typename F>
-  static base::expected<BoundedList, Error> Build(base::Value* input_value,
-                                                  Error wrong_type,
-                                                  Error out_of_bounds,
-                                                  F&& build_element) {
+  template <typename Error>
+  static base::expected<BoundedList, Error> Build(
+      base::Value* input_value,
+      Error wrong_type,
+      Error out_of_bounds,
+      base::FunctionRef<base::expected<T, Error>(base::Value&)> build_element) {
     if (!input_value)
       return BoundedList();
 
@@ -47,7 +48,7 @@ class BoundedList {
     vec.reserve(list->size());
 
     for (auto& value : *list) {
-      base::expected<T, Error> element = base::invoke(build_element, value);
+      base::expected<T, Error> element = build_element(value);
       if (!element.has_value())
         return base::unexpected(element.error());
 

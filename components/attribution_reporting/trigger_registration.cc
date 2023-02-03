@@ -104,7 +104,7 @@ TriggerRegistration::Parse(base::Value::Dict registration) {
   if (!not_filters.has_value())
     return base::unexpected(not_filters.error());
 
-  auto event_triggers = EventTriggerDataList::Build(
+  auto event_triggers = EventTriggerDataList::Build<TriggerRegistrationError>(
       registration.Find(kEventTriggerData),
       TriggerRegistrationError::kEventTriggerDataListWrongType,
       TriggerRegistrationError::kEventTriggerDataListTooLong,
@@ -112,11 +112,12 @@ TriggerRegistration::Parse(base::Value::Dict registration) {
   if (!event_triggers.has_value())
     return base::unexpected(event_triggers.error());
 
-  auto aggregatable_trigger_data = AggregatableTriggerDataList::Build(
-      registration.Find(kAggregatableTriggerData),
-      TriggerRegistrationError::kAggregatableTriggerDataListWrongType,
-      TriggerRegistrationError::kAggregatableTriggerDataListTooLong,
-      &AggregatableTriggerData::FromJSON);
+  auto aggregatable_trigger_data =
+      AggregatableTriggerDataList::Build<TriggerRegistrationError>(
+          registration.Find(kAggregatableTriggerData),
+          TriggerRegistrationError::kAggregatableTriggerDataListWrongType,
+          TriggerRegistrationError::kAggregatableTriggerDataListTooLong,
+          &AggregatableTriggerData::FromJSON);
   if (!aggregatable_trigger_data.has_value())
     return base::unexpected(aggregatable_trigger_data.error());
 
