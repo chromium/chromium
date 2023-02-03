@@ -31,7 +31,6 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetLoggerTestRule;
 import org.chromium.net.CronetTestRule;
@@ -163,7 +162,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     public void testCronetEngineInfoCreation() {
         CronetEngineBuilderImpl builder = new NativeCronetEngineBuilderImpl(mContext);
         CronetEngineBuilderInfo builderInfo = new CronetEngineBuilderInfo(builder);
@@ -184,7 +182,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     public void testCronetVersionCreation() {
         final int major = 100;
         final int minor = 0;
@@ -200,7 +197,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     public void testHttpCacheModeEnum() {
         final int publicBuilderHttpCacheModes[] = {CronetEngine.Builder.HTTP_CACHE_DISABLED,
                 CronetEngine.Builder.HTTP_CACHE_IN_MEMORY,
@@ -214,7 +210,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     public void testSetLoggerForTesting() {
         CronetLogger logger = CronetLoggerFactory.createLogger(mContext, null);
         assertEquals(0, mTestLogger.callsToLogCronetTrafficInfo());
@@ -231,7 +226,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     public void testTelemetryDefaultDisabled() throws JSONException {
         final String url = NativeTestServer.getEchoBodyURL();
@@ -251,7 +245,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     public void testEngineCreation() throws JSONException {
         JSONObject staleDns = new JSONObject()
@@ -318,7 +311,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     public void testEngineCreationAndTrafficInfoEngineId() throws Exception {
         JSONObject jsonExperimentalOptions = new JSONObject().put("enable_telemetry", true);
@@ -358,7 +350,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     public void testMultipleEngineCreationAndTrafficInfoEngineId() throws Exception {
         JSONObject jsonExperimentalOptions = new JSONObject().put("enable_telemetry", true);
@@ -401,7 +392,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     public void testSuccessfulRequestNative() throws Exception {
         JSONObject jsonExperimentalOptions = new JSONObject().put("enable_telemetry", true);
@@ -440,7 +430,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     public void testFailedRequestNative() throws Exception {
         JSONObject jsonExperimentalOptions = new JSONObject().put("enable_telemetry", true);
@@ -480,7 +469,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     public void testCanceledRequestNative() throws Exception {
         JSONObject jsonExperimentalOptions = new JSONObject().put("enable_telemetry", true);
@@ -522,7 +510,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     public void testEmptyHeadersSizeNative() {
         Map<String, List<String>> headers = Collections.emptyMap();
@@ -538,7 +525,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     public void testNonEmptyHeadersSizeNative() {
         Map<String, List<String>> headers = new HashMap<String, List<String>>() {

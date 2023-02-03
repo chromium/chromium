@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.PathUtils;
-import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 
 import java.io.BufferedReader;
@@ -59,7 +58,6 @@ public class DiskStorageTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     // Crashing on Android Cronet Builder, see crbug.com/601409.
     public void testReadOnlyStorageDirectory() throws Exception {
@@ -105,7 +103,6 @@ public class DiskStorageTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     // Crashing on Android Cronet Builder, see crbug.com/601409.
     public void testPurgeOldVersion() throws Exception {
@@ -169,7 +166,6 @@ public class DiskStorageTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     // Tests that if cache version is current, Cronet does not purge the directory.
     public void testCacheVersionCurrent() throws Exception {
@@ -232,7 +228,6 @@ public class DiskStorageTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     // Tests that enableHttpCache throws if storage path not set
     public void testEnableHttpCacheThrowsIfStoragePathNotSet() throws Exception {
@@ -266,7 +261,6 @@ public class DiskStorageTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     // Tests that prefs file is created even if httpcache isn't enabled
     public void testPrefsFileCreatedWithoutHttpCache() throws Exception {

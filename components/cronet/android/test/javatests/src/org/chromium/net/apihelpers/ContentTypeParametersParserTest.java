@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Feature;
 
 import java.util.Map;
 
@@ -27,7 +26,6 @@ import java.util.Map;
 public class ContentTypeParametersParserTest {
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     public void testSingleParam_simple() throws Exception {
         String header = "text/html;charset=utf-8";
 
@@ -41,7 +39,6 @@ public class ContentTypeParametersParserTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     public void testParser_quoted_noEscape() throws Exception {
         String header = "text/html;charset=\"utf-8\"";
 
@@ -55,7 +52,6 @@ public class ContentTypeParametersParserTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     public void testParser_quoted_noEscapeWithSpace() throws Exception {
         String header = "text/html;charset=\"utf-  8\"";
 
@@ -69,7 +65,6 @@ public class ContentTypeParametersParserTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     public void testParser_quoted_escape() throws Exception {
         String header = "text/html;charset=\"utf-\\\\8\"";
 
@@ -83,7 +78,6 @@ public class ContentTypeParametersParserTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     public void testParser_multiple_mixed() throws Exception {
         String header = "text/html;charset=\"utf-\\\\8\";foo=\" bar\" ;   baz=quix ; abc=def";
 
@@ -116,7 +110,6 @@ public class ContentTypeParametersParserTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     public void testParser_invalidTokenChar_key() throws Throwable {
         String header = "text/html;char\\set=utf8";
 
@@ -131,7 +124,6 @@ public class ContentTypeParametersParserTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     public void testParser_invalidTokenChar_value() throws Throwable {
         String header = "text/html;charset=utf\\8";
 
@@ -146,7 +138,6 @@ public class ContentTypeParametersParserTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     public void testParser_quotedStringNotClosed() throws Throwable {
         String header = "text/html;charset=\"utf-8";
 

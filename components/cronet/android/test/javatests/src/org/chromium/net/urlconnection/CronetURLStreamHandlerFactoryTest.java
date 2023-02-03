@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule;
 
 /**
@@ -29,7 +28,6 @@ public class CronetURLStreamHandlerFactoryTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     public void testRequireConfig() throws Exception {
         mTestRule.startCronetTestFramework();
         try {

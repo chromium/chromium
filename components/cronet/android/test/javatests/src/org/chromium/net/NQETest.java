@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
@@ -92,7 +91,6 @@ public class NQETest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     public void testNotEnabled() throws Exception {
         ExperimentalCronetEngine.Builder cronetEngineBuilder =
@@ -127,7 +125,6 @@ public class NQETest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     public void testListenerRemoved() throws Exception {
         ExperimentalCronetEngine.Builder cronetEngineBuilder =
@@ -164,7 +161,6 @@ public class NQETest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     @DisabledTest(message = "crbug.com/796260")
     public void testQuicDisabled() throws Exception {
@@ -272,7 +268,6 @@ public class NQETest {
     @Test
     @SmallTest
     @OnlyRunNativeCronet
-    @Feature({"Cronet"})
     public void testPrefsWriteRead() throws Exception {
         // When the loop is run for the first time, network quality is written to the disk. The
         // test verifies that in the next loop, the network quality is read back.
@@ -359,7 +354,6 @@ public class NQETest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     @DisabledTest(message = "crbug.com/796260")
     public void testQuicDisabledWithParams() throws Exception {

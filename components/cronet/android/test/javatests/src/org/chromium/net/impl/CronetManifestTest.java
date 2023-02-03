@@ -23,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
@@ -51,7 +50,6 @@ public class CronetManifestTest {
     @Test
     @SmallTest
     @OnlyRunNativeCronet
-    @Feature({"Cronet"})
     public void testTelemetryOptIn_whenNoMetadata() throws Exception {
         assertFalse(CronetManifest.isAppOptedInForTelemetry(
                 mMockContext, CronetSource.CRONET_SOURCE_STATICALLY_LINKED));
@@ -64,7 +62,6 @@ public class CronetManifestTest {
     @Test
     @SmallTest
     @OnlyRunNativeCronet
-    @Feature({"Cronet"})
     public void testTelemetryOptIn_whenMetadataIsTrue() throws Exception {
         mMetadata.putBoolean(CronetManifest.TELEMETRY_OPT_IN_META_DATA_STR, true);
         mAppInfo.metaData = mMetadata;
@@ -80,7 +77,6 @@ public class CronetManifestTest {
     @Test
     @SmallTest
     @OnlyRunNativeCronet
-    @Feature({"Cronet"})
     public void testTelemetryOptIn_whenMetadataIsFalse() throws Exception {
         mMetadata.putBoolean(CronetManifest.TELEMETRY_OPT_IN_META_DATA_STR, false);
         mAppInfo.metaData = mMetadata;

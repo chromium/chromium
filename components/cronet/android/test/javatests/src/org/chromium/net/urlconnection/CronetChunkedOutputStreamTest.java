@@ -20,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.CompareDefaultWithCronet;
@@ -64,7 +63,6 @@ public class CronetChunkedOutputStreamTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @CompareDefaultWithCronet
     public void testGetOutputStreamAfterConnectionMade() throws Exception {
         URL url = new URL(NativeTestServer.getEchoBodyURL());
@@ -83,7 +81,6 @@ public class CronetChunkedOutputStreamTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @CompareDefaultWithCronet
     public void testWriteAfterReadingResponse() throws Exception {
         URL url = new URL(NativeTestServer.getEchoBodyURL());
@@ -103,7 +100,6 @@ public class CronetChunkedOutputStreamTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @CompareDefaultWithCronet
     public void testWriteAfterRequestFailed() throws Exception {
         URL url = new URL(NativeTestServer.getEchoBodyURL());
@@ -132,7 +128,6 @@ public class CronetChunkedOutputStreamTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @CompareDefaultWithCronet
     public void testGetResponseAfterWriteFailed() throws Exception {
         URL url = new URL(NativeTestServer.getEchoBodyURL());
@@ -179,7 +174,6 @@ public class CronetChunkedOutputStreamTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @CompareDefaultWithCronet
     public void testPost() throws Exception {
         URL url = new URL(NativeTestServer.getEchoBodyURL());
@@ -197,7 +191,6 @@ public class CronetChunkedOutputStreamTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @CompareDefaultWithCronet
     public void testTransferEncodingHeaderSet() throws Exception {
         URL url = new URL(NativeTestServer.getEchoHeaderURL("Transfer-Encoding"));
@@ -215,7 +208,6 @@ public class CronetChunkedOutputStreamTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @CompareDefaultWithCronet
     public void testPostOneMassiveWrite() throws Exception {
         URL url = new URL(NativeTestServer.getEchoBodyURL());
@@ -234,7 +226,6 @@ public class CronetChunkedOutputStreamTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @CompareDefaultWithCronet
     public void testPostWriteOneByte() throws Exception {
         URL url = new URL(NativeTestServer.getEchoBodyURL());
@@ -254,7 +245,6 @@ public class CronetChunkedOutputStreamTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @CompareDefaultWithCronet
     public void testPostOneMassiveWriteWriteOneByte() throws Exception {
         URL url = new URL(NativeTestServer.getEchoBodyURL());
@@ -275,7 +265,6 @@ public class CronetChunkedOutputStreamTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @CompareDefaultWithCronet
     public void testPostWholeNumberOfChunks() throws Exception {
         URL url = new URL(NativeTestServer.getEchoBodyURL());
@@ -299,7 +288,6 @@ public class CronetChunkedOutputStreamTest {
 
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunCronetHttpURLConnection
     // Regression testing for crbug.com/618872.
     public void testOneMassiveWriteLargerThanInternalBuffer() throws Exception {

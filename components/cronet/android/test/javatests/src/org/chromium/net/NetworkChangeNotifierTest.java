@@ -23,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
@@ -48,7 +47,6 @@ public class NetworkChangeNotifierTest {
      */
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     @OnlyRunNativeCronet
     @RequiresMinAndroidApi(Build.VERSION_CODES.LOLLIPOP)
     // Os and OsConstants aren't exposed until Lollipop

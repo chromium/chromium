@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 
@@ -47,7 +46,6 @@ public class CronetStressTest {
     @Test
     @LargeTest
     @OnlyRunNativeCronet
-    @Feature({"Cronet"})
     public void testLargeNumberOfUploads() throws Exception {
         final int kNumRequest = 1000;
         final int kNumRequestHeaders = 100;

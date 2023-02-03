@@ -12,7 +12,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Feature;
 import org.chromium.net.impl.UrlResponseInfoImpl;
 
 import java.util.AbstractMap;
@@ -30,7 +29,6 @@ public class UrlResponseInfoTest {
      */
     @Test
     @SmallTest
-    @Feature({"Cronet"})
     public void testPublicAPI() throws Exception {
         final List<String> urlChain = new ArrayList<String>();
         urlChain.add("chromium.org");
