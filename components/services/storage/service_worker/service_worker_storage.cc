@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -56,6 +57,17 @@ void RecordDeleteAndStartOverResult(DeleteAndStartOverResult result) {
 }
 
 }  // namespace
+
+// When this is enabled, The ServiceWorker's scope URLs are cached on the UI
+// thread, and stops calling FindRegistrationForClientUrl mojo function if
+// possible.
+BASE_FEATURE(kServiceWorkerScopeCache,
+             "ServiceWorkerScopeCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The scope URL count limit per the storage key.
+const base::FeatureParam<int> kServiceWorkerScopeCacheLimitPerKey{
+    &kServiceWorkerScopeCache, "ServiceWorkerScopeCacheLimitPerKey", 100};
 
 ServiceWorkerStorage::InitialData::InitialData()
     : next_registration_id(blink::mojom::kInvalidServiceWorkerRegistrationId),
@@ -114,12 +126,13 @@ void ServiceWorkerStorage::GetRegisteredStorageKeys(
 void ServiceWorkerStorage::FindRegistrationForClientUrl(
     const GURL& client_url,
     const blink::StorageKey& key,
-    FindRegistrationDataCallback callback) {
+    FindRegistrationForClientUrlDataCallback callback) {
   DCHECK(!client_url.has_ref());
   switch (state_) {
     case STORAGE_STATE_DISABLED:
       std::move(callback).Run(
           /*data=*/nullptr, /*resources=*/nullptr,
+          /*scopes=*/absl::nullopt,
           ServiceWorkerDatabase::Status::kErrorDisabled);
       return;
     case STORAGE_STATE_INITIALIZING:
@@ -139,8 +152,12 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
 
   // Bypass database lookup when there is no stored registration.
   if (!base::Contains(registered_keys_, key)) {
+    absl::optional<std::vector<GURL>> scopes;
+    if (base::FeatureList::IsEnabled(storage::kServiceWorkerScopeCache)) {
+      scopes = std::vector<GURL>();
+    }
     std::move(callback).Run(
-        /*data=*/nullptr, /*resources=*/nullptr,
+        /*data=*/nullptr, /*resources=*/nullptr, /*scopes=*/scopes,
         ServiceWorkerDatabase::Status::kErrorNotFound);
     return;
   }
@@ -1704,7 +1721,7 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     const GURL& client_url,
     const blink::StorageKey& key,
-    FindInDBCallback callback) {
+    FindForClientUrlInDBCallback callback) {
   base::TimeTicks now = base::TimeTicks::Now();
   TRACE_EVENT1("ServiceWorker", "ServiceWorkerStorage::FindForClientUrlInDB",
                "url", client_url);
@@ -1717,7 +1734,8 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
     original_task_runner->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   /*data=*/nullptr,
-                                  /*resources=*/nullptr, status));
+                                  /*resources=*/nullptr,
+                                  /*scopes=*/absl::nullopt, status));
     return;
   }
 
@@ -1728,15 +1746,33 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
   // Find one with a scope match.
   blink::ServiceWorkerLongestScopeMatcher matcher(client_url);
   int64_t match = blink::mojom::kInvalidServiceWorkerRegistrationId;
-  for (const auto& registration_data : registration_data_list)
-    if (matcher.MatchLongest(registration_data->scope))
+  bool enable_scope_cache =
+      base::FeatureList::IsEnabled(kServiceWorkerScopeCache) &&
+      (registration_data_list.size() <=
+       static_cast<size_t>(kServiceWorkerScopeCacheLimitPerKey.Get()));
+  // `scopes` should contain all of the service worker's registration
+  // scopes that are relevant to the `key` so that we can cache scope
+  // URLs in the UI thread. The 'scopes' is valid only when the status
+  // is `kOk` or `kErrorNotFound`.
+  absl::optional<std::vector<GURL>> scopes;
+  if (enable_scope_cache) {
+    scopes = std::vector<GURL>();
+    scopes->reserve(registration_data_list.size());
+  }
+  for (const auto& registration_data : registration_data_list) {
+    if (matcher.MatchLongest(registration_data->scope)) {
       match = registration_data->registration_id;
+    }
+    if (enable_scope_cache) {
+      scopes->push_back(std::move(registration_data->scope));
+    }
+  }
   if (match != blink::mojom::kInvalidServiceWorkerRegistrationId)
     status = database->ReadRegistration(match, key, &data, resources.get());
 
   original_task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(data),
-                                std::move(resources), status));
+                                std::move(resources), scopes, status));
 
   base::UmaHistogramMediumTimes(
       "ServiceWorker.Storage.FindForClientUrlInDB.Time",

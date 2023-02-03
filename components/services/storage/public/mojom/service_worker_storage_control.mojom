@@ -153,11 +153,22 @@ interface ServiceWorkerStorageControl {
   // Returns all StorageKeys which have service worker registrations.
   GetRegisteredStorageKeys() => (array<blink.mojom.StorageKey> keys);
 
-  // Reads a stored registration for `client_url` that is associated with `key`.
+  // Reads a stored registration for `client_url` that is associated
+  // with `key`.  `scopes` contains all of the service worker's
+  // registration scopes that are relevant to the `key` so that we can
+  // cache scope URLs in the UI thread. The 'scopes' is valid only when
+  // the status is `kOk` or `kErrorNotFound`. The `scopes` must be
+  // optional because `scopes` can be empty if the scope count exceeds
+  // the threshold even when there are scopes in DB so that we can avoid
+  // sending too large information via mojo API. When this API returns
+  // null for `scopes`, the caller of this API can't cache the
+  // scopes. This means that the caller needs to fall back to the slow
+  // code path that queries the registration from the DB.
   FindRegistrationForClientUrl(url.mojom.Url client_url,
                                blink.mojom.StorageKey key) =>
       (ServiceWorkerDatabaseStatus status,
-       ServiceWorkerFindRegistrationResult? result);
+       ServiceWorkerFindRegistrationResult? result,
+       array<url.mojom.Url>? scopes);
   // Reads a stored registration for `scope` that is associated with `key`.
   FindRegistrationForScope(url.mojom.Url scope, blink.mojom.StorageKey key) =>
       (ServiceWorkerDatabaseStatus status,

@@ -158,8 +158,9 @@ void ServiceWorkerStorageControlImpl::FindRegistrationForClientUrl(
     FindRegistrationForClientUrlCallback callback) {
   storage_->FindRegistrationForClientUrl(
       client_url, key,
-      base::BindOnce(&ServiceWorkerStorageControlImpl::DidFindRegistration,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(
+          &ServiceWorkerStorageControlImpl::DidFindRegistrationForClientUrl,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ServiceWorkerStorageControlImpl::FindRegistrationForScope(
@@ -437,6 +438,30 @@ void ServiceWorkerStorageControlImpl::SetPurgingCompleteCallbackForTest(
   storage_->SetPurgingCompleteCallbackForTest(std::move(callback));  // IN-TEST
 }
 
+void ServiceWorkerStorageControlImpl::DidFindRegistrationForClientUrl(
+    FindRegistrationForClientUrlCallback callback,
+    mojom::ServiceWorkerRegistrationDataPtr data,
+    std::unique_ptr<ResourceList> resources,
+    const absl::optional<std::vector<GURL>>& scopes,
+    mojom::ServiceWorkerDatabaseStatus status) {
+  if (status != mojom::ServiceWorkerDatabaseStatus::kOk) {
+    std::move(callback).Run(status, /*result=*/nullptr, scopes);
+    return;
+  }
+
+  DCHECK(resources);
+  DCHECK(data);
+
+  mojo::PendingRemote<mojom::ServiceWorkerLiveVersionRef> remote_reference =
+      CreateLiveVersionReferenceRemote(data->version_id);
+
+  std::move(callback).Run(
+      status,
+      mojom::ServiceWorkerFindRegistrationResult::New(
+          std::move(remote_reference), std::move(data), std::move(*resources)),
+      scopes);
+}
+
 void ServiceWorkerStorageControlImpl::DidFindRegistration(
     base::OnceCallback<void(mojom::ServiceWorkerDatabaseStatus status,
                             mojom::ServiceWorkerFindRegistrationResultPtr)>
@@ -452,14 +477,13 @@ void ServiceWorkerStorageControlImpl::DidFindRegistration(
   DCHECK(resources);
   DCHECK(data);
 
-  ResourceList resource_list = std::move(*resources);
   mojo::PendingRemote<mojom::ServiceWorkerLiveVersionRef> remote_reference =
       CreateLiveVersionReferenceRemote(data->version_id);
 
-  std::move(callback).Run(status,
-                          mojom::ServiceWorkerFindRegistrationResult::New(
-                              std::move(remote_reference), std::move(data),
-                              std::move(resource_list)));
+  std::move(callback).Run(
+      status,
+      mojom::ServiceWorkerFindRegistrationResult::New(
+          std::move(remote_reference), std::move(data), std::move(*resources)));
 }
 
 void ServiceWorkerStorageControlImpl::DidGetRegistrationsForStorageKey(
