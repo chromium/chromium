@@ -190,11 +190,16 @@ template("chrome_public_common_apk_or_module_tmpl") {
       ]
     }
 
-    if (dfmify_dev_ui && (_target_type == "android_apk" ||
-                          _target_type == "instrumentation_test_apk")) {
+    if (dfmify_dev_ui && !_is_bundle) {
       # Dev UI is a feature in a DFM, and APKs don't use DFMs. To make the code
       # available for APKs add a dependency on it.
       deps += [ "//chrome/android/features/dev_ui:java" ]
+    }
+    if (enable_vr && !_is_bundle) {
+      # VR is a feature in a DFM, and APKs don't use DFMs, but we
+      # unconditionally include vr code in our native library. To make the code
+      # available for APKs, add a dependency on it.
+      deps += [ "//chrome/android/features/vr:java" ]
     }
 
     if (!is_java_debug) {

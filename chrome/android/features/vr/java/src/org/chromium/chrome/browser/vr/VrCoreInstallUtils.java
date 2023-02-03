@@ -248,7 +248,7 @@ public class VrCoreInstallUtils {
         }
     }
 
-    @NativeMethods("vr")
+    @NativeMethods
     interface Natives {
         void onInstallResult(long nativeVrCoreInstallHelper, boolean success);
     }

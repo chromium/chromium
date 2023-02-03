@@ -2126,6 +2126,9 @@ if (current_toolchain == default_toolchain) {
 
   generate_jni_registration("chrome_jni_registration") {
     targets = [ ":chrome_public_base_module_java" ]
+    if (enable_vr) {
+      targets += [ "//chrome/android/features/vr:java" ]
+    }
     manual_jni_registration = true
     file_exclusions = chrome_jni_file_exclusions
     if (allow_jni_multiplexing) {
@@ -2138,6 +2141,9 @@ if (current_toolchain == default_toolchain) {
   generate_jni_registration("chrome_jni_for_test_registration") {
     testonly = true
     targets = [ ":chrome_public_base_module_java_for_test" ]
+    if (enable_vr) {
+      targets += [ "//chrome/android/features/vr:java" ]
+    }
     manual_jni_registration = true
     file_exclusions = chrome_jni_file_exclusions
     if (allow_jni_multiplexing) {
@@ -2151,6 +2157,9 @@ if (current_toolchain == default_toolchain) {
         ":monochrome_java",
         ":chrome_all_java",
       ]
+      if (enable_vr) {
+        targets += [ "//chrome/android/features/vr:java" ]
+      }
       file_exclusions = chrome_jni_file_exclusions
       enable_jni_multiplexing = true
     }
