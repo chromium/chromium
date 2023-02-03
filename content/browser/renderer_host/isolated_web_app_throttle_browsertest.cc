@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -48,6 +47,8 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
     return url.host() == kAppHost;
   }
 
+  bool AreIsolatedWebAppsEnabled(BrowserContext*) override { return true; }
+
  private:
   url::Origin app_origin_;
 };
@@ -56,9 +57,7 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
 
 class HttpsBrowserTest : public ContentBrowserTest {
  public:
-  HttpsBrowserTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
-  }
+  HttpsBrowserTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
@@ -88,8 +87,6 @@ class HttpsBrowserTest : public ContentBrowserTest {
  private:
   net::EmbeddedTestServer https_server_;
   ContentMockCertVerifier mock_cert_verifier_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class IsolatedWebAppThrottleBrowserTest : public HttpsBrowserTest {

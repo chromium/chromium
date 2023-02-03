@@ -73,11 +73,6 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
 
   ~IsolatedWebAppPolicyManagerAshBrowserTest() override = default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kIsolatedWebApps}, {});
-    policy::DevicePolicyCrosBrowserTest::SetUp();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(ash::switches::kLoginManager);

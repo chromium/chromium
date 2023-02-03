@@ -45,11 +45,6 @@ IsolatedWebAppTrustChecker::~IsolatedWebAppTrustChecker() = default;
 IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
     const web_package::SignedWebBundleId& expected_web_bundle_id,
     const web_package::SignedWebBundleIntegrityBlock& integrity_block) const {
-  if (!base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
-    return {.status = Result::Status::kErrorFeatureDisabled,
-            .message = "Support for Isolated Web Apps is not enabled."};
-  }
-
   if (expected_web_bundle_id.type() !=
       web_package::SignedWebBundleId::Type::kEd25519PublicKey) {
     return {.status = Result::Status::kErrorUnsupportedWebBundleIdType,

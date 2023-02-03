@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -15,7 +14,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
-#include "content/public/common/content_features.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 
 namespace web_app {
 
@@ -62,7 +61,7 @@ KeyedService* IsolatedWebAppReaderRegistryFactory::BuildServiceInstanceFor(
 content::BrowserContext*
 IsolatedWebAppReaderRegistryFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
+  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(context)) {
     return nullptr;
   }
 

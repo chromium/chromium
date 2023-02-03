@@ -282,6 +282,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/file_url_loader.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/overlay_window.h"
@@ -2458,7 +2459,9 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     const GURL& url,
     bool origin_matches_flag) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
+
+  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
+          browser_context)) {
     return false;
   }
 
@@ -2820,6 +2823,11 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(commerce::switches::kEnableChromeCart);
       }
 #endif
+
+      if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
+              process->GetBrowserContext())) {
+        command_line->AppendSwitch(switches::kEnableIsolatedWebAppsInRenderer);
+      }
     }
 
     MaybeAppendBlinkSettingsSwitchForFieldTrial(browser_command_line,
@@ -5490,7 +5498,8 @@ void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
                          profile, content::ChildProcessHost::kInvalidUniqueID));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kIsolatedWebApps) &&
+  if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
+          browser_context) &&
       !browser_context->ShutdownStarted()) {
     // TODO(crbug.com/1365848): Only register the factory if we are already in
     // an isolated storage partition.
@@ -5529,7 +5538,8 @@ void ChromeContentBrowserClient::
   DCHECK(factories);
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kIsolatedWebApps) &&
+  if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
+          browser_context) &&
       !browser_context->ShutdownStarted()) {
     factories->emplace(
         chrome::kIsolatedAppScheme,
@@ -5765,14 +5775,16 @@ void ChromeContentBrowserClient::
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
+  {
     content::BrowserContext* browser_context =
         content::RenderProcessHost::FromID(render_process_id)
             ->GetBrowserContext();
     DCHECK(browser_context);
-    if (!browser_context->ShutdownStarted()) {
-      // TODO(crbug.com/1365848): Only register the factory if we are already in
-      // an isolated storage partition.
+    if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
+            browser_context) &&
+        !browser_context->ShutdownStarted()) {
+      // TODO(crbug.com/1365848): Only register the factory if we are already
+      // in an isolated storage partition.
 
       if (frame_host != nullptr) {
         factories->emplace(
@@ -7439,6 +7451,21 @@ bool ChromeContentBrowserClient::IsFileSystemURLNavigationAllowed(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   return false;
+}
+
+bool ChromeContentBrowserClient::AreIsolatedWebAppsEnabled(
+    content::BrowserContext* browser_context) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Check if the enterprise policy that regulates Isolated Web Apps force
+  // installing is present. If it is there then the IWAs should be enabled.
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  const base::Value::List& isolated_web_apps =
+      profile->GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList);
+  if (!isolated_web_apps.empty()) {
+    return true;
+  }
+#endif
+  return base::FeatureList::IsEnabled(features::kIsolatedWebApps);
 }
 
 #if BUILDFLAG(IS_MAC)

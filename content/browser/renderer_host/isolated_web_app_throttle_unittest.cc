@@ -6,8 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -76,6 +76,8 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
     last_page_transition_ = ui::PageTransition::PAGE_TRANSITION_QUALIFIER_MASK;
   }
 
+  bool AreIsolatedWebAppsEnabled(BrowserContext*) override { return true; }
+
  private:
   unsigned int external_protocol_call_count_ = 0;
   ui::PageTransition last_page_transition_ =
@@ -88,8 +90,6 @@ class IsolatedWebAppThrottleTest : public RenderViewHostTestHarness {
  public:
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
 
     old_client_ = SetBrowserClientForTesting(&test_client_);
 
@@ -211,8 +211,6 @@ class IsolatedWebAppThrottleTest : public RenderViewHostTestHarness {
   raw_ptr<ContentBrowserClient> old_client_;
   scoped_refptr<net::HttpResponseHeaders> coop_coep_headers_;
   scoped_refptr<net::HttpResponseHeaders> corp_coep_headers_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(IsolatedWebAppThrottleTest, AllowNavigationWithinNonApp) {

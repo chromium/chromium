@@ -477,7 +477,11 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   WebString chrome_search_scheme(
       WebString::FromASCII(chrome::kChromeSearchScheme));
 
-  if (base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
+  // IWAs can be enabled by either the feature flag or by enterprise
+  // policy. In either case the kEnableIsolatedWebAppsInRenderer flag is passed
+  // to the renderer process.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableIsolatedWebAppsInRenderer)) {
     // isolated-app: is the scheme used for Isolated Web Apps, which are web
     // applications packaged in Signed Web Bundles.
     WebString isolated_app_scheme(

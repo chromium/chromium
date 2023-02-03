@@ -2386,6 +2386,10 @@ class CONTENT_EXPORT ContentBrowserClient {
       int child_flags,
       const base::FilePath& helpers_path);
 #endif  // BUILDFLAG(IS_MAC)
+
+  // Checks if Isolated Web Apps are enabled, e.g. by feature flag
+  // or in any other way.
+  virtual bool AreIsolatedWebAppsEnabled(BrowserContext* browser_context);
 };
 
 }  // namespace content

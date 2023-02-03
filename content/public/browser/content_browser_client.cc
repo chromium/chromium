@@ -1433,4 +1433,11 @@ base::FilePath ContentBrowserClient::GetChildProcessPath(
 }
 #endif
 
+bool ContentBrowserClient::AreIsolatedWebAppsEnabled(
+    BrowserContext* browser_context) {
+  // The whole logic of the IWAs lives in //chrome. So IWAs should be
+  // enabled at that layer.
+  return false;
+}
+
 }  // namespace content
