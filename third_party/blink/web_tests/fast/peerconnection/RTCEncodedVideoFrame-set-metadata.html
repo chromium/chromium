@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<title>Test RTCEncodedVideoFrame.setMetadata in a loopback RTCPeerConnection</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/RTCPeerConnection-helper.js"></script>
+<script>
+"use strict";
+
+promise_test(async t => {
+  const csrcs = [123, 321, 456, 654];
+
+  const caller = new RTCPeerConnection({encodedInsertableStreams:true});
+  t.add_cleanup(() => caller.close());
+  const callee = new RTCPeerConnection({encodedInsertableStreams:true});
+  t.add_cleanup(() => callee.close());
+  exchangeIceCandidates(caller, callee);
+
+  const stream = await getNoiseStream({video: true});
+  const videoTrack = stream.getVideoTracks()[0];
+  t.add_cleanup(() => videoTrack.stop());
+
+  const senderTransceiver = caller.addTransceiver(videoTrack);
+  const senderStreams = senderTransceiver.sender.createEncodedStreams();
+  const senderReader = senderStreams.readable.getReader();
+  const senderWriter = senderStreams.writable.getWriter();
+
+  const ontrackPromise = addEventListenerPromise(t, callee, 'track');
+
+  await exchangeOfferAnswer(caller, callee);
+
+  const trackEvent = await ontrackPromise;
+  const receiverTransceiver = trackEvent.transceiver;
+  const receiverStreams = receiverTransceiver.receiver.createEncodedStreams();
+  const receiverReader = receiverStreams.readable.getReader();
+  const receiverWriter = receiverStreams.writable.getWriter();
+  const receiverFramePromise = receiverReader.read();
+
+  // Modify the CSRCS for the first frame sent.
+  const senderFrame = (await senderReader.read()).value;
+  const senderMetadata = senderFrame.getMetadata();
+  senderMetadata.contributingSources = csrcs;
+  senderFrame.setMetadata(senderMetadata);
+  senderWriter.write(senderFrame);
+  const receiverFrame = (await receiverFramePromise).value;
+
+  assert_array_equals(receiverFrame.getMetadata().contributingSources, csrcs,
+                      "First frame has modified CSRCS");
+
+  // Set different CSRCS for the second frame.
+  const csrcs2 = [987654321];
+
+  const receiverFrame2Promise = receiverReader.read();
+  const senderFrame2 = (await senderReader.read()).value;
+  const senderMetadata2 = senderFrame2.getMetadata();
+  senderMetadata2.contributingSources = csrcs2;
+  senderFrame2.setMetadata(senderMetadata2);
+  senderWriter.write(senderFrame2);
+  const receiverFrame2 = (await receiverFrame2Promise).value;
+
+  assert_array_equals(receiverFrame2.getMetadata().contributingSources, csrcs2,
+                      "Second frame has modified CSRCS");
+
+}, "modified csrcs are propagated over a PeerConnection");
+</script>
