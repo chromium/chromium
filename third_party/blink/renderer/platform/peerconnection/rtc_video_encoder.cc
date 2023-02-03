@@ -1321,8 +1321,10 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
         storage == media::VideoFrame::STORAGE_SHMEM;
     const bool is_gmb_frame =
         storage == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
-    requires_copy_or_scale =
-        RequiresSizeChange(*frame) || !(is_memory_based_frame || is_gmb_frame);
+    const bool is_right_format = frame->format() == media::PIXEL_FORMAT_I420 ||
+                                 frame->format() == media::PIXEL_FORMAT_NV12;
+    requires_copy_or_scale = !is_right_format || RequiresSizeChange(*frame) ||
+                             !(is_memory_based_frame || is_gmb_frame);
   }
 
   if (requires_copy_or_scale) {
