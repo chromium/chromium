@@ -36,7 +36,6 @@ gfx::ImageSkia GetWindowIcon(aura::Window* window) {
 
 // The maximum number of entries that can be kept in the
 // DlpConfidentialContentsCache.
-// TODO(crbug.com/1275926): determine the value to use
 static constexpr size_t kDefaultCacheSizeLimit = 100;
 
 // The default timeout after which the entries are evicted from the
