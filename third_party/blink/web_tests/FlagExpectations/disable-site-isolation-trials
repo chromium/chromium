@@ -82,7 +82,6 @@ crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/preload/prefetch-types.html [ Failure Timeout ]
-crbug.com/626703 external/wpt/webcodecs/videoFrame-serialization.crossAgentCluster.https.html [ Timeout ]
 crbug.com/626703 external/wpt/url/url-setters-a-area.window.html?exclude=(file|javascript|mailto) [ Crash Failure ]
 crbug.com/626703 virtual/idna-2008/external/wpt/url/a-element-origin.html [ Crash Failure ]
 crbug.com/626703 external/wpt/url/a-element-origin-xhtml.xhtml [ Crash Failure ]
