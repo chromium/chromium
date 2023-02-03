@@ -51,9 +51,10 @@ $ PATH_TO_INSTALLER.EXE ^
 --includeRecommended
 ```
 
--You must have the version 10.0.20348.0 [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/)
+-You must have the version 10.0.22621.755 [Windows 11 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/)
 installed. This can be installed separately or by checking the appropriate box
-in the Visual Studio Installer.
+in the Visual Studio Installer. Earlier versions will work except for some test
+failures when decoding large-page PDBs that are unsupported in prior SDKs.
 
 The SDK Debugging Tools must also be installed. If the Windows 10 SDK was
 installed via the Visual Studio installer, then they can be installed by going
