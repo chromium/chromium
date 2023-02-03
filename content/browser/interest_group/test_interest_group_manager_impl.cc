@@ -8,12 +8,17 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/interest_group/storage_interest_group.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -95,6 +100,23 @@ std::vector<GURL> TestInterestGroupManagerImpl::TakeReportUrlsOfType(
 std::vector<blink::InterestGroupKey>
 TestInterestGroupManagerImpl::TakeInterestGroupsThatBid() {
   return std::exchange(interest_groups_that_bid_, {});
+}
+
+absl::optional<StorageInterestGroup>
+TestInterestGroupManagerImpl::BlockingGetInterestGroup(
+    const url::Origin& owner,
+    const std::string& name) {
+  base::RunLoop run_loop;
+  absl::optional<StorageInterestGroup> out;
+  GetInterestGroup(
+      {owner, name},
+      base::BindLambdaForTesting(
+          [&](absl::optional<StorageInterestGroup> interest_group) {
+            out = std::move(interest_group);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  return out;
 }
 
 }  // namespace content

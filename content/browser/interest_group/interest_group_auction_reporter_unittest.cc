@@ -5,12 +5,15 @@
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/mock_auction_process_manager.h"
@@ -26,6 +29,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -82,8 +87,20 @@ class InterestGroupAuctionReporterTest
 
     winning_bid_info_.storage_interest_group =
         std::make_unique<StorageInterestGroup>();
-    winning_bid_info_.storage_interest_group->interest_group.bidding_url =
-        kWinningBidderScriptUrl;
+    winning_bid_info_.storage_interest_group->interest_group =
+        blink::TestInterestGroupBuilder(kWinningBidderOrigin,
+                                        kWinningBidderName)
+            .SetBiddingUrl(kWinningBidderScriptUrl)
+            .Build();
+
+    // Join the interest group that "won" the auction - this matters for tests
+    // that make sure the interest group is updated correctly.
+    interest_group_manager_impl_->JoinInterestGroup(
+        winning_bid_info_.storage_interest_group->interest_group,
+        /*joining_url=*/kWinningBidderOrigin.GetURL());
+
+    winning_bid_info_.ad_metadata = kWinningAdMetadata;
+
     // The actual value doesn't matter for tests, but need to set some value as
     // it doesn't have a default one.
     winning_bid_info_.bid = 1;
@@ -216,10 +233,33 @@ class InterestGroupAuctionReporterTest
     bidder_worklet->Flush();
   }
 
-  // AuctionWorkletManager::Delegate implementation. Note that none of these
-  // matter for these tests, as the the mock worklet classes don't make network
-  // requests, but a real AuctionWorkletManager is used, which expects most of
-  // these methods to return non-null objects.
+  // Checks that the win has not yet been recorded by the InterestGroupManager.
+  void ExpectNoWinsRecorded() const {
+    absl::optional<StorageInterestGroup> interest_group =
+        interest_group_manager_impl_->BlockingGetInterestGroup(
+            kWinningBidderOrigin, kWinningBidderName);
+    ASSERT_TRUE(interest_group);
+    EXPECT_EQ(0u, interest_group->bidding_browser_signals->prev_wins.size());
+  }
+
+  // Checks that the win has been recorded once and only once by the
+  // InterestGroupManager.
+  void ExpectWinRecordedOnce() const {
+    absl::optional<StorageInterestGroup> interest_group =
+        interest_group_manager_impl_->BlockingGetInterestGroup(
+            kWinningBidderOrigin, kWinningBidderName);
+    ASSERT_TRUE(interest_group);
+    const std::vector<auction_worklet::mojom::PreviousWinPtr>* prev_wins =
+        &interest_group->bidding_browser_signals->prev_wins;
+    ASSERT_EQ(1u, prev_wins->size());
+    EXPECT_EQ((*prev_wins)[0]->ad_json, kWinningAdMetadata);
+  }
+
+  // AuctionWorkletManager::Delegate implementation.
+  //
+  // Note that none of these matter for these tests, as the the mock worklet
+  // classes don't make network requests, but a real AuctionWorkletManager is
+  // used, which expects most of these methods to return non-null objects.
   network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() override {
     NOTREACHED();
     return nullptr;
@@ -283,6 +323,7 @@ class InterestGroupAuctionReporterTest
   const url::Origin kWinningBidderOrigin =
       url::Origin::Create(kWinningBidderScriptUrl);
   const std::string kWinningBidderName = "winning interest group name";
+  const std::string kWinningAdMetadata = R"({"render_url": "https://foo/"})";
 
   const url::Origin kLosingBidderOrigin =
       url::Origin::Create(GURL("https://losing.bidder.origin.test/"));
@@ -736,15 +777,18 @@ TEST_F(InterestGroupAuctionReporterTest, DebugReportsLateNavigation) {
   WaitForCompletion();
 }
 
-// Check that bids are reported to the InterestGroupManager, in the case where
-// the fenced frame is navigated to before any reporting scripts have run.
-TEST_F(InterestGroupAuctionReporterTest, RecordBids) {
+// Check that the winning interest group and bids are reported to the
+// InterestGroupManager, in the case where the fenced frame is navigated to
+// before any reporting scripts have run.
+TEST_F(InterestGroupAuctionReporterTest, RecordWinAndBids) {
   SetUpAndStartSingleSellerAuction();
+  ExpectNoWinsRecorded();
   EXPECT_THAT(interest_group_manager_impl_->TakeInterestGroupsThatBid(),
               testing::UnorderedElementsAre());
 
-  // The bids should be reported immediately upon navigation.
+  // The win and bids should be recorded immediately upon navigation.
   interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+  ExpectWinRecordedOnce();
   EXPECT_THAT(
       interest_group_manager_impl_->TakeInterestGroupsThatBid(),
       testing::UnorderedElementsAreArray(kExpectedInterestGroupsThatBid));
@@ -753,15 +797,16 @@ TEST_F(InterestGroupAuctionReporterTest, RecordBids) {
   WaitForReportWinAndRunCallback(absl::nullopt);
   WaitForCompletion();
 
-  // The bids should have been recorded only once.
+  // The win and bids should have been recorded only once.
+  ExpectWinRecordedOnce();
   EXPECT_THAT(interest_group_manager_impl_->TakeInterestGroupsThatBid(),
               testing::UnorderedElementsAre());
 }
 
-// Check that bids are reported to the InterestGroupManager, in the case where
-// the fenced frame is navigated to only after all reporting scripts have been
-// run.
-TEST_F(InterestGroupAuctionReporterTest, RecordBidsLateNavigation) {
+// Check that the winning interest group and bids are reported to the
+// InterestGroupManager, in the case where the fenced frame is navigated to only
+// after all reporting scripts have been run.
+TEST_F(InterestGroupAuctionReporterTest, RecordWinAndBidsLateNavigation) {
   SetUpAndStartSingleSellerAuction();
   EXPECT_THAT(interest_group_manager_impl_->TakeInterestGroupsThatBid(),
               testing::UnorderedElementsAre());
@@ -769,38 +814,44 @@ TEST_F(InterestGroupAuctionReporterTest, RecordBidsLateNavigation) {
   WaitForReportResultAndRunCallback(kSellerScriptUrl, absl::nullopt);
   WaitForReportWinAndRunCallback(absl::nullopt);
 
-  // Running reporting scripts should not cause any bids to be recorded.
+  // Running reporting scripts should not cause the win or any bids to be
+  // recorded.
+  ExpectNoWinsRecorded();
   EXPECT_THAT(interest_group_manager_impl_->TakeInterestGroupsThatBid(),
               testing::UnorderedElementsAre());
 
   // The bids should be recorded immediately upon navigation.
   interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+  ExpectWinRecordedOnce();
   EXPECT_THAT(
       interest_group_manager_impl_->TakeInterestGroupsThatBid(),
       testing::UnorderedElementsAreArray(kExpectedInterestGroupsThatBid));
 
   WaitForCompletion();
 
-  // The bids should have been recorded only once.
+  // The win and bids should have been recorded only once.
+  ExpectWinRecordedOnce();
   EXPECT_THAT(interest_group_manager_impl_->TakeInterestGroupsThatBid(),
               testing::UnorderedElementsAre());
 }
 
-// Test that no reports are sent and no bids recorded in the case that the
-// reporting scripts are successfully run, but the frame is never navigated to.
+// Test that no reports are sent and no wins or bids recorded in the case that
+// the reporting scripts are successfully run, but the frame is never navigated
+// to.
 TEST_F(InterestGroupAuctionReporterTest, NoNavigation) {
   SetUpAndStartSingleSellerAuction();
   WaitForReportResultAndRunCallback(kSellerScriptUrl, kSellerReportUrl);
   WaitForReportWinAndRunCallback(kBidderReportUrl);
   interest_group_auction_reporter_.reset();
 
+  ExpectNoWinsRecorded();
   EXPECT_THAT(interest_group_manager_impl_->TakeInterestGroupsThatBid(),
               testing::UnorderedElementsAre());
   interest_group_manager_impl_->ExpectReports({});
 }
 
 // Test multiple navigations result in only a single set of reports, and
-// interest groups that bid being recorded only once.
+// in interest groups that won or bid being recorded only once.
 TEST_F(InterestGroupAuctionReporterTest, MultipleNavigations) {
   SetUpAndStartSingleSellerAuction();
   base::RepeatingClosure callback =
@@ -827,7 +878,8 @@ TEST_F(InterestGroupAuctionReporterTest, MultipleNavigations) {
   callback.Run();
   callback.Run();
 
-  // The bids should have been recorded only once.
+  // The win and bids should have been recorded only once.
+  ExpectWinRecordedOnce();
   EXPECT_THAT(
       interest_group_manager_impl_->TakeInterestGroupsThatBid(),
       testing::UnorderedElementsAreArray(kExpectedInterestGroupsThatBid));

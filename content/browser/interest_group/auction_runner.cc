@@ -210,7 +210,6 @@ void AuctionRunner::FailAuction(
                            /*winning_group_key=*/absl::nullopt,
                            /*render_url=*/absl::nullopt,
                            /*ad_component_urls=*/{},
-                           /*winning_group_ad_metadata=*/std::string(),
                            auction_.TakePrivateAggregationRequests(),
                            auction_.GetKAnonKeysToJoin(), auction_.TakeErrors(),
                            /*reporter=*/nullptr);
@@ -278,19 +277,6 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
     return;
   }
 
-  std::string winning_group_ad_metadata;
-  if (auction_.top_bid()->bid->bid_ad->metadata) {
-    //`metadata` is already in JSON so no quotes are needed.
-    winning_group_ad_metadata = base::StringPrintf(
-        R"({"render_url":"%s","metadata":%s})",
-        auction_.top_bid()->bid->render_url.spec().c_str(),
-        auction_.top_bid()->bid->bid_ad->metadata.value().c_str());
-  } else {
-    winning_group_ad_metadata =
-        base::StringPrintf(R"({"render_url":"%s"})",
-                           auction_.top_bid()->bid->render_url.spec().c_str());
-  }
-
   DCHECK(auction_.top_bid()->bid->interest_group);
   const blink::InterestGroup& winning_group =
       *auction_.top_bid()->bid->interest_group;
@@ -313,7 +299,6 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
       this, /*manually_aborted=*/false, std::move(winning_group_key),
       auction_.top_bid()->bid->render_url,
       auction_.top_bid()->bid->ad_components,
-      std::move(winning_group_ad_metadata),
       // In this case, the reporter has all the private aggregation requests.
       std::map<url::Origin, PrivateAggregationRequests>(),
       auction_.GetKAnonKeysToJoin(), std::move(errors), std::move(reporter));

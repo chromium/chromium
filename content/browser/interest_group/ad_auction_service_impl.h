@@ -127,7 +127,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       absl::optional<blink::InterestGroupKey> winning_group_key,
       absl::optional<GURL> render_url,
       std::vector<GURL> ad_component_urls,
-      std::string winning_group_ad_metadata,
       std::map<
           url::Origin,
           std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
@@ -139,8 +138,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   void OnReporterComplete(
       ReporterList::iterator reporter_it,
       GURL urn_uuid,
-      blink::InterestGroupKey winning_group_key,
-      std::string winning_group_ad_metadata,
       scoped_refptr<FencedFrameReporter> fenced_frame_reporter,
       base::flat_set<std::string> k_anon_keys_to_join);
 

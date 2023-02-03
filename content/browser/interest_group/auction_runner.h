@@ -60,10 +60,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // `ad_component_urls` is the list of ad component URLs returned by the
   //  winning bidder. Null if there is no winner or no list was returned.
   //
-  // `winning_group_ad_metadata` is the metadata associated with the winning ad,
-  //  to be made available to the interest group in future auctions in the
-  //  `prevWins` field. Empty if there was no winner.
-  //
   // `report_urls` Reporting URLs returned by seller worklet reportResult()
   //  methods and the winning bidder's reportWin() methods, if any.
   //
@@ -88,7 +84,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       absl::optional<blink::InterestGroupKey> winning_group_id,
       absl::optional<GURL> render_url,
       std::vector<GURL> ad_component_urls,
-      std::string winning_group_ad_metadata,
       std::map<url::Origin, PrivateAggregationRequests>
           private_aggregation_requests,
       base::flat_set<std::string> k_anon_keys_to_join,

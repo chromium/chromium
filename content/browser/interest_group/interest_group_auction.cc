@@ -27,6 +27,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -1382,6 +1383,16 @@ InterestGroupAuction::CreateReporter(
   winning_bid_info.bid_duration = winner->bid->bid_duration;
   winning_bid_info.bidding_signals_data_version =
       winner->bid->bidding_signals_data_version;
+  if (winner->bid->bid_ad->metadata) {
+    //`metadata` is already in JSON so no quotes are needed.
+    winning_bid_info.ad_metadata =
+        base::StringPrintf(R"({"render_url":"%s","metadata":%s})",
+                           winner->bid->render_url.spec().c_str(),
+                           winner->bid->bid_ad->metadata.value().c_str());
+  } else {
+    winning_bid_info.ad_metadata = base::StringPrintf(
+        R"({"render_url":"%s"})", winner->bid->render_url.spec().c_str());
+  }
 
   InterestGroupAuctionReporter::SellerWinningBidInfo
       top_level_seller_winning_bid_info;

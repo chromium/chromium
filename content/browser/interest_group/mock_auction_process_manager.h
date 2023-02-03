@@ -375,14 +375,17 @@ class MockAuctionProcessManager
   std::map<GURL, std::unique_ptr<MockBidderWorklet>> bidder_worklets_;
   std::map<GURL, std::unique_ptr<MockSellerWorklet>> seller_worklets_;
 
-  // Used to wait for the worklets to be loaded at the start of the auction.
+  // Used to wait for the worklets to be loaded.
   std::unique_ptr<base::RunLoop> wait_for_worklets_run_loop_;
-  int waiting_for_num_bidders_ = 0;
-  int waiting_for_num_sellers_ = 0;
 
-  // Used to wait for a worklet to be reloaded at the end of an auction.
-  std::unique_ptr<base::RunLoop> wait_for_bidder_reload_run_loop_;
-  std::unique_ptr<base::RunLoop> wait_for_seller_reload_run_loop_;
+  // Number of seller and bidder worklets that `wait_for_worklets_run_loop_` is
+  // waiting for. These are compared to the size of the worklet maps above. Note
+  // that those only include cumulative worklets not claimed by
+  // TakeBidderWorklet() and TakeSellerWorklet()
+  // - once a worklet has been claimed by the consumer, it no longer counts
+  // towads these totals.
+  size_t waiting_for_num_bidders_ = 0;
+  size_t waiting_for_num_sellers_ = 0;
 
   // Map from ReceiverSet IDs to display name when the process was launched.
   // Used to verify that worklets are created in the right process.

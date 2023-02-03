@@ -478,15 +478,7 @@ void MockAuctionProcessManager::LoadBidderWorklet(
       script_source_url,
       std::make_unique<MockBidderWorklet>(std::move(bidder_worklet_receiver),
                                           expected_per_buyer_timeouts_));
-  // Whenever a worklet is created, one of the RunLoops should be waiting for
-  // worklet creation.
-  if (wait_for_bidder_reload_run_loop_) {
-    wait_for_bidder_reload_run_loop_->Quit();
-  } else {
-    ASSERT_GT(waiting_for_num_bidders_, 0);
-    --waiting_for_num_bidders_;
-    MaybeQuitWaitForWorkletsRunLoop();
-  }
+  MaybeQuitWaitForWorkletsRunLoop();
 }
 
 void MockAuctionProcessManager::LoadSellerWorklet(
@@ -515,15 +507,7 @@ void MockAuctionProcessManager::LoadSellerWorklet(
       script_source_url,
       std::make_unique<MockSellerWorklet>(std::move(seller_worklet_receiver)));
 
-  // Whenever a worklet is created, one of the RunLoops should be waiting for
-  // worklet creation.
-  if (wait_for_seller_reload_run_loop_) {
-    wait_for_seller_reload_run_loop_->Quit();
-  } else {
-    EXPECT_GT(waiting_for_num_sellers_, 0);
-    --waiting_for_num_sellers_;
-    MaybeQuitWaitForWorkletsRunLoop();
-  }
+  MaybeQuitWaitForWorkletsRunLoop();
 }
 
 void MockAuctionProcessManager::SetExpectedBuyerBidTimeout(
@@ -534,27 +518,27 @@ void MockAuctionProcessManager::SetExpectedBuyerBidTimeout(
 
 void MockAuctionProcessManager::WaitForWorklets(int num_bidders,
                                                 int num_sellers) {
+  DCHECK(!wait_for_worklets_run_loop_);
+
   waiting_for_num_bidders_ = num_bidders;
   waiting_for_num_sellers_ = num_sellers;
   wait_for_worklets_run_loop_ = std::make_unique<base::RunLoop>();
+  MaybeQuitWaitForWorkletsRunLoop();
   wait_for_worklets_run_loop_->Run();
   wait_for_worklets_run_loop_.reset();
+
+  EXPECT_EQ(waiting_for_num_bidders_, bidder_worklets_.size());
+  EXPECT_EQ(waiting_for_num_sellers_, seller_worklets_.size());
+  waiting_for_num_bidders_ = 0;
+  waiting_for_num_sellers_ = 0;
 }
 
 void MockAuctionProcessManager::WaitForWinningBidderReload() {
-  EXPECT_TRUE(bidder_worklets_.empty());
-  wait_for_bidder_reload_run_loop_ = std::make_unique<base::RunLoop>();
-  wait_for_bidder_reload_run_loop_->Run();
-  wait_for_bidder_reload_run_loop_.reset();
-  EXPECT_EQ(1u, bidder_worklets_.size());
+  WaitForWorklets(/*num_bidders=*/1, /*num_sellers=*/0);
 }
 
 void MockAuctionProcessManager::WaitForWinningSellerReload() {
-  EXPECT_TRUE(seller_worklets_.empty());
-  wait_for_seller_reload_run_loop_ = std::make_unique<base::RunLoop>();
-  wait_for_seller_reload_run_loop_->Run();
-  wait_for_seller_reload_run_loop_.reset();
-  EXPECT_EQ(1u, seller_worklets_.size());
+  WaitForWorklets(/*num_bidders=*/0, /*num_sellers=*/1);
 }
 
 std::unique_ptr<MockBidderWorklet> MockAuctionProcessManager::TakeBidderWorklet(
@@ -593,8 +577,9 @@ void MockAuctionProcessManager::Flush() {
 }
 
 void MockAuctionProcessManager::MaybeQuitWaitForWorkletsRunLoop() {
-  DCHECK(wait_for_worklets_run_loop_);
-  if (waiting_for_num_bidders_ == 0 && waiting_for_num_sellers_ == 0) {
+  if (wait_for_worklets_run_loop_ &&
+      bidder_worklets_.size() >= waiting_for_num_bidders_ &&
+      seller_worklets_.size() >= waiting_for_num_sellers_) {
     wait_for_worklets_run_loop_->Quit();
   }
 }

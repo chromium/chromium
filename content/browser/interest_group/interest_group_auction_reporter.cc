@@ -527,6 +527,12 @@ void InterestGroupAuctionReporter::OnNavigateToWinningAd() {
   interest_group_manager_->RecordInterestGroupBids(interest_groups_that_bid_);
   interest_groups_that_bid_.clear();
 
+  const blink::InterestGroup& winning_group =
+      winning_bid_info_.storage_interest_group->interest_group;
+  interest_group_manager_->RecordInterestGroupWin(
+      blink::InterestGroupKey(winning_group.owner, winning_group.name),
+      winning_bid_info_.ad_metadata);
+
   MaybeInvokeCallback();
 }
 

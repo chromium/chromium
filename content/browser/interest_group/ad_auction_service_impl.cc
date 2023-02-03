@@ -138,16 +138,12 @@ void SendSuccessfulAuctionReportsAndUpdateInterestGroups(
     PrivateAggregationManager* private_aggregation_manager,
     InterestGroupManagerImpl* interest_group_manager,
     const url::Origin& main_frame_origin,
-    const blink::InterestGroupKey& winning_group_key,
-    const std::string& winning_group_ad_metadata,
     std::map<url::Origin,
              std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
         private_aggregation_requests,
     base::flat_set<std::string> k_anon_keys_to_join) {
   DCHECK(interest_group_manager);
 
-  interest_group_manager->RecordInterestGroupWin(winning_group_key,
-                                                 winning_group_ad_metadata);
   interest_group_manager->RegisterAdKeysAsJoined(
       std::move(k_anon_keys_to_join));
 
@@ -590,7 +586,6 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     absl::optional<blink::InterestGroupKey> winning_group_key,
     absl::optional<GURL> render_url,
     std::vector<GURL> ad_component_urls,
-    std::string winning_group_ad_metadata,
     std::map<url::Origin,
              std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
         private_aggregation_requests,
@@ -627,7 +622,6 @@ void AdAuctionServiceImpl::OnAuctionComplete(
           std::move(k_anon_keys_to_join));
     }
 
-    DCHECK(winning_group_ad_metadata.empty());
     std::move(callback).Run(manually_aborted, /*config=*/absl::nullopt);
     if (auction_result_metrics) {
       // `auction_result_metrics` can be null since PageUserData like
@@ -647,7 +641,6 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   DCHECK(private_aggregation_requests.empty());
   // Should always be present with a render_url.
   DCHECK(winning_group_key);
-  DCHECK(!winning_group_ad_metadata.empty());
   DCHECK(blink::IsValidFencedFrameURL(*render_url));
   DCHECK(urn_uuid.is_valid());
 
@@ -681,8 +674,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   reporters_.emplace_front(std::move(reporter));
   reporters_.front()->Start(base::BindOnce(
       &AdAuctionServiceImpl::OnReporterComplete, base::Unretained(this),
-      reporters_.begin(), std::move(urn_uuid), std::move(*winning_group_key),
-      std::move(winning_group_ad_metadata), std::move(fenced_frame_reporter),
+      reporters_.begin(), std::move(urn_uuid), std::move(fenced_frame_reporter),
       std::move(k_anon_keys_to_join)));
   if (auction_result_metrics) {
     auction_result_metrics->ReportAuctionResult(
@@ -693,8 +685,6 @@ void AdAuctionServiceImpl::OnAuctionComplete(
 void AdAuctionServiceImpl::OnReporterComplete(
     ReporterList::iterator reporter_it,
     GURL urn_uuid,
-    blink::InterestGroupKey winning_group_key,
-    std::string winning_group_ad_metadata,
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter,
     base::flat_set<std::string> k_anon_keys_to_join) {
   // Forward debug information to devtools.
@@ -726,8 +716,8 @@ void AdAuctionServiceImpl::OnReporterComplete(
   // another issue).
   SendSuccessfulAuctionReportsAndUpdateInterestGroups(
       private_aggregation_manager_, &GetInterestGroupManager(),
-      main_frame_origin_, winning_group_key, winning_group_ad_metadata,
-      std::move(private_aggregation_requests), std::move(k_anon_keys_to_join));
+      main_frame_origin_, std::move(private_aggregation_requests),
+      std::move(k_anon_keys_to_join));
 
   // Pass reporting map to the FencedFrameReporter.
   // TODO(mmenke): move this into InterestGroupReporter.

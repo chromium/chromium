@@ -112,6 +112,10 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     base::TimeDelta bid_duration;
 
     absl::optional<uint32_t> bidding_signals_data_version;
+
+    // The metadata associated with the winning ad, to be made available to the
+    // interest group in future auctions in the `prevWins` field.
+    std::string ad_metadata;
   };
 
   // All passed in raw pointers, including those in *BidInfo fields must outlive
