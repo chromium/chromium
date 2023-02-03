@@ -9203,7 +9203,6 @@ if (!is_android) {
       "//components/storage_monitor:test_support",
       "//components/sync:test_support",
       "//components/user_manager",
-      "//components/variations",
       "//components/webapps/browser",
       "//content/public/browser",
       "//extensions/buildflags",

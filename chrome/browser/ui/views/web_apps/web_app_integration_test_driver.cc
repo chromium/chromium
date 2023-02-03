@@ -101,7 +101,6 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/variations/variations_switches.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -1546,8 +1545,6 @@ void WebAppIntegrationTestDriver::LaunchFromAppShimFallback(Site site) {
   command_line.AppendSwitchASCII(switches::kAppId, app_id);
   command_line.AppendSwitchASCII(switches::kTestType, "browser");
   command_line.AppendSwitchASCII(switches::kProfileDirectory, "");
-  command_line.AppendSwitch(
-      variations::switches::kEnableFieldTrialTestingConfig);
 
   if (is_open_in_app_browser) {
     BrowserAddedWaiter browser_added_waiter;
@@ -3494,8 +3491,6 @@ void WebAppIntegrationTestDriver::LaunchFile(Site site,
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, app_id);
   command_line.AppendSwitchASCII(switches::kTestType, "browser");
-  command_line.AppendSwitch(
-      variations::switches::kEnableFieldTrialTestingConfig);
   for (auto file_path : file_paths) {
     command_line.AppendArgPath(file_path);
   }
@@ -3522,8 +3517,6 @@ void WebAppIntegrationTestDriver::LaunchAppStartupBrowserCreator(
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, app_id);
   command_line.AppendSwitchASCII(switches::kTestType, "browser");
-  command_line.AppendSwitch(
-      variations::switches::kEnableFieldTrialTestingConfig);
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
