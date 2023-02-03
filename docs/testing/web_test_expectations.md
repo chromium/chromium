@@ -279,7 +279,9 @@ The syntax of a line is roughly:
   enclose them in brackets.
 * If test_name_or_directory is a directory, it should be ended with '/*', and all
   tests under the directory will have the expectations, unless overridden by
-  more specific expectation lines.
+  more specific expectation lines. **The wildcard is intentionally only allowed at the
+  end of test_name_or_directory, so that it will be easy to reason about
+  which test(s) a test expectation will apply to.**
 * Lines are expected to have one or more bug identifiers, and the linter will
   complain about lines missing them. Bug identifiers are of the form
   `crbug.com/12345`, `code.google.com/p/v8/issues/detail?id=12345` or
