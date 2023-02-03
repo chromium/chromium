@@ -65,7 +65,8 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
                             public ShelfObserver,
                             public TabletModeObserver,
                             public KeyboardControllerObserver,
-                            public ShellObserver {
+                            public ShellObserver,
+                            public eche_app::mojom::StreamOrientationObserver {
  public:
   METADATA_HEADER(EcheTray);
 
@@ -148,6 +149,10 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   void OnKeyboardUIDestroyed() override;
   void OnKeyboardHidden(bool is_temporary_hide) override;
 
+  // eche_app::mojom::StreamOrientationObserver:
+  void OnStreamOrientationChanged(
+      eche_app::mojom::StreamOrientation orientation) override;
+
   // Sets the url that will be passed to the webview.
   // Setting a new value will cause the current bubble be destroyed.
   void SetUrl(const GURL& url);
@@ -216,6 +221,9 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   void StartGracefulClose();
 
   // Test helpers
+  eche_app::mojom::StreamOrientation get_stream_orientation_for_test() {
+    return stream_orientation_;
+  }
   TrayBubbleWrapper* get_bubble_wrapper_for_test() { return bubble_.get(); }
   AshWebView* get_web_view_for_test() { return web_view_; }
   views::ImageButton* GetIcon();
@@ -225,6 +233,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   FRIEND_TEST_ALL_PREFIXES(EcheTrayTest, EcheTrayOnDisplayConfigurationChanged);
   FRIEND_TEST_ALL_PREFIXES(EcheTrayTest,
                            EcheTrayKeyboardShowHideUpdateBubbleBounds);
+  FRIEND_TEST_ALL_PREFIXES(EcheTrayTest, EcheTrayOnStreamOrientationChanged);
 
   // Intercepts all the events targeted to the internal webview in order to
   // process the accelerator keys.
@@ -324,6 +333,11 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // The time a stream is initializing. Used to record the elapsed time from
   // when the stream is initializing to when the stream is closed by user.
   absl::optional<base::TimeTicks> init_stream_timestamp_;
+
+  // The orientation of the stream (portrait vs landscape). The default
+  // orientation is portrait.
+  eche_app::mojom::StreamOrientation stream_orientation_ =
+      eche_app::mojom::StreamOrientation::kPortrait;
 
   bool is_stream_started_ = false;
   std::u16string phone_name_;

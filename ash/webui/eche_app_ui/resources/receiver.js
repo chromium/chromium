@@ -151,6 +151,11 @@ const EcheApiBindingImpl = new (class {
     streamActionCallback = callback;
   }
 
+  onStreamOrientationChanged(orientation) {
+    console.log('echeapi receiver.js onStreamOrientationChanged');
+    parentMessagePipe.sendMessage(Message.CHANGE_ORIENTATION, {orientation});
+  }
+
   onReceivedVirtualKeyboardChanged(callback) {
     console.log('echeapi receiver.js onReceivedVirtualKeyboardChanged');
     virtualKeyboardCallback = callback;
@@ -203,5 +208,7 @@ echeapi.system.registerVirtualKeyboardChangedReceiver =
 echeapi.system.registerAndroidNetworkInfoChangedReceiver =
     EcheApiBindingImpl.onAndroidDeviceNetworkInfoChanged.bind(
         EcheApiBindingImpl);
+echeapi.system.registerStreamOrientationReceiver =
+    EcheApiBindingImpl.onStreamOrientationChanged.bind(EcheApiBindingImpl);
 window['echeapi'] = echeapi;
 console.log('echeapi receiver.js finish bind the implementation of echeapi');

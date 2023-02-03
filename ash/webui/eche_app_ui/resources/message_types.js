@@ -109,4 +109,6 @@
   IS_VIRTUAL_KEYBOARD_ENABLED: 'is_virtual_keyboard_enabled',
   // Message for Android network info
   ANDROID_NETWORK_INFO: 'android-network-info',
+  // Message for changing app stream orientation
+  CHANGE_ORIENTATION: 'change_orientation',
 };
