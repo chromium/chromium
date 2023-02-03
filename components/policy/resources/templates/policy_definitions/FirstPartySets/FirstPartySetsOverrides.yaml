@@ -4,7 +4,7 @@ desc: |-
   This policy provides a way to override the list of sets the browser uses for First-Party Sets features.
 
         Each set in the browser's list of First-Party Sets must meet the requirements of a First-Party Set.
-        A First-Party Set must contain an owner site and one or more member sites.
+        A First-Party Set must contain a primary site and one or more member sites.
         A set can also contain a list of service sites that it owns, as well as a map from a site to all of its ccTLD variants.
         See https: //github.com/WICG/first-party-sets for more information on First-Party Sets are used by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
