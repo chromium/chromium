@@ -2042,6 +2042,7 @@ static_library("browser") {
     "//chrome/browser/ui/webui/omnibox:mojo_bindings",
     "//chrome/browser/ui/webui/reset_password:mojo_bindings",
     "//chrome/browser/ui/webui/segmentation_internals:mojo_bindings",
+    "//chrome/browser/ui/webui/suggest_internals:mojo_bindings",
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/browser/video_tutorials",

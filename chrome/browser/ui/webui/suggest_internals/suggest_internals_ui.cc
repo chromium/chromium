@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/suggest_internals/suggest_internals_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/suggest_internals_resources.h"
@@ -26,5 +27,13 @@ SuggestInternalsUI::SuggestInternalsUI(content::WebUI* web_ui)
 }
 
 SuggestInternalsUI::~SuggestInternalsUI() = default;
+
+void SuggestInternalsUI::BindInterface(
+    mojo::PendingReceiver<suggest_internals::mojom::PageHandler>
+        pending_page_handler) {
+  handler_ = std::make_unique<SuggestInternalsHandler>(
+      std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
+      web_ui()->GetWebContents());
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SuggestInternalsUI)

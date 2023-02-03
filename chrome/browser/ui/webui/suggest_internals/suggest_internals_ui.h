@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_UI_WEBUI_SUGGEST_INTERNALS_SUGGEST_INTERNALS_UI_H_
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/webui/suggest_internals/suggest_internals.mojom-forward.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+
+class SuggestInternalsHandler;
 
 // The Web UI controller for the chrome://suggest-internals.
 class SuggestInternalsUI : public ui::MojoWebUIController {
@@ -15,6 +18,15 @@ class SuggestInternalsUI : public ui::MojoWebUIController {
   SuggestInternalsUI(const SuggestInternalsUI&) = delete;
   SuggestInternalsUI& operator=(const SuggestInternalsUI&) = delete;
   ~SuggestInternalsUI() override;
+
+  // Instantiates the implementor of the suggest_internals::mojom::PageHandler
+  // mojo interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<suggest_internals::mojom::PageHandler>
+          pending_page_handler);
+
+ private:
+  std::unique_ptr<SuggestInternalsHandler> handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

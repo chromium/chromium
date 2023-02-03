@@ -1,0 +1,78 @@
+<style include="cr-shared-style">
+  :host {
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
+    display: block;
+    margin: calc(var(--cr-section-padding) / 2);
+    overflow: hidden;
+  }
+
+  .cr-row {
+    padding: calc(var(--cr-section-padding) / 2) var(--cr-section-padding);
+  }
+
+  .label:not(:first-child) {
+    margin-inline-start: var(--cr-icon-button-margin-start);
+  }
+
+  .status {
+    --iron-icon-fill-color: var(--google-grey-700);
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .status {
+      --iron-icon-fill-color: var(--google-grey-500);
+    }
+  }
+
+  .content {
+    flex-grow: 1;
+    overflow: auto;
+  }
+
+  .actions {
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .response-html {
+    white-space: pre;
+  }
+</style>
+<cr-expand-button class="cr-row first" expanded="{{request.expanded}}">
+  <span class="label">[[getTimestamp_(request.startTime)]]</span>
+  <iron-icon class="label status" icon="[[getStatusIcon_(request.status)]]"
+      title="[[getStatusTitle_(request.endTime)]]">
+  </iron-icon>
+  <span class="label">[[getRequestPath_(request.url)]]</span>
+</cr-expand-button>
+<iron-collapse opened="[[request.expanded]]">
+  <div class="cr-row" hidden$="[[!request.url.url]]">
+    <div class="content">[[request.url.url]]</div>
+    <div class="actions">
+      <cr-icon-button class="icon-copy-content" title="copy to clipboard"
+          on-click="onCopyUrlClick_">
+      </cr-icon-button>
+    </div>
+  </div>
+  <div class="cr-row" hidden$="[[!responseJson_]]">
+    <div class="content response-html"
+        inner-h-t-m-l="[[getResponseHtml_(responseJson_)]]">
+    </div>
+    <div class="actions">
+      <cr-icon-button class="icon-copy-content" title="copy to clipboard"
+          on-click="onCopyResponseClick_">
+      </cr-icon-button>
+      <cr-icon-button class="icon-visibility" title="view response"
+          on-click="onViewResponseClick_">
+      </cr-icon-button>
+      <cr-icon-button iron-icon="suggest:lock" title="hardcode response"
+          on-click="onHardcodeResponseClick_">
+      </cr-icon-button>
+    </div>
+  </div>
+</iron-collapse>

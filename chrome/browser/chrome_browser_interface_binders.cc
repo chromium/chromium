@@ -42,6 +42,8 @@
 #include "chrome/browser/ui/webui/omnibox/omnibox.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
+#include "chrome/browser/ui/webui/suggest_internals/suggest_internals.mojom.h"
+#include "chrome/browser/ui/webui/suggest_internals/suggest_internals_ui.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals.mojom.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -999,6 +1001,9 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<omnibox::mojom::PageHandler,
                                          NewTabPageUI, OmniboxPopupUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<suggest_internals::mojom::PageHandler,
+                                         SuggestInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       customize_themes::mojom::CustomizeThemesHandlerFactory, NewTabPageUI
