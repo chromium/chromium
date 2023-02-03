@@ -183,10 +183,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   void OnFilesChanged(const std::vector<mojom::FileChange>& changes) override;
   void OnError(const mojom::DriveError& error) override;
 
-  void OnFileCreated(const mojom::FileChange& event);
-  void OnFileDeleted(const mojom::FileChange& event);
-  void OnFileModified(const mojom::FileChange& event);
-
   base::WeakPtr<PinManager> GetWeakPtr() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return weak_ptr_factory_.GetWeakPtr();
@@ -269,6 +265,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // `transferred` is negative, use the total expected size. Returns whether an
   // item was actually removed.
   bool Remove(Id id, const Path& path, int64_t transferred = -1);
+  void Remove(Files::iterator it, const Path& path, int64_t transferred = -1);
 
   // Updates an item in the files to track. Does nothing if the item is not in
   // the map. Updates the total number of bytes transferred so far. Updates the
@@ -279,6 +276,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
               const Path& path,
               int64_t transferred,
               int64_t total);
+
+  void OnFileCreated(const mojom::FileChange& event);
+  void OnFileDeleted(const mojom::FileChange& event);
+  void OnFileModified(const mojom::FileChange& event);
 
   // Invoked on retrieval of available space in the `~/GCache` directory.
   void OnFreeSpaceRetrieved(int64_t free_space);
@@ -311,13 +312,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // status update but will get pinned.
   void CheckStalledFiles();
 
-  // When an item goes to completed, it doesn't emit the final chunk of progress
-  // nor it's final size, to ensure progress is adequately retrieved, this
-  // method is used to get the total size to keep track of.
-  void OnMetadataRetrieved(Id id,
-                           const Path& path,
-                           drive::FileError error,
-                           mojom::FileMetadataPtr metadata);
+  void OnMetadataForCreatedFile(Id id,
+                                const Path& path,
+                                drive::FileError error,
+                                mojom::FileMetadataPtr metadata);
+
+  void OnMetadataForModifiedFile(Id id,
+                                 const Path& path,
+                                 drive::FileError error,
+                                 mojom::FileMetadataPtr metadata);
 
   // Start or continue pinning some files.
   void PinSomeFiles();
