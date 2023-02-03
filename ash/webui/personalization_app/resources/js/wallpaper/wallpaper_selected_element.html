@@ -59,6 +59,25 @@
   cr-button + cr-button {
     margin-inline-start: 8px;
   }
+
+  cr-dialog::part(dialog) {
+    min-width: 288px;
+    width: 288px;
+  }
+
+  #dialogProceedButton {
+    background-color: var(--cros-button-background-color-primary);
+    border: 0;
+    --text-color: var(--cros-button-label-color-primary);
+  }
+
+  #dialogProceedButton:hover {
+    background-color: var(--cros-button-background-color-primary-hover-preblended);
+  }
+
+  #dialogProceedButton:active {
+    box-shadow: 0 1px 2px rgba(66, 133, 244, 0.3), 0 1px 3px rgba(66, 133, 244, 0.15);
+  }
 </style>
 <header id="container" class$="[[getContainerClass_(isLoading_, showImage_)]]">
   <template is="dom-if" if="[[showPlaceholders_(isLoading_, showImage_)]]">
@@ -123,5 +142,22 @@
         </div>
       </template>
     </div>
+    <template is="dom-if" if="[[shouldShowDailyRefreshConfirmationDialog_]]" restamp>
+      <cr-dialog id="dialog" on-close="closeDialog_" show-on-attach>
+        <div slot="title">[temp]Shared albums can be updated by other users</div>
+        <div slot="body">
+          [temp]Photos in shared albums can be updated by other users. Change
+          daily might show wallpapers not currently in the album
+        </div>
+        <div slot="button-container">
+          <cr-button id="dialogCancelButton" on-click="closeDialog_">
+            Cancel
+          </cr-button>
+          <cr-button id="dialogProceedButton" on-click="onClickProceed_">
+            Proceed
+          </cr-button>
+        </div>
+      </cr-dialog>
+    </template>
   </template>
 </header>

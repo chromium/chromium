@@ -73,8 +73,12 @@ export class PersonalizationRouter extends PolymerElement {
   }
   private path_: string;
   private query_: string;
-  private queryParams_:
-      {id?: string, googlePhotosAlbumId?: string, topicSource?: string};
+  private queryParams_: {
+    id?: string,
+    googlePhotosAlbumId?: string,
+    googlePhotosAlbumIsShared?: string,
+    topicSource?: string,
+  };
 
   static instance(): PersonalizationRouter {
     return document.querySelector(PersonalizationRouter.is) as
@@ -121,8 +125,10 @@ export class PersonalizationRouter extends PolymerElement {
 
   /** Navigate to a specific album in the Google Photos collection page. */
   selectGooglePhotosAlbum(album: GooglePhotosAlbum) {
-    this.goToRoute(
-        Paths.GOOGLE_PHOTOS_COLLECTION, {googlePhotosAlbumId: album.id});
+    this.goToRoute(Paths.GOOGLE_PHOTOS_COLLECTION, {
+      googlePhotosAlbumId: album.id,
+      googlePhotosAlbumIsShared: album.isShared,
+    });
   }
 
   /** Navigate to albums subpage of specific topic source. */

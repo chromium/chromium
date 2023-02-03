@@ -8,6 +8,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {CurrentWallpaper, DailyRefreshType, Paths, WallpaperLayout, WallpaperSelected, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -19,6 +20,12 @@ suite('WallpaperSelectedTest', function() {
   let wallpaperSelectedElement: WallpaperSelected|null;
   let wallpaperProvider: TestWallpaperProvider;
   let personalizationStore: TestPersonalizationStore;
+
+  async function clickButtonById(id: string) {
+    const button = wallpaperSelectedElement!.shadowRoot!.getElementById(id);
+    button!.click();
+    await waitAfterNextRender(wallpaperSelectedElement!);
+  }
 
   setup(() => {
     const mocks = baseSetup();
@@ -332,4 +339,185 @@ suite('WallpaperSelectedTest', function() {
                                                 'imageTitle')!.innerText,
         'default wallpaper attribution is shown');
   });
+
+  test(
+      'shows google photos shared album confirmation dialog for daily refresh',
+      async () => {
+        loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
+        const currentSelected: CurrentWallpaper = {
+          attribution: ['testing attribution'],
+          layout: WallpaperLayout.kStretch,
+          type: WallpaperType.kDefault,
+          key: 'key',
+        };
+        personalizationStore.data.wallpaper.currentSelected = currentSelected;
+        personalizationStore.data.wallpaper.loading.selected = false;
+        const album_id = 'test_album_id';
+
+        wallpaperSelectedElement = initElement(WallpaperSelected, {
+          'path': Paths.GOOGLE_PHOTOS_COLLECTION,
+          'googlePhotosAlbumId': album_id,
+          'googlePhotosAlbumIsShared': 'true',
+        });
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(wallpaperSelectedElement);
+
+        await clickButtonById('dailyRefresh');
+
+        const confirmationDialog =
+            wallpaperSelectedElement.shadowRoot!.getElementById('dialog');
+        assertFalse(confirmationDialog!.hidden);
+      });
+
+  test(
+      'clicks cancel on the Google Photos shared album confirmation dialog',
+      async () => {
+        loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
+        personalizationStore.data.wallpaper.currentSelected = {
+          attribution: ['testing attribution'],
+          layout: WallpaperLayout.kStretch,
+          type: WallpaperType.kDefault,
+          key: 'key',
+        };
+        personalizationStore.data.wallpaper.loading.selected = false;
+        const album_id = 'test_album_id';
+
+        wallpaperSelectedElement = initElement(WallpaperSelected, {
+          'path': Paths.GOOGLE_PHOTOS_COLLECTION,
+          'googlePhotosAlbumId': album_id,
+          'googlePhotosAlbumIsShared': 'true',
+        });
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(wallpaperSelectedElement);
+
+        await clickButtonById('dailyRefresh');
+
+        await clickButtonById('dialogCancelButton');
+
+        const confirmationDialog =
+            wallpaperSelectedElement.shadowRoot!.getElementById('dialog');
+        assertFalse(!!confirmationDialog);
+        assertEquals(
+            0, wallpaperProvider.getCallCount('selectGooglePhotosAlbum'));
+      });
+
+  test(
+      'clicks proceed on the Google Photos shared album confirmation dialog',
+      async () => {
+        loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
+        personalizationStore.data.wallpaper.currentSelected = {
+          attribution: ['testing attribution'],
+          layout: WallpaperLayout.kStretch,
+          type: WallpaperType.kDefault,
+          key: 'key',
+        };
+        personalizationStore.data.wallpaper.loading.selected = false;
+        const album_id = 'test_album_id';
+
+        wallpaperSelectedElement = initElement(WallpaperSelected, {
+          'path': Paths.GOOGLE_PHOTOS_COLLECTION,
+          'googlePhotosAlbumId': album_id,
+          'googlePhotosAlbumIsShared': 'true',
+        });
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(wallpaperSelectedElement);
+
+        await clickButtonById('dailyRefresh');
+
+        await clickButtonById('dialogProceedButton');
+
+        const confirmationDialog =
+            wallpaperSelectedElement.shadowRoot!.getElementById('dialog');
+        assertFalse(!!confirmationDialog);
+        assertEquals(
+            album_id,
+            await wallpaperProvider.whenCalled('selectGooglePhotosAlbum'));
+      });
+
+  test('turns off daily refresh for Google Photos shared album', async () => {
+    loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
+    personalizationStore.data.wallpaper.currentSelected = {
+      attribution: ['testing attribution'],
+      layout: WallpaperLayout.kStretch,
+      type: WallpaperType.kDefault,
+      key: 'key',
+    };
+    personalizationStore.data.wallpaper.loading.selected = false;
+    const album_id = 'test_album_id';
+
+    // Daily refresh is already enabled.
+    personalizationStore.data.wallpaper.dailyRefresh = {
+      id: album_id,
+      type: DailyRefreshType.GOOGLE_PHOTOS,
+    };
+
+    wallpaperSelectedElement = initElement(WallpaperSelected, {
+      'path': Paths.GOOGLE_PHOTOS_COLLECTION,
+      'googlePhotosAlbumId': album_id,
+      'googlePhotosAlbumIsShared': 'true',
+    });
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    await clickButtonById('dailyRefresh');
+
+    // There should be no confirmation dialog.
+    const confirmationDialog =
+        wallpaperSelectedElement.shadowRoot!.getElementById('dialog');
+    assertFalse(!!confirmationDialog);
+  });
+
+  test('does not show confirmation dialog when experiment is off', async () => {
+    loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: false});
+    personalizationStore.data.wallpaper.currentSelected = {
+      attribution: ['testing attribution'],
+      layout: WallpaperLayout.kStretch,
+      type: WallpaperType.kDefault,
+      key: 'key',
+    };
+    personalizationStore.data.wallpaper.loading.selected = false;
+    const album_id = 'test_album_id';
+
+    wallpaperSelectedElement = initElement(WallpaperSelected, {
+      'path': Paths.GOOGLE_PHOTOS_COLLECTION,
+      'googlePhotosAlbumId': album_id,
+      'googlePhotosAlbumIsShared': 'false',
+    });
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    await clickButtonById('dailyRefresh');
+
+    const confirmationDialog =
+        wallpaperSelectedElement.shadowRoot!.getElementById('dialog');
+    assertFalse(!!confirmationDialog);
+  });
+
+  test(
+      'does not show confirmation dialog for google photos unshared album',
+      async () => {
+        loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
+        personalizationStore.data.wallpaper.currentSelected = {
+          attribution: ['testing attribution'],
+          layout: WallpaperLayout.kStretch,
+          type: WallpaperType.kDefault,
+          key: 'key',
+        };
+        personalizationStore.data.wallpaper.loading.selected = false;
+        const album_id = 'test_album_id';
+
+        wallpaperSelectedElement = initElement(WallpaperSelected, {
+          'path': Paths.GOOGLE_PHOTOS_COLLECTION,
+          'googlePhotosAlbumId': album_id,
+          'googlePhotosAlbumIsShared': 'false',
+        });
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(wallpaperSelectedElement);
+
+        await clickButtonById('dailyRefresh');
+
+        const confirmationDialog =
+            wallpaperSelectedElement.shadowRoot!.getElementById('dialog');
+        assertFalse(!!confirmationDialog);
+      });
 });
