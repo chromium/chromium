@@ -10,7 +10,6 @@
         binary: "web_engine_exe",
         args: [
             "--context-provider",
-            "--enable-cfv2",
         ],
     },
     capabilities: [

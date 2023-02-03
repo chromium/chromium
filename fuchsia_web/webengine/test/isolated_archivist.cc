@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia_web/webengine/test/isolated_archivist_v2.h"
+#include "fuchsia_web/webengine/test/isolated_archivist.h"
 
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>

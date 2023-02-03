@@ -228,7 +228,6 @@ zx_status_t AppendLaunchArgs(fuchsia::web::CreateContextParams& params,
                              base::CommandLine& launch_args) {
   // Arguments to be stripped rather than propagated.
   launch_args.RemoveSwitch(switches::kContextProvider);
-  launch_args.RemoveSwitch(switches::kEnableCfv2);
 
   const fuchsia::web::ContextFeatureFlags features =
       params.has_features() ? params.features()

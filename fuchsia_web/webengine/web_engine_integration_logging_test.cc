@@ -11,16 +11,10 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
+#include "fuchsia_web/webengine/test/context_provider_for_test.h"
+#include "fuchsia_web/webengine/test/isolated_archivist.h"
 #include "fuchsia_web/webengine/web_engine_integration_test_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if defined(USE_CFV1_LAUNCHER)
-#include "fuchsia_web/webengine/test/context_provider_for_test_v1.h"  // nogncheck
-#include "fuchsia_web/webengine/test/isolated_archivist_v1.h"  // nogncheck
-#else
-#include "fuchsia_web/webengine/test/context_provider_for_test_v2.h"  // nogncheck
-#include "fuchsia_web/webengine/test/isolated_archivist_v2.h"  // nogncheck
-#endif
 
 namespace {
 

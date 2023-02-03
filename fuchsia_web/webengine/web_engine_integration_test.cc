@@ -20,6 +20,7 @@
 #include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/common/test/test_devtools_list_fetcher.h"
+#include "fuchsia_web/webengine/test/context_provider_for_test.h"
 #include "fuchsia_web/webengine/web_engine_integration_test_base.h"
 #include "media/base/media_switches.h"
 #include "media/fuchsia/audio/fake_audio_consumer.h"
@@ -28,12 +29,6 @@
 #include "net/http/http_request_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if defined(USE_CFV1_LAUNCHER)
-#include "fuchsia_web/webengine/test/context_provider_for_test_v1.h"  // nogncheck
-#else
-#include "fuchsia_web/webengine/test/context_provider_for_test_v2.h"  // nogncheck
-#endif
 
 namespace {
 

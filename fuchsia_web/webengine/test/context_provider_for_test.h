@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_WEB_WEBENGINE_TEST_CONTEXT_PROVIDER_FOR_TEST_V1_H_
-#define FUCHSIA_WEB_WEBENGINE_TEST_CONTEXT_PROVIDER_FOR_TEST_V1_H_
+#ifndef FUCHSIA_WEB_WEBENGINE_TEST_CONTEXT_PROVIDER_FOR_TEST_H_
+#define FUCHSIA_WEB_WEBENGINE_TEST_CONTEXT_PROVIDER_FOR_TEST_H_
 
-#include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_request.h>
-#include <lib/sys/cpp/service_directory.h>
+#include <lib/sys/component/cpp/testing/realm_builder.h>
 
 #include "base/command_line.h"
 
@@ -25,16 +24,13 @@ class ContextProviderForTest {
 
   ::fuchsia::web::ContextProviderPtr& ptr() { return context_provider_; }
   ::fuchsia::web::ContextProvider* get() { return context_provider_.get(); }
-  ::fuchsia::sys::ComponentControllerPtr& component_controller_ptr() {
-    return web_engine_controller_;
-  }
+  ::component_testing::RealmRoot& realm_root() { return realm_root_; }
 
  private:
-  ContextProviderForTest(
-      ::fuchsia::sys::ComponentControllerPtr web_engine_controller,
-      ::fuchsia::web::ContextProviderPtr context_provider);
+  ContextProviderForTest(::component_testing::RealmRoot realm_root,
+                         ::fuchsia::web::ContextProviderPtr context_provider);
 
-  ::fuchsia::sys::ComponentControllerPtr web_engine_controller_;
+  ::component_testing::RealmRoot realm_root_;
   ::fuchsia::web::ContextProviderPtr context_provider_;
 };
 
@@ -57,11 +53,9 @@ class ContextProviderForDebugTest {
       ::fidl::InterfaceRequest<::fuchsia::web::Debug> debug_request);
 
  private:
-  ContextProviderForDebugTest(ContextProviderForTest context_provider,
-                              ::sys::ServiceDirectory debug_service_directory);
+  explicit ContextProviderForDebugTest(ContextProviderForTest context_provider);
 
   ContextProviderForTest context_provider_;
-  ::sys::ServiceDirectory debug_service_directory_;
 };
 
-#endif  // FUCHSIA_WEB_WEBENGINE_TEST_CONTEXT_PROVIDER_FOR_TEST_V1_H_
+#endif  // FUCHSIA_WEB_WEBENGINE_TEST_CONTEXT_PROVIDER_FOR_TEST_H_

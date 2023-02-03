@@ -1038,28 +1038,6 @@
         "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_integration_tests/"
       },
       {
-        "args": [
-          "--test-arg=--vmodule=test_navigation_listener=1"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "web_engine_integration_tests_cfv1",
-        "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_integration_tests_cfv1/"
-      },
-      {
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -2240,28 +2218,6 @@
         },
         "test": "web_engine_integration_tests",
         "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_integration_tests/"
-      },
-      {
-        "args": [
-          "--test-arg=--vmodule=test_navigation_listener=1"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "web_engine_integration_tests_cfv1",
-        "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_integration_tests_cfv1/"
       },
       {
         "merge": {
@@ -3582,27 +3538,6 @@
         },
         "test": "web_engine_integration_tests",
         "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_integration_tests/"
-      },
-      {
-        "args": [
-          "--test-arg=--vmodule=test_navigation_listener=1"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "kvm": "1",
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "web_engine_integration_tests_cfv1",
-        "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_integration_tests_cfv1/"
       },
       {
         "merge": {
@@ -5119,27 +5054,6 @@
         },
         "test": "web_engine_integration_tests",
         "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_integration_tests/"
-      },
-      {
-        "args": [
-          "--test-arg=--vmodule=test_navigation_listener=1"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "kvm": "1",
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "web_engine_integration_tests_cfv1",
-        "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_integration_tests_cfv1/"
       },
       {
         "merge": {

@@ -5158,11 +5158,6 @@
           '--test-arg=--vmodule=test_navigation_listener=1',
         ],
       },
-      'web_engine_integration_tests_cfv1': {
-        'args': [
-          '--test-arg=--vmodule=test_navigation_listener=1',
-        ],
-      },
       'web_engine_unittests': {},
       'web_runner_integration_tests': {},
     },

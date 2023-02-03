@@ -65,10 +65,6 @@ extern const char kGoogleApiKey[];
 // Used to tell the WebEngine executable to run the ContextProvider service.
 extern const char kContextProvider[];
 
-// Used to tell the WebEngine executable that it is being run via a .cm
-// manifest.
-extern const char kEnableCfv2[];
-
 }  // namespace switches
 
 #endif  // FUCHSIA_WEB_WEBENGINE_SWITCHES_H_
