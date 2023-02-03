@@ -301,7 +301,7 @@ PASS win['statusbar'] == '[object BarProp]' is true
 PASS win['statusbar'] == '[object BarProp]' is true
 PASS win['toolbar'] == '[object BarProp]' is true
 PASS win['toolbar'] == '[object BarProp]' is true
-PASS win['console'] == '[object Object]' is true
+PASS win['console'] == '[object console]' is true
 PASS win['history'] == '[object History]' is true
 PASS win['navigator'] == '[object Navigator]' is true
 PASS win['navigator'] == '[object Navigator]' is true

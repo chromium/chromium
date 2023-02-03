@@ -6909,11 +6909,6 @@ http/tests/security/cross-frame-access-port-explicit-domain.html [ Failure Pass 
 http/tests/security/cross-frame-access-protocol-explicit-domain.html [ Failure Pass ]
 http/tests/security/canvas-remote-read-remote-image-document-domain.html [ Failure Pass ]
 
-# TODO(domfarolino): Remove these entries when https://crrev.com/c/4193308 lands.
-fast/dom/Window/window-lookup-precedence.html [ Failure Skip ]
-external/wpt/console/console-namespace-object-class-string.any.html [ Failure Skip ]
-external/wpt/console/console-namespace-object-class-string.any.worker.html [ Failure Skip ]
-
 # Sheriff 2023-01-20
 crbug.com/1408967 [ Fuchsia ] fast/block/float/float-in-float-painting.html [ Failure Pass ]
 crbug.com/1408967 [ Fuchsia ] fast/layers/opacity-transforms.html [ Failure Pass ]
