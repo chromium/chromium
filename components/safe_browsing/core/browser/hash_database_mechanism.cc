@@ -15,11 +15,13 @@ HashDatabaseMechanism::HashDatabaseMechanism(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-    bool can_check_db)
+    bool can_check_db,
+    MechanismExperimentHashDatabaseCache experiment_cache_selection)
     : SafeBrowsingLookupMechanism(url,
                                   threat_types,
                                   database_manager,
-                                  can_check_db) {}
+                                  can_check_db,
+                                  experiment_cache_selection) {}
 
 HashDatabaseMechanism::~HashDatabaseMechanism() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -39,8 +41,8 @@ HashDatabaseMechanism::StartCheckInternal() {
 }
 
 bool HashDatabaseMechanism::CallCheckBrowseUrl() {
-  bool is_safe_synchronously =
-      database_manager_->CheckBrowseUrl(url_, threat_types_, this);
+  bool is_safe_synchronously = database_manager_->CheckBrowseUrl(
+      url_, threat_types_, this, experiment_cache_selection_);
   if (!is_safe_synchronously) {
     is_async_database_manager_check_in_progress_ = true;
   }

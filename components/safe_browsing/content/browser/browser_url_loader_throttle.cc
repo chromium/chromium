@@ -142,7 +142,8 @@ class BrowserURLLoaderThrottle::CheckerOnIO
         can_check_high_confidence_allowlist_, url_lookup_service_metric_suffix_,
         last_committed_url_, content::GetUIThreadTaskRunner({}),
         url_lookup_service_, WebUIInfoSingleton::GetInstance(),
-        hash_realtime_service_, mechanism_experimenter_);
+        hash_realtime_service_, mechanism_experimenter_,
+        is_mechanism_experiment_allowed_);
 
     CheckUrl(url, method);
   }

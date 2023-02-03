@@ -32,9 +32,11 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
       network::mojom::RequestDestination request_destination) const override;
   bool CanCheckUrl(const GURL& url) const override;
   bool ChecksAreAlwaysAsync() const override;
-  bool CheckBrowseUrl(const GURL& url,
-                      const SBThreatTypeSet& threat_types,
-                      Client* client) override;
+  bool CheckBrowseUrl(
+      const GURL& url,
+      const SBThreatTypeSet& threat_types,
+      Client* client,
+      MechanismExperimentHashDatabaseCache experiment_cache_selection) override;
   AsyncMatch CheckCsdAllowlistUrl(const GURL& url, Client* client) override;
   bool CheckDownloadUrl(const std::vector<GURL>& url_chain,
                         Client* client) override;
