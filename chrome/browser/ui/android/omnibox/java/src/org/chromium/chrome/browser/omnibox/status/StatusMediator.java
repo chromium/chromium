@@ -201,6 +201,11 @@ public class StatusMediator implements PermissionDialogController.Observer,
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
+    @DrawableRes
+    int getSecurityIconResource() {
+        return mSecurityIconRes;
+    }
+
     /**
      * Update the displayed page's security level and whether it's a paint preview or offline page.
      */

@@ -381,6 +381,11 @@ public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
         return mLocationBarMediator;
     }
 
+    @Override
+    public UrlBarData getUrlBarData() {
+        return mUrlCoordinator.getUrlBarData();
+    }
+
     // OmniboxSuggestionsDropdownEmbedder implementation
     @Override
     public boolean isTablet() {

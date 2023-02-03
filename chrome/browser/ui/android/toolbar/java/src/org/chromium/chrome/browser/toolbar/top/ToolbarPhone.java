@@ -1619,15 +1619,27 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private ToolbarSnapshotState generateToolbarSnapshotState() {
-        UrlBarData urlBarData = getToolbarDataProvider().getUrlBarData();
+        UrlBarData urlBarData;
+        int securityIconResource;
+        if (ToolbarFeatures.shouldSuppressCaptures()) {
+            urlBarData = mLocationBar.getUrlBarData();
+            if (urlBarData == null) urlBarData = getToolbarDataProvider().getUrlBarData();
+            StatusCoordinator statusCoordinator = mLocationBar.getStatusCoordinator();
+            securityIconResource = statusCoordinator == null
+                    ? getToolbarDataProvider().getSecurityIconResource(false)
+                    : statusCoordinator.getSecurityIconResource();
+        } else {
+            urlBarData = getToolbarDataProvider().getUrlBarData();
+            securityIconResource = getToolbarDataProvider().getSecurityIconResource(false);
+        }
+
         String displayedUrlText = urlBarData.displayText.toString();
         CharSequence prefixHint = mLocationBar.getOmniboxVisibleTextPrefixHint();
         boolean isValidPrefixHint =
                 ToolbarSnapshotState.isValidVisibleTextPrefixHint(displayedUrlText, prefixHint);
         return new ToolbarSnapshotState(getTint().getDefaultColor(),
                 mTabCountProvider.getTabCount(), mButtonData, mVisualState, displayedUrlText,
-                isValidPrefixHint ? prefixHint : null,
-                getToolbarDataProvider().getSecurityIconResource(false),
+                isValidPrefixHint ? prefixHint : null, securityIconResource,
                 ImageViewCompat.getImageTintList(mHomeButton),
                 getMenuButtonCoordinator().isShowingUpdateBadge(),
                 getToolbarDataProvider().isPaintPreview(), getProgressBar().getProgress(),

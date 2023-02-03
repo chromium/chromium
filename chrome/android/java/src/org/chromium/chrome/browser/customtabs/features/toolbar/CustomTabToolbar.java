@@ -1288,6 +1288,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         @Override
+        public UrlBarData getUrlBarData() {
+            return mUrlCoordinator.getUrlBarData();
+        }
+
+        @Override
         public boolean onLongClick(View v) {
             if (v == mTitleUrlContainer) {
                 Tab tab = getCurrentTab();

@@ -124,6 +124,11 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         return mMediator.setUrlBarData(data, scrollType, state);
     }
 
+    /** Returns the UrlBarData representing the current contents of the UrsssdddsssslBar. */
+    public UrlBarData getUrlBarData() {
+        return mMediator.getUrlBarData();
+    }
+
     /** @see UrlBarMediator#setAutocompleteText(String, String) */
     public void setAutocompleteText(String userText, String autocompleteText) {
         mMediator.setAutocompleteText(userText, autocompleteText);
