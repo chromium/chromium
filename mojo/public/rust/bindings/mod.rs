@@ -11,3 +11,6 @@ pub mod encoding;
 pub mod message;
 pub mod mojom;
 pub mod run_loop;
+
+#[cfg(test)]
+mod tests;

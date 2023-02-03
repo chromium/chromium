@@ -1,0 +1,6 @@
+#[derive(Debug)]
+pub struct {{struct.name}} {
+{%- for packed_field in struct.packed.packed_fields %}
+    pub {{packed_field.field.name}}: {{packed_field.field.kind|rust_field_type}},
+{%- endfor %}
+}

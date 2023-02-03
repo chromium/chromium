@@ -18,6 +18,7 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
+import("//build/config/rust.gni")
 import("//build/toolchain/kythe.gni")
 import("//components/nacl/features.gni")
 import("//third_party/jinja2/jinja2.gni")
@@ -43,6 +44,9 @@ declare_args() {
   # Enables generating javascript fuzzing-related code and the bindings for the
   # MojoLPM fuzzer targets. Off by default.
   enable_mojom_fuzzer = false
+
+  # Enables generating mojom bindings for Rust targets.
+  enable_rust_bindings = enable_rust
 
   # Enables Closure compilation of generated JS lite bindings. In environments
   # where compilation is supported, any mojom target "foo" will also have a
@@ -123,6 +127,11 @@ mojom_generator_sources =
       "$mojom_generator_root/generators/mojom_ts_generator.py",
       "$mojom_generator_script",
     ]
+
+if (enable_rust) {
+  mojom_generator_sources +=
+      [ "$mojom_generator_root/generators/mojom_rust_generator.py" ]
+}
 
 if (enable_scrambled_message_ids) {
   declare_args() {
@@ -1622,6 +1631,51 @@ template("mojom") {
       sources_target_name = output_target_name
     }
 
+    if (enable_rust_bindings) {
+      rust_generator_target_name = "${output_target_name}_rust__generator"
+
+      if (sources_list != []) {
+        action(rust_generator_target_name) {
+          script = mojom_generator_script
+          inputs = mojom_generator_sources + jinja2_sources
+          sources = sources_list
+
+          deps = [
+            ":$parser_target_name",
+            "//mojo/public/tools/bindings:precompile_templates",
+          ]
+          if (defined(invoker.parser_deps)) {
+            deps += invoker.parser_deps
+          }
+
+          args = common_generator_args
+          filelist = []
+          outputs = []
+          foreach(source, sources_list) {
+            filelist += [ rebase_path("$source", root_build_dir) ]
+          }
+          foreach(base_path, output_file_base_paths) {
+            outputs += [ "$root_gen_dir/${base_path}${variant_suffix}.rs" ]
+          }
+
+          response_file_contents = filelist
+
+          args += [
+            "--filelist={{response_file_name}}",
+            "-g",
+            "rust",
+          ]
+        }
+      } else {
+        group(rust_generator_target_name) {
+        }
+      }
+
+      group("${output_target_name}_rust") {
+        deps = [ ":$rust_generator_target_name" ]
+      }
+    }
+
     target(sources_target_type, sources_target_name) {
       if (defined(output_name_override)) {
         output_name = output_name_override
@@ -1649,6 +1703,11 @@ template("mojom") {
         ":$shared_cpp_library_target_name",
         "//base",
       ]
+
+      if (enable_rust_bindings) {
+        deps += [ ":${output_target_name}_rust" ]
+      }
+
       if (require_full_cpp_deps) {
         public_deps += [ "//mojo/public/cpp/bindings" ]
       } else {

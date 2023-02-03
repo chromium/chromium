@@ -156,6 +156,13 @@ template("rust_target") {
         invoker.build_native_rust_unit_tests && can_build_rust_unit_tests
   }
 
+  _test_deps = []
+  if (_build_unit_tests && defined(invoker.test_deps)) {
+    _test_deps = invoker.test_deps
+  } else if (defined(invoker.test_deps)) {
+    not_needed(invoker, [ "test_deps" ])
+  }
+
   # Declares that the Rust crate generates bindings between C++ and Rust via the
   # Cxx crate. It may generate C++ headers and/or use the cxx crate macros to
   # generate Rust code internally, depending on what bindings are declared. If
@@ -348,9 +355,7 @@ template("rust_target") {
         deps = _rust_deps + _public_deps
         aliased_deps = _rust_aliased_deps
         public_deps = [ ":${_target_name}" ]
-        if (defined(invoker.test_deps)) {
-          deps += invoker.test_deps
-        }
+        deps += _test_deps
         inputs = []
         if (defined(invoker.inputs)) {
           inputs += invoker.inputs
@@ -369,6 +374,7 @@ template("rust_target") {
                    "_crate_root",
                    "_crate_name",
                    "_metadata",
+                   "_test_deps",
                  ])
     }
   }
