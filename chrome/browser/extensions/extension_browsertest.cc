@@ -223,10 +223,9 @@ bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
                                      base::Value::Dict& manifest_dict) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  // Retrieve the value of the "background" key and verify that it is
-  // non-persistent and specifies JS files.
-  // Persistent background pages or background pages that specify HTML files
-  // are not supported.
+  // Retrieve the value of the "background" key and verify that it has
+  // the "persistent" key and specifies JS files.
+  // Background pages that specify HTML files are not supported.
   base::Value::Dict* background_dict = manifest_dict.FindDict("background");
   if (!background_dict) {
     ADD_FAILURE() << extension_root.value()
