@@ -27,6 +27,12 @@ bool IsDescriptionPlaceholderFeatureEnabled() {
              page_info::kPageInfoAboutThisSiteDescriptionPlaceholder);
 }
 
+bool IsAboutThisSiteForNonMsbbFeatureEnabled() {
+  return IsMoreAboutThisSiteFeatureEnabled() &&
+         IsDescriptionPlaceholderFeatureEnabled() &&
+         base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteNonMsbb);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 bool IsPersistentSidePanelEntryFeatureEnabled() {
   return IsMoreAboutThisSiteFeatureEnabled() &&

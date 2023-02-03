@@ -51,7 +51,8 @@ KeyedService* AboutThisSiteServiceFactory::BuildServiceInstanceFor(
           OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
           profile->IsOffTheRecord(), profile->GetPrefs()),
       TemplateURLServiceFactory::GetForProfile(profile),
-      page_info::IsDescriptionPlaceholderFeatureEnabled());
+      page_info::IsDescriptionPlaceholderFeatureEnabled(),
+      page_info::IsAboutThisSiteForNonMsbbFeatureEnabled());
 }
 
 bool AboutThisSiteServiceFactory::ServiceIsCreatedWithBrowserContext() const {

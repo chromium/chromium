@@ -85,7 +85,7 @@ OptimizationGuideDecision ReturnUnknown(const GURL& url,
   return OptimizationGuideDecision::kUnknown;
 }
 
-class AboutThisSiteServiceTest : public testing::Test {
+class AboutThisSiteServiceTest : public testing::TestWithParam<bool> {
  public:
   void SetUp() override {
     auto client_mock =
@@ -98,7 +98,8 @@ class AboutThisSiteServiceTest : public testing::Test {
 
     service_ = std::make_unique<AboutThisSiteService>(
         std::move(client_mock), template_url_service_.get(),
-        /*allow_missing_description*/ false);
+        /*allow_missing_description*/ false,
+        /*allow_non_msbb_users*/ GetParam());
   }
 
   void SetOptimizationGuideAllowed(bool allowed) {
@@ -116,8 +117,12 @@ class AboutThisSiteServiceTest : public testing::Test {
   std::unique_ptr<TemplateURLService> template_url_service_;
 };
 
+INSTANTIATE_TEST_SUITE_P(AllowNonMsbbUsers,
+                         AboutThisSiteServiceTest,
+                         testing::Bool());
+
 // Tests that correct proto messages are accepted.
-TEST_F(AboutThisSiteServiceTest, ValidResponse) {
+TEST_P(AboutThisSiteServiceTest, ValidResponse) {
   base::HistogramTester t;
   EXPECT_CALL(*client(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnDescription));
@@ -134,7 +139,7 @@ TEST_F(AboutThisSiteServiceTest, ValidResponse) {
 }
 
 // Tests the language specific feature check.
-TEST_F(AboutThisSiteServiceTest, FeatureCheck) {
+TEST_P(AboutThisSiteServiceTest, FeatureCheck) {
   EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled("en-US"));
   EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled("en-GB"));
   EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled("en"));
@@ -144,7 +149,7 @@ TEST_F(AboutThisSiteServiceTest, FeatureCheck) {
 }
 
 // Tests that incorrect proto messages are discarded.
-TEST_F(AboutThisSiteServiceTest, InvalidResponse) {
+TEST_P(AboutThisSiteServiceTest, InvalidResponse) {
   base::HistogramTester t;
   EXPECT_CALL(*client(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnInvalidDescription));
@@ -159,7 +164,7 @@ TEST_F(AboutThisSiteServiceTest, InvalidResponse) {
 }
 
 // Tests that no response is handled.
-TEST_F(AboutThisSiteServiceTest, NoResponse) {
+TEST_P(AboutThisSiteServiceTest, NoResponse) {
   base::HistogramTester t;
   EXPECT_CALL(*client(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnNoResult));
@@ -174,7 +179,7 @@ TEST_F(AboutThisSiteServiceTest, NoResponse) {
 }
 
 // Tests that unknown response is handled.
-TEST_F(AboutThisSiteServiceTest, Unknown) {
+TEST_P(AboutThisSiteServiceTest, Unknown) {
   base::HistogramTester t;
   EXPECT_CALL(*client(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnUnknown));
@@ -189,7 +194,7 @@ TEST_F(AboutThisSiteServiceTest, Unknown) {
 }
 
 // Tests that ATP not shown when Google is not set as DSE
-TEST_F(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
+TEST_P(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
   base::HistogramTester t;
 
   // Changing default provider to other than Google
@@ -215,7 +220,7 @@ TEST_F(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
 }
 
 // Tests that IP addresses and localhost are handled.
-TEST_F(AboutThisSiteServiceTest, LocalHosts) {
+TEST_P(AboutThisSiteServiceTest, LocalHosts) {
   base::HistogramTester t;
 
   auto info = service()->GetAboutThisSiteInfo(
@@ -233,8 +238,16 @@ TEST_F(AboutThisSiteServiceTest, LocalHosts) {
                        AboutThisSiteInteraction::kNotShownLocalHost, 3);
 }
 
-// Tests that disabled optimization guide is handled.
-TEST_F(AboutThisSiteServiceTest, NotAllowed) {
+class AboutThisSiteNonMsbbUsersNotAllowedServiceTest
+    : public AboutThisSiteServiceTest {};
+
+INSTANTIATE_TEST_SUITE_P(AllowNonMsbbUsers,
+                         AboutThisSiteNonMsbbUsersNotAllowedServiceTest,
+                         testing::Values(false));
+
+// Tests that disabled optimization guide is handled when non-MSBB users are not
+// supported.
+TEST_P(AboutThisSiteNonMsbbUsersNotAllowedServiceTest, MssbUsersNotAllowed) {
   base::HistogramTester t;
   SetOptimizationGuideAllowed(false);
 
@@ -245,6 +258,40 @@ TEST_F(AboutThisSiteServiceTest, NotAllowed) {
   t.ExpectUniqueSample(
       "Security.PageInfo.AboutThisSiteInteraction",
       AboutThisSiteInteraction::kNotShownOptimizationGuideNotAllowed, 1);
+}
+
+class AboutThisSiteNonMsbbUsersAllowedServiceTest
+    : public AboutThisSiteServiceTest {};
+
+INSTANTIATE_TEST_SUITE_P(AllowNonMsbbUsers,
+                         AboutThisSiteNonMsbbUsersAllowedServiceTest,
+                         testing::Values(true));
+
+// Tests the local creation of the Diner URL when non-MSBB users are supported.
+TEST_P(AboutThisSiteNonMsbbUsersAllowedServiceTest,
+       OptimizationNotAllowedAndNonMsbbUsersAllowed) {
+  SetOptimizationGuideAllowed(false);
+  auto info = service()->GetAboutThisSiteInfo(
+      GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
+  EXPECT_TRUE(info.has_value());
+  EXPECT_EQ(info->more_about().url(),
+            "https://www.google.com/search?"
+            "q=About+https%3A%2F%2Ffoo.com%2F"
+            "&tbm=ilp&ctx=chrome");
+}
+
+// Tests the local creation of the Diner URL with an anchor when when non-MSBB
+// users are supported.
+TEST_P(AboutThisSiteNonMsbbUsersAllowedServiceTest,
+       OptimizationNotAllowedAndNonMsbbUsersAllowedWithAnchor) {
+  SetOptimizationGuideAllowed(false);
+  auto info = service()->GetAboutThisSiteInfo(
+      GURL("https://foo.com#anchor"), ukm::UkmRecorder::GetNewSourceID());
+  EXPECT_TRUE(info.has_value());
+  EXPECT_EQ(info->more_about().url(),
+            "https://www.google.com/search?"
+            "q=About+https%3A%2F%2Ffoo.com%2F%23anchor"
+            "&tbm=ilp&ctx=chrome");
 }
 
 }  // namespace page_info
