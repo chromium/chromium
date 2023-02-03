@@ -60,19 +60,11 @@ std::vector<SkPixmap> GetSkPixmaps(const std::vector<SkBitmap>& bitmaps) {
   return pixmaps;
 }
 
-// WrappedSkImageBackingFactoryTest is failing on Android emulator bots:
-// https://crbug.com/1411266
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
-#define MAYBE_WrappedSkImageBackingFactoryTest \
-  DISABLED_WrappedSkImageBackingFactoryTest
-#else
-#define MAYBE_WrappedSkImageBackingFactoryTest WrappedSkImageBackingFactoryTest
-#endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
-class MAYBE_WrappedSkImageBackingFactoryTest
+class WrappedSkImageBackingFactoryTest
     : public testing::TestWithParam<viz::SharedImageFormat> {
  public:
-  MAYBE_WrappedSkImageBackingFactoryTest() = default;
-  ~MAYBE_WrappedSkImageBackingFactoryTest() override {
+  WrappedSkImageBackingFactoryTest() = default;
+  ~WrappedSkImageBackingFactoryTest() override {
     // |context_state_| must be destroyed while current.
     context_state_->MakeCurrent(surface_.get(), /*needs_gl=*/true);
   }
@@ -120,7 +112,7 @@ class MAYBE_WrappedSkImageBackingFactoryTest
 };
 
 // Verify creation and Skia access works as expected.
-TEST_P(MAYBE_WrappedSkImageBackingFactoryTest, Basic) {
+TEST_P(WrappedSkImageBackingFactoryTest, Basic) {
   auto format = GetFormat();
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::Size size(100, 100);
@@ -181,7 +173,7 @@ TEST_P(MAYBE_WrappedSkImageBackingFactoryTest, Basic) {
 }
 
 // Verify that pixel upload works as expected.
-TEST_P(MAYBE_WrappedSkImageBackingFactoryTest, Upload) {
+TEST_P(WrappedSkImageBackingFactoryTest, Upload) {
   auto format = GetFormat();
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::Size size(100, 100);
@@ -263,7 +255,7 @@ const auto kFormats =
                       viz::MultiPlaneFormat::kYVU_420);
 
 INSTANTIATE_TEST_SUITE_P(,
-                         MAYBE_WrappedSkImageBackingFactoryTest,
+                         WrappedSkImageBackingFactoryTest,
                          kFormats,
                          TestParamToString);
 
