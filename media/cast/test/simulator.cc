@@ -55,6 +55,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/checked_math.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -225,6 +226,14 @@ class EncodedVideoFrameTracker final : public RawEventSubscriber {
   base::queue<scoped_refptr<media::VideoFrame>> video_frames_;
 };
 
+// Safely creates a span for data backing a `frame` on specified `plane`.
+base::span<const uint8_t> MakeFrameSpan(const media::VideoFrame* frame,
+                                        size_t plane) {
+  base::CheckedNumeric<size_t> size = frame->stride(plane);
+  size *= frame->rows(plane);
+  return base::make_span(frame->data(plane), size.ValueOrDie());
+}
+
 // Appends a YUV frame in I420 format to the file located at |path|.
 void AppendYuvToFile(const base::FilePath& path,
                      scoped_refptr<media::VideoFrame> frame) {
@@ -233,18 +242,9 @@ void AppendYuvToFile(const base::FilePath& path,
   base::StringAppendF(&header, "FRAME W%d H%d\n", frame->coded_size().width(),
                       frame->coded_size().height());
   AppendToFile(path, header);
-  AppendToFile(path,
-               base::make_span(frame->data(media::VideoFrame::kYPlane),
-                               frame->stride(media::VideoFrame::kYPlane) *
-                                   frame->rows(media::VideoFrame::kYPlane)));
-  AppendToFile(path,
-               base::make_span(frame->data(media::VideoFrame::kUPlane),
-                               frame->stride(media::VideoFrame::kUPlane) *
-                                   frame->rows(media::VideoFrame::kUPlane)));
-  AppendToFile(path,
-               base::make_span(frame->data(media::VideoFrame::kVPlane),
-                               frame->stride(media::VideoFrame::kVPlane) *
-                                   frame->rows(media::VideoFrame::kVPlane)));
+  AppendToFile(path, MakeFrameSpan(frame.get(), media::VideoFrame::kYPlane));
+  AppendToFile(path, MakeFrameSpan(frame.get(), media::VideoFrame::kUPlane));
+  AppendToFile(path, MakeFrameSpan(frame.get(), media::VideoFrame::kVPlane));
 }
 
 // A container to save output of GotVideoFrame() for computation based
