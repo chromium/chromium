@@ -116,6 +116,7 @@ class CORE_EXPORT CSSSelector {
   ~CSSSelector();
 
   String SelectorText() const;
+  String SimpleSelectorTextForDebug() const;
 
   CSSSelector& operator=(const CSSSelector&) = delete;
   CSSSelector& operator=(CSSSelector&&);
@@ -508,6 +509,7 @@ class CORE_EXPORT CSSSelector {
 
   unsigned SpecificityForOneSelector() const;
   unsigned SpecificityForPage() const;
+  bool SerializeSimpleSelector(StringBuilder& builder) const;
   const CSSSelector* SerializeCompound(StringBuilder&) const;
 
   struct RareData : public GarbageCollected<RareData> {
