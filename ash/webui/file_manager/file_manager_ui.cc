@@ -104,6 +104,10 @@ FileManagerUI::~FileManagerUI() {
   --instance_count_;
 
   DLOG(WARNING) << "Stopping FileManagerUI. Open windows: " << instance_count_;
+
+  if (!instance_count_) {
+    delegate()->ProgressPausedTasks();
+  }
 }
 
 void FileManagerUI::BindInterface(
