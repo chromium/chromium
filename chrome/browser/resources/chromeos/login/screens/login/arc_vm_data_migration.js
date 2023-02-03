@@ -62,6 +62,9 @@ class ArcVmDataMigrationScreen extends ArcVmDataMigrationScreenElementBase {
     return {
       hasEnoughFreeDiskSpace: Boolean,
       requiredFreeDiskSpaceInString: String,
+      minimumBatteryPercent: Number,
+      hasEnoughBattery: Boolean,
+      isConnectedToCharger: Boolean,
     };
   }
 
@@ -69,6 +72,9 @@ class ArcVmDataMigrationScreen extends ArcVmDataMigrationScreenElementBase {
     super();
     this.hasEnoughFreeDiskSpace = true;
     this.requiredFreeDiskSpaceInString = '';
+    this.minimumBatteryPercent = 0;
+    this.hasEnoughBattery = true;
+    this.isConnectedToCharger = true;
   }
 
   defaultUIStep() {
@@ -83,6 +89,8 @@ class ArcVmDataMigrationScreen extends ArcVmDataMigrationScreenElementBase {
     return [
       'setUIState',
       'setRequiredFreeDiskSpace',
+      'setMinimumBatteryPercent',
+      'setBatteryState',
     ];
   }
 
@@ -102,6 +110,19 @@ class ArcVmDataMigrationScreen extends ArcVmDataMigrationScreenElementBase {
   setRequiredFreeDiskSpace(requiredFreeDiskSpaceInString) {
     this.hasEnoughFreeDiskSpace = false;
     this.requiredFreeDiskSpaceInString = requiredFreeDiskSpaceInString;
+  }
+
+  setMinimumBatteryPercent(minimumBatteryPercent) {
+    this.minimumBatteryPercent = Math.floor(minimumBatteryPercent);
+  }
+
+  setBatteryState(hasEnoughBattery, isConnectedToCharger) {
+    this.hasEnoughBattery = hasEnoughBattery;
+    this.isConnectedToCharger = isConnectedToCharger;
+  }
+
+  shouldDisableUpdateButton_(hasEnoughFreeDiskSpace, hasEnoughBattery) {
+    return !hasEnoughFreeDiskSpace || !hasEnoughBattery;
   }
 
   onSkipButtonClicked_() {

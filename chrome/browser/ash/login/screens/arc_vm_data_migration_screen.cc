@@ -25,7 +25,9 @@ namespace ash {
 namespace {
 
 constexpr char kPathToCheckFreeDiskSpace[] = "/home/chronos/user";
+// TODO(b/258278176): Set appropriate thresholds based on experiments.
 constexpr int64_t kMinimumFreeDiskSpaceForMigration = 1LL << 30;  // 1 GB.
+constexpr double kMinimumBatteryPercent = 30.0;
 
 constexpr char kUserActionSkip[] = "skip";
 constexpr char kUserActionUpdate[] = "update";
@@ -41,6 +43,32 @@ ArcVmDataMigrationScreen::ArcVmDataMigrationScreen(
 }
 
 ArcVmDataMigrationScreen::~ArcVmDataMigrationScreen() = default;
+
+void ArcVmDataMigrationScreen::PowerChanged(
+    const power_manager::PowerSupplyProperties& proto) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (proto.has_battery_percent()) {
+    battery_percent_ = proto.battery_percent();
+  }
+
+  if (proto.has_external_power()) {
+    is_connected_to_charger_ =
+        proto.external_power() !=
+        power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
+  }
+
+  if (!view_) {
+    return;
+  }
+  view_->SetBatteryState(battery_percent_ >= kMinimumBatteryPercent,
+                         is_connected_to_charger_);
+
+  // TODO(b/258278176): Properly handle cases like the resume screen and the
+  // progress screen.
+  if (current_ui_state_ == ArcVmDataMigrationScreenView::UIState::kLoading) {
+    UpdateUIState(ArcVmDataMigrationScreenView::UIState::kWelcome);
+  }
+}
 
 void ArcVmDataMigrationScreen::ShowImpl() {
   if (!view_) {
@@ -84,7 +112,6 @@ void ArcVmDataMigrationScreen::OnUserAction(const base::Value::List& args) {
 }
 
 void ArcVmDataMigrationScreen::SetUpInitialView() {
-  // TODO(b/258278176): Check battery state.
   arc::ArcVmDataMigrationStatus data_migration_status =
       arc::GetArcVmDataMigrationStatus(profile_->GetPrefs());
   switch (data_migration_status) {
@@ -126,13 +153,28 @@ void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
   VLOG(1) << "Free disk space is " << free_disk_space;
   if (free_disk_space < kMinimumFreeDiskSpaceForMigration) {
     view_->SetRequiredFreeDiskSpace(kMinimumFreeDiskSpaceForMigration);
+    // Update the UI to show the low disk space warning and return, because the
+    // user cannot free up the disk space while in the screen, and thus there is
+    // no point in reporting the battery state in this case.
+    DCHECK_EQ(current_ui_state_,
+              ArcVmDataMigrationScreenView::UIState::kLoading);
+    UpdateUIState(ArcVmDataMigrationScreenView::UIState::kWelcome);
+    return;
   }
 
-  UpdateUIState(ArcVmDataMigrationScreenView::UIState::kWelcome);
+  view_->SetMinimumBatteryPercent(kMinimumBatteryPercent);
+
+  // Request PowerManager to report the battery status updates. The UI will be
+  // updated on PowerChanged().
+  DCHECK(chromeos::PowerManagerClient::Get());
+  power_manager_observation_.Observe(chromeos::PowerManagerClient::Get());
+  chromeos::PowerManagerClient::Get()->RequestStatusUpdate();
 }
 
 void ArcVmDataMigrationScreen::UpdateUIState(
     ArcVmDataMigrationScreenView::UIState state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  current_ui_state_ = state;
   if (view_) {
     view_->SetUIState(state);
   }

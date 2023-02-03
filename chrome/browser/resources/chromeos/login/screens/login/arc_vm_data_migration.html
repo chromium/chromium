@@ -10,8 +10,12 @@ found in the LICENSE file.
   }
   div.warning {
     border-bottom: var(--cr-separator-line);
-    padding-bottom: 11px;
-    padding-top: 22px;
+    padding-bottom: 19px;
+    padding-top: 21px;
+  }
+  div.warning-last-child {
+    padding-bottom: 19px;
+    padding-top: 21px;
   }
   .warning-message {
     margin-inline-start: 20px;
@@ -34,13 +38,28 @@ found in the LICENSE file.
       [[i18nDynamic(locale, 'welcomeScreenDescriptionBody')]]
     </div>
     <div class="message-container">
-      <div class="warning" hidden="[[hasEnoughFreeDiskSpace]]">
+      <div class="warning-last-child" hidden="[[hasEnoughFreeDiskSpace]]">
         <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
         <span class="warning-message">
           [[i18nDynamic(locale, 'notEnoughFreeDiskSpaceMessage',
                         requiredFreeDiskSpaceInString)]]
         </span>
       </div>
+      <template is="dom-if" if="[[!hasEnoughBattery]]">
+        <div class="warning" hidden="[[isConnectedToCharger]]">
+          <iron-icon icon="oobe-32:warning"></iron-icon>
+          <span class="warning-message">
+            [[i18nDynamic(locale, 'connectToChargerMessage')]]
+          </span>
+        </div>
+        <div class="warning-last-child">
+          <iron-icon icon="oobe-32:warning"></iron-icon>
+          <span class="warning-message">
+            [[i18nDynamic(locale, 'notEnoughBatteryMessage',
+                          minimumBatteryPercent)]]
+          </span>
+        </div>
+      </template>
     </div>
   </div>
   <div slot="bottom-buttons">
@@ -49,7 +68,8 @@ found in the LICENSE file.
         text-key="skipButtonLabel">
     </oobe-text-button>
     <oobe-text-button inverse id="update-button"
-        disabled="[[!hasEnoughFreeDiskSpace]]"
+        disabled="[[shouldDisableUpdateButton_(hasEnoughFreeDiskSpace,
+                                               hasEnoughBattery)]]"
         on-click="onUpdateButtonClicked_"
         text-key="updateButtonLabel">
     </oobe-text-button>

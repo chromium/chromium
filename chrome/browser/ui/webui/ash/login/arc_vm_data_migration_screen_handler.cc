@@ -27,6 +27,9 @@ void ArcVmDataMigrationScreenHandler::DeclareLocalizedValues(
                u"your device connected to a charger during the update.");
   builder->Add("notEnoughFreeDiskSpaceMessage",
                u"Free up more than $1 of space");
+  builder->Add("notEnoughBatteryMessage",
+               u"Your battery must be charged above $1%");
+  builder->Add("connectToChargerMessage", u"Connect your device to a charger");
   builder->Add("skipButtonLabel", u"Remind me later");
   builder->Add("updateButtonLabel", u"Next");
 }
@@ -43,6 +46,15 @@ void ArcVmDataMigrationScreenHandler::SetRequiredFreeDiskSpace(
     int64_t required_free_disk_space) {
   CallExternalAPI("setRequiredFreeDiskSpace",
                   ui::FormatBytes(required_free_disk_space));
+}
+
+void ArcVmDataMigrationScreenHandler::SetMinimumBatteryPercent(double percent) {
+  CallExternalAPI("setMinimumBatteryPercent", percent);
+}
+
+void ArcVmDataMigrationScreenHandler::SetBatteryState(bool enough,
+                                                      bool connected) {
+  CallExternalAPI("setBatteryState", enough, connected);
 }
 
 }  // namespace ash
