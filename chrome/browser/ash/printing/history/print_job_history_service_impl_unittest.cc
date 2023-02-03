@@ -93,7 +93,7 @@ TEST_F(PrintJobHistoryServiceImplTest, SaveObservedCupsPrintJob) {
 
   std::unique_ptr<CupsPrintJob> print_job = std::make_unique<CupsPrintJob>(
       chromeos::Printer(), /*job_id=*/0, kTitle, kPagesNumber,
-      ::printing::PrintJob::Source::PRINT_PREVIEW,
+      ::printing::PrintJob::Source::kPrintPreview,
       /*source_id=*/"", printing::proto::PrintSettings());
   print_job_manager_->CreatePrintJob(print_job.get());
   print_job_manager_->CancelPrintJob(print_job.get());
@@ -115,7 +115,7 @@ TEST_F(PrintJobHistoryServiceImplTest, DoesNotSaveIncognitoPrintJobs) {
 
   auto print_job = std::make_unique<CupsPrintJob>(
       chromeos::Printer(), /*job_id=*/0, kTitle, kPagesNumber,
-      ::printing::PrintJob::Source::PRINT_PREVIEW_INCOGNITO,
+      ::printing::PrintJob::Source::kPrintPreviewIncognito,
       /*source_id=*/"", printing::proto::PrintSettings());
   print_job_manager_->CreatePrintJob(print_job.get());
   print_job_manager_->CancelPrintJob(print_job.get());
@@ -132,7 +132,7 @@ TEST_F(PrintJobHistoryServiceImplTest, ObserverTest) {
 
   std::unique_ptr<CupsPrintJob> print_job = std::make_unique<CupsPrintJob>(
       chromeos::Printer(), /*job_id=*/0, kTitle, kPagesNumber,
-      ::printing::PrintJob::Source::PRINT_PREVIEW,
+      ::printing::PrintJob::Source::kPrintPreview,
       /*source_id=*/"", printing::proto::PrintSettings());
   print_job_manager_->CreatePrintJob(print_job.get());
   print_job_manager_->CancelPrintJob(print_job.get());
@@ -148,7 +148,7 @@ TEST_F(PrintJobHistoryServiceImplTest, DeleteAllPrintJobs) {
 
   auto print_job = std::make_unique<CupsPrintJob>(
       chromeos::Printer(), /*job_id=*/0, kTitle, kPagesNumber,
-      ::printing::PrintJob::Source::PRINT_PREVIEW,
+      ::printing::PrintJob::Source::kPrintPreview,
       /*source_id=*/"", printing::proto::PrintSettings());
   print_job_manager_->CreatePrintJob(print_job.get());
   print_job_manager_->CancelPrintJob(print_job.get());

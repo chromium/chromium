@@ -273,7 +273,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   Source source_;
 
   // ID of the source.
-  // This should be blank if the source is PRINT_PREVIEW or ARC.
+  // This should be blank if the source is kPrintPreview or kArc.
   std::string source_id_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -52,13 +52,13 @@ proto::MediaSize RequestedMediaToProto(
 proto::PrintJobInfo_PrintJobSource PrintJobSourceToProto(
     ::printing::PrintJob::Source source) {
   switch (source) {
-    case ::printing::PrintJob::Source::PRINT_PREVIEW:
+    case ::printing::PrintJob::Source::kPrintPreview:
       return proto::PrintJobInfo_PrintJobSource_PRINT_PREVIEW;
-    case ::printing::PrintJob::Source::ARC:
+    case ::printing::PrintJob::Source::kArc:
       return proto::PrintJobInfo_PrintJobSource_ARC;
-    case ::printing::PrintJob::Source::EXTENSION:
+    case ::printing::PrintJob::Source::kExtension:
       return proto::PrintJobInfo_PrintJobSource_EXTENSION;
-    case ::printing::PrintJob::Source::PRINT_PREVIEW_INCOGNITO:
+    case ::printing::PrintJob::Source::kPrintPreviewIncognito:
       return proto::PrintJobInfo_PrintJobSource_PRINT_PREVIEW_INCOGNITO;
     default:
       NOTREACHED();

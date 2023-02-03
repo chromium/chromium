@@ -264,7 +264,7 @@ class TestPrintViewManager : public PrintViewManagerBase {
     print_job_->Initialize(std::move(query), RenderSourceName(),
                            number_pages());
 #if BUILDFLAG(IS_CHROMEOS)
-    print_job_->SetSource(PrintJob::Source::PRINT_PREVIEW, /*source_id=*/"");
+    print_job_->SetSource(PrintJob::Source::kPrintPreview, /*source_id=*/"");
 #endif  // BUILDFLAG(IS_CHROMEOS)
     return true;
   }

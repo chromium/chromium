@@ -874,8 +874,8 @@ bool PrintViewManagerBase::CreateNewPrintJob(
   print_job_->Initialize(std::move(query), RenderSourceName(), number_pages());
 #if BUILDFLAG(IS_CHROMEOS)
   print_job_->SetSource(web_contents()->GetBrowserContext()->IsOffTheRecord()
-                            ? PrintJob::Source::PRINT_PREVIEW_INCOGNITO
-                            : PrintJob::Source::PRINT_PREVIEW,
+                            ? PrintJob::Source::kPrintPreviewIncognito
+                            : PrintJob::Source::kPrintPreview,
                         /*source_id=*/"");
 #endif
   print_job_->AddObserver(*this);

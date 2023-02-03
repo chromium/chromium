@@ -107,7 +107,7 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
         std::make_unique<ash::CupsPrintJob>(
             chromeos::Printer(), /*job_id=*/0, job_title,
             /*total_page_number=*/1,
-            ::printing::PrintJob::Source::PRINT_PREVIEW,
+            ::printing::PrintJob::Source::kPrintPreview,
             /*source_id=*/"", ash::printing::proto::PrintSettings());
     ash::TestCupsPrintJobManager* print_job_manager =
         static_cast<ash::TestCupsPrintJobManager*>(

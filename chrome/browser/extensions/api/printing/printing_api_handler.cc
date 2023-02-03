@@ -189,7 +189,7 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
     return;
   }
 
-  DCHECK_EQ(print_job->source(), crosapi::mojom::PrintJob::Source::EXTENSION);
+  DCHECK_EQ(print_job->source(), crosapi::mojom::PrintJob::Source::kExtension);
 
   std::string printer_id =
       base::UTF16ToUTF8(document->settings().device_name());

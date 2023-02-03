@@ -52,7 +52,7 @@ void FakePrintJobController::StartPrinting(
     const std::string& extension_id,
     std::unique_ptr<printing::PrintSettings> settings) {
   job_id_++;
-  job->SetSource(printing::PrintJob::Source::EXTENSION, extension_id);
+  job->SetSource(printing::PrintJob::Source::kExtension, extension_id);
   auto document = base::MakeRefCounted<printing::PrintedDocument>(
       std::move(settings), std::u16string(), 0);
   int observer_count = 0;

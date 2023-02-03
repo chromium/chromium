@@ -105,7 +105,7 @@ struct PrintJob {
   uint32 page_count@3;
   // Source showing which component initiated the print job.
   Source source@4;
-  // ID of source. Should be empty if source is PRINT_PREVIEW or ARC.
+  // ID of source. Should be empty if source is kPrintPreview or kArc.
   string source_id@5;
   // Converted to a print_job_info.proto ColorMode enum via
   // printing::IsColorModelSelected().
@@ -130,14 +130,13 @@ struct PrintJob {
     kShortEdge,
   };
   // Used in chrome/browser/printing/print_job.h.
-  // TODO(b/184986771): Rename to kUnknown, kPrintPreview, etc.
   [Stable, Extensible]
   enum Source {
-    [Default] UNKNOWN = -1,
-    PRINT_PREVIEW,
-    ARC,
-    EXTENSION,
-    PRINT_PREVIEW_INCOGNITO,
+    [Default] kUnknown = -1,
+    kPrintPreview,
+    kArc,
+    kExtension,
+    kPrintPreviewIncognito,
   };
 };
 

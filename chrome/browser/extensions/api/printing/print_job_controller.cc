@@ -59,7 +59,7 @@ void StartPrinting(scoped_refptr<printing::PrintJob> job,
   // Save in separate variable because |query| is moved.
   std::u16string title = query->settings().title();
   job->Initialize(std::move(query), title, /*page_count=*/1);
-  job->SetSource(printing::PrintJob::Source::EXTENSION, extension_id);
+  job->SetSource(printing::PrintJob::Source::kExtension, extension_id);
   job->document()->SetDocument(std::move(metafile));
   job->StartPrinting();
 }

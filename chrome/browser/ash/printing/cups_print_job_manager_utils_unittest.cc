@@ -240,7 +240,7 @@ TEST_P(CupsPrintJobManagerUtilsTest, UpdatePrintJob) {
         ::printing::ToJobStateReasonString(job_state_reason).data());
   }
   CupsPrintJob print_job(chromeos::Printer(), 0, std::string(), kTotalPages,
-                         crosapi::mojom::PrintJob::Source::UNKNOWN,
+                         crosapi::mojom::PrintJob::Source::kUnknown,
                          std::string(), printing::proto::PrintSettings());
   print_job.set_state(params.state);
   print_job.set_printed_page_number(params.pages);
@@ -262,7 +262,7 @@ TEST(CupsPrintJobManagerUtilsTest, UpdatePrintJobTimeout) {
   job.state = CupsJob::PROCESSING;
 
   CupsPrintJob print_job(chromeos::Printer(), 0, std::string(), kTotalPages,
-                         crosapi::mojom::PrintJob::Source::UNKNOWN,
+                         crosapi::mojom::PrintJob::Source::kUnknown,
                          std::string(), printing::proto::PrintSettings());
   print_job.set_state(State::STATE_STARTED);
 

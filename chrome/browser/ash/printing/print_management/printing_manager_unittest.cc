@@ -132,7 +132,7 @@ class PrintingManagerTest : public ::testing::Test {
   std::unique_ptr<CupsPrintJob> CreateOngoingPrintJob(int id) {
     auto print_job = std::make_unique<CupsPrintJob>(
         chromeos::Printer(), id, kTitle, kPagesNumber,
-        ::printing::PrintJob::Source::PRINT_PREVIEW,
+        ::printing::PrintJob::Source::kPrintPreview,
         /*source_id=*/"", proto::PrintSettings());
     print_job_manager_->CreatePrintJob(print_job.get());
     return print_job;

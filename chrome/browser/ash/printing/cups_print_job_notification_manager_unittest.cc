@@ -26,7 +26,7 @@ class CupsPrintJobNotificationManagerTest : public testing::Test {
 
 TEST_F(CupsPrintJobNotificationManagerTest, PrintJobLifetimeCheck) {
   CupsPrintJob printJob(chromeos::Printer(), 0, std::string(), 1,
-                        crosapi::mojom::PrintJob::Source::UNKNOWN,
+                        crosapi::mojom::PrintJob::Source::kUnknown,
                         std::string(), printing::proto::PrintSettings());
 
   manager_.OnPrintJobCreated(printJob.GetWeakPtr());

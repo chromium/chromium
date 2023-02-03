@@ -76,8 +76,9 @@ void PrintJobHistoryServiceImpl::SavePrintJob(base::WeakPtr<CupsPrintJob> job) {
   // Prevent saving print jobs if it's from incognito browser sessions.
   // TODO(crbug/1053704): Add policy pref to enable storing incognito print
   // jobs.
-  if (job->source() == ::printing::PrintJob::Source::PRINT_PREVIEW_INCOGNITO)
+  if (job->source() == ::printing::PrintJob::Source::kPrintPreviewIncognito) {
     return;
+  }
 
   printing::proto::PrintJobInfo print_job_info =
       CupsPrintJobToProto(*job, /*id=*/base::GenerateGUID(), base::Time::Now());

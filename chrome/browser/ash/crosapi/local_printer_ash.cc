@@ -303,7 +303,7 @@ void LocalPrinterAsh::NotifyPrintJobUpdate(base::WeakPtr<ash::CupsPrintJob> job,
   for (auto& remote : print_job_remotes_) {
     remote->OnPrintJobUpdate(job->printer().id(), job->job_id(), status);
   }
-  if (job->source() != mojom::PrintJob::Source::EXTENSION) {
+  if (job->source() != mojom::PrintJob::Source::kExtension) {
     return;
   }
   for (auto& remote : extension_print_job_remotes_) {

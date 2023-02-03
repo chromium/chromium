@@ -617,7 +617,7 @@ void TestControllerAsh::CreateAndCancelPrintJob(
   std::unique_ptr<ash::CupsPrintJob> print_job =
       std::make_unique<ash::CupsPrintJob>(
           chromeos::Printer(), /*job_id=*/0, job_title, /*total_page_number=*/1,
-          ::printing::PrintJob::Source::PRINT_PREVIEW,
+          ::printing::PrintJob::Source::kPrintPreview,
           /*source_id=*/"", ash::printing::proto::PrintSettings());
 
   ash::CupsPrintJobManager* print_job_manager =
