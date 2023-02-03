@@ -42,7 +42,11 @@ source_set("credential_provider_promo_ui") {
     "//components/password_manager/core/browser",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/credential_provider_promo/resources:animation_files",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
+
+    # TODO(crbug.com/1412808): uncomment once Lottie framework is added.
+    # "//ios/third_party/lottie",
     "//ui/base",
   ]
   frameworks = [
