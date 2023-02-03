@@ -190,13 +190,13 @@ class CertVerifierServiceTest : public PlatformTest {
   };
 
   // Wraps a DummyCertVerifier with a CertVerifierServiceImpl.
-  // NOTE: CertVerifierServiceImpl is self-deleting.
-  CertVerifierServiceTest()
-      : dummy_cv_(new DummyCertVerifier),
-        cv_service_(new internal::CertVerifierServiceImpl(
-            base::WrapUnique(dummy_cv_.get()),
-            cv_service_remote_.BindNewPipeAndPassReceiver(),
-            /*cert_net_fetcher=*/nullptr)) {}
+  CertVerifierServiceTest() : dummy_cv_(new DummyCertVerifier) {
+    // NOTE: CertVerifierServiceImpl is self-deleting.
+    (void)new internal::CertVerifierServiceImpl(
+        base::WrapUnique(dummy_cv_.get()),
+        cv_service_remote_.BindNewPipeAndPassReceiver(),
+        /*cert_net_fetcher=*/nullptr);
+  }
 
   void SetUp() override { ASSERT_TRUE(GetTestCert()); }
 
@@ -266,13 +266,13 @@ class CertVerifierServiceTest : public PlatformTest {
     return cv_service_remote_;
   }
   DummyCertVerifier* dummy_cv() { return dummy_cv_; }
+  void set_dummy_cv(DummyCertVerifier* cv) { dummy_cv_ = cv; }
 
  private:
   base::test::TaskEnvironment task_environment_;
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote_;
   raw_ptr<DummyCertVerifier> dummy_cv_;
-  raw_ptr<internal::CertVerifierServiceImpl> cv_service_;
 };
 }  // namespace
 
@@ -343,6 +343,7 @@ TEST_F(CertVerifierServiceTest, TestCVServiceDisconnection) {
       base::BindLambdaForTesting([&]() { disconnected = true; }));
 
   // Disconnect our receiver.
+  set_dummy_cv(nullptr);
   cv_service_remote().reset();
   task_environment()->RunUntilIdle();
 
