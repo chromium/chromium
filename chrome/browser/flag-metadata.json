@@ -698,7 +698,7 @@
   {
     "name": "biometric-reauth-password-filling",
     "owners": [ "ioanap", "vsemeniuk@google.com" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 117
   },
   {
     "name": "block-insecure-downloads",
