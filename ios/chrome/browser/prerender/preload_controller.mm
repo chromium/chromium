@@ -494,7 +494,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   DCHECK(![self isWebStatePrerendered:webState.get()]);
 
   webState->RemoveObserver(_webStateObserver.get());
-  breakpad::StopMonitoringURLsForPreloadWebState(webState.get());
+  crash_report_helper::StopMonitoringURLsForPreloadWebState(webState.get());
   webState->SetDelegate(nullptr);
   _policyDeciderBridge.reset();
 
@@ -705,7 +705,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 
   _webState->SetDelegate(_webStateDelegate.get());
   _webState->AddObserver(_webStateObserver.get());
-  breakpad::MonitorURLsForPreloadWebState(_webState.get());
+  crash_report_helper::MonitorURLsForPreloadWebState(_webState.get());
   _webState->SetWebUsageEnabled(true);
 
   if (AccountConsistencyService* accountConsistencyService =

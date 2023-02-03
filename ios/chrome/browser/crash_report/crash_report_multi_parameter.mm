@@ -20,18 +20,17 @@
 #endif
 
 namespace {
-// Maximum size of a breakpad parameter. The length of the dictionary serialized
-// into JSON cannot exceed this length. See declaration in (BreakPad.h) for
-// details.
-const int kMaximumBreakpadValueSize = 255;
+// The maximum size of the multi parameter key.
+const int kMaximumMultiParameterValueSize = 256;
 }
 
 @implementation CrashReportMultiParameter {
-  crash_reporter::CrashKeyString<256>* _key;
+  crash_reporter::CrashKeyString<kMaximumMultiParameterValueSize>* _key;
   base::Value _dictionary;
 }
 
-- (instancetype)initWithKey:(crash_reporter::CrashKeyString<256>&)key {
+- (instancetype)initWithKey:
+    (crash_reporter::CrashKeyString<kMaximumMultiParameterValueSize>&)key {
   if ((self = [super init])) {
     _dictionary = base::Value(base::Value::Type::DICT);
     _key = &key;
@@ -71,7 +70,7 @@ const int kMaximumBreakpadValueSize = 255;
 - (void)updateCrashReport {
   std::string stateAsJson;
   base::JSONWriter::Write(_dictionary, &stateAsJson);
-  if (stateAsJson.length() > kMaximumBreakpadValueSize) {
+  if (stateAsJson.length() > (kMaximumMultiParameterValueSize - 1)) {
     NOTREACHED();
     return;
   }

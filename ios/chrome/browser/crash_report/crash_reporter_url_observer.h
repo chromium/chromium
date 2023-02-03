@@ -91,9 +91,9 @@ class CrashReporterURLObserver : public WebStateListObserver,
   void RecordURLForWebState(web::WebState* web_state);
   // Remove the reporting of URLs of every WebStates in `group`.
   void RemoveGroup(const std::string& group);
-  // Map associating each Breakpad key with the group it is currently reporting
+  // Map associating each crash key with the group it is currently reporting
   // URLs for.
-  NSMutableDictionary<NSString*, NSNumber*>* breakpad_key_by_group_;
+  NSMutableDictionary<NSString*, NSNumber*>* crash_key_by_group_;
   // Map associating each WebState to its group.
   std::map<web::WebState*, std::string> web_state_to_group_;
   // Map associating each group to the WebState currently reported in crash
@@ -101,7 +101,7 @@ class CrashReporterURLObserver : public WebStateListObserver,
   std::map<std::string, web::WebState*> current_web_states_;
   // List of keys to use for recording URLs. This list is sorted such that a new
   // tab must use the first key in this list to record its URLs.
-  NSMutableArray<NSNumber*>* breakpad_keys_;
+  NSMutableArray<NSNumber*>* crash_keys_;
   // Forwards observer methods for all WebStates in the WebStateList monitored
   // by the CrashReporterURLObserver.
   std::map<WebStateList*, std::unique_ptr<AllWebStateObservationForwarder>>

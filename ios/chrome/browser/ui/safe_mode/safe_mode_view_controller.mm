@@ -41,9 +41,8 @@ const NSTimeInterval kUploadTotalTime = 5;
 - (void)startUploadProgress;
 // Updates progress bar for crash report upload.
 - (void)pumpUploadProgress;
-// Called when user taps on "Resume Chrome" button. Restores the default
-// Breakpad configuration and notifies the delegate to attempt to start the
-// browser.
+// Called when user taps on "Resume Chrome" button. Notifies the delegate to
+// attempt to start the browser.
 - (void)startBrowserFromSafeMode;
 @end
 
@@ -297,9 +296,9 @@ const NSTimeInterval kUploadTotalTime = 5;
   NSTimeInterval elapsed =
       [[NSDate date] timeIntervalSinceDate:_uploadStartTime];
   // Theoretically we could stop early when the value returned by
-  // breakpad::GetCrashReportCount() changes, but this is simpler. If we decide
-  // to look for a change in crash report count, then we also probably want to
-  // replace the UIProgressView with a UIActivityIndicatorView.
+  // crash_helper::GetCrashReportCount() changes, but this is simpler. If we
+  // decide to look for a change in crash report count, then we also probably
+  // want to replace the UIProgressView with a UIActivityIndicatorView.
   if (elapsed <= kUploadTotalTime) {
     [_uploadProgress setProgress:elapsed / kUploadTotalTime animated:YES];
   } else {
@@ -315,7 +314,6 @@ const NSTimeInterval kUploadTotalTime = 5;
 }
 
 - (void)startBrowserFromSafeMode {
-  crash_helper::RestoreDefaultConfiguration();
   [_delegate startBrowserFromSafeMode];
 }
 

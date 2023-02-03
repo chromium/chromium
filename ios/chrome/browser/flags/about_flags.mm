@@ -732,9 +732,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kStartSurface,
                                     kStartSurfaceVariations,
                                     "StartSurface")},
-    {"ios-crashpad", flag_descriptions::kCrashpadIOSName,
-     flag_descriptions::kCrashpadIOSDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kCrashpadIOS)},
     {"autofill-address-verification-in-save-prompt",
      flag_descriptions::kEnableAutofillAddressSavePromptAddressVerificationName,
      flag_descriptions::

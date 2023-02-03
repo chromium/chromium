@@ -84,9 +84,7 @@ const CGFloat kMediumAlpha = 0.5;
 
 + (void)initialize {
   if (self == [ShareViewController self]) {
-    if (crash_helper::common::CanUseCrashpad()) {
-      crash_helper::common::StartCrashpad();
-    }
+    crash_helper::common::StartCrashpad();
   }
 }
 

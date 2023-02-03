@@ -10,9 +10,6 @@
 
 namespace crash_helper {
 
-// Sync the kCrashpadIOS feature to kCrashpadStartOnNextRun NSUserDefault.
-void SyncCrashpadEnabledOnNextRun();
-
 // Starts the crash handlers. This must be run as soon as possible to catch
 // early crashes.
 void Start();
@@ -23,12 +20,8 @@ void SetEnabled(bool enabled);
 // Process and begin uploading pending crash reports if application is active.
 // If application state is inactive or backgrounded, this is a no-op. Can be
 // called multiple times, but will only take effect the first time (when app
-// state is active) for Crashpad. For Breakpad, this can be called to start
-// uploads and restart uploads after -PauseBreakpadUploads() is called.
+// state is active).
 void UploadCrashReports();
-
-// For breakpad, it is necessary to pause uploads when entering the background.
-void PauseBreakpadUploads();
 
 // Process any pending crashpad reports, and mark them as
 // 'uploaded_in_recovery_mode'.
@@ -53,9 +46,6 @@ void WillStartCrashRestoration();
 // sets a key in uploaded reports to allow tracking of reports that are uploaded
 // in recovery mode.
 void StartUploadingReportsInRecoveryMode();
-
-// Resets the Breakpad configuration from the main bundle.
-void RestoreDefaultConfiguration();
 
 // Deletes any reports that were recorded or uploaded within the time range.
 void ClearReportsBetween(base::Time delete_begin, base::Time delete_end);

@@ -96,10 +96,8 @@ source_set("unit_tests") {
     "//components/crash/core/common:reporter_running_ios",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/common/crash_report",
-    "//ios/chrome/test/ocmock",
     "//ios/testing:block_swizzler",
     "//testing/gtest",
-    "//third_party/breakpad:client",
     "//third_party/crashpad/crashpad/client",
     "//third_party/ocmock",
   ]

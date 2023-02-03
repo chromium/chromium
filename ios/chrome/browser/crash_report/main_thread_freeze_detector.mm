@@ -14,8 +14,6 @@
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
-#import "third_party/breakpad/breakpad/src/client/ios/Breakpad.h"
-#import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -23,8 +21,8 @@
 namespace {
 // The info contains a dictionary with info about the freeze report.
 // See description at `_lastSessionFreezeInfo`.
-const char kNsUserDefaultKeyLastSessionInfo[] =
-    "MainThreadDetectionLastThreadWasFrozenInfo";
+const char kNsUserDefaultKeyLastSessionEndedFrozen[] =
+    "MainThreadDetectionLastSessionEndedFrozen";
 
 // Clean exit beacon.
 NSString* const kLastSessionExitedCleanly = @"LastSessionExitedCleanly";
@@ -51,7 +49,7 @@ const char kUMAMainThreadFreezeDetectionNotRunningAfterReport[] =
 // metric. These values are persisted to logs. Entries should not be renumbered
 // and numeric values should never be reused.
 enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
-  kAfterBreakpadRef = 0,
+  kAfterBreakpadRef = 0,  // unused
   kAfterFileManagerUTEMove = 1,
   kAfterCrashpadDumpWithoutCrash = 2,
   kMaxValue = kAfterCrashpadDumpWithoutCrash,
@@ -86,14 +84,6 @@ bool IsMetricKitReport(crash_reporter::Report report) {
 @implementation MainThreadFreezeDetector {
   dispatch_queue_t _freezeDetectionQueue;
   BOOL _enabled;
-
-  // The information on the UTE report that was created on last session.
-  // Contains 3 fields:
-  // "dump": the file name of the .dmp file in `_UTEDirectory`,
-  // "config": the file name of the config file in `_UTEDirectory`,
-  // "date": the date at which the UTE file was generated.
-  // NOTE: Fields are unused with crashpad.
-  NSDictionary* _lastSessionFreezeInfo;
   // The directory containing the UTE crash reports.
   NSString* _UTEDirectory;
   // The directory containing UTE crash reports eligible for crashpad
@@ -114,24 +104,27 @@ bool IsMetricKitReport(crash_reporter::Report report) {
   self = [super init];
   if (self) {
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-    _lastSessionFreezeInfo =
-        [defaults dictionaryForKey:@(kNsUserDefaultKeyLastSessionInfo)];
+    _lastSessionEndedFrozen =
+        [defaults boolForKey:@(kNsUserDefaultKeyLastSessionEndedFrozen)];
 
-    if (_lastSessionFreezeInfo != nil) {
+    if (_lastSessionEndedFrozen) {
       // This cannot use WasLastShutdownClean() from the metrics service because
       // MainThreadFreezeDetector starts before metrics. Instead, grab the value
       // directly.
       bool clean = [defaults objectForKey:kLastSessionExitedCleanly] != nil &&
                    [defaults boolForKey:kLastSessionExitedCleanly];
-      // Last session exited cleanly, ignore _lastSessionFreezeInfo.
+      // Last session exited cleanly, ignore _lastSessionEndedFrozen.
       UMA_HISTOGRAM_BOOLEAN("IOS.MainThreadFreezeDetection.HangWithCleanExit",
                             clean);
       if (clean)
-        _lastSessionFreezeInfo = nil;
+        _lastSessionEndedFrozen = NO;
     }
 
-    _lastSessionEndedFrozen = _lastSessionFreezeInfo != nil;
-    [defaults removeObjectForKey:@(kNsUserDefaultKeyLastSessionInfo)];
+    [defaults removeObjectForKey:@(kNsUserDefaultKeyLastSessionEndedFrozen)];
+    // TODO(crbug.com/1260646) Remove old deprecated Breakpad key, remove this
+    // after a few milestones.
+    [defaults removeObjectForKey:@"MainThreadDetectionLastThreadWasFrozenInfo"];
+
     _delay = kFreezeDetectionDelay;
     _freezeDetectionQueue = dispatch_queue_create(
         "org.chromium.freeze_detection", DISPATCH_QUEUE_SERIAL);
@@ -152,7 +145,7 @@ bool IsMetricKitReport(crash_reporter::Report report) {
                          attributes:nil
                               error:nil];
 
-    // Like breakpad, the feature is created immediately in the enabled state as
+    // Like crashpad, the feature is created immediately in the enabled state as
     // the settings are not available yet when it is started.
     _enabled = YES;
   }
@@ -175,14 +168,14 @@ bool IsMetricKitReport(crash_reporter::Report report) {
   } else {
     [self stop];
     [[NSUserDefaults standardUserDefaults]
-        removeObjectForKey:@(kNsUserDefaultKeyLastSessionInfo)];
+        removeObjectForKey:@(kNsUserDefaultKeyLastSessionEndedFrozen)];
   }
 }
 
 - (void)start {
   if (self.delay == 0 || self.running || !_enabled ||
       tests_hook::DisableMainThreadFreezeDetection() ||
-      base::debug::BeingDebugged()) {
+      !crash_reporter::IsCrashpadRunning() || base::debug::BeingDebugged()) {
     return;
   }
   self.running = YES;
@@ -203,7 +196,7 @@ bool IsMetricKitReport(crash_reporter::Report report) {
     self.reportGenerated = NO;
     // Remove information about the last session info.
     [[NSUserDefaults standardUserDefaults]
-        removeObjectForKey:@(kNsUserDefaultKeyLastSessionInfo)];
+        removeObjectForKey:@(kNsUserDefaultKeyLastSessionEndedFrozen)];
     LogRecoveryTime(base::Seconds(
         [[NSDate date] timeIntervalSinceDate:oldLastSeenMainThread]));
     // Restart the freeze detection.
@@ -237,37 +230,25 @@ bool IsMetricKitReport(crash_reporter::Report report) {
   }
   if ([[NSDate date] timeIntervalSinceDate:self.lastSeenMainThread] >
       self.delay) {
-    if (crash_reporter::IsCrashpadRunning()) {
-      const base::TimeTicks start = base::TimeTicks::Now();
-      static crash_reporter::CrashKeyString<4> key("hang-report");
-      crash_reporter::ScopedCrashKeyString auto_clear(&key, "yes");
-      NSString* intermediate_dump = [_UTEDirectory
-          stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
-      base::FilePath path(base::SysNSStringToUTF8(intermediate_dump));
-      crash_reporter::DumpWithoutCrashAndDeferProcessingAtPath(path);
-      if (!self.running) {
-        UMA_HISTOGRAM_ENUMERATION(
-            kUMAMainThreadFreezeDetectionNotRunningAfterReport,
-            IOSMainThreadFreezeDetectionNotRunningAfterReportBlock::
-                kAfterCrashpadDumpWithoutCrash);
-        return;
-      }
-      // Fields unused by Crashpad.  Change to bool if Breakpad is deprecated.
-      [[NSUserDefaults standardUserDefaults]
-          setObject:@{@"dump" : @"", @"config" : @"", @"date" : [NSDate date]}
-             forKey:@(kNsUserDefaultKeyLastSessionInfo)];
-      self.reportGenerated = YES;
-      LogRecordHangGenerationTime(start);
+    const base::TimeTicks start = base::TimeTicks::Now();
+    static crash_reporter::CrashKeyString<4> key("hang-report");
+    crash_reporter::ScopedCrashKeyString auto_clear(&key, "yes");
+    NSString* intermediate_dump = [_UTEDirectory
+        stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
+    base::FilePath path(base::SysNSStringToUTF8(intermediate_dump));
+    crash_reporter::DumpWithoutCrashAndDeferProcessingAtPath(path);
+    if (!self.running) {
+      UMA_HISTOGRAM_ENUMERATION(
+          kUMAMainThreadFreezeDetectionNotRunningAfterReport,
+          IOSMainThreadFreezeDetectionNotRunningAfterReportBlock::
+              kAfterCrashpadDumpWithoutCrash);
       return;
     }
-
-    [[BreakpadController sharedInstance]
-        withBreakpadRef:^(BreakpadRef breakpadRef) {
-          const base::TimeTicks start = base::TimeTicks::Now();
-          [self recordHangWithBreakpadRef:breakpadRef];
-          LogRecordHangGenerationTime(start);
-        }];
-    return;
+    [[NSUserDefaults standardUserDefaults]
+        setBool:YES
+         forKey:@(kNsUserDefaultKeyLastSessionEndedFrozen)];
+    self.reportGenerated = YES;
+    LogRecordHangGenerationTime(start);
   }
 
   dispatch_after(
@@ -275,54 +256,6 @@ bool IsMetricKitReport(crash_reporter::Report report) {
       _freezeDetectionQueue, ^{
         [self runInFreezeDetectionQueue];
       });
-}
-
-- (void)recordHangWithBreakpadRef:(BreakpadRef)breakpadRef {
-  if (!self.running) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kUMAMainThreadFreezeDetectionNotRunningAfterReport,
-        IOSMainThreadFreezeDetectionNotRunningAfterReportBlock::
-            kAfterBreakpadRef);
-    return;
-  }
-  if (!breakpadRef) {
-    return;
-  }
-  BreakpadAddUploadParameter(breakpadRef, kHangReportKey, @"yes");
-  NSDictionary* breakpadReportInfo = BreakpadGenerateReport(breakpadRef, nil);
-  BreakpadRemoveUploadParameter(breakpadRef, kHangReportKey);
-  if (!breakpadReportInfo) {
-    return;
-  }
-  // The report is always generated in the BreakpadDirectory.
-  // As only one report can be uploaded per session, this report is
-  // moved out of the Breakpad directory and put in a `UTE` directory.
-  NSString* configFile =
-      [breakpadReportInfo objectForKey:@BREAKPAD_OUTPUT_CONFIG_FILE];
-  NSString* UTEConfigFile = [_UTEDirectory
-      stringByAppendingPathComponent:[configFile lastPathComponent]];
-  NSString* dumpFile =
-      [breakpadReportInfo objectForKey:@BREAKPAD_OUTPUT_DUMP_FILE];
-  NSString* UTEDumpFile = [_UTEDirectory
-      stringByAppendingPathComponent:[dumpFile lastPathComponent]];
-  NSFileManager* fileManager = [[NSFileManager alloc] init];
-  [fileManager moveItemAtPath:configFile toPath:UTEConfigFile error:nil];
-  [fileManager moveItemAtPath:dumpFile toPath:UTEDumpFile error:nil];
-  if (!self.running) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kUMAMainThreadFreezeDetectionNotRunningAfterReport,
-        IOSMainThreadFreezeDetectionNotRunningAfterReportBlock::
-            kAfterFileManagerUTEMove);
-    return;
-  }
-  [[NSUserDefaults standardUserDefaults]
-      setObject:@{
-        @"dump" : [dumpFile lastPathComponent],
-        @"config" : [configFile lastPathComponent],
-        @"date" : [NSDate date]
-      }
-         forKey:@(kNsUserDefaultKeyLastSessionInfo)];
-  self.reportGenerated = YES;
 }
 
 - (void)processIntermediateDumps {
@@ -365,80 +298,24 @@ bool IsMetricKitReport(crash_reporter::Report report) {
 }
 
 - (void)restoreLastSessionReportIfNeeded {
-  if (!_lastSessionFreezeInfo) {
+  if (!_lastSessionEndedFrozen) {
     return;
   }
 
   NSFileManager* fileManager = [[NSFileManager alloc] init];
-  if (crash_reporter::IsCrashpadRunning()) {
-    NSArray<NSString*>* UTEDirectoryContents =
-        [fileManager contentsOfDirectoryAtPath:_UTEDirectory error:NULL];
-    if (UTEDirectoryContents.count != 1)
-      return;
-
-    // Backup hang_report to a new location. See -processIntermediateDumps for
-    // why this is necessary.
-    NSString* hang_report =
-        [_UTEDirectory stringByAppendingPathComponent:UTEDirectoryContents[0]];
-    NSString* save_hang_report = [_UTEPendingCrashpadDirectory
-        stringByAppendingPathComponent:UTEDirectoryContents[0]];
-    [fileManager moveItemAtPath:hang_report toPath:save_hang_report error:nil];
+  NSArray<NSString*>* UTEDirectoryContents =
+      [fileManager contentsOfDirectoryAtPath:_UTEDirectory error:NULL];
+  if (UTEDirectoryContents.count != 1) {
     return;
   }
 
-  // Tests that the dump file still exist.
-  NSString* dumpFile = [_lastSessionFreezeInfo objectForKey:@"dump"];
-  if (![dumpFile length])
-    return;
-  NSString* UTEDumpFile =
-      [_UTEDirectory stringByAppendingPathComponent:dumpFile];
-  NSString* cacheDirectory = NSSearchPathForDirectoriesInDomains(
-      NSCachesDirectory, NSUserDomainMask, YES)[0];
-  NSString* breakpadDirectory =
-      [cacheDirectory stringByAppendingPathComponent:@"Breakpad"];
-  NSString* breakpadDumpFile =
-      [breakpadDirectory stringByAppendingPathComponent:dumpFile];
-  if (!UTEDumpFile || ![fileManager fileExistsAtPath:UTEDumpFile]) {
-    return;
-  }
-
-  // Tests that the config file still exist.
-  NSString* configFile = [_lastSessionFreezeInfo objectForKey:@"config"];
-  NSString* UTEConfigFile =
-      [_UTEDirectory stringByAppendingPathComponent:configFile];
-  NSString* breakpadConfigFile =
-      [breakpadDirectory stringByAppendingPathComponent:configFile];
-  if (!UTEConfigFile || ![fileManager fileExistsAtPath:UTEConfigFile]) {
-    return;
-  }
-
-  // Tests that the previous session did not end in a crash with a report.
-  NSDirectoryEnumerator* directoryEnumerator =
-      [fileManager enumeratorAtURL:[NSURL fileURLWithPath:breakpadDirectory]
-          includingPropertiesForKeys:@[ NSURLCreationDateKey ]
-                             options:NSDirectoryEnumerationSkipsHiddenFiles
-                        errorHandler:nil];
-  NSDate* UTECrashDate = [_lastSessionFreezeInfo objectForKey:@"date"];
-  if (!UTECrashDate) {
-    return;
-  }
-  for (NSURL* fileURL in directoryEnumerator) {
-    if ([[fileURL pathExtension] isEqualToString:@"log"]) {
-      // Ignore upload.log
-      continue;
-    }
-    NSDate* crashDate;
-    [fileURL getResourceValue:&crashDate forKey:NSURLCreationDateKey error:nil];
-    if ([UTECrashDate compare:crashDate] == NSOrderedAscending) {
-      return;
-    }
-  }
-
-  // Restore files.
-  [fileManager moveItemAtPath:UTEDumpFile toPath:breakpadDumpFile error:nil];
-  [fileManager moveItemAtPath:UTEConfigFile
-                       toPath:breakpadConfigFile
-                        error:nil];
+  // Backup hang_report to a new location. See -processIntermediateDumps for
+  // why this is necessary.
+  NSString* hang_report =
+      [_UTEDirectory stringByAppendingPathComponent:UTEDirectoryContents[0]];
+  NSString* save_hang_report = [_UTEPendingCrashpadDirectory
+      stringByAppendingPathComponent:UTEDirectoryContents[0]];
+  [fileManager moveItemAtPath:hang_report toPath:save_hang_report error:nil];
 }
 
 - (void)handleLastSessionReport {

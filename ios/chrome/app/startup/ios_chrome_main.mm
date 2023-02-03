@@ -44,8 +44,8 @@ IOSChromeMain::IOSChromeMain() {
   }
   main_params.argv = argv;
 
-  // Chrome registers an AtExitManager in main in order to initialize breakpad
-  // early, so prevent a second registration by WebMainRunner.
+  // Chrome registers an AtExitManager in main in order to initialize the crash
+  // handler early, so prevent a second registration by WebMainRunner.
   main_params.register_exit_manager = false;
   web_main_runner_->Initialize(std::move(main_params));
 }

@@ -18,8 +18,8 @@
     UserInterfaceStyleRecorder* userInterfaceStyleRecorder API_AVAILABLE(
         ios(13.0));
 
-// Updates the Breakpad report with the current size class.
-- (void)updateBreakpad;
+// Updates the crash keys with the current size class.
+- (void)updateCrashKeys;
 
 @end
 
@@ -29,7 +29,7 @@
   self = [super initWithFrame:frame];
   if (self) {
     // When not created via a nib, create the recorders immediately.
-    [self updateBreakpad];
+    [self updateCrashKeys];
     _userInterfaceStyleRecorder = [[UserInterfaceStyleRecorder alloc]
         initWithUserInterfaceStyle:self.traitCollection.userInterfaceStyle];
   }
@@ -38,10 +38,10 @@
 
 - (void)awakeFromNib {
   [super awakeFromNib];
-  [self updateBreakpad];
+  [self updateCrashKeys];
 }
 
-- (void)updateBreakpad {
+- (void)updateCrashKeys {
   crash_keys::SetCurrentHorizontalSizeClass(
       self.traitCollection.horizontalSizeClass);
   crash_keys::SetCurrentUserInterfaceStyle(
@@ -64,7 +64,7 @@
   [super traitCollectionDidChange:previousTraitCollection];
   if (previousTraitCollection.horizontalSizeClass !=
       self.traitCollection.horizontalSizeClass) {
-    [self updateBreakpad];
+    [self updateCrashKeys];
   }
   if ([self.traitCollection
           hasDifferentColorAppearanceComparedToTraitCollection:
@@ -72,7 +72,7 @@
     [self.userInterfaceStyleRecorder
         userInterfaceStyleDidChange:self.traitCollection.userInterfaceStyle];
   }
-  [self updateBreakpad];
+  [self updateCrashKeys];
 }
 
 @end

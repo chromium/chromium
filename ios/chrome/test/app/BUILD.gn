@@ -106,7 +106,6 @@ source_set("test_support") {
     "//ios/web/public/test",
     "//net",
     "//net:test_support",
-    "//third_party/breakpad:client",
     "//third_party/metrics_proto",
     "//url",
   ]

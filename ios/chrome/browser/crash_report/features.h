@@ -7,8 +7,6 @@
 
 #include "base/feature_list.h"
 
-BASE_DECLARE_FEATURE(kCrashpadIOS);
-
 BASE_DECLARE_FEATURE(kMetrickitNonCrashReport);
 
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_FEATURES_H_

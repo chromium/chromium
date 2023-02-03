@@ -28,7 +28,7 @@ namespace {
 // Delay between each invocations of `UpdateMemoryValues`.
 constexpr base::TimeDelta kMemoryMonitorDelay = base::Seconds(30);
 
-// Checks the values of free RAM and free disk space and updates breakpad with
+// Checks the values of free RAM and free disk space and updates crash keys with
 // these values. Also updates available free disk space for PreviousSessionInfo.
 void UpdateMemoryValues() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,

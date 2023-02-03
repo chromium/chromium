@@ -333,8 +333,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)sendQueuedFeedback;
 // Called whenever an orientation change is received.
 - (void)orientationDidChange:(NSNotification*)notification;
-// Register to receive orientation change notification to update breakpad
-// report.
+// Register to receive orientation change notification to update crash keys.
 - (void)registerForOrientationChangeNotifications;
 // Asynchronously creates the pref observers.
 - (void)schedulePrefObserverInitialization;
@@ -1158,7 +1157,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   DCHECK(persistentStorageManager);
   persistentStorageManager->GetStoredEvents(
       base::BindOnce(^(std::vector<std::string> events) {
-        breakpad::SetPreviousSessionEvents(events);
+        crash_report_helper::SetPreviousSessionEvents(events);
       }));
 }
 

@@ -196,7 +196,7 @@ const NSString* kDocumentMimeType = @"application/pdf";
 
 @end
 
-namespace breakpad {
+namespace crash_report_helper {
 
 void MonitorURLsForPreloadWebState(web::WebState* web_state) {
   CrashReporterURLObserver::GetSharedInstance()->ObservePreloadWebState(
@@ -238,4 +238,4 @@ void SetPreviousSessionEvents(const std::vector<std::string>& events) {
       events);
 }
 
-}  // namespace breakpad
+}  // namespace crash_report_helper

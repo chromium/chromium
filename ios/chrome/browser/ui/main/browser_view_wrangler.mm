@@ -248,8 +248,8 @@
 - (void)clearMainBrowser {
   if (_mainBrowser.get()) {
     WebStateList* webStateList = self.mainBrowser->GetWebStateList();
-    breakpad::StopMonitoringTabStateForWebStateList(webStateList);
-    breakpad::StopMonitoringURLsForWebStateList(webStateList);
+    crash_report_helper::StopMonitoringTabStateForWebStateList(webStateList);
+    crash_report_helper::StopMonitoringURLsForWebStateList(webStateList);
     // Close all webstates in `webStateList`. Do this in an @autoreleasepool as
     // WebStateList observers will be notified (they are unregistered later). As
     // some of them may be implemented in Objective-C and unregister themselves
@@ -266,7 +266,7 @@
 - (void)setOtrBrowser:(std::unique_ptr<Browser>)otrBrowser {
   if (_otrBrowser.get()) {
     WebStateList* webStateList = self.otrBrowser->GetWebStateList();
-    breakpad::StopMonitoringTabStateForWebStateList(webStateList);
+    crash_report_helper::StopMonitoringTabStateForWebStateList(webStateList);
     // Close all webstates in `webStateList`. Do this in an @autoreleasepool as
     // WebStateList observers will be notified (they are unregistered later). As
     // some of them may be implemented in Objective-C and unregister themselves
@@ -297,7 +297,7 @@
   browserList->RemoveIncognitoBrowser(self.otrBrowser);
 
   // Stop watching the OTR webStateList's state for crashes.
-  breakpad::StopMonitoringTabStateForWebStateList(
+  crash_report_helper::StopMonitoringTabStateForWebStateList(
       self.otrBrowser->GetWebStateList());
 
   // At this stage, a new incognitoBrowserCoordinator shouldn't be lazily
@@ -361,7 +361,7 @@
       self.otrBrowser->GetBrowserState());
   otrBrowserList->RemoveIncognitoBrowser(self.otrBrowser);
 
-  // Handles removing observers, stopping breakpad monitoring, and closing all
+  // Handles removing observers, stopping crash key monitoring, and closing all
   // tabs.
   [self clearMainBrowser];
   [self setOtrBrowser:nullptr];
@@ -423,12 +423,13 @@
 
   [self setSessionIDForBrowser:browser.get()];
 
-  breakpad::MonitorTabStateForWebStateList(browser->GetWebStateList());
+  crash_report_helper::MonitorTabStateForWebStateList(
+      browser->GetWebStateList());
 
   // Follow loaded URLs in the non-incognito browser to send those in case of
   // crashes.
   if (!browserState->IsOffTheRecord()) {
-    breakpad::MonitorURLsForWebStateList(browser->GetWebStateList());
+    crash_report_helper::MonitorURLsForWebStateList(browser->GetWebStateList());
   }
 
   return browser;

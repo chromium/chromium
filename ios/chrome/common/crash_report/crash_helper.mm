@@ -21,8 +21,6 @@ namespace common {
 
 const char kCrashReportsUploadingEnabledKey[] = "CrashReportsUploadingEnabled";
 
-const char kCrashpadStartOnNextRun[] = "CrashpadStartOnNextRun";
-
 const char kCrashpadNoAppGroupFolder[] = "Crashpad";
 
 bool UserEnabledUploading() {
@@ -35,18 +33,10 @@ void SetUserEnabledUploading(bool enabled) {
       setBool:enabled ? YES : NO
        forKey:base::SysUTF8ToNSString(
                   common::kCrashReportsUploadingEnabledKey)];
-}
-
-bool CanUseCrashpad() {
-  static const bool can_use_crashpad = ([]() {
-    @autoreleasepool {
-      NSNumber* ns_value = [app_group::GetGroupUserDefaults()
-          objectForKey:base::SysUTF8ToNSString(kCrashpadStartOnNextRun)];
-      // CrashpadIOSEnabler is enabled by default, so treat nil as enabled.
-      return ns_value == nil || ns_value.boolValue;
-    }
-  })();
-  return can_use_crashpad;
+  // TODO(crbug.com/1260646) Remove old deprecated Breakpad key, remove this
+  // after a few milestones.
+  [app_group::GetGroupUserDefaults()
+      removeObjectForKey:@"CrashpadStartOnNextRun"];
 }
 
 base::FilePath CrashpadDumpLocation() {

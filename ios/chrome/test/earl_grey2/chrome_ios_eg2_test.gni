@@ -46,7 +46,6 @@ template("chrome_ios_eg2_test_app_host") {
           info_plists += invoker.extra_info_plists
         }
         args = [
-          "--breakpad=$breakpad_enabled_as_int",
           "--branding=$chromium_short_name",
           "--version-overrides=MINOR=9999",
         ]

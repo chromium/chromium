@@ -52,7 +52,6 @@
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/thread/web_task_traits.h"
-#import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -275,19 +274,6 @@ class AppStateTest : public BlockCleanupTest {
         safe_mode_swizzle_block_));
   }
 
-  void swizzleBreakpadUploadingDisabled() {
-    breakpad_disabled_called_ = NO;
-
-    breakpad_swizzle_block_ = ^{
-      breakpad_disabled_called_ = YES;
-    };
-
-    breakpad_swizzler_.reset(
-        new ScopedBlockSwizzler([BreakpadController class],
-                                NSSelectorFromString(@"setUploadingEnabled:"),
-                                breakpad_swizzle_block_));
-  }
-
   void swizzleHandleStartupParameters(
       id<TabOpening> expectedTabOpener,
       ChromeBrowserState* expectedBrowserState) {
@@ -445,8 +431,6 @@ class AppStateTest : public BlockCleanupTest {
   }
   ChromeBrowserState* getBrowserState() { return browser_state_.get(); }
 
-  BOOL breakpadUploadingHasBeenDisabled() { return breakpad_disabled_called_; }
-
  private:
   web::WebTaskEnvironment task_environment_;
   TestAppState* app_state_;
@@ -465,12 +449,9 @@ class AppStateTest : public BlockCleanupTest {
   ScenesBlock connected_scenes_swizzle_block_;
   DecisionBlock safe_mode_swizzle_block_;
   HandleStartupParam handle_startup_swizzle_block_;
-  ProceduralBlock breakpad_swizzle_block_;
   std::unique_ptr<ScopedBlockSwizzler> safe_mode_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> connected_scenes_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> handle_startup_swizzler_;
-  std::unique_ptr<ScopedBlockSwizzler> breakpad_swizzler_;
-  __block BOOL breakpad_disabled_called_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };
 
@@ -795,57 +776,6 @@ TEST_F(AppStateTest, applicationWillEnterForegroundFromBackground) {
 
   // Tests.
   EXPECT_OCMOCK_VERIFY(getBrowserLauncherMock());
-}
-
-// Tests that -applicationDidEnterBackground calls the metrics mediator.
-TEST_F(AppStateTest, applicationDidEnterBackgroundIncognito) {
-  // This is a breakpad only test and can be deprecated once Breakpad is
-  // removed.
-  if (crash_helper::common::CanUseCrashpad())
-    return;
-  swizzleSafeModeShouldStart(NO);
-  [[getStartupInformationMock() stub] setIsFirstRun:YES];
-  [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
-
-  // Setup.
-  ScopedKeyWindow scopedKeyWindow;
-  id application = [OCMockObject niceMockForClass:[UIApplication class]];
-  id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
-  StubBrowserInterfaceProvider* interfaceProvider = getInterfaceProvider();
-  crash_helper::SetEnabled(true);
-
-  std::unique_ptr<Browser> browser =
-      std::make_unique<TestBrowser>(getBrowserState());
-  id startupInformation = getStartupInformationMock();
-  id browserLauncher = getBrowserLauncherMock();
-
-  AppState* appState = getAppStateWithRealWindow(scopedKeyWindow.Get());
-  id appStateMock = OCMPartialMock(appState);
-  [[appStateMock expect] completeUIInitialization];
-
-  [[startupInformation expect] expireFirstUserActionRecorder];
-  [[[memoryHelper stub] andReturnValue:@0] foregroundMemoryWarningCount];
-  interfaceProvider.incognitoInterface.browser = browser.get();
-  [[[browserLauncher stub] andReturn:interfaceProvider] interfaceProvider];
-
-  swizzleBreakpadUploadingDisabled();
-
-  // Simulate launching the app before going to background. This is to start
-  // initialization process.
-  NSDictionary* launchOptions = @{};
-  id browserLauncherMock = getBrowserLauncherMock();
-  [[browserLauncherMock expect] setLaunchOptions:launchOptions];
-  [appState queueTransitionToFirstInitStage];
-  [appState queueTransitionToNextInitStage];
-
-  // Action.
-  [appState applicationDidEnterBackground:application
-                             memoryHelper:memoryHelper];
-
-  // Tests.
-  EXPECT_OCMOCK_VERIFY(startupInformation);
-  EXPECT_TRUE(breakpadUploadingHasBeenDisabled());
-  crash_helper::SetEnabled(false);
 }
 
 // Tests that -applicationDidEnterBackground do nothing if the application has

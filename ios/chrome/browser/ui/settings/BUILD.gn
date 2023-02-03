@@ -406,7 +406,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/test/app:test_support",
-    "//third_party/breakpad:client",
   ]
   public_deps = [ "//components/content_settings/core/common" ]
 }

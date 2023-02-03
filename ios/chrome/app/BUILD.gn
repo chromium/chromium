@@ -169,7 +169,6 @@ if (!is_fat_secondary_toolchain) {
       deps += ios_chrome_info_plist_addition_targets
     }
     args = [
-      "--breakpad=$breakpad_enabled_as_int",
       "--branding=$chromium_short_name",
       "--add-gtm-metadata=1",
     ]

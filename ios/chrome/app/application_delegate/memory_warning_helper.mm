@@ -48,7 +48,7 @@ const CFTimeInterval kOutOfMemoryResetTimeInterval = 5;
   _outOfMemoryResetTime =
       CFAbsoluteTimeGetCurrent() + kOutOfMemoryResetTimeInterval;
 
-  // Add information to breakpad.
+  // Add information to crash keys.
   crash_keys::SetMemoryWarningCount(_foregroundMemoryWarningCount);
   crash_keys::SetMemoryWarningInProgress(true);
 

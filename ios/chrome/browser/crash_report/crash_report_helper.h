@@ -16,7 +16,7 @@ class WebState;
 
 class WebStateList;
 
-namespace breakpad {
+namespace crash_report_helper {
 
 // Monitors the urls loaded by `web_state` to allow crash reports to contain the
 // current loading url.
@@ -54,6 +54,6 @@ void ClearStateForWebStateList(WebStateList* web_state_list);
 // Sets breadcrumb events associated with the previous application session.
 void SetPreviousSessionEvents(const std::vector<std::string>& events);
 
-}  // namespace breakpad
+}  // namespace crash_report_helper
 
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_REPORT_HELPER_H_

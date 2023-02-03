@@ -294,10 +294,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [[PreviousSessionInfo sharedInstance] resetMemoryWarningFlag];
   [[PreviousSessionInfo sharedInstance] stopRecordingMemoryFootprint];
 
-  // Turn off uploading of crash reports. This prevents failed uploads that will
-  // not be retried in Breakpad.
-  crash_helper::PauseBreakpadUploads();
-
   GetApplicationContext()->OnAppEnterBackground();
 }
 

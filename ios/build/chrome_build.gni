@@ -87,15 +87,11 @@ if (target_environment == "catalyst") {
   ios_enable_screen_time = false
 }
 
-# Configure whether breakpad support is enabled.
-breakpad_enabled = is_official_build && is_chrome_branded
-
-if (breakpad_enabled) {
-  breakpad_enabled_as_int = 1
+# Configure is_official_release.
+if (is_official_build && is_chrome_branded) {
   is_official_release = enable_dsyms && target_environment == "device" &&
                         current_toolchain == default_toolchain
 } else {
-  breakpad_enabled_as_int = 0
   is_official_release = false
 }
 

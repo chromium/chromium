@@ -214,11 +214,6 @@ const char kContentSuggestionsUIModuleRefreshDescription[] =
     "When enabled, the Content Suggestions will be redesigned to be contained "
     "into distinct modules.";
 
-const char kCrashpadIOSName[] = "Use Crashpad for crash collection.";
-const char kCrashpadIOSDescription[] =
-    "When enabled use Crashpad to generate crash reports crash collection. "
-    "When disabled use Breakpad. This flag takes two restarts to take effect";
-
 const char kCredentialProviderExtensionPromoName[] =
     "Enable the Credential Provider Extension promo.";
 const char kCredentialProviderExtensionPromoDescription[] =

@@ -11,20 +11,22 @@
 #include "components/crash/core/common/crash_key.h"
 
 // CrashReportMultiParameter keeps state of multiple report values that will be
-// grouped in a single breakpad element to save limited number of breakpad
+// grouped in a single crash key element to save limited number of crash key
 // values.
+// TOOD(crbug.com/1412774): This class dates back to Breakpad and is no longer
+// needed with Crashpad. Migrate this to individual crash keys instead.
 @interface CrashReportMultiParameter : NSObject
-// Init with the breakpad parameter key.
+// Init with the crash key parameter.
 - (instancetype)initWithKey:(crash_reporter::CrashKeyString<256>&)key
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Adds or updates an element in the dictionary of the breakpad report. Value
+// Adds or updates an element in the dictionary of the crash report. Value
 // are stored in the instance so every time you call this function, the whole
 // JSON dictionary is regenerated. The total size of the serialized dictionary
-// must be under 256 bytes due to Breakpad limitation. Setting a value to 0 will
-// not remove the key. Use [removeValue:key] instead.
+// must be under 512 bytes. Setting a value to 0 will not remove the key.
+// Use [removeValue:key] instead.
 - (void)setValue:(base::StringPiece)key withValue:(int)value;
 
 // Removes the key element from the dictionary. Note that this is different from

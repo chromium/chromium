@@ -51,7 +51,7 @@ const char kPreloadWebStateGroup[] = "PreloadGroup";
 
 }  // namespace
 
-// A CrashReporterParameterSetter that forward parameters to Breakpad and
+// A CrashReporterParameterSetter that forward parameters to crash keys and
 // PreviousSessionInfo.
 @interface CrashReporterParameterSetter
     : NSObject <CrashReporterParameterSetter>
@@ -90,12 +90,12 @@ CrashReporterURLObserver* CrashReporterURLObserver::GetSharedInstance() {
 CrashReporterURLObserver::CrashReporterURLObserver(
     id<CrashReporterParameterSetter> setter) {
   params_setter_ = setter;
-  breakpad_key_by_group_ =
+  crash_key_by_group_ =
       [[NSMutableDictionary alloc] initWithCapacity:kNumberOfURLsToSend];
-  breakpad_keys_ =
-      [[NSMutableArray alloc] initWithCapacity:kNumberOfURLsToSend];
-  for (int i = 0; i < kNumberOfURLsToSend; ++i)
-    [breakpad_keys_ addObject:[NSNumber numberWithInt:i]];
+  crash_keys_ = [[NSMutableArray alloc] initWithCapacity:kNumberOfURLsToSend];
+  for (int i = 0; i < kNumberOfURLsToSend; ++i) {
+    [crash_keys_ addObject:[NSNumber numberWithInt:i]];
+  }
 }
 
 CrashReporterURLObserver::~CrashReporterURLObserver() {}
@@ -109,14 +109,14 @@ std::string CrashReporterURLObserver::GroupForWebStateList(
 
 void CrashReporterURLObserver::RemoveGroup(const std::string& group) {
   NSString* ns_group = base::SysUTF8ToNSString(group);
-  NSNumber* key = [breakpad_key_by_group_ objectForKey:ns_group];
+  NSNumber* key = [crash_key_by_group_ objectForKey:ns_group];
   if (!key)
     return;
   [params_setter_ removeReportParameter:key pending:NO];
   [params_setter_ removeReportParameter:key pending:YES];
-  [breakpad_key_by_group_ removeObjectForKey:ns_group];
-  [breakpad_keys_ removeObject:key];
-  [breakpad_keys_ insertObject:key atIndex:0];
+  [crash_key_by_group_ removeObjectForKey:ns_group];
+  [crash_keys_ removeObject:key];
+  [crash_keys_ insertObject:key atIndex:0];
   current_web_states_.erase(group);
 }
 
@@ -134,33 +134,34 @@ void CrashReporterURLObserver::RecordURL(const GURL& url,
   std::string group = web_state_to_group_[web_state];
   DCHECK(group.size());
   NSString* ns_group = base::SysUTF8ToNSString(group);
-  NSNumber* breakpad_key = [breakpad_key_by_group_ objectForKey:ns_group];
+  NSNumber* crash_key = [crash_key_by_group_ objectForKey:ns_group];
   BOOL reusing_key = NO;
-  if (!breakpad_key) {
-    // Get the first breakpad key and push it back at the end of the keys.
-    breakpad_key = [breakpad_keys_ objectAtIndex:0];
+  if (!crash_key) {
+    // Get the first crash key and push it back at the end of the keys.
+    crash_key = [crash_keys_ objectAtIndex:0];
 
-    // Remove the current mapping to the breakpad key.
+    // Remove the current mapping to the crash key.
     for (NSString* used_group in
-         [breakpad_key_by_group_ allKeysForObject:breakpad_key]) {
+         [crash_key_by_group_ allKeysForObject:crash_key]) {
       reusing_key = YES;
       current_web_states_.erase(base::SysNSStringToUTF8(used_group));
-      [breakpad_key_by_group_ removeObjectForKey:used_group];
+      [crash_key_by_group_ removeObjectForKey:used_group];
     }
-    // Associate the breakpad key to the tab id.
-    [breakpad_key_by_group_ setObject:breakpad_key forKey:ns_group];
+    // Associate the crash key to the tab id.
+    [crash_key_by_group_ setObject:crash_key forKey:ns_group];
   }
-  [breakpad_keys_ removeObject:breakpad_key];
-  [breakpad_keys_ addObject:breakpad_key];
+  [crash_keys_ removeObject:crash_key];
+  [crash_keys_ addObject:crash_key];
 
   current_web_states_[group] = web_state;
   if (pending) {
-    if (reusing_key)
-      [params_setter_ removeReportParameter:breakpad_key pending:NO];
-    [params_setter_ setReportParameterURL:url forKey:breakpad_key pending:YES];
+    if (reusing_key) {
+      [params_setter_ removeReportParameter:crash_key pending:NO];
+    }
+    [params_setter_ setReportParameterURL:url forKey:crash_key pending:YES];
   } else {
-    [params_setter_ setReportParameterURL:url forKey:breakpad_key pending:NO];
-    [params_setter_ removeReportParameter:breakpad_key pending:YES];
+    [params_setter_ setReportParameterURL:url forKey:crash_key pending:NO];
+    [params_setter_ removeReportParameter:crash_key pending:YES];
   }
 }
 

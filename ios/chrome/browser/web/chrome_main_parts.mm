@@ -254,10 +254,6 @@ void IOSChromeMainParts::PreCreateThreads() {
   IOSThreadProfiler::SetBrowserProcessReceiverCallback(base::BindRepeating(
       &metrics::CallStackProfileMetricsProvider::ReceiveProfile));
 
-  // Sync the crashpad field tral state to NSUserDefaults.  Called immediately
-  // after setting up field trials.
-  crash_helper::SyncCrashpadEnabledOnNextRun();
-
   // Sync the CleanExitBeacon.
   metrics::CleanExitBeacon::SyncUseUserDefaultsBeacon();
 
@@ -327,14 +323,6 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 
   // Now that the file thread has been started, start recording.
   StartMetricsRecording();
-
-  // Because the crashpad flag takes 2 restarts to take effect, register a
-  // synthetic field trial when crashpad is actually running.  Called
-  // immediately after starting metrics recording.
-  IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "CrashpadIOS",
-      crash_reporter::IsCrashpadRunning() ? "Enabled" : "Disabled",
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
   // Because the CleanExitBeacon flag takes 2 restarts to take effect, register
   // a synthetic field trial when the user defaults beacon is set. Called

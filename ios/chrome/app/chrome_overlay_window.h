@@ -7,7 +7,7 @@
 
 #import <MaterialComponents/MaterialOverlayWindow.h>
 
-// Tracks size classes changes then reports to SizeClassRecorder and Breakpad.
+// Tracks size classes changes then reports to SizeClassRecorder and Crash keys.
 @interface ChromeOverlayWindow : MDCOverlayWindow
 @end
 

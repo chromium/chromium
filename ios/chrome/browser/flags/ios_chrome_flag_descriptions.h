@@ -180,11 +180,6 @@ extern const char kCloseAllTabsConfirmationDescription[];
 extern const char kContentSuggestionsUIModuleRefreshName[];
 extern const char kContentSuggestionsUIModuleRefreshDescription[];
 
-// Title and description for the flag to control which crash generation tool
-// is used.
-extern const char kCrashpadIOSName[];
-extern const char kCrashpadIOSDescription[];
-
 // Title and description for the flag to enable the Credential
 // Provider Extension promo.
 extern const char kCredentialProviderExtensionPromoName[];
