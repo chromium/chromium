@@ -62,8 +62,6 @@ namespace autofill {
 
 namespace {
 
-using AutofillProfileSourceCategory =
-    AutofillMetrics::AutofillProfileSourceCategory;
 using testing::ElementsAre;
 using testing::Pointee;
 using testing::UnorderedElementsAre;
@@ -72,7 +70,6 @@ constexpr char kGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb292";
 constexpr char kPrimaryAccountEmail[] = "syncuser@example.com";
 constexpr char16_t kPrimaryAccountEmail16[] = u"syncuser@example.com";
 constexpr char kAddressEntryIcon[] = "accountIcon";
-constexpr int kNonChromeCreatorOrModifier = 1234;
 
 enum UserMode { USER_MODE_NORMAL, USER_MODE_INCOGNITO };
 
@@ -4709,127 +4706,6 @@ TEST_F(PersonalDataManagerTest, RemoveByGUID_ResetsBillingAddress) {
       // to profile1.
       EXPECT_EQ(profile1.guid(), card->billing_address_id());
     }
-  }
-}
-
-// Separate stored profile count metrics exist for every profile category. Test
-// them in a parameterized way.
-class StoredProfileMetricsTest
-    : public PersonalDataManagerHelper,
-      public testing::TestWithParam<AutofillProfileSourceCategory> {
- protected:
-  void SetUp() override {
-    SetUpTest();
-    // The union view needs to be enabled for kAccount profiles to be loaded.
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillAccountProfilesUnionView);
-    ResetPersonalDataManager(USER_MODE_NORMAL);
-  }
-  void TearDown() override { TearDownTest(); }
-
-  AutofillProfileSourceCategory Category() const { return GetParam(); }
-
-  // Returns the suffix used for the metrics.
-  std::string GetSuffix() const {
-    return AutofillMetrics::GetProfileCategorySuffix(Category());
-  }
-
-  // Sets the `profile`s source and initial creator to match `category` and adds
-  // it to the PersonalDataManager.
-  void AddProfileOfCategory(AutofillProfile profile,
-                            AutofillProfileSourceCategory category) {
-    switch (category) {
-      case AutofillProfileSourceCategory::kLocalOrSyncable:
-        profile.set_source_for_testing(
-            AutofillProfile::Source::kLocalOrSyncable);
-        break;
-      case AutofillProfileSourceCategory::kAccountChrome:
-      case AutofillProfileSourceCategory::kAccountNonChrome:
-        profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-        profile.set_initial_creator_id(
-            category == AutofillProfileSourceCategory::kAccountChrome
-                ? AutofillProfile::kInitialCreatorOrModifierChrome
-                : kNonChromeCreatorOrModifier);
-        break;
-    }
-    AddProfileToPersonalDataManager(profile);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    PersonalDataManagerTest,
-    StoredProfileMetricsTest,
-    testing::ValuesIn({AutofillProfileSourceCategory::kLocalOrSyncable,
-                       AutofillProfileSourceCategory::kAccountChrome,
-                       AutofillProfileSourceCategory::kAccountNonChrome}));
-
-// Tests that no profile count metrics for the corresponding category are
-// emitted when no profiles of that category are stored.
-TEST_P(StoredProfileMetricsTest, NoStoredProfiles) {
-  base::HistogramTester histogram_tester;
-  ResetPersonalDataManager(USER_MODE_NORMAL);
-  EXPECT_TRUE(personal_data_->GetProfiles().empty());
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.StoredProfileCount." + GetSuffix(), 0, 1);
-  // The following metrics are expected not to be emitted when no profiles are
-  // stored.
-  histogram_tester.ExpectTotalCount(
-      "Autofill.StoredProfileDisusedCount." + GetSuffix(), 0);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.StoredProfileUsedCount." + GetSuffix(), 0);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.StoredProfileUsedPercentage." + GetSuffix(), 0);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.DaysSinceLastUse.StoredProfile." + GetSuffix(), 0);
-
-  // The following metric is only collected for kLocalOrSyncable profiles.
-  if (Category() == AutofillProfileSourceCategory::kLocalOrSyncable) {
-    histogram_tester.ExpectTotalCount(
-        "Autofill.StoredProfileWithoutCountryCount", 0);
-  }
-}
-
-// Tests that when profiles of a category exist, they metrics are emitted.
-TEST_P(StoredProfileMetricsTest, StoredProfiles) {
-  // Add a recently used (3 days ago) profile.
-  AutofillProfile profile0 = test::GetFullProfile();
-  profile0.set_use_date(AutofillClock::Now() - base::Days(3));
-  AddProfileOfCategory(profile0, Category());
-
-  // Add a profile used a long time (200 days) ago without a country.
-  AutofillProfile profile1 = test::GetFullProfile2();
-  profile1.ClearFields({ADDRESS_HOME_COUNTRY});
-  profile1.set_use_date(AutofillClock::Now() - base::Days(200));
-  AddProfileOfCategory(profile1, Category());
-
-  // Reload the database, which will log the stored profile counts.
-  base::HistogramTester histogram_tester;
-  ResetPersonalDataManager(USER_MODE_NORMAL);
-  EXPECT_EQ(2u, personal_data_->GetProfiles().size());
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.StoredProfileCount." + GetSuffix(), 2, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.StoredProfileDisusedCount." + GetSuffix(), 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.StoredProfileUsedCount." + GetSuffix(), 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.StoredProfileUsedPercentage." + GetSuffix(), 50, 1);
-
-  const std::string last_used_metric =
-      "Autofill.DaysSinceLastUse.StoredProfile." + GetSuffix();
-  histogram_tester.ExpectTotalCount(last_used_metric, 2);
-  histogram_tester.ExpectBucketCount(last_used_metric, 3, 1);
-  histogram_tester.ExpectBucketCount(last_used_metric, 200, 1);
-
-  // The following metric is only collected for kLocalOrSyncable profiles.
-  if (Category() == AutofillProfileSourceCategory::kLocalOrSyncable) {
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.StoredProfileWithoutCountryCount", 1, 1);
   }
 }
 

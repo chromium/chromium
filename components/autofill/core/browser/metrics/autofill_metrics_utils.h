@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_UTILS_H_
 
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
@@ -56,6 +57,26 @@ AutofillMetrics::FieldFillingStatus GetFieldFillingStatus(
 // suggestions method used to fill in the value and the form type.
 // E. g. "CreditCard.TouchToFill".
 std::string GetMetricsSuffixByAutofillMethod(AutofillSuggestionMethod method);
+
+// kAccount profiles are synced from an external source and have potentially
+// originated from outside of Autofill. In order to determine the added value
+// for Autofill, the `AutofillProfile::Source` is further resolved in some
+// metrics.
+enum class AutofillProfileSourceCategory {
+  kLocalOrSyncable = 0,
+  kAccountChrome = 1,
+  kAccountNonChrome = 2,
+  kMaxValue = kAccountNonChrome
+};
+
+// Maps the `profile` to its category, depending on the profile's `source()`
+// and `initial_creator()`.
+AutofillProfileSourceCategory GetCategoryOfProfile(
+    const AutofillProfile& profile);
+
+// Converts the `category` to the histogram-suffix used for resolving some
+// metrics by category.
+const char* GetProfileCategorySuffix(AutofillProfileSourceCategory category);
 
 }  // namespace autofill
 

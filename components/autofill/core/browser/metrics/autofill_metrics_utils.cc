@@ -8,7 +8,6 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/form_types.h"
 
 namespace autofill {
 
@@ -91,6 +90,30 @@ std::string GetMetricsSuffixByAutofillMethod(AutofillSuggestionMethod method) {
   }
   NOTREACHED();
   return "";
+}
+
+AutofillProfileSourceCategory GetCategoryOfProfile(
+    const AutofillProfile& profile) {
+  switch (profile.source()) {
+    case AutofillProfile::Source::kLocalOrSyncable:
+      return AutofillProfileSourceCategory::kLocalOrSyncable;
+    case AutofillProfile::Source::kAccount:
+      return profile.initial_creator_id() ==
+                     AutofillProfile::kInitialCreatorOrModifierChrome
+                 ? AutofillProfileSourceCategory::kAccountChrome
+                 : AutofillProfileSourceCategory::kAccountNonChrome;
+  }
+}
+
+const char* GetProfileCategorySuffix(AutofillProfileSourceCategory category) {
+  switch (category) {
+    case AutofillProfileSourceCategory::kLocalOrSyncable:
+      return "Legacy";
+    case AutofillProfileSourceCategory::kAccountChrome:
+      return "AccountChrome";
+    case AutofillProfileSourceCategory::kAccountNonChrome:
+      return "AccountNonChrome";
+  }
 }
 
 }  // namespace autofill

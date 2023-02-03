@@ -46,6 +46,7 @@
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
+#include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
@@ -2103,38 +2104,7 @@ std::string PersonalDataManager::SaveImportedIBAN(IBAN& imported_iban) {
 
 void PersonalDataManager::LogStoredProfileMetrics() const {
   if (!has_logged_stored_profile_metrics_) {
-    const base::Time now = AutofillClock::Now();
-    // Counts stored profile metrics for all profile of the given `category` and
-    // emits UMA metrics for them.
-    auto count_and_log =
-        [&](AutofillMetrics::AutofillProfileSourceCategory category) {
-          AutofillMetrics::StoredProfileCounts counts;
-          for (const AutofillProfile* profile : GetProfiles()) {
-            if (category != AutofillMetrics::GetCategoryOfProfile(*profile)) {
-              continue;
-            }
-            const base::TimeDelta time_since_last_use =
-                now - profile->use_date();
-            AutofillMetrics::LogStoredProfileDaysSinceLastUse(
-                category, time_since_last_use.InDays());
-            counts.total++;
-            counts.disused += time_since_last_use > kDisusedDataModelTimeDelta;
-            counts.without_country += profile->HasRawInfo(ADDRESS_HOME_COUNTRY);
-          }
-          AutofillMetrics::LogStoredProfileCountStatistics(category, counts);
-        };
-
-    count_and_log(
-        AutofillMetrics::AutofillProfileSourceCategory::kLocalOrSyncable);
-    // These metrics are only relevant when kAccount profiles are loaded.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillAccountProfilesUnionView)) {
-      count_and_log(
-          AutofillMetrics::AutofillProfileSourceCategory::kAccountChrome);
-      count_and_log(
-          AutofillMetrics::AutofillProfileSourceCategory::kAccountNonChrome);
-    }
-
+    autofill_metrics::LogStoredProfileMetrics(GetProfiles());
     // Only log this info once per Chrome user profile load.
     has_logged_stored_profile_metrics_ = true;
   }
