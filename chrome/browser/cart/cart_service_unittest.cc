@@ -1333,7 +1333,9 @@ TEST_F(CartServiceTest, TestExpiredDataDeleted) {
   const ShoppingCarts result = {{kMockMerchantA, merchant_proto}};
 
   merchant_proto.set_timestamp(
-      (base::Time::Now() - base::Days(16)).ToDoubleT());
+      (base::Time::Now() -
+       base::Days(CartService::kCartExpirationTimeInDays + 2))
+          .ToDoubleT());
   service_->AddCart(mock_merchant_url_A_, absl::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
 
@@ -1368,7 +1370,9 @@ TEST_F(CartServiceTest, TestExpiredDataDeleted) {
   run_loop[3].Run();
 
   merchant_proto.set_timestamp(
-      (base::Time::Now() - base::Days(13)).ToDoubleT());
+      (base::Time::Now() -
+       base::Days(CartService::kCartExpirationTimeInDays - 2))
+          .ToDoubleT());
   merchant_proto.set_is_removed(false);
   service_->GetDB()->AddCart(
       kMockMerchantA, merchant_proto,

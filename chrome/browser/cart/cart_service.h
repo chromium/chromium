@@ -46,6 +46,8 @@ class CartService : public history::HistoryServiceObserver,
  public:
   // The maximum number of times that cart welcome surface shows.
   static constexpr int kWelcomSurfaceShowLimit = 3;
+  // The number of days since creation for a cart to be considered expired.
+  static constexpr int kCartExpirationTimeInDays = 14;
 
   CartService(const CartService&) = delete;
   CartService& operator=(const CartService&) = delete;
@@ -244,6 +246,8 @@ class CartService : public history::HistoryServiceObserver,
   bool IsCartAndDiscountEnabled();
   // Get calls when Cart module loads.
   void RecordDiscountConsentStatusAtLoad(bool should_show_consent);
+  // Checks if a cart has expired.
+  bool IsCartExpired(const cart_db::ChromeCartContentProto& proto);
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<CartDB> cart_db_;
