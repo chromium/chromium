@@ -22,24 +22,6 @@ imageset("omnibox_completion_default_favicon") {
   ]
 }
 
-imageset("omnibox_completion_bookmark") {
-  sources = [
-    "omnibox_completion_bookmark.imageset/Contents.json",
-    "omnibox_completion_bookmark.imageset/omnibox_completion_bookmark.png",
-    "omnibox_completion_bookmark.imageset/omnibox_completion_bookmark@2x.png",
-    "omnibox_completion_bookmark.imageset/omnibox_completion_bookmark@3x.png",
-  ]
-}
-
-imageset("omnibox_completion_history") {
-  sources = [
-    "omnibox_completion_history.imageset/Contents.json",
-    "omnibox_completion_history.imageset/omnibox_completion_history.png",
-    "omnibox_completion_history.imageset/omnibox_completion_history@2x.png",
-    "omnibox_completion_history.imageset/omnibox_completion_history@3x.png",
-  ]
-}
-
 imageset("answer_calculator") {
   sources = [
     "answer_calculator.imageset/Contents.json",

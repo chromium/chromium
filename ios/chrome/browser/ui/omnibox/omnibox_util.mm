@@ -24,11 +24,7 @@ const CGFloat kSymbolLocationBarPointSize = 10;
 #pragma mark - Suggestion icons.
 
 OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
-    AutocompleteMatchType::Type type,
-    bool is_starred) {
-  if (is_starred)
-    return OmniboxSuggestionIconType::kBookmark;
-
+    AutocompleteMatchType::Type type) {
   // TODO(crbug.com/1122669): Handle trending zero-prefix suggestions by
   // checking the match subtype similar to AutocompleteMatch::GetVectorIcon().
 
@@ -78,10 +74,9 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
 }
 
 UIImage* GetOmniboxSuggestionIconForAutocompleteMatchType(
-    AutocompleteMatchType::Type type,
-    bool is_starred) {
+    AutocompleteMatchType::Type type) {
   OmniboxSuggestionIconType iconType =
-      GetOmniboxSuggestionIconTypeForAutocompleteMatchType(type, is_starred);
+      GetOmniboxSuggestionIconTypeForAutocompleteMatchType(type);
   return GetOmniboxSuggestionIcon(iconType);
 }
 

@@ -490,7 +490,7 @@ NSAttributedString* calculatorText() {
   suggestion.detailText = currencyDetailText();
   suggestion.icon = [[SimpleOmniboxIcon alloc]
         initWithIconType:OmniboxIconTypeSuggestionIcon
-      suggestionIconType:OmniboxSuggestionIconType::kConversation
+      suggestionIconType:OmniboxSuggestionIconType::kConversion
                 isAnswer:NO
                 imageURL:[[CrURL alloc] initWithGURL:GURL()]];
   return suggestion;

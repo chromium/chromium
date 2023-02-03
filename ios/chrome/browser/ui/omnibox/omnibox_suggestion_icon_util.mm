@@ -13,19 +13,15 @@
 NSString* GetOmniboxSuggestionIconTypeAssetName(
     OmniboxSuggestionIconType iconType) {
   switch (iconType) {
-    case OmniboxSuggestionIconType::kBookmark:
-      return @"omnibox_completion_bookmark";
     case OmniboxSuggestionIconType::kCalculator:
       return @"answer_calculator";
     case OmniboxSuggestionIconType::kDefaultFavicon:
       return @"favicon_fallback";
-    case OmniboxSuggestionIconType::kHistory:
-      return @"omnibox_completion_history";
     case OmniboxSuggestionIconType::kSearch:
       return @"search";
     case OmniboxSuggestionIconType::kSearchHistory:
       return @"omnibox_popup_recent_query";
-    case OmniboxSuggestionIconType::kConversation:
+    case OmniboxSuggestionIconType::kConversion:
       return @"answer_conversion";
     case OmniboxSuggestionIconType::kDictionary:
       return @"answer_dictionary";

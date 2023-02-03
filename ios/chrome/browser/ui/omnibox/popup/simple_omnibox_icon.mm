@@ -59,14 +59,12 @@
 
 - (BOOL)hasCustomAnswerIcon {
   switch (self.suggestionIconType) {
-    case OmniboxSuggestionIconType::kBookmark:
     case OmniboxSuggestionIconType::kDefaultFavicon:
-    case OmniboxSuggestionIconType::kHistory:
     case OmniboxSuggestionIconType::kSearch:
     case OmniboxSuggestionIconType::kSearchHistory:
       return NO;
     case OmniboxSuggestionIconType::kCalculator:
-    case OmniboxSuggestionIconType::kConversation:
+    case OmniboxSuggestionIconType::kConversion:
     case OmniboxSuggestionIconType::kDictionary:
     case OmniboxSuggestionIconType::kStock:
     case OmniboxSuggestionIconType::kSunrise:

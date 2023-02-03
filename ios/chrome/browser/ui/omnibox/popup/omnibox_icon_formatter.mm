@@ -33,7 +33,7 @@ OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
       case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
         return OmniboxSuggestionIconType::kWhenIs;
       case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
-        return OmniboxSuggestionIconType::kConversation;
+        return OmniboxSuggestionIconType::kConversion;
       case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
         return OmniboxSuggestionIconType::kSunrise;
       case SuggestionAnswer::ANSWER_TYPE_KNOWLEDGE_GRAPH:
@@ -49,7 +49,7 @@ OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
         break;
     }
   }
-  return GetOmniboxSuggestionIconTypeForAutocompleteMatchType(type, false);
+  return GetOmniboxSuggestionIconTypeForAutocompleteMatchType(type);
 }
 
 }  // namespace

@@ -9,13 +9,11 @@
 
 // All available icons for autocomplete suggestions in the popup.
 enum class OmniboxSuggestionIconType {
-  kBookmark = 0,
-  kCalculator,
+  kCalculator = 0,
   kDefaultFavicon,
-  kHistory,
   kSearch,
   kSearchHistory,
-  kConversation,
+  kConversion,
   kDictionary,
   kStock,
   kSunrise,
