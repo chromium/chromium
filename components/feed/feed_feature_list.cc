@@ -166,4 +166,6 @@ BASE_FEATURE(kFeedPerformanceStudy,
 BASE_FEATURE(kSyntheticCapabilities,
              "FeedSyntheticCapabilities",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCormorant, "Cormorant", base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace feed

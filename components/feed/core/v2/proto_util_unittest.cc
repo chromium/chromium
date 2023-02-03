@@ -271,6 +271,22 @@ TEST(ProtoUtilTest, CrowButtonEnabled) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+TEST(ProtoUtilTest, CormorantEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kCormorant}, {});
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    /*request_metadata=*/{},
+                                    /*consistency_token=*/std::string())
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              Contains(feedwire::Capability::OPEN_WEB_FEED_COMMAND));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 TEST(ProtoUtilTest, InfoCardAcknowledgementTrackingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({}, {kInfoCardAcknowledgementTracking});

@@ -172,6 +172,9 @@ feedwire::Request CreateFeedQueryRequest(
   if (base::FeatureList::IsEnabled(kShareCrowButton)) {
     feed_request.add_client_capability(Capability::THANK_CREATOR);
   }
+  if (base::FeatureList::IsEnabled(kCormorant)) {
+    feed_request.add_client_capability(Capability::OPEN_WEB_FEED_COMMAND);
+  }
 #endif
 
   if (base::FeatureList::IsEnabled(kPersonalizeFeedUnsignedUsers)) {

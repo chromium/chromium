@@ -139,6 +139,9 @@ BASE_DECLARE_FEATURE(kFeedPerformanceStudy);
 // by the client, primarily to retroactively work around bugs.
 BASE_DECLARE_FEATURE(kSyntheticCapabilities);
 
+// Feature that enables Cormorant for users.
+BASE_DECLARE_FEATURE(kCormorant);
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_

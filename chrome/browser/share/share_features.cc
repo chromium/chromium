@@ -23,7 +23,6 @@ BASE_FEATURE(kUpcomingSharingFeatures,
 BASE_FEATURE(kShareToGoogleCollections,
              "ShareToGoogleCollections",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kCormorant, "Cormorant", base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kCrowLaunchTab,
