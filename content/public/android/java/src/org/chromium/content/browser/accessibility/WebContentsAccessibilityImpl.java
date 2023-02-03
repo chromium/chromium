@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static androidx.core.view.accessibility.AccessibilityEventCompat.CONTENT_CHANGE_TYPE_PANE_APPEARED;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ARGUMENT_HTML_ELEMENT_STRING;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT;
@@ -42,6 +43,9 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_SELECTION;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_TEXT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SHOW_ON_SCREEN;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_LENGTH;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_START_INDEX;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_CHARACTER;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_LINE;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_PARAGRAPH;
@@ -55,7 +59,6 @@ import android.content.IntentFilter;
 import android.content.ReceiverCallNotAllowedException;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.LocaleSpan;
@@ -125,16 +128,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                    UserData, AccessibilityState.Listener,
                    ViewAndroidDelegate.ContainerViewObserver {
     private static final String TAG = "A11yImpl";
-    // The following constants have been hard coded so we can support actions newer than our
-    // minimum SDK without having to break methods into a series of subclasses.
-    // TODO(mschillaci): Remove these once they are added to the AccessibilityNodeInfoCompat class.
-    public static final String EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY =
-            "android.view.accessibility.extra.DATA_TEXT_CHARACTER_LOCATION_KEY";
-    public static final String EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_START_INDEX =
-            "android.view.accessibility.extra.DATA_TEXT_CHARACTER_LOCATION_ARG_START_INDEX";
-    public static final String EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_LENGTH =
-            "android.view.accessibility.extra.DATA_TEXT_CHARACTER_LOCATION_ARG_LENGTH";
-    public static final int CONTENT_CHANGE_TYPE_PANE_APPEARED = 0x00000010;
 
     // Constants defined for AccessibilityNodeInfo Bundle extras keys.
     public static final String EXTRAS_KEY_BRAILLE_LABEL = "AccessibilityNodeInfo.brailleLabel";
@@ -189,14 +182,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private final AccessibilityDelegate mDelegate;
     protected AccessibilityManager mAccessibilityManager;
     protected Context mContext;
-    private String mProductVersion;
+    private final String mProductVersion;
     protected long mNativeObj;
-    private Rect mAccessibilityFocusRect;
     private boolean mIsHovering;
     private int mLastHoverId = View.NO_ID;
     private int mCurrentRootId;
     protected View mView;
-    private boolean mUserHasTouchExplored;
     private boolean mPendingScrollToMakeNodeVisible;
     private boolean mNotifyFrameInfoInitializedCalled;
     private boolean mAccessibilityEnabledOverride;
@@ -213,7 +204,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // Tracker for all actions performed and events sent by this instance, used for testing.
     private AccessibilityActionAndEventTracker mTracker;
 
-    private AccessibilityHistogramRecorder mHistogramRecorder;
+    // Helper object to track and record values relevant to histograms.
+    private final AccessibilityHistogramRecorder mHistogramRecorder;
 
     // Whether or not the next selection event should be fired. We only want to sent one traverse
     // and one selection event per granularity move, this ensures no double events while still
@@ -239,11 +231,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     // This array maps a given virtualViewId to an |AccessibilityNodeInfoCompat| for that view. We
     // use this to update a node quickly rather than building from one scratch each time.
-    private SparseArray<AccessibilityNodeInfoCompat> mNodeInfoCache = new SparseArray<>();
+    private final SparseArray<AccessibilityNodeInfoCompat> mNodeInfoCache = new SparseArray<>();
 
     // This handles the dispatching of accessibility events. It acts as an intermediary where we can
     // apply throttling rules, delay event construction, etc.
-    private AccessibilityEventDispatcher mEventDispatcher;
+    private final AccessibilityEventDispatcher mEventDispatcher;
     private String mSystemLanguageTag;
     private BroadcastReceiver mBroadcastReceiver;
 
@@ -940,7 +932,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 WebContentsAccessibilityImplJni.get().moveAccessibilityFocus(
                         mNativeObj, mAccessibilityFocusId, View.NO_ID);
                 mAccessibilityFocusId = View.NO_ID;
-                mAccessibilityFocusRect = null;
             }
             if (mLastHoverId == virtualViewId) {
                 sendAccessibilityEvent(mLastHoverId, AccessibilityEvent.TYPE_VIEW_HOVER_EXIT);
@@ -1148,7 +1139,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         mIsHovering = true;
-        mUserHasTouchExplored = true;
         return true;
     }
 
@@ -1169,7 +1159,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         WebContentsAccessibilityImplJni.get().moveAccessibilityFocus(
                 mNativeObj, mAccessibilityFocusId, View.NO_ID);
         mAccessibilityFocusId = View.NO_ID;
-        mAccessibilityFocusRect = null;
 
         sendAccessibilityEvent(mLastHoverId, AccessibilityEvent.TYPE_VIEW_HOVER_EXIT);
         mLastHoverId = View.NO_ID;
@@ -1423,7 +1412,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 mNativeObj, mAccessibilityFocusId, newAccessibilityFocusId);
 
         mAccessibilityFocusId = newAccessibilityFocusId;
-        mAccessibilityFocusRect = null;
         // Used to store the node (edit text field) that has input focus but not a11y focus.
         // Usually while the user is typing in an edit text field, a11y is on the IME and input
         // focus is on the edit field. Granularity move needs to know where the input focus is.
@@ -1654,8 +1642,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @CalledByNative
     private void handleNavigate(int newRootId) {
         mAccessibilityFocusId = View.NO_ID;
-        mAccessibilityFocusRect = null;
-        mUserHasTouchExplored = false;
         mCurrentRootId = newRootId;
         // Invalidate the host, since its child is now gone.
         sendAccessibilityEvent(View.NO_ID, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
@@ -2136,16 +2122,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             boolean hasCharacterLocations, boolean hasImage, String hint) {
         node.setHintText(hint);
 
-        // Work-around a gap in the Android API, that |AccessibilityNodeInfoCompat| class does not
-        // have the setAvailableExtraData method, so unwrap the node and call it directly.
-        // TODO(mschillaci): Remove unwrapping and SDK version req once Android API is updated.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (hasCharacterLocations) {
-                ((AccessibilityNodeInfo) node.getInfo())
-                        .setAvailableExtraData(sTextCharacterLocation);
-            } else if (hasImage) {
-                ((AccessibilityNodeInfo) node.getInfo()).setAvailableExtraData(sRequestImageData);
-            }
+        if (hasCharacterLocations) {
+            node.setAvailableExtraData(sTextCharacterLocation);
+        } else if (hasImage) {
+            node.setAvailableExtraData(sRequestImageData);
         }
     }
 
