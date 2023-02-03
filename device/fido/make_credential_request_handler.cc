@@ -246,6 +246,14 @@ void ReportMakeCredentialRequestTransport(FidoAuthenticator* authenticator) {
   }
 }
 
+void ReportMakeCredentialResponseTransport(
+    absl::optional<FidoTransportProtocol> transport) {
+  if (transport) {
+    base::UmaHistogramEnumeration(
+        "WebAuthentication.MakeCredentialResponseTransport", *transport);
+  }
+}
+
 // CredProtectForAuthenticator translates a |CredProtectRequest| to a
 // |CredProtect| value given the capabilities of a specific authenticator.
 CredProtect CredProtectForAuthenticator(
@@ -779,6 +787,7 @@ void MakeCredentialRequestHandler::HandleResponse(
       return;
     }
     CancelActiveAuthenticators(authenticator->GetId());
+    ReportMakeCredentialResponseTransport(response->transport_used);
     response->attestation_should_be_filtered = suppress_attestation_;
     std::move(completion_callback_)
         .Run(WinCtapDeviceResponseCodeToMakeCredentialStatus(status),
@@ -873,12 +882,7 @@ void MakeCredentialRequestHandler::HandleResponse(
     return;
   }
 
-  if (authenticator->AuthenticatorTransport()) {
-    base::UmaHistogramEnumeration(
-        "WebAuthentication.MakeCredentialResponseTransport",
-        *authenticator->AuthenticatorTransport());
-  }
-
+  ReportMakeCredentialResponseTransport(response->transport_used);
   response->attestation_should_be_filtered = suppress_attestation_;
   std::move(completion_callback_)
       .Run(MakeCredentialStatus::kSuccess, std::move(*response), authenticator);

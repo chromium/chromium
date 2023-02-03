@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -48,6 +49,10 @@ namespace device {
 namespace {
 
 constexpr uint8_t kBogusCredentialId[] = {0x01, 0x02, 0x03, 0x04};
+constexpr char kRequestTransportHistogram[] =
+    "WebAuthentication.GetAssertionRequestTransport";
+constexpr char kResponseTransportHistogram[] =
+    "WebAuthentication.GetAssertionResponseTransport";
 
 using TestGetAssertionRequestCallback = test::StatusAndValuesCallbackReceiver<
     GetAssertionStatus,
@@ -778,42 +783,41 @@ TEST(GetAssertionRequestHandlerTest, IncorrectTransportType) {
   EXPECT_FALSE(cb.was_called());
 }
 
+TEST_F(FidoGetAssertionHandlerTest, ReportTransportMetric) {
+  base::HistogramTester histograms;
+  auto request_handler = CreateGetAssertionHandlerCtap();
+
+  auto device = MockFidoDevice::MakeCtapWithGetInfoExpectation();
+  device->ExpectCtap2CommandAndRespondWith(
+      CtapRequestCommand::kAuthenticatorGetAssertion,
+      test_data::kTestGetAssertionResponse);
+  discovery()->AddDevice(std::move(device));
+
+  auto nfc_device = MockFidoDevice::MakeCtapWithGetInfoExpectation();
+  nfc_device->SetDeviceTransport(
+      FidoTransportProtocol::kNearFieldCommunication);
+  nfc_device->ExpectCtap2CommandAndDoNotRespond(
+      CtapRequestCommand::kAuthenticatorGetAssertion);
+  EXPECT_CALL(*nfc_device, Cancel(_));
+  nfc_discovery()->AddDevice(std::move(nfc_device));
+
+  nfc_discovery()->WaitForCallToStartAndSimulateSuccess();
+  discovery()->WaitForCallToStartAndSimulateSuccess();
+  get_assertion_callback().WaitForCallback();
+
+  EXPECT_EQ(GetAssertionStatus::kSuccess, get_assertion_callback().status());
+  histograms.ExpectBucketCount(kRequestTransportHistogram,
+                               FidoTransportProtocol::kUsbHumanInterfaceDevice,
+                               1);
+  histograms.ExpectBucketCount(kRequestTransportHistogram,
+                               FidoTransportProtocol::kNearFieldCommunication,
+                               1);
+  histograms.ExpectUniqueSample(kResponseTransportHistogram,
+                                FidoTransportProtocol::kUsbHumanInterfaceDevice,
+                                1);
+}
+
 #if BUILDFLAG(IS_WIN)
-
-class TestObserver : public FidoRequestHandlerBase::Observer {
- public:
-  TestObserver() {}
-  ~TestObserver() override {}
-
-  void set_controls_dispatch(bool controls_dispatch) {
-    controls_dispatch_ = controls_dispatch;
-  }
-
- private:
-  // FidoRequestHandlerBase::Observer:
-  void OnTransportAvailabilityEnumerated(
-      FidoRequestHandlerBase::TransportAvailabilityInfo data) override {}
-  bool EmbedderControlsAuthenticatorDispatch(
-      const FidoAuthenticator&) override {
-    return controls_dispatch_;
-  }
-  void BluetoothAdapterPowerChanged(bool is_powered_on) override {}
-  void FidoAuthenticatorAdded(const FidoAuthenticator& authenticator) override {
-  }
-  void FidoAuthenticatorRemoved(base::StringPiece device_id) override {}
-  bool SupportsPIN() const override { return false; }
-  void CollectPIN(
-      CollectPINOptions options,
-      base::OnceCallback<void(std::u16string)> provide_pin_cb) override {
-    NOTREACHED();
-  }
-  void StartBioEnrollment(base::OnceClosure next_callback) override {}
-  void OnSampleCollected(int bio_samples_remaining) override {}
-  void FinishCollectToken() override { NOTREACHED(); }
-  void OnRetryUserVerification(int attempts) override {}
-
-  bool controls_dispatch_ = false;
-};
 
 // Verify that the request handler instantiates a HID device backed
 // FidoDeviceAuthenticator or a WinNativeCrossPlatformAuthenticator, depending
@@ -824,6 +828,8 @@ TEST(GetAssertionRequestHandlerWinTest, TestWinUsbDiscovery) {
     SCOPED_TRACE(::testing::Message() << "enable_api=" << enable_api);
     FakeWinWebAuthnApi api;
     api.set_available(enable_api);
+    api.InjectNonDiscoverableCredential(
+        test_data::kTestGetAssertionCredentialId, test_data::kRelyingPartyId);
 
     // Simulate a connected HID device.
     ScopedFakeFidoHidManager fake_hid_manager;
@@ -832,24 +838,20 @@ TEST(GetAssertionRequestHandlerWinTest, TestWinUsbDiscovery) {
     TestGetAssertionRequestCallback cb;
     FidoDiscoveryFactory fido_discovery_factory;
     fido_discovery_factory.set_win_webauthn_api(&api);
+    CtapGetAssertionRequest request(test_data::kRelyingPartyId,
+                                    test_data::kClientDataJson);
+    request.allow_list = {PublicKeyCredentialDescriptor(
+        CredentialType::kPublicKey,
+        fido_parsing_utils::Materialize(
+            test_data::kTestGetAssertionCredentialId))};
     auto handler = std::make_unique<GetAssertionRequestHandler>(
         &fido_discovery_factory,
         base::flat_set<FidoTransportProtocol>(
             {FidoTransportProtocol::kUsbHumanInterfaceDevice}),
-        CtapGetAssertionRequest(test_data::kRelyingPartyId,
-                                test_data::kClientDataJson),
-        CtapGetAssertionOptions(),
+        std::move(request), CtapGetAssertionOptions(),
         /*allow_skipping_pin_touch=*/true, cb.callback());
-    // Register an observer that disables automatic dispatch. Dispatch to the
-    // (unimplemented) fake Windows API would immediately result in an invalid
-    // response.
-    TestObserver observer;
-    observer.set_controls_dispatch(true);
-    handler->set_observer(&observer);
-
     task_environment.RunUntilIdle();
 
-    ASSERT_FALSE(cb.was_called());
     EXPECT_EQ(handler->AuthenticatorsForTesting().size(), 1u);
     EXPECT_EQ(handler->AuthenticatorsForTesting().begin()->second->GetType() ==
                   FidoAuthenticator::Type::kWinNative,

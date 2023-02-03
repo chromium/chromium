@@ -77,6 +77,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
     return last_get_credentials_options_.get();
   }
 
+  // Sets the transport to be reported by the API for cross-platform requests.
+  void set_transport(int transport) { transport_ = transport; }
+
   // WinWebAuthnApi:
   bool IsAvailable() const override;
   bool SupportsSilentDiscovery() const override;
@@ -123,6 +126,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   bool supports_silent_discovery_ = false;
   bool supports_large_blobs_ = false;
   int version_ = WEBAUTHN_API_VERSION_2;
+  int transport_ = WEBAUTHN_CTAP_TRANSPORT_USB;
   HRESULT result_override_ = S_OK;
 
   // Owns a copy of the last get credentials options to have been passed to the

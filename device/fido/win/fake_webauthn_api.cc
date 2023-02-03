@@ -288,7 +288,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
       options->dwAuthenticatorAttachment ==
               WEBAUTHN_AUTHENTICATOR_ATTACHMENT_PLATFORM
           ? WEBAUTHN_CTAP_TRANSPORT_INTERNAL
-          : WEBAUTHN_CTAP_TRANSPORT_USB;
+          : transport_;
 
   *credential_attestation_ptr = &attestation->win_attestation;
   returned_attestations_.push_back(std::move(attestation));

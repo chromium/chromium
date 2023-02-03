@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -38,6 +39,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "device/fido/win/fake_webauthn_api.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Invoke;
@@ -54,6 +59,11 @@ using TestMakeCredentialRequestCallback = test::StatusAndValuesCallbackReceiver<
     const FidoAuthenticator*>;
 
 }  // namespace
+
+constexpr char kRequestTransportHistogram[] =
+    "WebAuthentication.MakeCredentialRequestTransport";
+constexpr char kResponseTransportHistogram[] =
+    "WebAuthentication.MakeCredentialResponseTransport";
 
 class FidoMakeCredentialHandlerTest : public ::testing::Test {
  public:
@@ -74,7 +84,8 @@ class FidoMakeCredentialHandlerTest : public ::testing::Test {
     ForgeDiscoveries();
     PublicKeyCredentialRpEntity rp(test_data::kRelyingPartyId);
     PublicKeyCredentialUserEntity user(
-        fido_parsing_utils::Materialize(test_data::kUserId));
+        fido_parsing_utils::Materialize(test_data::kUserId), "nia",
+        absl::nullopt);
     PublicKeyCredentialParams credential_params(
         std::vector<PublicKeyCredentialParams::CredentialInfo>(1));
 
@@ -798,5 +809,53 @@ TEST_F(FidoMakeCredentialHandlerTest, PinUvAuthTokenPreTouchFailure) {
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_FALSE(callback().was_called());
 }
+
+TEST_F(FidoMakeCredentialHandlerTest, ReportTransportMetric) {
+  base::HistogramTester histograms;
+  auto request_handler = CreateMakeCredentialHandler();
+  auto device = MockFidoDevice::MakeCtapWithGetInfoExpectation();
+  device->ExpectCtap2CommandAndRespondWith(
+      CtapRequestCommand::kAuthenticatorMakeCredential,
+      test_data::kTestMakeCredentialResponse);
+  discovery()->AddDevice(std::move(device));
+  discovery()->WaitForCallToStartAndSimulateSuccess();
+
+  auto nfc_device = MockFidoDevice::MakeCtapWithGetInfoExpectation();
+  nfc_device->SetDeviceTransport(
+      FidoTransportProtocol::kNearFieldCommunication);
+  nfc_device->ExpectCtap2CommandAndDoNotRespond(
+      CtapRequestCommand::kAuthenticatorMakeCredential);
+  EXPECT_CALL(*nfc_device, Cancel(_));
+  nfc_discovery()->AddDevice(std::move(nfc_device));
+  nfc_discovery()->WaitForCallToStartAndSimulateSuccess();
+
+  callback().WaitForCallback();
+  EXPECT_EQ(MakeCredentialStatus::kSuccess, callback().status());
+  histograms.ExpectBucketCount(kRequestTransportHistogram,
+                               FidoTransportProtocol::kUsbHumanInterfaceDevice,
+                               1);
+  histograms.ExpectBucketCount(kRequestTransportHistogram,
+                               FidoTransportProtocol::kNearFieldCommunication,
+                               1);
+  histograms.ExpectUniqueSample(kResponseTransportHistogram,
+                                FidoTransportProtocol::kUsbHumanInterfaceDevice,
+                                1);
+}
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(FidoMakeCredentialHandlerTest, ReportTransportMetricWin) {
+  FakeWinWebAuthnApi win_api_;
+  win_api_.set_version(WEBAUTHN_API_VERSION_3);
+  win_api_.set_transport(WEBAUTHN_CTAP_TRANSPORT_BLE);
+  base::HistogramTester histograms;
+  fake_discovery_factory_->set_win_webauthn_api(&win_api_);
+  auto request_handler = CreateMakeCredentialHandler();
+  callback().WaitForCallback();
+  EXPECT_EQ(MakeCredentialStatus::kSuccess, callback().status());
+  histograms.ExpectTotalCount(kRequestTransportHistogram, 0);
+  histograms.ExpectUniqueSample(kResponseTransportHistogram,
+                                FidoTransportProtocol::kBluetoothLowEnergy, 1);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace device
