@@ -1,0 +1,44 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 1
+
+// This file defines the mojo interface between arc-keymint and Chrome for the
+// keys hardware-backed and accessible by Chrome.
+
+module arc.keymint.mojom;
+
+import "chrome/services/keymanagement/public/mojom/cert_store_types.mojom";
+
+// Metadata to uniquely identify a chaps key.
+struct ChapsKeyData {
+  // Maps to the CKA_LABEL of the CKO_PRIVATE_KEY in PKCS#11.
+  string label;
+  // Maps to the CKA_ID of the CKO_PRIVATE_KEY in PKCS#11.
+  string id;
+  // The slot where this key is stored. Does NOT map to the PKCS#11 CK_SLOT_ID.
+  [MinVersion=1] arc.keymanagement.mojom.ChapsSlot slot;
+};
+
+// Union of Chrome OS keys from different sources.
+union KeyData {
+  ChapsKeyData chaps_key_data;
+};
+
+// Describes a placeholder for a Chrome OS key along with metadata about the
+// original key.
+struct ChromeOsKey {
+  string base64_subject_public_key_info;
+  KeyData key_data;
+};
+
+
+// Interface exposed by arc-keymint daemon and called by Chrome
+// (CertStoreBridgeKeyMint).
+// Next method ID: 2
+// Deprecated method IDs: 0
+interface CertStoreInstance {
+  // Updates info about the latest set of keys owned by Chrome OS.
+  UpdatePlaceholderKeys@1(array<ChromeOsKey> keys) => (bool success);
+};

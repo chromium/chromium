@@ -18,8 +18,7 @@ class BrowserContext;
 
 }  // namespace content
 
-namespace arc {
-namespace keymaster {
+namespace arc::keymaster {
 
 class CertStoreBridge {
  public:
@@ -32,9 +31,9 @@ class CertStoreBridge {
   // store instance proxy.
   void BindToInvitation(mojo::OutgoingInvitation* invitation);
 
-  bool is_proxy_bound() const { return cert_store_proxy_.is_bound(); }
+  bool IsProxyBound() const;
 
-  // Send the latest information about Chrome OS keys to arc-keymasterd.
+  // Updates the latest information about Chrome OS keys to arc-keymasterd.
   void UpdatePlaceholderKeysInKeymaster(
       std::vector<mojom::ChromeOsKeyPtr> keys,
       mojom::CertStoreInstance::UpdatePlaceholderKeysCallback callback);
@@ -46,7 +45,6 @@ class CertStoreBridge {
   base::WeakPtrFactory<CertStoreBridge> weak_ptr_factory_;
 };
 
-}  // namespace keymaster
-}  // namespace arc
+}  // namespace arc::keymaster
 
 #endif  // CHROME_BROWSER_ASH_ARC_KEYMASTER_CERT_STORE_BRIDGE_H_
