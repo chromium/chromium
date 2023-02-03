@@ -17,7 +17,16 @@ namespace cc {
 namespace {
 
 constexpr char kTracingCategory[] = "cc,benchmark,input";
-constexpr base::TimeDelta high_latency_threshold = base::Milliseconds(90);
+constexpr char kEventLatencyName[] = "EventLatency";
+constexpr char kEventLatencyToPresentationName[] =
+    "EventLatency.ToPresentation";
+constexpr char kEventLatencyPostPresentationName[] =
+    "EventLatency.PostPresentation";
+constexpr char kPresentationCompositorFrameToSwapEndName[] =
+    "PresentationCompositorFrameToSwapEnd";
+constexpr char kPresentationToSwapEndName[] = "PresentationToSwapEnd";
+
+constexpr base::TimeDelta kHighLatencyThreshold = base::Milliseconds(90);
 
 constexpr perfetto::protos::pbzero::EventLatency::EventType ToProtoEnum(
     EventMetrics::EventType event_type) {
@@ -51,6 +60,19 @@ constexpr perfetto::protos::pbzero::EventLatency::EventType ToProtoEnum(
     CASE(kGesturePinchEnd, GESTURE_PINCH_END);
     CASE(kGesturePinchUpdate, GESTURE_PINCH_UPDATE);
     CASE(kInertialGestureScrollUpdate, INERTIAL_GESTURE_SCROLL_UPDATE);
+  }
+}
+
+const char* GetVizBreakdownToPresentationName(
+    CompositorFrameReporter::VizBreakdown breakdown) {
+  switch (breakdown) {
+    case CompositorFrameReporter::VizBreakdown::kSwapStartToSwapEnd:
+      return "SwapStartToPresentation";
+    case CompositorFrameReporter::VizBreakdown::kLatchToSwapEnd:
+      return "LatchToPresentation";
+    default:
+      NOTREACHED();
+      return "";
   }
 }
 
@@ -200,14 +222,14 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
   const auto trace_track =
       perfetto::Track(base::trace_event::GetNextGlobalTraceId());
   TRACE_EVENT_BEGIN(
-      kTracingCategory, "EventLatency", trace_track, generated_timestamp,
+      kTracingCategory, kEventLatencyName, trace_track, generated_timestamp,
       [&](perfetto::EventContext context) {
         auto* event =
             context.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* event_latency = event->set_event_latency();
         event_latency->set_event_type(ToProtoEnum(event_metrics->type()));
         bool has_high_latency =
-            (termination_time - generated_timestamp) > high_latency_threshold;
+            (termination_time - generated_timestamp) > kHighLatencyThreshold;
         event_latency->set_has_high_latency(has_high_latency);
         for (auto stage : event_metrics->GetHighLatencyStages()) {
           // TODO(crbug.com/1334827): Consider changing the high_latency_stage
@@ -217,11 +239,17 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
         }
       });
 
+  if (stage_history) {
+    // Record to-presentation breakdown only if the event is associated with a
+    // successfully presented frame.
+    TRACE_EVENT_BEGIN(kTracingCategory, kEventLatencyToPresentationName,
+                      trace_track, generated_timestamp);
+  }
+
   // Event dispatch stages.
   EventMetrics::DispatchStage dispatch_stage =
       EventMetrics::DispatchStage::kGenerated;
-  base::TimeTicks dispatch_timestamp =
-      event_metrics->GetDispatchStageTimestamp(dispatch_stage);
+  base::TimeTicks dispatch_timestamp = generated_timestamp;
   while (dispatch_stage != EventMetrics::DispatchStage::kMaxValue) {
     DCHECK(!dispatch_timestamp.is_null());
 
@@ -248,13 +276,17 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
     dispatch_stage = end_stage;
     dispatch_timestamp = end_timestamp;
   }
+
+  base::TimeTicks event_latency_end_timestamp = termination_time;
   if (stage_history) {
     DCHECK(viz_breakdown);
+
     // Find the first compositor stage that starts at the same time or after the
     // end of the final event dispatch stage.
     auto stage_it = base::ranges::lower_bound(
         *stage_history, dispatch_timestamp, {},
         &CompositorFrameReporter::StageData::start_time);
+
     // TODO(crbug.com/1330903): Ideally, at least the start time of
     // SubmitCompositorFrameToPresentationCompositorFrame stage should be
     // greater than or equal to the final event dispatch timestamp, but
@@ -297,10 +329,32 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
                it.Advance()) {
             base::TimeTicks start_time = it.GetStartTime();
             base::TimeTicks end_time = it.GetEndTime();
-            if (start_time >= end_time)
+            CompositorFrameReporter::VizBreakdown breakdown = it.GetBreakdown();
+            if (start_time >= end_time) {
+              // `SwapEndToPresentationCompositorFrame` stage will have a
+              // negative length when swap-end is after presentation. Skip this
+              // case.
               continue;
-            const char* breakdown_name =
-                CompositorFrameReporter::GetVizBreakdownName(it.GetBreakdown());
+            }
+            const char* breakdown_name = nullptr;
+            if (end_time > termination_time) {
+              // A breakdown ending in swap-end can end after termination time
+              // (because swap-end can happen after presentation). In this case
+              // we truncate the breakdown to presentation and show its
+              // remainder in the post-presentation breakdown of EventLatency.
+              DCHECK(
+                  breakdown == CompositorFrameReporter::VizBreakdown::
+                                   kSwapStartToSwapEnd ||
+                  breakdown ==
+                      CompositorFrameReporter::VizBreakdown::kLatchToSwapEnd);
+              event_latency_end_timestamp = end_time;
+              end_time = termination_time;
+              breakdown_name = GetVizBreakdownToPresentationName(breakdown);
+            } else {
+              breakdown_name =
+                  CompositorFrameReporter::GetVizBreakdownName(breakdown);
+            }
+            DCHECK_LE(end_time, termination_time);
             TRACE_EVENT_BEGIN(kTracingCategory,
                               perfetto::StaticString{breakdown_name},
                               trace_track, start_time);
@@ -311,6 +365,33 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
         TRACE_EVENT_END(kTracingCategory, trace_track, stage_it->end_time);
       }
     }
+
+    // Finish to-presentation breakdown.
+    TRACE_EVENT_END(kTracingCategory, trace_track, termination_time);
+
+    if (event_latency_end_timestamp > termination_time) {
+      // When swap-end is after presentation, we need a post-presentation
+      // breakdown for EventLatency to show the remainder of the truncated
+      // breakdown.
+      TRACE_EVENT_BEGIN(kTracingCategory, kEventLatencyPostPresentationName,
+                        trace_track, termination_time);
+      {
+        TRACE_EVENT_BEGIN(kTracingCategory,
+                          kPresentationCompositorFrameToSwapEndName,
+                          trace_track, termination_time);
+        {
+          TRACE_EVENT_BEGIN(kTracingCategory, kPresentationToSwapEndName,
+                            trace_track, termination_time);
+          TRACE_EVENT_END(kTracingCategory, trace_track,
+                          event_latency_end_timestamp);
+        }
+        TRACE_EVENT_END(kTracingCategory, trace_track,
+                        event_latency_end_timestamp);
+      }
+      TRACE_EVENT_END(kTracingCategory, trace_track,
+                      event_latency_end_timestamp);
+    }
+
   } else {
     DCHECK(!viz_breakdown);
     const char* d2t_breakdown_name =
@@ -320,7 +401,9 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
                       dispatch_timestamp);
     TRACE_EVENT_END(kTracingCategory, trace_track, termination_time);
   }
-  TRACE_EVENT_END(kTracingCategory, trace_track, termination_time);
+
+  // Finish top-level event.
+  TRACE_EVENT_END(kTracingCategory, trace_track, event_latency_end_timestamp);
 
   event_metrics->tracing_recorded();
 }
