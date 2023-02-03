@@ -169,8 +169,19 @@ TEST_F(ChromeAutofillClientTest, IsFastCheckoutSupportedWithDisabledFeature) {
   EXPECT_FALSE(client()->IsFastCheckoutSupported());
 }
 
-TEST_F(ChromeAutofillClientTest, HideFastCheckout) {
+TEST_F(ChromeAutofillClientTest,
+       HideFastCheckout_IsShowing_CallsStopOnFastCheckoutClient) {
+  ON_CALL(*fast_checkout_client(), IsShowing)
+      .WillByDefault(testing::Return(true));
   EXPECT_CALL(*fast_checkout_client(), Stop(true));
+  client()->HideFastCheckout(/*allow_further_runs=*/true);
+}
+
+TEST_F(ChromeAutofillClientTest,
+       HideFastCheckout_NotShowing_DoesNotCallStopOnFastCheckoutClient) {
+  ON_CALL(*fast_checkout_client(), IsShowing)
+      .WillByDefault(testing::Return(false));
+  EXPECT_CALL(*fast_checkout_client(), Stop).Times(0);
   client()->HideFastCheckout(/*allow_further_runs=*/true);
 }
 

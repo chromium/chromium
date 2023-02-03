@@ -725,8 +725,10 @@ bool ChromeAutofillClient::TryToShowFastCheckout(
 
 void ChromeAutofillClient::HideFastCheckout(bool allow_further_runs) {
 #if BUILDFLAG(IS_ANDROID)
-  FastCheckoutClient::GetOrCreateForWebContents(web_contents())
-      ->Stop(/*allow_further_runs=*/allow_further_runs);
+  if (IsShowingFastCheckoutUI()) {
+    FastCheckoutClient::GetOrCreateForWebContents(web_contents())
+        ->Stop(/*allow_further_runs=*/allow_further_runs);
+  }
 #endif
 }
 
