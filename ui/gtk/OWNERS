@@ -1,2 +1,8 @@
 estade@chromium.org
 thomasanderson@chromium.org
+
+# For input related.
+per-file BUILD.gn=hidehiko@chromium.org
+per-file gtk_key_bindings_handler*=hidehiko@chromium.org
+per-file gtk_ui*=hidehiko@chromium.org
+per-file input_method_context_impl_gtk*=hidehiko@chromium.org
