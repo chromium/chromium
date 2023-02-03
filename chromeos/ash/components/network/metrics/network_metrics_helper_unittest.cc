@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/debug/debugging_buildflags.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -186,13 +187,13 @@ void LogVpnResult(const std::string& provider,
 // Emitting a metric for an unknown VPN provider will always cause a NOTREACHED
 // to be hit. This can cause a CHECK to fail, depending on the build flags. We
 // catch any failing CHECK below by asserting that we will crash when emitting.
-#if !BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
+#if DCHECK_IS_ON() && !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   if (provider == kTestUnknownVpn) {
     ASSERT_DEATH({ func.Run(); }, "");
     *failed_to_log_result = true;
     return;
   }
-#endif  // !BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
+#endif  // DCHECK_IS_ON() && !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   func.Run();
 }
 
