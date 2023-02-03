@@ -169,7 +169,7 @@ struct Slow {};
 // Call needs to be wrapped with glFlush call, used on MacOS.
 struct NeedFlush {};
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
 using SlowOnMac = Slow;
 using NeedFlushOnMac = NeedFlush;
 #else

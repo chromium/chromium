@@ -25,7 +25,7 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/gpu_timing.h"
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -259,7 +259,9 @@ bool GLContext::HasBackpressureFences() const {
 void GLContext::DestroyBackpressureFences() {
   backpressure_fences_.clear();
 }
+#endif
 
+#if BUILDFLAG(IS_MAC)
 void GLContext::FlushForDriverCrashWorkaround() {
   // If running on Apple silicon, regardless of the architecture, disable this
   // workaround.  See https://crbug.com/1131312.

@@ -8,7 +8,7 @@
 #include <CoreVideo/CVPixelBuffer.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
-#include <IOSurface/IOSurface.h>
+#include <IOSurface/IOSurfaceRef.h>
 #include <stdint.h>
 #include <map>
 

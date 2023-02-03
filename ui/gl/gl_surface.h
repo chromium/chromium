@@ -35,7 +35,7 @@
 #include "ui/gfx/native_pixmap.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "ui/gfx/mac/io_surface.h"
 #endif
 
@@ -67,7 +67,7 @@ class EGLTimestampClient;
 // OverlayImage is a platform specific type for overlay plane image data.
 #if BUILDFLAG(IS_OZONE)
 using OverlayImage = scoped_refptr<gfx::NativePixmap>;
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 using OverlayImage = gfx::ScopedIOSurface;
 #elif BUILDFLAG(IS_ANDROID)
 using OverlayImage =

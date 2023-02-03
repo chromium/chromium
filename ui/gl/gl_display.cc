@@ -575,7 +575,7 @@ void GLDisplayEGL::Shutdown() {
   egl_context_priority_supported_ = false;
   egl_android_native_fence_sync_supported_ = false;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   CleanupMetalSharedEvent();
 #endif
 }

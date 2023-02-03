@@ -72,5 +72,10 @@ component("init") {
     ]
 
     deps += [ "//ui/ozone" ]
+  } else if (is_ios) {
+    sources += [
+      "gl_factory_ios.mm",
+      "gl_initializer_ios.cc",
+    ]
   }
 }

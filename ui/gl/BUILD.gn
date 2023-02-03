@@ -240,7 +240,7 @@ component("gl") {
       ]
     }
 
-    if (is_posix && !is_fuchsia && !is_mac) {
+    if (is_posix && !is_fuchsia && !is_mac && !is_ios) {
       # Windows has USE_EGL but doesn't support base::FileDescriptor.
       # libsync isn't supported or needed on MacOSX.
       # Fuchsia is excluded due to a libsync dependency and because it's
@@ -403,6 +403,25 @@ component("gl") {
     deps += [ "//components/metal_util:metal_util_types" ]
 
     defines += [ "GL_SILENCE_DEPRECATION" ]
+  }
+  if (is_ios) {
+    sources += [
+      "ca_renderer_layer_params.cc",
+      "ca_renderer_layer_params.h",
+      "egl_surface_io_surface.cc",
+      "egl_surface_io_surface.h",
+      "gl_display_egl.mm",
+      "gl_fence_apple.cc",
+      "gl_fence_apple.h",
+      "gl_image_io_surface.h",
+      "gl_image_io_surface.mm",
+    ]
+    frameworks = [
+      "CoreFoundation.framework",
+      "IOSurface.framework",
+    ]
+
+    deps += [ "//components/metal_util:metal_util_types" ]
   }
   if (is_android) {
     defines += [

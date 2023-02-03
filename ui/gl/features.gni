@@ -9,12 +9,12 @@ import("//chrome/version.gni")
 
 declare_args() {
   # Should ANGLE be linked statically?
-  use_static_angle = is_android
+  use_static_angle = is_android || is_ios
 
   # Should EGL support be compiled?
   # Can be overriden to test during bring up of EGL support on other platforms.
   use_egl =
-      is_win || is_android || is_linux || is_chromeos || is_fuchsia || is_mac
+      is_win || is_android || is_linux || is_chromeos || is_fuchsia || is_apple
 
   # Should Dawn support be compiled to back the WebGPU implementation?
   # Also controls linking Dawn dependencies in such as SPIRV-Tools/SPIRV-Cross.
@@ -27,8 +27,8 @@ declare_args() {
   build_dawn_tests = is_mac || is_win || is_linux || is_chromeos || is_android
 
   enable_validating_command_decoder =
-      !is_win && !is_mac && !(is_linux && !is_castos && !is_chromeos_lacros) &&
-      !is_fuchsia
+      !is_win && !is_apple &&
+      !(is_linux && !is_castos && !is_chromeos_lacros) && !is_fuchsia
 }
 
 declare_args() {

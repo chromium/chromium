@@ -76,7 +76,7 @@ bool GLContextStub::HasRobustness() {
          HasExtension("GL_KHR_robustness") || HasExtension("GL_EXT_robustness");
 }
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
 void GLContextStub::FlushForDriverCrashWorkaround() {}
 #endif
 

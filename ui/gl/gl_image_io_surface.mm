@@ -15,7 +15,6 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/mac/display_icc_profiles.h"
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
@@ -25,6 +24,10 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/scoped_binders.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/gfx/mac/display_icc_profiles.h"
+#endif
 
 using gfx::BufferFormat;
 
@@ -172,6 +175,7 @@ void GLImageIOSurface::SetColorSpace(const gfx::ColorSpace& color_space) {
     return;
   color_space_ = color_space;
 
+#if BUILDFLAG(IS_MAC)
   // Prefer to use data from DisplayICCProfiles, which will give a byte-for-byte
   // match for color spaces of the system displays. Note that DisplayICCProfiles
   // is not used in IOSurfaceSetColorSpace because that call may be made in the
@@ -182,6 +186,7 @@ void GLImageIOSurface::SetColorSpace(const gfx::ColorSpace& color_space) {
     IOSurfaceSetValue(io_surface_, CFSTR("IOSurfaceColorSpace"), cf_data);
     return;
   }
+#endif
 
   // Only if that fails, fall back to IOSurfaceSetColorSpace, which will
   // generate a profile.

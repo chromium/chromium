@@ -35,7 +35,7 @@
 // The standard OpenGL native extension headers are also included.
 #if BUILDFLAG(IS_WIN)
 #include <GL/wglext.h>
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_MAC)
 #include <OpenGL/OpenGL.h>
 #elif BUILDFLAG(IS_LINUX)
 using Display = struct _XDisplay;

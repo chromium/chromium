@@ -20,7 +20,7 @@
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -178,7 +178,7 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
 
   bool is_swangle = IsSoftwareGLImplementation(GetGLImplementationParts());
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
   if (is_swangle && attribs.webgl_compatibility_context &&
       base::mac::GetCPUType() == base::mac::CPUType::kArm) {
     // crbug.com/1378476: LLVM 10 is used as the JIT compiler for SwiftShader,
@@ -186,6 +186,15 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     // WebGL until LLVM is upgraded.
     DVLOG(1) << __FUNCTION__
              << ": Software WebGL contexts are not supported on ARM MacOS.";
+    return false;
+  }
+#elif BUILDFLAG(IS_IOS)
+  if (is_swangle && attribs.webgl_compatibility_context) {
+    // crbug.com/1378476: LLVM 10 is used as the JIT compiler for SwiftShader,
+    // which doesn't fully support ARM. Disable Swiftshader on ARM CPUs for
+    // WebGL until LLVM is upgraded.
+    DVLOG(1) << __FUNCTION__
+             << ": Software WebGL contexts are not supported on iOS.";
     return false;
   }
 #endif
