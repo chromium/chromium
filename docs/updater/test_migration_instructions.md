@@ -24,9 +24,8 @@ On macOS, and with a per-user Keystone (this is common), run:
 
 On macOS, and with a system-wide Keystone, run:
 ```
-sudo /Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin -C chromium-updater-opt-in -P com.google.Keystone -S
+sudo /Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin -C chromium-updater-opt-in -P com.google.Keystone -S && /Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Resources/CheckForUpdatesNow.command
 ```
-and then wait 5 hours for Keystone to apply a self-update.
 
 On Windows, and with a per-user Omaha 3, use `regedit.exe` to open the key
 `HKEY_CURRENT_USER\SOFTWARE\Google\Update\ClientState\{430FD4D0-B729-4F61-AA34-91526481799D}\cohort`
