@@ -45,12 +45,12 @@ QuotaManagerImpl helpers that distribute tasks (e.g. measure an origin's quota
 usage) across QuotaClient instances, and cache results as needed.
 
 ### QuotaDatabase
-Stores persistent information in a per-profile SQLite database. Currently stores
-a few bits of implementation details, and will likely be expanded to cover
-Storage Buckets. The currently stored information is a usage count,
-last-modified-time, and last-accessed-time for each origin (used to implement
-LRU eviction on storage pressure, and Clear Site Data with a time filter), and
-quota granted via the deprecated API
+Stores persistent information in a per-StoragePartition SQLite database.
+Currently stores a few bits of implementation details, and will likely be
+expanded to cover Storage Buckets. The currently stored information is a usage
+count, last-modified-time, and last-accessed-time for each origin (used to
+implement LRU eviction on storage pressure, and Clear Site Data with a time
+filter), and quota granted via the deprecated API
 navigator.webkitPersistentStorage.requestQuota(1000, ...).
 
 ### QuotaTemporaryStorageEvictor
