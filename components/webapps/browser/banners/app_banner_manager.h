@@ -62,6 +62,8 @@ class AppBannerManager : public content::WebContentsObserver,
   // A StatusReporter handles the reporting of |InstallableStatusCode|s.
   class StatusReporter;
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.banners
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AppBannerManagerState
   enum class State {
     // The pipeline has not yet been triggered for this page load.
     INACTIVE,

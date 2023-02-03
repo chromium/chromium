@@ -325,6 +325,14 @@ public class AppBannerManagerTest {
         });
     }
 
+    private void assertAppBannerPipelineStatus(int expectedValue) {
+        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals(expectedValue,
+                    getAppBannerManager(tab.getWebContents()).getPipelineStatusForTesting());
+        });
+    }
+
     private void navigateToUrlAndWaitForBannerManager(
             ChromeActivityTestRule<? extends ChromeActivity> rule, String url) throws Exception {
         Tab tab = rule.getActivity().getActivityTab();
@@ -905,14 +913,17 @@ public class AppBannerManagerTest {
         resetEngagementForUrl(webBannerUrl, 10);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, webBannerUrl);
 
+        assertAppBannerPipelineStatus(AppBannerManagerState.PENDING_PROMPT_CANCELED);
         // As the page called preventDefault on the beforeinstallprompt event, we do not expect to
         // see an ambient badge.
-        InfoBarUtil.waitUntilNoInfoBarsExist(mTabbedActivityTestRule.getInfoBars());
+        checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
 
         // Even after waiting for three months, there should not be no ambient badge.
         AppBannerManager.setTimeDeltaForTesting(91);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, webBannerUrl);
-        InfoBarUtil.waitUntilNoInfoBarsExist(mTabbedActivityTestRule.getInfoBars());
+
+        assertAppBannerPipelineStatus(AppBannerManagerState.PENDING_PROMPT_CANCELED);
+        checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
 
         // When the page is ready and calls prompt() on the beforeinstallprompt event, only then we
         // expect to see the modal banner.
@@ -1109,7 +1120,8 @@ public class AppBannerManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { backgroundTab.loadUrl(new LoadUrlParams(url)); });
 
-        waitForAppBannerPipelineStatus(backgroundTab, /* PENDING_PROMPT */ 9);
+        waitForAppBannerPipelineStatus(
+                backgroundTab, AppBannerManagerState.PENDING_PROMPT_NOT_CANCELED);
 
         ThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals(BottomSheetController.SheetState.HIDDEN,
@@ -1228,7 +1240,8 @@ public class AppBannerManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { backgroundTab.loadUrl(new LoadUrlParams(url)); });
 
-        waitForAppBannerPipelineStatus(backgroundTab, /* PENDING_PROMPT */ 9);
+        waitForAppBannerPipelineStatus(
+                backgroundTab, AppBannerManagerState.PENDING_PROMPT_NOT_CANCELED);
 
         assertNoHelpBubble(withText(R.string.iph_pwa_install_available_text));
     }
@@ -1247,14 +1260,14 @@ public class AppBannerManagerTest {
 
         // As the page doesn't have service worker, we do not expect to
         // see an ambient badge.
-        InfoBarUtil.waitUntilNoInfoBarsExist(mTabbedActivityTestRule.getInfoBars());
+        checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
 
         // Even after waiting for three months, there should not be no ambient badge.
         AppBannerManager.setTimeDeltaForTesting(91);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, webBannerUrl);
-        InfoBarUtil.waitUntilNoInfoBarsExist(mTabbedActivityTestRule.getInfoBars());
+        checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
 
-        // Calls prompt() on the beforeinstallprompt event, we expect to see the modal banner.
+        // Tap to trigger beforeinstallprompt.prompt, we expect to see the modal banner.
         Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
         tapAndWaitForModalBanner(tab);
     }
@@ -1291,6 +1304,7 @@ public class AppBannerManagerTest {
         Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
         tapAndWaitForModalBanner(tab);
 
+        // Navigate and check that the dialog was dismissed.
         mTabbedActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         waitUntilNoDialogsShowing(tab);
     }
@@ -1342,18 +1356,14 @@ public class AppBannerManagerTest {
     public void testAmbientBadgeDoesNotAppearWhenRelatedAppInstalled() throws Exception {
         String url = WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
                 WEB_APP_MANIFEST_WITH_RELATED_APP_LIST, "call_stashed_prompt_on_click");
+        resetEngagementForUrl(url, 10);
 
         final Context contextToRestore = ContextUtils.getApplicationContext();
         ContextUtils.initApplicationContextForTests(new TestContext(contextToRestore));
 
-        resetEngagementForUrl(url, 10);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
-            Assert.assertEquals(11 /* COMPLETE */,
-                    getAppBannerManager(tab.getWebContents()).getPipelineStatusForTesting());
-        });
+        assertAppBannerPipelineStatus(AppBannerManagerState.COMPLETE);
 
         // The web app banner not show if a play app in related applications list is installed.
         checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
