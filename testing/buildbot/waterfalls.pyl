@@ -5852,7 +5852,19 @@
           ]
         },
       },
-
+      'mac12-arm64-updater-tester-rel': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'arm-64',
+              'os': 'Mac-12',
+            }
+          ]
+        },
+        'test_suites': {
+          'gtest_tests': 'updater_gtests_mac',
+        },
+      },
       'mac12-x64-updater-tester-asan-dbg': {
         'test_suites': {
           'gtest_tests': 'updater_gtests_mac',
