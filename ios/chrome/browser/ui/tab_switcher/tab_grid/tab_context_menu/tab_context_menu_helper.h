@@ -14,12 +14,16 @@ class Browser;
 
 //  TabContextMenuHelper controls the creation of context menus for tab items.
 @interface TabContextMenuHelper : NSObject <TabContextMenuProvider>
+
 - (instancetype)initWithBrowser:(Browser*)browser
          tabContextMenuDelegate:
              (id<TabContextMenuDelegate>)tabContextMenuDelegate
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Browser reference.
+@property(nonatomic, assign) Browser* browser;
 
 @end
 
