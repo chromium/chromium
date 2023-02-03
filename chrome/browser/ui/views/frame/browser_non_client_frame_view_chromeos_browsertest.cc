@@ -51,6 +51,7 @@
 #include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/command_updater.h"
@@ -1560,6 +1561,45 @@ IN_PROC_BROWSER_TEST_P(TabSearchFrameCaptionButtonTest,
   EXPECT_EQ(browser_view->GetTabSearchBubbleHost()->button(),
             test.custom_button());
 }
+
+namespace {
+
+class KioskBrowserNonClientFrameViewChromeOSTest
+    : public TopChromeMdParamTest<ash::WebKioskBaseTest> {
+ public:
+  KioskBrowserNonClientFrameViewChromeOSTest() = default;
+  KioskBrowserNonClientFrameViewChromeOSTest(
+      const KioskBrowserNonClientFrameViewChromeOSTest&) = delete;
+  KioskBrowserNonClientFrameViewChromeOSTest& operator=(
+      const KioskBrowserNonClientFrameViewChromeOSTest&) = delete;
+  ~KioskBrowserNonClientFrameViewChromeOSTest() override = default;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(KioskBrowserNonClientFrameViewChromeOSTest,
+                       ToggleTabletModeBrowserCaptionVisibilityTest) {
+  InitializeRegularOnlineKiosk();
+
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  auto* browser_view =
+      BrowserView::GetBrowserViewForBrowser(BrowserList::GetInstance()->get(0));
+  auto* frame_view = GetFrameViewChromeOS(browser_view);
+  EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
+
+  auto* widget = browser_view->GetWidget();
+  auto* immersive_controller = chromeos::ImmersiveFullscreenController::Get(
+      views::Widget::GetWidgetForNativeView(widget->GetNativeWindow()));
+  EXPECT_FALSE(immersive_controller->IsEnabled());
+
+  // Enter tablet mode.
+  ASSERT_NO_FATAL_FAILURE(
+      ash::ShellTestApi().SetTabletModeEnabledForTest(true));
+
+  EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
+  EXPECT_FALSE(immersive_controller->IsEnabled());
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #define INSTANTIATE_TEST_SUITE(name) \
@@ -1568,9 +1608,11 @@ IN_PROC_BROWSER_TEST_P(TabSearchFrameCaptionButtonTest,
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_TEST_SUITE(WebAppNonClientFrameViewAshTest);
 INSTANTIATE_TEST_SUITE(FloatBrowserNonClientFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(HomeLauncherBrowserNonClientFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(TabSearchFrameCaptionButtonTest);
+INSTANTIATE_TEST_SUITE(KioskBrowserNonClientFrameViewChromeOSTest);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

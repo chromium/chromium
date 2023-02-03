@@ -1145,6 +1145,11 @@ bool BrowserNonClientFrameViewChromeOS::IsFloated() const {
 
 bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController()
     const {
+  // Do not support immersive mode in kiosk.
+  if (profiles::IsKioskSession()) {
+    return false;
+  }
+
   if (chromeos::TabletState::Get()->InTabletMode()) {
     // Tabbed browsers do not support immersive mode in tablet mode. We use the
     // web ui touchable tabstrip, which has its own sliding mechanism to view
