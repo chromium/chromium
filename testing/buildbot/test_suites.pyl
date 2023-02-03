@@ -5206,6 +5206,7 @@
     'webview_trichrome_64_cts_tests': {
       'webview_trichrome_64_cts_tests': {
         'swarming': {
+          'shards': 2,
           'cipd_packages': [
             {
               'cipd_package': 'chromium/android_webview/tools/cts_archive',
@@ -5223,6 +5224,7 @@
           '--disable-field-trial-config',
         ],
         'swarming': {
+          'shards': 2,
           'cipd_packages': [
             {
               "cipd_package": 'chromium/android_webview/tools/cts_archive',
@@ -6451,7 +6453,11 @@
       'webview_ui_instrumentation_tests': {},
     },
 
-    'android_12_13_emulator_gtests': {
+    'android_12_emulator_fyi_gtests': {
+      'oop_network_service_tests': {},
+    },
+
+    'android_12_emulator_gtests': {
       'android_emulator_specific_chrome_public_tests': {},
       'android_monochrome_smoke_tests': {},
       'android_smoke_tests': {},
@@ -6469,10 +6475,6 @@
       'webview_ui_instrumentation_tests': {},
     },
 
-    'android_12_emulator_fyi_gtests': {
-      'oop_network_service_tests': {},
-    },
-
     'android_12l_emulator_gtests': {
       'android_emulator_specific_chrome_public_tests': {},
       'android_monochrome_smoke_tests': {},
@@ -6482,6 +6484,25 @@
       'chromium_gtests_for_devices_with_graphical_output': {},
       'linux_flavor_specific_chromium_gtests': {},
       'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
+      'webview_ui_instrumentation_tests': {},
+    },
+
+    'android_13_emulator_gtests': {
+      'android_emulator_specific_chrome_public_tests': {},
+      'android_monochrome_smoke_tests': {},
+      'android_smoke_tests': {},
+      'android_specific_chromium_gtests': {},  # Already includes gl_gtests.
+      'chromium_gtests': {},
+      'chromium_gtests_for_devices_with_graphical_output': {},
+      'linux_flavor_specific_chromium_gtests': {},
+      'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
+      'webview_trichrome_64_cts_tests': {
+        'variants': [
+          'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
+          'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
+        ]
+      },
+      'webview_trichrome_64_cts_tests_no_field_trial': {},
       'webview_ui_instrumentation_tests': {},
     },
 

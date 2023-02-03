@@ -704,7 +704,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'android_12_13_emulator_gtests',
+          'gtest_tests': 'android_12_emulator_gtests',
         }
       },
       'android-12l-x64-dbg-tests': {
@@ -730,7 +730,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'android_12_13_emulator_gtests',
+          'gtest_tests': 'android_13_emulator_gtests',
         }
       },
       'android-arm64-proguard-rel': {
