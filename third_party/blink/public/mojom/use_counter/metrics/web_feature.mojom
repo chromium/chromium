@@ -3794,6 +3794,7 @@ enum WebFeature {
   kServiceWorkerFetchHandlerModifiedAfterInitialization = 4453,
   kOptionLabelInQuirksMode = 4454,
   kParseFromStringIncludeShadows = 4455,
+  kWebAppEnableScopeExtensions = 4456,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
