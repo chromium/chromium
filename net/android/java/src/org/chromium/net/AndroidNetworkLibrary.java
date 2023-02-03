@@ -130,6 +130,16 @@ class AndroidNetworkLibrary {
     }
 
     /**
+     * Get the list of user-added roots.
+     *
+     * @return DER-encoded list of user-added roots.
+     */
+    @CalledByNative
+    public static byte[][] getUserAddedRoots() {
+        return X509Util.getUserAddedRoots();
+    }
+
+    /**
      * Adds a test root certificate to the local trust store.
      * @param rootCert DER encoded bytes of the certificate.
      */

@@ -7,6 +7,7 @@
 
 #include "net/base/net_export.h"
 #include "net/cert/pki/trust_store.h"
+#include "net/cert/pki/trust_store_in_memory.h"
 
 namespace net {
 
@@ -25,6 +26,9 @@ class NET_EXPORT TrustStoreAndroid : public TrustStore {
 
   CertificateTrust GetTrust(const ParsedCertificate* cert,
                             base::SupportsUserData* debug_data) override;
+
+ private:
+  TrustStoreInMemory trust_store_;
 };
 
 }  // namespace net

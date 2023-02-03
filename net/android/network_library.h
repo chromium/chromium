@@ -26,6 +26,10 @@
 
 namespace net::android {
 
+// Get the list of user-added roots from Android.
+// |roots| is a list of DER-encoded user-added roots from Android.
+std::vector<std::string> GetUserAddedRoots();
+
 // |cert_chain| is DER encoded chain of certificates, with the server's own
 // certificate listed first.
 // |auth_type| is as per the Java X509Certificate.checkServerTrusted method.

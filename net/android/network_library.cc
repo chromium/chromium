@@ -26,11 +26,22 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
+using base::android::JavaArrayOfByteArrayToStringVector;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfByteArray;
 using base::android::ToJavaByteArray;
 
 namespace net::android {
+
+std::vector<std::string> GetUserAddedRoots() {
+  std::vector<std::string> roots;
+  JNIEnv* env = AttachCurrentThread();
+
+  ScopedJavaLocalRef<jobjectArray> roots_byte_array =
+      Java_AndroidNetworkLibrary_getUserAddedRoots(env);
+  JavaArrayOfByteArrayToStringVector(env, roots_byte_array, &roots);
+  return roots;
+}
 
 void VerifyX509CertChain(const std::vector<std::string>& cert_chain,
                          base::StringPiece auth_type,
