@@ -1424,6 +1424,19 @@ TEST_F(
   EXPECT_EQ(test_api.contents_viewport()->layer()->type(), ui::LAYER_TEXTURED);
 }
 
+TEST_F(ScrollViewTest,
+       ContentsViewportLayerHasRoundedCorners_ScrollWithLayersEnabled) {
+  ScrollView scroll_view(ScrollView::ScrollWithLayers::kEnabled);
+  ScrollViewTestApi test_api(&scroll_view);
+  ASSERT_TRUE(test_api.contents_viewport()->layer());
+
+  const gfx::RoundedCornersF corner_radii = gfx::RoundedCornersF{16};
+  scroll_view.SetViewportRoundedCornerRadius(corner_radii);
+
+  EXPECT_EQ(test_api.contents_viewport()->layer()->rounded_corner_radii(),
+            corner_radii);
+}
+
 #if BUILDFLAG(IS_MAC)
 // Tests the overlay scrollbars on Mac. Ensure that they show up properly and
 // do not overlap each other.

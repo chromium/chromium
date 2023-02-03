@@ -24,6 +24,7 @@ struct ElementId;
 
 namespace gfx {
 class PointF;
+class RoundedCornersF;
 }
 
 namespace views {
@@ -121,6 +122,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // Sets the preferred margins within the scroll viewport - when scrolling
   // rects to visible, these margins will be added to the visible rect.
   void SetPreferredViewportMargins(const gfx::Insets& margins);
+
+  // You must be using layer scrolling for this method to work as it applies
+  // rounded corners to the `contents_viewport_` layer. See `ScrollWithLayers`.
+  void SetViewportRoundedCornerRadius(const gfx::RoundedCornersF& radii);
 
   // The background color can be configured in two distinct ways:
   // . By way of SetBackgroundThemeColorId(). This is the default and when

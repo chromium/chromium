@@ -385,6 +385,14 @@ void ScrollView::SetPreferredViewportMargins(const gfx::Insets& margins) {
   preferred_viewport_margins_ = margins;
 }
 
+void ScrollView::SetViewportRoundedCornerRadius(
+    const gfx::RoundedCornersF& radii) {
+  DCHECK(contents_viewport_->layer())
+      << "Please ensure you have enabled ScrollWithLayers.";
+
+  contents_viewport_->layer()->SetRoundedCornerRadius(radii);
+}
+
 void ScrollView::SetBackgroundColor(const absl::optional<SkColor>& color) {
   if (background_color_ == color && !background_color_id_)
     return;
