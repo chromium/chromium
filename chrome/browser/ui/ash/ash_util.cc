@@ -21,6 +21,16 @@ void SetupWidgetInitParamsForContainer(views::Widget::InitParams* params,
       ash::Shell::GetRootWindowForNewWindows(), container_id);
 }
 
+void SetupWidgetInitParamsForContainerInPrimary(
+    views::Widget::InitParams* params,
+    int container_id) {
+  DCHECK_GE(container_id, ash::kShellWindowId_MinContainer);
+  DCHECK_LE(container_id, ash::kShellWindowId_MaxContainer);
+
+  params->parent = ash::Shell::GetContainer(ash::Shell::GetPrimaryRootWindow(),
+                                            container_id);
+}
+
 int GetSystemModalDialogContainerId() {
   return session_manager::SessionManager::Get()->session_state() ==
                  session_manager::SessionState::ACTIVE

@@ -67,7 +67,8 @@ AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   // Placing the panel in the accessibility panel container allows ash to manage
   // both the window bounds and display work area.
-  ash_util::SetupWidgetInitParamsForContainer(
+  // The AccessibilityPanel is only shown in the primary root window.
+  ash_util::SetupWidgetInitParamsForContainerInPrimary(
       &params, ShellWindowId::kShellWindowId_AccessibilityPanelContainer);
   params.bounds = display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
   params.delegate = this;
