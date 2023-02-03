@@ -96,7 +96,37 @@ FormData::FormData() : encoding_(UTF8Encoding()) {}
 
 FormData* FormData::Create(HTMLFormElement* form,
                            ExceptionState& exception_state) {
-  FormData* form_data = form->ConstructEntryList(nullptr, UTF8Encoding());
+  return FormData::Create(form, nullptr, exception_state);
+}
+
+// https://xhr.spec.whatwg.org/#dom-formdata
+// 1. If form is given, then:
+FormData* FormData::Create(HTMLFormElement* form,
+                           HTMLElement* submitter,
+                           ExceptionState& exception_state) {
+  HTMLFormControlElement* control = nullptr;
+  // 1.1. If submitter is non-null, then:
+  if (submitter) {
+    // 1.1.1. If submitter is not a submit button, then throw a TypeError.
+    control = DynamicTo<HTMLFormControlElement>(submitter);
+    if (!control || !control->CanBeSuccessfulSubmitButton()) {
+      exception_state.ThrowTypeError(
+          "The specified element is not a submit button.");
+      return nullptr;
+    }
+    // 1.1.2. If submitter's form owner is not this form element, then throw a
+    // "NotFoundError" DOMException.
+    if (control->formOwner() != form) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotFoundError,
+          "The specified element is not owned by this form element.");
+      return nullptr;
+    }
+  }
+  // 1.2. Let list be the result of constructing the entry list for form and
+  // submitter.
+  FormData* form_data = form->ConstructEntryList(control, UTF8Encoding());
+  // 1.3. If list is null, then throw an "InvalidStateError" DOMException.
   if (!form_data) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The form is constructing entry list.");

@@ -382,10 +382,7 @@ void HTMLFormElement::requestSubmit(HTMLElement* submitter,
   if (submitter) {
     // 1.1. If submitter is not a submit button, then throw a TypeError.
     control = DynamicTo<HTMLFormControlElement>(submitter);
-    // button[type] is a subset of input[type]. So it's ok to compare button's
-    // type and input_type_names.
-    if (!control || (control->type() != input_type_names::kSubmit &&
-                     control->type() != input_type_names::kImage)) {
+    if (!control || !control->CanBeSuccessfulSubmitButton()) {
       exception_state.ThrowTypeError(
           "The specified element is not a submit button.");
       return;
