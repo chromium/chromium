@@ -1366,10 +1366,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioRendererAudioGlitches2.{LatencyTag}"
-    enum="AudioGlitchResult" expires_after="2023-02-05">
+    enum="AudioGlitchResult" expires_after="2024-02-05">
   <owner>dalecurtis@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>fhernqvist@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Captures if render-side audio glitches are detected or not. Sampled when a
