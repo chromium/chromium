@@ -1,0 +1,25 @@
+Name: Kotlin Standard Library
+Short Name: Kotlin stdlib
+Version: unknown
+License: Apache Version 2.0
+License File: NOT_SHIPPED
+Security Critical: No
+URL: https://kotlinlang.org/api/latest/jvm/stdlib/
+
+Description:
+The Kotlin Standard Library provides living essentials for everyday work with
+Kotlin. This bundles three deps into one:
+- org_jetbrains_kotlin_kotlin_stdlib_java
+- org_jetbrains_kotlin_kotlin_stdlib_common_java
+- org_jetbrains_annotations_java
+
+Local Modifications:
+None
+
+What version is this:
+  * Run print_version.sh to find out the version.
+  * New instances are uploaded by the packager bot:
+    https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
+  * The bot autoruns every 6 hours. Ping a trooper or a clank-build-core@ dev to
+    trigger it if you need it sooner:
+    https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
