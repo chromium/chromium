@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer_impl.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
@@ -197,7 +198,7 @@ void BruschettaInstallerView::StartInstallation() {
     CHECK_IS_TEST();
   }
   observation_.Observe(installer_.get());
-  installer_->Install(guest_id_.vm_name, guest_id_.vm_name);
+  installer_->Install(guest_id_.vm_name, bruschetta::kBruschettaPolicyId);
 
   OnStateUpdated();
 }

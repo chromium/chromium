@@ -36,6 +36,8 @@ const char kBruschettaDisplayName[] = "Bruschetta";
 const char kBiosPath[] = "Downloads/CROSVM_CODE.fd";
 const char kPflashPath[] = "Downloads/CROSVM_VARS.google.fd";
 
+const char kBruschettaPolicyId[] = "glinux-latest";
+
 const char* BruschettaResultString(const BruschettaResult res) {
 #define ENTRY(name)            \
   case BruschettaResult::name: \
