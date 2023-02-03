@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol TableViewModalPresenting;
-
 // BookmarkNavigationControllerDelegate serves as a delegate for
 // TableViewNavigationController.
 // It ensures that the way the navigation controller responds to adaptive

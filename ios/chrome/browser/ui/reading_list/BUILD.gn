@@ -56,7 +56,6 @@ source_set("reading_list") {
     "//ios/chrome/browser/ui/sharing/activity_services",
     "//ios/chrome/browser/ui/side_swipe",
     "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view:presentation",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/url:constants",

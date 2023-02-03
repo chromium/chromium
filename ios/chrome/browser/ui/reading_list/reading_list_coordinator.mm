@@ -38,7 +38,6 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_controller.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
-#import "ios/chrome/browser/ui/table_view/table_view_animator.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"

@@ -15,7 +15,6 @@ source_set("table_view") {
     "table_view_navigation_controller.mm",
   ]
   deps = [
-    ":presentation",
     ":styler",
     ":views",
     "//base",
@@ -50,21 +49,6 @@ source_set("styler") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
-  ]
-}
-
-source_set("presentation") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "table_view_animator.h",
-    "table_view_animator.mm",
-    "table_view_modal_presenting.h",
-  ]
-  deps = [
-    "//ios/chrome/browser/ui/image_util",
-    "//ios/chrome/browser/ui/resources:menu_shadow",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/ui/util",
   ]
 }
 

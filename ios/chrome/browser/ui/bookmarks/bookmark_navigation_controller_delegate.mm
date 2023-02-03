@@ -6,7 +6,6 @@
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
-#import "ios/chrome/browser/ui/table_view/table_view_modal_presenting.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
