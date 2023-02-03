@@ -51,9 +51,12 @@ class SyncEncryptionKeysTabHelper
  private:
   friend class content::WebContentsUserData<SyncEncryptionKeysTabHelper>;
 
+  // Null `sync_service` is interpreted as incognito (when it comes to metrics).
   SyncEncryptionKeysTabHelper(content::WebContents* web_contents,
                               syncer::SyncService* sync_service);
 
+  // Null `sync_service_` is interpreted as incognito (when it comes to
+  // metrics).
   const raw_ptr<syncer::SyncService> sync_service_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

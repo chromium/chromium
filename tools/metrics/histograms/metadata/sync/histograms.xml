@@ -1578,6 +1578,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.TrustedVaultJavascriptAddRecoveryMethodIsIncognito"
+    enum="BooleanIncognito" expires_after="2023-06-18">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records whether invocations to the Javascript API
+    chrome.addTrustedSyncEncryptionRecoveryMethod(), when received via Mojo in
+    the browser process, corresponds to an incognito profile.
+  </summary>
+</histogram>
+
 <histogram name="Sync.TrustedVaultJavascriptAddRecoveryMethodSucceeded"
     enum="BooleanSuccess" expires_after="2023-06-18">
   <owner>mmoskvitin@google.com</owner>
