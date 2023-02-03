@@ -135,3 +135,9 @@ struct TouchpadSettings {
   // Toggles whether haptic feedback is enabled for the touchpad at all.
   bool haptic_enabled;
 };
+
+// Contains all information needed to display, apply, and update pointing stick
+// settings.
+// TODO(michaelcheco): add `settings` to `mojom::PointingStick` struct.
+struct PointingStick {
+};
