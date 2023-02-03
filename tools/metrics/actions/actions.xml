@@ -11420,6 +11420,41 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.EmailExperience.LongPress.Copy">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    User tapped on the copy button after long-pressing on an email address.
+  </description>
+</action>
+
+<action name="IOS.EmailExperience.LongPress.CreateEmail">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    User tapped on the &quot;Create Email&quot; button after long-pressing on an
+    email address.
+  </description>
+</action>
+
+<action name="IOS.EmailExperience.LongPress.Display">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    The number of times the email experience context menu was displayed after a
+    user long press on an email address.
+  </description>
+</action>
+
+<action name="IOS.EmailExperience.OneTap.CreateEmail">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    The number of times the user tapped on an underlined email address and
+    triggered the &quot;Create mail with&quot; view controller.
+  </description>
+</action>
+
 <action name="IOS.ExperienceKit.Calendar.Copy">
   <owner>erahmaoui@google.com</owner>
   <owner>djean@chromium.org</owner>
