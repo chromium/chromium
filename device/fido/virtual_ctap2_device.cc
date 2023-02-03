@@ -2659,7 +2659,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
             LargeBlobsRequestKey::kPinUvAuthProtocol))) != request_map.end()) {
       return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
     }
-    const uint64_t get = get_it->second.GetUnsigned();
+    const size_t get = base::checked_cast<size_t>(get_it->second.GetUnsigned());
     if (get > max_fragment_length) {
       return CtapDeviceResponseCode::kCtap1ErrInvalidLength;
     }
@@ -2667,11 +2667,11 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
       return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
     }
     cbor::Value::MapValue response_map;
-    response_map.emplace(
-        static_cast<uint8_t>(LargeBlobsResponseKey::kConfig),
-        base::make_span(
-            mutable_state()->large_blob.data() + offset,
-            std::min(get, mutable_state()->large_blob.size() - offset)));
+
+    auto subspan = base::make_span(mutable_state()->large_blob).subspan(offset);
+    response_map.emplace(static_cast<uint8_t>(LargeBlobsResponseKey::kConfig),
+                         subspan.first(std::min<size_t>(get, subspan.size())));
+
     *response =
         cbor::Writer::Write(cbor::Value(std::move(response_map))).value();
   } else {
