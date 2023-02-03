@@ -2320,7 +2320,9 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
   policy_container_data->sandbox_flags |= frame_policy.sandbox_flags;
   frame_policy.sandbox_flags = policy_container_data->sandbox_flags;
 
-  ukm::SourceId document_ukm_source_id = ukm::UkmRecorder::GetNewSourceID();
+  // No URL is associated with this frame, but we can still assign UKM events to
+  // this identifier.
+  ukm::SourceId document_ukm_source_id = ukm::NoURLSourceId();
 
   auto complete_initialization = [this, owner_element, &policy_container_remote,
                                   &policy_container_data, &name,
