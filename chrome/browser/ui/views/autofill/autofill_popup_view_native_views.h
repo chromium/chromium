@@ -49,7 +49,6 @@ class AutofillPopupRowView : public views::View {
 
   // views::View:
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
-  void OnThemeChanged() override;
   // Drags and presses on any row should be a no-op; subclasses instead rely on
   // entry/release events. Returns true to indicate that those events have been
   // processed (i.e., intentionally ignored).

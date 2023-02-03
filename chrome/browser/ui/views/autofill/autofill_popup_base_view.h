@@ -64,10 +64,6 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // Notify accessibility that an item has been selected.
   void NotifyAXSelection(View*);
 
-  // Get colors used throughout various popup UIs, based on the current native
-  // theme.
-  ui::ColorId GetSeparatorColorId() const;
-
   base::TimeDelta time_delta_since_popup_shown() const {
     return base::Time::Now() - show_time_;
   }

@@ -325,6 +325,7 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
@@ -485,7 +486,6 @@ class AutofillPopupFooterView : public AutofillPopupItemView {
  protected:
   // AutofillPopupItemView:
   void CreateContent() override;
-  void RefreshStyle() override;
   int GetPrimaryTextStyle() override;
   gfx::Font::Weight GetPrimaryTextWeight() const override;
 
@@ -551,7 +551,6 @@ class AutofillPopupWarningView : public AutofillPopupRowView {
  protected:
   // AutofillPopupRowView:
   void CreateContent() override;
-  void RefreshStyle() override {}
 
  private:
   AutofillPopupWarningView(AutofillPopupViewNativeViews* popup_view,
@@ -604,6 +603,11 @@ void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void AutofillPopupItemView::OnPaint(gfx::Canvas* canvas) {
   AutofillPopupRowView::OnPaint(canvas);
   mouse_observed_outside_item_bounds_ |= !IsMouseInsideItemBounds();
+}
+
+void AutofillPopupItemView::OnThemeChanged() {
+  AutofillPopupRowView::OnThemeChanged();
+  RefreshStyle();
 }
 
 void AutofillPopupItemView::OnMouseEntered(const ui::MouseEvent& event) {
@@ -1096,6 +1100,9 @@ void AutofillPopupFooterView::CreateContent() {
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
 
+  SetBorder(views::CreateThemedSolidSidedBorder(gfx::Insets(),
+                                                ui::kColorMenuSeparator));
+
   views::BoxLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
@@ -1143,13 +1150,6 @@ void AutofillPopupFooterView::CreateContent() {
                       /*resize=*/true, layout_manager);
     AddChildView(std::move(trailing_icon));
   }
-}
-
-void AutofillPopupFooterView::RefreshStyle() {
-  AutofillPopupItemView::RefreshStyle();
-  SetBorder(views::CreateSolidSidedBorder(
-      gfx::Insets(),
-      GetColorProvider()->GetColor(popup_view()->GetSeparatorColorId())));
 }
 
 int AutofillPopupFooterView::GetPrimaryTextStyle() {
@@ -1283,11 +1283,6 @@ void AutofillPopupRowView::MaybeShowIphPromo() {
     browser->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
   }
-}
-
-void AutofillPopupRowView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  RefreshStyle();
 }
 
 bool AutofillPopupRowView::OnMouseDragged(const ui::MouseEvent& event) {

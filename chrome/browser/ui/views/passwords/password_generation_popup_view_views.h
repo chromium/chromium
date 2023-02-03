@@ -54,7 +54,6 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
   bool FullPopupVisible() const;
 
   // views:Views implementation.
-  void OnPaint(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize() const override;
 

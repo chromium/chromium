@@ -35,6 +35,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -314,10 +315,9 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
     return;
   }
 
-  // Add 1px distance between views for the separator.
   views::BoxLayout* box_layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical, gfx::Insets(), 1));
+          views::BoxLayout::Orientation::kVertical));
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
@@ -331,17 +331,20 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
     auto* password_strength_view = AddChildView(CreatePasswordStrengthView(
         l10n_util::GetStringUTF16(IDS_PASSWORD_WEAKNESS_INDICATOR)));
     password_strength_view->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(kVerticalPadding, kHorizontalMargin, kVerticalPadding,
-                          kHorizontalMargin)));
+        gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
   }
 
   auto password_view = std::make_unique<GeneratedPasswordBox>();
   password_view->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kVerticalPadding, kHorizontalMargin, kVerticalPadding,
-                        kHorizontalMargin)));
+      gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
   password_view->Init(controller_);
   password_view_ = AddChildView(std::move(password_view));
   PasswordSelectionUpdated();
+
+  AddChildView(views::Builder<views::Separator>()
+                   .SetOrientation(views::Separator::Orientation::kHorizontal)
+                   .SetColorId(ui::kColorMenuSeparator)
+                   .Build());
 
   base::RepeatingClosure open_password_manager_closure = base::BindRepeating(
       [](PasswordGenerationPopupViewViews* view) {
@@ -361,30 +364,12 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
           open_password_manager_closure));
 
   help_label->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kVerticalPadding, kHorizontalMargin, kVerticalPadding,
-                        kHorizontalMargin)));
+      gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
   help_label->SetDisplayedOnBackgroundColor(ui::kColorBubbleFooterBackground);
 }
 
 bool PasswordGenerationPopupViewViews::FullPopupVisible() const {
   return password_view_;
-}
-
-void PasswordGenerationPopupViewViews::OnPaint(gfx::Canvas* canvas) {
-  if (!controller_)
-    return;
-
-  // Draw border and background.
-  views::View::OnPaint(canvas);
-
-  // Divider line needs to be drawn after OnPaint() otherwise the background
-  // will overwrite the divider.
-  if (FullPopupVisible()) {
-    gfx::Rect divider_bounds(0, password_view_->bounds().bottom(),
-                             password_view_->width(), 1);
-    canvas->FillRect(divider_bounds,
-                     GetColorProvider()->GetColor(GetSeparatorColorId()));
-  }
 }
 
 void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
