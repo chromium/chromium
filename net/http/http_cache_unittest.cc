@@ -9905,8 +9905,6 @@ TEST_F(HttpCacheTest, RangeGET_FastFlakyServer2) {
   RemoveMockTransaction(&transaction);
 }
 
-#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
-// This test hits a NOTREACHED so it is a release mode only test.
 TEST_F(HttpCacheTest, RangeGET_OK_LoadOnlyFromCache) {
   MockHttpCache cache;
   AddMockTransaction(&kRangeGET_TransactionOK);
@@ -9942,7 +9940,6 @@ TEST_F(HttpCacheTest, RangeGET_OK_LoadOnlyFromCache) {
 
   RemoveMockTransaction(&kRangeGET_TransactionOK);
 }
-#endif
 
 // Tests the handling of the "truncation" flag.
 TEST_F(HttpCacheTest, WriteResponseInfo_Truncated) {
@@ -12754,6 +12751,49 @@ TEST_F(HttpCacheTest, RangeGET_MultipleRequests) {
   callback.WaitForResult();
 
   RemoveMockTransaction(&transaction);
+}
+
+// Verify that a range request can be satisfied from a completely cached
+// resource with the LOAD_ONLY_FROM_CACHE flag set. Currently it's not
+// implemented so it returns ERR_CACHE_MISS. See also
+// HttpCacheTest.RangeGET_OK_LoadOnlyFromCache.
+// TODO(ricea): Update this test if it is implemented in future.
+TEST_F(HttpCacheTest, RangeGET_Previous200_LoadOnlyFromCache) {
+  MockHttpCache cache;
+
+  // Store the whole thing with status 200.
+  MockTransaction transaction(kETagGET_Transaction);
+  transaction.url = kRangeGET_TransactionOK.url;
+  transaction.data = kFullRangeData;
+  AddMockTransaction(&transaction);
+  RunTransactionTest(cache.http_cache(), transaction);
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+
+  RemoveMockTransaction(&transaction);
+  AddMockTransaction(&kRangeGET_TransactionOK);
+
+  // Now see that we use the stored entry.
+  MockTransaction transaction2(kRangeGET_TransactionOK);
+  transaction2.load_flags |= LOAD_ONLY_FROM_CACHE;
+  MockHttpRequest request(transaction2);
+  TestCompletionCallback callback;
+
+  std::unique_ptr<HttpTransaction> trans;
+  int rv = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY, &trans);
+  EXPECT_THAT(rv, IsOk());
+  ASSERT_TRUE(trans);
+
+  rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+  if (rv == ERR_IO_PENDING) {
+    rv = callback.WaitForResult();
+  }
+  EXPECT_THAT(rv, IsError(ERR_CACHE_MISS));
+
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(1, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
 // Makes sure that a request stops using the cache when the response headers

@@ -2767,10 +2767,11 @@ bool HttpCache::Transaction::ShouldPassThrough() {
 
 int HttpCache::Transaction::BeginCacheRead() {
   // We don't support any combination of LOAD_ONLY_FROM_CACHE and byte ranges.
-  // TODO(jkarlin): Either handle this case or DCHECK.
+  // It's possible to trigger this from JavaScript using the Fetch API with
+  // `cache: 'only-if-cached'` so ideally we should support it.
+  // TODO(ricea): Correctly read from the cache in this case.
   if (response_.headers->response_code() == net::HTTP_PARTIAL_CONTENT ||
       partial_) {
-    NOTREACHED();
     TransitionToState(STATE_FINISH_HEADERS);
     return ERR_CACHE_MISS;
   }

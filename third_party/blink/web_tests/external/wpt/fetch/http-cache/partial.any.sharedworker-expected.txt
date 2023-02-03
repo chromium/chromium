@@ -3,6 +3,7 @@ FAIL HTTP cache stores partial content and reuses it assert_less_than: Response 
 PASS HTTP cache stores complete response and serves smaller ranges from it (byte-range-spec)
 PASS HTTP cache stores complete response and serves smaller ranges from it (absent last-byte-pos)
 PASS HTTP cache stores complete response and serves smaller ranges from it (suffix-byte-range-spec)
+FAIL HTTP cache stores complete response and serves smaller ranges from it with only-if-cached promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
 FAIL HTTP cache stores partial response and serves smaller ranges from it (byte-range-spec) assert_less_than: Response 2 does not come from cache expected a number less than 2 but got 2
 FAIL HTTP cache stores partial response and serves smaller ranges from it (absent last-byte-pos) assert_less_than: Response 2 does not come from cache expected a number less than 2 but got 2
 FAIL HTTP cache stores partial response and serves smaller ranges from it (suffix-byte-range-spec) assert_less_than: Response 2 does not come from cache expected a number less than 2 but got 2
