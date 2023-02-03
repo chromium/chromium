@@ -21,7 +21,6 @@ try_.defaults.set(
     compilator_goma_jobs = goma.jobs.J150,
     compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
     orchestrator_cores = 2,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
@@ -39,7 +38,6 @@ try_.builder(
         "ci/fuchsia-arm64-cast-receiver-rel",
     ],
     main_list_view = "try",
-    goma_backend = None,
     # This is the only bot that builds //chromecast code for Fuchsia on ARM64
     # so trigger it when changes are made.
     tryjob = try_.job(
@@ -51,6 +49,7 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-arm64-chrome-rel",
+    goma_backend = goma.backend.RBE_PROD,
     mirrors = [
         "ci/fuchsia-arm64-chrome-rel",
     ],
@@ -75,6 +74,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "fuchsia-arm64-rel-compilator",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    goma_backend = goma.backend.RBE_PROD,
     # TODO(crbug.com/1298110): Set to True once compilator bots are moved
     ssd = None,
     main_list_view = "try",
@@ -86,8 +86,6 @@ try_.builder(
     executable = "recipe:binary_size_fuchsia_trybot",
     builderless = not settings.is_main,
     cores = 16 if settings.is_main else 8,
-    goma_backend = None,
-    goma_jobs = goma.jobs.J150,
     properties = {
         "$build/binary_size": {
             "analyze_targets": [
@@ -110,7 +108,6 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
-    goma_backend = None,
     tryjob = try_.job(
         location_filters = [
             "base/fuchsia/.+",
@@ -123,19 +120,16 @@ try_.builder(
 try_.builder(
     name = "fuchsia-deterministic-dbg",
     executable = "recipe:swarming/deterministic_build",
-    goma_backend = None,
 )
 
 try_.builder(
     name = "fuchsia-fyi-arm64-dbg",
     mirrors = ["ci/fuchsia-fyi-arm64-dbg"],
-    goma_backend = None,
 )
 
 try_.builder(
     name = "fuchsia-fyi-x64-dbg",
     mirrors = ["ci/fuchsia-fyi-x64-dbg"],
-    goma_backend = None,
 )
 
 try_.orchestrator_builder(
@@ -160,11 +154,11 @@ try_.compilator_builder(
     cores = "8|16",
     ssd = True,
     main_list_view = "try",
-    goma_backend = None,
 )
 
 try_.builder(
     name = "fuchsia-x64-chrome-rel",
+    goma_backend = goma.backend.RBE_PROD,
     mirrors = [
         "ci/fuchsia-x64-chrome-rel",
     ],
@@ -173,6 +167,7 @@ try_.builder(
 try_.builder(
     name = "fuchsia-x64-rel",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    goma_backend = goma.backend.RBE_PROD,
     mirrors = [
         "ci/fuchsia-x64-rel",
     ],
@@ -186,6 +181,7 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-code-coverage",
+    goma_backend = goma.backend.RBE_PROD,
     mirrors = ["ci/fuchsia-code-coverage"],
     execution_timeout = 20 * time.hour,
 )

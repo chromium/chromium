@@ -16,7 +16,6 @@ try_.defaults.set(
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
@@ -28,28 +27,25 @@ consoles.list_view(
 try_.builder(
     name = "android-rust-arm-dbg",
     mirrors = ["ci/android-rust-arm-dbg"],
-    goma_backend = None,
 )
 
 try_.builder(
     name = "android-rust-arm-rel",
     mirrors = ["ci/android-rust-arm-rel"],
-    goma_backend = None,
 )
 
 try_.builder(
     name = "linux-rust-x64-rel",
     mirrors = ["ci/linux-rust-x64-rel"],
-    goma_backend = None,
 )
 
 try_.builder(
     name = "linux-rust-x64-rel-android-toolchain",
     mirrors = ["ci/linux-rust-x64-rel"],
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
     name = "linux-rust-x64-dbg",
     mirrors = ["ci/linux-rust-x64-dbg"],
-    goma_backend = None,
 )
