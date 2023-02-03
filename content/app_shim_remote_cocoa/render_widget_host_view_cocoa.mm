@@ -1917,7 +1917,8 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   if (range.length >= std::numeric_limits<NSUInteger>::max() - range.location)
     return nil;
 
-  const gfx::Range requestedRange(range);
+  const gfx::Range requestedRange =
+      gfx::Range::FromPossiblyInvalidNSRange(range);
   if (requestedRange.is_reversed())
     return nil;
 
