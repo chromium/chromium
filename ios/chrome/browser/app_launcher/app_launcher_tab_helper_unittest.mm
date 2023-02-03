@@ -501,11 +501,11 @@ class BlockedUrlPolicyAppLauncherTabHelperTest
     web_state_.SetBrowserState(enterprise_policy_helper_->GetBrowserState());
 
     policy::PolicyMap policy_map;
-    base::Value value(base::Value::Type::LIST);
+    base::Value::List value;
     value.Append("itms-apps://*");
     policy_map.Set(policy::key::kURLBlocklist, policy::POLICY_LEVEL_MANDATORY,
                    policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                   std::move(value), nullptr);
+                   base::Value(std::move(value)), nullptr);
     enterprise_policy_helper_->GetPolicyProvider()->UpdateChromePolicy(
         policy_map);
 
