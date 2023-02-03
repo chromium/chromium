@@ -157,7 +157,6 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
       }
       break;
     case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_GESTURE_END:
       // If an unsupported gesture is sent, make sure we reset `is_drag_active_`
       // to stop consuming events.
       if (is_drag_active_) {
