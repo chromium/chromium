@@ -369,6 +369,13 @@ BASE_FEATURE(kPassthroughYuvRgbConversion,
              "PassthroughYuvRgbConversion",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, the validating command decoder always obtains the size to use
+// from the source texture when copying textures, rather than first checking if
+// there is a GLImage present and using its size if so.
+BASE_FEATURE(kCmdDecoderAlwaysGetSizeFromSourceTexture,
+             "CmdDecoderAlwaysGetSizeFromSourceTexture",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool UseGles2ForOopR() {
 #if BUILDFLAG(IS_ANDROID)
   // GLS3 + passthrough decoder break many tests on Android.

@@ -149,6 +149,9 @@ extern const char kPPAPISharedImagesSwapChainDescription[];
 extern const char kSupportPepperVideoDecoderDevAPIName[];
 extern const char kSupportPepperVideoDecoderDevAPIDescription[];
 
+extern const char kCmdDecoderAlwaysGetSizeFromSourceTextureName[];
+extern const char kCmdDecoderAlwaysGetSizeFromSourceTextureDescription[];
+
 extern const char kPrivacyIndicatorsName[];
 extern const char kPrivacyIndicatorsDescription[];
 

@@ -26,6 +26,7 @@
 #include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -196,6 +197,11 @@ struct TexSubCoord3D {
   int height;
   int depth;
 };
+
+bool AlwaysGetSizeFromSourceTexture() {
+  return base::FeatureList::IsEnabled(
+      features::kCmdDecoderAlwaysGetSizeFromSourceTexture);
+}
 
 // Check if all |ref| bits are set in |bits|.
 bool AllBitsSet(GLbitfield bits, GLbitfield ref) {
@@ -17780,7 +17786,7 @@ void GLES2DecoderImpl::DoCopyTextureCHROMIUM(
   int source_height = 0;
   gl::GLImage* image =
       source_texture->GetLevelImage(source_target, source_level);
-  if (image) {
+  if (image && !AlwaysGetSizeFromSourceTexture()) {
     gfx::Size size = image->GetSize();
     source_width = size.width();
     source_height = size.height();
@@ -17921,7 +17927,7 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
   int source_height = 0;
   gl::GLImage* image =
       source_texture->GetLevelImage(source_target, source_level);
-  if (image) {
+  if (image && !AlwaysGetSizeFromSourceTexture()) {
     gfx::Size size = image->GetSize();
     source_width = size.width();
     source_height = size.height();

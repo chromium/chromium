@@ -202,6 +202,14 @@ extern const char kSupportPepperVideoDecoderDevAPIDescription[] =
     "When disabled, Chrome will return 0 if asked to create the "
     "PPB_VideoDecoder(Dev) API by in-process callers";
 
+extern const char kCmdDecoderAlwaysGetSizeFromSourceTextureName[] =
+    "Controls whether the GLES2 validating decoder always gets size from the "
+    "source texture when copying textures";
+extern const char kCmdDecoderAlwaysGetSizeFromSourceTextureDescription[] =
+    "When enabled, the GLES2 validating decoder will obtain size from the "
+    "source texture rather than the GLImage when copying textures even if a "
+    "GLImage is present";
+
 const char kPrivacyIndicatorsName[] = "Enable Privacy Indicators";
 const char kPrivacyIndicatorsDescription[] =
     "While screen sharing or camera/microphone is being accessed, show a green "

@@ -63148,6 +63148,8 @@ from previous Chrome versions.
   <int value="1033597574" label="disable-layer-squashing"/>
   <int value="1034347979"
       label="OmniboxFocusTriggersContextualWebZeroSuggest:disabled"/>
+  <int value="1036007454"
+      label="CmdDecoderAlwaysGetSizeFromSourceTexture:enabled"/>
   <int value="1036068554" label="enable-android-pay-integration-v2"/>
   <int value="1036501658" label="UseClientConfigIPH:disabled"/>
   <int value="1036565901" label="AssistPersonalInfo:enabled"/>
@@ -63440,6 +63442,8 @@ from previous Chrome versions.
   <int value="1200946197" label="ConfirmationChip:disabled"/>
   <int value="1201008500"
       label="EnableAmbientAuthenticationInIncognito:enabled"/>
+  <int value="1203002682"
+      label="CmdDecoderAlwaysGetSizeFromSourceTexture:disabled"/>
   <int value="1203084856"
       label="TrustedWebActivityNotificationPermissionDelegation:enabled"/>
   <int value="1203086664"
