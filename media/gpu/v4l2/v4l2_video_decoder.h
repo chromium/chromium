@@ -69,6 +69,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   bool IsPlatformDecoder() const override;
   // VideoDecoderMixin implementation, specific part.
   void ApplyResolutionChange() override;
+  size_t GetMaxOutputFramePoolSize() const override;
 
   // V4L2VideoDecoderBackend::Client implementation
   void OnBackendError() override;

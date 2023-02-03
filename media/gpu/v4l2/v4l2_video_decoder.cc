@@ -742,6 +742,15 @@ void V4L2VideoDecoder::ApplyResolutionChange() {
   std::move(continue_change_resolution_cb_).Run();
 }
 
+size_t V4L2VideoDecoder::GetMaxOutputFramePoolSize() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+
+  // VIDEO_MAX_FRAME is used as a size in V4L2 decoder drivers like Qualcomm
+  // Venus. We should not exceed this limit for the frame pool that the decoder
+  // writes into.
+  return VIDEO_MAX_FRAME;
+}
+
 CroStatus V4L2VideoDecoder::ContinueChangeResolution(
     const gfx::Size& pic_size,
     const gfx::Rect& visible_rect,

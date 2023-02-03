@@ -177,6 +177,10 @@ bool VideoDecoderMixin::NeedsTranscryption() {
   return false;
 }
 
+size_t VideoDecoderMixin::GetMaxOutputFramePoolSize() const {
+  return std::numeric_limits<size_t>::max();
+}
+
 VideoDecoderPipeline::ClientFlushCBState::ClientFlushCBState(
     DecodeCB flush_cb,
     DecoderStatus decoder_decode_status)
@@ -411,6 +415,13 @@ bool VideoDecoderPipeline::CanReadWithoutStalling() const {
 
   // TODO(mcasas): also query |decoder_|.
   return main_frame_pool_ && !main_frame_pool_->IsExhausted();
+}
+
+size_t VideoDecoderPipeline::GetDecoderMaxOutputFramePoolSize() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+
+  return decoder_ ? decoder_->GetMaxOutputFramePoolSize()
+                  : std::numeric_limits<size_t>::max();
 }
 
 void VideoDecoderPipeline::Initialize(const VideoDecoderConfig& config,
@@ -885,12 +896,20 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
 #endif
 
   if (viable_candidate) {
+    // If maximum decoder frame pool size is less than the number of codec
+    // reference frames (plus one frame for the frame being decoded), then the
+    // decode will stall. Instead, this returns an error.
+    if ((num_codec_reference_frames + 1) > GetDecoderMaxOutputFramePoolSize()) {
+      return CroStatus::Codes::kInsufficientFramePoolSize;
+    }
+
     // |main_frame_pool_| needs to allocate enough buffers for both the codec
     // reference needs and the Renderer pipeline.
     // |num_codec_reference_frames| is augmented by 1 to account for the frame
     // being decoded.
-    const size_t num_pictures =
-        num_codec_reference_frames + 1 + estimated_num_buffers_for_renderer_;
+    const size_t num_pictures = std::min(
+        GetDecoderMaxOutputFramePoolSize(),
+        num_codec_reference_frames + 1 + estimated_num_buffers_for_renderer_);
     VLOGF(1) << "Initializing frame pool with up to " << num_pictures
              << " VideoFrames. No ImageProcessor needed.";
     CroStatus::Or<GpuBufferLayout> status_or_layout =
@@ -926,6 +945,10 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   // We haven't found a |viable_candidate|, and need to instantiate an
   // ImageProcessor; this might need to allocate buffers internally, but only
   // to fill the Renderer pipeline.
+  // TODO(b/267691989): The number of buffers for the image processor may need
+  // need to be limited with a mechanism similar to
+  // VideoDecoderMixin::GetMaxOutputFramePoolSize() depending on the backend.
+  // Consider exposing the max frame pool size to the ImageProcessor.
   std::unique_ptr<ImageProcessor> image_processor;
   if (create_image_processor_cb_for_testing_) {
     image_processor = create_image_processor_cb_for_testing_.Run(
@@ -962,6 +985,13 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     // Use here |num_codec_reference_frames| + 2: one to account for the frame
     // being decoded and an extra one for the ImageProcessor.
     const size_t num_pictures = num_codec_reference_frames + 2;
+
+    // If maximum frame pool size is less than the number of codec reference
+    // frames |num_pictures|, the decode will stall. Instead, this returns an
+    // error.
+    if (num_pictures > GetDecoderMaxOutputFramePoolSize()) {
+      return CroStatus::Codes::kInsufficientFramePoolSize;
+    }
 
     VLOGF(1) << "Initializing auxiliary frame pool with up to " << num_pictures
              << " VideoFrames";

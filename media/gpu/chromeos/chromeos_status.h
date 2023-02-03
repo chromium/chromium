@@ -20,6 +20,7 @@ enum class ChromeosStatusCode : StatusCodeType {
   kResetRequired = 7,
   kInvalidLayoutSize = 8,
   kFailedToChangeResolution = 9,
+  kInsufficientFramePoolSize = 10,
 };
 
 struct CroStatusTraits {

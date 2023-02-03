@@ -121,6 +121,11 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
   // V4L2.
   virtual void SetDmaIncoherentV4L2(bool incoherent) {}
 
+  // The VideoDecoderPipeline can use this to query a decoder for an upper bound
+  // on the size of the frame pool that the decoder writes into. The default
+  // implementation indicates no limit.
+  virtual size_t GetMaxOutputFramePoolSize() const;
+
  protected:
   const std::unique_ptr<MediaLog> media_log_;
 
@@ -282,6 +287,9 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   void OnBufferTranscrypted(scoped_refptr<DecoderBuffer> transcrypted_buffer,
                             DecodeCB decode_callback);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Used to determine the decoder's maximum output frame pool size.
+  size_t GetDecoderMaxOutputFramePoolSize() const;
 
   // Used to figure out the supported configurations in Initialize().
   const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
