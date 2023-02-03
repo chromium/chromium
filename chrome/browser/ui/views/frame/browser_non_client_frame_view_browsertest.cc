@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -221,7 +222,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                        FullscreenForTabTitlebarHeight) {
   InstallAndLaunchBookmarkApp();
-  EXPECT_GT(GetAppFrameView()->GetTopInset(false), 0);
+  if (!base::FeatureList::IsEnabled(
+          features::kWebAppFrameToolbarInBrowserView)) {
+    // When WebAppFrameToolbarView lives in the BrowserView it is perfectly
+    // valid for the top insets to be 0 at all times. So only do this check when
+    // the feature is disabled.
+    EXPECT_GT(GetAppFrameView()->GetTopInset(false), 0);
+  }
 
   static_cast<content::WebContentsDelegate*>(app_browser_)
       ->EnterFullscreenModeForTab(web_contents_->GetPrimaryMainFrame(), {});

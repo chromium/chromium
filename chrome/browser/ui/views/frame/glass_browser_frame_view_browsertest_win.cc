@@ -170,8 +170,7 @@ class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
       return false;
     glass_frame_view_ = static_cast<GlassBrowserFrameView*>(frame_view);
 
-    web_app_frame_toolbar_ =
-        glass_frame_view_->web_app_frame_toolbar_for_testing();
+    web_app_frame_toolbar_ = browser_view_->web_app_frame_toolbar_for_testing();
     DCHECK(web_app_frame_toolbar_);
     DCHECK(web_app_frame_toolbar_->GetVisible());
     return true;
@@ -209,8 +208,10 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, MaximizedLayout) {
   glass_frame_view_->frame()->Maximize();
   RunScheduledLayouts();
 
-  DCHECK_GT(glass_frame_view_->window_title_for_testing()->x(), 0);
-  DCHECK_GE(glass_frame_view_->web_app_frame_toolbar_for_testing()->y(), 0);
+  views::View* const window_title =
+      glass_frame_view_->GetViewByID(VIEW_ID_WINDOW_TITLE);
+  DCHECK_GT(window_title->x(), 0);
+  DCHECK_GE(web_app_frame_toolbar_->y(), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, RTLTopRightHitTest) {
@@ -251,13 +252,13 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, ContainerHeight) {
       ->LayoutRootViewIfNecessary();
 
   EXPECT_EQ(
-      glass_frame_view_->web_app_frame_toolbar_for_testing()->height(),
+      web_app_frame_toolbar_->height(),
       glass_frame_view_->caption_button_container_for_testing()->height());
 
   glass_frame_view_->frame()->Maximize();
 
   EXPECT_EQ(
-      glass_frame_view_->web_app_frame_toolbar_for_testing()->height(),
+      web_app_frame_toolbar_->height(),
       glass_frame_view_->caption_button_container_for_testing()->height());
 }
 
@@ -321,7 +322,7 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
 
     glass_frame_view_ = static_cast<GlassBrowserFrameView*>(frame_view);
     auto* web_app_frame_toolbar =
-        glass_frame_view_->web_app_frame_toolbar_for_testing();
+        browser_view_->web_app_frame_toolbar_for_testing();
 
     DCHECK(web_app_frame_toolbar);
     DCHECK(web_app_frame_toolbar->GetVisible());
@@ -354,13 +355,13 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
   ToggleWindowControlsOverlayEnabledAndWait();
 
   EXPECT_EQ(
-      glass_frame_view_->web_app_frame_toolbar_for_testing()->height(),
+      browser_view_->web_app_frame_toolbar_for_testing()->height(),
       glass_frame_view_->caption_button_container_for_testing()->height());
 
   glass_frame_view_->frame()->Maximize();
 
   EXPECT_EQ(
-      glass_frame_view_->web_app_frame_toolbar_for_testing()->height(),
+      browser_view_->web_app_frame_toolbar_for_testing()->height(),
       glass_frame_view_->caption_button_container_for_testing()->height());
 }
 
@@ -457,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
   glass_frame_view_->UpdateWindowTitle();
 
   WebAppFrameToolbarView* web_app_frame_toolbar =
-      glass_frame_view_->web_app_frame_toolbar_for_testing();
+      browser_view_->web_app_frame_toolbar_for_testing();
 
   // Verify that the center container doesn't consume space by expecting the
   // right container to consume the full width of the WebAppFrameToolbarView.

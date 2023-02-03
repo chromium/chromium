@@ -110,8 +110,7 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
 
     opaque_browser_frame_view_ =
         static_cast<OpaqueBrowserFrameView*>(frame_view);
-    web_app_frame_toolbar_ =
-        opaque_browser_frame_view_->web_app_frame_toolbar_for_testing();
+    web_app_frame_toolbar_ = browser_view_->web_app_frame_toolbar_for_testing();
     DCHECK(web_app_frame_toolbar_);
     DCHECK(web_app_frame_toolbar_->GetVisible());
 
@@ -388,7 +387,7 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     opaque_browser_frame_view_ =
         static_cast<OpaqueBrowserFrameView*>(frame_view);
     auto* web_app_frame_toolbar =
-        opaque_browser_frame_view_->web_app_frame_toolbar_for_testing();
+        browser_view_->web_app_frame_toolbar_for_testing();
     DCHECK(web_app_frame_toolbar);
     DCHECK(web_app_frame_toolbar->GetVisible());
 

@@ -33,6 +33,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -93,6 +94,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_pin_type.h"
@@ -765,7 +767,7 @@ class WebAppNonClientFrameViewAshTest
     frame_header_ = static_cast<chromeos::DefaultFrameHeader*>(
         BrowserNonClientFrameViewChromeOSTestApi(frame_view).GetFrameHeader());
 
-    web_app_frame_toolbar_ = frame_view->web_app_frame_toolbar_for_testing();
+    web_app_frame_toolbar_ = browser_view_->web_app_frame_toolbar_for_testing();
     DCHECK(web_app_frame_toolbar_);
     DCHECK(web_app_frame_toolbar_->GetVisible());
 
@@ -865,8 +867,17 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
   EXPECT_TRUE(web_app_frame_toolbar_->GetVisible());
 
   StartOverview();
+  if (base::FeatureList::IsEnabled(
+          features::kWebAppFrameToolbarInBrowserView)) {
+    // This RunScheduledLayout call should be done unconditionally, but as it
+    // turns out this causes this test to fail when
+    // WebAppFrameToolbarInBrowserView is disabled, because in that case Layout
+    // incorrectly causes the toolbar to be made visible again.
+    views::test::RunScheduledLayout(browser_view_);
+  }
   EXPECT_FALSE(web_app_frame_toolbar_->GetVisible());
   EndOverview();
+  views::test::RunScheduledLayout(browser_view_);
   EXPECT_TRUE(web_app_frame_toolbar_->GetVisible());
 }
 
@@ -1117,9 +1128,8 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, PopupHasNoToolbar) {
   Browser* popup_browser = BrowserList::GetInstance()->GetLastActive();
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(popup_browser);
-  BrowserNonClientFrameViewChromeOS* frame_view =
-      GetFrameViewChromeOS(browser_view);
-  EXPECT_FALSE(frame_view->web_app_frame_toolbar_for_testing());
+  EXPECT_FALSE(browser_view->web_app_frame_toolbar_for_testing() &&
+               browser_view->web_app_frame_toolbar_for_testing()->GetVisible());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -24,8 +24,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppNonClientFrameViewBrowserTest,
   Browser* app_browser;
   LaunchApp(ash::SystemWebAppType::SETTINGS, &app_browser);
   EXPECT_EQ(nullptr, BrowserView::GetBrowserViewForBrowser(app_browser)
-                         ->frame()
-                         ->GetFrameView()
                          ->web_app_frame_toolbar_for_testing()
                          ->GetAppMenuButton());
 }
@@ -38,8 +36,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppNonClientFrameViewBrowserTest,
   LaunchApp(ash::SystemWebAppType::SETTINGS, &app_browser);
   WebAppFrameToolbarView* toolbar =
       BrowserView::GetBrowserViewForBrowser(app_browser)
-          ->frame()
-          ->GetFrameView()
           ->web_app_frame_toolbar_for_testing();
   EXPECT_FALSE(
       toolbar->GetPageActionIconView(PageActionIconType::kFileSystemAccess));

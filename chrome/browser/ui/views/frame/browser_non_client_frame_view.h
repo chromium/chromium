@@ -139,10 +139,6 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   int NonClientHitTest(const gfx::Point& point) override;
 
-  WebAppFrameToolbarView* web_app_frame_toolbar_for_testing() {
-    return web_app_frame_toolbar_;
-  }
-
   // TODO(https://crbug.com/1407240): Remove these methods (and all other
   // WebAppFrameToolbarView access/usage) from this class once work to refactor
   // ownership has been completed.
