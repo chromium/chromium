@@ -1300,17 +1300,33 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Tabs.CountAtResume" units="tabs" expires_after="2022-11-02">
+<histogram name="Tabs.CountAtResume" units="tabs" expires_after="2024-01-15">
+<!-- This histogram was expired between 2022-11-02 and M111 -->
+
   <owner>marq@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
-    [iOS] The number of tabs open when the app comes out of the background.
+    [iOS] The number of tabs opened when the app comes out of the background.
   </summary>
 </histogram>
 
 <histogram name="Tabs.CountAtStartup" units="tabs" expires_after="2023-07-09">
   <owner>marq@chromium.org</owner>
-  <summary>[Android and iOS] The number of tabs open at cold launch.</summary>
+  <owner>chromeleon@google.com</owner>
+  <summary>[Android and iOS] The number of tabs opened at cold launch.</summary>
+</histogram>
+
+<histogram name="Tabs.DuplicatesCountAtStartup" units="tabs"
+    expires_after="2024-01-15">
+  <owner>pakzhygitov@google.com</owner>
+  <owner>chromeleon@google.com</owner>
+  <summary>
+    [iOS] The number of duplicated tabs restored at cold launch.
+
+    Note: This metric counts each non-unique tab as a duplicate. E.g. if there
+    are 3 tabs with the same URL, this metric will reprepresnet the amount of
+    total duplicates (i.e. two duplicates).
+  </summary>
 </histogram>
 
 <histogram name="Tabs.FirstSwitchedToForegroundCreationRank" units="units"
@@ -2651,6 +2667,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TimeSinceCreationAtStartup" enum="IOSAllOpenTabsAge"
+    expires_after="2024-01-15">
+  <owner>pakzhygitov@google.com</owner>
+  <owner>chromeleon@google.com</owner>
+  <summary>
+    [iOS] The age of tabs opened at cold launch. The age of a tab is the time
+    elapsed since its creation.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TimeSinceLastView.OnTabClobber" units="seconds"
     expires_after="M82">
   <owner>mattsimmons@chromium.org</owner>
@@ -2696,6 +2722,16 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Tabs_TabUsageIntervalLength"
       variants="Tabs_TabUsageIntervalLength"/>
+</histogram>
+
+<histogram name="Tabs.UnusedCountAtStartup" units="tabs"
+    expires_after="2024-01-15">
+  <owner>pakzhygitov@google.com</owner>
+  <owner>chromeleon@google.com</owner>
+  <summary>
+    [iOS] The number of old/unused tabs opened at cold launch. Inactive tab is a
+    tab that has been not interacted with for more than 7 days.
+  </summary>
 </histogram>
 
 <histogram name="Tabs.UnusedInInterval.Count{Tabs_TabUsageIntervalLength}"
