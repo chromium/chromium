@@ -1907,48 +1907,6 @@ void MediaStreamManager::CancelRequest(const std::string& label) {
   CancelRequest(request_it);
 }
 
-void MediaStreamManager::CancelRequest(
-    DeviceRequests::const_iterator request_it) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (request_it == requests_.end()) {
-    return;
-  }
-  const std::string& label = request_it->first;
-  DeviceRequest* const request = request_it->second.get();
-
-  SendLogMessage(
-      base::StringPrintf("CancelRequest({label=%s})", label.c_str()));
-
-  // This is a request for closing one or more devices.
-  for (const blink::mojom::StreamDevicesPtr& stream_devices_ptr :
-       request->stream_devices_set.stream_devices) {
-    const blink::mojom::StreamDevices& stream_devices = *stream_devices_ptr;
-    for (const absl::optional<blink::MediaStreamDevice>* device_ptr : {
-             &stream_devices.audio_device,
-             &stream_devices.video_device,
-         }) {
-      if (!device_ptr->has_value()) {
-        continue;
-      }
-      const blink::MediaStreamDevice& device = device_ptr->value();
-      const MediaRequestState state = request->state(device.type);
-      // If we have not yet requested the device to be opened - just ignore it.
-      if (state != MEDIA_REQUEST_STATE_OPENING &&
-          state != MEDIA_REQUEST_STATE_DONE) {
-        continue;
-      }
-      // Stop the opening/opened devices of the requests.
-      CloseDevice(device.type, device.session_id());
-    }
-  }
-
-  // Cancel the request if still pending at UI side.
-  request->SetState(MediaStreamType::NUM_MEDIA_TYPES,
-                    MEDIA_REQUEST_STATE_CLOSING);
-  DeleteRequest(request_it);  // Invalidates |label| and |request|.
-}
-
 void MediaStreamManager::CancelAllRequests(int render_process_id,
                                            int render_frame_id,
                                            int requester_id) {
@@ -2512,6 +2470,48 @@ void MediaStreamManager::UpdateDeviceTransferStatus(
       request->ShouldStopInFuture(stream_type)) {
     StopDevice(stream_type, device->session_id());
   }
+}
+
+void MediaStreamManager::CancelRequest(
+    DeviceRequests::const_iterator request_it) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (request_it == requests_.end()) {
+    return;
+  }
+  const std::string& label = request_it->first;
+  DeviceRequest* const request = request_it->second.get();
+
+  SendLogMessage(
+      base::StringPrintf("CancelRequest({label=%s})", label.c_str()));
+
+  // This is a request for closing one or more devices.
+  for (const blink::mojom::StreamDevicesPtr& stream_devices_ptr :
+       request->stream_devices_set.stream_devices) {
+    const blink::mojom::StreamDevices& stream_devices = *stream_devices_ptr;
+    for (const absl::optional<blink::MediaStreamDevice>* device_ptr : {
+             &stream_devices.audio_device,
+             &stream_devices.video_device,
+         }) {
+      if (!device_ptr->has_value()) {
+        continue;
+      }
+      const blink::MediaStreamDevice& device = device_ptr->value();
+      const MediaRequestState state = request->state(device.type);
+      // If we have not yet requested the device to be opened - just ignore it.
+      if (state != MEDIA_REQUEST_STATE_OPENING &&
+          state != MEDIA_REQUEST_STATE_DONE) {
+        continue;
+      }
+      // Stop the opening/opened devices of the requests.
+      CloseDevice(device.type, device.session_id());
+    }
+  }
+
+  // Cancel the request if still pending at UI side.
+  request->SetState(MediaStreamType::NUM_MEDIA_TYPES,
+                    MEDIA_REQUEST_STATE_CLOSING);
+  DeleteRequest(request_it);  // Invalidates |label| and |request|.
 }
 
 void MediaStreamManager::DeleteRequest(
