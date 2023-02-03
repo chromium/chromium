@@ -91,7 +91,11 @@
 }
 
 - (BOOL)isMatchTypeSearch {
-  return true;
+  return YES;
+}
+
+- (BOOL)isWrapping {
+  return YES;
 }
 
 - (CrURL*)destinationUrl {

@@ -33,6 +33,7 @@
 @property(nonatomic) NSAttributedString* omniboxPreviewText;
 @property(nonatomic) UIImage* matchTypeIcon;
 @property(nonatomic, getter=isMatchTypeSearch) BOOL matchTypeSearch;
+@property(nonatomic, readonly) BOOL isWrapping;
 @property(nonatomic) CrURL* destinationUrl;
 
 // Simple suggestion with text.

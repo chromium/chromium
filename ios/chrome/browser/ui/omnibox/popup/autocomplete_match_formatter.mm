@@ -251,6 +251,11 @@ UIColor* DimColorIncognito() {
   return AutocompleteMatch::IsSearchType(_match.type);
 }
 
+- (BOOL)isWrapping {
+  return self.isMatchTypeSearch && !self.hasAnswer &&
+         _match.type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
+}
+
 - (CrURL*)destinationUrl {
   return [[CrURL alloc] initWithGURL:_match.destination_url];
 }
