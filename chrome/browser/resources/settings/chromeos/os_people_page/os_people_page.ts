@@ -173,7 +173,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
 
           // Perform Sync page deep links here since it's a shared page.
           Setting.kNonSplitSyncEncryptionOptions,
-          Setting.kAutocompleteSearchesAndUrls,
+          Setting.kImproveSearchSuggestions,
           Setting.kMakeSearchesAndBrowsingBetter,
           Setting.kGoogleDriveSearchSuggestions,
         ]),
@@ -291,7 +291,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
         });
         return false;
 
-      case Setting.kAutocompleteSearchesAndUrls:
+      case Setting.kImproveSearchSuggestions:
         this.afterRenderShowDeepLink_(settingId, () => {
           const syncPage =
               this.shadowRoot!.querySelector('os-settings-sync-page');

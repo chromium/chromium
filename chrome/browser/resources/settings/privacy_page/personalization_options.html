@@ -26,14 +26,6 @@
         no-set-pref>
     </settings-toggle-button>
 </if><!-- not chromeos and not lacros -->
-    <template is="dom-if" if="[[showSearchSuggestToggle_()]]" restamp>
-      <settings-toggle-button id="searchSuggestToggle"
-          class="hr"
-          pref="{{prefs.search.suggest_enabled}}"
-          label="$i18n{searchSuggestPref}"
-          sub-label="$i18n{searchSuggestPrefDesc}">
-      </settings-toggle-button>
-    </template>
 <if expr="_google_chrome">
 <if expr="chromeos_ash">
     <!-- Ash Browser settings show a link to the OS settings instead. -->
@@ -90,6 +82,14 @@
     </cr-link-row>
 </if><!-- chromeos -->
 </if><!-- _google_chrome -->
+    <template is="dom-if" if="[[showSearchSuggestToggle_()]]" restamp>
+      <settings-toggle-button id="searchSuggestToggle"
+          class="hr"
+          pref="{{prefs.search.suggest_enabled}}"
+          label="$i18n{searchSuggestPref}"
+          sub-label="$i18n{searchSuggestPrefDesc}">
+      </settings-toggle-button>
+    </template>
     <template is="dom-if" if="[[shouldShowDriveSuggest_(
         syncStatus, syncStatus.signedIn, syncStatus.statusAction)]]" restamp>
       <settings-toggle-button id="driveSuggestControl" class="hr"

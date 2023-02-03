@@ -69,12 +69,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // based on the type.
 typedef NS_ENUM(NSInteger, ItemType) {
   AllowChromeSigninItemType = kItemTypeEnumZero,
-  AutocompleteSearchesAndURLsItemType,
-  AutocompleteSearchesAndURLsManagedItemType,
   ImproveChromeItemType,
   ImproveChromeManagedItemType,
   BetterSearchAndBrowsingItemType,
   BetterSearchAndBrowsingManagedItemType,
+  ImproveSearchSuggestionsItemType,
+  ImproveSearchSuggestionsManagedItemType,
   TrackPricesOnTabsItemType,
 };
 
@@ -122,12 +122,6 @@ bool GetStatusForSigninPolicy() {
 // Preference value for the "Allow Chrome Sign-in" feature.
 @property(nonatomic, strong, readonly)
     PrefBackedBoolean* allowChromeSigninPreference;
-// Preference value for the "Autocomplete searches and URLs" feature.
-@property(nonatomic, strong, readonly)
-    PrefBackedBoolean* autocompleteSearchPreference;
-// Preference value for the "Help improve Chromium's features" feature.
-@property(nonatomic, strong, readonly)
-    PrefBackedBoolean* sendDataUsagePreference;
 // Preference value for the "Help improve Chromium's features" for Wifi-Only.
 // TODO(crbug.com/872101): Needs to create the UI to change from Wifi-Only to
 // always
@@ -136,6 +130,12 @@ bool GetStatusForSigninPolicy() {
 // Preference value for the "Make searches and browsing better" feature.
 @property(nonatomic, strong, readonly)
     PrefBackedBoolean* anonymizedDataCollectionPreference;
+// Preference value for the "Improve search suggestions" feature.
+@property(nonatomic, strong, readonly)
+    PrefBackedBoolean* improveSearchSuggestionsPreference;
+// Preference value for the "Help improve Chromium's features" feature.
+@property(nonatomic, strong, readonly)
+    PrefBackedBoolean* sendDataUsagePreference;
 
 // All the items for the non-personalized section.
 @property(nonatomic, strong, readonly) ItemArray nonPersonalizedItems;
@@ -171,10 +171,6 @@ bool GetStatusForSigninPolicy() {
         [[PrefBackedBoolean alloc] initWithPrefService:userPrefService
                                               prefName:prefs::kSigninAllowed];
     _allowChromeSigninPreference.observer = self;
-    _autocompleteSearchPreference = [[PrefBackedBoolean alloc]
-        initWithPrefService:userPrefService
-                   prefName:prefs::kSearchSuggestEnabled];
-    _autocompleteSearchPreference.observer = self;
     _sendDataUsagePreference = [[PrefBackedBoolean alloc]
         initWithPrefService:localPrefService
                    prefName:metrics::prefs::kMetricsReportingEnabled];
@@ -184,6 +180,10 @@ bool GetStatusForSigninPolicy() {
                    prefName:unified_consent::prefs::
                                 kUrlKeyedAnonymizedDataCollectionEnabled];
     _anonymizedDataCollectionPreference.observer = self;
+    _improveSearchSuggestionsPreference = [[PrefBackedBoolean alloc]
+        initWithPrefService:userPrefService
+                   prefName:prefs::kSearchSuggestEnabled];
+    _improveSearchSuggestionsPreference.observer = self;
     _trackPricesOnTabsPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:prefs::kTrackPricesOnTabsEnabled];
@@ -242,16 +242,6 @@ bool GetStatusForSigninPolicy() {
         }
         break;
       }
-      case AutocompleteSearchesAndURLsItemType:
-        base::mac::ObjCCast<SyncSwitchItem>(item).on =
-            self.autocompleteSearchPreference.value;
-        break;
-      case AutocompleteSearchesAndURLsManagedItemType:
-        base::mac::ObjCCast<TableViewInfoButtonItem>(item).statusText =
-            self.autocompleteSearchPreference.value
-                ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-        break;
       case ImproveChromeItemType:
         base::mac::ObjCCast<SyncSwitchItem>(item).on =
             self.sendDataUsagePreference.value;
@@ -269,6 +259,16 @@ bool GetStatusForSigninPolicy() {
       case BetterSearchAndBrowsingManagedItemType:
         base::mac::ObjCCast<TableViewInfoButtonItem>(item).statusText =
             self.anonymizedDataCollectionPreference.value
+                ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+                : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+        break;
+      case ImproveSearchSuggestionsItemType:
+        base::mac::ObjCCast<SyncSwitchItem>(item).on =
+            self.improveSearchSuggestionsPreference.value;
+        break;
+      case ImproveSearchSuggestionsManagedItemType:
+        base::mac::ObjCCast<TableViewInfoButtonItem>(item).statusText =
+            self.improveSearchSuggestionsPreference.value
                 ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                 : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
         break;
@@ -302,25 +302,6 @@ bool GetStatusForSigninPolicy() {
         kAllowSigninItemAccessibilityIdentifier;
     [items addObject:allowSigninItem];
 
-    if (self.userPrefService->IsManagedPreference(
-            prefs::kSearchSuggestEnabled)) {
-      TableViewInfoButtonItem* autocompleteItem = [self
-          tableViewInfoButtonItemType:AutocompleteSearchesAndURLsManagedItemType
-                         textStringID:
-                             IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTOCOMPLETE_SEARCHES_AND_URLS_TEXT
-                       detailStringID:
-                           IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTOCOMPLETE_SEARCHES_AND_URLS_DETAIL
-                               status:self.autocompleteSearchPreference.value];
-      [items addObject:autocompleteItem];
-    } else {
-      SyncSwitchItem* autocompleteItem = [self
-          switchItemWithItemType:AutocompleteSearchesAndURLsItemType
-                    textStringID:
-                        IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTOCOMPLETE_SEARCHES_AND_URLS_TEXT
-                  detailStringID:
-                      IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTOCOMPLETE_SEARCHES_AND_URLS_DETAIL];
-      [items addObject:autocompleteItem];
-    }
     if (self.localPrefService->IsManagedPreference(
             metrics::prefs::kMetricsReportingEnabled) &&
         !self.localPrefService->GetBoolean(
@@ -366,6 +347,26 @@ bool GetStatusForSigninPolicy() {
       betterSearchAndBrowsingItem.accessibilityIdentifier =
           kBetterSearchAndBrowsingItemAccessibilityID;
       [items addObject:betterSearchAndBrowsingItem];
+    }
+    if (self.userPrefService->IsManagedPreference(
+            prefs::kSearchSuggestEnabled)) {
+      TableViewInfoButtonItem* improveSearchSuggestionsItem = [self
+          tableViewInfoButtonItemType:ImproveSearchSuggestionsManagedItemType
+                         textStringID:
+                             IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_SEARCH_SUGGESTIONS_TEXT
+                       detailStringID:
+                           IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_SEARCH_SUGGESTIONS_DETAIL
+                               status:self.improveSearchSuggestionsPreference
+                                          .value];
+      [items addObject:improveSearchSuggestionsItem];
+    } else {
+      SyncSwitchItem* improveSearchSuggestionsItem = [self
+          switchItemWithItemType:ImproveSearchSuggestionsItemType
+                    textStringID:
+                        IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_SEARCH_SUGGESTIONS_TEXT
+                  detailStringID:
+                      IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_SEARCH_SUGGESTIONS_DETAIL];
+      [items addObject:improveSearchSuggestionsItem];
     }
     if (self.userPrefService->IsManagedPreference(
             prefs::kTrackPricesOnTabsEnabled)) {
@@ -468,9 +469,6 @@ bool GetStatusForSigninPolicy() {
       }
       break;
     }
-    case AutocompleteSearchesAndURLsItemType:
-      self.autocompleteSearchPreference.value = value;
-      break;
     case ImproveChromeItemType:
       self.sendDataUsagePreference.value = value;
       // Don't set value if sendDataUsageWifiOnlyPreference has not been
@@ -483,12 +481,15 @@ bool GetStatusForSigninPolicy() {
     case BetterSearchAndBrowsingItemType:
       self.anonymizedDataCollectionPreference.value = value;
       break;
+    case ImproveSearchSuggestionsItemType:
+      self.improveSearchSuggestionsPreference.value = value;
+      break;
     case TrackPricesOnTabsItemType:
       self.trackPricesOnTabsPreference.value = value;
       break;
-    case AutocompleteSearchesAndURLsManagedItemType:
     case BetterSearchAndBrowsingManagedItemType:
     case ImproveChromeManagedItemType:
+    case ImproveSearchSuggestionsManagedItemType:
       NOTREACHED();
       break;
   }

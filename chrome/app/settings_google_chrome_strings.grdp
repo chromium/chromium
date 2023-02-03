@@ -274,7 +274,10 @@
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_TITLE" desc="The title of the dialog to stop syncing and sign out.">
     Sign out of Chrome?
   </message>
-  <message name="IDS_DRIVE_SUGGEST_PREF_DESC" desc="The documentation string of the 'Show Drive Results in Omnibox' - full description sentence">
+  <message name="IDS_SETTINGS_SUGGEST_PREF_DESC" desc="The description of the 'Improve search suggestions' checkbox, which enables/disables sending omnibox input to the user's default search engine to get additional suggestions.">
+    When you type in the address bar or search box, Chrome sends what you type to your default search engine to get better suggestions. This is off in Incognito.
+  </message>
+  <message name="IDS_DRIVE_SUGGEST_PREF_DESC" desc="The description of the 'Show Drive Results in Omnibox' checkbox, which enabled/disables sending omnibox input to Google Drive to get suggestions for files.">
     Chrome will access your Drive to make suggestions in the address bar
   </message>
   <message name="IDS_SETTINGS_SYNC_SIGN_IN_PROMPT_WITH_NO_ACCOUNT" desc="The text displayed to prompt users to sign in to Chrome.">

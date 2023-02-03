@@ -681,7 +681,7 @@ void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultDefaultRank::kMedium, mojom::kSyncSetupSubpagePath);
   static constexpr mojom::Setting kSyncSettings[] = {
       mojom::Setting::kNonSplitSyncEncryptionOptions,
-      mojom::Setting::kAutocompleteSearchesAndUrls,
+      mojom::Setting::kImproveSearchSuggestions,
       mojom::Setting::kMakeSearchesAndBrowsingBetter,
       mojom::Setting::kGoogleDriveSearchSuggestions,
   };

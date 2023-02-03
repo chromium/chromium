@@ -95,7 +95,7 @@ enum Setting {
   // Note: Value 314 was for kRemoveFingerprint. Do not reuse.
   kSetUpParentalControls = 315,
   kNonSplitSyncEncryptionOptions = 316,
-  kAutocompleteSearchesAndUrls = 317,
+  kImproveSearchSuggestions = 317,
   kMakeSearchesAndBrowsingBetter = 318,
   kGoogleDriveSearchSuggestions = 319,
 
