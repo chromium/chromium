@@ -799,6 +799,7 @@ void ClientBufferFrameDeliverer::PaintAndDeliverNextFrame(
   uint8_t* data_ptr = buffer_access->data();
   memset(data_ptr, 0, buffer_access->mapped_size());
   frame_painter()->PaintFrame(timestamp_to_paint, data_ptr);
+  buffer_access.reset();  // Can't outlive `capture_buffer.handle_provider'.
 
   base::TimeTicks now = base::TimeTicks::Now();
   client()->OnIncomingCapturedBuffer(std::move(capture_buffer),
