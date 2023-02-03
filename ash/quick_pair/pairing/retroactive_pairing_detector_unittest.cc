@@ -43,11 +43,13 @@
 namespace {
 
 constexpr base::TimeDelta kRetroactiveDevicePairingTimeout = base::Seconds(60);
-constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 constexpr char kTestDeviceAddress2[] = "11:12:13:14:15:17";
 constexpr char kTestBleDeviceName[] = "Test Device Name";
 constexpr char kValidModelId[] = "718c17";
 const std::string kUserEmail = "test@test.test";
+
+// Expect no crash with invalid UTF-8 strings as device address.
+constexpr char kTestDeviceAddress[] = "\0xff\0xff\0xff\0xff\0xff\0xff";
 
 const std::vector<uint8_t> kModelIdBytes = {
     /*message_group=*/0x03,
