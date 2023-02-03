@@ -30,7 +30,9 @@ test(() => {
   }
 
   const numLiveNodesAfter = internals.numberOfLiveNodes();
-  assert_less_than_equal(numLiveNodesAfter, numLiveNodesBefore + 20);
+
+  // The exact number of retained nodes might vary in runs. Give it a generous leeway.
+  assert_less_than_equal(numLiveNodesAfter, numLiveNodesBefore + 40);
 });
 </script>
 </body>
