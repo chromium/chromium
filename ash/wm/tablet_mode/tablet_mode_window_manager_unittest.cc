@@ -1755,9 +1755,10 @@ TEST_F(TabletModeWindowManagerTest,
   // Check the window is moved to 1/3 snapped position.
   EXPECT_EQ(window->bounds().width(),
             1200 * 0.33 - kSplitviewDividerShortSideLength / 2);
-  // Exit tablet mode and verify the window stays in the same position.
+  // Exit tablet mode and verify the window stays near the same position.
   DestroyTabletModeWindowManager();
-  EXPECT_EQ(window->bounds().width(), 1200 * 0.33);
+  EXPECT_NEAR(window->bounds().width(), 1200 * 0.33,
+              kSplitviewDividerShortSideLength / 2);
 
   // Now test the 2 windows case.
   std::unique_ptr<aura::Window> window2(
@@ -1778,10 +1779,12 @@ TEST_F(TabletModeWindowManagerTest,
             1200 * 0.33 - kSplitviewDividerShortSideLength / 2);
   EXPECT_EQ(window2->bounds().width(),
             1200 - window->bounds().width() - kSplitviewDividerShortSideLength);
-  // Exit tablet mode and verify the windows stay in the same position.
+  // Exit tablet mode and verify the windows stay near the same position.
   DestroyTabletModeWindowManager();
-  EXPECT_EQ(window->bounds().width(), 1200 * 0.33);
-  EXPECT_EQ(window2->bounds().width(), 1200 - window->bounds().width());
+  EXPECT_NEAR(window->bounds().width(), 1200 * 0.33,
+              kSplitviewDividerShortSideLength / 2);
+  EXPECT_NEAR(window2->bounds().width(), 1200 - window->bounds().width(),
+              kSplitviewDividerShortSideLength / 2);
 }
 
 // Tests partial split clamshell <-> tablet transition.
@@ -1825,15 +1828,18 @@ TEST_F(TabletModeWindowManagerTest, PartialClamshellTabletTransitionTest) {
       split_view_controller()->split_view_divider()->GetDividerBoundsInScreen(
           /*is_dragging=*/false);
   ASSERT_NEAR(work_area_bounds.width() * 0.67f, window->bounds().width(),
-              divider_bounds.width());
+              divider_bounds.width() / 2);
   ASSERT_NEAR(work_area_bounds.width() * 0.33f, window2->bounds().width(),
-              divider_bounds.width());
+              divider_bounds.width() / 2);
   ASSERT_NEAR(work_area_bounds.width() * 0.67f, divider_bounds.x(),
-              divider_bounds.width());
-  // Exit tablet mode and verify the windows are the same.
+              divider_bounds.width() / 2);
+  // Exit tablet mode and verify the windows are still at 2/3, with allowance
+  // for the divider width since it is only there in tablet mode.
   DestroyTabletModeWindowManager();
-  EXPECT_EQ(work_area_bounds.width() * 0.67f, window->bounds().width());
-  EXPECT_EQ(work_area_bounds.width() * 0.33f, window2->bounds().width());
+  EXPECT_NEAR(work_area_bounds.width() * 0.67f, window->bounds().width(),
+              divider_bounds.width() / 2);
+  EXPECT_NEAR(work_area_bounds.width() * 0.33f, window2->bounds().width(),
+              divider_bounds.width() / 2);
 }
 
 // Test that when switching from clamshell mode to tablet mode, if overview mode

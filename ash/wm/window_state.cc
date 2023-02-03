@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
@@ -631,19 +632,15 @@ void WindowState::UpdatePipBounds() {
 }
 
 void WindowState::UpdateSnappedBounds() {
-  DCHECK(IsSnapped());
-  const float current_snap_ratio = GetCurrentSnapRatio(window_);
-  const gfx::Rect maximized_bounds =
-      screen_util::GetMaximizedWindowBoundsInParent(window_);
-  const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+  auto* split_view_controller = SplitViewController::Get(window_);
+  DCHECK(split_view_controller->IsWindowInSplitView(window_));
   const gfx::Rect snapped_bounds =
-      GetSnappedWindowBounds(maximized_bounds, display, window_,
-                             GetStateType() == WindowStateType::kPrimarySnapped
-                                 ? ash::SnapViewType::kPrimary
-                                 : ash::SnapViewType::kSecondary,
-                             current_snap_ratio);
-  SetBoundsInScreen(snapped_bounds);
+      split_view_controller->GetSnappedWindowBoundsInParent(
+          GetStateType() == WindowStateType::kPrimarySnapped
+              ? SplitViewController::SnapPosition::kPrimary
+              : SplitViewController::SnapPosition::kSecondary,
+          window_);
+  SetBoundsDirect(snapped_bounds);
 }
 
 std::unique_ptr<WindowState::State> WindowState::SetStateObject(

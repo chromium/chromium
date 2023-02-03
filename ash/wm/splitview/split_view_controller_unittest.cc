@@ -3350,6 +3350,88 @@ TEST_F(SplitViewControllerTest, SwapPartialWindows) {
               divider_bounds.width());
 }
 
+// Tests that, if two windows are snapped and one window has min size, trying to
+// partial split the other window opens Overview and updates bounds correctly.
+TEST_F(SplitViewControllerTest, SnapWindowWithMinSizeOpensOverview) {
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
+
+  // Snap 2 windows in split view. Set `window2` min length to be 0.4 of
+  // the work area so it can't fit in 1/3 split.
+  gfx::Rect work_area_bounds =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          window1.get());
+  aura::test::TestWindowDelegate* delegate2 =
+      static_cast<aura::test::TestWindowDelegate*>(window2->delegate());
+  delegate2->set_minimum_size(
+      gfx::Size(work_area_bounds.width() * 0.4f, work_area_bounds.height()));
+  split_view_controller()->SnapWindow(
+      window1.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(
+      window2.get(), SplitViewController::SnapPosition::kSecondary);
+
+  // Snap `window1` to 2/3. Since `window2` can't fit in 1/3, test that we open
+  // Overview instead.
+  WMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
+                                 chromeos::kTwoThirdSnapRatio);
+  WindowState::Get(window1.get())->OnWMEvent(&snap_primary_two_third);
+  EXPECT_EQ(split_view_controller()->state(),
+            SplitViewController::State::kPrimarySnapped);
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Activate `window2`, i.e. from Overview. Test that `window2` gets pushed to
+  // 1/2 and `window1` also gets updated to 1/2.
+  wm::ActivateWindow(window2.get());
+  EXPECT_EQ(split_view_controller()->state(),
+            SplitViewController::State::kBothSnapped);
+  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window1->bounds().width(),
+              kSplitviewDividerShortSideLength / 2);
+  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window2->bounds().width(),
+              kSplitviewDividerShortSideLength / 2);
+}
+
+// Tests that auto-snap for partial windows works correctly.
+TEST_F(SplitViewControllerTest, AutoSnapPartialWindows) {
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
+
+  // 1. Test without min size. Snap `window1` to 2/3.
+  WMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
+                                 chromeos::kTwoThirdSnapRatio);
+  WindowState::Get(window1.get())->OnWMEvent(&snap_primary_two_third);
+  // Activate `window2`. Test that `window2` gets auto-snapped to 1/3.
+  wm::ActivateWindow(window2.get());
+  gfx::Rect work_area_bounds =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          window1.get());
+  EXPECT_EQ(split_view_controller()->state(),
+            SplitViewController::State::kBothSnapped);
+  ASSERT_NEAR(work_area_bounds.width() * 0.67f, window1->bounds().width(),
+              kSplitviewDividerShortSideLength / 2);
+  ASSERT_NEAR(work_area_bounds.width() * 0.33f, window2->bounds().width(),
+              kSplitviewDividerShortSideLength / 2);
+  EndSplitView();
+
+  // 2. Test with min size. Set `window2` min length so that it can't fit in 1/3
+  // split. Snap `window1` to primary 2/3.
+  aura::test::TestWindowDelegate* delegate2 =
+      static_cast<aura::test::TestWindowDelegate*>(window2->delegate());
+  delegate2->set_minimum_size(
+      gfx::Size(work_area_bounds.width() * 0.4f, work_area_bounds.height()));
+  WindowState::Get(window1.get())->OnWMEvent(&snap_primary_two_third);
+  // Activate `window2`. Test that `window2` gets auto-snapped but pushed to 1/2
+  // and `window1` also gets updated to 1/2.
+  wm::ActivateWindow(window2.get());
+  EXPECT_EQ(split_view_controller()->state(),
+            SplitViewController::State::kBothSnapped);
+  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window1->bounds().width(),
+              kSplitviewDividerShortSideLength / 2);
+  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window2->bounds().width(),
+              kSplitviewDividerShortSideLength / 2);
+}
+
 TEST_F(SplitViewControllerTest, WMSnapEventDeviceOrientationMetricsInTablet) {
   UpdateDisplay("800x600");
   int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();

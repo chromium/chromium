@@ -227,28 +227,6 @@ void RemoveSnappingWindowFromOverviewIfApplicable(
   overview_session->RemoveItem(item);
 }
 
-void UpdateSnappedBounds(aura::Window* window) {
-  WindowState* window_state = WindowState::Get(window);
-  window_state->UpdateSnapRatio();
-  const bool in_tablet = Shell::Get()->tablet_mode_controller()->InTabletMode();
-  if (in_tablet) {
-    // TODO(b/264962634): Remove this workaround. Probably, we can rewrite
-    // `TabletModeWindowState::UpdateWindowPosition` to include this logic.
-    if (window->GetProperty(aura::client::kAppType) ==
-        static_cast<int>(AppType::ARC_APP)) {
-      const SetBoundsWMEvent event(
-          TabletModeWindowState::GetBoundsInTabletMode(window_state),
-          /*animate=*/true);
-      window_state->OnWMEvent(&event);
-      return;
-    }
-    TabletModeWindowState::UpdateWindowPosition(
-        window_state, WindowState::BoundsChangeAnimationType::kAnimate);
-  } else {
-    window_state->UpdateSnappedBounds();
-  }
-}
-
 }  // namespace
 
 // The window observer that observes the current tab-dragged window. When it's
@@ -913,37 +891,62 @@ void SplitViewController::OnWMEvent(aura::Window* window,
     return;
   }
 
-  // Do nothing if |window| is already waiting to be snapped in split screen.
-  if (to_be_snapped_windows_observer_->IsObserving(window))
+  // Do nothing if `window` is already waiting to be snapped in split screen.
+  // Order here matters: this must return for auto-snap windows before they try
+  // to override `divider_position_` from a `new_snap_ratio` below.
+  if (to_be_snapped_windows_observer_->IsObserving(window)) {
     return;
+  }
 
-  // If the snap event requested a snap ratio, update the divider position
-  // so it can be used in `GetSnappedWindowBoundsInScreen()`.
+  const SnapPosition to_snap_position = event_type == WM_EVENT_SNAP_PRIMARY
+                                            ? SnapPosition::kPrimary
+                                            : SnapPosition::kSecondary;
+
+  // Snap events may request a new snap ratio for an already snapped window, so
+  // update the divider position and use it to calculate the snapped bounds.
+  // Note that only manually-requested snap events (via the multitask menu) will
+  // arrive here, as auto-snap (via `SnapWindow()`) will have added the
+  // to-be-snapped window. b/267380892
   absl::optional<float> new_snap_ratio = WindowState::Get(window)->snap_ratio();
   if (new_snap_ratio) {
-    divider_position_ = GetDividerPosition(event_type == WM_EVENT_SNAP_PRIMARY
-                                               ? SnapPosition::kPrimary
-                                               : SnapPosition::kSecondary,
-                                           *new_snap_ratio);
+    divider_position_ = GetDividerPosition(to_snap_position, *new_snap_ratio);
     if (split_view_divider_) {
       split_view_divider_->UpdateDividerBounds();
     }
-    if (state_ == State::kPrimarySnapped ||
-        state_ == State::kSecondarySnapped) {
+    if (!primary_window_ != !secondary_window_) {
       // Only notify observers if there is only one snapped window, i.e.
       // overview is open.
       NotifyDividerPositionChanged();
-    } else if (BothSnapped()) {
-      // If both windows are snapped and one window snap ratio changes, the
-      // other window should also get updated.
-      UpdateSnappedWindowsAndDividerBounds();
+    } else if (primary_window_ && secondary_window_) {
+      auto* other_window = event_type == WM_EVENT_SNAP_PRIMARY
+                               ? secondary_window_
+                               : primary_window_;
+      DCHECK(other_window);
+      const int other_window_length =
+          GetMinimumWindowLength(other_window, IsLayoutHorizontal(window));
+      const int work_area_size = GetDividerEndPosition();
+      const int window_length = event_type == WM_EVENT_SNAP_PRIMARY
+                                    ? divider_position_
+                                    : work_area_size - divider_position_;
+      if (window_length + other_window_length +
+              kSplitviewDividerShortSideLength >
+          work_area_size) {
+        // If `other_window` can't fit in the opposite position, open Overview.
+        // TODO(b/265204266): Do bounce animation instead of open Overview.
+        Shell::Get()->overview_controller()->StartOverview(
+            OverviewStartAction::kSplitView,
+            OverviewEnterExitType::kImmediateEnter);
+      } else {
+        // If both windows are already snapped and one window snap ratio
+        // changes, the other window should also get updated.
+        UpdateSnappedBounds(other_window);
+      }
     }
   }
 
   // Start observe the to-be-snapped window.
-  to_be_snapped_windows_observer_->AddToBeSnappedWindow(
-      window, event_type == WM_EVENT_SNAP_PRIMARY ? SnapPosition::kPrimary
-                                                  : SnapPosition::kSecondary);
+  to_be_snapped_windows_observer_->AddToBeSnappedWindow(window,
+                                                        to_snap_position);
 }
 
 void SplitViewController::AttachSnappingWindow(aura::Window* window,
@@ -1000,6 +1003,8 @@ void SplitViewController::AttachSnappingWindow(aura::Window* window,
       primary_window_ = window;
     }
     if (secondary_window_ == window) {
+      // Remove `window` from `secondary_window_` if it was previously snapped
+      // there, i.e. during cycle snap or swap windows.
       secondary_window_ = nullptr;
       default_snap_position_ = SnapPosition::kPrimary;
     }
@@ -1010,6 +1015,7 @@ void SplitViewController::AttachSnappingWindow(aura::Window* window,
       secondary_window_ = window;
     }
     if (primary_window_ == window) {
+      // See above comment.
       primary_window_ = nullptr;
       default_snap_position_ = SnapPosition::kSecondary;
     }
@@ -1695,8 +1701,9 @@ void SplitViewController::OnWindowDestroyed(aura::Window* window) {
 }
 
 void SplitViewController::OnResizeLoopStarted(aura::Window* window) {
-  if (!InClamshellSplitViewMode())
+  if (!InClamshellSplitViewMode()) {
     return;
+  }
 
   // In clamshell mode, if splitview is active (which means overview is active
   // at the same time), only the resize that happens on the window edge that's
@@ -2143,10 +2150,11 @@ void SplitViewController::StartObserving(aura::Window* window) {
 
 void SplitViewController::StopObserving(SnapPosition snap_position) {
   aura::Window* window = GetSnappedWindow(snap_position);
-  if (window == primary_window_)
+  if (window == primary_window_) {
     primary_window_ = nullptr;
-  else
+  } else {
     secondary_window_ = nullptr;
+  }
 
   if (window && window->HasObserver(this)) {
     window->RemoveObserver(this);
@@ -2306,6 +2314,33 @@ void SplitViewController::UpdateSnappedWindowsAndDividerBounds() {
       split_view_divider_->SetAdjustable(true);
     }
   }
+}
+
+void SplitViewController::UpdateSnappedBounds(aura::Window* window) {
+  DCHECK(IsWindowInSplitView(window));
+  WindowState* window_state = WindowState::Get(window);
+  // SplitViewController will use the divider position to determine the
+  // window's snapped bounds.
+  const bool in_tablet = Shell::Get()->tablet_mode_controller()->InTabletMode();
+  // TODO(b/264962634): Remove this workaround. Probably, we can rewrite
+  // `TabletModeWindowState::UpdateWindowPosition` to include this logic.
+  if (window->GetProperty(aura::client::kAppType) ==
+      static_cast<int>(AppType::ARC_APP)) {
+    const gfx::Rect requested_bounds =
+        in_tablet ? TabletModeWindowState::GetBoundsInTabletMode(window_state)
+                  : GetSnappedWindowBoundsInScreen(
+                        GetPositionOfSnappedWindow(window), window);
+    const SetBoundsWMEvent event(requested_bounds,
+                                 /*animate=*/true);
+    window_state->OnWMEvent(&event);
+    return;
+  }
+  if (in_tablet) {
+    TabletModeWindowState::UpdateWindowPosition(
+        window_state, WindowState::BoundsChangeAnimationType::kAnimate);
+    return;
+  }
+  window_state->UpdateSnappedBounds();
 }
 
 SplitViewController::SnapPosition SplitViewController::GetBlackScrimPosition(
@@ -2490,6 +2525,16 @@ void SplitViewController::OnWindowSnapped(
        state_ == State::kSecondarySnapped)) {
     overview_controller->StartOverview(OverviewStartAction::kSplitView,
                                        OverviewEnterExitType::kNormal);
+    return;
+  }
+
+  // When `window` is snapped, it may push the divider position due to its
+  // minimum size constraint. If the other snap position holds a previously
+  // snapped window, we should update the other's snapped bounds to account for
+  // the newly snapped `window`.
+  if (primary_window_ && secondary_window_) {
+    UpdateSnappedBounds(window == primary_window_ ? secondary_window_
+                                                  : primary_window_);
   }
 }
 
