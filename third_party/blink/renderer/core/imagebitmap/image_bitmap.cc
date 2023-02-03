@@ -225,13 +225,31 @@ scoped_refptr<StaticBitmapImage> FlipImageVertically(
         paint_image.readPixels(info, writable_pixels, image_row_bytes, 0, 0);
     DCHECK(read_successful);
 
-    for (int i = 0; i < info.height() / 2; i++) {
-      size_t top_first_element = i * image_row_bytes;
-      size_t top_last_element = (i + 1) * image_row_bytes;
-      size_t bottom_first_element = (info.height() - 1 - i) * image_row_bytes;
-      std::swap_ranges(&writable_pixels[top_first_element],
-                       &writable_pixels[top_last_element],
-                       &writable_pixels[bottom_first_element]);
+    // Since rotation is applied after flip, vertical flip becomes horizontal
+    // flips after rotation for oritation 5-8. So we swap pixels left to right
+    // to flip the image horizontally instead.
+    if (input->CurrentFrameOrientation().UsesWidthAsHeight()) {
+      for (int i = 0; i < info.height() - 1; i++) {
+        for (int j = 0; j < info.width() / 2; j++) {
+          size_t first_element = i * image_row_bytes + j * info.bytesPerPixel();
+          size_t last_element =
+              i * image_row_bytes + (j + 1) * info.bytesPerPixel();
+          size_t bottom_element =
+              (i + 1) * image_row_bytes - (j + 1) * info.bytesPerPixel();
+          std::swap_ranges(&writable_pixels[first_element],
+                           &writable_pixels[last_element],
+                           &writable_pixels[bottom_element]);
+        }
+      }
+    } else {
+      for (int i = 0; i < info.height() / 2; i++) {
+        size_t top_first_element = i * image_row_bytes;
+        size_t top_last_element = (i + 1) * image_row_bytes;
+        size_t bottom_first_element = (info.height() - 1 - i) * image_row_bytes;
+        std::swap_ranges(&writable_pixels[top_first_element],
+                         &writable_pixels[top_last_element],
+                         &writable_pixels[bottom_first_element]);
+      }
     }
     return StaticBitmapImage::Create(std::move(image_pixels), info,
                                      input->CurrentFrameOrientation());
@@ -250,8 +268,15 @@ scoped_refptr<StaticBitmapImage> FlipImageVertically(
     return nullptr;
 
   auto* canvas = resource_provider->Canvas();
-  canvas->scale(1, -1);
-  canvas->translate(0, -input->height());
+  // Since rotation is applied after flip, vertical flips becomes horizontal
+  // flips for oritation 5-8. So we flip the images horizontally instead.
+  if (input->CurrentFrameOrientation().UsesWidthAsHeight()) {
+    canvas->scale(-1, 1);
+    canvas->translate(-input->width(), 0);
+  } else {
+    canvas->scale(1, -1);
+    canvas->translate(0, -input->height());
+  }
   cc::PaintFlags paint;
   paint.setBlendMode(SkBlendMode::kSrc);
   canvas->drawImage(input->PaintImageForCurrentFrame(), 0, 0,
