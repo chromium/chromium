@@ -9,6 +9,10 @@
     width: 100%;
   }
 
+  :host-context([chrome-refresh-2023]):host {
+    padding: 4px 16px;
+  }
+
   :host([size=compact]) {
     height: 32px;
     padding: 8px 20px;
@@ -16,6 +20,11 @@
 
   :host([size=large]) {
     height: 68px;
+    padding: 6px 16px;
+  }
+
+  :host-context([chrome-refresh-2023]):host([size=compact]),
+  :host-context([chrome-refresh-2023]):host([size=large]) {
     padding: 6px 16px;
   }
 
@@ -61,10 +70,21 @@
     width: 16px;
   }
 
+  :host-context([chrome-refresh-2023]):host([size=compact]) #iconContainer {
+    height: 24px;
+    marign-inline-end: 8px;
+    width: 24px;
+  }
+
   :host([size=large]) #iconContainer {
     height: 56px;
     margin-inline-end: 16px;
     width: 56px;
+  }
+
+  :host-context([chrome-refresh-2023]):host([size=medium]) #iconContainer,
+  :host-context([chrome-refresh-2023]):host([size=large]) #iconContainer {
+    border-radius: 8px;
   }
 
   .favicon {
@@ -93,14 +113,28 @@
     flex-direction: row;
   }
 
+  :host-context([chrome-refresh-2023]):host([size=compact]) .metadata,
+  :host-context([chrome-refresh-2023]):host([size=medium]) .metadata {
+    gap: 4px;
+  }
+
   :host([size=large]) .metadata {
     gap: 4px;
+  }
+
+  :host-context([chrome-refresh-2023]):host([size=large]) .metadata {
+    gap: 2px;
   }
 
   ::slotted([slot=title]) {
     color: var(--cr-primary-text-color);
     font-size: 13px;
     font-weight: 400;
+  }
+
+  :host-context([chrome-refresh-2023]) ::slotted([slot=title]) {
+    font-size: 12px;
+    font-weight: 500;
   }
 
   ::slotted(button[slot=title]) {
@@ -137,6 +171,11 @@
   ::slotted([slot=description]) {
     color: var(--cr-secondary-text-color);
     font-size: 13px;
+    font-weight: 400;
+  }
+
+  :host-context([chrome-refresh-2023]) ::slotted([slot=description]) {
+    font-size: 11px;
     font-weight: 400;
   }
 
