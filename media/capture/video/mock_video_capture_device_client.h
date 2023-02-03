@@ -5,6 +5,8 @@
 #ifndef MEDIA_CAPTURE_VIDEO_MOCK_VIDEO_CAPTURE_DEVICE_CLIENT_H_
 #define MEDIA_CAPTURE_VIDEO_MOCK_VIDEO_CAPTURE_DEVICE_CLIENT_H_
 
+#include <memory>
+
 #include "media/capture/video/video_capture_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
