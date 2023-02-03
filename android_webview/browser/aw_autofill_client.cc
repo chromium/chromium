@@ -262,10 +262,10 @@ void AwAutofillClient::UpdateAutofillPopupDataListValues(
   // See crrev.com/18102002 if need to implement.
 }
 
-base::span<const autofill::Suggestion> AwAutofillClient::GetPopupSuggestions()
+std::vector<autofill::Suggestion> AwAutofillClient::GetPopupSuggestions()
     const {
   NOTIMPLEMENTED();
-  return base::span<const autofill::Suggestion>();
+  return {};
 }
 
 void AwAutofillClient::PinPopupView() {

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 
 #import <utility>
+#import <vector>
 
 #import "base/check.h"
 #import "base/functional/bind.h"
@@ -431,10 +432,9 @@ void ChromeAutofillClientIOS::UpdateAutofillPopupDataListValues(
   // No op. ios/web_view does not support display datalist.
 }
 
-base::span<const Suggestion> ChromeAutofillClientIOS::GetPopupSuggestions()
-    const {
+std::vector<Suggestion> ChromeAutofillClientIOS::GetPopupSuggestions() const {
   NOTIMPLEMENTED();
-  return base::span<const Suggestion>();
+  return {};
 }
 
 void ChromeAutofillClientIOS::PinPopupView() {

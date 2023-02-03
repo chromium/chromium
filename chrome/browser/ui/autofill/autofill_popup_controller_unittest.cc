@@ -172,7 +172,6 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
   using AutofillPopupControllerImpl::SelectNextLine;
   using AutofillPopupControllerImpl::SelectPreviousLine;
   using AutofillPopupControllerImpl::SetSelectedLine;
-  using AutofillPopupControllerImpl::SetValues;
   MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
   MOCK_METHOD(void, Hide, (PopupHidingReason reason), (override));
   MOCK_METHOD(ui::AXPlatformNode*,

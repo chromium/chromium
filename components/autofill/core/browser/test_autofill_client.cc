@@ -339,8 +339,8 @@ void TestAutofillClient::UpdateAutofillPopupDataListValues(
     const std::vector<std::u16string>& values,
     const std::vector<std::u16string>& labels) {}
 
-base::span<const Suggestion> TestAutofillClient::GetPopupSuggestions() const {
-  return base::span<const Suggestion>();
+std::vector<Suggestion> TestAutofillClient::GetPopupSuggestions() const {
+  return {};
 }
 
 void TestAutofillClient::PinPopupView() {}

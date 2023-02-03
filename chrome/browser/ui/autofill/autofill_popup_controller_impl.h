@@ -68,7 +68,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
       base::i18n::TextDirection text_direction);
 
   // Shows the popup, or updates the existing popup with the given values.
-  virtual void Show(const std::vector<Suggestion>& suggestions,
+  virtual void Show(std::vector<Suggestion> suggestions,
                     AutoselectFirstSuggestion autoselect_first_suggestion);
 
   // Updates the data list values currently shown with the popup.
@@ -82,9 +82,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
 
-  // Returns (not elided) suggestions currently held by the controller.
-  base::span<const Suggestion> GetUnelidedSuggestions() const;
-
   // Hides the popup and destroys the controller. This also invalidates
   // |delegate_|.
   void Hide(PopupHidingReason reason) override;
@@ -96,6 +93,9 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // (meaning that no other handler, in not particular the default handler, can
   // process it).
   bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
+
+  // AutofillPopupController:
+  std::vector<Suggestion> GetSuggestions() const override;
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(AutofillPopupControllerUnitTest,
@@ -114,7 +114,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   const gfx::RectF& element_bounds() const override;
   void SetElementBounds(const gfx::RectF& bounds);
   bool IsRTL() const override;
-  std::vector<Suggestion> GetSuggestions() const override;
 
   // AutofillPopupController implementation.
   void OnSuggestionsChanged() override;
@@ -150,11 +149,11 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   bool CanAcceptForTabKeyPressEvent(int id);
 
   // Returns true if the popup still has non-options entries to show the user.
-  bool HasSuggestions();
+  bool HasSuggestions() const;
 
   // Set the Autofill entry values. Exposed to allow tests to set these values
   // without showing the popup.
-  void SetValues(const std::vector<Suggestion>& suggestions);
+  void SetSuggestions(std::vector<Suggestion> suggestions);
 
   base::WeakPtr<AutofillPopupControllerImpl> GetWeakPtr();
 

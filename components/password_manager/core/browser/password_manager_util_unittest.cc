@@ -260,7 +260,7 @@ class MockAutofillClient : public autofill::AutofillClient {
               (override));
   MOCK_METHOD(void, PinPopupView, (), (override));
   MOCK_METHOD(PopupOpenArgs, GetReopenPopupArgs, (), (const, override));
-  MOCK_METHOD(base::span<const autofill::Suggestion>,
+  MOCK_METHOD(std::vector<autofill::Suggestion>,
               GetPopupSuggestions,
               (),
               (const, override));

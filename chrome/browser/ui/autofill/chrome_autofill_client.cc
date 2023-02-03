@@ -816,10 +816,9 @@ void ChromeAutofillClient::UpdateAutofillPopupDataListValues(
     popup_controller_->UpdateDataListValues(values, labels);
 }
 
-base::span<const Suggestion> ChromeAutofillClient::GetPopupSuggestions() const {
-  if (!popup_controller_.get())
-    return base::span<const Suggestion>();
-  return popup_controller_->GetUnelidedSuggestions();
+std::vector<Suggestion> ChromeAutofillClient::GetPopupSuggestions() const {
+  return popup_controller_ ? popup_controller_->GetSuggestions()
+                           : std::vector<Suggestion>();
 }
 
 void ChromeAutofillClient::PinPopupView() {

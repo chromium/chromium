@@ -4,7 +4,8 @@
 
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 
-#include <utility>
+#import <utility>
+#import <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -311,10 +312,9 @@ void WebViewAutofillClientIOS::UpdateAutofillPopupDataListValues(
   // No op. ios/web_view does not support display datalist.
 }
 
-base::span<const Suggestion> WebViewAutofillClientIOS::GetPopupSuggestions()
-    const {
+std::vector<Suggestion> WebViewAutofillClientIOS::GetPopupSuggestions() const {
   NOTIMPLEMENTED();
-  return base::span<const Suggestion>();
+  return {};
 }
 
 void WebViewAutofillClientIOS::PinPopupView() {

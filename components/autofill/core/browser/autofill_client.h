@@ -700,7 +700,7 @@ class AutofillClient : public RiskDataLoader {
   virtual PopupOpenArgs GetReopenPopupArgs() const = 0;
 
   // Returns (not elided) suggestions currently held by the UI.
-  virtual base::span<const Suggestion> GetPopupSuggestions() const = 0;
+  virtual std::vector<Suggestion> GetPopupSuggestions() const = 0;
 
   // Updates the popup contents with the newly given suggestions.
   virtual void UpdatePopup(const std::vector<Suggestion>& suggestions,

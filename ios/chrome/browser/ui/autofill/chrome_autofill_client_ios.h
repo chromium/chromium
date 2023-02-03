@@ -126,7 +126,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   void UpdateAutofillPopupDataListValues(
       const std::vector<std::u16string>& values,
       const std::vector<std::u16string>& labels) override;
-  base::span<const Suggestion> GetPopupSuggestions() const override;
+  std::vector<Suggestion> GetPopupSuggestions() const override;
   void PinPopupView() override;
   PopupOpenArgs GetReopenPopupArgs() const override;
   void UpdatePopup(const std::vector<Suggestion>& suggestions,

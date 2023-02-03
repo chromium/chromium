@@ -38,7 +38,6 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -96,14 +95,14 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
 AutofillPopupControllerImpl::~AutofillPopupControllerImpl() = default;
 
 void AutofillPopupControllerImpl::Show(
-    const std::vector<Suggestion>& suggestions,
+    std::vector<Suggestion> suggestions,
     AutoselectFirstSuggestion autoselect_first_suggestion) {
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
   }
 
-  SetValues(suggestions);
+  SetSuggestions(std::move(suggestions));
 
   if (view_) {
     if (selected_line_ && *selected_line_ >= GetLineCount())
@@ -123,7 +122,7 @@ void AutofillPopupControllerImpl::Show(
 #if BUILDFLAG(IS_ANDROID)
     ManualFillingController::GetOrCreate(web_contents_)
         ->UpdateSourceAvailability(FillingSource::AUTOFILL,
-                                   !suggestions.empty());
+                                   !suggestions_.empty());
 #endif
     if (!view_.Call(&AutofillPopupView::Show))
       return;
@@ -201,11 +200,6 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
 
 void AutofillPopupControllerImpl::PinView() {
   is_view_pinned_ = true;
-}
-
-base::span<const Suggestion>
-AutofillPopupControllerImpl::GetUnelidedSuggestions() const {
-  return base::span<const Suggestion>(suggestions_);
 }
 
 void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
@@ -527,7 +521,7 @@ bool AutofillPopupControllerImpl::CanAcceptForTabKeyPressEvent(int id) {
   return id > 0 || base::Contains(kItemsTriggeringFieldFilling, id);
 }
 
-bool AutofillPopupControllerImpl::HasSuggestions() {
+bool AutofillPopupControllerImpl::HasSuggestions() const {
   if (suggestions_.empty())
     return false;
   int id = suggestions_[0].frontend_id;
@@ -535,9 +529,9 @@ bool AutofillPopupControllerImpl::HasSuggestions() {
          id == POPUP_ITEM_ID_SCAN_CREDIT_CARD;
 }
 
-void AutofillPopupControllerImpl::SetValues(
-    const std::vector<Suggestion>& suggestions) {
-  suggestions_ = suggestions;
+void AutofillPopupControllerImpl::SetSuggestions(
+    std::vector<Suggestion> suggestions) {
+  suggestions_ = std::move(suggestions);
 }
 
 WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetWeakPtr() {

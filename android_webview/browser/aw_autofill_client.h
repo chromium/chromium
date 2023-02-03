@@ -133,7 +133,7 @@ class AwAutofillClient : public autofill::AutofillClient,
   void UpdateAutofillPopupDataListValues(
       const std::vector<std::u16string>& values,
       const std::vector<std::u16string>& labels) override;
-  base::span<const autofill::Suggestion> GetPopupSuggestions() const override;
+  std::vector<autofill::Suggestion> GetPopupSuggestions() const override;
   void PinPopupView() override;
   autofill::AutofillClient::PopupOpenArgs GetReopenPopupArgs() const override;
   void UpdatePopup(const std::vector<autofill::Suggestion>& suggestions,
