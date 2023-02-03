@@ -221,7 +221,7 @@ export class Video extends ModeBase {
   /**
    * HTMLElement displaying warning about low storage.
    */
-  private lowStorageWarningNudge = dom.get('#nudge', HTMLDivElement);
+  private readonly lowStorageWarningNudge = dom.get('#nudge', HTMLDivElement);
 
   constructor(
       video: PreviewVideo,

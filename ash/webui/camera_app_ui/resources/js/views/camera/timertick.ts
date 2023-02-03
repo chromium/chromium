@@ -40,12 +40,12 @@ export function start(): Promise<void> {
     };
 
     let tickCounter = state.get(state.State.TIMER_10SEC) ? 10 : 3;
-    const sounds = {
-      1: '#sound-tick-final',
-      2: '#sound-tick-inc',
-      3: '#sound-tick-inc',
-      [tickCounter]: '#sound-tick-start',
-    };
+    const sounds: string[] = [];
+    sounds[1] = '#sound-tick-final';
+    sounds[2] = '#sound-tick-inc';
+    sounds[3] = '#sound-tick-inc';
+    sounds[tickCounter] = '#sound-tick-start';
+
     function onTimerTick() {
       if (tickCounter === 0) {
         resolve();

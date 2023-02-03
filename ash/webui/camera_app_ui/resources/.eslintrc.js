@@ -361,7 +361,6 @@ const googleRules = {
   // 'template-curly-spacing': 'off',
   'yield-star-spacing': ['error', 'after'],
 };
-/* eslint-enable @typescript-eslint/naming-convention */
 
 // https://github.com/eslint/eslint/issues/8769
 // Hack node module system so that eslint-plugin-cca resolves to local module.

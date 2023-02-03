@@ -103,7 +103,7 @@ export class DocumentReview extends View {
   private readonly modes: {
     [Mode.FIX]: DocumentFixMode,
     [Mode.PREVIEW]: DocumentPreviewMode,
-  }
+  };
 
   /**
    * The promise of current page updating process. Null if no pages are being

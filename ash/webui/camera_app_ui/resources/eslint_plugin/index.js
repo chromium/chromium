@@ -111,9 +111,11 @@ const todoFormatRule = {
 
 /* global module */
 module.exports = {
+  /* eslint-disable @typescript-eslint/naming-convention */
   rules: {
     'parameter-comment-format': parameterCommentFormatRule,
     'generic-parameter-on-declaration-type': genericParameterOnDeclarationType,
     'todo-format': todoFormatRule,
   },
+  /* eslint-enable @typescript-eslint/naming-convention */
 };
