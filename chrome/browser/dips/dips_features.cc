@@ -24,12 +24,12 @@ const base::FeatureParam<bool> kDeletionEnabled{&kFeature, "delete", false};
 // site after it performs some action (e.g. bouncing the user or using storage)
 // without user interaction.
 const base::FeatureParam<base::TimeDelta> kGracePeriod{
-    &kFeature, "grace_period", base::Hours(24)};
+    &kFeature, "grace_period", base::Hours(1)};
 
 // Set the cadence at which Chrome will attempt to clear incidental state
 // repeatedly.
 const base::FeatureParam<base::TimeDelta> kTimerDelay{&kFeature, "timer_delay",
-                                                      base::Hours(24)};
+                                                      base::Hours(1)};
 
 // Set how long DIPS maintains an interaction for a site.
 //
@@ -38,7 +38,7 @@ const base::FeatureParam<base::TimeDelta> kTimerDelay{&kFeature, "timer_delay",
 // protected from DIPS clearing until the interaction "expires" as set by this
 // param.
 const base::FeatureParam<base::TimeDelta> kInteractionTtl{
-    &kFeature, "interaction_ttl", base::Days(90)};
+    &kFeature, "interaction_ttl", base::Days(45)};
 
 // Sets the actions which will trigger DIPS clearing for a site. The default is
 // to set to kBounce, but can be overridden by Finch experiment groups or by
