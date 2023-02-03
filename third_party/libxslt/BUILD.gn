@@ -81,7 +81,7 @@ static_library("libxslt") {
   if (is_linux || is_chromeos) {
     sources += [ "linux/config.h" ]
   }
-  if (is_mac) {
+  if (is_apple) {
     sources += [ "mac/config.h" ]
   }
 
@@ -97,7 +97,7 @@ static_library("libxslt") {
       # 2015 64-bit warning for pointer truncation
       "/wd4311",
     ]
-  } else if (is_mac) {
+  } else if (is_apple) {
     include_dirs = [ "mac" ]
   }
 
