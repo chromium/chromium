@@ -8,11 +8,9 @@
 
 #include <memory>
 
-#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -546,22 +544,18 @@ TEST_F(PrefServiceSyncableMergeTest, ManagedListPreferences) {
   urls_to_restore.Append(kExampleUrl2);
   AddToRemoteDataList(kListPrefName, urls_to_restore, &in);
 
+  syncer::SyncChangeList out;
+  InitWithSyncDataTakeOutput(in, &out);
+
   // Start sync and verify the synced value didn't get merged.
-  {
-    syncer::SyncChangeList out;
-    InitWithSyncDataTakeOutput(in, &out);
-    EXPECT_FALSE(FindValue(kListPrefName, out).get());
-  }
+  EXPECT_FALSE(FindValue(kListPrefName, out).get());
 
   // Changing the user's urls to restore on startup pref should not sync
   // anything.
-  {
-    syncer::SyncChangeList out;
-    base::Value::List user_value;
-    user_value.Append("http://chromium.org");
-    prefs_.SetList(kListPrefName, std::move(user_value));
-    EXPECT_FALSE(FindValue(kListPrefName, out).get());
-  }
+  base::Value::List user_value;
+  user_value.Append("http://chromium.org");
+  prefs_.SetList(kListPrefName, std::move(user_value));
+  EXPECT_FALSE(FindValue(kListPrefName, out).get());
 
   // An incoming sync transaction should change the user value, not the managed
   // value.
