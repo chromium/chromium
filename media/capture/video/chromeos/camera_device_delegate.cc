@@ -499,8 +499,8 @@ void CameraDeviceDelegate::SetPhotoOptions(
 
       request_manager_->SetRepeatingCaptureMetadata(
           cros::mojom::CameraMetadataTag::ANDROID_SCALER_CROP_REGION,
-          cros::mojom::EntryType::TYPE_INT32, 4,
-          SerializeMetadataValueFromSpan(base::make_span(region, 4)));
+          cros::mojom::EntryType::TYPE_INT32, std::size(region),
+          SerializeMetadataValueFromSpan<int32_t>(region));
 
       VLOG(1) << "zoom ratio:" << settings->zoom << " scaler.crop.region("
               << region[0] << "," << region[1] << "," << region[2] << ","
