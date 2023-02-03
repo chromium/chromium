@@ -8,8 +8,12 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/system/sys_info.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 
 namespace {
 // File name for the file where deduplication data is stored.
@@ -18,22 +22,19 @@ constexpr char kAppDeduplicationDataFileName[] = "deduplication_data.pb";
 // Maximum size of App Deduplication Response is 1MB, current size of file
 // at initial launch (v1 of deduplication endpoint) is ~6KB.
 constexpr int kMaxRequiredDiskSpaceBytes = 1024 * 1024;
-}  // namespace
 
-namespace apps::deduplication {
-
-AppDeduplicationCache::AppDeduplicationCache(base::FilePath& path) {
-  file_path_ = path.AppendASCII(kAppDeduplicationDataFileName);
-  if (!base::PathExists(file_path_)) {
-    base::CreateDirectory(file_path_.DirName());
+// Writes data to given `path` on disk. If the write operation fails, the
+// existing data on disk will be unaffected. Returns true if data is
+// written to disk successfully and false otherwise.
+bool WriteDeduplicateDataToDisk(const base::FilePath& path,
+                                const apps::proto::DeduplicateData& data) {
+  if (!base::PathExists(path)) {
+    if (!base::CreateDirectory(path.DirName())) {
+      LOG(ERROR) << "Directory for deduplication data cannot be created";
+    }
   }
-}
 
-AppDeduplicationCache::~AppDeduplicationCache() = default;
-
-bool AppDeduplicationCache::WriteDeduplicateDataToDisk(
-    proto::DeduplicateData& data) {
-  if (base::SysInfo::AmountOfFreeDiskSpace(file_path_.DirName()) <
+  if (base::SysInfo::AmountOfFreeDiskSpace(path.DirName()) <
       kMaxRequiredDiskSpaceBytes) {
     LOG(ERROR) << "Not enough disk space left.";
     return false;
@@ -41,7 +42,7 @@ bool AppDeduplicationCache::WriteDeduplicateDataToDisk(
 
   // Create temporary file.
   base::FilePath temp_file;
-  if (!base::CreateTemporaryFileInDir(file_path_.DirName(), &temp_file)) {
+  if (!base::CreateTemporaryFileInDir(path.DirName(), &temp_file)) {
     LOG(ERROR) << "Failed to create a temporary file.";
     return false;
   }
@@ -55,7 +56,7 @@ bool AppDeduplicationCache::WriteDeduplicateDataToDisk(
   }
 
   // Replace the current file with the temporary file.
-  if (!base::ReplaceFile(temp_file, file_path_, /*error=*/nullptr)) {
+  if (!base::ReplaceFile(temp_file, path, /*error=*/nullptr)) {
     LOG(ERROR) << "Failed to replace the temporary file.";
     base::DeleteFile(temp_file);
     return false;
@@ -64,22 +65,69 @@ bool AppDeduplicationCache::WriteDeduplicateDataToDisk(
   return true;
 }
 
-absl::optional<proto::DeduplicateData>
-AppDeduplicationCache::ReadDeduplicateDataFromDisk() {
+// Reads and returns deduplicate data from `path`.
+absl::optional<apps::proto::DeduplicateData> ReadDeduplicateDataFromDisk(
+    const base::FilePath path) {
   std::string deduplicate_data_string;
+  if (!base::PathExists(path)) {
+    LOG(ERROR) << "Path to data does not exist";
+    return absl::nullopt;
+  }
 
-  if (!base::ReadFileToString(file_path_, &deduplicate_data_string)) {
+  if (!base::ReadFileToString(path, &deduplicate_data_string)) {
     LOG(ERROR) << "Reading deduplicate data file from disk failed.";
     return absl::nullopt;
   }
 
-  proto::DeduplicateData deduplicate_data;
+  apps::proto::DeduplicateData deduplicate_data;
   if (!deduplicate_data.ParseFromString(deduplicate_data_string)) {
     LOG(ERROR) << "Parsing proto to string failed.";
     return absl::nullopt;
   }
 
   return deduplicate_data;
+}
+
+}  // namespace
+
+namespace apps::deduplication {
+
+AppDeduplicationCache::AppDeduplicationCache(base::FilePath& path)
+    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
+  file_path_ = path.AppendASCII(kAppDeduplicationDataFileName);
+}
+
+AppDeduplicationCache::~AppDeduplicationCache() = default;
+
+void AppDeduplicationCache::WriteDeduplicationCache(
+    proto::DeduplicateData& data,
+    base::OnceCallback<void(bool)> callback) {
+  // Since `WriteDeduplicateDataToDisk` is a blocking function, the task is
+  // being posted to another thread.
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](const base::FilePath& path, const proto::DeduplicateData& data) {
+            return WriteDeduplicateDataToDisk(path, data);
+          },
+          file_path_, data),
+      std::move(callback));
+}
+
+void AppDeduplicationCache::ReadDeduplicationCache(
+    GetDeduplicateDataCallback callback) {
+  // Since `ReadDeduplicateDataFromDisk` is a blocking function, the task is
+  // being posted to another thread.
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](const base::FilePath& path) {
+            return ReadDeduplicateDataFromDisk(path);
+          },
+          file_path_),
+      std::move(callback));
 }
 
 }  // namespace apps::deduplication

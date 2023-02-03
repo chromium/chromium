@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/apps/app_deduplication_service/app_deduplication_cache.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.h"
 #include "chrome/browser/apps/app_deduplication_service/duplicate_group.h"
 #include "chrome/browser/apps/app_deduplication_service/entry_types.h"
@@ -77,6 +78,14 @@ class AppDeduplicationService : public KeyedService,
   void OnGetDeduplicateDataFromServerCompleted(
       absl::optional<proto::DeduplicateData> response);
 
+  // Checks for any errors after data is written to cache. If the write is
+  // successful, it will call the cache to read from disk.
+  void OnWriteDeduplicationCacheCompleted(bool result);
+
+  // Process data read from cache and converts it into `Entry`s.
+  void OnReadDeduplicationCacheCompleted(
+      absl::optional<proto::DeduplicateData> data);
+
   std::map<uint32_t, DuplicateGroup> duplication_map_;
   std::map<EntryId, uint32_t> entry_to_group_map_;
   std::map<EntryId, EntryStatus> entry_status_;
@@ -90,6 +99,7 @@ class AppDeduplicationService : public KeyedService,
       app_registry_cache_observation_{this};
 
   std::unique_ptr<AppDeduplicationServerConnector> server_connector_;
+  std::unique_ptr<AppDeduplicationCache> cache_;
 
   // `weak_ptr_factory_` must be the last member of this class.
   base::WeakPtrFactory<AppDeduplicationService> weak_ptr_factory_{this};
