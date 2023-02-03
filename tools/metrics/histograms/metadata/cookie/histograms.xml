@@ -401,8 +401,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.FirstPartySets.EnqueueingDelay.{QueryType}"
-    units="microseconds" expires_after="M115">
+<histogram name="Cookie.FirstPartySets.EnqueueingDelay.{QueryType}2" units="ms"
+    expires_after="M115">
   <owner>cfredric@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>

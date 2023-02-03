@@ -73,7 +73,7 @@ void FirstPartySetsManager::ComputeMetadataAndInvoke(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
 
-  UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.ComputeMetadata",
+  UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.ComputeMetadata2",
                       timer.Elapsed());
 
   std::move(callback).Run(
@@ -135,7 +135,7 @@ void FirstPartySetsManager::FindEntriesAndInvoke(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
 
-  UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.FindOwners",
+  UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.FindOwners2",
                       timer.Elapsed());
 
   std::move(callback).Run(FindEntriesInternal(sites, fps_context_config));
