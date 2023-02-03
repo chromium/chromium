@@ -730,9 +730,7 @@ URLLoader::URLLoader(
         request.net_log_reference_info.value());
   }
 
-  for (net::CookieSettingOverride cso : cookie_setting_overrides) {
-    url_request_->cookie_setting_overrides().Put(cso);
-  }
+  url_request_->cookie_setting_overrides().PutAll(cookie_setting_overrides);
   if (request.is_outermost_main_frame &&
       network::cors::IsCorsEnabledRequestMode(request_mode_)) {
     url_request_->cookie_setting_overrides().Put(
