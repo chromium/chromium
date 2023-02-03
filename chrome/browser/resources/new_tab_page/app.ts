@@ -531,6 +531,7 @@ export class AppElement extends PolymerElement {
     if (this.customizeChromeEnabled_) {
       this.setCustomizeChromeSidePanelVisible_(!this.showCustomize_);
       if (!this.showCustomize_) {
+        this.pageHandler_.incrementCustomizeChromeButtonOpenCount();
         recordCustomizeChromeOpen(
             NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON);
       }

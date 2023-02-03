@@ -760,6 +760,8 @@ suite('NewTabPageAppTest', () => {
           metrics.count(
               'NewTabPage.CustomizeChromeOpened',
               NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON));
+      assertEquals(
+          1, handler.getCallCount('incrementCustomizeChromeButtonOpenCount'));
     });
 
     test('clicking customize button hides side panel', async () => {
@@ -782,6 +784,8 @@ suite('NewTabPageAppTest', () => {
           metrics.count(
               'NewTabPage.CustomizeChromeOpened',
               NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON));
+      assertEquals(
+          0, handler.getCallCount('incrementCustomizeChromeButtonOpenCount'));
     });
 
     suite('modules', () => {

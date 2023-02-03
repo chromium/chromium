@@ -1080,3 +1080,23 @@ TEST_F(NewTabPageHandlerTest, SetCustomizeChromeSidePanelInvisible) {
   EXPECT_FALSE(visible);
   EXPECT_EQ(CustomizeChromeSection::kModules, section);
 }
+
+TEST_F(NewTabPageHandlerTest, IncrementCustomizeChromeButtonOpenCount) {
+  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
+                prefs::kNtpCustomizeChromeButtonOpenCount),
+            0);
+
+  handler_->IncrementCustomizeChromeButtonOpenCount();
+
+  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
+                prefs::kNtpCustomizeChromeButtonOpenCount),
+            1);
+
+  handler_->IncrementCustomizeChromeButtonOpenCount();
+
+  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
+                prefs::kNtpCustomizeChromeButtonOpenCount),
+            2);
+
+  mock_page_.FlushForTesting();
+}
