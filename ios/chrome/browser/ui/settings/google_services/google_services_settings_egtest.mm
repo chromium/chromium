@@ -189,7 +189,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests that disabling the "Allow Chrome sign-in" > "Clear Data" option blocks
 // the user from signing in to Chrome through the promo sign-in until it is
 // re-enabled.
-- (void)testToggleAllowChromeSigninWithPromoSigninClearData {
+// TODO(crbug.com/1412776): Test fails due to the view being blocked by the
+// what's new promo.
+- (void)DISABLED_testToggleAllowChromeSigninWithPromoSigninClearData {
   // User is signed-in and syncing.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
