@@ -25,19 +25,6 @@ Status GetTokensExecutionWaiter::status() {
   return Get<1>();
 }
 
-const std::string& SignExecutionWaiter::signature() {
-  return Get<0>();
-}
-
-Status SignExecutionWaiter::status() {
-  return Get<1>();
-}
-
-base::OnceCallback<void(const std::string&, Status)>
-SignExecutionWaiter::GetCallback() {
-  return TestFuture::GetCallback<const std::string&, Status>();
-}
-
 const net::CertificateList& GetCertificatesExecutionWaiter::matches() {
   return *Get<0>();
 }

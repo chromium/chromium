@@ -33,7 +33,7 @@ using GenerateKeyCallback =
                             chromeos::platform_keys::Status status)>;
 
 using SignCallback =
-    base::OnceCallback<void(const std::string& signature,
+    base::OnceCallback<void(std::vector<uint8_t> signature,
                             chromeos::platform_keys::Status status)>;
 
 // If the certificate request could be processed successfully, |matches| will

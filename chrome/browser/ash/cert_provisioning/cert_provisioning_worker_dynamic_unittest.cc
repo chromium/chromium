@@ -105,8 +105,7 @@ constexpr char kInvalidationTopic[] = "fake_invalidation_topic_1";
 constexpr char kDataToSign[] = "fake_data_to_sign_1";
 constexpr char kChallenge[] = "fake_va_challenge_1";
 constexpr char kChallengeResponse[] = "fake_va_challenge_response_1";
-constexpr char kSignature[] = "fake_signature_1";
-constexpr char kSignatureBase64[] = "ZmFrZV9zaWduYXR1cmVfMQ==";
+constexpr char kSignatureBase64[] = "AQIDBAU=";
 constexpr unsigned int kNonVaKeyModulusLengthBits = 2048;
 
 constexpr base::TimeDelta kDefaultTryLaterDelay = base::Seconds(30);
@@ -126,6 +125,14 @@ const std::vector<uint8_t>& GetPublicKeyBin() {
     CHECK(public_key.has_value());
   }
   return public_key.value();
+}
+
+std::string GetSignatureStr() {
+  return std::string({1, 2, 3, 4, 5});
+}
+
+std::vector<uint8_t> GetSignatureBin() {
+  return std::vector<uint8_t>({1, 2, 3, 4, 5});
 }
 
 void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
@@ -319,11 +326,11 @@ em::CertProvNextActionResponse NextActionImportCertificate(
         .WillOnce(RunOnceCallback<4>(Status::kErrorInternal)); \
   }
 
-#define EXPECT_SIGN_RSAPKC1_RAW_OK(SIGN_FUNC)                        \
-  {                                                                  \
-    EXPECT_CALL(*platform_keys_service_, SIGN_FUNC)                  \
-        .Times(1)                                                    \
-        .WillOnce(RunOnceCallback<3>(kSignature, Status::kSuccess)); \
+#define EXPECT_SIGN_RSAPKC1_RAW_OK(SIGN_FUNC)                               \
+  {                                                                         \
+    EXPECT_CALL(*platform_keys_service_, SIGN_FUNC)                         \
+        .Times(1)                                                           \
+        .WillOnce(RunOnceCallback<3>(GetSignatureBin(), Status::kSuccess)); \
   }
 
 #define EXPECT_IMPORT_CERTIFICATE_OK(IMPORT_FUNC)        \
@@ -576,7 +583,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
         .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
-        UploadProofOfPossession(Eq(std::ref(provisioning_process)), kSignature,
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
                                 /*callback=*/_),
         NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
     // kReadyForNextOperation
@@ -724,7 +732,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaiting) {
         .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
-        UploadProofOfPossession(Eq(std::ref(provisioning_process)), kSignature,
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
                                 /*callback=*/_),
         NextActionImportCertificate(kFakeCertificate));
 
@@ -918,7 +927,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaSuccess) {
                         GetPublicKey(), /*callback=*/_));
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
-        UploadProofOfPossession(Eq(std::ref(provisioning_process)), kSignature,
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
                                 /*callback=*/_),
         NextActionImportCertificate(kFakeCertificate));
 
@@ -989,7 +999,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, VaTooManyTwoProofsOfPossession) {
                         GetPublicKey(), /*callback=*/_));
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
-        UploadProofOfPossession(Eq(std::ref(provisioning_process)), kSignature,
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
                                 /*callback=*/_),
         NextActionProofOfPossession());
 
@@ -1052,7 +1063,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaTooManyTwoProofsOfPossession) {
                         GetPublicKey(), /*callback=*/_));
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
-        UploadProofOfPossession(Eq(std::ref(provisioning_process)), kSignature,
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
                                 /*callback=*/_),
         NextActionProofOfPossession());
 
@@ -1153,7 +1165,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterManualRetry) {
                         GetPublicKey(), /*callback=*/_));
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
-        UploadProofOfPossession(Eq(std::ref(provisioning_process)), kSignature,
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
                                 /*callback=*/_),
         NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
 
@@ -1278,7 +1291,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWait) {
                         GetPublicKey(), /*callback=*/_));
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
-        UploadProofOfPossession(Eq(std::ref(provisioning_process)), kSignature,
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
                                 /*callback=*/_),
         NextActionTryLater(too_short_delay.InMilliseconds()));
 
@@ -1653,7 +1667,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryUploadProofOfPossession) {
                         GetPublicKey(), /*callback=*/_));
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION_TEMPORARY_UNAVAILABLE(
-        UploadProofOfPossession(Eq(std::ref(provisioning_process)), kSignature,
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
                                 /*callback=*/_));
     worker.DoStep();
   }
@@ -1662,7 +1677,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryUploadProofOfPossession) {
     testing::InSequence seq;
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
-        UploadProofOfPossession(Eq(std::ref(provisioning_process)), kSignature,
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
                                 /*callback=*/_),
         NextActionImportCertificate(kFakeCertificate));
 
@@ -2042,7 +2058,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
     EXPECT_UPLOAD_PROOF_OF_POSSESSION_TEMPORARY_UNAVAILABLE(
-        UploadProofOfPossession(Eq(std::ref(provisioning_process)), kSignature,
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
                                 /*callback=*/_));
     worker->DoStep();
   }
@@ -2065,7 +2082,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
   {
     testing::InSequence seq;
     EXPECT_UPLOAD_PROOF_OF_POSSESSION(
-        UploadProofOfPossession(Eq(std::ref(provisioning_process)), kSignature,
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
                                 /*callback=*/_),
         NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
 

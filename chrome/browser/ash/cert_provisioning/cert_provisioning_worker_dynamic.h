@@ -107,7 +107,7 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
 
   void BuildProofOfPossession();
   void OnBuildProofOfPossessionDone(base::TimeTicks start_time,
-                                    const std::string& signature,
+                                    std::vector<uint8_t> signature,
                                     chromeos::platform_keys::Status status);
 
   void UploadProofOfPossession();

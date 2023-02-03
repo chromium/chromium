@@ -447,17 +447,17 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
       generate_key_waiter.Get<std::vector<uint8_t>>();
   EXPECT_FALSE(public_key_spki_der.empty());
 
-  test_util::SignExecutionWaiter sign_waiter;
+  base::test::TestFuture<std::vector<uint8_t>, Status> sign_waiter;
   platform_keys_service()->SignRSAPKCS1Digest(
       token_id, kDataToSign, BytesToStr(public_key_spki_der), kHashAlgorithm,
       sign_waiter.GetCallback());
   ASSERT_TRUE(sign_waiter.Wait());
-  EXPECT_EQ(sign_waiter.status(), Status::kSuccess);
+  EXPECT_EQ(sign_waiter.Get<Status>(), Status::kSuccess);
 
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
       kSignatureAlgorithm,
-      base::as_bytes(base::make_span(sign_waiter.signature())),
+      base::as_bytes(base::make_span(sign_waiter.Get<std::vector<uint8_t>>())),
       base::as_bytes(base::make_span(public_key_spki_der))));
   signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(kDataToSign)));
   EXPECT_TRUE(signature_verifier.VerifyFinal());
@@ -485,17 +485,17 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const std::vector<uint8_t> public_key_spki_der =
       GenerateKeyPair(token_id, kKeySize);
 
-  test_util::SignExecutionWaiter sign_waiter;
+  base::test::TestFuture<std::vector<uint8_t>, Status> sign_waiter;
   platform_keys_service()->SignRSAPKCS1Raw(
       token_id, kDigestInfoAndDataToSignHash, BytesToStr(public_key_spki_der),
       sign_waiter.GetCallback());
   ASSERT_TRUE(sign_waiter.Wait());
-  EXPECT_EQ(sign_waiter.status(), Status::kSuccess);
+  EXPECT_EQ(sign_waiter.Get<Status>(), Status::kSuccess);
 
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
       kSignatureAlgorithm,
-      base::as_bytes(base::make_span(sign_waiter.signature())),
+      base::as_bytes(base::make_span(sign_waiter.Get<std::vector<uint8_t>>())),
       base::as_bytes(base::make_span(public_key_spki_der))));
   signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(kDataToSign)));
   EXPECT_TRUE(signature_verifier.VerifyFinal());
@@ -545,12 +545,12 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
     std::string data_to_sign;
     data_to_sign.resize(kKeySize / 8 - 11);
 
-    test_util::SignExecutionWaiter sign_waiter;
+    base::test::TestFuture<std::vector<uint8_t>, Status> sign_waiter;
     platform_keys_service()->SignRSAPKCS1Raw(token_id, data_to_sign,
                                              BytesToStr(public_key_spki_der),
                                              sign_waiter.GetCallback());
     ASSERT_TRUE(sign_waiter.Wait());
-    EXPECT_EQ(sign_waiter.status(), Status::kSuccess);
+    EXPECT_EQ(sign_waiter.Get<Status>(), Status::kSuccess);
   }
 
   {
@@ -558,12 +558,12 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
     std::string data_to_sign_too_long;
     data_to_sign_too_long.resize(kKeySize / 8 - 10);
 
-    test_util::SignExecutionWaiter sign_waiter;
+    base::test::TestFuture<std::vector<uint8_t>, Status> sign_waiter;
     platform_keys_service()->SignRSAPKCS1Raw(token_id, data_to_sign_too_long,
                                              BytesToStr(public_key_spki_der),
                                              sign_waiter.GetCallback());
     ASSERT_TRUE(sign_waiter.Wait());
-    EXPECT_EQ(sign_waiter.status(), Status::kErrorInputTooLong);
+    EXPECT_EQ(sign_waiter.Get<Status>(), Status::kErrorInputTooLong);
   }
 }
 
