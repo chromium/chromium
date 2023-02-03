@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/background.h"
@@ -39,16 +40,18 @@ void InputMappingView::SetDisplayMode(const DisplayMode mode) {
       mode == DisplayMode::kPreMenu) {
     return;
   }
-  switch (mode) {
-    case DisplayMode::kView:
-      SetBackground(nullptr);
-      break;
-    case DisplayMode::kEdit:
-      SetBackground(views::CreateSolidBackground(kEditModeBgColor));
-      break;
-    default:
-      NOTREACHED();
-      break;
+  if (!AllowReposition()) {
+    switch (mode) {
+      case DisplayMode::kView:
+        SetBackground(nullptr);
+        break;
+      case DisplayMode::kEdit:
+        SetBackground(views::CreateSolidBackground(kEditModeBgColor));
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
   }
   for (auto* view : children()) {
     auto* action_view = static_cast<ActionView*>(view);
