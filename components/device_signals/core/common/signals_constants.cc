@@ -171,6 +171,13 @@ const char kMissingBundle[] = "MISSING_BUNDLE";
 // parameters.
 const char kMissingParameters[] = "MISSING_PARAMETERS";
 
+// Returned when a signal could not be retrieved due to a parsing operation
+// failed.
+const char kParsingFailed[] = "PARSING_FAILED";
+
+// Returned when a value was in a different format than expected.
+const char kUnexpectedValue[] = "UNEXPECTED_VALUE";
+
 }  // namespace errors
 
 }  // namespace device_signals

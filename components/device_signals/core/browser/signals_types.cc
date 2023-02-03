@@ -24,6 +24,10 @@ const std::string ErrorToString(SignalCollectionError error) {
       return errors::kInvalidUser;
     case SignalCollectionError::kMissingParameters:
       return errors::kMissingParameters;
+    case SignalCollectionError::kParsingFailed:
+      return errors::kParsingFailed;
+    case SignalCollectionError::kUnexpectedValue:
+      return errors::kUnexpectedValue;
   }
 }
 

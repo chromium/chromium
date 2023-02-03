@@ -14,10 +14,15 @@
 #include "components/device_signals/core/browser/base_signals_collector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class TimeTicks;
+}  // namespace base
+
 namespace device_signals {
 
 class CrowdStrikeClient;
 struct CrowdStrikeSignals;
+enum class SignalCollectionError;
 
 // Collector in charge of collecting signals from supported third-party
 // agents running on the device.
@@ -45,9 +50,11 @@ class AgentSignalsCollector : public BaseSignalsCollector {
   // signal collection outcome, and invoke `done_closure` to asynchronously
   // notify the caller of the completion of this request.
   void OnCrowdStrikeSignalCollected(
+      base::TimeTicks start_time,
       SignalsAggregationResponse& response,
       base::OnceClosure done_closure,
-      absl::optional<CrowdStrikeSignals> agent_signals);
+      absl::optional<CrowdStrikeSignals> agent_signals,
+      absl::optional<SignalCollectionError> error);
 
   // Instance used to collect signals from a CrowdStrike agent.
   std::unique_ptr<CrowdStrikeClient> crowdstrike_client_;

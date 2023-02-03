@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/device_signals/core/browser/crowdstrike_client.h"
 #include "components/device_signals/core/browser/signals_types.h"
@@ -28,7 +29,8 @@ class MockCrowdStrikeClient : public CrowdStrikeClient {
 
   MOCK_METHOD(void,
               GetIdentifiers,
-              (base::OnceCallback<void(absl::optional<CrowdStrikeSignals>)>),
+              (base::OnceCallback<void(absl::optional<CrowdStrikeSignals>,
+                                       absl::optional<SignalCollectionError>)>),
               (override));
 };
 
@@ -48,12 +50,17 @@ class AgentSignalsCollectorTest : public testing::Test {
         std::move(mocked_crowdstrike_client));
   }
 
-  void RunTest(absl::optional<CrowdStrikeSignals> returned_signals) {
+  void RunTest(
+      absl::optional<CrowdStrikeSignals> returned_signals,
+      absl::optional<SignalCollectionError> returned_error = absl::nullopt) {
     EXPECT_CALL(*mocked_crowdstrike_client_, GetIdentifiers(_))
         .WillOnce(Invoke(
-            [&returned_signals](
-                base::OnceCallback<void(absl::optional<CrowdStrikeSignals>)>
-                    callback) { std::move(callback).Run(returned_signals); }));
+            [&returned_signals, &returned_error](
+                base::OnceCallback<void(absl::optional<CrowdStrikeSignals>,
+                                        absl::optional<SignalCollectionError>)>
+                    callback) {
+              std::move(callback).Run(returned_signals, returned_error);
+            }));
 
     SignalsAggregationRequest empty_request;
     SignalsAggregationResponse captured_response;
@@ -71,14 +78,43 @@ class AgentSignalsCollectorTest : public testing::Test {
       EXPECT_EQ(
           captured_response.agent_signals_response->crowdstrike_signals.value(),
           returned_signals.value());
+    }
+
+    if (returned_error) {
+      ASSERT_TRUE(captured_response.agent_signals_response);
+      ASSERT_TRUE(captured_response.agent_signals_response->collection_error);
+      EXPECT_EQ(
+          captured_response.agent_signals_response->collection_error.value(),
+          returned_error.value());
+
+      histogram_tester_.ExpectTotalCount(
+          "Enterprise.DeviceSignals.Collection.Success", 0);
+      histogram_tester_.ExpectUniqueSample(
+          "Enterprise.DeviceSignals.Collection.Failure", SignalName::kAgent, 1);
+      histogram_tester_.ExpectTotalCount(
+          "Enterprise.DeviceSignals.Collection.Failure.Agent.Latency", 1);
     } else {
+      histogram_tester_.ExpectTotalCount(
+          "Enterprise.DeviceSignals.Collection.Failure", 0);
+      histogram_tester_.ExpectTotalCount(
+          "Enterprise.DeviceSignals.Collection.Failure.Agent.Latency", 0);
+    }
+
+    if (returned_signals && !returned_error) {
+      histogram_tester_.ExpectUniqueSample(
+          "Enterprise.DeviceSignals.Collection.Success", SignalName::kAgent, 1);
+    }
+
+    if (!returned_signals && !returned_error) {
       ASSERT_FALSE(captured_response.agent_signals_response);
     }
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   StrictMock<MockCrowdStrikeClient>* mocked_crowdstrike_client_;
   std::unique_ptr<AgentSignalsCollector> collector_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Test that runs a sanity check on the set of signals supported by this
@@ -118,8 +154,12 @@ TEST_F(AgentSignalsCollectorTest, GetSignal_Success) {
   RunTest(valid_signals);
 }
 
-TEST_F(AgentSignalsCollectorTest, GetSignal_Fail) {
+TEST_F(AgentSignalsCollectorTest, GetSignal_NoSignalNoError) {
   RunTest(absl::nullopt);
+}
+
+TEST_F(AgentSignalsCollectorTest, GetSignal_NoSignalWithError) {
+  RunTest(absl::nullopt, SignalCollectionError::kParsingFailed);
 }
 
 }  // namespace device_signals

@@ -17,6 +17,7 @@ class FilePath;
 namespace device_signals {
 
 struct CrowdStrikeSignals;
+enum class SignalCollectionError;
 
 // Client that can be used to retrieve information about a CrowdStrike agent
 // installed on the device.
@@ -32,7 +33,8 @@ class CrowdStrikeClient {
   // exists. Will return the value via `callback`, or absl::nullopt if nothing
   // could be found.
   virtual void GetIdentifiers(
-      base::OnceCallback<void(absl::optional<CrowdStrikeSignals>)>
+      base::OnceCallback<void(absl::optional<CrowdStrikeSignals>,
+                              absl::optional<SignalCollectionError>)>
           callback) = 0;
 };
 

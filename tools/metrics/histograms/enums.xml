@@ -25782,6 +25782,8 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="4" label="Missing Bundle"/>
   <int value="5" label="Invalid User"/>
   <int value="6" label="Missing Parameters"/>
+  <int value="7" label="Parsing Failed"/>
+  <int value="8" label="Unexpected Value"/>
 </enum>
 
 <enum name="DeviceSignalsSignalName">

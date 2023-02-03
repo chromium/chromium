@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/device_signals/core/browser/metrics_utils.h"
+#include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -130,11 +131,33 @@ class CrowdStrikeClientTest : public testing::Test {
     return scoped_temp_dir_.GetPath().Append(kFakeFileName);
   }
 
-  absl::optional<CrowdStrikeSignals> GetSignals() {
-    base::test::TestFuture<absl::optional<CrowdStrikeSignals>> future;
+  absl::optional<CrowdStrikeSignals> GetSignals(
+      absl::optional<SignalCollectionError> expected_error = absl::nullopt) {
+    base::test::TestFuture<absl::optional<CrowdStrikeSignals>,
+                           absl::optional<SignalCollectionError>>
+        future;
     client_->GetIdentifiers(future.GetCallback());
 
-    return future.Get();
+    // Should not have an error if signals are expected to be returned.
+    if (expected_error) {
+      EXPECT_EQ(expected_error, future.Get<1>());
+    } else {
+      EXPECT_FALSE(future.Get<1>());
+    }
+
+    return future.Get<0>();
+  }
+
+  absl::optional<SignalCollectionError> GetSignalCollectionError() {
+    base::test::TestFuture<absl::optional<CrowdStrikeSignals>,
+                           absl::optional<SignalCollectionError>>
+        future;
+    client_->GetIdentifiers(future.GetCallback());
+
+    // Should not have signals if an error is expected to be returned.
+    EXPECT_FALSE(future.Get<0>());
+
+    return future.Get<1>();
   }
 
   void ValidateHistogram(absl::optional<SignalsParsingError> error) {
@@ -162,7 +185,8 @@ class CrowdStrikeClientTest : public testing::Test {
 };
 
 TEST_F(CrowdStrikeClientTest, Identifiers_NoFile) {
-  EXPECT_FALSE(GetSignals());
+  // Expect no signals and no error.
+  EXPECT_FALSE(GetSignalCollectionError());
 
   // No value logged, not having the file available is not considered a failure.
   ValidateHistogram(absl::nullopt);
@@ -170,7 +194,9 @@ TEST_F(CrowdStrikeClientTest, Identifiers_NoFile) {
 
 TEST_F(CrowdStrikeClientTest, Identifiers_EmptyFile) {
   CreateFakeFileWithContent("");
-  EXPECT_FALSE(GetSignals());
+
+  // Expect no signals and no error.
+  EXPECT_FALSE(GetSignalCollectionError());
 
   // No value logged, having an empty file is not considered a failure.
   ValidateHistogram(absl::nullopt);
@@ -178,20 +204,32 @@ TEST_F(CrowdStrikeClientTest, Identifiers_EmptyFile) {
 
 TEST_F(CrowdStrikeClientTest, Identifiers_NotJwt) {
   CreateFakeFileWithContent("some.random.content");
-  EXPECT_FALSE(GetSignals());
+
+  const auto& error = GetSignalCollectionError();
+  ASSERT_TRUE(error);
+  EXPECT_EQ(error.value(), SignalCollectionError::kParsingFailed);
+
   ValidateHistogram(SignalsParsingError::kJsonParsingFailed);
 }
 
 TEST_F(CrowdStrikeClientTest, Identifiers_MaxDataSize) {
   std::string content(33 * 1024, 'a');
   CreateFakeFileWithContent(content);
-  EXPECT_FALSE(GetSignals());
+
+  const auto& error = GetSignalCollectionError();
+  ASSERT_TRUE(error);
+  EXPECT_EQ(error.value(), SignalCollectionError::kParsingFailed);
+
   ValidateHistogram(SignalsParsingError::kHitMaxDataSize);
 }
 
 TEST_F(CrowdStrikeClientTest, Identifiers_DecodingFailed) {
   CreateFakeFileWithContent("some.random%%.content");
-  EXPECT_FALSE(GetSignals());
+
+  const auto& error = GetSignalCollectionError();
+  ASSERT_TRUE(error);
+  EXPECT_EQ(error.value(), SignalCollectionError::kParsingFailed);
+
   ValidateHistogram(SignalsParsingError::kBase64DecodingFailed);
 }
 
@@ -204,7 +242,11 @@ TEST_F(CrowdStrikeClientTest, Identifiers_MissingJwtSection) {
       "c3ViIjoiYmVlZmJlZWZiZWVmYmVlZmJlZWZiZWVmYmVlZjExMTEiLCJ0eXAiOiJjcm93ZHN0"
       "cmlrZS16dGErand0In0";
   CreateFakeFileWithContent(kFakeJwtZtaContent);
-  EXPECT_FALSE(GetSignals());
+
+  const auto& error = GetSignalCollectionError();
+  ASSERT_TRUE(error);
+  EXPECT_EQ(error.value(), SignalCollectionError::kUnexpectedValue);
+
   ValidateHistogram(SignalsParsingError::kDataMalformed);
 }
 
@@ -228,7 +270,11 @@ TEST_F(CrowdStrikeClientTest, Identifiers_MissingSub) {
       "Pz_HnIvpt4JGXGOJMsemp4FeCT56hNKuCInN_zsFVe2O6xbZwU_8DTfIsfWNgErCroYr-"
       "Z6NSO6O6xaWojTiEsDSHFQ3lkpccscRZDz0rCluR-2xWUDWkrHht4FGRyCQz4NaM";
   CreateFakeFileWithContent(kFakeJwtZtaContent);
-  EXPECT_FALSE(GetSignals());
+
+  const auto& error = GetSignalCollectionError();
+  ASSERT_TRUE(error);
+  EXPECT_EQ(error.value(), SignalCollectionError::kParsingFailed);
+
   ValidateHistogram(SignalsParsingError::kMissingRequiredProperty);
 }
 
@@ -306,6 +352,19 @@ TEST_F(CrowdStrikeClientTest, Identifiers_FileHasPrecendence) {
   ASSERT_TRUE(signals);
   EXPECT_EQ(signals->agent_id, kExpectedAgentId);
   EXPECT_EQ(signals->customer_id, kExpectedCustomerId);
+}
+
+TEST_F(CrowdStrikeClientTest, Identifiers_DecodingFailed_RegistryFallback) {
+  CreateFakeFileWithContent("some.random%%.content");
+  SetUpCrowdStrikeInfo(kFakeHexCSCustomerId, kFakeHexCSAgentId);
+
+  auto signals =
+      GetSignals(/*expected_error=*/SignalCollectionError::kParsingFailed);
+
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(signals->customer_id, base::ToLowerASCII(kFakeHexCSCustomerId));
+  EXPECT_EQ(signals->agent_id, base::ToLowerASCII(kFakeHexCSAgentId));
+  ValidateHistogram(SignalsParsingError::kBase64DecodingFailed);
 }
 
 #endif  // BUILDFLAG(IS_WIN)

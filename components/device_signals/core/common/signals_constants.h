@@ -61,6 +61,8 @@ extern const char kUnsupported[];
 extern const char kMissingSystemService[];
 extern const char kMissingBundle[];
 extern const char kMissingParameters[];
+extern const char kParsingFailed[];
+extern const char kUnexpectedValue[];
 
 }  // namespace errors
 

@@ -46,7 +46,9 @@ enum class SignalCollectionError {
   kMissingBundle,
   kInvalidUser,
   kMissingParameters,
-  kMaxValue = kMissingParameters
+  kParsingFailed,
+  kUnexpectedValue,
+  kMaxValue = kUnexpectedValue
 };
 
 const std::string ErrorToString(SignalCollectionError error);
