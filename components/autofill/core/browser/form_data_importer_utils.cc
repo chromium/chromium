@@ -42,27 +42,32 @@ bool IsMinimumAddress(const AutofillProfile& profile,
   // Validates the `profile` by testing that it has information for at least one
   // of the `types`. If `required` is false, it is considered trivially valid.
   // Logs the profile's validity to UMA and autofill-internals.
-  auto ValidateAndLog = [&](bool required,
-                            const std::vector<ServerFieldType>& types,
-                            AddressImportRequirement valid,
-                            AddressImportRequirement invalid) {
-    if (!required || base::ranges::any_of(types, [&](ServerFieldType type) {
-          return profile.HasRawInfo(type);
-        })) {
-      AutofillMetrics::LogAddressFormImportRequirementMetric(valid);
-      return true;
-    }
-    AutofillMetrics::LogAddressFormImportRequirementMetric(invalid);
-    LOG_AF(import_log_buffer) << LogMessage::kImportAddressProfileFromFormFailed
-                              << "Missing required " <<
-        [&] {
-          std::vector<base::StringPiece> type_names;
-          for (auto& type : types)
-            type_names.push_back(FieldTypeToStringPiece(type));
-          return base::JoinString(type_names, " or ");
-        }() << "." << CTag{};
-    return false;
-  };
+  auto ValidateAndLog =
+      [&](bool required, const std::vector<ServerFieldType>& types,
+          AddressImportRequirement valid, AddressImportRequirement invalid) {
+        const bool is_valid =
+            !required || base::ranges::any_of(types, [&](ServerFieldType type) {
+              return profile.HasRawInfo(type);
+            });
+        if (!is_valid) {
+          LOG_AF(import_log_buffer)
+              << LogMessage::kImportAddressProfileFromFormFailed
+              << "Missing required " <<
+              [&] {
+                std::vector<base::StringPiece> type_names;
+                for (auto& type : types) {
+                  type_names.push_back(FieldTypeToStringPiece(type));
+                }
+                return base::JoinString(type_names, " or ");
+              }()
+              << "." << CTag{};
+        }
+        if (collect_metrics) {
+          AutofillMetrics::LogAddressFormImportRequirementMetric(
+              is_valid ? valid : invalid);
+        }
+        return is_valid;
+      };
 
   AutofillCountry country(predicted_country_code, app_locale);
   // Include the details of the country to the log.
