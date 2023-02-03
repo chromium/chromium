@@ -46,6 +46,17 @@ class ExecutionContext;
 class URLRegistry;
 class URLRegistrable;
 
+// Execution context ids for usage in metrics. Entries should not be renumbered
+// and numeric values should never be reused. Please keep in sync with
+// "BlobURLExecutionContextId" in
+// src/tools/metrics/histograms/metadata/histogram_suffixes_list.xml and with
+// `kExecutionContextNamesForHistograms` in public_url_manager.cc.
+enum class ExecutionContextIdForHistogram {
+  kFrame = 0,
+  kWorker = 1,
+  kMaxValue = kWorker
+};
+
 class CORE_EXPORT PublicURLManager final
     : public GarbageCollected<PublicURLManager>,
       public ExecutionContextLifecycleObserver {
@@ -89,7 +100,12 @@ class CORE_EXPORT PublicURLManager final
   URLToRegistryMap url_to_registry_;
   HashSet<URLString> mojo_urls_;
 
-  bool is_stopped_;
+  // Records which execution context type instantiated this PublicURLManager,
+  // for collecting metrics. This is only set when the SupportPartitionedBlobUrl
+  // feature is enabled, and is only set for frame or worker execution contexts.
+  absl::optional<ExecutionContextIdForHistogram> execution_context_type_;
+
+  bool is_stopped_ = false;
 
   // For a frame context or from a main thread worklet context, a
   // navigation-associated interface is used to preserve message ordering.
