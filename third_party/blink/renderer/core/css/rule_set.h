@@ -536,7 +536,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                      const ContainerQuery*,
                      CascadeLayer*,
                      const StyleScope*);
-  bool FindBestRuleSetAndAdd(const CSSSelector&, const RuleData&);
+  void FindBestRuleSetAndAdd(const CSSSelector&, const RuleData&);
   void AddRule(StyleRule*,
                unsigned selector_index,
                AddRuleFlags,

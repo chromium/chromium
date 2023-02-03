@@ -270,7 +270,7 @@ static const CSSSelector* ExtractBestSelectorValues(
   return it;
 }
 
-bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
+void RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
                                     const RuleData& rule_data) {
   AtomicString id;
   AtomicString class_name;
@@ -293,12 +293,12 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
   // Prefer rule sets in order of most likely to apply infrequently.
   if (!id.empty()) {
     AddToRuleSet(id, id_rules_, rule_data);
-    return true;
+    return;
   }
 
   if (!class_name.empty()) {
     AddToRuleSet(class_name, class_rules_, rule_data);
-    return true;
+    return;
   }
 
   if (!attr_name.empty()) {
@@ -306,7 +306,7 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
     if (attr_name == html_names::kStyleAttr) {
       has_bucket_for_style_attr_ = true;
     }
-    return true;
+    return;
   }
 
   if (!custom_pseudo_element_name.empty()) {
@@ -318,36 +318,36 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
     DCHECK(class_name.empty());
     AddToRuleSet(custom_pseudo_element_name, ua_shadow_pseudo_element_rules_,
                  rule_data);
-    return true;
+    return;
   }
 
   if (!part_name.empty()) {
     AddToRuleSet(part_pseudo_rules_, rule_data);
-    return true;
+    return;
   }
 
   switch (pseudo_type) {
     case CSSSelector::kPseudoCue:
       AddToRuleSet(cue_pseudo_rules_, rule_data);
-      return true;
+      return;
     case CSSSelector::kPseudoLink:
     case CSSSelector::kPseudoVisited:
     case CSSSelector::kPseudoAnyLink:
     case CSSSelector::kPseudoWebkitAnyLink:
       AddToRuleSet(link_pseudo_class_rules_, rule_data);
-      return true;
+      return;
     case CSSSelector::kPseudoSpatialNavigationInterest:
       AddToRuleSet(spatial_navigation_interest_class_rules_, rule_data);
-      return true;
+      return;
     case CSSSelector::kPseudoFocus:
       AddToRuleSet(focus_pseudo_class_rules_, rule_data);
-      return true;
+      return;
     case CSSSelector::kPseudoSelectorFragmentAnchor:
       AddToRuleSet(selector_fragment_anchor_rules_, rule_data);
-      return true;
+      return;
     case CSSSelector::kPseudoFocusVisible:
       AddToRuleSet(focus_visible_pseudo_class_rules_, rule_data);
-      return true;
+      return;
     case CSSSelector::kPseudoPlaceholder:
     case CSSSelector::kPseudoFileSelectorButton:
       if (it->FollowsPart()) {
@@ -360,24 +360,26 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
                                : shadow_element_names::kPseudoInputPlaceholder;
         AddToRuleSet(name, ua_shadow_pseudo_element_rules_, rule_data);
       }
-      return true;
+      return;
     case CSSSelector::kPseudoHost:
     case CSSSelector::kPseudoHostContext:
       AddToRuleSet(shadow_host_rules_, rule_data);
-      return true;
+      return;
     case CSSSelector::kPseudoSlotted:
       AddToRuleSet(slotted_pseudo_element_rules_, rule_data);
-      return true;
+      return;
     default:
       break;
   }
 
   if (!tag_name.empty()) {
     AddToRuleSet(tag_name, tag_rules_, rule_data);
-    return true;
+    return;
   }
 
-  return false;
+  // If we didn't find a specialized map to stick it in, file under universal
+  // rules.
+  AddToRuleSet(universal_rules_, rule_data);
 }
 
 void RuleSet::AddRule(StyleRule* rule,
@@ -405,11 +407,7 @@ void RuleSet::AddRule(StyleRule* rule,
     return;
   }
 
-  if (!FindBestRuleSetAndAdd(rule_data.Selector(), rule_data)) {
-    // If we didn't find a specialized map to stick it in, file under universal
-    // rules.
-    AddToRuleSet(universal_rules_, rule_data);
-  }
+  FindBestRuleSetAndAdd(rule_data.Selector(), rule_data);
 
   // If the rule has CSSSelector::kMatchLink, it means that there is a :visited
   // or :link pseudo-class somewhere in the selector. In those cases, we
