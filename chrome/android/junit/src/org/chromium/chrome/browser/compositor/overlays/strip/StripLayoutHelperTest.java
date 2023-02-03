@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.base.LocalizationUtils;
@@ -112,6 +113,8 @@ public class StripLayoutHelperTest {
     private static final float NEW_TAB_BTN_Y = 1400.f;
     private static final float NEW_TAB_BTN_WIDTH = 100.f;
     private static final float NEW_TAB_BTN_HEIGHT = 100.f;
+    private static final float NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING = 8.f;
+    private static final float MODEL_SELECTOR_BUTTON_BG_WIDTH_FOLIO = 36.f;
 
     private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_END = 72;
     private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_END_MODEL_SELECTOR = 120;
@@ -559,6 +562,83 @@ public class StripLayoutHelperTest {
                 tabs[3].getContainerOpacity(), EPSILON);
         assertEquals("Tab is not selected and container should not be visible.", hiddenOpacity,
                 tabs[4].getContainerOpacity(), EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testNewTabButtonPosition() {
+        // Setup
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
+        int tabCount = 4;
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
+        initializeTest(false, false, false, 3, tabCount);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+
+        // Set New tab button position.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify new tab button position.
+        assertEquals("New tab button position is not as expected", 758.f,
+                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testNewTabButtonPosition_RTL() {
+        // Setup
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
+        int tabCount = 4;
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
+        initializeTest(true, false, false, 3, tabCount);
+
+        // Set New tab button position.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify new tab button position.
+        assertEquals("New tab button position is not as expected", 6.0f,
+                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testNewTabButtonPosition_Incognito() {
+        // Setup
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
+        int tabCount = 4;
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
+        when(mModelSelectorBtn.getWidth()).thenReturn(MODEL_SELECTOR_BUTTON_BG_WIDTH_FOLIO);
+        initializeTest(false, true, false, 3, tabCount);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+
+        // Set New tab button position.
+        mStripLayoutHelper.setEndMargin(MODEL_SELECTOR_BUTTON_BG_WIDTH_FOLIO
+                + NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify new tab button position.
+        assertEquals("New tab button position is not as expected", 714.f,
+                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testNewTabButtonPosition_RTL_Incognito() {
+        // Setup
+        int tabCount = 4;
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
+        initializeTest(true, true, false, 3, tabCount);
+        when(mModelSelectorBtn.getWidth()).thenReturn(MODEL_SELECTOR_BUTTON_BG_WIDTH_FOLIO);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+
+        // Set New tab button position.
+        mStripLayoutHelper.setEndMargin(MODEL_SELECTOR_BUTTON_BG_WIDTH_FOLIO
+                + NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify new tab button position.
+        assertEquals("New tab button position is not as expected", 50.f,
+                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
     }
 
     @Test
@@ -1567,10 +1647,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
         setupForAnimations();
 
-        // Assert: New tab button position before starting tab closure.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
-        assertEquals("Unexpected starting newTabButton position.", 743.f,
-                mStripLayoutHelper.getNewTabButton().getX(), 0.0f);
 
         // Act: Call on close tab button handler.
         mStripLayoutHelper.handleCloseButtonClick(tabs[9], TIMESTAMP);
@@ -1584,37 +1661,32 @@ public class StripLayoutHelperTest {
                 (CompositorAnimator) mStripLayoutHelper.getRunningAnimatorForTesting();
         runningAnimator.end();
 
-        // Assert: Tab is closed and animations are still running. New button position isn't
-        // modified.
+        // Assert: Tab is closed and animations are still running.
         int expectedTabCount = 9;
         assertEquals("Unexpected tabs count.", expectedTabCount,
                 mStripLayoutHelper.getStripLayoutTabs().length);
         assertTrue("MultiStepAnimations should still be running.",
                 mStripLayoutHelper.isMultiStepCloseAnimationsRunning());
-        assertEquals("NewTabButton should not have moved.", 743.f,
-                mStripLayoutHelper.getNewTabButton().getX(), 0.0f);
 
         // Act: End next set of animations to apply final values.
         mStripLayoutHelper.getRunningAnimatorForTesting().end();
 
         // Assert: Animations completed. The tab width is not resized and drawX does not change.
         float expectedDrawX =
-                -442.f; // Since we are focused on the last tab, start tabs are off screen.
+                -423.f; // Since we are focused on the last tab, start tabs are off screen.
         StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabs();
         for (StripLayoutTab stripTab : updatedTabs) {
             assertEquals("Unexpected tab width after resize.", 156.f, stripTab.getWidth(), 0.0);
             assertEquals("Unexpected tab position.", expectedDrawX, stripTab.getDrawX(), 0.0);
             expectedDrawX += (TAB_WIDTH_MEDIUM - TAB_OVERLAP_WIDTH);
         }
-        assertEquals("NewTabButton should not have moved.", 743.f,
-                mStripLayoutHelper.getNewTabButton().getX(), 0.0f);
         assertFalse("MultiStepAnimations should have stopped running.",
                 mStripLayoutHelper.isMultiStepCloseAnimationsRunning());
     }
 
     @Test
     @Feature("Tab Strip Improvements")
-    public void testTabClosing_NonLastTab_TabResize_NewTabButtonMoved() {
+    public void testTabClosing_NonLastTab_TabResize() {
         // Arrange
         int tabCount = 4;
         TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
@@ -1624,10 +1696,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
         setupForAnimations();
 
-        // Assert: New tab button position before starting tab closure.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
-        assertEquals("Unexpected starting newTabButton position.", 743.f,
-                mStripLayoutHelper.getNewTabButton().getX(), 0.0f);
 
         // Act: Call on close tab button handler.
         mStripLayoutHelper.handleCloseButtonClick(tabs[2], TIMESTAMP);
@@ -1641,14 +1710,11 @@ public class StripLayoutHelperTest {
                 (CompositorAnimator) mStripLayoutHelper.getRunningAnimatorForTesting();
         runningAnimator.end();
 
-        // Assert: Tab is closed and animations are still running. New tab button position is not
-        // modified.
+        // Assert: Tab is closed and animations are still running.
         int expectedTabCount = 3;
         assertEquals(expectedTabCount, mStripLayoutHelper.getStripLayoutTabs().length);
         assertTrue("MultiStepAnimations should still be running.",
                 mStripLayoutHelper.isMultiStepCloseAnimationsRunning());
-        assertEquals("NewTabButton should not have moved.", 743.f,
-                mStripLayoutHelper.getNewTabButton().getX(), 0.0f);
 
         // Act: Set animation time forward by 250ms for next set of animations.
         mStripLayoutHelper.getRunningAnimatorForTesting().end();
@@ -1656,7 +1722,7 @@ public class StripLayoutHelperTest {
         // Assert: Animations completed. The tab width is resized, tab.drawX is changed and
         // newTabButton.drawX is also changed.
         float expectedDrawX = 0.f;
-        float expectedWidthAfterResize = 264.666f;
+        float expectedWidthAfterResize = 265.f;
         StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabs();
         for (int i = 0; i < updatedTabs.length; i++) {
             StripLayoutTab stripTab = updatedTabs[i];
@@ -1665,8 +1731,6 @@ public class StripLayoutHelperTest {
             assertEquals("Unexpected tab position.", expectedDrawX, stripTab.getDrawX(), 0.1f);
             expectedDrawX += (expectedWidthAfterResize - TAB_OVERLAP_WIDTH);
         }
-        assertEquals("NewTabButton position is incorrect.", 743.f,
-                mStripLayoutHelper.getNewTabButton().getX(), 0.0f);
         assertFalse("MultiStepAnimations should have ended.",
                 mStripLayoutHelper.isMultiStepCloseAnimationsRunning());
     }

@@ -147,7 +147,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final float FOLIO_ATTACHED_BOTTOM_MARGIN_DP = 0.f;
     private static final float FOLIO_ANIM_INTERMEDIATE_MARGIN_DP = -12.f;
     private static final float FOLIO_DETACHED_BOTTOM_MARGIN_DP = 4.f;
-    private static final float NEW_TAB_BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
+    private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
     private static final float NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY = 0.2f;
     private static final float NEW_TAB_BUTTON_DARK_DETACHED_OPACITY = 0.15f;
     static final float TAB_OPACITY_HIDDEN = 0.f;
@@ -225,6 +225,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private long mLastSpinnerUpdate;
     private float mLeftMargin;
     private float mRightMargin;
+
+    // New tab button with tab strip end padding
+    private float mNewTabButtonWithTabStripEndPadding;
+
     private final boolean mIncognito;
     // Whether the CascadingStripStacker should be used.
     private boolean mShouldCascadeTabs;
@@ -271,12 +275,20 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mModelSelectorButton = modelSelectorButton;
         mTabStripImpEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
 
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            mNewTabButtonWithTabStripEndPadding =
+                    (BUTTON_DESIRED_TOUCH_TARGET_SIZE - mNewTabButtonWidth) / 2;
+        } else {
+            mNewTabButtonWithTabStripEndPadding = NEW_TAB_BUTTON_PADDING_DP;
+        }
+
         mRightMargin = LocalizationUtils.isLayoutRtl()
                 ? 0
-                : mNewTabButtonWidth + NEW_TAB_BUTTON_PADDING_DP;
+                : mNewTabButtonWithTabStripEndPadding + mNewTabButtonWidth;
         mLeftMargin = LocalizationUtils.isLayoutRtl()
-                ? mNewTabButtonWidth + NEW_TAB_BUTTON_PADDING_DP
+                ? mNewTabButtonWithTabStripEndPadding + mNewTabButtonWidth
                 : 0;
+
         mMinTabWidth = TabUiFeatureUtilities.getTabMinWidth();
 
         mMaxTabWidth = TabUiThemeUtil.getMaxTabStripTabWidthDp();
@@ -443,7 +455,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         boolean isRtl = LocalizationUtils.isLayoutRtl();
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
             float newTabButtonTouchTargetOffsetTSR =
-                    (NEW_TAB_BUTTON_DESIRED_TOUCH_TARGET_SIZE - mNewTabButtonWidth) / 2;
+                    (BUTTON_DESIRED_TOUCH_TARGET_SIZE - mNewTabButtonWidth) / 2;
             return isRtl ? newTabButtonTouchTargetOffsetTSR : -newTabButtonTouchTargetOffsetTSR;
         }
         return isRtl ? NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET : -NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET;
@@ -526,9 +538,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     public void setEndMargin(float margin) {
         if (LocalizationUtils.isLayoutRtl()) {
-            mLeftMargin = margin + mNewTabButtonWidth + NEW_TAB_BUTTON_PADDING_DP;
+            mLeftMargin = margin + mNewTabButtonWithTabStripEndPadding + mNewTabButtonWidth;
         } else {
-            mRightMargin = margin + mNewTabButtonWidth + NEW_TAB_BUTTON_PADDING_DP;
+            mRightMargin = margin + mNewTabButtonWithTabStripEndPadding + mNewTabButtonWidth;
         }
     }
 
@@ -1279,8 +1291,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         // 4. Add new tab button offset animation.
-        CompositorAnimator newTabButtonOffsetAnimator = updateNewTabButtonState(true);
-        if (newTabButtonOffsetAnimator != null) tabStripAnimators.add(newTabButtonOffsetAnimator);
+        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            CompositorAnimator newTabButtonOffsetAnimator = updateNewTabButtonState(true);
+            if (newTabButtonOffsetAnimator != null) {
+                tabStripAnimators.add(newTabButtonOffsetAnimator);
+            };
+        }
 
         // 5. Add animation completion listener and start animations.
         startAnimationList(tabStripAnimators, new AnimatorListenerAdapter() {
@@ -1716,29 +1732,37 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     private CompositorAnimator updateNewTabButtonState(boolean animate) {
-        // 1. The new tab button is faded out/in when entering/exiting reorder mode.
-        if (mInReorderMode || mStripTabs.length == 0) return null;
+        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            // 1. The new tab button is faded out/in when entering/exiting reorder mode.
+            if (mInReorderMode || mStripTabs.length == 0) return null;
 
-        // 2. Get offset from strip stacker.
-        float offset = mStripStacker.computeNewTabButtonOffset(mStripTabs, mTabOverlapWidth,
-                mLeftMargin, mRightMargin, mWidth, mNewTabButtonWidth,
-                Math.abs(getNewTabButtonTouchTargetOffset()), mCachedTabWidth, animate);
+            // 2. Get offset from strip stacker.
+            float offset = mStripStacker.computeNewTabButtonOffset(mStripTabs, mTabOverlapWidth,
+                    mLeftMargin, mRightMargin, mWidth, mNewTabButtonWidth,
+                    Math.abs(getNewTabButtonTouchTargetOffset()), mCachedTabWidth, animate);
 
-        // 3. Hide the new tab button if it's not visible on the screen.
-        boolean isRtl = LocalizationUtils.isLayoutRtl();
-        if ((isRtl && offset + mNewTabButtonWidth < 0) || (!isRtl && offset > mWidth)) {
-            mNewTabButton.setVisible(false);
-            return null;
-        }
-        mNewTabButton.setVisible(true);
+            // 3. Hide the new tab button if it's not visible on the screen.
+            boolean isRtl = LocalizationUtils.isLayoutRtl();
+            if ((isRtl && offset + mNewTabButtonWidth < 0) || (!isRtl && offset > mWidth)) {
+                mNewTabButton.setVisible(false);
+                return null;
+            }
+            mNewTabButton.setVisible(true);
 
-        // 4. Position the new tab button.
-        if (animate) {
-            return CompositorAnimator.ofFloatProperty(mUpdateHost.getAnimationHandler(),
-                    mNewTabButton, CompositorButton.DRAW_X, mNewTabButton.getX(), offset,
-                    NEW_TAB_BUTTON_OFFSET_MOVE_MS);
+            // 4. Position the new tab button.
+            if (animate) {
+                return CompositorAnimator.ofFloatProperty(mUpdateHost.getAnimationHandler(),
+                        mNewTabButton, CompositorButton.DRAW_X, mNewTabButton.getX(), offset,
+                        NEW_TAB_BUTTON_OFFSET_MOVE_MS);
+            } else {
+                mNewTabButton.setX(offset);
+            }
         } else {
-            mNewTabButton.setX(offset);
+            if (!LocalizationUtils.isLayoutRtl()) {
+                mNewTabButton.setX(mWidth - mRightMargin);
+            } else {
+                mNewTabButton.setX(mLeftMargin - mNewTabButtonWidth);
+            }
         }
         return null;
     }
