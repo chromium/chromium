@@ -41,6 +41,7 @@ suite('AppListTest', () => {
           mayToggleRunOnOsLoginMode: true,
           runOnOsLoginMode: RunOnOsLoginMode.kNotRun,
           isLocallyInstalled: true,
+          mayUninstall: true,
           openInWindow: false,
         },
         {
@@ -55,6 +56,7 @@ suite('AppListTest', () => {
           mayToggleRunOnOsLoginMode: false,
           runOnOsLoginMode: RunOnOsLoginMode.kNotRun,
           isLocallyInstalled: false,
+          mayUninstall: false,
           openInWindow: false,
         },
       ],
@@ -72,6 +74,7 @@ suite('AppListTest', () => {
       runOnOsLoginMode: RunOnOsLoginMode.kNotRun,
       isLocallyInstalled: true,
       openInWindow: false,
+      mayUninstall: true,
     };
     testBrowserProxy = new TestAppHomeBrowserProxy(apps);
     callbackRouterRemote = testBrowserProxy.callbackRouterRemote;
@@ -175,6 +178,8 @@ suite('AppListTest', () => {
         contextMenu.querySelector<HTMLElement>('#create-shortcut')!.hidden);
     assertFalse(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
     assertFalse(
+        contextMenu.querySelector<HTMLButtonElement>('#uninstall')!.disabled);
+    assertFalse(
         contextMenu.querySelector<HTMLElement>('#app-settings')!.hidden);
     assertTrue(
         contextMenu.querySelector<HTMLElement>('#install-locally')!.hidden);
@@ -202,6 +207,8 @@ suite('AppListTest', () => {
         contextMenu.querySelector<HTMLElement>('#create-shortcut')!.hidden);
     assertTrue(contextMenu.querySelector<HTMLElement>('#app-settings')!.hidden);
     assertFalse(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
+    assertTrue(
+        contextMenu.querySelector<HTMLButtonElement>('#uninstall')!.disabled);
     assertFalse(
         contextMenu.querySelector<HTMLElement>('#install-locally')!.hidden);
   });

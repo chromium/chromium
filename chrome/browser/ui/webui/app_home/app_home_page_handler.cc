@@ -336,6 +336,9 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
   // Treat all other types of display mode as "open as window".
   app_info->open_in_window = registrar.GetAppEffectiveDisplayMode(app_id) !=
                              blink::mojom::DisplayMode::kBrowser;
+
+  app_info->may_uninstall =
+      web_app_provider_->install_finalizer().CanUserUninstallWebApp(app_id);
   return app_info;
 }
 

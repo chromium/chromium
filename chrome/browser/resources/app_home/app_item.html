@@ -95,7 +95,8 @@ cr-checkbox::part(label-container) {
 </button>
   <hr>
   <button id="uninstall" class="dropdown-item"
-      on-click="onUninstallItemClick_">
+    disabled="[[!appInfo.mayUninstall]]"
+    on-click="onUninstallItemClick_">
     $i18n{uninstallAppLabel}
   </button>
   <button id="app-settings" class="dropdown-item"

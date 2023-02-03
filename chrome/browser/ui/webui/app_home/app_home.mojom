@@ -41,6 +41,8 @@ struct AppInfo {
   bool is_locally_installed;
   // Whether the app open in a app window or as a browser tab.
   bool open_in_window;
+  // Whether this app can be uninstalled by user.
+  bool may_uninstall;
 
 };
 
