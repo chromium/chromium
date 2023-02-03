@@ -41,7 +41,6 @@ class EditableComboboxMenuModel;
 class EditableComboboxPreTargetHandler;
 class MenuRunner;
 class Textfield;
-class ToggleImageButton;
 
 namespace test {
 class InteractionTestUtilSimulatorViews;
@@ -187,7 +186,6 @@ class VIEWS_EXPORT EditableCombobox
   raw_ptr<Textfield> textfield_;
   raw_ptr<BoxLayoutView> control_elements_container_ = nullptr;
   raw_ptr<Button> arrow_ = nullptr;
-  raw_ptr<ToggleImageButton> eye_ = nullptr;
 
   // The EditableComboboxMenuModel used by |menu_runner_|.
   std::unique_ptr<EditableComboboxMenuModel> menu_model_;
