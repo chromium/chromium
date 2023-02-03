@@ -20,7 +20,8 @@
 #endif
 
 namespace {
-NSString* const kFirstStepAnimation = @"CPE_promo_animation_edu";
+NSString* const kFirstStepAnimation = @"CPE_promo_animation_edu_autofill";
+NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 }  // namespace
 
 @interface CredentialProviderPromoMediator ()
@@ -85,9 +86,7 @@ NSString* const kFirstStepAnimation = @"CPE_promo_animation_edu";
   if (context == CredentialProviderPromoContext::kFirstStep) {
     animationName = kFirstStepAnimation;
   } else {
-    // TODO(crbug.com/1392116): set animation for
-    // CredentialProviderPromoContext::kLearnMore.
-    animationName = kFirstStepAnimation;
+    animationName = kLearnMoreAnimation;
   }
   NSString* path = [[NSBundle mainBundle] pathForResource:animationName
                                                    ofType:@"json"];
@@ -98,32 +97,42 @@ NSString* const kFirstStepAnimation = @"CPE_promo_animation_edu";
 // `context`. When `source` is kPasswordCopied, no image is set.
 - (void)setTextAndImageWithContext:(CredentialProviderPromoContext)context
                             source:(CredentialProviderPromoSource)source {
+  NSString* titleString;
+  NSString* subtitleString;
+  NSString* primaryActionString;
+  UIImage* image;
+  NSString* secondaryActionString =
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_NO_THANKS);
+  NSString* tertiaryActionString =
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_REMIND_ME_LATER);
+
   if (context == CredentialProviderPromoContext::kFirstStep) {
-    NSString* titleString =
+    titleString =
         l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_TITLE);
-    NSString* subtitleString = l10n_util::GetNSString(
+    subtitleString = l10n_util::GetNSString(
         IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_SUBTITLE);
-    NSString* primaryActionString =
+    primaryActionString =
         l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW);
-    NSString* secondaryActionString =
-        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_NO_THANKS);
-    NSString* tertiaryActionString = l10n_util::GetNSString(
-        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_REMIND_ME_LATER);
-    UIImage* image = ios::provider::GetBrandedImage(
+    image = ios::provider::GetBrandedImage(
         ios::provider::BrandedImage::kPasswordSuggestionKey);
     if (source == CredentialProviderPromoSource::kPasswordCopied) {
       image = nil;
     }
-    [self.consumer setTitleString:titleString
-                   subtitleString:subtitleString
-              primaryActionString:primaryActionString
-            secondaryActionString:secondaryActionString
-             tertiaryActionString:tertiaryActionString
-                            image:image];
   } else {
-    // TODO(crbug.com/1392116): configure for
-    // CredentialProviderPromoContext::kLearnMore.
+    titleString = l10n_util::GetNSString(
+        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE);
+    subtitleString = l10n_util::GetNSString(
+        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE);
+    primaryActionString = l10n_util::GetNSString(
+        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_GO_TO_SETTINGS);
   }
+
+  [self.consumer setTitleString:titleString
+                 subtitleString:subtitleString
+            primaryActionString:primaryActionString
+          secondaryActionString:secondaryActionString
+           tertiaryActionString:tertiaryActionString
+                          image:image];
 }
 
 @end
