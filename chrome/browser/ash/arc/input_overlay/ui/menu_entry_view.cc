@@ -78,7 +78,7 @@ MenuEntryView::MenuEntryView(
   if (allow_reposition_) {
     focus_ring->SetHaloInset(kHaloInset);
     focus_ring->SetHaloThickness(kHaloThickness);
-    focus_ring->SetColorId(ui::kColorAshEditFinishFocusRing);
+    focus_ring->SetColorId(ui::kColorAshInputOverlayFocusRing);
   } else {
     focus_ring->SetHaloInset(kHaloInsetAlpha);
     focus_ring->SetHaloThickness(kHaloThicknessAlpha);

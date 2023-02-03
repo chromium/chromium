@@ -33,7 +33,6 @@ constexpr int kCrossCornerRadius = 6;
 constexpr float kHaloInset = -6;
 // Thickness of focus ring.
 constexpr float kHaloThickness = 3;
-constexpr SkColor kFocusRingColor = gfx::kGoogleBlue300;
 
 constexpr SkColor kOutsideStrokeColor =
     SkColorSetA(SK_ColorWHITE, 0xCC /*80%*/);
@@ -529,7 +528,7 @@ void TouchPoint::Init() {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::FocusRing::Install(this);
   auto* focus_ring = views::FocusRing::Get(this);
-  focus_ring->SetColorId(kFocusRingColor);
+  focus_ring->SetColorId(ui::kColorAshInputOverlayFocusRing);
   focus_ring->SetHaloInset(kHaloInset);
   focus_ring->SetHaloThickness(kHaloThickness);
 

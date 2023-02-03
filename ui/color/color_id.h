@@ -387,7 +387,7 @@
   E_CPONLY(kColorAshFocusRing) \
   /* TODO(kylixrd): Determine whether this special color should follow */ \
   /* light/dark mode. Remove if it should equal kColorAshFocusRing. */ \
-  E_CPONLY(kColorAshEditFinishFocusRing) \
+  E_CPONLY(kColorAshInputOverlayFocusRing) \
   E_CPONLY(kColorAshIconInOobe) \
   \
   /* TODO(crbug/1319917): Remove these when dark light mode is launched. */ \

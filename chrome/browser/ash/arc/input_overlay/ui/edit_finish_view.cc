@@ -71,7 +71,7 @@ class EditFinishView::ChildButton : public views::LabelButton {
     auto* focus_ring = views::FocusRing::Get(this);
     focus_ring->SetHaloInset(kHaloInset);
     focus_ring->SetHaloThickness(kHaloThickness);
-    focus_ring->SetColorId(ui::kColorAshEditFinishFocusRing);
+    focus_ring->SetColorId(ui::kColorAshInputOverlayFocusRing);
     ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                           /*highlight_on_hover=*/true,
                                           /*highlight_on_focus=*/true,

@@ -471,7 +471,8 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorAshAppListSeparator] =
       ui::SetAlpha(cros_tokens::kColorPrimaryLight, 0x24);
   mixer[ui::kColorAshArcInputMenuSeparator] = {SK_ColorGRAY};
-  mixer[ui::kColorAshEditFinishFocusRing] = {cros_tokens::kColorProminentDark};
+  mixer[ui::kColorAshInputOverlayFocusRing] = {
+      cros_tokens::kColorProminentDark};
   mixer[ui::kColorAshIconInOobe] = {kIconColorInOobe};
 
   // TODO(skau): Remove when dark/light mode launches.
