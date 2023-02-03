@@ -39,7 +39,7 @@ OptimizationGuideLogger::LogMessageBuilder::~LogMessageBuilder() {
   std::string message = base::StrCat(messages_);
   optimization_guide_logger_->OnLogMessageAdded(
       base::Time::Now(), log_source_, source_file_, source_line_, message);
-  DVLOG(0) << source_file_ << "(" << source_line_ << ") " << message;
+  DVLOG(1) << source_file_ << "(" << source_line_ << ") " << message;
 }
 
 OptimizationGuideLogger::LogMessageBuilder&
