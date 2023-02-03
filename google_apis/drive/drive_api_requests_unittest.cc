@@ -226,7 +226,6 @@ class DriveApiRequestsTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   net::EmbeddedTestServer test_server_;
-  std::unique_ptr<RequestSender> request_sender_;
   std::unique_ptr<DriveApiUrlGenerator> url_generator_;
   std::unique_ptr<network::mojom::NetworkService> network_service_;
   std::unique_ptr<network::mojom::NetworkContextClient> network_context_client_;
@@ -234,6 +233,7 @@ class DriveApiRequestsTest : public testing::Test {
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       test_shared_loader_factory_;
+  std::unique_ptr<RequestSender> request_sender_;
   base::ScopedTempDir temp_dir_;
 
   // This is a path to the file which contains expected response from

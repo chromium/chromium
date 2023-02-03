@@ -94,12 +94,12 @@ class BaseRequestsServerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   net::EmbeddedTestServer test_server_;
-  std::unique_ptr<RequestSender> request_sender_;
   std::unique_ptr<network::mojom::NetworkService> network_service_;
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       test_shared_loader_factory_;
+  std::unique_ptr<RequestSender> request_sender_;
   base::ScopedTempDir temp_dir_;
 
   // The incoming HTTP request is saved so tests can verify the request
