@@ -2377,7 +2377,9 @@ void WebViewImpl::SetPageScaleFactor(float scale_factor) {
   DCHECK(GetPage());
   DCHECK(MainFrameImpl());
 
-  MainFrameImpl()->GetFrame()->SetScaleFactor(scale_factor);
+  if (LocalFrame* frame = MainFrameImpl()->GetFrame()) {
+    frame->SetScaleFactor(scale_factor);
+  }
 }
 
 void WebViewImpl::SetZoomFactorForDeviceScaleFactor(
