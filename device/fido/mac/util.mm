@@ -15,6 +15,7 @@
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cbor/writer.h"
 #include "device/fido/fido_constants.h"
@@ -143,7 +144,8 @@ std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref) {
     return nullptr;
   }
   base::span<const uint8_t> key_data =
-      base::make_span(CFDataGetBytePtr(data_ref), CFDataGetLength(data_ref));
+      base::make_span(CFDataGetBytePtr(data_ref),
+                      base::checked_cast<size_t>(CFDataGetLength(data_ref)));
   auto key = P256PublicKey::ParseX962Uncompressed(
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256), key_data);
   if (!key) {

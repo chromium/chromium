@@ -16,6 +16,7 @@
 #include "base/mac/mac_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/elapsed_timer.h"
@@ -402,7 +403,8 @@ class TrustDomainCacheFullCerts {
         continue;
       }
       auto buffer = x509_util::CreateCryptoBuffer(base::make_span(
-          CFDataGetBytePtr(der_data.get()), CFDataGetLength(der_data.get())));
+          CFDataGetBytePtr(der_data.get()),
+          base::checked_cast<size_t>(CFDataGetLength(der_data.get()))));
       CertErrors errors;
       ParseCertificateOptions options;
       options.allow_invalid_serial_numbers = true;
@@ -830,7 +832,8 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
         continue;
       }
       auto buffer = x509_util::CreateCryptoBuffer(base::make_span(
-          CFDataGetBytePtr(der_data.get()), CFDataGetLength(der_data.get())));
+          CFDataGetBytePtr(der_data.get()),
+          base::checked_cast<size_t>(CFDataGetLength(der_data.get()))));
       CertErrors errors;
       ParseCertificateOptions options;
       options.allow_invalid_serial_numbers = true;
@@ -1002,7 +1005,8 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
         continue;
       }
       auto buffer = x509_util::CreateCryptoBuffer(base::make_span(
-          CFDataGetBytePtr(der_data.get()), CFDataGetLength(der_data.get())));
+          CFDataGetBytePtr(der_data.get()),
+          base::checked_cast<size_t>(CFDataGetLength(der_data.get()))));
       CertErrors errors;
       ParseCertificateOptions options;
       options.allow_invalid_serial_numbers = true;
@@ -1236,9 +1240,10 @@ TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
       LOG(ERROR) << "SecCertificateCopyData error";
       continue;
     }
-    matching_cert_buffers.push_back(x509_util::CreateCryptoBuffer(
-        base::make_span(CFDataGetBytePtr(der_data.get()),
-                        CFDataGetLength(der_data.get()))));
+    matching_cert_buffers.push_back(
+        x509_util::CreateCryptoBuffer(base::make_span(
+            CFDataGetBytePtr(der_data.get()),
+            base::checked_cast<size_t>(CFDataGetLength(der_data.get())))));
   }
   return matching_cert_buffers;
 }

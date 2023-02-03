@@ -235,7 +235,8 @@ bool SecureEnclaveClientImpl::ExportPublicKey(SecKeyRef key,
     return false;
 
   auto data =
-      base::make_span(CFDataGetBytePtr(data_ref), CFDataGetLength(data_ref));
+      base::make_span(CFDataGetBytePtr(data_ref),
+                      base::checked_cast<size_t>(CFDataGetLength(data_ref)));
   bssl::UniquePtr<EC_GROUP> p256(
       EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
   bssl::UniquePtr<EC_POINT> point(EC_POINT_new(p256.get()));

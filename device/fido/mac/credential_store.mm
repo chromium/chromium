@@ -16,6 +16,7 @@
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/random.h"
@@ -435,9 +436,9 @@ bool TouchIdCredentialStore::DeleteCredentialsSync(
       DLOG(ERROR) << "missing application label";
       continue;
     }
-    if (!DeleteCredentialById(
-            base::make_span(CFDataGetBytePtr(credential_id_data),
-                            CFDataGetLength(credential_id_data)))) {
+    if (!DeleteCredentialById(base::make_span(
+            CFDataGetBytePtr(credential_id_data),
+            base::checked_cast<size_t>(CFDataGetLength(credential_id_data))))) {
       // Indicate failure, but keep deleting remaining items.
       result = false;
     }

@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
@@ -29,7 +30,8 @@ bssl::UniquePtr<CRYPTO_BUFFER> CertBufferFromSecCertificate(
     return nullptr;
   }
   return X509Certificate::CreateCertBufferFromBytes(
-      base::make_span(CFDataGetBytePtr(der_data), CFDataGetLength(der_data)));
+      base::make_span(CFDataGetBytePtr(der_data),
+                      base::checked_cast<size_t>(CFDataGetLength(der_data))));
 }
 
 }  // namespace

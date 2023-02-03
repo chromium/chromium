@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "media/base/mac/color_space_util_mac.h"
 #include "media/formats/mp4/box_definitions.h"
@@ -43,7 +44,7 @@ base::span<const uint8_t> GetDataValue(CFDictionaryRef dict, CFStringRef key) {
       base::mac::CFCastStrict<CFDataRef>(CFDictionaryGetValue(dict, key));
   return data ? base::span<const uint8_t>(
                     reinterpret_cast<const uint8_t*>(CFDataGetBytePtr(data)),
-                    CFDataGetLength(data))
+                    base::checked_cast<size_t>(CFDataGetLength(data)))
               : base::span<const uint8_t>();
 }
 
