@@ -406,10 +406,9 @@ def main_win(options, args, results_collector):
     'mini_installer.exe',
     'resources.pak',
     'setup.exe',
+    'WidevineCdm\\_platform_specific\\win_arm64\\widevinecdm.dll',
     'WidevineCdm\\_platform_specific\\win_x64\\widevinecdm.dll',
-    'WidevineCdm\\_platform_specific\\win_x64\\widevinecdmadapter.dll',
     'WidevineCdm\\_platform_specific\\win_x86\\widevinecdm.dll',
-    'WidevineCdm\\_platform_specific\\win_x86\\widevinecdmadapter.dll',
   ]
 
   build_dir = build_directory.GetBuildOutputDirectory(SRC_DIR)

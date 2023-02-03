@@ -376,10 +376,9 @@ def main_win(output_directory, results_collector, size_path):
       'notification_helper.exe',
       'resources.pak',
       'setup.exe',
+      'WidevineCdm\\_platform_specific\\win_arm64\\widevinecdm.dll',
       'WidevineCdm\\_platform_specific\\win_x64\\widevinecdm.dll',
-      'WidevineCdm\\_platform_specific\\win_x64\\widevinecdmadapter.dll',
       'WidevineCdm\\_platform_specific\\win_x86\\widevinecdm.dll',
-      'WidevineCdm\\_platform_specific\\win_x86\\widevinecdmadapter.dll',
   ]
 
   for f in files:
