@@ -27,6 +27,7 @@ namespace http://www.w3.org/1999/xhtml
     property accessibleNode
     property addEventListener
     property after
+    property anchorElement
     property animate
     property append
     property appendChild

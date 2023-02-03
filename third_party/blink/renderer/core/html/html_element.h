@@ -228,11 +228,12 @@ class CORE_EXPORT HTMLElement : public Element {
                            HidePopoverForcingLevel forcing_level,
                            ExceptionState* exception_state);
   void PopoverHideFinishIfNeeded();
-  static const HTMLElement* FindTopmostPopoverAncestor(const HTMLElement&);
+  static const HTMLElement* FindTopmostPopoverAncestor(HTMLElement&);
 
   // Retrieves the element pointed to by this element's 'anchor' content
-  // attribute, if that element exists, and if this element is a popover.
-  Element* anchorElement() const;
+  // attribute, if that element exists.
+  Element* anchorElement();
+  void setAnchorElement(Element*);
   void ResetPopoverAnchorObserver();
   void PopoverAnchorElementChanged();
   static void HandlePopoverLightDismiss(const Event& event, const Node& node);

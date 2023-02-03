@@ -3277,6 +3277,7 @@ interface HTMLDocument : Document
 interface HTMLElement : Element
     attribute @@toStringTag
     getter accessKey
+    getter anchorElement
     getter attributeStyleMap
     getter autocapitalize
     getter autofocus
@@ -3421,6 +3422,7 @@ interface HTMLElement : Element
     method showPopover
     method togglePopover
     setter accessKey
+    setter anchorElement
     setter autocapitalize
     setter autofocus
     setter contentEditable

@@ -1195,7 +1195,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void IncrementAnchoredPopoverCount();
 
   // https://drafts.csswg.org/css-anchor-1/#implicit-anchor-element
-  Element* ImplicitAnchorElement() const;
+  Element* ImplicitAnchorElement();
 
  protected:
   bool HasElementData() const { return element_data_; }

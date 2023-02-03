@@ -36,7 +36,7 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   if (!anchor_query)
     return nullptr;
 
-  const Element* element = DynamicTo<Element>(layout_object->GetNode());
+  Element* element = DynamicTo<Element>(layout_object->GetNode());
   const bool is_in_top_layer = element ? element->IsInTopLayer() : false;
 
   const NGPhysicalFragment* fragment = nullptr;

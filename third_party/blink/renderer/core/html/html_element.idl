@@ -71,6 +71,9 @@
     [MeasureAs=ElementHidePopover,RuntimeEnabled=HTMLPopoverAttribute,RaisesException] void hidePopover();
     [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,MeasureAs=AnyPopoverAttribute,Reflect,ReflectOnly=("auto","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popover;
 
+    // Used by both Anchor Positioning and Popover
+    [CEReactions,RuntimeEnabled=CSSAnchorPositioning] attribute Element? anchorElement;
+
     // Non-standard APIs
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText, ImplementedAs=innerTextForBinding] attribute ([TreatNullAs=EmptyString] DOMString or TrustedScript) innerText;
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementOuterText] attribute [TreatNullAs=EmptyString] DOMString outerText;

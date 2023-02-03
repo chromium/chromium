@@ -8865,11 +8865,11 @@ bool Element::HasAnchoredPopover() const {
          IsA<HTMLSelectMenuElement>(this);
 }
 
-Element* Element::ImplicitAnchorElement() const {
+Element* Element::ImplicitAnchorElement() {
   if (!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
     return nullptr;
   }
-  const HTMLElement* html_element = DynamicTo<HTMLElement>(this);
+  HTMLElement* html_element = DynamicTo<HTMLElement>(this);
   if (!html_element) {
     return nullptr;
   }

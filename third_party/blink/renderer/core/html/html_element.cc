@@ -1811,7 +1811,7 @@ const HTMLElement* NearestInclusiveTargetPopoverForInvoker(const Node* node) {
 // first one to open is the "parent" and the second is the "child". Only
 // popover=auto popovers are considered.
 const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
-    const HTMLElement& new_popover) {
+    HTMLElement& new_popover) {
   DCHECK(new_popover.HasPopoverAttribute());
   auto& document = new_popover.GetDocument();
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
@@ -1945,10 +1945,17 @@ void HTMLElement::InvokePopover(Element* invoker) {
   ShowPopoverInternal(/*exception_state=*/nullptr);
 }
 
-Element* HTMLElement::anchorElement() const {
-  if (PopoverData* data = GetPopoverData())
-    return data->anchorElement();
-  return nullptr;
+Element* HTMLElement::anchorElement() {
+  Element* element = GetElementAttribute(html_names::kAnchorAttr);
+  DCHECK(!GetPopoverData() || element == GetPopoverData()->anchorElement());
+  return element;
+}
+
+void HTMLElement::setAnchorElement(Element* new_element) {
+  SetElementAttribute(html_names::kAnchorAttr, new_element);
+  if (GetPopoverData()) {
+    ResetPopoverAnchorObserver();
+  }
 }
 
 void HTMLElement::ResetPopoverAnchorObserver() {
@@ -1956,6 +1963,8 @@ void HTMLElement::ResetPopoverAnchorObserver() {
   DCHECK(HasPopoverAttribute());
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
+  // This attaches an idref observer on the target idref. If an element
+  // reference is set instead of an idref, the observer will be detached.
   const AtomicString& anchor_id = FastGetAttribute(html_names::kAnchorAttr);
   GetPopoverData()->setAnchorObserver(
       IsInTreeScope() && anchor_id
@@ -1967,11 +1976,11 @@ void HTMLElement::ResetPopoverAnchorObserver() {
 void HTMLElement::PopoverAnchorElementChanged() {
   DCHECK(GetPopoverData());
   DCHECK(HasPopoverAttribute());
-  const AtomicString& anchor_id = FastGetAttribute(html_names::kAnchorAttr);
-  Element* new_anchor = IsInTreeScope() && anchor_id
-                            ? GetTreeScope().getElementById(anchor_id)
-                            : nullptr;
-  Element* old_anchor = anchorElement();
+  Element* new_anchor = nullptr;
+  if (IsInTreeScope()) {
+    new_anchor = GetElementAttribute(html_names::kAnchorAttr);
+  }
+  Element* old_anchor = GetPopoverData()->anchorElement();
   if (new_anchor == old_anchor)
     return;
   if (old_anchor)
