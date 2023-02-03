@@ -1513,6 +1513,11 @@
         },
     },
     {
+      name: "GetDisplayMediaRequiresUserActivation",
+      depends_on: ["GetDisplayMedia"],
+      status: "experimental",
+    },
+    {
       // Enables the getDisplayMediaSet API for multi surface capture.
       name: "GetDisplayMediaSet",
       depends_on: ["GetDisplayMedia"],
