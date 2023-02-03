@@ -19,6 +19,8 @@ public class MockTab extends TabImpl {
     // TODO(crbug.com/1223963) set mIsInitialized to true when initialize is called
     private boolean mIsInitialized;
     private boolean mIsDestroyed;
+    private boolean mIsBeingRestored;
+
     /**
      * Create a new Tab for testing and initializes Tab UserData objects.
      */
@@ -110,5 +112,14 @@ public class MockTab extends TabImpl {
     @Override
     public boolean isCustomTab() {
         return false;
+    }
+
+    @Override
+    public boolean isBeingRestored() {
+        return mIsBeingRestored;
+    }
+
+    public void setIsBeingRestored(boolean isBeingRestored) {
+        mIsBeingRestored = isBeingRestored;
     }
 }

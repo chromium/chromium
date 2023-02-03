@@ -66,6 +66,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Tests for TabPersistentStore reacting to events from TabModel and Tab. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(Mode.PAUSED)
+@Features.EnableFeatures(ChromeFeatureList.TAB_STATE_V1_OPTIMIZATIONS)
 public class TabPersistentStoreIntegrationTest {
     @Rule
     public JniMocker jniMocker = new JniMocker();

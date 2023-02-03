@@ -11,9 +11,12 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabDataObserver;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -27,6 +30,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class TabStateAttributes extends TabWebContentsUserData {
     private static final Class<TabStateAttributes> USER_DATA_KEY = TabStateAttributes.class;
+    @VisibleForTesting
+    static final long DEFAULT_LOW_PRIORITY_SAVE_DELAY_MS = 30 * 1000L;
 
     /**
      * Defines the dirtiness states of the tab attributes.
@@ -51,6 +56,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
     @DirtinessState
     private int mDirtinessState;
     private WebContentsObserver mWebContentsObserver;
+    private boolean mPendingLowPrioritySave;
 
     /**
      * Allows observing changes for Tab state dirtiness updates.
@@ -99,24 +105,55 @@ public class TabStateAttributes extends TabWebContentsUserData {
         mTab.addObserver(new EmptyTabObserver() {
             @Override
             public void onHidden(Tab tab, int reason) {
-                if (tab.isDestroyed()) return;
-                if (mDirtinessState == DirtinessState.UNTIDY) updateIsDirty(DirtinessState.DIRTY);
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STATE_V1_OPTIMIZATIONS)) {
+                    if (!mTab.isClosing() && mDirtinessState == DirtinessState.UNTIDY) {
+                        updateIsDirty(DirtinessState.DIRTY);
+                    }
+                } else {
+                    if (mDirtinessState == DirtinessState.UNTIDY) {
+                        updateIsDirty(DirtinessState.DIRTY);
+                    }
+                }
+            }
+
+            @Override
+            public void onClosingStateChanged(Tab tab, boolean closing) {
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STATE_V1_OPTIMIZATIONS)) {
+                    if (!closing && mDirtinessState == DirtinessState.UNTIDY) {
+                        updateIsDirty(DirtinessState.DIRTY);
+                    }
+                }
             }
 
             @Override
             public void onNavigationEntriesDeleted(Tab tab) {
-                if (tab.isDestroyed()) return;
                 updateIsDirty(DirtinessState.DIRTY);
             }
 
             @Override
             public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
-                if (mDirtinessState == DirtinessState.UNTIDY) updateIsDirty(DirtinessState.DIRTY);
+                if (mDirtinessState != DirtinessState.UNTIDY) return;
+
+                boolean shouldCommitDirtyState =
+                        !ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STATE_V1_OPTIMIZATIONS)
+                        || toDifferentDocument;
+                if (shouldCommitDirtyState) {
+                    updateIsDirty(DirtinessState.DIRTY);
+                } else {
+                    if (mPendingLowPrioritySave) return;
+                    mPendingLowPrioritySave = true;
+                    PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
+                        assert mPendingLowPrioritySave;
+                        if (mDirtinessState == DirtinessState.UNTIDY) {
+                            updateIsDirty(DirtinessState.DIRTY);
+                        }
+                        mPendingLowPrioritySave = false;
+                    }, DEFAULT_LOW_PRIORITY_SAVE_DELAY_MS);
+                }
             }
 
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
-                if (tab.isDestroyed()) return;
                 // TODO(crbug/1374456): Reconcile the overlapping calls of
                 //                      didFinishNavigationInPrimaryMainFrame, onPageLoadFinished,
                 //                      and onLoadStopped.
@@ -125,7 +162,9 @@ public class TabStateAttributes extends TabWebContentsUserData {
 
             @Override
             public void onTitleUpdated(Tab tab) {
-                if (tab.isDestroyed()) return;
+                // TODO(crbug/1374456): Is the title of a page normally received before
+                //                      onLoadStopped? If not, this will get marked as untidy
+                //                      soon after the initial page load.
                 updateIsDirty(DirtinessState.UNTIDY);
             }
 
@@ -156,8 +195,6 @@ public class TabStateAttributes extends TabWebContentsUserData {
 
             @Override
             public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
-                if (mTab.isDestroyed()) return;
-
                 updateIsDirty(DirtinessState.UNTIDY);
             }
         };
@@ -193,11 +230,13 @@ public class TabStateAttributes extends TabWebContentsUserData {
 
     @VisibleForTesting
     void updateIsDirty(@DirtinessState int dirtiness) {
+        if (mTab.isDestroyed()) return;
         if (dirtiness == mDirtinessState) return;
-        // TODO(crbug/1374456): Enable the following:
-        // if (mTab.isBeingRestored()) return;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STATE_V1_OPTIMIZATIONS)) {
+            if (mTab.isBeingRestored()) return;
+        }
         mDirtinessState = dirtiness;
-        if (dirtiness == DirtinessState.DIRTY && !mTab.isDestroyed()) {
+        if (dirtiness == DirtinessState.DIRTY) {
             CriticalPersistedTabData.from(mTab).setShouldSave();
         }
         for (Observer observer : mObservers) observer.onTabStateDirtinessChanged(mTab, dirtiness);

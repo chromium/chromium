@@ -155,6 +155,7 @@ BASE_DECLARE_FEATURE(kTabGroupsUiImprovementsAndroid);
 BASE_DECLARE_FEATURE(kTabGroupsForTablets);
 BASE_DECLARE_FEATURE(kTabGridLayoutAndroid);
 BASE_DECLARE_FEATURE(kTabSelectionEditorV2);
+BASE_DECLARE_FEATURE(kTabStateV1Optimizations);
 BASE_DECLARE_FEATURE(kTabStripImprovements);
 BASE_DECLARE_FEATURE(kDiscoverFeedMultiColumn);
 BASE_DECLARE_FEATURE(kTabStripRedesign);
