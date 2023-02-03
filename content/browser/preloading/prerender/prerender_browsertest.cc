@@ -6562,22 +6562,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AbandonIfRendererProcessCrashes) {
     RenderProcessHost* process =
         GetPrerenderedMainFrameHost(host_id)->GetProcess();
     ScopedAllowRendererCrashes allow_renderer_crashes(process);
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
-    // On x86 and x86_64 Android, base::ImmediateCrash() macro used in
-    // ChildProcessHostImpl::CrashHungProcess() called from ForceCrash()
-    // does not seem to work as expected. (See https://crbug.com/1211655)
-    // We have no other ForceCrash() call sites on other than Linux and CrOS.
-    // In this test, we call Shutdown(content::RESULT_CODE_HUNG) instead as
-    // HungRenderDialogView does so on other platforms than Linux and CrOS.
-    process->Shutdown(RESULT_CODE_HUNG);
-#else
-    // On Android, ForceCrash results in TERMINATION_STATUS_NORMAL_TERMINATION.
-    // On other platforms, it does in TERMINATION_STATUS_PROCESS_CRASHED.
     process->ForceCrash();
-#endif
     host_observer.WaitForDestroyed();
   }
-
   ExpectFinalStatusForSpeculationRule(
 #if BUILDFLAG(IS_ANDROID)
       PrerenderFinalStatus::kRendererProcessKilled);
