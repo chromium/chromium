@@ -424,11 +424,15 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                             mControlsToken);
                     mControlsToken = TokenHolder.INVALID_TOKEN;
                 }
-            } else if (super.isDirty() && mToolbar.isReadyForTextureCapture().isReady) {
-                // Motion is starting, and we don't have a good capture. Lock the controls so that a
-                // new capture doesn't happen and the old capture is not shown. This can be fixed
-                // once the motion is over.
-                if (mControlContainerIsVisibleSupplier.getAsBoolean()) {
+            } else if (super.isDirty() && mControlContainerIsVisibleSupplier.getAsBoolean()) {
+                CaptureReadinessResult captureReadinessResult = mToolbar.isReadyForTextureCapture();
+                if (captureReadinessResult.blockReason
+                        == TopToolbarBlockCaptureReason.SNAPSHOT_SAME) {
+                    setDirtyRectEmpty();
+                } else if (captureReadinessResult.isReady) {
+                    // Motion is starting, and we don't have a good capture. Lock the controls so
+                    // that a new capture doesn't happen and the old capture is not shown. This can
+                    // be fixed once the motion is over.
                     mControlsToken =
                             mBrowserStateBrowserControlsVisibilityDelegate
                                     .showControlsPersistentAndClearOldToken(mControlsToken);

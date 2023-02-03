@@ -351,4 +351,18 @@ public class ToolbarControlContainerTest {
 
         Assert.assertTrue(adapter.isDirty());
     }
+
+    @Test
+    public void testInMotion_viewNotVisible() {
+        ToolbarViewResourceAdapter adapter =
+                new ToolbarViewResourceAdapter(mToolbarContainer, false);
+        initAdapter(adapter);
+        Mockito.doReturn(CaptureReadinessResult.readyWithSnapshotDifference(
+                                 ToolbarSnapshotDifference.URL_TEXT))
+                .when(mToolbar)
+                .isReadyForTextureCapture();
+        mIsVisible = false;
+
+        changeInMotion(true, false);
+    }
 }
