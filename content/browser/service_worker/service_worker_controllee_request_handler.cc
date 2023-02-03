@@ -95,12 +95,7 @@ const base::flat_set<std::string> FetchHandlerBypassedHashStrings() {
   return *result;
 }
 
-bool ShouldBypassFetchHandlerForMainResource(
-    const absl::optional<std::string>& sha256_script_checksum) {
-  if (!sha256_script_checksum) {
-    return false;
-  }
-
+bool ShouldBypassFetchHandlerForMainResource(ServiceWorkerVersion& version) {
   if (!base::FeatureList::IsEnabled(
           features::kServiceWorkerBypassFetchHandler)) {
     return false;
@@ -126,7 +121,11 @@ bool ShouldBypassFetchHandlerForMainResource(
     // resource fetch handlers are bypassed only when the sha256 checksum of the
     // script is in the allowlist.
     case features::ServiceWorkerBypassFetchHandlerStrategy::kAllowList:
-      if (FetchHandlerBypassedHashStrings().contains(sha256_script_checksum)) {
+      if (FetchHandlerBypassedHashStrings().contains(
+              version.sha256_script_checksum())) {
+        version.CountFeature(
+            blink::mojom::WebFeature::
+                kServiceWorkerBypassFetchHandlerForMainResource);
         RecordSkipReason(
             ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
                 kMainResourceSkippedBecauseMatchedWithAllowedScriptList);
@@ -140,18 +139,20 @@ bool ShouldBypassFetchHandlerForMainResource(
 }
 
 bool ShouldBypassFetchHandlerForMainResourceByOriginTrial(
-    ServiceWorkerVersion* version) {
-  if (version->origin_trial_tokens() &&
-      version->origin_trial_tokens()->contains(
+    ServiceWorkerVersion& version) {
+  if (version.origin_trial_tokens() &&
+      version.origin_trial_tokens()->contains(
           "ServiceWorkerBypassFetchHandlerForMainResource")) {
     RecordSkipReason(
         ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
             kMainResourceSkippedDueToOriginTrial);
-    // The UseCounter for kServiceWorkerBypassFetchHandlerForMainResource should
-    // only capture the usage of this feature invoked by the Origin Trial for
-    // the OT measurement purpose.
-    version->CountFeature(blink::mojom::WebFeature::
-                              kServiceWorkerBypassFetchHandlerForMainResource);
+    // The UseCounter for
+    // kServiceWorkerBypassFetchHandlerForMainResourceByOriginTrial should only
+    // capture the usage of this feature invoked by the Origin Trial for the OT
+    // measurement purpose.
+    version.CountFeature(
+        blink::mojom::WebFeature::
+            kServiceWorkerBypassFetchHandlerForMainResourceByOriginTrial);
     return true;
   }
 
@@ -573,9 +574,9 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
       // is no valid origin trial token, then check the eligibility based on the
       // feature flag and the url.
       if (ShouldBypassFetchHandlerForMainResourceByOriginTrial(
-              registration->active_version()) ||
+              *registration->active_version()) ||
           ShouldBypassFetchHandlerForMainResource(
-              registration->active_version()->sha256_script_checksum())) {
+              *registration->active_version())) {
         // If true, the main resource request bypasses ServiceWorker and starts
         // the worker in parallel for subsequent subresources.
         CompleteWithoutLoader();

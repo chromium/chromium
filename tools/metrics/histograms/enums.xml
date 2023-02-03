@@ -41997,6 +41997,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4454" label="OptionLabelInQuirksMode"/>
   <int value="4455" label="ParseFromStringIncludeShadows"/>
   <int value="4456" label="WebAppEnableScopeExtensions"/>
+  <int value="4457"
+      label="ServiceWorkerBypassFetchHandlerForMainResourceByOriginTrial"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
