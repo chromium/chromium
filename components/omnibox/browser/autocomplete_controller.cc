@@ -54,6 +54,7 @@
 #include "components/omnibox/browser/query_tile_provider.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
+#include "components/omnibox/browser/url_scoring_signals_annotator.h"
 #include "components/omnibox/browser/voice_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_verbatim_match_provider.h"
@@ -520,6 +521,8 @@ AutocompleteController::AutocompleteController(
     url_scoring_signals_annotators_.push_back(
         std::make_unique<BookmarkScoringSignalsAnnotator>(
             provider_client_.get()));
+    url_scoring_signals_annotators_.push_back(
+        std::make_unique<UrlScoringSignalsAnnotator>());
   }
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(

@@ -18,7 +18,8 @@
 #include "components/omnibox/browser/history_match.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "omnibox_event.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 
 // An HistoryMatch that has a score as well as metrics defining where in the
 // history item's URL and/or page title matches have occurred.
@@ -33,6 +34,18 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
   // interpolating between consecutive buckets.  See GetFinalRelevancyScore()
   // for details.
   using ScoreMaxRelevances = std::vector<ScoreMaxRelevance>;
+
+  // Struct for URL matching signals.
+  struct UrlMatchingSignals {
+    absl::optional<bool> host_match_at_word_boundary = absl::nullopt;
+    absl::optional<bool> has_non_scheme_www_match = absl::nullopt;
+    absl::optional<size_t> first_url_match_position = absl::nullopt;
+    size_t total_url_match_length = 0;
+    size_t total_host_match_length = 0;
+    size_t total_path_match_length = 0;
+    size_t total_query_or_ref_match_length = 0;
+    size_t num_input_terms_matched_by_url = 0;
+  };
 
   // Required for STL, we don't use this directly.
   ScoredHistoryMatch();
@@ -75,6 +88,27 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
   // with url_info to make tie-breaking a bit smarter.
   static bool MatchScoreGreater(const ScoredHistoryMatch& m1,
                                 const ScoredHistoryMatch& m2);
+
+  // Filters URL term matches in `url_matches` that are not at a word boundary
+  // and in the path (or later). `terms_to_word_starts_offsets` contains the
+  // offsets of word starts in the input text being searched for.
+  // `url_word_starts` contains the word starts within the `url`. `adjustments`
+  // contains any adjustments used to format `url`.
+  static TermMatches FilterUrlTermMatches(
+      const WordStarts& terms_to_word_starts_offsets,
+      const GURL& url,
+      const WordStarts& url_word_starts,
+      const base::OffsetAdjuster::Adjustments& adjustments,
+      const TermMatches& url_matches);
+
+  // Computes matching signals between the input text and url.
+  // See `FilterUrlTermMatches` for parameter details.
+  static UrlMatchingSignals ComputeUrlMatchingSignals(
+      const WordStarts& terms_to_word_starts_offsets,
+      const GURL& url,
+      const WordStarts& url_word_starts,
+      const base::OffsetAdjuster::Adjustments& adjustments,
+      const TermMatches& url_matches);
 
   // Returns |term_matches| after removing all matches that are not at a
   // word break that are in the range [|start_pos|, |end_pos|).
@@ -154,6 +188,15 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
                            const base::OffsetAdjuster::Adjustments& adjustments,
                            const WordStarts& terms_to_word_starts_offsets,
                            const RowWordStarts& word_starts);
+
+  // Increment URL match term scores.
+  // See `FilterUrlTermMatches` for parameter details.
+  void IncrementUrlMatchTermScores(
+      const WordStarts& terms_to_word_starts_offsets,
+      const GURL& url,
+      const WordStarts& url_word_starts,
+      const base::OffsetAdjuster::Adjustments& adjustments,
+      std::vector<int>* term_scores);
 
   // Increment term scores based on title matches.
   // Only uses the first `num_title_words_to_allow_` matches.

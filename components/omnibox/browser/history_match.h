@@ -19,6 +19,9 @@ struct HistoryMatch {
 
   static bool EqualsGURL(const HistoryMatch& h, const GURL& url);
 
+  // True if the url contains only a host, e.g. "http://www.google.com/".
+  static bool IsHostOnly(const GURL& gurl);
+
   // Returns true if url in this HistoryMatch is just a host
   // (e.g. "http://www.google.com/") and not some other subpage
   // (e.g. "http://www.google.com/foo.html").
