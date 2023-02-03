@@ -196,6 +196,7 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoSpatialNavigationInterest:
         case CSSSelector::kPseudoSlotted:
         case CSSSelector::kPseudoSelectorFragmentAnchor:
+        case CSSSelector::kPseudoRoot:
           pseudo_type = selector->GetPseudoType();
           break;
         case CSSSelector::kPseudoWebKitCustomElement:
@@ -367,6 +368,9 @@ void RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
       return;
     case CSSSelector::kPseudoSlotted:
       AddToRuleSet(slotted_pseudo_element_rules_, rule_data);
+      return;
+    case CSSSelector::kPseudoRoot:
+      AddToRuleSet(root_element_rules_, rule_data);
       return;
     default:
       break;
@@ -992,6 +996,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(property_rules_);
   visitor->Trace(counter_style_rules_);
   visitor->Trace(position_fallback_rules_);
+  visitor->Trace(root_element_rules_);
   visitor->Trace(media_query_set_results_);
   visitor->Trace(implicit_outer_layer_);
   visitor->Trace(layer_intervals_);

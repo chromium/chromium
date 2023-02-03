@@ -397,6 +397,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   base::span<const RuleData> SpatialNavigationInterestPseudoClassRules() const {
     return spatial_navigation_interest_class_rules_;
   }
+  base::span<const RuleData> RootElementRules() const {
+    return root_element_rules_;
+  }
   base::span<const RuleData> UniversalRules() const { return universal_rules_; }
   base::span<const RuleData> ShadowHostRules() const {
     return shadow_host_rules_;
@@ -607,6 +610,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<RuleData> slotted_pseudo_element_rules_;
   HeapVector<RuleData> visited_dependent_rules_;
   HeapVector<RuleData> selector_fragment_anchor_rules_;
+  HeapVector<RuleData> root_element_rules_;
   RuleFeatureSet features_;
   HeapVector<Member<StyleRulePage>> page_rules_;
   HeapVector<Member<StyleRuleFontFace>> font_face_rules_;

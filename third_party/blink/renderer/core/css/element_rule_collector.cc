@@ -718,6 +718,13 @@ void ElementRuleCollector::CollectMatchingRules(
           bundle.style_sheet_index, checker);
     }
   }
+  if (element.GetDocument().documentElement() == element) {
+    for (const auto bundle : match_request.AllRuleSets()) {
+      CollectMatchingRulesForList(
+          bundle.rule_set->RootElementRules(), match_request, bundle.rule_set,
+          bundle.style_sheet, bundle.style_sheet_index, checker);
+    }
+  }
   AtomicString element_name = matching_ua_rules_
                                   ? element.localName()
                                   : element.LocalNameForSelectorMatching();
