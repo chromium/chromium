@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@1.12.13.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@1.12.22.cr1
 package: chromium/third_party/android_deps/libs/net_bytebuddy_byte_buddy_agent
 description: "Byte Buddy agent"
 data:
-- file: byte-buddy-agent-1.12.13.jar
+- file: byte-buddy-agent-1.12.22.jar
