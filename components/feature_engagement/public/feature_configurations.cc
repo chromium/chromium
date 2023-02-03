@@ -9,6 +9,10 @@
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_constants.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "components/feature_engagement/public/ios_promo_feature_configuration.h"
+#endif  // BUILDFLAG(IS_IOS)
+
 namespace feature_engagement {
 
 FeatureConfig CreateAlwaysTriggerConfig(const base::Feature* feature) {
@@ -1237,16 +1241,10 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHiOSAppStorePromoFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->used =
-        EventConfig("app_store_promo_used", Comparator(EQUAL, 0), 365, 730);
-    config->trigger =
-        EventConfig("app_store_promo_trigger", Comparator(EQUAL, 0), 365, 730);
-    return config;
+  // iOS Promo Configs are split out into a separate file, so check that too.
+  if (absl::optional<FeatureConfig> ios_promo_feature_config =
+          GetClientSideiOSPromoFeatureConfig(feature)) {
+    return ios_promo_feature_config;
   }
 #endif  // BUILDFLAG(IS_IOS)
 

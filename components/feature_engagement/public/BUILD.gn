@@ -44,6 +44,13 @@ source_set("public") {
 
     deps += [ "//components/feature_engagement/public:jni_headers" ]
   }
+
+  if (is_ios) {
+    sources += [
+      "ios_promo_feature_configuration.cc",
+      "ios_promo_feature_configuration.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {
