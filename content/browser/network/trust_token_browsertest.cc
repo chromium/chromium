@@ -1482,4 +1482,35 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, CheckDepreciatedTypeField) {
  property from 'TrustToken': Required member is undefined."));
 }
 
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
+                       SendRedemptionRequestWithEmptyIssuers) {
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
+
+  GURL start_url = server_.GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  std::string command = R"(
+  (async () => {
+    await fetch("/issue", {trustToken: {version: 1,
+                                        operation: 'token-request'}});
+    await fetch("/redeem", {trustToken: {version: 1,
+                                         operation: 'token-redemption'}});
+    return "Success"; })(); )";
+  ASSERT_EQ("Success", EvalJs(shell(), command));
+
+  command = R"(
+    fetch("/sign", {trustToken: {version: 1,
+                                 operation: 'send-redemption-record',
+                                 issuers: []}})
+    .then(() => 'Success')
+    .catch(error => error.message); )";
+
+  // fetch should throw due to empty issuer field
+  EXPECT_THAT(EvalJs(shell(), command).ExtractString(),
+              HasSubstr("Failed to execute 'fetch' on 'Window':\
+ trustToken: operation type 'send-redemption-record' requires that\
+ the 'issuers' field be present and contain at least one secure,\
+ HTTP(S) URL, but it was missing or empty."));
+}
+
 }  // namespace content
