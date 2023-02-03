@@ -80,10 +80,12 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
   ~VideoCaptureDeviceClientTest() override = default;
 
  protected:
-  raw_ptr<NiceMock<MockVideoFrameReceiver>> receiver_;
   std::unique_ptr<unittest_internal::MockGpuMemoryBufferManager>
       gpu_memory_buffer_manager_;
+
+  // Must outlive `receiver_`.
   std::unique_ptr<VideoCaptureDeviceClient> device_client_;
+  raw_ptr<NiceMock<MockVideoFrameReceiver>> receiver_;
 };
 
 // A small test for reference and to verify VideoCaptureDeviceClient is
@@ -127,6 +129,7 @@ TEST_F(VideoCaptureDeviceClientTest, Minimal) {
       base::TimeTicks(), base::TimeDelta());
 
   // Releasing |device_client_| will also release |receiver_|.
+  receiver_ = nullptr;  // Avoid dangling reference.
   device_client_.reset();
 }
 
