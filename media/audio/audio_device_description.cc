@@ -22,13 +22,30 @@ const char AudioDeviceDescription::kLoopbackWithoutChromeId[] =
     "loopbackWithoutChrome";
 
 namespace {
-constexpr char kAirpodsNameSubstring[] = "AirPods";
-
 // Sanitize names which are known to contain the user's name, such as AirPods'
-// default name. See crbug.com/1163072 and crbug.com/1293761.
+// default name as recommended in
+// https://w3c.github.io/mediacapture-main/#sanitize-device-labels
+// See crbug.com/1163072 and crbug.com/1293761 for background information..
+constexpr char kAirpodsNameSubstring[] = "AirPods";  // crbug.com/1163072
+
+// On Windows 10, "... Hands-Free AG Audio" is a special profile with
+// both microphone and speakers.  "... Stereo" is another special profile
+// which supports higher quality audio. Windows 11 merges the two to avoid
+// confusing the user.
+// TODO(crbug.com/1412400): The strings are localized by the OS which
+// should be taken into account.
+constexpr char kProfileNameHandsFree[] = "Hands-Free AG Audio";
+constexpr char kProfileNameStereo[] = "Stereo";
+
 void RedactDeviceName(std::string& name) {
+  std::string profile;
+  if (name.find(kProfileNameHandsFree) != std::string::npos) {
+    profile += std::string(" ") + kProfileNameHandsFree;
+  } else if (name.find(kProfileNameStereo) != std::string::npos) {
+    profile += std::string(" ") + kProfileNameStereo;
+  }
   if (name.find(kAirpodsNameSubstring) != std::string::npos) {
-    name = kAirpodsNameSubstring;
+    name = kAirpodsNameSubstring + profile;
   }
 }
 
