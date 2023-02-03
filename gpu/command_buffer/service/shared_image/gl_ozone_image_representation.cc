@@ -21,6 +21,7 @@
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence.h"
+#include "ui/gl/scoped_binders.h"
 #include "ui/gl/trace_util.h"
 #include "ui/ozone/public/gl_ozone.h"
 #include "ui/ozone/public/native_pixmap_gl_binding.h"
@@ -217,6 +218,12 @@ GLOzoneImageRepresentationShared::GetBinding(
   gl::GLApi* api = gl::g_current_gl_context;
   DCHECK(api);
   api->glGenTexturesFn(1, &gl_texture_service_id);
+
+  gl::ScopedTextureBinder binder(target, gl_texture_service_id);
+  api->glTexParameteriFn(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  api->glTexParameteriFn(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   std::unique_ptr<ui::NativePixmapGLBinding> np_gl_binding =
       gl_ozone->ImportNativePixmap(pixmap, buffer_format, buffer_plane, size,
