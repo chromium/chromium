@@ -714,6 +714,14 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
         self.GetHttpUrlForFile('/chromedriver/shared_worker.html'))
     old_handles = self._driver.GetWindowHandles()
 
+  def testSetRPHResgistrationMode(self):
+    self._driver.Load(
+        self.GetHttpUrlForFile('/chromedirver/page_test.html'))
+
+    # The command expect no results if succeeded.
+    result = self._driver.SetRPHRegistrationMode('autoaccept');
+    self.assertEqual({}, result)
+
   def testSwitchToWindow(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/page_test.html'))
     self.assertEqual(

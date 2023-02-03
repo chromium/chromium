@@ -227,6 +227,21 @@ TEST(WindowCommandsTest, ProcessInputActionSequencePointerTouch) {
   ASSERT_EQ("pointerUp", base::OptionalFromPtr(action3.FindString("subtype")));
 }
 
+TEST(WindowCommandsTest, ExecuteSetRPHRegistrationMode_NoParams) {
+  base::Value::Dict params;
+  Status status = CallWindowCommand(ExecuteSetRPHRegistrationMode, params);
+  ASSERT_EQ(kInvalidArgument, status.code());
+  ASSERT_NE(status.message().find("missing parameter 'mode'"),
+            std::string::npos);
+}
+
+TEST(WindowCommandsTest, ExecuteSetRPHRegistrationMode) {
+  base::Value::Dict params;
+  params.Set("mode", "autoaccept");
+  Status status = CallWindowCommand(ExecuteSetRPHRegistrationMode, params);
+  ASSERT_EQ(kOk, status.code());
+}
+
 namespace {
 
 class AddCookieWebView : public StubWebView {

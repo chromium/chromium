@@ -213,6 +213,9 @@ class Command(object):
   SET_SPC_TRANSACTION_MODE = (
       _Method.POST,
       '/session/:sessionId/secure-payment-confirmation/set-mode')
+  SET_RPH_REGISTRATION_MODE = (
+      _Method.POST,
+      '/session/:sessionId/custom-handlers/set-mode')
   SET_PERMISSION = (
       _Method.POST, '/session/:sessionId/permissions')
   GET_CAST_SINKS = (

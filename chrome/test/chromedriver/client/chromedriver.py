@@ -732,6 +732,10 @@ class ChromeDriver(object):
     params = {'mode': mode}
     return self.ExecuteCommand(Command.SET_SPC_TRANSACTION_MODE, params)
 
+  def SetRPHRegistrationMode(self, mode):
+    params = {'mode': mode}
+    return self.ExecuteCommand(Command.SET_RPH_REGISTRATION_MODE, params)
+
   def GetSessionId(self):
     if not hasattr(self, '_session_id'):
       return None

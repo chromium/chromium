@@ -333,6 +333,12 @@ Status ExecuteDeleteAllCookies(Session* session,
                                std::unique_ptr<base::Value>* value,
                                Timeout* timeout);
 
+Status ExecuteSetRPHRegistrationMode(Session* session,
+                                     WebView* web_view,
+                                     const base::Value::Dict& params,
+                                     std::unique_ptr<base::Value>* value,
+                                     Timeout* timeout);
+
 Status ExecuteSetLocation(Session* session,
                           WebView* web_view,
                           const base::Value::Dict& params,

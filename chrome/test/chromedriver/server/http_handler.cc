@@ -936,6 +936,13 @@ HttpHandler::HttpHandler(
           WrapToCommand("SetSPCTransactionMode",
                         base::BindRepeating(&ExecuteSetSPCTransactionMode))),
 
+      // Extensions for Custom Handlers API:
+      // https://html.spec.whatwg.org/multipage/system-state.html#rph-automation
+      CommandMapping(
+          kPost, "session/:sessionId/custom-handlers/set-mode",
+          WrapToCommand("SetRPHRegistrationMode",
+                        base::BindRepeating(&ExecuteSetRPHRegistrationMode))),
+
       // Extension for Permissions Standard Automation "set permission" command:
       // https://w3c.github.io/permissions/#set-permission-command
       CommandMapping(kPost, "session/:sessionId/permissions",

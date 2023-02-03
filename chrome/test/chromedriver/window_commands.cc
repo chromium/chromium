@@ -2475,6 +2475,23 @@ Status ExecuteDeleteAllCookies(Session* session,
   return Status(kOk);
 }
 
+Status ExecuteSetRPHRegistrationMode(Session* session,
+                                     WebView* web_view,
+                                     const base::Value::Dict& params,
+                                     std::unique_ptr<base::Value>* value,
+                                     Timeout* timeout) {
+  const std::string* mode = params.FindString("mode");
+  if (!mode) {
+    return Status(kInvalidArgument, "missing parameter 'mode'");
+  }
+
+  base::Value::Dict body;
+  body.Set("mode", *mode);
+
+  return web_view->SendCommandAndGetResult("Page.setRPHRegistrationMode", body,
+                                           value);
+}
+
 Status ExecuteSetLocation(Session* session,
                           WebView* web_view,
                           const base::Value::Dict& params,
