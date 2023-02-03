@@ -300,11 +300,34 @@ void WindowTreeHostPlatform::OnOcclusionStateChanged(
   SetNativeWindowOcclusionState(aura_occlusion_state, {});
 }
 
-int64_t WindowTreeHostPlatform::InsertSequencePoint() {
-  int64_t seq =
-      compositor()->local_surface_id_from_parent().parent_sequence_number();
-  compositor()->RequestNewLocalSurfaceId();
-  return seq;
+int64_t WindowTreeHostPlatform::OnStateUpdate(
+    const PlatformWindowDelegate::State& old,
+    const PlatformWindowDelegate::State& latest) {
+  if (old.bounds_dip != latest.bounds_dip || old.size_px != latest.size_px ||
+      old.window_scale != latest.window_scale) {
+    bool origin_changed = old.bounds_dip.origin() != latest.bounds_dip.origin();
+    OnBoundsChanged({origin_changed});
+  }
+
+  // Only set the sequence ID if this change will produce a frame.
+  // If it won't, we may wait indefinitely for a frame that will never come.
+  bool produces_frame = old.bounds_dip.size() != latest.bounds_dip.size() ||
+                        old.size_px != latest.size_px ||
+                        old.window_scale != latest.window_scale ||
+                        old.raster_scale != latest.raster_scale;
+
+  if (produces_frame) {
+    // Update window()'s LocalSurfaceId. This will ensure that the parent ID is
+    // updated both here and for LayerTreeHostImpl. So, the CompositorFrame sent
+    // by LayerTreeHostImpl will include the updated parent ID for
+    // synchronization. Some operations may have already updated the
+    // LocalSurfaceId, but this only modifies pending commit state, so it's not
+    // expensive.
+    window()->AllocateLocalSurfaceId();
+    compositor()->SetLocalSurfaceIdFromParent(window()->GetLocalSurfaceId());
+  }
+
+  return window()->GetLocalSurfaceId().parent_sequence_number();
 }
 
 void WindowTreeHostPlatform::SetFrameRateThrottleEnabled(bool enabled) {

@@ -284,7 +284,7 @@ void WaylandPopup::OnCloseRequest() {
 }
 
 bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties,
-                                State* state) {
+                                PlatformWindowDelegate::State* state) {
   DCHECK(parent_window());
   state->window_scale = parent_window()->applied_state().window_scale;
   state->size_px =

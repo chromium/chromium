@@ -4,6 +4,8 @@
 
 #include "ui/platform_window/platform_window_delegate.h"
 
+#include <sstream>
+
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/owned_window_anchor.h"
@@ -11,6 +13,17 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
+
+std::string PlatformWindowDelegate::State::ToString() const {
+  std::stringstream result;
+  result << "State {";
+  result << "bounds_dip = " << bounds_dip.ToString();
+  result << ", size_px = " << size_px.ToString();
+  result << ", window_scale = " << window_scale;
+  result << ", raster_scale = " << raster_scale;
+  result << "}";
+  return result.str();
+}
 
 PlatformWindowDelegate::PlatformWindowDelegate() = default;
 
@@ -42,7 +55,8 @@ absl::optional<MenuType> PlatformWindowDelegate::GetMenuType() {
 void PlatformWindowDelegate::OnOcclusionStateChanged(
     PlatformWindowOcclusionState occlusion_state) {}
 
-int64_t PlatformWindowDelegate::InsertSequencePoint() {
+int64_t PlatformWindowDelegate::OnStateUpdate(const State& old,
+                                              const State& latest) {
   NOTREACHED();
   return -1;
 }

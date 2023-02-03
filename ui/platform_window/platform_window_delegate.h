@@ -86,6 +86,33 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
 #endif  // BUILDFLAG(IS_FUCHSIA)
   };
 
+  // State describes important data about this window, for example data that
+  // needs to be synchronized and acked. We apply this state to the client
+  // (us) and wait for a frame to be produced matching this state. That frame
+  // is identified by the sequence id.
+  // This is used by OnStateChanged and currently only by ozone/wayland.
+  struct COMPONENT_EXPORT(PLATFORM_WINDOW) State {
+    bool operator==(const State& rhs) const {
+      return std::tie(bounds_dip, size_px, window_scale, raster_scale) ==
+             std::tie(rhs.bounds_dip, rhs.size_px, rhs.window_scale,
+                      rhs.raster_scale);
+    }
+
+    // Bounds in DIP.
+    gfx::Rect bounds_dip;
+    // Size in pixels. Note that it's required to keep information in both DIP
+    // and pixels since it is not always possible to convert between them.
+    gfx::Size size_px;
+    // Current scale factor of the output where the window is located at.
+    float window_scale = 1.0;
+    // TODO(crbug.com/1395267): Add window states here.
+
+    // Scale to raster the window at.
+    float raster_scale = 1.0;
+
+    std::string ToString() const;
+  };
+
   PlatformWindowDelegate();
   virtual ~PlatformWindowDelegate();
 
@@ -160,12 +187,13 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual void OnOcclusionStateChanged(
       PlatformWindowOcclusionState occlusion_state);
 
-  // Requests a new LocalSurfaceId for the window tree of this platform window.
-  // Returns the currently set child id (not the new one, since that requires
-  // an asynchronous operation). Calling code can compare this value with
-  // the gfx::FrameData::seq value to see when viz has produced a frame at or
-  // after the (conceptually) inserted sequence point.
-  virtual int64_t InsertSequencePoint();
+  // Updates state for clients that need sequence point synchronized
+  // PlatformWindowDelegate::State operations. In particular, this requests a
+  // new LocalSurfaceId for the window tree of this platform window. It returns
+  // the new parent ID. Calling code can compare this value with the
+  // gfx::FrameData::seq value to see when viz has produced a frame at or after
+  // the (conceptually) inserted sequence point.
+  virtual int64_t OnStateUpdate(const State& old, const State& latest);
 
   // Returns optional information for owned windows that require anchor for
   // positioning. Useful for such backends as Wayland as it provides flexibility

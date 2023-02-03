@@ -79,7 +79,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void AckConfigure(uint32_t serial) override;
 
   bool OnInitialize(PlatformWindowInitProperties properties,
-                    State* state) override;
+                    PlatformWindowDelegate::State* state) override;
   bool IsActive() const override;
   void SetWindowGeometry(gfx::Size size_dip) override;
   bool IsScreenCoordinatesEnabled() const override;

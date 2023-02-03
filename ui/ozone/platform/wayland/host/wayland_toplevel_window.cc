@@ -543,7 +543,7 @@ void WaylandToplevelWindow::OnSequencePoint(int64_t seq) {
 
 bool WaylandToplevelWindow::OnInitialize(
     PlatformWindowInitProperties properties,
-    State* state) {
+    PlatformWindowDelegate::State* state) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto token = base::UnguessableToken::Create();
   window_unique_id_ =

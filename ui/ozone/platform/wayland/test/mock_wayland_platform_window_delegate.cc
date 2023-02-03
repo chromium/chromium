@@ -32,8 +32,15 @@ MockWaylandPlatformWindowDelegate::CreateWaylandWindow(
   return window;
 }
 
-int64_t MockWaylandPlatformWindowDelegate::InsertSequencePoint() {
-  return viz_seq_++;
+int64_t MockWaylandPlatformWindowDelegate::OnStateUpdate(
+    const PlatformWindowDelegate::State& old,
+    const PlatformWindowDelegate::State& latest) {
+  if (old.bounds_dip != latest.bounds_dip || old.size_px != latest.size_px ||
+      old.window_scale != latest.window_scale) {
+    bool origin_changed = old.bounds_dip.origin() != latest.bounds_dip.origin();
+    OnBoundsChanged({origin_changed});
+  }
+  return ++viz_seq_;
 }
 
 }  // namespace ui
