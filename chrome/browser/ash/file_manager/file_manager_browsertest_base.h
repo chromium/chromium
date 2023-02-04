@@ -41,12 +41,14 @@ namespace file_manager {
 
 enum GuestMode { NOT_IN_GUEST_MODE, IN_GUEST_MODE, IN_INCOGNITO };
 enum TestAccountType {
-  TEST_ACCOUNT_TYPE_NOT_SET,
-  ENTERPRISE,
-  CHILD,
-  NON_MANAGED
+  kTestAccountTypeNotSet,
+  kEnterprise,
+  kChild,
+  kNonManged,
+  // Non-managed account as a non owner profile on a device.
+  kNonManagedNonOwner,
 };
-enum DeviceMode { DEVICE_MODE_NOT_SET, CONSUMER_OWNED, ENROLLED };
+enum DeviceMode { kDeviceModeNotSet, kConsumerOwned, kEnrolled };
 
 class DriveFsTestVolume;
 class FakeTestVolume;
@@ -75,12 +77,12 @@ class FileManagerBrowserTestBase
     // Account type used to log-in for a test session. This option is valid only
     // for `LoggedInUserFilesAppBrowserTest`. This won't work with `guest_mode`
     // option.
-    TestAccountType test_account_type = TEST_ACCOUNT_TYPE_NOT_SET;
+    TestAccountType test_account_type = kTestAccountTypeNotSet;
 
     // Device mode used for a test session. This option is valid only for
     // `LoggedInUserFilesAppBrowserTest`. This might not work with `guest_mode`
     // option.
-    DeviceMode device_mode = DEVICE_MODE_NOT_SET;
+    DeviceMode device_mode = kDeviceModeNotSet;
 
     // Whether test runs in tablet mode.
     bool tablet_mode = false;

@@ -22,16 +22,16 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1057,38 +1057,43 @@ void AddStringsGeneric(base::Value::Dict* dict) {
 #undef SET_STRING
 
 bool IsEligibleAndEnabledGoogleOneOfferFilesBanner() {
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  // Google One offer is for a device, not for an account. Do not show a banner
+  // if a device is enrolled.
+  if (g_browser_process->platform_part()
+          ->browser_policy_connector_ash()
+          ->IsDeviceEnterpriseManaged()) {
+    return false;
+  }
+
+  raw_ptr<user_manager::UserManager> user_manager =
+      user_manager::UserManager::Get();
   if (!user_manager) {
     return false;
   }
 
-  user_manager::User* user = user_manager->GetActiveUser();
+  raw_ptr<user_manager::User> user = user_manager->GetActiveUser();
   if (!user) {
     return false;
   }
 
-  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
+  raw_ptr<Profile> profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile) {
     return false;
   }
 
-  // `GetUserCloudPolicyManagerAsh` returns non-nullptr if a profile is a
-  // managed account, e.g. enterprise account, child account.
-  // This approach is taken in
-  // `UserTypeByDeviceTypeMetricsProvider::GetUserSegment`.
-  if (profile->GetUserCloudPolicyManagerAsh()) {
+  if (profile->IsGuestSession()) {
     return false;
   }
 
-  ash::InstallAttributes* install_attributes = ash::InstallAttributes::Get();
-  if (!install_attributes) {
+  if (profile->IsChild()) {
     return false;
   }
 
-  // Google One offer is for a device. Do not show a banner if a device is not
-  // `policy::DeviceMode::DEVICE_MODE_CONSUMER`.
-  if (install_attributes->GetMode() !=
-      policy::DeviceMode::DEVICE_MODE_CONSUMER) {
+  if (profile->GetProfilePolicyConnector()->IsManaged()) {
+    return false;
+  }
+
+  if (!ash::ProfileHelper::IsOwnerProfile(profile)) {
     return false;
   }
 
