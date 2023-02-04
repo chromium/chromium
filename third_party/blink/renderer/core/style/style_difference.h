@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 
 class StyleDifference {
@@ -77,7 +79,10 @@ class StyleDifference {
   }
 
   bool NeedsPaintInvalidation() const { return needs_paint_invalidation_; }
-  void SetNeedsPaintInvalidation() { needs_paint_invalidation_ = true; }
+  void SetNeedsPaintInvalidation() {
+    recordreplay::Assert("[RUN-966] StyleDifference::SetNeedsPaintInvalidation");
+    needs_paint_invalidation_ = true;
+  }
 
   bool NeedsLayout() const { return layout_type_ != kNoLayout; }
   void ClearNeedsLayout() { layout_type_ = kNoLayout; }

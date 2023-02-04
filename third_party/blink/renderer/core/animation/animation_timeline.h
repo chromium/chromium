@@ -143,6 +143,11 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   // All animations attached to this timeline.
   HeapHashSet<WeakMember<Animation>> animations_;
 
+  // Strongly held references on animations when recording/replaying. Updating the
+  // animations can interact with the recording and the animations should be consistent
+  // between recording and replaying.
+  HeapHashSet<Member<Animation>> record_replay_animations_strong_;
+
   scoped_refptr<cc::AnimationTimeline> compositor_timeline_;
 
   absl::optional<PhaseAndTime> last_current_phase_and_time_;

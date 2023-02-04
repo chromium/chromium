@@ -24,10 +24,14 @@ AnimationTimeline::AnimationTimeline(Document* document)
 void AnimationTimeline::AnimationAttached(Animation* animation) {
   DCHECK(!animations_.Contains(animation));
   animations_.insert(animation);
+
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers"))
+    record_replay_animations_strong_.insert(animation);
 }
 
 void AnimationTimeline::AnimationDetached(Animation* animation) {
   animations_.erase(animation);
+  record_replay_animations_strong_.erase(animation);
   animations_needing_update_.erase(animation);
   if (animation->Outdated())
     outdated_animation_count_--;
@@ -216,6 +220,7 @@ void AnimationTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(animations_needing_update_);
   visitor->Trace(animations_);
+  visitor->Trace(record_replay_animations_strong_);
   ScriptWrappable::Trace(visitor);
 }
 

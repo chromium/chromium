@@ -2671,6 +2671,12 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
 #endif
   }
 
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("[RUN-966] LayoutObject::SetStyle #9 %d %d %d",
+                       diff.NeedsPaintInvalidation(),
+                       updated_diff.NeedsPaintInvalidation(),
+                       IsSVGRoot());
+
   if (diff.NeedsPaintInvalidation() || updated_diff.NeedsPaintInvalidation()) {
     if (IsSVGRoot()) {
       // LayoutSVGRoot::LocalVisualRect() depends on some styles.
