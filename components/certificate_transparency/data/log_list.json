@@ -1,6 +1,6 @@
 {
-  "version": "18.2",
-  "log_list_timestamp": "2023-02-02T12:56:48Z",
+  "version": "19.1",
+  "log_list_timestamp": "2023-02-04T12:53:44Z",
   "operators": [
     {
       "name": "Google",
@@ -400,8 +400,8 @@
           "url": "https://ct2024.trustasia.com/log2024/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-11-22T00:00:00Z"
+            "usable": {
+              "timestamp": "2023-02-03T08:00:00Z"
             }
           },
           "temporal_interval": {
