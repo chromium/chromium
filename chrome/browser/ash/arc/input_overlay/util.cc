@@ -61,8 +61,8 @@ void ClampPosition(gfx::Point& position,
     // Ignore |parent_padding| if there is not enough space.
     lo = 0;
     hi += parent_padding;
-    position.set_x(std::clamp(position.x(), lo, hi));
   }
+  position.set_x(std::clamp(position.x(), lo, hi));
 
   lo = parent_padding;
   hi = parent_size.height() - ui_size.height() - parent_padding;
@@ -70,8 +70,8 @@ void ClampPosition(gfx::Point& position,
     // Ignore |parent_padding| if there is not enough space.
     lo = 0;
     hi += parent_padding;
-    position.set_y(std::clamp(position.y(), lo, hi));
   }
+  position.set_y(std::clamp(position.y(), lo, hi));
 }
 
 bool AllowReposition() {

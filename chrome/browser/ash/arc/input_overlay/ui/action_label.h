@@ -56,6 +56,7 @@ class ActionLabel : public views::LabelButton {
   // for Alpha version.
   virtual void UpdateBoundsAlpha() = 0;
   virtual void UpdateBounds() = 0;
+  virtual void UpdateLabelPositionType(TapLabelPosition label_position) = 0;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

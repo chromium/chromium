@@ -95,6 +95,8 @@ enum class TapLabelPosition {
   kBottomLeft = 2,
   // Bottom-right of touch point. Starts to use in Alpha.
   kBottomRight = 3,
+  // Undefined label position. Starts to use in AlphaV2.
+  kNone = 4,
 };
 
 }  // namespace arc::input_overlay

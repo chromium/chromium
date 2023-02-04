@@ -77,6 +77,7 @@ class ActionMove::ActionMoveMouseView : public ActionView {
   void OnBindingToMouse(std::string mouse_action) override { NOTIMPLEMENTED(); }
   void OnMenuEntryPressed() override { NOTIMPLEMENTED(); }
   void AddTouchPoint() override { NOTIMPLEMENTED(); }
+  void MayUpdateLabelPosition(bool moving) override {}
 
   void ChildPreferredSizeChanged(View* child) override {
     DCHECK_EQ(labels_.size(), 1u);
@@ -164,6 +165,7 @@ class ActionMove::ActionMoveKeyView : public ActionView {
   void OnBindingToMouse(std::string mouse_action) override { NOTIMPLEMENTED(); }
   void OnMenuEntryPressed() override { NOTIMPLEMENTED(); }
   void AddTouchPoint() override { ActionView::AddTouchPoint(ActionType::MOVE); }
+  void MayUpdateLabelPosition(bool moving) override {}
 
   void ChildPreferredSizeChanged(View* child) override {
     DCHECK_EQ(labels_.size(), kActionMoveKeysSize);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap.h"
 
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
@@ -30,6 +31,18 @@ gfx::Size GetBoundingBoxOfChildren(views::View* view) {
   return gfx::Size(x, y);
 }
 
+bool IsOnEdgeLeft(int x, int margin) {
+  return x <= margin;
+}
+
+bool IsOnEdgeRight(int x, int margin, int width) {
+  return x >= width - margin;
+}
+
+bool IsOnEdgeTop(int y, int margin) {
+  return y <= margin;
+}
+
 }  // namespace
 
 class ActionTap::ActionTapView : public ActionView {
@@ -53,7 +66,7 @@ class ActionTap::ActionTapView : public ActionView {
     if (labels_.empty()) {
       // Create new action label when initializing.
       TapLabelPosition position = allow_reposition_
-                                      ? TapLabelPosition::kTopLeft
+                                      ? TapLabelPosition::kNone
                                       : (action_->on_left_or_middle_side()
                                              ? TapLabelPosition::kBottomRight
                                              : TapLabelPosition::kBottomLeft);
@@ -121,17 +134,57 @@ class ActionTap::ActionTapView : public ActionView {
 
   void AddTouchPoint() override { ActionView::AddTouchPoint(ActionType::TAP); }
 
+  void MayUpdateLabelPosition(bool moving) override {
+    DCHECK_EQ(labels_.size(), 1u);
+
+    labels_[0]->UpdateLabelPositionType(
+        GetTapLabelPosition(GetTouchCenterInWindow()));
+    if (!moving)
+      SetSize(GetBoundingBoxOfChildren(this));
+  }
+
   void ChildPreferredSizeChanged(View* child) override {
     DCHECK_EQ(1u, labels_.size());
     UpdateTrashButtonPosition();
     if (allow_reposition_) {
-      SetSize(GetBoundingBoxOfChildren(this));
+      MayUpdateLabelPosition(false);
     } else {
       int radius = action_->GetUIRadius();
       int width = std::max(radius * 2, GetBoundingBoxOfChildren(this).width());
       SetSize(gfx::Size(width, radius * 2));
     }
     SetPositionFromCenterPosition(action_->GetUICenterPosition());
+  }
+
+ private:
+  TapLabelPosition GetTapLabelPosition(const gfx::Point& touch_point_center) {
+    const auto point_size = TouchPoint::GetSize(ActionType::TAP);
+    const auto label_size = labels_[0]->size();
+    const int x_margin =
+        label_size.width() + point_size.width() / 2 + kOffsetToTouchPoint;
+    const int y_margin =
+        label_size.height() + point_size.height() / 2 + kOffsetToTouchPoint;
+    const int x = touch_point_center.x();
+    const int y = touch_point_center.y();
+
+    if (IsOnEdgeLeft(x, x_margin)) {
+      return IsOnEdgeTop(y, y_margin) ? TapLabelPosition::kBottomRight
+                                      : TapLabelPosition::kTopRight;
+    }
+
+    const int available_width = parent()->width();
+    if (IsOnEdgeRight(x, x_margin, available_width)) {
+      return IsOnEdgeTop(y, y_margin) ? TapLabelPosition::kBottomLeft
+                                      : TapLabelPosition::kTopLeft;
+    }
+
+    if (IsOnEdgeTop(y, y_margin)) {
+      return x <= available_width / 2 ? TapLabelPosition::kBottomLeft
+                                      : TapLabelPosition::kBottomRight;
+    }
+
+    return x <= available_width / 2 ? TapLabelPosition::kTopLeft
+                                    : TapLabelPosition::kTopRight;
   }
 };
 

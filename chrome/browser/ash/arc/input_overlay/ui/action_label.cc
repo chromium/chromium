@@ -8,6 +8,7 @@
 
 #include "ash/style/style_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -16,6 +17,7 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -96,6 +98,24 @@ constexpr char kCtrl[] = "ctrl";
 constexpr char kShift[] = "shift";
 constexpr char kCap[] = "cap";
 
+bool IsLeft(TapLabelPosition position) {
+  return position == TapLabelPosition::kTopLeft ||
+         position == TapLabelPosition::kBottomLeft;
+}
+
+bool IsRight(TapLabelPosition position) {
+  return !IsLeft(position) && position != TapLabelPosition::kNone;
+}
+
+bool IsTop(TapLabelPosition position) {
+  return position == TapLabelPosition::kTopLeft ||
+         position == TapLabelPosition::kTopRight;
+}
+
+bool IsBottom(TapLabelPosition position) {
+  return !IsTop(position) && position != TapLabelPosition::kNone;
+}
+
 class ActionLabelTap : public ActionLabel {
  public:
   ActionLabelTap(int radius,
@@ -148,12 +168,11 @@ class ActionLabelTap : public ActionLabel {
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kSideInset)));
     const auto label_size = CalculatePreferredSize();
     SetSize(label_size);
-    auto* action_view = static_cast<ActionView*>(parent());
-    if (display_mode_ == DisplayMode::kView) {
-      SetLabelPositionForViewMode(label_size);
+    // Label position is not set yet.
+    if (label_position_ == TapLabelPosition::kNone)
       return;
-    }
-    DCHECK_EQ(display_mode_, DisplayMode::kEdit);
+
+    auto* action_view = static_cast<ActionView*>(parent());
 
     switch (label_position_) {
       case TapLabelPosition::kBottomLeft:
@@ -192,14 +211,47 @@ class ActionLabelTap : public ActionLabel {
     }
   }
 
- private:
-  void SetLabelPositionForViewMode(const gfx::Size& label_size) {
-    SetPosition(gfx::Point());
-    static_cast<ActionView*>(parent())->SetTouchPointCenter(
-        gfx::Point(label_size.width() / 2, label_size.height() / 2));
+  void UpdateLabelPositionType(TapLabelPosition label_position) override {
+    if (label_position_ == label_position)
+      return;
+
+    parent()->SetPosition(
+        CalculateParentPositionWithFixedTouchPoint(label_position));
+    label_position_ = label_position;
+    UpdateBounds();
   }
 
-  TapLabelPosition label_position_ = TapLabelPosition::kTopLeft;
+ private:
+  gfx::Point CalculateParentPositionWithFixedTouchPoint(
+      TapLabelPosition label_position) {
+    DCHECK_NE(label_position_, label_position);
+    DCHECK_NE(label_position, TapLabelPosition::kNone);
+    auto* action_view = static_cast<ActionView*>(parent());
+    auto fix_pos = action_view->GetTouchCenterInWindow();
+    fix_pos.Offset(-touch_point_size_.width() / 2,
+                   -touch_point_size_.height() / 2);
+    fix_pos.SetToMax(gfx::Point());
+    auto new_pos = action_view->origin();
+    const auto& label_size = size();
+
+    if (IsLeft(label_position_) && IsRight(label_position)) {
+      new_pos.set_x(fix_pos.x());
+    } else if (!IsLeft(label_position_) && IsLeft(label_position)) {
+      new_pos.set_x(std::max(
+          0, fix_pos.x() - (label_size.width() + kOffsetToTouchPoint)));
+    }
+
+    if (IsTop(label_position_) && IsBottom(label_position)) {
+      new_pos.set_y(fix_pos.y());
+    } else if (!IsTop(label_position_) && IsTop(label_position)) {
+      new_pos.set_y(std::max(
+          0, fix_pos.y() - (label_size.height() + kOffsetToTouchPoint)));
+    }
+
+    return new_pos;
+  }
+
+  TapLabelPosition label_position_ = TapLabelPosition::kNone;
 };
 
 class ActionLabelMove : public ActionLabel {
@@ -248,6 +300,8 @@ class ActionLabelMove : public ActionLabel {
     static_cast<ActionView*>(parent())->SetTouchPointCenter(
         gfx::Point(center, center));
   }
+
+  void UpdateLabelPositionType(TapLabelPosition label_position) override {}
 };
 
 }  // namespace
