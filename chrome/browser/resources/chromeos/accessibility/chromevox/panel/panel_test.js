@@ -29,6 +29,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
     await importModule(
         ['PanelCommand', 'PanelCommandType'],
         '/chromevox/common/panel_command.js');
+    await importModule('MenuManager', '/chromevox/panel/menu_manager.js');
     await importModule('CursorRange', '/common/cursors/range.js');
     await importModule('LocalStorage', '/common/local_storage.js');
     await importModule(
@@ -58,21 +59,23 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   }
 
   async waitForMenu(menuMsg) {
+    const menuManager = this.getPanel().instance.menuManager_;
     // Menu and menu item updates occur in a different js context, so tests need
     // to wait until an update has been made. Swap in our hook, wait, then
     // restore after.
     const makeAssertions = () => {
-      const menu = this.getPanel().instance.menuManager_.activeMenu_;
+      const menu = menuManager.activeMenu_;
       assertEquals(menuMsg, menu.menuMsg);
     };
 
     return new Promise(resolve => {
       const Panel = this.getPanel();
-      const original = Panel.instance.activateMenu_.bind(Panel.instance);
-      Panel.instance.activateMenu_ = (menu, activateFirstItem) => {
+      // eslint-disable-next-line prefer-arrow-callback
+      const original = menuManager.activateMenu.bind(menuManager);
+      menuManager.activateMenu = (menu, activateFirstItem) => {
+        menuManager.activateMenu = original;
         original(menu, activateFirstItem);
         makeAssertions();
-        Panel.instance.activateMenu_ = original;
         resolve();
       };
     });

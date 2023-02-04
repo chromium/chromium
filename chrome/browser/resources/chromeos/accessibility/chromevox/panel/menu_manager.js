@@ -7,6 +7,7 @@
  */
 import {Command, CommandStore} from '../common/command_store.js';
 
+import {PanelInterface} from './panel_interface.js';
 import {PanelMenu, PanelSearchMenu} from './panel_menu.js';
 
 const $ = (id) => document.getElementById(id);
@@ -31,6 +32,31 @@ export class MenuManager {
     /** @private {?PanelSearchMenu} */
     this.searchMenu_ = null;
   }
+
+  /**
+   * Activate a menu, which implies hiding the previous active menu.
+   * @param {?PanelMenu} menu The new menu to activate.
+   * @param {boolean} activateFirstItem Whether or not we should activate the
+   *     menu's first item.
+   */
+  activateMenu(menu, activateFirstItem) {
+    if (menu === this.activeMenu_) {
+      return;
+    }
+
+    if (this.activeMenu_) {
+      this.activeMenu_.deactivate();
+      this.activeMenu_ = null;
+    }
+
+    this.activeMenu_ = menu;
+    PanelInterface.instance.setPendingCallback(null);
+
+    if (this.activeMenu_) {
+      this.activeMenu_.activate(activateFirstItem);
+    }
+  }
+
 
   /**
    * Clear any previous menus. The menus are all regenerated each time the
