@@ -738,12 +738,10 @@ static void ReplayNotifyAfterEvent(const String& eventName,
                             bool isCallback = false);
 
 void InspectorDOMDebuggerAgent::Will(const probe::ExecuteScript& probe) {
-  ReplayNotifyBeforeEvent("scriptFirstStatement");
   AllowNativeBreakpoint("scriptFirstStatement", nullptr, false);
 }
 
 void InspectorDOMDebuggerAgent::Did(const probe::ExecuteScript& probe) {
-  ReplayNotifyAfterEvent("scriptFirstStatement");
   CancelNativeBreakpoint();
 }
 
@@ -962,24 +960,37 @@ static String MakeReplayEventType(const String& eventTypeRaw,
   return builder.ToString();
 }
 
+static int gIsEventInFlight = 0;
+
 void ReplayNotifyBeforeEvent(const String& eventName, 
-                      EventTarget* eventTarget,
-                      bool isCallback) {
-  String qualifiedEventName =
+                             EventTarget* eventTarget,
+                             bool isCallback) {
+  String replayEventType =
       MakeReplayEventType(eventName, eventTarget, isCallback);
-  // Disabled, see https://linear.app/replay/issue/RUN-1206
-  //recordreplay::OnEvent(qualifiedEventName.Ascii().c_str(), true);
-  (void)qualifiedEventName;
+
+  // Disabled by default, see https://linear.app/replay/issue/RUN-1251
+  if (recordreplay::IsRecordingOrReplaying() &&
+      !recordreplay::FeatureEnabled("disable-collect-events")) {
+    if (!recordreplay::AreEventsDisallowed()) {
+      recordreplay::OnEvent(replayEventType.Ascii().c_str(), true);
+      ++gIsEventInFlight;
+    }
+  }
 }
 
 void ReplayNotifyAfterEvent(const String& eventName,
-                     EventTarget* eventTarget,
-                     bool isCallback) {
-  String qualifiedEventName =
+                            EventTarget* eventTarget,
+                            bool isCallback) {
+  String replayEventType =
       MakeReplayEventType(eventName, eventTarget, isCallback);
-  // Disabled, see https://linear.app/replay/issue/RUN-1206
-  //recordreplay::OnEvent(qualifiedEventName.Ascii().c_str(), false);
-  (void)qualifiedEventName;
+  // Disabled by default, see https://linear.app/replay/issue/RUN-1251
+  if (recordreplay::IsRecordingOrReplaying() &&
+      !recordreplay::FeatureEnabled("disable-collect-events")) {
+    if (gIsEventInFlight) {
+      recordreplay::OnEvent(replayEventType.Ascii().c_str(), false);
+      --gIsEventInFlight;
+    }
+  }
 }
 
 }  // namespace blink
