@@ -149,7 +149,7 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
   bool OnMousePressed(const ui::MouseEvent& event) override {
     gfx::Point location(event.location());
     views::View::ConvertPointToScreen(this, &location);
-    controller_->StartResize(location);
+    controller_->StartResizeWithDivider(location);
     OnResizeStatusChanged();
     return true;
   }
@@ -157,14 +157,14 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
   bool OnMouseDragged(const ui::MouseEvent& event) override {
     gfx::Point location(event.location());
     views::View::ConvertPointToScreen(this, &location);
-    controller_->Resize(location);
+    controller_->ResizeWithDivider(location);
     return true;
   }
 
   void OnMouseReleased(const ui::MouseEvent& event) override {
     gfx::Point location(event.location());
     views::View::ConvertPointToScreen(this, &location);
-    controller_->EndResize(location);
+    controller_->EndResizeWithDivider(location);
     OnResizeStatusChanged();
     if (event.GetClickCount() == 2)
       controller_->SwapWindows();
@@ -180,14 +180,14 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
         break;
       case ui::ET_GESTURE_TAP_DOWN:
       case ui::ET_GESTURE_SCROLL_BEGIN:
-        controller_->StartResize(location);
+        controller_->StartResizeWithDivider(location);
         OnResizeStatusChanged();
         break;
       case ui::ET_GESTURE_SCROLL_UPDATE:
-        controller_->Resize(location);
+        controller_->ResizeWithDivider(location);
         break;
       case ui::ET_GESTURE_END:
-        controller_->EndResize(location);
+        controller_->EndResizeWithDivider(location);
         OnResizeStatusChanged();
         break;
       default:

@@ -43,11 +43,9 @@ namespace {
 // which is actually used in Ash.
 class TestWidgetDelegate : public views::WidgetDelegateView {
  public:
-  TestWidgetDelegate() {}
-
+  TestWidgetDelegate() = default;
   TestWidgetDelegate(const TestWidgetDelegate&) = delete;
   TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
-
   ~TestWidgetDelegate() override = default;
 
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
@@ -61,12 +59,10 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
 class MultiWindowResizeControllerTest : public AshTestBase {
  public:
   MultiWindowResizeControllerTest() = default;
-
   MultiWindowResizeControllerTest(const MultiWindowResizeControllerTest&) =
       delete;
   MultiWindowResizeControllerTest& operator=(
       const MultiWindowResizeControllerTest&) = delete;
-
   ~MultiWindowResizeControllerTest() override = default;
 
   // AshTestBase:

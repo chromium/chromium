@@ -67,6 +67,16 @@ bool SnapGroupController::RemoveSnapGroupContainingWindow(
   return RemoveSnapGroup(snap_group);
 }
 
+bool SnapGroupController::IsArm1AutomaticallyLockEnabled() const {
+  return features::IsSnapGroupEnabled() &&
+         features::kAutomaticallyLockGroup.Get();
+}
+
+bool SnapGroupController::IsArm2ManuallyLockEnabled() const {
+  return features::IsSnapGroupEnabled() &&
+         !features::kAutomaticallyLockGroup.Get();
+}
+
 aura::Window* SnapGroupController::RetrieveTheOtherWindowInSnapGroup(
     aura::Window* window) const {
   if (window_to_snap_group_map_.find(window) ==

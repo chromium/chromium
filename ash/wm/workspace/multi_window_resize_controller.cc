@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow_controller.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_lock_button.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_metrics.h"
@@ -123,8 +124,9 @@ bool Intersects(int x1, int max_1, int x2, int max_2) {
 // Returns true if the entry point to create and remove the snap group through
 // the multi-window resizer is enabled.
 bool CanShowLockWidget() {
-  return features::IsSnapGroupEnabled() &&
-         !features::kAutomaticallyLockGroup.Get();
+  auto* snap_group_controller = Shell::Get()->snap_group_controller();
+  return snap_group_controller &&
+         snap_group_controller->IsArm2ManuallyLockEnabled();
 }
 
 }  // namespace

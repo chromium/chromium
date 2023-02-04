@@ -82,7 +82,7 @@ class ASH_EXPORT MultiWindowResizeController
 
  private:
   friend class MultiWindowResizeControllerTest;
-  friend class SnapGroupEntryPointArm2Test;
+  friend class SnapGroupTest;
   class ResizeMouseWatcherHost;
   class ResizeView;
 

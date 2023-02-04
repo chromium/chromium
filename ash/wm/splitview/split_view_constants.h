@@ -6,8 +6,8 @@
 #define ASH_WM_SPLITVIEW_SPLIT_VIEW_CONSTANTS_H_
 
 #include "ash/ash_export.h"
+#include "base/time/time.h"
 #include "chromeos/ui/wm/constants.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
 

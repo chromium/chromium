@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -14,8 +15,11 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_lock_button.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/multi_window_resize_controller.h"
@@ -23,7 +27,9 @@
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -35,15 +41,21 @@ namespace ash {
 
 class SnapGroupTest : public AshTestBase {
  public:
-  SnapGroupTest() = default;
+  SnapGroupTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kSnapGroup);
+  }
   SnapGroupTest(const SnapGroupTest&) = delete;
   SnapGroupTest& operator=(const SnapGroupTest&) = delete;
   ~SnapGroupTest() override = default;
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSnapGroup);
     AshTestBase::SetUp();
+    WorkspaceEventHandler* event_handler =
+        WorkspaceControllerTestApi(ShellTestApi().workspace_controller())
+            .GetEventHandler();
+    resize_controller_ =
+        WorkspaceEventHandlerTestHelper(event_handler).resize_controller();
   }
 
   void SnapTwoTestWindows(aura::Window* primary_window,
@@ -66,8 +78,37 @@ class SnapGroupTest : public AshTestBase {
     EXPECT_EQ(0.5f, *secondary_window_state->snap_ratio());
   }
 
+  views::Widget* GetLockWidget() const {
+    DCHECK(resize_controller_);
+    return resize_controller_->lock_widget_.get();
+  }
+
+  views::Widget* GetResizeWidget() const {
+    DCHECK(resize_controller_);
+    return resize_controller_->resize_widget_.get();
+  }
+
+  base::OneShotTimer* GetShowTimer() const {
+    DCHECK(resize_controller_);
+    return &resize_controller_->show_timer_;
+  }
+
+  bool IsShowing() const {
+    DCHECK(resize_controller_);
+    return resize_controller_->IsShowing();
+  }
+
+  MultiWindowResizeController* resize_controller() const {
+    return resize_controller_;
+  }
+
+  SplitViewController* split_view_controller() {
+    return SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  MultiWindowResizeController* resize_controller_;
 };
 
 // Tests that the corresponding snap group will be created when calling
@@ -151,46 +192,176 @@ TEST_F(SnapGroupTest, WindowActivationTest) {
   EXPECT_TRUE(IsStackedBelow(w3.get(), w2.get()));
 }
 
+// A test fixture that tests the snap group entry point arm 1 which will create
+// a snap group automatically when two windows are snapped. This entry point is
+// guarded by the feature flag `kSnapGroup` and will only be enabled when the
+// feature param `kAutomaticallyLockGroup` is true.
+class SnapGroupEntryPointArm1Test : public SnapGroupTest {
+ public:
+  SnapGroupEntryPointArm1Test() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kSnapGroup, {{"AutomaticLockGroup", "true"}});
+  }
+  SnapGroupEntryPointArm1Test(const SnapGroupEntryPointArm1Test&) = delete;
+  SnapGroupEntryPointArm1Test& operator=(const SnapGroupEntryPointArm1Test&) =
+      delete;
+  ~SnapGroupEntryPointArm1Test() override = default;
+
+  void SnapOneTestWindow(aura::Window* window,
+                         chromeos::WindowStateType state_type) {
+    UpdateDisplay("800x700");
+    WindowState* window_state = WindowState::Get(window);
+    const WMEvent snap_type(state_type ==
+                                    chromeos::WindowStateType::kPrimarySnapped
+                                ? WM_EVENT_SNAP_PRIMARY
+                                : WM_EVENT_SNAP_SECONDARY);
+    window_state->OnWMEvent(&snap_type);
+    EXPECT_EQ(state_type, window_state->GetStateType());
+    EXPECT_EQ(0.5f, window_state->snap_ratio());
+  }
+
+  void SnapTwoTestWindowsInArm1(aura::Window* window1, aura::Window* window2) {
+    // Snap `window1` to trigger the overview session shown on the other half of
+    // the screen.
+    SnapOneTestWindow(
+        window1,
+        /*state_type=*/chromeos::WindowStateType::kPrimarySnapped);
+    EXPECT_TRUE(split_view_controller()->InClamshellSplitViewMode());
+    EXPECT_EQ(split_view_controller()->state(),
+              SplitViewController::State::kPrimarySnapped);
+    EXPECT_EQ(split_view_controller()->primary_window(), window1);
+    WaitForOverviewEnterAnimation();
+    EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+    // The `window2` gets activated in the overview will be auto-snapped and the
+    // overview session will end.
+    wm::ActivateWindow(window2);
+    WaitForOverviewExitAnimation();
+    EXPECT_EQ(split_view_controller()->secondary_window(), window2);
+    EXPECT_EQ(split_view_controller()->state(),
+              SplitViewController::State::kBothSnapped);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that on one window snapped in clamshell mode, the overview will be
+// shown on the other half of the screen. When activating a window in overview,
+// the window gets activated will be auto-snapped and the overview session will
+// end. Close one window will end the split view mode.
+TEST_F(SnapGroupEntryPointArm1Test, ClamshellSplitViewBasicFunctionalities) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+  w1.reset();
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+}
+
+// Tests that after snapping two windows, resize one window will not end the
+// split view mode and the window bounds will be updated correctly.
+TEST_F(SnapGroupEntryPointArm1Test, ResizeOneWindowTest) {
+  const gfx::Rect work_area_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+  gfx::Rect expected_bounds =
+      gfx::Rect(work_area_bounds.x(), work_area_bounds.y(),
+                work_area_bounds.width() / 2, work_area_bounds.height());
+  WindowState* w1_state = WindowState::Get(w1.get());
+  EXPECT_EQ(0.5f, *w1_state->snap_ratio());
+
+  auto* event_generator = GetEventGenerator();
+  wm::ActivateWindow(w1.get());
+  const gfx::Point hover_location = w1->GetBoundsInScreen().right_center();
+  const int distance_delta = work_area_bounds.width() / 4;
+  event_generator->MoveMouseTo(hover_location);
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(hover_location.x() + distance_delta,
+                               hover_location.y());
+  event_generator->ReleaseLeftButton();
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  expected_bounds.set_width(expected_bounds.width() + distance_delta);
+  EXPECT_EQ(0.75f, WindowState::Get(w1.get())->snap_ratio());
+}
+
+// Tests that the two snapped window can be resized simultaneously when dragging
+// using the multi-window resizer.
+// TODO(michelefan) Update this test after adding divider bar in clamshell mode
+// when two windows are snapped.
+TEST_F(SnapGroupEntryPointArm1Test, MultiWindowResizeTest) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+
+  auto* event_generator = GetEventGenerator();
+  auto hover_location = w1->bounds().right_center();
+  event_generator->MoveMouseTo(hover_location);
+  auto* timer = GetShowTimer();
+  EXPECT_TRUE(timer->IsRunning());
+  timer->FireNow();
+  EXPECT_TRUE(GetResizeWidget());
+
+  gfx::Rect resize_widget_bounds(GetResizeWidget()->GetWindowBoundsInScreen());
+  hover_location = resize_widget_bounds.CenterPoint();
+  event_generator->MoveMouseTo(hover_location);
+  event_generator->PressLeftButton();
+  const int distance_delta = 255;
+  event_generator->MoveMouseTo(hover_location.x() + distance_delta,
+                               hover_location.y());
+  event_generator->ReleaseLeftButton();
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+}
+
+// Tests that when snapping a snapped window to the same snapped state, the
+// overview session will not be triggered. The Overview session will be
+// triggered when the snapped window is being snapped to the other snapped
+// state.
+TEST_F(SnapGroupEntryPointArm1Test, TwoWindowsSnappedTest) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+
+  // Snap the primary window again as the primary window, the overview session
+  // won't be triggered.
+  SnapOneTestWindow(w1.get(),
+                    /*state_type=*/chromeos::WindowStateType::kPrimarySnapped);
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Snap the current primary window as the secondary window, the overview
+  // session will be triggered.
+  SnapOneTestWindow(
+      w1.get(),
+      /*state_type=*/chromeos::WindowStateType::kSecondarySnapped);
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+}
+
+// Tests that there is no crash when work area changed after snapping two
+// windows with arm1. Docked mananifier is used as an example to trigger the
+// work area change.
+TEST_F(SnapGroupEntryPointArm1Test, WorkAreaChangeTest) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+  auto* docked_mangnifier_controller =
+      Shell::Get()->docked_magnifier_controller();
+  docked_mangnifier_controller->SetEnabled(/*enabled=*/true);
+}
+
 // A test fixture that tests the user-initiated snap group entry point. This
 // entry point is guarded by the feature flag `kSnapGroup` and will only be
 // enabled when the feature param `kAutomaticallyLockGroup` is false.
 class SnapGroupEntryPointArm2Test : public SnapGroupTest {
  public:
-  SnapGroupEntryPointArm2Test() = default;
+  SnapGroupEntryPointArm2Test() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kSnapGroup, {{"AutomaticLockGroup", "false"}});
+  }
   SnapGroupEntryPointArm2Test(const SnapGroupEntryPointArm2Test&) = delete;
   SnapGroupEntryPointArm2Test& operator=(const SnapGroupEntryPointArm2Test&) =
       delete;
   ~SnapGroupEntryPointArm2Test() override = default;
-
-  // SnapGroupTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kSnapGroup, {{"AutomaticLockGroup", "false"}});
-    AshTestBase::SetUp();
-    WorkspaceEventHandler* event_handler =
-        WorkspaceControllerTestApi(ShellTestApi().workspace_controller())
-            .GetEventHandler();
-    resize_controller_ =
-        WorkspaceEventHandlerTestHelper(event_handler).resize_controller();
-  }
-
-  views::Widget* GetLockWidget() const {
-    return resize_controller_->lock_widget_.get();
-  }
-
-  views::Widget* GetResizeWidget() const {
-    return resize_controller_->resize_widget_.get();
-  }
-
-  base::OneShotTimer* GetShowTimer() const {
-    return &resize_controller_->show_timer_;
-  }
-
-  bool IsShowing() const { return resize_controller_->IsShowing(); }
-
-  MultiWindowResizeController* resize_controller() const {
-    return resize_controller_;
-  }
 
   // Verifies that the given two windows can be locked properly and the tooltip
   // is updated accordingly.
@@ -221,7 +392,7 @@ class SnapGroupEntryPointArm2Test : public SnapGroupTest {
     event_generator->ReleaseLeftButton();
     EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(window1, window2));
     VerifyLockButton(/*locked=*/true,
-                     resize_controller_->lock_button_for_testing());
+                     resize_controller()->lock_button_for_testing());
   }
 
   // Verifies that the given two windows can be unlocked properly and the
@@ -242,14 +413,14 @@ class SnapGroupEntryPointArm2Test : public SnapGroupTest {
     EXPECT_FALSE(
         snap_group_controller->AreWindowsInSnapGroup(window1, window2));
     VerifyLockButton(/*locked=*/false,
-                     resize_controller_->lock_button_for_testing());
+                     resize_controller()->lock_button_for_testing());
   }
 
  private:
   // Verifies that the icon image and the tooltip of the lock button gets
   // updated correctly based on the `locked` state.
   void VerifyLockButton(bool locked, SnapGroupLockButton* lock_button) {
-    SkColor color =
+    const SkColor color =
         lock_button->GetColorProvider()->GetColor(kColorAshIconColorPrimary);
     const gfx::ImageSkia locked_icon_image =
         gfx::CreateVectorIcon(kLockScreenEasyUnlockCloseIcon, color);
@@ -269,7 +440,6 @@ class SnapGroupEntryPointArm2Test : public SnapGroupTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  MultiWindowResizeController* resize_controller_;
 };
 
 // Tests that the lock widget will show below the resize widget when two windows

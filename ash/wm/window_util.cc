@@ -24,6 +24,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -229,15 +230,22 @@ bool ShouldExcludeForCycleList(const aura::Window* window) {
 }
 
 bool ShouldExcludeForOverview(const aura::Window* window) {
-  // If we're currently in tablet splitview, remove the default snapped window
-  // from the window list. The default snapped window occupies one side of the
-  // screen, while the other windows occupy the other side of the screen in
-  // overview mode. The default snap position is the position where the window
-  // was first snapped. See |default_snap_position_| in SplitViewController for
-  // more detail.
+  // If we're currently in tablet splitview or in clamshell mode with
+  // `IsArm1AutomaticallyLockEnabled()` (see SnapGroupController for more
+  // details), remove the default snapped window from the window list. The
+  // default snapped window occupies one side of the screen, while the other
+  // windows occupy the other side of the screen in overview mode. The default
+  // snap position is the position where the window was first snapped. See
+  // `default_snap_position_` in SplitViewController for more details.
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  if (split_view_controller->InTabletSplitViewMode() &&
+
+  auto* snap_group_controller = Shell::Get()->snap_group_controller();
+  const bool should_exclude_in_clamshell =
+      snap_group_controller &&
+      snap_group_controller->IsArm1AutomaticallyLockEnabled();
+  if ((split_view_controller->InTabletSplitViewMode() ||
+       should_exclude_in_clamshell) &&
       window == split_view_controller->GetDefaultSnappedWindow()) {
     return true;
   }
