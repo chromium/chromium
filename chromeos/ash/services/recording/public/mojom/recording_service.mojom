@@ -33,7 +33,7 @@ enum RecordingStatus {
   kAudioEncodingError,
   // Ended due to an error occurring while encoding video.
   kVideoEncodingError,
-  // Ended due to an IO error causing a failure to write to the webm file.
+  // Ended due to an IO error causing a failure to write to the output file.
   kIoError,
   // Ended due to reaching a critically low disk space.
   kLowDiskSpace,
@@ -71,22 +71,26 @@ interface RecordingServiceClient {
 // launched by Ash on which the |RecordingServiceClient| resides, and is used to
 // perform audio/video recording of the whole screen, a partial region of it, or
 // an individual window. The service captures, encodes, and muxes the audio and
-// video frames, and writes the WebM muxed video chunks to directly to a file
-// whose path was given to the Record*() functions.
+// video frames, and writes the output directly to a file whose path was given
+// to the Record*() functions. The extension of the path (e.g. ".webm" or
+// ".gif") will determine how the services encodes the video frames and
+// generates the output. Audio recording is allowed only when recording a WebM
+// video.
 // Note that a maximum of one screen recording can be done at any time.
 // TODO(https://crbug.com/1147991) Explore alternative sandboxing.
 [ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
 interface RecordingService {
   // All the below Record*() interfaces, take a pending remote to a client (e.g.
-  // Ash) which will be notified when recording finishes and all the webm
-  // chuncks are written to the file, a pending remote bound to the video
+  // Ash) which will be notified when recording finishes and all the encoded
+  // chunks are written to the file, a pending remote bound to the video
   // capturer on Viz on the GPU process, another *optional* pending remote
   // to the audio stream factory on the Audio Service, which if not provided,
-  // the service will not record audio, and a path to the webm file where the
-  // video content should be saved.
+  // the service will not record audio, and a path to the output file where the
+  // video content should be saved. Only ".webm" and ".gif" are currently
+  // supported.
   //
   // The *optional* pending_remote `drive_fs_quota_delegate`, if provided, that
-  // means that the given `webm_file_path` lives on DriveFS, and the remaining
+  // means that the given `output_file_path` lives on DriveFS, and the remaining
   // free space calculations has to be done through this delegate.
   //
   // Note that we pass a FilePath rather than a File, since:
@@ -117,7 +121,7 @@ interface RecordingService {
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
       pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
       pending_remote<DriveFsQuotaDelegate>? drive_fs_quota_delegate,
-      mojo_base.mojom.FilePath webm_file_path,
+      mojo_base.mojom.FilePath output_file_path,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size frame_sink_size_dip,
       float device_scale_factor);
@@ -147,7 +151,7 @@ interface RecordingService {
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
       pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
       pending_remote<DriveFsQuotaDelegate>? drive_fs_quota_delegate,
-      mojo_base.mojom.FilePath webm_file_path,
+      mojo_base.mojom.FilePath output_file_path,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size frame_sink_size_dip,
       float device_scale_factor,
@@ -172,14 +176,15 @@ interface RecordingService {
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
       pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
       pending_remote<DriveFsQuotaDelegate>? drive_fs_quota_delegate,
-      mojo_base.mojom.FilePath webm_file_path,
+      mojo_base.mojom.FilePath output_file_path,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size frame_sink_size_dip,
       float device_scale_factor,
       gfx.mojom.Rect crop_region_dip);
 
   // Stops an on-going video recording. The remaining frames will continue to be
-  // written to the webm file until OnRecordingEnded() is called on the client.
+  // written to the output file until OnRecordingEnded() is called on the
+  // client.
   StopRecording();
 
   // Called by the client to let the service know that a window being recorded

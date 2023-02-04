@@ -188,7 +188,7 @@ RecordingEncoderMuxer::AudioFrame::~AudioFrame() = default;
 // RecordingEncoderMuxer:
 
 // static
-base::SequenceBound<RecordingEncoderMuxer> RecordingEncoderMuxer::Create(
+base::SequenceBound<RecordingEncoder> RecordingEncoderMuxer::Create(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     const media::VideoEncoder::Options& video_encoder_options,
     const media::AudioParameters* audio_input_params,
@@ -208,7 +208,7 @@ RecordingEncoderMuxer::RecordingEncoderMuxer(
     mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& webm_file_path,
     OnFailureCallback on_failure_callback)
-    : on_failure_callback_(std::move(on_failure_callback)),
+    : RecordingEncoder(std::move(on_failure_callback)),
       webm_muxer_(media::AudioCodec::kOpus,
                   /*has_video_=*/true,
                   /*has_audio_=*/!!audio_input_params,
@@ -459,26 +459,6 @@ void RecordingEncoderMuxer::OnVideoEncoderFlushed(base::OnceClosure on_done,
 
   webm_muxer_.Flush();
   std::move(on_done).Run();
-}
-
-void RecordingEncoderMuxer::OnEncoderStatus(bool for_video,
-                                            media::EncoderStatus status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (status.is_ok())
-    return;
-
-  LOG(ERROR) << "Failed to encode " << (for_video ? "video" : "audio")
-             << " frame: " << status.message();
-  NotifyFailure(for_video ? mojom::RecordingStatus::kVideoEncodingError
-                          : mojom::RecordingStatus::kAudioEncodingError);
-}
-
-void RecordingEncoderMuxer::NotifyFailure(mojom::RecordingStatus status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (on_failure_callback_)
-    std::move(on_failure_callback_).Run(status);
 }
 
 }  // namespace recording

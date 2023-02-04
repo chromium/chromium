@@ -13,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -22,7 +21,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
-#include "chromeos/ash/services/recording/recording_encoder_muxer.h"
+#include "chromeos/ash/services/recording/recording_encoder.h"
 #include "chromeos/ash/services/recording/video_capture_params.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
@@ -38,8 +37,8 @@ namespace recording {
 class RecordingServiceTestApi;
 
 // Implements the mojo interface of the recording service which handles
-// recording audio and video of the screen or portion of it, and writes the webm
-// muxed video chunks directly to a file at a path provided to the Record*()
+// recording audio and video of the screen or portion of it, and writes the
+// encoded video chunks directly to a file at a path provided to the Record*()
 // functions.
 class RecordingService : public mojom::RecordingService,
                          public viz::mojom::FrameSinkVideoConsumer,
@@ -58,7 +57,7 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
       mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
-      const base::FilePath& webm_file_path,
+      const base::FilePath& output_file_path,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size_dip,
       float device_scale_factor) override;
@@ -68,7 +67,7 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
       mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
-      const base::FilePath& webm_file_path,
+      const base::FilePath& output_file_path,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size_dip,
       float device_scale_factor,
@@ -80,7 +79,7 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
       mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
-      const base::FilePath& webm_file_path,
+      const base::FilePath& output_file_path,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size_dip,
       float device_scale_factor,
@@ -125,7 +124,7 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
       mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
-      const base::FilePath& webm_file_path,
+      const base::FilePath& output_file_path,
       std::unique_ptr<VideoCaptureParams> capture_params);
 
   // Called on the main thread during an on-going recording to reconfigure an
@@ -263,7 +262,7 @@ class RecordingService : public mojom::RecordingService,
   // Performs all encoding and muxing operations asynchronously on the
   // |encoding_task_runner_|. However, the |encoder_muxer_| object itself is
   // constructed, used, and destroyed on the main thread sequence.
-  base::SequenceBound<RecordingEncoderMuxer> encoder_muxer_
+  base::SequenceBound<RecordingEncoder> encoder_muxer_
       GUARDED_BY_CONTEXT(main_thread_checker_);
 
   // The number of times the video encoder was reconfigured as a result of a

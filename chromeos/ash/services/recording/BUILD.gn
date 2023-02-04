@@ -8,6 +8,8 @@ assert(is_chromeos_ash)
 
 source_set("recording") {
   sources = [
+    "recording_encoder.cc",
+    "recording_encoder.h",
     "recording_encoder_muxer.cc",
     "recording_encoder_muxer.h",
     "recording_service.cc",

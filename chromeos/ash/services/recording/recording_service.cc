@@ -162,7 +162,7 @@ RecordingService::~RecordingService() {
   // then this |RecordingService| instance will have already been gone. This is
   // because the muxer writes directly to the file and does not rely on this
   // instance.
-  encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::FlushAndFinalize)
+  encoder_muxer_.AsyncCall(&RecordingEncoder::FlushAndFinalize)
       .WithArgs(base::DoNothing());
   SignalRecordingEndedToClient(mojom::RecordingStatus::kServiceClosing);
 }
@@ -172,7 +172,7 @@ void RecordingService::RecordFullscreen(
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
     mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
-    const base::FilePath& webm_file_path,
+    const base::FilePath& output_file_path,
     const viz::FrameSinkId& frame_sink_id,
     const gfx::Size& frame_sink_size_dip,
     float device_scale_factor) {
@@ -181,7 +181,7 @@ void RecordingService::RecordFullscreen(
   StartNewRecording(
       std::move(client), std::move(video_capturer),
       std::move(audio_stream_factory), std::move(drive_fs_quota_delegate),
-      webm_file_path,
+      output_file_path,
       VideoCaptureParams::CreateForFullscreenCapture(
           frame_sink_id, frame_sink_size_dip, device_scale_factor));
 }
@@ -191,7 +191,7 @@ void RecordingService::RecordWindow(
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
     mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
-    const base::FilePath& webm_file_path,
+    const base::FilePath& output_file_path,
     const viz::FrameSinkId& frame_sink_id,
     const gfx::Size& frame_sink_size_dip,
     float device_scale_factor,
@@ -201,7 +201,7 @@ void RecordingService::RecordWindow(
 
   StartNewRecording(std::move(client), std::move(video_capturer),
                     std::move(audio_stream_factory),
-                    std::move(drive_fs_quota_delegate), webm_file_path,
+                    std::move(drive_fs_quota_delegate), output_file_path,
                     VideoCaptureParams::CreateForWindowCapture(
                         frame_sink_id, subtree_capture_id, frame_sink_size_dip,
                         device_scale_factor, window_size_dip));
@@ -212,7 +212,7 @@ void RecordingService::RecordRegion(
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
     mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
-    const base::FilePath& webm_file_path,
+    const base::FilePath& output_file_path,
     const viz::FrameSinkId& frame_sink_id,
     const gfx::Size& frame_sink_size_dip,
     float device_scale_factor,
@@ -221,7 +221,7 @@ void RecordingService::RecordRegion(
 
   StartNewRecording(std::move(client), std::move(video_capturer),
                     std::move(audio_stream_factory),
-                    std::move(drive_fs_quota_delegate), webm_file_path,
+                    std::move(drive_fs_quota_delegate), output_file_path,
                     VideoCaptureParams::CreateForRegionCapture(
                         frame_sink_id, frame_sink_size_dip, device_scale_factor,
                         crop_region_dip));
@@ -373,7 +373,7 @@ void RecordingService::OnFrameCaptured(
         .Run(*frame, content_rect);
   }
 
-  encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::EncodeVideo)
+  encoder_muxer_.AsyncCall(&RecordingEncoder::EncodeVideo)
       .WithArgs(std::move(frame));
 }
 
@@ -432,7 +432,7 @@ void RecordingService::StartNewRecording(
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
     mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
-    const base::FilePath& webm_file_path,
+    const base::FilePath& output_file_path,
     std::unique_ptr<VideoCaptureParams> capture_params) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
@@ -453,7 +453,7 @@ void RecordingService::StartNewRecording(
       encoding_task_runner_,
       CreateVideoEncoderOptions(current_video_capture_params_->GetVideoSize()),
       should_record_audio ? &audio_parameters_ : nullptr,
-      std::move(drive_fs_quota_delegate), webm_file_path,
+      std::move(drive_fs_quota_delegate), output_file_path,
       BindOnceToMainThread(&RecordingService::OnEncodingFailure));
 
   ConnectAndStartVideoCapturer(std::move(video_capturer));
@@ -475,7 +475,7 @@ void RecordingService::ReconfigureVideoEncoder() {
   DCHECK(current_video_capture_params_);
 
   ++number_of_video_encoder_reconfigures_;
-  encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::InitializeVideoEncoder)
+  encoder_muxer_.AsyncCall(&RecordingEncoder::InitializeVideoEncoder)
       .WithArgs(CreateVideoEncoderOptions(
           current_video_capture_params_->GetVideoSize()));
 }
@@ -489,7 +489,7 @@ void RecordingService::TerminateRecording(mojom::RecordingStatus status) {
   video_capturer_remote_.reset();
   consumer_receiver_.reset();
 
-  encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::FlushAndFinalize)
+  encoder_muxer_.AsyncCall(&RecordingEncoder::FlushAndFinalize)
       .WithArgs(BindOnceToMainThread(&RecordingService::OnEncoderMuxerFlushed,
                                      status));
 }
@@ -542,7 +542,7 @@ void RecordingService::OnAudioCaptured(
   if (did_failure_occur_)
     return;
 
-  encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::EncodeAudio)
+  encoder_muxer_.AsyncCall(&RecordingEncoder::EncodeAudio)
       .WithArgs(std::move(audio_bus), audio_capture_time);
 }
 

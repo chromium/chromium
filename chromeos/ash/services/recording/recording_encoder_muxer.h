@@ -18,6 +18,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "chromeos/ash/services/recording/recording_encoder.h"
 #include "media/audio/audio_opus_encoder.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -31,22 +32,13 @@ namespace base {
 class FilePath;
 }
 
-namespace media {
-class VideoFrame;
-}  // namespace media
-
 namespace recording {
 
 namespace mojom {
 class DriveFsQuotaDelegate;
-enum class RecordingStatus;
 }  // namespace mojom
 
-// Defines a callback type to notify the user of RecordingEncoderMuxer of a
-// failure while encoding audio or video frames.
-using OnFailureCallback =
-    base::OnceCallback<void(mojom::RecordingStatus status)>;
-
+// TODO(afakhry): Rename this class to `WebmEncoderMuxer`.
 // Encapsulates encoding and muxing audio and video frame. An instance of this
 // object can only be interacted with via a |base::SequenceBound| wrapper, which
 // guarantees all encoding and muxing operations as well as destruction of the
@@ -56,7 +48,7 @@ using OnFailureCallback =
 //
 // This object performs VP8 video encoding and Opus audio encoding, and mux the
 // audio and video encoded frames into a Webm container.
-class RecordingEncoderMuxer {
+class RecordingEncoderMuxer : public RecordingEncoder {
  private:
   using PassKey = base::PassKey<RecordingEncoderMuxer>;
 
@@ -76,7 +68,7 @@ class RecordingEncoderMuxer {
   // By default, |on_failure_callback| will be called on the same sequence of
   // |blocking_task_runner| (unless the caller binds the given callbacks to a
   // different sequence by means of base::BindPostTask()).
-  static base::SequenceBound<RecordingEncoderMuxer> Create(
+  static base::SequenceBound<RecordingEncoder> Create(
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       const media::VideoEncoder::Options& video_encoder_options,
       const media::AudioParameters* audio_input_params,
@@ -91,40 +83,17 @@ class RecordingEncoderMuxer {
       mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
       const base::FilePath& webm_file_path,
       OnFailureCallback on_failure_callback);
-  ~RecordingEncoderMuxer();
-
   RecordingEncoderMuxer(const RecordingEncoderMuxer&) = delete;
   RecordingEncoderMuxer& operator=(const RecordingEncoderMuxer&) = delete;
+  ~RecordingEncoderMuxer() override;
 
-  bool did_failure_occur() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return !on_failure_callback_;
-  }
-
-  // Creates and initializes the video encoder if none exists, or recreates and
-  // reinitializes it otherwise. This is useful when the video frame dimensions
-  // may need to change dynamically (such as when a recorded window gets moved
-  // to a display with different bounds).
+  // RecordingEncoder:
   void InitializeVideoEncoder(
-      const media::VideoEncoder::Options& video_encoder_options);
-
-  // Encodes and muxes the given video |frame|.
-  void EncodeVideo(scoped_refptr<media::VideoFrame> frame);
-
-  // Encodes and muxes the given audio frame in |audio_bus| captured at
-  // |capture_time|.
+      const media::VideoEncoder::Options& video_encoder_options) override;
+  void EncodeVideo(scoped_refptr<media::VideoFrame> frame) override;
   void EncodeAudio(std::unique_ptr<media::AudioBus> audio_bus,
-                   base::TimeTicks capture_time);
-
-  // Audio and video encoders as well as the WebmMuxer may buffer several frames
-  // before they're processed. It is important to flush all those buffers before
-  // releasing this object so as not to drop the final portion of the recording.
-  // |on_done| will be called when all remaining buffered frames have been
-  // processed and written to the webm file.
-  // By default, |on_done| will be called on the same sequence of
-  // |blocking_task_runner| unless the caller binds it to another sequence by
-  // means of base::BindPostTask().
-  void FlushAndFinalize(base::OnceClosure on_done);
+                   base::TimeTicks capture_time) override;
+  void FlushAndFinalize(base::OnceClosure on_done) override;
 
  private:
   class RecordingMuxerDelegate;
@@ -198,26 +167,6 @@ class RecordingEncoderMuxer {
   // flushing is complete.
   void OnVideoEncoderFlushed(base::OnceClosure on_done,
                              media::EncoderStatus status);
-
-  // Called by both the audio and video encoders to provide the |status| of
-  // encoding tasks.
-  void OnEncoderStatus(bool for_video, media::EncoderStatus status);
-
-  // Notifies the owner of this object (via |on_failure_callback_|) that a
-  // failure noted by |status| has occurred during audio or video encoding, or
-  // muxing.
-  void NotifyFailure(mojom::RecordingStatus status);
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  // A callback triggered when a failure happens during encoding. Once
-  // triggered, this callback is null, and therefore indicates that a failure
-  // occurred (See did_failure_occur() above).
-  // This has to be the first thing created, so it's the last thing that gets
-  // destroyed, since any failure in the encoders or muxer rely on this callback
-  // to notify the service about the failure.
-  // See https://crbug.com/1255090.
-  OnFailureCallback on_failure_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<media::VpxVideoEncoder> video_encoder_
       GUARDED_BY_CONTEXT(sequence_checker_);
