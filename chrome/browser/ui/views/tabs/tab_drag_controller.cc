@@ -510,9 +510,9 @@ void TabDragController::Init(TabDragContext* source_context,
   //     Mouse capture is not synchronous on desktop Linux. Chrome makes
   //     transferring capture between widgets without releasing capture appear
   //     synchronous on desktop Linux, so use that.
-  // - Chrome OS
+  // - ChromeOS Ash
   //     Releasing capture on Ash cancels gestures so avoid it.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
   can_release_capture_ = false;
 #endif
   start_point_in_screen_ = gfx::Point(source_view_offset, mouse_offset.y());
@@ -1165,8 +1165,8 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
     // Ideally we would always swap the tabs now, but on non-ash Windows, it
     // seems that running the move loop implicitly activates the window when
     // done, leading to all sorts of flicker. So, on non-ash Windows, instead
-    // we process the move after the loop completes. But on chromeos, we can
-    // do tab swapping now to avoid the tab flashing issue
+    // we process the move after the loop completes. But on ChromeOS Ash, we
+    // can do tab swapping now to avoid the tab flashing issue
     // (crbug.com/116329).
     if (can_release_capture_) {
       tab_strip_to_attach_to_after_exit_ = target_context;
