@@ -285,7 +285,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
 
   // Helper method for Init(): sets generation id based on data file name.
   // For backwards compatibility, accepts file name without generation too.
-  Status SetGenerationId(const base::FilePath& full_name);
+  Status SetOrConfirmGenerationId(const base::FilePath& full_name);
 
   // Helper method for Init(): enumerates all data files in the directory.
   // Valid file names are <prefix>.<sequencing_id>, any other names are ignored.

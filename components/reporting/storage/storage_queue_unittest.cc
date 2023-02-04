@@ -7,6 +7,7 @@
 #include <atomic>
 #include <cstdint>
 #include <initializer_list>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -46,6 +47,7 @@ using ::testing::Between;
 using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::Ne;
 using ::testing::Return;
 using ::testing::Sequence;
 using ::testing::StrEq;
@@ -750,6 +752,23 @@ class StorageQueueTest
   void SetExpectedUploadsCount(size_t count = 1u) {
     EXPECT_THAT(expected_uploads_count_, Eq(0u));
     expected_uploads_count_ = count;
+  }
+
+  void DeleteGenerationIdFromRecordFilePaths(const QueueOptions options) {
+    // Remove the generation id from the path of all data files in the storage
+    // queue directory
+    auto file_prefix_regex =
+        base::StrCat({options.file_prefix(), FILE_PATH_LITERAL(".*")});
+    base::FileEnumerator dir_enum(
+        options.directory(),
+        /*recursive=*/false, base::FileEnumerator::FILES, file_prefix_regex);
+    for (auto file_path = dir_enum.Next(); !file_path.empty();
+         file_path = dir_enum.Next()) {
+      base::FilePath file_path_without_generation_id = base::FilePath(
+          file_path.RemoveFinalExtension().RemoveFinalExtension().AddExtension(
+              file_path.FinalExtension()));
+      ASSERT_TRUE(Move(file_path, file_path_without_generation_id));
+    }
   }
 
   std::string dm_token_;
@@ -2379,6 +2398,24 @@ TEST_P(StorageQueueTest, UploadWithInsufficientMemory) {
     SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
+}
+
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWithCorruptData) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
+
+  // Save copy of options.
+  const QueueOptions options = storage_queue_->options();
+
+  ResetTestStorageQueue();
+
+  DeleteGenerationIdFromRecordFilePaths(options);
+
+  // All data files should be irreparably corrupt
+  auto storage_queue_result = CreateTestStorageQueue(options);
+  EXPECT_THAT(storage_queue_result.status(), Ne(Status::StatusOK()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
