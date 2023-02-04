@@ -579,7 +579,6 @@
 #include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
@@ -1813,27 +1812,14 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
 
   if (content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
           browser_context, site)) {
-    if (site.SchemeIs(chrome::kIsolatedAppScheme)) {
-      const base::expected<web_app::IsolatedWebAppUrlInfo, std::string>
-          iwa_url_info = web_app::IsolatedWebAppUrlInfo::Create(site);
-      if (!iwa_url_info.has_value()) {
-        LOG(ERROR) << "Invalid isolated-app URL: " << site;
-        return default_storage_partition_config;
-      }
-      return iwa_url_info->storage_partition_config(browser_context);
+    CHECK(site.SchemeIs(chrome::kIsolatedAppScheme));
+    const base::expected<web_app::IsolatedWebAppUrlInfo, std::string>
+        iwa_url_info = web_app::IsolatedWebAppUrlInfo::Create(site);
+    if (!iwa_url_info.has_value()) {
+      LOG(ERROR) << "Invalid isolated-app URL: " << site;
+      return default_storage_partition_config;
     }
-
-    // TODO(crbug.com/1363756): Remove this path once IWAs are off HTTPS.
-    Profile* profile = Profile::FromBrowserContext(browser_context);
-    const std::string* isolation_key = web_app::GetStorageIsolationKey(
-        profile->GetPrefs(), url::Origin::Create(site));
-    CHECK(isolation_key);
-    // |in_memory| and |partition_name| are only used in guest schemes, so they
-    // are cleared here.
-    return content::StoragePartitionConfig::Create(
-        browser_context, *isolation_key,
-        /*partition_name=*/std::string(),
-        /*in_memory=*/false);
+    return iwa_url_info->storage_partition_config(browser_context);
   }
 #endif
 
@@ -2468,15 +2454,8 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
   if (url.SchemeIs(chrome::kIsolatedAppScheme)) {
     return true;
   }
-
-  // TODO(crbug.com/1363756): Remove the GetStorageIsolationKey call.
-  return origin_matches_flag &&
-         !!web_app::GetStorageIsolationKey(
-             Profile::FromBrowserContext(browser_context)->GetPrefs(),
-             url::Origin::Create(url));
-#else
-  return false;
 #endif
+  return false;
 }
 
 bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(

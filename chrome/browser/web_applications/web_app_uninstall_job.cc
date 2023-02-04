@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -84,8 +83,6 @@ void WebAppUninstallJob::Start(const url::Origin& app_origin,
     app->SetIsUninstalling(true);
   }
   install_manager_->NotifyWebAppWillBeUninstalled(app_id_);
-
-  RemoveAppIsolationState(&profile_prefs, app_origin);
 
   auto synchronize_barrier = OsIntegrationManager::GetBarrierForSynchronize(
       base::BindOnce(&WebAppUninstallJob::OnOsHooksUninstalled,

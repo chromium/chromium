@@ -61,6 +61,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
@@ -92,7 +93,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "third_party/blink/public/common/features.h"
@@ -829,15 +829,6 @@ class ChromeContentBrowserClientStoragePartitionTest
   content::StoragePartitionConfig CreateDefaultStoragePartitionConfig() {
     return content::StoragePartitionConfig::CreateDefault(&profile_);
   }
-
-  void RegisterAppIsolationState(const std::string& app_id,
-                                 const std::string& scope,
-                                 bool isolated) {
-    web_app::WebApp app(app_id);
-    app.SetScope(GURL(scope));
-    app.SetStorageIsolated(isolated);
-    web_app::RecordOrRemoveAppIsolationState(profile_.GetPrefs(), app);
-  }
 };
 // static
 constexpr char ChromeContentBrowserClientStoragePartitionTest::kAppId[];
@@ -856,25 +847,7 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
 }
 
 TEST_F(ChromeContentBrowserClientStoragePartitionTest,
-       DefaultPartitionIsUsedOnHttpsWhenIsolationDisabled) {
-  RegisterAppIsolationState(kAppId, kHttpsScope, /*isolated=*/true);
-
-  TestChromeContentBrowserClient test_content_browser_client;
-  content::StoragePartitionConfig config =
-      test_content_browser_client.GetStoragePartitionConfigForSite(
-          &profile_, GURL(kHttpsScope));
-
-  EXPECT_EQ(CreateDefaultStoragePartitionConfig(), config);
-  EXPECT_FALSE(
-      test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
-          &profile_, GURL(kHttpsScope),
-          /*origin_matches_flag=*/false));
-}
-
-TEST_F(ChromeContentBrowserClientStoragePartitionTest,
        DefaultPartitionIsUsedForNonIsolatedPWAs) {
-  RegisterAppIsolationState(kAppId, kHttpsScope, /*isolated=*/false);
-
   TestChromeContentBrowserClient test_content_browser_client;
   content::StoragePartitionConfig config =
       test_content_browser_client.GetStoragePartitionConfigForSite(
@@ -924,30 +897,6 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
                   &profile_, GURL(kHttpsScope),
                   /*origin_matches_flag=*/false),
               IsFalse());
-}
-
-TEST_F(ChromeContentBrowserClientStoragePartitionTest,
-       DedicatedPartitionIsUsedForIsolatedHttpsApps) {
-  RegisterAppIsolationState(kAppId, kHttpsScope, /*isolated=*/true);
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kIsolatedWebApps);
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kIsolatedAppOrigins, kHttpsScope);
-
-  TestChromeContentBrowserClient test_content_browser_client;
-  content::StoragePartitionConfig config =
-      test_content_browser_client.GetStoragePartitionConfigForSite(
-          &profile_, GURL(kHttpsScope));
-
-  auto expected_config = content::StoragePartitionConfig::Create(
-      &profile_, /*partition_domain=*/kAppId, /*partition_name=*/"",
-      /*in_memory=*/false);
-  EXPECT_EQ(expected_config, config);
-  EXPECT_TRUE(test_content_browser_client.ShouldUrlUseApplicationIsolationLevel(
-      &profile_, GURL(kHttpsScope),
-      /*origin_matches_flag=*/true));
 }
 
 TEST_F(ChromeContentBrowserClientStoragePartitionTest,

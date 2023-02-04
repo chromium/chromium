@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
-#include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcuts_menu.h"
@@ -437,11 +436,6 @@ void WebAppInstallFinalizer::CommitToSyncBridge(std::unique_ptr<WebApp> web_app,
     std::move(commit_callback).Run(success);
     return;
   }
-
-  // Save the isolation state to prefs. On browser startup we may need access
-  // to the isolation state before WebAppDatabase has finished loading, so we
-  // duplicate this state in a pref to prevent blocking startup.
-  RecordOrRemoveAppIsolationState(profile_->GetPrefs(), *web_app);
 
   AppId app_id = web_app->app_id();
 
