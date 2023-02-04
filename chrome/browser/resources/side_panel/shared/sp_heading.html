@@ -10,12 +10,24 @@
     height: 28px;
   }
 
+  :host-context([chrome-refresh-2023]):host([compact]) {
+    height: 36px;
+  }
+
   #backButton,
   ::slotted(cr-icon-button[slot=buttons]) {
     --cr-icon-button-margin-start: -2px;
     --cr-icon-button-margin-end: -2px;
     --cr-icon-button-icon-size: 16px;
     --cr-icon-button-size: 20px;
+  }
+
+  :host-context([chrome-refresh-2023]) #backButton {
+    --cr-icon-button-fill-color: var(--cr-primary-text-color);
+  }
+
+  :host-context([chrome-refresh-2023]) ::slotted(cr-icon-button[slot=buttons]) {
+    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
   }
 
   ::slotted([slot=heading]:is(h1, h2, h3, h4, h5, h6)) {
@@ -29,12 +41,26 @@
     white-space: nowrap;
   }
 
+  :host-context([chrome-refresh-2023])
+      ::slotted([slot=heading]:is(h1, h2, h3, h4, h5, h6)) {
+    font-size: 14px;
+  }
+
   :host([compact]) ::slotted([slot=heading]:is(h1, h2, h3, h4, h5, h6)) {
     color: var(--cr-secondary-text-color);
     font-size: 11px;
     font-weight: 600;
     line-height: 16px;
     text-transform: uppercase;
+  }
+
+  :host-context([chrome-refresh-2023]):host([compact])
+      ::slotted([slot=heading]:is(h1, h2, h3, h4, h5, h6)) {
+    color: var(--cr-primary-text-color);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    text-transform: none;
   }
 
   ::slotted([slot=metadata]) {
@@ -46,6 +72,11 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  :host-context([chrome-refresh-2023]) ::slotted([slot=metadata]) {
+    line-height: 16px;
+    padding-inline-end: 4px;
   }
 
   #suffixButtons {

@@ -7308,10 +7308,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
       <message name="IDS_READ_LATER_MENU_UNREAD_HEADER" desc="Header for section of unread Read later items.">
-        UNREAD
+        Unread
       </message>
       <message name="IDS_READ_LATER_MENU_READ_HEADER" desc="Header for section of read Read later items.">
-        PAGES YOU'VE READ
+        Pages you've read
       </message>
       <message name="IDS_READ_LATER_MENU_TOOLTIP_MARK_AS_READ" desc="Tooltip for the button to mark a read later entry as read.">
         Mark as read
