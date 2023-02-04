@@ -685,8 +685,6 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   local_data->set_window_controls_overlay_enabled(
       web_app.window_controls_overlay_enabled());
 
-  local_data->set_is_storage_isolated(web_app.IsStorageIsolated());
-
   if (web_app.launch_handler()) {
     local_data->mutable_launch_handler()->set_client_mode(
         LaunchHandlerClientModeToProto(web_app.launch_handler()->client_mode));
@@ -1316,8 +1314,6 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetWindowControlsOverlayEnabled(
         local_data.window_controls_overlay_enabled());
   }
-
-  web_app->SetStorageIsolated(local_data.is_storage_isolated());
 
   if (local_data.has_launch_handler()) {
     const LaunchHandlerProto& launch_handler_proto =

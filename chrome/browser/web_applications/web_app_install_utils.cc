@@ -691,8 +691,6 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   if (manifest_url.is_valid())
     web_app_info->manifest_url = manifest_url;
 
-  web_app_info->is_storage_isolated = false;
-
   web_app_info->launch_handler = manifest.launch_handler;
   if (manifest.description.has_value()) {
     web_app_info->description = manifest.description.value();
@@ -1166,7 +1164,6 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
             web_app_info.shortcuts_menu_icon_bitmaps));
   }
 
-  web_app.SetStorageIsolated(web_app_info.is_storage_isolated);
   web_app.SetPermissionsPolicy(web_app_info.permissions_policy);
 
   if (web_app.file_handler_approval_state() == ApiApprovalState::kAllowed &&
