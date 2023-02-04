@@ -377,7 +377,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.CharTypedToRepaintLatency" units="ms"
-    expires_after="2024-01-11">
+    expires_after="2024-02-01">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
@@ -409,7 +409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.CharTypedToRepaintLatency.InsertToPresent" units="ms"
-    expires_after="2024-01-11">
+    expires_after="2024-02-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -433,7 +433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.CharTypedToRepaintLatency.PaintToPresent" units="ms"
-    expires_after="2024-01-11">
+    expires_after="2024-02-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -456,7 +456,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.CharTypedToRepaintLatency.ToPaint" units="ms"
-    expires_after="2024-01-11">
+    expires_after="2024-02-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -769,7 +769,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.FocusToOpenTimeAnyPopupState3" units="ms"
-    expires_after="2024-01-11">
+    expires_after="2024-02-01">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -893,9 +893,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.IsPasteAndGo" enum="Boolean"
-    expires_after="2022-05-01">
+    expires_after="2024-02-01">
   <owner>jdonnelly@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     Whether an omnibox interaction is a paste-and-search/paste-and-go action.
@@ -911,8 +910,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.IsPopupOpen" enum="Boolean" expires_after="2022-01-02">
-  <owner>mpearson@chromium.org</owner>
+<histogram name="Omnibox.IsPopupOpen" enum="Boolean" expires_after="2024-02-01">
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -1256,7 +1254,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.PaintTime" units="ms" expires_after="2024-01-11">
+<histogram name="Omnibox.PaintTime" units="ms" expires_after="2024-02-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -1266,9 +1264,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.Paste" units="count" expires_after="2022-01-02">
+<histogram name="Omnibox.Paste" units="count" expires_after="2024-02-01">
   <owner>jdonnelly@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     The number of paste commands on the text in the omnibox. Reported every time
@@ -1298,7 +1295,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ProviderTime2.{OmniboxProvider}" units="ms"
-    expires_after="2024-01-11">
+    expires_after="2024-02-01">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -1309,7 +1306,7 @@ chromium-metrics-reviews@google.com.
   <token key="OmniboxProvider" variants="OmniboxProviders"/>
 </histogram>
 
-<histogram name="Omnibox.QueryTime2" units="ms" expires_after="2024-01-11">
+<histogram name="Omnibox.QueryTime2" units="ms" expires_after="2024-02-01">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -1442,7 +1439,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.Search.OffTheRecord" enum="BooleanOffTheRecord"
-    expires_after="M115">
+    expires_after="2024-02-01">
+  <owner>jdonnelly@chromium.org</owner>
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -2656,7 +2654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Realbox.CharTypedToRepaintLatency.ToPaint" units="ms"
-    expires_after="2024-01-11">
+    expires_after="2024-02-01">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -2670,7 +2668,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Realbox.ResultChangedToRepaintLatency.ToPaint" units="ms"
-    expires_after="2024-01-11">
+    expires_after="2024-02-01">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>

@@ -2568,9 +2568,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionsListScrolled.{PageClass}"
-    enum="Boolean" expires_after="2023-01-31">
+    enum="Boolean" expires_after="2024-02-01">
   <owner>ender@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
     For every interaction with the Omnibox, this metric records whether the user
