@@ -112,10 +112,12 @@ def parse_and_expand_globlist(globlist_name, glob_root):
         expansion = [f[prefix_size:] for f in expansion]
 
         if is_exclusion:
-          files = [f for f in files if f not in expansion]
+          files = [f for f in files if f.replace('\\', '/') not in expansion]
         else:
           files += expansion
 
+      # Handle Windows backslashes
+      files = [f.replace('\\', '/') for f in files]
       files.sort()
       return files
 
@@ -137,7 +139,7 @@ def compare_lists(a, b, verbose):
 
 def write_filelist(filelist_name, files, header):
   try:
-    with open(filelist_name, 'w') as filelist:
+    with open(filelist_name, 'w', encoding='utf-8', newline='') as filelist:
       if not _HEADER_PATTERN.search(header):
         header = _HEADER
       filelist.write(header)
