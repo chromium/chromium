@@ -559,6 +559,8 @@ void ResponseBodyLoader::OnStateChange() {
     return;
 
   TRACE_EVENT0("blink", "ResponseBodyLoader::OnStateChange");
+  recordreplay::Assert("[RUN-1126] ResponseBodyLoader::OnStateChange %d",
+                       aborted_);
 
   size_t num_bytes_consumed = 0;
   while (!aborted_ && (!IsSuspended() || IsSuspendedForBackForwardCache())) {

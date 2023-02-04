@@ -568,6 +568,8 @@ void XMLHttpRequest::DispatchReadyStateChangeEvent() {
     return;
 
   ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
+  recordreplay::Assert(
+      "[RUN-1126] XMLHttpRequest::DispatchReadyStateChangeEvent %d %d", state_, async_);
   if (async_ || (state_ <= kOpened || state_ == kDone)) {
     DEVTOOLS_TIMELINE_TRACE_EVENT("XHRReadyStateChange",
                                   inspector_xhr_ready_state_change_event::Data,

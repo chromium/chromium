@@ -453,6 +453,8 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
 
     bool add_queue_time_to_tasks = sequence_manager_->GetAddQueueTimeToTasks();
     TimeTicks queue_time;
+    recordreplay::Assert("[RUN-1126] TaskQueueImpl::PostImmediateTaskImpl 1 %d",
+                         add_queue_time_to_tasks || delayed_fence_allowed_);
     if (add_queue_time_to_tasks || delayed_fence_allowed_)
       queue_time = sequence_manager_->any_thread_clock_maybe_events_disallowed()->NowTicks();
 

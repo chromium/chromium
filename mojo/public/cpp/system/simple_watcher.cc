@@ -200,6 +200,8 @@ void SimpleWatcher::Cancel() {
   MojoResult rv =
       MojoRemoveTrigger(trap_handle_.get().value(), context->value(), nullptr);
 
+  recordreplay::Assert("[RUN-1126] SimpleWatcher::Cancel %d", rv);
+
   // It's possible this cancellation could race with a handle closure
   // notification, in which case the watch may have already been implicitly
   // cancelled.
@@ -215,6 +217,9 @@ MojoResult SimpleWatcher::Arm(MojoResult* ready_result,
   MojoTrapEvent blocking_event = {sizeof(blocking_event)};
   MojoResult rv = MojoArmTrap(trap_handle_.get().value(), nullptr,
                               &num_blocking_events, &blocking_event);
+
+  recordreplay::Assert("[RUN-1126] SimpleWatcher::Arm %d", rv);
+
   if (rv == MOJO_RESULT_FAILED_PRECONDITION) {
     DCHECK(context_);
     DCHECK_EQ(1u, num_blocking_events);
