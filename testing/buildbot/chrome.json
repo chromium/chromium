@@ -1833,7 +1833,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R112-15336.0.0",
+        "cros_img": "dedede-release/R112-15338.0.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -1865,7 +1865,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R110-15278.47.0",
+        "cros_img": "dedede-release/R110-15278.51.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -1897,7 +1897,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R112-15336.0.0",
+        "cros_img": "eve-release/R112-15338.0.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -1929,7 +1929,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R110-15278.47.0",
+        "cros_img": "eve-release/R110-15278.51.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -2040,7 +2040,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R112-15336.0.0",
+        "cros_img": "jacuzzi-release/R112-15338.0.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -2072,7 +2072,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R110-15278.47.0",
+        "cros_img": "jacuzzi-release/R110-15278.51.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -2145,7 +2145,7 @@
       {
         "args": [],
         "cros_board": "herobrine",
-        "cros_img": "herobrine-release/R112-15336.0.0",
+        "cros_img": "herobrine-release/R112-15338.0.0",
         "name": "lacros_fyi_tast_tests HEROBRINE_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
