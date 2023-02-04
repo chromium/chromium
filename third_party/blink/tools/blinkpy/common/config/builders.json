@@ -228,5 +228,54 @@
             "blink_wpt_tests (with patch)": {}
         },
         "is_try_builder": true
+    },
+    "linux-rel": {
+        "main": "tryserver.chromium.linux",
+        "port_name": "linux-trusty",
+        "specifiers": ["Trusty", "Release"],
+        "has_webdriver_tests": true,
+        "steps": {
+            "blink_web_tests (with patch)": {},
+            "blink_wpt_tests (with patch)": {},
+            "high_dpi_blink_web_tests (with patch)": {
+                "flag_specific": "highdpi"
+            },
+            "high_dpi_blink_wpt_tests (with patch)": {
+                "flag_specific": "highdpi"
+            },
+            "vulkan_swiftshader_blink_web_tests (with patch)": {
+                "flag_specific": "skia-vulkan-swiftshader"
+            },
+            "not_site_per_process_blink_web_tests (with patch)": {
+                "flag_specific": "disable-site-isolation-trials"
+            },
+            "not_site_per_process_blink_wpt_tests (with patch)": {
+                "flag_specific": "disable-site-isolation-trials"
+            }
+        },
+        "is_try_builder": true,
+        "is_cq_builder":true
+    },
+    "mac-rel": {
+        "main": "tryserver.chromium.mac",
+        "port_name": "mac-mac12",
+        "specifiers": ["Mac12", "Release"],
+        "steps": {
+            "blink_web_tests (with patch)": {},
+            "blink_wpt_tests (with patch)": {}
+        },
+        "is_try_builder": true,
+        "is_cq_builder":true
+    },
+    "win-rel": {
+        "main": "tryserver.chromium.win",
+        "port_name": "win-win10.20h2",
+        "specifiers": ["Win10.20h2", "Release"],
+        "steps": {
+            "blink_web_tests (with patch)": {},
+            "blink_wpt_tests (with patch)": {}
+        },
+        "is_try_builder": true,
+        "is_cq_builder":true
     }
 }
