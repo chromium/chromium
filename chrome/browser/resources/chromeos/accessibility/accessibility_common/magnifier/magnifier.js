@@ -4,6 +4,7 @@
 
 import {ChromeEventHandler} from '../../common/chrome_event_handler.js';
 import {EventHandler} from '../../common/event_handler.js';
+import {FlagName, Flags} from '../../common/flags.js';
 import {RectUtil} from '../../common/rect_util.js';
 
 const EventType = chrome.automation.EventType;
@@ -33,13 +34,6 @@ export class Magnifier {
      * @private {boolean}
      */
     this.isInitializing_ = true;
-
-    /**
-     * Whether or not to draw a preview box around magnifier viewport area
-     * instead of magnifying the screen for debugging.
-     * @private {boolean}
-     */
-    this.magnifierDebugDrawRect_ = false;
 
     /**
      * Last seen mouse location (cached from event in onMouseMovedOrDragged).
@@ -146,13 +140,14 @@ export class Magnifier {
     setTimeout(() => {
       this.isInitializing_ = false;
     }, Magnifier.IGNORE_FOCUS_UPDATES_INITIALIZATION_MS);
+  }
 
-    chrome.commandLinePrivate.hasSwitch(
-        'enable-magnifier-debug-draw-rect', enabled => {
-          if (enabled) {
-            this.magnifierDebugDrawRect_ = true;
-          }
-        });
+  /**
+   * @return {boolean}
+   * @private
+   */
+  drawDebugRect_() {
+    return Flags.isEnabled(FlagName.MAGNIFIER_DEBUG_DRAW_RECT);
   }
 
   /**
@@ -160,7 +155,7 @@ export class Magnifier {
    * @private
    */
   onMagnifierBoundsChanged_(bounds) {
-    if (this.magnifierDebugDrawRect_) {
+    if (this.drawDebugRect_()) {
       chrome.accessibilityPrivate.setFocusRings([{
         rects: [bounds],
         type: chrome.accessibilityPrivate.FocusType.GLOW,

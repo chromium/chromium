@@ -37,6 +37,7 @@ chromevox_es6_modules = [
   "../common/cursors/range.js",
   "../common/cursors/recovery_strategy.js",
   "../common/event_generator.js",
+  "../common/flags.js",
   "../common/instance_checker.js",
   "../common/key_code.js",
   "../common/local_storage.js",

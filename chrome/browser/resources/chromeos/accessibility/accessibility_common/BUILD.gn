@@ -147,6 +147,7 @@ js_library("accessibility_common") {
     "../common:constants",
     "../common:event_generator",
     "../common:event_handler",
+    "../common:flags",
     "../common:instance_checker",
     "../common:rect_util",
   ]
@@ -187,6 +188,7 @@ js_library("dictation") {
     ":dictation_metrics",
     ":dictation_ui_controller",
     ":speech_parsing",
+    "../common:flags",
   ]
   externs_list = [
     "$externs_path/accessibility_private.js",

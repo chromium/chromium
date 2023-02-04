@@ -439,6 +439,7 @@ js_library("switch_access") {
     ":preference_manager",
     ":switch_access_constants",
     "../common:constants",
+    "../common:flags",
     "../common:tree_walker",
   ]
   externs_list = [

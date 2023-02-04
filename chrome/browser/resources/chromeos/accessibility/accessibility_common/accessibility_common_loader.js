@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Flags} from '../common/flags.js';
 import {InstanceChecker} from '../common/instance_checker.js';
 
 import {Autoclick} from './autoclick/autoclick.js';
@@ -28,6 +29,11 @@ export class AccessibilityCommon {
     this.magnifierLoadCallbackForTest_ = null;
 
     this.init_();
+  }
+
+  static async init() {
+    await Flags.init();
+    globalThis.accessibilityCommon = new AccessibilityCommon();
   }
 
   /**
@@ -162,4 +168,4 @@ export class AccessibilityCommon {
 
 InstanceChecker.closeExtraInstances();
 // Initialize the AccessibilityCommon extension.
-globalThis.accessibilityCommon = new AccessibilityCommon();
+AccessibilityCommon.init();

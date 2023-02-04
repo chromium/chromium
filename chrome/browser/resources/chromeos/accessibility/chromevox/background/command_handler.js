@@ -76,29 +76,6 @@ export class CommandHandler extends CommandHandlerInterface {
      * @private {?AutomationNode}
      */
     this.imageNode_;
-
-    /** @private {boolean} */
-    this.languageLoggingEnabled_ = false;
-
-    this.init_();
-  }
-
-  /**
-   * @param {boolean} flagEnabled
-   * @private
-   */
-  updateLanguageLoggingEnabled_(flagEnabled) {
-    this.languageLoggingEnabled_ |= flagEnabled;
-  }
-
-  /** @private */
-  init_() {
-    chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-language-detection',
-        enabled => this.updateLanguageLoggingEnabled_(enabled));
-    chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-language-detection-dynamic',
-        enabled => this.updateLanguageLoggingEnabled_(enabled));
   }
 
   /** @override */

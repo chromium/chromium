@@ -9,40 +9,53 @@ SwitchAccessSwitchAccessTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+    await importModule('Flags', '/common/flags.js');
     await importModule('SwitchAccess', '/switch_access/switch_access.js');
+  }
+
+  async waitForCallback() {
+    return new Promise(resolve => this.promiseCallback = resolve);
   }
 };
 
-async function waitForAsyncToResolve() {
-  await new Promise(resolve => setTimeout(resolve, 0));
+function resetState() {
+  delete Flags.instance;
 }
 
 AX_TEST_F(
     'SwitchAccessSwitchAccessTest', 'NoFocusDefersInit', async function() {
       // Build a new SwitchAccess instance with hooks.
       let initCount = 0;
-      SwitchAccess.finishInit_ = () => initCount++;
+      SwitchAccess.finishInit_ = () => {
+        initCount++;
+        assertTrue(Boolean(this.promiseCallback));
+        this.promiseCallback();
+        delete this.promiseCallback();
+      };
 
-      // A fake desktop.
-      const fakeDesktop = {};
-      fakeDesktop.addEventListener = () => {};
-      fakeDesktop.removeEventListener = () => {};
+      // Stub this out so that focus is undefined.
+      chrome.automation.getFocus = callback => {
+        callback();
+        assertTrue(Boolean(this.promiseCallback));
+        this.promiseCallback();
+        delete this.promiseCallback;
+      };
 
-      // Stub out this to be synchronous.
-      chrome.automation.getDesktop = callback => callback(fakeDesktop);
-
-      // Stub this out as well so that focus is undefined.
-      chrome.automation.getFocus = callback => callback();
+      // Reset state so there are no re-initialization errors.
+      resetState();
 
       // Initialize; we should not have called finishInit_ since there's no
       // focus.
       SwitchAccess.initialize();
-      await waitForAsyncToResolve();
+      await this.waitForCallback();
       assertEquals(0, initCount);
+
+      // Reset state so there are no re-initialization errors.
+      resetState();
 
       // Restub this to pass a "focused" node.
       chrome.automation.getFocus = callback => callback({});
       SwitchAccess.initialize();
-      await waitForAsyncToResolve();
+      await this.waitForCallback();
       assertEquals(1, initCount);
     });

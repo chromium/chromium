@@ -7,6 +7,7 @@ import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {AutomationUtil} from '../../common/automation_util.js';
 import {constants} from '../../common/constants.js';
 import {CursorRange} from '../../common/cursors/range.js';
+import {Flags} from '../../common/flags.js';
 import {InstanceChecker} from '../../common/instance_checker.js';
 import {LocalStorage} from '../../common/local_storage.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
@@ -111,8 +112,8 @@ export class Background extends ChromeVoxState {
   }
 
   static async init() {
-    // Initialize storage, settings, braille, prefs, TTS, and legacy background
-    // page first.
+    // Pre-initialization.
+    await Flags.init();
     await LocalStorage.init();
     await SettingsManager.init();
     BrailleBackground.init();
@@ -123,6 +124,7 @@ export class Background extends ChromeVoxState {
 
     ChromeVoxState.instance = new Background();
 
+    // Standard initialization.
     AutoScrollHandler.init();
     BackgroundKeyboardHandler.init();
     BrailleCommandHandler.init();
@@ -143,6 +145,7 @@ export class Background extends ChromeVoxState {
     RangeAutomationHandler.init();
     SmartStickyMode.init();
 
+    // Async initialization.
     // Allow all async initializers to run simultaneously, but wait for them to
     // complete before continuing.
     await Promise.all([

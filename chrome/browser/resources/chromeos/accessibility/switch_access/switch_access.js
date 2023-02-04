@@ -4,6 +4,7 @@
 
 import {AsyncUtil} from '../common/async_util.js';
 import {EventHandler} from '../common/event_handler.js';
+import {FlagName, Flags} from '../common/flags.js';
 
 import {SACommands} from './commands.js';
 import {Navigator} from './navigator.js';
@@ -23,6 +24,7 @@ const RoleType = chrome.automation.RoleType;
  */
 export class SwitchAccess {
   static async initialize() {
+    await Flags.init();
     SwitchAccess.instance = new SwitchAccess();
 
     const desktop = await AsyncUtil.getDesktop();
@@ -70,17 +72,6 @@ export class SwitchAccess {
 
   /** @private */
   constructor() {
-    /**
-     * Feature flag controlling improvement of text input capabilities.
-     * @private {boolean}
-     */
-    this.enableImprovedTextInput_ = false;
-
-    chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-switch-access-text', result => {
-          this.enableImprovedTextInput_ = result;
-        });
-
     /* @private {!Mode} */
     this.mode_ = Mode.ITEM_SCAN;
   }
@@ -91,7 +82,7 @@ export class SwitchAccess {
    * @return {boolean}
    */
   static improvedTextInputEnabled() {
-    return SwitchAccess.instance.enableImprovedTextInput_;
+    return Flags.isEnabled(FlagName.SWITCH_ACCESS_TEXT);
   }
 
   /** @return {!Mode} */

@@ -40,6 +40,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "cursors/recovery_strategy.js",
     "event_generator.js",
     "event_handler.js",
+    "flags.js",
     "gdocs_script.js",
     "instance_checker.js",
     "key_code.js",
@@ -116,6 +117,10 @@ js_library("event_generator") {
 
 js_library("event_handler") {
   externs_list = [ "$externs_path/automation.js" ]
+}
+
+js_library("flags") {
+  externs_list = [ "$externs_path/command_line_private.js" ]
 }
 
 js_library("key_code") {
