@@ -33,7 +33,7 @@ import org.chromium.chromecast.base.Both;
 import org.chromium.chromecast.base.CastSwitches;
 import org.chromium.chromecast.base.Controller;
 import org.chromium.chromecast.base.Observable;
-import org.chromium.chromecast.base.Observers;
+import org.chromium.chromecast.base.Observer;
 import org.chromium.chromecast.base.Unit;
 import org.chromium.content_public.browser.WebContents;
 
@@ -116,7 +116,7 @@ public class CastWebContentsActivity extends Activity {
                 mIsFinishingState.set("Stopped by intent: " + intent.getAction());
             });
         });
-        createdAndNotTestingState.subscribe(Observers.onEnter(x -> {
+        createdAndNotTestingState.subscribe(Observer.onOpen(x -> {
             // Do this in onCreate() only if not testing.
             CastBrowserHelper.initializeBrowser(getApplicationContext());
 
@@ -140,7 +140,7 @@ public class CastWebContentsActivity extends Activity {
             };
         });
 
-        mCreatedState.subscribe(Observers.onExit(x -> mSurfaceHelperState.reset()));
+        mCreatedState.subscribe(Observer.onClose(x -> mSurfaceHelperState.reset()));
 
         mCreatedState.subscribe(x -> {
             IntentFilter filter = new IntentFilter();
@@ -200,7 +200,7 @@ public class CastWebContentsActivity extends Activity {
 
         mGotIntentState.map(Intent::getExtras)
                 .map(CastWebContentsIntentUtils::getSessionId)
-                .subscribe(Observers.onEnter(mSessionIdState::set));
+                .subscribe(Observer.onOpen(mSessionIdState::set));
 
         mStartedState.and(mSessionIdState).subscribe(both -> {
             sendVisibilityChanged(
@@ -209,14 +209,14 @@ public class CastWebContentsActivity extends Activity {
                 sendVisibilityChanged(both.second, CastWebContentsIntentUtils.VISIBITY_TYPE_HIDDEN);
             };
         });
-        mStartedState.subscribe(Observers.onEnter(mSurfaceAvailable::set));
+        mStartedState.subscribe(Observer.onOpen(mSurfaceAvailable::set));
 
         // Set a flag to exit sleep mode when this activity starts.
         mCreatedState.and(mGotIntentState)
                 .map(Both::getSecond)
                 // Turn the screen on only if the launching Intent asks to.
                 .filter(CastWebContentsIntentUtils::shouldTurnOnScreen)
-                .subscribe(Observers.onEnter(x -> turnScreenOn()));
+                .subscribe(Observer.onOpen(x -> turnScreenOn()));
 
         // Handle each new Intent.
         Controller<CastWebContentsSurfaceHelper.StartParams> startParamsState = new Controller<>();
@@ -225,19 +225,19 @@ public class CastWebContentsActivity extends Activity {
                 .map(Intent::getExtras)
                 .map(CastWebContentsSurfaceHelper.StartParams::fromBundle)
                 // Use the duplicate-filtering functionality of Controller to drop duplicate params.
-                .subscribe(Observers.onEnter(startParamsState::set));
+                .subscribe(Observer.onOpen(startParamsState::set));
         mSurfaceHelperState.and(startParamsState)
-                .subscribe(Observers.onEnter(
+                .subscribe(Observer.onOpen(
                         Both.adapt(CastWebContentsSurfaceHelper::onNewStartParams)));
 
-        mIsFinishingState.subscribe(Observers.onEnter((String reason) -> {
+        mIsFinishingState.subscribe(Observer.onOpen((String reason) -> {
             if (DEBUG) Log.d(TAG, "Finishing activity: " + reason);
             mSurfaceHelperState.reset();
             finishAndRemoveTask();
         }));
 
         // If a new Intent arrives after finishing, start a new Activity instead of recycling this.
-        gotIntentAfterFinishingState.subscribe(Observers.onEnter((Intent intent) -> {
+        gotIntentAfterFinishingState.subscribe(Observer.onOpen((Intent intent) -> {
             Log.d(TAG, "Got intent while finishing current activity, so start new activity.");
             int flags = intent.getFlags();
             flags = flags & ~Intent.FLAG_ACTIVITY_SINGLE_TOP;

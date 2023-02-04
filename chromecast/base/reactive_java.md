@@ -126,7 +126,7 @@ class MyClass {
     private final Controller<B> mb = new Controller<>();
 
     {
-        mA.and(mB).subscribe(Observers.both(C::new));
+        mA.and(mB).subscribe(Both.adapt(C::new));
     }
 
     public void setA(A a) {
@@ -544,7 +544,7 @@ Calling `stateA.andThen(stateB)` returns an `Observable` representing the
 on the transition between `(just A)` and `(A and then B)`, and will not activate
 on the transition between `(just B)` and `(B and then A)`.
 
-### Observers as Scopes
+### Subscriptions as Scopes
 
 Sometimes you might want to only `subscribe()` to an `Observable` for a limited
 time, for instance, until some other `Observable` is activated. So how do you
@@ -677,13 +677,22 @@ dealing with `Both` objects becomes cumbersome. It is generally recommended to
 prefer the `and()` operator if all else is equal, because it's easier to add
 more operators to the pipeline later on if needed.
 
+An alternative to using `and()` in situations that call for `map()` and
+`filter()` on the result is to use `flatMap()`-currying:
+
+```java
+  stateA.flatMap(a -> stateB.flatMap(b -> Observable.just(new C(a, b))))
+      .filter(c -> isValid(c))
+      .subscribe(d -> ...);
+```
+
 ### Increase readability for Observers with wrapper methods
 
 The `Observers` class contains several helper methods to increase the
 fluency and readability of common cases that `Observer` objects might be
 used for.
 
-#### Use onEnter() and onExit() to observe only one kind of transition
+#### Use onOpen() and onClose() to observe only one kind of transition
 
 Every `Observer` returns a `Scope`, but sometimes clients do not care about
 when the state deactivates, only when it activates. It's possible to create a
@@ -701,21 +710,21 @@ when the state deactivates, only when it activates. It's possible to create a
 The `return () -> {};` statement in the lambda corresponds to having no
 side-effects to handle the destructor, but this is not very readable.
 
-To make intentions clearer, the `onEnter()` method can wrap any `Consumer` of
+To make intentions clearer, the `onOpen()` method can wrap any `Consumer` of
 the activation data's type:
 
 ```java
 {
     // Without data.
-    observable.subscribe(Observers.onEnter(x -> Log.d(TAG, "activated")));
+    observable.subscribe(Observer.onOpen(x -> Log.d(TAG, "activated")));
     // With data.
-    observable.subscribe(Observers.onEnter((String data) -> {
+    observable.subscribe(Observer.onOpen((String data) -> {
         Log.d(TAG, "activated: data=" + data);
     }));
 }
 ```
 
-Likewise, `onExit()` is used the same way to transform any `Consumer` of the
+Likewise, `onClose()` is used the same way to transform any `Consumer` of the
 activation data's type into a `Observer` that only has side effects when the
 `Observable` is deactivated.
 
@@ -739,11 +748,11 @@ recall that the `Observer` passed to `subscribe()` must look like this:
 arguments and returns a `Scope` into a `Observer<Both>`, which deconstructs
 the `Both` object for you and passes the constituent parts into the function.
 
-Using `Observers.both()`, we can rewrite the above like this:
+Using `Both.adapt()`, we can rewrite the above like this:
 
 ```java
 {
-    observableA.and(observableB).subscribe(Observers.both((A a, B b) -> {
+    observableA.and(observableB).subscribe(Both.adapt((A a, B b) -> {
         Log.d(TAG, "on enter: a = " + a + "; b = " + b);
         return () -> Log.d(TAG, "on exit: a = " + a + "; b = " + b);
     }));
@@ -936,7 +945,7 @@ Consider this code:
 ```
 
 Will the callback registered in the `subscribe()` call get fired? It turns out
-that it will not, since `c` is deactivated when `subscribe()` is made. But if
+that it will not, since `c` is deactivated when `subscribe()` is called. But if
 the `subscribe()` call is made before the `set()` call, then the callback is
 fired.
 
@@ -988,7 +997,7 @@ all observers have been notified. This allows a deterministic and unastonishing
 order of execution for the above example: the log will show "enter", followed
 immediately by "exit".
 
-We call this property *re-entrancy-safety*. `Controller`s are *re-entrant-safe*.
+We call this property *re-entrancy safety*. `Controller`s are *re-entrant-safe*.
 What this guarantees is that all observers are notified of all changes, and any
 observer that imposes its own change (including indirect changes) will not have
 that change take effect until all observers are notified of the current change.

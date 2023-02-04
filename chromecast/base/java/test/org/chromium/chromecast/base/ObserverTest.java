@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.chromecast.base.Inheritance.Base;
 import org.chromium.chromecast.base.Inheritance.Derived;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 /**
@@ -25,34 +25,34 @@ import java.util.function.Consumer;
  * Observable#subscribe().
  */
 @RunWith(BlockJUnit4ClassRunner.class)
-public class ObserversTest {
+@Batch(Batch.UNIT_TESTS)
+public class ObserverTest {
     @Test
-    public void testOnEnterWithConsumer() {
+    public void testonOpenWithConsumer() {
         Controller<String> controller = new Controller<>();
         List<String> result = new ArrayList<>();
-        controller.subscribe(Observers.onEnter((String s) -> result.add(s + ": got it!")));
+        controller.subscribe(Observer.onOpen((String s) -> result.add(s + ": got it!")));
         controller.set("thing");
         assertThat(result, contains("thing: got it!"));
     }
 
     @Test
-    public void testOnEnterWithConsumerOfSuperclass() {
+    public void testonOpenWithConsumerOfSuperclass() {
         Controller<Derived> controller = new Controller<>();
         List<String> result = new ArrayList<>();
         Consumer<Base> consumer = (Base base) -> result.add(base.toString() + ": got it!");
         // Compile error if generics are wrong.
-        Observer<Derived> observer = Observers.onEnter(consumer);
+        Observer<Derived> observer = Observer.onOpen(consumer);
         controller.subscribe(observer);
         controller.set(new Derived());
         assertThat(result, contains("Derived: got it!"));
     }
 
-
     @Test
-    public void testOnEnterMultipleActivations() {
+    public void testonOpenMultipleActivations() {
         Controller<String> controller = new Controller<>();
         List<String> result = new ArrayList<>();
-        controller.subscribe(Observers.onEnter(s -> result.add(s.toString())));
+        controller.subscribe(Observer.onOpen(s -> result.add(s.toString())));
         controller.set("a");
         controller.set("b");
         controller.set("c");
@@ -60,31 +60,31 @@ public class ObserversTest {
     }
 
     @Test
-    public void testOnExitNotFiredIfObservableIsNotDeactivated() {
+    public void testonCloseNotFiredIfObservableIsNotDeactivated() {
         Controller<String> controller = new Controller<>();
         List<String> result = new ArrayList<>();
-        controller.subscribe(Observers.onExit((String s) -> result.add(s + ": got it!")));
+        controller.subscribe(Observer.onClose((String s) -> result.add(s + ": got it!")));
         controller.set("stuff");
         assertThat(result, emptyIterable());
     }
 
     @Test
-    public void testOnExitWithConsumer() {
+    public void testonCloseWithConsumer() {
         Controller<String> controller = new Controller<>();
         List<String> result = new ArrayList<>();
-        controller.subscribe(Observers.onExit((String s) -> result.add(s + ": got it!")));
+        controller.subscribe(Observer.onClose((String s) -> result.add(s + ": got it!")));
         controller.set("thing");
         controller.reset();
         assertThat(result, contains("thing: got it!"));
     }
 
     @Test
-    public void testOnExitWithConsumerOfSuperclass() {
+    public void testonCloseWithConsumerOfSuperclass() {
         Controller<Derived> controller = new Controller<>();
         List<String> result = new ArrayList<>();
         Consumer<Base> consumer = (Base base) -> result.add(base.toString() + ": got it!");
         // Compile error if generics are wrong.
-        Observer<Derived> observer = Observers.onExit(consumer);
+        Observer<Derived> observer = Observer.onClose(consumer);
         controller.subscribe(observer);
         controller.set(new Derived());
         controller.reset();
@@ -92,10 +92,10 @@ public class ObserversTest {
     }
 
     @Test
-    public void testOnExitMultipleActivations() {
+    public void testonCloseMultipleActivations() {
         Controller<String> controller = new Controller<>();
         List<String> result = new ArrayList<>();
-        controller.subscribe(Observers.onExit(s -> result.add(s.toString())));
+        controller.subscribe(Observer.onClose(s -> result.add(s.toString())));
         controller.set("a");
         // Implicit reset causes exit handler to fire for "a".
         controller.set("b");
@@ -105,54 +105,34 @@ public class ObserversTest {
     }
 
     @Test
-    public void testHowUsingBothOnEnterAndOnExitLooks() {
+    public void testHowUsingBothonOpenAndonCloseLooks() {
         Controller<Derived> controller = new Controller<>();
         List<String> result = new ArrayList<>();
-        controller.subscribe(Observers.onEnter((Base base) -> result.add("enter " + base)));
-        controller.subscribe(Observers.onExit((Base base) -> result.add("exit " + base)));
+        controller.subscribe(Observer.onOpen((Base base) -> result.add("enter " + base)));
+        controller.subscribe(Observer.onClose((Base base) -> result.add("exit " + base)));
         controller.set(new Derived());
         controller.reset();
         assertThat(result, contains("enter Derived", "exit Derived"));
     }
 
     @Test
-    public void testsubscribeBothWithStrings() {
-        Controller<String> controllerA = new Controller<>();
-        Controller<String> controllerB = new Controller<>();
+    public void testBothAdaptObserver() {
+        Cell<Integer> ints = new Cell<>(0);
+        Cell<String> strings = new Cell<>("a");
         List<String> result = new ArrayList<>();
-        controllerA.and(controllerB).subscribe(Observers.both((String a, String b) -> {
-            result.add("enter: " + a + ", " + b);
-            return () -> result.add("exit: " + a + ", " + b);
+        Subscription sub = ints.and(strings).subscribe(Observer.both((Integer i, String s) -> {
+            result.add("opened " + i + " " + s);
+            return () -> result.add("closed " + i + " " + s);
         }));
-        controllerA.set("A");
-        controllerB.set("B");
-        controllerA.set("AA");
-        controllerB.set("BB");
-        assertThat(result,
-                contains("enter: A, B", "exit: A, B", "enter: AA, B", "exit: AA, B",
-                        "enter: AA, BB"));
-    }
-
-    @Test
-    public void testBuildObserverWithFunctionThatTakesSuperclass() {
-        BiFunction<Base, Base, Scope> function = (Base a, Base b) -> {
-            return () -> {};
-        };
-        // Compile error if generics are wrong.
-        Observer<Both<Derived, Derived>> observer = Observers.both(function);
-    }
-
-    // Dummy class that extends Scope.
-    private static class SubScope implements Scope {
-        @Override
-        public void close() {}
-    }
-
-    @Test
-    public void testBuildObserverWithFunctionThatReturnsSubclassOfScope() {
-        SubScope subScope = new SubScope();
-        BiFunction<String, String, SubScope> function = (a, b) -> subScope;
-        // Compile error if generics are wrong.
-        Observer<Both<String, String>> observer = Observers.both(function);
+        assertThat(result, contains("opened 0 a"));
+        result.clear();
+        ints.set(1);
+        assertThat(result, contains("closed 0 a", "opened 1 a"));
+        result.clear();
+        strings.set("b");
+        assertThat(result, contains("closed 1 a", "opened 1 b"));
+        result.clear();
+        sub.close();
+        assertThat(result, contains("closed 1 b"));
     }
 }

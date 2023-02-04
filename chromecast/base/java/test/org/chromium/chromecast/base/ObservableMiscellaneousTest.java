@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.chromecast.base.Inheritance.Base;
 import org.chromium.chromecast.base.Inheritance.Derived;
 
@@ -23,6 +24,7 @@ import java.util.List;
  * This includes advanced behaviors like subscription-currying and correct use of generics.
  */
 @RunWith(BlockJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class ObservableMiscellaneousTest {
     @Test
     public void testMakeNotifyOneAtATime() {
@@ -30,15 +32,15 @@ public class ObservableMiscellaneousTest {
             observer.open(1).close();
             observer.open(2).close();
             observer.open(3).close();
-            return Scopes.NO_OP;
+            return Scope.NO_OP;
         }));
         r.verify().opened(1).closed(1).opened(2).closed(2).opened(3).closed(3).end();
     }
 
     @Test
     public void testMakeNotifyAllAtOnce() {
-        ReactiveRecorder r = ReactiveRecorder.record(Observable.make(observer
-                -> Scopes.combine(observer.open("a"), observer.open("b"), observer.open("c"))));
+        ReactiveRecorder r = ReactiveRecorder.record(Observable.make(
+                observer -> observer.open("a").and(observer.open("b")).and(observer.open("c"))));
         r.verify().opened("a").opened("b").opened("c").end();
         r.unsubscribe();
         r.verify().closed("c").closed("b").closed("a").end();

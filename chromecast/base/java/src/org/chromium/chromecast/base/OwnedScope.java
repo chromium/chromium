@@ -36,7 +36,7 @@ package org.chromium.chromecast.base;
  *               }
  *           };
  *           context.bindService(new Intent(context, FooService.class), connection);
- *           return Scopes.combine(subscription, () -> context.unbindService(connection));
+ *           return subscription.and(() -> context.unbindService(connection));
  *       });
  *   }
  *

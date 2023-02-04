@@ -19,7 +19,7 @@ import androidx.core.app.NotificationCompat;
 import org.chromium.base.Log;
 import org.chromium.chromecast.base.Controller;
 import org.chromium.chromecast.base.Observable;
-import org.chromium.chromecast.base.Observers;
+import org.chromium.chromecast.base.Observer;
 import org.chromium.content.browser.MediaSessionImpl;
 import org.chromium.content_public.browser.WebContents;
 
@@ -59,10 +59,10 @@ public class CastWebContentsService extends Service {
             return () -> stopForeground(true /*removeNotification*/);
         });
         mWebContentsState.map(this::getMediaSessionImpl)
-                .subscribe(Observers.onEnter(MediaSessionImpl::requestSystemAudioFocus));
+                .subscribe(Observer.onOpen(MediaSessionImpl::requestSystemAudioFocus));
         // Inform CastContentWindowAndroid we're detaching.
         Observable<String> instanceIdState = mIntentState.map(Intent::getData).map(Uri::getPath);
-        instanceIdState.subscribe(Observers.onExit(CastWebContentsComponent::onComponentClosed));
+        instanceIdState.subscribe(Observer.onClose(CastWebContentsComponent::onComponentClosed));
 
         if (DEBUG) {
             mWebContentsState.subscribe(x -> {

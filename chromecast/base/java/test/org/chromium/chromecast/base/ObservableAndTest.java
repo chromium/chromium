@@ -8,10 +8,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
+import org.chromium.base.test.util.Batch;
+
 /**
  * Tests for Observable#and().
  */
 @RunWith(BlockJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class ObservableAndTest {
     @Test
     public void testBothState_activateFirstDoesNotTrigger() {
@@ -126,11 +129,11 @@ public class ObservableAndTest {
         ReactiveRecorder r = ReactiveRecorder.record(
                 Observable
                         .make(observer
-                                -> Scopes.combine(
-                                        observer.open(1), observer.open(2), observer.open(3)))
+                                -> observer.open(1).and(observer.open(2)).and(observer.open(3)))
                         .and(Observable.make(observer
-                                -> Scopes.combine(observer.open("a"), observer.open("b"),
-                                        observer.open("c")))));
+                                -> observer.open("a")
+                                           .and(observer.open("b"))
+                                           .and(observer.open("c")))));
         r.verify()
                 .opened(Both.both(1, "a"))
                 .opened(Both.both(1, "b"))

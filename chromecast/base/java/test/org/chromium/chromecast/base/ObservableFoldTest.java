@@ -8,10 +8,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
+import org.chromium.base.test.util.Batch;
+
 /**
  * Tests for Observable#and().
  */
 @RunWith(BlockJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class ObservableFoldTest {
     // Use fold() operator to construct a string that compactly represents all state transitions of
     // |src|. For each activation in |src|, the result adds a "+" followed by the data, and for each
@@ -64,7 +67,7 @@ public class ObservableFoldTest {
     @Test
     public void multipleIntegers() {
         ReactiveRecorder r = ReactiveRecorder.record(sum(Observable.make(
-                observer -> Scopes.combine(observer.open(1), observer.open(2), observer.open(3)))));
+                observer -> observer.open(1).and(observer.open(2)).and(observer.open(3)))));
         r.verify().opened(6).end();
         r.unsubscribe();
         r.verify().closed(6).end();
@@ -72,8 +75,8 @@ public class ObservableFoldTest {
 
     @Test
     public void multipleStrings() {
-        ReactiveRecorder r = ReactiveRecorder.record(transitionString(Observable.make(observer
-                -> Scopes.combine(observer.open("a"), observer.open("b"), observer.open("c")))));
+        ReactiveRecorder r = ReactiveRecorder.record(transitionString(Observable.make(
+                observer -> observer.open("a").and(observer.open("b")).and(observer.open("c")))));
         r.verify().opened("+a+b+c").end();
         r.unsubscribe();
         r.verify().closed("+a+b+c").end();

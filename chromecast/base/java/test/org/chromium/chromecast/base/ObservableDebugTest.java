@@ -11,6 +11,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
+import org.chromium.base.test.util.Batch;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,7 @@ import java.util.List;
  * Tests for Observable#debug().
  */
 @RunWith(BlockJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class ObservableDebugTest {
     @Test
     public void testDebugSubscription() {
@@ -75,9 +78,8 @@ public class ObservableDebugTest {
 
     @Test
     public void testDebugMultipleIntegers() {
-        Observable<Integer> a = Observable.make(observer
-                -> Scopes.combine(observer.open(1)::close, observer.open(2)::close,
-                        observer.open(3)::close)::close);
+        Observable<Integer> a = Observable.make(
+                observer -> observer.open(1).and(observer.open(2)).and(observer.open(3))::close);
         List<String> events = new ArrayList<>();
         Subscription sub = a.debug(events::add).subscribe(x -> () -> {});
         assertThat(events, contains("subscribe", "open 1", "open 2", "open 3"));

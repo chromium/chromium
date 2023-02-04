@@ -52,7 +52,7 @@ public abstract class Observable<T> {
      *   empty().or(x) == x
      */
     public final Observable<T> or(Observable<T> other) {
-        return make(observer -> Scopes.combine(subscribe(observer), other.subscribe(observer)));
+        return make(observer -> subscribe(observer).and(other.subscribe(observer)));
     }
 
     /**
@@ -65,7 +65,7 @@ public abstract class Observable<T> {
     public final Observable<T> after() {
         return make(observer -> {
             Box<Boolean> after = new Box<Boolean>(false);
-            Subscription sub = subscribe(t -> after.value ? observer.open(t) : Scopes.NO_OP);
+            Subscription sub = subscribe(t -> after.value ? observer.open(t) : Scope.NO_OP);
             after.value = true;
             return sub;
         });
@@ -152,7 +152,7 @@ public abstract class Observable<T> {
                 current.mutate(a -> acc.apply(a, t));
                 return () -> current.mutate(a -> dim.apply(a, t));
             });
-            return Scopes.combine(sub, current.subscribe(observer))::close;
+            return sub.and(current.subscribe(observer))::close;
         });
     }
 
@@ -188,7 +188,7 @@ public abstract class Observable<T> {
      * A degenerate Observable that has no data.
      */
     public static <T> Observable<T> empty() {
-        return make(observer -> Scopes.NO_OP);
+        return make(observer -> Scope.NO_OP);
     }
 
     /**
@@ -220,10 +220,10 @@ public abstract class Observable<T> {
                 Scope scope = observer.open(data);
                 Scope debugClose =
                         () -> logger.accept(new StringBuilder("close ").append(data).toString());
-                return Scopes.combine(scope, debugClose);
+                return scope.and(debugClose);
             })::close;
             Scope debugUnsubscribe = () -> logger.accept("unsubscribe");
-            return Scopes.combine(subscription, debugUnsubscribe);
+            return subscription.and(debugUnsubscribe);
         });
     }
 
