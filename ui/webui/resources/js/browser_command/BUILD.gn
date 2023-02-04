@@ -3,43 +3,9 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
 
 mojom("mojo_bindings") {
   sources = [ "browser_command.mojom" ]
   webui_module_path = "chrome://resources/js/browser_command"
   use_typescript_sources = true
-}
-
-ts_library("build_ts") {
-  root_dir = target_gen_dir
-  out_dir = "$root_gen_dir/ui/webui/resources/tsc/js/browser_command"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "browser_command_proxy.ts",
-    "browser_command.mojom-webui.ts",
-  ]
-  deps = [ "//ui/webui/resources/mojo:library" ]
-  extra_deps = [
-    ":mojo_bindings_ts__generator",
-    ":preprocess_src",
-  ]
-}
-
-preprocess_if_expr("preprocess_src") {
-  in_folder = "."
-  out_folder = target_gen_dir
-  in_files = [ "browser_command_proxy.ts" ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_js_browser_command"
-  out_grd = "$target_gen_dir/resources.grdp"
-  public_deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  resource_path_prefix = "js/browser_command"
 }

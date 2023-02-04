@@ -4,7 +4,7 @@
 
 import 'chrome://whats-new/whats_new_app.js';
 
-import {CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
+import {CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

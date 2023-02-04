@@ -9,7 +9,7 @@ import {$$, BrowserProxyImpl, decodeString16, MetricsReporterImpl, mojoString16,
 import {AutocompleteMatch, NavigationPredictor, SideType} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js';
+import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';

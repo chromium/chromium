@@ -23,8 +23,10 @@ build_cr_component("build") {
     "focus_row.ts",
     "icon.ts",
     "keyboard_shortcut_list.ts",
-    "load_time_data.ts",
     "load_time_data_deprecated.js",
+    "load_time_data.ts",
+    "metrics_reporter/browser_proxy.ts",
+    "metrics_reporter/metrics_reporter.ts",
     "open_window_proxy.ts",
     "parse_html_subset.ts",
     "platform.ts",
@@ -58,10 +60,22 @@ build_cr_component("build") {
     non_web_component_files += [
       "focus_row_mixin.ts",
       "focus_without_ink.ts",
+      "browser_command/browser_command_proxy.ts",
     ]
+  }
+
+  mojo_files_deps = [ "./metrics_reporter:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom-webui.ts" ]
+
+  if (include_polymer) {
+    mojo_files_deps += [ "./browser_command:mojo_bindings_ts__generator" ]
+    mojo_files += [ "$root_gen_dir/ui/webui/resources/js/browser_command/browser_command.mojom-webui.ts" ]
   }
 
   tsc_dir = "$root_gen_dir/ui/webui/resources/tsc/js"
   ts_deps = [ "../mojo:library" ]
-  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/chrome_timeticks.d.ts",
+  ]
 }

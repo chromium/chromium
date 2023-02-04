@@ -10,8 +10,6 @@ def GetDepToPathMappings(root_gen_dir):
   shared_ts_folders = [
       "cr_elements",
       "js",
-      "js/browser_command",
-      "js/metrics_reporter",
       "mojo",
       "cr_components/app_management",
       "cr_components/certificate_manager",

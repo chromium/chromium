@@ -30,7 +30,6 @@ generate_grd("build_grd") {
     "css:build_grdp",
     "images:build_grdp",
     "js:build_grdp",
-    "js/metrics_reporter:build_grdp",
     "//third_party/jstemplate:build_grdp",
   ]
   grdp_files = [
@@ -38,7 +37,6 @@ generate_grd("build_grd") {
     "$target_gen_dir/cr_elements/resources.grdp",
     "$target_gen_dir/css/resources.grdp",
     "$target_gen_dir/images/resources.grdp",
-    "$target_gen_dir/js/metrics_reporter/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
   ]
 
@@ -51,7 +49,6 @@ generate_grd("build_grd") {
       "cr_components/managed_dialog:build_grdp",
       "cr_components/managed_footnote:build_grdp",
       "cr_components/most_visited:build_grdp",
-      "js/browser_command:build_grdp",
       "//third_party/polymer/v3_0:build_grdp",
     ]
     grdp_files += [
@@ -63,7 +60,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/managed_dialog/resources.grdp",
       "$target_gen_dir/cr_components/managed_footnote/resources.grdp",
       "$target_gen_dir/cr_components/most_visited/resources.grdp",
-      "$target_gen_dir/js/browser_command/resources.grdp",
     ]
 
     if (use_nss_certs) {

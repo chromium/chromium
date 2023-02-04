@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+
+import {assert} from '../assert_ts.js';
+
 import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 
 function timeFromMojo(delta: TimeDelta): bigint {
