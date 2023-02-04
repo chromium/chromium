@@ -598,13 +598,7 @@ gfx::Size EcheTray::CalculateSizeForEche() const {
       (static_cast<float>(work_area_bounds.height()) * kMaxHeightPercentage) /
       kDefaultBubbleSize.height();
   height_scale = std::min(height_scale, 1.0f);
-  gfx::Size size = gfx::ScaleToFlooredSize(kDefaultBubbleSize, height_scale);
-
-  if (stream_orientation_ == eche_app::mojom::StreamOrientation::kLandscape) {
-    size = gfx::Size(size.height(), size.width());
-  }
-
-  return size;
+  return gfx::ScaleToFlooredSize(kDefaultBubbleSize, height_scale);
 }
 
 void EcheTray::OnArrowBackActivated() {
@@ -780,19 +774,8 @@ void EcheTray::OnTabletModeStarted() {
 void EcheTray::OnTabletModeEnded() {
   UpdateEcheSizeAndBubbleBounds();
 }
-
 void EcheTray::OnShelfAlignmentChanged(aura::Window* root_window,
                                        ShelfAlignment old_alignment) {
-  UpdateEcheSizeAndBubbleBounds();
-}
-
-void EcheTray::OnStreamOrientationChanged(
-    eche_app::mojom::StreamOrientation orientation) {
-  if (stream_orientation_ == orientation) {
-    return;
-  }
-
-  stream_orientation_ = orientation;
   UpdateEcheSizeAndBubbleBounds();
 }
 
