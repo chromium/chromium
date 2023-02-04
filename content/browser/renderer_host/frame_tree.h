@@ -546,6 +546,13 @@ class CONTENT_EXPORT FrameTree {
   void RegisterOriginForUnpartitionedSessionStorageAccess(
       const url::Origin& origin);
 
+  // This should only be called by NavigationRequest when it detects that an
+  // origin is not participating in the deprecation trial.
+  //
+  // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
+  void UnregisterOriginForUnpartitionedSessionStorageAccess(
+      const url::Origin& origin);
+
   // This should be used for all session storage related bindings as it adjusts
   // the storage key used depending on the deprecation trial.
   //
