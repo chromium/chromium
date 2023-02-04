@@ -44,6 +44,22 @@ struct PlatformCredentialListDeleter {
   raw_ptr<WinWebAuthnApi> win_api_;
 };
 
+AuthenticatorSupportedOptions WinWebAuthnApiOptions(int api_version) {
+  AuthenticatorSupportedOptions options;
+  options.is_platform_device =
+      AuthenticatorSupportedOptions::PlatformDevice::kBoth;
+  options.supports_resident_key = true;
+  options.user_verification_availability = AuthenticatorSupportedOptions::
+      UserVerificationAvailability::kSupportedAndConfigured;
+  options.supports_user_presence = true;
+  options.supports_cred_protect = api_version >= WEBAUTHN_API_VERSION_2;
+  options.enterprise_attestation = api_version >= WEBAUTHN_API_VERSION_3;
+  options.supports_large_blobs = api_version >= WEBAUTHN_API_VERSION_3;
+  options.supports_min_pin_length_extension =
+      api_version >= WEBAUTHN_API_VERSION_3;
+  return options;
+}
+
 }  // namespace
 
 // static
@@ -150,7 +166,9 @@ void WinWebAuthnApiAuthenticator::DeletePlatformCredential(
 WinWebAuthnApiAuthenticator::WinWebAuthnApiAuthenticator(
     HWND current_window,
     WinWebAuthnApi* win_api)
-    : current_window_(current_window), win_api_(win_api) {
+    : options_(WinWebAuthnApiOptions(win_api->Version())),
+      current_window_(current_window),
+      win_api_(win_api) {
   CHECK(win_api_->IsAvailable());
   CoCreateGuid(&cancellation_id_);
 }
@@ -356,12 +374,7 @@ bool WinWebAuthnApiAuthenticator::SupportsLargeBlobs() const {
 
 const absl::optional<AuthenticatorSupportedOptions>&
 WinWebAuthnApiAuthenticator::Options() const {
-  // The request can potentially be fulfilled by any device that Windows
-  // communicates with, so returning AuthenticatorSupportedOptions really
-  // doesn't make much sense.
-  static const absl::optional<AuthenticatorSupportedOptions> no_options =
-      absl::nullopt;
-  return no_options;
+  return options_;
 }
 
 base::WeakPtr<FidoAuthenticator> WinWebAuthnApiAuthenticator::GetWeakPtr() {

@@ -113,8 +113,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
       std::pair<CtapDeviceResponseCode,
                 absl::optional<AuthenticatorGetAssertionResponse>> result);
 
+  // options_ is per-instance because the capabilities of `win_api_` can
+  // change at run-time in tests.
+  const absl::optional<AuthenticatorSupportedOptions> options_;
   HWND current_window_;
-
   bool is_pending_ = false;
   bool waiting_for_cancellation_ = false;
   GUID cancellation_id_ = {};

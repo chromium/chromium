@@ -498,16 +498,6 @@ void MakeCredentialRequestHandler::DispatchRequest(
       IsCandidateAuthenticatorPostTouch(*request.get(), authenticator, options_,
                                         observer());
   if (post_touch_status != MakeCredentialStatus::kSuccess) {
-#if BUILDFLAG(IS_WIN)
-    // If the Windows API cannot handle a request, just reject the request
-    // outright. There are no other authenticators to attempt, so calling
-    // GetTouch() would not make sense.
-    if (authenticator->GetType() == FidoAuthenticator::Type::kWinNative) {
-      HandleInapplicableAuthenticator(authenticator, post_touch_status);
-      return;
-    }
-#endif  // BUILDFLAG(IS_WIN)
-
     if (authenticator->Options() &&
         authenticator->Options()->is_platform_device !=
             AuthenticatorSupportedOptions::PlatformDevice::kNo) {
