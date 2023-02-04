@@ -23,6 +23,8 @@ class ExtensionJSBrowserTest : public JavaScriptBrowserTest {
   ~ExtensionJSBrowserTest() override;
 
  protected:
+  void SetUpOnMainThread() override;
+
   // Waits for an extension to load; returns immediately if already loaded.
   void WaitForExtension(const char* extension_id, base::OnceClosure load_cb);
 
