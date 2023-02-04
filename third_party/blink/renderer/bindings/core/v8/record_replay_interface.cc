@@ -819,6 +819,9 @@ function isCdpRefType(cdpObject) {
  * @return {RRP.Pause.Object}
  */
 function buildRrpObjectFromCdpObject(cdpObject) {
+  if (!cdpObject) {
+    return {};
+  }
   switch (cdpObject.type) {
     case "undefined":
       return {};
@@ -3525,13 +3528,15 @@ static void fromJsMakeDebuggeeValue(
   auto remoteObjSerialized = gInspectorSession->wrapObject(
       context, value, ToV8InspectorStringView(object_group), generatePreview);
 
-  auto result = convertCborToJS(isolate, (v8_crdtp::Serializable*)remoteObjSerialized.get());
+  if (remoteObjSerialized) {
+    auto result = convertCborToJS(isolate, (v8_crdtp::Serializable*)remoteObjSerialized.get());
 
-  if (!result.IsEmpty()) {
-    args.GetReturnValue().Set(result.ToLocalChecked());
-  } else {
-    args.GetReturnValue().SetNull();
+    if (!result.IsEmpty()) {
+      args.GetReturnValue().Set(result.ToLocalChecked());
+      return;
+    }
   }
+  args.GetReturnValue().SetNull();
 }
 
 static void fromJsGetArgumentsInFrame(
