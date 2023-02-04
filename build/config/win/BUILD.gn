@@ -43,9 +43,7 @@ declare_args() {
   use_clang_diagnostics_format = false
 
   # Indicates whether to use /pdbpagesize:8192 to allow PDBs larger than 4 GiB.
-  # This requires updated debugging and profiling tools which are not widely
-  # distributed yet which is why it is currently opt-in.
-  use_large_pdbs = false
+  use_large_pdbs = true
 }
 
 # This is included by reference in the //build/config/compiler config that

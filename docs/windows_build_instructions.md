@@ -55,12 +55,9 @@ $ PATH_TO_INSTALLER.EXE ^
 installed. This can be installed separately or by checking the appropriate box
 in the Visual Studio Installer.
 
-The SDK Debugging Tools must also be installed. If the Windows 10 SDK was
-installed via the Visual Studio installer, then they can be installed by going
-to: Control Panel → Programs → Programs and Features → Select the "Windows
-Software Development Kit" → Change → Change → Check "Debugging Tools For
-Windows" → Change. Or, you can download the standalone SDK installer and use it
-to install the Debugging Tools.
+The 10.0.22621.755 (Windows 11) SDK Debugging Tools must also be installed. This
+version of the Debugging tools is needed in order to support reading the
+large-page PDBs that Chrome uses to allow greater-than 4 GiB PDBs.
 
 ## Install `depot_tools`
 
