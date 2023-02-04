@@ -6248,7 +6248,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6832218595502288407">Links uitlijnen</translation>
 <translation id="6833479554815567477">Tabblad verwijderd uit groep <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Overschakelen naar een slimme, beveiligde browser</translation>
-<translation id="6833996806551876956">Proef voor privacy-sandbox</translation>
+<translation id="6833996806551876956">Proef voor Privacy Sandbox</translation>
 <translation id="6835762382653651563">Maak verbinding met internet om je <ph name="DEVICE_TYPE" /> te updaten.</translation>
 <translation id="6839225236531462745">Fout tijdens verwijderen van certificaat</translation>
 <translation id="6839916869147598086">Inloggegevens zijn gewijzigd</translation>
@@ -8804,7 +8804,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="932327136139879170">Homepage</translation>
 <translation id="932508678520956232">Kan afdrukken niet starten.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Dit bestand is te groot voor een beveiligingscontrole. Je kunt bestanden tot 50 MB uploaden.}other{Sommige van deze bestanden zijn te groot voor een beveiligingscontrole. Je kunt bestanden tot 50 MB uploaden.}}</translation>
-<translation id="93343527085570547">Ga naar de <ph name="BEGIN_LINK1" />pagina voor juridische hulp<ph name="END_LINK1" /> om contentwijzigingen uit juridische overwegingen aan te vragen. Bepaalde account- en systeemgegevens kunnen naar Google worden verzonden. We gebruiken de door jou verstrekte informatie om technische problemen op te lossen en onze services te verbeteren, in overeenstemming met het <ph name="BEGIN_LINK2" />privacybeleid<ph name="END_LINK2" /> en de <ph name="BEGIN_LINK3" />servicevoorwaarden<ph name="END_LINK3" />.</translation>
+<translation id="93343527085570547">Ga naar de <ph name="BEGIN_LINK1" />pagina voor juridische hulp<ph name="END_LINK1" /> om contentwijzigingen uit juridische overwegingen aan te vragen. Bepaalde account- en systeemgegevens kunnen naar Google worden verzonden. We gebruiken de door jou verstrekte informatie om technische problemen op te lossen en onze services te verbeteren, in overeenstemming met het <ph name="BEGIN_LINK2" />Privacybeleid<ph name="END_LINK2" /> en de <ph name="BEGIN_LINK3" />Servicevoorwaarden<ph name="END_LINK3" />.</translation>
 <translation id="93393615658292258">Alleen wachtwoord</translation>
 <translation id="934244546219308557">Deze groep een naam geven</translation>
 <translation id="934503638756687833">Items die hier niet worden vermeld, worden zo nodig ook verwijderd. Lees meer informatie over &lt;a href="<ph name="URL" />"&gt;bescherming tegen ongewenste software&lt;/a&gt; in de whitepaper over privacy in Chrome.</translation>
