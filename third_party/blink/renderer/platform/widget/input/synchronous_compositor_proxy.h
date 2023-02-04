@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/record_replay.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -132,7 +133,7 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
   mojo::AssociatedReceiver<mojom::blink::SynchronousCompositor> receiver_{this};
   bool use_in_process_zero_copy_software_draw_ = false;
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
+  recordreplay::unique_leaky_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
 
   const bool viz_frame_submission_enabled_;
 

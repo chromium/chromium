@@ -9,6 +9,7 @@
 
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
+#include "base/record_replay.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
@@ -225,7 +226,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // presented.
   base::flat_set<uint32_t> ignorable_submitted_frames_;
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
+  recordreplay::unique_leaky_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
 
   THREAD_CHECKER(thread_checker_);
 

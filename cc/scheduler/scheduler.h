@@ -11,6 +11,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/record_replay.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "cc/cc_export.h"
@@ -354,7 +355,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // arrive so that |client_| can be informed about changes.
   base::TimeDelta last_frame_interval_;
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
+  recordreplay::unique_leaky_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
   power_scheduler::PowerMode last_power_mode_vote_ =
       power_scheduler::PowerMode::kIdle;
 

@@ -8,6 +8,7 @@
 #include <atomic>
 #include <memory>
 
+#include "base/record_replay.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -378,7 +379,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // the input handling thread (i.e. on the compositor thread if it exists).
   bool has_seen_first_gesture_scroll_update_after_begin_ = false;
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> response_power_mode_voter_;
+  recordreplay::unique_leaky_ptr<power_scheduler::PowerModeVoter> response_power_mode_voter_;
 
   // Timer for count dropped events.
   std::unique_ptr<base::OneShotTimer> dropped_event_counts_timer_;

@@ -8,6 +8,7 @@
 #include <inttypes.h>
 
 #include "base/containers/span.h"
+#include "base/record_replay.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
@@ -70,7 +71,7 @@ class CORE_EXPORT ResourceLoadObserverForFrame final
 
   void UpdatePowerModeVote();
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
+  recordreplay::unique_leaky_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
 
   // There are some overlap between |document_loader_|, |document_| and
   // |fetcher_properties_|. Use |fetcher_properties_| whenever possible.

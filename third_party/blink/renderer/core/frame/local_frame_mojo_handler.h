@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_HANDLER_H_
 
+#include "base/record_replay.h"
 #include "build/build_config.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "services/device/public/mojom/device_posture_provider.mojom-blink.h"
@@ -49,8 +50,6 @@ class LocalFrameMojoHandler
       public device::mojom::blink::DevicePostureProviderClient {
  public:
   explicit LocalFrameMojoHandler(blink::LocalFrame& frame);
-  ~LocalFrameMojoHandler() override;
-
   void Trace(Visitor* visitor) const;
 
   void WasAttachedAsLocalMainFrame();
@@ -285,7 +284,7 @@ class LocalFrameMojoHandler
   device::mojom::blink::DevicePostureType current_device_posture_ =
       device::mojom::blink::DevicePostureType::kContinuous;
 
-  std::unique_ptr<power_scheduler::PowerModeVoter>
+  recordreplay::unique_leaky_ptr<power_scheduler::PowerModeVoter>
       script_execution_power_mode_voter_;
 };
 

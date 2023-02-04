@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list_threadsafe.h"
+#include "base/record_replay.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -53,7 +54,7 @@ class CONTENT_EXPORT ProcessVisibilityTracker {
   scoped_refptr<base::ObserverListThreadSafe<ProcessVisibilityObserver>>
       observers_ GUARDED_BY(lock_);
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_visibility_voter_;
+  recordreplay::unique_leaky_ptr<power_scheduler::PowerModeVoter> power_mode_visibility_voter_;
   SEQUENCE_CHECKER(main_thread_);
 };
 
