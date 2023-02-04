@@ -130,12 +130,10 @@ bool StructTraits<printing::mojom::PaperDataView,
     return true;
   }
 
-  // Invalid if the printable area is empty, has negative values or has a larger
-  // width or height than the size of the Paper.
-  return !out->printable_area_um.IsEmpty() && out->printable_area_um.x() >= 0 &&
-         out->printable_area_um.y() >= 0 &&
-         out->printable_area_um.width() <= out->size_um.width() &&
-         out->printable_area_um.height() <= out->size_um.height();
+  // Invalid if the printable area is empty or if the printable area is out of
+  // bounds of the paper size.
+  return !out->printable_area_um.IsEmpty() &&
+         gfx::Rect(out->size_um).Contains(out->printable_area_um);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

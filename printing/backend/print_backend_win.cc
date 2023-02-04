@@ -32,6 +32,8 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_utils.h"
 #include "printing/units.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace printing {
 
@@ -175,6 +177,16 @@ void LoadPaper(const wchar_t* printer,
     if (devmode) {
       devmode->dmPaperSize = ids[i];
       paper.printable_area_um = LoadPaperPrintableAreaUm(printer, devmode);
+    }
+
+    // Default to the paper size if printable area is missing.
+    // We've seen some drivers have a printable area that goes out of bounds of
+    // the paper size. In those cases, set the printable area to be the size.
+    // (See crbug.com/1412305.)
+    const gfx::Rect size_um_rect = gfx::Rect(paper.size_um);
+    if (paper.printable_area_um.IsEmpty() ||
+        !size_um_rect.Contains(paper.printable_area_um)) {
+      paper.printable_area_um = size_um_rect;
     }
 
     caps->papers.push_back(paper);

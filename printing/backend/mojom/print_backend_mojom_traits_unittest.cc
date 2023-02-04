@@ -122,6 +122,18 @@ TEST(PrintBackendMojomTraitsTest, TestPaperPrintableAreaLargerThanSize) {
       mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
 }
 
+TEST(PrintBackendMojomTraitsTest, TestPaperPrintableAreaOutOfBounds) {
+  // The printable area is out of bounds of the size, so it should be invalid.
+  PrinterSemanticCapsAndDefaults::Paper input{
+      /*display_name=*/"display_name", /*vendor_id=*/"vendor_id",
+      /*size_um=*/gfx::Size(4000, 7000),
+      /*printable_area_um=*/gfx::Rect(4050, 6950, 100, 100)};
+  PrinterSemanticCapsAndDefaults::Paper output;
+
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+}
+
 TEST(PrintBackendMojomTraitsTest, TestPaperNegativePrintableArea) {
   // The printable area has negative x and y values, so it should be invalid.
   PrinterSemanticCapsAndDefaults::Paper input{
