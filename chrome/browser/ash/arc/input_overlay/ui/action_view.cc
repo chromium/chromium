@@ -189,6 +189,17 @@ bool ActionView::ShouldShowErrorMsg(ui::DomCode code,
   return false;
 }
 
+void ActionView::OnChildLabelUpdateFocus(ActionLabel* child, bool focus) {
+  if (labels_.size() == 1u)
+    return;
+
+  for (auto* label : labels_) {
+    if (label == child)
+      continue;
+    label->OnSiblingUpdateFocus(focus);
+  }
+}
+
 bool ActionView::ApplyMousePressed(const ui::MouseEvent& event) {
   if (!allow_reposition_)
     return false;

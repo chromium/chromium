@@ -82,6 +82,8 @@ class ActionView : public views::View {
   // Otherwise, don't show any error message and return false.
   bool ShouldShowErrorMsg(ui::DomCode code,
                           ActionLabel* editing_label = nullptr);
+  // Reacts to child label focus change.
+  void OnChildLabelUpdateFocus(ActionLabel* child, bool focus);
 
   bool ApplyMousePressed(const ui::MouseEvent& event);
   bool ApplyMouseDragged(const ui::MouseEvent& event);

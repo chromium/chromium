@@ -52,8 +52,9 @@ constexpr SkColor kViewTextColorAlpha = SK_ColorWHITE;
 
 // About colors.
 constexpr SkColor kBackgroundColorDefault = SK_ColorWHITE;
-constexpr SkColor kEditedUnboundBgColor = gfx::kGoogleRed300;
 constexpr SkColor kTextColorDefault = gfx::kGoogleGrey900;
+constexpr SkColor kEditedUnboundBgColor = gfx::kGoogleRed300;
+constexpr SkColor kEditInactiveTextColor = SK_ColorWHITE;
 
 // UI specs - AlphaV2.
 constexpr gfx::Size kLabelSize(22, 22);
@@ -539,6 +540,16 @@ bool ActionLabel::ClearFocus() {
   return has_focus;
 }
 
+void ActionLabel::OnSiblingUpdateFocus(bool sibling_focused) {
+  if (sibling_focused) {
+    SetToEditInactive();
+  } else if (!IsInputUnbound()) {
+    SetToEditDefault();
+  } else {
+    SetToEditUnbindInput();
+  }
+}
+
 gfx::Size ActionLabel::CalculatePreferredSize() const {
   auto size = LabelButton::CalculatePreferredSize();
   size.SetToMax(allow_reposition_ ? kLabelSize : kLabelSizeAlpha);
@@ -565,17 +576,22 @@ bool ActionLabel::OnKeyPressed(const ui::KeyEvent& event) {
 
 void ActionLabel::OnMouseEntered(const ui::MouseEvent& event) {
   if (IsFocusable() && !HasFocus())
-    SetToEditHover();
+    SetToEditHover(true);
 }
 
 void ActionLabel::OnMouseExited(const ui::MouseEvent& event) {
   if (IsFocusable() && !HasFocus())
-    SetToEditDefault();
+    SetToEditHover(false);
 }
 
 void ActionLabel::OnFocus() {
   SetToEditFocus();
   LabelButton::OnFocus();
+  if (allow_reposition_) {
+    static_cast<ActionView*>(parent())->OnChildLabelUpdateFocus(this,
+                                                                /*focus=*/true);
+  }
+
   if (IsInputUnbound()) {
     static_cast<ActionView*>(parent())->ShowErrorMsg(
         l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING), this,
@@ -589,6 +605,10 @@ void ActionLabel::OnFocus() {
 void ActionLabel::OnBlur() {
   SetToEditDefault();
   LabelButton::OnBlur();
+  if (allow_reposition_) {
+    static_cast<ActionView*>(parent())->OnChildLabelUpdateFocus(
+        this, /*focus=*/false);
+  }
   static_cast<ActionView*>(parent())->RemoveMessage();
 }
 
@@ -660,13 +680,18 @@ void ActionLabel::SetToEditDefault() {
   label()->SetFontList(gfx::FontList(
       {kFontStyle}, gfx::Font::NORMAL,
       allow_reposition_ ? kFontSize : kFontSizeAlpha, gfx::Font::Weight::BOLD));
-  views::FocusRing::Get(this)->SetColorId(absl::nullopt);
+  SetEnabledTextColors(kTextColorDefault);
   SetBackgroundForEdit();
+  views::FocusRing::Get(this)->SetColorId(absl::nullopt);
 }
 
-void ActionLabel::SetToEditHover() {
-  views::FocusRing::Get(this)->SetColorId(
-      ui::kColorAshActionLabelFocusRingHover);
+void ActionLabel::SetToEditHover(bool hovered) {
+  if (hovered) {
+    views::FocusRing::Get(this)->SetColorId(
+        ui::kColorAshActionLabelFocusRingHover);
+  } else {
+    views::FocusRing::Get(this)->SetColorId(absl::nullopt);
+  }
 }
 
 void ActionLabel::SetToEditFocus() {
@@ -674,10 +699,11 @@ void ActionLabel::SetToEditFocus() {
       {kFontStyle}, gfx::Font::NORMAL,
       allow_reposition_ ? kFontSize : kFontSizeAlpha, gfx::Font::Weight::BOLD));
   SetPreferredSize(CalculatePreferredSize());
+  SetEnabledTextColors(kTextColorDefault);
+  SetBackgroundForEdit();
   views::FocusRing::Get(this)->SetColorId(
       IsInputUnbound() ? ui::kColorAshActionLabelFocusRingError
                        : ui::kColorAshActionLabelFocusRingEdit);
-  SetBackgroundForEdit();
 }
 
 void ActionLabel::SetToEditError() {
@@ -690,6 +716,14 @@ void ActionLabel::SetToEditUnbindInput() {
   SetBackground(views::CreateRoundedRectBackground(
       kEditedUnboundBgColor,
       allow_reposition_ ? kCornerRadius : kCornerRadiusAlpha));
+}
+
+void ActionLabel::SetToEditInactive() {
+  if (IsInputUnbound())
+    return;
+
+  SetBackground(nullptr);
+  SetEnabledTextColors(kEditInactiveTextColor);
 }
 
 void ActionLabel::SetBackgroundForEdit() {

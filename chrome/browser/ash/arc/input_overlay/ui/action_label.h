@@ -49,6 +49,9 @@ class ActionLabel : public views::LabelButton {
   void SetDisplayMode(DisplayMode mode);
   // Return true if it has focus before clear focus.
   bool ClearFocus();
+  // It is possible that multiple labels are in one ActionView and these labels
+  // are called sibling labels. This label reacts to sibling's focus change.
+  void OnSiblingUpdateFocus(bool sibling_focused);
 
   // TODO(b/260937747): Update or remove when removing flags
   // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
@@ -89,14 +92,17 @@ class ActionLabel : public views::LabelButton {
   void SetToEditMode();
   // In edit mode without mouse hover or focus.
   void SetToEditDefault();
-  // In edit mode when mouse hovers.
-  void SetToEditHover();
+  // In edit mode when mouse hovers or not.
+  void SetToEditHover(bool hovered);
   // In edit mode when this view is focused.
   void SetToEditFocus();
   // In edit mode when there is edit error.
   void SetToEditError();
   // In edit mode when the input is unbound.
   void SetToEditUnbindInput();
+  // In edit mode of ActionMoveView with four keys, when one label is focused,
+  // the other labels turn to edit inactive visually.
+  void SetToEditInactive();
 
   void SetBackgroundForEdit();
 
