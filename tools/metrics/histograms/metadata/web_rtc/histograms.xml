@@ -952,6 +952,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.DesktopCapture.Win.DirectXCapturerResult"
+    enum="WebRtcDirectXCapturerResult" expires_after="2024-02-02">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    This records high level errors, or success, encountered across the entire
+    capture flow in the DirectX (DXGI) based capturer. Is recorded every time a
+    new video frame is captured using DXGI. Only recorded on Windows.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.DesktopCapture.Win.WgcCapturerResult"
     enum="WebRtcWgcCapturerResult" expires_after="2023-06-18">
   <owner>alcooper@chromium.org</owner>

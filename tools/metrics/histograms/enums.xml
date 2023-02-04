@@ -107983,6 +107983,15 @@ This is true even if the type has been removed from the mojom file.
   <int value="5" label="ScreenCapturerWinDirectx"/>
 </enum>
 
+<enum name="WebRtcDirectXCapturerResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="UnsupportedSession"/>
+  <int value="2" label="FramePrepareFailed"/>
+  <int value="3" label="InitializationFailed"/>
+  <int value="4" label="DuplicationFailed"/>
+  <int value="5" label="InvalidMonitorId"/>
+</enum>
+
 <enum name="WebRTCEventFrequency">
   <int value="0" label="None."/>
   <int value="1" label="Few."/>
