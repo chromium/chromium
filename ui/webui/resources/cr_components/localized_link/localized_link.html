@@ -1,6 +1,13 @@
 <style include="cr-shared-style">
   :host {
     --cr-localized-link-display: inline;
+    display: block;
+  }
+
+  :host([link-disabled]) {
+    cursor: pointer;
+    opacity: var(--cr-disabled-opacity);
+    pointer-events: none;
   }
 
   a {
@@ -19,10 +26,8 @@
     user-select: none;
   }
 
-  :host([link-disabled]) #container {
-    cursor: pointer;
-    opacity: var(--cr-disabled-opacity);
-    pointer-events: none;
+  #container {
+    display: contents;
   }
 </style>
 <!-- innerHTML is set via setContainerInnerHtml_. -->
