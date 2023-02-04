@@ -305,9 +305,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   size_t max_large_blob_fragment_length();
 
   const std::unique_ptr<FidoDevice> device_;
-  absl::optional<AuthenticatorSupportedOptions> options_;
+  AuthenticatorSupportedOptions options_;
+  // opt_options_ only exists to contain a copy of options_ for API reasons.
+  mutable absl::optional<AuthenticatorSupportedOptions> opt_options_;
   std::unique_ptr<FidoTask> task_;
   std::unique_ptr<GenericDeviceOperation> operation_;
+  bool initialized_ = false;
 
   // The highest advertised PINUVAuthProtocol version that the authenticator
   // supports. This is guaranteed to be non-null after authenticator
