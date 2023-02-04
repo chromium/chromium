@@ -372,8 +372,8 @@ bool WinWebAuthnApiAuthenticator::SupportsLargeBlobs() const {
   return win_api_->SupportsLargeBlobs();
 }
 
-const absl::optional<AuthenticatorSupportedOptions>&
-WinWebAuthnApiAuthenticator::Options() const {
+const AuthenticatorSupportedOptions& WinWebAuthnApiAuthenticator::Options()
+    const {
   return options_;
 }
 

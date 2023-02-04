@@ -100,7 +100,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
   bool SupportsEnterpriseAttestation() const override;
   bool SupportsCredBlobOfSize(size_t num_bytes) const override;
   bool SupportsLargeBlobs() const override;
-  const absl::optional<AuthenticatorSupportedOptions>& Options() const override;
+  const AuthenticatorSupportedOptions& Options() const override;
   absl::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
 
@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
 
   // options_ is per-instance because the capabilities of `win_api_` can
   // change at run-time in tests.
-  const absl::optional<AuthenticatorSupportedOptions> options_;
+  const AuthenticatorSupportedOptions options_;
   HWND current_window_;
   bool is_pending_ = false;
   bool waiting_for_cancellation_ = false;

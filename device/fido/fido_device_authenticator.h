@@ -133,7 +133,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   bool SupportsCredBlobOfSize(size_t num_bytes) const override;
   bool SupportsDevicePublicKey() const override;
   bool SupportsLargeBlobs() const override;
-  const absl::optional<AuthenticatorSupportedOptions>& Options() const override;
+  const AuthenticatorSupportedOptions& Options() const override;
   absl::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
 
@@ -306,8 +306,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
 
   const std::unique_ptr<FidoDevice> device_;
   AuthenticatorSupportedOptions options_;
-  // opt_options_ only exists to contain a copy of options_ for API reasons.
-  mutable absl::optional<AuthenticatorSupportedOptions> opt_options_;
   std::unique_ptr<FidoTask> task_;
   std::unique_ptr<GenericDeviceOperation> operation_;
   bool initialized_ = false;

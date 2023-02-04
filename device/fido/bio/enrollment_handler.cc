@@ -153,18 +153,17 @@ void BioEnrollmentHandler::OnTouch(FidoAuthenticator* authenticator) {
 
   CancelActiveAuthenticators(authenticator->GetId());
 
-  if (!authenticator->Options() ||
-      (authenticator->Options()->bio_enrollment_availability ==
-           AuthenticatorSupportedOptions::BioEnrollmentAvailability::
-               kNotSupported &&
-       authenticator->Options()->bio_enrollment_availability_preview ==
-           AuthenticatorSupportedOptions::BioEnrollmentAvailability::
-               kNotSupported)) {
+  if (authenticator->Options().bio_enrollment_availability ==
+          AuthenticatorSupportedOptions::BioEnrollmentAvailability::
+              kNotSupported &&
+      authenticator->Options().bio_enrollment_availability_preview ==
+          AuthenticatorSupportedOptions::BioEnrollmentAvailability::
+              kNotSupported) {
     RunErrorCallback(Error::kAuthenticatorMissingBioEnrollment);
     return;
   }
 
-  if (authenticator->Options()->client_pin_availability !=
+  if (authenticator->Options().client_pin_availability !=
       AuthenticatorSupportedOptions::ClientPinAvailability::
           kSupportedAndPinSet) {
     RunErrorCallback(Error::kNoPINSet);

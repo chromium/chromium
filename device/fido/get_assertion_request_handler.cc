@@ -278,7 +278,7 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     const FidoAuthenticator& authenticator) {
   CtapGetAssertionRequest specialized_request(request);
 
-  if (authenticator.Options() && authenticator.Options()->always_uv) {
+  if (authenticator.Options().always_uv) {
     specialized_request.user_verification =
         UserVerificationRequirement::kRequired;
   }

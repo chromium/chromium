@@ -304,8 +304,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   virtual bool SupportsCredBlobOfSize(size_t num_bytes) const;
   virtual bool SupportsDevicePublicKey() const;
   virtual bool SupportsLargeBlobs() const;
-  virtual const absl::optional<AuthenticatorSupportedOptions>& Options()
-      const = 0;
+  virtual const AuthenticatorSupportedOptions& Options() const = 0;
   virtual absl::optional<FidoTransportProtocol> AuthenticatorTransport()
       const = 0;
   virtual base::WeakPtr<FidoAuthenticator> GetWeakPtr() = 0;

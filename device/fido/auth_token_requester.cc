@@ -43,13 +43,12 @@ AuthTokenRequester::AuthTokenRequester(Delegate* delegate,
       internal_uv_locked_(options_.internal_uv_locked) {
   DCHECK(delegate_);
   DCHECK(authenticator_);
-  DCHECK(authenticator_->Options());
   DCHECK(!options_.token_permissions.empty());
   DCHECK(!options_.rp_id || !options_.rp_id->empty());
   // Authenticators with CTAP2.0-style pinToken support only support certain
   // default permissions.
   DCHECK(
-      authenticator_->Options()->supports_pin_uv_auth_token ||
+      authenticator_->Options().supports_pin_uv_auth_token ||
       base::STLSetDifference<std::set<pin::Permissions>>(
           options_.token_permissions,
           std::set<pin::Permissions>{pin::Permissions::kMakeCredential,
@@ -62,12 +61,12 @@ AuthTokenRequester::AuthTokenRequester(Delegate* delegate,
 AuthTokenRequester::~AuthTokenRequester() = default;
 
 void AuthTokenRequester::ObtainPINUVAuthToken() {
-  if (authenticator_->Options()->supports_pin_uv_auth_token) {
+  if (authenticator_->Options().supports_pin_uv_auth_token) {
     // Only attempt to obtain a token through internal UV if the authenticator
     // supports CTAP 2.1 pinUvAuthTokens. If it does not, it could be a 2.0
     // authenticator that supports UV without any sort of token.
     const UserVerificationAvailability user_verification_availability =
-        authenticator_->Options()->user_verification_availability;
+        authenticator_->Options().user_verification_availability;
     switch (user_verification_availability) {
       case UserVerificationAvailability::kNotSupported:
       case UserVerificationAvailability::kSupportedButNotConfigured:
@@ -80,7 +79,7 @@ void AuthTokenRequester::ObtainPINUVAuthToken() {
   }
 
   const ClientPinAvailability client_pin_availability =
-      authenticator_->Options()->client_pin_availability;
+      authenticator_->Options().client_pin_availability;
   switch (client_pin_availability) {
     case ClientPinAvailability::kNotSupported:
       delegate_->HavePINUVAuthTokenResultForAuthenticator(
@@ -125,7 +124,7 @@ void AuthTokenRequester::OnGetUVRetries(
   if (response->retries == 0) {
     // The authenticator was locked prior to calling
     // ObtainTokenFromInternalUV(). Fall back to PIN if able.
-    if (authenticator_->Options()->client_pin_availability ==
+    if (authenticator_->Options().client_pin_availability ==
         ClientPinAvailability::kSupportedAndPinSet) {
       if (options_.skip_pin_touch) {
         ObtainTokenFromPIN();
@@ -193,7 +192,7 @@ void AuthTokenRequester::OnGetUVToken(
 
   if (status == CtapDeviceResponseCode::kCtap2ErrUvBlocked) {
     // Fall back to PIN if able.
-    if (authenticator_->Options()->client_pin_availability ==
+    if (authenticator_->Options().client_pin_availability ==
         ClientPinAvailability::kSupportedAndPinSet) {
       internal_uv_locked_ = true;
       ObtainTokenFromPIN();

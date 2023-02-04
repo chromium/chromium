@@ -1357,16 +1357,8 @@ bool FidoDeviceAuthenticator::SupportsLargeBlobs() const {
   return options_.supports_large_blobs;
 }
 
-const absl::optional<AuthenticatorSupportedOptions>&
-FidoDeviceAuthenticator::Options() const {
-  DCHECK(initialized_);
-  // This function has to return a reference to an absl::optional so this
-  // object has to hold on to such a value. Thus `opt_options_` is just a
-  // copy of `options_` in a compatible form.
-  if (!opt_options_) {
-    opt_options_ = options_;
-  }
-  return opt_options_;
+const AuthenticatorSupportedOptions& FidoDeviceAuthenticator::Options() const {
+  return options_;
 }
 
 absl::optional<FidoTransportProtocol>

@@ -87,7 +87,7 @@ void SetPINRequestHandler::OnTouch(FidoAuthenticator* authenticator) {
 
   authenticator_ = authenticator;
 
-  switch (authenticator_->Options()->client_pin_availability) {
+  switch (authenticator_->Options().client_pin_availability) {
     case AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported:
       state_ = State::kFinished;
       CancelActiveAuthenticators(authenticator->GetId());

@@ -140,9 +140,8 @@ AuthenticatorSupportedOptions TouchIdAuthenticatorOptions() {
 
 }  // namespace
 
-const absl::optional<AuthenticatorSupportedOptions>&
-TouchIdAuthenticator::Options() const {
-  static const absl::optional<AuthenticatorSupportedOptions> options =
+const AuthenticatorSupportedOptions& TouchIdAuthenticator::Options() const {
+  static const AuthenticatorSupportedOptions options =
       TouchIdAuthenticatorOptions();
   return options;
 }

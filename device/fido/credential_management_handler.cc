@@ -53,9 +53,8 @@ void CredentialManagementHandler::OnTouch(FidoAuthenticator* authenticator) {
   CancelActiveAuthenticators(authenticator->GetId());
 
   if (authenticator->SupportedProtocol() != ProtocolVersion::kCtap2 ||
-      !authenticator->Options() ||
-      !(authenticator->Options()->supports_credential_management ||
-        authenticator->Options()->supports_credential_management_preview)) {
+      !(authenticator->Options().supports_credential_management ||
+        authenticator->Options().supports_credential_management_preview)) {
     state_ = State::kFinished;
     std::move(finished_callback_)
         .Run(CredentialManagementStatus::
@@ -63,7 +62,7 @@ void CredentialManagementHandler::OnTouch(FidoAuthenticator* authenticator) {
     return;
   }
 
-  if (authenticator->Options()->client_pin_availability !=
+  if (authenticator->Options().client_pin_availability !=
       AuthenticatorSupportedOptions::ClientPinAvailability::
           kSupportedAndPinSet) {
     // The authenticator doesn't have a PIN/UV set up or doesn't support PINs.
@@ -125,7 +124,7 @@ void CredentialManagementHandler::OnHavePIN(std::string pin) {
   state_ = State::kGettingPINToken;
   std::vector<pin::Permissions> permissions = {
       pin::Permissions::kCredentialManagement};
-  if (authenticator_->Options()->supports_large_blobs) {
+  if (authenticator_->Options().supports_large_blobs) {
     permissions.push_back(pin::Permissions::kLargeBlobWrite);
   }
   authenticator_->GetPINToken(
@@ -168,7 +167,7 @@ void CredentialManagementHandler::OnHavePINToken(
   }
 
   pin_token_ = response;
-  if (authenticator_->Options()->supports_large_blobs) {
+  if (authenticator_->Options().supports_large_blobs) {
     authenticator_->GarbageCollectLargeBlob(
         *pin_token_,
         base::BindOnce(&CredentialManagementHandler::OnInitFinished,
@@ -219,7 +218,7 @@ void CredentialManagementHandler::OnDeleteCredentials(
   }
 
   if (remaining_credential_ids.empty()) {
-    if (authenticator_->Options()->supports_large_blobs) {
+    if (authenticator_->Options().supports_large_blobs) {
       authenticator_->GarbageCollectLargeBlob(*pin_token_, std::move(callback));
       return;
     }

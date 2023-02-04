@@ -62,9 +62,8 @@ AuthenticatorSupportedOptions ChromeOSAuthenticatorOptions() {
 
 }  // namespace
 
-const absl::optional<AuthenticatorSupportedOptions>&
-ChromeOSAuthenticator::Options() const {
-  static const absl::optional<AuthenticatorSupportedOptions> options =
+const AuthenticatorSupportedOptions& ChromeOSAuthenticator::Options() const {
+  static const AuthenticatorSupportedOptions options =
       ChromeOSAuthenticatorOptions();
   return options;
 }

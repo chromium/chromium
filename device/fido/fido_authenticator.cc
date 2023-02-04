@@ -199,7 +199,7 @@ ProtocolVersion FidoAuthenticator::SupportedProtocol() const {
 }
 
 bool FidoAuthenticator::SupportsCredProtectExtension() const {
-  return Options() && Options()->supports_cred_protect;
+  return Options().supports_cred_protect;
 }
 
 bool FidoAuthenticator::SupportsHMACSecretExtension() const {
