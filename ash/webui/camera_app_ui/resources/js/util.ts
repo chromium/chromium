@@ -102,13 +102,10 @@ const KEYBOARD_KEYS = [
 const KEYBOARD_KEY_SET = new Set(KEYBOARD_KEYS);
 type KeyboardKey = typeof KEYBOARD_KEYS[number];
 
-// TODO(b/248398229): After upgrading TS to 4.7 or later, we can use "extends
-// constraints on infer" to simplify the syntax of `WithModifiers`.
 type WithModifiers<Modifiers extends string[], Key extends string> =
-    Modifiers extends [...infer Rest, infer Last] ?
-    Rest extends string[] ?
-    Last extends string ? WithModifiers<Rest, Key|`${Last}-${Key}`>: never :
-    never :
+    Modifiers extends [...infer Rest extends string[], infer Last extends
+                           string] ?
+    WithModifiers<Rest, Key|`${Last}-${Key}`>:
     Key;
 export type KeyboardShortcut =
     WithModifiers<['Ctrl', 'Alt', 'Shift'], KeyboardKey>|'Unsupported';
