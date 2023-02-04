@@ -64,7 +64,7 @@ class EventProcessorTest : public testing::Test {
 };
 
 TEST_F(EventProcessorTest, Basic) {
-  std::unique_ptr<TestEventTarget> child(new TestEventTarget());
+  auto child = std::make_unique<TestEventTarget>();
   child->SetEventTargeter(
       std::make_unique<TestEventTargeter>(child.get(), false));
   SetTarget(child.get());
@@ -126,28 +126,26 @@ class ReDispatchEventHandler : public TestEventHandler {
 // being processed by another event processor.
 TEST_F(EventProcessorTest, NestedEventProcessing) {
   // Add one child to the default event processor used in this test suite.
-  std::unique_ptr<TestEventTarget> child(new TestEventTarget());
+  auto child = std::make_unique<TestEventTarget>();
   SetTarget(child.get());
   root()->AddChild(std::move(child));
 
   // Define a second root target and child.
-  std::unique_ptr<EventTarget> second_root_scoped(new TestEventTarget());
-  TestEventTarget* second_root =
-      static_cast<TestEventTarget*>(second_root_scoped.get());
-  std::unique_ptr<TestEventTarget> second_child(new TestEventTarget());
+  auto second_root_scoped = std::make_unique<TestEventTarget>();
+  TestEventTarget* second_root = second_root_scoped.get();
+  auto second_child = std::make_unique<TestEventTarget>();
   second_root->SetEventTargeter(
-      base::WrapUnique(new TestEventTargeter(second_child.get(), false)));
+      std::make_unique<TestEventTargeter>(second_child.get(), false));
   second_root->AddChild(std::move(second_child));
 
   // Define a second event processor which owns the second root.
-  std::unique_ptr<TestEventProcessor> second_processor(
-      new TestEventProcessor());
+  auto second_processor = std::make_unique<TestEventProcessor>();
   second_processor->SetRoot(std::move(second_root_scoped));
 
   // Indicate that an event which is dispatched to the child target owned by the
   // first event processor should be handled by |target_handler| instead.
-  std::unique_ptr<TestEventHandler> target_handler(
-      new ReDispatchEventHandler(second_processor.get(), root()->child_at(0)));
+  auto target_handler = std::make_unique<ReDispatchEventHandler>(
+      second_processor.get(), root()->child_at(0));
   std::ignore = root()->child_at(0)->SetTargetHandler(target_handler.get());
 
   // Dispatch a mouse event to the tree of event targets owned by the first
@@ -181,7 +179,7 @@ TEST_F(EventProcessorTest, NestedEventProcessing) {
 // Verifies that OnEventProcessingFinished() is called when an event
 // has been handled.
 TEST_F(EventProcessorTest, OnEventProcessingFinished) {
-  std::unique_ptr<TestEventTarget> child(new TestEventTarget());
+  auto child = std::make_unique<TestEventTarget>();
   child->set_mark_events_as_handled(true);
   SetTarget(child.get());
   root()->AddChild(std::move(child));
@@ -202,7 +200,7 @@ TEST_F(EventProcessorTest, OnEventProcessingFinished) {
 // OnEventProcessingStarted() marks the event as handled. Also verifies that
 // OnEventProcessingFinished() is also called in either case.
 TEST_F(EventProcessorTest, OnEventProcessingStarted) {
-  std::unique_ptr<TestEventTarget> child(new TestEventTarget());
+  auto child = std::make_unique<TestEventTarget>();
   SetTarget(child.get());
   root()->AddChild(std::move(child));
 
@@ -240,12 +238,12 @@ TEST_F(EventProcessorTest, OnEventProcessingStarted) {
 // Tests that unhandled events are correctly dispatched to the next-best
 // target as decided by the TestEventTargeter.
 TEST_F(EventProcessorTest, DispatchToNextBestTarget) {
-  std::unique_ptr<TestEventTarget> child(new TestEventTarget());
-  std::unique_ptr<TestEventTarget> grandchild(new TestEventTarget());
+  auto child = std::make_unique<TestEventTarget>();
+  auto grandchild = std::make_unique<TestEventTarget>();
 
   // Install a TestEventTargeter which permits bubbling.
   root()->SetEventTargeter(
-      base::WrapUnique(new TestEventTargeter(grandchild.get(), true)));
+      std::make_unique<TestEventTargeter>(grandchild.get(), true));
   child->AddChild(std::move(grandchild));
   root()->AddChild(std::move(child));
 
@@ -314,12 +312,12 @@ TEST_F(EventProcessorTest, DispatchToNextBestTarget) {
 // targets, pre-target handlers, and post-target handlers when
 // a TestEventTargeter is installed on the root target which permits bubbling.
 TEST_F(EventProcessorTest, HandlerSequence) {
-  std::unique_ptr<TestEventTarget> child(new TestEventTarget());
-  std::unique_ptr<TestEventTarget> grandchild(new TestEventTarget());
+  auto child = std::make_unique<TestEventTarget>();
+  auto grandchild = std::make_unique<TestEventTarget>();
 
   // Install a TestEventTargeter which permits bubbling.
   root()->SetEventTargeter(
-      base::WrapUnique(new TestEventTargeter(grandchild.get(), true)));
+      std::make_unique<TestEventTargeter>(grandchild.get(), true));
   child->AddChild(std::move(grandchild));
   root()->AddChild(std::move(child));
 
@@ -400,7 +398,7 @@ class SelfDestroyingEventProcessor : public TestEventProcessor {
 class SelfDestroyingTestEventTarget : public TestEventTarget {
  public:
   SelfDestroyingTestEventTarget()
-      : processor_(new SelfDestroyingEventProcessor()) {}
+      : processor_(std::make_unique<SelfDestroyingEventProcessor>()) {}
 
   SelfDestroyingTestEventTarget(const SelfDestroyingTestEventTarget&) = delete;
   SelfDestroyingTestEventTarget& operator=(
@@ -424,9 +422,8 @@ EventDispatchDetails SelfDestroyingEventProcessor::PostDispatchEvent(
 }  // namespace
 
 TEST(EventProcessorCrashTest, Basic) {
-  std::unique_ptr<TestEventTarget> root(new TestEventTarget());
-  std::unique_ptr<SelfDestroyingTestEventTarget> target(
-      new SelfDestroyingTestEventTarget());
+  auto root = std::make_unique<TestEventTarget>();
+  auto target = std::make_unique<SelfDestroyingTestEventTarget>();
   root->SetEventTargeter(
       std::make_unique<TestEventTargeter>(target.get(), false));
   TestEventProcessor* processor = target->processor();
@@ -443,7 +440,7 @@ class SelfDestroyingTestEventTargeter : public TestEventTargeter {
  public:
   explicit SelfDestroyingTestEventTargeter(std::unique_ptr<EventTarget> root)
       : TestEventTargeter(nullptr, false),
-        processor_(new TestEventProcessor()) {
+        processor_(std::make_unique<TestEventProcessor>()) {
     processor_->SetRoot(std::move(root));
   }
   SelfDestroyingTestEventTargeter(const SelfDestroyingTestEventTarget&) =
@@ -467,8 +464,8 @@ class SelfDestroyingTestEventTargeter : public TestEventTargeter {
 }  // namespace
 
 TEST(EventProcessorCrashTest, DestroyDuringFindTarget) {
-  std::unique_ptr<TestEventTarget> root(new TestEventTarget());
-  auto* root_ptr = root.get();
+  auto root = std::make_unique<TestEventTarget>();
+  TestEventTarget* root_ptr = root.get();
   auto event_targeter =
       std::make_unique<SelfDestroyingTestEventTargeter>(std::move(root));
   auto* processor = event_targeter->processor();
