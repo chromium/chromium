@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/view.h"
 
@@ -42,6 +43,14 @@ class EditFinishView : public views::View {
   EditFinishView& operator=(const EditFinishView&) = delete;
   ~EditFinishView() override;
 
+  // views::View:
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  bool OnMouseDragged(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
+  bool OnKeyReleased(const ui::KeyEvent& event) override;
+
  private:
   class ChildButton;
 
@@ -51,12 +60,24 @@ class EditFinishView : public views::View {
   void OnSaveButtonPressed();
   void OnCancelButtonPressed();
 
+  // Drag operations.
+  void OnDragStart(const ui::LocatedEvent& event);
+  void OnDragUpdate(const ui::LocatedEvent& event);
+  void OnDragEnd();
+
   raw_ptr<ChildButton> reset_button_ = nullptr;
   raw_ptr<ChildButton> save_button_ = nullptr;
   raw_ptr<ChildButton> cancel_button_ = nullptr;
 
   // DisplayOverlayController owns |this| class, no need to deallocate.
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
+
+  // LocatedEvent's position when drag starts.
+  gfx::Point start_drag_event_pos_;
+  // This view's position when drag starts.
+  gfx::Point start_drag_view_pos_;
+  // If this view is in a dragging state.
+  bool is_dragging_ = false;
 };
 
 }  // namespace arc::input_overlay

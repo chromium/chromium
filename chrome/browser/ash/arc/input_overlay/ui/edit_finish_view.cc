@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
 
+#include "ash/app_list/app_list_util.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
@@ -12,6 +13,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -26,6 +28,7 @@ constexpr int kSideMargin = 24;
 constexpr int kViewMargin = 8;
 constexpr int kViewCornerRadius = 16;
 constexpr int kViewBackgroundColor = SkColorSetA(SK_ColorBLACK, 0xCC /*80%*/);
+constexpr int kParentPadding = 16;
 // Space between children.
 constexpr int kSpaceRow = 4;
 // Alpha view features.
@@ -60,11 +63,24 @@ constexpr float kHaloThickness = 4;
 
 class EditFinishView::ChildButton : public views::LabelButton {
  public:
-  explicit ChildButton(PressedCallback callback,
-                       int text_source_id,
-                       SkColor background_color,
-                       SkColor text_color)
-      : LabelButton(callback, l10n_util::GetStringUTF16(text_source_id)) {
+  using OnMousePressedCallback =
+      base::RepeatingCallback<bool(const ui::MouseEvent& event)>;
+  using OnMouseDraggedCallback =
+      base::RepeatingCallback<bool(const ui::MouseEvent& event)>;
+  using OnMouseReleasedCallback =
+      base::RepeatingCallback<void(const ui::MouseEvent& event)>;
+
+  ChildButton(PressedCallback callback,
+              int text_source_id,
+              SkColor background_color,
+              SkColor text_color,
+              OnMousePressedCallback on_mouse_pressed_callback,
+              OnMouseDraggedCallback on_mouse_dragged_callback,
+              OnMouseReleasedCallback on_mouse_released_callback)
+      : LabelButton(callback, l10n_util::GetStringUTF16(text_source_id)),
+        on_mouse_pressed_callback_(on_mouse_pressed_callback),
+        on_mouse_dragged_callback_(on_mouse_dragged_callback),
+        on_mouse_released_callback_(on_mouse_released_callback) {
     label()->SetFontList(
         gfx::FontList({kFontStyle}, gfx::Font::NORMAL,
                       AllowReposition() ? kFontSize : kFontSizeAlpha,
@@ -93,6 +109,37 @@ class EditFinishView::ChildButton : public views::LabelButton {
                                           kEditBackgroundColor);
   }
   ~ChildButton() override = default;
+
+  bool OnMousePressed(const ui::MouseEvent& event) override {
+    if (AllowReposition())
+      on_mouse_pressed_callback_.Run(event);
+    return LabelButton::OnMousePressed(event);
+  }
+
+  bool OnMouseDragged(const ui::MouseEvent& event) override {
+    if (AllowReposition()) {
+      is_dragging_ = true;
+      on_mouse_dragged_callback_.Run(event);
+    }
+    return LabelButton::OnMouseDragged(event);
+  }
+
+  void OnMouseReleased(const ui::MouseEvent& event) override {
+    if (!AllowReposition() || !is_dragging_) {
+      LabelButton::OnMouseReleased(event);
+      return;
+    }
+    is_dragging_ = false;
+    on_mouse_released_callback_.Run(event);
+  }
+
+ private:
+  bool is_dragging_ = false;
+
+  // Callbacks for dragging.
+  OnMousePressedCallback on_mouse_pressed_callback_;
+  OnMouseDraggedCallback on_mouse_dragged_callback_;
+  OnMouseReleasedCallback on_mouse_released_callback_;
 };
 
 // static
@@ -122,23 +169,33 @@ void EditFinishView::Init(const gfx::Size& parent_size) {
       AllowReposition() ? kSpaceRow : kSpaceRowAlpha));
   SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
 
+  auto on_mouse_pressed_callback = base::BindRepeating(
+      &EditFinishView::OnMousePressed, base::Unretained(this));
+  auto on_mouse_dragged_callback = base::BindRepeating(
+      &EditFinishView::OnMouseDragged, base::Unretained(this));
+  auto on_mouse_released_callback = base::BindRepeating(
+      &EditFinishView::OnMouseReleased, base::Unretained(this));
+
   reset_button_ = AddChildView(std::make_unique<ChildButton>(
       base::BindRepeating(&EditFinishView::OnResetButtonPressed,
                           base::Unretained(this)),
-      IDS_INPUT_OVERLAY_EDIT_MODE_RESET, SK_ColorTRANSPARENT,
-      kButtonTextColor));
+      IDS_INPUT_OVERLAY_EDIT_MODE_RESET, SK_ColorTRANSPARENT, kButtonTextColor,
+      on_mouse_pressed_callback, on_mouse_dragged_callback,
+      on_mouse_released_callback));
 
   save_button_ = AddChildView(std::make_unique<ChildButton>(
       base::BindRepeating(&EditFinishView::OnSaveButtonPressed,
                           base::Unretained(this)),
       IDS_INPUT_OVERLAY_EDIT_MODE_SAVE, kSaveButtonBackgroundColor,
-      kSaveButtonTextColor));
+      kSaveButtonTextColor, on_mouse_pressed_callback,
+      on_mouse_dragged_callback, on_mouse_released_callback));
 
   cancel_button_ = AddChildView(std::make_unique<ChildButton>(
       base::BindRepeating(&EditFinishView::OnCancelButtonPressed,
                           base::Unretained(this)),
-      IDS_INPUT_OVERLAY_EDIT_MODE_CANCEL, SK_ColorTRANSPARENT,
-      kButtonTextColor));
+      IDS_INPUT_OVERLAY_EDIT_MODE_CANCEL, SK_ColorTRANSPARENT, kButtonTextColor,
+      on_mouse_pressed_callback, on_mouse_dragged_callback,
+      on_mouse_released_callback));
 
   const int width = CalculateWidth();
   SetSize(gfx::Size(AllowReposition() ? width + 2 * kViewMargin : width,
@@ -157,6 +214,89 @@ int EditFinishView::CalculateWidth() {
                        save_button_->GetPreferredSize().width());
   width = std::max(width, cancel_button_->GetPreferredSize().width());
   return width;
+}
+
+bool EditFinishView::OnMousePressed(const ui::MouseEvent& event) {
+  if (AllowReposition())
+    OnDragStart(event);
+  return views::View::OnMousePressed(event);
+}
+
+bool EditFinishView::OnMouseDragged(const ui::MouseEvent& event) {
+  if (AllowReposition())
+    OnDragUpdate(event);
+  return views::View::OnMouseDragged(event);
+}
+
+void EditFinishView::OnMouseReleased(const ui::MouseEvent& event) {
+  if (!AllowReposition() || !is_dragging_) {
+    views::View::OnMouseReleased(event);
+    return;
+  }
+  OnDragEnd();
+}
+
+void EditFinishView::OnGestureEvent(ui::GestureEvent* event) {
+  if (!AllowReposition()) {
+    views::View::OnGestureEvent(event);
+    return;
+  }
+
+  switch (event->type()) {
+    case ui::ET_GESTURE_SCROLL_BEGIN:
+      OnDragStart(*event);
+      event->SetHandled();
+      break;
+    case ui::ET_GESTURE_SCROLL_UPDATE:
+      OnDragUpdate(*event);
+      event->SetHandled();
+      break;
+    case ui::ET_GESTURE_SCROLL_END:
+    case ui::ET_SCROLL_FLING_START:
+      OnDragEnd();
+      event->SetHandled();
+      break;
+    default:
+      views::View::OnGestureEvent(event);
+      break;
+  }
+}
+
+bool EditFinishView::OnKeyPressed(const ui::KeyEvent& event) {
+  auto target_position = origin();
+  if (!AllowReposition() ||
+      !UpdatePositionByArrowKey(event.key_code(), target_position)) {
+    return views::View::OnKeyPressed(event);
+  }
+
+  ClampPosition(target_position, size(), parent()->size(), kParentPadding);
+  SetPosition(target_position);
+  return true;
+}
+
+bool EditFinishView::OnKeyReleased(const ui::KeyEvent& event) {
+  if (!AllowReposition() || !ash::IsArrowKeyEvent(event))
+    return views::View::OnKeyReleased(event);
+
+  return true;
+}
+
+void EditFinishView::OnDragStart(const ui::LocatedEvent& event) {
+  start_drag_event_pos_ = event.location();
+  start_drag_view_pos_ = origin();
+}
+
+void EditFinishView::OnDragUpdate(const ui::LocatedEvent& event) {
+  is_dragging_ = true;
+
+  auto new_location = event.location();
+  auto target_position = origin() + (new_location - start_drag_event_pos_);
+  ClampPosition(target_position, size(), parent()->size(), kParentPadding);
+  SetPosition(target_position);
+}
+
+void EditFinishView::OnDragEnd() {
+  is_dragging_ = false;
 }
 
 void EditFinishView::OnResetButtonPressed() {
