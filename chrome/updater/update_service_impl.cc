@@ -143,9 +143,6 @@ MakeUpdateClientCrxStateChangeCallbackForUpdateCheck(
     virtual ~RefCountedState() {}
   };
 
-  scoped_refptr<RefCountedState> previous_state =
-      base::MakeRefCounted<RefCountedState>();
-
   return base::BindRepeating(
       [](scoped_refptr<update_client::Configurator> config,
          UpdateService::StateChangeCallback callback,
@@ -166,7 +163,7 @@ MakeUpdateClientCrxStateChangeCallbackForUpdateCheck(
 
         callback.Run(update_state);
       },
-      config, callback, previous_state);
+      config, callback, base::MakeRefCounted<RefCountedState>());
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -480,12 +477,13 @@ void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
 void UpdateServiceImpl::Update(
     const std::string& app_id,
     const std::string& install_data_index,
-// TODO(crbug.com/1396103): mojo interface changes will be done in separate CL.
+    Priority priority,
+    PolicySameVersionUpdate policy_same_version_update,
+// TODO(crbug.com/1396103): remove this `#if` once mojo interface changes are
+// done in separate CL.
 #if BUILDFLAG(IS_WIN)
     bool do_update_check_only,
 #endif  // BUILDFLAG(IS_WIN)
-    Priority priority,
-    PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
     Callback callback) {
   VLOG(1) << __func__;
@@ -498,6 +496,8 @@ void UpdateServiceImpl::Update(
     return;
   }
 
+// TODO(crbug.com/1396103): remove this `#if` once mojo interface changes are
+// done in separate CL.
 #if BUILDFLAG(IS_WIN)
   if (do_update_check_only) {
     main_task_runner_->PostTask(
@@ -510,7 +510,7 @@ void UpdateServiceImpl::Update(
                            AppInstallDataIndex(
                                {std::make_pair(app_id, install_data_index)}),
                            priority == Priority::kForeground,
-                           /*update_blocked*/ true, policy_same_version_update),
+                           /*update_blocked=*/true, policy_same_version_update),
             MakeUpdateClientCrxStateChangeCallbackForUpdateCheck(config_,
                                                                  state_update),
             priority == Priority::kForeground,

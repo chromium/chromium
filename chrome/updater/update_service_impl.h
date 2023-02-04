@@ -54,13 +54,13 @@ class UpdateServiceImpl : public UpdateService {
 
   void Update(const std::string& app_id,
               const std::string& install_data_index,
-  // TODO(crbug.com/1396103): mojo interface changes will be done in separate
-  // CL.
+              Priority priority,
+              PolicySameVersionUpdate policy_same_version_update,
+// TODO(crbug.com/1396103): remove this `#if` once mojo interface changes are
+// done in separate CL.
 #if BUILDFLAG(IS_WIN)
               bool do_update_check_only,
 #endif  // BUILDFLAG(IS_WIN)
-              Priority priority,
-              PolicySameVersionUpdate policy_same_version_update,
               StateChangeCallback state_update,
               Callback callback) override;
   void Install(const RegistrationRequest& registration,

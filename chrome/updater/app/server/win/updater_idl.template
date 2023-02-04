@@ -160,9 +160,9 @@ interface IUpdater : IUnknown {
   HRESULT RunPeriodicTasks([in] IUpdaterCallback* callback);
   HRESULT Update([in, string] const WCHAR* app_id,
                  [in, string] const WCHAR* install_data_index,
-                 [in] BOOL do_update_check_only,
                  [in] LONG priority,
                  [in] BOOL same_version_update_allowed,
+                 [in] BOOL do_update_check_only,
                  [in] IUpdaterObserver* observer);
   HRESULT UpdateAll([in] IUpdaterObserver* observer);
   HRESULT Install([in, string] const WCHAR* app_id,
@@ -206,9 +206,9 @@ interface IUpdaterUser : IUnknown {
   HRESULT RunPeriodicTasks([in] IUpdaterCallbackUser* callback);
   HRESULT Update([in, string] const WCHAR* app_id,
                  [in, string] const WCHAR* install_data_index,
-                 [in] BOOL do_update_check_only,
                  [in] LONG priority,
                  [in] BOOL same_version_update_allowed,
+                 [in] BOOL do_update_check_only,
                  [in] IUpdaterObserverUser* observer);
   HRESULT UpdateAll([in] IUpdaterObserverUser* observer);
   HRESULT Install([in, string] const WCHAR* app_id,
@@ -252,9 +252,9 @@ interface IUpdaterSystem : IUnknown {
   HRESULT RunPeriodicTasks([in] IUpdaterCallbackSystem* callback);
   HRESULT Update([in, string] const WCHAR* app_id,
                  [in, string] const WCHAR* install_data_index,
-                 [in] BOOL do_update_check_only,
                  [in] LONG priority,
                  [in] BOOL same_version_update_allowed,
+                 [in] BOOL do_update_check_only,
                  [in] IUpdaterObserverSystem* observer);
   HRESULT UpdateAll([in] IUpdaterObserverSystem* observer);
   HRESULT Install([in, string] const WCHAR* app_id,

@@ -1195,21 +1195,21 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 1050 */	NdrFcShort( 0x10 ),	/* ARM64 Stack size/offset = 16 */
 /* 1052 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
-	/* Parameter do_update_check_only */
+	/* Parameter priority */
 
 /* 1054 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 1056 */	NdrFcShort( 0x18 ),	/* ARM64 Stack size/offset = 24 */
 /* 1058 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
-	/* Parameter priority */
+	/* Parameter same_version_update_allowed */
 
 /* 1060 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 1062 */	NdrFcShort( 0x20 ),	/* ARM64 Stack size/offset = 32 */
 /* 1064 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
-	/* Parameter same_version_update_allowed */
+	/* Parameter do_update_check_only */
 
 /* 1066 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 1068 */	NdrFcShort( 0x28 ),	/* ARM64 Stack size/offset = 40 */
@@ -1669,21 +1669,21 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 1558 */	NdrFcShort( 0x10 ),	/* ARM64 Stack size/offset = 16 */
 /* 1560 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
-	/* Parameter do_update_check_only */
+	/* Parameter priority */
 
 /* 1562 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 1564 */	NdrFcShort( 0x18 ),	/* ARM64 Stack size/offset = 24 */
 /* 1566 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
-	/* Parameter priority */
+	/* Parameter same_version_update_allowed */
 
 /* 1568 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 1570 */	NdrFcShort( 0x20 ),	/* ARM64 Stack size/offset = 32 */
 /* 1572 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
-	/* Parameter same_version_update_allowed */
+	/* Parameter do_update_check_only */
 
 /* 1574 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 1576 */	NdrFcShort( 0x28 ),	/* ARM64 Stack size/offset = 40 */
@@ -2090,21 +2090,21 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 2024 */	NdrFcShort( 0x10 ),	/* ARM64 Stack size/offset = 16 */
 /* 2026 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
-	/* Parameter do_update_check_only */
+	/* Parameter priority */
 
 /* 2028 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 2030 */	NdrFcShort( 0x18 ),	/* ARM64 Stack size/offset = 24 */
 /* 2032 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
-	/* Parameter priority */
+	/* Parameter same_version_update_allowed */
 
 /* 2034 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 2036 */	NdrFcShort( 0x20 ),	/* ARM64 Stack size/offset = 32 */
 /* 2038 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
-	/* Parameter same_version_update_allowed */
+	/* Parameter do_update_check_only */
 
 /* 2040 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 2042 */	NdrFcShort( 0x28 ),	/* ARM64 Stack size/offset = 40 */

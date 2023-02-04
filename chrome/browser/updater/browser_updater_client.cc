@@ -78,12 +78,13 @@ void BrowserUpdaterClient::CheckForUpdate(
       updater::UpdateService::UpdateState::State::kCheckingForUpdates;
   version_updater_callback.Run(update_state);
   update_service_->Update(
-      GetAppId(), {},
+      GetAppId(), {}, updater::UpdateService::Priority::kForeground,
+      updater::UpdateService::PolicySameVersionUpdate::kNotAllowed,
+// TODO(crbug.com/1396103): remove this `#if` once mojo interface changes are
+// done in separate CL.
 #if BUILDFLAG(IS_WIN)
       /*do_update_check_only=*/false,
 #endif  // BUILDFLAG(IS_WIN)
-      updater::UpdateService::Priority::kForeground,
-      updater::UpdateService::PolicySameVersionUpdate::kNotAllowed,
       base::BindPostTaskToCurrentDefault(version_updater_callback),
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&BrowserUpdaterClient::UpdateCompleted, this,

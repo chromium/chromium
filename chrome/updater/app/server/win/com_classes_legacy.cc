@@ -331,9 +331,9 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
             [](scoped_refptr<UpdateService> update_service, AppWebImplPtr obj,
                bool do_update_check_only) {
               update_service->Update(
-                  obj->app_id_, "", do_update_check_only,
-                  UpdateService::Priority::kForeground,
+                  obj->app_id_, "", UpdateService::Priority::kForeground,
                   UpdateService::PolicySameVersionUpdate::kNotAllowed,
+                  do_update_check_only,
                   base::BindRepeating(
                       [](AppWebImplPtr obj,
                          const UpdateService::UpdateState& state_update) {

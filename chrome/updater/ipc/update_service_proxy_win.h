@@ -40,9 +40,9 @@ class UpdateServiceProxy : public UpdateService {
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,
               const std::string& install_data_index,
-              bool do_update_check_only,
               Priority priority,
               PolicySameVersionUpdate policy_same_version_update,
+              bool do_update_check_only,
               StateChangeCallback state_update,
               Callback callback) override;
   void Install(const RegistrationRequest& registration,
