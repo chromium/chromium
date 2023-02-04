@@ -1,0 +1,6 @@
+Tests clipboard copy/paste operations.
+input1: input1_value
+input2: input2_value
+Copied input1 value to input2
+input1: input1_value
+input2: input1_value

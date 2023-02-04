@@ -146,9 +146,7 @@ void HeadlessProtocolBrowserTest::OnLoadEventFired(
 void HeadlessProtocolBrowserTest::OnEvaluateResult(base::Value::Dict params) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDumpTestResult)) {
-    std::string json_params;
-    base::JSONWriter::Write(params, &json_params);
-    LOG(ERROR) << "Test result: " << json_params;
+    LOG(ERROR) << "Test result:\n" << params.DebugString();
   }
 
   ProcessTestResult(DictString(params, "result.result.value"));
@@ -311,6 +309,9 @@ HEADLESS_PROTOCOL_TEST(DragStarted, "input/dragIntercepted.js")
 #define MAYBE_InputClipboardOps InputClipboardOps
 #endif
 HEADLESS_PROTOCOL_TEST(MAYBE_InputClipboardOps, "input/input-clipboard-ops.js")
+
+HEADLESS_PROTOCOL_TEST(ClipboardApiCopyPaste,
+                       "input/clipboard-api-copy-paste.js")
 
 HEADLESS_PROTOCOL_TEST(FocusBlurNotifications,
                        "input/focus-blur-notifications.js")
