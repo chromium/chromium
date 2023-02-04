@@ -79,6 +79,15 @@ class DesktopZpsSection : public ZpsSection {
   explicit DesktopZpsSection(omnibox::GroupConfigMap& group_configs);
 };
 
+// Section expressing the Desktop secondary zps limits and grouping. The rules
+// are:
+// - Containing up to 3 related search suggestion chips.
+// - Allow up to 3 suggestions total.
+class DesktopSecondaryZpsSection : public ZpsSection {
+ public:
+  explicit DesktopSecondaryZpsSection(omnibox::GroupConfigMap& group_configs);
+};
+
 // Section expressing the Desktop, non-zps limits and grouping. The rules are:
 // - Contains up to 1 default, 10 starer packs, 10 search, 8 nav, and 1 history
 //   cluster suggestions.

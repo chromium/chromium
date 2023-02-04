@@ -123,6 +123,12 @@ DesktopZpsSection::DesktopZpsSection(omnibox::GroupConfigMap& group_configs)
                   {8, omnibox::GROUP_TRENDS}},
                  group_configs) {}
 
+DesktopSecondaryZpsSection::DesktopSecondaryZpsSection(
+    omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(3,
+                 {{3, omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS}},
+                 group_configs) {}
+
 DesktopNonZpsSection::DesktopNonZpsSection(
     omnibox::GroupConfigMap& group_configs)
     : Section(10,

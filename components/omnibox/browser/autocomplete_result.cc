@@ -385,6 +385,12 @@ void AutocompleteResult::SortAndCull(
     if (is_zero_suggest) {
       sections.push_back(
           std::make_unique<DesktopZpsSection>(suggestion_groups_map_));
+      if (page_classification == OmniboxEventProto::NTP_REALBOX &&
+          base::FeatureList::IsEnabled(omnibox::kKeepSecondaryZeroSuggest)) {
+        // Allow secondary zero-prefix suggestions in the NTP realbox, if any.
+        sections.push_back(std::make_unique<DesktopSecondaryZpsSection>(
+            suggestion_groups_map_));
+      }
     } else {
       sections.push_back(
           std::make_unique<DesktopNonZpsSection>(suggestion_groups_map_));
