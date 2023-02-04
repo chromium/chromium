@@ -869,49 +869,6 @@ TEST_F(WebAppInstallTaskTest, LoadAndRetrieveWebAppInstallInfoWithIcons) {
   }
 }
 
-TEST_F(WebAppInstallTaskTest, StorageIsolationFlagSaved) {
-  const GURL manifest_start_url = GURL("https://example.com/start");
-  const AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, manifest_start_url);
-
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->short_name = u"Short Name from Manifest";
-  manifest->name = u"Name from Manifest";
-  manifest->start_url = GURL("https://example.com/start");
-  manifest->isolated_storage = true;
-
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  UpdateWebAppInfoFromManifest(*manifest, manifest_start_url,
-                               web_app_info.get());
-
-  InitializeInstallTaskAndRetriever(
-      webapps::WebappInstallSource::MENU_BROWSER_TAB);
-  data_retriever_->SetManifest(
-      std::move(manifest), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
-  data_retriever_->SetRendererWebAppInstallInfo(std::move(web_app_info));
-
-  base::RunLoop run_loop;
-  bool callback_called = false;
-
-  install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), WebAppInstallFlow::kInstallSite,
-      base::BindOnce(test::TestAcceptDialogCallback),
-      base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
-            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
-            EXPECT_EQ(app_id, installed_app_id);
-            callback_called = true;
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-
-  EXPECT_TRUE(callback_called);
-
-  const WebApp* web_app = registrar().GetAppById(app_id);
-  EXPECT_NE(nullptr, web_app);
-  EXPECT_TRUE(web_app->IsStorageIsolated());
-}
-
 TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
        InstallFromWebContentsRunOnOsLoginByPolicy) {
   EXPECT_TRUE(AreWebAppsUserInstallable(profile()));

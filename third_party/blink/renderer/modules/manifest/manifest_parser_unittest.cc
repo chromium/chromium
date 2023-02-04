@@ -5843,23 +5843,6 @@ TEST_F(ManifestParserTest, GCMSenderIDParseRules) {
   }
 }
 
-TEST_F(ManifestParserTest, StorageIsolationEnabled) {
-  auto& manifest = ParseManifest(R"({ "isolated_storage": true })");
-  EXPECT_EQ(manifest->isolated_storage, true);
-  EXPECT_EQ(0u, GetErrorCount());
-}
-
-TEST_F(ManifestParserTest, StorageIsolationBadScope) {
-  auto& manifest = ParseManifest(
-      R"({ "isolated_storage": true,
-      "scope": "/invalid",
-      "start_url": "/invalid/index.html" })");
-  EXPECT_EQ(manifest->isolated_storage, false);
-  EXPECT_EQ(1u, GetErrorCount());
-  EXPECT_EQ("Isolated storage is only supported with a scope of \"/\".",
-            errors()[0]);
-}
-
 TEST_F(ManifestParserTest, PermissionsPolicy) {
   auto& manifest = ParseManifest(
       R"({ "permissions_policy": {

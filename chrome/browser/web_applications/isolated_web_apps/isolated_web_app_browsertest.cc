@@ -210,33 +210,6 @@ class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
   std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
 };
 
-class IsolatedWebAppUsingOriginsFlagBrowserTest
-    : public IsolatedWebAppBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
-
-    std::string isolated_web_app_origins = std::string("https://") + kAppHost;
-    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
-                                    isolated_web_app_origins);
-  }
-
- protected:
-  static constexpr char kAppHost[] = "app.com";
-};
-
-IN_PROC_BROWSER_TEST_F(
-    IsolatedWebAppUsingOriginsFlagBrowserTest,
-    CanInstallAppWithManifestFieldAndIsolatedAppOriginsFlag) {
-  AppId app_id = InstallIsolatedWebApp(kAppHost);
-  content::RenderFrameHost* app_frame = OpenApp(app_id);
-
-  EXPECT_NE(default_storage_partition(), app_frame->GetStoragePartition());
-  EXPECT_EQ(content::RenderFrameHost::WebExposedIsolationLevel::
-                kMaybeIsolatedApplication,
-            app_frame->GetWebExposedIsolationLevel());
-}
-
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, AppsPartitioned) {
   web_app::IsolatedWebAppUrlInfo url_info1 = InstallDevModeProxyIsolatedWebApp(
       isolated_web_app_dev_server().GetOrigin());

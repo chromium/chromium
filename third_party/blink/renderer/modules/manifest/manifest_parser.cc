@@ -198,7 +198,6 @@ bool ManifestParser::Parse() {
   manifest_->gcm_sender_id = ParseGCMSenderID(root_object.get());
   manifest_->shortcuts = ParseShortcuts(root_object.get());
 
-  manifest_->isolated_storage = ParseIsolatedStorage(root_object.get());
   manifest_->permissions_policy =
       ParseIsolatedAppPermissions(root_object.get());
 
@@ -1781,15 +1780,6 @@ String ManifestParser::ParseGCMSenderID(const JSONObject* object) {
   absl::optional<String> gcm_sender_id =
       ParseString(object, "gcm_sender_id", Trim(true));
   return gcm_sender_id.has_value() ? *gcm_sender_id : String();
-}
-
-bool ManifestParser::ParseIsolatedStorage(const JSONObject* object) {
-  bool is_storage_isolated = ParseBoolean(object, "isolated_storage", false);
-  if (is_storage_isolated && manifest_->scope.GetPath() != "/") {
-    AddErrorInfo("Isolated storage is only supported with a scope of \"/\".");
-    return false;
-  }
-  return is_storage_isolated;
 }
 
 Vector<blink::ParsedPermissionsPolicyDeclaration>

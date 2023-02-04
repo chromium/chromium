@@ -104,12 +104,6 @@ struct Manifest {
   // As such, this field should not be exposed by default.
   CaptureLinks capture_links;
 
-  // TODO(b/245352075): Remove this field.
-  // TODO(crbug.com/1212263): This field is non-standard and part of a Chrome
-  // experiment. See:
-  // https://github.com/robbiemc/pwa-isolated-storage/blob/main/explainer.md
-  bool isolated_storage;
-
   array<ParsedPermissionsPolicyDeclaration> permissions_policy;
 
   // TODO(crbug.com/1231886): This field is non-standard and part of a Chrome

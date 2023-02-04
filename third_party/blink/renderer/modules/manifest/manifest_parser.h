@@ -480,12 +480,6 @@ class MODULES_EXPORT ManifestParser {
   // Returns the parsed string if any, a null string if the parsing failed.
   String ParseGCMSenderID(const JSONObject* object);
 
-  // Parses the 'isolated_storage' field of the manifest.
-  // This marks whether the application should be loaded in a dedicated storage
-  // partition.
-  // Returns true iff the field could be parsed as the boolean true.
-  bool ParseIsolatedStorage(const JSONObject* object);
-
   // Parses the 'permissions_policy' field of the manifest.
   // This outsources semantic parsing of the policy to the
   // PermissionsPolicyParser.
