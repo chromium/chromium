@@ -2481,7 +2481,7 @@
 <translation id="3183944777708523606">မော်နီတာ အစီအစဉ်</translation>
 <translation id="3184536091884214176">CUPS ပုံနှိပ်စက်များကို စနစ်ထည့်သွင်းပါ သို့မဟုတ် စီမံပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{ဤအက်ပ်ကို ပိတ်ထားသည်}other{အက်ပ်အချို့ကို ပိတ်ထားသည်}}</translation>
-<translation id="3187472288455401631">ကြော်ငြာတိုင်းတာခြင်း</translation>
+<translation id="3187472288455401631">ကြော်ငြာ တိုင်းတာအကဲဖြတ်ခြင်း</translation>
 <translation id="3188257591659621405">ကျွန်ုပ်၏ဖိုင်များ</translation>
 <translation id="3188465121994729530">ပျမ်းမျှ ရွေ့ပေးနေ</translation>
 <translation id="3189187154924005138">ကာဆာ အကြီး</translation>
@@ -4120,7 +4120,7 @@
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (မူလ)</translation>
 <translation id="4684427112815847243">အားလုံး စင့်ခ်ရန်</translation>
 <translation id="4687613760714619596">အမျိုးအမည်မသိ ကိရိယာ (<ph name="DEVICE_ID" />)</translation>
-<translation id="4687718960473379118">ဝဘ်ဆိုက်က အကြံပြုထားသည့် ကြော်ငြာများ</translation>
+<translation id="4687718960473379118">ဝဘ်ဆိုက်အကြံပြု ကြော်ငြာများ</translation>
 <translation id="4688036121858134881">စက်တွင်းမှတ်တမ်း ID− <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />။</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> က ဤစက်ကို ယခင်ဗားရှင်းသို့ ပြောင်းနေသည် (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4689235506267737042">သရုပ်ပြ ဆက်တင်များကို ရွေးပါ</translation>
@@ -4481,7 +4481,7 @@
 <translation id="5038818366306248416"><ph name="ORIGIN" /> တွင် နောက်ဆက်တွဲအားလုံးကို ခွင့်မပြုရန် သင်ယခင်က ရွေးချယ်ထားသည်</translation>
 <translation id="5039696241953571917">သင်၏ Google Account တွင် သိမ်းထားသော စကားဝှက်များကို ကြည့်ပြီးစီမံနိုင်သည်</translation>
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
-<translation id="5040262127954254034">ကိုယ်ရေး</translation>
+<translation id="5040262127954254034">ကိုယ်ရေးအချက်အလက်လုံခြုံမှု</translation>
 <translation id="5040823038948176460">နောက်ထပ် အကြောင်းအရာ ဆက်တင်များ</translation>
 <translation id="5041509233170835229">Chrome အက်ပ်</translation>
 <translation id="5043440033854483429">အမည်တွင် အက္ခရာ၊ ဂဏန်းနှင့် တုံးတိုများ (-) သုံးနိုင်ပြီး စာလုံးရေ ၁ လုံးမှ ၁၅ လုံးအတွင်း ရှိရမည်။</translation>
@@ -5729,7 +5729,7 @@
 <translation id="6200151268994853226">‘နောက်ဆက်တွဲ’ စီမံရန်</translation>
 <translation id="6201608810045805374">ဤအကောင့်ကို ဖယ်ရှားမလား။</translation>
 <translation id="6202304368170870640">သင့်စက်ပစ္စည်းသို့ လက်မှတ်ထိုးဝင်ရန် (သို့) လော့ခ်ဖွင့်ရန် သင်၏' ပင်နံပါတ်' ကို အသုံးပြုနိုင်သည်။</translation>
-<translation id="6205314730813004066">ကြော်ငြာဆိုင်ရာ ကိုယ်ရေးအချက်အလက်လုံခြုံမှု</translation>
+<translation id="6205314730813004066">ကြော်ငြာဆိုင်ရာ အချက်အလက်လုံခြုံမှု</translation>
 <translation id="6206199626856438589">ဖွင့်ထားသော တဘ်များအပါအဝင် ပြထားသောဝဘ်ဆိုက်များမှ သင်ထွက်သွားပါမည်</translation>
 <translation id="6206311232642889873">ပုံ&amp;ကို ကူးယူရန်</translation>
 <translation id="6206521455877863927">တူညီသည့်ဒိုမိန်းမှ ဝဘ်ဆိုက်များ ဥပမာ google.com နှင့် mail.google.com အပါအဝင် သင်ကြည့်နေသည့် ဝဘ်ဆိုက်များက သင့်စက်ပေါ်တွင် ဒေတာသိမ်းနိုင်သည်။</translation>
