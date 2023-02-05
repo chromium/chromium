@@ -83,8 +83,9 @@ public class DownloadFragment extends BaseSwipeBackFragment {
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
         super.initView(view, savedInstanceState);
         this.mViewPager = findViewById(R.id.view_pager);
-        ZToolBar toolBar = findViewById(R.id.tool_bar);
-        toolBar.getRightImageButton().setOnClickListener(new View.OnClickListener() {
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> pop());
+        findViewById(R.id.btn_more).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ZDialog.attach()
@@ -107,6 +108,12 @@ public class DownloadFragment extends BaseSwipeBackFragment {
                         })
                         .setAttachView(v)
                         .show(context);
+            }
+        });
+        findViewById(R.id.btn_search).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                _mActivity.start(new DownloadSearchFragment());
             }
         });
 
@@ -185,12 +192,7 @@ public class DownloadFragment extends BaseSwipeBackFragment {
         @Override
         List<FilterItem> getFilterItems() {
             List<FilterItem> items = new ArrayList<>();
-            items.add(new FilterItem("全部") {
-                @Override
-                List<DownloadItem> filter(List<DownloadItem> items) {
-                    return new ArrayList<>(items);
-                }
-            });
+            items.add(new AllTypeFilterItem());
             items.add(new FileTypeFilterItem("视频", FileUtils.FileType.VIDEO));
             items.add(new FileTypeFilterItem("图片", FileUtils.FileType.IMAGE));
             items.add(new FileTypeFilterItem("文本", FileUtils.FileType.TXT));
@@ -213,40 +215,9 @@ public class DownloadFragment extends BaseSwipeBackFragment {
         List<FilterItem> getFilterItems() {
             mFilterIndex = 1;
             List<FilterItem> items = new ArrayList<>();
-            items.add(new FilterItem("全部") {
-                @Override
-                List<DownloadItem> filter(List<DownloadItem> items) {
-                    return new ArrayList<>(items);
-                }
-            });
-            items.add(new FilterItem("已完成") {
-                @Override
-                List<DownloadItem> filter(List<DownloadItem> items) {
-
-                    List<DownloadItem> filterItems = new ArrayList<>();
-                    for (DownloadItem item : items) {
-                        if (!item.isRemoved()) {
-                            filterItems.add(item);
-                        }
-                    }
-
-                    return filterItems;
-                }
-            });
-            items.add(new FilterItem("已移除") {
-                @Override
-                List<DownloadItem> filter(List<DownloadItem> items) {
-
-                    List<DownloadItem> filterItems = new ArrayList<>();
-                    for (DownloadItem item : items) {
-                        if (item.isRemoved()) {
-                            filterItems.add(item);
-                        }
-                    }
-
-                    return filterItems;
-                }
-            });
+            items.add(new AllTypeFilterItem());
+            items.add(new FinishedTypeFilterItem());
+            items.add(new RemovedTypeFilterItem());
             items.add(new FileTypeFilterItem("视频", FileUtils.FileType.VIDEO));
             items.add(new FileTypeFilterItem("图片", FileUtils.FileType.IMAGE));
             items.add(new FileTypeFilterItem("文本", FileUtils.FileType.TXT));
@@ -257,7 +228,73 @@ public class DownloadFragment extends BaseSwipeBackFragment {
         }
     }
 
-    private static class FileTypeFilterItem extends DownloadChildFragment.FilterItem {
+    static class AllTypeFilterItem extends DownloadChildFragment.FilterItem {
+
+        AllTypeFilterItem() {
+            super("全部");
+        }
+
+        @Override
+        List<DownloadItem> filter(List<DownloadItem> items) {
+            return new ArrayList<>(items);
+        }
+    }
+
+    static class DownloadingTypeFilterItem extends DownloadChildFragment.FilterItem {
+        DownloadingTypeFilterItem() {
+            super("下载中");
+        }
+
+        @Override
+        List<DownloadItem> filter(List<DownloadItem> items) {
+            List<DownloadItem> filterItems = new ArrayList<>();
+            for (DownloadItem item : items) {
+                if (!item.isComplete()) {
+                    filterItems.add(item);
+                }
+            }
+            return filterItems;
+        }
+    }
+
+    static class FinishedTypeFilterItem extends DownloadChildFragment.FilterItem {
+        FinishedTypeFilterItem() {
+            super("已完成");
+        }
+
+        @Override
+        List<DownloadItem> filter(List<DownloadItem> items) {
+
+            List<DownloadItem> filterItems = new ArrayList<>();
+            for (DownloadItem item : items) {
+                if (!item.isRemoved()) {
+                    filterItems.add(item);
+                }
+            }
+
+            return filterItems;
+        }
+    }
+
+    static class RemovedTypeFilterItem extends DownloadChildFragment.FilterItem {
+        RemovedTypeFilterItem() {
+            super("已移除");
+        }
+
+        @Override
+        List<DownloadItem> filter(List<DownloadItem> items) {
+            List<DownloadItem> filterItems = new ArrayList<>();
+            for (DownloadItem item : items) {
+                if (item.isRemoved()) {
+                    filterItems.add(item);
+                }
+            }
+
+            return filterItems;
+        }
+    }
+
+    public static class FileTypeFilterItem extends DownloadChildFragment.FilterItem {
 
         private final FileUtils.FileType mFileType;
 

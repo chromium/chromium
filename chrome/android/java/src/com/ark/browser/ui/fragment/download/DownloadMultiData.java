@@ -74,14 +74,11 @@ public class DownloadMultiData extends SingleTypeMultiData<DownloadItem> {
                         ZToast.success("mimetype=" + FileUtils.getMIMEType(file));
                         if (file.exists()) {
                             FileUtils.openFile(context, file);
-//                            openFile(context, file);
                         } else {
-                            // TODO
-//                            DownloadDetailFragment.newInstance(mission).show(context);
+                            DownloadDetailFragment.newInstance(mission).show(context);
                         }
                     } else {
-                        // TODO
-//                        DownloadDetailFragment.newInstance(mission).show(context);
+                        DownloadDetailFragment.newInstance(mission).show(context);
                     }
                 })
                 .setOnLongClickListener((v, x, y) -> {
@@ -268,8 +265,7 @@ public class DownloadMultiData extends SingleTypeMultiData<DownloadItem> {
                             Clipboard.getInstance().setTextFromUser(info.getOriginalUrl());
                             break;
                         case "任务详情":
-                            // TODO
-//                            DownloadDetailFragment.newInstance(mission).show(context);
+                            DownloadDetailFragment.newInstance(mission).show(context);
                             break;
                         case "分享":
                             ZToast.normal("分享");

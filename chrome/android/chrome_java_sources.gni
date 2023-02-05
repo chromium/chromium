@@ -145,6 +145,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/download/DownloadFilterDialog.java",
   "java/src/com/ark/browser/ui/fragment/download/DownloadFragment.java",
   "java/src/com/ark/browser/ui/fragment/download/DownloadMultiData.java",
+  "java/src/com/ark/browser/ui/fragment/download/DownloadSearchFragment.java",
 
   "java/src/com/ark/browser/ui/fragment/manager/ManagerFragment.java",
   "java/src/com/ark/browser/ui/fragment/manager/adblock/AdblockAbpRuleFragment.java",
