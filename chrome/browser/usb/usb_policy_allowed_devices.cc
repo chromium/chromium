@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
@@ -14,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -78,14 +80,15 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_list| follows the policy template.
-  for (const auto& item : pref_list) {
-    const base::Value* urls_list = item.FindKey(kPrefUrlsKey);
+  for (const base::Value& item_val : pref_list) {
+    const base::Value::Dict& item = item_val.GetDict();
+    const base::Value::List* urls_list = item.FindList(kPrefUrlsKey);
     std::set<url::Origin> parsed_set;
 
     // A urls item can contain a pair of URLs that are delimited by a comma. If
     // it does not contain a second URL, set the embedding URL to an empty GURL
     // to signify a wildcard embedded URL.
-    for (const auto& urls_value : urls_list->GetList()) {
+    for (const auto& urls_value : CHECK_DEREF(urls_list)) {
       std::vector<std::string> urls =
           base::SplitString(urls_value.GetString(), ",", base::TRIM_WHITESPACE,
                             base::SPLIT_WANT_ALL);
@@ -116,14 +119,17 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
 
     // For each device entry in the map, create or update its respective URL
     // set.
-    const base::Value* devices = item.FindKey(kPrefDevicesKey);
-    for (const auto& device : devices->GetList()) {
+    const base::Value::List* devices = item.FindList(kPrefDevicesKey);
+    for (const base::Value& device_val : CHECK_DEREF(devices)) {
+      const base::Value::Dict& device = device_val.GetDict();
       // A missing ID signifies a wildcard for that ID, so a sentinel value of
       // -1 is assigned.
-      const base::Value* vendor_id_value = device.FindKey(kPrefVendorIdKey);
-      const base::Value* product_id_value = device.FindKey(kPrefProductIdKey);
-      int vendor_id = vendor_id_value ? vendor_id_value->GetInt() : -1;
-      int product_id = product_id_value ? product_id_value->GetInt() : -1;
+      const absl::optional<int> vendor_id_optional =
+          device.FindInt(kPrefVendorIdKey);
+      const absl::optional<int> product_id_optional =
+          device.FindInt(kPrefProductIdKey);
+      int vendor_id = vendor_id_optional.value_or(-1);
+      int product_id = product_id_optional.value_or(-1);
       DCHECK(vendor_id != -1 || product_id == -1);
 
       auto key = std::make_pair(vendor_id, product_id);
