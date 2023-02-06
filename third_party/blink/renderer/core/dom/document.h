@@ -2170,9 +2170,9 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<LocalDOMWindow> dom_window_;
 
   // For Documents given a dom_window_ at creation that are not Shutdown(),
-  // execution_context_ and dom_window_ will be equal.
+  // execution_context_ and dom_window_ will be equal and non-null.
   // For Documents given a dom_window_ at creation that are Shutdown(),
-  // execution_context_ will be nullptr.
+  // execution_context_ and dom_window_ will both be nullptr.
   // For Documents not given a dom_window_ at creation, execution_context_
   // will be the LocalDOMWindow where script will execute (which may be nullptr
   // in unit tests).
