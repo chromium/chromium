@@ -127,7 +127,7 @@ struct PrintParams {
   // Does the printer support alpha blending?
   bool supports_alpha_blend = false;
 
-  // *** Parameters below are used only for print preview. ***
+  // *** Parameters in this section are used only for Print Preview. ***
   // The print preview ui associated with this request.
   int32 preview_ui_id = -1;
   // The id of the preview request.
@@ -136,6 +136,8 @@ struct PrintParams {
   bool is_first_request = false;
   // Specifies the page scaling option for preview printing.
   PrintScalingOption print_scaling_option = kSourceSize;
+
+  // *** Parameters in this section are used for Print Preview and Headless. ***
   // True if print to pdf is requested.
   bool print_to_pdf = false;
   // Specifies if the header and footer should be rendered.
