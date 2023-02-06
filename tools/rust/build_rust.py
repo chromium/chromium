@@ -255,6 +255,8 @@ def RunXPy(sub, args, llvm_bins_path, zlib_path, libxml2_dirs, build_mac_arm,
         RUSTENV['AR'] = os.path.join(llvm_bins_path, 'llvm-ar')
         RUSTENV['CC'] = os.path.join(llvm_bins_path, 'clang')
         RUSTENV['CXX'] = os.path.join(llvm_bins_path, 'clang++')
+        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += f' -Clink-arg=-fuse-ld=lld'
+        RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] += f' -Clink-arg=-fuse-ld=lld'
 
     if sys.platform == 'darwin':
         # The system/xcode compiler would find system SDK correctly, but
