@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
 import("//testing/test.gni")
 
 if (is_android) {
@@ -273,7 +274,7 @@ static_library("component_metrics") {
   ]
 }
 
-if (!is_ios) {
+if (use_blink) {
   static_library("content") {
     sources = [
       # ChromeOS accessibility metrics provider is in chromeos_metrics_provider.
@@ -574,6 +575,13 @@ source_set("unit_tests") {
     ]
   }
 
+  if (use_blink) {
+    deps += [
+      ":content",
+      "//content/test:test_support",
+    ]
+  }
+
   # iOS is not supported by the profiler and the ios-simulator bot chokes on
   # these tests.
   if (is_ios) {
@@ -584,11 +592,7 @@ source_set("unit_tests") {
       "content/content_stability_metrics_provider_unittest.cc",
       "content/subprocess_metrics_provider_unittest.cc",
     ]
-    deps += [
-      ":content",
-      "//content/test:test_support",
-      "//extensions/buildflags",
-    ]
+    deps += [ "//extensions/buildflags" ]
   }
 
   if (is_win || is_linux) {

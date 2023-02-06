@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 static_library("net") {
   sources = [
     "variations_command_line.cc",
@@ -30,8 +32,7 @@ static_library("net") {
     "//components/variations/proto",
   ]
 
-  # third_party/blink/public/common does not build on iOS
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "variations_url_loader_throttle.cc",
       "variations_url_loader_throttle.h",
@@ -62,8 +63,7 @@ component("omnibox_http_headers") {
     "//url",
   ]
 
-  # third_party/blink/public/common does not build on iOS
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "omnibox_url_loader_throttle.cc",
       "omnibox_url_loader_throttle.h",

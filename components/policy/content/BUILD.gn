@@ -4,7 +4,8 @@
 
 import("//build/config/features.gni")
 
-assert(!is_ios, "Policy Throttle should not be referenced on iOS")
+assert(use_blink,
+       "Policy Throttle should not be referenced on non-blink platforms")
 
 source_set("safe_sites_navigation_throttle") {
   sources = [

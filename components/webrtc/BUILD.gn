@@ -2,11 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-if (!is_ios) {
+if (use_blink) {
   source_set("media_stream_device_enumerator") {
     sources = [
       "media_stream_device_enumerator.h",

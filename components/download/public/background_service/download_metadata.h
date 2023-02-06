@@ -9,13 +9,14 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/download/public/background_service/download_params.h"
 #include "net/http/http_response_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
 #include "storage/browser/blob/blob_data_handle.h"
 #endif
 
@@ -27,7 +28,7 @@ struct CompletionInfo {
   // to retrieve data.
   base::FilePath path;
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
   // The blob data handle that contains download data.
   // Will be available after the download is completed in incognito mode.
   absl::optional<storage::BlobDataHandle> blob_handle;

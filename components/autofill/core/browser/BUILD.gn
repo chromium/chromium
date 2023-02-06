@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/features.gni")
 import("//chrome/version.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//tools/grit/grit_rule.gni")
@@ -593,7 +594,7 @@ static_library("browser") {
     "//ui/accessibility:accessibility",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     deps += [
       "//components/webauthn/core/browser",
       "//third_party/blink/public/common",
@@ -764,7 +765,7 @@ static_library("test_support") {
     "//ui/gfx/geometry",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "payments/test_credit_card_fido_authenticator.cc",
       "payments/test_credit_card_fido_authenticator.h",
@@ -1050,7 +1051,7 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     deps += [
       "//content/test:test_support",
       "//third_party/blink/public/common",

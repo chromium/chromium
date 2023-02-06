@@ -68,6 +68,9 @@ static_library("browser") {
       "insecure_private_network_policy_handler.cc",
       "insecure_private_network_policy_handler.h",
     ]
+  }
+
+  if (use_blink) {
     deps += [
       "//components/policy:generated",
       "//components/policy/core/browser",
@@ -113,7 +116,7 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [ "cookie_settings_policy_handler_unittest.cc" ]
 
     deps += [

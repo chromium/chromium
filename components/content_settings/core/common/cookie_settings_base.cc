@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/types/optional_util.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -17,7 +18,7 @@
 #include "net/cookies/static_cookie_policy.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #endif
 
@@ -35,7 +36,7 @@ CookieSettingsBase::CookieSettingsBase()
     : is_storage_partitioned_(base::FeatureList::IsEnabled(
           net::features::kThirdPartyStoragePartitioning)),
       is_privacy_sandbox_v4_enabled_(
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(USE_BLINK)
           false
 #else
           base::FeatureList::IsEnabled(

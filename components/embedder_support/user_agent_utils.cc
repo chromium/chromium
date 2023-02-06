@@ -592,7 +592,7 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service) {
   metadata.architecture = content::GetCpuArchitecture();
   metadata.model = content::BuildModelInfo();
   metadata.mobile = false;
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   metadata.mobile = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kUseMobileUserAgent);
 #endif

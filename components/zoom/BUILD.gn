@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(!is_ios, "Desktop zoom is not used on iOS platform.")
+import("//build/config/features.gni")
+
+assert(use_blink, "Desktop zoom is not used on non blink platforms.")
 
 static_library("zoom") {
   sources = [

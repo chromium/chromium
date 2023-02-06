@@ -352,8 +352,14 @@ static_library("browser") {
     ]
     deps += [
       "//components/history_clusters/core",
-      "//components/keyed_service/content",
       "//components/optimization_guide/core:entities",
+    ]
+  }
+
+  if (use_blink) {
+    deps += [
+      "//components/keyed_service/content",
+      "//content/public/browser",
     ]
   }
 

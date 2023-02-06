@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
@@ -35,12 +37,12 @@ source_set("public") {
   }
 
   deps = [
+    "//build:blink_buildflags",
     "//components/keyed_service/core",
     "//services/network/public/mojom:url_loader_base",
   ]
 
-  # Blob storage is not supported on iOS.
-  if (!is_ios) {
+  if (use_blink) {
     deps += [ "//storage/browser" ]
   }
 
@@ -50,7 +52,7 @@ source_set("public") {
     "//url",
   ]
 
-  if (is_ios) {
+  if (!use_blink) {
     public_deps += [ "//components/download/public/task:task_type" ]
   } else {
     public_deps += [ "//components/download/public/task:public" ]

@@ -2,12 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
 }
 
-if (!is_ios) {
+if (use_blink) {
   static_library("internal") {
     visibility = [
       ":*",
@@ -62,7 +64,7 @@ if (!is_ios) {
       deps += [ ":jni_headers" ]
     }
 
-    if (is_mac) {
+    if (is_apple) {
       sources += [
         "scheduler/battery_status_listener_mac.cc",
         "scheduler/battery_status_listener_mac.h",
@@ -135,11 +137,12 @@ source_set("common") {
   deps = [
     ":storage",
     "//base",
+    "//build:blink_buildflags",
     "//components/download/public/background_service:public",
     "//services/network/public/cpp",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     deps += [ "//storage/browser" ]
   }
 }

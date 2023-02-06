@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 source_set("lib") {
   sources = [
     "csv_password_parser_impl.cc",
@@ -18,7 +20,7 @@ source_set("lib") {
       [ "//components/password_manager/services/csv_password/public/mojom" ]
 }
 
-if (!is_ios) {
+if (use_blink) {
   source_set("service") {
     sources = [
       "csv_password_parser_service.cc",

@@ -33,7 +33,9 @@ source_set("test_support") {
     ]
 
     deps += [ "//services/network:test_support" ]
-  } else {
+  }
+
+  if (use_blink) {
     deps += [
       "//components/invalidation/impl",
       "//components/policy/core/browser",
