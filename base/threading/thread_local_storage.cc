@@ -206,7 +206,9 @@ TlsVectorState GetTlsVectorStateAndValue(PlatformThreadLocalStorage::TLSKey key,
 // macOS 11, the TPIDRRO_EL0 registers holds the CPU index in the low bits,
 // which is not the case in macOS 12. See libsyscall/os/tsd.h in XNU
 // (_os_tsd_get_direct() is used by pthread_getspecific() internally).
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
+// Disabled for recording/replaying, as the GS segment register is not used in the
+// same way when replaying and pthread_getspecific needs to be called directly.
+#if 0 && BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
   // On macOS, pthread_getspecific() is in libSystem, so a call to it has to go
   // through PLT. However, and contrary to some other platforms, *all* TLS keys
   // are in a static array in the thread structure. So they are *always* at a

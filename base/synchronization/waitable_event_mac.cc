@@ -39,8 +39,10 @@ WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
                              InitialState initial_state)
     : policy_(reset_policy) {
   // Pointer registration is needed for sorting in WaitSet.user_events_
-  recordreplay::RegisterPointer("WaitableEvent", this);
-  record_replay_ordered_lock_id_ = recordreplay::CreateOrderedLock("WaitableEvent");
+  if (!recordreplay::AreEventsDisallowed() || recordreplay::HasDivergedFromRecording()) {
+    recordreplay::RegisterPointer("WaitableEvent", this);
+    record_replay_ordered_lock_id_ = recordreplay::CreateOrderedLock("WaitableEvent");
+  }
 
   mach_port_options_t options{};
   options.flags = MPO_INSERT_SEND_RIGHT;
@@ -62,11 +64,19 @@ WaitableEvent::~WaitableEvent() {
 }
 
 void WaitableEvent::Reset() {
+  absl::optional<recordreplay::AutoDisallowEvents> disallow;
+  if (!record_replay_ordered_lock_id_)
+    disallow.emplace("WaitableEvent::Reset");
+
   PeekPort(receive_right_->Name(), true);
 }
 
 void WaitableEvent::Signal() {
   RecordReplayEnsureOrdered(record_replay_ordered_lock_id_);
+
+  absl::optional<recordreplay::AutoDisallowEvents> disallow;
+  if (!record_replay_ordered_lock_id_)
+    disallow.emplace("WaitableEvent::Signal");
 
   mach_msg_empty_send_t msg{};
   msg.header.msgh_bits = MACH_MSGH_BITS_REMOTE(MACH_MSG_TYPE_COPY_SEND);
@@ -81,6 +91,10 @@ void WaitableEvent::Signal() {
 }
 
 bool WaitableEvent::IsSignaled() {
+  absl::optional<recordreplay::AutoDisallowEvents> disallow;
+  if (!record_replay_ordered_lock_id_)
+    disallow.emplace("WaitableEvent::IsSignaled");
+
   return PeekPort(receive_right_->Name(), policy_ == ResetPolicy::AUTOMATIC);
 }
 
@@ -94,6 +108,10 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
     RecordReplayEnsureOrdered(record_replay_ordered_lock_id_);
     return IsSignaled();
   }
+
+  absl::optional<recordreplay::AutoDisallowEvents> disallow;
+  if (!record_replay_ordered_lock_id_)
+    disallow.emplace("WaitableEvent::TimedWait");
 
   // Record the event that this thread is blocking upon (for hang diagnosis) and
   // consider blocked for scheduling purposes. Ignore this for non-blocking
@@ -167,6 +185,7 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
 // static
 size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables, size_t count) {
   DCHECK(count) << "Cannot wait on no events";
+
   internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(
       FROM_HERE, BlockingType::MAY_BLOCK);
   // Record an event (the first) that this thread is blocking upon.

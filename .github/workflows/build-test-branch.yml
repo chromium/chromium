@@ -2,6 +2,16 @@ name: Build/Test Branch
 on:
   workflow_dispatch:
     inputs:
+      linux_build:
+        description: "Build and run tests on linux"
+        type: boolean
+        required: false
+        default: "true"
+      mac_build:
+        description: "Build and run tests on macOS"
+        type: boolean
+        required: false
+        default: "true"
       driver_revision:
         description: "Driver revision to use, if not the latest"
         required: false
@@ -50,6 +60,8 @@ jobs:
           BUILD_TEST_HOSTNAME: a49855c191a944333918aea7ad31bc76-6a8a830d89921d8a.elb.us-east-2.amazonaws.com
           BUILD_TEST_PORT: ${{ secrets.BUILD_TEST_PORT }}
           BUILD_TEST_INSECURE: ${{ secrets.BUILD_TEST_INSECURE }}
+          INPUT_LINUX_BUILD: ${{ github.event.inputs.linux_build }}
+          INPUT_MAC_BUILD: ${{ github.event.inputs.mac_build }}
           INPUT_DRIVER_REVISION: ${{ github.event.inputs.driver_revision }}
           INPUT_CLOBBER: ${{ github.event.inputs.clobber }}
           INPUT_SLOT: ${{ github.event.inputs.slot }}

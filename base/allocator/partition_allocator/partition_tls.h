@@ -31,7 +31,9 @@ using PartitionTlsKey = pthread_key_t;
 // macOS 11, the TPIDRRO_EL0 registers holds the CPU index in the low bits,
 // which is not the case in macOS 12. See libsyscall/os/tsd.h in XNU
 // (_os_tsd_get_direct() is used by pthread_getspecific() internally).
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
+// Disabled for recording/replaying, as the GS segment register is not used in the
+// same way when replaying and pthread_getspecific needs to be called directly.
+#if 0 && BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
 namespace {
 
 PA_ALWAYS_INLINE void* FastTlsGet(PartitionTlsKey index) {
@@ -70,7 +72,7 @@ PA_ALWAYS_INLINE bool PartitionTlsCreate(PartitionTlsKey* key,
 }
 
 PA_ALWAYS_INLINE void* PartitionTlsGet(PartitionTlsKey key) {
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
+#if 0 && BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
   PA_DCHECK(pthread_getspecific(key) == FastTlsGet(key));
   return FastTlsGet(key);
 #else

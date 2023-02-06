@@ -10,6 +10,14 @@ console.log("BranchName", branchName);
 
 const chromiumRevision = getLatestRevision();
 
+const linuxBuildInput = process.env.INPUT_LINUX_BUILD;
+console.log("LinuxBuild", linuxBuildInput);
+const linuxBuild = linuxBuildInput == "true";
+
+const macBuildInput = process.env.INPUT_MAC_BUILD;
+console.log("MacBuild", macBuildInput);
+const macBuild = macBuildInput == "true";
+
 const driverRevision = process.env.INPUT_DRIVER_REVISION;
 console.log("DriverRevision", driverRevision);
 
@@ -48,12 +56,15 @@ if (slot) {
   requestName += ` slot ${slot}`;
 }
 
-sendBuildTestRequest({
-  name: requestName,
-  tasks: [
-    ...platformTasks("linux"),
-  ],
-});
+const allTasks = [];
+if (linuxBuild) {
+  allTasks.push(...platformTasks("linux"));
+}
+if (macBuild) {
+  allTasks.push(...platformTasks("macOS"));
+}
+
+sendBuildTestRequest({ name: requestName, tasks: allTasks });
 
 function platformTasks(platform) {
   const buildTask = newTask(
