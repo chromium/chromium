@@ -417,9 +417,9 @@ void ImageResource::Finish(base::TimeTicks load_finish_time,
       UpdateImageAndClearBuffer();
   } else {
     UpdateImage(Data(), ImageResourceContent::kUpdateImage, true);
-    // As encoded image data can be created from m_image  (see
-    // ImageResource::resourceBuffer(), we don't have to keep m_data. Let's
-    // clear this. As for the lifetimes of m_image and m_data, see this
+    // As encoded image data can be obtained from Image::Data() via `content_`
+    // (see ResourceBuffer()), we don't have to keep `data_`. Let's
+    // clear it. As for the lifetimes of `content_` and `data_`, see this
     // document:
     // https://docs.google.com/document/d/1v0yTAZ6wkqX2U_M6BNIGUJpM1s0TIw1VsqpxoL7aciY/edit?usp=sharing
     ClearData();
