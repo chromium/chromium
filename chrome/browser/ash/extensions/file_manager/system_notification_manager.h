@@ -145,22 +145,24 @@ class SystemNotificationManager {
       int progress);
 
   /**
-   * Returns an instance of an 'ash' Notification with progress value and Cancel
-   * button bound to CancelTaskId(task_id, ...);
+   * Returns an instance of an 'ash' Notification with IOTask progress value.
    */
   std::unique_ptr<message_center::Notification>
   CreateIOTaskProgressNotification(file_manager::io_task::IOTaskId task_id,
                                    const std::string& notification_id,
                                    const std::u16string& title,
                                    const std::u16string& message,
+                                   const bool paused,
                                    int progress);
 
   /**
-   * Click handler for the IO Task progress notification. Cancels the IO Task.
+   * Click handler for the IOTask progress notification.
    */
-  void CancelTaskId(file_manager::io_task::IOTaskId task_id,
-                    const std::string& notification_id,
-                    absl::optional<int> button_index);
+  void HandleIOTaskProgressNotificationClick(
+      file_manager::io_task::IOTaskId task_id,
+      const std::string& notification_id,
+      const bool paused,
+      absl::optional<int> button_index);
 
   /**
    *  Returns an instance of an 'ash' Notification with title and message

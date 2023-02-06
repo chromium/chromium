@@ -255,36 +255,86 @@ SystemNotificationManager::CreateIOTaskProgressNotification(
     const std::string& notification_id,
     const std::u16string& title,
     const std::u16string& message,
+    const bool paused,
     int progress) {
   message_center::RichNotificationData rich_data;
   rich_data.progress = progress;
   rich_data.progress_status = message;
 
+  // Button click delegate to handle the state::PAUSED IOTask case, where the
+  // user [X] closes this system notification, but did not press its buttons.
+  // In that case, default behavior is to auto-click button 1.
+  class IOTaskProgressNotificationClickDelegate
+      : public message_center::HandleNotificationClickDelegate {
+   public:
+    IOTaskProgressNotificationClickDelegate(const ButtonClickCallback& callback,
+                                            bool paused)
+        : message_center::HandleNotificationClickDelegate(callback),
+          paused_(paused) {}
+
+    void Close(bool by_user) override {
+      if (paused_ && by_user) {  // Click button at index 1.
+        message_center::HandleNotificationClickDelegate::Click(1, {});
+      }
+    }
+
+   protected:
+    ~IOTaskProgressNotificationClickDelegate() override = default;
+
+   private:
+    bool paused_;  // True if the IOTask is in state::PAUSED.
+  };
+
+  auto notification_click_handler = base::BindRepeating(
+      &SystemNotificationManager::HandleIOTaskProgressNotificationClick,
+      weak_ptr_factory_.GetWeakPtr(), task_id, notification_id, paused);
+
   auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
       message, app_name_, GURL(), message_center::NotifierId(), rich_data,
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(&SystemNotificationManager::CancelTaskId,
-                              weak_ptr_factory_.GetWeakPtr(), task_id,
-                              notification_id)),
+      base::MakeRefCounted<IOTaskProgressNotificationClickDelegate>(
+          std::move(notification_click_handler), paused),
       ash::kFolderIcon, message_center::SystemNotificationWarningLevel::NORMAL);
 
-  // Add the cancel button:
-  notification->set_buttons({message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL))});
+  std::vector<message_center::ButtonInfo> notification_buttons;
+
+  // Add "Cancel" button.
+  notification_buttons.emplace_back(message_center::ButtonInfo(
+      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL)));
+
+  if (paused) {  // For paused tasks, add "Open Files app" button.
+    notification_buttons.emplace_back(
+        message_center::ButtonInfo(l10n_util::GetStringUTF16(
+            IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL)));
+  }
+
+  notification->set_buttons(notification_buttons);
   return notification;
 }
 
-void SystemNotificationManager::CancelTaskId(
+void SystemNotificationManager::HandleIOTaskProgressNotificationClick(
     file_manager::io_task::IOTaskId task_id,
     const std::string& notification_id,
+    const bool paused,
     absl::optional<int> button_index) {
-  if (button_index) {
+  if (!button_index) {
+    return;
+  }
+
+  // Dismiss the notification now (to ignore button double-clicks).
+  Dismiss(notification_id);
+
+  if (button_index == 0) {
     if (io_task_controller_) {
       io_task_controller_->Cancel(task_id);
     } else {
       LOG(ERROR) << "No TaskController, can't cancel task_id: " << task_id;
     }
+  }
+
+  if (paused && button_index == 1) {
+    platform_util::ShowItemInFolder(
+        profile_, file_manager::util::GetMyFilesFolderForProfile(profile_));
   }
 }
 
@@ -632,9 +682,23 @@ void SystemNotificationManager::HandleIOTaskProgress(
     return;
   }
 
-  // From here state is kQueued or kInProgress:
-  std::u16string title = app_name_;
-  std::u16string message = GetIOTaskMessage(profile_, status);
+  // From here state is kQueued, kInProgress, or kPaused.
+  const bool paused = status.IsPaused();
+
+  std::u16string title;
+  std::u16string message;
+  if (!paused) {
+    title = app_name_;
+    message = GetIOTaskMessage(profile_, status);
+  } else {
+    title = GetIOTaskMessage(profile_, status);
+    int message_id = IDS_FILE_BROWSER_CONFLICT_DIALOG_MESSAGE;
+    if (status.pause_params.conflict_is_directory) {
+      message_id = IDS_FILE_BROWSER_CONFLICT_DIALOG_FOLDER_MESSAGE;
+    }
+    auto& item_name = status.pause_params.conflict_name;
+    message = GetStringFUTF16(message_id, base::UTF8ToUTF16(item_name));
+  }
 
   int progress = 0;
   if (status.total_bytes > 0) {
@@ -643,7 +707,7 @@ void SystemNotificationManager::HandleIOTaskProgress(
 
   std::unique_ptr<message_center::Notification> notification =
       CreateIOTaskProgressNotification(status.task_id, id, title, message,
-                                       progress);
+                                       paused, progress);
 
   GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
                                            *notification,
