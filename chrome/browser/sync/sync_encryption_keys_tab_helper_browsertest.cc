@@ -124,6 +124,7 @@ std::vector<std::vector<uint8_t>> FetchTrustedVaultKeysForProfile(
   loop.Run();
   return actual_keys;
 }
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class SyncEncryptionKeysTabHelperBrowserTest : public PlatformBrowserTest {
@@ -294,6 +295,72 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
   EXPECT_THAT(actual_keys, testing::ElementsAre(kEncryptionKey));
 }
 
+IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
+                       ShouldIgnoreEncryptionsKeysInIncognito) {
+  const GURL initial_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(browser()->profile(), initial_url);
+  content::WebContents* incognito_web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+
+  // EncryptionKeysApi is created for the primary page as the origin is allowed.
+  EXPECT_TRUE(
+      HasEncryptionKeysApi(incognito_web_contents->GetPrimaryMainFrame()));
+
+  content::WebContentsConsoleObserver console_observer(incognito_web_contents);
+  console_observer.SetPattern(kConsoleSuccessMessage);
+
+  // Calling setSyncEncryptionKeys() in incognito completes successfully,
+  // although it does nothing.
+  const std::vector<uint8_t> kEncryptionKey = {7};
+  ExecJsSetSyncEncryptionKeys(incognito_web_contents->GetPrimaryMainFrame(),
+                              kEncryptionKey);
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(1u, console_observer.messages().size());
+
+  AccountInfo account;
+  account.gaia = kFakeGaiaId;
+  std::vector<std::vector<uint8_t>> actual_keys =
+      FetchTrustedVaultKeysForProfile(browser()->profile(), account);
+  // In incognito, the keys should actually be ignored, never forwarded to
+  // SyncService.
+  EXPECT_THAT(actual_keys, testing::IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
+                       ShouldIgnoreRecoveryMethodInIncognito) {
+  const GURL initial_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(browser()->profile(), initial_url);
+  content::WebContents* incognito_web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+
+  // EncryptionKeysApi is created for the primary page as the origin is allowed.
+  EXPECT_TRUE(
+      HasEncryptionKeysApi(incognito_web_contents->GetPrimaryMainFrame()));
+
+  content::WebContentsConsoleObserver console_observer(incognito_web_contents);
+  console_observer.SetPattern(kConsoleSuccessMessage);
+
+  base::HistogramTester histogram_tester;
+
+  // Calling addTrustedSyncEncryptionRecoveryMethod() in incognito completes
+  // successfully, although it does nothing.
+  const std::vector<uint8_t> kPublicKey = {7};
+  ExecJsAddTrustedSyncEncryptionRecoveryMethod(
+      incognito_web_contents->GetPrimaryMainFrame(), kPublicKey);
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(1u, console_observer.messages().size());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultJavascriptAddRecoveryMethodIsIncognito",
+      1 /*Incognito*/, 1);
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Tests that chrome.addTrustedSyncEncryptionRecoveryMethod() works in the main
@@ -334,6 +401,10 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultJavascriptAddRecoveryMethodValidArgs", 1 /*Valid*/, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultJavascriptAddRecoveryMethodIsIncognito",
+      0 /*Not Incognito*/, 1);
 
 #if BUILDFLAG(IS_ANDROID)
   // This metric is only instrumented on Android.
