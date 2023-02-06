@@ -53,9 +53,10 @@ cr-checkbox::part(label-container) {
 </style>
 
 <div class="icon-container">
-  <img src="[[getIconUrl_(appInfo)]]" class="icon-image" alt="App's icon"></img>
+  <img src="[[getIconUrl_(appInfo)]]" class="icon-image"
+  alt="[[appInfo.name]]" aria-hidden="true"></img>
 </div>
-<div class="text-container">[[appInfo.name]]</div>
+<div class="text-container" aria-hidden="true">[[appInfo.name]]</div>
 
 <cr-action-menu id="menu" on-mousedown="onMenuMousedown_">
   <div id="open-in-window" tabindex="0" class="dropdown-item"
