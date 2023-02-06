@@ -224,6 +224,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <ph name="DOMAIN" /> reikia, kad paliktumėte įdėtą išmaniąją kortelę.}many{Būsite automatiškai atjungti po # sekundės.
 <ph name="DOMAIN" /> reikia, kad paliktumėte įdėtą išmaniąją kortelę.}other{Būsite automatiškai atjungti po # sekundžių.
 <ph name="DOMAIN" /> reikia, kad paliktumėte įdėtą išmaniąją kortelę.}}</translation>
+<translation id="119330003005586565">Perskaityti puslapiai</translation>
 <translation id="1193927020065025187">Šioje svetainėje gali būti bandoma apgaule priversti jus leisti nepageidaujamus pranešimus</translation>
 <translation id="1195210374336998651">Eiti į programos nustatymus</translation>
 <translation id="1195447618553298278">Nežinoma klaida.</translation>
@@ -5538,6 +5539,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6007240208646052708">Paieška balsu jūsų kalba nepasiekiama.</translation>
 <translation id="6010651352520077187">Kai „Google“ vertėjas bus įjungtas, jis siūlys versti svetaines į pageidaujamą kalbą. Be to, jis gali automatiškai versti svetaines.</translation>
 <translation id="6011193465932186973">Piršto antspaudas</translation>
+<translation id="6011308810877101166">Paieškos pasiūlymų tobulinimas</translation>
 <translation id="6011908034087870826">Nuoroda siunčiama į įrenginį „<ph name="DEVICE_NAME" />“</translation>
 <translation id="6013027779243312217">Gaukite garso ir vaizdo įrašų subtitrus</translation>
 <translation id="6014293228235665243">Neskaityta</translation>
@@ -5854,6 +5856,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="630292539633944562">Asmens informacijos pasiūlymai</translation>
 <translation id="6305607932814307878">Visuotinė politika:</translation>
 <translation id="6305909198255586420">Įdiekite naudodami pagrindinį profilį</translation>
+<translation id="630750887748244481">Jūsų tėvai išjungė svetainių, programų ir plėtinių leidimus sistemoje „Chrome“. Neleidžiama pridėti šio plėtinio.</translation>
 <translation id="6307990684951724544">Sistema užimta</translation>
 <translation id="6308493641021088955">Prisijungimo duomenis pateikė „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6308937455967653460">Išsaugoti nuorod&amp;ą kaip...</translation>
@@ -8001,6 +8004,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8251509999076836464">Susiejama su „<ph name="DEVICE_NAME" />“</translation>
 <translation id="8251578425305135684">Miniatiūra pašalinta.</translation>
 <translation id="825238165904109940">Visada rodyti visus URL</translation>
+<translation id="8252538334423261825">Nepavyko pridėti plėtinio</translation>
 <translation id="8252569384384439529">Įkeliama...</translation>
 <translation id="8253198102038551905">Spustelėkite „+“, kad peržiūrėtumėte tinklo savybes</translation>
 <translation id="8255212965098517578">Naujausios nuotraukos, pranešimai ir programos</translation>

@@ -80,6 +80,7 @@
 <translation id="149095475893949513">Бул вебсайт конфигурациялык профилди жүктөп алууга аракет кылып жатат.</translation>
 <translation id="1491277525950327607">Жөндөөнү которуштуруу үчүн, эки жолу таптаңыз</translation>
 <translation id="1492417797159476138">Бул сайт үчүн ушул колдонуучунун атын сактап койгонсуз</translation>
+<translation id="1498283581832036924"><ph name="WEBSITE" /> аккаунтуңуз өчүрүлбөйт.</translation>
 <translation id="1506063256525392513">Бул сүрөткө тартууга жана аларды жүктөп берүүгө, ошондой эле, QR коддорун скандоого жол ачат</translation>
 <translation id="1509486075633541495">Вебсайтка кирүү</translation>
 <translation id="1509960214886564027">Функциялар көпчүлүк сайттарда туура иштебеши мүмкүн.</translation>
@@ -218,6 +219,7 @@
 <translation id="2664621323652615289">Токтотуу</translation>
 <translation id="2671426118752779020">Google Сырсөздөрдү башкаргычка сакталган сырсөздөрдү iPhone'догу башка колдонмолордо колдонууга болот.</translation>
 <translation id="2690858294534178585">Камера колдонулууда</translation>
+<translation id="26915454213703967">Google аркылуу сүрөттөн издөө</translation>
 <translation id="2691653761409724435">Оффлайнда жеткиликтүү эмес</translation>
 <translation id="2695507686909505111">Барак которулду</translation>
 <translation id="2697526135132990015">Аккаунттан чыгып, дайын-даректерди өчүрүү</translation>
@@ -380,6 +382,7 @@
 <translation id="3819183753496523827">Оффлайн режиминдесиз. Интернет байланышыңызды текшерип, кайталап көрүңүз.</translation>
 <translation id="3835964409414434850">Кийинки өтмөккө өтүү</translation>
 <translation id="385051799172605136">Артка</translation>
+<translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> жана дагы <ph name="NUMBER_OF_ACCOUNTS" /> вебсайттын сырсөздөрү жок кылынат. Аккаунттарыңыз өчүрүлбөйт.</translation>
 <translation id="3858860766373142691">Аталышы</translation>
 <translation id="3861486700625780712">Жазылууну токтотуу</translation>
 <translation id="3863769054730344136">Түзмөктөрүңүзгө жөнөтүңүз</translation>
@@ -515,6 +518,7 @@
 <translation id="4833786495304741580">Колдонуу статистикасын жана каталар жөнүндө кабарларды Google'га автоматтык түрдө жөнөтүп турат.</translation>
 <translation id="4840495572919996524">Кыстармаларыңыз, таржымалыңыз, сырсөздөрүңүз жана башкалар мындан ары Google аккаунтуңузга шайкештирилбейт.</translation>
 <translation id="4844899002472726590">Кызыктуу темаларды көрүп, түзөтүү</translation>
+<translation id="4848999860252535517"><ph name="WEBSITE" /> вебсайтынын сырсөзү жок кылынсынбы?</translation>
 <translation id="4854345657858711387">Өткөрүүчү кодду коюу</translation>
 <translation id="4858786880085262208">Мүмкүн болгондо HTTPS кеңейтүүсүнө жаңыртыңыз. Коопсуз сайттар кооптуу контентти жалгаштырышы мүмкүн.</translation>
 <translation id="4860895144060829044">Чалуу</translation>
@@ -768,6 +772,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6598875554591387303">Жарыялоочу боюнча иреттөө</translation>
 <translation id="6603393121510733479">Уюмуңуз жекече серептөөнү өчүрүп койду.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> жана <ph name="THIRD_WEBSITE" /> вебсайтынын сырсөздөрү жок кылынат. Аккаунттарыңыз өчүрүлбөйт.</translation>
 <translation id="6610002944194042868">Которуу параметрлери</translation>
 <translation id="661266467055912436">Сиз жана башкалар үчүн Интернеттеги коопсуздукту арттырат.</translation>
 <translation id="6620279676667515405">Жокко чыгаруу</translation>
@@ -1045,6 +1050,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8756969031206844760">Сырсөз жаңыртылсынбы?</translation>
 <translation id="8763613688786959833">Акыркы өтмөккө өтүү</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> сайтына жазылууну токтотуу</translation>
+<translation id="8766790350274092814"><ph name="WEBSITE" /> жана <ph name="SECOND_WEBSITE" /> вебсайтынын сырсөздөрү жок кылынат. Аккаунттарыңыз өчүрүлбөйт.</translation>
 <translation id="8775144690796719618">Жараксыз URL</translation>
 <translation id="8787968206789828143">Интернетте издөө</translation>
 <translation id="8792626944327216835">микрофон</translation>
@@ -1094,6 +1100,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="9093271241977565440">Экрандын жогору жагындагы Издөө сүрөтчөсүн таптаңыз</translation>
 <translation id="9094033019050270033">Сырсөздү жаңыртуу</translation>
 <translation id="9097506547406246598">Жазылуу токтотулган жок. Бир жерден ката кетти.</translation>
+<translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> сырсөз жок кылынсынбы?</translation>
 <translation id="9100610230175265781">Купуя сөз айкашы талап кылынат</translation>
 <translation id="9107664647686727385">Уурдалган сырсөздөрдү текшерет</translation>
 <translation id="9124387962554796433">Издөө жана башка Google кызматтарын жекелештирүү үчүн Google таржымалыңызды колдонушу мүмкүн.</translation>

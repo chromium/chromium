@@ -525,6 +525,7 @@
 <translation id="2202627062836089804">ด้านหลังบัตร</translation>
 <translation id="22081806969704220">ถาด 3</translation>
 <translation id="2210794033760923560">อัปโหลดรายงาน</translation>
+<translation id="2212579473415663542">บันทึกที่อยู่นี้ไว้ในบัญชี Google (<ph name="ACCOUNT" />) แล้ว คุณสามารถใช้ที่อยู่กับผลิตภัณฑ์ต่างๆ ของ Google ในอุปกรณ์ใดก็ได้</translation>
 <translation id="2212735316055980242">ไม่พบนโยบาย</translation>
 <translation id="2213606439339815911">กำลังดึงรายการ...</translation>
 <translation id="2213612003795704869">พิมพ์หน้าแล้ว</translation>
@@ -1976,6 +1977,7 @@
 <translation id="5866898949289125849">คุณกำลังดูหน้าเครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="5869405914158311789">ไม่สามารถเข้าถึงเว็บไซต์นี้</translation>
 <translation id="5869522115854928033">รหัสผ่านที่บันทึกไว้</translation>
+<translation id="5872692522325383488">บันทึก IBAN แล้ว</translation>
 <translation id="5873013647450402046">ธนาคารต้องการยืนยันตัวตนของคุณ</translation>
 <translation id="5877831137320480913">สุขภาพและความงาม</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
@@ -2145,6 +2147,7 @@
 <translation id="6300452962057769623">{0,plural, =0{อุปกรณ์จะรีสตาร์ทตอนนี้}=1{อุปกรณ์จะรีสตาร์ทใน 1 วินาที}other{อุปกรณ์จะรีสตาร์ทใน # วินาที}}</translation>
 <translation id="6301104306974789820">รับการแจ้งเตือนการติดตามราคา</translation>
 <translation id="6305205051461490394">ไม่สามารถเข้าถึง <ph name="URL" /></translation>
+<translation id="6306713302480826305">ระบบจะลบที่อยู่นี้ออกจากอุปกรณ์เครื่องนี้และเครื่องอื่นๆ ที่ลงชื่อเข้าใช้</translation>
 <translation id="6311165245110979290">บัตรเสมือนพร้อมใช้งาน</translation>
 <translation id="6312113039770857350">หน้าเว็บไม่พร้อมใช้งาน</translation>
 <translation id="6316226860534107313">สกู๊ตเตอร์และโมเพ็ด</translation>
@@ -3036,6 +3039,7 @@
 <translation id="8473863474539038330">ที่อยู่และอื่นๆ</translation>
 <translation id="8474910779563686872">แสดงรายละเอียดนักพัฒนาซอฟต์แวร์</translation>
 <translation id="8479754468255770962">เย็บด้วยลวดเย็บกระดาษด้านซ้ายล่าง</translation>
+<translation id="8483229036294884935">ระบบจะลบที่อยู่นี้ออกจากบัญชี Google <ph name="ACCOUNT" /></translation>
 <translation id="8483780878231876732">หากต้องการใช้การ์ดจากบัญชี Google ให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="8488350697529856933">ใช้กับ</translation>
 <translation id="8490137692873530638">สแต็กเกอร์ 10</translation>

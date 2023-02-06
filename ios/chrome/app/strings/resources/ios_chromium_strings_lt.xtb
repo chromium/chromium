@@ -93,6 +93,7 @@
 <translation id="7045244423563602563">Suasmeninkite „Chromium“</translation>
 <translation id="7099326575020694068">„Chromium“ negali naudoti fotoaparato padalyto rodinio režimu</translation>
 <translation id="7118091470949186573">Dabar galite naudoti „Chromium“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
+<translation id="7165402419892018581">„Chromium“ pasirinkimas automatinio pildymo funkcijai</translation>
 <translation id="7175400662502680481">Jūsų slaptažodis atskleistas įvykus duomenų saugos pažeidimui. Slaptažodžių tvarkytuvė rekomenduoja pakeisti jį dabar.</translation>
 <translation id="7208566199746267865">„Chromium“ taupo laiką naudodama paskyras žiniatinklyje. Paskyras galite pridėti arba pašalinti nustatymuose.</translation>
 <translation id="725427773388857052">„Chromium“ gali padėti apsisaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir pan.</translation>
@@ -107,6 +108,7 @@
 <translation id="7746854981345936341">„Chromium“ patarimas. Kai kurie mygtukai dabar yra ekrano apačioje, pvz., mygtukai „Atgal“, „Pirmyn“ ir „Ieškoti“.</translation>
 <translation id="7763454117143368771">Naudokite „Chromium“ kaip numatytąją naršyklę, kad apsisaugotumėte nuo pavojingų svetainių ir užtikrintumėte slaptažodžių apsaugą</translation>
 <translation id="7812317783196516890">Esate prisijungę ir sinchronizuojate duomenis naudodami paskyrą, valdomą <ph name="DOMAIN" />, kur jos administratorius dabar gali nustatyti tos paskyros naudotojo politiką, pagal kurią galima keisti „Chromium“ veikimą.</translation>
+<translation id="7859018312476869945">Kai įvedate tekstą adreso juostoje ar paieškos laukelyje, „Chromium“ siunčia tai, ką įvedate, į numatytąjį paieškos variklį, kad gautų geresnių pasiūlymų. Ši funkcija inkognito režimu išjungta.</translation>
 <translation id="786327964234957808">Perjungiate sinchronizuojamas paskyras iš <ph name="USER_EMAIL1" /> į <ph name="USER_EMAIL2" />. Esamus „Chromium“ duomenis tvarko <ph name="DOMAIN" />. Tai atlikus bus ištrinti duomenys iš šio įrenginio, bet duomenys liks <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Pradėkite naudoti „Chromium“ skaitytuvą</translation>
 <translation id="7928628054454574139">Bet kada palietus nuorodas kitose programose, bus atidaroma „Chromium“</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">Išvalyti jūsų „Chromium“ duomenis iš šio įrenginio?</translation>
 <translation id="8240981428553046115">„Chromium“ nepavyko patikrinti, ar yra naujinių. Bandykite dar kartą vėliau.</translation>
 <translation id="8409374867500149834">Turite patikimiausią „Chromium“ apsaugą nuo žalingų svetainių</translation>
+<translation id="8460301378281140593">„iPhone“ nustatymuose atidarykite „Slaptažodžio parinktys“ ir pasirinkite „Chromium“</translation>
 <translation id="858114650497379505">Galite naudoti Slaptažodžių tvarkytuvėje išsaugotus slaptažodžius kitose „iPhone“ programose.</translation>
 <translation id="8586442755830160949">Autorių teisės priklauso „Chromium“ autoriams, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
 <translation id="8603022514504485810">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą rytoj arba <ph name="BEGIN_LINK" />patikrinkite slaptažodžius „Google“ paskyroje<ph name="END_LINK" />.</translation>

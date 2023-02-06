@@ -1185,23 +1185,6 @@ Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DEVICE_SCREENSAVER
 <translation id="20838788335877967">Nonaktifkan pelaporan informasi identifikasi pengguna</translation>
 <translation id="208566302163036794">Blokir fitur yang dinonaktifkan</translation>
 <translation id="208623333578980446">Izinkan penguncian layar saat aktif untuk pengelolaan daya</translation>
-<translation id="2087277084358676117">Kebijakan ini dapat digunakan sementara waktu untuk otomatis mengaktifkan dukungan bagi
-PPB_VideoDecoder(Dev) API.
-
-Jika kebijakan tidak disetel atau disetel ke Nonaktif, browser akan menentukan apakah
-API didukung atau tidak.
-Jika kebijakan disetel ke Aktif, API akan didukung.
-
-Kebijakan ini dapat digunakan jika penghapusan dukungan yang sedang berlangsung untuk API ini
-menyebabkan masalah. Jika Anda harus menggunakan kebijakan ini, laporkan bug di crbug.com
-yang menjelaskan kasus penggunaan Anda dan CC {blundell, vasilyt}@chromium.org. Kebijakan ini
-dijadwalkan untuk tersedia hingga <ph name="PRODUCT_NAME" />
-versi 114, setelah itu dukungan untuk API ini direncanakan akan dihapus
-tanpa syarat.
-
-CATATAN: Jika nilai kebijakan diubah, tab baru akan menerapkan nilai
-baru. Tab yang sudah ada harus ditutup dan dibuka kembali untuk menerapkan nilai
-baru.</translation>
 <translation id="2089541797660774692">Aktifkan pelaporan cloud browser terkelola</translation>
 <translation id="2090939118981888335">Jika kebijakan disetel ke Aktif, proxy kompresi data akan diizinkan. Jika kebijakan disetel ke Nonaktif, proxy tidak akan diizinkan.
 
@@ -5536,18 +5519,6 @@ mengetahui detail tambahan.</translation>
       Perlu diketahui bahwa kebijakan ini sebelumnya diumumkan akan dihapus di <ph name="PRODUCT_NAME" /> versi 82, tetapi saat ini telah dihapus di versi 84.</translation>
 <translation id="6276087670023098167">Nonaktifkan pelaporan informasi identifikasi mesin</translation>
 <translation id="627672037430076089">Cegah koneksi dukungan jarak jauh ke perangkat ini</translation>
-<translation id="6277043520666738324">Kebijakan ini mengontrol apakah plugin <ph name="PEPPER_NAME" /> dapat
-menggunakan dekoder baru, bukan dekoder video lama, untuk berkomunikasi dengan dekoder
-hardware.
-
-Migrasi hanya memengaruhi detail implementasi internal dan seharusnya tidak
-mengubah perilaku apa pun. Namun, kebijakan ini dapat digunakan jika aplikasi
-PPAPI tidak berfungsi seperti yang diharapkan.
-
-Jika kebijakan tidak disetel atau disetel ke Aktif, browser akan menentukan
-implementasi mana yang akan digunakan.
-Jika kebijakan disetel ke Nonaktif, browser akan menggunakan implementasi lama
-hingga kebijakan ini tidak berlaku lagi.</translation>
 <translation id="6277314550042130537">Gunakan persetujuan kebijakan KDC selama autentikasi HTTP</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6279722058145292462">Menyetel kebijakan akan menentukan seberapa sering klien mengubah sandi akun perangkat mereka dalam hitungan hari. Sandi dibuat oleh klien secara acak dan tidak terlihat oleh pengguna. Menonaktifkan kebijakan ini atau menyetel jumlah hari yang tinggi dapat menimbulkan dampak negatif pada keamanan, karena akan memberi lebih banyak waktu bagi calon penyerang untuk menemukan dan menggunakan sandi akun perangkat.
@@ -6459,23 +6430,6 @@ pemblokiran permintaan semacam itu akan diterapkan.</translation>
       Jika Anda menetapkan kebijakan ini sebagai wajib, pengguna tidak dapat mengubah atau menggantinya.
 
       Jika kebijakan ini tidak ditetapkan, rak akan ditempatkan di bagian bawah layar secara default dan pengguna dapat mengubah posisi rak.</translation>
-<translation id="7037853989942016900">Kebijakan ini mengontrol pemfaktoran ulang terbaru untuk Graphics3D API dalam plugin PPAPI.
-
-Migrasi hanya memengaruhi detail implementasi internal dan seharusnya tidak
-mengubah perilaku apa pun. Namun, kebijakan ini dapat digunakan jika aplikasi
-PPAPI tidak berfungsi seperti yang diharapkan.
-
-Jika kebijakan disetel ke Aktif atau tidak disetel, browser akan menentukan
-implementasi mana yang akan digunakan.
-Jika kebijakan disetel ke Nonaktif, browser akan menggunakan implementasi lama
-hingga kebijakan berakhir.
-
-Jika Anda harus menggunakan kebijakan tersebut, laporkan bug di crbug.com yang menjelaskan
-kasus penggunaan Anda. Kebijakan ini dijadwalkan untuk ditawarkan hingga <ph name="PRODUCT_NAME" /> versi 114, setelah itu
-implementasi lama akan dihapus.
-
-CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada
-kebijakan ini saat browser berjalan.</translation>
 <translation id="7039815268521168329">Tampilkan alur Voice Match Asisten Google selama penyiapan awal</translation>
 <translation id="7040229947030068419">Nilai contoh:</translation>
 <translation id="7044883996351280650">Mengontrol layanan pencadangan dan pemulihan Android</translation>

@@ -221,6 +221,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1192706927100816598">{0,plural, =1{Bạn sẽ tự động đăng xuất sau # giây.
 <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.}other{Bạn sẽ tự động đăng xuất sau # giây.
 <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.}}</translation>
+<translation id="119330003005586565">Trang bạn đã đọc</translation>
 <translation id="1193927020065025187">Trang web này có thể đang tìm cách lừa bạn để bạn cho phép thông báo xâm nhập</translation>
 <translation id="1195210374336998651">Chuyển đến trang cài đặt ứng dụng</translation>
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
@@ -5533,6 +5534,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6007240208646052708">Chưa có dịch vụ tìm kiếm bằng giọng nói cho ngôn ngữ của bạn.</translation>
 <translation id="6010651352520077187">Khi được bật, Google Dịch sẽ đề xuất dịch các trang web sang ngôn ngữ bạn thường dùng. Google Dịch cũng có thể tự động dịch các trang web.</translation>
 <translation id="6011193465932186973">Vân tay</translation>
+<translation id="6011308810877101166">Cải thiện cụm từ tìm kiếm được đề xuất</translation>
 <translation id="6011908034087870826">Đang gửi đường liên kết đến <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Hiển thị phụ đề cho âm thanh và video của bạn</translation>
 <translation id="6014293228235665243">Chưa đọc</translation>
@@ -5850,6 +5852,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="630292539633944562">Thông tin cá nhân đề xuất</translation>
 <translation id="6305607932814307878">Chính sách toàn cầu:</translation>
 <translation id="6305909198255586420">Vui lòng cài đặt bằng hồ sơ chính của bạn</translation>
+<translation id="630750887748244481">Cha/mẹ bạn đã tắt tuỳ chọn "Quyền của các trang web, ứng dụng và tiện ích" đối với Chrome. Bạn không được phép thêm tiện ích này.</translation>
 <translation id="6307990684951724544">Hệ thống đang bận</translation>
 <translation id="6308493641021088955">Màn hình đăng nhập do <ph name="EXTENSION_NAME" /> cung cấp</translation>
 <translation id="6308937455967653460">Lưu liên &amp;kết thành...</translation>
@@ -7991,6 +7994,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8251509999076836464">Đang ghép nối với <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Đã xóa hình thu nhỏ.</translation>
 <translation id="825238165904109940">Luôn hiển thị URL đầy đủ</translation>
+<translation id="8252538334423261825">Không thể thêm tiện ích</translation>
 <translation id="8252569384384439529">Đang tải lên...</translation>
 <translation id="8253198102038551905">Hãy nhấp vào '+' để nhận thuộc tính mạng</translation>
 <translation id="8255212965098517578">Ảnh, thông báo và ứng dụng gần đây</translation>

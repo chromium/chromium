@@ -20,7 +20,7 @@
 <translation id="1076785341346483463">與受管理帳戶同步</translation>
 <translation id="1080365971383768617">在所有裝置上都能使用自己的密碼</translation>
 <translation id="1084365883616172403">已順利發布到 Facebook。</translation>
-<translation id="1085696779717592361">預設為使用 Chrome</translation>
+<translation id="1085696779717592361">使用 Chrome 做為預設瀏覽器</translation>
 <translation id="1103523840287552314">一律翻譯<ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">切換至已開啟的視窗</translation>
 <translation id="1112015203684611006">列印失敗。</translation>
@@ -407,7 +407,7 @@
 <translation id="4018310736049373830">管理活動</translation>
 <translation id="4038354071007134711">這個裝置上沒有能開啟此檔案的應用程式。</translation>
 <translation id="4042870976416480368">在網頁中查找</translation>
-<translation id="40433179647657191">為頁面上醒目顯示的內容建立直接連結並分享。</translation>
+<translation id="40433179647657191">反白標示頁面上的某個部分，然後建立可以直接連結的網址，輕鬆與其他人分享頁面上的內容。</translation>
 <translation id="4049507953662678203">請確定您已連上網路，然後再試一次。</translation>
 <translation id="4063300985191096908">前往「動態饋給」</translation>
 <translation id="408404951701638773">現在使用搜尋列更加方便了</translation>
@@ -1025,7 +1025,7 @@
 <translation id="8533670235862049797">已啟用安全瀏覽功能</translation>
 <translation id="8534481786647257214">已順利發布到 Google+。</translation>
 <translation id="8548878600947630424">在網頁中尋找...</translation>
-<translation id="8558480467877843976">你現在隨時可以使用 Chrome 上網或開啟訊息、文件和其他應用程式中的連結。</translation>
+<translation id="8558480467877843976">現在起，每當你瀏覽或點選訊息、文件和其他應用程式中的連結時，都可以直接使用 Chrome 來開啟。</translation>
 <translation id="8588404856427128947">關閉</translation>
 <translation id="8591976964826315682">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="8605219856220328675">關閉分頁。</translation>

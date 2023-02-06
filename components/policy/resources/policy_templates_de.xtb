@@ -1170,14 +1170,6 @@ Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCR
 <translation id="20838788335877967">Erfassen personenbezogener Daten deaktivieren</translation>
 <translation id="208566302163036794">Deaktivierte Funktionen sperren</translation>
 <translation id="208623333578980446">Bildschirm-Wakelocks für die Energieverwaltung zulassen</translation>
-<translation id="2087277084358676117">Mit dieser Richtlinie kann die Unterstützung der PPB_VideoDecoder(Dev) API vorübergehend erzwungen werden.
-
-Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, entscheidet der Browser, ob die API unterstützt wird.
-Wenn die Richtlinie aktiviert ist, wird die API unterstützt.
-
-Diese Richtlinie kann verwendet werden, wenn die fehlende Unterstützung für diese API Probleme bereitet. Wenn du die Richtlinie verwenden musst, melde auf crbug.com einen Fehler unter Angabe deines Anwendungsfalls und setze {blundell, vasilyt}@chromium.org in Cc. Die Richtlinie kann bis zum Ende von Version 114 von <ph name="PRODUCT_NAME" /> verwendet werden. Danach wird die Unterstützung für diese API voraussichtlich vollständig beendet.
-
-HINWEIS: Wenn der Wert der Richtlinie geändert wird, übernehmen neue Tabs den neuen Wert. Vorhandene Tabs müssen geschlossen und wieder geöffnet werden, damit sie den neuen Wert übernehmen.</translation>
 <translation id="2089541797660774692">Cloud-Berichterstellung über verwaltete Browser aktivieren</translation>
 <translation id="2090939118981888335">Wenn diese Richtlinie aktiviert ist, wird der Proxy zur Datenkomprimierung zugelassen. Ist die Richtlinie deaktiviert, kann der Proxy nicht verwendet werden.
 
@@ -3014,6 +3006,14 @@ Wenn diese Einstellung deaktiviert ist, können Nutzer sich nicht mit Smart Lock
 Wenn diese Richtlinie nicht festgelegt ist, gilt die Standardeinstellung: Vom Unternehmen verwaltete Nutzer können sich nicht mit Smart Lock anmelden, nicht verwaltete Nutzer können sich mit Smart Lock anmelden.</translation>
 <translation id="3791179836066841809">Richtliniendokumentation</translation>
 <translation id="3791556154364029875">Unverankerten Arbeitsbereich aktivieren und Remote-Browserfenster bei der Anmeldung öffnen</translation>
+<translation id="3793998702484455655">Chrome versucht, einige Unterressourcentypen für gemischte Inhalte (HTTP auf einer HTTPS-Website) auf iOS-Geräten upzugraden.
+Weitere Informationen findest du unter https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md.
+
+Die Funktion wird standardmäßig aktiviert. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, bleibt die Funktion aktiviert.
+
+Ist die Richtlinie deaktiviert, wird die Funktion deaktiviert.
+
+Diese Richtlinie ist eine vorübergehende Problemumgehung, die in einem zukünftigen Meilenstein entfernt wird – voraussichtlich im Rahmen von M113.</translation>
 <translation id="3795413481405077588">Mit dieser Richtlinie kann ein Administrator Einstellungen für installierte Web-Apps angeben.
 
       Diese Richtlinie ordnet die ID einer Web-App einer bestimmten Einstellung zu. Mit der spezifischen ID <ph name="DEFAULT_SCOPE" /> kannst du eine Standardkonfiguration festlegen, die für alle Web-Apps angewendet wird, die keine benutzerdefinierte Konfiguration in dieser Richtlinie haben.
@@ -5442,12 +5442,6 @@ Weitere Informationen findest du unter https://developer.chrome.com/blog/immutab
       Hinweis: Diese Richtlinie sollte ursprünglich planmäßig in <ph name="PRODUCT_NAME" />-Version 82 entfernt werden, wurde aber erst in Version 84 entfernt.</translation>
 <translation id="6276087670023098167">Erfassen gerätebezogener Daten deaktivieren</translation>
 <translation id="627672037430076089">Verbindungen zu diesem Computer per Remote-Unterstützung verhindern</translation>
-<translation id="6277043520666738324">Mit dieser Richtlinie wird festgelegt, ob <ph name="PEPPER_NAME" />-Plug-ins den neuen Videodecoder statt des alten Decoders verwenden können, um mit Hardwaredecodern zu kommunizieren.
-
-Die Migration wirkt sich nur auf Details der internen Implementierung aus und sollte das Verhalten nicht ändern. Diese Richtlinie kann jedoch verwendet werden, wenn PPAPI-Anwendungen nicht wie erwartet funktionieren.
-
-Wenn die Richtlinie nicht konfiguriert oder aktiviert ist, entscheidet der Browser, welche Implementierung zum Einsatz kommt.
-Wenn die Richtlinie deaktiviert ist, verwendet der Browser die alte Implementierung, bis diese Richtlinie abläuft.</translation>
 <translation id="6277314550042130537">Genehmigung der KDC-Richtlinie bei der HTTP-Authentifizierung berücksichtigen</translation>
 <translation id="6278428485366576908">Design</translation>
 <translation id="6279722058145292462">Wenn die Richtlinie konfiguriert ist, wird in Tagen angegeben, wie häufig ein Client das Computerpasswort ändert. Das Passwort wird vom Client zufällig generiert und ist für den Nutzer nicht sichtbar. Eine Deaktivierung dieser Richtlinie oder die Auswahl einer hohen Anzahl von Tagen kann sich negativ auf die Sicherheit auswirken, da potenzielle Angreifer so mehr Zeit haben, das Computerpasswort herauszufinden und missbräuchlich zu verwenden.
@@ -6340,16 +6334,6 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, gilt das Standardve
       Wird diese Richtlinie als verbindlich konfiguriert, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
       Ist die Richtlinie nicht konfiguriert, erscheint die Ablage standardmäßig unten auf dem Bildschirm und der Nutzer hat die Möglichkeit, diese Position zu ändern.</translation>
-<translation id="7037853989942016900">Diese Richtlinie steuert die aktuelle Refaktorierung für Graphics3D-APIs im PPAPI-Plug‑in.
-
-Die Migration wirkt sich nur auf Details der internen Implementierung aus und sollte das Verhalten nicht ändern. Diese Richtlinie kann jedoch verwendet werden, wenn PPAPI-Anwendungen nicht wie erwartet funktionieren.
-
-Wenn die Richtlinie nicht konfiguriert oder aktiviert ist, entscheidet der Browser, welche Implementierung verwendet wird.
-Wenn die Richtlinie deaktiviert ist, verwendet der Browser die alte Implementierung, bis die Richtlinie abgelaufen ist.
-
-Wenn du die Richtlinie verwenden musst, melde auf crbug.com einen Fehler unter Angabe deines Anwendungsfalls. Die Richtlinie kann bis zum Ende von Version 114 von <ph name="PRODUCT_NAME" /> verwendet werden. Danach wird die alte Implementierung entfernt.
-
-HINWEIS: Änderungen an dieser Richtlinie werden nur für neu gestartete Rendererprozesse übernommen, während der Browser ausgeführt wird.</translation>
 <translation id="7039815268521168329">Ablauf „Voice Match mit Google Assistant“ bei der Ersteinrichtung anzeigen</translation>
 <translation id="7040229947030068419">Beispielwert</translation>
 <translation id="7044883996351280650">Android-Dienst "Sicherung und Wiederherstellung" konfigurieren</translation>

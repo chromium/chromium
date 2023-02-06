@@ -80,6 +80,7 @@
 <translation id="149095475893949513">यो वेबसाइट कुनै कन्फिगुरेसन प्रोफाइल डाउनलोड गर्न खोज्दै छ।</translation>
 <translation id="1491277525950327607">सेटिङ टगल गर्न डबल ट्याप गर्नुहोस्</translation>
 <translation id="1492417797159476138">तपाईंले यो साइटका लागि यो युजरनेम सुरक्षित गरिसक्नुभएको छ</translation>
+<translation id="1498283581832036924">तपाईंको <ph name="WEBSITE" /> खाता मेटिने छैन।</translation>
 <translation id="1506063256525392513">तपाईंले क्यामेरा प्रयोग गर्न दिनुभयो भने तपाईं फोटो खिच्न र अपलोड गर्न तथा QR कोड स्क्यान गर्न पनि सक्नुहुन्छ</translation>
 <translation id="1509486075633541495">वेबसाइटमा साइन इन गर्नुहोस्</translation>
 <translation id="1509960214886564027">कयौँ साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
@@ -218,6 +219,7 @@
 <translation id="2664621323652615289">रोक्नुहोस्</translation>
 <translation id="2671426118752779020">तपाईं आफूले Google पासवर्ड म्यानेजरमा सेभ गरेका पासवर्डहरू आफ्नो iPhone मा भएका अन्य एपमा प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="2690858294534178585">क्यामेरा प्रयोग भइरहेको छ</translation>
+<translation id="26915454213703967">Google प्रयोग गरी फोटोमा खोज्नुहोस्</translation>
 <translation id="2691653761409724435">अफलाइन उपलब्ध छैन</translation>
 <translation id="2695507686909505111">पृष्ठ अनुवाद गरियो</translation>
 <translation id="2697526135132990015">साइन आउट गर्नुहोस् र डेटा मेटाउनुहोस्</translation>
@@ -380,6 +382,7 @@
 <translation id="3819183753496523827">तपाईं अफलाइन हुनुहुन्छ। आफ्नो इन्टरनेट कनेक्सनको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3835964409414434850">अर्को ट्याबमा जानुहोस्</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
+<translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> र अन्य <ph name="NUMBER_OF_ACCOUNTS" /> वटा खाताका पासवर्डहरू मेटिने छन्। तपाईंका खाताहरू मेटिने छैनन्।</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3861486700625780712">अनफलो गर्नुहोस्</translation>
 <translation id="3863769054730344136">आफ्ना डिभाइसहरूमा पठाउनुहोस्</translation>
@@ -515,6 +518,7 @@
 <translation id="4833786495304741580">यसले Google मा प्रयोगसम्बन्धी तथ्याङ्क र क्र्यास रिपोर्टहरू स्वतः पठाउँछ।</translation>
 <translation id="4840495572919996524">अब उप्रान्त तपाईंको Google खातामा तपाईंका पुस्तक चिन्ह, इतिहाससम्बन्धी डेटा, पासवर्ड र अन्य सेटिङहरू सिंक हुने छैनन्।</translation>
 <translation id="4844899002472726590">आफूलाई रुचि भएका विषयहरू हेर्नुहोस् र बदल्नुहोस्</translation>
+<translation id="4848999860252535517"><ph name="WEBSITE" /> को पासवर्ड मेटाउने हो?</translation>
 <translation id="4854345657858711387">कुनै पासकोड सेट गर्नुहोस्‌</translation>
 <translation id="4858786880085262208">सम्भव हुँदा अपग्रेड गरी HTTPS बनाइयोस्। सुरक्षित साइटहरूले असुरक्षित खालका सामग्री इम्बेड गर्न सक्छन्।</translation>
 <translation id="4860895144060829044">कल गर्नुहोस्</translation>
@@ -768,6 +772,7 @@
 <translation id="6598875554591387303">प्रकाशकअनुसार क्रमबद्ध गर्नुहोस्</translation>
 <translation id="6603393121510733479">तपाईंको सङ्गठनले गोप्य रूपमा ब्राउज गर्ने सुविधा अफ गरेको छ।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> र <ph name="THIRD_WEBSITE" /> का पासवर्डहरू मेटिने छन्। तपाईंका खाताहरू मेटिने छैनन्।</translation>
 <translation id="6610002944194042868">अनुवादसम्बन्धी विकल्पहरू</translation>
 <translation id="661266467055912436">तपाईं र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई झन् सुरक्षित पार्छ।</translation>
 <translation id="6620279676667515405">रद्द गर्नुहोस्</translation>
@@ -1045,6 +1050,7 @@
 <translation id="8756969031206844760">पासवर्ड अद्यावधिक गर्ने हो?</translation>
 <translation id="8763613688786959833">अन्तिम ट्याबमा जानुहोस्</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> लाई अनफलो गर्नुहोस्</translation>
+<translation id="8766790350274092814"><ph name="WEBSITE" /> र <ph name="SECOND_WEBSITE" /> का पासवर्डहरू मेटिने छन्। तपाईंका खाताहरू मेटिने छैनन्।</translation>
 <translation id="8775144690796719618">अमान्य URL</translation>
 <translation id="8787968206789828143">वेबमा खोज्नुहोस्</translation>
 <translation id="8792626944327216835">माइक्रोफोन</translation>
@@ -1094,6 +1100,7 @@
 <translation id="9093271241977565440">स्क्रिनको सिरानमा रहेको "खोज्नुहोस्" आइकनमा ट्याप गर्नुहोस्</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट गर्नुहोस्</translation>
 <translation id="9097506547406246598">अनफलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
+<translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> वटा खाताका पासवर्डहरू मेटाउने हो?</translation>
 <translation id="9100610230175265781">पासफ्रेज आवश्यक छ</translation>
 <translation id="9107664647686727385">अरूले पासवर्डहरू देखेका छन् कि छैनन् भनी जाँच्नुहोस्</translation>
 <translation id="9124387962554796433">Google ले Search तथा Google का अन्य सेवाहरूमा तपाईंका आवश्यकताअनुसारका सुविधा उपलब्ध गराउन तपाईंको गतिविधिसम्बन्धी इतिहास प्रयोग गर्न सक्छ।</translation>

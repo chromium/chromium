@@ -411,6 +411,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ ഒന്നുമില്ല}=1{അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട {NUM_COMPROMISED} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="1380028686461971526">നെറ്റ്‌വർക്കിലേക്ക് സ്വയമേവ കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> സംഭാഷണം പ്രോസസ് ചെയ്യുന്നതിന് Google-ലേക്ക് അയച്ചു</translation>
+<translation id="1383381142702995121">ഈ വിപുലീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="1383597849754832576">സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1383861834909034572">പൂര്‍ത്തിയാകുമ്പോള്‍ തുറക്കുന്നു</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -4224,6 +4225,7 @@
 <translation id="4807098396393229769">കാര്‍‌ഡിലെ നാമം</translation>
 <translation id="4808667324955055115">പോപ്-അപ്പുകൾ ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="4809079943450490359">നിങ്ങളുടെ ഉപകരണ അഡ്‌മിന്റെ നിർദ്ദേശങ്ങൾ:</translation>
+<translation id="4809447465126035330">ഇല്ലാതാക്കുക</translation>
 <translation id="480990236307250886">ഹോംപേജ് തുറക്കുക</translation>
 <translation id="4809927044794281115">ലൈറ്റ് തീം</translation>
 <translation id="4811212958317149293">കീബോർഡ് ഓട്ടോ സ്‌കാൻ സ്വിച്ച് ആക്‌സസ്</translation>
@@ -5026,6 +5028,7 @@
 <translation id="5556459405103347317">വീണ്ടും ലോഡ് ചെയ്യുക</translation>
 <translation id="5558129378926964177">സൂം ഇൻ ചെയ്യുക</translation>
 <translation id="5558247502209241936">ആപ്പ് വിൻഡോയിൽ തുറക്കുന്നത് പ്രവർത്തനക്ഷമമാക്കുക</translation>
+<translation id="5559311991468302423">വിലാസം ഇല്ലാതാക്കുക</translation>
 <translation id="55601339223879446">ഡിസ്‌പ്ലേയിൽ നിങ്ങളുടെ ഡെസ്‌ക്‌ടോപ്പിന്റെ ബൗണ്ടറികൾ ക്രമീകരിക്കുക</translation>
 <translation id="5561162485081632007">അപകടകരമായ ഇവന്റുകൾ നടക്കുമ്പോൾ അവ കണ്ടെത്തുകയും നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുകയും ചെയ്യുന്നു</translation>
 <translation id="5562781907504170924">ഈ ടാബ് Bluetooth ഉപകരണവുമായി കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു.</translation>
@@ -6417,6 +6420,7 @@
 <translation id="6839916869147598086">സൈൻ ഇൻ മാറ്റി</translation>
 <translation id="6840155290835956714">അയയ്‌ക്കുന്നതിന് മുമ്പ് ചോദിക്കുക</translation>
 <translation id="6840184929775541289">ഒരു സര്‍ട്ടിഫിക്കേഷന്‍ അതോറിറ്റി അല്ല</translation>
+<translation id="6840214587087739194">വിലാസം ഇല്ലാതാക്കി</translation>
 <translation id="6841143363521180029">എൻക്രിപ്റ്റ് ചെയ്‌തു</translation>
 <translation id="6841186874966388268">പിശകുകൾ</translation>
 <translation id="6842136130964845393">സംരക്ഷിച്ച നിങ്ങളുടെ പാസ്‌വേഡുകൾ എപ്പോഴും ആക്‌സസ് ചെയ്യാനാകുമെന്ന് ഉറപ്പാക്കാൻ ഇത് നിങ്ങളാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
@@ -8260,6 +8264,7 @@
 <translation id="8525306231823319788">പൂര്‍ണ്ണ സ്ക്രീന്‍</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">ഭാഷകൾ ചേർക്കുക</translation>
+<translation id="8528479410903501741">IBAN സംരക്ഷിക്കുക</translation>
 <translation id="8528962588711550376">പ്രവേശിക്കുന്നു.</translation>
 <translation id="8529925957403338845">തൽക്ഷണ ടെതറിംഗ് കണക്ഷൻ പരാജയപ്പെട്ടു</translation>
 <translation id="8531701051932785007">മെച്ചപ്പെടുത്തിയ സുരക്ഷിത ബ്രൗസിംഗ് ഓഫാണ്</translation>

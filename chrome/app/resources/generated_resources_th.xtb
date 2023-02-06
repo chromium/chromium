@@ -219,6 +219,7 @@
 <translation id="1192706927100816598">{0,plural, =1{คุณจะออกจากระบบโดยอัตโนมัติใน # วินาที
 คุณต้องเสียบสมาร์ทการ์ดไว้ตลอดเพื่อให้ใช้งาน <ph name="DOMAIN" /> ได้}other{คุณจะออกจากระบบโดยอัตโนมัติใน # วินาที
 คุณต้องเสียบสมาร์ทการ์ดไว้ตลอดเพื่อให้ใช้งาน <ph name="DOMAIN" /> ได้}}</translation>
+<translation id="119330003005586565">หน้าที่คุณอ่านแล้ว</translation>
 <translation id="1193927020065025187">เว็บไซต์นี้อาจกำลังพยายามหลอกล่อคุณให้อนุญาตการแจ้งเตือนที่ล่วงล้ำ</translation>
 <translation id="1195210374336998651">ไปที่การตั้งค่าแอป</translation>
 <translation id="1195447618553298278">ข้อผิดพลาดที่ไม่รู้จัก</translation>
@@ -409,6 +410,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ไม่มีรหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด 1 รายการ}other{มีรหัสผ่านที่ถูกละเมิด {NUM_COMPROMISED} รายการ}}</translation>
 <translation id="1380028686461971526">เชื่อมต่อกับเครือข่ายโดยอัตโนมัติ</translation>
 <translation id="1381567580865186407">ระบบจะส่งคำพูดภาษา<ph name="LANGUAGE" />ไปประมวลผลที่ Google</translation>
+<translation id="1383381142702995121">จัดการส่วนขยายนี้</translation>
 <translation id="1383597849754832576">ดาวน์โหลดไฟล์คำพูดไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="1383861834909034572">เปิดไฟล์เมื่อดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
@@ -4226,6 +4228,7 @@
 <translation id="4807098396393229769">ชื่อบนบัตร</translation>
 <translation id="4808667324955055115">บล็อกป๊อปอัปอยู่:</translation>
 <translation id="4809079943450490359">วิธีการจากผู้ดูแลระบบอุปกรณ์ของคุณ</translation>
+<translation id="4809447465126035330">ลบ</translation>
 <translation id="480990236307250886">เปิดหน้าแรก</translation>
 <translation id="4809927044794281115">ธีมสว่าง</translation>
 <translation id="4811212958317149293">การสแกนอัตโนมัติของแป้นพิมพ์การเข้าถึงด้วยสวิตช์</translation>
@@ -5028,6 +5031,7 @@
 <translation id="5556459405103347317">โหลดใหม่</translation>
 <translation id="5558129378926964177">ขยาย&amp;</translation>
 <translation id="5558247502209241936">เปิดใช้การเปิดแอปในหน้าต่าง</translation>
+<translation id="5559311991468302423">ลบที่อยู่</translation>
 <translation id="55601339223879446">ปรับขอบของเดสก์ท็อปให้อยู่ในหน้าจอแสดงผล</translation>
 <translation id="5561162485081632007">ตรวจหาและเตือนคุณเมื่อเกิดเหตุการณ์อันตราย</translation>
 <translation id="5562781907504170924">แท็บนี้เชื่อมต่อกับอุปกรณ์บลูทูธอยู่</translation>
@@ -5514,6 +5518,7 @@
 <translation id="6007240208646052708">ภาษาของคุณไม่มีการค้นหาด้วยเสียง</translation>
 <translation id="6010651352520077187">เมื่อเปิดไว้ Google แปลภาษาจะเสนอการแปลเว็บไซต์เป็นภาษาที่คุณต้องการ และยังแปลเว็บไซต์โดยอัตโนมัติได้ด้วย</translation>
 <translation id="6011193465932186973">ลายนิ้วมือ</translation>
+<translation id="6011308810877101166">ปรับปรุงการแนะนำการค้นหา</translation>
 <translation id="6011908034087870826">กำลังส่งลิงก์ไปยัง <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">รับคำบรรยายสำหรับเสียงและวิดีโอของคุณ</translation>
 <translation id="6014293228235665243">ยังไม่อ่าน</translation>
@@ -5831,6 +5836,7 @@
 <translation id="630292539633944562">การแนะนำข้อมูลส่วนบุคคล</translation>
 <translation id="6305607932814307878">นโยบายทั่วโลก:</translation>
 <translation id="6305909198255586420">โปรดติดตั้งโดยใช้โปรไฟล์หลัก</translation>
+<translation id="630750887748244481">ผู้ปกครองได้ปิด "สิทธิ์สำหรับเว็บไซต์ แอป และส่วนขยาย" ใน Chrome จึงเพิ่มส่วนขยายนี้ไม่ได้</translation>
 <translation id="6307990684951724544">ระบบกำลังทำงานอื่นอยู่</translation>
 <translation id="6308493641021088955">การลงชื่อเข้าใช้ให้บริการโดย <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">บันทึก&amp;ลิงก์เป็น...</translation>
@@ -6414,6 +6420,7 @@
 <translation id="6839916869147598086">มีการเปลี่ยนแปลงการลงชื่อเข้าใช้</translation>
 <translation id="6840155290835956714">ถามก่อนที่จะส่ง</translation>
 <translation id="6840184929775541289">ไม่ได้เป็นผู้ออกใบรับรอง</translation>
+<translation id="6840214587087739194">ลบที่อยู่แล้ว</translation>
 <translation id="6841143363521180029">มีการเข้ารหัส</translation>
 <translation id="6841186874966388268">ข้อผิดพลาด</translation>
 <translation id="6842136130964845393">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงรหัสผ่านที่บันทึกไว้ได้ทุกเมื่อ</translation>
@@ -7972,6 +7979,7 @@
 <translation id="8251509999076836464">กำลังจับคู่กับ <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">รูปภาพขนาดย่อถูกลบแล้ว</translation>
 <translation id="825238165904109940">แสดง URL แบบเต็มเสมอ</translation>
+<translation id="8252538334423261825">เพิ่มส่วนขยายไม่ได้</translation>
 <translation id="8252569384384439529">กำลังอัปโหลด...</translation>
 <translation id="8253198102038551905">คลิก "+" เพื่อดูคุณสมบัติของเครือข่าย</translation>
 <translation id="8255212965098517578">รูปภาพ การแจ้งเตือน และแอปล่าสุด</translation>
@@ -8257,6 +8265,7 @@
 <translation id="8525306231823319788">เต็มหน้าจอ</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">เพิ่มภาษา</translation>
+<translation id="8528479410903501741">บันทึก IBAN</translation>
 <translation id="8528962588711550376">กำลังลงชื่อเข้าใช้</translation>
 <translation id="8529925957403338845">การเชื่อมต่ออินเทอร์เน็ตผ่านมือถือแบบด่วนล้มเหลว</translation>
 <translation id="8531701051932785007">Google Safe Browsing เวอร์ชันปรับปรุงปิดอยู่</translation>

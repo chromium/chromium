@@ -408,6 +408,7 @@
 <translation id="4038354071007134711">គ្មានកម្មវិធីណាលើឧបករណ៍នេះអាចបើកឯកសារនេះបានទេ។</translation>
 <translation id="4042870976416480368">ស្វែងរកក្នុងទំព័រ</translation>
 <translation id="40433179647657191">បង្កើត និងចែករំលែក​តំណ​ផ្ទាល់​ទៅផ្នែក​នៃទំព័រ​ដែល​អ្នក​បាន​រំលេច។</translation>
+<translation id="4045648459118332842">យក​ពាក្យសម្ងាត់​ដែល​បាន​រក្សាទុក​របស់​អ្នក​នៅក្នុង​កម្មវិធីណា​មួយ​ដោយ​ចុច​ម្ដង</translation>
 <translation id="4049507953662678203">សូមប្រាកដថាអ្នកមានការតភ្ជាប់បណ្តាញ ហើយសូមព្យាយាមម្តងទៀត។</translation>
 <translation id="4063300985191096908">ចូលទៅកាន់​ព័ត៌មាន</translation>
 <translation id="408404951701638773">ឥឡូវនេះ របារស្វែងរកផ្ដល់ភាពងាយស្រួលក្នុងការចូល​ប្រើជាងមុន</translation>
@@ -667,6 +668,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5988097621740394599">មើលការធ្លាក់ថ្លៃ​នៅក្នុងផ្ទាំង​របស់អ្នក។</translation>
 <translation id="5988851877894965432">បើក URL នៅក្នុង Chrome</translation>
 <translation id="6006672969046233841">ផ្ទាំងថ្មី</translation>
+<translation id="6011308810877101166">កែលម្អ​ការណែនាំ​ការស្វែងរក</translation>
 <translation id="6012140227487808125">កំពុងអ៊ីនគ្រីប…</translation>
 <translation id="6021332621416007159">បើកនៅក្នុង...</translation>
 <translation id="6027945736510816438">តើ​អ្នក​ចង់​មានន័យ​ថា <ph name="WEBSITE" /> មែនទេ?</translation>
@@ -886,6 +888,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="746684838091935575">3. ជ្រើសរើស Chrome</translation>
 <translation id="7472734401283673885">ឈ្មោះក្រុមហ៊ុន</translation>
 <translation id="7473891865547856676">ទេ អរគុណ</translation>
+<translation id="7491131399623468277">ចូលទៅកាន់ការកំណត់…</translation>
 <translation id="750493650310597496">បានជ្រើសរើស ០</translation>
 <translation id="7508728395076009983">ដើម្បីចាក់សោផ្ទាំងឯកជនរបស់អ្នក សូមរៀបចំ Touch ID, Face ID ឬលេខ​កូដ​សម្ងាត់។</translation>
 <translation id="7514365320538308">ទាញយក</translation>

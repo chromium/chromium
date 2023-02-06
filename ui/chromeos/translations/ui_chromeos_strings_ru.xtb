@@ -408,6 +408,7 @@
 <translation id="4462159676511157176">Другие серверы имен</translation>
 <translation id="4465725236958772856">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", под управлением администратора, подключение</translation>
 <translation id="4470564870223067757">Корейская раскладка (Dubeolsik)</translation>
+<translation id="4474142134969976028">Ничего не найдено</translation>
 <translation id="4477002475007461989">Румынский</translation>
 <translation id="4477219268485577442">Болгарская (фонетическая)</translation>
 <translation id="4508265954913339219">Активация завершилась со сбоем</translation>
@@ -813,6 +814,7 @@
 <translation id="7655441028674523381">Удобный доступ к Google Фото</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7663224033570512922">Хинди</translation>
+<translation id="7665680517722058469">Введите другой запрос.</translation>
 <translation id="7689532716264131859">Несколько объектов (<ph name="NUMBER_OF_ITEMS" />) перемещены в корзину</translation>
 <translation id="7693909743393669729">При форматировании диска все хранящиеся на нем данные и созданные разделы (включая скрытые) будут удалены. Это действие нельзя отменить.</translation>
 <translation id="7695430100978772476">Не удалось отформатировать внешнее хранилище "<ph name="DRIVE_NAME" />".</translation>
@@ -969,6 +971,7 @@
 <translation id="8866284467018526531">Арабский, транслитерация</translation>
 <translation id="8873014196523807561">Чтобы восстановить эти объекты, перетащите их в новую папку. Папки, в которых находились некоторые из этих объектов ранее, были удалены.</translation>
 <translation id="8874184842967597500">Не подключено</translation>
+<translation id="8876368061475701452">В очереди</translation>
 <translation id="8900820606136623064">Венгерский</translation>
 <translation id="8903931173357132290">Выпускник</translation>
 <translation id="8912078710089354287">Собака виляет хвостом</translation>

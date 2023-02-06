@@ -496,7 +496,7 @@
 <translation id="3630697955794050612">ବନ୍ଦ ଅଛି</translation>
 <translation id="3631369015426612114">ନିମ୍ନୋକ୍ତରୁ ବିଜ୍ଞପ୍ତିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="3633097874324966332">ଆପଣଙ୍କ ଡିଭାଇସକୁ ପେୟାର କରିବା ପାଇଁ ବ୍ଲୁଟୁଥ ସେଟିଂସ ଖୋଲନ୍ତୁ</translation>
-<translation id="3638400994746983214">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
+<translation id="3638400994746983214">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649505501900178324">ଅପ୍‌ଡେଟ୍ ହେବାକୁ ବାକି ଅଛି</translation>
 <translation id="3659444876902283058">(ଦିନ <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">ପ୍ରାୟ <ph name="TIME_LEFT" /> ବାକି ଅଛି (<ph name="PERCENTAGE" />%)।
@@ -691,7 +691,7 @@
 <translation id="468293128311738995">ଆପଣଙ୍କ ଫୋନରୁ ଆପ୍ସ</translation>
 <translation id="4690510401873698237">ତଳ ପଟକୁ ସେଲ୍ଫ</translation>
 <translation id="4696813013609194136">ମାତାପିତାଙ୍କ କୋଡ୍‌ରେ ଡିଭାଇସ୍ ଅନଲକ୍ କରନ୍ତୁ</translation>
-<translation id="4702647871202761252">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍ ବନ୍ଦ ଅଛି</translation>
+<translation id="4702647871202761252">ଗୋପନୀୟତା ସ୍କ୍ରିନ ବନ୍ଦ ଅଛି</translation>
 <translation id="4706121060329443414">ପରେ ଡାଉନଲୋଡ୍ କରିବା ପାଇଁ ଚେଷ୍ଟା କରାଯିବ। ସ୍ପିଚ୍ ବର୍ତ୍ତମାନ ପ୍ରକ୍ରିୟାନ୍ୱିତ ହେବା ପାଇଁ Googleକୁ ପଠାଯିବ।</translation>
 <translation id="470644585772471629">ରଙ୍ଗ ଇନଭର୍ସନ</translation>
 <translation id="4717575069099566988">ଆପଣଙ୍କ USB-C କେବୁଲ USB4କୁ ସମର୍ଥନ କରେ ନାହିଁ। ଡିଭାଇସ ପରଫରମାନ୍ସକୁ ସୀମିତ କରାଯାଇପାରେ।</translation>
@@ -775,7 +775,7 @@
 <translation id="5127986747308934633">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କର ଡିଭାଇସକୁ ନିୟନ୍ତ୍ରଣ କରୁଛନ୍ତି</translation>
 <translation id="5136175204352732067">ଅଲଗା କୀବୋର୍ଡ ସଂଯୁକ୍ତ ହୋ‍ଇଛି</translation>
 <translation id="5147567197700016471">ଅନଲକ୍ କରାଯାଇଛି</translation>
-<translation id="5150070631291639005">ଗୋପନୀୟତା ସେଟିଂସ୍</translation>
+<translation id="5150070631291639005">ଗୋପନୀୟତା ସେଟିଂସ</translation>
 <translation id="5155897006997040331">ପଢ଼ିବା ବେଗ</translation>
 <translation id="5166007464919321363">ଏକ ଟେମ୍ପଲେଟ ଭାବେ ଡେସ୍କ ସେଭ କରନ୍ତୁ</translation>
 <translation id="5168181903108465623">କାଷ୍ଟ ଡିଭାଇସ୍ ଉପଲବ୍ଧ</translation>
@@ -895,7 +895,7 @@
 <translation id="576341972084747908">ବିପଦଜନକ <ph name="FILENAME" />କୁ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="5763928712329149804">ସେଲ୍ଫ ପାର୍ଟି ବନ୍ଦ ଅଛି।</translation>
 <translation id="576453121877257266">ନାଇଟ୍ ଲାଇଟ୍ ଚାଲୁ ଅଛି।</translation>
-<translation id="5769373120130404283">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍</translation>
+<translation id="5769373120130404283">ଗୋପନୀୟତା ସ୍କ୍ରିନ</translation>
 <translation id="5773950591113557721">ଏହା କେମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ ଅନୁମତି ଥିବା <ph name="APP_NAME" /> ଏବଂ ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="5777841717266010279">ସ୍କ୍ରିନ୍ ସେୟାରିଂ ବନ୍ଦ କରିବେ?</translation>
 <translation id="5779721926447984944">ପିନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକ</translation>
@@ -1049,7 +1049,7 @@
 <translation id="6597278316891651699">କ୍ୟାମେରାକୁ ନିମ୍ନ ବାମପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି। ସିଷ୍ଟମ ସର୍ଫେସ ସହ ବିବାଦ।</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="6612802754306526077">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ମୋଡକୁ ଚୟନ କରାଯାଇଛି</translation>
-<translation id="6614169507485700968">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍ ଚାଲୁ ଅଛି</translation>
+<translation id="6614169507485700968">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଚାଲୁ ଅଛି</translation>
 <translation id="6625718907317144388">"ଦେଖିବା ସମ୍ବନ୍ଧିତ ସୁରକ୍ଷା" ସୁବିଧା ଚାଲୁ ଥିବା ଯୋଗୁଁ <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ଏବଂ ଅନ୍ୟ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଲୁକ୍କାୟିତ ଅଛି</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6637729079642709226">ସମୟ ବଦଳାନ୍ତୁ</translation>
@@ -1277,7 +1277,7 @@
 <translation id="7872786842639831132">ବନ୍ଦ ଅଛି</translation>
 <translation id="7875575368831396199">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ବ୍ଲୁଟୁଥ୍ ବନ୍ଦ କରାଯାଇଥିବା ପରି ଜଣାପଡ଼ୁଛି। ଦୟାକରି ଫୋନ୍ ହବ୍ ବ୍ୟବହାର କରିବା ପାଇଁ ବ୍ଲୁଟୁଥକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="7877557217297072640">{0,plural, =0{ଡିଭାଇସକୁ ବର୍ତ୍ତମାନ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}=1{ଡିଭାଇସକୁ 1 ସେକେଣ୍ଡ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}other{ଡିଭାଇସକୁ # ସେକେଣ୍ଡ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}}</translation>
-<translation id="7886169021410746335">ଗୋପନୀୟତା ସେଟିଂସ୍ ଆଡ୍‌ଜଷ୍ଟ କରନ୍ତୁ</translation>
+<translation id="7886169021410746335">ଗୋପନୀୟତା ସେଟିଂସ ଆଡଜଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="7886277072580235377">ଯେତେବେଳେ ଆପଣ ସାଇନ୍ ଆଉଟ୍ କରିବେ ସେତେବେଳେ ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ୍ ଅବଧି ଖାଲି ହୋଇଯିବ। <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ଏକ ଇମେଲ୍ ପଠାନ୍ତୁ</translation>
 <translation id="7893503627044934815">ଏହି ଫାଇଲଟି ଦେଖାଯାଉ ବୋଲି ଚାହୁଁ ନାହିଁ</translation>

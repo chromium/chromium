@@ -80,6 +80,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="149095475893949513">Tovuti hii inajaribu kupakua wasifu wa mipangilio.</translation>
 <translation id="1491277525950327607">Gusa mara mbili ili ugeuze mipangilio</translation>
 <translation id="1492417797159476138">Tayari umehifadhi jina hili la mtumiaji kwa ajili ya tovuti hii</translation>
+<translation id="1498283581832036924">Akaunti yako ya <ph name="WEBSITE" /> haitafutwa.</translation>
 <translation id="1506063256525392513">Hali hii hukuwezesha kupiga na kupakia picha pamoja na kuchanganua misimbo ya QR</translation>
 <translation id="1509486075633541495">Ingia katika akaunti ya tovuti</translation>
 <translation id="1509960214886564027">Huenda vipengele kwenye tovuti nyingi vikakosa kufanya kazi</translation>
@@ -218,6 +219,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="2664621323652615289">Sitisha</translation>
 <translation id="2671426118752779020">Unaweza kutumia manenosiri uliyohifadhi kwenye Kidhibiti cha Manenosiri cha Google katika programu zingine kwenye iPhone yako.</translation>
 <translation id="2690858294534178585">Kamera inatumika</translation>
+<translation id="26915454213703967">Tafuta Katika Picha ukitumia Google</translation>
 <translation id="2691653761409724435">Haipatikani nje ya mtandao</translation>
 <translation id="2695507686909505111">Ukurasa Umetafsiriwa</translation>
 <translation id="2697526135132990015">Ondoka katika akaunti na Ufute Data</translation>
@@ -380,6 +382,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3819183753496523827">Haupo mtandaoni. Kagua muunganisho wako wa intaneti kisha ujaribu tena.</translation>
 <translation id="3835964409414434850">Nenda kwenye Kichupo Kinachofuata</translation>
 <translation id="385051799172605136">Rudi nyuma</translation>
+<translation id="3851938967634752633">Manenosiri ya <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> na tovuti zingine <ph name="NUMBER_OF_ACCOUNTS" /> yatafutwa. Akaunti zako hazitafutwa.</translation>
 <translation id="3858860766373142691">Jina</translation>
 <translation id="3861486700625780712">Acha kufuata</translation>
 <translation id="3863769054730344136">Tuma kwenye Vifaa Vyako</translation>
@@ -515,6 +518,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="4833786495304741580">Hutuma kiotomatiki takwimu za matumizi na ripoti za programu kuacha kufanya kazi kwa Google.</translation>
 <translation id="4840495572919996524">Haitasawazisha tena alamisho, historia, manenosiri na vipengee vyako vingine kwenye Akaunti yako ya Google.</translation>
 <translation id="4844899002472726590">Angalia na ubadilishe mada zinazokuvutia</translation>
+<translation id="4848999860252535517">Ungependa kufuta Nenosiri la <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Weka Nambari ya Siri</translation>
 <translation id="4858786880085262208">Boresha ili iwe HTTPS inapowezekana. Tovuti zilizo salama huenda zikapachika maudhui ambayo si salama.</translation>
 <translation id="4860895144060829044">Piga simu</translation>
@@ -768,6 +772,7 @@ Jaribu kutumia nenosiri la kipekee kwa kila tovuti.</translation>
 <translation id="6598875554591387303">Panga kulingana na Mchapishaji</translation>
 <translation id="6603393121510733479">Shirika lako limezima kipengele cha kuvinjari kwa faragha.
 <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Manenosiri ya <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> na <ph name="THIRD_WEBSITE" /> yatafutwa. Akaunti zako hazitafutwa.</translation>
 <translation id="6610002944194042868">Chaguo za Tafsiri</translation>
 <translation id="661266467055912436">Huboresha usalama wako na wa kila mtu kwenye wavuti.</translation>
 <translation id="6620279676667515405">Ghairi</translation>
@@ -1045,6 +1050,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8756969031206844760">Ungependa kusasisha nenosiri?</translation>
 <translation id="8763613688786959833">Nenda kwenye Kichupo cha Mwisho</translation>
 <translation id="8764015330924122850">Acha kufuata <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Manenosiri ya <ph name="WEBSITE" /> na <ph name="SECOND_WEBSITE" /> yatafutwa. Akaunti zako hazitafutwa.</translation>
 <translation id="8775144690796719618">URL si sahihi</translation>
 <translation id="8787968206789828143">Tafuta kwenye tovuti</translation>
 <translation id="8792626944327216835">maikrofoni</translation>
@@ -1094,6 +1100,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="9093271241977565440">Juu ya Skrini, Gusa Aikoni ya Tafuta</translation>
 <translation id="9094033019050270033">Sasisha nenosiri</translation>
 <translation id="9097506547406246598">Imeshindwa kuacha kufuatilia. Hitilafu fulani imetokea.</translation>
+<translation id="9098541895599151034">Ungependa kufuta Manenosiri <ph name="NUMBER_OF_ACCOUNTS" />?</translation>
 <translation id="9100610230175265781">Kaulisiri inahitajika</translation>
 <translation id="9107664647686727385">Kagua kama kuna manenosiri yaliyoathiriwa</translation>
 <translation id="9124387962554796433">Huenda Google ikatumia historia yako kuboresha huduma ya Tafuta na huduma nyingine za Google.</translation>

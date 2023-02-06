@@ -1183,23 +1183,6 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="DE
 <translation id="20838788335877967">Inhabilitar la generación de informes sobre la identificación de usuarios</translation>
 <translation id="208566302163036794">Bloquea las funciones inhabilitadas</translation>
 <translation id="208623333578980446">Permite los bloqueos de activación de pantalla para la administración de energía</translation>
-<translation id="2087277084358676117">Esta política se puede usar de manera temporal para habilitar la compatibilidad con la
-API de PPB_VideoDecoder(Dev) de forma automática.
-
-Si no la estableces o la inhabilitas, el navegador decidirá
-si la API es compatible.
-Si la habilitas, se admitirá la API.
-
-Esta política se puede usar en caso de que la eliminación continua de la compatibilidad con esta API
-muestre problemas. Si tienes que utilizar la política, informa un error en crbug.com
-en el que expliques tu caso de uso y agrega a {blundell, vasilyt}@chromium.org en el campo CC. La política está
-programada para estar vigente hasta la versión 114 de <ph name="PRODUCT_NAME" />,
-después de lo cual se planea quitar la compatibilidad con esta API
-de forma incondicional.
-
-NOTA: Cuando se cambia el valor de la política, las pestañas nuevas obtienen el
-valor nuevo. Las pestañas existentes deberán cerrarse y volverse a abrir para obtener el
-valor nuevo.</translation>
 <translation id="2089541797660774692">Habilitar los informes en la nube de navegadores administrados</translation>
 <translation id="2090939118981888335">Si habilitas la política, se activará el proxy de compresión de datos. Si la inhabilitas, se desactivará el proxy.
 
@@ -5523,16 +5506,6 @@ Para obtener más información, consulta https://developer.chrome.com/blog/immut
       Ten en cuenta que se anunció que esta política se quitaría en la versión 82 de <ph name="PRODUCT_NAME" />, pero se quitó en la versión 84.</translation>
 <translation id="6276087670023098167">Inhabilitar los informes sobre la identificación de máquinas</translation>
 <translation id="627672037430076089">No permitir las conexiones de asistencia remota a esta máquina</translation>
-<translation id="6277043520666738324">Esta política controla si los complementos de <ph name="PEPPER_NAME" /> pueden usar el nuevo decodificador para comunicarse con los decodificadores de hardware en lugar del decodificador de video heredado.
-
-La migración solo afecta los detalles de implementación internos y no debe
-cambiar ningún comportamiento. Sin embargo, esta política se puede usar en caso de que las aplicaciones PPAPI
-no funcionen como se espera.
-
-Si no estableces la política o la habilitas, el navegador decidirá
-qué implementación se utiliza.
-Si la inhabilitas, el navegador usará la implementación anterior
-hasta que esta política venza.</translation>
 <translation id="6277314550042130537">Utilizar la aprobación de la política de KDC durante la autenticación de HTTP</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6279722058145292462">Si estableces la política, se especificará la frecuencia (expresada en días) con la que un cliente cambia la contraseña de la cuenta de máquina. El cliente genera la contraseña de forma aleatoria, y el usuario no puede verla. Si inhabilitas esta política o la estableces en una cantidad alta de días, la seguridad puede verse afectada de forma negativa porque los potenciales atacantes tendrán más tiempo para encontrar y usar la contraseña de la cuenta de máquina.
@@ -6442,23 +6415,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si se establece como obligatoria, los usuarios no podrán cambiarla ni anularla.
 
       Si no la estableces, se ubicará la biblioteca de forma predeterminada en la parte inferior de la pantalla y el usuario podrá cambiar su posición.</translation>
-<translation id="7037853989942016900">Esta política controla la refactorización reciente de las APIs de Graphics3D en el complemento PPAPI.
-
-La migración solo afecta los detalles de implementación internos y no debe
-cambiar ningún comportamiento. Sin embargo, esta política se puede usar en caso de que las aplicaciones PPAPI
-no funcionen como se espera.
-
-Si no estableces la política o la habilitas, el navegador decidirá
-qué implementación se utiliza.
-Si la inhabilitas, el navegador usará la implementación anterior
-hasta que la política venza.
-
-Si tienes que utilizar la política, informa un error en crbug.com en el que expliques tu
-caso de uso. La política está programada para ofrecerse a través de la versión 114 de <ph name="PRODUCT_NAME" />, después de lo cual
-se quitará la implementación anterior.
-
-NOTA: Solo los procesos del renderizado recién iniciado reflejarán los cambios de esta
-política mientras se esté ejecutando el navegador.</translation>
 <translation id="7039815268521168329">Mostrar el flujo de Voice Match de Asistente de Google durante la configuración inicial</translation>
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
 <translation id="7044883996351280650">Controlar el servicio de restablecimiento y copias de seguridad</translation>

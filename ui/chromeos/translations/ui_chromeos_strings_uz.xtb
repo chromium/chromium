@@ -408,6 +408,7 @@
 <translation id="4462159676511157176">Boshqa nom serverlari</translation>
 <translation id="4465725236958772856">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Administrator boshqaruvida, Ulanish</translation>
 <translation id="4470564870223067757">Hangul 2 majmuali</translation>
+<translation id="4474142134969976028">Hech narsa topilmadi</translation>
 <translation id="4477002475007461989">Rumin</translation>
 <translation id="4477219268485577442">Bolgar fonetik</translation>
 <translation id="4508265954913339219">Faollashtirib bo‘lmadi</translation>
@@ -812,6 +813,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7655441028674523381">Google Photosni oson oching</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7663224033570512922">Hind</translation>
+<translation id="7665680517722058469">Qaytadan qidiring</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> ta fayl chiqitdonga tashlandi</translation>
 <translation id="7693909743393669729">Disk formatlansa, undagi barcha maʼlumotlar oʻchib ketadi va undagi barcha mavjud boʻlimlar, jumladan yashirinlari ham olib tashlanadi. Bu amal bekor qilinmaydi.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> formatlanmadi</translation>

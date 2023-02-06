@@ -3053,6 +3053,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">तुम्ही आणि Google</translation>
 <translation id="3722108462506185496">व्हर्च्युअल मशीन सेवा सुरू करताना एरर आली. कृपया पुन्हा प्रयत्न करा.</translation>
+<translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> सूचना मिळाली आहे</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">उपलब्ध असलेली वायफाय नेटवर्क</translation>
 <translation id="3727187387656390258">पॉपअपची तपासणी करा</translation>
@@ -3409,6 +3410,7 @@
 <translation id="402211067068791756">यामुळे प्रदर्शित केलेल्या साइटनी स्टोअर केलेला <ph name="TOTAL_USAGE" /> डेटा साफ होईल</translation>
 <translation id="4022426551683927403">शब्दकोशात &amp;जोडा</translation>
 <translation id="4025039777635956441">निवडलेली साइट म्यूट करा</translation>
+<translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> सूचना मिळाली आहे</translation>
 <translation id="4027958407426528157">तुमच्या <ph name="DEVICE_TYPE" /> वर इंस्टॉल केलेल्या अ‍ॅप्समध्ये वेबसाइट उघडा</translation>
 <translation id="4028467762035011525">इनपुट पद्धती जोडा</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> पेजवरून मागे जा</translation>
@@ -5689,6 +5691,7 @@
 <translation id="6150961653851236686">ही भाषा पेज भाषांतरित करताना वापरली जाते</translation>
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> शोधण्यासाठी <ph name="SEARCH_KEY" /> दाबा</translation>
 <translation id="6151771661215463137">फाइल तुमच्या डाउनलोड फोल्डरमध्ये आधीपासून आहे.</translation>
+<translation id="6152918902620844577">पुढील ऑपरेशनची प्रतीक्षा करत आहे</translation>
 <translation id="6154240335466762404">सर्व पोर्ट काढून टाका</translation>
 <translation id="615436196126345398">प्रोटोकॉल</translation>
 <translation id="6155141482566063812">बॅकग्राउंड टॅब तुमची स्क्रीन शेअर करत आहे</translation>
@@ -7399,6 +7402,7 @@
 <translation id="7730683939467795481">हे पेज "<ph name="EXTENSION_NAME" />" एक्स्टेंशनने बदलले.</translation>
 <translation id="7735165285389721951">दुसरे Steam सेटअप रन होत आहे. पुन्हा प्रयत्न करण्यापूर्वी ते पूर्ण होण्याची प्रतीक्षा करा</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" सोबत पेअर करत आहे...</translation>
+<translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> सूचना मिळाली आहे</translation>
 <translation id="7737846262459425222">तुम्ही हे सेटिंग्ज &gt; Google Assistant &gt;स्क्रीन संदर्भ येथे कधीही बदलू शकता.</translation>
 <translation id="7737948071472253612">तुमचा कॅमेरा वापरण्याची अनुमती नाही</translation>
 <translation id="77381465218432215">आघातचिन्ह आणि विशेष वर्ण दाखवा</translation>

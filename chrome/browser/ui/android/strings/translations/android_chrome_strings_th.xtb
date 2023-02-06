@@ -922,6 +922,7 @@
 <translation id="6000203700195075278">ติดตามอีกครั้ง</translation>
 <translation id="6002122790816966947">อุปกรณ์ของคุณ</translation>
 <translation id="6005538289190791541">รหัสผ่านที่แนะนำ</translation>
+<translation id="6011308810877101166">ปรับปรุงการแนะนำการค้นหา</translation>
 <translation id="6039379616847168523">ข้ามไปยังแท็บถัดไป</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="604124094241169006">อัตโนมัติ</translation>
@@ -1452,6 +1453,7 @@
 <translation id="8746155870861185046">แชร์ไฮไลต์</translation>
 <translation id="8748850008226585750">เนื้อหาถูกซ่อนไว้</translation>
 <translation id="8756969031206844760">อัปเดตรหัสผ่านไหม</translation>
+<translation id="8765470054473112089">เมื่อคุณพิมพ์ในแถบที่อยู่หรือช่องค้นหา Chrome จะส่งสิ่งที่คุณพิมพ์ไปยังเครื่องมือค้นหาเริ่มต้นเพื่อให้ได้รับการแนะนำที่ดียิ่งขึ้น ตัวเลือกนี้จะปิดไว้ในโหมดไม่ระบุตัวตน</translation>
 <translation id="8766529642647037772">สร้างลิงก์ที่ไฮไลต์แบบลิงก์นี้ไหม</translation>
 <translation id="8773160212632396039">กำลังดำเนินการตามคำขอ</translation>
 <translation id="8788265440806329501">ประวัติการนำทางปิดอยู่</translation>

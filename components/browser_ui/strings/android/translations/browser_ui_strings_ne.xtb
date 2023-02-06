@@ -230,7 +230,7 @@
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5335288049665977812">साइटहरूलाई JavaScript सञ्चालन गर्न अनुमति दिने (सिफारिस गरिएको)</translation>
 <translation id="534295439873310000">NFC यन्त्रहरू</translation>
-<translation id="5344522958567249764">विज्ञापनसम्बन्धी गोपनीयता व्यवस्थापन गर्नुहोस्</translation>
+<translation id="5344522958567249764">विज्ञापनको गोपनीयतासम्बन्धी सेटिङ व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5354152178998424783">यस कार्यले साइटहरूले भण्डारण गरेका <ph name="DATASIZE" /> डेटा तथा कुकीहरू मेटाउने छ।</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ १ थप)}other{(+ # थप)}}</translation>
 <translation id="5403592356182871684">नामहरू</translation>
@@ -279,7 +279,7 @@
 <translation id="6181444274883918285">साइटको अपवाद थप्नुुहोस्</translation>
 <translation id="6192792657125177640">अपवाद</translation>
 <translation id="6196640612572343990">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
-<translation id="6205314730813004066">विज्ञापनसम्बन्धी गोपनीयता</translation>
+<translation id="6205314730813004066">विज्ञापनको गोपनीयता</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> विकल्पहरू</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' अनइन्स्टल गर्ने हो?</translation>
 <translation id="6262191102408817757">तपाईंको अन्तिम ट्याबका आधारमा</translation>

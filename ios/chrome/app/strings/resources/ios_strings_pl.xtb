@@ -80,6 +80,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="149095475893949513">Ta strona próbuje pobrać profil konfiguracji.</translation>
 <translation id="1491277525950327607">Kliknij dwukrotnie, by zmienić ustawienie</translation>
 <translation id="1492417797159476138">Ta nazwa użytkownika została już zapisana w tej witrynie</translation>
+<translation id="1498283581832036924">Twoje konto na stronie <ph name="WEBSITE" /> nie zostanie usunięte.</translation>
 <translation id="1506063256525392513">Umożliwia robienie i przesyłanie zdjęć oraz skanowanie kodów QR</translation>
 <translation id="1509486075633541495">Zaloguj się w witrynie</translation>
 <translation id="1509960214886564027">Funkcje wielu stron mogą nie działać prawidłowo</translation>
@@ -218,6 +219,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2664621323652615289">Zatrzymaj</translation>
 <translation id="2671426118752779020">Haseł zapisanych w menedżerze haseł Google możesz używać w innych aplikacjach na iPhonie.</translation>
 <translation id="2690858294534178585">Aparat jest w użyciu</translation>
+<translation id="26915454213703967">Przeszukaj obraz w Google</translation>
 <translation id="2691653761409724435">Niedostępne offline</translation>
 <translation id="2695507686909505111">Strona została przetłumaczona</translation>
 <translation id="2697526135132990015">Wyloguj się i wyczyść dane</translation>
@@ -380,6 +382,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3819183753496523827">Jesteś offline. Sprawdź połączenie z internetem i spróbuj ponownie.</translation>
 <translation id="3835964409414434850">Przejdź do następnej karty</translation>
 <translation id="385051799172605136">Wstecz</translation>
+<translation id="3851938967634752633">Hasła do stron <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i jeszcze <ph name="NUMBER_OF_ACCOUNTS" /> innych zostaną usunięte. Twoje konta nie zostaną usunięte.</translation>
 <translation id="3858860766373142691">Nazwa</translation>
 <translation id="3861486700625780712">Przestań obserwować</translation>
 <translation id="3863769054730344136">Wyślij na swoje urządzenia</translation>
@@ -515,6 +518,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="4833786495304741580">Automatycznie przesyła do Google statystyki użytkowania i raporty o awariach.</translation>
 <translation id="4840495572919996524">Twoje zakładki, historia, hasła i inne ustawienia przestaną być synchronizowane z Twoim kontem Google.</translation>
 <translation id="4844899002472726590">Wyświetl tematy, które Cię interesują, i wprowadź w nich zmiany</translation>
+<translation id="4848999860252535517">Usunąć hasło do strony <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Ustaw kod dostępu</translation>
 <translation id="4858786880085262208">Jeśli to możliwe, przełączaj się na HTTPS. Bezpieczne witryny mogą umieszczać treści, które nie są bezpieczne.</translation>
 <translation id="4860895144060829044">Zadzwoń</translation>
@@ -768,6 +772,7 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="6598875554591387303">Sortuj według wydawcy</translation>
 <translation id="6603393121510733479">Twoja organizacja wyłączyła przeglądanie prywatne.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Hasła do stron <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i <ph name="THIRD_WEBSITE" /> zostaną usunięte. Twoje konta nie zostaną usunięte.</translation>
 <translation id="6610002944194042868">Opcje tłumaczenia</translation>
 <translation id="661266467055912436">Zwiększa bezpieczeństwo Twoje i pozostałych użytkowników internetu.</translation>
 <translation id="6620279676667515405">Anuluj</translation>
@@ -1045,6 +1050,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8756969031206844760">Zaktualizować hasło?</translation>
 <translation id="8763613688786959833">Przejdź do ostatniej karty</translation>
 <translation id="8764015330924122850">Przestań obserwować tag <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Hasła do stron <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" /> zostaną usunięte. Twoje konta nie zostaną usunięte.</translation>
 <translation id="8775144690796719618">Nieprawidłowy URL</translation>
 <translation id="8787968206789828143">Wyszukaj w internecie</translation>
 <translation id="8792626944327216835">mikrofon</translation>
@@ -1094,6 +1100,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9093271241977565440">U góry ekranu kliknij ikonę wyszukiwania</translation>
 <translation id="9094033019050270033">Aktualizuj hasło</translation>
 <translation id="9097506547406246598">Nie udało się zrezygnować z obserwowania. Coś poszło nie tak.</translation>
+<translation id="9098541895599151034">Usunąć hasła (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9100610230175265781">Wymagane jest hasło</translation>
 <translation id="9107664647686727385">Sprawdź, czy nie przejęto haseł</translation>
 <translation id="9124387962554796433">Google może korzystać z Twojej historii, żeby personalizować wyniki wyszukiwania i działanie innych usług Google.</translation>

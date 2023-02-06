@@ -410,6 +410,7 @@
 <translation id="4462159676511157176">Tinkintų pavadinimų serveriai</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, tvarko administratorius, prisijungti</translation>
 <translation id="4470564870223067757">Hangul 2 rinkinys</translation>
+<translation id="4474142134969976028">Nėra jokių atitinkančių rezultatų</translation>
 <translation id="4477002475007461989">Rumunų k.</translation>
 <translation id="4477219268485577442">Fonetinė bulgarų</translation>
 <translation id="4508265954913339219">Nepavyko suaktyvinti</translation>
@@ -817,6 +818,7 @@
 <translation id="7655441028674523381">Lengvai pasiekite „Google“ nuotraukas</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7663224033570512922">Hindi k.</translation>
+<translation id="7665680517722058469">Bandykite atlikti kitą paiešką</translation>
 <translation id="7689532716264131859">Elementų perkelta į šiukšliadėžę: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="7693909743393669729">Formatuojant tvarkyklę bus ištrinti visi joje saugomi duomenys ir pašalinti visos esami skaidiniai, įskaitant tuos skaidinius, kurie gali būti nematomi. Šio veiksmo anuliuoti negalima.</translation>
 <translation id="7695430100978772476">Nepavyko suformatuoti: „<ph name="DRIVE_NAME" />“</translation>

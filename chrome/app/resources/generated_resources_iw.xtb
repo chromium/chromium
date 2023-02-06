@@ -3054,6 +3054,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">‏ההגדרות שלך ב-Google</translation>
 <translation id="3722108462506185496">קרתה שגיאה בהפעלת שירות המכונה הווירטואלית. צריך לנסות שוב.</translation>
+<translation id="3722624153992426516">התקבלה הוראה של <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">‏רשתות Wi-Fi זמינות</translation>
 <translation id="3727187387656390258">בדיקת חלון מוקפץ</translation>
@@ -3410,6 +3411,7 @@
 <translation id="402211067068791756">הפעולה הזו תגרום למחיקת <ph name="TOTAL_USAGE" /> של נתונים שאוחסנו על ידי האתרים המוצגים</translation>
 <translation id="4022426551683927403">&amp;הוספה למילון</translation>
 <translation id="4025039777635956441">השתקת האתרים שנבחרו</translation>
+<translation id="402707738228916911">התקבלה הוראה של <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027958407426528157">פתיחת אתרים באפליקציות שמותקנות ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">הוספה של שיטות קלט</translation>
 <translation id="4029556917477724407">חזרה מהדף <ph name="PAGE_TITLE" /></translation>
@@ -5691,6 +5693,7 @@
 <translation id="6150961653851236686">זו השפה שדפים יתורגמו אליה</translation>
 <translation id="6151323131516309312">יש ללחוץ על <ph name="SEARCH_KEY" /> כדי לחפש ב-<ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">הקובץ כבר קיים בתיקיית ההורדות שלך.</translation>
+<translation id="6152918902620844577">בהמתנה לפעולה הבאה</translation>
 <translation id="6154240335466762404">הסרה של כל היציאות</translation>
 <translation id="615436196126345398">פרוטוקול</translation>
 <translation id="6155141482566063812">כרטיסיית הרקע משתפת את המסך שלך</translation>
@@ -7405,6 +7408,7 @@
 <translation id="7730683939467795481">התוסף "<ph name="EXTENSION_NAME" />" שינה את הדף הזה</translation>
 <translation id="7735165285389721951">‏מתנהל תהליך הגדרה נוסף של Steam. לפני הניסיון החוזר, צריך להמתין לסיום התהליך</translation>
 <translation id="7737115349420013392">מתבצעת התאמה עם "<ph name="DEVICE_NAME" />" ...</translation>
+<translation id="7737203573077018777">התקבלה הוראה של <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
 <translation id="7737846262459425222">‏יש לך תמיד אפשרות לשנות את ההגדרה הזו ב'הגדרות' &gt; ‏Google Assistant‏ &gt; 'הקשר מסך'.</translation>
 <translation id="7737948071472253612">לא מורשים להשתמש במצלמה</translation>
 <translation id="77381465218432215">הצגת סימנים דיאקריטיים ותווים מיוחדים</translation>

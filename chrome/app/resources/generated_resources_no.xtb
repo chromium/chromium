@@ -410,6 +410,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ingen passord er utsatt for sikkerhetsbrudd}=1{1 passord er utsatt for sikkerhetsbrudd}other{{NUM_COMPROMISED} passord er utsatt for sikkerhetsbrudd}}</translation>
 <translation id="1380028686461971526">Koble til nettverket automatisk</translation>
 <translation id="1381567580865186407">Tale på <ph name="LANGUAGE" /> blir sendt til Google for behandling</translation>
+<translation id="1383381142702995121">Administrer denne utvidelsen</translation>
 <translation id="1383597849754832576">Kan ikke laste ned talefiler. Prøv på nytt senere.</translation>
 <translation id="1383861834909034572">Åpnes ved fullført nedlasting</translation>
 <translation id="1383876407941801731">Søk</translation>
@@ -4231,6 +4232,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4807098396393229769">Navn som er oppført på kortet</translation>
 <translation id="4808667324955055115">Blokkerte forgrunnsvinduer:</translation>
 <translation id="4809079943450490359">Veiledning fra enhetsadministratoren din:</translation>
+<translation id="4809447465126035330">Slett</translation>
 <translation id="480990236307250886">Åpne startsiden</translation>
 <translation id="4809927044794281115">Lyst tema</translation>
 <translation id="4811212958317149293">Automatisk skanning av brytertilgangstastaturet</translation>
@@ -5032,6 +5034,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5556459405103347317">Last inn på nytt</translation>
 <translation id="5558129378926964177">Zoom &amp;inn</translation>
 <translation id="5558247502209241936">Slå på åpning av app i vindu</translation>
+<translation id="5559311991468302423">Slett adressen</translation>
 <translation id="55601339223879446">Juster grensene for skrivebordet på skjermen</translation>
 <translation id="5561162485081632007">Oppdager og advarer deg om farlige hendelser idet de inntreffer</translation>
 <translation id="5562781907504170924">Denne fanen er koblet til en Bluetooth-enhet.</translation>
@@ -6421,6 +6424,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6839916869147598086">Påloggingen er endret</translation>
 <translation id="6840155290835956714">Spør før noe sendes</translation>
 <translation id="6840184929775541289">Er ikke en sertifiseringsinstans</translation>
+<translation id="6840214587087739194">Adressen er slettet</translation>
 <translation id="6841143363521180029">Kryptert</translation>
 <translation id="6841186874966388268">Feil</translation>
 <translation id="6842136130964845393">For å sikre at du alltid har tilgang til de lagrede passordene dine, må du bekrefte at det er deg</translation>
@@ -8262,6 +8266,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8525306231823319788">Full skjerm</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Legg til språk</translation>
+<translation id="8528479410903501741">Lagre IBAN</translation>
 <translation id="8528962588711550376">Logger på.</translation>
 <translation id="8529925957403338845">Tilkoblingen med umiddelbar internettdeling kunne ikke opprettes</translation>
 <translation id="8531701051932785007">Safe Browsing med økt beskyttelse er avslått</translation>

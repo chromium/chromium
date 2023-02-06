@@ -408,6 +408,7 @@
 <translation id="4038354071007134711">ไม่มีแอปพลิเคชันใดบนอุปกรณ์นี้ที่สามารถเปิดไฟล์ได้</translation>
 <translation id="4042870976416480368">ค้นหาในหน้าเว็บ</translation>
 <translation id="40433179647657191">สร้างและแชร์ลิงก์โดยตรงของหน้าที่คุณไฮไลต์</translation>
+<translation id="4045648459118332842">เรียกข้อมูลรหัสผ่านที่บันทึกไว้ในแอปต่างๆ ด้วยการแตะเพียงครั้งเดียว</translation>
 <translation id="4049507953662678203">ตรวจสอบว่าคุณมีการเชื่อมต่อเครือข่าย และลองอีกครั้ง</translation>
 <translation id="4063300985191096908">ไปที่ฟีด</translation>
 <translation id="408404951701638773">เข้าถึงแถบค้นหาได้ง่ายขึ้นแล้ว</translation>
@@ -667,6 +668,7 @@
 <translation id="5988097621740394599">ดูการลดราคาในแท็บ</translation>
 <translation id="5988851877894965432">เปิด URL ใน Chrome</translation>
 <translation id="6006672969046233841">แท็บใหม่</translation>
+<translation id="6011308810877101166">ปรับปรุงการแนะนำการค้นหา</translation>
 <translation id="6012140227487808125">กำลังเข้ารหัส…</translation>
 <translation id="6021332621416007159">เปิดใน...</translation>
 <translation id="6027945736510816438">คุณหมายถึง <ph name="WEBSITE" /> ใช่ไหม</translation>
@@ -886,6 +888,7 @@
 <translation id="746684838091935575">3. เลือก Chrome</translation>
 <translation id="7472734401283673885">ชื่อบริษัท</translation>
 <translation id="7473891865547856676">ไม่ ขอบคุณ</translation>
+<translation id="7491131399623468277">ไปที่การตั้งค่า…</translation>
 <translation id="750493650310597496">เลือก 0 รายการ</translation>
 <translation id="7508728395076009983">หากต้องการล็อกแท็บที่ไม่ระบุตัวตน ให้ตั้งค่า Touch ID, Face ID หรือรหัสผ่าน</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>

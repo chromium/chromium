@@ -376,6 +376,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1339009753652684748">Få adgang til Google Assistent, når du siger "Hey Google". Du kan spare på batteriet ved at vælge "Til (anbefales)". Google Assistent svarer kun, når din enhed oplader eller er sluttet til en strømkilde.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Sikkerhedskopiér medier fra enheden ved hjælp af appen Filer.</translation>
+<translation id="1341871421050612057">Synkroniseringen med <ph name="USERNAME" /> mislykkedes</translation>
 <translation id="1343865611738742294">Giv Linux-apps adgang til USB-enheder. Linux husker ikke en USB-enhed, når den er fjernet.</translation>
 <translation id="1343920184519992513">Fortsæt, hvor du slap, og åbn en bestemt række sider</translation>
 <translation id="134589511016534552">Mediefaner vises også i sektionen Åbne faner</translation>
@@ -3054,6 +3055,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Dig og Google</translation>
 <translation id="3722108462506185496">Der opstod en fejl under opstarten af tjenesten på den virtuelle maskine. Prøv igen.</translation>
+<translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />-instruktionen er modtaget</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Tilgængelige Wi-Fi-netværk</translation>
 <translation id="3727187387656390258">Undersøg pop op-vindue</translation>
@@ -3410,6 +3412,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="402211067068791756">Denne handling rydder <ph name="TOTAL_USAGE" /> data, der er gemt af de viste websites</translation>
 <translation id="4022426551683927403">&amp;Føj til ordbog</translation>
 <translation id="4025039777635956441">Slå lyden fra på det valgte website</translation>
+<translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" />-instruktionen er modtaget</translation>
 <translation id="4027958407426528157">Åbn websites i apps, der er installeret på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Tilføj indtastningsmetoder</translation>
 <translation id="4029556917477724407">Tilbage fra siden <ph name="PAGE_TITLE" /></translation>
@@ -4150,6 +4153,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4713409221649555176">Slet, når du lukker alle vinduer</translation>
 <translation id="47158868804223727">Klik på gruppenavnet for at udvide eller skjule det</translation>
 <translation id="4716483597559580346">Udfør powerwash som et ekstra sikkerhedsniveau</translation>
+<translation id="471759229191973607">Skift tema</translation>
 <translation id="4722735765955348426">Adgangskode til <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deler din skærm.</translation>
 <translation id="4722989931633062466">Har ikke tilladelse til vise loginmeddelelser fra tredjeparter</translation>
@@ -5690,6 +5694,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6150961653851236686">Dette sprog bruges ved oversættelse af sider</translation>
 <translation id="6151323131516309312">Tryk på <ph name="SEARCH_KEY" /> for at søge på <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Filen findes allerede i mappen til downloads.</translation>
+<translation id="6152918902620844577">Afventer næste handling</translation>
 <translation id="6154240335466762404">Fjern alle porte</translation>
 <translation id="615436196126345398">Protokol</translation>
 <translation id="6155141482566063812">En fane i baggrunden deler din skærm</translation>
@@ -7174,6 +7179,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> svarer ikke. Vælg "Tving til at lukke" for at lukke appen.</translation>
 <translation id="7535730537657706072">Luk alle inkognitofaner for at rydde browserhistorikken for inkognitovinduet fra din enhed</translation>
 <translation id="7537451260744431038">Websites kan ikke anvende cookies til at forbedre din browseroplevelse ved f.eks. at sørge for, at du forbliver logget ind, eller ved at huske varerne i din kurv</translation>
+<translation id="7538088324298143359">Søg i billedet med <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Der opstod en fejl ved søgning efter opdateringer: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> har skiftet til en tidligere version af denne enhed. Gem vigtige filer, og genstart derefter. Alle dataene på enheden slettes.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> med appen <ph name="APP_NAME" /></translation>
@@ -7401,6 +7407,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7730683939467795481">Denne side blev ændret af udvidelsen "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7735165285389721951">En anden Steam-konfiguration er i gang. Vent, indtil den er fuldført, før du prøver igen</translation>
 <translation id="7737115349420013392">Parrer med "<ph name="DEVICE_NAME" />"...</translation>
+<translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" />-instruktionen er modtaget</translation>
 <translation id="7737846262459425222">Du kan til enhver tid ændre dette ved at gå til Indstillinger &gt; Google Assistent &gt; Skærmkontekst.</translation>
 <translation id="7737948071472253612">Har ikke tilladelse til at bruge dit kamera</translation>
 <translation id="77381465218432215">Vis accenttegn og specialtegn</translation>
@@ -7600,6 +7607,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7912080627461681647">Din adgangskode er blevet ændret på serveren. Log ud, og log derefter ind igen.</translation>
 <translation id="7912974581251770345">Oversættelse</translation>
 <translation id="7915457674565721553">Opret forbindelse til internettet for at konfigurere børnesikring</translation>
+<translation id="7916364730877325865">Din organisation tillader ikke, at du aktiverer synkronisering med denne konto</translation>
 <translation id="7918257978052780342">Tilmeld dig</translation>
 <translation id="7919123827536834358">Oversæt disse sprog automatisk</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sek.</translation>

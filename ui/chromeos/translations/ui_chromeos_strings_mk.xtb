@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">англиски (САД) со тастатура Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - домаќин</translation>
 <translation id="1521655867290435174">Табели на Google</translation>
+<translation id="1521795806314479294">Се подготвува <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Се отвораат датотеките на Linux…</translation>
 <translation id="1547964879613821194">канадско англиска</translation>
 <translation id="1556189134700913550">Примени на сите</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Се пакуваат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
 <translation id="1722687688096767818">Се додава профил…</translation>
 <translation id="1726100011689679555">DNS-сервери</translation>
+<translation id="1727562178154619254">Спремно за синхронизација</translation>
 <translation id="1729953886957086472">германски (Германија)</translation>
 <translation id="1730235522912993863">кинески цанцзе</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ставки се копирани.</translation>
@@ -479,6 +481,7 @@
 <translation id="4973523518332075481">Користете име што содржи <ph name="MAX_LENGTH" /> знаци или помалку</translation>
 <translation id="4973970068702235170">Пакувањето не успеа, неочекувана грешка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">јапонски</translation>
+<translation id="4987699874727873250">англиски (Индија)</translation>
 <translation id="4988205478593450158">Дали сте сигурни дека сакате да ја избришете „<ph name="FILE_NAME" />“?</translation>
 <translation id="498902553138568924">Црвена пеперутка</translation>
 <translation id="4992066212339426712">Вклучи звук</translation>
@@ -509,6 +512,7 @@
    Со отстранување на уредот додека се користи може да се предизвика загуба на податоци. Почекајте додека да заврши операцијата, па исфрлете го уредот со помош на апликацијата Датотеки.</translation>
 <translation id="5163869187418756376">Споделувањето не успеа. Проверете ја врската и обидете се повторно подоцна.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
+<translation id="5167102019886320507">Се подготвуваат <ph name="NUMBER_OF_ITEMS" /> ставки...</translation>
 <translation id="5177526793333269655">Приказ на сликичка</translation>
 <translation id="5181896909298187506">Нема неодамнешни датотеки</translation>
 <translation id="5194713942430106590">Кликнете за подредување на колоната по растечки редослед.</translation>

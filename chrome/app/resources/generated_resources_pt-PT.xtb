@@ -219,6 +219,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1192706927100816598">{0,plural, =1{A sua sessão será terminada automaticamente dentro de # segundo.
 <ph name="DOMAIN" /> requer que mantenha o seu cartão inteligente inserido.}other{A sua sessão será terminada automaticamente dentro de # segundos.
 <ph name="DOMAIN" /> requer que mantenha o seu cartão inteligente inserido.}}</translation>
+<translation id="119330003005586565">Páginas lidas</translation>
 <translation id="1193927020065025187">Este site pode estar a tentar enganar o utilizador para que permita notificações intrusivas.</translation>
 <translation id="1195210374336998651">Aceda às definições da app</translation>
 <translation id="1195447618553298278">Erro desconhecido.</translation>
@@ -5522,6 +5523,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6007240208646052708">A pesquisa por voz não está disponível no seu idioma.</translation>
 <translation id="6010651352520077187">Quando ativado, o Google Tradutor sugere a tradução de sites para o seu idioma preferido. Também pode traduzir sites automaticamente.</translation>
 <translation id="6011193465932186973">Impressão digital</translation>
+<translation id="6011308810877101166">Melhorar sugestões de pesquisa</translation>
 <translation id="6011908034087870826">A enviar link para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Obtenha legendas para o áudio e o vídeo.</translation>
 <translation id="6014293228235665243">Não lidas</translation>
@@ -5839,6 +5841,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="630292539633944562">Sugestões de informações pessoais</translation>
 <translation id="6305607932814307878">Política Global:</translation>
 <translation id="6305909198255586420">Instale através do seu perfil principal</translation>
+<translation id="630750887748244481">Um dos teus pais desativou as "Autorizações para sites, apps e extensões" do Chrome. Não é permitido adicionar esta extensão.</translation>
 <translation id="6307990684951724544">Sistema ocupado</translation>
 <translation id="6308493641021088955">Início de sessão fornecido por <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Guardar lin&amp;k como...</translation>
@@ -7981,6 +7984,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8251509999076836464">A sincronizar com <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatura removida.</translation>
 <translation id="825238165904109940">Mostrar sempre URLs completos</translation>
+<translation id="8252538334423261825">Não é possível adicionar a extensão</translation>
 <translation id="8252569384384439529">A carregar…</translation>
 <translation id="8253198102038551905">Clique em "+" para aceder às propriedades de rede</translation>
 <translation id="8255212965098517578">Fotos, notificações e apps recentes</translation>

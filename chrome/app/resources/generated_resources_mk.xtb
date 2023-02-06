@@ -411,6 +411,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Нема компромитирани лозинки}=1{1 компромитирана лозинка}one{{NUM_COMPROMISED} компромитирана лозинка}other{{NUM_COMPROMISED} компромитирани лозинки}}</translation>
 <translation id="1380028686461971526">Автоматско поврзување на мрежа</translation>
 <translation id="1381567580865186407">Говорот на <ph name="LANGUAGE" /> се испраќа во Google за обработка</translation>
+<translation id="1383381142702995121">Управувајте со екстензијава</translation>
 <translation id="1383597849754832576">Не може да се преземат датотеките за говор. Обидете се повторно подоцна.</translation>
 <translation id="1383861834909034572">Ќе се отвори кога ќе заврши</translation>
 <translation id="1383876407941801731">Барај</translation>
@@ -4241,6 +4242,7 @@
 <translation id="4807098396393229769">Име на картичка</translation>
 <translation id="4808667324955055115">Блокирани скокачки прозорци:</translation>
 <translation id="4809079943450490359">Упатства од администраторот на уредот:</translation>
+<translation id="4809447465126035330">Избриши</translation>
 <translation id="480990236307250886">Отвори ја почетната страница</translation>
 <translation id="4809927044794281115">Светла тема</translation>
 <translation id="4811212958317149293">Автоматско скенирање на тастатурата за „Пристап со прекинувачи“</translation>
@@ -5043,6 +5045,7 @@
 <translation id="5556459405103347317">Повторно вчитај</translation>
 <translation id="5558129378926964177">Зумир&amp;ај</translation>
 <translation id="5558247502209241936">Овозможете отворање на апликацијата во прозорец</translation>
+<translation id="5559311991468302423">Избришете ја адресата</translation>
 <translation id="55601339223879446">Приспособете ги границите на работната површина во рамките на екранот</translation>
 <translation id="5561162485081632007">Открива опасни настани и ве предупредува кога ќе се случат</translation>
 <translation id="5562781907504170924">Оваа картичка е поврзана со Bluetooth-уред.</translation>
@@ -6434,6 +6437,7 @@
 <translation id="6839916869147598086">Најавувањето се промени</translation>
 <translation id="6840155290835956714">Прашај пред да испратиш</translation>
 <translation id="6840184929775541289">Не е орган за сертифицирање</translation>
+<translation id="6840214587087739194">Адресата е избришана</translation>
 <translation id="6841143363521180029">Шифрирана</translation>
 <translation id="6841186874966388268">Грешки</translation>
 <translation id="6842136130964845393">За да можете секогаш да пристапувате до зачуваните лозинки, потврдете дека сте вие</translation>
@@ -8277,6 +8281,7 @@
 <translation id="8525306231823319788">Цел екран</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Додај јазици</translation>
+<translation id="8528479410903501741">Зачувајте го IBAN</translation>
 <translation id="8528962588711550376">Се пријавува.</translation>
 <translation id="8529925957403338845">Неуспешно инстант врзување</translation>
 <translation id="8531701051932785007">„Подобреното безбедно прелистување“ е вклучено</translation>

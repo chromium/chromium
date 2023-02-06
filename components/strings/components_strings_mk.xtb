@@ -525,6 +525,7 @@
 <translation id="2202627062836089804">задната страна од картичката</translation>
 <translation id="22081806969704220">Фиока 3</translation>
 <translation id="2210794033760923560">Прикачи пријава</translation>
+<translation id="2212579473415663542">Адресава е зачувана во вашата сметка на Google (<ph name="ACCOUNT" />). Може да ја користите на производите на Google на кој било уред.</translation>
 <translation id="2212735316055980242">Политиката не е пронајдена</translation>
 <translation id="2213606439339815911">Земање записи...</translation>
 <translation id="2213612003795704869">Страницата е испечатена</translation>
@@ -1977,6 +1978,7 @@
 <translation id="5866898949289125849">Гледате страница со алатки за програмери</translation>
 <translation id="5869405914158311789">Не може да се пристапи до сајтот</translation>
 <translation id="5869522115854928033">Зачувани лозинки</translation>
+<translation id="5872692522325383488">IBAN е зачуван</translation>
 <translation id="5873013647450402046">Вашата банка сака да потврди дека сте вие.</translation>
 <translation id="5877831137320480913">Убавина и фитнес</translation>
 <translation id="5884465125445718607">Плик Chinese #6</translation>
@@ -2146,6 +2148,7 @@
 <translation id="6300452962057769623">{0,plural, =0{Уредот ќе се рестартира сега}=1{Уредот ќе се рестартира за 1 секунда}one{Уредот ќе се рестартира за # секунда}other{Уредот ќе се рестартира за # секунди}}</translation>
 <translation id="6301104306974789820">Добивајте известувања за следењето на цената</translation>
 <translation id="6305205051461490394"><ph name="URL" /> е недостапна.</translation>
+<translation id="6306713302480826305">Адресава ќе биде избришана од овој и од другите ваши најавени уреди</translation>
 <translation id="6311165245110979290">Достапна е виртуелна картичка</translation>
 <translation id="6312113039770857350">Веб-страницата не е достапна</translation>
 <translation id="6316226860534107313">Скутери и мопеди</translation>
@@ -3037,6 +3040,7 @@
 <translation id="8473863474539038330">Адреси и друго</translation>
 <translation id="8474910779563686872">Прикажи ги деталите за програмерот</translation>
 <translation id="8479754468255770962">Спојување долу лево</translation>
+<translation id="8483229036294884935">Адресава ќе биде избришана од вашата сметка на Google, <ph name="ACCOUNT" /></translation>
 <translation id="8483780878231876732">За да ги користите картичките од вашата сметка на Google, најавете се на Chrome</translation>
 <translation id="8488350697529856933">Се однесува на</translation>
 <translation id="8490137692873530638">Фиока за складирање 10</translation>

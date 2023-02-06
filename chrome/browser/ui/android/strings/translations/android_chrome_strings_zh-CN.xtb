@@ -250,6 +250,7 @@
 <translation id="2426805022920575512">选择其他帐号</translation>
 <translation id="2433507940547922241">外观</translation>
 <translation id="2435457462613246316">显示密码</translation>
+<translation id="2439153523196674349"><ph name="SITE_NAME" />预览</translation>
 <translation id="2450083983707403292">要重新开始下载 <ph name="FILE_NAME" /> 吗？</translation>
 <translation id="2453860139492968684">完成</translation>
 <translation id="2459390580524506445">增强版语音搜索</translation>
@@ -388,6 +389,7 @@
 <translation id="3066573403916685335">下移</translation>
 <translation id="3070005020161560471">自动翻译</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。您也必须遵守<ph name="BEGIN_LINK3" />隐私权政策<ph name="END_LINK3" />。</translation>
+<translation id="3083194063661536258">已退出帐号。按钮。打开对话框即可登录并开启同步功能。</translation>
 <translation id="3091010850649238832">显示剪贴板内容</translation>
 <translation id="3098745985164956033">系统会将部分图片发送给 Google 以便为您改进说明</translation>
 <translation id="3104179992611025423">您的浏览器由家长管理</translation>
@@ -924,6 +926,7 @@
 <translation id="6040143037577758943">关闭</translation>
 <translation id="604124094241169006">自动</translation>
 <translation id="6042308850641462728">展开</translation>
+<translation id="6049046116080614938">您已使用<ph name="USER_NAME" />的身份登录。<ph name="USER_EMAIL" />。按钮。打开设置。</translation>
 <translation id="604996488070107836">出现未知错误，未能下载 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">在此处控制您的报道和活动</translation>
@@ -1297,6 +1300,7 @@
 <translation id="7968014550143838305">已添加到阅读清单</translation>
 <translation id="7971136598759319605">1 天前曾有活动</translation>
 <translation id="7975379999046275268">预览网页<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">您已使用<ph name="USER_NAME" />的身份登录。按钮。打开设置。</translation>
 <translation id="7986497153528221272">若要查看密码，请先在设备上设置屏幕锁定</translation>
 <translation id="7995059495660416932">待内容可显示后，您即会看到相应内容</translation>
 <translation id="799576009106109668">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
@@ -1343,7 +1347,7 @@
 <translation id="8156139159503939589">您能看懂哪些语言？</translation>
 <translation id="8168435359814927499">内容</translation>
 <translation id="8186512483418048923">还剩 <ph name="FILES" /> 个文件</translation>
-<translation id="8189750580333936930">隐私沙盒</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">还剩 1 天</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的设备<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">继续</translation>

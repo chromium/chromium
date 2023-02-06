@@ -250,6 +250,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="2426805022920575512">Vælg en anden konto</translation>
 <translation id="2433507940547922241">Udseende</translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
+<translation id="2439153523196674349">Forhåndsvisning af <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Vil du begynde at downloade <ph name="FILE_NAME" /> igen?</translation>
 <translation id="2453860139492968684">Udfør</translation>
 <translation id="2459390580524506445">Forbedret stemmesøgning</translation>
@@ -388,6 +389,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3066573403916685335">Flyt ned</translation>
 <translation id="3070005020161560471">Oversæt automatisk</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> åbnes i Chrome. Når du fortsætter, accepterer du <ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" /> og de <ph name="BEGIN_LINK2" />yderligere servicevilkår for Google Chrome og ChromeOS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Privatlivspolitikken<ph name="END_LINK3" /> vil også gælde.</translation>
+<translation id="3083194063661536258">Logget ud. Knap. Åbner dialogboksen, hvor du kan logge ind og aktivere synkronisering.</translation>
 <translation id="3091010850649238832">Vis indhold i udklipsholderen</translation>
 <translation id="3098745985164956033">Nogle billeder sendes til Google for at give dig bedre beskrivelser</translation>
 <translation id="3104179992611025423">Din browser administreres af dine forældre</translation>
@@ -924,6 +926,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="6040143037577758943">Luk</translation>
 <translation id="604124094241169006">Automatisk</translation>
 <translation id="6042308850641462728">Mere</translation>
+<translation id="6049046116080614938">Logget ind som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Knap. Åbner indstillinger.</translation>
 <translation id="604996488070107836"><ph name="FILE_NAME" /> kunne ikke downloades, da der opstod en ukendt fejl.</translation>
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Administrer dine historier og din aktivitet her</translation>
@@ -1297,6 +1300,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7968014550143838305">Føjet til læseliste</translation>
 <translation id="7971136598759319605">Aktiv for 1 dag siden</translation>
 <translation id="7975379999046275268">Se forhåndsvisning af siden <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Logget ind som <ph name="USER_NAME" />. Knap. Åbner indstillinger.</translation>
 <translation id="7986497153528221272">Hvis du vil se adgangskoder, skal du først konfigurere en skærmlås på din enhed</translation>
 <translation id="7995059495660416932">Du får vist indhold, når det bliver tilgængeligt</translation>
 <translation id="799576009106109668">Du får hurtigere browsing, da indholdet indlæses proaktivt på baggrund af den webside, du aktuelt er på</translation>

@@ -408,6 +408,7 @@
 <translation id="4462159676511157176">Máy chủ có tên tùy chỉnh</translation>
 <translation id="4465725236958772856">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Do quản trị viên của bạn quản lý, Kết nối</translation>
 <translation id="4470564870223067757">Hangul 2 bộ</translation>
+<translation id="4474142134969976028">Không có kết quả nào phù hợp</translation>
 <translation id="4477002475007461989">Tiếng Rumani</translation>
 <translation id="4477219268485577442">Ngữ âm tiếng Bungary</translation>
 <translation id="4508265954913339219">Kích hoạt không thành công</translation>
@@ -813,6 +814,7 @@
 <translation id="7655441028674523381">Dễ dàng truy cập vào Google Photos</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7663224033570512922">Tiếng Hindi</translation>
+<translation id="7665680517722058469">Thử nhập cụm từ tìm kiếm khác</translation>
 <translation id="7689532716264131859">Đã chuyển <ph name="NUMBER_OF_ITEMS" /> mục vào thùng rác</translation>
 <translation id="7693909743393669729">Thao tác định dạng ổ đĩa sẽ xóa toàn bộ dữ liệu lưu trữ trên ổ đĩa đó, đồng thời xóa tất cả phân vùng hiện có, bao gồm cả những phân vùng có thể không hiển thị. Bạn không thể hủy thao tác này sau khi thực hiện.</translation>
 <translation id="7695430100978772476">Không định dạng được <ph name="DRIVE_NAME" /></translation>

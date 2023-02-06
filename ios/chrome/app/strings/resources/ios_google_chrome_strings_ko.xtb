@@ -48,7 +48,7 @@
 <translation id="384394811301901750">지금 Chrome에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="3980220367029651214">동기화 계정을 <ph name="USER_EMAIL1" />에서 <ph name="USER_EMAIL2" />(으)로 전환합니다. 기존 Chrome 데이터는 <ph name="DOMAIN" />에서 관리합니다. 이렇게 하면 데이터가 이 기기에서 삭제되지만 <ph name="USER_EMAIL1" />에는 그대로 유지됩니다.</translation>
 <translation id="3984746313391923992">조직에서 Chrome 로그아웃 상태를 유지할 것을 요청합니다.</translation>
-<translation id="3988789688219830639">Chrome이 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
+<translation id="3988789688219830639">Chrome이 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인 정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
 <translation id="417201473131094001">Chrome Canary에서 지원되지 않습니다.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 계정이 Chrome을 사용했으며 이 기기에 북마크, 비밀번호, 기타 설정을 남겼습니다</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
@@ -67,7 +67,7 @@
 <translation id="5389212809648216794">다른 애플리케이션에서 카메라를 사용하고 있으므로 Chrome에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="5460571915754665838">4. Chrome을 선택합니다.</translation>
 <translation id="5552137475244467770">Chrome에서는 온라인에 게시된 비밀번호 목록에 사용자의 비밀번호가 포함되어 있는지를 주기적으로 확인합니다. 이렇게 하면 비밀번호 및 사용자 이름이 암호화되어 Google을 포함해 누구도 읽을 수 없습니다.</translation>
-<translation id="5639704535586432836">설정 &gt; 개인정보 보호 &gt; 카메라 &gt; Chrome을 열고 카메라를 사용 설정하세요.</translation>
+<translation id="5639704535586432836">설정 &gt; 개인 정보 보호 &gt; 카메라 &gt; Chrome을 열고 카메라를 사용 설정하세요.</translation>
 <translation id="5642200033778930880">Chrome에서는 분할 모드에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="5661521615548540542">Google 비밀번호 관리자에서 일부 비밀번호를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="5690427481109656848">Google LLC</translation>

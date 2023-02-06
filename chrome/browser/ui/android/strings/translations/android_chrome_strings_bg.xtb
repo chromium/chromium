@@ -250,6 +250,7 @@
 <translation id="2426805022920575512">Избиране на друг профил</translation>
 <translation id="2433507940547922241">Облик</translation>
 <translation id="2435457462613246316">Показване на паролата</translation>
+<translation id="2439153523196674349">Предварителен преглед на <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Искате ли да започнете да изтегляте „<ph name="FILE_NAME" />“ още веднъж?</translation>
 <translation id="2453860139492968684">Край</translation>
 <translation id="2459390580524506445">Подобрено гласово търсене</translation>
@@ -388,6 +389,7 @@
 <translation id="3066573403916685335">Преместване надолу</translation>
 <translation id="3070005020161560471">Да се превежда автоматично от</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Декларацията за поверителност<ph name="END_LINK3" />.</translation>
+<translation id="3083194063661536258">Не сте в профила си. Бутон. Отваря диалоговия прозорец за вход в профила и включване на синхронизирането.</translation>
 <translation id="3091010850649238832">Показване на съдържанието в буферната памет</translation>
 <translation id="3098745985164956033">Някои изображения се изпращат до Google с цел подобряване на описанията за вас</translation>
 <translation id="3104179992611025423">Браузърът се управлява от родителите ви</translation>
@@ -924,6 +926,7 @@
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="604124094241169006">Автоматично</translation>
 <translation id="6042308850641462728">Още</translation>
+<translation id="6049046116080614938">Влезли сте като <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Бутон. Отваря настройките.</translation>
 <translation id="604996488070107836">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради неизвестна грешка.</translation>
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Управлявайте материалите и активността си тук</translation>
@@ -1297,6 +1300,7 @@
 <translation id="7968014550143838305">Добавено към списъка за четене</translation>
 <translation id="7971136598759319605">Активно преди 1 ден</translation>
 <translation id="7975379999046275268">Визуализация <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="7981085434646346979">Влезли сте като <ph name="USER_NAME" />. Бутон. Отваря настройките.</translation>
 <translation id="7986497153528221272">За да видите паролите, първо настройте заключване на екрана на устройството си</translation>
 <translation id="7995059495660416932">Ще видите съдържание, когато има такова</translation>
 <translation id="799576009106109668">Ще сърфирате по-бързо, тъй като съдържанието се зарежда предварително въз основа на уеб страницата, която сте посетили в момента</translation>

@@ -525,6 +525,7 @@
 <translation id="2202627062836089804">আপোনাৰ কাৰ্ডৰ পিছফালে</translation>
 <translation id="22081806969704220">ট্ৰে’ ৩</translation>
 <translation id="2210794033760923560">ৰিপ’ৰ্ট আপল’ড কৰক</translation>
+<translation id="2212579473415663542">এই ঠিকনাটো আপোনাৰ Google একাউণ্ট (<ph name="ACCOUNT" />)ত ছেভ কৰা হ’ব। আপুনি যিকোনো ডিভাইচত Googleৰ বিভিন্ন প্ৰ’ডাক্টসমূহত ঠিকনা ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="2212735316055980242">নীতিটো বিচাৰি পোৱা নগ’ল</translation>
 <translation id="2213606439339815911">প্ৰবিষ্টিবোৰ আহৰণ কৰি থকা হৈছে...</translation>
 <translation id="2213612003795704869">পৃষ্ঠাখন প্ৰিণ্ট কৰা হ’ল</translation>
@@ -1336,7 +1337,7 @@
 <translation id="4282346679996504092">এই প্ৰ’ডাক্টটোৰ বাবে সতৰ্কবাৰ্তা অফ কৰা হৈছে আৰু বুকমাৰ্কটো আঁতৰোৱা হৈছে</translation>
 <translation id="4285498937028063278">আনপিন কৰক</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{এই কাৰ্ডখন আপোনাৰ Google একাউণ্টত ছেভ কৰা হৈছে}one{এই কাৰ্ডসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰা হৈছে}other{এই কাৰ্ডসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰা হৈছে}}</translation>
-<translation id="4287495839370498922">Chromeত বিজ্ঞাপনৰ উন্নত গোপনীয়তা</translation>
+<translation id="4287495839370498922">Chromeত বৰ্ধিত বিজ্ঞাপনৰ গোপনীয়তা</translation>
 <translation id="4287885627794386150">ট্ৰায়েলৰ বাবে যোগ্য কিন্তু সক্ৰিয় নহয়</translation>
 <translation id="4297502707443874121">পৃষ্ঠা <ph name="THUMBNAIL_PAGE" />ৰ বাবে থাম্বনেইল</translation>
 <translation id="4298000214066716287">বিনিয়োগ কৰা</translation>
@@ -1973,6 +1974,7 @@
 <translation id="5866898949289125849">আপুনি বিকাশকৰ্তাৰ সঁজুলিৰ এটা পৃষ্ঠা চাই আছে</translation>
 <translation id="5869405914158311789">এই ছাইটটো খুলিব নোৱাৰি</translation>
 <translation id="5869522115854928033">ছেভ কৰা পাছৱৰ্ডসমূহ</translation>
+<translation id="5872692522325383488">IBAN ছেভ কৰা হ’ল</translation>
 <translation id="5873013647450402046">আপোনাৰ বেংকে এয়া আপুনি বুলি নিশ্চিত কৰিবলৈ বিচাৰে।</translation>
 <translation id="5877831137320480913">ৰূপচৰ্চা আৰু ফিটনেছ</translation>
 <translation id="5884465125445718607">এনভেল’প চীনা #৬</translation>
@@ -2141,6 +2143,7 @@
 <translation id="6300452962057769623">{0,plural, =0{আপোনাৰ ডিভাইচটো এতিয়াই ৰিষ্টাৰ্ট হ'ব}=1{আপোনাৰ ডিভাইচটো ১ ছেকেণ্ডত ৰিষ্টাৰ্ট হ'ব}one{আপোনাৰ ডিভাইচটো # ছেকেণ্ডত ৰিষ্টাৰ্ট হ'ব}other{আপোনাৰ ডিভাইচটো # ছেকেণ্ডত ৰিষ্টাৰ্ট হ'ব}}</translation>
 <translation id="6301104306974789820">মূল্য ট্ৰেকিঙৰ জাননী পাওক</translation>
 <translation id="6305205051461490394"><ph name="URL" />ত উপনীত হ’ব নোৱাৰি৷</translation>
+<translation id="6306713302480826305">এই ঠিকনাটো এইটো আৰু আপোনাৰ অন্য ছাইন-ইন কৰা ডিভাইচসমূহৰ পৰা মচি পেলোৱা হ’ব</translation>
 <translation id="6311165245110979290">ভাৰ্চুৱেল কাৰ্ড উপলব্ধ</translation>
 <translation id="6312113039770857350">ৱেবপৃষ্ঠা উপলব্ধ নহয়</translation>
 <translation id="6316226860534107313">স্কুটাৰ আৰু ম’পেড</translation>
@@ -3032,6 +3035,7 @@
 <translation id="8473863474539038330">ঠিকনা আৰু অধিক</translation>
 <translation id="8474910779563686872">বিকাশকর্তাৰ সবিশেষ দেখুৱাওক</translation>
 <translation id="8479754468255770962">বাওঁফালে তলৰ অংশত ষ্টে'পল কৰক</translation>
+<translation id="8483229036294884935">এই ঠিকনাটো আপোনাৰ Google একাউণ্ট <ph name="ACCOUNT" />ৰ পৰা মচি পেলোৱা হ’ব</translation>
 <translation id="8483780878231876732">আপোনাৰ Google একাউণ্টৰ পৰা কাৰ্ড ব্যৱহাৰ কৰিবলৈ Chromeত ছাইন ইন কৰক</translation>
 <translation id="8488350697529856933">এইসমূহত প্ৰযোজ্য হয়</translation>
 <translation id="8490137692873530638">ষ্টেকাৰ ১০</translation>

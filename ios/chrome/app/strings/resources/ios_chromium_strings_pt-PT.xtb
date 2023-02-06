@@ -93,6 +93,7 @@
 <translation id="7045244423563602563">Personalize o Chromium</translation>
 <translation id="7099326575020694068">O Chromium não pode utilizar a câmara no modo Vista dividida</translation>
 <translation id="7118091470949186573">Agora, pode utilizar o Chromium sempre que tocar em links de mensagens, documentos e outras apps.</translation>
+<translation id="7165402419892018581">Escolha o Chromium para o preenchimento automático</translation>
 <translation id="7175400662502680481">A sua palavra-passe foi exposta numa violação de dados. O Gestor de palavras-passe recomenda que a altere agora.</translation>
 <translation id="7208566199746267865">O Chromium poupa o seu tempo ao trazer as suas contas para a Web. Pode adicionar ou remover contas nas Definições.</translation>
 <translation id="725427773388857052">O Chromium pode ajudar a proteger contra violações de dados, Websites inseguros e muito mais.</translation>
@@ -107,6 +108,7 @@
 <translation id="7746854981345936341">Sugestão para o Chromium: alguns botões encontram-se agora na parte inferior do ecrã, como Voltar, Avançar e Pesquisar.</translation>
 <translation id="7763454117143368771">Utilize o Chromium como o navegador predefinido para obter proteção contra sites perigosos e manter as suas palavras-passe protegidas</translation>
 <translation id="7812317783196516890">Tem sessão iniciada e está a sincronizar os seus dados com uma conta gerida pelo domínio <ph name="DOMAIN" />, onde o respetivo administrador pode agora definir Políticas do Utilizador específicas para essa conta que podem alterar o comportamento do Chromium.</translation>
+<translation id="7859018312476869945">Quando escreve na barra de endereço ou caixa de pesquisa, o Chromium envia o que escreve para o motor de pesquisa predefinido de forma a obter melhores sugestões. Esta opção está desativada na Navegação anónima.</translation>
 <translation id="786327964234957808">Está a mudar a sincronização de contas de <ph name="USER_EMAIL1" /> para <ph name="USER_EMAIL2" />. Os seus dados do Chromium existentes são geridos por <ph name="DOMAIN" />. Esta ação eliminará os dados deste dispositivo, mas os dados permanecerão em <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Comece a utilizar o leitor do Chromium</translation>
 <translation id="7928628054454574139">Abra o Chromium sempre que tocar em links noutras apps</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">Pretende limpar os dados do Chromium deste dispositivo?</translation>
 <translation id="8240981428553046115">O Chromium não conseguiu verificar se existem atualizações. Tente mais tarde.</translation>
 <translation id="8409374867500149834">Tem a segurança mais avançada do Chromium contra Websites prejudiciais</translation>
+<translation id="8460301378281140593">Nas Definições do seu iPhone, abra as "Opções de palavras-passe" e selecione "Chromium"</translation>
 <translation id="858114650497379505">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe noutras apps no seu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8603022514504485810">O Gestor de Palavras-passe da Google não conseguiu verificar todas as palavras-passe. Tente amanhã ou <ph name="BEGIN_LINK" />verifique as palavras-passe na sua Conta Google<ph name="END_LINK" />.</translation>

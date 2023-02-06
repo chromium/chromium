@@ -92,6 +92,7 @@
 <translation id="7045244423563602563">Biến Chromium thành trình duyệt của riêng bạn</translation>
 <translation id="7099326575020694068">Chromium không thể sử dụng máy ảnh của bạn ở Chế độ xem phân tách</translation>
 <translation id="7118091470949186573">Giờ đây, bạn có thể dùng Chromium bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
+<translation id="7165402419892018581">Chọn Chromium làm dịch vụ tự động điền</translation>
 <translation id="7175400662502680481">Mật khẩu của bạn đã bị lộ trong một vụ rò rỉ dữ liệu. Trình quản lý mật khẩu khuyên bạn nên đổi mật khẩu này ngay.</translation>
 <translation id="7208566199746267865">Chromium giúp bạn tiết kiệm thời gian bằng cách đưa tài khoản của bạn lên web. Bạn có thể thêm hoặc xóa tài khoản trong Cài đặt.</translation>
 <translation id="725427773388857052">Chromium có thể bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác.</translation>
@@ -106,6 +107,7 @@
 <translation id="7746854981345936341">Mẹo dành cho Chromium. Một số nút hiện nằm ở cuối màn hình, chẳng hạn như nút Quay lại, Tiến lên và Tìm kiếm.</translation>
 <translation id="7763454117143368771">Hãy đặt Chromium làm trình duyệt mặc định để luôn được bảo vệ khỏi các trang web nguy hiểm và giữ cho mật khẩu của bạn an toàn</translation>
 <translation id="7812317783196516890">Bạn đang đăng nhập và đồng bộ hoá dữ liệu bằng một tài khoản do <ph name="DOMAIN" /> quản lý; theo đó, quản trị viên nay có thể thiết lập chính sách người dùng dành riêng cho tài khoản đó và việc này có thể làm thay đổi hành vi của Chromium.</translation>
+<translation id="7859018312476869945">Khi bạn nhập vào thanh địa chỉ hoặc hộp tìm kiếm, Chromium sẽ gửi nội dung bạn nhập đến công cụ tìm kiếm mặc định để đề xuất cho bạn cụm từ phù hợp hơn. Tính năng này bị tắt trong chế độ Ẩn danh.</translation>
 <translation id="786327964234957808">Bạn đang chuyển các tài khoản đồng bộ hóa từ <ph name="USER_EMAIL1" /> về <ph name="USER_EMAIL2" />. Dữ liệu Chromium hiện có của bạn do <ph name="DOMAIN" /> quản lý. Thao tác này sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn còn trong <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Bắt đầu dùng trình quét của Chromium</translation>
 <translation id="7928628054454574139">Mở Chromium bất cứ khi nào bạn nhấn vào đường liên kết trong các ứng dụng khác</translation>
@@ -115,6 +117,7 @@
 <translation id="8073677936375100957">Xóa dữ liệu Chromium của bạn khỏi thiết bị này?</translation>
 <translation id="8240981428553046115">Chromium không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử lại sau.</translation>
 <translation id="8409374867500149834">Chromium sở hữu khả năng bảo mật mạnh nhất để bảo vệ bạn trước các trang web có hại</translation>
+<translation id="8460301378281140593">Trong phần Cài đặt của iPhone, hãy mở "Tuỳ chọn mật khẩu" rồi chọn "Chromium"</translation>
 <translation id="858114650497379505">Bạn có thể sử dụng mật khẩu đã lưu vào Trình quản lý mật khẩu trong ứng dụng khác trên iPhone.</translation>
 <translation id="8586442755830160949">Bản quyền <ph name="YEAR" /> Tác giả Chromium. Mọi quyền được bảo lưu.</translation>
 <translation id="8603022514504485810">Trình quản lý mật khẩu của Google không thể kiểm tra tất cả mật khẩu. Hãy thử lại vào ngày mai hoặc <ph name="BEGIN_LINK" />kiểm tra các mật khẩu trong Tài khoản Google của bạn.<ph name="END_LINK" /></translation>

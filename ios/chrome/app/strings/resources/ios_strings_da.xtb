@@ -80,6 +80,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="149095475893949513">Dette website forsøger at downloade en konfigurationsprofil.</translation>
 <translation id="1491277525950327607">Tryk to gange for at skifte indstilling</translation>
 <translation id="1492417797159476138">Du har allerede gemt dette brugernavn for dette website</translation>
+<translation id="1498283581832036924">Din <ph name="WEBSITE" />-konto slettes ikke.</translation>
 <translation id="1506063256525392513">Det giver dig mulighed for at tage og uploade billeder samt scanne QR-koder</translation>
 <translation id="1509486075633541495">Log ind på website</translation>
 <translation id="1509960214886564027">Funktioner på mange websites virker muligvis ikke</translation>
@@ -218,6 +219,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2664621323652615289">Stop</translation>
 <translation id="2671426118752779020">Du kan bruge de adgangskoder, du har gemt i Google Adgangskodeadministrator, i andre apps på din iPhone.</translation>
 <translation id="2690858294534178585">Kameraet er i brug</translation>
+<translation id="26915454213703967">Søg i billedet med Google</translation>
 <translation id="2691653761409724435">Ikke tilgængelig offline</translation>
 <translation id="2695507686909505111">Siden blev oversat</translation>
 <translation id="2697526135132990015">Log ud, og ryd data</translation>
@@ -380,6 +382,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3819183753496523827">Du er offline. Tjek din internetforbindelse, og prøv igen.</translation>
 <translation id="3835964409414434850">Gå til næste fane</translation>
 <translation id="385051799172605136">Tilbage</translation>
+<translation id="3851938967634752633">Adgangskoderne til <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="NUMBER_OF_ACCOUNTS" /> andre slettes. Dine konti slettes ikke.</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3861486700625780712">Følg ikke</translation>
 <translation id="3863769054730344136">Send to Your Devices [Send til dine enheder]</translation>
@@ -515,6 +518,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="4833786495304741580">Sender automatisk brugsstatistik og nedbrudsrapporter til Google.</translation>
 <translation id="4840495572919996524">Dine bogmærker, din historik, dine adgangskoder og meget andet synkroniseres ikke længere med din Google-konto.</translation>
 <translation id="4844899002472726590">Se og rediger de emner, du er interesseret i</translation>
+<translation id="4848999860252535517">Vil du slette adgangskoden til <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Angiv en adgangskode</translation>
 <translation id="4858786880085262208">Opgrader til HTTPS, når det er muligt. Sikre websites indlejrer muligvis indhold, der ikke er sikkert.</translation>
 <translation id="4860895144060829044">Ring op</translation>
@@ -768,6 +772,7 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="6598875554591387303">Sortér efter udgiver</translation>
 <translation id="6603393121510733479">Din organisation har deaktiveret privat browsing.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793">Adgangskoderne til <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="THIRD_WEBSITE" /> slettes. Dine konti slettes ikke.</translation>
 <translation id="6610002944194042868">Valgmuligheder for oversættelse</translation>
 <translation id="661266467055912436">Forbedrer din og alles sikkerhed på nettet.</translation>
 <translation id="6620279676667515405">Annuller</translation>
@@ -1045,6 +1050,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8756969031206844760">Vil du opdatere adgangskoden?</translation>
 <translation id="8763613688786959833">Gå til sidste fane</translation>
 <translation id="8764015330924122850">Følg ikke <ph name="DOMAIN_NAME" /></translation>
+<translation id="8766790350274092814">Adgangskoderne til <ph name="WEBSITE" /> og <ph name="SECOND_WEBSITE" /> slettes. Dine konti slettes ikke.</translation>
 <translation id="8775144690796719618">Ugyldig webadresse</translation>
 <translation id="8787968206789828143">Søg på nettet</translation>
 <translation id="8792626944327216835">mikrofon</translation>
@@ -1094,6 +1100,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9093271241977565440">Tryk på søgeikonet øverst på skærmen</translation>
 <translation id="9094033019050270033">Opdater adgangskoden</translation>
 <translation id="9097506547406246598">"Følg" kan ikke fortrydes. Der gik noget galt.</translation>
+<translation id="9098541895599151034">Vil du slette <ph name="NUMBER_OF_ACCOUNTS" /> adgangskoder?</translation>
 <translation id="9100610230175265781">Adgangssætning kræves</translation>
 <translation id="9107664647686727385">Tjekker, om der er kompromitterede adgangskoder</translation>
 <translation id="9124387962554796433">Google kan bruge din historik til at tilpasse Søgning og andre Google-tjenester.</translation>

@@ -1167,14 +1167,6 @@
 <translation id="20838788335877967">停用关于用户标识信息的报告</translation>
 <translation id="208566302163036794">禁用已停用的功能</translation>
 <translation id="208623333578980446">允许使用屏幕唤醒锁定以便进行电源管理</translation>
-<translation id="2087277084358676117">此政策可暂时用于强制启用对 PPB_VideoDecoder(Dev) API 的支持。
-
-如果此政策未设置或已停用，浏览器将决定是否支持该 API。
-如果此政策已启用，系统将会支持该 API。
-
-我们正在取消对该 API 的支持，如果在这个过程中遇到问题，可以使用此政策。如果您必须使用此政策，请在 crbug.com 上提交 bug 以说明您的使用情形并抄送 {blundell, vasilyt}@chromium.org。此政策的预定有效期会一直持续到 <ph name="PRODUCT_NAME" /> 114 版，之后我们将按计划无条件地取消对该 API 的支持。
-
-注意：如果此政策的值发生更改，新标签页将会自动采用新值。若要让现有标签页采用新值，您需关闭并重新打开相应标签页。</translation>
 <translation id="2089541797660774692">为受管理浏览器启用云报告功能</translation>
 <translation id="2090939118981888335">如果此政策已启用，系统会允许使用数据压缩代理。如果此政策已停用，系统将禁止使用该代理。
 
@@ -2997,6 +2989,14 @@
       如果此政策未设置，默认情况下，受企业管理的用户不能使用 Smart Lock，不受管理的用户则能够使用 Smart Lock。</translation>
 <translation id="3791179836066841809">政策文档</translation>
 <translation id="3791556154364029875">启用悬浮式工作区，并在登录时启动远程浏览器窗口</translation>
+<translation id="3793998702484455655">在 iOS 上，Chrome 会尝试升级某些类型的混合内容（HTTPS 网站上的 HTTP）子资源。
+如需了解详情，请参阅 https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md。
+
+该功能默认处于启用状态。如果此政策已启用或未设置，系统会保持该功能的启用状态。
+
+如果此政策已停用，系统会停用该功能。
+
+此政策只是一种临时的变通方案，会在几个里程碑后被移除（我们暂定在 M113 中移除它）。</translation>
 <translation id="3795413481405077588">此政策让管理员能够为已安装的 Web 应用指定设置。
 
       使用此政策后，您可将某个 Web 应用 ID 映射到特定设置。您可以使用特殊 ID<ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有 Web 应用。
@@ -4673,6 +4673,10 @@
       当该策略值已设置，且不为零，那么当不活动期达到指定的时间期间后，当前登录的演示用户就会自动退出。
 
       该策略值应该以毫秒为单位。</translation>
+<translation id="5501031245538651575">从 M110 开始，非标准 API window.webkitStorageInfo 将被移除。此政策用于重新启用该 API。
+如果此政策已启用，window.webkitStorageInfo API 将可用。
+如果此政策已停用或未设置，window.webkitStorageInfo API 将不可用。
+此政策将在 M112 中移除。</translation>
 <translation id="5502683401545256109">此政策可控制当有多个证书与 <ph name="DEVICE_LOGIN_SCREEN_AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> 匹配时，系统是否会提示用户在 SAML 流程托管框架的登录屏幕上选择客户端证书。
       如果此政策已启用，每当自动选择政策与多个证书匹配时，系统都会要求用户选择客户端证书。
       如果此政策已停用或未设置，系统从不会提示用户在登录屏幕上选择客户端证书。
@@ -5415,12 +5419,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       请注意，我们曾宣布将在 <ph name="PRODUCT_NAME" /> 82 版中移除此政策，但已改为在 84 版中移除。</translation>
 <translation id="6276087670023098167">停用关于机器标识信息的报告</translation>
 <translation id="627672037430076089">禁止与这台计算机建立远程支持连接</translation>
-<translation id="6277043520666738324">此政策用于控制 <ph name="PEPPER_NAME" /> 插件能否使用新版解码器（而非旧版视频解码器）与硬件解码器通信。
-
-迁移只会影响内部实现细节，而不应改变任何行为。不过，如果任何 PPAPI 应用都无法正常运行，则可以使用此政策。
-
-如果此政策未设置或已启用，浏览器会决定使用哪种实现方案。
-如果此政策已停用，浏览器将会使用旧版实现方案，直至此政策到期。</translation>
 <translation id="6277314550042130537">在 HTTP 身份验证期间使用 KDC 政策审批结果</translation>
 <translation id="6278428485366576908">主题</translation>
 <translation id="6279722058145292462">通过设置此政策，您可以指定客户端对其机器帐号密码的更改频率（以天为单位）。密码是由客户端随机生成的，不会显示给用户。停用此政策或设置较多的天数可能会对安全性产生不利影响，因为这会让潜在攻击者有更多时间来找出并使用机器帐号密码。
@@ -6315,16 +6313,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果您将此政策设为强制性要求，用户便无法更改或覆盖它。
 
       如果未设置此政策，工具栏将默认放置在屏幕底部，但用户可以更改工具栏的位置。</translation>
-<translation id="7037853989942016900">此政策用于控制 PPAPI 插件中 Graphics3D API 的近期重构。
-
-迁移只会影响内部实现细节，应该不会改变任何行为。不过，如有任何 PPAPI 应用无法正常运行，可以使用此政策。
-
-如果此政策未设置或已启用，浏览器将决定使用哪种实现。
-如果此政策已停用，浏览器将使用旧实现，直到此政策失效为止。
-
-如果您必须使用此政策，请在 crbug.com 上提交 bug 以说明您的使用情形。此政策按计划可一直使用到 <ph name="PRODUCT_NAME" /> 114 版，之后我们将移除旧版实现。
-
-注意：在浏览器运行期间，只有新启动的渲染程序进程才会反映对此政策的更改。</translation>
 <translation id="7039815268521168329">在初始设置期间显示 Google 助理 Voice Match 流程</translation>
 <translation id="7040229947030068419">值示例：</translation>
 <translation id="7044883996351280650">控制 Android 备份和恢复服务</translation>

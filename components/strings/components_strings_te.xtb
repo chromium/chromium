@@ -426,7 +426,7 @@
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1956486093533522234">మీ పరికరాన్ని కనుగొని, సురక్షితంగా ఉండండి, లేదా ఫ్యాక్టరీ రీసెట్ చేయండి</translation>
 <translation id="1958218078413065209">మీ అత్యధిక స్కోర్ <ph name="SCORE" />.</translation>
-<translation id="1959001866257244765">Googleకు <ph name="BEGIN_WHITEPAPER_LINK" />మీరు సందర్శించిన కొన్ని పేజీల URLలు, పరిమిత సిస్టమ్ సమాచారం, కొంత పేజీ కంటెంట్<ph name="END_WHITEPAPER_LINK" />ను పంపడం ద్వారా వెబ్‌లో ప్రతిఒక్కరికీ భద్రతను మెరుగుపరచడంలో సహాయం చేయండి. <ph name="BEGIN_PRIVACY_PAGE_LINK" />గోప్యతా పాలసీ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />మీరు సందర్శించిన కొన్ని పేజీల URLలను, పరిమితంగా సిస్టమ్ సమాచారాన్ని, కొంత పేజీ కంటెంట్<ph name="END_WHITEPAPER_LINK" />ను Googleకు పంపడం ద్వారా వెబ్‌లో ప్రతి ఒక్కరికీ భద్రతను మెరుగుపరచడంలో సహాయం చేయండి. <ph name="BEGIN_PRIVACY_PAGE_LINK" />గోప్యతా పాలసీ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> బుక్‌మార్క్‌లు</translation>
 <translation id="1973335181906896915">శ్రేణిగా రూపొందించడంలో ఎర్రర్</translation>
 <translation id="1974060860693918893">అధునాతన సెట్టింగ్‌లు</translation>
@@ -1342,7 +1342,7 @@
 <translation id="4282346679996504092">ఈ ప్రోడక్ట్‌కి సంబంధించిన హెచ్చరికలు ఆఫ్ చేయబడ్డాయి, బుక్‌మార్క్ తీసివేయబడింది</translation>
 <translation id="4285498937028063278">అన్‌పిన్ చేయి</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ఈ కార్డ్ మీ Google ఖాతాలో సేవ్ చేయబడింది}other{ఈ కార్డ్‌లు మీ Google ఖాతాలో సేవ్ చేయబడ్డాయి}}</translation>
-<translation id="4287495839370498922">Chromeలో, మెరుగుపరిచిన యాడ్ గోప్యత</translation>
+<translation id="4287495839370498922">Chromeలో, యాడ్‌ల విషయంలో మెరుగుపరిచిన గోప్యత</translation>
 <translation id="4287885627794386150">ట్రయల్‌కు అర్హత పొందారు, కానీ యాక్టివ్‌లో లేదు</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> పేజీ కోసం థంబ్‌నెయిల్</translation>
 <translation id="4298000214066716287">పెట్టుబడి</translation>
@@ -1785,7 +1785,7 @@
 <translation id="5337569431717511221">Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేసే బటన్, Chromeను సిస్టమ్ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయడానికి 'Enter'ను నొక్కండి</translation>
 <translation id="5340250774223869109">యాప్ బ్లాక్ చేయబడింది</translation>
 <translation id="534295439873310000">NFC పరికరాలు</translation>
-<translation id="5344522958567249764">యాడ్‌ల గోప్యతను మేనేజ్ చేయండి</translation>
+<translation id="5344522958567249764">యాడ్‌ల విషయంలో గోప్యతను మేనేజ్ చేయండి</translation>
 <translation id="5344579389779391559">ఈ పేజీ మీకు డబ్బు ఛార్జీ చేయడానికి ప్రయత్నించవచ్చు</translation>
 <translation id="5347645913823149105">'Chromeలో ఫాంట్‌లను అనుకూలంగా మార్చండి' బటన్, Chromeలో ఫాంట్ సైజ్‌లను, టైప్‌ఫేస్‌లను అనుకూలంగా మార్చడానికి Enterను నొక్కండి</translation>
 <translation id="5355557959165512791"><ph name="SITE" /> యొక్క ప్రమాణపత్రం రద్దు చేయబడినందున మీరు ప్రస్తుతం దీన్ని సందర్శించలేరు. నెట్‌వర్క్ లోపాలు మరియు దాడులు సాధారణంగా తాత్కాలికమే, కనుక ఈ పేజీ తర్వాత పని చేయవచ్చు.</translation>
@@ -2110,7 +2110,7 @@
 <translation id="6196640612572343990">థర్డ్ పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="6197648101609735209">89 x 89 మి.మీ.</translation>
 <translation id="6203231073485539293">మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేయండి</translation>
-<translation id="6205314730813004066">యాడ్‌ల గోప్యత</translation>
+<translation id="6205314730813004066">యాడ్‌ల విషయంలో గోప్యత</translation>
 <translation id="6212314149070368045">US ఫ్యాన్‌ఫోల్డ్</translation>
 <translation id="6218753634732582820">Chromium నుండి అడ్రస్‌ను తీసివేయాలా?</translation>
 <translation id="622039917539443112">పారలల్ ఫోల్డ్</translation>

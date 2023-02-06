@@ -90,6 +90,7 @@
 <translation id="6709398533399187136">Jūsų slaptažodis atskleistas įvykus duomenų saugos pažeidimui. „Google“ slaptažodžių tvarkytuvė rekomenduoja pakeisti jį dabar.</translation>
 <translation id="6822673484890854830">„Chrome“ nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą vėliau.</translation>
 <translation id="6964931465519938134">Dabar galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
+<translation id="6975725306479268850">„Chrome“ pasirinkimas automatinio pildymo funkcijai</translation>
 <translation id="701356708427365932">Susipažinkite su nauju „Chrome“ meniu</translation>
 <translation id="7059914902409643750">Suasmeninkite „Chrome“</translation>
 <translation id="7124339256045485976">Atnaujinkite „Chrome“</translation>
@@ -110,6 +111,7 @@
 <translation id="7754633291442704733">Organizacija „<ph name="DOMAIN" />“ galės pasiekti „Chrome“ duomenis, žymes, istoriją, slaptažodžius ir kitus nustatymus, kuriuos saugote šioje paskyroje. Kai atsijungsite, šio įrenginio duomenys bus išvalyti.  Tačiau duomenys bus toliau saugomi jūsų valdomoje „Google“ paskyroje ir bus pasiekiami jūsų organizacijai. Jūsų organizacija taip pat gali nustatyti tos paskyros naudotojo politiką, pagal kurią galima keisti „Chrome“ veikimą.</translation>
 <translation id="7780154209050837198">Jei norite išnaudoti visas „Chrome“ galimybes, prisijunkite prie „Chrome“ naudodami „Google“ paskyrą.</translation>
 <translation id="7855730255114109580">„Google Chrome“ yra naujausios versijos</translation>
+<translation id="7939179037291298976">„iPhone“ nustatymuose atidarykite „Slaptažodžio parinktys“ ir pasirinkite „Chrome“</translation>
 <translation id="8022947259858476807">Naudokite „Chrome“ pagal numatytuosius nustatymus, kad atidarytumėte nuorodas, ieškotumėte iš valdiklių ir automatiškai pildytumėte slaptažodžius kitose programose</translation>
 <translation id="81358522153858150">Dabar „Chrome“ palaiko valdomos paskyros naudotojo politiką</translation>
 <translation id="8160472928944011082">Nepavyko atnaujinti „Chrome“</translation>
@@ -125,6 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą rytoj arba <ph name="BEGIN_LINK" />patikrinkite slaptažodžius „Google“ paskyroje<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Saugos užtikrinimas naudojant „Google Chrome“</translation>
+<translation id="8765470054473112089">Kai įvedate tekstą adreso juostoje ar paieškos laukelyje, „Chrome“ siunčia tai, ką įvedate, į numatytąjį paieškos variklį, kad gautų geresnių pasiūlymų. Ši funkcija inkognito režimu išjungta.</translation>
 <translation id="8772179140489533211">Rodomi raginimai prisijungti prie „Chrome“.</translation>
 <translation id="8788269841521769222">Jums nereikia prisiminti šio slaptažodžio. Jis bus išsaugotas „Google“ slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>
 <translation id="8857676124663337448">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Rytoj bandykite dar kartą.</translation>

@@ -5736,7 +5736,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6200151268994853226">Upravljajte ekstenzijom</translation>
 <translation id="6201608810045805374">Ukloniti ovaj račun?</translation>
 <translation id="6202304368170870640">Možete koristiti PIN za prijavu ili otključavanje uređaja.</translation>
-<translation id="6205314730813004066">Privatnost oglasa</translation>
+<translation id="6205314730813004066">Privatnost pri izloženosti oglasima</translation>
 <translation id="6206199626856438589">Odjavit ćete se s prikazanih web lokacija, uključujući otvorene kartice</translation>
 <translation id="6206311232642889873">Kop&amp;iraj sliku</translation>
 <translation id="6206521455877863927">Uključujući web lokacije s iste domene, naprimjer google.com i mail.google.com. Web lokacije koje pregledate mogu pohranjivati podatke na vašem uređaju.</translation>
@@ -8870,7 +8870,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="90528604757378587">Aktivnost u pozadini i neki vizuelni efekti poput glatkog klizanja mogu biti ograničeni.</translation>
 <translation id="9053563360605707198">Štampaj obostrano</translation>
 <translation id="9055636786322918818">Nametni RC4 šifriranje. Koristeći ovu opciju povećavate rizik jer je RCR4 šifriranje nesigurno.</translation>
-<translation id="9056788090206401048">Bluetooth mora biti uključen da biste upotrebljavali pristupni ključ na drugom uređaju. Time možete upravljati u postavkama.</translation>
+<translation id="9056788090206401048">Bluetooth mora biti uključen da koristite pristupni ključ na drugom uređaju. Ovim uvijek možete upravljati u postavkama.</translation>
 <translation id="9056810968620647706">Nije pronađeno nijedno podudaranje.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> želi pristupiti sljedećem sadržaju:</translation>
 <translation id="9057354806206861646">Ažuriranje rasporeda</translation>

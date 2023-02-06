@@ -404,7 +404,7 @@
 <translation id="4018310736049373830">アクティビティを管理</translation>
 <translation id="4038354071007134711">このデバイスのアプリケーションではファイルを開けません。</translation>
 <translation id="4042870976416480368">ページ内を検索</translation>
-<translation id="40433179647657191">ハイライト表示したページの一部への直接リンクを作成して共有します。</translation>
+<translation id="40433179647657191">ページでハイライトした部分への直接リンクを作成して共有します。</translation>
 <translation id="4049507953662678203">ネットワークに接続していることを確認してから、もう一度お試しください。</translation>
 <translation id="4063300985191096908">フィードに移動</translation>
 <translation id="408404951701638773">検索バーをより手軽に使用できるようになりました</translation>
@@ -591,7 +591,7 @@
 <translation id="5489208564673669003">すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />Cookie の設定<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="5490005495580364134">すべての Cookie をブロックする（推奨されません）</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 時間前</translation>
-<translation id="5520466080178053306">パスワード マネージャーをタップして、[追加] をタップします</translation>
+<translation id="5520466080178053306">パスワード マネージャーをタップして、[追加] をタップする</translation>
 <translation id="5525095647255982834">このタブを別のデバイスに送信するには、送信先のデバイスで Chrome にログインしてください。</translation>
 <translation id="5525269841082836315">パスフレーズの作成</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> 件見つかりました</translation>
@@ -990,7 +990,7 @@
 <translation id="8283172974887967105">設定…</translation>
 <translation id="8299417921174340354">パスワードを使用するには、まずデバイスにパスコードを設定する必要があります。</translation>
 <translation id="8299613349954694191">ウェブをプライベート モードで閲覧するにはシークレット タブを開きます。</translation>
-<translation id="8316944564970119719">サイトとパスワードを入力し、保存します</translation>
+<translation id="8316944564970119719">サイトとパスワードを入力し、保存する</translation>
 <translation id="8319076807703933069">新しく検索</translation>
 <translation id="8323906514956095947">長押しすると、タブのオプションがさらに表示されます</translation>
 <translation id="8328777765163860529">すべて閉じる</translation>

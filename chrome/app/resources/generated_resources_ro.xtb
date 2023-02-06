@@ -409,6 +409,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nicio parolă compromisă}=1{O parolă compromisă}few{{NUM_COMPROMISED} parole compromise}other{{NUM_COMPROMISED} de parole compromise}}</translation>
 <translation id="1380028686461971526">Conectează-te automat la rețea</translation>
 <translation id="1381567580865186407">Vorbirea în <ph name="LANGUAGE" /> este trimisă către Google spre procesare</translation>
+<translation id="1383381142702995121">Gestionează extensia</translation>
 <translation id="1383597849754832576">Nu se pot descărca fișierele de redare în scris a vorbirii. Încearcă din nou mai târziu.</translation>
 <translation id="1383861834909034572">Se va deschide după finalizare</translation>
 <translation id="1383876407941801731">Caută</translation>
@@ -4225,6 +4226,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4807098396393229769">Numele de pe card</translation>
 <translation id="4808667324955055115">Ferestre pop-up blocate:</translation>
 <translation id="4809079943450490359">Instrucțiuni de la administratorul dispozitivului:</translation>
+<translation id="4809447465126035330">Șterge</translation>
 <translation id="480990236307250886">Deschide pagina de pornire</translation>
 <translation id="4809927044794281115">Temă luminoasă</translation>
 <translation id="4811212958317149293">Căutarea automată a tastaturii pentru accesul prin comutare</translation>
@@ -5027,6 +5029,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
 <translation id="5558129378926964177">Măr&amp;ește</translation>
 <translation id="5558247502209241936">Activează deschiderea aplicației în fereastră</translation>
+<translation id="5559311991468302423">Șterge adresa</translation>
 <translation id="55601339223879446">Ajustează delimitările desktopului din afișare</translation>
 <translation id="5561162485081632007">Detectează și te avertizează cu privire la evenimentele periculoase atunci când au loc</translation>
 <translation id="5562781907504170924">Această filă este conectată la un dispozitiv Bluetooth.</translation>
@@ -6418,6 +6421,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6839916869147598086">Conectarea a fost schimbată</translation>
 <translation id="6840155290835956714">Întreabă înainte de a trimite</translation>
 <translation id="6840184929775541289">Nu este o Autoritate de certificare</translation>
+<translation id="6840214587087739194">Adresa a fost ștearsă</translation>
 <translation id="6841143363521180029">Criptat</translation>
 <translation id="6841186874966388268">Erori</translation>
 <translation id="6842136130964845393">Confirmă-ți identitatea ca să te asiguri că ai în permanență acces la parolele salvate</translation>
@@ -8259,6 +8263,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8525306231823319788">Ecran complet</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Adaugă limbi</translation>
+<translation id="8528479410903501741">Salvează codul IBAN</translation>
 <translation id="8528962588711550376">Se conectează.</translation>
 <translation id="8529925957403338845">Nu s-a conectat prin Tethering instantaneu</translation>
 <translation id="8531701051932785007">Navigarea sigură îmbunătățită este dezactivată</translation>

@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ดีโวรัก</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - โฮสต์</translation>
 <translation id="1521655867290435174">Google ชีต</translation>
+<translation id="1521795806314479294">กำลังเตรียม <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">กำลังเปิดไฟล์ Linux...</translation>
 <translation id="1547964879613821194">อังกฤษแบบแคนาดา</translation>
 <translation id="1556189134700913550">ใช้กับทั้งหมด</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">กำลังซิป <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
 <translation id="1722687688096767818">กำลังเพิ่มโปรไฟล์...</translation>
 <translation id="1726100011689679555">เซิร์ฟเวอร์ชื่อ</translation>
+<translation id="1727562178154619254">พร้อมที่จะซิงค์แล้ว</translation>
 <translation id="1729953886957086472">เยอรมัน (เยอรมนี)</translation>
 <translation id="1730235522912993863">จีน (Cangjie)</translation>
 <translation id="1731889557567069540">คัดลอก <ph name="NUMBER_OF_ITEMS" /> รายการแล้ว</translation>
@@ -408,6 +410,7 @@
 <translation id="4462159676511157176">เซิร์ฟเวอร์ชื่อที่กำหนดเอง</translation>
 <translation id="4465725236958772856">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, จัดการโดยผู้ดูแลระบบ, เชื่อมต่อ</translation>
 <translation id="4470564870223067757">ฮังกูลแบบ 2 ชุด</translation>
+<translation id="4474142134969976028">ไม่มีผลลัพธ์ที่ตรงกัน</translation>
 <translation id="4477002475007461989">โรมาเนีย</translation>
 <translation id="4477219268485577442">การออกเสียงภาษาบัลแกเรีย</translation>
 <translation id="4508265954913339219">การเปิดใช้งานล้มเหลว</translation>
@@ -479,6 +482,7 @@
 <translation id="4973523518332075481">ใช้ชื่อที่มีอักขระไม่เกิน <ph name="MAX_LENGTH" /> อักขระ</translation>
 <translation id="4973970068702235170">การซิปล้มเหลว ข้อผิดพลาดที่ไม่คาดคิด: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">ญี่ปุ่น</translation>
+<translation id="4987699874727873250">อังกฤษ (อินเดีย)</translation>
 <translation id="4988205478593450158">แน่ใจไหมว่าต้องการลบ "<ph name="FILE_NAME" />"</translation>
 <translation id="498902553138568924">ผีเสื้อสีแดง</translation>
 <translation id="4992066212339426712">เปิดเสียง</translation>
@@ -509,6 +513,7 @@
    การนำอุปกรณ์ออกขณะใช้งานอยู่อาจทำให้ข้อมูลสูญหาย โปรดรอจนกว่าการทำงานจะเสร็จสิ้น จากนั้นนำอุปกรณ์ออกโดยใช้แอป "Files"</translation>
 <translation id="5163869187418756376">การแชร์ล้มเหลว ตรวจสอบการเชื่อมต่อของคุณและพยายามอีกครั้งในภายหลัง</translation>
 <translation id="516592729076796170">ดีโวรักโปรแกรมเมอร์สหรัฐอเมริกา</translation>
+<translation id="5167102019886320507">กำลังเตรียม <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
 <translation id="5177526793333269655">มุมมองรูปภาพขนาดย่อ</translation>
 <translation id="5181896909298187506">ไม่มีไฟล์ล่าสุด</translation>
 <translation id="5194713942430106590">คลิกเพื่อจัดเรียงคอลัมน์จากน้อยไปหามาก</translation>
@@ -813,6 +818,7 @@
 <translation id="7655441028674523381">เข้าถึง Google Photos ได้ง่ายๆ</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7663224033570512922">ฮินดี</translation>
+<translation id="7665680517722058469">ลองค้นหาด้วยข้อความอื่น</translation>
 <translation id="7689532716264131859">ย้าย <ph name="NUMBER_OF_ITEMS" /> รายการไปที่ถังขยะแล้ว</translation>
 <translation id="7693909743393669729">การฟอร์แมตไดรฟ์จะลบข้อมูลทั้งหมดที่เก็บไว้ในไดรฟ์และลบพาร์ติชันที่มีอยู่ทั้งหมด รวมถึงพาร์ติชันที่อาจมองไม่เห็น การดำเนินการนี้เลิกทำไม่ได้</translation>
 <translation id="7695430100978772476">จัดรูปแบบ <ph name="DRIVE_NAME" /> ไม่ได้</translation>

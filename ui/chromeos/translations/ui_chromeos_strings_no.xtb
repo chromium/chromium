@@ -59,6 +59,7 @@
 <translation id="1499943022354839699">Engelsk (USA) med Dvorak-tastatur</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – vert</translation>
 <translation id="1521655867290435174">Google Regneark</translation>
+<translation id="1521795806314479294">Forbereder <ph name="FILE_NAME" /> …</translation>
 <translation id="1538729222189715449">Åpner Linux-filer …</translation>
 <translation id="1547964879613821194">Canadisk engelsk</translation>
 <translation id="1556189134700913550">Gjelder alle</translation>
@@ -83,6 +84,7 @@
 <translation id="1722487484194605434">Zipper <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
 <translation id="1722687688096767818">Legger til profil …</translation>
 <translation id="1726100011689679555">Navnetjenere</translation>
+<translation id="1727562178154619254">Klar for synkronisering</translation>
 <translation id="1729953886957086472">Tysk (Tyskland)</translation>
 <translation id="1730235522912993863">Kinesisk cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementer er kopiert.</translation>
@@ -479,6 +481,7 @@
 <translation id="4973523518332075481">Bruk et navn på <ph name="MAX_LENGTH" /> eller færre tegn</translation>
 <translation id="4973970068702235170">Zippingen mislyktes på grunn av en uventet feil: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japansk</translation>
+<translation id="4987699874727873250">Engelsk (India)</translation>
 <translation id="4988205478593450158">Er du sikker på at du vil slette «<ph name="FILE_NAME" />»?</translation>
 <translation id="498902553138568924">Rød sommerfugl</translation>
 <translation id="4992066212339426712">Slå på lyden</translation>
@@ -509,6 +512,7 @@
        Fjerning av enheten mens den er i bruk kan resultere i tap av data. Vent til handlingen er utført før du mater ut enheten ved bruk av Filer-appen.</translation>
 <translation id="5163869187418756376">Delingen mislyktes. Sjekk tilkoblingen din og prøv på nytt senere.</translation>
 <translation id="516592729076796170">Amerikansk programmeringstastatur (Dvorak)</translation>
+<translation id="5167102019886320507">Forbereder <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
 <translation id="5177526793333269655">Miniatyrbildevisning</translation>
 <translation id="5181896909298187506">Ingen nylige filer</translation>
 <translation id="5194713942430106590">Klikk for å sortere kolonnen i stigende rekkefølge.</translation>

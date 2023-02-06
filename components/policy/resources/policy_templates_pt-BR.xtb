@@ -1182,23 +1182,6 @@ Esta política não terá efeito quando a <ph name="DEVICE_SCREENSAVER_ENABLED_P
 <translation id="20838788335877967">Desativar relatórios sobre informações de identificação do usuário</translation>
 <translation id="208566302163036794">Bloquear recursos desativados</translation>
 <translation id="208623333578980446">Permitir wake locks de tela para gerenciamento de energia</translation>
-<translation id="2087277084358676117">Esta política pode ser usada temporariamente para ativar o suporte à
-API PPB_VideoDecoder(Dev).
-
-Quando a política é deixada sem definição ou é desativada, o navegador decide se
-há suporte para API.
-Quando a política é ativada, há suporte.
-
-Esta política pode ser usada caso nossa eliminação contínua do suporte a essa API
-exponha problemas. Se você precisar usar a política, registre um bug em crbug.com
-explicando seu caso de uso e envie uma cópia para {blundell, vasilyt}@chromium.org. A política está
-programada para ser transmitida até a versão 114
-do <ph name="PRODUCT_NAME" />. Depois, o suporte para a API vai ser eliminado
-sem restrições.
-
-OBSERVAÇÃO: quando o valor da política é modificado, as novas guias captam o novo
-valor. As guias atuais precisarão ser fechadas e reabertas para captar o novo
-valor.</translation>
 <translation id="2089541797660774692">Ativar os relatórios de nuvem do navegador gerenciado</translation>
 <translation id="2090939118981888335">Se a política for definida como "Ativada", o proxy de compressão de dados será permitido. Se a política for definida como "Desativada", o proxy não será permitido.
 
@@ -5531,18 +5514,6 @@ Confira mais detalhes em https://developer.chrome.com/blog/immutable-document-do
       A remoção desta política foi anunciada para o <ph name="PRODUCT_NAME" /> versão 82, mas ela foi removida na versão 84.</translation>
 <translation id="6276087670023098167">Desativar relatórios sobre informações de identificação da máquina</translation>
 <translation id="627672037430076089">Impedir conexões de suporte remoto a esta máquina</translation>
-<translation id="6277043520666738324">Esta política controla se os plug-ins do <ph name="PEPPER_NAME" /> podem
-usar o novo decodificador para se comunicar com os de hardware, em vez do decodificador
-de vídeo legado.
-
-A migração afeta apenas os detalhes de implementação internos e não pode
-mudar nenhum comportamento. No entanto, ela pode ser usada caso algum aplicativo PPAPI
-não funcione como esperado.
-
-Quando a política é ativada ou deixada sem definição, o navegador decide qual
-implementação é usada.
-Quando a política é desativada, o navegador usa a implementação antiga
-até que a política expire.</translation>
 <translation id="6277314550042130537">Usar a aprovação da política de KDC durante a autenticação do HTTP</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6279722058145292462">A definição da política especifica, em dias, com que frequência um cliente muda a senha da conta da máquina. A senha é gerada aleatoriamente pelo cliente e não fica visível para o usuário. Se a política for desativada ou definida com um número alto de dias, poderá haver um impacto negativo na segurança, porque possíveis invasores terão mais tempo para descobrir a senha da conta da máquina e usá-la.
@@ -6451,23 +6422,6 @@ bloqueio dessas solicitações será aplicado.</translation>
       Se esta política for definida como obrigatória, o usuário não poderá alterá-la ou modificá-la.
 
       Se esta política não for definida, a estante será posicionada na parte inferior da tela por padrão, e o usuário poderá mudar a posição da estante.</translation>
-<translation id="7037853989942016900">Esta política controla a refatoração recente das APIs Graphics3D no plug-in PPAPI.
-
-A migração afeta apenas os detalhes de implementação internos e não pode
-mudar nenhum comportamento. No entanto, ela pode ser usada caso algum app PPAPI
-não funcione como esperado.
-
-Quando a política é ativada ou deixada sem definição, o navegador decide qual
-implementação será usada.
-Quando a política é desativada, o navegador usa a implementação antiga
-até que a política expire.
-
-Se você precisar usar a política, registre um bug em crbug.com explicando seu
-caso de uso. A política está programada para ser oferecida até a versão 114 do <ph name="PRODUCT_NAME" />. Após esse período,
-a implementação antiga será removida.
-
-OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta
-política enquanto o navegador estiver em execução.</translation>
 <translation id="7039815268521168329">Mostrar o fluxo do Voice Match do Google Assistente durante a configuração inicial</translation>
 <translation id="7040229947030068419">Exemplo de valor:</translation>
 <translation id="7044883996351280650">Controlar o serviço de backup e restauração do Android</translation>

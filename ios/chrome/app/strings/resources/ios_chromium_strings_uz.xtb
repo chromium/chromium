@@ -91,6 +91,7 @@
 <translation id="7045244423563602563">Chromium brauzerini oʻzingizga moslashtiring</translation>
 <translation id="7099326575020694068">Chromium kamerangizdan Split View rejimida foydalana olmaydi</translation>
 <translation id="7118091470949186573">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
+<translation id="7165402419892018581">Avtomatik kiritish uchun Chromiumni tanlang</translation>
 <translation id="7175400662502680481">Parolingiz oshkor qilingan. Parollar menejeri uni hoziroq almashtirishni tavsiya etadi.</translation>
 <translation id="7208566199746267865">Chromium xizmatlariga kirishda har safar foydalanuvchi nomi va parol kiritishingiz shart emas. Chromium qurilmada saqlangan hisoblardan foydalanadi. Ularni sozlamalar orqali boshqarishingiz mumkin.</translation>
 <translation id="725427773388857052">Chromium maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi.</translation>
@@ -105,6 +106,7 @@
 <translation id="7746854981345936341">Chromium maslahati. Ba’zi tugmalar endi ekranning quyi qismida. Masalan: Orqaga, Oldinga va Qidiruv tugmalari.</translation>
 <translation id="7763454117143368771">Internetni xavfsiz kezish va parollaringizni himoyalashda Chromium birlamchi brauzer sifatida ishlatilsin</translation>
 <translation id="7812317783196516890">Siz tizimga kirdingiz va maʼlumotlaringizni <ph name="DOMAIN" /> boshqaradigan hisob bilan sinxronladingiz. Uning administratori endi Chromium funksiyasini oʻzgartirishi mumkin boʻlgan oʻsha hisobga tegishli foydalanuvchi siyosatlarini oʻrnatishi mumkin.</translation>
+<translation id="7859018312476869945">Manzillar qatori yoki qidiruv oynasiga matn kiritilganda Chromium yaxshiroq takliflar olish uchun yozilgan matnni birlamchi qidiruv tizimiga yuboradi. Inkognito rejimda bu funksiya yoqilmasin</translation>
 <translation id="786327964234957808">Siz <ph name="USER_EMAIL1" /> hisobi ma’lumotlarini <ph name="USER_EMAIL2" /> hisobiga ko‘chirish arafasizdasiz. Mavjud Chromium ma’lumotlaringiz <ph name="DOMAIN" /> domenida boshqariladi. Barcha Chromium ma’lumotlari ushbu qurilmadan o‘chiriladi, lekin <ph name="USER_EMAIL1" /> hisobida saqlanib qoladi.</translation>
 <translation id="7890287942691234100">Chromium skaneridan foydalanish</translation>
 <translation id="7928628054454574139">Chromiumni istalgan vaqt boshqa ilovalardagi havolalarni bosib ochish</translation>
@@ -114,6 +116,7 @@
 <translation id="8073677936375100957">Chromium maʼlumotlari bu qurilmadan tozalansinmi?</translation>
 <translation id="8240981428553046115">Chromium yangilanishlar chiqqanini tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="8409374867500149834">Sizdagi Chromium zararli saytlarga qarshi eng kuchli himoya tizimiga ega</translation>
+<translation id="8460301378281140593">iPhone sozlamalari orqali “Parol variantlari” sahifasini oching va “Chromium” ilovasini tanlang</translation>
 <translation id="858114650497379505">Parollar menejeriga saqlangan parollarni iPhonedagi boshqa ilovalarda ishlatish mumkin.</translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" />. Barcha huquqlar himoyalangan.</translation>
 <translation id="8603022514504485810">Google Parollar menejeri barcha parollarni tekshira olmadi. Ertaga qaytadan urining yoki <ph name="BEGIN_LINK" />Google hisobingizdagi parollarni tekshiring.<ph name="END_LINK" /></translation>

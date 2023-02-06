@@ -922,6 +922,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="6000203700195075278">Voltar a seguir</translation>
 <translation id="6002122790816966947">Os seus dispositivos</translation>
 <translation id="6005538289190791541">Palavra-passe sugerida</translation>
+<translation id="6011308810877101166">Melhorar sugestões de pesquisa</translation>
 <translation id="6039379616847168523">Ir para o próximo separador</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="604124094241169006">Automático</translation>
@@ -1452,6 +1453,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8746155870861185046">Partilhar destaque</translation>
 <translation id="8748850008226585750">Conteúdo ocultado</translation>
 <translation id="8756969031206844760">Pretende atualizar a palavra-passe?</translation>
+<translation id="8765470054473112089">Quando escreve na barra de endereço ou caixa de pesquisa, o Chrome envia o que escreve para o motor de pesquisa predefinido de forma a obter melhores sugestões. Esta opção está desativada na Navegação anónima.</translation>
 <translation id="8766529642647037772">Pretende criar um link realçado como este?</translation>
 <translation id="8773160212632396039">A processar o pedido</translation>
 <translation id="8788265440806329501">O histórico de navegação está fechado.</translation>

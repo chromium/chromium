@@ -80,6 +80,7 @@
 <translation id="149095475893949513">웹사이트에서 구성 프로필을 다운로드하려고 합니다.</translation>
 <translation id="1491277525950327607">설정을 전환하려면 두 번 탭하세요.</translation>
 <translation id="1492417797159476138">이미 사이트에 사용 중인 사용자 이름입니다.</translation>
+<translation id="1498283581832036924"><ph name="WEBSITE" /> 계정은 삭제되지 않습니다.</translation>
 <translation id="1506063256525392513">액세스를 허용하면 사진을 찍고, 업로드하고, QR 코드를 스캔할 수 있습니다.</translation>
 <translation id="1509486075633541495">웹사이트에 로그인</translation>
 <translation id="1509960214886564027">다수의 사이트에서 기능이 작동하지 않을 수 있음</translation>
@@ -218,6 +219,7 @@
 <translation id="2664621323652615289">중지</translation>
 <translation id="2671426118752779020">Google 비밀번호 관리자에 저장된 비밀번호를 iPhone의 다른 앱에서 사용할 수 있습니다</translation>
 <translation id="2690858294534178585">카메라 사용 중</translation>
+<translation id="26915454213703967">Google로 이미지 내 검색</translation>
 <translation id="2691653761409724435">오프라인에서 사용할 수 없음</translation>
 <translation id="2695507686909505111">페이지 번역됨</translation>
 <translation id="2697526135132990015">로그아웃 후 데이터 지우기</translation>
@@ -248,7 +250,7 @@
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">번역 설정 재설정</translation>
 <translation id="2848086008667475748">설정에서 기본 브라우저로 지정…</translation>
-<translation id="2858204748079866344">Chrome에서는 개인정보 보호를 위해 이 입력란의 비밀번호를 자동 완성하지 않습니다.</translation>
+<translation id="2858204748079866344">Chrome에서는 개인 정보 보호를 위해 이 입력란의 비밀번호를 자동 완성하지 않습니다.</translation>
 <translation id="285960592395650245">다운로드 다시 시도</translation>
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2871695793448672541">숨겨진 비밀번호</translation>
@@ -380,6 +382,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3819183753496523827">오프라인 상태입니다. 인터넷 연결을 확인한 후 다시 시도해 보세요.</translation>
 <translation id="3835964409414434850">다음 탭으로 이동</translation>
 <translation id="385051799172605136">뒤로</translation>
+<translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> 외 <ph name="NUMBER_OF_ACCOUNTS" />개 계정의 비밀번호가 삭제됩니다. 계정은 삭제되지 않습니다.</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="3861486700625780712">팔로우 해제</translation>
 <translation id="3863769054730344136">기기로 전송</translation>
@@ -515,6 +518,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4833786495304741580">사용 통계 및 비정상 종료 보고서를 Google에 자동으로 전송합니다.</translation>
 <translation id="4840495572919996524">북마크, 방문 기록, 비밀번호 등이 더 이상 Google 계정과 동기화되지 않습니다.</translation>
 <translation id="4844899002472726590">관심 주제를 보고 수정합니다.</translation>
+<translation id="4848999860252535517"><ph name="WEBSITE" />의 비밀번호를 삭제하시겠습니까?</translation>
 <translation id="4854345657858711387">비밀번호 설정</translation>
 <translation id="4858786880085262208">가능하면 HTTPS로 전환하세요. 안전한 사이트에도 안전하지 않은 콘텐츠가 삽입되어 있을 수 있습니다.</translation>
 <translation id="4860895144060829044">전화걸기</translation>
@@ -575,7 +579,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5318298563956633672">이미 추적 중인 제품입니다.</translation>
 <translation id="5339316356165661760">동기화 사용</translation>
 <translation id="536067926684072644">북마크 보기</translation>
-<translation id="5360976571138293719">개인정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 참고하세요.</translation>
+<translation id="5360976571138293719">개인 정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 참고하세요.</translation>
 <translation id="5386314158584363703">여기에 내가 팔로우한 사이트가 표시됩니다</translation>
 <translation id="5388358297987318779">이미지 열기</translation>
 <translation id="5407969256130905701">변경사항 취소</translation>
@@ -617,7 +621,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5701270923492462699">카메라 액세스 허용됨</translation>
 <translation id="5704908597376970822">로그인할 수 없습니다</translation>
 <translation id="5706552126692816153">1일 전 사용됨</translation>
-<translation id="5711039611392265845">개인정보 보호, 보안, 데이터 수집에 관한 설정을 더 보려면 <ph name="BEGIN_LINK" />동기화 및 Google 서비스<ph name="END_LINK" />를 참조하세요.</translation>
+<translation id="5711039611392265845">개인 정보 보호, 보안, 데이터 수집에 관한 설정을 더 보려면 <ph name="BEGIN_LINK" />동기화 및 Google 서비스<ph name="END_LINK" />를 참조하세요.</translation>
 <translation id="5724941645893276623">비공개로 웹을 탐색하려면 새 탭을 추가하세요.</translation>
 <translation id="5728700505257787410">죄송합니다. 계정에 로그인하는 중에 문제가 발생했습니다.</translation>
 <translation id="5733084997078800044">Chrome 관련 도움말</translation>
@@ -768,6 +772,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6598875554591387303">게시자순 정렬</translation>
 <translation id="6603393121510733479">조직에서 시크릿 브라우징을 사용 중지했습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, <ph name="THIRD_WEBSITE" />의 비밀번호가 삭제됩니다. 계정은 삭제되지 않습니다.</translation>
 <translation id="6610002944194042868">번역 옵션</translation>
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6620279676667515405">취소</translation>
@@ -929,7 +934,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7870750252270996949">렌즈에서 이미지를 복사했습니다.</translation>
 <translation id="7879275349003161544">다운로드 표시</translation>
 <translation id="7884694604461143138">검색 기록(<ph name="COUNT" />개 찾음)</translation>
-<translation id="7887198238286927132">Chrome에서는 개인정보 보호를 위해 이 입력란을 자동 완성하지 않습니다.</translation>
+<translation id="7887198238286927132">Chrome에서는 개인 정보 보호를 위해 이 입력란을 자동 완성하지 않습니다.</translation>
 <translation id="7911190106180361398">조직에서 모든 항목을 동기화하도록 허용하지 않습니다.</translation>
 <translation id="7920949005883349320">개인 정보 보호 및 보안</translation>
 <translation id="7930998711684428189">데이터 유출로 인해 비밀번호가 노출된 경우 알립니다.</translation>
@@ -1045,6 +1050,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8756969031206844760">비밀번호를 업데이트하시겠습니까?</translation>
 <translation id="8763613688786959833">마지막 탭으로 이동</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> 팔로우 해제</translation>
+<translation id="8766790350274092814"><ph name="WEBSITE" /> 및 <ph name="SECOND_WEBSITE" />의 비밀번호가 삭제됩니다. 계정은 삭제되지 않습니다.</translation>
 <translation id="8775144690796719618">URL이 올바르지 않습니다.</translation>
 <translation id="8787968206789828143">웹에서 검색</translation>
 <translation id="8792626944327216835">마이크</translation>
@@ -1094,6 +1100,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="9093271241977565440">화면 상단에서 검색 아이콘을 탭합니다.</translation>
 <translation id="9094033019050270033">비밀번호 업데이트</translation>
 <translation id="9097506547406246598">팔로우를 해제할 수 없습니다. 문제가 발생했습니다.</translation>
+<translation id="9098541895599151034">비밀번호 <ph name="NUMBER_OF_ACCOUNTS" />개를 삭제하시겠습니까?</translation>
 <translation id="9100610230175265781">암호를 입력해야 합니다.</translation>
 <translation id="9107664647686727385">유출된 비밀번호 확인</translation>
 <translation id="9124387962554796433">Google 검색 및 다른 Google 서비스를 맞춤설정하기 위하여 Google에서 사용자의 방문 기록을 이용할 수 있습니다</translation>

@@ -1176,14 +1176,6 @@ Dit beleid heeft geen effect als het beleid <ph name="DEVICE_SCREENSAVER_ENABLED
 <translation id="20838788335877967">Rapportage van informatie over gebruikersidentificatie uitzetten</translation>
 <translation id="208566302163036794">Uitgezette functies blokkeren</translation>
 <translation id="208623333578980446">Wake locks voor het scherm toestaan voor stroombeheer</translation>
-<translation id="2087277084358676117">Dit beleid kan tijdelijk worden gebruikt om ondersteuning voor de PPB_VideoDecoder(Dev) API gedwongen aan te zetten.
-
-Als je het beleid niet instelt of niet toepast, bepaalt de browser of de API wordt ondersteund.
-Als je het beleid aanzet, wordt de API ondersteund.
-
-Dit beleid kan worden gebruikt als de lopende beëindiging van ondersteuning voor deze API problemen aan het licht brengt. Als je het beleid moet gebruiken, dien je een bug in op crbug.com, met een cc naar {blundell, vasilyt}@chromium.org, waarin je je use case uitlegt. Volgens de planning wordt het beleid voortgezet tot en met versie 114 van <ph name="PRODUCT_NAME" />, waarna de ondersteuning voor deze API onvoorwaardelijk wordt beëindigd.
-
-OPMERKING: Als de waarde van het beleid wordt gewijzigd, maken nieuwe tabbladen gebruik van de nieuwe waarde. Bestaande tabbladen moeten worden gesloten en opnieuw worden geopend om de nieuwe waarde te gebruiken.</translation>
 <translation id="2089541797660774692">Cloudrapportage voor beheerde browsers aanzetten</translation>
 <translation id="2090939118981888335">Als je dit beleid toepast, wordt de proxy voor gegevenscompressie toegestaan. Als je het beleid niet toepast, wordt de proxy niet toegestaan.
 
@@ -4697,6 +4689,10 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
       Wanneer de waarde van dit beleid is ingesteld en niet 0 is, wordt de momenteel ingelogde demogebruiker automatisch uitgelogd nadat een inactiviteitsperiode met de opgegeven duur is verstreken.
 
       De beleidswaarde moet worden opgegeven in milliseconden.</translation>
+<translation id="5501031245538651575">Vanaf M110 wordt de niet-standaard API window.webkitStorageInfo verwijderd. Dit beleid zet de API opnieuw aan.
+Als je dit beleid toepast, is de API window.webkitStorageInfo beschikbaar.
+Als je dit beleid niet toepast of niet instelt, is de API window.webkitStorageInfo niet beschikbaar.
+Dit is verwijderd in M112.</translation>
 <translation id="5502683401545256109">Met dit beleid bepaal je of de gebruiker wordt gevraagd een clientcertificaat te selecteren op het inlogscherm in het frame dat de SAML-stroom host als meerdere certificaten overeenkomen met <ph name="DEVICE_LOGIN_SCREEN_AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Als je dit beleid toepast, wordt de gebruiker gevraagd het clientcertificaat te selecteren als het beleid voor automatisch selecteren overeenkomt met meerdere certificaten.
       Als je dit beleid niet toepast of niet instelt, wordt de gebruiker nooit gevraagd om een clientcertificaat te selecteren op het inlogscherm.
@@ -5437,12 +5433,6 @@ Zie https://developer.chrome.com/blog/immutable-document-domain/ voor meer infor
       Er was aangekondigd dat dit beleid zou worden verwijderd in <ph name="PRODUCT_NAME" /> versie 82, maar dat is versie 84 geworden.</translation>
 <translation id="6276087670023098167">Rapportage van informatie over machine-identificatie uitzetten</translation>
 <translation id="627672037430076089">Verbindingen voor externe support met deze machine voorkomen</translation>
-<translation id="6277043520666738324">Dit beleid bepaalt of <ph name="PEPPER_NAME" />-plug-ins de nieuwe decoder in plaats van de verouderde videodecoder kunnen gebruiken om te communiceren met hardwaredecoders.
-
-De migratie heeft alleen invloed op interne implementatiegegevens en verandert niets aan het gedrag. Dit beleid kan worden gebruikt als PPAPI-apps niet werken zoals verwacht.
-
-Als je het beleid toepast of niet instelt, bepaalt de browser welke implementatie wordt gebruikt.
-Als je het beleid niet toepast, gebruikt de browser de oude implementatie totdat dit beleid verloopt.</translation>
 <translation id="6277314550042130537">KDC-beleidsgoedkeuring gebruiken tijdens HTTP-verificatie</translation>
 <translation id="6278428485366576908">Thema</translation>
 <translation id="6279722058145292462">Als je het beleid instelt, geef je de frequentie in dagen aan waarmee een client het wachtwoord van een computeraccount moet wijzigen. Het wachtwoord wordt willekeurig gegenereerd door de client en is niet zichtbaar voor de gebruiker. Als je dit beleid niet toepast of als je een lange periode instelt, kan dat negatieve gevolgen hebben voor de veiligheid, omdat potentiële aanvallers langer de tijd hebben om het wachtwoord van het computeraccount te achterhalen en te gebruiken.
@@ -6333,16 +6323,6 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
       Als je dit beleid als verplicht instelt, kunnen gebruikers de instelling niet wijzigen of overschrijven.
 
       Als het beleid niet wordt ingesteld, wordt de plank standaard onderaan het scherm geplaatst en kan de gebruiker de positie van de plank zelf wijzigen.</translation>
-<translation id="7037853989942016900">Dit beleid beheert de recente refactor voor Graphics3D-API's in PPAPI-plug-in.
-
-De migratie heeft alleen invloed op interne implementatiegegevens en verandert niets aan het gedrag. Dit beleid kan worden gebruikt als PPAPI-apps niet werken zoals verwacht.
-
-Als je het beleid toepast of niet instelt, bepaalt de browser welke implementatie wordt gebruikt.
-Als je het beleid niet toepast, gebruikt de browser de oude implementatie totdat het beleid is verlopen.
-
-Als je het beleid moet gebruiken, dien je een bug in op crbug.com waarin je je use case uitlegt. Volgens de planning wordt het beleid voortgezet tot en met versie 114 van <ph name="PRODUCT_NAME" />, waarna de oude implementatie wordt verwijderd.
-
-OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestarte weergaveprocessen terwijl de browser actief is.</translation>
 <translation id="7039815268521168329">Voice Match-proces van de Google Assistent laten zien tijdens de eerste installatie</translation>
 <translation id="7040229947030068419">Voorbeeldwaarde:</translation>
 <translation id="7044883996351280650">De Android-service 'Back-up maken en terugzetten' beheren</translation>

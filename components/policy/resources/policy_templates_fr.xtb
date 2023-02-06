@@ -1178,14 +1178,6 @@ Cette règle n'a aucune incidence lorsque la règle <ph name="DEVICE_SCREENSAVER
 <translation id="20838788335877967">Désactiver les rapports sur les informations d'identification des utilisateurs</translation>
 <translation id="208566302163036794">Bloquer les fonctionnalités désactivées</translation>
 <translation id="208623333578980446">Autoriser les wakelocks forçant l'activation de l'écran pour la gestion de l'alimentation</translation>
-<translation id="2087277084358676117">Cette règle peut être utilisée temporairement pour forcer l'activation de la prise en charge de l'API PPB_VideoDecoder(Dev).
-
-Si elle n'est pas configurée ou si elle est désactivée, le navigateur décide si l'API est prise en charge.
-Si elle est activée, l'API est prise en charge.
-
-Cette règle peut être utilisée si l'élimination de la prise en charge de l'API entraîne des problèmes. Si vous devez utiliser cette règle, veuillez signaler un bug sur crbug.com en expliquant votre cas d'utilisation et mettez en copie {blundell, vasilyt}@chromium.org. Cette règle sera appliquée jusqu'à la version 114 de <ph name="PRODUCT_NAME" />, après quoi la prise en charge de cette API sera éliminée sans conditions.
-
-REMARQUE : Lorsque la valeur de la règle est modifiée, les nouveaux onglets récupèrent la nouvelle valeur. Vous devrez fermer, puis rouvrir les onglets existants pour qu'ils récupèrent la nouvelle valeur.</translation>
 <translation id="2089541797660774692">Activer la création de rapports cloud via un navigateur géré</translation>
 <translation id="2090939118981888335">Si vous activez cette règle, le proxy de compression des données est activé. Si vous la désactivez, le proxy est désactivé.
 
@@ -5460,12 +5452,6 @@ Pour en savoir plus, consultez https://developer.chrome.com/blog/immutable-docum
       La suppression de cette règle avait été annoncée pour la version 82 de <ph name="PRODUCT_NAME" />, mais elle a eu lieu à la version 84.</translation>
 <translation id="6276087670023098167">Désactiver les rapports sur les informations d'identification de l'ordinateur</translation>
 <translation id="627672037430076089">Empêcher les connexions d'assistance à distance à cet appareil</translation>
-<translation id="6277043520666738324">Cette règle permet de définir si les plug-ins <ph name="PEPPER_NAME" /> peuvent utiliser le nouveau décodeur pour communiquer avec des décodeurs matériels au lieu de l'ancien décodeur vidéo.
-
-La migration n'affecte que les détails de l'implémentation interne et ne doit pas modifier le comportement. Toutefois, cette règle peut être utilisée si des applications PPAPI ne fonctionnent pas comme prévu.
-
-Si cette règle n'est pas configurée ou si elle est activée, le navigateur décide quelle implémentation est utilisée.
-Si elle est désactivée, le navigateur utilisera l'ancienne implémentation jusqu'à expiration de la règle.</translation>
 <translation id="6277314550042130537">Utiliser l'approbation par la règle KDC lors de l'authentification HTTP</translation>
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6279722058145292462">Cette règle permet de spécifier la fréquence (en jours) à laquelle un client modifie le mot de passe du compte de la machine. Ce mot de passe, généré de manière aléatoire par le client, n'est pas accessible à l'utilisateur. La désactivation de cette règle ou la définition d'un nombre de jours élevé peut nuire à la sécurité, dans la mesure où cela laisse plus de temps aux pirates informatiques pour trouver le mot de passe du compte de la machine et l'exploiter.
@@ -6361,16 +6347,6 @@ Si la règle est désactivée ou n'est pas configurée, le comportement par déf
       Si vous définissez cette règle comme obligatoire, les utilisateurs ne peuvent ni la modifier, ni l'ignorer.
 
       Si cette règle n'est pas configurée, l'étagère est placée par défaut au bas de l'écran. Toutefois, l'utilisateur peut la mettre à un autre endroit.</translation>
-<translation id="7037853989942016900">Cette règle contrôle la refactorisation récente des API Graphics3D dans le plug-in PPAPI.
-
-La migration n'affecte que les détails de l'implémentation interne et ne devrait modifier aucun comportement. Toutefois, cette règle peut être utilisée si des applications PPAPI ne fonctionnent pas comme prévu.
-
-Si cette règle n'est pas configurée ou si elle est activée, le navigateur décide quelle implémentation est utilisée.
-Si cette règle est désactivée, le navigateur utilise l'ancienne implémentation jusqu'à ce que la règle expire.
-
-Si vous devez utiliser cette règle, veuillez signaler un bug sur crbug.com en expliquant votre cas d'utilisation. Cette règle sera disponible jusqu'à la version 114 de <ph name="PRODUCT_NAME" />, après quoi l'ancienne implémentation sera supprimée.
-
-REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les modifications apportées à cette règle lorsque le navigateur sera en cours d'exécution.</translation>
 <translation id="7039815268521168329">Afficher la procédure Voice Match pour l'Assistant Google lors de la configuration initiale</translation>
 <translation id="7040229947030068419">Exemple de valeur :</translation>
 <translation id="7044883996351280650">Gérer le service de sauvegarde et de restauration Android</translation>

@@ -952,7 +952,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="6193448654517602979">Vyberte karty</translation>
 <translation id="6196315980958524839">Hesla se ukládají do Správce hesel Google pouze na tomto zařízení</translation>
 <translation id="6202812185118613467">Přihlásit se a zahájit synchronizaci</translation>
-<translation id="6205314730813004066">Ochrana soukromí u reklam</translation>
+<translation id="6205314730813004066">Ochrana soukromí v reklamách</translation>
 <translation id="6210748933810148297">Nejste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Zobrazování náhledu této stránky</translation>
 <translation id="6221633008163990886">Chcete-li exportovat hesla, odemkněte zařízení</translation>
@@ -1209,7 +1209,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7493994139787901920"><ph name="VERSION" /> (aktualizováno <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">Téma bylo znovu přidáno k potenciálním tématům</translation>
 <translation id="7498271377022651285">Čekejte prosím…</translation>
-<translation id="7502234197872745058">Pokud se chcete odhlásit od účtu Google na všech webech, <ph name="BEGIN_LINK1" />odhlaste se z Chromu<ph name="END_LINK1" />.</translation>
+<translation id="7502234197872745058">Pokud se chcete odhlásit z účtu Google na všech webech, <ph name="BEGIN_LINK1" />odhlaste se z Chromu<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Jsou k dispozici aktualizace</translation>
 <translation id="7507207699631365376">Zobrazit <ph name="BEGIN_LINK" />zásady ochrany soukromí<ph name="END_LINK" /> tohoto poskytovatele</translation>
 <translation id="7514365320538308">Stáhnout</translation>

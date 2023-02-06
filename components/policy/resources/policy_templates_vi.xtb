@@ -1178,23 +1178,6 @@ Chính sách này sẽ không có hiệu lực khi bạn đặt chính sách <ph
 <translation id="20838788335877967">Tắt chính sách báo cáo thông tin nhận dạng người dùng</translation>
 <translation id="208566302163036794">Chặn các tính năng đã tắt</translation>
 <translation id="208623333578980446">Cho phép khóa chế độ thức của màn hình để quản lý nguồn điện</translation>
-<translation id="2087277084358676117">Chính sách này có thể tạm thời được dùng để buộc bật chế độ hỗ trợ cho
-API PPB_VideoDecoder(Dev).
-
-Khi bạn không đặt hoặc đặt chính sách này thành Tắt, trình duyệt sẽ quyết định liệu
-API có được hỗ trợ hay không.
-Khi bạn đặt chính sách này thành Bật, API sẽ được hỗ trợ.
-
-Bạn có thể sử dụng chính sách này trong trường hợp quyết định đang diễn ra của chúng tôi về việc loại bỏ chế độ hỗ trợ cho API này
-gặp vấn đề. Nếu bạn phải sử dụng chính sách này, vui lòng báo cáo lỗi trên crbug.com
-giải thích trường hợp sử dụng của bạn và CC {blundell, vasilyt}@chromium.org. Theo lịch biểu, chính sách này
-sẽ được phát hành đến hết <ph name="PRODUCT_NAME" />
-phiên bản 114, sau đó, chế độ hỗ trợ cho API này dự kiến sẽ bị loại bỏ
-vô điều kiện.
-
-LƯU Ý: Khi giá trị của chính sách thay đổi, thẻ mới sẽ nhận giá trị
-mới. Bạn sẽ cần đóng và mở lại các thẻ hiện có để nhận giá trị
-mới.</translation>
 <translation id="2089541797660774692">Bật tính năng báo cáo trên đám mây qua trình duyệt được quản lý</translation>
 <translation id="2090939118981888335">Nếu bạn đặt chính sách này thành Bật, proxy nén dữ liệu sẽ được phép hoạt động. Nếu bạn đặt chính sách này thành Tắt, proxy nén dữ liệu sẽ không được phép hoạt động.
 
@@ -4906,6 +4889,29 @@ Bạn có thể điều chỉnh thời gian chờ ở trạng thái không hoạ
       Việc đặt chính sách này thành Bật sẽ ẩn các cảnh báo về việc ngừng cung cấp.
       Việc đặt thành Tắt hoặc không đặt chính sách này sẽ hiển thị các cảnh báo về việc ngừng cung cấp.</translation>
 <translation id="5666457529647159548">Cho phép người dùng quản lý các chứng chỉ ứng dụng khách đã cài đặt.</translation>
+<translation id="5670286392821164294">Chính sách này đưa ra cách ghi đè danh sách nhóm mà trình duyệt dùng cho các tính năng của Nhóm bên thứ nhất.
+
+      Mọi nhóm trong danh sách Nhóm bên thứ nhất của trình duyệt đều phải đáp ứng yêu cầu về Nhóm bên thứ nhất.
+      Nhóm bên thứ nhất phải chứa một trang web chính và tối thiểu một trang web thành viên.
+      Một nhóm cũng có thể chứa danh sách trang web dịch vụ thuộc sở hữu của nhóm đó và bản đồ từ một trang web đến tất cả biến thể ccTLD (miền cấp cao nhất theo mã quốc gia) của trang web đó.
+      Hãy truy cập https: //github.com/WICG/first-party-sets để biết thêm thông tin về Nhóm bên thứ nhất mà <ph name="PRODUCT_NAME" /> sử dụng.
+
+      Tất cả trang web trong một Nhóm bên thứ nhất đều phải là miền có thể đăng ký và được phân phát qua HTTPS. Mỗi trang web trong Nhóm bên thứ nhất cũng phải là duy nhất, nghĩa là mỗi trang web chỉ được liệt kê một lần trong một Nhóm bên thứ nhất.
+
+      Khi bạn cung cấp một thư mục trống cho chính sách này, trình duyệt sẽ sử dụng danh sách Nhóm bên thứ nhất công khai.
+
+      Đối với mọi trang web ở Nhóm bên thứ nhất trong danh sách <ph name="REPLACEMENTS" />, nếu một trang web cũng xuất hiện trong Nhóm bên thứ nhất thuộc danh sách của trình duyệt thì trang web đó sẽ bị loại bỏ khỏi Nhóm bên thứ nhất của trình duyệt.
+      Sau đó, Nhóm bên thứ nhất của chính sách sẽ được thêm vào danh sách Nhóm bên thứ nhất của trình duyệt.
+
+      Đối với mọi trang web ở Nhóm bên thứ nhất trong danh sách <ph name="ADDITIONS" />, nếu một trang web cũng xuất hiện trong Nhóm bên thứ nhất thuộc danh sách của trình duyệt thì Nhóm bên thứ nhất của trình duyệt sẽ được cập nhật sao cho có thể thêm Nhóm bên thứ nhất mới vào danh sách của trình duyệt. Sau khi danh sách của trình duyệt được cập nhật, Nhóm bên thứ nhất của chính sách sẽ được thêm vào danh sách Nhóm bên thứ nhất của trình duyệt.
+
+      Danh sách Nhóm bên thứ nhất của trình duyệt yêu cầu mỗi trang web thuộc danh sách này chỉ xuất hiện trong một nhóm. Đây cũng là yêu cầu đối với cả danh sách <ph name="REPLACEMENTS" /> và danh sách <ph name="ADDITIONS" />. Tương tự như vậy, một trang web không được xuất hiện trong cả danh sách <ph name="REPLACEMENTS" /> và danh sách <ph name="ADDITIONS" />.
+
+      Hệ thống không hỗ trợ việc dùng ký tự đại diện (*) làm giá trị chính sách, cũng như trong mọi Nhóm bên thứ nhất thuộc những danh sách này.
+
+      Mọi nhóm mà chính sách cung cấp đều phải là Nhóm bên thứ nhất hợp lệ. Nếu không, lỗi tương ứng sẽ xảy ra.
+
+      Chính sách này chỉ có trên các phiên bản Windows liên kết với miền <ph name="MS_AD_NAME" />, phiên bản Windows 10 Pro hay Enterprise đã đăng ký dịch vụ quản lý thiết bị hoặc phiên bản macOS được quản lý thông qua phần mềm MDM (Quản lý thiết bị di động) hay đã liên kết với một miền thông qua MCX.</translation>
 <translation id="567377007899266033">Nếu bạn đặt chính sách này thành True, thì hệ thống sẽ gửi cho Google các báo cáo về sự kiện cài đặt tiện ích do khóa, chính sách kích hoạt. Nếu bạn đặt chính sách này thành False, thì sẽ không có sự kiện nào được ghi lại. Nếu bạn không đặt chính sách này, thì giá trị mặc định sẽ được đặt thành True.</translation>
 <translation id="5676740747107495269">Hiển thị tùy chọn hỗ trợ tiếp cận trong trình đơn của khay hệ thống trên màn hình đăng nhập</translation>
 <translation id="567832102568869993">Kích hoạt một thao tác khi máy tính ở trạng thái rảnh.
@@ -5497,12 +5503,6 @@ Xem thêm thông tin chi tiết tại https://developer.chrome.com/blog/immutabl
       Xin lưu ý rằng chúng tôi đã thông báo việc loại bỏ chính sách này trong <ph name="PRODUCT_NAME" /> phiên bản 82. Tuy nhiên, chính sách này sẽ bị loại bỏ trong phiên bản 84.</translation>
 <translation id="6276087670023098167">Tắt chính sách báo cáo thông tin nhận dạng máy</translation>
 <translation id="627672037430076089">Ngăn các kết nối hỗ trợ từ xa đến máy này</translation>
-<translation id="6277043520666738324">Chính sách này kiểm soát việc các trình bổ trợ <ph name="PEPPER_NAME" /> có thể sử dụng bộ giải mã mới để giao tiếp với các bộ giải mã phần cứng thay vì bộ giải mã video cũ hay không.
-
-Quá trình di chuyển chỉ ảnh hưởng đến thông tin chi tiết triển khai nội bộ và sẽ không làm thay đổi hành vi nào. Tuy nhiên, chính sách này có thể được sử dụng trong trường hợp có bất kỳ ứng dụng PPAPI nào không hoạt động như dự kiến.
-
-Khi bạn không đặt chính sách này hoặc đặt thành Bật, trình duyệt sẽ quyết định hoạt động triển khai nào được sử dụng.
-Khi bạn đặt chính sách này thành Tắt, trình duyệt sẽ sử dụng phương thức triển khai cũ cho đến khi chính sách này hết hạn.</translation>
 <translation id="6277314550042130537">Yêu cầu phê duyệt chính sách KDC trong quá trình xác thực HTTP</translation>
 <translation id="6278428485366576908">Giao diện</translation>
 <translation id="6279722058145292462">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định tần suất (tính theo ngày) mà một máy khách sẽ thay đổi mật khẩu tài khoản cho máy của mình. Mật khẩu do máy khách tạo ngẫu nhiên và không hiển thị với người dùng. Việc tắt chính sách này hoặc đặt một số ngày lớn hơn có thể ảnh hưởng tiêu cực đến tính bảo mật vì kẻ tấn công sẽ có thêm thời gian tìm ra mật khẩu tài khoản của máy và sử dụng mật khẩu đó.
@@ -6401,16 +6401,6 @@ tức là chặn những yêu cầu này, sẽ được áp dụng.</translation
       Nếu bạn đặt chính sách này thành bắt buộc, thì người dùng sẽ không thể thay đổi hoặc ghi đè chính sách này.
 
       Nếu bạn không đặt chính sách này, thì kệ sẽ được đặt ở cuối màn hình theo mặc định và người dùng có thể thay đổi vị trí của kệ.</translation>
-<translation id="7037853989942016900">Chính sách này kiểm soát hoạt động tái cấu trúc gần đây của các API Graphics3D trong trình bổ trợ PPAPI.
-
-Quá trình di chuyển chỉ ảnh hưởng đến thông tin triển khai nội bộ và không thay đổi hành vi nào. Tuy nhiên, chính sách này có thể được sử dụng trong trường hợp bất kỳ ứng dụng PPAPI nào không hoạt động như dự kiến.
-
-Khi bạn không đặt chính sách này hoặc đặt thành Bật, trình duyệt sẽ quyết định phương thức triển khai nào được sử dụng.
-Khi bạn đặt chính sách này thành Tắt, trình duyệt sẽ sử dụng phương thức triển khai cũ cho đến khi chính sách này hết hạn.
-
-Nếu bạn phải sử dụng chính sách này, vui lòng báo cáo lỗi trên crbug.com kèm thông tin giải thích trường hợp sử dụng của bạn. Theo lịch, chính sách này sẽ được cung cấp thông qua phiên bản 114 của <ph name="PRODUCT_NAME" />, sau đó phương thức triển khai cũ sẽ bị loại bỏ.
-
-LƯU Ý: Chỉ các quy trình kết xuất đồ hoạ mới bắt đầu mới phản ánh các thay đổi đối với chính sách này trong khi trình duyệt đang chạy.</translation>
 <translation id="7039815268521168329">Hiển thị quy trình so khớp giọng nói của Trợ lý Google trong quá trình thiết lập ban đầu</translation>
 <translation id="7040229947030068419">Giá trị mẫu:</translation>
 <translation id="7044883996351280650">Kiểm soát dịch vụ sao lưu và khôi phục trên thiết bị Android</translation>
