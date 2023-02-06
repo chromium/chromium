@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/autofill_popup_view_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 
 #include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
-TEST(AutofillPopupViewUtilsTest, GetOptimalArrowSide) {
+TEST(PopupViewsUtilsTest, GetOptimalArrowSide) {
   const gfx::Size default_preferred_size{200, 600};
 
   struct TestCase {
@@ -76,7 +76,7 @@ TEST(AutofillPopupViewUtilsTest, GetOptimalArrowSide) {
   }
 }
 
-TEST(AutofillPopupViewUtilsTest, CalculatePopupBounds) {
+TEST(PopupViewsUtilsTest, CalculatePopupBounds) {
   // Define the prompt sizes.
   const int desired_prompt_width = 40;
   const int desired_prompt_height = 30;
@@ -181,7 +181,7 @@ TEST(AutofillPopupViewUtilsTest, CalculatePopupBounds) {
   }
 }
 
-TEST(AutofillPopupViewUtilsTest, NotEnoughHeightForAnItem) {
+TEST(PopupViewsUtilsTest, NotEnoughHeightForAnItem) {
   // In this test, each row of the popup has a height of 8 pixels, and there is
   // no enough height in the content area to show one row.
   //
@@ -206,7 +206,7 @@ TEST(AutofillPopupViewUtilsTest, NotEnoughHeightForAnItem) {
       CanShowDropdownHere(item_height, content_area_bounds, element_bounds));
 }
 
-TEST(AutofillPopupViewUtilsTest, ElementOutOfContentAreaBounds) {
+TEST(PopupViewsUtilsTest, ElementOutOfContentAreaBounds) {
   // In this test, each row of the popup has a height of 8 pixels, and there is
   // no enough height in the content area to show one row.
   //
@@ -234,7 +234,7 @@ TEST(AutofillPopupViewUtilsTest, ElementOutOfContentAreaBounds) {
       CanShowDropdownHere(item_height, content_area_bounds, element_bounds));
 }
 
-TEST(AutofillPopupViewUtilsTest, GetAvailableVerticalSpaceOnSideOfElement) {
+TEST(PopupViewsUtilsTest, GetAvailableVerticalSpaceOnSideOfElement) {
   gfx::Rect content_area_bounds(100, 200, 500, 600);
   gfx::Rect element_bounds(250, 350, 200, 100);
 
@@ -257,7 +257,7 @@ TEST(AutofillPopupViewUtilsTest, GetAvailableVerticalSpaceOnSideOfElement) {
       150);
 }
 
-TEST(AutofillPopupViewUtilsTest, GetAvailableHorizontalSpaceOnSideOfElement) {
+TEST(PopupViewsUtilsTest, GetAvailableHorizontalSpaceOnSideOfElement) {
   gfx::Rect content_area_bounds(100, 200, 700, 600);
   gfx::Rect element_bounds(220, 350, 200, 100);
 
@@ -283,7 +283,7 @@ TEST(AutofillPopupViewUtilsTest, GetAvailableHorizontalSpaceOnSideOfElement) {
       content_area_bounds.width() - 2 * kMinimalPopupDistanceToContentAreaEdge);
 }
 
-TEST(AutofillPopupViewUtilsTest, IsPopupPlaceableOnSideOfElement) {
+TEST(PopupViewsUtilsTest, IsPopupPlaceableOnSideOfElement) {
   // 200 pixels on top of the element.
   // 55O pixels below the element.
   // 100 pixels on the left side (BubbleArrowSide::kRight)
@@ -308,7 +308,7 @@ TEST(AutofillPopupViewUtilsTest, IsPopupPlaceableOnSideOfElement) {
       views::BubbleArrowSide::kTop));
 }
 
-TEST(AutofillPopupViewUtilsTest, GetOptimalPopupArrowSide) {
+TEST(PopupViewsUtilsTest, GetOptimalPopupArrowSide) {
   // For this test, we fix the content area and the popup size.
   gfx::Rect content_area_bounds = {0, 0, 800, 800};
   gfx::Size preferred_popup_size = {200, 300};
@@ -330,7 +330,7 @@ TEST(AutofillPopupViewUtilsTest, GetOptimalPopupArrowSide) {
   }
 }
 
-TEST(AutofillPopupViewUtilsTest, GetOptimalPopupPlacement) {
+TEST(PopupViewsUtilsTest, GetOptimalPopupPlacement) {
   // For this test, the content area bounds and preferred popup size is fixed.
   const gfx::Rect kContentsAreaBounds = {0, 0, 800, 800};
   const gfx::Size kPreferredPopupSize = {200, 300};

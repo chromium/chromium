@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 
 #include <algorithm>
 #include <memory>
@@ -15,7 +15,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/autofill/autofill_popup_view_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
@@ -46,10 +46,10 @@
 
 namespace autofill {
 
-// The widget that the AutofillPopupBaseView will be attached to.
-class AutofillPopupBaseView::Widget : public views::Widget {
+// The widget that the PopupBaseView will be attached to.
+class PopupBaseView::Widget : public views::Widget {
  public:
-  explicit Widget(AutofillPopupBaseView* autofill_popup_base_view)
+  explicit Widget(PopupBaseView* autofill_popup_base_view)
       : autofill_popup_base_view_(autofill_popup_base_view) {
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
     params.delegate = autofill_popup_base_view_;
@@ -68,57 +68,59 @@ class AutofillPopupBaseView::Widget : public views::Widget {
 
   // views::Widget:
   const ui::ThemeProvider* GetThemeProvider() const override {
-    if (!autofill_popup_base_view_ || !autofill_popup_base_view_->browser())
+    if (!autofill_popup_base_view_ || !autofill_popup_base_view_->browser()) {
       return nullptr;
+    }
 
     return &ThemeService::GetThemeProviderForProfile(
         autofill_popup_base_view_->browser()->profile());
   }
 
   views::Widget* GetPrimaryWindowWidget() override {
-    if (!autofill_popup_base_view_ || !autofill_popup_base_view_->browser())
+    if (!autofill_popup_base_view_ || !autofill_popup_base_view_->browser()) {
       return nullptr;
+    }
 
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(
         autofill_popup_base_view_->browser());
-    if (!browser_view)
+    if (!browser_view) {
       return nullptr;
+    }
 
     return browser_view->GetWidget()->GetPrimaryWindowWidget();
   }
 
  private:
-  const raw_ptr<AutofillPopupBaseView, DanglingUntriaged>
-      autofill_popup_base_view_;
+  const raw_ptr<PopupBaseView, DanglingUntriaged> autofill_popup_base_view_;
 };
 
 // static
-int AutofillPopupBaseView::GetCornerRadius() {
+int PopupBaseView::GetCornerRadius() {
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kMedium);
 }
 
 // static
-int AutofillPopupBaseView::GetHorizontalMargin() {
+int PopupBaseView::GetHorizontalMargin() {
   return views::MenuConfig::instance().item_horizontal_padding +
          GetCornerRadius();
 }
 
 // static
-int AutofillPopupBaseView::GetHorizontalPadding() {
+int PopupBaseView::GetHorizontalPadding() {
   return GetHorizontalMargin();
 }
 
-AutofillPopupBaseView::AutofillPopupBaseView(
-    base::WeakPtr<AutofillPopupViewDelegate> delegate,
-    views::Widget* parent_widget)
+PopupBaseView::PopupBaseView(base::WeakPtr<AutofillPopupViewDelegate> delegate,
+                             views::Widget* parent_widget)
     : delegate_(delegate), parent_widget_(parent_widget) {
   // GetWebContents() may return nullptr in some tests.
-  if (GetWebContents())
+  if (GetWebContents()) {
     browser_ = chrome::FindBrowserWithWebContents(GetWebContents());
+  }
 }
 
-AutofillPopupBaseView::~AutofillPopupBaseView() {
+PopupBaseView::~PopupBaseView() {
   if (delegate_) {
     delegate_->ViewDestroyed();
 
@@ -128,18 +130,19 @@ AutofillPopupBaseView::~AutofillPopupBaseView() {
   CHECK(!IsInObserverList());
 }
 
-bool AutofillPopupBaseView::DoShow() {
+bool PopupBaseView::DoShow() {
   const bool initialize_widget = !GetWidget();
   if (initialize_widget) {
     // On Mac Cocoa browser, |parent_widget_| is null (the parent is not a
     // views::Widget).
     // TODO(crbug.com/826862): Remove |parent_widget_|.
-    if (parent_widget_)
+    if (parent_widget_) {
       parent_widget_->AddObserver(this);
+    }
 
     // The widget is destroyed by the corresponding NativeWidget, so we don't
     // have to worry about deletion.
-    new AutofillPopupBaseView::Widget(this);
+    new PopupBaseView::Widget(this);
 
     show_time_ = base::Time::Now();
   }
@@ -148,19 +151,21 @@ bool AutofillPopupBaseView::DoShow() {
   bool enough_height = DoUpdateBoundsAndRedrawPopup();
   // If there is insufficient height, DoUpdateBoundsAndRedrawPopup() hides and
   // thus deletes |this|. Hence, there is nothing else to do.
-  if (!enough_height)
+  if (!enough_height) {
     return false;
+  }
   GetWidget()->Show();
 
   // Showing the widget can change native focus (which would result in an
   // immediate hiding of the popup). Only start observing after shown.
-  if (initialize_widget)
+  if (initialize_widget) {
     views::WidgetFocusManager::GetInstance()->AddFocusChangeListener(this);
+  }
 
   return true;
 }
 
-void AutofillPopupBaseView::DoHide() {
+void PopupBaseView::DoHide() {
   if (is_ax_menu_start_event_fired_) {
     // Fire menu end event.
     // The menu start event is delayed until the user
@@ -176,8 +181,9 @@ void AutofillPopupBaseView::DoHide() {
     if (parent_widget_) {
       if (views::FocusManager* focus_manager =
               parent_widget_->GetFocusManager()) {
-        if (View* focused_view = focus_manager->GetFocusedView())
+        if (View* focused_view = focus_manager->GetFocusedView()) {
           focused_view->GetViewAccessibility().FireFocusAfterMenuClose();
+        }
       }
     }
   }
@@ -198,7 +204,7 @@ void AutofillPopupBaseView::DoHide() {
   }
 }
 
-void AutofillPopupBaseView::NotifyAXSelection(View* selected_view) {
+void PopupBaseView::NotifyAXSelection(View* selected_view) {
   DCHECK(selected_view);
   if (!is_ax_menu_start_event_fired_) {
     // Fire the menu start event once, right before the first item is selected.
@@ -214,9 +220,8 @@ void AutofillPopupBaseView::NotifyAXSelection(View* selected_view) {
   selected_view->GetViewAccessibility().SetPopupFocusOverride();
 #if DCHECK_IS_ON()
   constexpr auto kDerivedClasses = base::MakeFixedFlatSet<base::StringPiece>(
-      {"AutofillPopupSuggestionView", "PasswordPopupSuggestionView",
-       "AutofillPopupFooterView", "AutofillPopupSeparatorView",
-       "AutofillPopupWarningView", "AutofillPopupBaseView",
+      {"PopupSuggestionView", "PopupPasswordSuggestionView", "PopupFooterView",
+       "PopupSeparatorView", "PopupWarningView", "PopupBaseView",
        "PasswordGenerationPopupViewViews::GeneratedPasswordBox"});
   DCHECK(kDerivedClasses.contains(selected_view->GetClassName()))
       << "If you add a new derived class from AutofillPopupRowView, add it "
@@ -229,16 +234,17 @@ void AutofillPopupBaseView::NotifyAXSelection(View* selected_view) {
   selected_view->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
 }
 
-void AutofillPopupBaseView::OnWidgetBoundsChanged(views::Widget* widget,
-                                                  const gfx::Rect& new_bounds) {
+void PopupBaseView::OnWidgetBoundsChanged(views::Widget* widget,
+                                          const gfx::Rect& new_bounds) {
   DCHECK(widget == parent_widget_ || widget == GetWidget());
-  if (widget != parent_widget_)
+  if (widget != parent_widget_) {
     return;
+  }
 
   HideController(PopupHidingReason::kWidgetChanged);
 }
 
-void AutofillPopupBaseView::OnWidgetDestroying(views::Widget* widget) {
+void PopupBaseView::OnWidgetDestroying(views::Widget* widget) {
   // On Windows, widgets can be destroyed in any order. Regardless of which
   // widget is destroyed first, remove all observers and hide the popup.
   DCHECK(widget == parent_widget_ || widget == GetWidget());
@@ -256,15 +262,16 @@ void AutofillPopupBaseView::OnWidgetDestroying(views::Widget* widget) {
   HideController(PopupHidingReason::kWidgetChanged);
 }
 
-void AutofillPopupBaseView::RemoveWidgetObservers() {
-  if (parent_widget_)
+void PopupBaseView::RemoveWidgetObservers() {
+  if (parent_widget_) {
     parent_widget_->RemoveObserver(this);
+  }
   GetWidget()->RemoveObserver(this);
 
   views::WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(this);
 }
 
-void AutofillPopupBaseView::UpdateClipPath() {
+void PopupBaseView::UpdateClipPath() {
   SkRect local_bounds = gfx::RectToSkRect(GetLocalBounds());
   SkScalar radius = SkIntToScalar(GetCornerRadius());
   SkPath clip_path;
@@ -272,10 +279,11 @@ void AutofillPopupBaseView::UpdateClipPath() {
   SetClipPath(clip_path);
 }
 
-gfx::Rect AutofillPopupBaseView::GetContentAreaBounds() const {
+gfx::Rect PopupBaseView::GetContentAreaBounds() const {
   content::WebContents* web_contents = GetWebContents();
-  if (web_contents)
+  if (web_contents) {
     return web_contents->GetContainerBounds();
+  }
 
   // If the |web_contents| is null, simply return an empty rect. The most common
   // reason to end up here is that the |web_contents| has been destroyed
@@ -284,15 +292,16 @@ gfx::Rect AutofillPopupBaseView::GetContentAreaBounds() const {
   return gfx::Rect();
 }
 
-gfx::Rect AutofillPopupBaseView::GetTopWindowBounds() const {
+gfx::Rect PopupBaseView::GetTopWindowBounds() const {
   views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
       delegate_->container_view());
   // Find root in window tree.
   while (widget && widget->parent()) {
     widget = widget->parent();
   }
-  if (widget)
+  if (widget) {
     return widget->GetWindowBoundsInScreen();
+  }
 
   // If the widget is null, simply return an empty rect. The most common reason
   // to end up here is that the NativeView has been destroyed externally, which
@@ -301,7 +310,7 @@ gfx::Rect AutofillPopupBaseView::GetTopWindowBounds() const {
   return gfx::Rect();
 }
 
-gfx::Rect AutofillPopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
+gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
     const gfx::Rect& element_bounds,
     const gfx::Rect& max_bounds_for_popup,
     const gfx::Size& preferred_size) {
@@ -342,7 +351,7 @@ gfx::Rect AutofillPopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
   return popup_bounds;
 }
 
-bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
+bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   gfx::Size preferred_size = GetPreferredSize();
   const gfx::Rect content_area_bounds = GetContentAreaBounds();
   // TODO(crbug.com/1262371) Once popups can render outside the main window on
@@ -395,7 +404,7 @@ bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   return true;
 }
 
-std::unique_ptr<views::Border> AutofillPopupBaseView::CreateBorder() {
+std::unique_ptr<views::Border> PopupBaseView::CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
       ui::kColorDropdownBackground);
@@ -409,12 +418,13 @@ std::unique_ptr<views::Border> AutofillPopupBaseView::CreateBorder() {
   return border;
 }
 
-void AutofillPopupBaseView::OnNativeFocusChanged(gfx::NativeView focused_now) {
-  if (GetWidget() && GetWidget()->GetNativeView() != focused_now)
+void PopupBaseView::OnNativeFocusChanged(gfx::NativeView focused_now) {
+  if (GetWidget() && GetWidget()->GetNativeView() != focused_now) {
     HideController(PopupHidingReason::kFocusChanged);
+  }
 }
 
-void AutofillPopupBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+void PopupBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // TODO(aleventhal) The correct role spec-wise to use here is kMenu, however
   // as of NVDA 2018.2.1, firing a menu event with kMenu breaks left/right
   // arrow editing feedback in text field. If NVDA addresses this we should
@@ -425,31 +435,33 @@ void AutofillPopupBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
 }
 
-void AutofillPopupBaseView::HideController(PopupHidingReason reason) {
-  if (delegate_)
+void PopupBaseView::HideController(PopupHidingReason reason) {
+  if (delegate_) {
     delegate_->Hide(reason);
+  }
   // This will eventually result in the deletion of |this|, as the delegate
   // will hide |this|. See |DoHide| above for an explanation on why the precise
   // timing of that deletion is tricky.
 }
 
-content::WebContents* AutofillPopupBaseView::GetWebContents() const {
-  if (!delegate_)
+content::WebContents* PopupBaseView::GetWebContents() const {
+  if (!delegate_) {
     return nullptr;
+  }
 
   return delegate_->GetWebContents();
 }
 
-gfx::NativeView AutofillPopupBaseView::GetParentNativeView() const {
+gfx::NativeView PopupBaseView::GetParentNativeView() const {
   return parent_widget_ ? parent_widget_->GetNativeView()
                         : delegate_->container_view();
 }
 
-gfx::NativeView AutofillPopupBaseView::container_view() {
+gfx::NativeView PopupBaseView::container_view() {
   return delegate_->container_view();
 }
 
-BEGIN_METADATA(AutofillPopupBaseView, views::WidgetDelegateView)
+BEGIN_METADATA(PopupBaseView, views::WidgetDelegateView)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, ContentAreaBounds)
 END_METADATA
 

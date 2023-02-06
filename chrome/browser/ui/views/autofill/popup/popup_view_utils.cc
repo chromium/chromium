@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/autofill_popup_view_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 
 #include <algorithm>
 
@@ -260,8 +260,9 @@ bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                                     content::WebContents* web_contents) {
   gfx::NativeView top_level_view =
       platform_util::GetViewForWindow(web_contents->GetTopLevelNativeWindow());
-  if (!top_level_view)
+  if (!top_level_view) {
     return false;
+  }
   // We generally want to ensure that no prompt overlaps with |screen_bounds|.
   // It is possible, however, that a <datalist> is part of a prompt (e.g. an
   // extension popup can render a <datalist>). Therefore, we exclude the widget
@@ -291,20 +292,23 @@ bool BoundsOverlapWithOpenPermissionsPrompt(
     const gfx::Rect& screen_bounds,
     content::WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (!browser)
+  if (!browser) {
     return false;
+  }
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view)
+  if (!browser_view) {
     return false;
+  }
 
   views::View* const permission_bubble_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
           PermissionPromptBubbleView::kPermissionPromptBubbleViewIdentifier,
           views::ElementTrackerViews::GetInstance()->GetContextForView(
               browser_view));
-  if (!permission_bubble_view)
+  if (!permission_bubble_view) {
     return false;
+  }
 
   return permission_bubble_view->GetWidget()
       ->GetWindowBoundsInScreen()
@@ -319,8 +323,9 @@ bool BoundsOverlapWithPictureInPictureWindow(const gfx::Rect& screen_bounds) {
 }
 
 bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents) {
-  if (!web_contents)  // May be null for tests.
+  if (!web_contents) {  // May be null for tests.
     return false;
+  }
   const GURL& url = web_contents->GetLastCommittedURL();
   // Extensions may want to show <datalist> form controls whose popups cannot be
   // rendered within the bounds of an extension popup. For that reason they are

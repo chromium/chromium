@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 
 #include <utility>
 
@@ -60,15 +60,14 @@ class MockAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
 
 }  // namespace
 
-class AutofillPopupBaseViewTest : public InProcessBrowserTest {
+class PopupBaseViewBrowsertest : public InProcessBrowserTest {
  public:
-  AutofillPopupBaseViewTest() = default;
+  PopupBaseViewBrowsertest() = default;
 
-  AutofillPopupBaseViewTest(const AutofillPopupBaseViewTest&) = delete;
-  AutofillPopupBaseViewTest& operator=(const AutofillPopupBaseViewTest&) =
-      delete;
+  PopupBaseViewBrowsertest(const PopupBaseViewBrowsertest&) = delete;
+  PopupBaseViewBrowsertest& operator=(const PopupBaseViewBrowsertest&) = delete;
 
-  ~AutofillPopupBaseViewTest() override = default;
+  ~PopupBaseViewBrowsertest() override = default;
 
   void SetUpOnMainThread() override {
     content::WebContents* web_contents =
@@ -80,10 +79,9 @@ class AutofillPopupBaseViewTest : public InProcessBrowserTest {
         .WillRepeatedly(Return(web_contents));
     EXPECT_CALL(mock_delegate_, ViewDestroyed());
 
-    view_ =
-        new AutofillPopupBaseView(mock_delegate_.GetWeakPtr(),
-                                  views::Widget::GetWidgetForNativeWindow(
-                                      browser()->window()->GetNativeWindow()));
+    view_ = new PopupBaseView(mock_delegate_.GetWeakPtr(),
+                              views::Widget::GetWidgetForNativeWindow(
+                                  browser()->window()->GetNativeWindow()));
   }
 
   void TearDownOnMainThread() override { view_ = nullptr; }
@@ -92,10 +90,10 @@ class AutofillPopupBaseViewTest : public InProcessBrowserTest {
 
  protected:
   testing::NiceMock<MockAutofillPopupViewDelegate> mock_delegate_;
-  raw_ptr<AutofillPopupBaseView> view_ = nullptr;
+  raw_ptr<PopupBaseView> view_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(AutofillPopupBaseViewTest, CorrectBoundsTest) {
+IN_PROC_BROWSER_TEST_F(PopupBaseViewBrowsertest, CorrectBoundsTest) {
   gfx::Rect web_bounds = mock_delegate_.GetWebContents()->GetViewBounds();
   gfx::RectF bounds(web_bounds.x() + 100, web_bounds.y() + 150, 10, 10);
   EXPECT_CALL(mock_delegate_, element_bounds())
@@ -119,11 +117,11 @@ struct ProminentPopupTestParams {
   int expected_left_offset;
 };
 
-class AutofillPopupBaseViewProminentStyleFeatureTest
-    : public AutofillPopupBaseViewTest,
+class PopupBaseViewProminentStyleFeatureTest
+    : public PopupBaseViewBrowsertest,
       public testing::WithParamInterface<ProminentPopupTestParams> {
  public:
-  AutofillPopupBaseViewProminentStyleFeatureTest() {
+  PopupBaseViewProminentStyleFeatureTest() {
     feature_list_.InitWithFeatureState(features::kAutofillMoreProminentPopup,
                                        GetParam().is_feature_enabled);
   }
@@ -132,8 +130,7 @@ class AutofillPopupBaseViewProminentStyleFeatureTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(AutofillPopupBaseViewProminentStyleFeatureTest,
-                       LeftMaxOffset) {
+IN_PROC_BROWSER_TEST_P(PopupBaseViewProminentStyleFeatureTest, LeftMaxOffset) {
   gfx::Rect web_bounds = mock_delegate_.GetWebContents()->GetViewBounds();
   gfx::RectF bounds(web_bounds.x() + 100, web_bounds.y() + 150, 1000, 20);
   EXPECT_CALL(mock_delegate_, element_bounds())
@@ -160,7 +157,7 @@ IN_PROC_BROWSER_TEST_P(AutofillPopupBaseViewProminentStyleFeatureTest,
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    AutofillPopupBaseViewProminentStyleFeatureTest,
+    PopupBaseViewProminentStyleFeatureTest,
     testing::Values(ProminentPopupTestParams{.is_feature_enabled = false,
                                              .expected_left_offset = 95},
                     ProminentPopupTestParams{.is_feature_enabled = true,

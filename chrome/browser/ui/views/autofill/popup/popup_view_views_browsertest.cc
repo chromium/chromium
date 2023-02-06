@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/autofill_popup_view_native_views.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 
 #include <tuple>
 #include <utility>
@@ -33,12 +33,11 @@ using testing::NiceMock;
 using testing::Return;
 
 // If the boolean test parameter is `true`, dark mode is enforced.
-class AutofillPopupViewNativeViewsTest
-    : public UiBrowserTest,
-      public testing::WithParamInterface<bool> {
+class PopupViewViewsBrowsertest : public UiBrowserTest,
+                                  public testing::WithParamInterface<bool> {
  public:
-  AutofillPopupViewNativeViewsTest() = default;
-  ~AutofillPopupViewNativeViewsTest() override = default;
+  PopupViewViewsBrowsertest() = default;
+  ~PopupViewViewsBrowsertest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (GetParam()) {
@@ -62,9 +61,9 @@ class AutofillPopupViewNativeViewsTest
 
   void ShowUi(const std::string& name) override {
     EXPECT_CALL(controller_, ViewDestroyed());
-    view_ = new AutofillPopupViewNativeViews(
-        controller_.GetWeakPtr(), views::Widget::GetWidgetForNativeWindow(
-                                      browser()->window()->GetNativeWindow()));
+    view_ = new PopupViewViews(controller_.GetWeakPtr(),
+                               views::Widget::GetWidgetForNativeWindow(
+                                   browser()->window()->GetNativeWindow()));
     view_->Show();
   }
 
@@ -78,15 +77,14 @@ class AutofillPopupViewNativeViewsTest
       return false;
     }
 
-    // VerifyPixelUi works only for these platforms. 
+    // VerifyPixelUi works only for these platforms.
     // TODO(crbug.com/958242): Revise this if supported platforms change.
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
     const std::string screenshot_name =
         base::StrCat({test_info->test_case_name(), "_", test_info->name()});
 
-    return VerifyPixelUi(widget, "AutofillPopupViewNativeViewsTest",
-                         screenshot_name);
+    return VerifyPixelUi(widget, "PopupViewViewsBrowsertest", screenshot_name);
 #else
     return true;
 #endif
@@ -101,18 +99,16 @@ class AutofillPopupViewNativeViewsTest
  private:
   std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
   NiceMock<autofill::MockAutofillPopupController> controller_;
-  raw_ptr<AutofillPopupViewNativeViews> view_ = nullptr;
+  raw_ptr<PopupViewViews> view_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_P(AutofillPopupViewNativeViewsTest,
-                       InvokeUi_Autocomplete) {
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autocomplete) {
   PrepareSuggestions({Suggestion("Autocomplete entry 1", "", "", 0),
                       Suggestion("Autocomplete entry 2", "", "", 0)});
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPopupViewNativeViewsTest,
-                       InvokeUi_Autofill_Profile) {
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autofill_Profile) {
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back("123 Apple St.", "Charles", "accountIcon", 1);
   suggestions.emplace_back("3734 Elvis Presley Blvd.", "Elvis", "accountIcon",
@@ -129,7 +125,7 @@ IN_PROC_BROWSER_TEST_P(AutofillPopupViewNativeViewsTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPopupViewNativeViewsTest,
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_Passwords_PasswordField) {
   // An account store entry.
   std::vector<Suggestion> suggestions;
@@ -166,7 +162,7 @@ IN_PROC_BROWSER_TEST_P(AutofillPopupViewNativeViewsTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPopupViewNativeViewsTest,
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_InsecureContext_PaymentDisabled) {
   Suggestion warning(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION));
@@ -175,8 +171,6 @@ IN_PROC_BROWSER_TEST_P(AutofillPopupViewNativeViewsTest,
   ShowAndVerifyUi();
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         AutofillPopupViewNativeViewsTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, PopupViewViewsBrowsertest, testing::Bool());
 
 }  // namespace autofill

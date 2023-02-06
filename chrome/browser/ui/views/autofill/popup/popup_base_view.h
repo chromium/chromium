@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_POPUP_BASE_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_POPUP_BASE_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_BASE_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_BASE_VIEW_H_
 
 #include <memory>
 
@@ -20,23 +20,15 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
-namespace gfx {
-class Point;
-}
-
-namespace views {
-class BubbleBorder;
-}
-
 namespace autofill {
 
 // Class that deals with the event handling for Autofill-style popups. This
 // class should only be instantiated by sub-classes.
-class AutofillPopupBaseView : public views::WidgetDelegateView,
-                              public views::WidgetFocusChangeListener,
-                              public views::WidgetObserver {
+class PopupBaseView : public views::WidgetDelegateView,
+                      public views::WidgetFocusChangeListener,
+                      public views::WidgetObserver {
  public:
-  METADATA_HEADER(AutofillPopupBaseView);
+  METADATA_HEADER(PopupBaseView);
 
   // Consider the input element is |kElementBorderPadding| pixels larger at the
   // top and at the bottom in order to reposition the dropdown, so that it
@@ -51,8 +43,8 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // center of the focused field.
   static constexpr int kMaximumWidthPercentageToMoveTheSuggestionToCenter = 50;
 
-  AutofillPopupBaseView(const AutofillPopupBaseView&) = delete;
-  AutofillPopupBaseView& operator=(const AutofillPopupBaseView&) = delete;
+  PopupBaseView(const PopupBaseView&) = delete;
+  PopupBaseView& operator=(const PopupBaseView&) = delete;
 
   static int GetCornerRadius();
   // Returns the horizontal margin between elements and the edge of the view.
@@ -71,9 +63,9 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   Browser* browser() { return browser_; }
 
  protected:
-  AutofillPopupBaseView(base::WeakPtr<AutofillPopupViewDelegate> delegate,
-                        views::Widget* parent_widget);
-  ~AutofillPopupBaseView() override;
+  PopupBaseView(base::WeakPtr<AutofillPopupViewDelegate> delegate,
+                views::Widget* parent_widget);
+  ~PopupBaseView() override;
 
   // Show this popup. Idempotent. Returns |true| if popup is shown, |false|
   // otherwise.
@@ -109,7 +101,7 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
       const gfx::Size& preferred_size);
 
  private:
-  friend class AutofillPopupBaseViewTest;
+  friend class PopupBaseViewBrowsertest;
 
   class Widget;
 
@@ -158,4 +150,4 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_POPUP_BASE_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_BASE_VIEW_H_

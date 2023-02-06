@@ -87,8 +87,8 @@ std::unique_ptr<views::View> CreatePasswordStrengthView(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // Add space between the icon and the password strength string.
-  AddSpacerWithSize(autofill::AutofillPopupBaseView::GetHorizontalPadding(),
-                    false, password_strength_view.get());
+  AddSpacerWithSize(autofill::PopupBaseView::GetHorizontalPadding(), false,
+                    password_strength_view.get());
 
   auto* password_strength_label =
       password_strength_view->AddChildView(std::make_unique<views::Label>(
@@ -176,7 +176,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
   AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           GooglePasswordManagerVectorIcon(), ui::kColorIcon, kIconSize)));
-  AddSpacerWithSize(AutofillPopupBaseView::GetHorizontalPadding(),
+  AddSpacerWithSize(PopupBaseView::GetHorizontalPadding(),
                     /*resize=*/false, this);
 
   suggestion_label_ = AddChildView(std::make_unique<views::Label>(
@@ -249,8 +249,7 @@ END_METADATA
 PasswordGenerationPopupViewViews::PasswordGenerationPopupViewViews(
     base::WeakPtr<PasswordGenerationPopupController> controller,
     views::Widget* parent_widget)
-    : AutofillPopupBaseView(controller, parent_widget),
-      controller_(controller) {
+    : PopupBaseView(controller, parent_widget), controller_(controller) {
   CreateLayoutAndChildren();
 }
 
@@ -375,7 +374,7 @@ bool PasswordGenerationPopupViewViews::FullPopupVisible() const {
 void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   // TODO(crbug.com/1404297): kListBox is used for the same reason as in
-  // AutofillPopupViewNativeViews. See crrev.com/c/2545285 for details.
+  // `autofill::PopupViewViews`. See crrev.com/c/2545285 for details.
   // Consider using a more appropriate role (e.g. kMenuListPopup or similar).
   node_data->role = ax::mojom::Role::kListBox;
 
@@ -412,6 +411,5 @@ PasswordGenerationPopupView* PasswordGenerationPopupView::Create(
   return new PasswordGenerationPopupViewViews(controller, observing_widget);
 }
 
-BEGIN_METADATA(PasswordGenerationPopupViewViews,
-               autofill::AutofillPopupBaseView)
+BEGIN_METADATA(PasswordGenerationPopupViewViews, autofill::PopupBaseView)
 END_METADATA

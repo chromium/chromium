@@ -731,13 +731,13 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
       // Autofill popup menu items are always announced on selection events,
       // independent of focus.
-      // The AutofillPopupSeparatorView is intentionally omitted because it
+      // The `PopupSeparatorView` is intentionally omitted because it
       // cannot be focused.
-      if (target.className === 'AutofillPopupSuggestionView' ||
-          target.className === 'PasswordPopupSuggestionView' ||
-          target.className === 'AutofillPopupFooterView' ||
-          target.className === 'AutofillPopupWarningView' ||
-          target.className === 'AutofillPopupBaseView' ||
+      if (target.className === 'PopupSuggestionView' ||
+          target.className === 'PopupPasswordSuggestionView' ||
+          target.className === 'PopupFooterView' ||
+          target.className === 'PopupWarningView' ||
+          target.className === 'PopupBaseView' ||
           target.className ===
               'PasswordGenerationPopupViewViews::GeneratedPasswordBox') {
         override = true;
