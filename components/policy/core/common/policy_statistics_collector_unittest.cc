@@ -207,25 +207,6 @@ TEST_F(PolicyStatisticsCollectorTest, MultiplePolicies) {
   histogram_tester_.ExpectTotalCount("Enterprise.Policies", 2);
 }
 
-TEST_F(PolicyStatisticsCollectorTest, PolicyIgnoredByAtomicGroup) {
-  SetPolicyIgnoredByAtomicGroup(kTestPolicy3);
-  const AtomicGroup* extensions = nullptr;
-
-  for (size_t i = 0; i < kPolicyAtomicGroupMappingsLength; ++i) {
-    if (kPolicyAtomicGroupMappings[i].policy_group == group::kExtensions) {
-      extensions = &kPolicyAtomicGroupMappings[i];
-      break;
-    }
-  }
-
-  DCHECK(extensions);
-
-  policy_statistics_collector_->Initialize();
-
-  histogram_tester_.ExpectUniqueSample(
-      "Enterprise.Policies.IgnoredByPolicyGroup", kTestPolicy3Id, 1);
-}
-
 TEST_F(PolicyStatisticsCollectorTest, MandatoryPolicy) {
   SetPolicy(kTestPolicy1, POLICY_LEVEL_MANDATORY);
 

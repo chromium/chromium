@@ -147,9 +147,6 @@ void PolicyStatisticsCollector::RecordPolicyUse(int id, Condition condition) {
     case kRecommended:
       suffix = ".Recommended";
       break;
-    case kIgnoredByAtomicGroup:
-      suffix = ".IgnoredByPolicyGroup";
-      break;
   }
   base::UmaHistogramSparse("Enterprise.Policies" + suffix, id);
 }
@@ -177,22 +174,6 @@ void PolicyStatisticsCollector::CollectStatistics() {
       NOTREACHED();
     }
     source |= SimplifyPolicySource(policy_entry->source, it.key());
-  }
-
-  for (size_t i = 0; i < kPolicyAtomicGroupMappingsLength; ++i) {
-    const AtomicGroup& group = kPolicyAtomicGroupMappings[i];
-    // Find the policy with the highest priority that is both in |policies|
-    // and |group.policies|, an array ending with a nullptr.
-    for (const char* const* policy_name = group.policies; *policy_name;
-         ++policy_name) {
-      if (policies.IsPolicyIgnoredByAtomicGroup(*policy_name)) {
-        const PolicyDetails* details = get_details_.Run(*policy_name);
-        if (details)
-          RecordPolicyUse(details->id, kIgnoredByAtomicGroup);
-        else
-          NOTREACHED();
-      }
-    }
   }
 
   RecordPoliciesSources(static_cast<SimplePolicySource>(source));

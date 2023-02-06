@@ -29,7 +29,6 @@ enum Condition {
   kDefault,
   kMandatory,
   kRecommended,
-  kIgnoredByAtomicGroup,
 };
 
 enum class PoliciesSources {

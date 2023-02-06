@@ -2323,19 +2323,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.Policies.IgnoredByPolicyGroup"
-    enum="EnterprisePolicies" expires_after="2023-02-12">
-  <owner>ydago@chromium.org</owner>
-  <owner>pastarmovj@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    A set of enterprise policy rules that are ignored because they do not share
-    the highest priority from their policy atomic group. This is recorded at
-    startup, then every 24 hours. If chrome is not running at the 24 hours mark,
-    this will be recorded at the next startup.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.Policies.Sources" enum="EnterprisePoliciesSources"
     expires_after="2023-06-04">
   <owner>zmin@chromium.org</owner>
