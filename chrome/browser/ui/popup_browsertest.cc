@@ -271,6 +271,8 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, ResizeClampedToCurrentDisplay) {
 #endif
 // Tests that an about:blank popup can be moved across screens with permission.
 IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_AboutBlankCrossScreenPlacement) {
+  display::Screen* screen = display::Screen::GetScreen();
+  int actual_num_displays = screen->GetNumDisplays();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-802x802");
@@ -290,8 +292,7 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_AboutBlankCrossScreenPlacement) {
       display::DisplayList::Type::NOT_PRIMARY);
   display::test::ScopedScreenOverride screen_override(&test_screen);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  display::Screen* screen = display::Screen::GetScreen();
-  ASSERT_EQ(2, screen->GetNumDisplays());
+  ASSERT_EQ(actual_num_displays + 1, screen->GetNumDisplays());
 
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
@@ -316,7 +317,7 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_AboutBlankCrossScreenPlacement) {
         }
       })();
     )";
-    EXPECT_EQ(2, EvalJs(opener, kGetScreensLength));
+    EXPECT_EQ(actual_num_displays + 1, EvalJs(opener, kGetScreensLength));
     // Do not auto-accept any other permission requests.
     permission_request_manager->set_auto_response_for_test(
         permissions::PermissionRequestManager::NONE);
