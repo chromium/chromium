@@ -512,24 +512,44 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
     profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
     profile.scalability_modes.push_back(SVCScalabilityMode::kL1T3);
   }
+
+  // Add SupportedProfile for portrait resolution.
+  SupportedProfile portrait_profile(profile);
+  portrait_profile.max_resolution =
+      gfx::Size(kMaxResolutionHeight, kMaxResolutionWidth);
+  portrait_profile.min_resolution =
+      gfx::Size(kMinResolutionHeight, kMinResolutionWidth);
+
   if (codec == VideoCodec::kH264) {
     profile.profile = H264PROFILE_BASELINE;
+    portrait_profile.profile = H264PROFILE_BASELINE;
     profiles.push_back(profile);
+    profiles.push_back(portrait_profile);
 
     profile.profile = H264PROFILE_MAIN;
+    portrait_profile.profile = H264PROFILE_MAIN;
     profiles.push_back(profile);
+    profiles.push_back(portrait_profile);
 
     profile.profile = H264PROFILE_HIGH;
+    portrait_profile.profile = H264PROFILE_HIGH;
     profiles.push_back(profile);
+    profiles.push_back(portrait_profile);
   } else if (codec == VideoCodec::kVP9) {
     profile.profile = VP9PROFILE_PROFILE0;
+    portrait_profile.profile = VP9PROFILE_PROFILE0;
     profiles.push_back(profile);
+    profiles.push_back(portrait_profile);
   } else if (codec == VideoCodec::kAV1) {
     profile.profile = AV1PROFILE_PROFILE_MAIN;
+    portrait_profile.profile = AV1PROFILE_PROFILE_MAIN;
     profiles.push_back(profile);
+    profiles.push_back(portrait_profile);
   } else if (codec == VideoCodec::kHEVC) {
     profile.profile = HEVCPROFILE_MAIN;
+    portrait_profile.profile = HEVCPROFILE_MAIN;
     profiles.push_back(profile);
+    profiles.push_back(portrait_profile);
   }
   return profiles;
 }
