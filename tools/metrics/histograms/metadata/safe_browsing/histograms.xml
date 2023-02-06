@@ -1102,6 +1102,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.HPRTExperiment.Redirects.AllChecksEligible"
+    enum="Boolean" expires_after="2023-07-27">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    When there are redirects in an HPRT experiment and not all of them are
+    ineligible for the experiment, this logs true if all of them are eligible.
+    (It logs false if some are ineligible.) Eligible is defined as: if a lookup
+    was unsafe, it would display a warning. Ineligibility can happen for this
+    log if WebContents disappears partway through the experiment, or if some but
+    not all of the redirects have already shown a warning on the WebContents and
+    have been bypassed by the user. This is logged when the HPRT experiment is
+    about to conclude, once all lookup mechanisms have completed or timed out,
+    BrowserUrlLoaderThrottle has reached WillProcessResponse or has destructed
+    CheckerOnIO before that occurred, and the eligibility of each check has been
+    determined.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.HPRTExperiment{MaybeRedirects}.DelayedResponseResult"
     enum="HPRTExperimentCombinedResult" expires_after="2023-07-19">
@@ -1110,8 +1129,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records which mechanisms delayed the page response. Logged when the HPRT
     experiment concludes, which is once all lookup mechanisms have completed or
-    timed out, and BrowserUrlLoaderThrottle has reached WillProcessResponse or
-    has destructed CheckerOnIO before that occurred. {MaybeRedirects}
+    timed out, BrowserUrlLoaderThrottle has reached WillProcessResponse or has
+    destructed CheckerOnIO before that occurred, and the eligibility of each
+    check has been determined and at least one is eligible. Eligible is defined
+    as: if a lookup was unsafe, it would display a warning. {MaybeRedirects}
   </summary>
   <token key="MaybeRedirects"
       variants="HPRTExperimentDelayedResponseMaybeRedirects"/>
@@ -1124,8 +1145,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records which mechanisms timed out. Logged when the HPRT experiment
     concludes, which is once all lookup mechanisms have completed or timed out,
-    and BrowserUrlLoaderThrottle has reached WillProcessResponse or has
-    destructed CheckerOnIO before that occurred. {MaybeRedirects}
+    BrowserUrlLoaderThrottle has reached WillProcessResponse or has destructed
+    CheckerOnIO before that occurred, and the eligibility of each check has been
+    determined and at least one is eligible. Eligible is defined as: if a lookup
+    was unsafe, it would display a warning. {MaybeRedirects}
   </summary>
   <token key="MaybeRedirects" variants="HPRTExperimentMaybeRedirects"/>
 </histogram>
@@ -1137,8 +1160,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records which mechanisms resulted in a warning. Logged when the HPRT
     experiment concludes, which is once all lookup mechanisms have completed or
-    timed out, and BrowserUrlLoaderThrottle has reached WillProcessResponse or
-    has destructed CheckerOnIO before that occurred. {MaybeRedirects}
+    timed out, BrowserUrlLoaderThrottle has reached WillProcessResponse or has
+    destructed CheckerOnIO before that occurred, and the eligibility of each
+    check has been determined and at least one is eligible. Eligible is defined
+    as: if a lookup was unsafe, it would display a warning. {MaybeRedirects}
   </summary>
   <token key="MaybeRedirects" variants="HPRTExperimentMaybeRedirects"/>
 </histogram>
@@ -1151,9 +1176,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records by how much {Mechanism1} was faster than {Mechanism2}. Logged when
     the HPRT experiment concludes, which is once all lookup mechanisms have
-    completed or timed out, and BrowserUrlLoaderThrottle has reached
-    WillProcessResponse or has destructed CheckerOnIO before that occurred.
-    {MaybeRedirects}
+    completed or timed out, BrowserUrlLoaderThrottle has reached
+    WillProcessResponse or has destructed CheckerOnIO before that occurred, and
+    the eligibility of each check has been determined and at least one is
+    eligible. Eligible is defined as: if a lookup was unsafe, it would display a
+    warning. {MaybeRedirects}
   </summary>
   <token key="Mechanism1" variants="HPRTExperimentMechanism"/>
   <token key="Mechanism2" variants="HPRTExperimentMechanism"/>
@@ -1168,8 +1195,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether {Mechanism} delayed the page response. Logged when the HPRT
     experiment concludes, which is once all lookup mechanisms have completed or
-    timed out, and BrowserUrlLoaderThrottle has reached WillProcessResponse or
-    has destructed CheckerOnIO before that occurred. {MaybeRedirects}
+    timed out, BrowserUrlLoaderThrottle has reached WillProcessResponse or has
+    destructed CheckerOnIO before that occurred, and the eligibility of each
+    check has been determined and at least one is eligible. Eligible is defined
+    as: if a lookup was unsafe, it would display a warning. {MaybeRedirects}
   </summary>
   <token key="Mechanism" variants="HPRTExperimentMechanism"/>
   <token key="MaybeRedirects" variants="HPRTExperimentMaybeRedirects"/>
@@ -1182,10 +1211,12 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records by how much {Mechanism} delayed the page response. Logged when all
-    lookup mechanisms in the HPRT experiment have completed or timed out, and
-    BrowserUrlLoaderThrottle has reached WillProcessResponse. If
-    BrowserUrlLoaderThrottle destructs CheckerOnIO before WillProcessResponse is
-    called, there is no log. {MaybeRedirects}
+    lookup mechanisms in the HPRT experiment have completed or timed out,
+    BrowserUrlLoaderThrottle has reached WillProcessResponse, and the
+    eligibility of each check has been determined and at least one is eligible.
+    If BrowserUrlLoaderThrottle destructs CheckerOnIO before WillProcessResponse
+    is called, there is no log. Eligible is defined as: if a lookup was unsafe,
+    it would display a warning. {MaybeRedirects}
   </summary>
   <token key="Mechanism" variants="HPRTExperimentMechanism"/>
   <token key="MaybeRedirects" variants="HPRTExperimentMaybeRedirects"/>
@@ -1198,7 +1229,11 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether {Mechanism} timed out. Logged when the HPRT experiment
-    concludes. {MaybeRedirects}
+    concludes, which is once all lookup mechanisms have completed or timed out,
+    BrowserUrlLoaderThrottle has reached WillProcessResponse or has destructed
+    CheckerOnIO before that occurred, and the eligibility of each check has been
+    determined and at least one is eligible. Eligible is defined as: if a lookup
+    was unsafe, it would display a warning. {MaybeRedirects}
   </summary>
   <token key="Mechanism" variants="HPRTExperimentMechanism"/>
   <token key="MaybeRedirects" variants="HPRTExperimentMaybeRedirects"/>
@@ -1211,7 +1246,11 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records by how long {Mechanism} took. Logged when the HPRT experiment
-    concludes. {MaybeRedirects}
+    concludes, which is once all lookup mechanisms have completed or timed out,
+    BrowserUrlLoaderThrottle has reached WillProcessResponse or has destructed
+    CheckerOnIO before that occurred, and the eligibility of each check has been
+    determined and at least one is eligible. Eligible is defined as: if a lookup
+    was unsafe, it would display a warning. {MaybeRedirects}
   </summary>
   <token key="Mechanism" variants="HPRTExperimentMechanism"/>
   <token key="MaybeRedirects" variants="HPRTExperimentMaybeRedirects"/>

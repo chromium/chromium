@@ -26,11 +26,12 @@ namespace safe_browsing {
 // for each mechanism. This class will wait until all redirects have completed
 // before ending the experiment and logging the results.
 // This class should only be used on the IO thread.
-// TODO(1410253): Delete this class once the temporary experiment is complete.
+// TODO(crbug.com/1410253): Delete this class once the temporary experiment is
+// complete.
 class SafeBrowsingLookupMechanismExperimenter
     : public base::RefCounted<SafeBrowsingLookupMechanismExperimenter> {
  public:
-  SafeBrowsingLookupMechanismExperimenter();
+  explicit SafeBrowsingLookupMechanismExperimenter(bool is_prefetch);
   SafeBrowsingLookupMechanismExperimenter(
       const SafeBrowsingLookupMechanismExperimenter&) = delete;
   SafeBrowsingLookupMechanismExperimenter& operator=(
@@ -46,6 +47,7 @@ class SafeBrowsingLookupMechanismExperimenter
   // only callback passed through is |url_real_time_result_callback|, which is
   // called when the URL real-time check completes.
   SafeBrowsingLookupMechanism::StartCheckResult RunChecks(
+      size_t safe_browsing_url_checker_index,
       SafeBrowsingLookupMechanismRunner::CompleteCheckCallbackWithTimeout
           url_real_time_result_callback,
       const GURL& url,
@@ -76,6 +78,17 @@ class SafeBrowsingLookupMechanismExperimenter
   // If SafeBrowsingUrlCheckerImpl is destructed before the latest URL real-time
   // check has completed, the experiment end with the results being thrown away.
   void OnSafeBrowsingUrlCheckerImplDestructed();
+
+  // Determines whether the particular SafeBrowsingUrlCheckerImpl |urls_| index
+  // has been used to start a lookup for the experiment.
+  bool IsCheckInExperiment(size_t safe_browsing_url_checker_index);
+
+  // There is some post-logic after a server-side endpoint says a URL is
+  // unsafe that determines whether a warning should be shown. A check is only
+  // eligible for the experiment if it would show a warning if deemed unsafe.
+  // It might complete the experiment if this is the last awaited item.
+  void SetCheckExperimentEligibility(size_t safe_browsing_url_checker_index,
+                                     bool is_eligible_for_experiment);
 
  private:
   friend class base::RefCounted<SafeBrowsingLookupMechanismExperimenter>;
@@ -155,6 +168,12 @@ class SafeBrowsingLookupMechanismExperimenter
     RunDetails hash_database_details;
     RunDetails hash_real_time_details;
     UrlRealTimeRunDetails url_real_time_details;
+    // There is some post-logic after a server-side endpoint says a URL is
+    // unsafe that determines whether a warning should be shown. Once the
+    // real-time URL lookup completes, this value is populated with true or
+    // false and affects whether or not this check's results are logged. Before
+    // the lookup has completed, this value is unpopulated.
+    absl::optional<bool> would_check_show_warning_if_unsafe;
   };
 
   struct DelayInformation {
@@ -169,6 +188,7 @@ class SafeBrowsingLookupMechanismExperimenter
   // Helper function that does everything |RunChecks| does after the lookup
   // mechanism objects have been created.
   SafeBrowsingLookupMechanism::StartCheckResult RunChecksInternal(
+      size_t safe_browsing_url_checker_index,
       std::unique_ptr<SafeBrowsingLookupMechanism> url_real_time_mechanism,
       std::unique_ptr<SafeBrowsingLookupMechanism> hash_database_mechanism,
       std::unique_ptr<SafeBrowsingLookupMechanism> hash_real_time_mechanism,
@@ -215,7 +235,9 @@ class SafeBrowsingLookupMechanismExperimenter
   // delete the entire experimenter object if there are no remaining consumer
   // pointers to it.
   void MaybeCompleteExperiment();
-  // Combines the results of all the lookups and logs them.
+  // Combines the results of all the lookups and logs them. This function should
+  // only be called if at least one check is "eligible," i.e. that it has true
+  // for |would_check_show_warning_if_unsafe|.
   void LogExperimentResults();
   // Once this is called, this object will be cleaned up either immediately or
   // shortly afterwards once other objects (SafeBrowsingUrlCheckerImpl or
@@ -262,6 +284,9 @@ class SafeBrowsingLookupMechanismExperimenter
   void LogIndividualMechanismResult(const std::string& redirects_qualifier,
                                     MechanismResults& results,
                                     const std::string& acronym) const;
+  // Returns whether any check has |would_check_show_warning_if_unsafe|
+  // set to true.
+  bool AreAnyChecksEligibleForLogging();
 
   // This represents the checks that the experiment will or already did run.
   // Each |CheckToRun| has the inputs that all 3 mechanism lookups need to be
@@ -284,6 +309,18 @@ class SafeBrowsingLookupMechanismExperimenter
   // called, so this property being set ensures that the experiment doesn't keep
   // waiting for a call that will not come.
   bool is_browser_url_loader_throttle_checker_on_io_destructed_ = false;
+  // A check is not eligible for the experiment if it wouldn't even show a
+  // warning if the result was unsafe. This eligibility can only be computed on
+  // the UI thread, and must be done before the user sees a blocking page. To
+  // avoid slowing down the real-time URL check, this eligibility is determined
+  // in parallel with the lookup, so the experiment is not allowed to conclude
+  // until the eligibility has been determined for all run checks.
+  size_t num_checks_with_eligibility_determined_ = 0;
+  // Mapping of the |urls_| index in SafeBrowsingUrlCheckerImpl to the
+  // |checks_to_run_| index for a particular check. This is used to populate a
+  // particular check's |would_check_show_warning_if_unsafe| value async.
+  std::map<size_t, size_t>
+      safe_browsing_url_checker_index_to_experimenter_index_;
 #if DCHECK_IS_ON()
   // Used only for a DCHECK to confirm that the experiment is only completed
   // once.
@@ -292,6 +329,14 @@ class SafeBrowsingLookupMechanismExperimenter
   // Set to the current time when the first check starts being run. This is used
   // to decide how long it took before WillProcessResponse was called.
   absl::optional<base::TimeTicks> first_check_start_time_;
+
+  // Specifies whether the request is a prefetch request. If so, there will not
+  // be any results logged. However, the experiment is still run so that the 2
+  // backgrounded mechanisms are able to cache the results as they would
+  // normally. Then, later requests within the experiment can benefit from those
+  // cached results.
+  bool is_prefetch_ = false;
+
   base::WeakPtrFactory<SafeBrowsingLookupMechanismExperimenter> weak_factory_{
       this};
 };

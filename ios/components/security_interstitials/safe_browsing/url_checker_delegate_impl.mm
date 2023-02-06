@@ -130,6 +130,20 @@ void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
   NOTREACHED();
 }
 
+void UrlCheckerDelegateImpl::CheckLookupMechanismExperimentEligibility(
+    const security_interstitials::UnsafeResource& resource,
+    base::OnceCallback<void(bool)> callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  NOTREACHED();
+}
+
+void UrlCheckerDelegateImpl::CheckExperimentEligibilityAndStartBlockingPage(
+    const security_interstitials::UnsafeResource& resource,
+    base::OnceCallback<void(bool)> callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  NOTREACHED();
+}
+
 const safe_browsing::SBThreatTypeSet& UrlCheckerDelegateImpl::GetThreatTypes() {
   return threat_types_;
 }

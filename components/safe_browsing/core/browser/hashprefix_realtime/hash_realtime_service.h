@@ -78,7 +78,8 @@ class HashRealTimeService : public KeyedService {
 
   // This function is only currently used for the hash-prefix real-time lookup
   // experiment. Once the experiment is complete, it will be deprecated.
-  // TODO(1410253): Deprecate this (including the factory populating it).
+  // TODO(crbug.com/1410253): Deprecate this (including the factory populating
+  // it).
   bool IsEnhancedProtectionEnabled();
 
   // Returns true if the lookups are currently in backoff mode due to too many

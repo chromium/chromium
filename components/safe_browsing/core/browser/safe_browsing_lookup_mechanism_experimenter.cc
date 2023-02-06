@@ -15,12 +15,15 @@
 
 namespace safe_browsing {
 SafeBrowsingLookupMechanismExperimenter::
-    SafeBrowsingLookupMechanismExperimenter() = default;
+    SafeBrowsingLookupMechanismExperimenter(bool is_prefetch) {
+  is_prefetch_ = is_prefetch;
+}
 SafeBrowsingLookupMechanismExperimenter::
     ~SafeBrowsingLookupMechanismExperimenter() = default;
 
 SafeBrowsingLookupMechanism::StartCheckResult
 SafeBrowsingLookupMechanismExperimenter::RunChecks(
+    size_t safe_browsing_url_checker_index,
     SafeBrowsingLookupMechanismRunner::CompleteCheckCallbackWithTimeout
         url_real_time_result_callback,
     const GURL& url,
@@ -46,19 +49,25 @@ SafeBrowsingLookupMechanismExperimenter::RunChecks(
       url, threat_types, database_manager, can_check_db, ui_task_runner,
       hash_real_time_service_on_ui);
 
-  return RunChecksInternal(std::move(url_real_time_mechanism),
-                           std::move(hash_database_mechanism),
-                           std::move(hash_real_time_mechanism),
-                           std::move(url_real_time_result_callback));
+  return RunChecksInternal(
+      safe_browsing_url_checker_index, std::move(url_real_time_mechanism),
+      std::move(hash_database_mechanism), std::move(hash_real_time_mechanism),
+      std::move(url_real_time_result_callback));
 }
 
 SafeBrowsingLookupMechanism::StartCheckResult
 SafeBrowsingLookupMechanismExperimenter::RunChecksInternal(
+    size_t safe_browsing_url_checker_index,
     std::unique_ptr<SafeBrowsingLookupMechanism> url_real_time_mechanism,
     std::unique_ptr<SafeBrowsingLookupMechanism> hash_database_mechanism,
     std::unique_ptr<SafeBrowsingLookupMechanism> hash_real_time_mechanism,
     SafeBrowsingLookupMechanismRunner::CompleteCheckCallbackWithTimeout
         url_real_time_result_callback) {
+  DCHECK(!base::Contains(safe_browsing_url_checker_index_to_experimenter_index_,
+                         safe_browsing_url_checker_index));
+  safe_browsing_url_checker_index_to_experimenter_index_
+      [safe_browsing_url_checker_index] = checks_to_run_.size();
+
   // Create the mechanism runners and give them a reference to this object.
   // UrlRealTimeMechanism
   auto url_real_time_runner = std::make_unique<
@@ -242,6 +251,7 @@ void SafeBrowsingLookupMechanismExperimenter::MaybeCompleteExperiment() {
   if (!latest_check->hash_database_details.results.has_value() ||
       !latest_check->hash_real_time_details.results.has_value() ||
       !latest_check->url_real_time_details.results.has_value() ||
+      num_checks_with_eligibility_determined_ < checks_to_run_.size() ||
       (!will_process_response_reached_time_.has_value() &&
        !is_browser_url_loader_throttle_checker_on_io_destructed_)) {
     // The results are not yet complete.
@@ -251,15 +261,36 @@ void SafeBrowsingLookupMechanismExperimenter::MaybeCompleteExperiment() {
   DCHECK(!is_experiment_complete_);
   is_experiment_complete_ = true;
 #endif
-  LogExperimentResults();
+  if (AreAnyChecksEligibleForLogging()) {
+    LogExperimentResults();
+  }
   EndExperiment();
   // NOTE: Calling |EndExperiment| may result in the synchronous destruction
   // of this object, so there is nothing safe to do here but return.
 }
 
+bool SafeBrowsingLookupMechanismExperimenter::AreAnyChecksEligibleForLogging() {
+  bool any_eligible = false;
+  bool all_eligible = true;
+  for (auto& check : checks_to_run_) {
+    if (check->would_check_show_warning_if_unsafe.value()) {
+      any_eligible = true;
+    } else {
+      all_eligible = false;
+    }
+  }
+  if (checks_to_run_.size() > 1 && any_eligible) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.HPRTExperiment.Redirects.AllChecksEligible",
+        all_eligible);
+  }
+  return any_eligible;
+}
+
 void SafeBrowsingLookupMechanismExperimenter::LogExperimentResults() {
   if (checks_to_run_.size() == 1) {
     auto& single_check = checks_to_run_.back();
+    DCHECK(single_check->would_check_show_warning_if_unsafe.value());
     LogAggregatedResults("",
                          single_check->url_real_time_details.results.value(),
                          single_check->hash_database_details.results.value(),
@@ -448,7 +479,9 @@ SafeBrowsingLookupMechanismExperimenter::AggregateRedirectInfo(
   base::TimeDelta time_taken = base::TimeDelta();
   for (auto& check : checks_to_run_) {
     if (get_results.Run(check).had_warning) {
-      had_warning = true;
+      // Only count it as a warning for the particular check if it would have
+      // shown a warning.
+      had_warning = check->would_check_show_warning_if_unsafe.value();
     }
     if (get_results.Run(check).timed_out) {
       timed_out = true;
@@ -475,6 +508,49 @@ SafeBrowsingLookupMechanismExperimenter::CombineBoolResults(
          : hash_real_time_result ? ExperimentAllInOneResult::kHashRealTimeOnly
          : url_real_time_result  ? ExperimentAllInOneResult::kUrlRealTimeOnly
                                  : ExperimentAllInOneResult::kNoMechanism;
+}
+
+bool SafeBrowsingLookupMechanismExperimenter::IsCheckInExperiment(
+    size_t safe_browsing_url_checker_index) {
+  return base::Contains(safe_browsing_url_checker_index_to_experimenter_index_,
+                        safe_browsing_url_checker_index);
+}
+void SafeBrowsingLookupMechanismExperimenter::SetCheckExperimentEligibility(
+    size_t safe_browsing_url_checker_index,
+    bool is_eligible_for_experiment) {
+  if (checks_to_run_.empty()) {
+    // The experiment already ended. Can happen if it's the second call from
+    // SafeBrowsingUrlCheckerImpl and the first call was the last thing the
+    // experiment was waiting on.
+    return;
+  }
+  if (!IsCheckInExperiment(safe_browsing_url_checker_index)) {
+    DCHECK(false);
+    return;
+  }
+  auto index = safe_browsing_url_checker_index_to_experimenter_index_
+      [safe_browsing_url_checker_index];
+  if (index >= checks_to_run_.size()) {
+    DCHECK(false);
+    return;
+  }
+  if (checks_to_run_[index]->would_check_show_warning_if_unsafe.has_value()) {
+    // It's not unexpected that the check might already have this populated,
+    // since SafeBrowsingUrlCheckerImpl might try to populate it twice.
+    return;
+  }
+  // In addition to applying results provided by the caller of this method, we
+  // also set |would_check_show_warning_if_unsafe| to false if the request is a
+  // prefetch request. We do this here instead of just not running the whole
+  // experiment because we still want the 2 backgrounded mechanisms to be able
+  // to cache the results as they would normally, so that later requests within
+  // the experiment can benefit from those cached results.
+  checks_to_run_[index]->would_check_show_warning_if_unsafe =
+      is_eligible_for_experiment && !is_prefetch_;
+  num_checks_with_eligibility_determined_++;
+  MaybeCompleteExperiment();
+  // NOTE: Calling |MaybeCompleteExperiment| may result in the synchronous
+  // destruction of this object, so there is nothing safe to do here but return.
 }
 
 void SafeBrowsingLookupMechanismExperimenter::

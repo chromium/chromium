@@ -75,6 +75,57 @@ class MockSafeBrowsingLookupMechanism : public SafeBrowsingLookupMechanism {
   base::WeakPtrFactory<MockSafeBrowsingLookupMechanism> weak_factory_{this};
 };
 
+struct EligibilityConfig {
+  EligibilityConfig(size_t safe_browsing_url_checker_index,
+                    base::TimeDelta time_to_resolution,
+                    bool eligibility)
+      : safe_browsing_url_checker_index(safe_browsing_url_checker_index),
+        time_to_resolution(time_to_resolution),
+        eligibility(eligibility) {}
+  size_t safe_browsing_url_checker_index;
+  base::TimeDelta time_to_resolution;
+  bool eligibility;
+};
+
+// This class is meant to simulate how the UrlCheckerDelegate interacts with the
+// experimenter.
+class PretendUrlCheckerDelegate {
+ public:
+  void SetEligibilityConfigs(
+      scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
+          mechanism_experimenter,
+      absl::optional<std::vector<EligibilityConfig>> eligibility_configs) {
+    if (eligibility_configs.has_value()) {
+      for (const auto& config : eligibility_configs.value()) {
+        SetEligibilityConfig(mechanism_experimenter, config);
+      }
+    }
+  }
+  void SetEligibilityConfig(
+      scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
+          mechanism_experimenter,
+      EligibilityConfig config) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PretendUrlCheckerDelegate::SetEligibility,
+                       weak_factory_.GetWeakPtr(), mechanism_experimenter,
+                       config.safe_browsing_url_checker_index,
+                       config.eligibility),
+        config.time_to_resolution);
+  }
+
+ private:
+  void SetEligibility(scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
+                          mechanism_experimenter,
+                      size_t safe_browsing_url_checker_index,
+                      bool is_eligible_for_experiment) {
+    mechanism_experimenter->SetCheckExperimentEligibility(
+        safe_browsing_url_checker_index, is_eligible_for_experiment);
+  }
+
+  base::WeakPtrFactory<PretendUrlCheckerDelegate> weak_factory_{this};
+};
+
 // This class is meant to simulate how the SafeBrowsingUrlCheckerImpl interacts
 // with the experimenter.
 class PretendSafeBrowsingUrlCheckerImpl {
@@ -87,6 +138,8 @@ class PretendSafeBrowsingUrlCheckerImpl {
   ~PretendSafeBrowsingUrlCheckerImpl() {
     mechanism_experimenter_->OnSafeBrowsingUrlCheckerImplDestructed();
   }
+
+ private:
   scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
       mechanism_experimenter_;
 };
@@ -96,7 +149,11 @@ class PretendSafeBrowsingUrlCheckerImpl {
 class PretendCheckerOnIO {
  public:
   explicit PretendCheckerOnIO(base::TimeDelta time_to_will_process_response,
-                              base::TimeDelta time_to_self_destruct) {
+                              base::TimeDelta time_to_self_destruct,
+                              bool is_prefetch) {
+    mechanism_experimenter_ =
+        base::MakeRefCounted<SafeBrowsingLookupMechanismExperimenter>(
+            is_prefetch);
     safe_browsing_url_checker_impl_ =
         std::make_unique<PretendSafeBrowsingUrlCheckerImpl>(
             mechanism_experimenter_);
@@ -128,8 +185,7 @@ class PretendCheckerOnIO {
   std::unique_ptr<PretendSafeBrowsingUrlCheckerImpl>
       safe_browsing_url_checker_impl_;
   scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
-      mechanism_experimenter_ =
-          base::MakeRefCounted<SafeBrowsingLookupMechanismExperimenter>();
+      mechanism_experimenter_;
   base::WeakPtrFactory<PretendCheckerOnIO> weak_factory_{this};
 };
 
@@ -156,25 +212,28 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
 
   void RunChecks(
       scoped_refptr<Experimenter> mechanism_experimenter,
+      size_t safe_browsing_url_checker_index,
       std::unique_ptr<SafeBrowsingLookupMechanism> url_real_time_mechanism,
       std::unique_ptr<SafeBrowsingLookupMechanism> hash_database_mechanism,
       std::unique_ptr<SafeBrowsingLookupMechanism> hash_real_time_mechanism,
       CompleteCheckCallbackWithTimeout url_real_time_result_callback) {
     mechanism_experimenter->RunChecksInternal(
-        std::move(url_real_time_mechanism), std::move(hash_database_mechanism),
-        std::move(hash_real_time_mechanism),
+        safe_browsing_url_checker_index, std::move(url_real_time_mechanism),
+        std::move(hash_database_mechanism), std::move(hash_real_time_mechanism),
         std::move(url_real_time_result_callback));
   }
   void CreateAndRunChecks(
       scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
           mechanism_experimenter,
+      size_t safe_browsing_url_checker_index,
       std::vector<base::TimeDelta> urt_hpd_hprt_times_taken,
       std::vector<SBThreatType> urt_hpd_hprt_threat_types,
-      CompleteCheckCallbackWithTimeout url_real_time_result_callback) {
+      CompleteCheckCallbackWithTimeout url_real_time_result_callback,
+      bool immediately_resolve_eligibility) {
     DCHECK(urt_hpd_hprt_times_taken[1] != base::Seconds(0) ||
            urt_hpd_hprt_threat_types[1] == SB_THREAT_TYPE_SAFE);
     RunChecks(
-        mechanism_experimenter,
+        mechanism_experimenter, safe_browsing_url_checker_index,
         CreateUrlRealTimeMechanism(urt_hpd_hprt_threat_types[0],
                                    urt_hpd_hprt_times_taken[0]),
         urt_hpd_hprt_times_taken[1] == base::Seconds(0)
@@ -184,16 +243,26 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
         CreateHashRealTimeMechanism(urt_hpd_hprt_threat_types[2],
                                     urt_hpd_hprt_times_taken[2]),
         std::move(url_real_time_result_callback));
+
+    if (immediately_resolve_eligibility) {
+      mechanism_experimenter->SetCheckExperimentEligibility(
+          safe_browsing_url_checker_index, true);
+    }
   }
 
   scoped_refptr<SafeBrowsingLookupMechanismExperimenter> SetUpExperimenter(
       base::TimeDelta will_process_response_time_taken,
-      base::TimeDelta checker_on_io_self_destruct_time) {
+      base::TimeDelta checker_on_io_self_destruct_time,
+      absl::optional<std::vector<EligibilityConfig>> eligibility_configs,
+      bool is_prefetch) {
     // Created with 'new' so that it can live on past the end of this method but
     // also control its own lifetime via |time_to_self_destruct|.
     auto* checker_on_io = new PretendCheckerOnIO(
         /*time_to_will_process_response=*/will_process_response_time_taken,
-        /*time_to_self_destruct=*/checker_on_io_self_destruct_time);
+        /*time_to_self_destruct=*/checker_on_io_self_destruct_time,
+        is_prefetch);
+    url_checker_delegate_->SetEligibilityConfigs(
+        checker_on_io->GetExperimenter(), eligibility_configs);
     return checker_on_io->GetExperimenter();
   }
 
@@ -208,12 +277,17 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
       std::vector<SBThreatType> urt_hpd_hprt_threat_types,
       base::TimeDelta will_process_response_time_taken,
       base::TimeDelta checker_on_io_self_destruct_time,
-      CompleteCheckCallbackWithTimeout url_real_time_result_callback) {
+      CompleteCheckCallbackWithTimeout url_real_time_result_callback,
+      absl::optional<std::vector<EligibilityConfig>> eligibility_configs,
+      bool is_prefetch) {
     auto mechanism_experimenter = SetUpExperimenter(
-        will_process_response_time_taken, checker_on_io_self_destruct_time);
-    CreateAndRunChecks(mechanism_experimenter, urt_hpd_hprt_times_taken,
-                       urt_hpd_hprt_threat_types,
-                       std::move(url_real_time_result_callback));
+        will_process_response_time_taken, checker_on_io_self_destruct_time,
+        eligibility_configs, is_prefetch);
+    CreateAndRunChecks(
+        mechanism_experimenter, /*safe_browsing_url_checker_index=*/0,
+        urt_hpd_hprt_times_taken, urt_hpd_hprt_threat_types,
+        std::move(url_real_time_result_callback),
+        /*immediately_resolve_eligibility=*/!eligibility_configs.has_value());
     return mechanism_experimenter;
   }
 
@@ -249,6 +323,19 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
         /*is_url_real_time=*/false);
   }
 
+  void VerifyNoLogs() {
+    // WarningsResult is always logged if there are any logs at all, so we only
+    // need to check this. We do not want to use:
+    // EXPECT_EQ(histogram_tester_->GetAllHistogramsRecorded().size(), 0u);
+    // This is because there can be logs unrelated to HPRTExperiment that occur,
+    // such as Scheduler.TaskQueueImpl.* logs.
+    histogram_tester_->ExpectTotalCount(
+        /*name=*/"SafeBrowsing.HPRTExperiment.WarningsResult",
+        /*expected_count=*/0);
+    histogram_tester_->ExpectTotalCount(
+        /*name=*/"SafeBrowsing.HPRTExperiment.Redirects.WarningsResult",
+        /*expected_count=*/0);
+  }
   void VerifyLogs(
       std::vector<base::TimeDelta> expected_urt_hpd_hprt_times_taken,
       std::vector<bool> expected_urt_hpd_hprt_had_warnings,
@@ -258,7 +345,8 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
       base::TimeDelta checker_on_io_self_destruct_time) {
     VerifyLogsAllowingRedirects(
         expected_urt_hpd_hprt_times_taken, expected_urt_hpd_hprt_times_taken,
-        expected_urt_hpd_hprt_had_warnings, /*expected_had_redirects=*/false,
+        expected_urt_hpd_hprt_had_warnings,
+        /*expected_had_redirects=*/false, /*expected_some_ineligible=*/false,
         expected_warnings_result, expected_timed_out_result,
         will_process_response_time_taken, checker_on_io_self_destruct_time);
   }
@@ -267,6 +355,7 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
       std::vector<base::TimeDelta> expected_max_urt_hpd_hprt_times_taken,
       std::vector<bool> expected_urt_hpd_hprt_had_warnings,
       bool expected_had_redirects,
+      bool expected_some_ineligible,
       AllInOneResult expected_warnings_result,
       AllInOneResult expected_timed_out_result,
       base::TimeDelta will_process_response_time_taken,
@@ -283,6 +372,7 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
     DCHECK(expected_max_urt_hpd_hprt_times_taken.size() == 3);
     DCHECK(expected_urt_hpd_hprt_delayed_responses.size() == 3);
     DCHECK(expected_urt_hpd_hprt_had_warnings.size() == 3);
+
     std::string histogram_prefix =
         expected_had_redirects ? "SafeBrowsing.HPRTExperiment.Redirects."
                                : "SafeBrowsing.HPRTExperiment.";
@@ -357,6 +447,17 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
           /*sample=*/expected_delayed_response_result.value(),
           /*expected_bucket_count=*/1);
     }
+
+    if (expected_had_redirects) {
+      histogram_tester_->ExpectUniqueSample(
+          /*name=*/"SafeBrowsing.HPRTExperiment.Redirects.AllChecksEligible",
+          /*sample=*/!expected_some_ineligible,
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester_->ExpectTotalCount(
+          /*name=*/"SafeBrowsing.HPRTExperiment.Redirects.AllChecksEligible",
+          /*expected_count=*/0);
+    }
   }
 
   UnknownNoYesResult ToUnknownNoYesResult(bool input,
@@ -404,6 +505,40 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
     return info;
   }
 
+  // Should be used to test different combinations of eligibility configs.
+  void RunEligibilityTest(std::vector<EligibilityConfig> eligibility_configs,
+                          bool is_prefetch,
+                          bool expect_logs) {
+    std::vector<base::TimeDelta> urt_hpd_hprt_times_taken = {
+        base::Seconds(0), base::Seconds(1), base::Seconds(2)};
+    base::TimeDelta will_process_response_time_taken = base::Seconds(10);
+    base::TimeDelta checker_on_io_self_destruct_time = base::Seconds(20);
+    base::MockCallback<CompleteCheckCallbackWithTimeout>
+        url_real_time_result_callback;
+    EXPECT_CALL(url_real_time_result_callback,
+                Run(false, Matches(SB_THREAT_TYPE_SAFE)))
+        .Times(1);
+    SetUpExperimenterAndChecks(
+        urt_hpd_hprt_times_taken,
+        /*urt_hpd_hprt_threat_types=*/
+        {SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_SAFE},
+        will_process_response_time_taken, checker_on_io_self_destruct_time,
+        url_real_time_result_callback.Get(), eligibility_configs, is_prefetch);
+
+    task_environment_.FastForwardUntilNoTasksRemain();
+
+    if (expect_logs) {
+      VerifyLogs(
+          /*expected_urt_hpd_hprt_times_taken=*/urt_hpd_hprt_times_taken,
+          /*expected_urt_hpd_hprt_had_warnings=*/{false, false, false},
+          /*expected_warnings_result=*/AllInOneResult::kNoMechanism,
+          /*expected_timed_out_result=*/AllInOneResult::kNoMechanism,
+          will_process_response_time_taken, checker_on_io_self_destruct_time);
+    } else {
+      VerifyNoLogs();
+    }
+  }
+
   // Helper function for that runs different orderings of mechanism completions
   // / WillProcessResponse reached / CheckerOnIO destruction. The goal of this
   // is to ensure that the lifetime of the experimenter is handled correctly, as
@@ -422,12 +557,14 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
         /*urt_hpd_hprt_threat_types=*/
         {SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_SAFE},
         will_process_response_time_taken, checker_on_io_self_destruct_time,
-        url_real_time_result_callback.Get());
+        url_real_time_result_callback.Get(),
+        /*eligibility_configs=*/absl::nullopt,
+        /*is_prefetch=*/false);
 
     task_environment_.FastForwardUntilNoTasksRemain();
 
     if (will_be_canceled) {
-      EXPECT_EQ(histogram_tester_->GetAllHistogramsRecorded().size(), 0u);
+      VerifyNoLogs();
     } else {
       VerifyLogs(
           /*expected_urt_hpd_hprt_times_taken=*/urt_hpd_hprt_times_taken,
@@ -436,6 +573,26 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
           /*expected_timed_out_result=*/AllInOneResult::kNoMechanism,
           will_process_response_time_taken, checker_on_io_self_destruct_time);
     }
+  }
+
+  // Similar to RunEligibilityTest except that |RunChecks| is called a total of
+  // 3 times on the same experimenter.
+  void RunEligibilityWithTwoRedirectsTest(
+      absl::optional<std::vector<EligibilityConfig>> eligibility_configs,
+      std::vector<std::vector<SBThreatType>> threat_types,
+      bool is_prefetch) {
+    auto urt_hpd_hprt_times_taken = {base::Seconds(2), base::Seconds(1),
+                                     base::Seconds(3)};
+    auto will_process_response_time_taken = base::Seconds(8);
+    auto checker_on_io_self_destruct_time = base::Seconds(15);
+    std::vector<bool> all_in_time = {false, false, false};
+    RunRedirectsTestBase(threat_types,
+                         {urt_hpd_hprt_times_taken, urt_hpd_hprt_times_taken,
+                          urt_hpd_hprt_times_taken},
+                         {all_in_time, all_in_time, all_in_time},
+                         will_process_response_time_taken,
+                         checker_on_io_self_destruct_time, eligibility_configs,
+                         is_prefetch);
   }
 
   // Similar to RunLifetimesTest except that |RunChecks| is called a total of 3
@@ -451,7 +608,8 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
     RunRedirectsTestBase(
         {all_safe, all_safe, all_safe}, urt_hpd_hprt_times_taken,
         {all_in_time, all_in_time, all_in_time},
-        will_process_response_time_taken, checker_on_io_self_destruct_time);
+        will_process_response_time_taken, checker_on_io_self_destruct_time,
+        /*eligibility_configs=*/absl::nullopt, /*is_prefetch=*/false);
   }
 
   // Similar to RunWarningsTest except that |RunChecks| is called a total of 3
@@ -463,12 +621,13 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
     auto will_process_response_time_taken = base::Seconds(12);
     auto checker_on_io_self_destruct_time = base::Seconds(15);
     std::vector<bool> all_in_time = {false, false, false};
-    RunRedirectsTestBase(urt_hpd_hprt_threat_types,
-                         {urt_hpd_hprt_times_taken, urt_hpd_hprt_times_taken,
-                          urt_hpd_hprt_times_taken},
-                         {all_in_time, all_in_time, all_in_time},
-                         will_process_response_time_taken,
-                         checker_on_io_self_destruct_time);
+    RunRedirectsTestBase(
+        urt_hpd_hprt_threat_types,
+        {urt_hpd_hprt_times_taken, urt_hpd_hprt_times_taken,
+         urt_hpd_hprt_times_taken},
+        {all_in_time, all_in_time, all_in_time},
+        will_process_response_time_taken, checker_on_io_self_destruct_time,
+        /*eligibility_configs=*/absl::nullopt, /*is_prefetch=*/false);
   }
 
   // Similar to RunTimeoutTest except that |RunChecks| is called a total of 3
@@ -489,10 +648,11 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
     auto checker_on_io_self_destruct_time = base::Seconds(25);
     std::vector<SBThreatType> all_safe = {
         SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_SAFE};
-    RunRedirectsTestBase({all_safe, all_safe, all_safe},
-                         urt_hpd_hprt_times_taken, urt_hpd_hprt_time_outs,
-                         will_process_response_time_taken,
-                         checker_on_io_self_destruct_time);
+    RunRedirectsTestBase(
+        {all_safe, all_safe, all_safe}, urt_hpd_hprt_times_taken,
+        urt_hpd_hprt_time_outs, will_process_response_time_taken,
+        checker_on_io_self_destruct_time,
+        /*eligibility_configs=*/absl::nullopt, /*is_prefetch=*/false);
   }
 
   // Used by the RunRedirectsTestBase function to add 2 redirect checks.
@@ -500,6 +660,7 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
       scoped_refptr<Experimenter> experimenter,
       std::vector<std::vector<base::TimeDelta>> urt_hpd_hprt_times_taken,
       std::vector<std::vector<SBThreatType>> urt_hpd_hprt_threat_types,
+      absl::optional<std::vector<EligibilityConfig>> eligibility_configs,
       int index,
       bool timed_out,
       absl::optional<
@@ -511,12 +672,18 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
     }
     CreateAndRunChecks(
         experimenter,
+        /*safe_browsing_url_checker_index=*/index,
         urt_hpd_hprt_times_taken[index], /*urt_hpd_hprt_threat_types=*/
         urt_hpd_hprt_threat_types[index],
         base::BindOnce(
             &SafeBrowsingLookupMechanismExperimenterTest::CallbackForRedirects,
             base::Unretained(this), experimenter, urt_hpd_hprt_times_taken,
-            urt_hpd_hprt_threat_types, index + 1));
+            urt_hpd_hprt_threat_types, eligibility_configs, index + 1),
+        /*immediately_resolve_eligibility=*/!eligibility_configs.has_value());
+    if (eligibility_configs.has_value()) {
+      url_checker_delegate_->SetEligibilityConfig(
+          experimenter, eligibility_configs.value()[index]);
+    }
   }
 
   void RunRedirectsTestBase(
@@ -524,7 +691,11 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
       std::vector<std::vector<base::TimeDelta>> urt_hpd_hprt_times_taken,
       std::vector<std::vector<bool>> urt_hpd_hprt_time_outs,
       base::TimeDelta will_process_response_time_taken,
-      base::TimeDelta checker_on_io_self_destruct_time) {
+      base::TimeDelta checker_on_io_self_destruct_time,
+      absl::optional<std::vector<EligibilityConfig>> eligibility_configs,
+      bool is_prefetch) {
+    DCHECK(!eligibility_configs.has_value() ||
+           eligibility_configs.value().size() == 3u);
     // Used for deciding which mechanism was faster and for deciding if a
     // mechanism finished slower than WillProcessResponse.
     std::vector<base::TimeDelta> summed_urt_hpd_hprt_times_taken = {
@@ -550,29 +721,47 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
     // Run within a block to avoid this function having a reference to
     // the experimenter keeping it alive.
     {
+      absl::optional<std::vector<EligibilityConfig>> just_first_config_maybe;
+      if (eligibility_configs.has_value()) {
+        std::vector<EligibilityConfig> just_first_config;
+        just_first_config.push_back(eligibility_configs.value()[0]);
+        just_first_config_maybe = just_first_config;
+      }
       scoped_refptr<Experimenter> experimenter = SetUpExperimenter(
-          will_process_response_time_taken, checker_on_io_self_destruct_time);
+          will_process_response_time_taken, checker_on_io_self_destruct_time,
+          /*eligibility_configs=*/just_first_config_maybe, is_prefetch);
       CreateAndRunChecks(
-          experimenter, urt_hpd_hprt_times_taken[0],
+          experimenter, /*safe_browsing_url_checker_index=*/0,
+          urt_hpd_hprt_times_taken[0],
           /*urt_hpd_hprt_threat_types=*/urt_hpd_hprt_threat_types[0],
           base::BindOnce(&SafeBrowsingLookupMechanismExperimenterTest::
                              CallbackForRedirects,
                          base::Unretained(this), experimenter,
                          urt_hpd_hprt_times_taken, urt_hpd_hprt_threat_types,
-                         /*index=*/1));
+                         eligibility_configs,
+                         /*index=*/1),
+          /*immediately_resolve_eligibility=*/
+          !eligibility_configs.has_value());
     }
     task_environment_.FastForwardUntilNoTasksRemain();
 
+    auto expected_lookup_had_warning = [urt_hpd_hprt_threat_types,
+                                        eligibility_configs](int i, int j) {
+      if (eligibility_configs.has_value() &&
+          !eligibility_configs.value()[i].eligibility) {
+        // Ineligible lookups are automatically safe.
+        return false;
+      }
+      return urt_hpd_hprt_threat_types[i][j] == SB_THREAT_TYPE_URL_PHISHING;
+    };
+    auto expected_mechanism_had_warning = [expected_lookup_had_warning](int j) {
+      return expected_lookup_had_warning(0, j) ||
+             expected_lookup_had_warning(1, j) ||
+             expected_lookup_had_warning(2, j);
+    };
     std::vector<bool> expected_urt_hpd_hprt_had_warnings = {
-        urt_hpd_hprt_threat_types[0][0] == SB_THREAT_TYPE_URL_PHISHING ||
-            urt_hpd_hprt_threat_types[1][0] == SB_THREAT_TYPE_URL_PHISHING ||
-            urt_hpd_hprt_threat_types[2][0] == SB_THREAT_TYPE_URL_PHISHING,
-        urt_hpd_hprt_threat_types[0][1] == SB_THREAT_TYPE_URL_PHISHING ||
-            urt_hpd_hprt_threat_types[1][1] == SB_THREAT_TYPE_URL_PHISHING ||
-            urt_hpd_hprt_threat_types[2][1] == SB_THREAT_TYPE_URL_PHISHING,
-        urt_hpd_hprt_threat_types[0][2] == SB_THREAT_TYPE_URL_PHISHING ||
-            urt_hpd_hprt_threat_types[1][2] == SB_THREAT_TYPE_URL_PHISHING ||
-            urt_hpd_hprt_threat_types[2][2] == SB_THREAT_TYPE_URL_PHISHING};
+        expected_mechanism_had_warning(0), expected_mechanism_had_warning(1),
+        expected_mechanism_had_warning(2)};
     std::vector<bool> expected_urt_hpd_hprt_time_outs = {
         urt_hpd_hprt_time_outs[0][0] || urt_hpd_hprt_time_outs[1][0] ||
             urt_hpd_hprt_time_outs[2][0],
@@ -581,20 +770,33 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
         urt_hpd_hprt_time_outs[0][2] || urt_hpd_hprt_time_outs[1][2] ||
             urt_hpd_hprt_time_outs[2][2],
     };
-    VerifyLogsAllowingRedirects(
-        summed_urt_hpd_hprt_times_taken, max_urt_hpd_hprt_times_taken,
-        /*expected_urt_hpd_hprt_had_warnings=*/
-        expected_urt_hpd_hprt_had_warnings,
-        /*expected_had_redirects=*/true,
-        /*expected_warnings_result=*/
-        CombineBoolResults(expected_urt_hpd_hprt_had_warnings[0],
-                           expected_urt_hpd_hprt_had_warnings[1],
-                           expected_urt_hpd_hprt_had_warnings[2]),
-        /*expected_timed_out_result=*/
-        CombineBoolResults(expected_urt_hpd_hprt_time_outs[0],
-                           expected_urt_hpd_hprt_time_outs[1],
-                           expected_urt_hpd_hprt_time_outs[2]),
-        will_process_response_time_taken, checker_on_io_self_destruct_time);
+    bool all_eligible = !eligibility_configs.has_value() ||
+                        (eligibility_configs.value()[0].eligibility &&
+                         eligibility_configs.value()[1].eligibility &&
+                         eligibility_configs.value()[2].eligibility);
+    bool all_ineligible = eligibility_configs.has_value() &&
+                          (!eligibility_configs.value()[0].eligibility &&
+                           !eligibility_configs.value()[1].eligibility &&
+                           !eligibility_configs.value()[2].eligibility);
+    if (all_ineligible || is_prefetch) {
+      VerifyNoLogs();
+    } else {
+      VerifyLogsAllowingRedirects(
+          summed_urt_hpd_hprt_times_taken, max_urt_hpd_hprt_times_taken,
+          /*expected_urt_hpd_hprt_had_warnings=*/
+          expected_urt_hpd_hprt_had_warnings,
+          /*expected_had_redirects=*/true,
+          /*expected_some_ineligible=*/!all_eligible,
+          /*expected_warnings_result=*/
+          CombineBoolResults(expected_urt_hpd_hprt_had_warnings[0],
+                             expected_urt_hpd_hprt_had_warnings[1],
+                             expected_urt_hpd_hprt_had_warnings[2]),
+          /*expected_timed_out_result=*/
+          CombineBoolResults(expected_urt_hpd_hprt_time_outs[0],
+                             expected_urt_hpd_hprt_time_outs[1],
+                             expected_urt_hpd_hprt_time_outs[2]),
+          will_process_response_time_taken, checker_on_io_self_destruct_time);
+    }
   }
 
   // Should be used to test different combinations of mechanisms resulting in
@@ -612,7 +814,8 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
     SetUpExperimenterAndChecks(
         urt_hpd_hprt_times_taken, urt_hpd_hprt_threat_types,
         will_process_response_time_taken, checker_on_io_self_destruct_time,
-        url_real_time_result_callback.Get());
+        url_real_time_result_callback.Get(),
+        /*eligibility_configs=*/absl::nullopt, /*is_prefetch=*/false);
     task_environment_.FastForwardUntilNoTasksRemain();
     auto warning_threat_types = {
         SB_THREAT_TYPE_URL_PHISHING, SB_THREAT_TYPE_URL_MALWARE,
@@ -657,7 +860,8 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
         {SB_THREAT_TYPE_URL_PHISHING, SB_THREAT_TYPE_URL_PHISHING,
          SB_THREAT_TYPE_URL_PHISHING},
         will_process_response_time_taken, checker_on_io_self_destruct_time,
-        url_real_time_result_callback.Get());
+        url_real_time_result_callback.Get(),
+        /*eligibility_configs=*/absl::nullopt, /*is_prefetch=*/false);
     task_environment_.FastForwardUntilNoTasksRemain();
     std::vector<bool> expected_urt_hpd_hprt_had_warnings = {
         !urt_hpd_hprt_time_out[0], !urt_hpd_hprt_time_out[1],
@@ -680,6 +884,8 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<base::HistogramTester> histogram_tester_ =
       std::make_unique<base::HistogramTester>();
+  std::unique_ptr<PretendUrlCheckerDelegate> url_checker_delegate_ =
+      std::make_unique<PretendUrlCheckerDelegate>();
 };
 
 TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestLifetimes) {
@@ -751,9 +957,9 @@ TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestEmptyExperiment) {
   // experiment.
   new PretendCheckerOnIO(
       /*time_to_will_process_response=*/base::Seconds(3),
-      /*time_to_self_destruct=*/base::Seconds(1));
+      /*time_to_self_destruct=*/base::Seconds(1), /*is_prefetch=*/false);
   task_environment_.FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(histogram_tester_->GetAllHistogramsRecorded().size(), 0u);
+  VerifyNoLogs();
 }
 
 TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestCombineBoolResults) {
@@ -916,4 +1122,194 @@ TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestRedirectTimeouts) {
   }
 }
 
+TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestEligibility) {
+  auto run_basic_test = [this](base::TimeDelta eligibility_resolution_time,
+                               bool eligibility, bool is_prefetch,
+                               bool expect_logs) {
+    std::vector<EligibilityConfig> eligibility_configs = {EligibilityConfig(
+        /*safe_browsing_url_checker_index=*/0, eligibility_resolution_time,
+        eligibility)};
+    RunEligibilityTest(eligibility_configs, is_prefetch, expect_logs);
+    ResetMetrics();
+  };
+
+  // Is eligible and eligibility finishes last. Should have logs.
+  {
+    run_basic_test(base::Seconds(50), /*eligibility=*/true,
+                   /*is_prefetch=*/false, /*expect_logs=*/true);
+  }
+  // Is not eligible and eligibility finishes last. Should not have logs.
+  {
+    run_basic_test(base::Seconds(50), /*eligibility=*/false,
+                   /*is_prefetch=*/false, /*expect_logs=*/false);
+  }
+  // Is eligible and eligibility does not finish last. Should have logs.
+  {
+    run_basic_test(base::Seconds(5), /*eligibility=*/true,
+                   /*is_prefetch=*/false, /*expect_logs=*/true);
+  }
+  // Is not eligible and eligibility does not finish last. Should not have logs.
+  {
+    run_basic_test(base::Seconds(5), /*eligibility=*/false,
+                   /*is_prefetch=*/false, /*expect_logs=*/false);
+  }
+  // Is not eligible due to prefetch. Should not have logs.
+  {
+    run_basic_test(base::Seconds(50), /*eligibility=*/true,
+                   /*is_prefetch=*/true, /*expect_logs=*/false);
+  }
+  // When eligibility finishes last, a 2nd call to defining it does not crash.
+  {
+    std::vector<EligibilityConfig> eligibility_configs = {
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/0, base::Seconds(50), true),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/0, base::Seconds(60), true)};
+    RunEligibilityTest(eligibility_configs, /*is_prefetch=*/false,
+                       /*expect_logs=*/true);
+    ResetMetrics();
+  }
+  // When eligibility doesn't finish last, a 2nd call to defining it does not
+  // crash and does not replace the first value.
+  {
+    std::vector<EligibilityConfig> eligibility_configs = {
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/0, base::Seconds(5), true),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/0, base::Seconds(7), false)};
+    RunEligibilityTest(eligibility_configs, /*is_prefetch=*/false,
+                       /*expect_logs=*/true);
+    ResetMetrics();
+  }
+}
+
+TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestRedirectEligibility) {
+  std::vector<SBThreatType> all_safe = {
+      SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_SAFE};
+  std::vector<SBThreatType> all_unsafe = {SB_THREAT_TYPE_URL_PHISHING,
+                                          SB_THREAT_TYPE_URL_PHISHING,
+                                          SB_THREAT_TYPE_URL_PHISHING};
+  std::vector<std::vector<SBThreatType>> safe_threat_types = {
+      all_safe, all_safe, all_safe};
+  // All eligible. Resolved in the same order as the checks were run.
+  {
+    std::vector<EligibilityConfig> eligibility_configs = {
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/0,
+            /*time_to_resolution=*/base::Seconds(10), /*eligibility=*/true),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/1,
+            /*time_to_resolution=*/base::Seconds(20), /*eligibility=*/true),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/2,
+            /*time_to_resolution=*/base::Seconds(30), /*eligibility=*/true)};
+    RunEligibilityWithTwoRedirectsTest(eligibility_configs, safe_threat_types,
+                                       /*is_prefetch=*/false);
+    ResetMetrics();
+  }
+  // All eligible. Resolved in different order than the checks were run.
+  {
+    std::vector<EligibilityConfig> eligibility_configs = {
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/0,
+            /*time_to_resolution=*/base::Seconds(20), /*eligibility=*/true),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/1,
+            /*time_to_resolution=*/base::Seconds(30), /*eligibility=*/true),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/2,
+            /*time_to_resolution=*/base::Seconds(10), /*eligibility=*/true)};
+    RunEligibilityWithTwoRedirectsTest(eligibility_configs, safe_threat_types,
+                                       /*is_prefetch=*/false);
+    ResetMetrics();
+  }
+  // None eligible. Resolved in the same order as the checks were run.
+  {
+    std::vector<EligibilityConfig> eligibility_configs = {
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/0,
+            /*time_to_resolution=*/base::Seconds(10), /*eligibility=*/false),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/1,
+            /*time_to_resolution=*/base::Seconds(20), /*eligibility=*/false),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/2,
+            /*time_to_resolution=*/base::Seconds(30),
+            /*eligibility=*/false)};
+    RunEligibilityWithTwoRedirectsTest(eligibility_configs, safe_threat_types,
+                                       /*is_prefetch=*/false);
+    ResetMetrics();
+  }
+  // None eligible. Resolved in different order than the checks were run.
+  {
+    std::vector<EligibilityConfig> eligibility_configs = {
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/0,
+            /*time_to_resolution=*/base::Seconds(20), /*eligibility=*/false),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/1,
+            /*time_to_resolution=*/base::Seconds(30), /*eligibility=*/false),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/2,
+            /*time_to_resolution=*/base::Seconds(10),
+            /*eligibility=*/false)};
+    RunEligibilityWithTwoRedirectsTest(eligibility_configs, safe_threat_types,
+                                       /*is_prefetch=*/false);
+    ResetMetrics();
+  }
+  // Only first and last eligible. Middle one being unsafe should not affect the
+  // results.
+  {
+    std::vector<EligibilityConfig> eligibility_configs = {
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/0,
+            /*time_to_resolution=*/base::Seconds(20), /*eligibility=*/true),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/1,
+            /*time_to_resolution=*/base::Seconds(30), /*eligibility=*/false),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/2,
+            /*time_to_resolution=*/base::Seconds(10),
+            /*eligibility=*/true)};
+    RunEligibilityWithTwoRedirectsTest(eligibility_configs,
+                                       {all_safe, all_unsafe, all_safe},
+                                       /*is_prefetch=*/false);
+    ResetMetrics();
+  }
+  // Only first and last eligible. Middle one and last being unsafe should say
+  // it's unsafe.
+  {
+    std::vector<EligibilityConfig> eligibility_configs = {
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/0,
+            /*time_to_resolution=*/base::Seconds(20), /*eligibility=*/true),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/1,
+            /*time_to_resolution=*/base::Seconds(30), /*eligibility=*/false),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/2,
+            /*time_to_resolution=*/base::Seconds(10),
+            /*eligibility=*/true)};
+    RunEligibilityWithTwoRedirectsTest(eligibility_configs,
+                                       {all_safe, all_unsafe, all_unsafe},
+                                       /*is_prefetch=*/false);
+    ResetMetrics();
+  }
+  // All eligible but is prefetch, so overall no logs.
+  {
+    std::vector<EligibilityConfig> eligibility_configs = {
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/0,
+            /*time_to_resolution=*/base::Seconds(10), /*eligibility=*/true),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/1,
+            /*time_to_resolution=*/base::Seconds(20), /*eligibility=*/true),
+        EligibilityConfig(
+            /*safe_browsing_url_checker_index=*/2,
+            /*time_to_resolution=*/base::Seconds(30), /*eligibility=*/true)};
+    RunEligibilityWithTwoRedirectsTest(eligibility_configs, safe_threat_types,
+                                       /*is_prefetch=*/true);
+    ResetMetrics();
+  }
+}
 }  // namespace safe_browsing
