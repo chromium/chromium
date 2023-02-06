@@ -1238,6 +1238,7 @@ TEST_F(StorageKeyTest, FromWireReturnValue) {
   const net::SchemefulSite site1 = net::SchemefulSite(o1);
   const net::SchemefulSite site2 = net::SchemefulSite(o2);
   const net::SchemefulSite site3 = net::SchemefulSite(o3);
+  const net::SchemefulSite opaque_site = net::SchemefulSite(opaque);
   base::UnguessableToken nonce1 = base::UnguessableToken::Create();
 
   const struct TestCase {
@@ -1262,6 +1263,10 @@ TEST_F(StorageKeyTest, FromWireReturnValue) {
        AncestorChainBit::kSameSite, true},
       {opaque, site1, site1, absl::nullopt, AncestorChainBit::kCrossSite,
        AncestorChainBit::kCrossSite, true},
+      {o1, site1, opaque_site, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, true},
+      {o1, opaque_site, opaque_site, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, true},
       // Failing cases:
       // If a 3p key is indicated, the *if_third_party_enabled pieces should
       // match their counterparts.
@@ -1285,6 +1290,12 @@ TEST_F(StorageKeyTest, FromWireReturnValue) {
        AncestorChainBit::kCrossSite, false},
       {o1, site1, site1, nonce1, AncestorChainBit::kSameSite,
        AncestorChainBit::kCrossSite, false},
+      // If the top_level_site* is opaque, the ancestor_chain_bit* must be
+      // same-site.
+      {o1, site1, opaque_site, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kCrossSite, false},
+      {o1, opaque_site, opaque_site, absl::nullopt,
+       AncestorChainBit::kCrossSite, AncestorChainBit::kCrossSite, false},
   };
 
   const StorageKey starting_key;

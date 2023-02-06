@@ -429,19 +429,27 @@ bool StorageKey::FromWire(
   }
 
   // If top_level_site* is cross-site to origin, then ancestor_chain_bit* must
-  // indicate that. We can't know for sure at this point if opaque
-  // top_level_sites have cross-site ancestor chain bits or not, so skip them.
-  if (top_level_site != net::SchemefulSite(origin) &&
-      !top_level_site.opaque()) {
-    if (ancestor_chain_bit != blink::mojom::AncestorChainBit::kCrossSite) {
+  // indicate that. An opaque top_level_site* must have a same-site
+  // ancestor_chain_bit*.
+  if (top_level_site != net::SchemefulSite(origin)) {
+    if (!top_level_site.opaque() &&
+        ancestor_chain_bit != blink::mojom::AncestorChainBit::kCrossSite) {
+      return false;
+    } else if (top_level_site.opaque() &&
+               ancestor_chain_bit !=
+                   blink::mojom::AncestorChainBit::kSameSite) {
       return false;
     }
   }
 
-  if (top_level_site_if_third_party_enabled != net::SchemefulSite(origin) &&
-      !top_level_site_if_third_party_enabled.opaque()) {
-    if (ancestor_chain_bit_if_third_party_enabled !=
-        blink::mojom::AncestorChainBit::kCrossSite) {
+  if (top_level_site_if_third_party_enabled != net::SchemefulSite(origin)) {
+    if (!top_level_site_if_third_party_enabled.opaque() &&
+        ancestor_chain_bit_if_third_party_enabled !=
+            blink::mojom::AncestorChainBit::kCrossSite) {
+      return false;
+    } else if (top_level_site_if_third_party_enabled.opaque() &&
+               ancestor_chain_bit_if_third_party_enabled !=
+                   blink::mojom::AncestorChainBit::kSameSite) {
       return false;
     }
   }
