@@ -36,6 +36,8 @@ namespace internal {
 
 const char kErrorEvents[] = "PageLoad.Internal.ErrorCode";
 const char kPageLoadPrerender2Event[] = "PageLoad.Internal.Prerender2.Event";
+const char kPageLoadPrerender2VisibilityAtActivation[] =
+    "PageLoad.Internal.Prerender2.VisibilityAtActivation";
 const char kPageLoadTrackerPageType[] = "PageLoad.Internal.PageType";
 
 }  // namespace internal
@@ -484,10 +486,25 @@ void PageLoadTracker::DidActivatePrerenderedPage(
   source_id_ = ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
                                       ukm::SourceIdType::NAVIGATION_ID);
 
-  if (GetWebContents()->GetVisibility() == content::Visibility::VISIBLE) {
-    visibility_at_activation_ = PageVisibility::kForeground;
-  } else {
-    visibility_at_activation_ = PageVisibility::kBackground;
+  switch (GetWebContents()->GetVisibility()) {
+    case content::Visibility::HIDDEN:
+      visibility_at_activation_ = PageVisibility::kBackground;
+      base::UmaHistogramEnumeration(
+          internal::kPageLoadPrerender2VisibilityAtActivation,
+          internal::VisibilityAtActivation::kHidden);
+      break;
+    case content::Visibility::OCCLUDED:
+      visibility_at_activation_ = PageVisibility::kBackground;
+      base::UmaHistogramEnumeration(
+          internal::kPageLoadPrerender2VisibilityAtActivation,
+          internal::VisibilityAtActivation::kOccluded);
+      break;
+    case content::Visibility::VISIBLE:
+      visibility_at_activation_ = PageVisibility::kForeground;
+      base::UmaHistogramEnumeration(
+          internal::kPageLoadPrerender2VisibilityAtActivation,
+          internal::VisibilityAtActivation::kVisible);
+      break;
   }
 
   for (const auto& observer : observers_)
