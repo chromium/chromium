@@ -162,7 +162,7 @@ function showText(text: string) {
 /**
  * Shows an actionable chip for the string detected from a barcode.
  */
-export async function show(code: string): Promise<void> {
+export function show(code: string): void {
   if (code === currentCode) {
     if (currentTimer !== null) {
       // Extend the duration by resetting the timeout.
