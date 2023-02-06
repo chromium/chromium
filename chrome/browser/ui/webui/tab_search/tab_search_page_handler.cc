@@ -450,9 +450,11 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
       TabRendererData::FromTabInModel(tab_strip_model, index);
   tab_data->pinned = tab_renderer_data.pinned;
   tab_data->title = base::UTF16ToUTF8(tab_renderer_data.title);
-  tab_data->url = tab_renderer_data.last_committed_url.is_empty()
-                      ? tab_renderer_data.visible_url
-                      : tab_renderer_data.last_committed_url;
+  const auto& last_committed_url = tab_renderer_data.last_committed_url;
+  tab_data->url =
+      !last_committed_url.is_valid() || last_committed_url.is_empty()
+          ? tab_renderer_data.visible_url
+          : last_committed_url;
 
   if (tab_renderer_data.favicon.isNull()) {
     tab_data->is_default_favicon = true;
