@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/networking/network_configuration_updater.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -57,6 +58,10 @@ std::set<std::string> CollectExtensionIds(
 }
 
 }  // namespace
+
+BASE_FEATURE(kDisablePolicyEthernetRecommendedWorkaround,
+             "DisablePolicyEthernetRecommendedWorkaround",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 NetworkConfigurationUpdater::~NetworkConfigurationUpdater() {
   policy_service_->RemoveObserver(POLICY_DOMAIN_CHROME, this);
@@ -216,6 +221,10 @@ void NetworkConfigurationUpdater::ApplyPolicy() {
 void NetworkConfigurationUpdater::
     MarkFieldsAsRecommendedForBackwardsCompatibility(
         base::Value::List& network_configs_onc) {
+  if (base::FeatureList::IsEnabled(
+          kDisablePolicyEthernetRecommendedWorkaround)) {
+    return;
+  }
   for (auto& network_config_onc : network_configs_onc) {
     DCHECK(network_config_onc.is_dict());
     base::Value::Dict& network_config_onc_dict = network_config_onc.GetDict();
