@@ -1578,8 +1578,28 @@ export class CommandHandler extends CommandHandlerInterface {
 
   /** @private */
   reportIssue_() {
-    const url = 'https://issuetracker.google.com/issues/new?component=1272895';
-    chrome.tabs.create({url});
+    let url =
+        'https://issuetracker.google.com/issues/new?component=1272895&type=BUG' +
+        '&priority=P2&severity=S2&description=';
+    const description = {};
+    description['Chrome OS Version'] = chrome.runtime.getManifest().version;
+    description['Lacros Version (if applicable)'] =
+        '(copy from chrome://version)';
+    description['Reproduction Steps'] = '%0a1.%0a2.%0a3.';
+    description['Expected result'] = '';
+    description['What actually happens'] = '';
+    for (const key in description) {
+      url += key + ':%20' + description[key] + '%0a';
+    }
+    chrome.windows.getAll((windows) => {
+      if (windows.length > 0) {
+        // Open in existing window.
+        chrome.tabs.create({url});
+      } else {
+        // No window open, cannot use chrome.tabs API.
+        chrome.windows.create({url});
+      }
+    });
   }
 
   /** @private */
