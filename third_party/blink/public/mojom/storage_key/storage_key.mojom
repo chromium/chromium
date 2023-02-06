@@ -27,4 +27,12 @@ struct StorageKey {
   // ancestor chain (including the `top_level_site`) is cross-site with the
   // current frame (`origin`).
   blink.mojom.AncestorChainBit ancestor_chain_bit;
+
+  // The value the top_level_site would be if third party partitioning is
+  // enabled. See storage_key.h for more details.
+  network.mojom.SchemefulSite top_level_site_if_third_party_enabled;
+
+  // The value the ancestor_chain_bit would be if third party partitioning is
+  // enabled. See storage_key.h for more details.
+  blink.mojom.AncestorChainBit ancestor_chain_bit_if_third_party_enabled;
 };

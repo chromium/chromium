@@ -19,25 +19,42 @@ namespace mojo {
 bool StructTraits<blink::mojom::StorageKeyDataView, blink::BlinkStorageKey>::
     Read(blink::mojom::StorageKeyDataView data, blink::BlinkStorageKey* out) {
   scoped_refptr<const blink::SecurityOrigin> origin;
-  if (!data.ReadOrigin(&origin))
+  if (!data.ReadOrigin(&origin)) {
     return false;
+  }
   DCHECK(origin);
 
   blink::BlinkSchemefulSite top_level_site;
-  if (!data.ReadTopLevelSite(&top_level_site))
+  if (!data.ReadTopLevelSite(&top_level_site)) {
     return false;
+  }
 
   absl::optional<base::UnguessableToken> nonce;
-  if (!data.ReadNonce(&nonce))
+  if (!data.ReadNonce(&nonce)) {
     return false;
+  }
 
   blink::mojom::blink::AncestorChainBit ancestor_chain_bit;
-  if (!data.ReadAncestorChainBit(&ancestor_chain_bit))
+  if (!data.ReadAncestorChainBit(&ancestor_chain_bit)) {
     return false;
+  }
 
-  *out = blink::BlinkStorageKey(std::move(origin), top_level_site,
-                                base::OptionalToPtr(nonce), ancestor_chain_bit);
-  return true;
+  blink::BlinkSchemefulSite top_level_site_if_third_party_enabled;
+  if (!data.ReadTopLevelSiteIfThirdPartyEnabled(
+          &top_level_site_if_third_party_enabled)) {
+    return false;
+  }
+
+  blink::mojom::blink::AncestorChainBit
+      ancestor_chain_bit_if_third_party_enabled;
+  if (!data.ReadAncestorChainBitIfThirdPartyEnabled(
+          &ancestor_chain_bit_if_third_party_enabled)) {
+    return false;
+  }
+
+  return blink::BlinkStorageKey::FromWire(
+      origin, top_level_site, top_level_site_if_third_party_enabled, nonce,
+      ancestor_chain_bit, ancestor_chain_bit_if_third_party_enabled, *out);
 }
 
 }  // namespace mojo

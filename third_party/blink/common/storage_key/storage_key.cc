@@ -407,6 +407,79 @@ StorageKey StorageKey::CreateForTesting(
 }
 
 // static
+// Keep consistent with BlinkStorageKey::FromWire().
+bool StorageKey::FromWire(
+    const url::Origin& origin,
+    const net::SchemefulSite& top_level_site,
+    const net::SchemefulSite& top_level_site_if_third_party_enabled,
+    const absl::optional<base::UnguessableToken>& nonce,
+    blink::mojom::AncestorChainBit ancestor_chain_bit,
+    blink::mojom::AncestorChainBit ancestor_chain_bit_if_third_party_enabled,
+    StorageKey& out) {
+  // If this key's "normal" members indicate a 3p key, then the
+  // *_if_third_party_enabled counterparts must match them.
+  if (top_level_site != net::SchemefulSite(origin) ||
+      ancestor_chain_bit != blink::mojom::AncestorChainBit::kSameSite) {
+    if (top_level_site != top_level_site_if_third_party_enabled) {
+      return false;
+    }
+    if (ancestor_chain_bit != ancestor_chain_bit_if_third_party_enabled) {
+      return false;
+    }
+  }
+
+  // If top_level_site* is cross-site to origin, then ancestor_chain_bit* must
+  // indicate that. We can't know for sure at this point if opaque
+  // top_level_sites have cross-site ancestor chain bits or not, so skip them.
+  if (top_level_site != net::SchemefulSite(origin) &&
+      !top_level_site.opaque()) {
+    if (ancestor_chain_bit != blink::mojom::AncestorChainBit::kCrossSite) {
+      return false;
+    }
+  }
+
+  if (top_level_site_if_third_party_enabled != net::SchemefulSite(origin) &&
+      !top_level_site_if_third_party_enabled.opaque()) {
+    if (ancestor_chain_bit_if_third_party_enabled !=
+        blink::mojom::AncestorChainBit::kCrossSite) {
+      return false;
+    }
+  }
+
+  // If there is a nonce, all other values must indicate same-site to origin.
+  if (nonce) {
+    if (top_level_site != net::SchemefulSite(origin)) {
+      return false;
+    }
+
+    if (top_level_site_if_third_party_enabled != net::SchemefulSite(origin)) {
+      return false;
+    }
+
+    if (ancestor_chain_bit != blink::mojom::AncestorChainBit::kSameSite) {
+      return false;
+    }
+
+    if (ancestor_chain_bit_if_third_party_enabled !=
+        blink::mojom::AncestorChainBit::kSameSite) {
+      return false;
+    }
+  }
+
+  // This key is well formed.
+  out.origin_ = origin;
+  out.top_level_site_ = top_level_site;
+  out.top_level_site_if_third_party_enabled_ =
+      top_level_site_if_third_party_enabled;
+  out.nonce_ = nonce;
+  out.ancestor_chain_bit_ = ancestor_chain_bit;
+  out.ancestor_chain_bit_if_third_party_enabled_ =
+      ancestor_chain_bit_if_third_party_enabled;
+
+  return true;
+}
+
+// static
 bool StorageKey::IsThirdPartyStoragePartitioningEnabled() {
   return base::FeatureList::IsEnabled(
       net::features::kThirdPartyStoragePartitioning);
@@ -738,6 +811,14 @@ bool StorageKey::MatchesOriginForTrustedStorageDeletion(
   return (ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kSameSite)
              ? (origin_ == origin)
              : (top_level_site_ == net::SchemefulSite(origin));
+}
+
+bool StorageKey::ExactMatchForTesting(const StorageKey& other) const {
+  return *this == other &&
+         this->ancestor_chain_bit_if_third_party_enabled_ ==
+             other.ancestor_chain_bit_if_third_party_enabled_ &&
+         this->top_level_site_if_third_party_enabled_ ==
+             other.top_level_site_if_third_party_enabled_;
 }
 
 bool operator==(const StorageKey& lhs, const StorageKey& rhs) {

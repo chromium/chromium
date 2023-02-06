@@ -155,6 +155,29 @@ class BLINK_COMMON_EXPORT StorageKey {
   static StorageKey CreateForTesting(const url::Origin& origin,
                                      const net::SchemefulSite& top_level_site);
 
+  // Tries to construct an instance from (potentially
+  // untrusted) values that got received over Mojo.
+  //
+  // Returns whether successful or not. Doesn't touch
+  // `out` if false is returned.  This returning true does
+  // not mean that whoever sent the values did not lie,
+  // merely that they are well-formed.
+  //
+  // This function should only be used for serializing from Mojo or
+  // testing.
+  //
+  // TODO(crbug.com/1159586): This function can be removed (or greatly
+  // simplified) once the
+  // `*_if_third_party_enabled_` members are removed.
+  static bool FromWire(
+      const url::Origin& origin,
+      const net::SchemefulSite& top_level_site,
+      const net::SchemefulSite& top_level_site_if_third_party_enabled,
+      const absl::optional<base::UnguessableToken>& nonce,
+      blink::mojom::AncestorChainBit ancestor_chain_bit,
+      blink::mojom::AncestorChainBit ancestor_chain_bit_if_third_party_enabled,
+      StorageKey& out);
+
   // Returns true if ThirdPartyStoragePartitioning feature flag is enabled.
   static bool IsThirdPartyStoragePartitioningEnabled();
 
@@ -248,6 +271,13 @@ class BLINK_COMMON_EXPORT StorageKey {
   // in contrast to that.
   bool MatchesOriginForTrustedStorageDeletion(const url::Origin& origin) const;
 
+  // Checks if every single member in a StorageKey matches those in `other`.
+  // Since the *_if_third_party_enabled_ fields aren't used normally this
+  // function is only useful for testing purposes.
+  // This function can be removed when  the *_if_third_party_enabled_ fields are
+  // removed.
+  bool ExactMatchForTesting(const StorageKey& other) const;
+
  private:
   // This enum represents the different type of encodable partitioning
   // attributes.
@@ -305,7 +335,7 @@ class BLINK_COMMON_EXPORT StorageKey {
   // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
   // serialization or comparison.
   // TODO(crbug.com/1159586): Remove when no longer needed.
-  net::SchemefulSite top_level_site_if_third_party_enabled_;
+  net::SchemefulSite top_level_site_if_third_party_enabled_ = top_level_site_;
 
   // An optional nonce, forcing a partitioned storage from anything else. Used
   // by anonymous iframes:
@@ -322,8 +352,8 @@ class BLINK_COMMON_EXPORT StorageKey {
   // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
   // serialization or comparison.
   // TODO(crbug.com/1159586): Remove when no longer needed.
-  blink::mojom::AncestorChainBit ancestor_chain_bit_if_third_party_enabled_{
-      blink::mojom::AncestorChainBit::kSameSite};
+  blink::mojom::AncestorChainBit ancestor_chain_bit_if_third_party_enabled_ =
+      ancestor_chain_bit_;
 };
 
 BLINK_COMMON_EXPORT

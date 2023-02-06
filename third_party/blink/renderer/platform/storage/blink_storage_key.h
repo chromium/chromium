@@ -82,6 +82,25 @@ class PLATFORM_EXPORT BlinkStorageKey {
       scoped_refptr<const SecurityOrigin> origin,
       const BlinkSchemefulSite& top_level_site);
 
+  // Tries to construct an instance from (potentially
+  // untrusted) values that got received over Mojo.
+  //
+  // Returns whether successful or not. Doesn't touch
+  // `out` if false is returned.  This returning true does
+  // not mean that whoever sent the values did not lie,
+  // merely that they are well-formed.
+  //
+  // This function should only be used for serializing from Mojo or
+  // testing.
+  static bool FromWire(
+      scoped_refptr<const SecurityOrigin> origin,
+      const BlinkSchemefulSite& top_level_site,
+      const BlinkSchemefulSite& top_level_site_if_third_party_enabled,
+      const absl::optional<base::UnguessableToken>& nonce,
+      mojom::blink::AncestorChainBit ancestor_chain_bit,
+      mojom::blink::AncestorChainBit ancestor_chain_bit_if_third_party_enabled,
+      BlinkStorageKey& out);
+
   const scoped_refptr<const SecurityOrigin>& GetSecurityOrigin() const {
     return origin_;
   }
@@ -111,6 +130,12 @@ class PLATFORM_EXPORT BlinkStorageKey {
     return storage_key;
   }
 
+  // Checks if every single member in a BlinkStorageKey matches those in
+  // `other`. Since the *_if_third_party_enabled_ fields aren't used normally
+  // this function is only useful for testing purposes. This function can be
+  // removed when  the *_if_third_party_enabled_ fields are removed.
+  bool ExactMatchForTesting(const blink::BlinkStorageKey& other) const;
+
  private:
   BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
                   const base::UnguessableToken* nonce);
@@ -121,7 +146,7 @@ class PLATFORM_EXPORT BlinkStorageKey {
   // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
   // serialization or comparison.
   // TODO(crbug.com/1159586): Remove when no longer needed.
-  BlinkSchemefulSite top_level_site_if_third_party_enabled_;
+  BlinkSchemefulSite top_level_site_if_third_party_enabled_ = top_level_site_;
   absl::optional<base::UnguessableToken> nonce_;
   mojom::blink::AncestorChainBit ancestor_chain_bit_{
       mojom::blink::AncestorChainBit::kSameSite};
@@ -129,8 +154,8 @@ class PLATFORM_EXPORT BlinkStorageKey {
   // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
   // serialization or comparison.
   // TODO(crbug.com/1159586): Remove when no longer needed.
-  mojom::blink::AncestorChainBit ancestor_chain_bit_if_third_party_enabled_{
-      mojom::blink::AncestorChainBit::kSameSite};
+  mojom::blink::AncestorChainBit ancestor_chain_bit_if_third_party_enabled_ =
+      ancestor_chain_bit_;
 };
 
 PLATFORM_EXPORT

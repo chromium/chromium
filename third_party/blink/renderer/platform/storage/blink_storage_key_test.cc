@@ -352,4 +352,86 @@ TEST(BlinkStorageKeyTest, OriginAndSiteMismatchRequiresCrossSite) {
                                   mojom::blink::AncestorChainBit::kCrossSite);
   }
 }
+
+// Tests that FromWire() returns true/false correctly.
+// If you make a change here, you should probably make it in StorageKeyTest too.
+TEST(BlinkStorageKeyTest, FromWireReturnValue) {
+  using AncestorChainBit = blink::mojom::AncestorChainBit;
+  scoped_refptr<const SecurityOrigin> o1 =
+      SecurityOrigin::CreateFromString("https://a.com");
+  scoped_refptr<const SecurityOrigin> o2 =
+      SecurityOrigin::CreateFromString("https://b.com");
+  scoped_refptr<const SecurityOrigin> o3 =
+      SecurityOrigin::CreateFromString("https://c.com");
+  scoped_refptr<const SecurityOrigin> opaque =
+      SecurityOrigin::CreateUniqueOpaque();
+  const BlinkSchemefulSite site1 = BlinkSchemefulSite(o1);
+  const BlinkSchemefulSite site2 = BlinkSchemefulSite(o2);
+  const BlinkSchemefulSite site3 = BlinkSchemefulSite(o3);
+  base::UnguessableToken nonce1 = base::UnguessableToken::Create();
+
+  const struct TestCase {
+    scoped_refptr<const SecurityOrigin> origin;
+    const BlinkSchemefulSite& top_level_site;
+    const BlinkSchemefulSite& top_level_site_if_third_party_enabled;
+    const absl::optional<base::UnguessableToken>& nonce;
+    AncestorChainBit ancestor_chain_bit;
+    AncestorChainBit ancestor_chain_bit_if_third_party_enabled;
+    bool result;
+  } test_cases[] = {
+      // Passing cases:
+      {o1, site1, site1, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, true},
+      {o1, site1, site1, nonce1, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, true},
+      {o1, site1, site2, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kCrossSite, true},
+      {o1, site1, site1, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kCrossSite, true},
+      {o1, site1, site1, nonce1, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, true},
+      {opaque, site1, site1, absl::nullopt, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kCrossSite, true},
+      // Failing cases:
+      // If a 3p key is indicated, the *if_third_party_enabled pieces should
+      // match their counterparts.
+      {o1, site2, site3, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, false},
+      {o1, site1, site1, absl::nullopt, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kSameSite, false},
+      // If the top_level_site* is cross-site to the origin, the
+      // ancestor_chain_bit* must indicate cross-site.
+      {o1, site2, site2, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kCrossSite, false},
+      {o1, site1, site2, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, false},
+      {o1, site2, site2, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, false},
+      // If there is a nonce, all other values must indicate same-site to
+      // origin.
+      {o1, site2, site2, nonce1, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kCrossSite, false},
+      {o1, site1, site1, nonce1, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kCrossSite, false},
+      {o1, site1, site1, nonce1, AncestorChainBit::kSameSite,
+       AncestorChainBit::kCrossSite, false},
+  };
+
+  const BlinkStorageKey starting_key;
+
+  for (const auto& test_case : test_cases) {
+    BlinkStorageKey result_key = starting_key;
+    EXPECT_EQ(
+        test_case.result,
+        BlinkStorageKey::FromWire(
+            test_case.origin, test_case.top_level_site,
+            test_case.top_level_site_if_third_party_enabled, test_case.nonce,
+            test_case.ancestor_chain_bit,
+            test_case.ancestor_chain_bit_if_third_party_enabled, result_key));
+    if (!test_case.result) {
+      // The key should not be modified for a return value of false.
+      EXPECT_TRUE(starting_key.ExactMatchForTesting(result_key));
+    }
+  }
+}
 }  // namespace blink
