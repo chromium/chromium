@@ -25,7 +25,7 @@
 #include "services/audio/log_factory_manager.h"
 #include "services/audio/system_info.h"
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
 #include "media/audio/mac/audio_device_listener_mac.h"
 #endif
 
@@ -169,7 +169,7 @@ void Service::BindTestingApi(
 
 void Service::InitializeDeviceMonitor() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
   if (audio_device_listener_mac_)
     return;
 
