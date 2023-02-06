@@ -7,12 +7,15 @@
 #include <tuple>
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/sync_service_impl.h"
@@ -28,6 +31,18 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/android/android_browser_test.h"
+#include "components/site_isolation/features.h"
+#else
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 const char kFakeGaiaId[] = "fake_gaia_id";
@@ -38,10 +53,10 @@ const char kConsoleFailureMessage[] = "setSyncEncryptionKeys:Undefined";
 // |kConsoleSuccessMessage| or |kConsoleFailureMessage| is logged to the console
 // upon completion.
 void ExecJsSetSyncEncryptionKeys(content::RenderFrameHost* render_frame_host,
-                                 const std::vector<uint8_t>& keys) {
-  // To simplify the test, it limits the size of `keys` to 1.
-  DCHECK_EQ(keys.size(), 1u);
-  const std::string set_encryption_keys_script = base::StringPrintf(
+                                 const std::vector<uint8_t>& key) {
+  // To simplify the test, it limits the size of `key` to 1.
+  DCHECK_EQ(key.size(), 1u);
+  const std::string script = base::StringPrintf(
       R"(
       if (chrome.setSyncEncryptionKeys === undefined) {
         console.log('%s');
@@ -54,11 +69,40 @@ void ExecJsSetSyncEncryptionKeys(content::RenderFrameHost* render_frame_host,
             "%s", [buffer], 0);
       }
     )",
-      kConsoleFailureMessage, keys[0], kConsoleSuccessMessage, kFakeGaiaId);
+      kConsoleFailureMessage, key[0], kConsoleSuccessMessage, kFakeGaiaId);
 
-  std::ignore = content::ExecJs(render_frame_host, set_encryption_keys_script);
+  std::ignore = content::ExecJs(render_frame_host, script);
 }
 
+// Executes JS to call chrome.addTrustedSyncEncryptionRecoveryMethod. Either
+// |kConsoleSuccessMessage| or |kConsoleFailureMessage| is logged to the console
+// upon completion.
+void ExecJsAddTrustedSyncEncryptionRecoveryMethod(
+    content::RenderFrameHost* render_frame_host,
+    const std::vector<uint8_t>& public_key) {
+  // To simplify the test, it limits the size of `public_key` to 1.
+  DCHECK_EQ(public_key.size(), 1u);
+  const std::string script = base::StringPrintf(
+      R"(
+      if (chrome.addTrustedSyncEncryptionRecoveryMethod === undefined) {
+        console.log('%s');
+      } else {
+        let buffer = new ArrayBuffer(1);
+        let view = new Uint8Array(buffer);
+        view[0] = %d;
+        chrome.addTrustedSyncEncryptionRecoveryMethod(
+            () => {console.log('%s');},
+            "%s", buffer, 2);
+      }
+    )",
+      kConsoleFailureMessage, public_key[0], kConsoleSuccessMessage,
+      kFakeGaiaId);
+
+  std::ignore = content::ExecJs(render_frame_host, script);
+}
+
+// Key retrieval doesn't exist on Android and cannot be verified.
+#if !BUILDFLAG(IS_ANDROID)
 std::vector<std::vector<uint8_t>> FetchTrustedVaultKeysForProfile(
     Profile* profile,
     const AccountInfo& account_info) {
@@ -80,20 +124,40 @@ std::vector<std::vector<uint8_t>> FetchTrustedVaultKeysForProfile(
   loop.Run();
   return actual_keys;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-class SyncEncryptionKeysTabHelperBrowserTest : public InProcessBrowserTest {
+class SyncEncryptionKeysTabHelperBrowserTest : public PlatformBrowserTest {
  public:
   SyncEncryptionKeysTabHelperBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         prerender_helper_(base::BindRepeating(
             &SyncEncryptionKeysTabHelperBrowserTest::web_contents,
-            base::Unretained(this))) {}
+            base::Unretained(this))) {
+#if BUILDFLAG(IS_ANDROID)
+    // Avoid the disabling of site isolation due to memory constraints, required
+    // on Android so that ApplyGlobalIsolatedOrigins() takes effect regardless
+    // of available memory when running the test (otherwise low-memory bots may
+    // run into test failures).
+    feature_list_.InitAndEnableFeatureWithParameters(
+        site_isolation::features::kSiteIsolationMemoryThresholds,
+        {{site_isolation::features::
+              kStrictSiteIsolationMemoryThresholdParamName,
+          "0"},
+         { site_isolation::features::
+               kPartialSiteIsolationMemoryThresholdParamName,
+           "0" }});
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
 
-  ~SyncEncryptionKeysTabHelperBrowserTest() override = default;
+  ~SyncEncryptionKeysTabHelperBrowserTest() override {
+    // An explicit reset is required here to avoid CHECK failures due to
+    // unexpected reset ordering.
+    feature_list_.Reset();
+  }
 
  protected:
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return chrome_test_utils::GetActiveWebContents(this);
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
@@ -114,7 +178,7 @@ class SyncEncryptionKeysTabHelperBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     ASSERT_TRUE(https_server_.InitializeAndListen());
-    InProcessBrowserTest::SetUp();
+    PlatformBrowserTest::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -128,27 +192,53 @@ class SyncEncryptionKeysTabHelperBrowserTest : public InProcessBrowserTest {
     // other than localhost (the EmbeddedTestServer serves a certificate that
     // is valid for localhost).
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-    InProcessBrowserTest::SetUpCommandLine(command_line);
+    PlatformBrowserTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    https_server()->AddDefaultHandlers(GetChromeTestDataDir());
+    https_server()->ServeFilesFromDirectory(
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA));
     https_server()->StartAcceptingConnections();
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_;
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-// Tests that chrome.setSyncEncryptionKeys() works in the main frame.
+// Tests that chrome.setSyncEncryptionKeys() works in the main frame, except on
+// Android. On Android, this particular Javascript API isn't defined.
+#if BUILDFLAG(IS_ANDROID)
+
+IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
+                       ShouldNotBindEncryptionKeysApiOnAndroid) {
+  const GURL initial_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+  // EncryptionKeysApi is created for the primary page as the origin is allowed.
+  EXPECT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kConsoleFailureMessage);
+
+  // Calling setSyncEncryptionKeys() in the main frame shouldn't work.
+  const std::vector<uint8_t> kEncryptionKey = {7};
+  ExecJsSetSyncEncryptionKeys(web_contents()->GetPrimaryMainFrame(),
+                              kEncryptionKey);
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(1u, console_observer.messages().size());
+}
+
+#else
+
 IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
                        ShouldBindEncryptionKeysApiInMainFrame) {
   const GURL initial_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
   // EncryptionKeysApi is created for the primary page as the origin is allowed.
   EXPECT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
 
@@ -157,9 +247,9 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
 
   // Calling setSyncEncryptionKeys() in the main frame works and it gets
   // the callback by setSyncEncryptionKeys().
-  const std::vector<uint8_t> kExpectedEncryptionKey = {7};
+  const std::vector<uint8_t> kEncryptionKey = {7};
   ExecJsSetSyncEncryptionKeys(web_contents()->GetPrimaryMainFrame(),
-                              kExpectedEncryptionKey);
+                              kEncryptionKey);
   ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(1u, console_observer.messages().size());
 
@@ -167,7 +257,90 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
   account.gaia = kFakeGaiaId;
   std::vector<std::vector<uint8_t>> actual_keys =
       FetchTrustedVaultKeysForProfile(browser()->profile(), account);
-  EXPECT_THAT(actual_keys, testing::ElementsAre(kExpectedEncryptionKey));
+  EXPECT_THAT(actual_keys, testing::ElementsAre(kEncryptionKey));
+}
+
+// Tests that chrome.setSyncEncryptionKeys() works in a fenced frame.
+IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
+                       ShouldBindEncryptionKeysApiInFencedFrame) {
+  const GURL initial_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+  // EncryptionKeysApi is created for the primary page as the origin is allowed.
+  ASSERT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
+
+  const GURL main_url = https_server()->GetURL("accounts.google.com",
+                                               "/fenced_frames/title1.html");
+  auto* fenced_frame_host = fenced_frame_test_helper().CreateFencedFrame(
+      web_contents()->GetPrimaryMainFrame(), main_url);
+  // EncryptionKeysApi is also created for a fenced frame since it's a main
+  // frame as well.
+  EXPECT_TRUE(HasEncryptionKeysApi(fenced_frame_host));
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kConsoleSuccessMessage);
+
+  // Calling setSyncEncryptionKeys() in the fenced frame works and it gets
+  // the callback by setSyncEncryptionKeys().
+  const std::vector<uint8_t> kEncryptionKey = {7};
+  ExecJsSetSyncEncryptionKeys(fenced_frame_host, kEncryptionKey);
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(1u, console_observer.messages().size());
+
+  AccountInfo account;
+  account.gaia = kFakeGaiaId;
+  std::vector<std::vector<uint8_t>> actual_keys =
+      FetchTrustedVaultKeysForProfile(browser()->profile(), account);
+  EXPECT_THAT(actual_keys, testing::ElementsAre(kEncryptionKey));
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// Tests that chrome.addTrustedSyncEncryptionRecoveryMethod() works in the main
+// frame.
+IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
+                       ShouldBindAddRecoveryMethodApiInMainFrame) {
+  // Out desktop platforms using StandaloneTrustedVaultClient, a primary account
+  // needs to be set for the Javascript operation to complete. Otherwise, the
+  // logic is deferred until a primary account is set and the test would wait
+  // indefinitely until it times out.
+#if !BUILDFLAG(IS_ANDROID)
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(browser()->profile()),
+      "testusername", signin::ConsentLevel::kSync);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  const GURL initial_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+  // EncryptionKeysApi is created for the primary page as the origin is allowed.
+  EXPECT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kConsoleSuccessMessage);
+
+  base::HistogramTester histogram_tester;
+
+  // Calling addTrustedSyncEncryptionRecoveryMethod() in the main frame works.
+  const std::vector<uint8_t> kPublicKey = {7};
+  ExecJsAddTrustedSyncEncryptionRecoveryMethod(
+      web_contents()->GetPrimaryMainFrame(), kPublicKey);
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(1u, console_observer.messages().size());
+
+  // Collect histograms from the renderer process, since otherwise
+  // HistogramTester cannot verify the ones instrumented in the renderer.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultJavascriptAddRecoveryMethodValidArgs", 1 /*Valid*/, 1);
+
+#if BUILDFLAG(IS_ANDROID)
+  // This metric is only instrumented on Android.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultJavascriptAddRecoveryMethodUserKnown", 0 /*Unknown*/,
+      1);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Tests that chrome.setSyncEncryptionKeys() doesn't work in prerendering.
@@ -175,10 +348,20 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
 // and EncryptionKeyApi is not bound.
 IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
                        ShouldNotBindEncryptionKeysApiInPrerendering) {
+  // Out desktop platforms using StandaloneTrustedVaultClient, a primary account
+  // needs to be set for the Javascript operation to complete. Otherwise, the
+  // logic is deferred until a primary account is set and the test would wait
+  // indefinitely until it times out.
+#if !BUILDFLAG(IS_ANDROID)
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(browser()->profile()),
+      "testusername", signin::ConsentLevel::kSync);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   base::HistogramTester histogram_tester;
   const GURL signin_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), signin_url));
   // EncryptionKeysApi is created for the primary page.
   EXPECT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
 
@@ -199,12 +382,13 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
     content::WebContentsConsoleObserver console_observer(web_contents());
     console_observer.SetPattern(kConsoleSuccessMessage);
 
-    // Calling setSyncEncryptionKeys() in the prerendered page triggers
-    // canceling the prerendering since it's a associated interface and the
-    // default policy is `MojoBinderAssociatedPolicy::kCancel`.
-    const std::vector<uint8_t> kExpectedEncryptionKey = {7};
-    ExecJsSetSyncEncryptionKeys(prerendered_frame_host.get(),
-                                kExpectedEncryptionKey);
+    // Calling addTrustedSyncEncryptionRecoveryMethod() in the prerendered page
+    // triggers canceling the prerendering since it's a associated interface and
+    // the default policy is `MojoBinderAssociatedPolicy::kCancel`. Calling  in
+    // the main frame works.
+    const std::vector<uint8_t> kPublicKey = {7};
+    ExecJsAddTrustedSyncEncryptionRecoveryMethod(prerendered_frame_host.get(),
+                                                 kPublicKey);
     host_observer.WaitForDestroyed();
     EXPECT_EQ(0u, console_observer.messages().size());
     histogram_tester.ExpectUniqueSample(
@@ -224,53 +408,14 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
     content::WebContentsConsoleObserver console_observer(web_contents());
     console_observer.SetPattern(kConsoleSuccessMessage);
 
-    // Calling setSyncEncryptionKeys() in the primary page works and it gets
-    // the callback by setSyncEncryptionKeys().
-    const std::vector<uint8_t> kExpectedEncryptionKey = {7};
-    ExecJsSetSyncEncryptionKeys(primary_main_frame, kExpectedEncryptionKey);
+    // Calling addTrustedSyncEncryptionRecoveryMethod() in the primary page
+    // works.
+    const std::vector<uint8_t> kPublicKey = {7};
+    ExecJsAddTrustedSyncEncryptionRecoveryMethod(primary_main_frame,
+                                                 kPublicKey);
     ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(1u, console_observer.messages().size());
-
-    AccountInfo account;
-    account.gaia = kFakeGaiaId;
-    std::vector<std::vector<uint8_t>> actual_keys =
-        FetchTrustedVaultKeysForProfile(browser()->profile(), account);
-    EXPECT_THAT(actual_keys, testing::ElementsAre(kExpectedEncryptionKey));
   }
-}
-
-// Tests that chrome.setSyncEncryptionKeys() works in a fenced frame.
-IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
-                       ShouldBindEncryptionKeysApiInFencedFrame) {
-  const GURL initial_url =
-      https_server()->GetURL("accounts.google.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-  // EncryptionKeysApi is created for the primary page as the origin is allowed.
-  ASSERT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
-
-  const GURL main_url = https_server()->GetURL("accounts.google.com",
-                                               "/fenced_frames/title1.html");
-  auto* fenced_frame_host = fenced_frame_test_helper().CreateFencedFrame(
-      web_contents()->GetPrimaryMainFrame(), main_url);
-  // EncryptionKeysApi is also created for a fenced frame since it's a main
-  // frame as well.
-  EXPECT_TRUE(HasEncryptionKeysApi(fenced_frame_host));
-
-  content::WebContentsConsoleObserver console_observer(web_contents());
-  console_observer.SetPattern(kConsoleSuccessMessage);
-
-  // Calling setSyncEncryptionKeys() in the fenced frame works and it gets
-  // the callback by setSyncEncryptionKeys().
-  const std::vector<uint8_t> kExpectedEncryptionKey = {7};
-  ExecJsSetSyncEncryptionKeys(fenced_frame_host, kExpectedEncryptionKey);
-  ASSERT_TRUE(console_observer.Wait());
-  EXPECT_EQ(1u, console_observer.messages().size());
-
-  AccountInfo account;
-  account.gaia = kFakeGaiaId;
-  std::vector<std::vector<uint8_t>> actual_keys =
-      FetchTrustedVaultKeysForProfile(browser()->profile(), account);
-  EXPECT_THAT(actual_keys, testing::ElementsAre(kExpectedEncryptionKey));
 }
 
 // Same as SyncEncryptionKeysTabHelperBrowserTest but switches::kGaiaUrl does
@@ -297,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(
     ShouldNotBindEncryptionKeys) {
   const GURL initial_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
   // EncryptionKeysApi is NOT created for the primary page as the origin is
   // disallowed.
   EXPECT_FALSE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
