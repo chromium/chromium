@@ -104,6 +104,7 @@ bug may exist in other places. For example:
 * Fix the bug as quickly as you can in your normal working hours
 * Set the bug’s status to **Fixed** as soon as the CL lands
 * Merge the CLs to the appropriate branches after receiving merge approval
+* See also our [top security things checklist](checklist.md)
 
 **Don’t:**
 
