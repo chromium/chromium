@@ -30,4 +30,9 @@ void RecordInputOverlayMenuEntryReposition(RepositionType type) {
       "Arc.InputOverlay.MenuEntryRepositionOperationType", type);
 }
 
+void RecordInputOverlayButtonGroupReposition(RepositionType type) {
+  base::UmaHistogramEnumeration(
+      "Arc.InputOverlay.ButtonGroupRepositionOperationType", type);
+}
+
 }  // namespace arc::input_overlay

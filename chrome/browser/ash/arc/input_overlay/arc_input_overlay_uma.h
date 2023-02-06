@@ -29,6 +29,9 @@ void RecordInputOverlayActionReposition(RepositionType type);
 // Record when finishing menu entry dragging or releasing arrow key.
 void RecordInputOverlayMenuEntryReposition(RepositionType type);
 
+// Record when finishing button group dragging or releasing arrow key.
+void RecordInputOverlayButtonGroupReposition(RepositionType type);
+
 }  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_UMA_H_

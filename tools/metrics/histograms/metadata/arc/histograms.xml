@@ -1360,6 +1360,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.InputOverlay.ButtonGroupRepositionOperationType"
+    enum="ArcInputOverlayRepositionOperationType" expires_after="2023-06-13">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Records the button group reposition operation types, including touchscreen
+    drag, mouse drag and keyboard arrow keys, when users move the button group.
+    Records the events when users release touch, mouse or key.
+  </summary>
+</histogram>
+
 <histogram name="Arc.InputOverlay.Customized" enum="BooleanEnabled"
     expires_after="2023-06-11">
   <owner>cuicuiruan@google.com</owner>

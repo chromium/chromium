@@ -7,6 +7,7 @@
 #include "ash/app_list/app_list_util.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
@@ -234,6 +235,7 @@ void EditFinishView::OnMouseReleased(const ui::MouseEvent& event) {
     return;
   }
   OnDragEnd();
+  RecordInputOverlayButtonGroupReposition(RepositionType::kMouseDragRepostion);
 }
 
 void EditFinishView::OnGestureEvent(ui::GestureEvent* event) {
@@ -255,6 +257,8 @@ void EditFinishView::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_SCROLL_FLING_START:
       OnDragEnd();
       event->SetHandled();
+      RecordInputOverlayButtonGroupReposition(
+          RepositionType::kTouchscreenDragRepostion);
       break;
     default:
       views::View::OnGestureEvent(event);
@@ -278,6 +282,8 @@ bool EditFinishView::OnKeyReleased(const ui::KeyEvent& event) {
   if (!AllowReposition() || !ash::IsArrowKeyEvent(event))
     return views::View::OnKeyReleased(event);
 
+  RecordInputOverlayButtonGroupReposition(
+      RepositionType::kKeyboardArrowKeyReposition);
   return true;
 }
 
