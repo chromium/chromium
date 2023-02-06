@@ -103,6 +103,9 @@ void FidoDeviceAuthenticator::InitializeAuthenticatorDone(
         chosen_pin_uv_auth_protocol_ =
             *(device_->device_info()->pin_protocols->end() - 1);
       }
+      // The hmac-secret extension involves encrypting the values passed back
+      // and forth, thus there must be a valid PIN protocol.
+      options_.supports_hmac_secret &= chosen_pin_uv_auth_protocol_.has_value();
       break;
     case ProtocolVersion::kUnknown:
       NOTREACHED() << "uninitialized device";
@@ -365,7 +368,7 @@ void FidoDeviceAuthenticator::GetEphemeralKey(
     GetEphemeralKeyCallback callback) {
   DCHECK(options_.client_pin_availability !=
              ClientPinAvailability::kNotSupported ||
-         options_.supports_pin_uv_auth_token || SupportsHMACSecretExtension());
+         options_.supports_pin_uv_auth_token || options_.supports_hmac_secret);
   DCHECK(chosen_pin_uv_auth_protocol_);
 
   RunOperation<pin::KeyAgreementRequest, pin::KeyAgreementResponse>(
@@ -517,7 +520,7 @@ FidoDeviceAuthenticator::PINUVDispositionForMakeCredential(
         // the HMAC output is stable. Otherwise later configuring UV on the
         // authenticator could cause the hmac-secret outputs to change as a
         // different seed is used for UV and non-UV assertions.
-        (!request.hmac_secret || !SupportsHMACSecretExtension())))) {
+        (!request.hmac_secret || !options_.supports_hmac_secret)))) {
     return PINUVDisposition::kNoUV;
   }
 
@@ -1315,16 +1318,6 @@ std::string FidoDeviceAuthenticator::GetDisplayName() const {
 ProtocolVersion FidoDeviceAuthenticator::SupportedProtocol() const {
   DCHECK(initialized_);
   return device_->supported_protocol();
-}
-
-bool FidoDeviceAuthenticator::SupportsHMACSecretExtension() const {
-  const absl::optional<AuthenticatorGetInfoResponse>& get_info_response =
-      device_->device_info();
-  return get_info_response && get_info_response->extensions &&
-         base::Contains(*get_info_response->extensions, kExtensionHmacSecret) &&
-         // The hmac-secret extension involves encrypting the values passed
-         // back and forth, thus there must be a valid PIN protocol.
-         chosen_pin_uv_auth_protocol_.has_value();
 }
 
 bool FidoDeviceAuthenticator::SupportsEnterpriseAttestation() const {

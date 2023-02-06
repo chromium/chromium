@@ -198,10 +198,6 @@ ProtocolVersion FidoAuthenticator::SupportedProtocol() const {
   return ProtocolVersion::kUnknown;
 }
 
-bool FidoAuthenticator::SupportsHMACSecretExtension() const {
-  return false;
-}
-
 bool FidoAuthenticator::SupportsEnterpriseAttestation() const {
   return false;
 }

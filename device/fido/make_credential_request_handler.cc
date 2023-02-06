@@ -1016,7 +1016,7 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     request->cred_protect_enforce = options_.cred_protect_request->second;
   }
 
-  if (request->hmac_secret && !authenticator->SupportsHMACSecretExtension()) {
+  if (request->hmac_secret && !auth_options.supports_hmac_secret) {
     request->hmac_secret = false;
   }
 

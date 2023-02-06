@@ -334,6 +334,8 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
         cred_blob_extension_seen = true;
       } else if (extension_str == kExtensionMinPINLength) {
         options.supports_min_pin_length_extension = true;
+      } else if (extension_str == kExtensionHmacSecret) {
+        options.supports_hmac_secret = true;
       }
       extensions.push_back(extension_str);
     }

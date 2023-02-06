@@ -298,7 +298,7 @@ CtapGetAssertionOptions SpecializeOptionsForAuthenticator(
   CtapGetAssertionOptions specialized_options(options);
 
   if (!options.prf_inputs.empty() &&
-      !authenticator.SupportsHMACSecretExtension()) {
+      !authenticator.Options().supports_hmac_secret) {
     specialized_options.prf_inputs.clear();
   }
 

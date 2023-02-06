@@ -63,6 +63,7 @@ AuthenticatorSupportedOptions WinWebAuthnApiOptions(int api_version) {
     // request.
     options.max_cred_blob_length = 256;
   }
+  options.supports_hmac_secret = true;
   return options;
 }
 
@@ -355,10 +356,6 @@ WinWebAuthnApiAuthenticator::AuthenticatorTransport() const {
   // The Windows API could potentially use any external or
   // platform authenticator.
   return absl::nullopt;
-}
-
-bool WinWebAuthnApiAuthenticator::SupportsHMACSecretExtension() const {
-  return true;
 }
 
 bool WinWebAuthnApiAuthenticator::SupportsEnterpriseAttestation() const {
