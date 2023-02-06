@@ -19,8 +19,6 @@ class TestPrivacyHubHandler : public PrivacyHubHandler {
  public:
   using content::WebUIMessageHandler::set_web_ui;
 
-  using PrivacyHubHandler::HandleInitialAvailabilityOfMicrophoneForSimpleUsage;
-  using PrivacyHubHandler::HandleInitialCameraSwitchState;
   using PrivacyHubHandler::HandleInitialMicrophoneSwitchState;
 };
 
@@ -117,44 +115,6 @@ class PrivacyHubHandlerMicrophoneTest
   }
 };
 
-class PrivacyHubHandlerCameraTest : public PrivacyHubHandlerTest,
-                                    public testing::WithParamInterface<cps> {
- public:
-  void ExpectValueMatchesEnumParam(const base::Value& value) const {
-    if (GetParam() == cps::UNKNOWN) {
-      EXPECT_TRUE(value.is_none());
-    } else {
-      ExpectValueMatchesBoolParam(GetParam() == cps::ON, value);
-    }
-  }
-};
-
-TEST_P(PrivacyHubHandlerCameraTest, CameraHardwareToggleChanged) {
-  privacy_hub_handler_.CameraHardwareToggleChanged(GetParam());
-
-  const base::Value data =
-      GetLastWebUIListenerData("camera-hardware-toggle-changed");
-
-  ExpectValueMatchesEnumParam(data);
-}
-
-INSTANTIATE_TEST_SUITE_P(HardwareSwitchStates,
-                         PrivacyHubHandlerCameraTest,
-                         testing::Values(cps::ON, cps::OFF, cps::UNKNOWN),
-                         testing::PrintToStringParamName());
-
-TEST_F(PrivacyHubHandlerCameraTest, HandleInitialCameraSwitchState) {
-  base::Value::List args;
-  args.Append(this_test_name_);
-
-  privacy_hub_handler_.HandleInitialCameraSwitchState(args);
-
-  const base::Value data = GetLastWebUIResponse(this_test_name_);
-
-  // The initial state is always UNKNOWN which is communicated as NONE
-  EXPECT_TRUE(data.is_none());
-}
-
 TEST_P(PrivacyHubHandlerMicrophoneTest,
        MicrophoneHardwarePrivacySwitchChanged) {
   privacy_hub_handler_.MicrophoneHardwareToggleChanged(GetParam());
@@ -178,27 +138,6 @@ TEST_P(PrivacyHubHandlerMicrophoneTest, HandleInitialMicrophoneSwitchState) {
   ExpectValueMatchesBoolParam(data);
 }
 
-TEST_F(PrivacyHubHandlerMicrophoneTest,
-       HandleInitialAvailabilityOfSimpleMicrophone) {
-  base::Value::List args;
-  args.Append(this_test_name_);
-
-  privacy_hub_handler_.HandleInitialAvailabilityOfMicrophoneForSimpleUsage(
-      args);
-
-  const base::Value data = GetLastWebUIResponse(this_test_name_);
-  EXPECT_FALSE(data.is_none());
-}
-
-TEST_P(PrivacyHubHandlerMicrophoneTest, AvailabilityOfMicrophoneChanged) {
-  privacy_hub_handler_.AvailabilityOfMicrophoneChanged(GetParam());
-
-  const base::Value data = GetLastWebUIListenerData(
-      "availability-of-microphone-for-simple-usage-changed");
-
-  ExpectValueMatchesBoolParam(data);
-}
-
 INSTANTIATE_TEST_SUITE_P(HardwareSwitchStates,
                          PrivacyHubHandlerMicrophoneTest,
                          testing::Values(true, false),
@@ -206,22 +145,6 @@ INSTANTIATE_TEST_SUITE_P(HardwareSwitchStates,
 
 #if DCHECK_IS_ON()
 using PrivacyHubHandlerDeathTest = PrivacyHubHandlerTest;
-
-TEST_F(PrivacyHubHandlerDeathTest, HandleInitialCameraSwitchStateNoCallbackId) {
-  base::Value::List args;
-
-  EXPECT_DEATH(privacy_hub_handler_.HandleInitialCameraSwitchState(args),
-               ".*Callback ID is required.*");
-}
-
-TEST_F(PrivacyHubHandlerDeathTest, HandleInitialCameraSwitchStateWithArgs) {
-  base::Value::List args;
-  args.Append(this_test_name_);
-  args.Append(base::Value());
-
-  EXPECT_DEATH(privacy_hub_handler_.HandleInitialCameraSwitchState(args),
-               ".*Did not expect arguments.*");
-}
 
 TEST_F(PrivacyHubHandlerDeathTest,
        HandleInitialMicrophoneSwitchStateNoCallbackId) {
@@ -238,28 +161,6 @@ TEST_F(PrivacyHubHandlerDeathTest, HandleInitialMicrophoneSwitchStateWithArgs) {
 
   EXPECT_DEATH(privacy_hub_handler_.HandleInitialMicrophoneSwitchState(args),
                ".*Did not expect arguments.*");
-}
-
-TEST_F(PrivacyHubHandlerDeathTest,
-       HandleInitialAvailabilityOfMicrophoneForSimpleUsageNoCallbackId) {
-  base::Value::List args;
-
-  EXPECT_DEATH(
-      privacy_hub_handler_.HandleInitialAvailabilityOfMicrophoneForSimpleUsage(
-          args),
-      ".*Callback ID is required.*");
-}
-
-TEST_F(PrivacyHubHandlerDeathTest,
-       HandleInitialAvailabilityOfMicrophoneForSimpleUsageWithArgs) {
-  base::Value::List args;
-  args.Append(this_test_name_);
-  args.Append(base::Value());
-
-  EXPECT_DEATH(
-      privacy_hub_handler_.HandleInitialAvailabilityOfMicrophoneForSimpleUsage(
-          args),
-      ".*Did not expect arguments.*");
 }
 #endif
 

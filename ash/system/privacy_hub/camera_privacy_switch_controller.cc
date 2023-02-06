@@ -11,7 +11,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/system/system_notification_controller.h"
@@ -173,12 +172,6 @@ void CameraPrivacySwitchController::OnCameraHWPrivacySwitchStateChanged(
     const std::string& device_id,
     cros::mojom::CameraPrivacySwitchState state) {
   camera_privacy_switch_state_ = state;
-  PrivacyHubDelegate* const frontend =
-      Shell::Get()->privacy_hub_controller()->frontend();
-  if (frontend) {
-    // This event can be received before the frontend delegate is registered
-    frontend->CameraHardwareToggleChanged(state);
-  }
   // Issue a notification if camera is disabled by HW switch, but not by the SW
   // switch and there is multiple cameras.
   if (state == cros::mojom::CameraPrivacySwitchState::ON &&

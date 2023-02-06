@@ -80,10 +80,7 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
 
 class MockFrontendAPI : public PrivacyHubDelegate {
  public:
-  MOCK_METHOD(void, AvailabilityOfMicrophoneChanged, (bool), (override));
   MOCK_METHOD(void, MicrophoneHardwareToggleChanged, (bool), (override));
-  void CameraHardwareToggleChanged(
-      cros::mojom::CameraPrivacySwitchState state) override {}
 };
 
 }  // namespace
@@ -233,14 +230,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, OnInputMuteChanged) {
         microphone_muted, CrasAudioHandler::InputMuteChangeMethod::kOther);
     EXPECT_EQ(GetUserPref(), microphone_allowed);
   }
-}
-
-TEST_F(PrivacyHubMicrophoneControllerTest, OnAudioNodesChanged) {
-  EXPECT_CALL(mock_frontend_, AvailabilityOfMicrophoneChanged(_));
-  Shell::Get()
-      ->privacy_hub_controller()
-      ->microphone_controller()
-      .OnAudioNodesChanged();
 }
 
 TEST_F(PrivacyHubMicrophoneControllerTest, OnMicrophoneMuteSwitchValueChanged) {

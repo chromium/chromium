@@ -41,16 +41,6 @@ class MockSwitchAPI : public CameraPrivacySwitchAPI {
               (override));
 };
 
-class MockFrontendAPI : public PrivacyHubDelegate {
- public:
-  MOCK_METHOD(void,
-              CameraHardwareToggleChanged,
-              (cros::mojom::CameraPrivacySwitchState state),
-              (override));
-  void AvailabilityOfMicrophoneChanged(bool) override {}
-  void MicrophoneHardwareToggleChanged(bool) override {}
-};
-
 class FakeSensorDisabledNotificationDelegate
     : public SensorDisabledNotificationDelegate {
  public:
@@ -134,7 +124,6 @@ class PrivacyHubCameraControllerTests : public AshTestBase {
     auto mock_switch = std::make_unique<::testing::NiceMock<MockSwitchAPI>>();
     mock_switch_ = mock_switch.get();
 
-    Shell::Get()->privacy_hub_controller()->set_frontend(&mock_frontend_);
     controller_ = &Shell::Get()->privacy_hub_controller()->camera_controller();
     controller_->SetCameraPrivacySwitchAPIForTest(std::move(mock_switch));
   }
@@ -154,7 +143,6 @@ class PrivacyHubCameraControllerTests : public AshTestBase {
     waiter.Wait();
   }
 
-  ::testing::NiceMock<MockFrontendAPI> mock_frontend_;
   ::testing::NiceMock<MockSwitchAPI>* mock_switch_;
   CameraPrivacySwitchController* controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -241,10 +229,6 @@ TEST_F(PrivacyHubCameraControllerTests, OnCameraSoftwarePrivacySwitchChanged) {
 
 TEST_F(PrivacyHubCameraControllerTests,
        OnCameraHardwarePrivacySwitchChangedMultipleCameras) {
-  EXPECT_CALL(mock_frontend_, CameraHardwareToggleChanged(
-                                  cros::mojom::CameraPrivacySwitchState::OFF));
-  EXPECT_CALL(mock_frontend_, CameraHardwareToggleChanged(
-                                  cros::mojom::CameraPrivacySwitchState::ON));
   CameraPrivacySwitchController& controller =
       Shell::Get()->privacy_hub_controller()->camera_controller();
   // We have 2 cameras in the system.
@@ -310,10 +294,6 @@ TEST_F(PrivacyHubCameraControllerTests,
 
 TEST_F(PrivacyHubCameraControllerTests,
        OnCameraHardwarePrivacySwitchChangedOneCamera) {
-  EXPECT_CALL(mock_frontend_, CameraHardwareToggleChanged(
-                                  cros::mojom::CameraPrivacySwitchState::OFF));
-  EXPECT_CALL(mock_frontend_, CameraHardwareToggleChanged(
-                                  cros::mojom::CameraPrivacySwitchState::ON));
   CameraPrivacySwitchController& controller =
       Shell::Get()->privacy_hub_controller()->camera_controller();
   // We have 1 camera in the system.

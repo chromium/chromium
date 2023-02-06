@@ -17,14 +17,8 @@ namespace ash {
 // //ash/system.
 class PrivacyHubDelegate {
  public:
-  // Signals that the availability of microphone changed
-  virtual void AvailabilityOfMicrophoneChanged(
-      bool has_active_input_device) = 0;
   // Signals that the state of the microphone hardware toggle changed
   virtual void MicrophoneHardwareToggleChanged(bool muted) = 0;
-  // Signals that the state of the camera hardware toggle changed
-  virtual void CameraHardwareToggleChanged(
-      cros::mojom::CameraPrivacySwitchState state) = 0;
 };
 
 }  // namespace ash

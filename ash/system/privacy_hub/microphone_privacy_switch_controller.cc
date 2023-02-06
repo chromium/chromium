@@ -162,16 +162,6 @@ void MicrophonePrivacySwitchController::SetSystemMute() {
   }
 }
 
-void MicrophonePrivacySwitchController::OnAudioNodesChanged() {
-  PrivacyHubDelegate* const frontend = GetFrontend();
-
-  if (frontend) {
-    // This may be called before the webui registers a frontend delegate
-    frontend->AvailabilityOfMicrophoneChanged(
-        CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage());
-  }
-}
-
 void MicrophonePrivacySwitchController::SetMicrophoneNotificationVisible(
     const bool visible) {
   mute_switch_notification_.Hide();
