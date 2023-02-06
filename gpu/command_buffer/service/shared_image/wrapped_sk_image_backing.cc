@@ -162,6 +162,8 @@ WrappedSkImageBacking::~WrappedSkImageBacking() {
 }
 
 bool WrappedSkImageBacking::Initialize() {
+  DCHECK(!format().IsCompressed());
+
   // MakeCurrent to avoid destroying another client's state because Skia may
   // change GL state to create and upload textures (crbug.com/1095679).
   if (!context_state_->MakeCurrent(nullptr)) {
@@ -169,7 +171,6 @@ bool WrappedSkImageBacking::Initialize() {
   }
   context_state_->set_need_context_state_reset(true);
 
-  DCHECK(!format().IsCompressed());
   auto mipmap = usage() & SHARED_IMAGE_USAGE_MIPMAP ? GrMipMapped::kYes
                                                     : GrMipMapped::kNo;
   const std::string label = "WrappedSkImageBackingFactory_Initialize" +

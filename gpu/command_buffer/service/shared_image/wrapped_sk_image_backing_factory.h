@@ -68,9 +68,6 @@ class GPU_GLES2_EXPORT WrappedSkImageBackingFactory
                    base::span<const uint8_t> pixel_data) override;
 
  private:
-  bool CanUseWrappedSkImage(uint32_t usage,
-                            GrContextType gr_context_type) const;
-
   scoped_refptr<SharedContextState> context_state_;
   const bool is_drdc_enabled_;
 };
