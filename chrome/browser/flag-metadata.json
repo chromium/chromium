@@ -4109,8 +4109,8 @@
   },
   {
     "name": "help-app-launcher-search",
-    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
-    "expiry_milestone": 107
+    "owners": [ "//ash/webui/help_app_ui/OWNERS", "//chrome/browser/ash/app_list/search/OWNERS" ],
+    "expiry_milestone": 115
   },
   {
     "name": "hidden-network-migration",

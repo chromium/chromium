@@ -6,12 +6,10 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
 #include "ash/webui/help_app_ui/url_constants.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -101,11 +99,6 @@ HelpAppProvider::HelpAppProvider(Profile* profile,
   app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
   Observe(&app_service_proxy_->AppRegistryCache());
   LoadIcon();
-
-  if (!base::FeatureList::IsEnabled(ash::features::kHelpAppLauncherSearch)) {
-    // Only get the help app manager if the launcher search feature is enabled.
-    return;
-  }
 
   if (!search_handler_) {
     return;
@@ -198,8 +191,9 @@ void HelpAppProvider::OnAppRegistryCacheWillBeDestroyed(
 
 // If the availability of search results changed, start a new search.
 void HelpAppProvider::OnSearchResultAvailabilityChanged() {
-  if (last_query_.empty())
+  if (last_query_.empty()) {
     return;
+  }
   Start(last_query_);
 }
 

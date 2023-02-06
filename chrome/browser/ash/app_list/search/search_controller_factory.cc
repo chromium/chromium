@@ -125,10 +125,12 @@ std::unique_ptr<SearchController> CreateSearchController(
 
   controller->AddProvider(std::make_unique<KeyboardShortcutProvider>(profile));
 
-  controller->AddProvider(std::make_unique<HelpAppProvider>(
-      profile,
-      ash::help_app::HelpAppManagerFactory::GetForBrowserContext(profile)
-          ->search_handler()));
+  if (base::FeatureList::IsEnabled(ash::features::kHelpAppLauncherSearch)) {
+    controller->AddProvider(std::make_unique<HelpAppProvider>(
+        profile,
+        ash::help_app::HelpAppManagerFactory::GetForBrowserContext(profile)
+            ->search_handler()));
+  }
 
   controller->AddProvider(
       std::make_unique<HelpAppZeroStateProvider>(profile, notifier));
