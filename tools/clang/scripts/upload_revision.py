@@ -199,7 +199,7 @@ def PatchRustStage0():
   # should do the same for both Rust and Clang if we do so.
   print(verify_stage0.stdout)
   lines = verify_stage0.stdout.splitlines()
-  m = re.match('Actual hash: +([0-9a-z]+)', lines[2])
+  m = re.match('Actual hash: +([0-9a-z]+)', lines[-1])
   new_stage0_hash = m.group(1)
 
   with open(RUST_UPDATE_PY_PATH) as f:
