@@ -233,13 +233,7 @@ UIImage* DefaultFaviconImage() {
       !_layoutConstraintsInitialized) {
     [self setNeedsUpdateConstraints];
   } else {
-    if (_pinned) {
-      [NSLayoutConstraint deactivateConstraints:self.defaultConstraints];
-      [NSLayoutConstraint activateConstraints:self.faviconPinnedConstraints];
-    } else {
-      [NSLayoutConstraint deactivateConstraints:self.faviconPinnedConstraints];
-      [NSLayoutConstraint activateConstraints:self.defaultConstraints];
-    }
+    [self updatePinnedConstraints];
   }
 }
 
@@ -378,6 +372,7 @@ UIImage* DefaultFaviconImage() {
   AddSameCenterXConstraint(self, _faviconView, _activityIndicator);
   AddSameCenterYConstraint(self, _faviconView, _activityIndicator);
   AddSameCenterYConstraint(self, _faviconView, _titleLabel);
+  [self updatePinnedConstraints];
 }
 // Updates this tab's style based on the value of `selected` and the current
 // incognito style.
@@ -463,6 +458,17 @@ UIImage* DefaultFaviconImage() {
                clockwise:NO];
   [path closePath];
   return path;
+}
+
+// Updates constraints that depend on the pinned state.
+- (void)updatePinnedConstraints {
+  if (_pinned) {
+    [NSLayoutConstraint deactivateConstraints:self.defaultConstraints];
+    [NSLayoutConstraint activateConstraints:self.faviconPinnedConstraints];
+  } else {
+    [NSLayoutConstraint deactivateConstraints:self.faviconPinnedConstraints];
+    [NSLayoutConstraint activateConstraints:self.defaultConstraints];
+  }
 }
 
 #pragma mark - Getters
