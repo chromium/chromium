@@ -636,6 +636,12 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  // If `feedWrapperViewController` is nil, then the NTP is either being created
+  // or updated and is not ready to handle scroll events. Doing so could cause
+  // unexpected behavior, such as breaking the layout or causing crashes.
+  if (!self.feedWrapperViewController) {
+    return;
+  }
   [self.overscrollActionsController scrollViewDidScroll:scrollView];
   [self.panGestureHandler scrollViewDidScroll:scrollView];
   [self updateFakeOmniboxForScrollPosition];
