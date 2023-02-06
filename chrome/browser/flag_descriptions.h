@@ -568,9 +568,6 @@ extern const char kEnableTLS13EarlyDataDescription[];
 extern const char kAccessibilityAcceleratorNotificationsTimeoutName[];
 extern const char kAccessibilityAcceleratorNotificationsTimeoutDescription[];
 
-extern const char kChromeVoxQ1FastTrackFeaturesName[];
-extern const char kChromeVoxQ1FastTrackFeaturesDescription[];
-
 extern const char kAccessibilityServiceName[];
 extern const char kAccessibilityServiceDescription[];
 
