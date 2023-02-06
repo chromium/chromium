@@ -1308,7 +1308,7 @@ TEST_F(FederatedAuthRequestImplTest,
 TEST_F(FederatedAuthRequestImplTest,
        AutoSigninForSingleReturningUserSingleAccount) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoSignin);
+  list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
@@ -1339,7 +1339,7 @@ TEST_F(FederatedAuthRequestImplTest,
 TEST_F(FederatedAuthRequestImplTest,
        AutoSigninForSingleReturningUserMultipleAccounts) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoSignin);
+  list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
   // Pretend the sharing permission has not been granted for this account.
   EXPECT_CALL(*test_permission_delegate_,
@@ -1385,7 +1385,7 @@ TEST_F(FederatedAuthRequestImplTest,
 TEST_F(FederatedAuthRequestImplTest,
        AutoSigninForMultipleReturningUsersMultipleAccounts) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoSignin);
+  list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
   // Pretend the sharing permission has not been granted for this account.
   EXPECT_CALL(*test_permission_delegate_,
@@ -1432,7 +1432,7 @@ TEST_F(FederatedAuthRequestImplTest,
 // mode to explicit.
 TEST_F(FederatedAuthRequestImplTest, AutoSigninForZeroReturningUsers) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoSignin);
+  list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
   // Pretend the sharing permission has not been granted for this account.
   EXPECT_CALL(
@@ -1458,11 +1458,11 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninForZeroReturningUsers) {
 }
 
 // Test that auto sign-in with multiple accounts and a single returning user
-// sets the sign-in mode to kExplicit if `preferAutoSignin` is not specified.
+// sets the sign-in mode to kExplicit if `autoReauthn` is not specified.
 TEST_F(FederatedAuthRequestImplTest,
        AutoSigninForSingleReturningUserWithoutSettingPreferAutoSignin) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoSignin);
+  list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
@@ -1484,7 +1484,7 @@ TEST_F(FederatedAuthRequestImplTest,
 // is set to explicit regardless the account's login state.
 TEST_F(FederatedAuthRequestImplTest, AutoSigninBrowserNotObservedSigninBefore) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoSignin);
+  list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
@@ -1517,7 +1517,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninBrowserNotObservedSigninBefore) {
 // explicit.
 TEST_F(FederatedAuthRequestImplTest, AutoSigninForFirstTimeUser) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoSignin);
+  list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
   // Pretend the auto sign-in permission has been granted.
   EXPECT_CALL(*mock_auto_signin_permission_delegate_, HasAutoSigninPermission())
@@ -1537,7 +1537,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninForFirstTimeUser) {
 TEST_F(FederatedAuthRequestImplTest,
        AutoSigninWithBlockedAutoSigninPermissions) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoSignin);
+  list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(

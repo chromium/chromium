@@ -402,9 +402,9 @@ BASE_FEATURE(kFedCm, "FedCm", base::FEATURE_ENABLED_BY_DEFAULT);
 // is enabled.
 const char kFedCmIdpSignoutFieldTrialParamName[] = "IdpSignout";
 
-// Enables usage of the FedCM API with auto sign-in.
-BASE_FEATURE(kFedCmAutoSignin,
-             "FedCmAutoSignin",
+// Enables usage of the FedCM API with auto re-authentication.
+BASE_FEATURE(kFedCmAutoReauthn,
+             "FedCmAutoReauthn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM API with iframe support.

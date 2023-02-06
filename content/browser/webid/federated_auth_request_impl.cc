@@ -537,7 +537,7 @@ void FederatedAuthRequestImpl::RequestToken(
           idp_config_url,
           IdentityProviderGetInfo(std::move(idp_ptr),
                                   idp_get_params_ptr->prefer_auto_sign_in &&
-                                      IsFedCmAutoSigninEnabled(),
+                                      IsFedCmAutoReauthnEnabled(),
                                   rp_context));
     }
   }
@@ -889,7 +889,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   DCHECK(render_frame_host().GetPage().IsPrimary());
 
   bool maybe_proceed_with_auto_signin =
-      prefer_auto_signin && IsFedCmAutoSigninEnabled() &&
+      prefer_auto_signin && IsFedCmAutoReauthnEnabled() &&
       auto_signin_permission_delegate_->HasAutoSigninPermission();
 
   if (maybe_proceed_with_auto_signin) {

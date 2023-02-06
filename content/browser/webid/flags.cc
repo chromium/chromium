@@ -11,8 +11,8 @@
 
 namespace content {
 
-bool IsFedCmAutoSigninEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmAutoSignin);
+bool IsFedCmAutoReauthnEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmAutoReauthn);
 }
 
 bool IsFedCmIdpSignoutEnabled() {

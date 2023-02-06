@@ -1267,7 +1267,7 @@
       status: "stable",
     },
     {
-      name: "FedCmAutoSignin",
+      name: "FedCmAutoReauthn",
       depends_on: ["FedCm"],
       public: true,
     },

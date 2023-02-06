@@ -1474,9 +1474,10 @@ const char kFedCmName[] = "FedCM";
 const char kFedCmDescription[] =
     "Enables JavaScript API to intermediate federated identity requests.";
 
-const char kFedCmAutoSigninName[] = "FedCmAutoSignin";
-const char kFedCmAutoSigninDescription[] =
-    "Enables auto sign-in in the FedCM API. Requires FedCM to be enabled.";
+const char kFedCmAutoReauthnName[] = "FedCmAutoReauthn";
+const char kFedCmAutoReauthnDescription[] =
+    "Enables auto re-authentication in the FedCM API. Requires FedCM to be "
+    "enabled.";
 
 const char kFedCmIframeSupportName[] = "FedCM with iframe support";
 const char kFedCmIframeSupportDescription[] =

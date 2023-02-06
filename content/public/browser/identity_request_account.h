@@ -35,7 +35,7 @@ struct CONTENT_EXPORT IdentityRequestAccount {
     // This is the default sign in mode for returning users.
     kExplicit,
     // This represents the auto sign in flow. Currently it's only available when
-    // RP specifies |preferAutoSignIn = true| AND there is only one signed in
+    // RP specifies |autoReauthn = true| AND there is only one signed in
     // account.
     kAuto,
   };

@@ -217,7 +217,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableDocumentPolicy, features::kDocumentPolicy},
     {wf::EnableDocumentPolicyNegotiation, features::kDocumentPolicyNegotiation},
     {wf::EnableFedCm, features::kFedCm, kSetOnlyIfOverridden},
-    {wf::EnableFedCmAutoSignin, features::kFedCmAutoSignin,
+    {wf::EnableFedCmAutoReauthn, features::kFedCmAutoReauthn,
      kSetOnlyIfOverridden},
     {wf::EnableFedCmIframeSupport, features::kFedCmIframeSupport,
      kSetOnlyIfOverridden},

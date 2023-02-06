@@ -7858,9 +7858,9 @@ const FeatureEntry kFeatureEntries[] = {
                                     kFedCmFeatureVariations,
                                     "FedCmFeatureVariations")},
 
-    {"fedcm-auto-sign-in", flag_descriptions::kFedCmAutoSigninName,
-     flag_descriptions::kFedCmAutoSigninDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmAutoSignin)},
+    {"fedcm-auto-re-authn", flag_descriptions::kFedCmAutoReauthnName,
+     flag_descriptions::kFedCmAutoReauthnDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmAutoReauthn)},
 
     {"fedcm-iframe-support", flag_descriptions::kFedCmIframeSupportName,
      flag_descriptions::kFedCmIframeSupportDescription, kOsAll,

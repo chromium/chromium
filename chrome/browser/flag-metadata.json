@@ -3703,7 +3703,7 @@
     "expiry_milestone": 120
   },
   {
-    "name": "fedcm-auto-sign-in",
+    "name": "fedcm-auto-re-authn",
     "owners": [ "tanzachary", "web-identity-eng@google.com"],
     "expiry_milestone": 120
   },
