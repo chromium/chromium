@@ -93,6 +93,9 @@ bool FontFallbackList::ShouldSkipDrawing() const {
 
 const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontData(
     const FontDescription& font_description) {
+  // https://linear.app/replay/issue/RUN-1219
+  recordreplay::Assert("[RUN-1219] FontFallbackList::DeterminePrimarySimpleFontData");
+
   base::ElapsedTimer timer;
   const SimpleFontData* result =
       DeterminePrimarySimpleFontDataCore(font_description);
