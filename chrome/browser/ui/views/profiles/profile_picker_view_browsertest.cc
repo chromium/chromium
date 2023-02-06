@@ -27,6 +27,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/interstitials/chrome_settings_page_helper.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/metrics/first_web_contents_profiler_base.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
@@ -2186,6 +2187,41 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLocalProfileCreationDialogBrowserTest,
                          ->GetProfileAttributesStorage()
                          .GetProfileAttributesWithPath(profile_path));
   EXPECT_TRUE(ProfilePicker::IsOpen());
+}
+
+// Only MacOS has a keyboard shortcut to exit Chrome.
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       SyncConfirmationExitChromeTest) {
+  // Simulate a successful sign-in and wait for the sign-in to propagate to the
+  // flow, resulting in sync confirmation screen getting displayed.
+  SignInForNewProfile(GetSyncConfirmationURL(), "joe.consumer@gmail.com",
+                      "Joe");
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  // Exit the sync confirmation view (Cmd-Q).
+  view()->AcceleratorPressed(ui::Accelerator(ui::VKEY_Q, ui::EF_COMMAND_DOWN));
+  WaitForPickerClosed();
+  EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       SyncConfirmationNavigateBackTest) {
+  // Simulate a successful sign-in and wait for the sign-in to propagate to the
+  // flow, resulting in sync confirmation screen getting displayed.
+  SignInForNewProfile(GetSyncConfirmationURL(), "joe.consumer@gmail.com",
+                      "Joe");
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+
+// Navigate back does nothing.
+#if BUILDFLAG(IS_MAC)
+  view()->AcceleratorPressed(
+      ui::Accelerator(ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN));
+#else
+  view()->AcceleratorPressed(ui::Accelerator(ui::VKEY_LEFT, ui::EF_ALT_DOWN));
+#endif
+  EXPECT_EQ(web_contents()->GetController().GetPendingEntry(), nullptr);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

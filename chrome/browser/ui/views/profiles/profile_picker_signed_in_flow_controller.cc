@@ -140,6 +140,12 @@ bool ProfilePickerSignedInFlowController::HandleContextMenu(
   return true;
 }
 
+bool ProfilePickerSignedInFlowController::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  return host_->GetWebContentsDelegate()->HandleKeyboardEvent(source, event);
+}
+
 void ProfilePickerSignedInFlowController::SwitchToSyncConfirmationFinished() {
   DCHECK(IsInitialized());
   // Initialize the WebUI page once we know it's committed.
