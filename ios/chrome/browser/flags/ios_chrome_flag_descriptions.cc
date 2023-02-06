@@ -485,6 +485,12 @@ const char kIOSSharedHighlightingV2Description[] =
     "Enables improvements to text fragments UI, including a menu for removing "
     "or resharing a highlight.";
 
+const char kIOSShowPasswordStorageInSaveInfobarName[] =
+    "Show password storage in save infobar";
+const char kIOSShowPasswordStorageInSaveInfobarDescription[] =
+    "Modifies the save password infobar to show whether the save happens to an "
+    "account or only to the current device";
+
 const char kKeyboardShortcutsMenuName[] = "Keyboard Shortcuts Menu";
 const char kKeyboardShortcutsMenuDescription[] =
     "Enables the new keyboard shortcuts menu.";

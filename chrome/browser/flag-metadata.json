@@ -4427,6 +4427,11 @@
     "expiry_milestone": 109
   },
   {
+    "name": "ios-show-password-storage-in-save-infobar",
+    "owners": ["victorvianna", "chrome-sync-dev+finch@google.com"],
+    "expiry_milestone": 114
+  },
+  {
     "name": "ios-tabstrip-context-menu",
     "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 118

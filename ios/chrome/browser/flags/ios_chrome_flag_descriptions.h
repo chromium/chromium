@@ -431,6 +431,11 @@ extern const char kIOSSharedHighlightingAmpDescription[];
 extern const char kIOSSharedHighlightingV2Name[];
 extern const char kIOSSharedHighlightingV2Description[];
 
+// Title and description for the flag that modifies the save password infobar
+// to show whether the save happens to an account or only to the current device.
+extern const char kIOSShowPasswordStorageInSaveInfobarName[];
+extern const char kIOSShowPasswordStorageInSaveInfobarDescription[];
+
 // Title and description for the flag to enable Keyboard Shortcuts Refresh.
 extern const char kKeyboardShortcutsMenuName[];
 extern const char kKeyboardShortcutsMenuDescription[];

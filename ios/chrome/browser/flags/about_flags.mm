@@ -1278,6 +1278,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCloseAllTabsConfirmationName,
      flag_descriptions::kCloseAllTabsConfirmationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kCloseAllTabsConfirmation)},
+    {"ios-show-password-storage-in-save-infobar",
+     flag_descriptions::kIOSShowPasswordStorageInSaveInfobarName,
+     flag_descriptions::kIOSShowPasswordStorageInSaveInfobarDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kIOSShowPasswordStorageInSaveInfobar)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
