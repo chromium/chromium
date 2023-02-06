@@ -36,7 +36,7 @@
   }
 
   .side-padding {
-    flex-grow: 1;
+    flex-grow: 0;
     flex-shrink: 0;
     max-height: 100%;
     overflow-y: scroll;
@@ -48,9 +48,12 @@
   #list-container {
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
     overflow-y: clip;
     width: 100%;
+  }
+
+  #search-container {
+    flex-grow: 0;
   }
 
   #tabs {
