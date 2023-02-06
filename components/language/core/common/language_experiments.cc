@@ -22,10 +22,10 @@ BASE_FEATURE(kExplicitLanguageAsk,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAppLanguagePrompt,
              "AppLanguagePrompt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAppLanguagePromptULP,
              "AppLanguagePromptULP",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kForceAppLanguagePrompt,
              "ForceAppLanguagePrompt",
              base::FEATURE_DISABLED_BY_DEFAULT);
