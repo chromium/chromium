@@ -94,7 +94,7 @@ constexpr absl::optional<ParsedDecimal> ConsumeDurationNumber(
 }
 
 // A helper for FromString() that tries to parse a leading unit designator
-// (e.g., ns, us, ms, s, m, h) from the given StringPiece. |unit_string| is
+// (e.g., ns, us, ms, s, m, h, d) from the given StringPiece. |unit_string| is
 // modified to start from the first unconsumed char.
 //
 // Adapted from absl:
@@ -109,6 +109,7 @@ absl::optional<TimeDelta> ConsumeDurationUnit(StringPiece& unit_string) {
            std::make_pair("s", Seconds(1)),
            std::make_pair("m", Minutes(1)),
            std::make_pair("h", Hours(1)),
+           std::make_pair("d", Days(1)),
        }) {
     if (ConsumePrefix(unit_string, str_delta.first))
       return str_delta.second;

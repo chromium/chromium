@@ -17,11 +17,11 @@ class TimeDelta;
 // This is not part of TimeDelta to avoid dragging the includes above into
 // base/time/time.h.
 //
-// From Go's doc at https://golang.org/pkg/time/#ParseDuration
+// Adapted from Go's doc at https://golang.org/pkg/time/#ParseDuration
 //   [ParseDuration] parses a duration string. A duration string is
 //   a possibly signed sequence of decimal numbers, each with optional
 //   fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m".
-//   Valid time units are "ns", "us" "ms", "s", "m", "h".
+//   Valid time units are "ns", "us" "ms", "s", "m", "h", "d".
 //
 // Special values that are allowed without specifying units:
 //  "0", "+0", "-0" -> TimeDelta()
