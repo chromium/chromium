@@ -128,8 +128,9 @@ class BasePasswordManagerViewControllerTest
     mediator_.consumer = passwords_controller;
     [passwords_controller setPasswords:{} blockedSites:{}];
 
-    // Set up handler. Use strict mock to ensure `showPasswordIssues` isn't
-    // called except when that page is available.
+    // Set up handler. Use strict mock to ensure `showPasswordCheckup (or
+    // `showPasswordIssues` when kIOSPasswordCheckup is disabled) isn't called
+    // except when that page is available.
     passwords_settings_commands_strict_mock_ =
         OCMStrictProtocolMock(@protocol(PasswordsSettingsCommands));
     passwords_controller.handler = passwords_settings_commands_strict_mock_;
@@ -967,7 +968,7 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_TRUE(checkPassword.accessoryType);
   SetEditing(false);
 
-  OCMExpect([passwords_settings_commands_strict_mock_ showPasswordIssues]);
+  OCMExpect([passwords_settings_commands_strict_mock_ showPasswordCheckup]);
   SelectCell(/*item=*/0,
              /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
   EXPECT_OCMOCK_VERIFY(passwords_settings_commands_strict_mock_);

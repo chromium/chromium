@@ -1,0 +1,56 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("password_checkup") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_checkup_coordinator.h",
+    "password_checkup_coordinator.mm",
+    "password_checkup_mediator.h",
+    "password_checkup_mediator.mm",
+  ]
+  deps = [
+    ":password_checkup_ui",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/table_view:utils",
+  ]
+}
+
+source_set("password_checkup_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_checkup_commands.h",
+    "password_checkup_consumer.h",
+    "password_checkup_view_controller.h",
+    "password_checkup_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/settings:settings_root",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "password_checkup_mediator_unittest.mm",
+    "password_checkup_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":password_checkup",
+    ":password_checkup_ui",
+    "//testing/gtest",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "password_checkup_egtest.mm" ]
+  deps = [ "//ios/chrome/test/earl_grey:eg_test_support+eg2" ]
+}

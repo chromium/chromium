@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
@@ -46,6 +47,7 @@
     AddPasswordCoordinatorDelegate,
     PasswordDetailsCoordinatorDelegate,
     PasswordIssuesCoordinatorDelegate,
+    PasswordCheckupCoordinatorDelegate,
     PasswordsInOtherAppsCoordinatorDelegate,
     PasswordSettingsCoordinatorDelegate,
     PasswordsSettingsCommands,
@@ -66,7 +68,13 @@
     id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>
         dispatcher;
 
-// Coordinator for password details.
+// Coordinator for Password Checkup.
+@property(nonatomic, strong)
+    PasswordCheckupCoordinator* passwordCheckupCoordinator;
+
+// Coordinator for password issues.
+// TODO(crbug.com/1406871): Remove when kIOSPasswordCheckup is enabled by
+// default.
 @property(nonatomic, strong)
     PasswordIssuesCoordinator* passwordIssuesCoordinator;
 
@@ -157,6 +165,10 @@
   self.passwordsViewController.delegate = nil;
   self.passwordsViewController = nil;
 
+  [self.passwordCheckupCoordinator stop];
+  self.passwordCheckupCoordinator.delegate = nil;
+  self.passwordCheckupCoordinator = nil;
+
   [self.passwordIssuesCoordinator stop];
   self.passwordIssuesCoordinator.delegate = nil;
   self.passwordIssuesCoordinator = nil;
@@ -177,6 +189,15 @@
 }
 
 #pragma mark - PasswordsSettingsCommands
+
+- (void)showPasswordCheckup {
+  DCHECK(!self.passwordCheckupCoordinator);
+  self.passwordCheckupCoordinator = [[PasswordCheckupCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  self.passwordCheckupCoordinator.delegate = self;
+  [self.passwordCheckupCoordinator start];
+}
 
 - (void)showPasswordIssues {
   DCHECK(!self.passwordIssuesCoordinator);
@@ -282,6 +303,8 @@
   [self.passwordSettingsCoordinator start];
 }
 
+// TODO(crbug.com/1406871): Remove when kIOSPasswordCheckup is enabled by
+// default.
 #pragma mark - PasswordIssuesCoordinatorDelegate
 
 - (void)passwordIssuesCoordinatorDidRemove:
@@ -296,6 +319,16 @@
     (const password_manager::CredentialUIEntry&)credential {
   [self.mediator deleteCredential:credential];
   return YES;
+}
+
+#pragma mark - PasswordCheckupCoordinatorDelegate
+
+- (void)passwordCheckupCoordinatorDidRemove:
+    (PasswordCheckupCoordinator*)coordinator {
+  DCHECK_EQ(self.passwordCheckupCoordinator, coordinator);
+  [self.passwordCheckupCoordinator stop];
+  self.passwordCheckupCoordinator.delegate = nil;
+  self.passwordCheckupCoordinator = nil;
 }
 
 #pragma mark PasswordDetailsCoordinatorDelegate

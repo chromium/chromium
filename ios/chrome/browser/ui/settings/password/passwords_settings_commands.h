@@ -14,6 +14,9 @@ struct CredentialUIEntry;
 // Commands relative to the passwords in the Settings.
 @protocol PasswordsSettingsCommands <NSObject>
 
+// Shows the Password Checkup screen.
+- (void)showPasswordCheckup;
+
 // Shows the screen with password issues.
 - (void)showPasswordIssues;
 

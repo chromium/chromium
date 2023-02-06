@@ -19972,6 +19972,21 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobilePasswordCheckupSettingsBack">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user goes back from Password Checkup Settings UI to root
+    Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordCheckupSettingsClose">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when Password Checkup Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
 <action name="MobilePasswordsSettingsBack">
   <owner>kazinova@google.com</owner>
   <owner>sczs@chromium.org</owner>
