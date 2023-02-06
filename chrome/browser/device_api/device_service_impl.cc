@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -72,7 +73,8 @@ bool IsForceInstalledOrigin(const PrefService* prefs,
       prefs->GetList(prefs::kWebAppInstallForceList);
 
   return base::Contains(prefs_list, origin, [](const auto& entry) {
-    std::string entry_url = entry.FindKey(web_app::kUrlKey)->GetString();
+    std::string entry_url =
+        CHECK_DEREF(entry.GetDict().FindString(web_app::kUrlKey));
     return url::Origin::Create(GURL(entry_url));
   });
 }
