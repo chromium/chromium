@@ -70,13 +70,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.jank_tracker.DummyJankTracker;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.base.test.util.MetricsUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -115,7 +114,6 @@ import org.chromium.chrome.features.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -1704,27 +1702,30 @@ public class StartSurfaceMediatorUnitTest {
 
         doReturn(true).when(mSecondaryTasksSurfaceController).isDialogVisible();
         doReturn(true).when(mSecondaryTasksSurfaceController).onBackPressed();
-        int startSurface =
-                BackPressManager.getHistogramValueForTesting(BackPressHandler.Type.START_SURFACE);
-        MetricsUtils.HistogramDelta startSurfaceBackPressRecord = new MetricsUtils.HistogramDelta(
-                BackPressManager.getHistogramForTesting(), startSurface);
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Android.BackPress.Intercept", 4); // START_SURFACE enum value
         Assert.assertTrue(mediator.onBackPressed());
         verify(mCarouselOrSingleTabSwitcherModuleController, never()).onBackPressed();
         verify(mSecondaryTasksSurfaceController).onBackPressed();
-        Assert.assertEquals(1, startSurfaceBackPressRecord.getDelta());
+        histogramWatcher.assertExpected();
 
         doReturn(false).when(mSecondaryTasksSurfaceController).isDialogVisible();
         doReturn(false).when(mSecondaryTasksSurfaceController).onBackPressed();
+        histogramWatcher = HistogramWatcher.newBuilder()
+                                   .expectNoRecords("Android.BackPress.Intercept")
+                                   .build();
         Assert.assertFalse(verify(mSecondaryTasksSurfaceController).onBackPressed());
-        Assert.assertEquals(1, startSurfaceBackPressRecord.getDelta());
+        histogramWatcher.assertExpected();
 
+        histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Android.BackPress.Intercept", 4); // START_SURFACE enum value
         mediator.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
         mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
         Assert.assertEquals(StartSurfaceState.SHOWN_TABSWITCHER, mediator.getStartSurfaceState());
         Assert.assertTrue(mediator.onBackPressed());
         Assert.assertEquals("Should return to home page on back press.",
                 StartSurfaceState.SHOWN_HOMEPAGE, mediator.getStartSurfaceState());
-        Assert.assertEquals(2, startSurfaceBackPressRecord.getDelta());
+        histogramWatcher.assertExpected();
     }
 
     /**
@@ -1744,25 +1745,25 @@ public class StartSurfaceMediatorUnitTest {
         // Start Surface -> Grid Tab Switcher -> Start Surface -> onPauseWithNative ->
         // onResumeWithNative -> destroy.
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_START);
-        int expectedRecordTime = 1;
         if (!ChromeFeatureList.sStartSurfaceRefactor.isEnabled()) {
+            var histogramWatcher =
+                    HistogramWatcher.newSingleRecordWatcher(START_SURFACE_TIME_SPENT);
             // Verifies that the histograms are logged in the transitions of Start Surface -> Grid
             // Tab Switcher. Only testing in the case when the refactoring is disabled, since
             // StartSurfaceState isn't used if the refactoring is enabled.
             mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
-            Assert.assertEquals(expectedRecordTime,
-                    RecordHistogram.getHistogramTotalCountForTesting(START_SURFACE_TIME_SPENT));
+            histogramWatcher.assertExpected();
             showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_HOMEPAGE);
-            expectedRecordTime++;
         }
-        mPauseResumeWithNativeObserverArgumentCaptor.getValue().onPauseWithNative();
-        Assert.assertEquals(expectedRecordTime,
-                RecordHistogram.getHistogramTotalCountForTesting(START_SURFACE_TIME_SPENT));
 
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(START_SURFACE_TIME_SPENT);
+        mPauseResumeWithNativeObserverArgumentCaptor.getValue().onPauseWithNative();
+        histogramWatcher.assertExpected();
+
+        histogramWatcher = HistogramWatcher.newSingleRecordWatcher(START_SURFACE_TIME_SPENT);
         mPauseResumeWithNativeObserverArgumentCaptor.getValue().onResumeWithNative();
         mediator.destroy();
-        Assert.assertEquals(expectedRecordTime + 1,
-                RecordHistogram.getHistogramTotalCountForTesting(START_SURFACE_TIME_SPENT));
+        histogramWatcher.assertExpected();
     }
 
     private StartSurfaceMediator createStartSurfaceMediator(boolean isStartSurfaceEnabled) {

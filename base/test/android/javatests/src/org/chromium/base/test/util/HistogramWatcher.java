@@ -61,6 +61,14 @@ public class HistogramWatcher {
     }
 
     /**
+     * Convenience method to create a new {@link HistogramWatcher} that expects a single record with
+     * any value for {@code histogram} and no more records to the same histogram.
+     */
+    public static HistogramWatcher newSingleRecordWatcher(String histogram) {
+        return newBuilder().expectAnyRecord(histogram).build();
+    }
+
+    /**
      * Builder for {@link HistogramWatcher}. Use to list the expectations of records.
      */
     public static class Builder {
