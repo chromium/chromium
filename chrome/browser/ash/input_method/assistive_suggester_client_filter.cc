@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
+#include "chrome/browser/ash/input_method/ime_rules_config.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/exo/wm_helper.h"
@@ -35,15 +36,32 @@ const char* kAllowedDomainAndPathsForEmojiSuggester[][2] = {
     {"voice.google.com", ""},    {"mail.google.com", "/chat"},
 };
 
-// TODO(b/3339115): Add web.skype.com back to the list after compatibility
-//    issues are solved.
-const char* kAllowedDomainAndPathsForMultiWordSuggester[][2] = {
-    {"discord.com", ""},          {"messenger.com", ""},
-    {"web.whatsapp.com", ""},     {"duo.google.com", ""},
-    {"hangouts.google.com", ""},  {"messages.google.com", ""},
-    {"web.telegram.org", ""},     {"voice.google.com", ""},
-    {"mail.google.com", "/chat"},
+// The default denylist of domains and paths that will turn off multi word
+// suggestion.
+const char* kDeniedDomainsForMultiwordSuggester[] = {
+    "amazon",
+    "b.corp.google",
+    "buganizer.corp.google",
+    "cider.corp.google",
+    "classroom.google",
+    "desmos",
+    "docs.google",
+    "facebook",
+    "instagram",
+    "mail.google",
+    "outlook.live",
+    "outlook.office",
+    "quizlet",
+    // TODO(b/209696920): remove web.skype.com from the list after compatibility
+    // issues are solved.
+    "web.skype",
+    "whatsapp",
+    "youtube",
 };
+
+// exceptions where multi word suggestion is enabled.
+const char* kAllowedDomainsAndPathsForMultiwordSuggester[][2] = {
+    {"mail.google", "/chat"}};
 
 const char* kTestUrls[] = {
     "e14s-test",
@@ -114,6 +132,19 @@ const char* kDeniedDomainAndPathsForDiacritics[][2] = {
     {"docs.google.com", "/presentation"},
     // Google Docs: delete on insert does not work
     {"docs.google.com", "/document"},
+};
+
+const char* kDeniedUrlsForMultiwordSuggester[] = {
+    "chrome-untrusted://crosh/",     // Crosh on Chrome browser
+    "chrome-untrusted://terminal/",  // Terminal on Chrome browser
+};
+
+const char* kDeniedAppsForMultiwordSuggester[] = {
+    "iodihamcpbpeioajjeobimgagajmlibd",  // SSH app
+    "cgfnfgkafmcdkdgilmojlnaadileaach",  // Crosh app
+    "fhicihalidkgcimdmhpohldehjmcabcf",  // Terminal app
+    "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
+    "algkcnfjnajfhgimadimbjhmpaeohhln",  // SSH app (dev)
 };
 
 const char* kDeniedAppsForDiacritics[] = {
@@ -209,6 +240,35 @@ bool IsMatchedApp(const char* (&expected_app_ids_or_package_names)[N],
   return false;
 }
 
+template <size_t N>
+bool IsMatchedSubDomain(const char* (&expected_domains)[N],
+                        const absl::optional<GURL>& url) {
+  if (!url.has_value()) {
+    return false;
+  }
+  for (const auto& domain : expected_domains) {
+    if (IsSubDomain(*url, domain)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+template <size_t N>
+bool IsMatchedSubDomainWithPathPrefix(
+    const char* (&expected_domains_and_paths)[N][2],
+    const absl::optional<GURL>& url) {
+  if (!url.has_value()) {
+    return false;
+  }
+  for (const auto& [domain, path_prefix] : expected_domains_and_paths) {
+    if (IsSubDomainWithPathPrefix(*url, domain, path_prefix)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void ReturnEnabledSuggestions(
     AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback,
     WindowProperties window_properties,
@@ -235,11 +295,13 @@ void ReturnEnabledSuggestions(
                                  current_url) ||
       IsMatchedApp(kAllowedAppsForEmojiSuggester, window_properties);
 
-  // Allow-list (will only allow if matched)
+  // Deny-list (will block if matched, otherwise allow)
   bool multi_word_suggestions_allowed =
-      IsTestUrl(current_url) || IsInternalWebsite(current_url) ||
-      IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForMultiWordSuggester,
-                                 current_url);
+      (!IsMatchedSubDomain(kDeniedDomainsForMultiwordSuggester, current_url) ||
+       IsMatchedSubDomainWithPathPrefix(
+           kAllowedDomainsAndPathsForMultiwordSuggester, current_url)) &&
+      !IsMatchedApp(kDeniedAppsForMultiwordSuggester, window_properties) &&
+      !IsMatchedExactUrl(kDeniedUrlsForMultiwordSuggester, current_url);
 
   // Allow-list (will only allow if matched)
   bool personal_info_suggestions_allowed =

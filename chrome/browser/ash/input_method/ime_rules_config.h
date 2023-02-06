@@ -16,6 +16,9 @@ bool IsAutoCorrectDisabled(const TextFieldContextualInfo& info);
 // Runs the rule check against url
 bool IsMultiWordSuggestDisabled(const GURL& url);
 
+// Checks if domain is a sub-domain of url
+bool IsSubDomain(const GURL& url, const base::StringPiece domain);
+
 // Checks if url belongs to domain and has the path_prefix
 bool IsSubDomainWithPathPrefix(const GURL& url,
                                const base::StringPiece domain,

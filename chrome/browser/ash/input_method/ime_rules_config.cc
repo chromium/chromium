@@ -30,26 +30,7 @@ const char* kDefaultAutocorrectDomainDenylist[] = {
     "whatsapp",
     "youtube",
 };
-
-// The default denylist of domains and paths that will turn off multi word
-// suggestion feature.
-const char* kDefaultMultiwordSuggestDomainAndPathDenylist[][2] = {
-    {"amazon", ""},
-    {"b.corp.google", ""},
-    {"buganizer.corp.google", ""},
-    {"cider.corp.google", ""},
-    {"classroom.google", ""},
-    {"desmos", ""},
-    {"docs.google", ""},
-    {"facebook", ""},
-    {"instagram", ""},
-    {"mail.google", "/mail"},
-    {"outlook.live", ""},
-    {"outlook.office", ""},
-    {"quizlet", ""},
-    {"whatsapp", ""},
-    {"youtube", ""},
-};
+}  // namespace
 
 // Checks if domain is a sub-domain of url
 bool IsSubDomain(const GURL& url, const base::StringPiece domain) {
@@ -66,7 +47,6 @@ bool IsSubDomain(const GURL& url, const base::StringPiece domain) {
 
   return url::DomainIs(urlDomain, domain);
 }
-}  // namespace
 
 // Checks if url belongs to domain and has the path_prefix
 bool IsSubDomainWithPathPrefix(const GURL& url,
@@ -80,17 +60,6 @@ bool IsAutoCorrectDisabled(const TextFieldContextualInfo& info) {
   // Check the default domain denylist rules.
   for (const char* domain : kDefaultAutocorrectDomainDenylist) {
     if (IsSubDomain(info.tab_url, domain)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool IsMultiWordSuggestDisabled(const GURL& url) {
-  // Check the default domain denylist rules
-  for (const auto& [domain, path] :
-       kDefaultMultiwordSuggestDomainAndPathDenylist) {
-    if (IsSubDomainWithPathPrefix(url, domain, path)) {
       return true;
     }
   }
