@@ -526,7 +526,7 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
   }
 
   // The |size| is only valid for ProgressType::kProgress.
-  DCHECK_EQ(type, ProgressType::kProgress);
+  DCHECK_EQ(ProgressType::kProgress, type);
   int64_t& last_size = individual_progress.at(destination_path);
   int64_t delta = size - last_size;
   last_size = size;
