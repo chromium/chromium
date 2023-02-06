@@ -18,8 +18,8 @@ features:
   can_be_recommended: true
   dynamic_refresh: false
   per_profile: true
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:112-
 items:
 - caption: Activate account recovery
   value: true
