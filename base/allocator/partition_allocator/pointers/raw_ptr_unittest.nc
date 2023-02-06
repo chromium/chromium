@@ -25,7 +25,7 @@ struct PmfTest {
   int Func(char, double) const { return 11; }
 };
 
-#if defined(NCTEST_INVALID_RAW_PTR_TRAIT)  // [r"Unknown raw_ptr trait"]
+#if defined(NCTEST_INVALID_RAW_PTR_TRAIT)  // [r"Unknown raw_ptr trait\(s\)"]
 
 void WontCompile() {
   constexpr auto InvalidRawPtrTrait =
@@ -33,7 +33,7 @@ void WontCompile() {
   raw_ptr<int, InvalidRawPtrTrait> p;
 }
 
-#elif defined(NCTEST_INVALID_RAW_PTR_TRAIT_OF_MANY)  // [r"Unknown raw_ptr trait"]
+#elif defined(NCTEST_INVALID_RAW_PTR_TRAIT_OF_MANY)  // [r"Unknown raw_ptr trait\(s\)"]
 
 void WontCompile() {
   constexpr auto InvalidRawPtrTrait = ~base::RawPtrTraits::kEmpty;

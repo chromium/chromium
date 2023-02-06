@@ -89,6 +89,12 @@ namespace base {
 // raw_ptr.
 //
 // Internal use only: Developers shouldn't use those values directly.
+//
+// Housekeeping rules: Try not to change trait values, so that numeric trait
+// values stay constant across builds (could be useful e.g. when analyzing stack
+// traces). A reasonable exception to this rule are `*ForTest` traits. As a
+// matter of fact, we propose that new non-test traits are added before the
+// `*ForTest` traits.
 enum class RawPtrTraits : unsigned {
   kEmpty = 0,
 
@@ -110,6 +116,7 @@ enum class RawPtrTraits : unsigned {
 
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
   // Disables any hooks, by switching to NoOpImpl in that case.
+  //
   // Internal use only.
   kDisableHooks = (1 << 2),
 #else
@@ -147,15 +154,17 @@ constexpr RawPtrTraits Remove(RawPtrTraits a, RawPtrTraits b) {
   return a & ~b;
 }
 
-constexpr bool IsValid(RawPtrTraits traits) {
-  return !Contains(
-      traits, ~(RawPtrTraits::kMayDangle | RawPtrTraits::kDisableMTECheckedPtr |
-                RawPtrTraits::kDisableHooks |
-                RawPtrTraits::kUseCountingWrapperForTest));
+constexpr bool AreValid(RawPtrTraits traits) {
+  return Remove(traits, RawPtrTraits::kMayDangle |
+                            RawPtrTraits::kDisableMTECheckedPtr |
+                            RawPtrTraits::kDisableHooks |
+                            RawPtrTraits::kUseCountingWrapperForTest) ==
+         RawPtrTraits::kEmpty;
 }
 
 template <RawPtrTraits Traits>
 struct TraitsToImpl;
+
 }  // namespace raw_ptr_traits
 
 namespace internal {
@@ -633,7 +642,7 @@ struct IsSupportedType<T,
 
 template <RawPtrTraits Traits>
 struct TraitsToImpl {
-  static_assert(IsValid(Traits), "Unknown raw_ptr trait");
+  static_assert(AreValid(Traits), "Unknown raw_ptr trait(s)");
 
  private:
   // UnderlyingImpl is the struct that provides the implementation of the

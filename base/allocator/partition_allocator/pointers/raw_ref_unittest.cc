@@ -761,13 +761,13 @@ TEST(RawRefPtr, CTADWithConst) {
 }
 
 // `kDisableHooks` matches what `CountingRawRef` does internally.
-// `UseCountingWrapperForTest` is removed, and `DisableHooks` is added.
+// `kUseCountingWrapperForTest` is removed, and `DisableHooks` is added.
 using RawPtrCountingImpl = base::internal::RawPtrCountingImplWrapperForTest<
     base::RawPtrTraits::kDisableHooks>;
 
 // `kDisableHooks | kMayDangle` matches what `CountingRawRefMayDangle` does
-// internally. `UseCountingWrapperForTest` is removed, `kDisableHooks` is added,
-// and `kMayDangle` is kept.
+// internally. `kUseCountingWrapperForTest` is removed, `kDisableHooks` is
+// added, and `kMayDangle` is kept.
 using RawPtrCountingMayDangleImpl =
     base::internal::RawPtrCountingImplWrapperForTest<
         base::RawPtrTraits::kMayDangle | base::RawPtrTraits::kDisableHooks>;

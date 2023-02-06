@@ -95,12 +95,12 @@ static_assert(
 namespace {
 
 // `kEmpty` matches what `CountingRawPtr` does internally.
-// `UseCountingWrapperForTest` is removed.
+// `kUseCountingWrapperForTest` is removed.
 using RawPtrCountingImpl = base::internal::RawPtrCountingImplWrapperForTest<
     base::RawPtrTraits::kEmpty>;
 
 // `kMayDangle` matches what `CountingRawPtrMayDangle` does internally.
-// `UseCountingWrapperForTest` is removed, and `kMayDangle` is kept.
+// `kUseCountingWrapperForTest` is removed, and `kMayDangle` is kept.
 using RawPtrCountingMayDangleImpl =
     base::internal::RawPtrCountingImplWrapperForTest<
         base::RawPtrTraits::kMayDangle>;
