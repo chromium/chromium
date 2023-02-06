@@ -106,7 +106,8 @@ const std::string& GetUniversalApiContractVersion() {
       [] {
         int major_version = 0;
         int minor_version = 0;
-        if (base::win::GetVersion() <= base::win::Version::WIN10_RS4) {
+        if (base::win::OSInfo::Kernel32Version() <=
+            base::win::Version::WIN10_RS4) {
           major_version = GetPreRS5UniversalApiContractVersion();
         } else {
           base::win::RegKey version_key(
