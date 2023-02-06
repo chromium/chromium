@@ -78,8 +78,6 @@ class AttributionParserErrorManager {
 
   bool has_error() const { return has_error_; }
 
-  void ResetErrorState() { has_error_ = false; }
-
  private:
   const raw_ref<std::ostream> error_stream_;
 

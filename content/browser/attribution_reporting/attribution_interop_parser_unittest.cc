@@ -4,17 +4,17 @@
 
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 
-#include <sstream>
+#include <string>
 #include <tuple>
 #include <utility>
 
 #include "base/strings/strcat.h"
 #include "base/test/values_test_util.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -64,7 +64,6 @@ bool operator==(AttributionConfig a, AttributionConfig b) {
 namespace {
 
 using ::testing::HasSubstr;
-using ::testing::Optional;
 
 TEST(AttributionInteropParserTest, ValidInput) {
   constexpr char kInputJson[] = R"json({"input": {
@@ -123,13 +122,10 @@ TEST(AttributionInteropParserTest, ValidInput) {
       }]
     })json";
 
-  base::Value input = base::test::ParseJson(kInputJson);
-
-  std::ostringstream error_stream;
-  EXPECT_THAT(AttributionInteropParser(error_stream)
-                  .SimulatorInputFromInteropInput(input.GetDict()),
-              Optional(base::test::IsJson(base::test::ParseJson(kOutputJson))));
-  EXPECT_EQ(error_stream.str(), "");
+  auto result = AttributionSimulatorInputFromInteropInput(
+      base::test::ParseJsonDict(kInputJson));
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(*result, base::test::IsJson(base::test::ParseJson(kOutputJson)));
 }
 
 TEST(AttributionInteropParserTest, ValidOutput) {
@@ -213,13 +209,10 @@ TEST(AttributionInteropParserTest, ValidOutput) {
       }]
     })json";
 
-  base::Value::Dict input = base::test::ParseJsonDict(kInputJson);
-
-  std::ostringstream error_stream;
-  EXPECT_THAT(AttributionInteropParser(error_stream)
-                  .InteropOutputFromSimulatorOutput(std::move(input)),
-              Optional(base::test::IsJson(base::test::ParseJson(kOutputJson))));
-  EXPECT_EQ(error_stream.str(), "");
+  auto result = AttributionInteropOutputFromSimulatorOutput(
+      base::test::ParseJsonDict(kInputJson));
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(*result, base::test::IsJson(base::test::ParseJson(kOutputJson)));
 }
 
 TEST(AttributionInteropParserTest, ValidConfig) {
@@ -331,13 +324,16 @@ TEST(AttributionInteropParserTest, ValidConfig) {
   };
 
   for (const auto& test_case : kTestCases) {
-    base::Value json = base::test::ParseJson(test_case.json);
-    AttributionConfig config;
-    std::ostringstream error_stream;
-    EXPECT_TRUE(AttributionInteropParser(error_stream)
-                    .ParseConfig(json, config, test_case.required));
-    EXPECT_EQ(config, test_case.expected) << json;
-    EXPECT_EQ(error_stream.str(), "") << json;
+    base::Value::Dict json = base::test::ParseJsonDict(test_case.json);
+    if (test_case.required) {
+      auto result = ParseAttributionConfig(json);
+      EXPECT_TRUE(result.has_value()) << json;
+      EXPECT_EQ(result, test_case.expected) << json;
+    } else {
+      AttributionConfig config;
+      EXPECT_EQ("", MergeAttributionConfig(json, config)) << json;
+      EXPECT_EQ(config, test_case.expected) << json;
+    }
   }
 }
 
@@ -359,14 +355,12 @@ TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
   };
 
   {
-    AttributionConfig config;
-    std::ostringstream error_stream;
-    EXPECT_FALSE(AttributionInteropParser(error_stream)
-                     .ParseConfig(base::Value(base::Value::Dict()), config,
-                                  /*required=*/true));
+    auto result = ParseAttributionConfig(base::Value::Dict());
+    ASSERT_FALSE(result.has_value());
+
     for (const char* field : kFields) {
       EXPECT_THAT(
-          error_stream.str(),
+          result.error(),
           HasSubstr(base::StrCat(
               {"[\"", field,
                "\"]: must be a positive integer formatted as base-10 string"})))
@@ -376,17 +370,16 @@ TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
 
   {
     AttributionConfig config;
-    std::ostringstream error_stream;
     base::Value::Dict dict;
     for (const char* field : kFields) {
       dict.Set(field, "0");
     }
-    EXPECT_FALSE(AttributionInteropParser(error_stream)
-                     .ParseConfig(base::Value(std::move(dict)), config,
-                                  /*required=*/false));
+
+    std::string error = MergeAttributionConfig(dict, config);
+
     for (const char* field : kFields) {
       EXPECT_THAT(
-          error_stream.str(),
+          error,
           HasSubstr(base::StrCat(
               {"[\"", field,
                "\"]: must be a positive integer formatted as base-10 string"})))
@@ -403,13 +396,11 @@ TEST(AttributionInteropParserTest, InvalidConfigNonNegativeIntegers) {
   };
 
   {
-    AttributionConfig config;
-    std::ostringstream error_stream;
-    EXPECT_FALSE(AttributionInteropParser(error_stream)
-                     .ParseConfig(base::Value(base::Value::Dict()), config,
-                                  /*required=*/true));
+    auto result = ParseAttributionConfig(base::Value::Dict());
+    ASSERT_FALSE(result.has_value());
+
     for (const char* field : kFields) {
-      EXPECT_THAT(error_stream.str(),
+      EXPECT_THAT(result.error(),
                   HasSubstr(base::StrCat({"[\"", field,
                                           "\"]: must be a non-negative integer "
                                           "formatted as base-10 string"})))
@@ -419,16 +410,15 @@ TEST(AttributionInteropParserTest, InvalidConfigNonNegativeIntegers) {
 
   {
     AttributionConfig config;
-    std::ostringstream error_stream;
     base::Value::Dict dict;
     for (const char* field : kFields) {
       dict.Set(field, "-10");
     }
-    EXPECT_FALSE(AttributionInteropParser(error_stream)
-                     .ParseConfig(base::Value(std::move(dict)), config,
-                                  /*required=*/false));
+
+    std::string error = MergeAttributionConfig(dict, config);
+
     for (const char* field : kFields) {
-      EXPECT_THAT(error_stream.str(),
+      EXPECT_THAT(error,
                   HasSubstr(base::StrCat({"[\"", field,
                                           "\"]: must be a non-negative integer "
                                           "formatted as base-10 string"})))
@@ -444,14 +434,12 @@ TEST(AttributionInteropParserTest, InvalidConfigRandomizedResponseRates) {
   };
 
   {
-    AttributionConfig config;
-    std::ostringstream error_stream;
-    EXPECT_FALSE(AttributionInteropParser(error_stream)
-                     .ParseConfig(base::Value(base::Value::Dict()), config,
-                                  /*required=*/true));
+    auto result = ParseAttributionConfig(base::Value::Dict());
+    ASSERT_FALSE(result.has_value());
+
     for (const char* field : kFields) {
       EXPECT_THAT(
-          error_stream.str(),
+          result.error(),
           HasSubstr(base::StrCat(
               {"[\"", field,
                "\"]: must be a double between 0 and 1 formatted as string"})))
@@ -461,17 +449,16 @@ TEST(AttributionInteropParserTest, InvalidConfigRandomizedResponseRates) {
 
   {
     AttributionConfig config;
-    std::ostringstream error_stream;
     base::Value::Dict dict;
     for (const char* field : kFields) {
       dict.Set(field, "1.5");
     }
-    EXPECT_FALSE(AttributionInteropParser(error_stream)
-                     .ParseConfig(base::Value(std::move(dict)), config,
-                                  /*required=*/false));
+
+    std::string error = MergeAttributionConfig(dict, config);
+
     for (const char* field : kFields) {
       EXPECT_THAT(
-          error_stream.str(),
+          error,
           HasSubstr(base::StrCat(
               {"[\"", field,
                "\"]: must be a double between 0 and 1 formatted as string"})))
@@ -491,15 +478,10 @@ class AttributionInteropParseInputErrorTest
 TEST_P(AttributionInteropParseInputErrorTest, InvalidInputFails) {
   const ParseErrorTestCase& test_case = GetParam();
 
-  base::Value value = base::test::ParseJson(test_case.json);
-
-  std::ostringstream error_stream;
-
-  EXPECT_EQ(AttributionInteropParser(error_stream)
-                .SimulatorInputFromInteropInput(value.GetDict()),
-            absl::nullopt);
-
-  EXPECT_THAT(error_stream.str(), HasSubstr(test_case.expected_failure_substr));
+  auto result = AttributionSimulatorInputFromInteropInput(
+      base::test::ParseJsonDict(test_case.json));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_THAT(result.error(), HasSubstr(test_case.expected_failure_substr));
 }
 
 const ParseErrorTestCase kParseInputErrorTestCases[] = {
@@ -757,14 +739,10 @@ class AttributionInteropParseOutputErrorTest
 TEST_P(AttributionInteropParseOutputErrorTest, InvalidOutputFails) {
   const ParseErrorTestCase& test_case = GetParam();
 
-  base::Value::Dict value = base::test::ParseJsonDict(test_case.json);
-
-  std::ostringstream error_stream;
-  AttributionInteropParser parser(error_stream);
-
-  parser.InteropOutputFromSimulatorOutput(std::move(value));
-
-  EXPECT_THAT(error_stream.str(), HasSubstr(test_case.expected_failure_substr));
+  auto result = AttributionInteropOutputFromSimulatorOutput(
+      base::test::ParseJsonDict(test_case.json));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_THAT(result.error(), HasSubstr(test_case.expected_failure_substr));
 }
 
 const ParseErrorTestCase kParseOutputErrorTestCases[] = {

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/values_test_util.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
@@ -25,14 +25,12 @@ namespace content {
 
 namespace {
 
-using ::testing::Optional;
-
 constexpr char kDefaultConfigFileName[] = "default_config.json";
 
-base::Value ReadJsonFromFile(const base::FilePath& path) {
+base::Value::Dict ReadJsonFromFile(const base::FilePath& path) {
   std::string contents;
   EXPECT_TRUE(base::ReadFileToString(path, &contents));
-  return base::test::ParseJson(contents);
+  return base::test::ParseJsonDict(contents);
 }
 
 base::FilePath GetInputDir() {
@@ -68,51 +66,30 @@ class AttributionInteropTest : public ::testing::TestWithParam<base::FilePath> {
 // See //content/test/data/attribution_reporting/interop/README.md for the
 // JSON schema.
 TEST_P(AttributionInteropTest, HasExpectedOutput) {
-  std::ostringstream error_stream;
+  auto config = ParseAttributionConfig(
+      ReadJsonFromFile(GetInputDir().AppendASCII(kDefaultConfigFileName)));
+  ASSERT_TRUE(config.has_value()) << config.error();
 
-  AttributionInteropParser parser(error_stream);
+  base::Value::Dict dict = ReadJsonFromFile(GetParam());
 
-  AttributionConfig config;
-
-  base::Value config_value =
-      ReadJsonFromFile(GetInputDir().AppendASCII(kDefaultConfigFileName));
-
-  bool is_config_valid =
-      parser.ParseConfig(config_value, config, /*required=*/true);
-  EXPECT_TRUE(is_config_valid) << error_stream.str();
-  error_stream.str("");
-
-  base::Value value = ReadJsonFromFile(GetParam());
-  base::Value::Dict& dict = value.GetDict();
-
-  static constexpr char kKeyApiConfig[] = "api_config";
-  if (const base::Value* api_config = dict.Find(kKeyApiConfig)) {
-    bool success = parser.ParseConfig(*api_config, config, /*required=*/false,
-                                      kKeyApiConfig);
-    is_config_valid &= success;
-    EXPECT_TRUE(success) << error_stream.str();
-    error_stream.str("");
+  if (const base::Value* api_config = dict.Find("api_config")) {
+    ASSERT_TRUE(api_config->is_dict());
+    ASSERT_EQ("", MergeAttributionConfig(api_config->GetDict(), *config));
   }
 
-  absl::optional<base::Value::Dict> input =
-      parser.SimulatorInputFromInteropInput(dict);
-  EXPECT_TRUE(input) << error_stream.str();
+  absl::optional<base::Value> expected_output = dict.Extract("output");
+  ASSERT_TRUE(expected_output.has_value());
 
-  base::Value* expected_output = dict.Find("output");
-  EXPECT_TRUE(expected_output);
+  auto input = AttributionSimulatorInputFromInteropInput(std::move(dict));
+  ASSERT_TRUE(input.has_value()) << input.error();
 
-  ASSERT_TRUE(is_config_valid && input);
-
-  auto simulator_output = RunAttributionSimulation(std::move(*input), config);
+  auto simulator_output = RunAttributionSimulation(std::move(*input), *config);
   ASSERT_TRUE(simulator_output.has_value()) << simulator_output.error();
 
-  absl::optional<base::Value::Dict> actual_output =
-      parser.InteropOutputFromSimulatorOutput(std::move(*simulator_output));
-  EXPECT_TRUE(actual_output) << error_stream.str();
-
-  if (expected_output) {
-    EXPECT_THAT(actual_output, Optional(base::test::IsJson(*expected_output)));
-  }
+  auto actual_output =
+      AttributionInteropOutputFromSimulatorOutput(std::move(*simulator_output));
+  ASSERT_TRUE(actual_output.has_value()) << actual_output.error();
+  EXPECT_THAT(*actual_output, base::test::IsJson(*expected_output));
 }
 
 INSTANTIATE_TEST_SUITE_P(
