@@ -9,31 +9,36 @@
 <script>
 'use strict';
 
-promise_test(async () => {
-  const ancestor_key = token();
-  let url0 = generateURL("resources/frame0.html", [ancestor_key]);
-  let url1 = generateURL("resources/frame1.html", [ancestor_key]);
-  let url2 = generateURL("resources/frame2.html", [ancestor_key]);
+for (const resolve_to_config of [true, false]) {
+  promise_test(async () => {
+    const ancestor_key = token();
+    let url0 = generateURL("resources/frame0.html", [ancestor_key]);
+    let url1 = generateURL("resources/frame1.html", [ancestor_key]);
+    let url2 = generateURL("resources/frame2.html", [ancestor_key]);
 
-  await sharedStorage.set('key0-set-from-document', 'value0');
-  await sharedStorage.worklet.addModule("resources/verify-storage-entries-module.js");
-  await sharedStorage.run("set-key0-operation");
+    await sharedStorage.set('key0-set-from-document', 'value0');
+    await addModuleOnce("resources/verify-storage-entries-module.js");
+    await sharedStorage.run("set-key0-operation");
 
-  let uuid1 = await sharedStorage.selectURL(
-      "verify-storage-entries-url-selection-operation",
-      [{url: url0,
-        reportingMetadata: {'click': "resources/frame0.html"}},
-       {url: url1,
-        reportingMetadata:
-          {'mouse interaction': "resources/frame1.html",
-          'click': "resources/frame2.html"}}]);
+    let select_url_result = await sharedStorage.selectURL(
+        "verify-storage-entries-url-selection-operation",
+        [{url: url0,
+          reportingMetadata: {'click': "resources/frame0.html"}},
+         {url: url1,
+          reportingMetadata:
+            {'mouse interaction': "resources/frame1.html",
+            'click': "resources/frame2.html"}}],
+        {resolveToConfig: resolve_to_config});
 
-  attachFencedFrame(uuid1, 'opaque-ads');
+    assert_true(validateSelectURLResult(select_url_result, resolve_to_config));
+    attachFencedFrame(select_url_result, 'opaque-ads');
 
-  // frame1_loaded implies that the setters and the operations were successful.
-  assert_equals(await nextValueFromServer(ancestor_key), "frame1_loaded");
+    // frame1_loaded implies that the setters and the operations were successful.
+    assert_equals(await nextValueFromServer(ancestor_key), "frame1_loaded");
 
-}, 'verify-storage-entries-url-selection-operation');
+  }, 'verify-storage-entries-url-selection-operation selectURL() resolves to ' +
+     (resolve_to_config ? 'config' : 'urn:uuid'));
+}
 
 </script>
 </body>

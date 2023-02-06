@@ -26,33 +26,36 @@ async function waitForReportCount(id) {
   assert_true(false, 'timeout');
 }
 
-promise_test(async () => {
+for (const resolve_to_config of [true, false]) {
+  promise_test(async () => {
     const ancestor_key = token();
     let url0 = generateURL("resources/sender0.html", [ancestor_key]);
     let url1 = generateURL("resources/sender1.html", [ancestor_key]);
 
-    await sharedStorage.worklet.addModule("resources/simple-module.js");
+    await addModuleOnce("resources/simple-module.js");
 
     const report_id = token();
     const reportURL = `resources/report.py?token=${report_id}`;
-    let uuid0 = await sharedStorage.selectURL(
+    let select_url_result = await sharedStorage.selectURL(
         "test-url-selection-operation", [
             {url: url0,
-             reportingMetadata:
-                 {
-                     'click': reportURL,
-                     'mouse interaction': "resources/receiver1.html"
-                 }
-             }, {url: url1}
-        ], {data: {'mockResult': 0}});
-    assert_true(uuid0.startsWith('urn:uuid:'));
-    attachFencedFrame(uuid0, 'opaque-ads');
+            reportingMetadata:
+                {
+                    'click': reportURL,
+                    'mouse interaction': "resources/receiver1.html"
+                }
+            }, {url: url1}
+        ], {data: {'mockResult': 0}, resolveToConfig: resolve_to_config});
+    assert_true(validateSelectURLResult(select_url_result, resolve_to_config));
+    attachFencedFrame(select_url_result, 'opaque-ads');
     const result0 = await nextValueFromServer(ancestor_key);
     assert_equals(result0, "sender0_reported");
 
     const reportCount = await waitForReportCount(report_id);
     assert_equals(reportCount, 1, `Num reports received: ${reportCount}`);
-}, 'selectURL() with reportEvent()');
+  }, 'selectURL() with reportEvent(), selectURL() resolves to ' +
+    (resolve_to_config ? 'config' : 'urn:uuid'));
+}
 
 </script>
 </body>
