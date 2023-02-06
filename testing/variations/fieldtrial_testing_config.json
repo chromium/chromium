@@ -13273,6 +13273,25 @@
             ]
         }
     ],
+    "WebRTC-Bwe-RobustThroughputEstimatorSettings": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled:true,_V1"
+                }
+            ]
+        }
+    ],
     "WebRTC-IPv6NetworkResolutionFixes": [
         {
             "platforms": [
