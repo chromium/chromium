@@ -280,7 +280,7 @@ generate_grd("build_grd") {
     input_files += [
       "file_manager/foreground/js/deferred_elements.rollup.js",
       "file_manager/foreground/js/main.rollup.js",
-      "file_manager/foreground/js/metadata_dispatcher.rollup.js",
+      "file_manager/foreground/js/metadata/metadata_dispatcher.rollup.js",
       "file_manager/foreground/js/shared.rollup.js",
 
       # For Image Loader unittests:
@@ -292,7 +292,7 @@ generate_grd("build_grd") {
     resource_path_rewrites += [
       "file_manager/foreground/js/deferred_elements.rollup.js|file_manager/foreground/js/deferred_elements.js",
       "file_manager/foreground/js/main.rollup.js|file_manager/foreground/js/main.js",
-      "file_manager/foreground/js/metadata_dispatcher.rollup.js|file_manager/foreground/js/metadata/metadata_dispatcher.js",
+      "file_manager/foreground/js/metadata/metadata_dispatcher.rollup.js|file_manager/foreground/js/metadata/metadata_dispatcher.js",
     ]
 
     deps += [

@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
-import("//ui/file_manager/base/gn/files_webui_bundle/files_webui_bundle.gni")
 import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 visibility = [
@@ -1260,7 +1260,7 @@ image_loader_path =
     rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
                 root_build_dir)
 
-files_webui_bundle("build") {
+optimize_webui("build") {
   visibility += [ "//ui/file_manager:build_grd" ]
   host = "file_manager"
 
@@ -1268,12 +1268,6 @@ files_webui_bundle("build") {
   js_module_in_files = [
     "main.js",
     "deferred_elements.js",
-  ]
-
-  js_out_files = [
-    "main.rollup.js",
-    "deferred_elements.rollup.js",
-    "shared.rollup.js",
   ]
 
   external_paths = [
@@ -1291,14 +1285,12 @@ files_webui_bundle("build") {
   ]
 }
 
-files_webui_bundle("build_worker") {
+optimize_webui("build_worker") {
   visibility += [ "//ui/file_manager:build_grd" ]
   host = "file_manager"
 
   input = tsc_folder
   js_module_in_files = [ "metadata/metadata_dispatcher.js" ]
-
-  js_out_files = [ "metadata_dispatcher.rollup.js" ]
 
   external_paths = [
     "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
