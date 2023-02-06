@@ -2027,7 +2027,9 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
                                          base::TimeTicks response_end,
                                          LoaderFinishType type,
                                          uint32_t inflight_keepalive_bytes,
-                                         bool should_report_corb_blocking) {
+                                         bool should_report_corb_blocking,
+                                         bool pervasive_payload_requested,
+                                         int64_t bytes_fetched) {
   DCHECK(resource);
 
   // kRaw might not be subresource, and we do not need them.
@@ -2048,9 +2050,20 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
       }
     }
   }
+
+  pervasive_payload_requested_ |= pervasive_payload_requested;
+  if (bytes_fetched > 0) {
+    total_bytes_fetched_ += bytes_fetched;
+    if (pervasive_payload_requested) {
+      pervasive_bytes_fetched_ += bytes_fetched;
+    }
+  }
+
   context_->UpdateSubresourceLoadMetrics(
       number_of_subresources_loaded_,
-      number_of_subresource_loads_handled_by_service_worker_);
+      number_of_subresource_loads_handled_by_service_worker_,
+      pervasive_payload_requested_, pervasive_bytes_fetched_,
+      total_bytes_fetched_);
 
   DCHECK_LE(inflight_keepalive_bytes, inflight_keepalive_bytes_);
   inflight_keepalive_bytes_ -= inflight_keepalive_bytes;

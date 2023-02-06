@@ -52,7 +52,10 @@ class PageTimingMetricsSender {
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior);
   void DidObserveSubresourceLoad(
       uint32_t number_of_subresources_loaded,
-      uint32_t number_of_subresource_loads_handled_by_service_worker);
+      uint32_t number_of_subresource_loads_handled_by_service_worker,
+      bool pervasive_payload_requested,
+      int64_t pervasive_bytes_fetched,
+      int64_t total_bytes_fetched);
   void DidObserveNewFeatureUsage(const blink::UseCounterFeature& feature);
   void DidObserveSoftNavigation(uint32_t count);
   void DidObserveLayoutShift(double score, bool after_input_or_scroll);
