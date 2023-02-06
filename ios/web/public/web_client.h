@@ -24,7 +24,7 @@ class RefCountedMemory;
 
 class GURL;
 
-@protocol UITextSearching;
+@protocol CRWFindSession;
 @protocol UITraitEnvironment;
 @class NSString;
 
@@ -192,7 +192,7 @@ class WebClient {
                                         const GURL& url2) const;
 
   // Provides a searchable object for the given `web_state` instance.
-  virtual id<UITextSearching> GetSearchableObjectForWebState(
+  virtual id<CRWFindSession> CreateFindSessionForWebState(
       web::WebState* web_state) const API_AVAILABLE(ios(16));
 
   // Starts a text search in `web_state`.

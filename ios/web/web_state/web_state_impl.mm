@@ -707,7 +707,8 @@ void WebStateImpl::SetFindInteractionEnabled(bool enabled) {
   [GetWebController() setFindInteractionEnabled:enabled];
 }
 
-UIFindInteraction* WebStateImpl::GetFindInteraction() API_AVAILABLE(ios(16)) {
+id<CRWFindInteraction> WebStateImpl::GetFindInteraction()
+    API_AVAILABLE(ios(16)) {
   return [GetWebController() findInteraction];
 }
 

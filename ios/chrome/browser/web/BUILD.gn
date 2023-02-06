@@ -312,6 +312,7 @@ source_set("web_internal") {
     "//ios/web/common",
     "//ios/web/common:user_agent",
     "//ios/web/public",
+    "//ios/web/public/find_in_page",
     "//ios/web/public/js_messaging",
     "//net",
     "//rlz/buildflags",

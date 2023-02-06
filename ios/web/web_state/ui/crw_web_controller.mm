@@ -42,6 +42,7 @@
 #import "ios/web/navigation/wk_back_forward_list_item_holder.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/browser_state.h"
+#import "ios/web/public/find_in_page/crw_find_interaction.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/ui/crw_context_menu_item.h"
@@ -1074,8 +1075,12 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   return NO;
 }
 
-- (UIFindInteraction*)findInteraction API_AVAILABLE(ios(16)) {
-  return self.webView.findInteraction;
+- (id<CRWFindInteraction>)findInteraction API_AVAILABLE(ios(16)) {
+  if (self.webView.findInteraction) {
+    return [[CRWFindInteraction alloc]
+        initWithUIFindInteraction:self.webView.findInteraction];
+  }
+  return nil;
 }
 
 #pragma mark - JavaScript

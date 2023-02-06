@@ -33,7 +33,7 @@ class GURL;
 @class CRWSessionStorage;
 @protocol CRWScrollableContent;
 @protocol CRWWebViewDownload;
-@class UIFindInteraction;
+@protocol CRWFindInteraction;
 @protocol CRWWebViewDownloadDelegate;
 @protocol CRWWebViewProxy;
 typedef id<CRWWebViewProxy> CRWWebViewProxyType;
@@ -475,7 +475,7 @@ class WebState : public base::SupportsUserData {
   // Get the Find interaction object associated with the contained web view.
   // Returns `nil` if the Find interaction is currently disabled. Should only be
   // called if `IsFindInteractionSupported()` returns `true`.
-  virtual UIFindInteraction* GetFindInteraction() API_AVAILABLE(ios(16)) = 0;
+  virtual id<CRWFindInteraction> GetFindInteraction() = 0;
 
  protected:
   friend class WebStatePolicyDecider;

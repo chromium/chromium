@@ -111,7 +111,7 @@ class FakeWebState : public WebState {
   bool IsFindInteractionSupported() final;
   bool IsFindInteractionEnabled() final;
   void SetFindInteractionEnabled(bool enabled) final;
-  UIFindInteraction* GetFindInteraction() final API_AVAILABLE(ios(16));
+  id<CRWFindInteraction> GetFindInteraction() final API_AVAILABLE(ios(16));
 
   void AddPolicyDecider(WebStatePolicyDecider* decider) override;
   void RemovePolicyDecider(WebStatePolicyDecider* decider) override;
@@ -144,6 +144,8 @@ class FakeWebState : public WebState {
   void SetIsEvicted(bool value);
   void SetWebViewProxy(CRWWebViewProxyType web_view_proxy);
   void SetCanTakeSnapshot(bool can_take_snapshot);
+  void SetFindInteraction(id<CRWFindInteraction> find_interaction)
+      API_AVAILABLE(ios(16));
 
   // Getters for test data.
   // Uses `policy_deciders` to determine whether the navigation corresponding to
@@ -186,6 +188,7 @@ class FakeWebState : public WebState {
   bool has_opener_ = false;
   bool can_take_snapshot_ = false;
   bool is_closed_ = false;
+  bool is_find_interaction_enabled_ = false;
   base::Time last_active_time_ = base::Time::Now();
   base::Time creation_time_ = base::Time::Now();
   int navigation_item_count_ = 0;
@@ -202,6 +205,7 @@ class FakeWebState : public WebState {
   NSData* last_loaded_data_ = nil;
   PermissionState camera_permission_state_ = PermissionStateNotAccessible;
   PermissionState microphone_permission_state_ = PermissionStateNotAccessible;
+  id<CRWFindInteraction> find_interaction_ API_AVAILABLE(ios(16));
 
   // A list of observers notified when page state changes. Weak references.
   base::ObserverList<WebStateObserver, true> observers_;

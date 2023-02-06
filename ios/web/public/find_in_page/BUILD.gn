@@ -10,6 +10,8 @@ source_set("find_in_page") {
 
   sources = [
     "abstract_find_in_page_manager.h",
+    "crw_find_interaction.h",
+    "crw_find_session.h",
     "find_in_page_manager.h",
     "find_in_page_manager_delegate.h",
     "find_in_page_manager_delegate_bridge.h",

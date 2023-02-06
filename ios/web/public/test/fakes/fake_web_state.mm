@@ -17,6 +17,7 @@
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
+#import "ios/web/public/test/fakes/crw_fake_find_interaction.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/policy_decision_state_tracker.h"
 #import "ui/gfx/image/image.h"
@@ -455,6 +456,11 @@ void FakeWebState::SetCanTakeSnapshot(bool can_take_snapshot) {
   can_take_snapshot_ = can_take_snapshot;
 }
 
+void FakeWebState::SetFindInteraction(id<CRWFindInteraction> find_interaction)
+    API_AVAILABLE(ios(16)) {
+  find_interaction_ = find_interaction;
+}
+
 CRWWebViewProxyType FakeWebState::GetWebViewProxy() const {
   return web_view_proxy_;
 }
@@ -552,27 +558,20 @@ void FakeWebState::DownloadCurrentPage(
     void (^handler)(id<CRWWebViewDownload>)) {}
 
 bool FakeWebState::IsFindInteractionSupported() {
-  return false;
+  return true;
 }
 
 bool FakeWebState::IsFindInteractionEnabled() {
-  // Should only be called if `IsFindInteractionSupported()` returns `true`,
-  // which it never does in this implementation.
-  NOTREACHED();
-  return false;
+  return is_find_interaction_enabled_;
 }
 
 void FakeWebState::SetFindInteractionEnabled(bool enabled) {
-  // Should only be called if `IsFindInteractionSupported()` returns `true`,
-  // which it never does in this implementation.
-  NOTREACHED();
+  is_find_interaction_enabled_ = enabled;
 }
 
-UIFindInteraction* FakeWebState::GetFindInteraction() API_AVAILABLE(ios(16)) {
-  // Should only be called if `IsFindInteractionSupported()` returns `true`,
-  // which it never does in this implementation.
-  NOTREACHED();
-  return nil;
+id<CRWFindInteraction> FakeWebState::GetFindInteraction()
+    API_AVAILABLE(ios(16)) {
+  return is_find_interaction_enabled_ ? find_interaction_ : nil;
 }
 
 FakeWebStateWithPolicyCache::FakeWebStateWithPolicyCache(

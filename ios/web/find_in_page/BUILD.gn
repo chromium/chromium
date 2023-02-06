@@ -17,8 +17,9 @@ source_set("find_in_page") {
     "//ios/web/public/js_messaging",
     "//ios/web/web_state:web_state_impl_header",
   ]
-
   sources = [
+    "crw_find_interaction.mm",
+    "crw_find_session.mm",
     "find_in_page_constants.h",
     "find_in_page_constants.mm",
     "find_in_page_java_script_feature.h",
@@ -34,7 +35,7 @@ source_set("find_in_page") {
     "java_script_find_in_page_request.h",
     "java_script_find_in_page_request.mm",
   ]
-
+  frameworks = [ "UIKit.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 

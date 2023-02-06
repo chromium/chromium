@@ -38,6 +38,7 @@ source_set("ui") {
     "//ios/web/public",
     "//ios/web/public/deprecated",
     "//ios/web/public/download",
+    "//ios/web/public/find_in_page",
     "//ios/web/public/js_messaging",
     "//ios/web/public/permissions",
     "//ios/web/public/security",

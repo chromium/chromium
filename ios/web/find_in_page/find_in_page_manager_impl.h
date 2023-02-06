@@ -11,8 +11,8 @@
 
 #import "base/memory/weak_ptr.h"
 
-@class UIFindSession;
-@class UITextSearchingFindSession;
+@protocol CRWFindInteraction;
+@protocol CRWFindSession;
 
 namespace web {
 
@@ -32,10 +32,11 @@ class FindInPageManagerImpl : public FindInPageManager,
 
  private:
   friend class web::WebStateUserData<FindInPageManagerImpl>;
+  friend class FindInPageManagerImplTest;
 
   // Lazily creates the Find interaction in the web state and returns it. Should
   // only be called if `use_find_interaction_`.
-  UIFindInteraction* GetOrCreateFindInteraction() API_AVAILABLE(ios(16));
+  id<CRWFindInteraction> GetOrCreateFindInteraction() API_AVAILABLE(ios(16));
 
   // Executes find logic for `FindInPageSearch` option.
   void StartSearch(NSString* query) API_AVAILABLE(ios(16));
@@ -49,7 +50,7 @@ class FindInPageManagerImpl : public FindInPageManager,
   // Returns the currently active Find session if any. If there is a Find
   // interaction in the web state, then its active Find session is returned. If
   // not, `find_session_` is returned.
-  UIFindSession* GetActiveFindSession() API_AVAILABLE(ios(16));
+  id<CRWFindSession> GetActiveFindSession() API_AVAILABLE(ios(16));
   // Start calling `PollActiveFindSession` repeatedly to report Find session
   // results to `delegate_` using `find_session_polling_timer_`.
   void StartPollingActiveFindSession() API_AVAILABLE(ios(16));
@@ -84,10 +85,12 @@ class FindInPageManagerImpl : public FindInPageManager,
   // `PollActiveFindSession()` so as to report any changes in the state of the
   // active Find session to the delegate.
   base::RepeatingTimer find_session_polling_timer_;
+  // Delay between each call to `PollActiveFindSession()`.
+  base::TimeDelta poll_active_find_session_delay_;
 
   // Current Find session if `use_find_interaction_` is not `true`. Instantiated
   // in `StartSearch` and set back to `nil` in `StopSearch`.
-  UITextSearchingFindSession* find_session_ API_AVAILABLE(ios(16)) = nil;
+  id<CRWFindSession> find_session_ API_AVAILABLE(ios(16)) = nil;
 
   FindInPageManagerDelegate* delegate_ = nullptr;
   web::WebState* web_state_ = nullptr;

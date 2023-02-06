@@ -124,7 +124,7 @@ bool WebClient::IsPointingToSameDocument(const GURL& url1,
   return url1 == url2;
 }
 
-id<UITextSearching> WebClient::GetSearchableObjectForWebState(
+id<CRWFindSession> WebClient::CreateFindSessionForWebState(
     web::WebState* web_state) const API_AVAILABLE(ios(16)) {
   // Subclasses need to provide their own implementation to use this method.
   NOTREACHED();

@@ -32,6 +32,7 @@
 @protocol CRWWebViewProxy;
 @protocol CRWWebViewNavigationProxy;
 @class UIViewController;
+@protocol CRWFindInteraction;
 enum WKPermissionDecision : NSInteger;
 
 namespace web {
@@ -348,7 +349,7 @@ class WebStateImpl final : public WebState {
   bool IsFindInteractionSupported() final;
   bool IsFindInteractionEnabled() final;
   void SetFindInteractionEnabled(bool enabled) final;
-  UIFindInteraction* GetFindInteraction() final API_AVAILABLE(ios(16));
+  id<CRWFindInteraction> GetFindInteraction() final API_AVAILABLE(ios(16));
 
  protected:
   // WebState:
