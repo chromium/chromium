@@ -20,6 +20,7 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -68,6 +69,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -110,6 +112,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private final TabContentManager mTabContentManager;
     private final boolean mIsStartSurfaceEnabled;
     private final boolean mIsStartSurfaceRefactorEnabled;
+    private final boolean mIsTablet;
     private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     private final MultiWindowModeStateDispatcher.MultiWindowModeObserver mMultiWindowModeObserver;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
@@ -296,6 +299,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mContext = context;
         mIsStartSurfaceEnabled = ReturnToChromeUtil.isStartSurfaceEnabled(context);
         mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context);
+        mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
 
         if (incognitoReauthControllerSupplier != null) {
             mCallbackController = new CallbackController();
@@ -616,11 +620,9 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             return;
         }
 
-        // The polished version of the grid tab switcher for tablets translates up over top of the
-        // browser controls.
-        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(mContext)) {
-            final int toolbarHeight =
-                    mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+        // The grid tab switcher for tablets translates up over top of the browser controls.
+        if (mIsTablet) {
+            final int toolbarHeight = getToolbarHeight();
 
             mContainerViewModel.set(TOP_MARGIN, toolbarHeight);
             mContainerViewModel.set(SHADOW_TOP_OFFSET, toolbarHeight);
@@ -947,7 +949,19 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     @Override
     public void addCustomView(@NonNull View customView, @Nullable Runnable backPressRunnable) {
         assert mCustomView == null : "Only one client at a time is supported to add a custom view.";
-        mContainerView.addView(customView);
+
+        // The grid tab switcher for tablets translates up over top of the browser controls, causing
+        // the custom view to do the same.
+        if (mIsTablet) {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            params.topMargin = getToolbarHeight();
+
+            mContainerView.addView(customView, params);
+        } else {
+            mContainerView.addView(customView);
+        }
+
         mCustomView = customView;
         mCustomViewBackPressRunnable = backPressRunnable;
         notifyBackPressStateChangedInternal();
@@ -1110,6 +1124,10 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private void notifyBackPressStateChangedInternal() {
         mIsDialogVisibleSupplier.set(isDialogVisible());
         mBackPressChangedSupplier.set(shouldInterceptBackPress());
+    }
+
+    private int getToolbarHeight() {
+        return mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
     }
 
     /**
