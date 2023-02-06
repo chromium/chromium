@@ -45,13 +45,9 @@ namespace {
 class MockSharingFCMSender : public SharingFCMSender {
  public:
   MockSharingFCMSender(
-      SharingSyncPreference* sync_preference,
       syncer::LocalDeviceInfoProvider* local_device_info_provider)
       : SharingFCMSender(
-            /*web_push_sender=*/nullptr,
             /*sharing_message_bridge=*/nullptr,
-            sync_preference,
-            /*vapid_key_manager=*/nullptr,
             /*gcm_driver=*/nullptr,
             local_device_info_provider,
             /*sync_service=*/nullptr) {}
@@ -107,7 +103,6 @@ class SharingMessageSenderTest : public testing::Test {
   SharingMessageSenderTest() {
     SharingSyncPreference::RegisterProfilePrefs(prefs_.registry());
     auto mock_sharing_fcm_sender = std::make_unique<MockSharingFCMSender>(
-        &sharing_sync_preference_,
         fake_device_info_sync_service_.GetLocalDeviceInfoProvider());
     mock_sharing_fcm_sender_ = mock_sharing_fcm_sender.get();
     sharing_message_sender_.RegisterSendDelegate(
@@ -322,7 +317,7 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckReceivedBeforeMessageId) {
         // Call FCM send success after receiving the ACK.
         std::move(callback).Run(SharingSendMessageResult::kSuccessful,
                                 kSenderMessageID,
-                                SharingChannelType::kFcmVapid);
+                                SharingChannelType::kFcmSenderId);
       };
 
   EXPECT_CALL(

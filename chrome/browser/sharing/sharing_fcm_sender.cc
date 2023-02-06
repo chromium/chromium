@@ -5,33 +5,23 @@
 #include "chrome/browser/sharing/sharing_fcm_sender.h"
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/guid.h"
+#include "base/logging.h"
 #include "base/trace_event/trace_event.h"
-#include "base/version.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_message_bridge.h"
-#include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "chrome/browser/sharing/sharing_utils.h"
-#include "chrome/browser/sharing/vapid_key_manager.h"
-#include "chrome/browser/sharing/web_push/web_push_sender.h"
 #include "components/gcm_driver/crypto/gcm_encryption_result.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 
 SharingFCMSender::SharingFCMSender(
-    std::unique_ptr<WebPushSender> web_push_sender,
     SharingMessageBridge* sharing_message_bridge,
-    SharingSyncPreference* sync_preference,
-    VapidKeyManager* vapid_key_manager,
     gcm::GCMDriver* gcm_driver,
     syncer::LocalDeviceInfoProvider* local_device_info_provider,
     syncer::SyncService* sync_service)
-    : web_push_sender_(std::move(web_push_sender)),
-      sharing_message_bridge_(sharing_message_bridge),
-      sync_preference_(sync_preference),
-      vapid_key_manager_(vapid_key_manager),
+    : sharing_message_bridge_(sharing_message_bridge),
       gcm_driver_(gcm_driver),
       local_device_info_provider_(local_device_info_provider),
       sync_service_(sync_service) {}
@@ -70,53 +60,27 @@ void SharingFCMSender::SendMessageToFcmTarget(
     SendMessageCallback callback) {
   TRACE_EVENT0("sharing", "SharingFCMSender::SendMessageToFcmTarget");
 
-  bool canSendViaSync =
+  bool can_send =
       sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE) &&
       !fcm_configuration.sender_id_fcm_token().empty() &&
       !fcm_configuration.sender_id_p256dh().empty() &&
       !fcm_configuration.sender_id_auth_secret().empty();
-  bool canSendViaVapid = !fcm_configuration.vapid_fcm_token().empty() &&
-                         !fcm_configuration.vapid_p256dh().empty() &&
-                         !fcm_configuration.vapid_auth_secret().empty();
-
-  if (canSendViaSync) {
-    message.set_message_id(base::GenerateGUID());
-    EncryptMessage(
-        kSharingSenderID, fcm_configuration.sender_id_p256dh(),
-        fcm_configuration.sender_id_auth_secret(), message,
-        SharingChannelType::kFcmSenderId, std::move(callback),
-        base::BindOnce(&SharingFCMSender::DoSendMessageToSenderIdTarget,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       fcm_configuration.sender_id_fcm_token(), time_to_live,
-                       message.message_id()));
+  if (!can_send) {
+    std::move(callback).Run(SharingSendMessageResult::kDeviceNotFound,
+                            /*message_id=*/absl::nullopt,
+                            SharingChannelType::kUnknown);
     return;
   }
 
-  // TODO(crbug.com/1408456): This can probably go away.
-  if (canSendViaVapid) {
-    absl::optional<SharingSyncPreference::FCMRegistration> fcm_registration =
-        sync_preference_->GetFCMRegistration();
-    if (!fcm_registration || !fcm_registration->authorized_entity) {
-      LOG(ERROR) << "Unable to retrieve FCM registration";
-      std::move(callback).Run(SharingSendMessageResult::kInternalError,
-                              /*message_id=*/absl::nullopt,
-                              SharingChannelType::kUnknown);
-      return;
-    }
-
-    EncryptMessage(
-        *fcm_registration->authorized_entity, fcm_configuration.vapid_p256dh(),
-        fcm_configuration.vapid_auth_secret(), message,
-        SharingChannelType::kFcmVapid, std::move(callback),
-        base::BindOnce(&SharingFCMSender::DoSendMessageToVapidTarget,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       fcm_configuration.vapid_fcm_token(), time_to_live));
-    return;
-  }
-
-  std::move(callback).Run(SharingSendMessageResult::kDeviceNotFound,
-                          /*message_id=*/absl::nullopt,
-                          SharingChannelType::kUnknown);
+  message.set_message_id(base::GenerateGUID());
+  EncryptMessage(
+      kSharingSenderID, fcm_configuration.sender_id_p256dh(),
+      fcm_configuration.sender_id_auth_secret(), message,
+      SharingChannelType::kFcmSenderId, std::move(callback),
+      base::BindOnce(&SharingFCMSender::DoSendMessageToSenderIdTarget,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     fcm_configuration.sender_id_fcm_token(), time_to_live,
+                     message.message_id()));
 }
 
 void SharingFCMSender::SendMessageToServerTarget(
@@ -170,67 +134,6 @@ void SharingFCMSender::OnMessageEncrypted(SharingChannelType channel_type,
   }
 
   std::move(message_sender).Run(std::move(message), std::move(callback));
-}
-
-void SharingFCMSender::DoSendMessageToVapidTarget(
-    const std::string& fcm_token,
-    base::TimeDelta time_to_live,
-    std::string message,
-    SendMessageCallback callback) {
-  TRACE_EVENT0("sharing", "SharingFCMSender::DoSendMessageToVapidTarget");
-
-  auto* vapid_key = vapid_key_manager_->GetOrCreateKey();
-  if (!vapid_key) {
-    LOG(ERROR) << "Unable to retrieve VAPID key";
-    std::move(callback).Run(SharingSendMessageResult::kInternalError,
-                            /*message_id=*/absl::nullopt,
-                            SharingChannelType::kFcmVapid);
-    return;
-  }
-
-  WebPushMessage web_push_message;
-  web_push_message.time_to_live = time_to_live.InSeconds();
-  web_push_message.urgency = WebPushMessage::Urgency::kHigh;
-  web_push_message.payload = std::move(message);
-
-  web_push_sender_->SendMessage(
-      fcm_token, vapid_key, std::move(web_push_message),
-      base::BindOnce(&SharingFCMSender::OnMessageSentToVapidTarget,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void SharingFCMSender::OnMessageSentToVapidTarget(
-    SendMessageCallback callback,
-    SendWebPushMessageResult result,
-    absl::optional<std::string> message_id) {
-  TRACE_EVENT1("sharing", "SharingFCMSender::OnMessageSentToVapidTarget",
-               "result", result);
-
-  SharingSendMessageResult send_message_result;
-  switch (result) {
-    case SendWebPushMessageResult::kSuccessful:
-      send_message_result = SharingSendMessageResult::kSuccessful;
-      break;
-    case SendWebPushMessageResult::kDeviceGone:
-      send_message_result = SharingSendMessageResult::kDeviceNotFound;
-      break;
-    case SendWebPushMessageResult::kNetworkError:
-      send_message_result = SharingSendMessageResult::kNetworkError;
-      break;
-    case SendWebPushMessageResult::kPayloadTooLarge:
-      send_message_result = SharingSendMessageResult::kPayloadTooLarge;
-      break;
-    case SendWebPushMessageResult::kEncryptionFailed:
-    case SendWebPushMessageResult::kCreateJWTFailed:
-    case SendWebPushMessageResult::kServerError:
-    case SendWebPushMessageResult::kParseResponseFailed:
-    case SendWebPushMessageResult::kVapidKeyInvalid:
-      send_message_result = SharingSendMessageResult::kInternalError;
-      break;
-  }
-
-  std::move(callback).Run(send_message_result, message_id,
-                          SharingChannelType::kFcmVapid);
 }
 
 void SharingFCMSender::DoSendMessageToSenderIdTarget(
@@ -351,11 +254,6 @@ bool SharingFCMSender::SetMessageSenderInfo(SharingMessage* message) {
   fcm_configuration->set_sender_id_auth_secret(
       sharing_info->sender_id_target_info.auth_secret);
   return true;
-}
-
-void SharingFCMSender::SetWebPushSenderForTesting(
-    std::unique_ptr<WebPushSender> web_push_sender) {
-  web_push_sender_ = std::move(web_push_sender);
 }
 
 void SharingFCMSender::SetSharingMessageBridgeForTesting(

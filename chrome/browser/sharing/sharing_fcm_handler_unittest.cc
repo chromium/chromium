@@ -60,10 +60,7 @@ class MockSharingFCMSender : public SharingFCMSender {
  public:
   MockSharingFCMSender()
       : SharingFCMSender(
-            /*web_push_sender=*/nullptr,
             /*sharing_message_bridge=*/nullptr,
-            /*sync_preference=*/nullptr,
-            /*vapid_key_manager=*/nullptr,
             /*gcm_driver=*/nullptr,
             /*local_device_info_provider=*/nullptr,
             /*sync_service=*/nullptr) {}
