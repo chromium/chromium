@@ -10,61 +10,6 @@
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 
-/*
-EventSetInformation configuration macros:
-
-TraceLogging works best if the EventSetInformation API can be used to notify
-ETW that the provider uses TraceLogging event encoding.
-
-The EventSetInformation API is available on Windows 8 and later. (It is also
-available on fully-patched Windows 7, but not on Windows 7 RTM).
-
-The TLM_HAVE_EVENT_SET_INFORMATION and TLM_EVENT_SET_INFORMATION macros can
-be set before compiling this file to  control how the TlmProvider class deals
-with the EventSetInformation API.
-
-If these macros are not set, the default behavior is to check the WINVER
-macro at compile time:
-
-- If WINVER is set to Windows 7 or before, TlmProvider will use GetProcAddress
-  to locate EventSetInformation, and then invoke it if present. This is less
-  efficient, but works on older versions of Windows.
-- If WINVER is set to Windows 8 or later, TlmProvider will directly invoke
-  EventSetInformation. This is more efficient, but the resulting application
-  will only work correctly on newer versions of Windows.
-
-If you need to run on Windows 7 RTM, but for some reason need to set WINVER to
-Windows 8 or higher, you can override the default behavior by defining
-TLM_HAVE_EVENT_SET_INFORMATION=2 when compiling this file.
-
-Details:
-- The TLM_EVENT_SET_INFORMATION macro can be set the name of a replacement
-  function that TlmProvider should use instead of EventSetInformation.
-- The TLM_HAVE_EVENT_SET_INFORMATION macro can be set to 0 (disable the use of
-  EventSetInformation), 1 (directly invoke EventSetInformation), or 2 (try to
-  locate EventSetInformation via GetProcAddress, and invoke if found).
-*/
-
-// This code needs to run on Windows 7 and this is magic which
-// removes static linking to EventSetInformation
-#define TLM_HAVE_EVENT_SET_INFORMATION 2
-
-#ifndef TLM_EVENT_SET_INFORMATION
-#define TLM_EVENT_SET_INFORMATION EventSetInformation
-#ifndef TLM_HAVE_EVENT_SET_INFORMATION
-#if WINVER < 0x0602 || !defined(EVENT_FILTER_TYPE_SCHEMATIZED)
-// Find "EventSetInformation" via GetModuleHandleExW+GetProcAddress
-#define TLM_HAVE_EVENT_SET_INFORMATION 2
-#else
-// Directly invoke TLM_EVENT_SET_INFORMATION(...)
-#define TLM_HAVE_EVENT_SET_INFORMATION 1
-#endif
-#endif
-#elif !defined(TLM_HAVE_EVENT_SET_INFORMATION)
-// Directly invoke TLM_EVENT_SET_INFORMATION(...)
-#define TLM_HAVE_EVENT_SET_INFORMATION 1
-#endif
-
 TlmProvider::~TlmProvider() {
   Unregister();
 }
@@ -134,42 +79,9 @@ ULONG TlmProvider::Register(const char* provider_name,
   if (status != ERROR_SUCCESS)
     return status;
 
-#if TLM_HAVE_EVENT_SET_INFORMATION == 1
-
   // Best-effort, ignore failure.
-  status =
-      TLM_EVENT_SET_INFORMATION(reg_handle_, EventProviderSetTraits,
-                                provider_metadata_, provider_metadata_size_);
-
-#elif TLM_HAVE_EVENT_SET_INFORMATION == 2
-
-  HMODULE eventing_lib;
-  if (GetModuleHandleExW(0, L"api-ms-win-eventing-provider-l1-1-0.dll",
-                         &eventing_lib) ||
-      GetModuleHandleExW(0, L"advapi32.dll", &eventing_lib)) {
-    typedef ULONG(WINAPI * PFEventSetInformation)(
-        REGHANDLE reg_handle, EVENT_INFO_CLASS information_class,
-        PVOID event_information, ULONG information_length);
-    PFEventSetInformation event_set_information_ptr =
-        reinterpret_cast<decltype(&::EventSetInformation)>(
-            GetProcAddress(eventing_lib, "EventSetInformation"));
-    if (event_set_information_ptr) {
-      // Best-effort, ignore failure.
-      status = event_set_information_ptr(reg_handle_, EventProviderSetTraits,
-                                         provider_metadata_,
-                                         provider_metadata_size_);
-    }
-
-    FreeLibrary(eventing_lib);
-  }
-
-#else  // TLM_HAVE_EVENT_SET_INFORMATION == 0
-
-    // Make no attempt to invoke EventSetInformation.
-
-#endif  // TLM_HAVE_EVENT_SET_INFORMATION
-
-  return status;
+  return ::EventSetInformation(reg_handle_, EventProviderSetTraits,
+                               provider_metadata_, provider_metadata_size_);
 }
 
 bool TlmProvider::IsEnabled() const noexcept {
