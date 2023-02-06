@@ -40,18 +40,27 @@ Only one build configuration is currently supported.
    is_debug = false # we can't really use most debugging symbols right now
    dcheck_always_on = false # disable dchecks
    enable_nacl = false  # no native targets
+   use_allocator = "none"
+   use_allocator_shim = false
    ```
-   * On linux add the following settings to disable the allocator shim.
-     ```ini
-     use_allocator = "none"
-     use_allocator_shim = false
-     ```
-     * NOTE: This may not be necessary but avoids interactions between the driver and chromium.
-   * On linux the following setting may be helpful for looking at stack traces while recording.
+   * The following setting may be helpful for looking at stack traces while recording.
      ```ini
      symbol_level = 1
      ```
      * NOTE: This isn't used for production builds because the resulting binary size is pretty huge.
+   * On macOS add the following settings.
+     ```ini
+     use_system_xcode = false
+     mac_sdk_official_version = "13.0"
+     ```
+     A hermetic version of xcode also needs to be downloaded and installed. Run the following:
+     ```
+     cd /path/to/chromium/src
+     mkdir -p ./build/mac_files/xcode_binaries
+     cd build/mac_files/xcode_binaries
+     wget https://static.replay.io/downloads/hermetic_xcode.tar.gz
+     tar xf hermetic_xcode.tar.gz
+     ```
 6. Build:
    ```
    node build
