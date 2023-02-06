@@ -535,10 +535,6 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
 
   const inlineStatus = li.querySelector('.inline-status');
   if (inlineStatus) {
-    // TODO: use "XfIcon.types.OFFLINE*" instead when converting to TS.
-    inlineStatus.querySelector('xf-icon').type =
-        externalProps.pinned ? 'offline' : '';
-
     // Clear the inline status' aria label and set it to "in progress",
     // "queued", or "available offline" with the respective order of
     // precedence if applicable.
