@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ash/smb_client/smb_service.h"
 
+#include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/unguessable_token.h"
+#include "base/values.h"
 #include "chrome/browser/ash/file_manager/file_manager_pref_names.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -641,24 +644,25 @@ std::vector<SmbUrl> SmbService::GetPreconfiguredSharePaths(
   const base::Value::List& preconfigured_shares = profile_->GetPrefs()->GetList(
       prefs::kNetworkFileSharesPreconfiguredShares);
 
-  for (const base::Value& info : preconfigured_shares) {
-    // |info| is a dictionary with entries for |share_url| and |mode|.
-    const base::Value* share_url = info.FindKey(kShareUrlKey);
-    const base::Value* mode = info.FindKey(kModeKey);
+  for (const base::Value& info_val : preconfigured_shares) {
+    // |info| is a dictionary with entries for `share_url` and `mode`.
+    const base::Value::Dict& info = info_val.GetDict();
+    const std::string* share_url_ptr = info.FindString(kShareUrlKey);
+    const std::string* mode_ptr = info.FindString(kModeKey);
 
+    const std::string& mode = CHECK_DEREF(mode_ptr);
+    const std::string& share_url = CHECK_DEREF(share_url_ptr);
     if (policy_mode == kModeUnknownValue) {
       // kModeUnknownValue is used to filter for any shares that do not match
       // a presently known mode for preconfiguration. As new preconfigure
       // modes are added, this should be kept in sync.
-      if (mode->GetString() != kModeDropDownValue &&
-          mode->GetString() != kModePreMountValue) {
-        preconfigured_urls.emplace_back(share_url->GetString());
+      if (mode != kModeDropDownValue && mode != kModePreMountValue) {
+        preconfigured_urls.emplace_back(share_url);
       }
-
     } else {
-      // Filter normally
-      if (mode->GetString() == policy_mode) {
-        preconfigured_urls.emplace_back(share_url->GetString());
+      // Filter normally.
+      if (mode == policy_mode) {
+        preconfigured_urls.emplace_back(share_url);
       }
     }
   }
