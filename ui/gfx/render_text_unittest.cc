@@ -18,6 +18,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -344,8 +345,8 @@ class TestRenderTextCanvas : public SkCanvas {
     if (blob) {
       SkTextBlob::Iter::Run run;
       for (SkTextBlob::Iter it(*blob); it.next(&run);) {
-        auto run_glyphs =
-            base::span<const uint16_t>(run.fGlyphIndices, run.fGlyphCount);
+        auto run_glyphs = base::span<const uint16_t>(
+            run.fGlyphIndices, base::checked_cast<size_t>(run.fGlyphCount));
         glyphs.insert(glyphs.end(), run_glyphs.begin(), run_glyphs.end());
       }
     }
