@@ -43,6 +43,10 @@ std::ostream& operator<<(std::ostream& ostream, const GuestId& container_id);
 // Returns a list of all containers in prefs.
 std::vector<GuestId> GetContainers(Profile* profile, VmType vm_type);
 
+// Returns true if the container_id's vm_name and container_name matches entries
+// in the dict.
+bool MatchContainerDict(const base::Value& dict, const GuestId& container_id);
+
 // Add a new container to the kGuestOsContainers pref
 void AddContainerToPrefs(Profile* profile,
                          const GuestId& container_id,
