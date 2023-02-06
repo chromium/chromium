@@ -1893,7 +1893,11 @@ crbug.com/686118 http/tests/security/setDomainRelaxationForbiddenForURLScheme.ht
 
 # Flaky tests on Mac after enabling scroll animations in web_tests
 crbug.com/944583 [ Mac ] fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Failure Pass ]
-crbug.com/944583 [ Mac ] fast/scrolling/percentage-mousewheel-scroll-on-iframe.html [ Failure Pass ]
+crbug.com/944583 [ Mac10.15 Release ] fast/scrolling/percentage-mousewheel-scroll-on-iframe.html [ Failure Pass ]
+crbug.com/944583 [ Mac11 Release ] fast/scrolling/percentage-mousewheel-scroll-on-iframe.html [ Failure Pass ]
+crbug.com/944583 [ Mac11-arm64 Release ] fast/scrolling/percentage-mousewheel-scroll-on-iframe.html [ Failure Pass ]
+crbug.com/944583 [ Mac12 ] fast/scrolling/percentage-mousewheel-scroll-on-iframe.html [ Failure Pass ]
+crbug.com/944583 [ Mac12-arm64 Release ] fast/scrolling/percentage-mousewheel-scroll-on-iframe.html [ Failure Pass ]
 crbug.com/944583 [ Debug Mac12 ] fast/events/platform-wheelevent-paging-x-in-scrolling-page.html [ Failure Pass Timeout ]
 crbug.com/944583 [ Mac ] fast/events/platform-wheelevent-paging-y-in-scrolling-page.html [ Failure Pass Timeout ]
 # Sheriff: 2020-05-18
@@ -5276,20 +5280,8 @@ crbug.com/1246351 http/tests/misc/scroll-cross-origin-iframes-scrollbar.html [ F
 # DCHECK(!snapshot.drawsNothing()) failing on Macs:
 # Also reported as failing via crbug.com/1233766
 crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline-and-display-none.https.html [ Crash Failure Pass Timeout ]
-# Previously reported as failing via crbug.com/626703:
-crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-keyframes.https.html [ Crash Failure Pass ]
-# Previously reported as fialing via crbug.com/626703:
-crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-immediately.https.html [ Crash Failure Pass ]
-# Also reported as failing via crbug.com/1233766:
-crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-timing.https.html [ Crash Failure Pass ]
-# Previously reported as failing via crbug.com/1233766 on Mac11:
-# Previously reported as failing via crbug.com/626703 on Mac10.15:
-crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-2.https.html [ Crash Failure Pass ]
 # Also reported as failing via crbug.com/1233766:
 crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-cancel.https.html [ Crash Failure Pass ]
-# Previously reported as failing via crbug.com/626703:
-crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-before-start.https.html [ Crash Failure Pass ]
-crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-get-timing-on-worklet-thread.https.html [ Crash Failure Pass ]
 
 # Following tests fail on mac11-arm64 or mac12-arm64
 crbug.com/1249176 [ Mac11-arm64 ] css3/blending/svg-blend-exclusion.html [ Failure ]
@@ -5364,7 +5356,6 @@ crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/elements/accessibility/edi
 crbug.com/1249176 [ Mac12-arm64 ] http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/timeline/page-frames.js [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] inspector-protocol/timeline/page-frames.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/timeline/user-timing.js [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] inspector-protocol/timeline/user-timing.js [ Failure Pass ]
@@ -5578,11 +5569,8 @@ crbug.com/1373055 external/wpt/css/css-transforms/transform-translate-background
 crbug.com/1233826 external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Crash Failure Pass Timeout ]
 crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Crash Failure Pass Timeout ]
 crbug.com/1233826 external/wpt/animation-worklet/worklet-animation-with-non-ascii-name.https.html [ Crash Failure Pass Timeout ]
-crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-non-ascii-name.https.html [ Crash Failure Pass Timeout ]
 crbug.com/1233826 external/wpt/animation-worklet/worklet-animation-local-time-after-duration.https.html [ Crash Failure Pass Timeout ]
-crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-after-duration.https.html [ Crash Failure Pass Timeout ]
 crbug.com/930462 external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Crash Failure Pass Timeout ]
-crbug.com/930462 virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2021-10-01
 crbug.com/1255221 http/tests/devtools/elements/styles-4/svg-style.js [ Failure Pass ]
