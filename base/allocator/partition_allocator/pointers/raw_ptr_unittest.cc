@@ -94,30 +94,27 @@ static_assert(
 // this namespace calls the correct functions from this namespace.
 namespace {
 
-// TraitBundle<> matches what CountingRawPtr does internally.
-// UseCountingWrapperForTest is removed.
+// `kEmpty` matches what `CountingRawPtr` does internally.
+// `UseCountingWrapperForTest` is removed.
 using RawPtrCountingImpl = base::internal::RawPtrCountingImplWrapperForTest<
-    base::raw_ptr_traits::TraitBundle<>>;
+    base::RawPtrTraits::kEmpty>;
 
-// TraitBundle<MayDangle> matches what CountingRawPtrMayDangle does internally.
-// UseCountingWrapperForTest is removed, and MayDangle is kept.
+// `kMayDangle` matches what `CountingRawPtrMayDangle` does internally.
+// `UseCountingWrapperForTest` is removed, and `kMayDangle` is kept.
 using RawPtrCountingMayDangleImpl =
     base::internal::RawPtrCountingImplWrapperForTest<
-        base::raw_ptr_traits::TraitBundle<base::raw_ptr_traits::MayDangle>>;
+        base::RawPtrTraits::kMayDangle>;
 
 template <typename T>
 using CountingRawPtr =
-    raw_ptr<T,
-            base::raw_ptr_traits::TraitBundle<
-                base::raw_ptr_traits::UseCountingWrapperForTest>>;
+    raw_ptr<T, base::RawPtrTraits::kUseCountingWrapperForTest>;
 static_assert(std::is_same_v<CountingRawPtr<int>::Impl, RawPtrCountingImpl>);
 
 template <typename T>
 using CountingRawPtrMayDangle =
     raw_ptr<T,
-            base::raw_ptr_traits::TraitBundle<
-                base::raw_ptr_traits::MayDangle,
-                base::raw_ptr_traits::UseCountingWrapperForTest>>;
+            base::RawPtrTraits::kMayDangle |
+                base::RawPtrTraits::kUseCountingWrapperForTest>;
 static_assert(std::is_same_v<CountingRawPtrMayDangle<int>::Impl,
                              RawPtrCountingMayDangleImpl>);
 
@@ -1152,10 +1149,10 @@ TEST_F(RawPtrTest, ComparisonOperatorUsesGetForComparison) {
               CountersMatch());
 }
 
-// Two `raw_ptr`s with different `TraitBundle`s should still hit
-// `GetForComparison()` (as opposed to `GetForExtraction()`) in their
-// comparison operators. We use `CountingRawPtr` and
-// `CountingRawPtrMayDangle` to contrast two different `TraitBundle`s.
+// Two `raw_ptr`s with different Traits should still hit `GetForComparison()`
+// (as opposed to `GetForExtraction()`) in their comparison operators. We use
+// `CountingRawPtr` and `CountingRawPtrMayDangle` to contrast two different
+// Traits.
 TEST_F(RawPtrTest, OperatorsUseGetForComparison) {
   int x = 123;
   CountingRawPtr<int> ptr1 = &x;

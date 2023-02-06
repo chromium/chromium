@@ -98,8 +98,6 @@ added.
 //
 // When using it, please provide a justification about what guarantees that it
 // will never be dereferenced after becoming dangling.
-using DisableDanglingPtrDetection =
-    base::raw_ptr_traits::TraitBundle<base::raw_ptr_traits::MayDangle>;
 ```
 
 **In emergency situations**: `DanglingUntriaged` can be used similarly, in case

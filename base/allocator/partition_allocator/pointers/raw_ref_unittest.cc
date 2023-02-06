@@ -760,33 +760,28 @@ TEST(RawRefPtr, CTADWithConst) {
   EXPECT_EQ(&*s2.r, &str);
 }
 
-// TraitBundle<DisableHooks> matches what CountingRawRef does internally.
-// UseCountingWrapperForTest is removed, and DisableHooks is added.
+// `kDisableHooks` matches what `CountingRawRef` does internally.
+// `UseCountingWrapperForTest` is removed, and `DisableHooks` is added.
 using RawPtrCountingImpl = base::internal::RawPtrCountingImplWrapperForTest<
-    base::raw_ptr_traits::TraitBundle<base::raw_ptr_traits::DisableHooks>>;
+    base::RawPtrTraits::kDisableHooks>;
 
-// `TraitBundle<DisableHooks, MayDangle>` matches what
-// `CountingRawRefMayDangle` does internally.
-// `UseCountingWrapperForTest` is removed, `DisableHooks` is added, and
-// `MayDangle` is kept.
+// `kDisableHooks | kMayDangle` matches what `CountingRawRefMayDangle` does
+// internally. `UseCountingWrapperForTest` is removed, `kDisableHooks` is added,
+// and `kMayDangle` is kept.
 using RawPtrCountingMayDangleImpl =
     base::internal::RawPtrCountingImplWrapperForTest<
-        base::raw_ptr_traits::TraitBundle<base::raw_ptr_traits::MayDangle,
-                                          base::raw_ptr_traits::DisableHooks>>;
+        base::RawPtrTraits::kMayDangle | base::RawPtrTraits::kDisableHooks>;
 
 template <typename T>
 using CountingRawRef =
-    raw_ref<T,
-            base::raw_ptr_traits::TraitBundle<
-                base::raw_ptr_traits::UseCountingWrapperForTest>>;
+    raw_ref<T, base::RawPtrTraits::kUseCountingWrapperForTest>;
 static_assert(std::is_same_v<CountingRawRef<int>::Impl, RawPtrCountingImpl>);
 
 template <typename T>
 using CountingRawRefMayDangle =
     raw_ref<T,
-            base::raw_ptr_traits::TraitBundle<
-                base::raw_ptr_traits::MayDangle,
-                base::raw_ptr_traits::UseCountingWrapperForTest>>;
+            base::RawPtrTraits::kMayDangle |
+                base::RawPtrTraits::kUseCountingWrapperForTest>;
 static_assert(std::is_same_v<CountingRawRefMayDangle<int>::Impl,
                              RawPtrCountingMayDangleImpl>);
 
@@ -842,9 +837,8 @@ TEST(RawRef, StdLess) {
   }
 }
 
-// Verifies that comparing `raw_ref`s with different underlying
-// `TraitBundle`s is a valid utterance and primarily uses the
-// `GetForComparison()` methods.
+// Verifies that comparing `raw_ref`s with different underlying Traits
+// is a valid utterance and primarily uses the `GetForComparison()` methods.
 TEST(RawRef, OperatorsUseGetForComparison) {
   int x = 123;
   CountingRawRef<int> ref1(x);

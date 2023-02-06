@@ -28,15 +28,18 @@ struct PmfTest {
 #if defined(NCTEST_INVALID_RAW_PTR_TRAIT)  // [r"Unknown raw_ptr trait"]
 
 void WontCompile() {
-  struct InvalidRawPtrTrait {};
-  raw_ptr<int, base::raw_ptr_traits::TraitBundle<InvalidRawPtrTrait>> p;
+  constexpr auto InvalidRawPtrTrait =
+      ~base::RawPtrTraits::kEmpty;
+  raw_ptr<int, InvalidRawPtrTrait> p;
 }
 
 #elif defined(NCTEST_INVALID_RAW_PTR_TRAIT_OF_MANY)  // [r"Unknown raw_ptr trait"]
 
 void WontCompile() {
-  struct InvalidRawPtrTrait {};
-  raw_ptr<int, base::raw_ptr_traits::TraitBundle<base::raw_ptr_traits::MayDangle, InvalidRawPtrTrait, base::raw_ptr_traits::DisableMTECheckedPtr>> p;
+  constexpr auto InvalidRawPtrTrait = ~base::RawPtrTraits::kEmpty;
+  raw_ptr<int, DisableDanglingPtrDetection | InvalidRawPtrTrait |
+                   DegradeToNoOpWhenMTE>
+      p;
 }
 
 #elif defined(NCTEST_AUTO_DOWNCAST)  // [r"no viable conversion from 'raw_ptr<Producer>' to 'raw_ptr<DerivedProducer>'"]

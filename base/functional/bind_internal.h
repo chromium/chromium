@@ -133,12 +133,12 @@ class UnretainedWrapper {
   // Trick to only instantiate these constructors if they are used. Otherwise,
   // instantiating UnretainedWrapper with a T that is not supported by
   // raw_ptr would trigger raw_ptr<T>'s static_assert.
-  template <typename U = T, typename Traits>
+  template <typename U = T, RawPtrTraits Traits>
   explicit UnretainedWrapper(const raw_ptr<U, Traits>& o) : ptr_(o) {}
-  template <typename U = T, typename Traits>
+  template <typename U = T, RawPtrTraits Traits>
   explicit UnretainedWrapper(raw_ptr<U, Traits>&& o) : ptr_(std::move(o)) {}
 
-  template <typename U, typename Traits>
+  template <typename U, RawPtrTraits Traits>
   static void ReportIfDangling(const raw_ptr<U, Traits>& ptr) {
     if constexpr (std::is_same_v<Trait, unretained_traits::MayNotDangle>) {
       ptr.ReportIfDangling();
@@ -219,9 +219,9 @@ class UnretainedRefWrapper {
   //
   // This is only needed when <T, Trait, true> specialization isn't compiled in
   // when MTECheckedPtr is enabled.
-  template <typename U = T, typename Traits>
+  template <typename U = T, RawPtrTraits Traits>
   explicit UnretainedRefWrapper(const raw_ref<U, Traits>& o) : ref_(o.get()) {}
-  template <typename U = T, typename Traits>
+  template <typename U = T, RawPtrTraits Traits>
   explicit UnretainedRefWrapper(raw_ref<U, Traits>&& o) : ref_(o.get()) {}
 
   T& get() const { return ref_; }
@@ -241,9 +241,9 @@ class UnretainedRefWrapper<T, Trait, true> {
                 "base/functional/disallow_unretained.h for alternatives.");
 
   explicit UnretainedRefWrapper(T& o) : ref_(o) {}
-  template <typename U = T, typename Traits>
+  template <typename U = T, RawPtrTraits Traits>
   explicit UnretainedRefWrapper(const raw_ref<U, Traits>& o) : ref_(o.get()) {}
-  template <typename U = T, typename Traits>
+  template <typename U = T, RawPtrTraits Traits>
   explicit UnretainedRefWrapper(raw_ref<U, Traits>&& o) : ref_(o.get()) {}
   T& get() const {
     // The ultimate goal is to crash when a callback is invoked with a
@@ -888,7 +888,7 @@ struct StorageTraits<T*> {
 // For raw_ptr<T>, store as UnretainedWrapper<T> for safety. This may seem
 // contradictory, but this ensures guaranteed protection for the pointer even
 // during execution of callbacks with parameters of type raw_ptr<T>.
-template <typename T, typename I>
+template <typename T, RawPtrTraits I>
 struct StorageTraits<raw_ptr<T, I>> {
   using Type = UnretainedWrapper<T, unretained_traits::MayNotDangle>;
 };
@@ -1409,7 +1409,7 @@ struct BindArgument {
       // true if we are handling `this` parameter.
       static constexpr bool kParamIsThisPointer = is_method && i == 0;
       // true if the current parameter is of type `raw_ptr<T>` with
-      // raw_ptr_traits::MayDangle trait (e.g. `MayBeDangling<T>`).
+      // `RawPtrTraits::kMayDangle` trait (e.g. `MayBeDangling<T>`).
       static constexpr bool kParamIsDanglingRawPtr =
           IsRawPtrMayDangleV<FunctionParamType>;
       // true if the bound parameter is of type

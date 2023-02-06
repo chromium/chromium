@@ -174,24 +174,24 @@ inline auto Unretained(T* o) {
   return internal::UnretainedWrapper<T, unretained_traits::MayNotDangle>(o);
 }
 
-template <typename T, typename RawPtrType>
-inline auto Unretained(const raw_ptr<T, RawPtrType>& o) {
+template <typename T, RawPtrTraits Traits>
+inline auto Unretained(const raw_ptr<T, Traits>& o) {
   return internal::UnretainedWrapper<T, unretained_traits::MayNotDangle>(o);
 }
 
-template <typename T, typename RawPtrType>
-inline auto Unretained(raw_ptr<T, RawPtrType>&& o) {
+template <typename T, RawPtrTraits Traits>
+inline auto Unretained(raw_ptr<T, Traits>&& o) {
   return internal::UnretainedWrapper<T, unretained_traits::MayNotDangle>(
       std::move(o));
 }
 
-template <typename T, typename RawPtrType>
-inline auto Unretained(const raw_ref<T, RawPtrType>& o) {
+template <typename T, RawPtrTraits Traits>
+inline auto Unretained(const raw_ref<T, Traits>& o) {
   return internal::UnretainedRefWrapper<T, unretained_traits::MayNotDangle>(o);
 }
 
-template <typename T, typename RawPtrType>
-inline auto Unretained(raw_ref<T, RawPtrType>&& o) {
+template <typename T, RawPtrTraits Traits>
+inline auto Unretained(raw_ref<T, Traits>&& o) {
   return internal::UnretainedRefWrapper<T, unretained_traits::MayNotDangle>(o);
 }
 
@@ -236,24 +236,24 @@ inline auto UnsafeDangling(T* o) {
   return internal::UnretainedWrapper<T, unretained_traits::MayDangle>(o);
 }
 
-template <typename T, typename RawPtrType>
-auto UnsafeDangling(const raw_ptr<T, RawPtrType>& o) {
+template <typename T, RawPtrTraits Traits>
+auto UnsafeDangling(const raw_ptr<T, Traits>& o) {
   return internal::UnretainedWrapper<T, unretained_traits::MayDangle>(o);
 }
 
-template <typename T, typename RawPtrType>
-auto UnsafeDangling(raw_ptr<T, RawPtrType>&& o) {
+template <typename T, RawPtrTraits Traits>
+auto UnsafeDangling(raw_ptr<T, Traits>&& o) {
   return internal::UnretainedWrapper<T, unretained_traits::MayDangle>(
       std::move(o));
 }
 
-template <typename T, typename RawPtrType>
-auto UnsafeDangling(const raw_ref<T, RawPtrType>& o) {
+template <typename T, RawPtrTraits Traits>
+auto UnsafeDangling(const raw_ref<T, Traits>& o) {
   return internal::UnretainedRefWrapper<T, unretained_traits::MayDangle>(o);
 }
 
-template <typename T, typename RawPtrType>
-auto UnsafeDangling(raw_ref<T, RawPtrType>&& o) {
+template <typename T, RawPtrTraits Traits>
+auto UnsafeDangling(raw_ref<T, Traits>&& o) {
   return internal::UnretainedRefWrapper<T, unretained_traits::MayDangle>(o);
 }
 
@@ -269,27 +269,27 @@ inline auto UnsafeDanglingUntriaged(T* o) {
       o);
 }
 
-template <typename T, typename RawPtrType>
-auto UnsafeDanglingUntriaged(const raw_ptr<T, RawPtrType>& o) {
+template <typename T, RawPtrTraits Traits>
+auto UnsafeDanglingUntriaged(const raw_ptr<T, Traits>& o) {
   return internal::UnretainedWrapper<T, unretained_traits::MayDangleUntriaged>(
       o);
 }
 
-template <typename T, typename RawPtrType>
-auto UnsafeDanglingUntriaged(raw_ptr<T, RawPtrType>&& o) {
+template <typename T, RawPtrTraits Traits>
+auto UnsafeDanglingUntriaged(raw_ptr<T, Traits>&& o) {
   return internal::UnretainedWrapper<T, unretained_traits::MayDangleUntriaged>(
       std::move(o));
 }
 
-template <typename T, typename RawPtrType>
-auto UnsafeDanglingUntriaged(const raw_ref<T, RawPtrType>& o) {
+template <typename T, RawPtrTraits Traits>
+auto UnsafeDanglingUntriaged(const raw_ref<T, Traits>& o) {
   return internal::UnretainedRefWrapper<T,
                                         unretained_traits::MayDangleUntriaged>(
       o);
 }
 
-template <typename T, typename RawPtrType>
-auto UnsafeDanglingUntriaged(raw_ref<T, RawPtrType>&& o) {
+template <typename T, RawPtrTraits Traits>
+auto UnsafeDanglingUntriaged(raw_ref<T, Traits>&& o) {
   return internal::UnretainedRefWrapper<T,
                                         unretained_traits::MayDangleUntriaged>(
       o);
