@@ -20,6 +20,7 @@ class BookmarkNode;
 }  // namespace bookmarks
 
 @protocol BookmarksFolderChooserViewControllerDelegate <NSObject>
+
 // Called when a bookmark folder is selected. `folder` is the newly selected
 // folder.
 - (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
@@ -28,12 +29,7 @@ class BookmarkNode;
 // the Back button.
 - (void)folderPickerDidCancel:
     (BookmarksFolderChooserViewController*)folderPicker;
-// TODO(crbug.com/1405746): Remove this method after migrating
-// UIAdaptivePresentationControllerDelegate from
-// BookmarksFolderChooserViewController to BookmarksFolderChooserCoordinator.
-// Called when the user dismisses the picker by swiping down.
-- (void)folderPickerDidDismiss:
-    (BookmarksFolderChooserViewController*)folderPicker;
+
 @end
 
 // A folder selector view controller.
@@ -41,8 +37,7 @@ class BookmarkNode;
 // This controller monitors the state of the bookmark model, so changes to the
 // bookmark model can affect this controller's state.
 // The bookmark model is assumed to be loaded, thus also not to be NULL.
-@interface BookmarksFolderChooserViewController
-    : ChromeTableViewController <UIAdaptivePresentationControllerDelegate>
+@interface BookmarksFolderChooserViewController : ChromeTableViewController
 
 @property(nonatomic, weak) id<BookmarksFolderChooserViewControllerDelegate>
     delegate;
@@ -72,6 +67,9 @@ class BookmarkNode;
 // This method changes the currently selected folder and updates the UI. The
 // delegate is not notified of the change.
 - (void)changeSelectedFolder:(const bookmarks::BookmarkNode*)selectedFolder;
+
+// Whether the bookmark folder chooser can be dismissed.
+- (BOOL)canDismiss;
 
 @end
 

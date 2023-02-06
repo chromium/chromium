@@ -383,7 +383,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 #pragma mark - BookmarkTextFieldItemDelegate
 
 - (void)textDidChangeForItem:(BookmarkTextFieldItem*)item {
-  self.modalInPresentation = YES;
+  self.edited = YES;
   [self updateSaveButtonState];
   if (self.displayingValidURL != [self inputURLIsValid]) {
     self.displayingValidURL = [self inputURLIsValid];

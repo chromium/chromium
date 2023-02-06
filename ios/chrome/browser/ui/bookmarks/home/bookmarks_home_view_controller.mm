@@ -263,6 +263,17 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   _rootNode = rootNode;
 }
 
+- (BOOL)canDismiss {
+  if (self.folderChooserCoordinator &&
+      ![self.folderChooserCoordinator canDismiss]) {
+    return NO;
+  }
+  if (self.bookmarksCoordinator && ![self.bookmarksCoordinator canDismiss]) {
+    return NO;
+  }
+  return YES;
+}
+
 - (NSArray<BookmarksHomeViewController*>*)cachedViewControllerStack {
   // This method is only designed to be called for the view controller
   // associated with the root node.

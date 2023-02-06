@@ -66,6 +66,9 @@ class BookmarkNode;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
+// Whether the bookmark folder chooser can be dismissed.
+- (BOOL)canDismiss;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_COORDINATOR_H_

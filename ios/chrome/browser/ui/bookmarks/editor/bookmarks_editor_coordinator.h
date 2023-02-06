@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller_delegate.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 namespace bookmarks {
@@ -37,6 +36,9 @@ class BookmarkNode;
 
 // Whether the dismissal is animated.
 @property(nonatomic, assign) BOOL animatedDismissal;
+
+// Whether the bookmark editor can be dismissed.
+- (BOOL)canDismiss;
 
 @end
 

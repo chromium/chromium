@@ -67,6 +67,9 @@ class BookmarkNode;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
+// Whether the bookmarks folder editor can be dismissed.
+- (BOOL)canDismiss;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_FOLDER_EDITOR_BOOKMARKS_FOLDER_EDITOR_VIEW_CONTROLLER_H_

@@ -69,6 +69,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
 @property(nonatomic, assign) Browser* browser;
 @property(nonatomic, assign) ChromeBrowserState* browserState;
+// Whether the folder name was edited.
+@property(nonatomic, assign) BOOL edited;
 @property(nonatomic, assign) const BookmarkNode* folder;
 // TODO(crbug.com/1402758): Move this to BookmarksFolderEditorCoordinator.
 // A reference to the presented folder chooser.
@@ -222,6 +224,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Actions
 
+// Whether the bookmarks folder editor can be dismissed.
+- (BOOL)canDismiss {
+  if (self.edited) {
+    return NO;
+  }
+  if (self.folderChooserCoordinator) {
+    return [self.folderChooserCoordinator canDismiss];
+  }
+  return YES;
+}
+
 - (void)dismiss {
   [self.view endEditing:YES];
   [self.delegate bookmarkFolderEditorDidCancel:self];
@@ -368,7 +381,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - BookmarkTextFieldItemDelegate
 
 - (void)textDidChangeForItem:(BookmarkTextFieldItem*)item {
-  self.modalInPresentation = YES;
+  self.edited = YES;
   [self updateSaveButtonState];
 }
 
@@ -447,6 +460,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self dismiss];
+}
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return [self canDismiss];
 }
 
 #pragma mark - Private

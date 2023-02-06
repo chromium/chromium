@@ -60,6 +60,9 @@ class GURL;
 // Removes any snackbar related to bookmarks that could have been presented.
 - (void)dismissSnackbar;
 
+// whether the current bookmark view can be dismissed.
+- (BOOL)canDismiss;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_COORDINATOR_H_

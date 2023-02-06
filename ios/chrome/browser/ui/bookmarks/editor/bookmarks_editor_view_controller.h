@@ -31,6 +31,8 @@ class Browser;
 @property(nonatomic, strong, readonly) UIBarButtonItem* cancelItem;
 // Mutator for the presented bookmark.
 @property(nonatomic, weak) id<BookmarksEditorMutator> mutator;
+// Whether some value was edited.
+@property(nonatomic, assign) BOOL edited;
 
 // Designated initializer.
 // TODO(crbug.com/1404311) Remove the model from init.

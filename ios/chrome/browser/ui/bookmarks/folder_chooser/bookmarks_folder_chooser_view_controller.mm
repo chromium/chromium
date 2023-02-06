@@ -149,6 +149,13 @@ using bookmarks::BookmarkNode;
   _folderAddController.delegate = nil;
 }
 
+- (BOOL)canDismiss {
+  if (self.folderAddController && ![self.folderAddController canDismiss]) {
+    return NO;
+  }
+  return YES;
+}
+
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad {
@@ -287,13 +294,6 @@ using bookmarks::BookmarkNode;
 - (void)bookmarkFolderEditorWillCommitTitleChange:
     (BookmarksFolderEditorViewController*)controller {
   // Do nothing.
-}
-
-#pragma mark - UIAdaptivePresentationControllerDelegate
-
-- (void)presentationControllerDidDismiss:
-    (UIPresentationController*)presentationController {
-  [self.delegate folderPickerDidDismiss:self];
 }
 
 #pragma mark - BookmarkModelBridgeObserver

@@ -45,9 +45,6 @@
   // controller is the child of this navigation controller.
   UINavigationController* _navigationController;
 
-  // The delegate provided to `_bookmarkNavigationController`.
-  BookmarkNavigationControllerDelegate* _navigationControllerDelegate;
-
   // The folder chooser coordinator.
   BookmarksFolderChooserCoordinator* _folderChooserCoordinator;
 }
@@ -92,12 +89,10 @@
   _mediator.delegate = self;
   _viewController.mutator = _mediator;
 
-  _navigationControllerDelegate =
-      [[BookmarkNavigationControllerDelegate alloc] init];
   _navigationController =
       [[TableViewNavigationController alloc] initWithTable:_viewController];
   _navigationController.toolbarHidden = YES;
-  _navigationController.delegate = _navigationControllerDelegate;
+  _navigationController.presentationController.delegate = self;
   [_navigationController
       setModalPresentationStyle:UIModalPresentationFormSheet];
 
@@ -125,7 +120,16 @@
   [_navigationController dismissViewControllerAnimated:self.animatedDismissal
                                             completion:nil];
   _navigationController = nil;
-  _navigationControllerDelegate = nil;
+}
+
+- (BOOL)canDismiss {
+  if (_viewController.edited) {
+    return NO;
+  }
+  if (_folderChooserCoordinator && ![_folderChooserCoordinator canDismiss]) {
+    return NO;
+  }
+  return YES;
 }
 
 #pragma mark - BookmarksEditorViewControllerDelegate
@@ -210,6 +214,11 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [_viewController dismissBookmarkEditorView];
+}
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return [self canDismiss];
 }
 
 #pragma mark - BookmarksEditorMediatorDelegate

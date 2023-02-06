@@ -72,6 +72,9 @@ class GURL;
 // the returned array, if appropriate.
 - (NSArray<BookmarksHomeViewController*>*)cachedViewControllerStack;
 
+// Whether the browser can be dismissed.
+- (BOOL)canDismiss;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_HOME_BOOKMARKS_HOME_VIEW_CONTROLLER_H_

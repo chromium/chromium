@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
 
@@ -22,17 +21,15 @@
 #endif
 
 @interface BookmarksFolderChooserCoordinator () <
-    BookmarksFolderChooserViewControllerDelegate> {
+    BookmarksFolderChooserViewControllerDelegate,
+    UIAdaptivePresentationControllerDelegate> {
   // If folder chooser is created with a base view controller then folder
   // chooser will create and own `_navigationController` that should be deleted
   // in the end.
   // Otherwise, folder chooser is pushed into the `_baseNavigationController`
   // that it doesn't own.
   BookmarkNavigationController* _navigationController;
-  // Delegate for `_navigationController` if it was created inside folder
-  // chooser and needs to be deleted with it.
-  BookmarkNavigationControllerDelegate* _navigationControllerDelegate;
-  BookmarksFolderChooserViewController* _viewController;
+  BookmarksFolderChooserViewController* _folderChooserViewController;
   // List of nodes to hide when displaying folders. This is to avoid to move a
   // folder inside a child folder.
   std::set<const bookmarks::BookmarkNode*> _hiddenNodes;
@@ -79,25 +76,24 @@
   bookmarks::BookmarkModel* model =
       ios::BookmarkModelFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  _viewController = [[BookmarksFolderChooserViewController alloc]
+  _folderChooserViewController = [[BookmarksFolderChooserViewController alloc]
       initWithBookmarkModel:model
            allowsNewFolders:YES
                 editedNodes:_hiddenNodes
                allowsCancel:YES
              selectedFolder:_selectedFolder
                     browser:self.browser];
-  _viewController.delegate = self;
+  _folderChooserViewController.delegate = self;
 
   if (_baseNavigationController) {
-    _viewController.navigationItem.largeTitleDisplayMode =
+    _folderChooserViewController.navigationItem.largeTitleDisplayMode =
         UINavigationItemLargeTitleDisplayModeNever;
-    [_baseNavigationController pushViewController:_viewController animated:YES];
+    [_baseNavigationController pushViewController:_folderChooserViewController
+                                         animated:YES];
   } else {
     _navigationController = [[BookmarkNavigationController alloc]
-        initWithRootViewController:_viewController];
-    _navigationControllerDelegate =
-        [[BookmarkNavigationControllerDelegate alloc] init];
-    _navigationController.delegate = _navigationControllerDelegate;
+        initWithRootViewController:_folderChooserViewController];
+    _navigationController.presentationController.delegate = self;
 
     [_navigationController
         setModalPresentationStyle:UIModalPresentationFormSheet];
@@ -109,7 +105,7 @@
 
 - (void)stop {
   [super stop];
-  DCHECK(_viewController);
+  DCHECK(_folderChooserViewController);
 
   if (_baseNavigationController) {
     // Currently when folder editor is shown from folder chooser and the user
@@ -121,40 +117,58 @@
     // selection.
     // TODO(crbug.com/1405746): Revisit this logic after folder editor
     // coordinator is finished.
-    if (_baseNavigationController.topViewController != _viewController) {
-      [_baseNavigationController popToViewController:_viewController
-                                            animated:YES];
+    if (_baseNavigationController.topViewController !=
+        _folderChooserViewController) {
+      [_baseNavigationController
+          popToViewController:_folderChooserViewController
+                     animated:YES];
     }
-    DCHECK_EQ(_baseNavigationController.topViewController, _viewController);
+    DCHECK_EQ(_baseNavigationController.topViewController,
+              _folderChooserViewController);
     [_baseNavigationController popViewControllerAnimated:YES];
   } else if (_navigationController) {
     [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
     _navigationController = nil;
-    _navigationControllerDelegate = nil;
   } else {
     DCHECK(!self.baseViewController.presentedViewController);
   }
-  _viewController = nil;
+  _folderChooserViewController = nil;
 }
 
 - (void)setSelectedFolder:(const bookmarks::BookmarkNode*)folder {
   DCHECK(folder);
   DCHECK(folder->is_folder());
   _selectedFolder = folder;
-  if (_viewController) {
-    [_viewController changeSelectedFolder:_selectedFolder];
+  if (_folderChooserViewController) {
+    [_folderChooserViewController changeSelectedFolder:_selectedFolder];
   }
 }
 
 - (void)changeSelectedFolder:(const bookmarks::BookmarkNode*)folder {
-  [_viewController changeSelectedFolder:folder];
+  [_folderChooserViewController changeSelectedFolder:folder];
+}
+
+- (BOOL)canDismiss {
+  if (_folderChooserViewController &&
+      ![_folderChooserViewController canDismiss]) {
+    return NO;
+  }
+  return YES;
+}
+
+#pragma mark - Private
+
+- (void)dismiss {
+  DCHECK(_navigationController);
+  _navigationController = nil;
+  [_delegate bookmarksFolderChooserCoordinatorDidCancel:self];
 }
 
 #pragma mark - BookmarkFolderViewControllerDelegate
 
 - (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
     didFinishWithFolder:(const bookmarks::BookmarkNode*)folder {
-  self.editedNodes = _viewController.editedNodes;
+  self.editedNodes = _folderChooserViewController.editedNodes;
   [_delegate bookmarksFolderChooserCoordinatorDidConfirm:self
                                       withSelectedFolder:folder];
 }
@@ -166,9 +180,18 @@
 
 - (void)folderPickerDidDismiss:
     (BookmarksFolderChooserViewController*)folderPicker {
-  _navigationController = nil;
-  _navigationControllerDelegate = nil;
-  [_delegate bookmarksFolderChooserCoordinatorDidCancel:self];
+  [self dismiss];
 }
 
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self dismiss];
+}
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return [self canDismiss];
+}
 @end

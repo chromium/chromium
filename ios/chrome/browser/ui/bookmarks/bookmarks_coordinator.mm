@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator_delegate.h"
@@ -73,7 +72,8 @@ enum class PresentedState {
 @interface BookmarksCoordinator () <BookmarksEditorCoordinatorDelegate,
                                     BookmarksFolderEditorViewControllerDelegate,
                                     BookmarksFolderChooserCoordinatorDelegate,
-                                    BookmarksHomeViewControllerDelegate> {
+                                    BookmarksHomeViewControllerDelegate,
+                                    UIAdaptivePresentationControllerDelegate> {
   // The browser bookmarks are presented in.
   Browser* _browser;  // weak
 
@@ -101,10 +101,6 @@ enum class PresentedState {
 // are children of this navigation controller.
 @property(nonatomic, strong)
     UINavigationController* bookmarkNavigationController;
-
-// The delegate provided to `self.bookmarkNavigationController`.
-@property(nonatomic, strong)
-    BookmarkNavigationControllerDelegate* bookmarkNavigationControllerDelegate;
 
 // The bookmark model in use.
 @property(nonatomic, assign) BookmarkModel* bookmarkModel;
@@ -157,8 +153,6 @@ enum class PresentedState {
 @synthesize bookmarkBrowser = _bookmarkBrowser;
 @synthesize bookmarkModel = _bookmarkModel;
 @synthesize bookmarkNavigationController = _bookmarkNavigationController;
-@synthesize bookmarkNavigationControllerDelegate =
-    _bookmarkNavigationControllerDelegate;
 @synthesize currentPresentedState = _currentPresentedState;
 @synthesize delegate = _delegate;
 @synthesize folderEditor = _folderEditor;
@@ -385,7 +379,6 @@ enum class PresentedState {
   self.bookmarkBrowser.homeDelegate = nil;
   self.bookmarkBrowser = nil;
   self.bookmarkNavigationController = nil;
-  self.bookmarkNavigationControllerDelegate = nil;
 }
 
 - (void)dismissBookmarkEditorAnimated:(BOOL)animated {
@@ -430,6 +423,21 @@ enum class PresentedState {
   [MDCSnackbarManager.defaultManager
       dismissAndCallCompletionBlocksWithCategory:
           bookmark_utils_ios::kBookmarksSnackbarCategory];
+}
+
+- (BOOL)canDismiss {
+  switch (self.currentPresentedState) {
+    case PresentedState::NONE:
+      return YES;
+    case PresentedState::BOOKMARK_BROWSER:
+      return [self.bookmarkBrowser canDismiss];
+    case PresentedState::BOOKMARK_EDITOR:
+      return [self.bookmarkEditorCoordinator canDismiss];
+    case PresentedState::FOLDER_SELECTION:
+      return [self.folderChooserCoordinator canDismiss];
+    case PresentedState::FOLDER_EDITOR:
+      return [self.folderEditor canDismiss];
+  }
 }
 
 #pragma mark - BookmarksEditorCoordinatorDelegate
@@ -596,10 +604,8 @@ enum class PresentedState {
 // Presents `viewController` using the appropriate presentation and styling,
 // depending on whether the UIRefresh experiment is enabled or disabled. Sets
 // `self.bookmarkNavigationController` to the UINavigationController subclass
-// used, and may set `self.bookmarkNavigationControllerDelegate` depending on
-// whether or not the desired transition requires those objects.  If
-// `replacementViewControllers` is not nil, those controllers are swapped in to
-// the UINavigationController instead of `viewController`.
+// used. If `replacementViewControllers` is not nil, those controllers are
+// swapped in to the UINavigationController instead of `viewController`.
 - (void)presentTableViewController:
             (ChromeTableViewController<
                 UIAdaptivePresentationControllerDelegate>*)viewController
@@ -613,9 +619,7 @@ enum class PresentedState {
   }
 
   navController.toolbarHidden = YES;
-  self.bookmarkNavigationControllerDelegate =
-      [[BookmarkNavigationControllerDelegate alloc] init];
-  navController.delegate = self.bookmarkNavigationControllerDelegate;
+  navController.presentationController.delegate = self;
 
   [navController setModalPresentationStyle:UIModalPresentationFormSheet];
 
@@ -643,6 +647,13 @@ enum class PresentedState {
   params.SetInBackground(inBackground);
   params.in_incognito = inIncognito;
   UrlLoadingBrowserAgent::FromBrowser(_browser)->Load(params);
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return [self canDismiss];
 }
 
 @end

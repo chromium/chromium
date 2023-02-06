@@ -64,8 +64,6 @@ source_set("core") {
     "bookmark_mediator.mm",
     "bookmark_navigation_controller.h",
     "bookmark_navigation_controller.mm",
-    "bookmark_navigation_controller_delegate.h",
-    "bookmark_navigation_controller_delegate.mm",
     "bookmark_path_cache.h",
     "bookmark_path_cache.mm",
     "bookmark_utils_ios.h",
