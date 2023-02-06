@@ -283,15 +283,16 @@ if (android_64bit_target_cpu) {
     variables = _webview_jinja_variables + [ "use32bitAbi=" ]
   }
 
+  _use_high_package_name_for_trichrome = is_high_end_android
+
   jinja_template("trichrome_webview_64_manifest") {
     input = "java/AndroidManifest.xml"
     output = trichrome_webview_64_android_manifest
-    _use_high_package_name_for_64bit_only_trichrome = is_high_end_android
-    if (_use_high_package_name_for_64bit_only_trichrome) {
+    if (_use_high_package_name_for_trichrome) {
       if (_use_stable_package_name_for_trichrome) {
-        _version_code = trichrome_64_high_beta_version_code
+        _version_code = trichrome_64_high_beta_version_code  # Deprecated.
       } else {
-        _version_code = trichrome_64_high_version_code
+        _version_code = trichrome_64_high_version_code  # Deprecated.
       }
     } else {
       if (_use_stable_package_name_for_trichrome) {
@@ -310,10 +311,18 @@ if (android_64bit_target_cpu) {
   jinja_template("trichrome_webview_64_32_manifest") {
     input = "java/AndroidManifest.xml"
     output = trichrome_webview_64_32_android_manifest
-    if (_use_stable_package_name_for_trichrome) {
-      _version_code = trichrome_64_32_beta_version_code
+    if (_use_high_package_name_for_trichrome) {
+      if (_use_stable_package_name_for_trichrome) {
+        _version_code = trichrome_64_32_high_beta_version_code
+      } else {
+        _version_code = trichrome_64_32_high_version_code
+      }
     } else {
-      _version_code = trichrome_64_32_version_code
+      if (_use_stable_package_name_for_trichrome) {
+        _version_code = trichrome_64_32_beta_version_code
+      } else {
+        _version_code = trichrome_64_32_version_code
+      }
     }
     variables = trichrome_jinja_variables + _webview_jinja_variables + [
                   "use32bitAbi=",
