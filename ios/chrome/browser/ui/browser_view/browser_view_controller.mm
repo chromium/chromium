@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/help_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
@@ -409,6 +410,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorCommandsHandler;
 
+// Command handler for find in page commands
+@property(nonatomic, weak) id<FindInPageCommands> findInPageCommandsHandler;
+
 // The FullscreenController.
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
@@ -502,6 +506,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.applicationCommandsHandler = dependencies.applicationCommandsHandler;
     self.browserCoordinatorCommandsHandler =
         dependencies.browserCoordinatorCommandsHandler;
+    self.findInPageCommandsHandler = dependencies.findInPageCommandsHandler;
     dependencies.lensCoordinator.delegate = self;
 
     _inNewTabAnimation = NO;
@@ -534,9 +539,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - Public Properties
 
-- (id<FindInPageCommands, ToolbarCommands>)dispatcher {
-  return static_cast<id<FindInPageCommands, ToolbarCommands>>(
-      self.commandDispatcher);
+- (id<ToolbarCommands>)dispatcher {
+  return static_cast<id<ToolbarCommands>>(self.commandDispatcher);
 }
 
 - (UIView*)contentArea {
@@ -855,7 +859,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // Keyboard shouldn't overlay the ecoutez window, so dismiss find in page and
   // dismiss the keyboard.
-  [self.dispatcher closeFindInPage];
+  [self.findInPageCommandsHandler closeFindInPage];
   [self.textZoomHandler closeTextZoom];
   [[self viewForWebState:self.currentWebState] endEditing:NO];
 
@@ -918,7 +922,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   web::WebState* webState = self.currentWebState;
 
   if (webState) {
-    [self.dispatcher closeFindInPage];
+    [self.findInPageCommandsHandler closeFindInPage];
     [self.textZoomHandler closeTextZoom];
   }
 
@@ -1273,7 +1277,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // updateToobar];
   if (ShouldShowCompactToolbar(previousTraitCollection) !=
       ShouldShowCompactToolbar(self)) {
-    [self.dispatcher hideFindUI];
+    [self.findInPageCommandsHandler hideFindUI];
     [self.textZoomHandler hideTextZoomUI];
   }
 
@@ -1912,7 +1916,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // TODO(crbug.com/1329087): -updateToolbar will move out of the BVC; make
     // sure this comment remains accurate. Hide findbar.  `updateToolbar` will
     // restore the findbar later.
-    [self.dispatcher hideFindUI];
+    [self.findInPageCommandsHandler hideFindUI];
     [self.textZoomHandler hideTextZoomUI];
 
     // Make new content visible, resizing it first as the orientation may
@@ -3108,7 +3112,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Dismiss the soft keyboard (if open).
   [[self viewForWebState:self.currentWebState] endEditing:NO];
   // Dismiss Find in Page focus.
-  [self.dispatcher defocusFindInPage];
+  [self.findInPageCommandsHandler defocusFindInPage];
 
   // Allow the non-modal promo scheduler to close the promo.
   [self.nonModalPromoScheduler logPopupMenuEntered];
@@ -3529,7 +3533,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   } else {
     // Hide UI accessories such as find bar and first visit overlays
     // for welcome page.
-    [self.dispatcher hideFindUI];
+    [self.findInPageCommandsHandler hideFindUI];
     [self.textZoomHandler hideTextZoomUI];
   }
 }

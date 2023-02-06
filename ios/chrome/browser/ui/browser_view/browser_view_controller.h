@@ -33,6 +33,7 @@ class Browser;
 @protocol CRWResponderInputView;
 @class DefaultBrowserPromoNonModalScheduler;
 @protocol DefaultPromoNonModalPresentationDelegate;
+@protocol FindInPageCommands;
 class FullscreenController;
 @protocol HelpCommands;
 @class KeyCommandsProvider;
@@ -74,6 +75,7 @@ typedef struct {
   id<SnackbarCommands> snackbarCommandsHandler;
   id<ApplicationCommands> applicationCommandsHandler;
   id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler;
+  id<FindInPageCommands> findInPageCommandsHandler;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers
