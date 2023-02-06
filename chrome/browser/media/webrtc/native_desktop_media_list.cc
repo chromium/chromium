@@ -68,7 +68,10 @@ bool IsFrameValid(webrtc::DesktopFrame* frame) {
 uint32_t GetFrameHash(webrtc::DesktopFrame* frame) {
   // TODO(dcheng): Is this vulnerable to overflow??
   int data_size = frame->stride() * frame->size().height();
-  return base::FastHash(base::make_span(frame->data(), data_size));
+  // IsFrameValid has already verified that the height and stride are positive
+  // so it is safe to cast to size_t, which can always fit a positive int.
+  return base::FastHash(
+      base::make_span(frame->data(), static_cast<size_t>(data_size)));
 }
 
 gfx::ImageSkia ScaleDesktopFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
