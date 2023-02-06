@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/numerics/safe_math.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/byte_string_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
@@ -269,9 +270,12 @@ class StructTraits<remoting::mojom::MouseCursorDataView,
   static base::span<const uint8_t> image_data(
       const ::webrtc::MouseCursor& cursor) {
     auto& image_size = cursor.image()->size();
-    auto buffer_size = ::webrtc::DesktopFrame::kBytesPerPixel *
-                       image_size.width() * image_size.height();
-    return base::span<const uint8_t>(cursor.image()->data(), buffer_size);
+    base::CheckedNumeric<size_t> buffer_size(
+        ::webrtc::DesktopFrame::kBytesPerPixel);
+    buffer_size *= image_size.width();
+    buffer_size *= image_size.height();
+    return base::span<const uint8_t>(cursor.image()->data(),
+                                     buffer_size.ValueOrDie());
   }
 
   static const webrtc::DesktopVector& hotspot(
