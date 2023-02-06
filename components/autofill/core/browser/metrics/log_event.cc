@@ -99,4 +99,11 @@ bool AreCollapsible(const ServerPredictionFieldLogEvent& event1,
              event2.rank_in_field_signature_group;
 }
 
+bool AreCollapsible(const RationalizationFieldLogEvent& event1,
+                    const RationalizationFieldLogEvent& event2) {
+  return event1.field_type == event2.field_type &&
+         event1.section_id == event2.section_id &&
+         event1.type_changed == event2.type_changed;
+}
+
 }  // namespace autofill

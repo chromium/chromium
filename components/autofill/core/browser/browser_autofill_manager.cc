@@ -3406,6 +3406,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
   size_t num_heuristic_prediction_event = 0;
   size_t num_autocomplete_attribute_event = 0;
   size_t num_server_prediction_event = 0;
+  size_t num_rationalization_event = 0;
 
   for (const auto& autofill_field : form_structure) {
     if (base::FeatureList::IsEnabled(
@@ -3414,7 +3415,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
           form_structure, *autofill_field);
       for (const auto& log_event : autofill_field->field_log_events()) {
         static_assert(
-            absl::variant_size<AutofillField::FieldLogEventType>() == 8,
+            absl::variant_size<AutofillField::FieldLogEventType>() == 9,
             "When adding new variants check that this function does not "
             "need to be updated.");
         if (absl::holds_alternative<AskForValuesToFillFieldLogEvent>(
@@ -3436,6 +3437,9 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
         } else if (absl::holds_alternative<ServerPredictionFieldLogEvent>(
                        log_event)) {
           ++num_server_prediction_event;
+        } else if (absl::holds_alternative<RationalizationFieldLogEvent>(
+                       log_event)) {
+          ++num_rationalization_event;
         } else {
           NOTREACHED();
         }
@@ -3449,7 +3453,8 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
   size_t total_num_log_events =
       num_ask_for_values_to_fill_event + num_trigger_fill_event +
       num_fill_event + num_typing_event + num_heuristic_prediction_event +
-      num_autocomplete_attribute_event + num_server_prediction_event;
+      num_autocomplete_attribute_event + num_server_prediction_event +
+      num_rationalization_event;
   // Record the number of each type of log events into UMA to decide if we need
   // to clear them before the form is submitted or destroyed.
   UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.AskForValuesToFillEvent",
@@ -3464,6 +3469,8 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
                              num_autocomplete_attribute_event);
   UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.ServerPredictionEvent",
                              num_server_prediction_event);
+  UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.RationalizationEvent",
+                             num_rationalization_event);
   UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.All", total_num_log_events);
 }
 

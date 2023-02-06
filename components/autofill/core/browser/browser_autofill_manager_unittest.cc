@@ -890,12 +890,23 @@ class BrowserAutofillManagerTest : public testing::Test {
               expected.rank_in_field_signature_group)));
   }
 
+  // Matches a RationalizationFieldLogEvent by equality of fields.
+  auto Equal(const RationalizationFieldLogEvent& expected) {
+    return VariantWith<RationalizationFieldLogEvent>(
+        AllOf(Field("field_type", &RationalizationFieldLogEvent::field_type,
+                    expected.field_type),
+              Field("section_id", &RationalizationFieldLogEvent::section_id,
+                    expected.section_id),
+              Field("type_changed", &RationalizationFieldLogEvent::type_changed,
+                    expected.type_changed)));
+  }
+
   // Matches a vector of FieldLogEventType objects by equality of fields of each
   // log event type.
   auto ArrayEquals(
       const std::vector<AutofillField::FieldLogEventType>& expected) {
     static_assert(
-        absl::variant_size<AutofillField::FieldLogEventType>() == 8,
+        absl::variant_size<AutofillField::FieldLogEventType>() == 9,
         "If you add a new field event type, you need to update this function");
     std::vector<Matcher<AutofillField::FieldLogEventType>> matchers;
     for (const auto& event : expected) {
@@ -920,6 +931,9 @@ class BrowserAutofillManagerTest : public testing::Test {
                      event)) {
         matchers.push_back(
             Equal(absl::get<ServerPredictionFieldLogEvent>(event)));
+      } else if (absl::holds_alternative<RationalizationFieldLogEvent>(event)) {
+        matchers.push_back(
+            Equal(absl::get<RationalizationFieldLogEvent>(event)));
       } else {
         NOTREACHED();
       }
@@ -5397,8 +5411,10 @@ class BrowserAutofillManagerWithLogEventsTest
         /*disabled_features=*/{});
   }
 
-  std::vector<AutofillField::FieldLogEventType> ToHeuristicFieldTypeEvents(
-      ServerFieldType heuristic_type) {
+  std::vector<AutofillField::FieldLogEventType> ToFieldTypeEvents(
+      ServerFieldType heuristic_type,
+      ServerFieldType overall_type,
+      size_t field_signature_rank = 1) {
     std::vector<AutofillField::FieldLogEventType> expected_events;
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
     // Default pattern.
@@ -5406,28 +5422,28 @@ class BrowserAutofillManagerWithLogEventsTest
         .field_type = heuristic_type,
         .pattern_source = PatternSource::kDefault,
         .is_active_pattern_source = true,
-        .rank_in_field_signature_group = 1,
+        .rank_in_field_signature_group = field_signature_rank,
     });
     // Legacy pattern.
     expected_events.push_back(HeuristicPredictionFieldLogEvent{
         .field_type = heuristic_type,
         .pattern_source = PatternSource::kLegacy,
         .is_active_pattern_source = false,
-        .rank_in_field_signature_group = 1,
+        .rank_in_field_signature_group = field_signature_rank,
     });
     // Experimental pattern.
     expected_events.push_back(HeuristicPredictionFieldLogEvent{
         .field_type = heuristic_type,
         .pattern_source = PatternSource::kExperimental,
         .is_active_pattern_source = false,
-        .rank_in_field_signature_group = 1,
+        .rank_in_field_signature_group = field_signature_rank,
     });
     // Nextgen pattern.
     expected_events.push_back(HeuristicPredictionFieldLogEvent{
         .field_type = heuristic_type,
         .pattern_source = PatternSource::kNextGen,
         .is_active_pattern_source = false,
-        .rank_in_field_signature_group = 1,
+        .rank_in_field_signature_group = field_signature_rank,
     });
 #else
     // Legacy pattern.
@@ -5435,9 +5451,15 @@ class BrowserAutofillManagerWithLogEventsTest
         .field_type = heuristic_type,
         .pattern_source = PatternSource::kLegacy,
         .is_active_pattern_source = true,
-        .rank_in_field_signature_group = 1,
+        .rank_in_field_signature_group = field_signature_rank,
     });
 #endif
+    // Rationalization.
+    expected_events.push_back(RationalizationFieldLogEvent{
+        .field_type = overall_type,
+        .section_id = 1,
+        .type_changed = false,
+    });
     return expected_events;
   }
 
@@ -5507,7 +5529,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToHeuristicFieldTypeEvents(autofill_field_ptr->heuristic_type());
+        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
+                          autofill_field_ptr->heuristic_type());
 
     if (autofill_field_ptr->parseable_label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
@@ -5589,7 +5612,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToHeuristicFieldTypeEvents(autofill_field_ptr->heuristic_type());
+        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
+                          autofill_field_ptr->heuristic_type());
 
     if (autofill_field_ptr->parseable_label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
@@ -5715,7 +5739,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToHeuristicFieldTypeEvents(autofill_field_ptr->heuristic_type());
+        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
+                          autofill_field_ptr->heuristic_type());
 
     if (autofill_field_ptr->parseable_label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
@@ -5815,7 +5840,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToHeuristicFieldTypeEvents(autofill_field_ptr->heuristic_type());
+        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
+                          autofill_field_ptr->heuristic_type());
 
     if (autofill_field_ptr->parseable_label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
@@ -5892,7 +5918,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToHeuristicFieldTypeEvents(autofill_field_ptr->heuristic_type());
+        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
+                          autofill_field_ptr->heuristic_type());
 
     if (autofill_field_ptr->parseable_label() == u"Name on Card") {
       // The "Name on Card" field gets focus and shows a suggestion so it
@@ -5962,8 +5989,14 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
+    // The overall_type of the field "Email" is UNKNOWN_TYPE, because its
+    // html_type is unrecognized.
+    ServerFieldType overall_type =
+        autofill_field_ptr->parseable_label() == u"Email"
+            ? UNKNOWN_TYPE
+            : autofill_field_ptr->heuristic_type();
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToHeuristicFieldTypeEvents(autofill_field_ptr->heuristic_type());
+        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(), overall_type);
     if (autofill_field_ptr->parseable_label() != u"Middle name") {
       expected_events.insert(expected_events.begin(),
                              AutocompleteAttributeFieldLogEvent{
@@ -6004,6 +6037,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   test::CreateTestFormField(/*label=*/"Postal Code", /*name=*/"zipcode",
                             /*value=*/"", /*type=*/"text", /*field=*/&field);
   form.fields.push_back(field);
+
   // Simulate having seen this form on page load.
   // |form_structure_instance| will be owned by |browser_autofill_manager_|.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
@@ -6045,25 +6079,21 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // Query autofill server for the field type prediction.
   browser_autofill_manager_->OnLoadedServerPredictionsForTest(
       encoded_response_string, test::GetEncodedSignatures(*form_structure));
-  EXPECT_EQ(NAME_FIRST, form_structure->field(0)->Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_HOME_LINE1,
-            form_structure->field(1)->Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_HOME_CITY,
-            form_structure->field(2)->Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_HOME_STATE,
-            form_structure->field(3)->Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_HOME_ZIP,
-            form_structure->field(4)->Type().GetStorableType());
+  std::vector<ServerFieldType> types{NAME_FIRST, ADDRESS_HOME_LINE1,
+                                     ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
+                                     ADDRESS_HOME_ZIP};
+  for (size_t i = 0; i < types.size(); ++i) {
+    EXPECT_EQ(types[i], form_structure->field(i)->Type().GetStorableType());
+  }
 
   // Simulate form submission.
   FormSubmitted(form);
 
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
-    // All parsed fields share the same expected
-    // HeuristicPredictionFieldLogEvent.
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToHeuristicFieldTypeEvents(autofill_field_ptr->heuristic_type());
+        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
+                          autofill_field_ptr->heuristic_type());
     // The autofill server applies two predictions on the "Name" field.
     ServerFieldType server_type2 =
         autofill_field_ptr->parseable_label() == u"Name" ? USERNAME
@@ -6085,6 +6115,107 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
         .server_type_prediction_is_override =
             server_type_prediction_is_override,
         .rank_in_field_signature_group = 1,
+    });
+    // Rationalization.
+    expected_events.push_back(RationalizationFieldLogEvent{
+        .field_type = autofill_field_ptr->server_type(),
+        .section_id = 1,
+        .type_changed = false,
+    });
+    EXPECT_THAT(autofill_field_ptr->field_log_events(),
+                ArrayEquals(expected_events));
+  }
+}
+
+// Test that we record field log events correctly for rationalization when
+// there are two address fields.
+TEST_F(BrowserAutofillManagerWithLogEventsTest,
+       LogEventsRationalizationTwoAddresses) {
+  // Set up our form data.
+  FormData form;
+  form.host_frame = test::MakeLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"MyForm";
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+  FormFieldData field;
+  test::CreateTestFormField(/*label=*/"Full Name", /*name=*/"fullName",
+                            /*value=*/"", /*type=*/"text", /*field=*/&field);
+  form.fields.push_back(field);
+  test::CreateTestFormField(/*label=*/"Address", /*name=*/"address",
+                            /*value=*/"", /*type=*/"text", /*field=*/&field);
+  form.fields.push_back(field);
+  test::CreateTestFormField(/*label=*/"Address", /*name=*/"address",
+                            /*value=*/"", /*type=*/"text", /*field=*/&field);
+  form.fields.push_back(field);
+  test::CreateTestFormField(/*label=*/"City", /*name=*/"city",
+                            /*value=*/"", /*type=*/"text", /*field=*/&field);
+  form.fields.push_back(field);
+
+  // Simulate having seen this form on page load.
+  // |form_structure_instance| will be owned by |browser_autofill_manager_|.
+  auto form_structure_instance = std::make_unique<FormStructure>(form);
+  // This pointer is valid as long as autofill manager lives.
+  FormStructure* form_structure = form_structure_instance.get();
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+  browser_autofill_manager_->AddSeenFormStructure(
+      std::move(form_structure_instance));
+
+  // Make API response with suggestions.
+  AutofillQueryResponse response;
+  AutofillQueryResponse::FormSuggestion* form_suggestion;
+  // Set suggestions for form.
+  form_suggestion = response.add_form_suggestions();
+  std::vector<ServerFieldType> server_types{
+      NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_CITY};
+  for (size_t i = 0; i < server_types.size(); ++i) {
+    autofill::test::AddFieldPredictionToForm(form.fields[i], server_types[i],
+                                             form_suggestion);
+  }
+
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
+  std::string encoded_response_string;
+  base::Base64Encode(response_string, &encoded_response_string);
+
+  // Query autofill server for the field type prediction.
+  browser_autofill_manager_->OnLoadedServerPredictionsForTest(
+      encoded_response_string, test::GetEncodedSignatures(*form_structure));
+  std::vector<ServerFieldType> overall_types{
+      NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_CITY};
+  for (size_t i = 0; i < server_types.size(); ++i) {
+    EXPECT_EQ(overall_types[i],
+              form_structure->field(i)->Type().GetStorableType());
+  }
+
+  // Simulate form submission.
+  FormSubmitted(form);
+
+  for (const auto& autofill_field_ptr : *form_structure) {
+    SCOPED_TRACE(autofill_field_ptr->parseable_label());
+    size_t field_signature_rank =
+        autofill_field_ptr->heuristic_type() == ADDRESS_HOME_LINE2 ? 2 : 1;
+    std::vector<AutofillField::FieldLogEventType> expected_events =
+        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
+                          autofill_field_ptr->heuristic_type(),
+                          field_signature_rank);
+    expected_events.push_back(ServerPredictionFieldLogEvent{
+        .server_type1 = autofill_field_ptr->server_type(),
+        .prediction_source1 =
+            autofill_field_ptr->server_predictions()[0].source(),
+        .server_type2 = NO_SERVER_DATA,
+        .prediction_source2 = FieldPrediction::SOURCE_UNSPECIFIED,
+        .server_type_prediction_is_override = false,
+        .rank_in_field_signature_group = field_signature_rank,
+    });
+    // Rationalization.
+    bool type_changed =
+        autofill_field_ptr->parseable_label() == u"Address" ? true : false;
+    expected_events.push_back(RationalizationFieldLogEvent{
+        .field_type = autofill_field_ptr->Type().GetStorableType(),
+        .section_id = 1,
+        .type_changed = type_changed,
     });
     EXPECT_THAT(autofill_field_ptr->field_log_events(),
                 ArrayEquals(expected_events));

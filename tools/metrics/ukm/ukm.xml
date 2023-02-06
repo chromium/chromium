@@ -2776,11 +2776,27 @@ be describing additional metrics about the same event.
       visibility with false positives.
     </summary>
   </metric>
+  <metric name="OverallType" enum="AutofillServerFieldType">
+    <summary>
+      The final field type from the list of |autofill::ServerFieldType| that we
+      choose after rationalization, which is used to determine the autofill
+      suggestion when the user triggers autofilling.
+    </summary>
+  </metric>
   <metric name="RankInFieldSignatureGroup">
     <summary>
       If multiple fields have the same signature, this indicates the position
       within this set of fields. This allows us to understand problems related
       to duplicated field signatures.
+    </summary>
+  </metric>
+  <metric name="SectionId">
+    <summary>
+      A single HTML form can consist of multiple sections. A section is a set of
+      fields that are filled together. For example a single form can contain a
+      shipping and a billing address. Each of those corresponds to one section.
+      The sections are mapped to consecutive natural numbers starting at 1. The
+      section IDs are unique per form.
     </summary>
   </metric>
   <metric name="ServerPredictionSource1" enum="AutofillServerPredictionSource">
@@ -2837,6 +2853,11 @@ be describing additional metrics about the same event.
     <summary>
       Whether a suggestion popup was ever shown on this field (i.e. the field
       had focus and user had data on file).
+    </summary>
+  </metric>
+  <metric name="TypeChangedByRationalization" enum="Boolean">
+    <summary>
+      Whether the field's type was changed by running the rationalization.
     </summary>
   </metric>
   <metric name="UserTypedIntoField" enum="Boolean">

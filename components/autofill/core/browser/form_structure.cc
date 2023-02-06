@@ -358,6 +358,22 @@ void FormStructure::DetermineHeuristicTypes(
   }
   rationalizer.RationalizeFieldTypePredictions(log_manager);
 
+  // Log the field type predicted by rationalization.
+  // The sections are mapped to consecutive natural numbers starting at 1.
+  std::map<Section, size_t> section_id_map;
+  for (const auto& field : fields_) {
+    if (!base::Contains(section_id_map, field->section)) {
+      size_t next_section_id = section_id_map.size() + 1;
+      section_id_map[field->section] = next_section_id;
+    }
+    field->AppendLogEventIfNotRepeated(RationalizationFieldLogEvent{
+        .field_type = field->Type().GetStorableType(),
+        .section_id = section_id_map[field->section],
+        .type_changed = field->Type().GetStorableType() !=
+                        field->ComputedType().GetStorableType(),
+    });
+  }
+
   LogDetermineHeuristicTypesMetrics();
 }
 
@@ -663,6 +679,22 @@ void FormStructure::ProcessQueryResponse(
     // since generally only this sectioning result is used.
     LogSectioningMetrics(form->form_signature(), form->fields_,
                          form_interactions_ukm_logger);
+
+    // Log the field type predicted by rationalization.
+    // The sections are mapped to consecutive natural numbers starting at 1.
+    std::map<Section, size_t> section_id_map;
+    for (const auto& field : form->fields_) {
+      if (!base::Contains(section_id_map, field->section)) {
+        size_t next_section_id = section_id_map.size() + 1;
+        section_id_map[field->section] = next_section_id;
+      }
+      field->AppendLogEventIfNotRepeated(RationalizationFieldLogEvent{
+          .field_type = field->Type().GetStorableType(),
+          .section_id = section_id_map[field->section],
+          .type_changed = field->Type().GetStorableType() !=
+                          field->ComputedType().GetStorableType(),
+      });
+    }
   }
 
   AutofillMetrics::ServerQueryMetric metric;

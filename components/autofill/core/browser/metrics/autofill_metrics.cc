@@ -2516,12 +2516,22 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   // that a manual override defines the server type.
   bool server_type_is_override = false;
 
+  // The final field type from the list of |autofill::ServerFieldType| that we
+  // choose after rationalization, which is used to determine
+  // the autofill suggestion when the user triggers autofilling.
+  ServerFieldType overall_type = NO_SERVER_DATA;
+  // The sections are mapped to consecutive natural numbers starting at 1,
+  // numbered according to the ordering of their first fields.
+  size_t section_id = 0;
+  bool type_changed_by_rationalization = false;
+
   bool had_heuristic_type = false;
   bool had_html_type = false;
   bool had_server_type = false;
+  bool had_rationalization_event = false;
 
   for (const auto& log_event : field_log_events) {
-    static_assert(absl::variant_size<AutofillField::FieldLogEventType>() == 8,
+    static_assert(absl::variant_size<AutofillField::FieldLogEventType>() == 9,
                   "When adding new variants check that this function does not "
                   "need to be updated.");
     if (auto* event =
@@ -2617,6 +2627,13 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       rank_in_field_signature_group = event->rank_in_field_signature_group;
       had_server_type = true;
     }
+
+    if (auto* event = absl::get_if<RationalizationFieldLogEvent>(&log_event)) {
+      overall_type = event->field_type;
+      section_id = event->section_id;
+      type_changed_by_rationalization = event->type_changed;
+      had_rationalization_event = true;
+    }
   }
 
   if (had_value_after_filling != OptionalBoolean::kUndefined ||
@@ -2686,6 +2703,12 @@ void AutofillMetrics::FormInteractionsUkmLogger::
         .SetServerType2(server_type2)
         .SetServerPredictionSource2(prediction_source2)
         .SetServerTypeIsOverride(server_type_is_override);
+  }
+
+  if (had_rationalization_event) {
+    builder.SetOverallType(overall_type)
+        .SetSectionId(section_id)
+        .SetTypeChangedByRationalization(type_changed_by_rationalization);
   }
 
   if (rank_in_field_signature_group) {

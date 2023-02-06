@@ -10480,7 +10480,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
 
   {
     // Simulating submission with filled local data. The third field cannot be
-    // autofilled because its type cannot be predicated.
+    // autofilled because its type cannot be predicted.
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields[0], gfx::RectF(), AutoselectFirstSuggestion(false),
         FormElementWasClicked(true));
@@ -10551,6 +10551,8 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
         "Autofill.LogEvent.AutocompleteAttributeEvent", 0, 1);
     histogram_tester.ExpectBucketCount(
         "Autofill.LogEvent.ServerPredictionEvent", 0, 1);
+    histogram_tester.ExpectBucketCount("Autofill.LogEvent.RationalizationEvent",
+                                       0, 1);
     histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 6, 1);
   }
 }
@@ -10614,6 +10616,8 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   std::vector<HtmlFieldType> html_field_types{
       HtmlFieldType::kFamilyName, HtmlFieldType::kAdditionalName,
       HtmlFieldType::kUnrecognized, HtmlFieldType::kPostalCode};
+  std::vector<ServerFieldType> overall_types{NAME_LAST, NAME_MIDDLE,
+                                             NAME_MIDDLE, ADDRESS_HOME_ZIP};
 
   for (size_t i = 0; i < entries.size(); ++i) {
     SCOPED_TRACE(testing::Message() << i);
@@ -10636,6 +10640,9 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
         {UFIT::kServerPredictionSource2Name,
          FieldPrediction::SOURCE_UNSPECIFIED},
         {UFIT::kServerTypeIsOverrideName, false},
+        {UFIT::kOverallTypeName, overall_types[i]},
+        {UFIT::kSectionIdName, 1},
+        {UFIT::kTypeChangedByRationalizationName, false},
         {UFIT::kIsFocusableName, true},
         {UFIT::kRankInFieldSignatureGroupName, 1},
         {UFIT::kWasFocusedName, false},
@@ -10678,14 +10685,16 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
       "Autofill.LogEvent.AutocompleteAttributeEvent", 3, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.ServerPredictionEvent",
                                      4, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.RationalizationEvent",
+                                     8, 1);
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   histogram_tester.ExpectBucketCount(
       "Autofill.LogEvent.HeuristicPredictionEvent", 12, 1);
-  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 19, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 27, 1);
 #else
   histogram_tester.ExpectBucketCount(
       "Autofill.LogEvent.HeuristicPredictionEvent", 3, 1);
-  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 10, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 18, 1);
 #endif
 }
 
@@ -10757,6 +10766,8 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   histogram_tester.ExpectBucketCount(
       "Autofill.LogEvent.AutocompleteAttributeEvent", 0, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.ServerPredictionEvent",
+                                     0, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.RationalizationEvent",
                                      0, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 2, 1);
 }

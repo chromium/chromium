@@ -2561,6 +2561,8 @@ chromium-metrics-reviews@google.com.
     <variant name="HeuristicPredictionEvent"
         summary="total number of HeuristicPredictionFieldLogEvent events
                  recorded"/>
+    <variant name="RationalizationEvent"
+        summary="total number of RationalizationFieldLogEvent events recorded"/>
     <variant name="ServerPredictionEvent"
         summary="total number of ServerPredictionFieldLogEvent events
                  recorded"/>
