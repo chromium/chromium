@@ -216,11 +216,10 @@ public abstract class SyncConsentFragmentBase
      * @param accessPoint The access point for starting sign-in flow.
      * @param accountName The account to preselect or null to preselect the default account.
      */
-    public static Bundle createArgumentsForTangibleSyncFlow(
+    public static Bundle createArgumentsForTangibleSync(
             @SigninAccessPoint int accessPoint, String accountName) {
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC);
-        Bundle result = SyncConsentFragmentBase.createArgumentsForChooseAccountFlow(
-                accessPoint, accountName);
+        Bundle result = SyncConsentFragmentBase.createArguments(accessPoint, accountName);
         result.putBoolean(ARGUMENT_SHOW_TANGIBLE_SYNC_CONSENT_VIEW, true);
         return result;
     }

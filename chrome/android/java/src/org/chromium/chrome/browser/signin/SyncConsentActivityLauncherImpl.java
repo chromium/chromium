@@ -110,8 +110,7 @@ public final class SyncConsentActivityLauncherImpl implements SyncConsentActivit
     public void launchActivityForTangibleSyncFlow(
             Context context, @SigninAccessPoint int accessPoint, String accountName) {
         launchInternal(context,
-                SyncConsentFragmentBase.createArgumentsForTangibleSyncFlow(
-                        accessPoint, accountName));
+                SyncConsentFragmentBase.createArgumentsForTangibleSync(accessPoint, accountName));
     }
 
     /**

@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -42,8 +46,14 @@ public class SyncConsentFirstRunFragment
         final List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
                 AccountManagerFacadeProvider.getInstance().getAccounts());
         boolean isChild = getPageDelegate().getProperties().getBoolean(IS_CHILD_ACCOUNT, false);
-        setArguments(createArguments(SigninAccessPoint.START_PAGE,
-                accounts.isEmpty() ? null : accounts.get(0).name, isChild));
+        String accountName = accounts.isEmpty() ? null : accounts.get(0).name;
+        final Bundle arguments;
+        if (!isChild && ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC)) {
+            arguments = createArgumentsForTangibleSync(SigninAccessPoint.START_PAGE, accountName);
+        } else {
+            arguments = createArguments(SigninAccessPoint.START_PAGE, accountName, isChild);
+        }
+        setArguments(arguments);
     }
 
     @Override
@@ -110,7 +120,11 @@ public class SyncConsentFirstRunFragment
         // Ignore calls before view is created.
         if (getView() == null) return;
 
-        final View title = getView().findViewById(R.id.signin_title);
+        @Nullable
+        View title = getView().findViewById(R.id.signin_title);
+        if (title == null) {
+            title = getView().findViewById(R.id.sync_consent_title);
+        }
         title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
