@@ -7,25 +7,31 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.components.payments.CurrencyFormatter;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.url.GURLJavaTestHelper;
 
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * A lightweight integration test for CurrencyFormatter to run on an Android device.
+ * A lightweight unit test for CurrencyFormatter to run on an Android device.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class CurrencyFormatterTest {
-    @Rule
-    public ChromeBrowserTestRule mActivityTestRule = new ChromeBrowserTestRule();
+    @Before
+    public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        GURLJavaTestHelper.nativeInitializeICU();
+    }
 
     /**
      * Unicode non-breaking space.
