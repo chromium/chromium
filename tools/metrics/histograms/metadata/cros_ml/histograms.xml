@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.HandwritingModel.LoadModelResult.Event"
     enum="MachineLearningServiceLoadHandwritingModelResultEvent"
-    expires_after="2023-02-19">
+    expires_after="2023-08-19">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.MojoConnectionEvent"
-    enum="MachineLearningServiceMojoConnectionEvent" expires_after="2023-03-12">
+    enum="MachineLearningServiceMojoConnectionEvent" expires_after="2023-09-12">
   <owner>alanlxl@chromium.org</owner>
   <owner>honglinyu@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
