@@ -2166,6 +2166,7 @@
         'args': [
           '--flag-specific=devtools-tab-target',
           '--num-retries=3',
+          'http/tests/devtools',
         ],
         'isolate_name': 'blink_web_tests',
         'merge': {
