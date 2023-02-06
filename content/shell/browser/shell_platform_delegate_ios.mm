@@ -7,10 +7,29 @@
 #import <UIKit/UIKit.h>
 
 #include "base/containers/contains.h"
+#include "base/files/file.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/trace_event/trace_config.h"
 #include "content/shell/app/resource.h"
 #include "content/shell/browser/shell.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_config.h"
+#include "services/tracing/public/mojom/constants.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "ui/display/screen.h"
+
+@interface TracingHandler : NSObject {
+ @private
+  std::unique_ptr<perfetto::TracingSession> _tracingSession;
+  NSFileHandle* _traceFileHandle;
+}
+
+- (void)startWithHandler:(void (^)())startHandler
+          andStopHandler:(void (^)())stopHandler;
+- (void)stop;
+- (BOOL)isTracing;
+
+@end
 
 @interface ContentShellWindowDelegate : UIViewController <UITextFieldDelegate> {
  @private
@@ -32,7 +51,11 @@
 @property(nonatomic, strong) UITextField* field;
 // Container for |webView|.
 @property(nonatomic, strong) UIView* contentView;
+// Manages tracing and tracing state.
+@property(nonatomic, strong) TracingHandler* tracingHandler;
 
++ (UIColor*)backgroundColorDefault;
++ (UIColor*)backgroundColorTracing;
 - (id)initWithShell:(content::Shell*)shell;
 - (content::Shell*)shell;
 - (void)back;
@@ -40,6 +63,9 @@
 - (void)reloadOrStop;
 - (void)setURL:(NSString*)url;
 - (void)setContents:(UIView*)content;
+- (void)toggleTracing;
+- (UIAlertController*)actionSheetWithTitle:(nullable NSString*)title
+                                   message:(nullable NSString*)message;
 @end
 
 @implementation ContentShellWindowDelegate
@@ -51,6 +77,21 @@
 @synthesize menuButton = _menuButton;
 @synthesize headerBackgroundView = _headerBackgroundView;
 @synthesize headerContentView = _headerContentView;
+@synthesize tracingHandler = _tracingHandler;
+
++ (UIColor*)backgroundColorDefault {
+  return [UIColor colorWithRed:66.0 / 255.0
+                         green:133.0 / 255.0
+                          blue:244.0 / 255.0
+                         alpha:1.0];
+}
+
++ (UIColor*)backgroundColorTracing {
+  return [UIColor colorWithRed:234.0 / 255.0
+                         green:67.0 / 255.0
+                          blue:53.0 / 255.0
+                         alpha:1.0];
+}
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -64,6 +105,7 @@
   self.reloadOrStopButton = [[UIButton alloc] init];
   self.menuButton = [[UIButton alloc] init];
   self.field = [[UITextField alloc] init];
+  self.tracingHandler = [[TracingHandler alloc] init];
 
   // View hierarchy.
   [self.view addSubview:_headerBackgroundView];
@@ -75,10 +117,8 @@
   [_headerContentView addSubview:_menuButton];
   [_headerContentView addSubview:_field];
 
-  _headerBackgroundView.backgroundColor = [UIColor colorWithRed:66.0 / 255.0
-                                                          green:133.0 / 255.0
-                                                           blue:244.0 / 255.0
-                                                          alpha:1.0];
+  _headerBackgroundView.backgroundColor =
+      [ContentShellWindowDelegate backgroundColorDefault];
 
   [_backButton setImage:[UIImage imageNamed:@"ic_back"]
                forState:UIControlStateNormal];
@@ -242,6 +282,49 @@
 }
 
 - (void)showMainMenu {
+  UIAlertController* alertController = [self actionSheetWithTitle:@"Main menu"
+                                                          message:nil];
+
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                         style:UIAlertActionStyleCancel
+                                       handler:nil]];
+
+  NSString* traceActionTitle =
+      [_tracingHandler isTracing] ? @"End tracing" : @"Begin tracing";
+
+  __weak ContentShellWindowDelegate* weakSelf = self;
+
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:traceActionTitle
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction* action) {
+                                         [weakSelf toggleTracing];
+                                       }]];
+
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)updateBackground {
+  _headerBackgroundView.backgroundColor =
+      [_tracingHandler isTracing]
+          ? [ContentShellWindowDelegate backgroundColorTracing]
+          : [ContentShellWindowDelegate backgroundColorDefault];
+}
+
+- (void)toggleTracing {
+  __weak ContentShellWindowDelegate* weakSelf = self;
+  if ([_tracingHandler isTracing]) {
+    [_tracingHandler stop];
+  } else {
+    [_tracingHandler
+        startWithHandler:^{
+          [weakSelf updateBackground];
+        }
+        andStopHandler:^{
+          [weakSelf updateBackground];
+        }];
+  }
 }
 
 - (void)setURL:(NSString*)url {
@@ -262,6 +345,101 @@
 
 - (void)setContents:(UIView*)content {
   [_contentView addSubview:content];
+}
+
+- (UIAlertController*)actionSheetWithTitle:(nullable NSString*)title
+                                   message:(nullable NSString*)message {
+  UIAlertController* alertController = [UIAlertController
+      alertControllerWithTitle:title
+                       message:message
+                preferredStyle:UIAlertControllerStyleActionSheet];
+  alertController.popoverPresentationController.sourceView = _menuButton;
+  alertController.popoverPresentationController.sourceRect =
+      CGRectMake(CGRectGetWidth(_menuButton.bounds) / 2,
+                 CGRectGetHeight(_menuButton.bounds), 1, 1);
+  return alertController;
+}
+
+@end
+
+@implementation TracingHandler
+
+- (void)startWithHandler:(void (^)())startHandler
+          andStopHandler:(void (^)())stopHandler {
+  int i = 0;
+  NSString* filename;
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  NSString* path = NSSearchPathForDirectoriesInDomains(
+      NSDocumentDirectory, NSUserDomainMask, YES)[0];
+
+  do {
+    filename =
+        [path stringByAppendingPathComponent:
+                  [NSString stringWithFormat:@"trace_%d.pftrace.gz", i++]];
+  } while ([fileManager fileExistsAtPath:filename]);
+
+  if (![fileManager createFileAtPath:filename contents:nil attributes:nil]) {
+    NSLog(@"Failed to create tracefile: %@", filename);
+    return;
+  }
+
+  _traceFileHandle = [NSFileHandle fileHandleForWritingAtPath:filename];
+  if (_traceFileHandle == nil) {
+    NSLog(@"Failed to open tracefile: %@", filename);
+    return;
+  }
+
+  NSLog(@"Will trace to file: %@", filename);
+
+  perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
+      base::trace_event::TraceConfig("-*,blink,cc,gpu,renderer.scheduler,"
+                                     "sequence_manager,v8,toplevel,viz",
+                                     ""),
+      /*privacy_filtering_enabled=*/false,
+      /*convert_to_legacy_json=*/true);
+
+  perfetto_config.set_write_into_file(true);
+  _tracingSession =
+      perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
+
+  _tracingSession->Setup(perfetto_config, [_traceFileHandle fileDescriptor]);
+
+  __weak TracingHandler* weakSelf = self;
+  auto runner = base::SequencedTaskRunner::GetCurrentDefault();
+
+  _tracingSession->SetOnStartCallback([runner, startHandler]() {
+    runner->PostTask(FROM_HERE, base::BindOnce(^{
+                       startHandler();
+                     }));
+  });
+
+  _tracingSession->SetOnStopCallback([runner, weakSelf, stopHandler]() {
+    runner->PostTask(FROM_HERE, base::BindOnce(^{
+                       [weakSelf onStopped];
+                       stopHandler();
+                     }));
+  });
+
+  _tracingSession->Start();
+}
+
+- (void)stop {
+  _tracingSession->Stop();
+}
+
+- (void)onStopped {
+  [_traceFileHandle closeFile];
+  _traceFileHandle = nil;
+  _tracingSession.reset();
+}
+
+- (id)init {
+  _traceFileHandle = nil;
+  return self;
+}
+
+- (BOOL)isTracing {
+  return !!_tracingSession.get();
 }
 
 @end

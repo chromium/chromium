@@ -210,6 +210,10 @@ static_library("content_shell_lib") {
       "browser/shell_web_contents_view_delegate_ios.mm",
     ]
     configs += [ "//build/config/compiler:enable_arc" ]
+    deps += [
+      "//services/tracing/public/cpp",
+      "//services/tracing/public/mojom:mojom",
+    ]
   }
 
   if (is_win) {

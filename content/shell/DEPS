@@ -54,4 +54,9 @@ specific_include_rules = {
   "shell_views\.cc": [
     "+ui/wm/test"
   ],
+
+  # Content shell for this platform has UI for starting traces.
+  "shell_platform_delegate_ios.mm": [
+    "+services/tracing/public",
+  ],
 }
