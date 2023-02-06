@@ -94,10 +94,9 @@ std::unique_ptr<SystemNudgeLabel> ClipboardNudge::CreateLabelView() const {
                 AshColorProvider::ContentLayerType::kIconColorPrimary);
             if (use_launcher_key) {
               return IsAssistantAvailable()
-                         ? gfx::CreateVectorIcon(gfx::IconDescription(
-                               kClipboardLauncherOuterIcon,
-                               kKeyboardShortcutIconSize, icon_color,
-                               &kClipboardLauncherInnerIcon))
+                         ? gfx::CreateVectorIcon(kClipboardLauncherIcon,
+                                                 kKeyboardShortcutIconSize,
+                                                 icon_color)
                          : gfx::CreateVectorIcon(
                                kClipboardLauncherNoAssistantIcon,
                                kKeyboardShortcutIconSize, icon_color);
