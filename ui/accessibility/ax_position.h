@@ -241,8 +241,8 @@ class AXPosition {
 
   static AXPositionInstance CreateNullPosition() {
     AXPositionInstance new_position(new AXPositionType());
-    new_position->Initialize(AXPositionKind::NULL_POSITION, nullptr,
-                             INVALID_INDEX, INVALID_OFFSET,
+    new_position->Initialize(AXPositionKind::NULL_POSITION, AXTreeIDUnknown(),
+                             kInvalidAXNodeID, INVALID_INDEX, INVALID_OFFSET,
                              ax::mojom::TextAffinity::kDownstream);
     return new_position;
   }
@@ -254,7 +254,8 @@ class AXPosition {
     DCHECK_NE(anchor.id(), kInvalidAXNodeID);
 
     AXPositionInstance new_position(new AXPositionType());
-    new_position->Initialize(AXPositionKind::TREE_POSITION, &anchor,
+    new_position->Initialize(AXPositionKind::TREE_POSITION,
+                             anchor.tree()->GetAXTreeID(), anchor.id(),
                              child_index, INVALID_OFFSET,
                              ax::mojom::TextAffinity::kDownstream);
     return new_position;
@@ -285,7 +286,8 @@ class AXPosition {
     DCHECK_NE(anchor.id(), kInvalidAXNodeID);
 
     AXPositionInstance new_position(new AXPositionType());
-    new_position->Initialize(AXPositionKind::TEXT_POSITION, &anchor,
+    new_position->Initialize(AXPositionKind::TEXT_POSITION,
+                             anchor.tree()->GetAXTreeID(), anchor.id(),
                              INVALID_INDEX, text_offset, affinity);
     return new_position;
   }
@@ -345,12 +347,12 @@ class AXPosition {
     result.kind = kind_;
 
     // A tree ID can be serialized as a 32-byte string.
-    std::string tree_id_string = GetTreeID().ToString();
+    std::string tree_id_string = tree_id_.ToString();
     DCHECK_LE(tree_id_string.size(), 32U);
     strncpy(result.tree_id, tree_id_string.c_str(), 32);
     result.tree_id[32] = 0;
 
-    result.anchor_id = GetAnchorID();
+    result.anchor_id = anchor_id_;
     result.child_index = child_index_;
     result.text_offset = text_offset_;
     result.affinity = affinity_;
@@ -383,8 +385,8 @@ class AXPosition {
         } else {
           str_child_index = base::NumberToString(child_index_);
         }
-        str = "TreePosition tree_id=" + GetTreeID().ToString() +
-              " anchor_id=" + base::NumberToString(GetAnchorID()) +
+        str = "TreePosition tree_id=" + tree_id_.ToString() +
+              " anchor_id=" + base::NumberToString(anchor_id_) +
               " child_index=" + str_child_index;
         break;
       }
@@ -395,7 +397,7 @@ class AXPosition {
         } else {
           str_text_offset = base::NumberToString(text_offset_);
         }
-        str = "TextPosition anchor_id=" + base::NumberToString(GetAnchorID()) +
+        str = "TextPosition anchor_id=" + base::NumberToString(anchor_id_) +
               " text_offset=" + str_text_offset + " affinity=" +
               ui::ToString(static_cast<ax::mojom::TextAffinity>(affinity_));
         break;
@@ -445,11 +447,10 @@ class AXPosition {
   }
 
   AXPositionKind kind() const { return kind_; }
+  AXTreeID tree_id() const { return tree_id_; }
+  AXNodeID anchor_id() const { return anchor_id_; }
 
-  // Deprecated.
-  // TODO(crbug.com/1362839): replace on GetTreeID()/GetAnchorID().
-  AXTreeID tree_id() const { return GetTreeID(); }
-  AXNodeID anchor_id() const { return GetAnchorID(); }
+  AXTreeManager* GetManager() const { return AXTreeManager::FromID(tree_id()); }
 
   // Returns true if this position is within an "empty object", i.e. within a
   // node that should contribute no text to the accessibility tree's text
@@ -524,18 +525,20 @@ class AXPosition {
     return !node.GetChildCountCrossingTreeBoundary() || IsEmptyObject(node);
   }
 
-  AXNode* GetAnchor() const { return anchor_.get(); }
-  AXTree* GetTree() const { return anchor_ ? anchor_->tree() : nullptr; }
-  AXTreeManager* GetManager() const {
-    return anchor_ ? anchor_->GetManager() : nullptr;
+  AXNode* GetAnchor() const {
+    if (tree_id_ == AXTreeIDUnknown() || anchor_id_ == kInvalidAXNodeID)
+      return nullptr;
+
+    const AXTreeManager* manager = GetManager();
+    if (manager)
+      return manager->GetNode(anchor_id());
+
+    return nullptr;
   }
 
-  AXNodeID GetAnchorID() const {
-    return anchor_ ? anchor_->id() : kInvalidAXNodeID;
-  }
-  AXTreeID GetTreeID() const {
-    DCHECK(!anchor_ || anchor_->tree());
-    return anchor_ ? anchor_->tree()->GetAXTreeID() : AXTreeIDUnknown();
+  AXTree* GetTree() const {
+    AXNode* anchor = GetAnchor();
+    return anchor ? anchor->tree() : nullptr;
   }
 
   int GetAnchorSiblingCount() const {
@@ -656,7 +659,9 @@ class AXPosition {
   bool IsValid() const {
     switch (kind_) {
       case AXPositionKind::NULL_POSITION:
-        return !GetAnchor() && child_index_ == INVALID_INDEX &&
+        return tree_id_ == AXTreeIDUnknown() &&
+               anchor_id_ == kInvalidAXNodeID &&
+               child_index_ == INVALID_INDEX &&
                text_offset_ == INVALID_OFFSET &&
                affinity_ == ax::mojom::TextAffinity::kDownstream;
       case AXPositionKind::TREE_POSITION:
@@ -2342,7 +2347,7 @@ class AXPosition {
             ->CreatePositionAtStartOfAnchor();
     if (IsTextPosition())
       root_position = root_position->AsTextPosition();
-    DCHECK_EQ(root_position->GetTree(), GetTree())
+    DCHECK_EQ(root_position->tree_id_, tree_id_)
         << "`CreatePositionAtStartOfAXTree` should not cross any tree "
            "boundaries, neither return the null position.";
     return root_position;
@@ -4265,7 +4270,8 @@ class AXPosition {
 
   void swap(AXPosition& other) {
     std::swap(kind_, other.kind_);
-    std::swap(anchor_, other.anchor_);
+    std::swap(tree_id_, other.tree_id_);
+    std::swap(anchor_id_, other.anchor_id_);
     std::swap(child_index_, other.child_index_);
     std::swap(text_offset_, other.text_offset_);
     std::swap(affinity_, other.affinity_);
@@ -4408,7 +4414,9 @@ class AXPosition {
 
  protected:
   AXPosition()
-      : anchor_(nullptr),
+      : kind_(AXPositionKind::NULL_POSITION),
+        tree_id_(AXTreeIDUnknown()),
+        anchor_id_(kInvalidAXNodeID),
         child_index_(INVALID_INDEX),
         text_offset_(INVALID_OFFSET),
         affinity_(ax::mojom::TextAffinity::kDownstream) {}
@@ -4416,7 +4424,8 @@ class AXPosition {
   // We explicitly don't copy any cached members.
   AXPosition(const AXPosition& other)
       : kind_(other.kind_),
-        anchor_(other.anchor_),
+        tree_id_(other.tree_id_),
+        anchor_id_(other.anchor_id_),
         child_index_(other.child_index_),
         text_offset_(other.text_offset_),
         affinity_(other.affinity_),
@@ -4486,22 +4495,17 @@ class AXPosition {
                                    int text_offset,
                                    ax::mojom::TextAffinity affinity) {
     kind_ = kind;
+    tree_id_ = tree_id;
+    anchor_id_ = anchor_id;
     child_index_ = child_index;
     text_offset_ = text_offset;
     affinity_ = affinity;
 
-    AXTreeManager* manager = AXTreeManager::FromID(tree_id);
-    if (manager) {
-      AXNode* anchor = manager->GetNode(anchor_id);
-      if (anchor) {
-        anchor_ = anchor->AsWeakPtr();
-      }
-    }
-
     if (!IsValid()) {
       // Reset to the null position.
       kind_ = AXPositionKind::NULL_POSITION;
-      anchor_ = nullptr;
+      tree_id_ = AXTreeIDUnknown();
+      anchor_id_ = kInvalidAXNodeID;
       child_index_ = INVALID_INDEX;
       text_offset_ = INVALID_OFFSET;
       affinity_ = ax::mojom::TextAffinity::kDownstream;
@@ -4509,23 +4513,28 @@ class AXPosition {
   }
 
   void Initialize(AXPositionKind kind,
-                  const AXNode* anchor,
+                  AXTreeID tree_id,
+                  AXNodeID anchor_id,
                   int child_index,
                   int text_offset,
                   ax::mojom::TextAffinity affinity) {
     kind_ = kind;
+    tree_id_ = tree_id;
+    anchor_id_ = anchor_id;
     child_index_ = child_index;
     text_offset_ = text_offset;
     affinity_ = affinity;
 
-    if (kind_ != AXPositionKind::NULL_POSITION) {
-      SANITIZER_CHECK(anchor)
-          << "Creating a position without an anchor is disallowed";
-      SANITIZER_CHECK(anchor->GetManager())
-          << "Creating a position without a tree manager is disallowed:\n"
-          << ToDebugString();
-      anchor_ = const_cast<AXNode*>(anchor)->AsWeakPtr();
-    }
+    // TODO(accessibility) Consider using WeakPtr<AXTree> instead of an
+    // AXTreeID, which would be both faster and easier to use in combination
+    // with AXTreeSnapshotter, which does not use AXTreeManager to cache
+    // AXTreeIDs in a map.
+    SANITIZER_CHECK(GetManager() || kind_ == AXPositionKind::NULL_POSITION)
+        << "Tree manager required, tree_id = " << tree_id.ToString()
+        << "  is unknown = " << (tree_id == AXTreeIDUnknown());
+    SANITIZER_CHECK(GetAnchor() || kind_ == AXPositionKind::NULL_POSITION)
+        << "Creating a position without an anchor is disallowed:\n"
+        << ToDebugString();
 
     // TODO(crbug.com/1404289) Remove this line and let the below IsValid()
     // assertion get triggered instead. We shouldn't be creating test positions
@@ -5590,8 +5599,12 @@ class AXPosition {
     return text_position;
   }
 
-  AXPositionKind kind_ = AXPositionKind::NULL_POSITION;
-  base::WeakPtr<AXNode> anchor_;
+  AXPositionKind kind_;
+  // TODO(crbug.com/1362839): use weak pointers for the AXTree, so that
+  // AXPosition can be used without AXTreeManager support (and also faster than
+  // the slow AXTreeID).
+  AXTreeID tree_id_;
+  AXNodeID anchor_id_;
 
   // For text positions, |child_index_| is initially set to |-1| and only
   // computed on demand. The same with tree positions and |text_offset_|.
